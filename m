@@ -2,78 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C34C51D9E2D
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57CA71D9E51
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729417AbgESRtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 13:49:20 -0400
-Received: from mga01.intel.com ([192.55.52.88]:44933 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726059AbgESRtT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 13:49:19 -0400
-IronPort-SDR: mHE+khGHz4PSIQ7vDLaSQ5z0KT5oaTPzKfMifC1FMP4x8sEGJCY7DWObytRrKIkDff+XfU8KrQ
- wjNEMa6KkKmQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 10:49:05 -0700
-IronPort-SDR: MYW1UuulTzlhBMvTgl1szX1qyh5J9CHwu/jTPJeIQLCFA3iFS92wri7b23GBe48OFv0XFwY6xG
- nUT8iY49OnXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
-   d="scan'208";a="466218150"
-Received: from stputhen-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.5.127])
-  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 10:49:05 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, olteanv@gmail.com,
-        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
-        netdev@vger.kernel.org, vladimir.oltean@nxp.com, po.liu@nxp.com,
-        Jose.Abreu@synopsys.com
-Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
-In-Reply-To: <29959a1a-fc45-6870-fa11-311866b51aa0@ti.com>
-References: <20200516012948.3173993-1-vinicius.gomes@intel.com> <20200516.133739.285740119627243211.davem@davemloft.net> <CA+h21hoNW_++QHRob+NbWC2k7y7sFec3kotSjTL6s8eZGGT+2Q@mail.gmail.com> <20200516.151932.575795129235955389.davem@davemloft.net> <87wo59oyhr.fsf@intel.com> <20200518135613.379f6a63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <87h7wcq4nx.fsf@intel.com> <29959a1a-fc45-6870-fa11-311866b51aa0@ti.com>
-Date:   Tue, 19 May 2020 10:49:04 -0700
-Message-ID: <87ftbvolwv.fsf@intel.com>
+        id S1729001AbgESR4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 13:56:52 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:53706 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbgESR4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 13:56:51 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JHuj47126716;
+        Tue, 19 May 2020 12:56:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589911005;
+        bh=mZncJCwJdkNq+GLu4yjejDCJIhmYL6I8ymoASj1tNtM=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=ZIhbg0EdUOYCvXcHuoJFXS8/tTki84yCTmmFgfpWz3UPijQ/PfbufhFTcicDCwyy5
+         YWUQILT9xlmHVs0gcvbVuqGrjCd+G4YRuKHfnWAKyU+UYRaTwt+sZapp/l3kw3YfXv
+         RgXz5ARUiCHqNHRdlJtwW/Y8b/6xmez0GLzX5T0I=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JHujYd072096;
+        Tue, 19 May 2020 12:56:45 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
+ May 2020 12:56:45 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 19 May 2020 12:56:45 -0500
+Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JHuj3m119856;
+        Tue, 19 May 2020 12:56:45 -0500
+Subject: Re: [PATCH net-next 2/4] net: phy: dp83869: Set opmode from straps
+From:   Dan Murphy <dmurphy@ti.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+References: <20200519141813.28167-1-dmurphy@ti.com>
+ <20200519141813.28167-3-dmurphy@ti.com>
+ <20200519095818.425d227b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <65e1b5ca-680e-f82d-cde4-3d5a3eb40884@ti.com>
+Message-ID: <459afc6f-a519-43f5-aeb2-e28c362237b3@ti.com>
+Date:   Tue, 19 May 2020 12:56:40 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <65e1b5ca-680e-f82d-cde4-3d5a3eb40884@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri <m-karicheri2@ti.com> writes:
+Jakub
 
->> That was the (only?) strong argument in favor of having frame preemption
->> in the TC side when this was last discussed.
->> 
->> We can have a hybrid solution, we can move the express/preemptible per
->> queue map to mqprio/taprio/whatever. And have the more specific
->> configuration knobs, minimum fragment size, etc, in ethtool.
+On 5/19/20 12:40 PM, Dan Murphy wrote:
+> Jakub
 >
-> Isn't this a pure h/w feature? FPE is implemented at L2 and involves
-> fragments that are only seen by h/w and never at Linux network core
-> unlike IP fragments and is transparent to network stack. However it
-> enhances priority handling at h/w to the next level by pre-empting 
-> existing lower priority traffic to give way to express queue traffic
-> and improve latency. So everything happens in h/w. So ethtool makes
-> perfect sense here as it is a queue configuration. I agree with Vinicius
-> and Vladmir to support this in ethtool instead of TC.
+> On 5/19/20 11:58 AM, Jakub Kicinski wrote:
+>> On Tue, 19 May 2020 09:18:11 -0500 Dan Murphy wrote:
+>>> If the op-mode for the device is not set in the device tree then set
+>>> the strapped op-mode and store it for later configuration.
+>>>
+>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ../drivers/net/phy/dp83869.c: In function0 dp83869_set_strapped_mode:
+>> ../drivers/net/phy/dp83869.c:171:10: warning: comparison is always 
+>> false due to limited range of data type [-Wtype-limits]
+>>    171 |  if (val < 0)
+>>        |          ^
+>
+> This looks to be a false positive.
+>
+> phy_read_mmd will return an errno or a value from 0->15
+>
+> So if errno is returned then this will be true.
+>
+> Unless I have to do IS_ERR.
+>
+> I did not get that warning.  But I am using 9.2-gcc.
+>
+> What compiler are you using?
+>
+I see what the issue is val needs to be an int not a u16
 
-The way I see, the issue that Jakub is pointing here is more of
-usability/understandability.
+I will fix it
 
-By having the express/preemptible queue mapping in TC, we have the
-configuration near where the "priority to queue" mapping happens. That
-improves the ease of configuration, makes it easier to spot mistakes,
-that kind of thing, all of which are a big plus.
-
-Right now, I am seeing this hybrid approach as a good compromise, we
-have the queue settings near to where the kinds of traffic are mapped to
-queues, and we have the rest of the hardware configuration in ethtool.
+Dan
 
 
-Cheers,
--- 
-Vinicius
+> Dan
+>
