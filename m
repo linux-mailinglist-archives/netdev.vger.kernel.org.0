@@ -2,59 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 423FC1DA53F
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F04F01DA544
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgESXVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 19:21:12 -0400
-Received: from cmccmta1.chinamobile.com ([221.176.66.79]:46225 "EHLO
-        cmccmta1.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725998AbgESXVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 19:21:12 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.15]) by rmmx-syy-dmz-app03-12003 (RichMail) with SMTP id 2ee35ec469d7797-56eb0; Wed, 20 May 2020 07:20:57 +0800 (CST)
-X-RM-TRANSID: 2ee35ec469d7797-56eb0
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from [192.168.0.104] (unknown[112.3.208.171])
-        by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee85ec469d7770-24acd;
-        Wed, 20 May 2020 07:20:56 +0800 (CST)
-X-RM-TRANSID: 2ee85ec469d7770-24acd
-Subject: Re: [PATCH] net/amd: Remove the extra blank lines
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200519111529.12016-1-tangbin@cmss.chinamobile.com>
- <20200519.154202.2088276192882746951.davem@davemloft.net>
-From:   Tang Bin <tangbin@cmss.chinamobile.com>
-Message-ID: <82c34fac-b62d-0317-535e-6e0bc37fa1ac@cmss.chinamobile.com>
-Date:   Wed, 20 May 2020 07:21:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728026AbgESXXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 19:23:04 -0400
+Received: from novek.ru ([213.148.174.62]:46344 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725998AbgESXXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 19:23:04 -0400
+Received: from [10.0.1.119] (unknown [62.76.204.32])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id D6B355028F3;
+        Wed, 20 May 2020 02:22:58 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru D6B355028F3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1589930579; bh=Xew9WbpOlUKzcYABUmHLYzkkH9zZbMApb4JrZcSNi2Y=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=x3P/Oy+G9AnG8WUi5dJCo4S7WX1cyRWnJshAAN99T8JQs7PAe702wZLTW+7uBe2VE
+         yYd29MVsgMcxX70XhNcxMfS20AJderDf297ojd9k+5BoNYQFMpZzpKwBaNjSviXaNh
+         yUB8ATo1GGvUljT3XDpxPlZXA9Gezx8ib8uFuDuU=
+Subject: Re: [PATCH v2 net] net/tls: fix encryption error checking
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1589883643-6939-1-git-send-email-vfedorenko@novek.ru>
+ <20200519150420.485c800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <e4ec82ba-10e5-8b23-4da5-5883f3a89b92@novek.ru>
+ <20200519161018.0f9be0d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <68b07ef8-9240-7860-6ed0-c868629278dc@novek.ru>
+Date:   Wed, 20 May 2020 02:23:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200519.154202.2088276192882746951.davem@davemloft.net>
+In-Reply-To: <20200519161018.0f9be0d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
+X-Spam-Status: No, score=2.2 required=5.0 tests=RDNS_NONE,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.1
+X-Spam-Level: **
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David:
+On 20.05.2020 02:10, Jakub Kicinski wrote:
+> On Wed, 20 May 2020 01:49:33 +0300 Vadim Fedorenko wrote:
+>> On 20.05.2020 01:04, Jakub Kicinski wrote:
+>>> On Tue, 19 May 2020 13:20:43 +0300 Vadim Fedorenko wrote:
+>>>> bpf_exec_tx_verdict() can return negative value for copied
+>>>> variable. In that case this value will be pushed back to caller
+>>>> and the real error code will be lost. Fix it using signed type and
+>>>> checking for positive value.
+>>>>
+>>>> Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
+>>>> Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
+>>>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+>>> If the error encountered is transient we will still drop some data from
+>>> the stream, because the record that was freed may have included data
+>>> from a previous send call. Still, cleaning up the error code seems like
+>>> an improvement.
+>>>
+>>> John, do you have an opinion on this?
+>> Jakub, maybe it is better to free only in case of fatal encryption error? I mean
+>> when sk->sk_err is EBADMSG. Because in case of ENOMEM we will iterate to
+>> alloc_payload and in case of ENOSPC we will return good return code and send
+>> open_rec again on next call. The EBADMSG state is the only fatal state that needs
+>> freeing of allocated record.
+> Sounds good!
 
-On 2020/5/20 6:42, David Miller wrote:
-> Please put these patches into a proper, numbered, patch series with
-> an appropriate header posting.
-Whether you mean the patches should be like this: [PATCH 0/5].........?
->
-> Some of these patches do not apply cleanly to the net-next tree, which
-> is where these changes should be targetted.  Please respin.
-
-Can you tell me which one is useless, I will drop and not put it in the 
-patches set.
-
-Thanks,
-
-Tang Bin
-
-
-
+Ok, will send v3 with both fixes.
