@@ -2,83 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B521D9EE7
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B73C71D9EF3
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbgESSLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 14:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S1729089AbgESSOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 14:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726510AbgESSLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 14:11:30 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4682C08C5C0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 11:11:30 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id n14so471515qke.8
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 11:11:30 -0700 (PDT)
+        with ESMTP id S1726447AbgESSOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 14:14:24 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25761C08C5C1
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 11:14:24 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id s10so223171pgm.0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 11:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dM3hQnXd+9exA5NjGkA80fd7WRkZgNXz6zMARfHdwSc=;
-        b=vadcOj0wml8nyuzYpIOw+SoOXgMR/4OHMr45XXc6F1BjQaPbcCJ7sgtHXN2mqL6tAH
-         NVSsSckzL41i8JnyMvwTVTAxUayipdYTNf0Dc0Oe8t7uHHV2mg4J192gqVb9fUAv6B9t
-         ec8p+sjkpbG8+fSCT9lHWULqvd5T+ULgfa2Up91E7sfj7Qltwonokf2EvYoW06nlfnb/
-         i2pewlcvfEKqFU9m66yeN2+ffY1oiy/iIfk/JAr9jsb7f7cM9sX3V9qMgVqG/O+BWEiO
-         8z/HE1WfTmn/jpkwwq3DdlCh00DY3Yfm5kJsMERtMpOnIhDM+X2P5/UTnrU64IuzpUZE
-         WKgQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=GWcc8oVpXNGnhmVFSGsMCYNch8YIZsE+7UZfyDX1b1s=;
+        b=qDxV66tUkSvuPJb7KqJEMgMn6a6QQv5vMRFGKOOlXTaP9TVGqmf+swUWW6F3ibePpm
+         jGMjoYXGMJ8J9WOVwGakwM02ksOKmj9XmG+n8Y08QaAYsEih7trLFLwaLPbOB5jjIQYf
+         M6VJzccmMaUWK4jw+axMKaSnumIKZgFkncQKmXSBkOGyjK6KpvLwByruFYP26AUeF48n
+         vZhgrMVSMOJCgzy1lqW8+8G3bJ3vjtcERhDeWf4LqQeSdMGrK3jtpSbPFVjEOSJ6kmfE
+         MAkCOVpIY+z2/rCAXGW5/lFvs+sNwcKa8qUi9vV13a7eZ1lUXNUp0T4k2DnxpCWlFWg9
+         FWFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dM3hQnXd+9exA5NjGkA80fd7WRkZgNXz6zMARfHdwSc=;
-        b=WniUANkWr5Ozf1IELV+k5KXVtJTs+S9RNPy/O9H/8Iqjcu/1n4HtuywsBpSCgK5kgC
-         EVfKcpzVSrPUqjXLODyGaiUwU3m7ZhaMlszqAcdsmYKznzNEkoChR9E2JP92d3kssJbu
-         Aco/8q46D5ZO3h8dHLNtsgAE7jvVXum4dxYhedKNSW2+GzzR89cjmn58UQuZcdd9Nhsv
-         auVMmdzalXPIbDpOLUMRGQT0bQkosA6z2w6A9UzjvIyAjYq6crC5H2lpP3daRYJaOnrS
-         JnUh1+oix53YrMIaRn71J6k9a1pUre43wX8b362r8qjk9L1jg3bNO0XnEB+jVMtoiKMo
-         BaEg==
-X-Gm-Message-State: AOAM531djXSbQKtgTehjp59yppMJze604nVG08SiwkpTYsyBJdicIVuO
-        ysc8deUlUl2c37nQ6E9XMiE=
-X-Google-Smtp-Source: ABdhPJxpCJSRgTM3rssgQYBF70XrpoWbAUiXre9mozj77aUT9xlyaXZNJPIs99MMlAh/s6Oy/9iFHA==
-X-Received: by 2002:a37:8d3:: with SMTP id 202mr655156qki.237.1589911890036;
-        Tue, 19 May 2020 11:11:30 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c5f3:7fed:e95c:6b74? ([2601:282:803:7700:c5f3:7fed:e95c:6b74])
-        by smtp.googlemail.com with ESMTPSA id s30sm321821qtd.34.2020.05.19.11.11.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2020 11:11:29 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/1] tc: report time an action was first
- used
-To:     Roman Mashak <mrv@mojatatu.com>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        kernel@mojatatu.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us
-References: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6619cab4-02bb-51e7-0c2c-acb0cb13d022@gmail.com>
-Date:   Tue, 19 May 2020 12:11:28 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=GWcc8oVpXNGnhmVFSGsMCYNch8YIZsE+7UZfyDX1b1s=;
+        b=IGbxGDn+eNFeCgE0RbbK2gJqi3YCwhP3/4XqHF+2Ou6jvnyXAxNc4ffzcFjn/8qltf
+         59aKA6I0hWbzzwQmHiBoBpXsAitkhC7HClajycAvy1115Ws17jTu+0bZJ9wkZtXSa/Bw
+         pMhew0AufWrJKU5p9cAOh3HAtdfE/1FWu3lGUhyg4dNMYr0/QJQ0b0S3Sgg9eXVOj3jR
+         aurI9nGYjGP9JfOw2/IaWnyEZM2PnabVR3YYiEE2y5JvOyDNnzFAyL0dZifBIIGfqwU0
+         TmlPxRl77XXp5dgHlowRYm7xkQwDyYrjHvDQtyUDNeCTnuM5rdOlOM0e5tTZdaY0saV5
+         V8fg==
+X-Gm-Message-State: AOAM532GuihVzMup0MPu2MctkOhtKRJARyMSYoJbrcLLPAwSz0KTFkjp
+        wv0oQil/80RoyH9fNqI44BkB
+X-Google-Smtp-Source: ABdhPJwugN3E28mkgq62MwyOHN6GuwFZQCbSjgrj5P9JL3FNCPKsli5EFHbI2c2y0hHHPx8+GvXwhA==
+X-Received: by 2002:a62:5487:: with SMTP id i129mr312992pfb.77.1589912063535;
+        Tue, 19 May 2020 11:14:23 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:908:98af:f00e:87b6:e4b4:50f0])
+        by smtp.gmail.com with ESMTPSA id q201sm156543pfq.40.2020.05.19.11.14.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 11:14:22 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH] net: qrtr: Fix passing invalid reference to qrtr_local_enqueue()
+Date:   Tue, 19 May 2020 23:44:16 +0530
+Message-Id: <20200519181416.4235-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/20 7:28 AM, Roman Mashak wrote:
-> Have print_tm() dump firstuse value along with install, lastuse
-> and expires.
-> 
-> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
-> ---
->  tc/tc_util.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+Once the traversal of the list is completed with list_for_each_entry(),
+the iterator (node) will point to an invalid object. So passing this to
+qrtr_local_enqueue() which is outside of the iterator block is erroneous
+eventhough the object is not used.
 
-I can merge master once Stephen commits the bug fix. Then resubmit this
-patch.
+So fix this by passing NULL to qrtr_local_enqueue().
+
+Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ net/qrtr/qrtr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 7ed31b5e77e4..2d8d6131bc5f 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -854,7 +854,7 @@ static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 	}
+ 	mutex_unlock(&qrtr_node_lock);
+ 
+-	qrtr_local_enqueue(node, skb, type, from, to);
++	qrtr_local_enqueue(NULL, skb, type, from, to);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+
