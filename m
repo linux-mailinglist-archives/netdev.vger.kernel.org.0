@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 784A31D9953
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 16:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 116AA1D994B
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 16:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729077AbgESOSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 10:18:33 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:52860 "EHLO
+        id S1729265AbgESOS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 10:18:28 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:52862 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729237AbgESOSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 10:18:25 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JEIKPg120851;
-        Tue, 19 May 2020 09:18:20 -0500
+        with ESMTP id S1729246AbgESOS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 10:18:26 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JEILqg120856;
+        Tue, 19 May 2020 09:18:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589897900;
-        bh=sz1d30oTTh8vMYDylpY9tVGBzny00+8RzK0fIiSFu8Q=;
+        s=ti-com-17Q1; t=1589897901;
+        bh=7cEMewK4Dv4aBSc5J3k0txTglRN+Y1e+MxBhdDrWOk8=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=n0uMSJWz5fyt5LwBAOTax8WapYYuiXLZwiRwP3Tmx0TnsKJ0xaUZDhMpnkfQr+pVH
-         hL3OvEWOWA8bYonJU0acCxv+Z9EIpchmxDIT8YoD5QypSiaMMg9R7ReKEN+5JexOT6
-         z7V8wzQzEqbFoi7ePNo036NpCVacKkGVsouw9w/M=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04JEIJVP034347
+        b=ONxEvuKbrDDp1glzRc3K1QahIt4TjB5gPhpf4G6TVGPkAwhwt787qXhOovwS42Z1O
+         zf+foupkxElMIr7ahNJm11d+N4O65zOz2nyKfC2X2x9cSqbCmPW5dV/5lXuJQg310t
+         Jp4gYAsoKfIGpMc1LJTuph1OAOdtegYNljmbtXl8=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04JEILHQ057284
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 May 2020 09:18:20 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 19 May 2020 09:18:21 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
- May 2020 09:18:19 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ May 2020 09:18:20 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 19 May 2020 09:18:19 -0500
+ Frontend Transport; Tue, 19 May 2020 09:18:20 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JEIISx058746;
-        Tue, 19 May 2020 09:18:19 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JEIKBQ058773;
+        Tue, 19 May 2020 09:18:20 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
         <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next 3/4] dt-bindings: net: Add RGMII internal delay for DP83869
-Date:   Tue, 19 May 2020 09:18:12 -0500
-Message-ID: <20200519141813.28167-4-dmurphy@ti.com>
+Subject: [PATCH net-next 4/4] net: dp83869: Add RGMII internal delay configuration
+Date:   Tue, 19 May 2020 09:18:13 -0500
+Message-ID: <20200519141813.28167-5-dmurphy@ti.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200519141813.28167-1-dmurphy@ti.com>
 References: <20200519141813.28167-1-dmurphy@ti.com>
@@ -56,77 +56,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the internal delay values into the header and update the binding
-with the internal delay properties.
+Add RGMII internal delay configuration for Rx and Tx.
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- .../devicetree/bindings/net/ti,dp83869.yaml    | 16 ++++++++++++++++
- include/dt-bindings/net/ti-dp83869.h           | 18 ++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ drivers/net/phy/dp83869.c | 84 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-index 5b69ef03bbf7..344015ab9081 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-@@ -64,6 +64,20 @@ properties:
-        Operational mode for the PHY.  If this is not set then the operational
-        mode is set by the straps. see dt-bindings/net/ti-dp83869.h for values
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 64fa2d911074..7d0b11220e47 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -99,6 +99,14 @@
+ #define DP83869_OP_MODE_MII			BIT(5)
+ #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
  
-+  ti,rx-internal-delay:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: |
-+      RGMII Receive Clock Delay - see dt-bindings/net/ti-dp83869.h
-+      for applicable values. Required only if interface type is
-+      PHY_INTERFACE_MODE_RGMII_ID or PHY_INTERFACE_MODE_RGMII_RXID.
++/* RGMIIDCTL bits */
++#define DP83869_RGMII_TX_CLK_DELAY_MAX		0xf
++#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
++#define DP83869_RGMII_TX_CLK_DELAY_INV	(DP83869_RGMII_TX_CLK_DELAY_MAX + 1)
++#define DP83869_RGMII_RX_CLK_DELAY_MAX		0xf
++#define DP83869_RGMII_RX_CLK_DELAY_SHIFT	0
++#define DP83869_RGMII_RX_CLK_DELAY_INV	(DP83869_RGMII_RX_CLK_DELAY_MAX + 1)
 +
-+  ti,tx-internal-delay:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: |
-+      RGMII Transmit Clock Delay - see dt-bindings/net/ti-dp83869.h
-+      for applicable values. Required only if interface type is
-+      PHY_INTERFACE_MODE_RGMII_ID or PHY_INTERFACE_MODE_RGMII_TXID.
-+
- required:
-   - reg
+ enum {
+ 	DP83869_PORT_MIRRORING_KEEP,
+ 	DP83869_PORT_MIRRORING_EN,
+@@ -108,6 +116,8 @@ enum {
+ struct dp83869_private {
+ 	int tx_fifo_depth;
+ 	int rx_fifo_depth;
++	u32 rx_id_delay;
++	u32 tx_id_delay;
+ 	int io_impedance;
+ 	int port_mirroring;
+ 	bool rxctrl_strap_quirk;
+@@ -232,6 +242,26 @@ static int dp83869_of_init(struct phy_device *phydev)
+ 				 &dp83869->tx_fifo_depth))
+ 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
  
-@@ -80,5 +94,7 @@ examples:
-         ti,op-mode = <DP83869_RGMII_COPPER_ETHERNET>;
-         ti,max-output-impedance = "true";
-         ti,clk-output-sel = <DP83869_CLK_O_SEL_CHN_A_RCLK>;
-+        ti,rx-internal-delay = <DP83869_RGMIIDCTL_2_25_NS>;
-+        ti,tx-internal-delay = <DP83869_RGMIIDCTL_2_75_NS>;
-       };
-     };
-diff --git a/include/dt-bindings/net/ti-dp83869.h b/include/dt-bindings/net/ti-dp83869.h
-index 218b1a64e975..77d104a40f1f 100644
---- a/include/dt-bindings/net/ti-dp83869.h
-+++ b/include/dt-bindings/net/ti-dp83869.h
-@@ -16,6 +16,24 @@
- #define DP83869_PHYCR_FIFO_DEPTH_6_B_NIB	0x02
- #define DP83869_PHYCR_FIFO_DEPTH_8_B_NIB	0x03
- 
-+/* RGMIIDCTL internal delay for rx and tx */
-+#define	DP83869_RGMIIDCTL_250_PS	0x0
-+#define	DP83869_RGMIIDCTL_500_PS	0x1
-+#define	DP83869_RGMIIDCTL_750_PS	0x2
-+#define	DP83869_RGMIIDCTL_1_NS		0x3
-+#define	DP83869_RGMIIDCTL_1_25_NS	0x4
-+#define	DP83869_RGMIIDCTL_1_50_NS	0x5
-+#define	DP83869_RGMIIDCTL_1_75_NS	0x6
-+#define	DP83869_RGMIIDCTL_2_00_NS	0x7
-+#define	DP83869_RGMIIDCTL_2_25_NS	0x8
-+#define	DP83869_RGMIIDCTL_2_50_NS	0x9
-+#define	DP83869_RGMIIDCTL_2_75_NS	0xa
-+#define	DP83869_RGMIIDCTL_3_00_NS	0xb
-+#define	DP83869_RGMIIDCTL_3_25_NS	0xc
-+#define	DP83869_RGMIIDCTL_3_50_NS	0xd
-+#define	DP83869_RGMIIDCTL_3_75_NS	0xe
-+#define	DP83869_RGMIIDCTL_4_00_NS	0xf
++	dp83869->rx_id_delay = DP83869_RGMII_RX_CLK_DELAY_INV;
++	ret = of_property_read_u32(of_node, "ti,rx-internal-delay",
++				   &dp83869->rx_id_delay);
++	if (!ret && dp83869->rx_id_delay > DP83869_RGMII_RX_CLK_DELAY_MAX) {
++		phydev_err(phydev,
++			   "ti,rx-internal-delay value of %u out of range\n",
++			   dp83869->rx_id_delay);
++		return -EINVAL;
++	}
 +
- /* IO_MUX_CFG - Clock output selection */
- #define DP83869_CLK_O_SEL_CHN_A_RCLK		0x0
- #define DP83869_CLK_O_SEL_CHN_B_RCLK		0x1
++	dp83869->tx_id_delay = DP83869_RGMII_TX_CLK_DELAY_INV;
++	ret = of_property_read_u32(of_node, "ti,tx-internal-delay",
++				   &dp83869->tx_id_delay);
++	if (!ret && dp83869->tx_id_delay > DP83869_RGMII_TX_CLK_DELAY_MAX) {
++		phydev_err(phydev,
++			   "ti,tx-internal-delay value of %u out of range\n",
++			   dp83869->tx_id_delay);
++		return -EINVAL;
++	}
++
+ 	return ret;
+ }
+ #else
+@@ -270,6 +300,29 @@ static int dp83869_configure_rgmii(struct phy_device *phydev,
+ 	return ret;
+ }
+ 
++static int dp83869_verify_rgmii_cfg(struct phy_device *phydev)
++{
++	struct dp83869_private *dp83869 = phydev->priv;
++
++	/* RX delay *must* be specified if internal delay of RX is used. */
++	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
++	     phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) &&
++	     dp83869->rx_id_delay == DP83869_RGMII_RX_CLK_DELAY_INV) {
++		phydev_err(phydev, "ti,rx-internal-delay must be specified\n");
++		return -EINVAL;
++	}
++
++	/* TX delay *must* be specified if internal delay of TX is used. */
++	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
++	     phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) &&
++	     dp83869->tx_id_delay == DP83869_RGMII_TX_CLK_DELAY_INV) {
++		phydev_err(phydev, "ti,tx-internal-delay must be specified\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static int dp83869_configure_mode(struct phy_device *phydev,
+ 				  struct dp83869_private *dp83869)
+ {
+@@ -371,6 +424,11 @@ static int dp83869_config_init(struct phy_device *phydev)
+ {
+ 	struct dp83869_private *dp83869 = phydev->priv;
+ 	int ret, val;
++	u16 delay;
++
++	ret = dp83869_verify_rgmii_cfg(phydev);
++	if (ret)
++		return ret;
+ 
+ 	ret = dp83869_configure_mode(phydev, dp83869);
+ 	if (ret)
+@@ -394,6 +452,32 @@ static int dp83869_config_init(struct phy_device *phydev)
+ 				     dp83869->clk_output_sel <<
+ 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
+ 
++	if (phy_interface_is_rgmii(phydev)) {
++		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
++
++		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN | DP83869_RGMII_RX_CLK_DELAY_EN);
++		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
++			val |= (DP83869_RGMII_TX_CLK_DELAY_EN | DP83869_RGMII_RX_CLK_DELAY_EN);
++
++		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
++			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
++
++		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
++			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
++
++		phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL, val);
++
++		delay = 0;
++		if (dp83869->rx_id_delay != DP83869_RGMII_RX_CLK_DELAY_INV)
++			delay |= dp83869->rx_id_delay;
++		if (dp83869->tx_id_delay != DP83869_RGMII_TX_CLK_DELAY_INV)
++			delay |= dp83869->tx_id_delay <<
++				 DP83869_RGMII_TX_CLK_DELAY_SHIFT;
++
++		phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
++			      delay);
++	}
++
+ 	return ret;
+ }
+ 
 -- 
 2.26.2
 
