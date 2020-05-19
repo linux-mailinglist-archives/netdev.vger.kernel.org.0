@@ -2,138 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 889471D92ED
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 11:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79FED1D92FB
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 11:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728625AbgESJEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 05:04:38 -0400
-Received: from mail-eopbgr130040.outbound.protection.outlook.com ([40.107.13.40]:54535
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726333AbgESJEi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 05:04:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bYzxR9bOu1HSd7nDH1iWOEzaCxDk3xdnxA2hIPBOOqJOdLL75/B7EZbnqOPctZFIK/eXhWdVkJkcX2695F/6wMcmAuR5J4lkue0HwsmgI+wpICXppVWBlDilgAXr0w1eqC80bkzIwR/RVk/uHorOApvxlO9KuTs++SEG8bpw4coOO4w/dZyKWNVmg8Jt29UlrIaxAKvXpDZqJrFIHnPjMRho8PL32eTMP7JuBcuMHSGgAmjLlR8qZRrpvMkBoFupLaKxBGIbhq6uplMQjhrHMonZGZBtJYSp4YKYLYn84XuvBqkqAvdpfCx/EOA1r4h9pltggEK5MEBiI0dEQwg8YQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bgT+2JWhuBy1d+zq30fBSeA5wY8JMMm3ZEsbKQikrnI=;
- b=Iv55doD//aCR44tvKk0MqPunHkZRlSnpCZdumtLI0J9YhGMyvPM3hPEUVWLtozYZ3cfTejgvGbQVsBOx9XANa17EofENcWzrPpXqzG9DkLhcl8na+EWECcd0v0MdpPjK4EQIyVzQGqMaiI+bTOn6v4pcAdXT8Dmbf5M4AB49tnrfJKMwLkuQAv5R6+GghrWXsWM+5u37tVOwc9w862CVojXmmHvcqxVnp+eHiTthZ01fE7Mt8tLQlYh3OIoBmTiFZ35zbeLXfXijFog4SRvH90jL1OmxRIkHmqrCMb5GhbTGFwaJ+WzOjSXkJp/vebyyh5RWPLFGtcpyApso8mOH6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bgT+2JWhuBy1d+zq30fBSeA5wY8JMMm3ZEsbKQikrnI=;
- b=SjZur2E38eth8hSQLWviWVSCftZ+nO4R5axnrJ54pGcHimR+E72bLKadEqleqU7+6snKQ+OTauuF0+nAPpbcWdkArkG1caromxXG9+fsEYNx/I9AujOMUQY9Y81KtH1aTn1qp4/dePsJi/3aM2pZzjKM06rBJbX0MJgJoQGA3GU=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
-Received: from AM7PR05MB6995.eurprd05.prod.outlook.com (2603:10a6:20b:1ad::15)
- by AM7PR05MB6868.eurprd05.prod.outlook.com (2603:10a6:20b:1af::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Tue, 19 May
- 2020 09:04:33 +0000
-Received: from AM7PR05MB6995.eurprd05.prod.outlook.com
- ([fe80::3903:9c1e:52e0:d74e]) by AM7PR05MB6995.eurprd05.prod.outlook.com
- ([fe80::3903:9c1e:52e0:d74e%8]) with mapi id 15.20.3000.034; Tue, 19 May 2020
- 09:04:33 +0000
-References: <20200515114014.3135-1-vladbu@mellanox.com> <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
-User-agent: mu4e 1.2.0; emacs 26.2.90
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, dcaratti@redhat.com, marcelo.leitner@gmail.com,
-        kuba@kernel.org
-Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
-In-reply-to: <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
-Date:   Tue, 19 May 2020 12:04:30 +0300
-Message-ID: <vbfo8qkb8ip.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: FR2P281CA0032.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:14::19) To AM7PR05MB6995.eurprd05.prod.outlook.com
- (2603:10a6:20b:1ad::15)
+        id S1728553AbgESJJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 05:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbgESJJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 05:09:07 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73807C061A0C
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 02:09:06 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id x12so10507459qts.9
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 02:09:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hXWeyFmd3luOSRif7RPJAa2Grpy/uijbKad9S3QDMRA=;
+        b=u1Ru63fUF7eYQzqRlS7ypWnLHB6Bgsv2IZjlfAPkJ6+//KF3Gg8cQwNJlvrIMG8iha
+         O85kcVEf5mQGaWTGoJOyyHFWko/7vXxP4qNV4oArgzOQnKWyaO0cC4hEW/FlHDhCpSi/
+         187iTSwEISAbl6UTzTZ8vCq/2O3KCplEFCzcXRRChiiQsPfDjQW6+wMvIWBdjIZ2jE29
+         C0Bn/sb0v5OA7bvATS0ZD+RKfOxmVg5nTv/YwwHVJPLlDqMpGAwbj0zsMD3h04li1b+H
+         HHJ1pzSCqwyaGMgRY2I6xBTBz5XNv0URFn1PZwuaOYGG8ZdyPMMm2TeGtnylIVlIJ4tZ
+         BTig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hXWeyFmd3luOSRif7RPJAa2Grpy/uijbKad9S3QDMRA=;
+        b=RszHoK1r6OLvuAsq2hncX+ShZ4s6wGy5rF0sBu3wgGw1kDEktq0tfakbU3xlJwpoHL
+         PNy56dTmmjwnjeJ19hVG+qfDCea59d73GmRzqg1j9RgJczjAyXCZU9fG/A+CkAbpOaxR
+         AizB+xpc+YT8bXtG10Qbn19Ko9omqFWaqPpj7UvM2trdmV+qbD6DtNZdnThgYJ1XS3xx
+         MXuLkZj3h0Z4vkiXu7G7HPT0E1NhD1af7vrPJfhryXIdHUEEgc+8OwXWA2KTFnTpf+Pq
+         AFqs6t++LkOKSZXEREKmOr6SP2PdX4Mj/Wijz6/sWPAfv12PeC1xR0FlNVCORk7Gt/Me
+         gZsA==
+X-Gm-Message-State: AOAM5302/drBaf6oKGSGxmW6YL1wEUzLuyC5A/me7kSGWHHYa5tYySxe
+        TJy09iB2mSPvVKeaspSJPo0Xsg==
+X-Google-Smtp-Source: ABdhPJyq6Qq/IPfhVDXuFgj0e+dADOXDCBlJTnPCAQ994SLmbfPRdlm+LYon3pGpQxTCwDSyEnrFzg==
+X-Received: by 2002:ac8:6bda:: with SMTP id b26mr2740322qtt.230.1589879345640;
+        Tue, 19 May 2020 02:09:05 -0700 (PDT)
+Received: from [10.0.0.248] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id c3sm8340521qtp.24.2020.05.19.02.09.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 May 2020 02:09:04 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 1/1] tc: report time an action was first
+ used
+To:     David Ahern <dsahern@gmail.com>, Roman Mashak <mrv@mojatatu.com>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        kernel@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
+References: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
+ <1a7ed71e-a169-a583-8e8b-f700d3413a08@mojatatu.com>
+ <e62b0766-3764-3cab-256c-1b5a0ca75d66@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <96851268-982b-6f1a-6e56-4967591810c5@mojatatu.com>
+Date:   Tue, 19 May 2020 05:09:03 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by FR2P281CA0032.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:14::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Tue, 19 May 2020 09:04:32 +0000
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0f10afff-766f-4096-2891-08d7fbd3a5ee
-X-MS-TrafficTypeDiagnostic: AM7PR05MB6868:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM7PR05MB686818D4F3AA93C84128B43CADB90@AM7PR05MB6868.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 040866B734
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rFN54d2nbpNdQy6ap7DpEVXAuvrQcqy/2GQX5sL5kWDgNYziVXXXOiH0vqVvSG2vI7NLZKkcJsryvfFc7CMrGzG9O3OpC3fTpnoo8Yif+HRwEa4Kxve0iIQ4SvnpZ4NOCa0L7vF3EMLaAHzBMbomnagGQlGWijKDR62wiRL0g4N/09NEnso+BhJvVF2bF+9nlFkNvQjZNwx6j9Nd0E6yG1kX0R6ZRLIf9C6xBxOGfGHSqfXkEf0JCoiMFyJWOLzuCHJLXMi6BALRtMnKxGj0M3ZjP4Fq5Mc7t53belLY6KuGEte517QpMailt9DFZ450vKlQQajA2phk0q5OeHgEb25mZZ4faMDeUKEGygptRLkitlHpEIAoduMDx2FVnNooRZ/+CvukcAb6ZRQNeENZ90qGEpJPfGT43TzchUASteau9AGDPSl56NJjvx9Nat/t
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6995.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(136003)(376002)(396003)(366004)(5660300002)(53546011)(6916009)(316002)(7696005)(36756003)(52116002)(8936002)(4326008)(8676002)(478600001)(26005)(186003)(66556008)(86362001)(2906002)(6486002)(16526019)(2616005)(66476007)(66946007)(956004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: zpyyGn6kLw4lrM8HFpChJPvvVlLO74nNccsBZMVJUzSZv2AEF+YTXe58bGbmXuLSoapmR7Zk/Y4sN5c9OC2CLHkYxWRaOkafZ9CEwI/5kKPp0gJzyqSJ5lPNvDCkbA56LPr3NpofPDMF16KmWn5HEZCgxBMK2DeUwWoUyizA6cO2/98Bosp5JzUzOe+op537rjdIOFwKcm1o8FMdx9vtrS6DODWmG+CM8FOu+FQGU1VyVp9BY1Y1YfJWkE6QE7T0n+x2rSWERE+f3oXngzG2j+y/9b0xgJSGlKdKSdGUhXBWdL1/uZuf8SaGLq16/bSLDXXkQcBd3H4jet5fTF7ZBYUf7mhS1cQB6vNS2E+BcmGnx+uXJPAY2Nbsu6Y1efDNCAR0tIjB3mBIl+0GrBFT4W9CtLdCAzCBTb0rnUeu/i760Zp/6h33vvfmvG+C8VwiRS6+E5ugwQgnqKGPQ90sTUIIEroWayCTL0WXs745r7k=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f10afff-766f-4096-2891-08d7fbd3a5ee
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2020 09:04:33.8426
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MTe+oPhXgCJQfZwd27GQxPb5H2xT73WwvCe2pYNZVhGOFrzZlWN/87biVQkCW5+K/m7xDvjUWB+D5p1WlAGmZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6868
+In-Reply-To: <e62b0766-3764-3cab-256c-1b5a0ca75d66@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-05-18 11:38 a.m., David Ahern wrote:
+> On 5/18/20 7:10 AM, Jamal Hadi Salim wrote:
+>> On 2020-05-17 9:28 a.m., Roman Mashak wrote:
+>>> Have print_tm() dump firstuse value along with install, lastuse
+>>> and expires.
+>>>
+>>> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+>>> ---
+>>>    tc/tc_util.c | 5 +++++
+>>>    1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/tc/tc_util.c b/tc/tc_util.c
+>>> index 12f865cc71bf..f6aa2ed552a9 100644
+>>> --- a/tc/tc_util.c
+>>> +++ b/tc/tc_util.c
+>>> @@ -760,6 +760,11 @@ void print_tm(FILE *f, const struct tcf_t *tm)
+>>>            print_uint(PRINT_FP, NULL, " used %u sec",
+>>>                   (unsigned int)(tm->lastuse/hz));
+>>>        }
+>>> +    if (tm->firstuse != 0) {
+>>> +        print_uint(PRINT_JSON, "first_used", NULL, tm->firstuse);
+>>> +        print_uint(PRINT_FP, NULL, " firstused %u sec",
+>>> +               (unsigned int)(tm->firstuse/hz));
+>>> +    }
+>>
+>> Maybe an else as well to print something like "firstused NEVER"
+>> or alternatively just print 0 (to be backward compatible on old
+>> kernels it will never be zero).
+>>
+> 
+> existing times do not, so shouldn't this be consistent?
+> 
 
-On Mon 18 May 2020 at 18:37, Edward Cree <ecree@solarflare.com> wrote:
-> On 15/05/2020 12:40, Vlad Buslov wrote:
->> In order to
->> significantly improve filter dump rate this patch sets implement new
->> mode of TC filter dump operation named "terse dump" mode. In this mode
->> only parameters necessary to identify the filter (handle, action cookie,
->> etc.) and data that can change during filter lifecycle (filter flags,
->> action stats, etc.) are preserved in dump output while everything else
->> is omitted.
-> I realise I'm a bit late, but isn't this the kind of policy that shouldn't
->  be hard-coded in the kernel?  I.e. if next year it turns out that some
->  user needs one parameter that's been omitted here, but not the whole dump,
->  are they going to want to add another mode to the uapi?
+Good point..
 
-Why not just extend terse dump? I won't break user land unless you are
-removing something from it.
-
-> Should this not instead have been done as a set of flags to specify which
->  pieces of information the caller wanted in the dump, rather than a mode
->  flag selecting a pre-defined set?
->
-> -ed
-
-I considered that approach initially but decided against it for
-following reasons:
-
-- Generic data is covered by current terse dump implementation.
-  Everything else will be act or cls specific which would result long
-  list of flag values like: TCA_DUMP_FLOWER_KEY_ETH_DST,
-  TCA_DUMP_FLOWER_KEY_ETH_DST, TCA_DUMP_FLOWER_KEY_VLAN_ID, ...,
-  TCA_DUMP_TUNNEL_KEY_ENC_KEY_ID, TCA_DUMP_TUNNEL_KEY_ENC_TOS. All of
-  these would require a lot of dedicated logic in act and cls dump
-  callbacks. Also, it would be quite a challenge to test all possible
-  combinations.
-
-- It is hard to come up with proper validation for such implementation.
-  In case of terse dump I just return an error if classifier doesn't
-  implement the callback (and since current implementation only outputs
-  generic action info, it doesn't even require support from
-  action-specific dump callbacks). But, for example, how do we validate
-  a case where user sets some flower and tunnel_key act dump flags from
-  previous paragraph, but Qdisc contains some other classifier? Or
-  flower classifier points to other types of actions? Or when flower
-  classifier has and tunnel_key actions but also mirred? Should the
-  implementation return an error on encountering any classifier or
-  action that doesn't have any flags set for its type or just print all
-  data like regular dump? What if user asks to dump some specific option
-  that wasn't set for particular filter of action instance?
-
-Overall, the more I think about such implementation the more it looks
-like a mess to me.
+cheers,
+jamal
