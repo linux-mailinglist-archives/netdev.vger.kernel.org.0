@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CD41D9807
+	by mail.lfdr.de (Postfix) with ESMTP id C1DB21D9808
 	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 15:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729076AbgESNlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 09:41:15 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:35527 "EHLO
+        id S1729087AbgESNlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 09:41:20 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:51279 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728633AbgESNlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 09:41:14 -0400
+        by vger.kernel.org with ESMTP id S1729065AbgESNlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 09:41:17 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 2AFF8581897;
-        Tue, 19 May 2020 09:41:12 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 0DA7C581898;
+        Tue, 19 May 2020 09:41:15 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 19 May 2020 09:41:12 -0400
+  by compute4.internal (MEProxy); Tue, 19 May 2020 09:41:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=dqlWJI4T+sFokDDE/lNlmxzM1yPp3AR5Wws/BGOGKBM=; b=RsgCx2Io
-        cFJu9nYE5zdFCmBeysPk0b4vzmXCcUDGeyupZKsWIZNZC+4F2BOiHhS8Nr3fcdBU
-        PfbnVoBzPtKb+CHcBOWS18mOiuMzy00msP+0p1lSEs/4DcRpHiq7VRbR5Xz4ScE5
-        m8Ow2ZPycYUSO/gZool82EO1E3/lZJImLd2hQ8ljN8gUziUzhxtbXq1IgRm8lNev
-        uuA6xrr2z8YsdTa5GBEFkh8ols4eVT14lDGJQy7jiKGfFhgKcwsLpJQ4wUeejvgL
-        zqfndCkvYEyK++mJGED22p9+6x0knqD07j1lSrPNAh9RppFErMc6peIqrTmVduR/
-        hXlgcDgssrMNpg==
-X-ME-Sender: <xms:-OHDXv5wqodxmrCU8uNRmnro_8RuhScY6VsLNqFEDybLpY58wnsZNQ>
+        fm2; bh=5upsxQk2XKbFjulpofwFMfAsawZI4MEtV2fO812HZEo=; b=SyApaBxJ
+        /cwmg0ssJPd+2XyyudKjVbmbW5NB+w6dugkA/CdVJB2W5zjyAjrmwQ5OWFFEjbmW
+        ztVKQdCxRiVfU3HovEeS6OCXhlZ9CSsN/LVY2u3dU0gh1BDAgI2Rqu2WWwwCBI3A
+        NA0NKXBwXCA6X+59oCmWN+mKc4qFQRY80S81Nxkjn5QnhJiUiaGPZXJeoVcCyPFa
+        QHiw2MkqivjXXgc9QJ3pyZ+Zf89LRWQm79NOZrM6ChJZjsmkdM7Kyq4JEJGDV5WI
+        ttNQ5CX01VtERSkSehVeBMmYNP+XDHAnBYLOAMs/xMl+HR2mxfuOrj1TuYBWJuwO
+        Pdb57y59e79GSg==
+X-ME-Sender: <xms:-uHDXn9s8cGsha9S47BwEITHSC4YZ0d62GfKWp7Tdl-s7mPKS1OBBg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddtjedgieejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -36,13 +36,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddtjedgieejucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
     necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-OHDXk5sNJvMzqj47uSs9JH-mRKs7t27GlgNqHkTiJrtzngq1o0CBQ>
-    <xmx:-OHDXmeJ6KGLpHUHsHKxm_DowSXnwA_r8xoOUvcAU8RA3zHINvuXfg>
-    <xmx:-OHDXgJ3TB3zHkqo4ukh6-Xm5eTs9KqdFVPu8p2cEGd4DjXnFIN9wA>
-    <xmx:-OHDXlzbbtmjmtaFYrfAq3NgCwCMebkdKkTONMMRHcqTb4rI6uMMUg>
+X-ME-Proxy: <xmx:-uHDXjtoT-rLoUuF4mqpFv7JAtBvRR6wtD-AalDTGzMheThWZKqnxQ>
+    <xmx:-uHDXlC7OFNMiTA4WEGd0B4obEl9G6ausRvwLXIPghTKOaJ88gijPw>
+    <xmx:-uHDXjcNFbo1DtAR2pqtYSl8_RbiwY2-MERQSVyRSqWDP9rWctbBHA>
+    <xmx:--HDXllyXTczrf9NLI3vUW579xuxnMQ37COiJ4t1To3ywIsVUXnqPg>
 Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 565E2328006A;
-        Tue, 19 May 2020 09:41:09 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4C0F63280066;
+        Tue, 19 May 2020 09:41:12 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         saeedm@mellanox.com, leon@kernel.org, snelson@pensando.io,
         drivers@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/3] devlink: Add a new devlink port width attribute and pass to netlink
-Date:   Tue, 19 May 2020 16:40:31 +0300
-Message-Id: <20200519134032.1006765-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/3] selftests: net: Add port split test
+Date:   Tue, 19 May 2020 16:40:32 +0300
+Message-Id: <20200519134032.1006765-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200519134032.1006765-1-idosch@idosch.org>
 References: <20200519134032.1006765-1-idosch@idosch.org>
@@ -66,244 +66,307 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@mellanox.com>
 
-Add a new devlink port attribute that indicates the port's width.
-Drivers are expected to set it via devlink_port_attrs_set(), before
-registering the port.
+Test port split configuration using previously added port's width
+attribute.
 
-The attribute is not passed to user space in case the width is invalid
-(0).
+Check that all the splittable ports are successfully split to their
+width and below, and that those which are not splittable fail to be
+split.
+
+Test output example:
+
+TEST: swp4 is unsplittable                                         [ OK ]
+TEST: split port swp53 into 4                                      [ OK ]
+TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
+TEST: split port swp53 into 2                                      [ OK ]
+TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
 
 Signed-off-by: Danielle Ratson <danieller@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c    | 2 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c         | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c     | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/core.c           | 2 +-
- drivers/net/ethernet/netronome/nfp/nfp_devlink.c     | 2 +-
- drivers/net/ethernet/pensando/ionic/ionic_devlink.c  | 2 +-
- drivers/net/netdevsim/dev.c                          | 2 +-
- include/net/devlink.h                                | 2 ++
- include/uapi/linux/devlink.h                         | 2 ++
- net/core/devlink.c                                   | 7 +++++++
- net/dsa/dsa2.c                                       | 6 +++---
- 12 files changed, 23 insertions(+), 12 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/devlink_port_split.py       | 259 ++++++++++++++++++
+ 2 files changed, 260 insertions(+)
+ create mode 100755 tools/testing/selftests/net/devlink_port_split.py
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a812beb46325..25d577433dbf 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -714,7 +714,7 @@ int bnxt_dl_register(struct bnxt *bp)
- 		return 0;
- 
- 	devlink_port_attrs_set(&bp->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--			       bp->pf.port_id, false, 0, bp->dsn,
-+			       bp->pf.port_id, false, 0, 0, bp->dsn,
- 			       sizeof(bp->dsn));
- 	rc = devlink_port_register(dl, &bp->dl_port, bp->pf.port_id);
- 	if (rc) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index c6833944b90a..a46ebeb249b8 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -297,7 +297,7 @@ int ice_devlink_create_port(struct ice_pf *pf)
- 	}
- 
- 	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--			       pf->hw.pf_id, false, 0, NULL, 0);
-+			       pf->hw.pf_id, false, 0, 0, NULL, 0);
- 	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
- 	if (err) {
- 		dev_err(dev, "devlink_port_register failed: %d\n", err);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
-index f8b2de4b04be..365f2df6d851 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
-@@ -11,12 +11,12 @@ int mlx5e_devlink_port_register(struct mlx5e_priv *priv)
- 		devlink_port_attrs_set(&priv->dl_port,
- 				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
- 				       PCI_FUNC(priv->mdev->pdev->devfn),
--				       false, 0,
-+				       false, 0, 0,
- 				       NULL, 0);
- 	else
- 		devlink_port_attrs_set(&priv->dl_port,
- 				       DEVLINK_PORT_FLAVOUR_VIRTUAL,
--				       0, false, 0, NULL, 0);
-+				       0, false, 0, 0, NULL, 0);
- 
- 	return devlink_port_register(devlink, &priv->dl_port, 1);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 52351c105627..cf54c88a90d1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -2050,7 +2050,7 @@ static int register_devlink_port(struct mlx5_core_dev *dev,
- 	if (rep->vport == MLX5_VPORT_UPLINK)
- 		devlink_port_attrs_set(&rpriv->dl_port,
- 				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
--				       pfnum, false, 0,
-+				       pfnum, false, 0, 0,
- 				       &ppid.id[0], ppid.id_len);
- 	else if (rep->vport == MLX5_VPORT_PF)
- 		devlink_port_attrs_pci_pf_set(&rpriv->dl_port,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 8f1ef90c7f5a..df011c1d0712 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -2134,7 +2134,7 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
- 
- 	mlxsw_core_port->local_port = local_port;
- 	devlink_port_attrs_set(devlink_port, flavour, port_number,
--			       split, split_port_subnumber,
-+			       split, split_port_subnumber, width,
- 			       switch_id, switch_id_len);
- 	err = devlink_port_register(devlink, devlink_port, local_port);
- 	if (err)
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-index 07dbf4d72227..65ecd0bdc8be 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-@@ -368,7 +368,7 @@ int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port)
- 	serial_len = nfp_cpp_serial(port->app->cpp, &serial);
- 	devlink_port_attrs_set(&port->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
- 			       eth_port.label_port, eth_port.is_split,
--			       eth_port.label_subport, serial, serial_len);
-+			       eth_port.label_subport, 0, serial, serial_len);
- 
- 	devlink = priv_to_devlink(app->pf);
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index 273c889faaad..a21a10307ecc 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -82,7 +82,7 @@ int ionic_devlink_register(struct ionic *ionic)
- 		return 0;
- 
- 	devlink_port_attrs_set(&ionic->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--			       0, false, 0, NULL, 0);
-+			       0, false, 0, 0, NULL, 0);
- 	err = devlink_port_register(dl, &ionic->dl_port, 0);
- 	if (err)
- 		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 68668a22b9dd..75549640d113 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -893,7 +893,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
- 
- 	devlink_port = &nsim_dev_port->devlink_port;
- 	devlink_port_attrs_set(devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--			       port_index + 1, 0, 0,
-+			       port_index + 1, 0, 0, 0,
- 			       nsim_dev->switch_id.id,
- 			       nsim_dev->switch_id.id_len);
- 	err = devlink_port_register(priv_to_devlink(nsim_dev), devlink_port,
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 8ffc1b5cd89b..de374d544671 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -68,6 +68,7 @@ struct devlink_port_attrs {
- 	u8 set:1,
- 	   split:1,
- 	   switch_port:1;
-+	u32 width;
- 	enum devlink_port_flavour flavour;
- 	struct netdev_phys_item_id switch_id;
- 	union {
-@@ -972,6 +973,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
- 			    enum devlink_port_flavour flavour,
- 			    u32 port_number, bool split,
- 			    u32 split_subport_number,
-+			    u32 width,
- 			    const unsigned char *switch_id,
- 			    unsigned char switch_id_len);
- void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 1ae90e06c06d..69e914e000c4 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -442,6 +442,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_TRAP_POLICER_RATE,			/* u64 */
- 	DEVLINK_ATTR_TRAP_POLICER_BURST,		/* u64 */
- 
-+	DEVLINK_ATTR_PORT_WIDTH,		/* u32 */
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 895ec992b2f1..90fcf8ba9ed0 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -17,6 +17,7 @@ TEST_PROGS += route_localnet.sh
+ TEST_PROGS += reuseaddr_ports_exhausted.sh
+ TEST_PROGS += txtimestamp.sh
+ TEST_PROGS += vrf-xfrm-tests.sh
++TEST_PROGS += devlink_port_split.py
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+diff --git a/tools/testing/selftests/net/devlink_port_split.py b/tools/testing/selftests/net/devlink_port_split.py
+new file mode 100755
+index 000000000000..e5ce331df233
+--- /dev/null
++++ b/tools/testing/selftests/net/devlink_port_split.py
+@@ -0,0 +1,259 @@
++#!/usr/bin/python3
++# SPDX-License-Identifier: GPL-2.0
 +
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 7b76e5fffc10..9887fba60a7a 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -526,6 +526,10 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
- 
- 	if (!attrs->set)
- 		return 0;
-+	if (attrs->width) {
-+		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_WIDTH, attrs->width))
-+			return -EMSGSIZE;
-+	}
- 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
- 		return -EMSGSIZE;
- 	switch (devlink_port->attrs.flavour) {
-@@ -7408,6 +7412,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
-  *	@split: indicates if this is split port
-  *	@split_subport_number: if the port is split, this is the number
-  *	                       of subport.
-+ *	@width: width of the port. 0 value is not passed to netlink.
-  *	@switch_id: if the port is part of switch, this is buffer with ID,
-  *	            otwerwise this is NULL
-  *	@switch_id_len: length of the switch_id buffer
-@@ -7416,6 +7421,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
- 			    enum devlink_port_flavour flavour,
- 			    u32 port_number, bool split,
- 			    u32 split_subport_number,
-+			    u32 width,
- 			    const unsigned char *switch_id,
- 			    unsigned char switch_id_len)
- {
-@@ -7427,6 +7433,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
- 	if (ret)
- 		return;
- 	attrs->split = split;
-+	attrs->width = width;
- 	attrs->phys.port_number = port_number;
- 	attrs->phys.split_subport_number = split_subport_number;
- }
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 076908fdd29b..5d9322cb5bf3 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -275,7 +275,7 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	case DSA_PORT_TYPE_CPU:
- 		memset(dlp, 0, sizeof(*dlp));
- 		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_CPU,
--				       dp->index, false, 0, id, len);
-+				       dp->index, false, 0, 0, id, len);
- 		err = devlink_port_register(dl, dlp, dp->index);
- 		if (err)
- 			break;
-@@ -295,7 +295,7 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	case DSA_PORT_TYPE_DSA:
- 		memset(dlp, 0, sizeof(*dlp));
- 		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_DSA,
--				       dp->index, false, 0, id, len);
-+				       dp->index, false, 0, 0, id, len);
- 		err = devlink_port_register(dl, dlp, dp->index);
- 		if (err)
- 			break;
-@@ -315,7 +315,7 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	case DSA_PORT_TYPE_USER:
- 		memset(dlp, 0, sizeof(*dlp));
- 		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--				       dp->index, false, 0, id, len);
-+				       dp->index, false, 0, 0, id, len);
- 		err = devlink_port_register(dl, dlp, dp->index);
- 		if (err)
- 			break;
++from subprocess import PIPE, Popen
++import json
++import time
++import argparse
++import collections
++import sys
++
++#
++# Test port split configuration using devlink-port width attribute.
++# The test is skipped in case the attribute is not available.
++#
++# First, check that all the ports with a width of 1 fail to split.
++# Second, check that all the ports with a width larger than 1 can be split
++# to all valid configurations (e.g., split to 2, split to 4 etc.)
++#
++
++
++Port = collections.namedtuple('Port', 'bus_info name')
++
++
++def run_command(cmd, should_fail=False):
++    """
++    Run a command in subprocess.
++    Return: Tuple of (stdout, stderr).
++    """
++
++    p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
++    stdout, stderr = p.communicate()
++    stdout, stderr = stdout.decode(), stderr.decode()
++
++    if stderr != "" and not should_fail:
++        print("Error sending command: %s" % cmd)
++        print(stdout)
++        print(stderr)
++    return stdout, stderr
++
++
++class devlink_ports(object):
++    """
++    Class that holds information on the devlink ports, required to the tests;
++    if_names: A list of interfaces in the devlink ports.
++    """
++
++    def get_if_names(dev):
++        """
++        Get a list of physical devlink ports.
++        Return: Array of tuples (bus_info/port, if_name).
++        """
++
++        arr = []
++
++        cmd = "devlink -j port show"
++        stdout, stderr = run_command(cmd)
++        assert stderr == ""
++        ports = json.loads(stdout)['port']
++
++        for port in ports:
++            if dev in port:
++                if ports[port]['flavour'] == 'physical':
++                    arr.append(Port(bus_info=port, name=ports[port]['netdev']))
++
++        return arr
++
++    def __init__(self, dev):
++        self.if_names = devlink_ports.get_if_names(dev)
++
++
++def get_width(port):
++    """
++    Get the width of $port.
++    Return: width, e.g. 1, 2, 4 and 8.
++    """
++
++    cmd = "devlink -j port show %s" % port
++    stdout, stderr = run_command(cmd)
++    assert stderr == ""
++    values = list(json.loads(stdout)['port'].values())[0]
++
++    if 'width' in values:
++        width = values['width']
++    else:
++        width = 0
++    return width
++
++
++def split(k, port, should_fail=False):
++    """
++    Split $port into $k ports.
++    If should_fail == True, the split should fail. Otherwise, should pass.
++    Return: Array of sub ports after splitting.
++            If the $port wasn't split, the array will be empty.
++    """
++
++    cmd = "devlink port split %s count %s" % (port.bus_info, k)
++    stdout, stderr = run_command(cmd, should_fail=should_fail)
++
++    if should_fail:
++        if not test(stderr != "", "%s is unsplittable" % port.name):
++            print("split an unsplittable port %s" % port.name)
++            return create_split_group(port, k)
++    else:
++        if stderr == "":
++            return create_split_group(port, k)
++        print("didn't split a splittable port %s" % port.name)
++
++    return []
++
++
++def unsplit(port):
++    """
++    Unsplit $port.
++    """
++
++    cmd = "devlink port unsplit %s" % port
++    stdout, stderr = run_command(cmd)
++    test(stderr == "", "Unsplit port %s" % port)
++
++
++def exists(port, dev):
++    """
++    Check if $port exists in the devlink ports.
++    Return: True is so, False otherwise.
++    """
++
++    return any(dev_port.name == port
++               for dev_port in devlink_ports.get_if_names(dev))
++
++
++def exists_and_width(ports, lanes, dev):
++    """
++    Check if every port in the list $ports exists in the devlink ports and has
++    $lanes number of lanes after splitting.
++    Return: True if both are True, False otherwise.
++    """
++
++    for port in ports:
++        width = get_width(port)
++        if not exists(port, dev):
++            print("port %s doesn't exist in devlink ports" % port)
++            return False
++        if width != lanes:
++            print("port %s has %d lanes, but %s were expected"
++                  % (port, lanes, width))
++            return False
++    return True
++
++
++def test(cond, msg):
++    """
++    Check $cond and print a message accordingly.
++    Return: True is pass, False otherwise.
++    """
++
++    if cond:
++        print("TEST: %-60s [ OK ]" % msg)
++    else:
++        print("TEST: %-60s [FAIL]" % msg)
++
++    return cond
++
++
++def create_split_group(port, k):
++    """
++    Create the split group for $port.
++    Return: Array with $k elements, which are the split port group.
++    """
++
++    return list(port.name + "s" + str(i) for i in range(k))
++
++
++def split_unsplittable_port(port, k):
++    """
++    Test that splitting of unsplittable port fails.
++    """
++
++    # split to max
++    new_split_group = split(k, port, should_fail=True)
++
++    if new_split_group != []:
++        unsplit(port.bus_info)
++
++
++def split_splittable_port(port, k, width, dev):
++    """
++    Test that splitting of splittable port passes correctly.
++    """
++
++    new_split_group = split(k, port)
++
++    # Once the split command ends, it takes some time to the sub ifaces'
++    # to get their names. Use udevadm to continue only when all current udev
++    # events are handled.
++    cmd = "udevadm settle"
++    stdout, stderr = run_command(cmd)
++    assert stderr == ""
++
++    if new_split_group != []:
++        test(exists_and_width(new_split_group, width/k, dev),
++             "split port %s into %s" % (port.name, k))
++
++    unsplit(port.bus_info)
++
++
++def make_parser():
++    parser = argparse.ArgumentParser(description='A test for port splitting.')
++    parser.add_argument('--dev',
++                        help='The devlink handle of the device under test. ' +
++                             'The default is the first registered devlink ' +
++                             'handle.')
++
++    return parser
++
++
++def main(cmdline=None):
++    parser = make_parser()
++    args = parser.parse_args(cmdline)
++
++    dev = args.dev
++    if not dev:
++        cmd = "devlink -j dev show"
++        stdout, stderr = run_command(cmd)
++        assert stderr == ""
++
++        devs = json.loads(stdout)['dev']
++        dev = list(devs.keys())[0]
++
++    cmd = "devlink dev show %s" % dev
++    stdout, stderr = run_command(cmd)
++    if stderr != "":
++        print("devlink device %s can not be found" % dev)
++        sys.exit(1)
++
++    ports = devlink_ports(dev)
++
++    for port in ports.if_names:
++        width = get_width(port.name)
++
++        # If width is 0, do not test port splitting at all
++        if width == 0:
++            continue
++
++        # If 1 lane, shouldn't be able to split
++        elif width == 1:
++            split_unsplittable_port(port, width)
++
++        # Else, splitting should pass and all the split ports should exist.
++        else:
++            lane = width
++            while lane > 1:
++                split_splittable_port(port, lane, width, dev)
++
++                lane //= 2
++
++
++if __name__ == "__main__":
++    main()
 -- 
 2.26.2
 
