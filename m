@@ -2,207 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50BE71D8EDD
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 06:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8656D1D8EF3
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbgESEkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 00:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
+        id S1726387AbgESFC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 01:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbgESEkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 00:40:03 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694EC061A0C;
-        Mon, 18 May 2020 21:40:02 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id p12so10096591qtn.13;
-        Mon, 18 May 2020 21:40:02 -0700 (PDT)
+        with ESMTP id S1726307AbgESFC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:02:26 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56172C061A0C;
+        Mon, 18 May 2020 22:02:26 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id fb16so5874378qvb.5;
+        Mon, 18 May 2020 22:02:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ef8uGVA3J/Q3uZk4bRLiF9KBaJiSBJ6a54346FamXFo=;
-        b=jg5nASl04iv4Fc5ymkwoZdlDwRQVgGM2FpUy9uFpbr0c+83BGnJ1o5FV+qhpeF6MHo
-         VumZG/7Rmk9kAEwa+g4riNpMv+IUHO1SEmgULUseVmK5WtcpvCK9EYqDsCMM/FmW51CL
-         LakjbSnjLdyQ78kKJyrT56Y3fOiPKzirVpiIqQ8hQQ38otfUMBlAAkN92L5Rv2QUL4+q
-         HJdJ+KwCgh/vGSD+RHcWa2o080Tdfhiq1JlAtdmf+oVjvRJubNgzetePevVHB0of2SEv
-         gob25SdBucK9iDLvVY1B3TnjEBpf9LT9wvFi1Sy44ptyrsdu2IKpFQ8P8/4quYilGHKE
-         CXFA==
+        bh=Uvj7JpgrKcCwl/FzIB0Q4Qcsgoc9SwKx0uyZBGriSL0=;
+        b=LXx4sYnFrTdkwiMbnPxk+5xAV1ocvbjjzdjpIyuu71jdfYiTtxYnfcPoh7xVQo5D/4
+         4/z4e5tUyAUVxy83gALhutERE2hAW8kjxs41eGYkgoK1iym2aX0ibSY8GRon+orMME6w
+         uPp9HmkP4XzK0LjP8uxlMf1YNWt3gLAUJK9x+byfHqm+5ppBzArpBqE6jeraTyMgo+Ne
+         yuorEdF9WkPK2GO81WRIl8c7jpzIFux/pTkfm3iy1x8vT/rHuOExGYPYn466zEGEkH6e
+         tEgY/2WO9ra1Hpvg+2YxpqxC0z0Mq5u1GvpS9Jf4nfDLINDTQIIS/8h1YMjiOKAUGKg4
+         lD1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ef8uGVA3J/Q3uZk4bRLiF9KBaJiSBJ6a54346FamXFo=;
-        b=AEGUCx8eqJwP1MJbdOZr36hO92dgfTFYIXgbp1RfB5+bheaAfaoLZ+HI3S8jjdXF86
-         Vn0PVEOMk9QReowodkqa/qsiuZksPDRoaLpwcO6pTthDuG6vaSot/lSHk0TYNUlUv08J
-         ppVFX/TcAiEJw1VQLRg9F0jZtI5LFduqk5wlzOAqAQ3D0BWEsbPG5EQj9JbtBR0qKLyl
-         YCml28yygsX55MW8d0odH0VYIQr4cptVJx4oZ1KtqiToSNO8UnMQNVRwiGtr6VQfZOyo
-         wK929O/SxZZGvQywFu/aGwZ/4u4xIpZwcwx/e3oqScnzqKSHVfhyuIjlwkH6ZObd6FAf
-         jR0A==
-X-Gm-Message-State: AOAM5328bhfhtL41a5gsq+GYQLzxMvHfiLShsDrDO90BdCJOgEwQ2E/G
-        mWRMjKTuoU6Hbbtmp/bKpH+0N+n//6+uSmITk8I=
-X-Google-Smtp-Source: ABdhPJy9zag//58ZgfB17SZbTGntuo6NBj9soLHQ18BKXHp8Pa3IFGtcsOrc18YvUEKZ329NgPHO/qNZXJveTbmgvW8=
-X-Received: by 2002:aed:2f02:: with SMTP id l2mr19919130qtd.117.1589863201034;
- Mon, 18 May 2020 21:40:01 -0700 (PDT)
+        bh=Uvj7JpgrKcCwl/FzIB0Q4Qcsgoc9SwKx0uyZBGriSL0=;
+        b=BXRzYe6U78ZkU5Z/gMLa6wB4pc1QKI2fDK/2G58D5l0PIFAhjowBFi5iekX3aaXETU
+         rdok57IU0heKXwvaqBxLYr+L/+pmwlh7Jq5pfTeW+7wI3dU0gOtzbtIGVkC3yxzQ16eC
+         6dqAPU9rOud/tDuXJLXcDj2S5SUnWT83wC3TCtYkeXV2LEyH2EBNo9v4tVVkVJf+theD
+         lo07HETD5gBcLyb7MHjNiOYS9PRMTjM+mDuXLYGKInxE4owUabnTn45s/kQZNXNuIVuC
+         5EBn+TMSktY1XPvXT8MYZElcdOnaiy/gM55OWe5OEZsqx/E7yEj1FjVqVo8iJ8MAkfsQ
+         mtTw==
+X-Gm-Message-State: AOAM532mS9jQd0wRlfAYYTHpTUpZvScN3nXrh7XAw74sEQg1ln0AELw2
+        eeKnuBYa9OuX+dX4yqh6+o3LrqAMQvRl+svKn39iKamvTbI=
+X-Google-Smtp-Source: ABdhPJxnPUt8lR+GQ3bL54sTmsY3Y7JNIGk6seamAfsyGUKtXn7nIwiLt+AFH6zO1Q61shkknPZP4x67EsuSpTamAWM=
+X-Received: by 2002:ad4:588c:: with SMTP id dz12mr17109717qvb.196.1589864545252;
+ Mon, 18 May 2020 22:02:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200516005149.3841-1-quentin@isovalent.com> <CAEf4BzZDC9az2vFPTNW03gSUZiYdc9-XeyP+1h8WkAKHagkUTg@mail.gmail.com>
- <3ffe7cc3-01da-1862-d734-b7a8b1d7c63d@isovalent.com>
-In-Reply-To: <3ffe7cc3-01da-1862-d734-b7a8b1d7c63d@isovalent.com>
+References: <158983199930.6512.18408887419883363781.stgit@john-Precision-5820-Tower>
+ <158983215367.6512.2773569595786906135.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158983215367.6512.2773569595786906135.stgit@john-Precision-5820-Tower>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 18 May 2020 21:39:50 -0700
-Message-ID: <CAEf4BzaD3UW8AL7ZEiqMzpSP_u_RT-p=VK5oTVjMHyd7Wpckyg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] tools: bpftool: make capability check account
- for new BPF caps
-To:     Quentin Monnet <quentin@isovalent.com>
+Date:   Mon, 18 May 2020 22:02:14 -0700
+Message-ID: <CAEf4BzbjEXRy-VJqGodKB9Co7X8zGXSVFXqmZYK_PrCza6UOBA@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 1/4] bpf: verifier track null pointer
+ branch_taken with JNE and JEQ
+To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 18, 2020 at 6:03 PM Quentin Monnet <quentin@isovalent.com> wrote:
+On Mon, May 18, 2020 at 1:05 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> 2020-05-18 17:07 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > On Fri, May 15, 2020 at 5:52 PM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>
-> >> Following the introduction of CAP_BPF, and the switch from CAP_SYS_ADMIN
-> >> to other capabilities for various BPF features, update the capability
-> >> checks (and potentially, drops) in bpftool for feature probes. Because
-> >> bpftool and/or the system might not know of CAP_BPF yet, some caution is
-> >> necessary:
-> >>
-> >> - If compiled and run on a system with CAP_BPF, check CAP_BPF,
-> >>   CAP_SYS_ADMIN, CAP_PERFMON, CAP_NET_ADMIN.
-> >>
-> >> - Guard against CAP_BPF being undefined, to allow compiling bpftool from
-> >>   latest sources on older systems. If the system where feature probes
-> >>   are run does not know of CAP_BPF, stop checking after CAP_SYS_ADMIN,
-> >>   as this should be the only capability required for all the BPF
-> >>   probing.
-> >>
-> >> - If compiled from latest sources on a system without CAP_BPF, but later
-> >>   executed on a newer system with CAP_BPF knowledge, then we only test
-> >>   CAP_SYS_ADMIN. Some probes may fail if the bpftool process has
-> >>   CAP_SYS_ADMIN but misses the other capabilities. The alternative would
-> >>   be to redefine the value for CAP_BPF in bpftool, but this does not
-> >>   look clean, and the case sounds relatively rare anyway.
-> >>
-> >> Note that libcap offers a cap_to_name() function to retrieve the name of
-> >> a given capability (e.g. "cap_sys_admin"). We do not use it because
-> >> deriving the names from the macros looks simpler than using
-> >> cap_to_name() (doing a strdup() on the string) + cap_free() + handling
-> >> the case of failed allocations, when we just want to use the name of the
-> >> capability in an error message.
-> >>
-> >> The checks when compiling without libcap (i.e. root versus non-root) are
-> >> unchanged.
-> >>
-> >> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> >> ---
-> >>  tools/bpf/bpftool/feature.c | 85 +++++++++++++++++++++++++++++--------
-> >>  1 file changed, 67 insertions(+), 18 deletions(-)
-> >>
-> >> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-> >> index 1b73e63274b5..3c3d779986c7 100644
-> >> --- a/tools/bpf/bpftool/feature.c
-> >> +++ b/tools/bpf/bpftool/feature.c
-> >> @@ -758,12 +758,32 @@ static void section_misc(const char *define_prefix, __u32 ifindex)
-> >>         print_end_section();
-> >>  }
-> >>
-> >> +#ifdef USE_LIBCAP
-> >> +#define capability(c) { c, #c }
-> >> +#endif
-> >> +
-> >>  static int handle_perms(void)
-> >>  {
-> >>  #ifdef USE_LIBCAP
-> >> -       cap_value_t cap_list[1] = { CAP_SYS_ADMIN };
-> >> -       bool has_sys_admin_cap = false;
-> >> +       struct {
-> >> +               cap_value_t cap;
-> >> +               char name[14];  /* strlen("CAP_SYS_ADMIN") */
-> >> +       } required_caps[] = {
-> >> +               capability(CAP_SYS_ADMIN),
-> >> +#ifdef CAP_BPF
-> >> +               /* Leave CAP_BPF in second position here: We will stop checking
-> >> +                * if the system does not know about it, since it probably just
-> >> +                * needs CAP_SYS_ADMIN to run all the probes in that case.
-> >> +                */
-> >> +               capability(CAP_BPF),
-> >> +               capability(CAP_NET_ADMIN),
-> >> +               capability(CAP_PERFMON),
-> >> +#endif
-> >> +       };
-> >> +       bool has_admin_caps = true;
-> >> +       cap_value_t *cap_list;
-> >>         cap_flag_value_t val;
-> >> +       unsigned int i;
-> >>         int res = -1;
-> >>         cap_t caps;
-> >>
-> >> @@ -774,41 +794,70 @@ static int handle_perms(void)
-> >>                 return -1;
-> >>         }
-> >>
-> >> -       if (cap_get_flag(caps, CAP_SYS_ADMIN, CAP_EFFECTIVE, &val)) {
-> >> -               p_err("bug: failed to retrieve CAP_SYS_ADMIN status");
-> >> +       cap_list = malloc(sizeof(cap_value_t) * ARRAY_SIZE(required_caps));
-> >
-> > I fail to see why you need to dynamically allocate cap_list?
-> > cap_value_t cap_list[ARRAY_SIZE(required_caps)] wouldn't work?
+> Current verifier when considering which branch may be taken on a
+> conditional test with pointer returns -1 meaning either branch may
+> be taken. But, we track if pointers can be NULL by using dedicated
+> types for valid pointers (pointers that can not be NULL). For example,
+> we have PTR_TO_SOCK and PTR_TO_SOCK_OR_NULL to indicate a pointer
+> that is valid or not, PTR_TO_SOCK being the validated pointer type.
 >
-> Oh I should have thought about that, thanks! I'll fix it.
+> We can then use this extra information when we encounter null tests
+> against pointers. Consider,
 >
-> >> +       if (!cap_list) {
-> >> +               p_err("failed to allocate cap_list: %s", strerror(errno));
-> >>                 goto exit_free;
-> >>         }
-> >> -       if (val == CAP_SET)
-> >> -               has_sys_admin_cap = true;
-> >>
-> >> -       if (!run_as_unprivileged && !has_sys_admin_cap) {
-> >> -               p_err("full feature probing requires CAP_SYS_ADMIN, run as root or use 'unprivileged'");
-> >> -               goto exit_free;
-> >> +       for (i = 0; i < ARRAY_SIZE(required_caps); i++) {
-> >> +               const char *cap_name = required_caps[i].name;
-> >> +               cap_value_t cap = required_caps[i].cap;
-> >> +
-> >> +#ifdef CAP_BPF
-> >> +               if (cap == CAP_BPF && !CAP_IS_SUPPORTED(cap))
-> >> +                       /* System does not know about CAP_BPF, meaning
-> >> +                        * that CAP_SYS_ADMIN is the only capability
-> >> +                        * required. We already checked it, break.
-> >> +                        */
-> >> +                       break;
-> >> +#endif
-> >
-> > Seems more reliable to check all 4 capabilities independently (so
-> > don't stop if !CAP_IS_SUPPORTED(cap)), and drop those that you have
-> > set. Or there are some downsides to that?
+>   if (sk_ptr == NULL) ... else ...
 >
-> If CAP_BPF is not supported, there is simply no point in going on
-> checking the other capabilities, since CAP_SYS_ADMIN is the only one we
-> need to do the feature probes. So in that case I see little point in
-> checking the others.
+> if the sk_ptr has type PTR_TO_SOCK we know the null check will fail
+> and the null branch can not be taken.
 >
-> But if I understand your concern, you're right in the sense that the
-> current code would consider a user as "unprivileged" if they do not have
-> all four capabilities (in the case where CAP_BPF is supported); but they
-> may still have a subset of them and not be completely unprivileged, and
-> in that case we would have has_admin_caps at false and skip capabilities
-> drop.
+> In this patch we extend is_branch_taken to consider this extra
+> information and to return only the branch that will be taken. This
+> resolves a verifier issue reported with this C code,
 >
-> I will fix that in next version. I am not sure about the advantage of
-> keeping track of the capabilities and building a list just for dropping
-> only the ones we have, but I can do that if you prefer.
+>  sk = bpf_sk_lookup_tcp(skb, tuple, tuple_len, BPF_F_CURRENT_NETNS, 0);
+>  bpf_printk("sk=%d\n", sk ? 1 : 0);
+>  if (sk)
+>    bpf_sk_release(sk);
+>  return sk ? TC_ACT_OK : TC_ACT_UNSPEC;
+>
+> The generated asm then looks like this,
+>
+>  43: (85) call bpf_sk_lookup_tcp#84
+>  44: (bf) r6 = r0                    <- do the lookup and put result in r6
+>  ...                                 <- do some more work
+>  51: (55) if r6 != 0x0 goto pc+1     <- test sk ptr for printk use
+>  ...
+>  56: (85) call bpf_trace_printk#6
+>  ...
+>  61: (15) if r6 == 0x0 goto pc+1     <- do the if (sk) test from C code
+>  62: (b7) r0 = 0                     <- skip release because both branches
+>                                         are taken in verifier
+>  63: (95) exit
+>  Unreleased reference id=3 alloc_insn=43
 >
 
-Honestly, I don't use bpftool feature at all, so I'm not very
-qualified to decide. I just like tools not making too many
-assumptions, where not necessary. So see for yourself :)
+bpf_sk_release call in above assembler would be really nice for
+completeness. As written, this code never calls and never will call
+bpf_sk_release().
 
-> Thanks a lot for the review!
-> Quentin
+> In the verifier path the flow is,
+>
+>  51 -> 53 ... 61 -> 62
+>
+> Because at 51->53 jmp verifier promoted reg6 from type PTR_TO_SOCK_OR_NULL
+> to PTR_TO_SOCK but then at 62 we still test both paths ignoring that we
+
+Seems like your description got a bit out of sync with the code above.
+There is no line 53, check is actually on line 61, not 62, etc. Can
+you please update it in your v2 as well?
+
+> already promoted the type. So we incorrectly conclude an unreleased
+> reference. To fix this we add logic in is_branch_taken to test the
+> OR_NULL portion of the type and if its not possible for a pointer to
+> be NULL we can prune the branch taken where 'r6 == 0x0'.
+>
+> After the above additional logic is added the C code above passes
+> as expected.
+>
+> This makes the assumption that all pointer types PTR_TO_* that can be null
+> have an equivalent type PTR_TO_*_OR_NULL logic.
+>
+> Suggested-by: Alexei Starovoitov <ast@kernel.org>
+> Reported-by: Andrey Ignatov <rdna@fb.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  0 files changed
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 180933f..8f576e2 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -393,6 +393,14 @@ static bool type_is_sk_pointer(enum bpf_reg_type type)
+>                 type == PTR_TO_XDP_SOCK;
+>  }
+>
+> +static bool reg_type_not_null(enum bpf_reg_type type)
+> +{
+> +       return type == PTR_TO_SOCKET ||
+> +               type == PTR_TO_TCP_SOCK ||
+> +               type == PTR_TO_MAP_VALUE ||
+> +               type == PTR_TO_SOCK_COMMON;
+
+PTR_TO_BTF_ID should probably be here as well (we do have
+PTR_TO_BTF_ID_OR_NULL now).
+
+> +}
+> +
+>  static bool reg_type_may_be_null(enum bpf_reg_type type)
+>  {
+>         return type == PTR_TO_MAP_VALUE_OR_NULL ||
+> @@ -1970,8 +1978,9 @@ static int __mark_chain_precision(struct bpf_verifier_env *env, int regno,
+>         if (regno >= 0) {
+>                 reg = &func->regs[regno];
+>                 if (reg->type != SCALAR_VALUE) {
+> -                       WARN_ONCE(1, "backtracing misuse");
+> -                       return -EFAULT;
+> +                       if (unlikely(!reg_type_not_null(reg->type)))
+> +                               WARN_ONCE(1, "backtracing misuse");
+> +                       return 0;
+
+I think it's safer to instead add check in check_cond_jmp_op, in case
+branch is known, to only mark precision if register is not a non-null
+pointer. __mark_chain_precision is used in many places, so it's better
+to guard against this particular situation and leave warning for
+general case, IMO.
+
+>                 }
+>                 if (!reg->precise)
+>                         new_marks = true;
+> @@ -6306,8 +6315,26 @@ static int is_branch64_taken(struct bpf_reg_state *reg, u64 val, u8 opcode)
+>  static int is_branch_taken(struct bpf_reg_state *reg, u64 val, u8 opcode,
+>                            bool is_jmp32)
+>  {
+> -       if (__is_pointer_value(false, reg))
+> -               return -1;
+> +       if (__is_pointer_value(false, reg)) {
+> +               if (!reg_type_not_null(reg->type))
+> +                       return -1;
+> +
+> +               /* If pointer is valid tests against zero will fail so we can
+> +                * use this to direct branch taken.
+> +                */
+> +               switch (opcode) {
+> +               case BPF_JEQ:
+> +                       if (val == 0)
+> +                               return 0;
+> +                       return 1;
+
+if val != 0, then we can't really tell whether point is equal to our
+scalar or not, right? What if we leaked pointer into a global
+variable, now we are checking against that stored value? It can go
+both ways. So unless I'm missing something, it should be -1 here.
+
+> +               case BPF_JNE:
+> +                       if (val == 0)
+> +                               return 1;
+> +                       return 0;
+
+same here, unless value we compare against is zero, we can't really
+tell for sure, so -1?
+
+
+> +               default:
+> +                       return -1;
+> +               }
+> +       }
+>
+>         if (is_jmp32)
+>                 return is_branch32_taken(reg, val, opcode);
+>
