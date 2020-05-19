@@ -2,140 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A0841DA0F5
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:24:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7381DA0F6
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgESTYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 15:24:08 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46720 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726567AbgESTYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:24:08 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04JJNcZ7008119
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=JYvQGkyd0h1cyUW1PFBkm37Q7xBmDjShcSctWenRTDU=;
- b=EQG+QR8Z9QRdlD3ei6zAJOdpJTcToIq+G2y2ugvoYt30FQyFXFJhOWnXKcjZEUIjrP1O
- FOwmh+KBJNRqyU+M6riGMCFxp0hQqddF72hnxs04a7BXRdLX/I2o971ikzmlOSFBnIPH
- V56YW+VejZzP37o4j/HhurGiqdVTiI5fnOo= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3130euwwur-11
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:07 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 19 May 2020 12:23:45 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id DBED02EC2A0B; Tue, 19 May 2020 12:23:41 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: convert bpf_iter_test_kern{3,4}.c to define own bpf_iter_meta
-Date:   Tue, 19 May 2020 12:23:41 -0700
-Message-ID: <20200519192341.134360-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726803AbgESTYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 15:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbgESTYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:24:12 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF59C08C5C0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:12 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id s69so106478pjb.4
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=481jJeyXaoRAJoR7uKEVrBmi6B97KiyVLVF9TF6+jqg=;
+        b=fxkvz6sCj3xc2xESMvj5XP4jU3Gwq3pVKSELbqNTV2FqEDbUEvGihz734/gEucUVvA
+         d7hTs72+0ctSY4oA7oH1BCfUhpcRkkx8Q42toreNMf5uqVGoMAHvcpGeOtce2ChY/13X
+         SFIeIVyS4WHQvDEeU1YM1U6EnSBjOqNw2fwsl3ACq8cNBlV6/gqKCIn5r4yAnRtzzt5w
+         vKg8HoGZcde2C59KOvavLBT3OcfcqiABApYbUXask+stvkTJAba8BKq/Fsmm1vHmEKq+
+         6mJbUFtZNkePYm4pG71On4kK0Lq6DGH6KSoFBZwvc+2S1DzpVLWlmVtYQym1/wAyUl9Y
+         VIYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=481jJeyXaoRAJoR7uKEVrBmi6B97KiyVLVF9TF6+jqg=;
+        b=Avy7FtkgjS3Av/pZPvof6jujJ2Ti7NlA3wbYjhs8maiLUiGf8tCQTg3sHiZ3rwn7RE
+         UiTb6dxsd3vddk2fl/jQ6dqUV5j//9sl4CTJKof3XphqspgGmmwfP1KZu+rLUAC+kgBn
+         KccZTcMSZm2bf5NQQYrxSlrlWIGzYdLdVvN/+ZciM600HUDZvkGp9aRH28l939l7PTCP
+         1SRBSg7TcrOPSjCCazdNDztWbv6GK9WQcRUGmBLQ1bBJMNqxHNRvZsvoKguswkCKGzmg
+         wf0Z1GQJISfYoNgM8u+4roDnxnLiqon1xJNOjZzf4YqGrpicoNouY7CMquXZa27KKbbw
+         ymjA==
+X-Gm-Message-State: AOAM531v0Pyhcr/vrVTR//MPgxAmv/kxtPbsXQNm39Olun9yLhRHAMfX
+        JlWdTw5HkarwTVBF86TzxiVCzQ==
+X-Google-Smtp-Source: ABdhPJwMVw3667hRv6pWEcjInFOlyhCwhXNet5lLnh+lSbHDagcO+F7vLVgVcEQz2eCE8vvTSxocwA==
+X-Received: by 2002:a17:90a:d3ca:: with SMTP id d10mr1084701pjw.42.1589916251823;
+        Tue, 19 May 2020 12:24:11 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id f11sm234059pfa.32.2020.05.19.12.24.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 May 2020 12:24:11 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/3] devlink: Add a new devlink port width
+ attribute and pass to netlink
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        danieller@mellanox.com, mlxsw@mellanox.com,
+        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
+        saeedm@mellanox.com, leon@kernel.org, drivers@pensando.io,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20200519134032.1006765-1-idosch@idosch.org>
+ <20200519134032.1006765-3-idosch@idosch.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <82d5a049-293d-b7ed-615e-e11abc81f4dd@pensando.io>
+Date:   Tue, 19 May 2020 12:24:09 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-19_08:2020-05-19,2020-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- malwarescore=0 bulkscore=0 suspectscore=8 mlxlogscore=982
- priorityscore=1501 phishscore=0 spamscore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 cotscore=-2147483648 adultscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005190165
-X-FB-Internal: deliver
+In-Reply-To: <20200519134032.1006765-3-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-b9f4c01f3e0b ("selftest/bpf: Make bpf_iter selftest compilable against ol=
-d vmlinux.h")
-missed the fact that bpf_iter_test_kern{3,4}.c are not just including
-bpf_iter_test_kern_common.h and need similar bpf_iter_meta re-definition
-explicitly.
+On 5/19/20 6:40 AM, Ido Schimmel wrote:
+> From: Danielle Ratson <danieller@mellanox.com>
+>
+> Add a new devlink port attribute that indicates the port's width.
+> Drivers are expected to set it via devlink_port_attrs_set(), before
+> registering the port.
+>
+> The attribute is not passed to user space in case the width is invalid
+> (0).
+>
+> Signed-off-by: Danielle Ratson <danieller@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
 
-Fixes: b9f4c01f3e0b ("selftest/bpf: Make bpf_iter selftest compilable aga=
-inst old vmlinux.h")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/progs/bpf_iter_test_kern3.c     | 15 +++++++++++++++
- .../selftests/bpf/progs/bpf_iter_test_kern4.c     | 15 +++++++++++++++
- 2 files changed, 30 insertions(+)
+[...]
 
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern3.c b/to=
-ols/testing/selftests/bpf/progs/bpf_iter_test_kern3.c
-index 636a00fa074d..13c2c90c835f 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern3.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern3.c
-@@ -1,10 +1,25 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2020 Facebook */
-+#define bpf_iter_meta bpf_iter_meta___not_used
-+#define bpf_iter__task bpf_iter__task___not_used
- #include "vmlinux.h"
-+#undef bpf_iter_meta
-+#undef bpf_iter__task
- #include <bpf/bpf_helpers.h>
-=20
- char _license[] SEC("license") =3D "GPL";
-=20
-+struct bpf_iter_meta {
-+	struct seq_file *seq;
-+	__u64 session_id;
-+	__u64 seq_num;
-+} __attribute__((preserve_access_index));
-+
-+struct bpf_iter__task {
-+	struct bpf_iter_meta *meta;
-+	struct task_struct *task;
-+} __attribute__((preserve_access_index));
-+
- SEC("iter/task")
- int dump_task(struct bpf_iter__task *ctx)
- {
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c b/to=
-ols/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
-index b18dc0471d07..0aa71b333cf3 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
-@@ -1,10 +1,25 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2020 Facebook */
-+#define bpf_iter_meta bpf_iter_meta___not_used
-+#define bpf_iter__bpf_map bpf_iter__bpf_map___not_used
- #include "vmlinux.h"
-+#undef bpf_iter_meta
-+#undef bpf_iter__bpf_map
- #include <bpf/bpf_helpers.h>
-=20
- char _license[] SEC("license") =3D "GPL";
-=20
-+struct bpf_iter_meta {
-+	struct seq_file *seq;
-+	__u64 session_id;
-+	__u64 seq_num;
-+} __attribute__((preserve_access_index));
-+
-+struct bpf_iter__bpf_map {
-+	struct bpf_iter_meta *meta;
-+	struct bpf_map *map;
-+} __attribute__((preserve_access_index));
-+
- __u32 map1_id =3D 0, map2_id =3D 0;
- __u32 map1_accessed =3D 0, map2_accessed =3D 0;
- __u64 map1_seqnum =3D 0, map2_seqnum1 =3D 0, map2_seqnum2 =3D 0;
---=20
-2.24.1
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> index 273c889faaad..a21a10307ecc 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> @@ -82,7 +82,7 @@ int ionic_devlink_register(struct ionic *ionic)
+>   		return 0;
+>   
+>   	devlink_port_attrs_set(&ionic->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
+> -			       0, false, 0, NULL, 0);
+> +			       0, false, 0, 0, NULL, 0);
+>   	err = devlink_port_register(dl, &ionic->dl_port, 0);
+>   	if (err)
+>   		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
+for ionic
+Acked-by: Shannon Nelson <snelson@pensando.io>
+
+[...]
+
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 7b76e5fffc10..9887fba60a7a 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -526,6 +526,10 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+>   
+>   	if (!attrs->set)
+>   		return 0;
+> +	if (attrs->width) {
+> +		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_WIDTH, attrs->width))
+> +			return -EMSGSIZE;
+> +	}
+>   	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
+>   		return -EMSGSIZE;
+>   	switch (devlink_port->attrs.flavour) {
+> @@ -7408,6 +7412,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
+>    *	@split: indicates if this is split port
+>    *	@split_subport_number: if the port is split, this is the number
+>    *	                       of subport.
+> + *	@width: width of the port. 0 value is not passed to netlink.
+
+A little more explanation here would help - basically something like
+     @width: number of ways the port can be split.  0 value is not 
+passed to netlink.
+
+Is this always going to be an even number, or a power-of-2?  If so, 
+perhaps that should be noted here.
+
+
+Thanks,
+sln
+
 
