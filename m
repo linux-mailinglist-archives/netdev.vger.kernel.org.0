@@ -2,109 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8381D9438
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 12:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B413C1D94AB
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 12:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgESKU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 06:20:59 -0400
-Received: from novek.ru ([213.148.174.62]:34082 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725911AbgESKU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 06:20:59 -0400
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 4274550276C;
-        Tue, 19 May 2020 13:20:52 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 4274550276C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1589883653; bh=Pss2g0Se+s2/wYozNtHyR3oaX1nDx53AFRY0RRJev1k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CWrNLALEAbvk91egehIBXCA0OiKAhVO+jVfSRMPRiNaRmhnGgE4anGrlu1InELuIc
-         KPwK/S9CtPYW+pmJU0AfrmV5lxiKbRnm8pzJR42Tr9Ijyu+5nzezoAjOlUPRd99D3E
-         YKlqXXPdg2AMNeG0qxtlRyXB7z68COQhyE74gYeY=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Subject: [PATCH v2 net] net/tls: fix encryption error checking
-Date:   Tue, 19 May 2020 13:20:43 +0300
-Message-Id: <1589883643-6939-1-git-send-email-vfedorenko@novek.ru>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S1728769AbgESKrW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 19 May 2020 06:47:22 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:36498 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726494AbgESKrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 06:47:21 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-144-vWr0GKQJMfuAIEY_8Ti9yg-1; Tue, 19 May 2020 11:47:18 +0100
+X-MC-Unique: vWr0GKQJMfuAIEY_8Ti9yg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 19 May 2020 11:47:18 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 19 May 2020 11:47:18 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+CC:     Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: sctp doesn't honour net.ipv6.bindv6only
+Thread-Topic: sctp doesn't honour net.ipv6.bindv6only
+Thread-Index: AdYtySwMD5fuoEShRtCmkqkLr9/ogQ==
+Date:   Tue, 19 May 2020 10:47:17 +0000
+Message-ID: <62ff05456c5d4ab5953b85fff3934ba9@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_exec_tx_verdict() can return negative value for copied
-variable. In that case this value will be pushed back to caller
-and the real error code will be lost. Fix it using signed type and
-checking for positive value.
+The sctp code doesn't use sk->sk_ipv6only (which is initialised
+from net.ipv6.bindv6only) but instead uses its own flag
+sp->v4mapped which always defaults to 1.
 
-Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
-Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- net/tls/tls_sw.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+There may also be an expectation that
+  [gs]etsockopt(sctp_fd, IPPROTO_IPV6, IPV6_V6ONLY,...)
+will access the flag that sctp uses internally.
+(Matching TCP and UDP.)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index e23f94a..57f8082 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -780,7 +780,7 @@ static int tls_push_record(struct sock *sk, int flags,
- 
- static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
- 			       bool full_record, u8 record_type,
--			       size_t *copied, int flags)
-+			       ssize_t *copied, int flags)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
-@@ -916,7 +916,8 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	unsigned char record_type = TLS_RECORD_TYPE_DATA;
- 	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
- 	bool eor = !(msg->msg_flags & MSG_MORE);
--	size_t try_to_copy, copied = 0;
-+	size_t try_to_copy;
-+	ssize_t copied = 0;
- 	struct sk_msg *msg_pl, *msg_en;
- 	struct tls_rec *rec;
- 	int required_size;
-@@ -1118,7 +1119,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 	release_sock(sk);
- 	mutex_unlock(&tls_ctx->tx_lock);
--	return copied ? copied : ret;
-+	return copied > 0 ? copied : ret;
- }
- 
- static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
-@@ -1132,7 +1133,7 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 	struct sk_msg *msg_pl;
- 	struct tls_rec *rec;
- 	int num_async = 0;
--	size_t copied = 0;
-+	ssize_t copied = 0;
- 	bool full_record;
- 	int record_room;
- 	int ret = 0;
-@@ -1234,7 +1235,7 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 	}
- sendpage_end:
- 	ret = sk_stream_error(sk, flags, ret);
--	return copied ? copied : ret;
-+	return copied > 0 ? copied : ret;
- }
- 
- int tls_sw_sendpage_locked(struct sock *sk, struct page *page,
--- 
-1.8.3.1
+Patch is trivial (remembering the inverted state)
+but I don't have a clean enough source tree :-(
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
