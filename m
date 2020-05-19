@@ -2,173 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4CF01DA265
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 22:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F6A1DA276
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 22:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726455AbgESUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 16:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S1728097AbgESUUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 16:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726290AbgESUSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 16:18:44 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF4EC08C5C0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:18:44 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id l21so523967eji.4
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lL4ozjO7sIu89/0ZdtpZ+grNZO7La5memrjZAz9fUk0=;
-        b=ZByOxcWZEGVSx0wUUQIKY6Lw/heX5sMkMCAxTHHPK+6ioi6FiW5Ivw4Z7T0/Nsu58c
-         KBdpFSMR5DZ9/Fan6TguF2CqRqBB1RiOHXF7adO0G8p+vAKeUpTqfShVLpqLUMDmSLi1
-         EQ9HfNNyPLSZop4afoNbYFWcjitqlo7fgxaKoCCTWTuiFmdSvBW7XY0iiFNWqgGj7KRs
-         TC/MqL75oZY1jUN8E7jzoZ3x0UqfnmePmTE/KV1JCoRkX+RpHBWDUXURu+joTefkXso/
-         Zzj2NcqozV3LUz+vL8gbiGipZCgL0mKs7ynTlmNA5D2yFrKQ+OioPOkKCO8FSJo0vylo
-         /yNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lL4ozjO7sIu89/0ZdtpZ+grNZO7La5memrjZAz9fUk0=;
-        b=lLxttvJ7zdSxPFXAFTeWDaQsX5y8eOepqjaduDl87B78/OYLgWhu+MO6Zyuqw1sUQQ
-         cOrcYa9X5N+K43fCH3+2pEK46MwhaCqmIpcBoMvJTS1j18PEzES0DDadW6C/1Kz3wdgb
-         r7zDwUKenLWfqdsGLGh22dcnuaQQhePswXBuOPHfnUn1wCMQn4R8gvLvPxmoFzxz9cvG
-         1QnCFjYEz4A3r9pZKmUYT/E6BMBolth4UEKwGiFMRScuMlHtbjD2pPQpp0whm873DQSc
-         bwM1pjjQLI3MQ8t4krM8JbOw60wju5UmhZ9SuNjwoM5ly3xXjT6nDMSUn1LixrHQUt8O
-         ahaA==
-X-Gm-Message-State: AOAM530V7z/ZesTtTtt6lT2J9Zm/7PXxjJFFrJYF4LdvBO5p0IQJKbGz
-        /bc62GFno8O0FKIOxBDduInIlJiU8/WBh0xg3vawcw==
-X-Google-Smtp-Source: ABdhPJzmLJ2VE1XY5jhp3oLT94K798EgEIL11S0+1hP87wWAtRinPfX07mNjAjt65tc4uEKH4OGuafZh3NS7Q2bYA/g=
-X-Received: by 2002:a17:906:934d:: with SMTP id p13mr869611ejw.452.1589919522687;
- Tue, 19 May 2020 13:18:42 -0700 (PDT)
+        with ESMTP id S1726595AbgESUUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 16:20:44 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC5EC08C5C0;
+        Tue, 19 May 2020 13:20:43 -0700 (PDT)
+Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
+        by Galois.linutronix.de with esmtp (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1jb8ig-00012c-Sv; Tue, 19 May 2020 22:20:10 +0200
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mike Galbraith <umgwanakikbuti@gmail.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, netdev@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 6/8] connector/cn_proc: Protect send_msg() with a local lock
+Date:   Tue, 19 May 2020 22:19:10 +0200
+Message-Id: <20200519201912.1564477-7-bigeasy@linutronix.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200519201912.1564477-1-bigeasy@linutronix.de>
+References: <20200519201912.1564477-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-References: <CAG=TAF6mfrwxF1-xEJJ9dL675uMUa7RZrOa_eL2mJizZJ-U7iQ@mail.gmail.com>
- <CAEf4BzazvGOoJbm+zNMqTjhTPJAnVLVv9V=rXkdXZELJ4FPtiA@mail.gmail.com>
- <CAG=TAF6aqo-sT2YE30riqp7f47KyXH_uhNJ=M9L12QU6EEEfqQ@mail.gmail.com>
- <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
- <CAG=TAF5rYmMXBcxno0pPxVZdcyz=ik-enh03E-V8wupjDS0K5g@mail.gmail.com> <CAEf4BzYZ9LkYtmiukToJDw1-V-AFbwfB2jysMU9mM3ie9=qWHw@mail.gmail.com>
-In-Reply-To: <CAEf4BzYZ9LkYtmiukToJDw1-V-AFbwfB2jysMU9mM3ie9=qWHw@mail.gmail.com>
-From:   Qian Cai <cai@lca.pw>
-Date:   Tue, 19 May 2020 16:18:31 -0400
-Message-ID: <CAG=TAF45T4pKew6U2kPNBK0qSAjgoECAX81obmKmFnv0cjE-oA@mail.gmail.com>
-Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 3:30 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, May 19, 2020 at 8:00 AM Qian Cai <cai@lca.pw> wrote:
-> >
-> > On Mon, May 18, 2020 at 8:25 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, May 18, 2020 at 5:09 PM Qian Cai <cai@lca.pw> wrote:
-> > > >
-> > > > On Mon, May 18, 2020 at 7:55 PM Andrii Nakryiko
-> > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > >
-> > > > > On Sun, May 17, 2020 at 7:45 PM Qian Cai <cai@lca.pw> wrote:
-> > > > > >
-> > > > > > With Clang 9.0.1,
-> > > > > >
-> > > > > > return array->value + array->elem_size * (index & array->index_mask);
-> > > > > >
-> > > > > > but array->value is,
-> > > > > >
-> > > > > > char value[0] __aligned(8);
-> > > > >
-> > > > > This, and ptrs and pptrs, should be flexible arrays. But they are in a
-> > > > > union, and unions don't support flexible arrays. Putting each of them
-> > > > > into anonymous struct field also doesn't work:
-> > > > >
-> > > > > /data/users/andriin/linux/include/linux/bpf.h:820:18: error: flexible
-> > > > > array member in a struct with no named members
-> > > > >    struct { void *ptrs[] __aligned(8); };
-> > > > >
-> > > > > So it probably has to stay this way. Is there a way to silence UBSAN
-> > > > > for this particular case?
-> > > >
-> > > > I am not aware of any way to disable a particular function in UBSAN
-> > > > except for the whole file in kernel/bpf/Makefile,
-> > > >
-> > > > UBSAN_SANITIZE_arraymap.o := n
-> > > >
-> > > > If there is no better way to do it, I'll send a patch for it.
-> > >
-> > >
-> > > That's probably going to be too drastic, we still would want to
-> > > validate the rest of arraymap.c code, probably. Not sure, maybe
-> > > someone else has better ideas.
-> >
-> > This works although it might makes sense to create a pair of
-> > ubsan_disable_current()/ubsan_enable_current() for it.
-> >
-> > diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> > index 11584618e861..6415b089725e 100644
-> > --- a/kernel/bpf/arraymap.c
-> > +++ b/kernel/bpf/arraymap.c
-> > @@ -170,11 +170,16 @@ static void *array_map_lookup_elem(struct
-> > bpf_map *map, void *key)
-> >  {
-> >         struct bpf_array *array = container_of(map, struct bpf_array, map);
-> >         u32 index = *(u32 *)key;
-> > +       void *elem;
-> >
-> >         if (unlikely(index >= array->map.max_entries))
-> >                 return NULL;
-> >
-> > -       return array->value + array->elem_size * (index & array->index_mask);
-> > +       current->in_ubsan++;
-> > +       elem = array->value + array->elem_size * (index & array->index_mask);
-> > +       current->in_ubsan--;
->
-> This is an unnecessary performance hit for silencing what is clearly a
-> false positive. I'm not sure that's the right solution here. It seems
-> like something that's lacking on the tooling side instead. C language
-> doesn't allow to express the intent here using flexible array
-> approach. That doesn't mean that what we are doing here is wrong or
-> undefined.
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
 
-Oh, so you worry about this ++ and -- hurt the performance? If so, how
-about this?
+send_msg() disables preemption to avoid out-of-order messages. As the
+code inside the preempt disabled section acquires regular spinlocks,
+which are converted to 'sleeping' spinlocks on a PREEMPT_RT kernel and
+eventually calls into a memory allocator, this conflicts with the RT
+semantics.
 
-ubsan_disable_current();
-elem = array->value + array->elem_size * (index & array->index_mask);
-ubsan_enable_current();
+Convert it to a local_lock which allows RT kernels to substitute them with
+a real per CPU lock. On non RT kernels this maps to preempt_disable() as
+before. No functional change.
 
-#ifdef UBSAN
-ubsan_disable_current()
-{
-      current->in_ubsan++;
-}
-#else
-ubsan_disable_current() {}
-#endif
+[bigeasy: Patch description]
 
-etc
+Cc: Evgeniy Polyakov <zbr@ioremap.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Mike Galbraith <umgwanakikbuti@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/connector/cn_proc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Production kernel would normally have UBSAN=n, so it is an noop.
+diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
+index d58ce664da843..055b0c86a0693 100644
+--- a/drivers/connector/cn_proc.c
++++ b/drivers/connector/cn_proc.c
+@@ -18,6 +18,7 @@
+ #include <linux/pid_namespace.h>
+=20
+ #include <linux/cn_proc.h>
++#include <linux/locallock.h>
+=20
+ /*
+  * Size of a cn_msg followed by a proc_event structure.  Since the
+@@ -40,10 +41,11 @@ static struct cb_id cn_proc_event_id =3D { CN_IDX_PROC,=
+ CN_VAL_PROC };
+=20
+ /* proc_event_counts is used as the sequence number of the netlink message=
+ */
+ static DEFINE_PER_CPU(__u32, proc_event_counts) =3D { 0 };
++static DEFINE_LOCAL_LOCK(send_msg_lock);
+=20
+ static inline void send_msg(struct cn_msg *msg)
+ {
+-	preempt_disable();
++	local_lock(send_msg_lock);
+=20
+ 	msg->seq =3D __this_cpu_inc_return(proc_event_counts) - 1;
+ 	((struct proc_event *)msg->data)->cpu =3D smp_processor_id();
+@@ -56,7 +58,7 @@ static inline void send_msg(struct cn_msg *msg)
+ 	 */
+ 	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
+=20
+-	preempt_enable();
++	local_unlock(send_msg_lock);
+ }
+=20
+ void proc_fork_connector(struct task_struct *task)
+--=20
+2.26.2
 
-Leaving this false positive unsilenced may also waste many people's
-time over and over again, and increase the noisy level. Especially, it
-seems this is one-off (not seen other parts of kernel doing like this)
-and rather expensive to silence it in the UBSAN or/and compilers.
