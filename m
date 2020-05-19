@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D08C21D950D
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 13:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C751D950F
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 13:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728793AbgESLRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 07:17:08 -0400
-Received: from cmccmta1.chinamobile.com ([221.176.66.79]:46215 "EHLO
+        id S1728816AbgESLRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 07:17:18 -0400
+Received: from cmccmta1.chinamobile.com ([221.176.66.79]:4393 "EHLO
         cmccmta1.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgESLRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 07:17:08 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.19]) by rmmx-syy-dmz-app03-12003 (RichMail) with SMTP id 2ee35ec3c013ca6-513bb; Tue, 19 May 2020 19:16:36 +0800 (CST)
-X-RM-TRANSID: 2ee35ec3c013ca6-513bb
+        with ESMTP id S1726605AbgESLRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 07:17:17 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.17]) by rmmx-syy-dmz-app02-12002 (RichMail) with SMTP id 2ee25ec3c039bee-51310; Tue, 19 May 2020 19:17:13 +0800 (CST)
+X-RM-TRANSID: 2ee25ec3c039bee-51310
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG: 00000000
 Received: from localhost.localdomain (unknown[112.25.154.146])
-        by rmsmtp-syy-appsvr10-12010 (RichMail) with SMTP id 2eea5ec3c0115f0-070af;
-        Tue, 19 May 2020 19:16:36 +0800 (CST)
-X-RM-TRANSID: 2eea5ec3c0115f0-070af
+        by rmsmtp-syy-appsvr09-12009 (RichMail) with SMTP id 2ee95ec3c036399-0aa79;
+        Tue, 19 May 2020 19:17:13 +0800 (CST)
+X-RM-TRANSID: 2ee95ec3c036399-0aa79
 From:   Tang Bin <tangbin@cmss.chinamobile.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Tang Bin <tangbin@cmss.chinamobile.com>,
         Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Subject: [PATCH] net/amd: Fix indentation to put on one line affected code
-Date:   Tue, 19 May 2020 19:17:21 +0800
-Message-Id: <20200519111721.14240-1-tangbin@cmss.chinamobile.com>
+Subject: [PATCH] net/amd: Simplify assertions
+Date:   Tue, 19 May 2020 19:17:58 +0800
+Message-Id: <20200519111758.4676-1-tangbin@cmss.chinamobile.com>
 X-Mailer: git-send-email 2.20.1.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -35,29 +35,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It looks better and has improved readability without additional
-line breaks.
+Simplifies assertions for errors.
 
 Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
 Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
 ---
- drivers/net/ethernet/amd/au1000_eth.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/amd/au1000_eth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
-index 7988e7df1..5f91e717b 100644
+index 76ac3a752..328c0ddba 100644
 --- a/drivers/net/ethernet/amd/au1000_eth.c
 +++ b/drivers/net/ethernet/amd/au1000_eth.c
-@@ -390,8 +390,7 @@ static void au1000_enable_rx_tx(struct net_device *dev)
- 	mdelay(10);
- }
+@@ -1201,7 +1201,7 @@ static int au1000_probe(struct platform_device *pdev)
+ 	}
  
--static void
--au1000_adjust_link(struct net_device *dev)
-+static void au1000_adjust_link(struct net_device *dev)
- {
- 	struct au1000_private *aup = netdev_priv(dev);
- 	struct phy_device *phydev = dev->phydev;
+ 	aup->mii_bus = mdiobus_alloc();
+-	if (aup->mii_bus == NULL) {
++	if (!aup->mii_bus) {
+ 		dev_err(&pdev->dev, "failed to allocate mdiobus structure\n");
+ 		err = -ENOMEM;
+ 		goto err_mdiobus_alloc;
+@@ -1227,7 +1227,7 @@ static int au1000_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	err = au1000_mii_probe(dev);
+-	if (err != 0)
++	if (err)
+ 		goto err_out;
+ 
+ 	pDBfree = NULL;
+@@ -1288,7 +1288,7 @@ static int au1000_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_out:
+-	if (aup->mii_bus != NULL)
++	if (aup->mii_bus)
+ 		mdiobus_unregister(aup->mii_bus);
+ 
+ 	/* here we should have a valid dev plus aup-> register addresses
 -- 
 2.20.1.windows.1
 
