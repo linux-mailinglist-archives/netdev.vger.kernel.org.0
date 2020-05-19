@@ -2,194 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9FB1D92FF
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 11:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB631D9300
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 11:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728502AbgESJKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 05:10:38 -0400
-Received: from mail-eopbgr150088.outbound.protection.outlook.com ([40.107.15.88]:4078
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S1728590AbgESJKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 05:10:41 -0400
+Received: from mail-am6eur05on2058.outbound.protection.outlook.com ([40.107.22.58]:6264
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726595AbgESJKi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 05:10:38 -0400
+        id S1726818AbgESJKk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 05:10:40 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O8yeFNq80sQVObfTqQe92PpjjZ9glsZuBBvZ+XeSWjOLscU0noHah4oiB87NcUuWHi0xmoq9+aQnfd/b8SwFicz5OeRX2JTMbNOQUgXa+7d3EXuBI1VAWiWH15XUSqqe+be8bZ4DW3/oem29frTFfZiyX3+mJuNJ6i4OU61u3FqVXb+MmP2d71vID3mTdguxpfwz9qkYlDiUZd8fcCz6pOqdDMeUiTVpI5lRjy5BFlB/y37RXw7ECTu2D0SCf1eCE6vmm8br2Wjcx4OPXTsQeXth1M0RXYir5bg/25C5q+yzImrRgfs5lw7ss3m3e4lJoCm4C4NZ2qDWbWS2siemnw==
+ b=ByNY8S7XSj+IPac9B0Bh+4RQsm1ztZ9u/PeceCPziIfgmOPzyQaX1HOEDj2OSWal7Ht4LfNvt1Vm9hh5TE6cdoqIjIsNupoHQSzsmFyB/pz1S5ziL447SWksKinj+c5BB4C2/1+9tQmOk0NO0utkrEJKilJoxErVfOHr/15qsL3otbc8XMGmg/0zBzu4fudR1/8UId1gXBWVET2/6S3k0k7/gDMP04ZRa8vdW1fUsGg8Ia/9bvMSk1cXXx1hDM2pHYaPSn5RahZ9TUqcvMPYRt8avS+IOPUgy/G5684NQrKEK8tikR0peA4UAdMY+b9fk36KSe2owKCrxDturG0m4A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nWLJS3qi6r9z7uAeVDXLppx6ZSNIslFjpGjsBmc3T8U=;
- b=UWxFEAtcO6OygQE5xOyWd2DXzFtu0BX2JnAliEC3yqrROIcbip8HYgHfxm/EIS7p1bRxYvIVlX+xW7PgGm24EZAcOgfZcq4rIHs0jFV/mCfiSVp3Cn6R6y1iA9f1fSvZkvrDypVO/NzpmjwRCofa6lzg0k5KARmHupRZBlfQilPIgfxSe/xashQRMADPEUG6UIDumzjyfUKzX/07u03DVBkTmh2ZUEJ6WJmnsIR+s6Ou/9XCityfkVfi1QUc13KjwBJftGI9L6aYCY7M04AbHQS2WILvqpXOQaeAEBZWAuIsBvjyEzqzaRmWOOx6GJsmVcmQPqW66k1JHPm5FTmAKg==
+ bh=AxyOWENtLYNAlsE8iPJb7516DMeLooI/dIYZNB+A7QY=;
+ b=Zn0zeRlGHODVD6WVWjEjCYbWzU17g4Iq03ZetgTPR8aybeHkTJODI9w+XgMv3KGnlkXEy/sxfIH5clvZxjDjeKuPYBP0+zrIE5iE40eCJEyKLhhp2atnYXuKmxZ8Yn31DWF6rQ58Cjd2Z3p2jiwQeNs4lkLzgiTDsl67IC8rEuKu+Jy1ilShH1aFVxv5VHoa8Y9sn3SReD+IvKz0/dBfVtSLUzLowa+Mc7b3U0YWlW8JTVTQ4vlmAlgGOxkNJ6lOLya4gGwQp2SRre+TQvW1dr+1qaZRq81wjasDS6P6/s2ev1KuDRsJCv34d1Hg0B83YrG5Y/vL8x4PEACh4OANnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nWLJS3qi6r9z7uAeVDXLppx6ZSNIslFjpGjsBmc3T8U=;
- b=XkqeV4QjEj0QCh/IZMX4eB4CkVbt6279q7S1fyzqpDET//kLY9ixdER5IcuZgd+Potv1Ggbbov8oMgCdLiNeFSsEzqh/CXSgOtDFCYxRm4A5/ItP/tBgmqQnWQrXay19QKqsIZ0k6M8/9DqIMiARGstCf+ME6tmj+UTT82j6b2g=
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VE1PR04MB6704.eurprd04.prod.outlook.com (2603:10a6:803:128::13) with
+ bh=AxyOWENtLYNAlsE8iPJb7516DMeLooI/dIYZNB+A7QY=;
+ b=tLMLrsgJf1xDH4Px5Gmklb3e4D1Lwr09SwCq41DuxHsBeina/WpW1LoXtGzDUczIA4hhKbqjUHCKB/qxRqnwNMLor5/MhgKgRaF7uIve9qE1+8oa+lYmNDC15SjntoC1TMREAIFGT/L2PHhMtFTLmysft6LciH7pyyf3h2SV1wo=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com (2603:10a6:20b:1ad::15)
+ by AM7PR05MB6961.eurprd05.prod.outlook.com (2603:10a6:20b:1a5::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.26; Tue, 19 May
- 2020 09:10:32 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.3000.034; Tue, 19 May 2020
- 09:10:32 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>
-Subject: RE: Re: [next-queue RFC 0/4] ethtool: Add support for frame
- preemption
-Thread-Topic: Re: [next-queue RFC 0/4] ethtool: Add support for frame
- preemption
-Thread-Index: AdYtu6jDqFE7FoLyQLevlykzK6jDEw==
-Date:   Tue, 19 May 2020 09:10:32 +0000
-Message-ID: <VE1PR04MB6496D0B1507969D8474F78FC92B90@VE1PR04MB6496.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5faa466c-7577-4a2c-9b25-08d7fbd47bbf
-x-ms-traffictypediagnostic: VE1PR04MB6704:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6704AA260B561B7629C89BEF92B90@VE1PR04MB6704.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 040866B734
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HxHTRDU+XGUookwJQeSzUKE2tkS/kYestHM5CYksC3eMki1gpkQ2LnNBole6o8qXoKgW0OUx7Mjli4ZLwheuhqaFXKXUdxVptNP2RNlfOR3fClOoNfAvg8iyPjSYZhKCQHwCRC8y4t4y9DVHZKUEbxVdpk4SH/E0YflmT9N+Ix2mbj3AToz54QujT0quEm+mP9CnvAAMVFV/VGPZiI2wLuTABjn9LENstix0zbZliqmCankwtdCo44XteMcCb+Dl2GG5YuozmSDpSkvWrvX62mUBmsJ59wW/iMpK+OuZ/p1Pwmjpm0lPrDJBav8MxVtoKPv+CSmMLQ+rtaHFzj+7l1y9ec/Qhx4PID+y1n+HrqjpZ7y+eWMg4qDoPpn06K9DmunrRj0gsGNd58R3E/zb1SNc1h6bS85dS/6OCljJNOzNsUxE9DNIZnNfPOCvgQN5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(366004)(376002)(39860400002)(396003)(136003)(26005)(8676002)(86362001)(44832011)(7696005)(9686003)(66946007)(76116006)(8936002)(64756008)(52536014)(66556008)(66476007)(33656002)(53546011)(5660300002)(316002)(478600001)(66446008)(55016002)(6506007)(54906003)(110136005)(4326008)(71200400001)(2906002)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: m0f4B1AYsxexsNZN4nG/Xe56qhrJLdQAalv8XwUMw8OVKppb5AYR4fEQoxkCQNOOaFigNc0YiVlprynnkbtAsFuLeNYA5me5jlRexg2+aJHl3ia39wIJH9XP+3k4fLfWnqy9dNf49uxoNH/aB9avYo6wXb+9gIl+lF0IhylT2TWZGIwylWcvaa9JqKM+bOl+W16Zk5w1DRKjUe9NdIpd038+LUX6pmG5kzlhbog6Tz0KbibhONMV/BBi4C9jwO7goxxfU8njTUeZZGlXl0VJQkjl4tad6wzNK1ot4SqNlNwn/qdkni7NnH26Kw3gfWi1rl2kHmJrUsx9rik+4936qYt1nEdgNPRAvEYHgZwK/t7OXRbUkefyehL3R6UyY+ojKmu65uiE7qSXaE1HEgBjzdIdRSpaphJW2ssIy+F4E2OK9onUILb83YYiOcrJBNNqnFgTQ9zn+gvdS1F5Q8lt+ZHo8M2LnokSZr+q8/UTaF0=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+ 2020 09:10:36 +0000
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::3903:9c1e:52e0:d74e]) by AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::3903:9c1e:52e0:d74e%8]) with mapi id 15.20.3000.034; Tue, 19 May 2020
+ 09:10:36 +0000
+References: <20200515114014.3135-1-vladbu@mellanox.com> <CAM_iQpXtqZ-Uy=x_UzTh0N0_LRYGp-bFKyOwTUMNLaiVs=7XKQ@mail.gmail.com> <vbf4ksdpwsu.fsf@mellanox.com> <CAM_iQpXdyFqBO=AkmLqVW=dZxQ3SfjKp71BxsKRuyhaoVuMEfg@mail.gmail.com>
+User-agent: mu4e 1.2.0; emacs 26.2.90
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
+In-reply-to: <CAM_iQpXdyFqBO=AkmLqVW=dZxQ3SfjKp71BxsKRuyhaoVuMEfg@mail.gmail.com>
+Date:   Tue, 19 May 2020 12:10:33 +0300
+Message-ID: <vbfmu64b88m.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: FR2P281CA0018.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::28) To AM7PR05MB6995.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1ad::15)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5faa466c-7577-4a2c-9b25-08d7fbd47bbf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2020 09:10:32.2388
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by FR2P281CA0018.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Tue, 19 May 2020 09:10:35 +0000
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: adef65a4-8015-45a8-cac7-08d7fbd47e50
+X-MS-TrafficTypeDiagnostic: AM7PR05MB6961:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM7PR05MB6961BEA3A0C5B0AE7C48E230ADB90@AM7PR05MB6961.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 040866B734
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: furwftFE0ou8NUg22wC3ijhhvGD5IDgimCD9UMSgxHyPHU7itMSVONVZhYGlUyOsgsw6CCjZQOHo1lMQLDsk0ybn1togebGFRqshXVWc+MN9nUJasMJKlqZ97booA4IvGIcfXM/BCGJpQUZep/V6U8+xEzMzVpMueyw22q2kUAUH6Z7yjOo284rIrFwkQ+S44i3lE25MJ244uyHqMc597szZsGwt21ssIyA5EXB8zslfzas/OdV/YpjvQtmKTMZaPIPjs5yjLBG9NmRal1FQ3x8jmwTcMWYi/REAnIMRNCr2OwITqGjajmfbuy5PjTJLAfCjTdwe+6rgoGtHSjoNQuK2hohNiPPRAFkVFCn5id6Pm68a9bNZ8GEEdEd6XFusogvV2JyBoEkzucQiLnQrXQP2g1RLG7GsDAC8dk2UYN29LcKeGg7SVtiKsN8tFbCG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6995.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(346002)(39860400002)(376002)(396003)(2906002)(6486002)(66946007)(66556008)(66476007)(8936002)(36756003)(8676002)(478600001)(86362001)(4326008)(54906003)(5660300002)(26005)(53546011)(7696005)(956004)(52116002)(186003)(16526019)(2616005)(316002)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Zixp6/ZBE5wwuYvJJVKKVwwhCHZf4DaxrEaS1qfCp1vmtgGQlP5FbF5j6ifH4hPtK3nRUF6lvAPxoI7EET2NVOET8cvpjvz4iHIQHb+AoXYIaNbLicez5X1n32u3N+pLfnA1HaqSbxsjK5tVzYZBcQkresn7P1zZtvklapMNk3pzM8ApDz6hNeyfzb3QaMS6xtGzVzf9OsnQwKGg0ZwD3E7Yb4pEP1tRmbweOXxWcFyGDFyK23dziOsVY+tGkgeum3pXaQeG2v0c7jR+cLUJ8J6Xz02/0la3mheT3TjtcyWl4D+2S+ZRIs+p1uxnJJy3UrOHgJ80z1JCSQUEQs8b+yRd0vbk/PdIkMxDZRY/5DwZwXBtZGSfBEDViJ5VG/9kLNzBnBTr0oksW9Jnjd3b7OayyndLoWFGHe/2tp2IyO12OGXniqpey4B0qJQzO+QTD1PCOED7A0n1GVxw+FcQOBT10dSRi6rBge/NKOmYSQPgJY5w5QgugLVXec69ffII
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: adef65a4-8015-45a8-cac7-08d7fbd47e50
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2020 09:10:36.7893
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7WEwc1crzjyG8HnGo5RqiyvTsfEBVTzDcD2/kpCrKh+EYk66jxzBIIbqUIPuFk9P
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6704
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DpHDoWLRoLGBbZkscyKqbVqGE9coJMXUeUzCje4zESgu/Xf7yHL78iHI/cyZJsd2erN7Lhfm9ryrjVdk6UJgpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6961
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmluaWNpdXMsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVmlu
-aWNpdXMgQ29zdGEgR29tZXMgPHZpbmljaXVzLmdvbWVzQGludGVsLmNvbT4NCj4gU2VudDogMjAy
-MMTqNdTCMTnI1SAzOjM0DQo+IFRvOiBNaWNoYWwgS3ViZWNlayA8bWt1YmVjZWtAc3VzZS5jej47
-IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vv
-c2wub3JnOyBqZWZmcmV5LnQua2lyc2hlckBpbnRlbC5jb207IFZsYWRpbWlyDQo+IE9sdGVhbiA8
-dmxhZGltaXIub2x0ZWFuQG54cC5jb20+OyBQbyBMaXUgPHBvLmxpdUBueHAuY29tPjsgbS0NCj4g
-a2FyaWNoZXJpMkB0aS5jb207IEpvc2UuQWJyZXVAc3lub3BzeXMuY29tDQo+IFN1YmplY3Q6IFJl
-OiBbbmV4dC1xdWV1ZSBSRkMgMC80XSBldGh0b29sOiBBZGQgc3VwcG9ydCBmb3IgZnJhbWUNCj4g
-cHJlZW1wdGlvbg0KPiANCj4gSGksDQo+IA0KPiBNaWNoYWwgS3ViZWNlayA8bWt1YmVjZWtAc3Vz
-ZS5jej4gd3JpdGVzOg0KPiANCj4gPiBPbiBGcmksIE1heSAxNSwgMjAyMCBhdCAwNjoyOTo0NFBN
-IC0wNzAwLCBWaW5pY2l1cyBDb3N0YSBHb21lcyB3cm90ZToNCj4gPj4gSGksDQo+ID4+DQo+ID4+
-IFRoaXMgc2VyaWVzIGFkZHMgc3VwcG9ydCBmb3IgY29uZmlndXJpbmcgZnJhbWUgcHJlZW1wdGlv
-biwgYXMgZGVmaW5lZA0KPiA+PiBieSBJRUVFIDgwMi4xUS0yMDE4IChwcmV2aW91c2x5IElFRUUg
-ODAyLjFRYnUpIGFuZCBJRUVFIDgwMi4zYnIuDQo+ID4+DQo+ID4+IEZyYW1lIHByZWVtcHRpb24g
-YWxsb3dzIGEgcGFja2V0IGZyb20gYSBoaWdoZXIgcHJpb3JpdHkgcXVldWUgbWFya2VkDQo+ID4+
-IGFzICJleHByZXNzIiB0byBwcmVlbXB0IGEgcGFja2V0IGZyb20gbG93ZXIgcHJpb3JpdHkgcXVl
-dWUgbWFya2VkIGFzDQo+ID4+ICJwcmVlbXB0aWJsZSIuIFRoZSBpZGVhIGlzIHRoYXQgdGhpcyBj
-YW4gaGVscCByZWR1Y2UgdGhlIGxhdGVuY3kgZm9yDQo+ID4+IGhpZ2hlciBwcmlvcml0eSB0cmFm
-ZmljLg0KPiA+Pg0KPiA+PiBQcmV2aW91c2x5LCB0aGUgcHJvcG9zZWQgaW50ZXJmYWNlIGZvciBj
-b25maWd1cmluZyB0aGVzZSBmZWF0dXJlcyB3YXMNCj4gPj4gdXNpbmcgdGhlIHFkaXNjIGxheWVy
-LiBCdXQgYXMgdGhpcyBpcyB2ZXJ5IGhhcmR3YXJlIGRlcGVuZGVudCBhbmQgYWxsDQo+ID4+IHRo
-YXQgcWRpc2MgZGlkIHdhcyBwYXNzIHRoZSBpbmZvcm1hdGlvbiB0byB0aGUgZHJpdmVyLCBpdCBt
-YWtlcyBzZW5zZQ0KPiA+PiB0byBoYXZlIHRoaXMgaW4gZXRodG9vbC4NCj4gPj4NCj4gPj4gT25l
-IGV4YW1wbGUsIGZvciByZXRyaWV2aW5nIGFuZCBzZXR0aW5nIHRoZSBjb25maWd1cmF0aW9uOg0K
-PiA+Pg0KPiA+PiAkIGV0aHRvb2wgJCBzdWRvIC4vZXRodG9vbCAtLXNob3ctZnJhbWUtcHJlZW1w
-dGlvbiBlbnAzczAgRnJhbWUNCj4gPj4gcHJlZW1wdGlvbiBzZXR0aW5ncyBmb3IgZW5wM3MwOg0K
-PiA+PiAgICAgIHN1cHBvcnQ6IHN1cHBvcnRlZA0KPiA+DQo+ID4gSU1ITyB3ZSBkb24ndCBuZWVk
-IGEgc3BlY2lhbCBib29sIGZvciB0aGlzLiBJSVVDIHRoaXMgaXMgbm90IGEgc3RhdGUNCj4gPiBm
-bGFnIHRoYXQgd291bGQgY2hhbmdlIHZhbHVlIGZvciBhIHBhcnRpY3VsYXIgZGV2aWNlOyBlaXRo
-ZXIgdGhlDQo+ID4gZGV2aWNlIHN1cHBvcnRzIHRoZSBmZWF0dXJlIG9yIGl0IGRvZXMgbm90LiBJ
-ZiBpdCBkb2VzIG5vdCwgdGhlDQo+ID4gZXRodG9vbF9vcHMgY2FsbGJhY2tzIHdvdWxkIHJldHVy
-biAtRU9QTk9UU1VQUCAob3Igd291bGQgbm90IGV2ZW4NCj4gPiBleGlzdCBpZiB0aGUgZHJpdmVy
-IGhhcyBubyBzdXBwb3J0KSBhbmQgZXRodG9vbCB3b3VsZCBzYXkgc28uDQo+IA0KPiAoSSBrbm93
-IHRoYXQgdGhlIGNvbW1lbnRzIGJlbG93IG9ubHkgYXBwbHkgaWYgImV0aHRvb2wtd2F5IiBpcyB3
-aGF0J3MNCj4gZGVjaWRlZCkNCj4gDQo+IENvb2wuIFdpbGwgcmVtb3ZlIHRoZSBzdXBwb3J0ZWQg
-Yml0Lg0KDQpTaGFsbCBpdCBtb3ZlIHRvIHRoZSBsaW5rX2tzZXR0aW5ncyBmaXhlZCBzdXBwb3J0
-ZWQgbGlzdD8gU28gY2FuIGJlIGNoZWNrZWQgYnkgdGhlIGV0aHRvb2wgLWsgY29tbWFuZC4gSSB1
-bmRlcnN0YW5kIHRoYXQgdGhlIGh3IGZlYXR1cmVzIGFyZSBlbmNvdXJhZ2VkIGxpc3RpbmcgaW4g
-dGhlIGtzZXR0aW5ncy4NClRoZSB0d28gTUFDcyBzaG91bGQgYWxsIGJlIGluaXRpYWxpemVkIGF0
-IGRyaXZlciBzaXplLiBBbmQgYWxsIGZyYW1lIHF1ZXVlcyBzaG91bGQgYXNzaWduZWQgdG8gdGhl
-IGV4cHJlc3MgTUFDIGJ5IGRlZmF1bHQuIFRoYXQgbG9va3MgYXMgbm9ybWFsIG1vZGUgY2FsbGVk
-IHByZWVtcHRpb24gZGlzYWJsZS4NCkFueSBmcmFtZSBxdWV1ZXMgYXNzaWduZWQgcGFzcyBwcmVl
-bXB0YWJsZSBNQUMgY291bGQgYmUgY2FsbGVkIHByZWVtcHRpb24gZW5hYmxlLiAgDQoNCj4gDQo+
-ID4NCj4gPj4gICAgICBhY3RpdmU6IGFjdGl2ZQ0KPiA+PiAgICAgIHN1cHBvcnRlZCBxdWV1ZXM6
-IDB4Zg0KPiA+PiAgICAgIHN1cHBvcnRlZCBxdWV1ZXM6IDB4ZQ0KPiA+PiAgICAgIG1pbmltdW0g
-ZnJhZ21lbnQgc2l6ZTogNjgNCj4gPj4NCj4gPj4NCj4gPj4gJCBldGh0b29sIC0tc2V0LWZyYW1l
-LXByZWVtcHRpb24gZW5wM3MwIGZwIG9uIG1pbi1mcmFnLXNpemUgNjgNCj4gPj4gcHJlZW1wdGli
-bGUtcXVldWVzLW1hc2sgMHhlDQo+ID4+DQo+ID4+IFRoaXMgaXMgYSBSRkMgYmVjYXVzZSBJIHdh
-bnRlZCB0byBoYXZlIGZlZWRiYWNrIG9uIHNvbWUgcG9pbnRzOg0KPiA+Pg0KPiA+PiAgIC0gVGhl
-IHBhcmFtZXRlcnMgYWRkZWQgYXJlIGVub3VnaCBmb3IgdGhlIGhhcmR3YXJlIEkgaGF2ZSwgaXMg
-aXQNCj4gPj4gICAgIGVub3VnaCBpbiBnZW5lcmFsPw0KPiA+Pg0KPiA+PiAgIC0gZXZlbiB3aXRo
-IHRoZSBldGh0b29sIHZpYSBuZXRsaW5rIGVmZm9ydCwgSSBjaG9zZSB0byBrZWVwIHRoZQ0KPiA+
-PiAgICAgaW9jdGwoKSB3YXksIGluIGNhc2Ugc29tZW9uZSB3YW50cyB0byBiYWNrcG9ydCB0aGlz
-IHRvIGFuIG9sZGVyDQo+ID4+ICAgICBrZXJuZWwsIGlzIHRoZXJlIGEgcHJvYmxlbSB3aXRoIHRo
-aXM/DQo+ID4NCj4gPiBJIHdvdWxkIHByZWZlciBub3QgZXh0ZW5kaW5nIGlvY3RsIGludGVyZmFj
-ZSB3aXRoIG5ldyBmZWF0dXJlcywgd2l0aA0KPiA+IG9idmlvdXMgZXhjZXB0aW9ucyBsaWtlIGFk
-ZGluZyBuZXcgbGluayBtb2RlcyBvciBzby4gTm90IG9ubHkgYmVjYXVzZQ0KPiA+IGhhdmluZyBu
-ZXcgZmVhdHVyZXMgb25seSBhdmFpbGFibGUgdGhyb3VnaCBuZXRsaW5rIHdpbGwgbW90aXZhdGUN
-Cj4gPiBhdXRob3JzIG9mIHVzZXJzcGFjZSB0b29scyB0byBzdXBwb3J0IG5ldGxpbmsgYnV0IG1v
-c3RseSBiZWNhdXNlIHRoZQ0KPiA+IGxhY2sgb2YgZmxleGliaWxpdHkgYW5kIGV4dGVuc2liaWxp
-dHkgb2YgaW9jdGwgaW50ZXJmYWNlIGluZXZpdGFibHkNCj4gPiBsZWFkcyB0byBjb21wcm9taXNl
-cyB5b3Ugd291bGRuJ3QgaGF2ZSB0byBkbyBpZiB5b3Ugb25seSBpbXBsZW1lbnQNCj4gPiBuZXRs
-aW5rIHJlcXVlc3RzLg0KPiANCj4gQWdyZWVkLiBXaWxsIHNlbmQgdGhlIG5leHQgdmVyc2lvbiB3
-aXRoIG9ubHkgdGhlIG5ldGxpbmsgaW50ZXJmYWNlLCBhbmQgbGV0J3MNCj4gc2VlIHdobyBjb21w
-bGFpbnMuDQo+IA0KPiA+DQo+ID4gT25lIGV4YW1wbGUgSSBjYW4gc2VlIGlzIHRoZSB1c2Ugb2Yg
-dTMyIGZvciBxdWV1ZSBiaXRtYXBzLiBQZXJoYXBzIHlvdQ0KPiA+IGRvbid0IGV4cGVjdCB0aGlz
-IGZlYXR1cmUgdG8gYmUgc3VwcG9ydGVkIG9uIGRldmljZXMgd2l0aCBtb3JlIHRoYW4gMzINCj4g
-PiBxdWV1ZXMgKGFuZCBJIGRvbid0IGhhdmUgZW5vdWdoIGV4cGVydGlzZSB0byB0ZWxsIGlmIGl0
-J3MganVzdGlmaWVkIGF0DQo+ID4gdGhlIG1vbWVudCkgYnV0IGNhbiB5b3UgYmUgc3VyZSBpdCB3
-aWxsIGJlIHRoZSBjYXNlIGluIDEwIG9yIDIwIHllYXJzPw0KPiA+IEFzIGxvbmcgYXMgdGhlc2Ug
-aGFyZGNvZGVkIHUzMiBiaXRtYXBzIGFyZSBvbmx5IHBhcnQgb2YgaW50ZXJuYWwNCj4gPiBrZXJu
-ZWwgQVBJIChldGh0b29sX29wcyksIGV4dGVuZGluZyB0aGUgc3VwcG9ydCBmb3IgYmlnZ2VyIGRl
-dmljZXMNCj4gPiB3aWxsIG1lYW4gc29tZSBjb2RlIGNodXJuIChwb3NzaWJseSBsYXJnZSBpZiBt
-YW55IGRyaXZlcnMgaW1wbGVtZW50DQo+ID4gdGhlIGZlYXR1cmUpIGJ1dCBpdCdzIHNvbWV0aGlu
-ZyB0aGF0IGNhbiBiZSBkb25lLiBCdXQgaWYgeW91IGhhdmUgdGhpcw0KPiA+IGxpbWl0IGluIHVz
-ZXJzcGFjZSBBUEksIHlvdSBhcmUgaW4gYSBtdWNoIGJpZ2dlciB0cm91YmxlLiBUaGUgc2FtZSBj
-YW4NCj4gPiBiZSBzYWlkIGZvciBhZGRpbmcgbmV3IGF0dHJpYnV0ZXMgLSBlYXN5IHdpdGggbmV0
-bGluayBidXQgd2l0aCBpb2N0bA0KPiA+IHlvdSBuZXZlciBrbm93IGlmIHRob3NlIHJlc2VydmVk
-IGZpZWxkcyB3aWxsIHN1ZmZpY2UuDQo+IA0KPiBBIGJpdCBvZiBiYWNrZ3JvdW5kIGZvciB0aGlz
-IGRlY2lzaW9uICh1c2luZyB1MzIpLCBmcmFtZSBwcmVlbXB0aW9uIGhhcw0KPiBkaW1pc2hpbmcg
-cmV0dXJucyBpbiByZWxhdGlvbiB0byBsaW5rIHNwZWVkcywgbXkgZ3V0IGZlZWxpbmcgaXMgdGhh
-dCBmb3IgbGlua3MNCj4gZmFzdGVyIHRoYW4gMi41RyBpdCBzdG9wcyBtYWtpbmcgc2Vuc2UsIGF0
-IGxlYXN0IGluIExpbnV4LCB0aGUgbWVhc3VyZW1lbnQNCj4gbm9pc2Ugd2lsbCBoaWRlIGFueSBs
-YXRlbmN5IGltcHJvdmVtZW50IGJyb3VnaHQgYnkgZnJhbWUgcHJlZW1wdGlvbi4NCj4gQW5kIEkg
-ZG9uJ3Qgc2VlIG1hbnkgMi41RyBOSUNzIHN1cHBvcnRpbmcgbW9yZSB0aGFuIDMyIHF1ZXVlcy4N
-Cj4gDQo+IEJ1dCBJIGFncmVlIHRoYXQga2VlcGluZyB0aGUgaW50ZXJmYWNlIGZ1dHVyZSBwcm9v
-ZiBpcyBiZXR0ZXIuIFdpbGwgY2hhbmdlIHRvDQo+IGV4cG9zZSB0aGUgcXVldWVzIGNvbmZpZ3Vy
-YXRpb24gYXMgYml0c2V0Lg0KPiANCj4gPg0KPiA+Pg0KPiA+PiAgIC0gU29tZSBzcGFjZSBmb3Ig
-YmlrZXNoZWRkaW5nIHRoZSBuYW1lcyBhbmQgbG9jYXRpb24gKGZvciBleGFtcGxlLA0KPiA+PiAg
-ICAgZG9lcyBpdCBtYWtlIHNlbnNlIGZvciB0aGVzZSBzZXR0aW5ncyB0byBiZSBwZXItcXVldWU/
-KSwgYXMgSSBhbQ0KPiA+PiAgICAgbm90IHF1aXRlIGhhcHB5IHdpdGggdGhlbSwgb25lIGV4YW1w
-bGUsIGlzIHRoZSB1c2Ugb2YgcHJlZW1wdGlibGUNCj4gPj4gICAgIHZzLiBwcmVlbXB0YWJsZTsN
-Cj4gPj4NCj4gPj4NCj4gPj4gQWJvdXQgdGhlIHBhdGNoZXMsIHNob3VsZCBiZSBxdWl0ZSBzdHJh
-aWdodGZvcndhcmQ6DQo+ID4+DQo+ID4+IFBhdGNoIDEsIGFkZHMgdGhlIEVUSFRPT0xfR0ZQIGFu
-ZCBFVEhPT0xfU0ZQIGNvbW1hbmRzIGFuZCB0aGUNCj4gPj4gYXNzb2NpYXRlZCBkYXRhIHN0cnVj
-dHVyZXM7DQo+ID4+DQo+ID4+IFBhdGNoIDIsIGFkZHMgdGhlIEVUSFRPT0xfTVNHX1BSRUVNUFRf
-R0VUIGFuZA0KPiBFVEhUT09MX01TR19QUkVFTVBUX1NFVA0KPiA+PiBuZXRsaW5rIG1lc3NhZ2Vz
-IGFuZCB0aGUgYXNzb2NpYXRlZCBhdHRyaWJ1dGVzOw0KPiA+DQo+ID4gSSBkaWRuJ3QgbG9vayB0
-b28gZGVlcGx5IGJ1dCBvbmUgdGhpbmcgSSBub3RpY2VkIGlzIHRoYXQgc2V0dGluZyB0aGUNCj4g
-PiBwYXJhbWV0ZXJzIHVzaW5nIGlvY3RsKCkgZG9lcyBub3QgdHJpZ2dlciBuZXRsaW5rIG5vdGlm
-aWNhdGlvbi4gSWYgd2UNCj4gPiBkZWNpZGUgdG8gaW1wbGVtZW50IGlvY3RsIHN1cHBvcnQgKGFu
-ZCBJJ20gbm90IGEgZmFuIG9mIHRoYXQpLCB0aGUNCj4gPiBub3RpZmljYXRpb25zIHNob3VsZCBi
-ZSBzZW50IGV2ZW4gd2hlbiBpb2N0bCBpcyB1c2VkLg0KPiANCj4gT2gsIHllYWgsIHRoYXQncyBy
-aWdodC4gTmljZSBjYXRjaC4NCj4gDQo+IA0KPiBDaGVlcnMsDQo+IC0tDQo+IFZpbmljaXVzDQoN
-CkJyLA0KUG8gTGl1DQo=
+
+On Mon 18 May 2020 at 21:46, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Sun, May 17, 2020 at 11:44 PM Vlad Buslov <vladbu@mellanox.com> wrote:
+>>
+>>
+>> On Sun 17 May 2020 at 22:13, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>> > On Fri, May 15, 2020 at 4:40 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+>> >>
+>> >> Output rate of current upstream kernel TC filter dump implementation if
+>> >> relatively low (~100k rules/sec depending on configuration). This
+>> >> constraint impacts performance of software switch implementation that
+>> >> rely on TC for their datapath implementation and periodically call TC
+>> >> filter dump to update rules stats. Moreover, TC filter dump output a lot
+>> >> of static data that don't change during the filter lifecycle (filter
+>> >> key, specific action details, etc.) which constitutes significant
+>> >> portion of payload on resulting netlink packets and increases amount of
+>> >> syscalls necessary to dump all filters on particular Qdisc. In order to
+>> >> significantly improve filter dump rate this patch sets implement new
+>> >> mode of TC filter dump operation named "terse dump" mode. In this mode
+>> >> only parameters necessary to identify the filter (handle, action cookie,
+>> >> etc.) and data that can change during filter lifecycle (filter flags,
+>> >> action stats, etc.) are preserved in dump output while everything else
+>> >> is omitted.
+>> >>
+>> >> Userspace API is implemented using new TCA_DUMP_FLAGS tlv with only
+>> >> available flag value TCA_DUMP_FLAGS_TERSE. Internally, new API requires
+>> >> individual classifier support (new tcf_proto_ops->terse_dump()
+>> >> callback). Support for action terse dump is implemented in act API and
+>> >> don't require changing individual action implementations.
+>> >
+>> > Sorry for being late.
+>> >
+>> > Why terse dump needs a new ops if it only dumps a subset of the
+>> > regular dump? That is, why not just pass a boolean flag to regular
+>> > ->dump() implementation?
+>> >
+>> > I guess that might break user-space ABI? At least some netlink
+>> > attributes are not always dumped anyway, so it does not look like
+>> > a problem?
+>> >
+>> > Thanks.
+>>
+>> Hi Cong,
+>>
+>> I considered adding a flag to ->dump() callback but decided against it
+>> for following reasons:
+>>
+>> - It complicates fl_dump() code by adding additional conditionals. Not a
+>>   big problem but it seemed better for me to have a standalone callback
+>>   because with combined implementation it is even hard to deduce what
+>>   does terse dump actually output.
+>
+> This is not a problem, at least you can add a big if in fl_dump(),
+> something like:
+>
+> if (terse) {
+>   // do terse dump
+>   return 0;
+> }
+> // normal dump
+
+That is what I was trying to prevent with my implementation: having big
+"superfunctions" that implement multiple things with branching. Why not
+just have dedicated callbacks that do exactly one thing?
+
+>
+>>
+>> - My initial implementation just called regular dump for classifiers
+>>   that don't support terse dump, but in internal review Jiri insisted
+>>   that cls API should fail if it can't satisfy user's request and having
+>>   dedicated callback allows implementation to return an error if
+>>   classifier doesn't define ->terse_dump(). With flag approach it would
+>>   be not trivial to determine if implementation actually uses the flag.
+>
+> Hmm? For those not support terse dump, we can just do:
+>
+> if (terse)
+>   return -EOPNOTSUPP;
+> // normal dump goes here
+>
+> You just have to pass 'terse' flag to all implementations and let them
+> to decide whether to support it or not.
+
+But why duplicate the same code to all existing cls dump implementations
+instead of having such check nicely implemented in cls API (via callback
+existence or a flag)?
+
+>
+>
+>>   I guess I could have added new tcf_proto_ops->flags value to designate
+>>   terse dump support, but checking for dedicated callback existence
+>>   seemed like obvious approach.
+>
+> This does not look necessary, as long as we can just pass the flag
+> down to each ->dump().
+>
+> Thanks.
