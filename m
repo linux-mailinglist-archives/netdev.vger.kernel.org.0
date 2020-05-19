@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE9C1D9D79
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:06:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 420E01D9D82
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729404AbgESRGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 13:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
+        id S1729432AbgESRHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 13:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728689AbgESRGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 13:06:39 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1BEC08C5C0;
-        Tue, 19 May 2020 10:06:39 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id f13so3806026wmc.5;
-        Tue, 19 May 2020 10:06:39 -0700 (PDT)
+        with ESMTP id S1729185AbgESRHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 13:07:52 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9E8C08C5C0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 10:07:51 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id y22so195954qki.3
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 10:07:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=b0b+DAWsimTwHxmy06gC1qGATqHB41HGKjKMHuwB2uU=;
-        b=MfGRtbZZN/6k9+wrlP2zSdODee8Kn2QMUL/8Ac6tS6yHb3r8m6+MdCT9zPTPzeU1bh
-         iBaeIRXuJeWmrcRrYr2Ncl75OrlrAjpsKpnhD3i8CWAZhepgZGpfutsOGBg3lLIE0vGb
-         6Sj+AbGtcN1W7daBksFLJO2r8GovEcfrwfPUdj+253ep5uVVDZ96wj7Hy92GkDH02Bu/
-         c0F2eRV3e9oR49N/mS6eQAST8HlLpI9bycnb06i9dISfkaFo5b+2RZpgWr8p9O8vYUdW
-         0fj21SkwZGgas8XZUAY0JS4YGRhjBUMVZhyT2YA73HmIIdtcJeA05E69kFQdG28feQ5J
-         ShHg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VhF6t8nwVtw96tu4Qljdbs4ZYVn+qtTTRU/PiWIuW3o=;
+        b=d4i9P6W+Oa+TB9ROmzQsRW3g2FeCUP4bbwMu1C2OKmywWXsY9bOt9wCciXekUSCmeY
+         IZaH1DrgFlbrJQ0uFp6sGX1E67im34BUj8SSx2nsSnve0ZnJ951nnGFZ0p2S1j8XbFOM
+         Dzh6QWhNXsIExD32JxCRCMnPiHTGqitg4jXj1yUUg1DhiJyhBXvW9BCY4SAzu87/Kgx1
+         YhjOJLD59NR67fdiQd6zO3XpWjTzttEGKGCMvZKo+98ZS2mP17vXlrT7xuSMzwgs7PyQ
+         M8YP6V1ZPCxNikYbh4DDabzBOWbhprPU1e+CLTKTFmmUxcZr9H4yD8JdZR/P8vk2WtLs
+         SXsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=b0b+DAWsimTwHxmy06gC1qGATqHB41HGKjKMHuwB2uU=;
-        b=NPVrbdqsz8RaWqqNDf9A6pHNEpJbKKdxBc38h2NFN51w55wIWYYj8PakDpmnauTEHK
-         H7guAnMFAh2XZQR8qARxd23WPtfggunYhN+omWI/7pq78bNIAsP/IcXBm7hKZC0iO5Va
-         MCuqHMqLiGB/MUzK+/bLAzJcy1CTJj5INgfmzxW3+iFMOusTBdKhMPOZFjf+koXN1UkM
-         7LYeGVGUKZaym252IkZSMcXkrN01kkFTLsWkHHj83C6XGtEN0YXIBc0ImgMkam9WO8uE
-         EuCWBOetCFhfVkR6Y2Ww1Tti0dESCiFlZXpDADIzwrxLT2G/9t3cqGG91eZroHD+0LPc
-         adkg==
-X-Gm-Message-State: AOAM532996DiujznV+rkj9JOkd4mhORO88hb63jy7P2r+d5sPE48zQGN
-        mLNvDtiosiSoz+4nlCP2LHchanRoceniv72jaRw=
-X-Google-Smtp-Source: ABdhPJxy2Vuubx4taPhjA38NN0S65kjz787Mc5Ytyn12i7oNvkxHFWadGOZ8hPI5SvYsnQIOwXmu+TeL1T73xs+taxk=
-X-Received: by 2002:a1c:a557:: with SMTP id o84mr358436wme.165.1589907998184;
- Tue, 19 May 2020 10:06:38 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VhF6t8nwVtw96tu4Qljdbs4ZYVn+qtTTRU/PiWIuW3o=;
+        b=msWfZxjhedR2Vzbk0SV1k0v/cdJY05PbWD5l5v55k9r07raxhXjPhm/ba8bXtSNhlv
+         kQPQc47HLNzXOUmli+ZF6yMVBHM1BmVXtExiyvO/67mOAIxSCzyeJqstxwoAAY4ED2bA
+         BWkz46S/RazlyFhAv9Z1seZ4IWiiX7cHQjexFrPBrh+PU3rbavlyoJDvANiHYqqC+R0F
+         flcM9ZZ2x1E6dm+pLEw++By1pYJFY/KbracsK5H9poihc1Q3KU2JldBe9XvyTQg5tj3I
+         +4kfi0ePRLOILASpo9A++zUhD5QW4Kj18Mq6sI4YJHQID+mRnWfkyE6h/TCl2NyOg8SP
+         +iEg==
+X-Gm-Message-State: AOAM532pMIizAokX5Xe3eGAjc0yEq1nNKShwwlx//EQCHrVUsl3FnXVE
+        hIz5rGeEcOGPw0dkETXwQQJgy8Ms
+X-Google-Smtp-Source: ABdhPJzQHcfx0q9tYqQL7iVFqkzE/QocfqA5fvK5mud/4TluBsNorOK7edNh5tA/NhD1KRANd2tm4w==
+X-Received: by 2002:a37:b744:: with SMTP id h65mr339457qkf.273.1589908071210;
+        Tue, 19 May 2020 10:07:51 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c5f3:7fed:e95c:6b74? ([2601:282:803:7700:c5f3:7fed:e95c:6b74])
+        by smtp.googlemail.com with ESMTPSA id 66sm87116qkk.31.2020.05.19.10.07.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 May 2020 10:07:50 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/6] nexthop: support for fdb ecmp nexthops
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>
+References: <1589854474-26854-1-git-send-email-roopa@cumulusnetworks.com>
+ <1589854474-26854-3-git-send-email-roopa@cumulusnetworks.com>
+ <4a103e6c-9b23-cbfc-b759-d2ff0c70668d@gmail.com>
+ <CAJieiUjXO6h9HtwTn3fv7W=WovyUxzU2+EZ_Off6kxxRfgyUKQ@mail.gmail.com>
+ <CAJieiUgHqYo1UZ2VKHK=hTTLZjkScYisdRJ0be0kjtj6c-DRYA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <530d85f9-7fd5-7e7b-7838-8ced98d27f3e@gmail.com>
+Date:   Tue, 19 May 2020 11:07:49 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200519085724.294949-8-bjorn.topel@gmail.com>
- <202005192351.j1H08VpV%lkp@intel.com> <c81b36a0-11dd-4b7f-fad8-85f31dced58c@intel.com>
- <20200519095539.570323c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200519095539.570323c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 19 May 2020 19:06:26 +0200
-Message-ID: <CAJ+HfNiunSSR8yY3_wHdxW71kmxMXhsRg2TRv+OVvSg9UZCFWw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 07/15] i40e: separate kernel allocated rx_bi
- rings from AF_XDP rings
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        kbuild-all@lists.01.org, Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAJieiUgHqYo1UZ2VKHK=hTTLZjkScYisdRJ0be0kjtj6c-DRYA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 May 2020 at 18:55, Jakub Kicinski <kuba@kernel.org> wrote:
->
-[...]
->
-> While at it I also get this on patch 11 (gcc-10, W=3D1):
->
-> drivers/net/ethernet/mellanox/mlx5/core/en_main.c: In function mlx5e_allo=
-c_rq:
-> drivers/net/ethernet/mellanox/mlx5/core/en_main.c:376:6: warning: variabl=
-e num_xsk_frames set but not used [-Wunused-but-set-variable]
->    376 |  u32 num_xsk_frames =3D 0;
->        |      ^~~~~~~~~~~~~~
+On 5/19/20 11:02 AM, Roopa Prabhu wrote:
+> What are the rules here.... does neighbor code only check for NDA_NH_ID
+> because the strict start type is set to NDA_NH_ID ?
+> 
 
-Ah, yes. Thanks!
+Lack of checking of unused attributes leads to the kernel silently
+ignoring userspace data. From top of memory that has a few problems:
 
-I'll wait until tomorrow for more input, and then do a respin.
+1. does the kernel support feature A (lack of probing for a feature),
 
+2. kernel not implementing what the user requested and not telling the user,
 
-Bj=C3=B6rn
+3. impacting the ability to start using feature A in that code at some
+point in the future (it was ignored in the past and garbage was passed
+in, now suddenly that garbage is acted on).
