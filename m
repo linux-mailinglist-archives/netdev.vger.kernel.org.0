@@ -2,108 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE25B1D9B32
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 17:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB6EC1D9B4D
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 17:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729230AbgESPac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 11:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729001AbgESPab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 11:30:31 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BCEC08C5C3
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 08:30:30 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id o35so36317uao.4
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 08:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gRtjuUSYT9o98HLxZ4XPAs12lnRhBaPqO3z+DvVbkXQ=;
-        b=qL4QXfwKBZ8jPjCgkPdHLsNzO3/idGDrn4woTx+Iaqn6RAptgipyKH04ujRHYZjG88
-         6h+bcxiTfIwF/L9qvccSvRM1/GxUjlw/HeyNlEcnxKgpivdoDc42/1LeeqUf5xXLBe0j
-         6HqkWM5XX+UIELvR7g8Lwiy37Sng0XHKrYq9WBGrPxdqaFXz+eY2WtwPjjuqh6abGUZj
-         cQuChf+5HtiOSA0tlViPvgzEbmQZFVs5v+qES50lIvTBeC3DvKISZpV9x0QAK0xcnTF0
-         wOd+ah2kE6iBsTcmFxS+uJOaF6E6DEmDVtdq120xhn/50fbY/t1Rmg8uZ5MPsvr0eACC
-         toQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gRtjuUSYT9o98HLxZ4XPAs12lnRhBaPqO3z+DvVbkXQ=;
-        b=LdtrOE48ZTowwy/xEOrHvHQFuLJPwf8V2hR4SNffHaiAr84A0yMRiNX1SgE85xbKgE
-         k40p6V3utNiY+kpOPGRYpJ6HLpve6IeeMQn4ags3UAvrDNffi5nFVCXp9WR27UMtNGvi
-         3jDh5UEBnWo13gylGGkIoBZYBtMTGnuRf81ftfw+hZA+iriDIpdUCq6KfGNuqFuS0tRE
-         g80DpY5v47zjTiX5h/nIbM9+gKSnurwaLETzvWnALI2JjTkHu/6+3aS/11UnfI8rz+xB
-         +wlCPUA7nVHWb1Y5lC80PlVY2u+qkHut7dvvDlK0C+vqWnJWdF6iCAFjdBDcKOeVm1BX
-         oYHA==
-X-Gm-Message-State: AOAM5333UZLgspXEjjcT41WPuAKREhUBhosQCk5rH2CzPuXqXi9SFW2p
-        BFgbZjgoFs1DWDegX2r2H74vLUz+u+oM7MaVQHbasPt7ZSo=
-X-Google-Smtp-Source: ABdhPJzPgBQocJHPBpM1TmD4hAcv+eqS/ZghZr75cOL/pxSov9+iNsVjciXOY1ZcKGnnELDE1CIZW7qYNDDgGWRq0RQ=
-X-Received: by 2002:ab0:186d:: with SMTP id j45mr575631uag.104.1589902229726;
- Tue, 19 May 2020 08:30:29 -0700 (PDT)
+        id S1729247AbgESPcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 11:32:42 -0400
+Received: from mga05.intel.com ([192.55.52.43]:1474 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728725AbgESPcl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 11:32:41 -0400
+IronPort-SDR: WnHdYLnlPULpxuQk7nzd7S1pqAPGA/b2X+IZoA9Oy2QKBM6FKZJlDCsgYtQM5S+lOpjl5KBqZq
+ yBA805IQ+yzg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 08:32:41 -0700
+IronPort-SDR: /D8eAVIdFAdKR2ZCtY+BpIV7wTp3ROMhUFbR0tChvaBGec4BDg2JXDjaXjdhNNtswao3uiQm2d
+ eZOPASOl7pog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
+   d="scan'208";a="466165188"
+Received: from stputhen-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.5.127])
+  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 08:32:40 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        intel-wired-lan@lists.osuosl.org
+Cc:     jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, po.liu@nxp.com, Jose.Abreu@synopsys.com
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+In-Reply-To: <b33e582f-e0e6-467a-636a-674322108855@ti.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com> <b33e582f-e0e6-467a-636a-674322108855@ti.com>
+Date:   Tue, 19 May 2020 08:32:40 -0700
+Message-ID: <87v9ksndnr.fsf@intel.com>
 MIME-Version: 1.0
-References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1589555337-5498-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 19 May 2020 17:29:52 +0200
-Message-ID: <CAPDyKFobJkEUvqJpKOtpLLyLBbxBukASbKPapt5-gxh_iP=cdA@mail.gmail.com>
-Subject: Re: [PATCH 04/17] dt-bindings: mmc: renesas,sdhi: Document r8a7742 support
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>, linux-ide@vger.kernel.org,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c@vger.kernel.org,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-watchdog@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 May 2020 at 17:09, Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Document SDHI controller for RZ/G1H (R8A7742) SoC, which is compatible
-> with R-Car Gen2 SoC family.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+Murali Karicheri <m-karicheri2@ti.com> writes:
 
-Applied for next, thanks!
-
-Kind regards
-Uffe
-
-
-> ---
->  Documentation/devicetree/bindings/mmc/renesas,sdhi.txt | 1 +
->  1 file changed, 1 insertion(+)
+>> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+>> Frame preemption settings for enp3s0:
+>> 	support: supported
+>> 	active: active
+>> 	supported queues: 0xf
 >
-> diff --git a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> index e6cc478..0ca9a62 100644
-> --- a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> +++ b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> @@ -7,6 +7,7 @@ Required properties:
->                 "renesas,sdhi-r7s9210" - SDHI IP on R7S9210 SoC
->                 "renesas,sdhi-r8a73a4" - SDHI IP on R8A73A4 SoC
->                 "renesas,sdhi-r8a7740" - SDHI IP on R8A7740 SoC
-> +               "renesas,sdhi-r8a7742" - SDHI IP on R8A7742 SoC
->                 "renesas,sdhi-r8a7743" - SDHI IP on R8A7743 SoC
->                 "renesas,sdhi-r8a7744" - SDHI IP on R8A7744 SoC
->                 "renesas,sdhi-r8a7745" - SDHI IP on R8A7745 SoC
-> --
-> 2.7.4
+> I assume this is will be in sync with ethtool -L output which indicates
+> how many tx h/w queues present? I mean if there are 8 h/w queues,
+> supported queues will show 0xff.
+
+In this approach, the driver builds these bitmasks, so it's responsible
+to keep it consistent with the rest of the stuff that's exposed in
+ethtool.
+
 >
+>> 	supported queues: 0xe
+>  From the command below, it appears this is the preemptible queue mask.
+> bit 0  is Q0, bit 1 Q1 and so forth. Right? In that case isn't it more
+> clear to display
+>          preemptible queues : 0xef
+>
+> In the above Q7 is express queue and Q6-Q0 are preemptible.
+
+In my case, the controller I have here only has 4 queues, and Queue 0 is
+the highest priority one, and it's marked as express.
+
+>
+> Also there is a handshake called verify that happens which initiated
+> by the h/w to check the capability of peer. It looks like
+> not all vendor's hardware supports it and good to have it displayed
+> something like
+>
+>          Verify supported/{not supported}
+>
+> If Verify is supported, FPE is enabled only if it succeeds. So may be
+> good to show a status of Verify if it is supported something like
+>          Verify success/Failed
+>
+>> 	minimum fragment size: 68
+>> 
+>> 
+>> $ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 preemptible-queues-mask 0xe
+>> 
+>> This is a RFC because I wanted to have feedback on some points:
+>> 
+>>    - The parameters added are enough for the hardware I have, is it
+>>      enough in general?
+>
+> As described above, it would be good to add an optional parameter for
+> verify
+>
+> ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 
+> preemptible-queues-mask 0xe verify on
+>
+
+The hardware I have do not support this, but this makes sense.
+
+
+Cheers,
+-- 
+Vinicius
