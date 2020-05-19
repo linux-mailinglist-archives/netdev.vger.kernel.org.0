@@ -2,206 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771B01D8F1B
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:17:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8209E1D8F22
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:19:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbgESFRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 01:17:34 -0400
-Received: from mail-vi1eur05on2049.outbound.protection.outlook.com ([40.107.21.49]:34049
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726323AbgESFRe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 01:17:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TF81s9cCKQZ3Vij8QvFuUO0yhfLZRWEe3gH74p6I3lEEwpm2KNqaXLDVm1vKhTnYuVMgaFyPUmqrylBvR0icntnL+o/tDv82cRCQI0MqN5E+VE23gwtlqx+fwfnMDwALN+JyaGrt9FYbf+rTzjGHwLVdo8L5ucjGl582LgpzcKPT9uEVUkusAjwrBRakgAaETKtS93HiGFLVlT/z94a9nPVLV19OsXi6o2X0+NlB4dxzREDBwPnJUWUPhBWVE2PpxPwSiANt4gejQ/XsfpCzraZrJCMEfzKiuDjM1d8dECcbSNqkYRv2KaN3iuabR0vKfEyX6N8QOqLY9Bm6wkXbBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=umNTEQ3QOi+1GTe2AtCgLtbGRSWIbWTFd2nEFEqCU7g=;
- b=AT/C444KIZHGKW4DkkzBefKPpvBmqoJzXRefAxtH86dQLfIpY6n8d5Jij1XclL2EMrNgPyZb5oqLRFnEMd9d8JBHOR038k6hwq9lfhOzvM52BhXbx0BNjUxCjUqxvkzPMIMt6ptEfQwZvq1GwI+BV6KGYF+WCJzUo1RpkneBuUa1vQx/KcDyY3lQM3WIrcHu1YU+Qy+32svuzvSWP01pZb6eq7824oXlRi1ZgE0JDVPMF5X1+XnsPDFAXNAMWEK1VFQkEaHnUroG4sAdwW0DuZZZwIpsWtgDE2OhWcLgvWSJgDoWWCOTmoVD0aRZt4axt9VFcFGqf/4r4sPDywjNeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=umNTEQ3QOi+1GTe2AtCgLtbGRSWIbWTFd2nEFEqCU7g=;
- b=eWyCsFytDcQK3zkfwmepQMxAfKS4uh9ooMZtUQme6/8tMO8QNfvcYPDx1zVr5cz5R7kbZ/PJR0JGalUHkUO/wQdm3jZODWCH0ZVS5w/qHNGUBe65+nrUhcghnEpGjopIDl6mntxfVXnP3upFCHPoYUnhuTj+rLIClb+jjLKWRB4=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
- by AM0PR05MB6482.eurprd05.prod.outlook.com (2603:10a6:208:146::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Tue, 19 May
- 2020 05:17:28 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::5dd6:fa09:c5d1:b387]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::5dd6:fa09:c5d1:b387%7]) with mapi id 15.20.3000.034; Tue, 19 May 2020
- 05:17:27 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>
-Subject: RE: [RFC v2] current devlink extension plan for NICs
-Thread-Topic: [RFC v2] current devlink extension plan for NICs
-Thread-Index: AQHWH5j86VY8EpKiG0SvO1qzzv+snaioVl8AgAChUQCAAMrbgIADv/OAgADugYCAAIUywA==
-Date:   Tue, 19 May 2020 05:17:27 +0000
-Message-ID: <AM0PR05MB4866687F67EE56BEBB0D9B3AD1B90@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        id S1728184AbgESFTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 01:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726323AbgESFTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:19:13 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65860C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:19:13 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id z4so1653772wmi.2
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pcHDjg+HOYIROAS36NtMZdtFRJI62FcrI/rUmEqAQ0c=;
+        b=O1d8dfNRLjftx1gBOUEyIbSyAEzvLDqj4VesUfWMMXHOzh4Ptka+HApF4dCXtttwD0
+         fpW2trtQl9LnEXbxHm55t+cnloK4RE9dwu/CJ8J6xPxHoty94dUTv7fTbt5GuhJaWtHt
+         opUubgoCPbsklpxqbpY0qqTjh2G8m+K5xSNCSp/6bpG8cwXQkp3IQEIKkyeLEMbhxYhJ
+         9sEy/hfxGQoppjRtAmR8UtGweO7KMs+yxfkMyv3jQQfVl0goc02agDEKXw9HwGiKwy1c
+         r9YZu+WnZxoSKh90Bnl5ewAoXdV36b5H/lRPFaZLjvrFDsO5x7v0WmyvU1erLdxKQVDm
+         tYrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pcHDjg+HOYIROAS36NtMZdtFRJI62FcrI/rUmEqAQ0c=;
+        b=KItillFvF8eyzTM3Pll0yrIanCa6Ib5EHDllOB8lvqFSmaNGPy9BHj3PNv8GWvc+Mi
+         BYG+hvPQzIQYSsV69h3pInWUvksusmchjCxVU/CC8rq4WqWmnDRdgQzSgRlaB8Iy0eMV
+         5ee6OfvudEctT22wnKbc/Gf2MeqD7w6mtQBuWrO88tjfmUKh54knbGp+5zdaMma0IcFV
+         lbIAQ5V2sIj6ReBsPn+7sA2nDVXwXZ+soko+LW3/ac9U1QnTdnQBQAVp0FyZbMcfC/Ra
+         LL37SjLV6TZ/OQ1qrnaseOwdR5BBMwsvNqy1ewCEMk1p0A+BwnH6RHDoLyg16AauO9w1
+         EqvQ==
+X-Gm-Message-State: AOAM531YOg1Mms/t7zpjN0jsdOhsd/9WDro+ScgkzC1JZKHYvWJRtSHJ
+        GVdhBEiK0oA9Y5TEyryLzm+JcA==
+X-Google-Smtp-Source: ABdhPJzapb+q5gpKv30YdXgeA69G1JGoh/UUjwRujRTJIWT2Ouv6X6rBs6ajZPZXp/s3Gc7yvtADeg==
+X-Received: by 2002:a1c:2e41:: with SMTP id u62mr3313983wmu.91.1589865552115;
+        Mon, 18 May 2020 22:19:12 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id 94sm19508818wrf.74.2020.05.18.22.19.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2020 22:19:11 -0700 (PDT)
+Date:   Tue, 19 May 2020 07:19:10 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
+        saeedm@mellanox.com, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
+        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
+        oss-drivers@netronome.com, snelson@pensando.io,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        valex@mellanox.com, linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
+Subject: Re: [RFC v2] current devlink extension plan for NICs
+Message-ID: <20200519051910.GA4655@nanopsycho>
 References: <20200501091449.GA25211@nanopsycho.orion>
  <b0f75e76-e6cb-a069-b863-d09f77bc67f6@intel.com>
  <20200515093016.GE2676@nanopsycho>
  <e3aa20ec-a47e-0b91-d6d5-1ad2020eca28@intel.com>
  <20200518065207.GA2193@nanopsycho>
  <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
-In-Reply-To: <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [106.51.29.144]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: eca047a7-7455-4f72-2bd4-08d7fbb3ec63
-x-ms-traffictypediagnostic: AM0PR05MB6482:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6482EA876954A604C1D756FDD1B90@AM0PR05MB6482.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 040866B734
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 48Pv7ZmIfaveC0d8KXGwEiJYkgpH1qgqzdtlJPPQmp/qkpssDxkEGHTKP62lINQBr28to3sGHFix/sGKmRD074RokEIEV9UYmtOqofajHEsW+QOt0iRyYDXonwiQhNE8UJSOUs6l1Lh2lfc5rvSxzkaRzhSBfeQNH7z15/xmImf/IRXG+QqTVAnbdRC+H3X/FsaLcrtOi84v4vXrjpOYko8BW/dOXmNEqnIjsDp6/0KsDOkmyZSiH+xWVK7Nn7eQRzYZqsvShF//w6LXIsBwaQpXlllwicXcj4rAz31MK3zq/eTPjvJIP/CCkYPya1mMsGZSwzo2RNsosc6WQog/zWNY5PHMTLh7trCgXrGiXLrHGtvLKjuqoitWoqDTHXBLExeyPG84l2tp0KHvZx3JLuU29RqcFaCNzvcA7WDsCVwWjD7T/7apoDcKhwG1ECkWj65JT3kcO1/PPy+kdxNc5hXRbzmI0hdc46K5dJCsk97yqpfj3usl+gEHJrdFziPP37jG4HLfSxfgrHvKkm2QODeWHiM65eZ1rOnzGQWeT8/FBuTFUS0IXO6OlZLSS2rA
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(4326008)(9686003)(52536014)(26005)(186003)(966005)(71200400001)(478600001)(33656002)(55016002)(5660300002)(2906002)(53546011)(8936002)(8676002)(55236004)(66446008)(64756008)(66476007)(66556008)(66946007)(76116006)(110136005)(7416002)(7696005)(316002)(6506007)(86362001)(54906003)(6606295002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YjP3lWGwKOsM7UYfMWANnfDbQY2g8dzqEcvWd1y70AmHuwB+Ygi4x88hQn/sK+WTlwO3iQG255AR3gWBUNAUuLqVFksQ4uHl9/LGHt9E/nDkZngVdYUzVD/37FPpvWviFRq0ilKn5ocZnpuBLeHtSenEz/dYgAWHgA30MgAHYv2jivVFUHOXI5Cu20mCpd1decrSnnX4TDGXPSTWMGB5+TlxfLrrB69gTwCJQfs2uMq7FrQudnFRo0bC1QAFv98nzix+/PintNXHa2JIoQed1B6wjBPIh4wskbqgWiE3K+P8SRQhtlAMvD7MxgQJLtFaOg5J9K73mgfGgTy27o72r3qvS7ArSTbJYz+ByW4wRq+DKqJUCFZmaH7ZQ5AxA4SVmMqEUPNA9kVvb0onwjQNume7yHFMvbgqzzXYevCe9QSpoQinlfle9xVhhR0AVzRkoXE9haQzO5OVK4dNr770r6/ZX6sNLMpVToYJIjH3gMNqE3nA4HucR0N/nKH7Q65+
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eca047a7-7455-4f72-2bd4-08d7fbb3ec63
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2020 05:17:27.8215
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: glozakZsdgzkYRF6wkAZtyA564lcRM90eWEQbpUSTp1hhGTswb+yQf3DBzb5CtnofgBHRB3IV3XBVhPlDB2/Og==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6482
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSmFrZSwNCg0KPiBGcm9tOiBuZXRkZXYtb3duZXJAdmdlci5rZXJuZWwub3JnIDxuZXRkZXYt
-b3duZXJAdmdlci5rZXJuZWwub3JnPiBPbg0KPiBCZWhhbGYgT2YgSmFjb2IgS2VsbGVyDQo+IA0K
-PiANCj4gT24gNS8xNy8yMDIwIDExOjUyIFBNLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiA+IEZyaSwg
-TWF5IDE1LCAyMDIwIGF0IDExOjM2OjE5UE0gQ0VTVCwgamFjb2IuZS5rZWxsZXJAaW50ZWwuY29t
-IHdyb3RlOg0KPiA+Pg0KPiA+Pg0KPiA+PiBPbiA1LzE1LzIwMjAgMjozMCBBTSwgSmlyaSBQaXJr
-byB3cm90ZToNCj4gPj4+IEZyaSwgTWF5IDE1LCAyMDIwIGF0IDAxOjUyOjU0QU0gQ0VTVCwgamFj
-b2IuZS5rZWxsZXJAaW50ZWwuY29tIHdyb3RlOg0KPiA+Pj4+PiAkIGRldmxpbmsgcG9ydCBhZGQg
-cGNpLzAwMDAuMDYuMDAuMC8xMDAgZmxhdm91ciBwY2lzZiBwZm51bSAxDQo+ID4+Pj4+IHNmbnVt
-IDEwDQo+ID4+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBDYW4geW91IGNsYXJpZnkgd2hhdCBzZm51bSBt
-ZWFucyBoZXJlPyBhbmQgd2h5IGlzIGl0IGRpZmZlcmVudCBmcm9tDQo+ID4+Pj4gdGhlIGluZGV4
-PyBJIGdldCB0aGF0IHRoZSBpbmRleCBpcyBhIHVuaXF1ZSBudW1iZXIgdGhhdCBpZGVudGlmaWVz
-DQo+ID4+Pj4gdGhlIHBvcnQgcmVnYXJkbGVzcyBvZiB0eXBlLCBzbyBzZm51bSBtdXN0IGJlIHNv
-bWUgc29ydCBvZiBoYXJkd2FyZQ0KPiA+Pj4+IGludGVybmFsIGlkZW50aWZpZXI/DQo+ID4+Pg0K
-PiA+Pj4gQmFzaWNhbGx5IHBmbnVtLCBzZm51bSBhbmQgdmZudW0gY291bGQgb3ZlcmxhcC4gSW5k
-ZXggaXMgdW5pcXVlDQo+ID4+PiB3aXRoaW4gYWxsIGdyb3VwcyB0b2dldGhlci4NCj4gPj4+DQo+
-ID4+DQo+ID4+IFJpZ2h0LiBJbmRleCBpcyBqdXN0IGFuIGlkZW50aWZpZXIgZm9yIHdoaWNoIHBv
-cnQgdGhpcyBpcy4NCj4gPj4NCj4gDQo+IE9rLCBzbyB3aGV0aGVyIG9yIG5vdCBhIGRyaXZlciB1
-c2VzIHRoaXMgaW50ZXJuYWxseSBpcyBhbiBpbXBsZW1lbnRhdGlvbg0KPiBkZXRhaWwgdGhhdCBk
-b2Vzbid0IG1hdHRlciB0byB0aGUgaW50ZXJmYWNlLg0KPiANCj4gDQo+ID4+Pg0KPiA+Pj4+DQo+
-ID4+Pj4gV2hlbiBsb29raW5nIGF0IHRoaXMgd2l0aCBjb2xsZWFndWVzLCB0aGVyZSB3YXMgYSBs
-b3Qgb2YgY29uZnVzaW9uDQo+ID4+Pj4gYWJvdXQgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUg
-aW5kZXggYW5kIHRoZSBzZm51bS4NCj4gPj4+DQo+ID4+PiBObyBjb25mdXNpb24gYWJvdXQgaW5k
-ZXggYW5kIHBmbnVtL3ZmbnVtPyBUaGV5IGJlaGF2ZSB0aGUgc2FtZS4NCj4gPj4+IEluZGV4IGlz
-IGp1c3QgYSBwb3J0IGhhbmRsZS4NCj4gPj4+DQo+ID4+DQo+ID4+IEknbSBsZXNzIGNvbmZ1c2Vk
-IGFib3V0IHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gaW5kZXggYW5kIHRoZXNlDQo+ID4+ICJudW1z
-IiwgYW5kIG1vcmUgc28gcXVlc3Rpb25pbmcgd2hhdCBwZm51bS92Zm51bS9zZm51bSByZXByZXNl
-bnQ/DQo+IEFyZQ0KPiA+PiB0aGV5IHNpbWlsYXIgdG8gdGhlIHZmIElEIHRoYXQgd2UgaGF2ZSBp
-biB0aGUgbGVnYWN5IFNSSU9WIGZ1bmN0aW9ucz8NCj4gPj4gSS5lLiBhIGhhcmR3YXJlIGluZGV4
-Pw0KPiA+Pg0KPiA+PiBJIGRvbid0IHRoaW5rIGluIGdlbmVyYWwgdXNlcnMgbmVjZXNzYXJpbHkg
-Y2FyZSB3aGljaCAiaW5kZXgiIHRoZXkNCj4gPj4gZ2V0IHVwZnJvbnQuIFRoZXkgb2J2aW91c2x5
-IHZlcnkgbXVjaCBjYXJlIGFib3V0IHRoZSBpbmRleCBvbmNlIGl0J3MNCj4gPj4gc2VsZWN0ZWQu
-IEkgZG8gYmVsaWV2ZSB0aGUgaW50ZXJmYWNlcyBzaG91bGQgc3RhcnQgd2l0aCB0aGUNCj4gPj4g
-Y2FwYWJpbGl0eSBmb3IgdGhlIGluZGV4IHRvIGJlIHNlbGVjdGVkIGF1dG9tYXRpY2FsbHkgYXQg
-Y3JlYXRpb24NCj4gPj4gKHdpdGggdGhlIG9wdGlvbmFsIGNhcGFiaWxpdHkgdG8gc2VsZWN0IGEg
-c3BlY2lmaWMgaW5kZXggaWYgZGVzaXJlZCwgYXMgc2hvd24NCj4gaGVyZSkuDQo+ID4+DQo+ID4+
-IEkgZG8gbm90IHRoaW5rIG1vc3QgdXNlcnMgd2FudCB0byBjYXJlIGFib3V0IHdoYXQgdG8gcGlj
-ayBmb3IgdGhpcw0KPiA+PiBudW1iZXIuIChKdXN0IGFzIHRoZXkgd291bGQgbm90IHdhbnQgdG8g
-cGljayBhIG51bWJlciBmb3IgdGhlIHBvcnQNCj4gPj4gaW5kZXggZWl0aGVyKS4NCj4gPg0KPiA+
-IEkgc2VlIHlvdXIgcG9pbnQuIEhvd2V2ZXIgSSBkb24ndCB0aGluayBpdCBpcyBhbHdheXMgdGhl
-IHJpZ2h0DQo+ID4gc2NlbmFyaW8uIFRoZSAibnVtcyIgYXJlIHVzZWQgZm9yIG5hbWluZyBvZiB0
-aGUgbmV0ZGV2aWNlcywgYm90aCB0aGUNCj4gPiBlc3dpdGNoIHBvcnQgcmVwcmVzZW50b3IgYW5k
-IHRoZSBhY3R1YWwgU0YgKGluIGNhc2Ugb2YgU0YpLg0KPiA+DQo+ID4gSSB0aGluayB0aGF0IGlu
-IGxvdCBvZiB1c2VjYXNlcyBpcyBtb3JlIGNvbnZlbmllbnQgZm9yIHVzZXIgdG8gc2VsZWN0DQo+
-ID4gdGhlICJudW0iIG9uIHRoZSBjbWRsaW5lLg0KPiA+DQo+IA0KPiBBZ3JlZWQsIGJhc2VkIG9u
-IHRoZSBiZWxvdyBzdGF0ZW1lbnRzLiBCYXNpY2FsbHkgImxldCB1c2VycyBzcGVjaWZ5IG9yIGdl
-dCBpdA0KPiBhdXRvbWF0aWNhbGx5IGNob3NlbiIsIGp1c3QgbGlrZSB3aXRoIHRoZSBwb3J0IGlk
-ZW50aWZpZXIgYW5kIHdpdGggdGhlIHJlZ2lvbg0KPiBudW1iZXJzIG5vdy4NCj4gDQo+IA0KPiBU
-aGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbnMhDQo+IA0KPiA+Pg0KPiA+Pj4+IE9idmlvdXNseSB0
-aGlzIGlzIGEgVE9ETywgYnV0IGhvdyBkb2VzIHRoaXMgZGlmZmVyIGZyb20gdGhlIGN1cnJlbnQN
-Cj4gPj4+PiBwb3J0X3NwbGl0IGFuZCBwb3J0X3Vuc3BsaXQ/DQo+ID4+Pg0KPiA+Pj4gRG9lcyBu
-b3QgaGF2ZSBhbnl0aGluZyB0byBkbyB3aXRoIHBvcnQgc3BsaXR0aW5nLiBUaGlzIGlzIGFib3V0
-DQo+ID4+PiBjcmVhdGluZyBhICJjaGlsZCBQRiIgZnJvbSB0aGUgc2VjdGlvbiBhYm92ZS4NCj4g
-Pj4+DQo+ID4+DQo+ID4+IEhtbS4gT2sgc28gdGhpcyBpcyBhYm91dCBpbnRlcm5hbCBjb25uZWN0
-aW9ucyBpbiB0aGUgc3dpdGNoLCB0aGVuPw0KPiA+DQo+ID4gWWVzLiBUYWtlIHRoZSBzbWFydG5p
-YyBhcyBhbiBleGFtcGxlLiBPbiB0aGUgc21hcnRuaWMgY3B1LCB0aGUgZXN3aXRjaA0KPiA+IG1h
-bmFnZW1lbnQgaXMgYmVpbmcgZG9uZS4gVGhlcmUncyBkZXZsaW5rIGluc3RhbmNlIHdpdGggYWxs
-IGVzd2l0Y2gNCj4gPiBwb3J0IHZpc2libGUgYXMgZGV2bGluayBwb3J0cy4gT25lIFBGLXR5cGUg
-ZGV2bGluayBwb3J0IHBlciBob3N0LiBUaGF0DQo+ID4gYXJlIHRoZSAiY2hpbGQgUEZzIi4NCj4g
-Pg0KPiA+IE5vdyBmcm9tIHBlcnNwZWN0aXZlIG9mIHRoZSBob3N0LCB0aGVyZSBhcmUgMiBzY2Vu
-YXJpb3M6DQo+ID4gMSkgaGF2ZSB0aGUgInNpbXBsZSBkdW1iIiBQRiwgd2hpY2gganVzdCBleHBv
-c2VzIDEgbmV0ZGV2IGZvciBob3N0IHRvDQo+ID4gICAgcnVuIHRyYWZmaWMgb3Zlci4gc21hcnRu
-aWMgY3B1IG1hbmFnZXMgdGhlIFZGcy9TRnMgYW5kIHNlZXMgdGhlDQo+ID4gICAgZGV2bGluayBw
-b3J0cyBmb3IgdGhlbS4gVGhpcyBpcyAxIGxldmVsIHN3aXRjaCAtIG1lcmdlZCBzd2l0Y2gNCj4g
-Pg0KPiA+IDIpIFBGIG1hbmFnZXMgYSBzdWItc3dpdGNoL25lc3RlZC1zd2l0Y2guIFRoZSBkZXZs
-aW5rL2RldmxpbmsgcG9ydHMgYXJlDQo+ID4gICAgY3JlYXRlZCBvbiB0aGUgaG9zdCBhbmQgdGhl
-IGRldmxpbmsgcG9ydHMgZm9yIFNGcy9WRnMgYXJlIGNyZWF0ZWQNCj4gPiAgICB0aGVyZS4gVGhp
-cyBpcyBtdWx0aS1sZXZlbCBlc3dpdGNoLiBFYWNoICJjaGlsZCBQRiIgb24gYSBwYXJlbnQNCj4g
-PiAgICBtYW5hZ2VzIGEgbmVzdGVkIHN3aXRjaC4gQW5kIGNvdWxkIGluIHRoZW9yeSBoYXZlIG90
-aGVyIFBGIGNoaWxkIHdpdGgNCj4gPiAgICBhbm90aGVyIG5lc3RlZCBzd2l0Y2guDQo+ID4NCj4g
-DQo+IE9rLiBTbyBpbiB0aGUgc21hcnQgTklDIENQVSwgd2UnZCBzZWUgdGhlIHByaW1hcnkgUEYg
-YW5kIHNvbWUgY2hpbGQgUEZzLA0KPiBhbmQgaW4gdGhlIGhvc3Qgc3lzdGVtIHdlJ2Qgc2VlIGEg
-InByaW1hcnkgUEYiIHRoYXQgaXMgdGhlIG90aGVyIGVuZCBvZiB0aGUNCj4gYXNzb2NpYXRlZCBD
-aGlsZCBQRiwgYW5kIG1pZ2h0IGJlIGFibGUgdG8gbWFuYWdlIGl0cyBvd24gc3Vic3dpdGNoLg0K
-PiANCj4gT2sgdGhpcyBpcyBtYWtpbmcgbW9yZSBzZW5zZSBub3cuDQo+IA0KPiBJIHRoaW5rIEkg
-aGFkIGltYWdpbmVkIHRoYXQgd2FzIHdoYXQgc3ViZnVudGlvbnMgd2VyZS4gQnV0IHJlYWxseQ0K
-PiBzdWJmdW5jdGlvbnMgYXJlIGEgYml0IGRpZmZlcmVudCwgdGhleSdyZSBtb3JlIHNpbWlsYXIg
-dG8gZXhwYW5kZWQgVkZzPw0KPg0KIA0KMS4gU3ViIGZ1bmN0aW9ucyBhcmUgbW9yZSBsaWdodCB3
-ZWlnaHQgdGhhbiBWRnMgYmVjYXVzZSwNCjIuIFRoZXkgc2hhcmUgdGhlIHNhbWUgUENJIGRldmlj
-ZSAoQkFSLCBJUlFzKSBhcyB0aGF0IG9mIFBGL1ZGIG9uIHdoaWNoIGl0IGlzIGRlcGxveWVkLg0K
-My4gVW5saWtlIFZGcyB3aGljaCBhcmUgZW5hYmxlZC9kaXNhYmxlZCBpbiBidWxrLCBzdWJmdW5j
-dGlvbnMgYXJlIGNyZWF0ZWQsIGRlcGxveWVkIGluIHVuaXQgb2YgMS4NCg0KU2luY2UgdGhpcyBS
-RkMgY29udGVudCBpcyBvdmVyd2hlbG1pbmcsIEkgZXhwYW5kZWQgdGhlIFNGIHBsdW1iaW5nIGRl
-dGFpbHMgbW9yZSBpbiBbMV0gaW4gcHJldmlvdXMgUkZDIHZlcnNpb24uDQpZb3UgY2FuIHJlcGxh
-Y2UgJ2Rldmxpbmsgc2xpY2UnIHdpdGggJ2RldmxpbmsgcG9ydCBmdW5jJyBpbiBbMV0uDQoNClsx
-XSBodHRwczovL21hcmMuaW5mby8/bD1saW51eC1uZXRkZXYmbT0xNTg1NTU5Mjg1MTc3Nzcmdz0y
-DQo=
+Mon, May 18, 2020 at 11:05:45PM CEST, jacob.e.keller@intel.com wrote:
+>
+>
+>On 5/17/2020 11:52 PM, Jiri Pirko wrote:
+>> Fri, May 15, 2020 at 11:36:19PM CEST, jacob.e.keller@intel.com wrote:
+>>>
+>>>
+>>> On 5/15/2020 2:30 AM, Jiri Pirko wrote:
+>>>> Fri, May 15, 2020 at 01:52:54AM CEST, jacob.e.keller@intel.com wrote:
+>>>>>> $ devlink port add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10
+>>>>>>
+>>>>>
+>>>>> Can you clarify what sfnum means here? and why is it different from the
+>>>>> index? I get that the index is a unique number that identifies the port
+>>>>> regardless of type, so sfnum must be some sort of hardware internal
+>>>>> identifier?
+>>>>
+>>>> Basically pfnum, sfnum and vfnum could overlap. Index is unique within
+>>>> all groups together.
+>>>>
+>>>
+>>> Right. Index is just an identifier for which port this is.
+>>>
+>
+>Ok, so whether or not a driver uses this internally is an implementation
+>detail that doesn't matter to the interface.
+>
+>
+>>>>
+>>>>>
+>>>>> When looking at this with colleagues, there was a lot of confusion about
+>>>>> the difference between the index and the sfnum.
+>>>>
+>>>> No confusion about index and pfnum/vfnum? They behave the same.
+>>>> Index is just a port handle.
+>>>>
+>>>
+>>> I'm less confused about the difference between index and these "nums",
+>>> and more so questioning what pfnum/vfnum/sfnum represent? Are they
+>>> similar to the vf ID that we have in the legacy SRIOV functions? I.e. a
+>>> hardware index?
+>>>
+>>> I don't think in general users necessarily care which "index" they get
+>>> upfront. They obviously very much care about the index once it's
+>>> selected. I do believe the interfaces should start with the capability
+>>> for the index to be selected automatically at creation (with the
+>>> optional capability to select a specific index if desired, as shown here).
+>>>
+>>> I do not think most users want to care about what to pick for this
+>>> number. (Just as they would not want to pick a number for the port index
+>>> either).
+>> 
+>> I see your point. However I don't think it is always the right
+>> scenario. The "nums" are used for naming of the netdevices, both the
+>> eswitch port representor and the actual SF (in case of SF).
+>> 
+>> I think that in lot of usecases is more convenient for user to select
+>> the "num" on the cmdline.
+>> 
+>
+>Agreed, based on the below statements. Basically "let users specify or
+>get it automatically chosen", just like with the port identifier and
+>with the region numbers now.
+>
+>
+>Thanks for the explanations!
+>
+>>>
+>>>>> Obviously this is a TODO, but how does this differ from the current
+>>>>> port_split and port_unsplit?
+>>>>
+>>>> Does not have anything to do with port splitting. This is about creating
+>>>> a "child PF" from the section above.
+>>>>
+>>>
+>>> Hmm. Ok so this is about internal connections in the switch, then?
+>> 
+>> Yes. Take the smartnic as an example. On the smartnic cpu, the
+>> eswitch management is being done. There's devlink instance with all
+>> eswitch port visible as devlink ports. One PF-type devlink port per
+>> host. That are the "child PFs".
+>> 
+>> Now from perspective of the host, there are 2 scenarios:
+>> 1) have the "simple dumb" PF, which just exposes 1 netdev for host to
+>>    run traffic over. smartnic cpu manages the VFs/SFs and sees the
+>>    devlink ports for them. This is 1 level switch - merged switch
+>> 
+>> 2) PF manages a sub-switch/nested-switch. The devlink/devlink ports are
+>>    created on the host and the devlink ports for SFs/VFs are created
+>>    there. This is multi-level eswitch. Each "child PF" on a parent
+>>    manages a nested switch. And could in theory have other PF child with
+>>    another nested switch.
+>> 
+>
+>Ok. So in the smart NIC CPU, we'd see the primary PF and some child PFs,
+>and in the host system we'd see a "primary PF" that is the other end of
+>the associated Child PF, and might be able to manage its own subswitch.
+>
+>Ok this is making more sense now.
+>
+>I think I had imagined that was what subfuntions were. But really
+>subfunctions are a bit different, they're more similar to expanded VFs?
+
+Yeah, they are basically VFs without separate pci BDF. They reside on a
+BDF of the PF they are created on. Basically a lightweight VFs.
+
+
+>
+>Thanks,
+>Jake
