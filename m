@@ -2,127 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BD4C1D916F
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 09:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B80BA1D9176
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 09:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbgESHw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 03:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728620AbgESHwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 03:52:15 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E9BC061A0C
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 00:52:15 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jax2k-0002vV-Of; Tue, 19 May 2020 09:52:06 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jax2g-0006QK-JG; Tue, 19 May 2020 09:52:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: [PATCH net-next v1 2/2] net: phy: tja11xx: add SQI support
-Date:   Tue, 19 May 2020 09:52:00 +0200
-Message-Id: <20200519075200.24631-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200519075200.24631-1-o.rempel@pengutronix.de>
-References: <20200519075200.24631-1-o.rempel@pengutronix.de>
+        id S1728669AbgESHxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 03:53:44 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:40164 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726943AbgESHxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 03:53:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589874823; h=Date: Message-Id: Cc: To: Subject: From:
+ Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
+ bh=Jn5kEp5C6wqJZJXYscr+MdqvrxFZlynEmyXeR1RAOiw=; b=ghliDE4EoKoRKPa4XayPua98MrA8puOVq+ILYKC8wvnct29QLtImYsi32MrdPnOgsP6tUwEk
+ 91Bt1X+piohDEcgOKuXp9TH9WokzxlF1O8jsUAM4GaCHCol93LO7Rti02hyMWa1kmwm/7Fa2
+ tYv2OD5C22XmtbiMqcAsNl8VgoI=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ec3907b.7fb2ee573928-smtp-out-n04;
+ Tue, 19 May 2020 07:53:31 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 0652AC432C2; Tue, 19 May 2020 07:53:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0D2E3C433F2;
+        Tue, 19 May 2020 07:53:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0D2E3C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+From:   Kalle Valo <kvalo@codeaurora.org>
+Subject: pull-request: wireless-drivers-2020-05-19
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20200519075331.0652AC432C2@smtp.codeaurora.org>
+Date:   Tue, 19 May 2020 07:53:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements reading of the Signal Quality Index for better
-cable/link troubleshooting.
+Hi,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/nxp-tja11xx.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+here's a pull request to net tree, more info below. Please let me know if there
+are any problems.
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index 0d4f9067ca715..ed588caa563f4 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -53,6 +53,7 @@
- 
- #define MII_COMMSTAT			23
- #define MII_COMMSTAT_LINK_UP		BIT(15)
-+#define MII_COMMSTAT_SQI_STATE		GENMASK(7, 5)
- 
- #define MII_GENSTAT			24
- #define MII_GENSTAT_PLL_LOCKED		BIT(14)
-@@ -329,6 +330,17 @@ static int tja11xx_read_status(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int tja11xx_get_sqi(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_COMMSTAT);
-+	if (ret < 0)
-+		return ret;
-+
-+	return FIELD_GET(MII_COMMSTAT_SQI_STATE, ret) + 1;
-+}
-+
- static int tja11xx_get_sset_count(struct phy_device *phydev)
- {
- 	return ARRAY_SIZE(tja11xx_hw_stats);
-@@ -683,6 +695,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
- 		.set_loopback   = genphy_loopback,
-@@ -699,6 +712,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
- 		.set_loopback   = genphy_loopback,
-@@ -715,6 +729,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
- 		.match_phy_device = tja1102_p0_match_phy_device,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-@@ -736,6 +751,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
- 		.match_phy_device = tja1102_p1_match_phy_device,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
--- 
-2.26.2
+Kalle
 
+The following changes since commit 0e698dfa282211e414076f9dc7e83c1c288314fd:
+
+  Linux 5.7-rc4 (2020-05-03 14:56:04 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-05-19
+
+for you to fetch changes up to f92f26f2ed2c9f92c9270c705bca96310c3cdf5a:
+
+  iwlwifi: pcie: handle QuZ configs with killer NICs as well (2020-05-08 13:09:17 +0300)
+
+----------------------------------------------------------------
+wireless-drivers fixes for v5.7
+
+Third and most likely the last set of fixes for v5.7. Only one
+iwlwifi fix this time.
+
+iwlwifi
+
+* another fix for QuZ device configuration
+
+----------------------------------------------------------------
+Luca Coelho (1):
+      iwlwifi: pcie: handle QuZ configs with killer NICs as well
+
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 4 ++++
+ 1 file changed, 4 insertions(+)
