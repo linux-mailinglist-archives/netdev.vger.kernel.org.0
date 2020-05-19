@@ -2,109 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE7B51DA478
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:24:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45D51DA486
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:27:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728061AbgESWYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 18:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
+        id S1726348AbgESW1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 18:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbgESWYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:24:11 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241C6C061A0F;
-        Tue, 19 May 2020 15:24:11 -0700 (PDT)
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jbAeL-0003PM-CF; Wed, 20 May 2020 00:23:49 +0200
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id B8CC0100606; Wed, 20 May 2020 00:23:48 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of a seqcount
-In-Reply-To: <20200519150159.4d91af93@hermes.lan>
-References: <20200519214547.352050-1-a.darwish@linutronix.de> <20200519214547.352050-2-a.darwish@linutronix.de> <20200519150159.4d91af93@hermes.lan>
-Date:   Wed, 20 May 2020 00:23:48 +0200
-Message-ID: <87v9kr5zt7.fsf@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        with ESMTP id S1725998AbgESW1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:27:42 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74F6C061A0F
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 15:27:42 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 289E0128EC8DD;
+        Tue, 19 May 2020 15:27:42 -0700 (PDT)
+Date:   Tue, 19 May 2020 15:27:41 -0700 (PDT)
+Message-Id: <20200519.152741.1857499409331981778.davem@davemloft.net>
+To:     simon.horman@netronome.com
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net-next v2 0/2] nfp: flower: feature bit updates
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200519141502.18676-1-simon.horman@netronome.com>
+References: <20200519141502.18676-1-simon.horman@netronome.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 May 2020 15:27:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
-> On Tue, 19 May 2020 23:45:23 +0200
-> "Ahmed S. Darwish" <a.darwish@linutronix.de> wrote:
->
->> Sequence counters write paths are critical sections that must never be
->> preempted, and blocking, even for CONFIG_PREEMPTION=n, is not allowed.
->> 
->> Commit 5dbe7c178d3f ("net: fix kernel deadlock with interface rename and
->> netdev name retrieval.") handled a deadlock, observed with
->> CONFIG_PREEMPTION=n, where the devnet_rename seqcount read side was
->> infinitely spinning: it got scheduled after the seqcount write side
->> blocked inside its own critical section.
->> 
->> To fix that deadlock, among other issues, the commit added a
->> cond_resched() inside the read side section. While this will get the
->> non-preemptible kernel eventually unstuck, the seqcount reader is fully
->> exhausting its slice just spinning -- until TIF_NEED_RESCHED is set.
->> 
->> The fix is also still broken: if the seqcount reader belongs to a
->> real-time scheduling policy, it can spin forever and the kernel will
->> livelock.
->> 
->> Disabling preemption over the seqcount write side critical section will
->> not work: inside it are a number of GFP_KERNEL allocations and mutex
->> locking through the drivers/base/ :: device_rename() call chain.
->> 
->> From all the above, replace the seqcount with a rwsem.
->> 
->> Fixes: 5dbe7c178d3f (net: fix kernel deadlock with interface rename and netdev name retrieval.)
->> Fixes: 30e6c9fa93cf (net: devnet_rename_seq should be a seqcount)
->> Fixes: c91f6df2db49 (sockopt: Change getsockopt() of SO_BINDTODEVICE to return an interface name)
->> Cc: <stable@vger.kernel.org>
->> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
->> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->
-> Have your performance tested this with 1000's of network devices?
+From: Simon Horman <simon.horman@netronome.com>
+Date: Tue, 19 May 2020 16:15:00 +0200
 
-No. We did not. -ENOTESTCASE
+> this short series has two parts.
+> 
+> * The first patch cleans up the treatment of existing feature bits.
+>   There are two distinct methods used and the code now reflects this
+>   more clearly.
+> * The second patch informs firmware of flower features. This allows
+>   the firmware to disable certain features in the absence of of host support.
+> 
+> Changes since v1
+> - Add now-first patch to clean up existing implementation
+> - Address Jakub's feedback
 
-> The reason seqcount logic is was done here was to achieve scaleablity
-> and a semaphore does not scale as well.
-
-That still does not make the livelock magically going away. Just make a
-reader with real-time priority preempt the writer and the system stops
-dead. The net result is perfomance <= 0.
-
-This was observed on RT kernels without a special 1000's of network
-devices test case.
-
-Just for the record: This is not a RT specific problem. You can
-reproduce that w/o an RT kernel as well. Just run the reader with
-real-time scheduling policy.
-
-As much as you hate it from a performance POV the only sane rule of
-programming is: Correctness first.
-
-And this code clearly violates that rule.
-
-Thanks,
-
-        tglx
+Series applied, thanks Simon.
