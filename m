@@ -2,612 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A611DA417
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 23:51:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 943211DA327
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 22:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbgESVv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 17:51:28 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:38940 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726977AbgESVv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 17:51:27 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04JLkQ5x021123;
-        Tue, 19 May 2020 14:51:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=0n+bSPdXO+NGZqJd0j6z85utyhp8fImclJk/BxeNh5U=;
- b=QMgeRni9vl9X/XfhE50tehJZKxaHSkQcTdYk78XQK9pIPaz1Sa9ZMjHfx+R3gBD4UkQa
- F3zp24yCPE9mYhDITCTYmJPgHPzIqsUtbzlcu+C7v/dMvyb5PW1BH8p+dmk3v44KZyb+
- t0S13g4zafbHfaf7hP98eLODs5umoXnamVml96VqmDIXhhgoLz2fpxTYMmuogV+aeVON
- 6XMgxDdqZpLeI7cVx53roaYlW/fT+Rv1Vsqpxa41Tj/ufEoCDkbWQg7SRscJs6kGWuMs
- 3JAE9IS7EzWUq7jeI07880jNfsZ+6hwgXiAonEa6dwmCnrMR+an4UH/4alItNvqAgoLb mA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 312dhqp2mf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 19 May 2020 14:51:24 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 19 May
- 2020 14:51:22 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 19 May
- 2020 14:51:22 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 19 May 2020 14:51:22 -0700
-Received: from lb-tlvb-ybason.il.qlogic.org (unknown [10.5.221.176])
-        by maili.marvell.com (Postfix) with ESMTP id 2B5833F703F;
-        Tue, 19 May 2020 14:51:19 -0700 (PDT)
-From:   Yuval Basson <ybason@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <mkalderon@marvell.com>, <ybason@marvell.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next,v2 2/2] qed: Add XRC to RoCE
-Date:   Tue, 19 May 2020 23:51:26 +0300
-Message-ID: <20200519205126.26987-3-ybason@marvell.com>
-X-Mailer: git-send-email 2.14.5
-In-Reply-To: <20200519205126.26987-1-ybason@marvell.com>
-References: <20200519205126.26987-1-ybason@marvell.com>
+        id S1726283AbgESU6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 16:58:55 -0400
+Received: from mail-eopbgr80055.outbound.protection.outlook.com ([40.107.8.55]:15475
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725998AbgESU6z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 16:58:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R94Jj2mNSDEDENXvNSCXnjexr1HtM0ATBEBgOlBk6bEFNmZRz11JSPzUpKYG9fdQYVWnrJ7kI0lkqcaLscodkm5oFJ8veRoUNkRKGDabmnbDkJb2oBtPwO+FtkPAztZ+BUMdp9ZzLDGTTbEtS9cRGvt9lCA+Ywp4wYjuYiNjQz4E+hakjZNs1ZBkgqdZzwxPMU8cdmxlJ2qGsyK8MstbMjFn7ZdcceRNebqPYuGK31D/xDBwO4OIbDTj2VYiMKWS2k4/LR82zxK6TYHUmXi0WRApYNoz4Js5oI+DXPDw6NqOQydC4pelB+Q9Zl8cmGZNK55rDgk/jLCOQ8HGCcYYPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jPydZzjkD2OPaTVCVGLwKuEoqNf5ILHeT5vWGPlUOjk=;
+ b=KL+JhcAUQZyUkQd4cM5Of7aSMYF79G1ZqAD/YP4HesfhvJg+vEwB7yDisxacFypvzrLkemT8g0GYlDSRP6I0RqJTdvrR0zEVyiqXT/IX6MfpxVQMVa2Q1cneqRIDMj+qlPygxfjIjlJ/u0kAOFZCUGGy6TkuR1yjXeQWs64pNoS3iqo89Vb1qcL6uxS35OhzUX2M/p9O29eiEx2f7cAPLZMnfYSRmi6dF37TCwnmL2Sk4UF/yGcLaEZW7cgp+s2r4cdAWNVZJmL3wA0KSDxXrAgrgK+sxGlvutY+ow6PQhFfCi0mB0ss3f0/KI8TDVkSrboOYZr4hS12cKQ2sMfwjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jPydZzjkD2OPaTVCVGLwKuEoqNf5ILHeT5vWGPlUOjk=;
+ b=jdIwLgxGMDxDqmxLtGkb9d1/ZO4tDBpNlIiTnylbtGA82ebUpX7s/yMkuSp0mgiaSMGKnLj3lA7Quah1w6m34x708JvUp4gV9JMnL5bulpjw9mc1AzYRA36rpu81/JU06uzOopXESCaaIpW/mMT6EzO1RZ1RZL/ftRGC8cHKoXA=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3901.eurprd04.prod.outlook.com
+ (2603:10a6:803:18::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.26; Tue, 19 May
+ 2020 20:58:51 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3000.033; Tue, 19 May 2020
+ 20:58:51 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Thread-Topic: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Thread-Index: AQHWKulbmiq87o7Yx0yuJ8Tm2Q7xY6iphgOAgAACOECAAAN2gIAAEXFggAAcYgCAAKFaYIAD5lUAgADH7GCAALvkAIAAGOkQ
+Date:   Tue, 19 May 2020 20:58:50 +0000
+Message-ID: <VI1PR0402MB387192A5F1A47C6779D0958DE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
+        <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387165B351F0DF0FA1E78BF4E0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515124059.33c43d03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB3871F0358FE1369A2F00621DE0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515152500.158ca070@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB38719FE975320D9E0E47A6F9E0BA0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200518123540.3245b949@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387101A0B3D3382B08DBE07CE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <20200519114342.331ff0f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200519114342.331ff0f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.147.193]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2d9d2722-e75a-4f4d-5e34-08d7fc376ef7
+x-ms-traffictypediagnostic: VI1PR0402MB3901:
+x-microsoft-antispam-prvs: <VI1PR0402MB3901D7B001340326DA463D28E0B90@VI1PR0402MB3901.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 040866B734
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: on/m2kA2KoH7PP7G+lKSqqmgcNzEtwHqjDx5U1jcPdF8AJWeUYPa1bThkko5rRfm7Sxx/Hu4Kit/e0kKMj+wupl3s3zMpZY3YQ6aQBuxwdh0ZySmP0UbCoiM71suz5flkp2gYJMmrt4yxdhA1WyruHXsEMkiRDKw8RCZLvZdHUpIGTe77P+t6UTZpfBswcXBgDKH3AO9BL1p7QjbbrvlUQIJEoUelOhU5KPgLXyjp1oqrKdp2dh4XmpH9PNTyfHLpu7FuRrDoyYin2TmsIEXlvEvGvxKjKYFCfsXoK8hrf4JJ9+pW7e4kXxNxxHa4DfNFQbY9Xlsp0XgQZN1n0RW6ZD5jWeNX/D2hDF0DIsB6JnbnTgKsobE0utHy2EwyiYaU0dS2n93++1g8hWcyZwdOJKWItWDb+8Odk5GR7GEot3wUy8aKwJcVUf2TpXPR8kE
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(396003)(366004)(39860400002)(376002)(55016002)(9686003)(2906002)(5660300002)(33656002)(26005)(186003)(76116006)(4326008)(66946007)(66476007)(54906003)(6506007)(66556008)(64756008)(66446008)(86362001)(7696005)(478600001)(6916009)(44832011)(316002)(71200400001)(8936002)(8676002)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: XXQSdjNHEVix85gSmRN9B5T4hdJpZY7CLX0SmcK9p2tKyz1AsYFAR0VtyOiZBqu9txNg/YDNJ814iyEWPQFjbYIzA35fcpvG+p4QpO1/8VFTPDCszkJ2W3RXbQOcOQuoiDwmLQYu2Wg//vG6bvRkOpRPuVMFAMbzem5FY/nmENoDZIq35coEFb65ImEFlZWwVk3bSoEb3W6W5b3m2/UThR7h7tPFMooUth3m6h8K/OrHcHo3Dqrz0foqg+dgiOn8CryhTjtQFg17RsSqx5GsboZY9VMqiA9gKQpEBN1T0plDcl4268JxkSwucna1Zw1wXvFfIKOzekl9TsRduPGvnkCRJlMidGxzg68Z9Rg4gZgDJKmCrK5nrT73v03pb8Tp7wlLplIUyGbmHTCeg6Mu+vWG8G412pLuykE5xn41PBFRbyugYzcj4z8HZhosbv1RUNSALkX+2nq+smCaMu1qA+woNSsDl/iinY6L1Y/HZs9MSGY3+VXUag9l6Q8ulL9K
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-19_10:2020-05-19,2020-05-19 signatures=0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d9d2722-e75a-4f4d-5e34-08d7fc376ef7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2020 20:58:51.0221
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: h6s7zOHebdJDdWbwP6hJnKUC/kZEizgO392nLDM4tcUHV/8ZED4VUIx7Nm44dpLW1p503DTzXiTbCnEkEBWK+Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3901
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for XRC-SRQ's and XRC-QP's for upper layer driver.
+> Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffi=
+c
+> classes
+>=20
+> On Tue, 19 May 2020 07:38:57 +0000 Ioana Ciornei wrote:
+> > > Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx
+> > > traffic classes
+> > >
+> > > On Sat, 16 May 2020 08:16:47 +0000 Ioana Ciornei wrote:
+> > > > > With the Rx QoS features users won't even be able to tell via
+> > > > > standard Linux interfaces what the config was.
+> > > >
+> > > > Ok, that is true. So how should this information be exported to the=
+ user?
+> > >
+> > > I believe no such interface currently exists.
+> >
+> > I am having a bit of trouble understanding what should be the route
+> > for this feature to get accepted.
+>=20
+> What's the feature you're trying to get accepted? Driver's datapath to be=
+have
+> correctly when some proprietary out-of-tree API is used to do the actual
+> configuration? Unexciting.
+>=20
 
-We maintain separate bitmaps for resource management for srq and
-xrc-srq, However, the range in FW is one, The xrc-srq's are first
-and then the srq's follow. Therefore we maintain a srq-id offset.
+I don't think this comment is very productive. The out-of-tree API has noth=
+ing
+to do with this. The NIC parameters like number of traffic classes and numb=
+er of
+queues per traffic class are fixed as far as the Linux driver is concerned.=
+=20
 
-v2: perform cleanups if XRC bitmpas allocation fail.
+What this patch set does is make use of the queues corresponding to traffic=
+ classes
+different than 0, if those exist.
 
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Yuval Bason <ybason@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_rdma.c | 145 +++++++++++++++++++++++++----
- drivers/net/ethernet/qlogic/qed/qed_rdma.h |  19 ++++
- drivers/net/ethernet/qlogic/qed/qed_roce.c |  29 ++++++
- include/linux/qed/qed_rdma_if.h            |  19 ++++
- 4 files changed, 194 insertions(+), 18 deletions(-)
+> > Is the problem having the classification to a TC based on the VLAN PCP
+> > or is there anything else?
+>=20
+> What you have is basically RX version of mqprio, right? Multiple rings pe=
+r
+> "channel" each gets frames with specific priorities?=20
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 415f3f3..5098587 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -212,13 +212,22 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
- 		goto free_rdma_port;
- 	}
- 
-+	/* Allocate bit map for XRC Domains */
-+	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->xrcd_map,
-+				 QED_RDMA_MAX_XRCDS, "XRCD");
-+	if (rc) {
-+		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
-+			   "Failed to allocate xrcd_map,rc = %d\n", rc);
-+		goto free_pd_map;
-+	}
-+
- 	/* Allocate DPI bitmap */
- 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->dpi_map,
- 				 p_hwfn->dpi_count, "DPI");
- 	if (rc) {
- 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
- 			   "Failed to allocate DPI bitmap, rc = %d\n", rc);
--		goto free_pd_map;
-+		goto free_xrcd_map;
- 	}
- 
- 	/* Allocate bitmap for cq's. The maximum number of CQs is bound to
-@@ -271,6 +280,19 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
- 		goto free_cid_map;
- 	}
- 
-+	/* The first SRQ follows the last XRC SRQ. This means that the
-+	 * SRQ IDs start from an offset equals to max_xrc_srqs.
-+	 */
-+	p_rdma_info->srq_id_offset = p_hwfn->p_cxt_mngr->xrc_srq_count;
-+	rc = qed_rdma_bmap_alloc(p_hwfn,
-+				 &p_rdma_info->xrc_srq_map,
-+				 p_hwfn->p_cxt_mngr->xrc_srq_count, "XRC SRQ");
-+	if (rc) {
-+		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
-+			   "Failed to allocate xrc srq bitmap, rc = %d\n", rc);
-+		goto free_real_cid_map;
-+	}
-+
- 	/* Allocate bitmap for srqs */
- 	p_rdma_info->num_srqs = p_hwfn->p_cxt_mngr->srq_count;
- 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->srq_map,
-@@ -278,7 +300,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
- 	if (rc) {
- 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
- 			   "Failed to allocate srq bitmap, rc = %d\n", rc);
--		goto free_real_cid_map;
-+		goto free_xrc_srq_map;
- 	}
- 
- 	if (QED_IS_IWARP_PERSONALITY(p_hwfn))
-@@ -292,6 +314,8 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
- 
- free_srq_map:
- 	kfree(p_rdma_info->srq_map.bitmap);
-+free_xrc_srq_map:
-+	kfree(p_rdma_info->xrc_srq_map.bitmap);
- free_real_cid_map:
- 	kfree(p_rdma_info->real_cid_map.bitmap);
- free_cid_map:
-@@ -304,6 +328,8 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
- 	kfree(p_rdma_info->cq_map.bitmap);
- free_dpi_map:
- 	kfree(p_rdma_info->dpi_map.bitmap);
-+free_xrcd_map:
-+	kfree(p_rdma_info->xrcd_map.bitmap);
- free_pd_map:
- 	kfree(p_rdma_info->pd_map.bitmap);
- free_rdma_port:
-@@ -377,6 +403,7 @@ static void qed_rdma_resc_free(struct qed_hwfn *p_hwfn)
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->tid_map, 1);
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->srq_map, 1);
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->real_cid_map, 1);
-+	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->xrc_srq_map, 1);
- 
- 	kfree(p_rdma_info->port);
- 	kfree(p_rdma_info->dev);
-@@ -612,7 +639,10 @@ static int qed_rdma_start_fw(struct qed_hwfn *p_hwfn,
- 	p_params_header->cnq_start_offset = (u8)RESC_START(p_hwfn,
- 							   QED_RDMA_CNQ_RAM);
- 	p_params_header->num_cnqs = params->desired_cnq;
--
-+	p_params_header->first_reg_srq_id =
-+	    cpu_to_le16(p_hwfn->p_rdma_info->srq_id_offset);
-+	p_params_header->reg_srq_base_addr =
-+	    cpu_to_le32(qed_cxt_get_ilt_page_size(p_hwfn, ILT_CLI_TSDM));
- 	if (params->cq_mode == QED_RDMA_CQ_MODE_16_BITS)
- 		p_params_header->cq_ring_mode = 1;
- 	else
-@@ -983,6 +1013,41 @@ static void qed_rdma_free_pd(void *rdma_cxt, u16 pd)
- 	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
- }
- 
-+static int qed_rdma_alloc_xrcd(void *rdma_cxt, u16 *xrcd_id)
-+{
-+	struct qed_hwfn *p_hwfn = (struct qed_hwfn *)rdma_cxt;
-+	u32 returned_id;
-+	int rc;
-+
-+	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Alloc XRCD\n");
-+
-+	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
-+	rc = qed_rdma_bmap_alloc_id(p_hwfn,
-+				    &p_hwfn->p_rdma_info->xrcd_map,
-+				    &returned_id);
-+	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
-+	if (rc) {
-+		DP_NOTICE(p_hwfn, "Failed in allocating xrcd id\n");
-+		return rc;
-+	}
-+
-+	*xrcd_id = (u16)returned_id;
-+
-+	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Alloc XRCD - done, rc = %d\n", rc);
-+	return rc;
-+}
-+
-+static void qed_rdma_free_xrcd(void *rdma_cxt, u16 xrcd_id)
-+{
-+	struct qed_hwfn *p_hwfn = (struct qed_hwfn *)rdma_cxt;
-+
-+	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "xrcd_id = %08x\n", xrcd_id);
-+
-+	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
-+	qed_bmap_release_id(p_hwfn, &p_hwfn->p_rdma_info->xrcd_map, xrcd_id);
-+	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
-+}
-+
- static enum qed_rdma_toggle_bit
- qed_rdma_toggle_bit_create_resize_cq(struct qed_hwfn *p_hwfn, u16 icid)
- {
-@@ -1306,6 +1371,8 @@ static int qed_rdma_destroy_qp(void *rdma_cxt, struct qed_rdma_qp *qp)
- 	qp->resp_offloaded = false;
- 	qp->e2e_flow_control_en = qp->use_srq ? false : true;
- 	qp->stats_queue = in_params->stats_queue;
-+	qp->qp_type = in_params->qp_type;
-+	qp->xrcd_id = in_params->xrcd_id;
- 
- 	if (QED_IS_IWARP_PERSONALITY(p_hwfn)) {
- 		rc = qed_iwarp_create_qp(p_hwfn, qp, out_params);
-@@ -1418,6 +1485,18 @@ static int qed_rdma_modify_qp(void *rdma_cxt,
- 			   qp->cur_state);
- 	}
- 
-+	switch (qp->qp_type) {
-+	case QED_RDMA_QP_TYPE_XRC_INI:
-+		qp->has_req = 1;
-+		break;
-+	case QED_RDMA_QP_TYPE_XRC_TGT:
-+		qp->has_resp = 1;
-+		break;
-+	default:
-+		qp->has_req = 1;
-+		qp->has_resp = 1;
-+	}
-+
- 	if (QED_IS_IWARP_PERSONALITY(p_hwfn)) {
- 		enum qed_iwarp_qp_state new_state =
- 		    qed_roce2iwarp_state(qp->cur_state);
-@@ -1657,6 +1736,15 @@ static void *qed_rdma_get_rdma_ctx(struct qed_dev *cdev)
- 	return QED_AFFIN_HWFN(cdev);
- }
- 
-+static struct qed_bmap *qed_rdma_get_srq_bmap(struct qed_hwfn *p_hwfn,
-+					      bool is_xrc)
-+{
-+	if (is_xrc)
-+		return &p_hwfn->p_rdma_info->xrc_srq_map;
-+
-+	return &p_hwfn->p_rdma_info->srq_map;
-+}
-+
- static int qed_rdma_modify_srq(void *rdma_cxt,
- 			       struct qed_rdma_modify_srq_in_params *in_params)
- {
-@@ -1686,8 +1774,8 @@ static int qed_rdma_modify_srq(void *rdma_cxt,
- 	if (rc)
- 		return rc;
- 
--	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "modified SRQ id = %x",
--		   in_params->srq_id);
-+	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "modified SRQ id = %x, is_xrc=%u\n",
-+		   in_params->srq_id, in_params->is_xrc);
- 
- 	return rc;
- }
-@@ -1702,6 +1790,7 @@ static int qed_rdma_modify_srq(void *rdma_cxt,
- 	struct qed_spq_entry *p_ent;
- 	struct qed_bmap *bmap;
- 	u16 opaque_fid;
-+	u16 offset;
- 	int rc;
- 
- 	opaque_fid = p_hwfn->hw_info.opaque_fid;
-@@ -1723,14 +1812,16 @@ static int qed_rdma_modify_srq(void *rdma_cxt,
- 	if (rc)
- 		return rc;
- 
--	bmap = &p_hwfn->p_rdma_info->srq_map;
-+	bmap = qed_rdma_get_srq_bmap(p_hwfn, in_params->is_xrc);
-+	offset = (in_params->is_xrc) ? 0 : p_hwfn->p_rdma_info->srq_id_offset;
- 
- 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
--	qed_bmap_release_id(p_hwfn, bmap, in_params->srq_id);
-+	qed_bmap_release_id(p_hwfn, bmap, in_params->srq_id - offset);
- 	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
- 
--	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "SRQ destroyed Id = %x",
--		   in_params->srq_id);
-+	DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
-+		   "XRC/SRQ destroyed Id = %x, is_xrc=%u\n",
-+		   in_params->srq_id, in_params->is_xrc);
- 
- 	return rc;
- }
-@@ -1748,24 +1839,26 @@ static int qed_rdma_modify_srq(void *rdma_cxt,
- 	u16 opaque_fid, srq_id;
- 	struct qed_bmap *bmap;
- 	u32 returned_id;
-+	u16 offset;
- 	int rc;
- 
--	bmap = &p_hwfn->p_rdma_info->srq_map;
-+	bmap = qed_rdma_get_srq_bmap(p_hwfn, in_params->is_xrc);
- 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
- 	rc = qed_rdma_bmap_alloc_id(p_hwfn, bmap, &returned_id);
- 	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
- 
- 	if (rc) {
--		DP_NOTICE(p_hwfn, "failed to allocate srq id\n");
-+		DP_NOTICE(p_hwfn,
-+			  "failed to allocate xrc/srq id (is_xrc=%u)\n",
-+			  in_params->is_xrc);
- 		return rc;
- 	}
- 
--	elem_type = QED_ELEM_SRQ;
-+	elem_type = (in_params->is_xrc) ? (QED_ELEM_XRC_SRQ) : (QED_ELEM_SRQ);
- 	rc = qed_cxt_dynamic_ilt_alloc(p_hwfn, elem_type, returned_id);
- 	if (rc)
- 		goto err;
--	/* returned id is no greater than u16 */
--	srq_id = (u16)returned_id;
-+
- 	opaque_fid = p_hwfn->hw_info.opaque_fid;
- 
- 	opaque_fid = p_hwfn->hw_info.opaque_fid;
-@@ -1782,20 +1875,34 @@ static int qed_rdma_modify_srq(void *rdma_cxt,
- 	DMA_REGPAIR_LE(p_ramrod->pbl_base_addr, in_params->pbl_base_addr);
- 	p_ramrod->pages_in_srq_pbl = cpu_to_le16(in_params->num_pages);
- 	p_ramrod->pd_id = cpu_to_le16(in_params->pd_id);
--	p_ramrod->srq_id.srq_idx = cpu_to_le16(srq_id);
- 	p_ramrod->srq_id.opaque_fid = cpu_to_le16(opaque_fid);
- 	p_ramrod->page_size = cpu_to_le16(in_params->page_size);
- 	DMA_REGPAIR_LE(p_ramrod->producers_addr, in_params->prod_pair_addr);
-+	offset = (in_params->is_xrc) ? 0 : p_hwfn->p_rdma_info->srq_id_offset;
-+	srq_id = (u16)returned_id + offset;
-+	p_ramrod->srq_id.srq_idx = cpu_to_le16(srq_id);
- 
-+	if (in_params->is_xrc) {
-+		SET_FIELD(p_ramrod->flags,
-+			  RDMA_SRQ_CREATE_RAMROD_DATA_XRC_FLAG, 1);
-+		SET_FIELD(p_ramrod->flags,
-+			  RDMA_SRQ_CREATE_RAMROD_DATA_RESERVED_KEY_EN,
-+			  in_params->reserved_key_en);
-+		p_ramrod->xrc_srq_cq_cid =
-+			cpu_to_le32((p_hwfn->hw_info.opaque_fid << 16) |
-+				     in_params->cq_cid);
-+		p_ramrod->xrc_domain = cpu_to_le16(in_params->xrcd_id);
-+	}
- 	rc = qed_spq_post(p_hwfn, p_ent, NULL);
- 	if (rc)
- 		goto err;
- 
- 	out_params->srq_id = srq_id;
- 
--	DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
--		   "SRQ created Id = %x\n", out_params->srq_id);
--
-+	DP_VERBOSE(p_hwfn,
-+		   QED_MSG_RDMA,
-+		   "XRC/SRQ created Id = %x (is_xrc=%u)\n",
-+		   out_params->srq_id, in_params->is_xrc);
- 	return rc;
- 
- err:
-@@ -1961,6 +2068,8 @@ static int qed_iwarp_set_engine_affin(struct qed_dev *cdev, bool b_reset)
- 	.rdma_cnq_prod_update = &qed_rdma_cnq_prod_update,
- 	.rdma_alloc_pd = &qed_rdma_alloc_pd,
- 	.rdma_dealloc_pd = &qed_rdma_free_pd,
-+	.rdma_alloc_xrcd = &qed_rdma_alloc_xrcd,
-+	.rdma_dealloc_xrcd = &qed_rdma_free_xrcd,
- 	.rdma_create_cq = &qed_rdma_create_cq,
- 	.rdma_destroy_cq = &qed_rdma_destroy_cq,
- 	.rdma_create_qp = &qed_rdma_create_qp,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.h b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-index 3689fe3..5a7ebc7 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-@@ -63,6 +63,11 @@
- #define QED_RDMA_MAX_CQE_32_BIT             (0x7FFFFFFF - 1)
- #define QED_RDMA_MAX_CQE_16_BIT             (0x7FFF - 1)
- 
-+/* Up to 2^16 XRC Domains are supported, but the actual number of supported XRC
-+ * SRQs is much smaller so there's no need to have that many domains.
-+ */
-+#define QED_RDMA_MAX_XRCDS      (roundup_pow_of_two(RDMA_MAX_XRC_SRQS))
-+
- enum qed_rdma_toggle_bit {
- 	QED_RDMA_TOGGLE_BIT_CLEAR = 0,
- 	QED_RDMA_TOGGLE_BIT_SET = 1
-@@ -81,9 +86,11 @@ struct qed_rdma_info {
- 
- 	struct qed_bmap cq_map;
- 	struct qed_bmap pd_map;
-+	struct qed_bmap xrcd_map;
- 	struct qed_bmap tid_map;
- 	struct qed_bmap qp_map;
- 	struct qed_bmap srq_map;
-+	struct qed_bmap xrc_srq_map;
- 	struct qed_bmap cid_map;
- 	struct qed_bmap tcp_cid_map;
- 	struct qed_bmap real_cid_map;
-@@ -111,6 +118,7 @@ struct qed_rdma_qp {
- 	u32 qpid;
- 	u16 icid;
- 	enum qed_roce_qp_state cur_state;
-+	enum qed_rdma_qp_type qp_type;
- 	enum qed_iwarp_qp_state iwarp_state;
- 	bool use_srq;
- 	bool signal_all;
-@@ -153,18 +161,21 @@ struct qed_rdma_qp {
- 	dma_addr_t orq_phys_addr;
- 	u8 orq_num_pages;
- 	bool req_offloaded;
-+	bool has_req;
- 
- 	/* responder */
- 	u8 max_rd_atomic_resp;
- 	u32 rq_psn;
- 	u16 rq_cq_id;
- 	u16 rq_num_pages;
-+	u16 xrcd_id;
- 	dma_addr_t rq_pbl_ptr;
- 	void *irq;
- 	dma_addr_t irq_phys_addr;
- 	u8 irq_num_pages;
- 	bool resp_offloaded;
- 	u32 cq_prod;
-+	bool has_resp;
- 
- 	u8 remote_mac_addr[6];
- 	u8 local_mac_addr[6];
-@@ -174,6 +185,14 @@ struct qed_rdma_qp {
- 	struct qed_iwarp_ep *ep;
- };
- 
-+static inline bool qed_rdma_is_xrc_qp(struct qed_rdma_qp *qp)
-+{
-+	if (qp->qp_type == QED_RDMA_QP_TYPE_XRC_TGT ||
-+	    qp->qp_type == QED_RDMA_QP_TYPE_XRC_INI)
-+		return true;
-+
-+	return false;
-+}
- #if IS_ENABLED(CONFIG_QED_RDMA)
- void qed_rdma_dpm_bar(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);
- void qed_rdma_dpm_conf(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-index 475b899..46a4d09 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-@@ -254,6 +254,9 @@ static int qed_roce_sp_create_responder(struct qed_hwfn *p_hwfn,
- 	int rc;
- 	u8 tc;
- 
-+	if (!qp->has_resp)
-+		return 0;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 
- 	/* Allocate DMA-able memory for IRQ */
-@@ -315,6 +318,10 @@ static int qed_roce_sp_create_responder(struct qed_hwfn *p_hwfn,
- 		  ROCE_CREATE_QP_RESP_RAMROD_DATA_MIN_RNR_NAK_TIMER,
- 		  qp->min_rnr_nak_timer);
- 
-+	SET_FIELD(p_ramrod->flags,
-+		  ROCE_CREATE_QP_RESP_RAMROD_DATA_XRC_FLAG,
-+		  qed_rdma_is_xrc_qp(qp));
-+
- 	p_ramrod->max_ird = qp->max_rd_atomic_resp;
- 	p_ramrod->traffic_class = qp->traffic_class_tos;
- 	p_ramrod->hop_limit = qp->hop_limit_ttl;
-@@ -335,6 +342,7 @@ static int qed_roce_sp_create_responder(struct qed_hwfn *p_hwfn,
- 	p_ramrod->qp_handle_for_cqe.lo = cpu_to_le32(qp->qp_handle.lo);
- 	p_ramrod->cq_cid = cpu_to_le32((p_hwfn->hw_info.opaque_fid << 16) |
- 				       qp->rq_cq_id);
-+	p_ramrod->xrc_domain = cpu_to_le16(qp->xrcd_id);
- 
- 	tc = qed_roce_get_qp_tc(p_hwfn, qp);
- 	regular_latency_queue = qed_get_cm_pq_idx_ofld_mtc(p_hwfn, tc);
-@@ -395,6 +403,9 @@ static int qed_roce_sp_create_requester(struct qed_hwfn *p_hwfn,
- 	int rc;
- 	u8 tc;
- 
-+	if (!qp->has_req)
-+		return 0;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 
- 	/* Allocate DMA-able memory for ORQ */
-@@ -444,6 +455,10 @@ static int qed_roce_sp_create_requester(struct qed_hwfn *p_hwfn,
- 		  ROCE_CREATE_QP_REQ_RAMROD_DATA_RNR_NAK_CNT,
- 		  qp->rnr_retry_cnt);
- 
-+	SET_FIELD(p_ramrod->flags,
-+		  ROCE_CREATE_QP_REQ_RAMROD_DATA_XRC_FLAG,
-+		  qed_rdma_is_xrc_qp(qp));
-+
- 	p_ramrod->max_ord = qp->max_rd_atomic_req;
- 	p_ramrod->traffic_class = qp->traffic_class_tos;
- 	p_ramrod->hop_limit = qp->hop_limit_ttl;
-@@ -517,6 +532,9 @@ static int qed_roce_sp_modify_responder(struct qed_hwfn *p_hwfn,
- 	struct qed_spq_entry *p_ent;
- 	int rc;
- 
-+	if (!qp->has_resp)
-+		return 0;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 
- 	if (move_to_err && !qp->resp_offloaded)
-@@ -611,6 +629,9 @@ static int qed_roce_sp_modify_requester(struct qed_hwfn *p_hwfn,
- 	struct qed_spq_entry *p_ent;
- 	int rc;
- 
-+	if (!qp->has_req)
-+		return 0;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 
- 	if (move_to_err && !(qp->req_offloaded))
-@@ -705,6 +726,11 @@ static int qed_roce_sp_destroy_qp_responder(struct qed_hwfn *p_hwfn,
- 	dma_addr_t ramrod_res_phys;
- 	int rc;
- 
-+	if (!qp->has_resp) {
-+		*cq_prod = 0;
-+		return 0;
-+	}
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 	*cq_prod = qp->cq_prod;
- 
-@@ -785,6 +811,9 @@ static int qed_roce_sp_destroy_qp_requester(struct qed_hwfn *p_hwfn,
- 	dma_addr_t ramrod_res_phys;
- 	int rc = -ENOMEM;
- 
-+	if (!qp->has_req)
-+		return 0;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
- 
- 	if (!qp->req_offloaded)
-diff --git a/include/linux/qed/qed_rdma_if.h b/include/linux/qed/qed_rdma_if.h
-index 74efca1..f93edd5 100644
---- a/include/linux/qed/qed_rdma_if.h
-+++ b/include/linux/qed/qed_rdma_if.h
-@@ -53,6 +53,13 @@ enum qed_roce_qp_state {
- 	QED_ROCE_QP_STATE_SQE
- };
- 
-+enum qed_rdma_qp_type {
-+	QED_RDMA_QP_TYPE_RC,
-+	QED_RDMA_QP_TYPE_XRC_INI,
-+	QED_RDMA_QP_TYPE_XRC_TGT,
-+	QED_RDMA_QP_TYPE_INVAL = 0xffff,
-+};
-+
- enum qed_rdma_tid_type {
- 	QED_RDMA_TID_REGISTERED_MR,
- 	QED_RDMA_TID_FMR,
-@@ -291,6 +298,12 @@ struct qed_rdma_create_srq_in_params {
- 	u16 num_pages;
- 	u16 pd_id;
- 	u16 page_size;
-+
-+	/* XRC related only */
-+	bool reserved_key_en;
-+	bool is_xrc;
-+	u32 cq_cid;
-+	u16 xrcd_id;
- };
- 
- struct qed_rdma_destroy_cq_in_params {
-@@ -319,7 +332,9 @@ struct qed_rdma_create_qp_in_params {
- 	u16 rq_num_pages;
- 	u64 rq_pbl_ptr;
- 	u16 srq_id;
-+	u16 xrcd_id;
- 	u8 stats_queue;
-+	enum qed_rdma_qp_type qp_type;
- };
- 
- struct qed_rdma_create_qp_out_params {
-@@ -429,11 +444,13 @@ struct qed_rdma_create_srq_out_params {
- 
- struct qed_rdma_destroy_srq_in_params {
- 	u16 srq_id;
-+	bool is_xrc;
- };
- 
- struct qed_rdma_modify_srq_in_params {
- 	u32 wqe_limit;
- 	u16 srq_id;
-+	bool is_xrc;
- };
- 
- struct qed_rdma_stats_out_params {
-@@ -611,6 +628,8 @@ struct qed_rdma_ops {
- 	int (*rdma_set_rdma_int)(struct qed_dev *cdev, u16 cnt);
- 	int (*rdma_alloc_pd)(void *rdma_cxt, u16 *pd);
- 	void (*rdma_dealloc_pd)(void *rdma_cxt, u16 pd);
-+	int (*rdma_alloc_xrcd)(void *rdma_cxt, u16 *xrcd);
-+	void (*rdma_dealloc_xrcd)(void *rdma_cxt, u16 xrcd);
- 	int (*rdma_create_cq)(void *rdma_cxt,
- 			      struct qed_rdma_create_cq_in_params *params,
- 			      u16 *icid);
--- 
-1.8.3.1
+You can think of it like that (maybe, understanding that mqprio cannot be a=
+ttached
+to the ingress qdisc, indeed).
+DPAA2 has many peculiarities but I don't think this is one of them. There a=
+re some
+RX queues, some of which can be given a hardware priority at dequeue time a=
+nd they
+form a traffic class together. The assumption being that you don't want low=
+-priority
+traffic to cause congestion for high-priority traffic, to have lower latenc=
+y for
+high-priority traffic, etc.
+Some 802.1Q standards like PFC actually depend on having multiple traffic c=
+lasses too,
+based on VLAN PCP.
+
+> This needs to be well
+> integrated with the rest of the stack, but I don't think TC qdisc offload=
+ is a fit.
+> Given we don't have qdiscs on ingress. As I said a new API for this would=
+ most
+> likely have to be created.
+
+For just assigning a traffic class based on packet headers a tc filter with=
+ the
+skbedit priority action on ingress is enough (maybe even too much since the=
+re are
+other drivers that have the same default prioritization based on VLAN PCP).
+
+But you are correct that this would not be enough to cover all possible use=
+ cases except
+for the most simple ones. There are per-traffic class ingress policers, and=
+ those become
+tricky to support since there's nothing that denotes the traffic class to m=
+atch on,
+currently. I see 2 possible approaches, each with its own drawbacks:
+- Allow clsact to be classful, similar to mqprio, and attach filters to its=
+ classes (each
+  class would correspond to an ingress traffic class). But this would make =
+the skbedit
+  action redundant, since QoS classification with a classful clsact should =
+be done
+  completely differently now. Also, the classful clsact would have to deny =
+qdiscs attached
+  to it that don't make sense, because all of those were written with egres=
+s in mind.
+- Try to linearize the ingress filter rules under the classless clsact, bot=
+h the ones that
+  have a skbedit action, and the ones that match on a skb priority in order=
+ to perform
+  ingress policing. But this would be very brittle because the matching ord=
+er would depend
+  on the order in which the rules were introduced:
+  rule 1: flower skb-priority 5 action police rate 34Mbps # note: matching =
+on skb-priority doesn't exist (yet?)
+  rule 2: flower vlan_prio 5 action skbedit priority 5
+  In this case, traffic with VLAN priority 5 would not get rate-limited to =
+34Mbps.
+
+So this is one of the reasons why I preferred to defer the hard questions a=
+nd start with
+something simple (which for some reason still gets pushback).
+
+Ioana
 
