@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D731D8CEA
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 03:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37CD1D8CE8
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 03:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbgESBGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 21:06:03 -0400
+        id S1728196AbgESBGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 21:06:02 -0400
 Received: from mga04.intel.com ([192.55.52.120]:20288 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728133AbgESBGA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 21:06:00 -0400
-IronPort-SDR: ruXaiM48NfDNErwRgRXJe2knahFeUcCII7LtalC9mVmbfqRvBQ1iMdV7frdvWuqXyr5aEa5bnh
- 7sWGaiztSPlg==
+        id S1728183AbgESBGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 21:06:01 -0400
+IronPort-SDR: Tjk3oVNBRzaf/KVl1uSsJHkb2z8nkjsBD6TAc897olYzfwAF25UBwghJv0NCedbBJTG/3juTHF
+ SKi1ZXtc/xdQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2020 18:03:46 -0700
-IronPort-SDR: 0CCOmMfw4xb/+nlMXw2xlR3ySB4Znzw2bQQS53VWhcU91HKG0WdS6Yus/Mn0IFvNqy2ZeC7nXG
- 2Rb06JWl1oYw==
+IronPort-SDR: +a3b3253x8K5jQuDnIutyLo1jj57FQbr4t6UziJGzh2f1sVD69cdmGZlXVBEP5ioXyoaY1dYHm
+ CBY6i14c7gnQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,408,1583222400"; 
-   d="scan'208";a="267713983"
+   d="scan'208";a="267713986"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga006.jf.intel.com with ESMTP; 18 May 2020 18:03:45 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -30,9 +30,9 @@ Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v5 6/9] igc: Use netdev log helpers in igc_dump.c
-Date:   Mon, 18 May 2020 18:03:40 -0700
-Message-Id: <20200519010343.2386401-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v5 7/9] igc: Use netdev log helpers in igc_base.c
+Date:   Mon, 18 May 2020 18:03:41 -0700
+Message-Id: <20200519010343.2386401-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200519010343.2386401-1-jeffrey.t.kirsher@intel.com>
 References: <20200519010343.2386401-1-jeffrey.t.kirsher@intel.com>
@@ -45,229 +45,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andre Guedes <andre.guedes@intel.com>
 
-In igc_dump.c we print log messages using dev_* and pr_* helpers,
-generating inconsistent output with the rest of the driver. Since this
-is a network device driver, we should preferably use netdev_* helpers
-because they append the interface name to the message, helping making
-sense out of the logs.
-
-This patch converts all dev_* and pr_* calls to netdev_*.
-
-Quick note about igc_rings_dump(): This function is always called with
-valid adapter->netdev so there is not need to check it.
+This patch coverts one pr_debug() call to hw_dbg() in order to keep log
+output aligned with the rest of the driver. hw_dbg() is actually a macro
+defined in igc_hw.h that expands to netdev_dbg().
 
 Signed-off-by: Andre Guedes <andre.guedes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_dump.c | 109 +++++++++++-----------
- 1 file changed, 54 insertions(+), 55 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_base.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_dump.c b/drivers/net/ethernet/intel/igc/igc_dump.c
-index 657ab50ae296..4ad32d98f77f 100644
---- a/drivers/net/ethernet/intel/igc/igc_dump.c
-+++ b/drivers/net/ethernet/intel/igc/igc_dump.c
-@@ -47,6 +47,7 @@ static const struct igc_reg_info igc_reg_info_tbl[] = {
- /* igc_regdump - register printout routine */
- static void igc_regdump(struct igc_hw *hw, struct igc_reg_info *reginfo)
- {
-+	struct net_device *dev = igc_get_hw_dev(hw);
- 	int n = 0;
- 	char rname[16];
- 	u32 regs[8];
-@@ -101,13 +102,14 @@ static void igc_regdump(struct igc_hw *hw, struct igc_reg_info *reginfo)
- 			regs[n] = rd32(IGC_TXDCTL(n));
- 		break;
- 	default:
--		pr_info("%-15s %08x\n", reginfo->name, rd32(reginfo->ofs));
-+		netdev_info(dev, "%-15s %08x\n", reginfo->name,
-+			    rd32(reginfo->ofs));
- 		return;
+diff --git a/drivers/net/ethernet/intel/igc/igc_base.c b/drivers/net/ethernet/intel/igc/igc_base.c
+index f7fb18d8d8f5..cc5a6cf531c7 100644
+--- a/drivers/net/ethernet/intel/igc/igc_base.c
++++ b/drivers/net/ethernet/intel/igc/igc_base.c
+@@ -26,7 +26,7 @@ static s32 igc_reset_hw_base(struct igc_hw *hw)
+ 	 */
+ 	ret_val = igc_disable_pcie_master(hw);
+ 	if (ret_val)
+-		hw_dbg("PCI-E Master disable polling has failed.\n");
++		hw_dbg("PCI-E Master disable polling has failed\n");
+ 
+ 	hw_dbg("Masking off all interrupts\n");
+ 	wr32(IGC_IMC, 0xffffffff);
+@@ -177,7 +177,7 @@ static s32 igc_init_phy_params_base(struct igc_hw *hw)
+ 	 */
+ 	ret_val = hw->phy.ops.reset(hw);
+ 	if (ret_val) {
+-		hw_dbg("Error resetting the PHY.\n");
++		hw_dbg("Error resetting the PHY\n");
+ 		goto out;
  	}
  
- 	snprintf(rname, 16, "%s%s", reginfo->name, "[0-3]");
--	pr_info("%-15s %08x %08x %08x %08x\n", rname, regs[0], regs[1],
--		regs[2], regs[3]);
-+	netdev_info(dev, "%-15s %08x %08x %08x %08x\n", rname, regs[0], regs[1],
-+		    regs[2], regs[3]);
- }
- 
- /* igc_rings_dump - Tx-rings and Rx-rings */
-@@ -125,39 +127,34 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 	if (!netif_msg_hw(adapter))
- 		return;
- 
--	/* Print netdevice Info */
--	if (netdev) {
--		dev_info(&adapter->pdev->dev, "Net device Info\n");
--		pr_info("Device Name     state            trans_start\n");
--		pr_info("%-15s %016lX %016lX\n", netdev->name,
--			netdev->state, dev_trans_start(netdev));
--	}
-+	netdev_info(netdev, "Device info: state %016lX trans_start %016lX\n",
-+		    netdev->state, dev_trans_start(netdev));
- 
- 	/* Print TX Ring Summary */
--	if (!netdev || !netif_running(netdev))
-+	if (!netif_running(netdev))
- 		goto exit;
- 
--	dev_info(&adapter->pdev->dev, "TX Rings Summary\n");
--	pr_info("Queue [NTU] [NTC] [bi(ntc)->dma  ] leng ntw timestamp\n");
-+	netdev_info(netdev, "TX Rings Summary\n");
-+	netdev_info(netdev, "Queue [NTU] [NTC] [bi(ntc)->dma  ] leng ntw timestamp\n");
- 	for (n = 0; n < adapter->num_tx_queues; n++) {
- 		struct igc_tx_buffer *buffer_info;
- 
- 		tx_ring = adapter->tx_ring[n];
- 		buffer_info = &tx_ring->tx_buffer_info[tx_ring->next_to_clean];
- 
--		pr_info(" %5d %5X %5X %016llX %04X %p %016llX\n",
--			n, tx_ring->next_to_use, tx_ring->next_to_clean,
--			(u64)dma_unmap_addr(buffer_info, dma),
--			dma_unmap_len(buffer_info, len),
--			buffer_info->next_to_watch,
--			(u64)buffer_info->time_stamp);
-+		netdev_info(netdev, "%5d %5X %5X %016llX %04X %p %016llX\n",
-+			    n, tx_ring->next_to_use, tx_ring->next_to_clean,
-+			    (u64)dma_unmap_addr(buffer_info, dma),
-+			    dma_unmap_len(buffer_info, len),
-+			    buffer_info->next_to_watch,
-+			    (u64)buffer_info->time_stamp);
+@@ -367,7 +367,7 @@ void igc_rx_fifo_flush_base(struct igc_hw *hw)
  	}
  
- 	/* Print TX Rings */
- 	if (!netif_msg_tx_done(adapter))
- 		goto rx_ring_summary;
+ 	if (ms_wait == 10)
+-		pr_debug("Queue disable timed out after 10ms\n");
++		hw_dbg("Queue disable timed out after 10ms\n");
  
--	dev_info(&adapter->pdev->dev, "TX Rings Dump\n");
-+	netdev_info(netdev, "TX Rings Dump\n");
- 
- 	/* Transmit Descriptor Formats
- 	 *
-@@ -172,10 +169,11 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 
- 	for (n = 0; n < adapter->num_tx_queues; n++) {
- 		tx_ring = adapter->tx_ring[n];
--		pr_info("------------------------------------\n");
--		pr_info("TX QUEUE INDEX = %d\n", tx_ring->queue_index);
--		pr_info("------------------------------------\n");
--		pr_info("T [desc]     [address 63:0  ] [PlPOCIStDDM Ln] [bi->dma       ] leng  ntw timestamp        bi->skb\n");
-+		netdev_info(netdev, "------------------------------------\n");
-+		netdev_info(netdev, "TX QUEUE INDEX = %d\n",
-+			    tx_ring->queue_index);
-+		netdev_info(netdev, "------------------------------------\n");
-+		netdev_info(netdev, "T [desc]     [address 63:0  ] [PlPOCIStDDM Ln] [bi->dma       ] leng  ntw timestamp        bi->skb\n");
- 
- 		for (i = 0; tx_ring->desc && (i < tx_ring->count); i++) {
- 			const char *next_desc;
-@@ -194,14 +192,14 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 			else
- 				next_desc = "";
- 
--			pr_info("T [0x%03X]    %016llX %016llX %016llX %04X  %p %016llX %p%s\n",
--				i, le64_to_cpu(u0->a),
--				le64_to_cpu(u0->b),
--				(u64)dma_unmap_addr(buffer_info, dma),
--				dma_unmap_len(buffer_info, len),
--				buffer_info->next_to_watch,
--				(u64)buffer_info->time_stamp,
--				buffer_info->skb, next_desc);
-+			netdev_info(netdev, "T [0x%03X]    %016llX %016llX %016llX %04X  %p %016llX %p%s\n",
-+				    i, le64_to_cpu(u0->a),
-+				    le64_to_cpu(u0->b),
-+				    (u64)dma_unmap_addr(buffer_info, dma),
-+				    dma_unmap_len(buffer_info, len),
-+				    buffer_info->next_to_watch,
-+				    (u64)buffer_info->time_stamp,
-+				    buffer_info->skb, next_desc);
- 
- 			if (netif_msg_pktdata(adapter) && buffer_info->skb)
- 				print_hex_dump(KERN_INFO, "",
-@@ -214,19 +212,19 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 
- 	/* Print RX Rings Summary */
- rx_ring_summary:
--	dev_info(&adapter->pdev->dev, "RX Rings Summary\n");
--	pr_info("Queue [NTU] [NTC]\n");
-+	netdev_info(netdev, "RX Rings Summary\n");
-+	netdev_info(netdev, "Queue [NTU] [NTC]\n");
- 	for (n = 0; n < adapter->num_rx_queues; n++) {
- 		rx_ring = adapter->rx_ring[n];
--		pr_info(" %5d %5X %5X\n",
--			n, rx_ring->next_to_use, rx_ring->next_to_clean);
-+		netdev_info(netdev, "%5d %5X %5X\n", n, rx_ring->next_to_use,
-+			    rx_ring->next_to_clean);
- 	}
- 
- 	/* Print RX Rings */
- 	if (!netif_msg_rx_status(adapter))
- 		goto exit;
- 
--	dev_info(&adapter->pdev->dev, "RX Rings Dump\n");
-+	netdev_info(netdev, "RX Rings Dump\n");
- 
- 	/* Advanced Receive Descriptor (Read) Format
- 	 *    63                                           1        0
-@@ -251,11 +249,12 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 
- 	for (n = 0; n < adapter->num_rx_queues; n++) {
- 		rx_ring = adapter->rx_ring[n];
--		pr_info("------------------------------------\n");
--		pr_info("RX QUEUE INDEX = %d\n", rx_ring->queue_index);
--		pr_info("------------------------------------\n");
--		pr_info("R  [desc]      [ PktBuf     A0] [  HeadBuf   DD] [bi->dma       ] [bi->skb] <-- Adv Rx Read format\n");
--		pr_info("RWB[desc]      [PcsmIpSHl PtRs] [vl er S cks ln] ---------------- [bi->skb] <-- Adv Rx Write-Back format\n");
-+		netdev_info(netdev, "------------------------------------\n");
-+		netdev_info(netdev, "RX QUEUE INDEX = %d\n",
-+			    rx_ring->queue_index);
-+		netdev_info(netdev, "------------------------------------\n");
-+		netdev_info(netdev, "R  [desc]      [ PktBuf     A0] [  HeadBuf   DD] [bi->dma       ] [bi->skb] <-- Adv Rx Read format\n");
-+		netdev_info(netdev, "RWB[desc]      [PcsmIpSHl PtRs] [vl er S cks ln] ---------------- [bi->skb] <-- Adv Rx Write-Back format\n");
- 
- 		for (i = 0; i < rx_ring->count; i++) {
- 			const char *next_desc;
-@@ -275,18 +274,18 @@ void igc_rings_dump(struct igc_adapter *adapter)
- 
- 			if (staterr & IGC_RXD_STAT_DD) {
- 				/* Descriptor Done */
--				pr_info("%s[0x%03X]     %016llX %016llX ---------------- %s\n",
--					"RWB", i,
--					le64_to_cpu(u0->a),
--					le64_to_cpu(u0->b),
--					next_desc);
-+				netdev_info(netdev, "%s[0x%03X]     %016llX %016llX ---------------- %s\n",
-+					    "RWB", i,
-+					    le64_to_cpu(u0->a),
-+					    le64_to_cpu(u0->b),
-+					    next_desc);
- 			} else {
--				pr_info("%s[0x%03X]     %016llX %016llX %016llX %s\n",
--					"R  ", i,
--					le64_to_cpu(u0->a),
--					le64_to_cpu(u0->b),
--					(u64)buffer_info->dma,
--					next_desc);
-+				netdev_info(netdev, "%s[0x%03X]     %016llX %016llX %016llX %s\n",
-+					    "R  ", i,
-+					    le64_to_cpu(u0->a),
-+					    le64_to_cpu(u0->b),
-+					    (u64)buffer_info->dma,
-+					    next_desc);
- 
- 				if (netif_msg_pktdata(adapter) &&
- 				    buffer_info->dma && buffer_info->page) {
-@@ -314,8 +313,8 @@ void igc_regs_dump(struct igc_adapter *adapter)
- 	struct igc_reg_info *reginfo;
- 
- 	/* Print Registers */
--	dev_info(&adapter->pdev->dev, "Register Dump\n");
--	pr_info(" Register Name   Value\n");
-+	netdev_info(adapter->netdev, "Register Dump\n");
-+	netdev_info(adapter->netdev, "Register Name   Value\n");
- 	for (reginfo = (struct igc_reg_info *)igc_reg_info_tbl;
- 	     reginfo->name; reginfo++) {
- 		igc_regdump(hw, reginfo);
+ 	/* Clear RLPML, RCTL.SBP, RFCTL.LEF, and set RCTL.LPE so that all
+ 	 * incoming packets are rejected.  Set enable and wait 2ms so that
 -- 
 2.26.2
 
