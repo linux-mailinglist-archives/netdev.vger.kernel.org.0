@@ -2,180 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFAEF1D8CCD
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 03:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6C61D8CD5
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 03:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727958AbgESBAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 21:00:34 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27586 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726573AbgESBAd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 21:00:33 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04J0rbwQ002148;
-        Mon, 18 May 2020 18:00:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : subject : to : cc
- : references : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=PE5yJF7+VMNN2lkn9QA3zJHhm9Au9myyKImmSp7E/Os=;
- b=NfWCcQ/V+8EbvitV5gqKYYPOCeL16D7YZpIMeTX5w4AkVCXKnbPIJE85oApr4FSAwwK3
- AhlBxU5ArWRVWVZd37pHrL31Qh6zJX8rPKARv4zv9Vl8zVmkqMITpqNrA7nAoKR9Kqe8
- 5mW4nr7o47/ghZ+JmuBGY6z+O+a13Wpm2sA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31305rtw13-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 18 May 2020 18:00:16 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 18 May 2020 18:00:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j+EB0f+D01VeMHNnHxAybF589GwNTgiFx9QrTLJOCHrp9O+vX6S4MCh/oYndRMEz6Dk+kn9NMN5l3i2p03TCrkAgwWsm+MPJOLCExxVL+frS2CO1obhsJVPxHiyhPtUm8IxAfdhfXqod3wEULfx5liAxHQBXATk0jiq48qhO8G4wLm4lPs0cxCVezOLDPLsL/L8LLyky7EA9V+cFczd9Lq/djuTTbmBwMNHbGbYvLqefVtlLlZi4wQ65mvGCDKghXV1rHOvqruLFgGR3YAiWgx61wRI5EzbuIIUXJJBB6buQfZBqu7XotmcOK+V7A5SAZdtjXhtnN35kP9MAPvUeGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PE5yJF7+VMNN2lkn9QA3zJHhm9Au9myyKImmSp7E/Os=;
- b=PKSkhvB7LpZDJnoD19scH3mt8mIRWpGnMWhXTLy5PtsKVCnTwQjBqODSbMVH/9kaXlNUJRljavq0niXLiDnGWQXIL0KfzvVZ5T428Ja3iM/CCduKFF7kg3hTgP+gqp9CtmTcY45L3aT5VZXaFeh/gFJk5FvzUOnDwjwr6PTqFtvuMOkUpWoVIOSWb5B2Jlc+Wv2vUkiGP4NTtfFP9z8RsY5D4IbiNDmuM7UTwEW3TUeGAhoikrQbCYvfN5Mrlc97yqsyOft/0XEUFjNta2VS4+qaWgrkIjEQ2wcGR0j9EtyqOCSpLKj6KIsbNzy4iSXMVUuKVbtBLMrj8Sd/E9xUVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PE5yJF7+VMNN2lkn9QA3zJHhm9Au9myyKImmSp7E/Os=;
- b=Do+A8ce8ODTIhKo3hkd52bSEs9V6FWTi/DQIW6tIezWN13wqUrkBB+PV0gguokP+onyYnAZgB4SZBdLDqNAHgvA++lKArOqSUvB8NgA+oAS1CrTfLtdMV5YE7QTAqbYWpB7QclA+o382UHPiyVKu6a9ca/FlfZxEydV8jk9F68s=
-Authentication-Results: chromium.org; dkim=none (message not signed)
- header.d=none;chromium.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2550.namprd15.prod.outlook.com (2603:10b6:a03:151::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Tue, 19 May
- 2020 01:00:11 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3000.034; Tue, 19 May 2020
- 01:00:11 +0000
-From:   Yonghong Song <yhs@fb.com>
-Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>, Qian Cai <cai@lca.pw>
-CC:     Alexei Starovoitov <ast@kernel.org>,
+        id S1726731AbgESBDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 21:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726573AbgESBDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 21:03:06 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAEBC05BD09
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 18:03:06 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id f134so1308026wmf.1
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 18:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uwuNGFJAq2sDPWpG9aNv6dzcxMBNAA6NXYKA7mcTybI=;
+        b=drPHrcBCXZX1rda3Kpdk+cqo042O7DO1DIU9AeEqDf7UHkFJ4/c/onKSCTe3otqFTF
+         jns2pg4DXnUY2hLBRDmiR1TxSV/1nViKvRFbfT2V11J/nWErA0mBfRLJRoPUtRzLZUgS
+         EV2oY3nooJYb1s7urSS6Tu097ar0rPT5GtU/CYTnltusVt5x1LnukwgGwcZ+zzQ+TarC
+         IeDak1/oXB27jw6FYqrWXDndFCAByBwu4APRQJGRiC96BB9N+kYXrzgE3au1Uqy77x9J
+         fjXpXQ5aakljhndn/SHte+D4wTE8v9IKVrgcZtjcKxmOc/DhiZZOfsgalbkin+ZebIol
+         n8HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uwuNGFJAq2sDPWpG9aNv6dzcxMBNAA6NXYKA7mcTybI=;
+        b=QFmCYWdZx9Sk7Sz7mPRg1Q/W2v2yGSXh5KZA90v+D+K6DT8D4njbFlE/7e9rp5/Da/
+         0SVlxXftstIvbbkOz/uqsm5TvkRrXqZ8b3QSdMqTPEs1mCfeNLWq7NFsYRIAHwWJwVoN
+         phBqQhKIcDniEHYQsC6cAbDuQ6KXRi03BpPhhVQ1bF49Eg5/i7bHMijT0cfTuVo2oGis
+         EL8IvrLud+e6g3AD+uptstjrTFMxYrQLXvpC/iZFNag9r6/+s221GZYZyQKi3gjBS61e
+         V6UsuXqX76ohIZG44sJH2wnt24Z0rncRbLKoUygp+GHoJxrfgZAhiL/zgr1d9LPa1i+h
+         YR9A==
+X-Gm-Message-State: AOAM530FqE+GZlGu9pT3JqrL1cEjWHSkASDHlPF/dBALF748W+gWnsQY
+        h16V0mvA1s/WEvE9wAtqPnczihNwlZs=
+X-Google-Smtp-Source: ABdhPJxBU/Q//jj/zetOkVpdP3raoQMUciTl3LZyGYwOsbKeYbCF/iIr0qFPPGN8ye4L1Af1qUSRiw==
+X-Received: by 2002:a05:600c:247:: with SMTP id 7mr2155491wmj.76.1589850184317;
+        Mon, 18 May 2020 18:03:04 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.137])
+        by smtp.gmail.com with ESMTPSA id 81sm1852918wme.16.2020.05.18.18.03.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 May 2020 18:03:03 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] tools: bpftool: make capability check account
+ for new BPF caps
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Kees Cook <keescook@chromium.org>
-References: <CAG=TAF6mfrwxF1-xEJJ9dL675uMUa7RZrOa_eL2mJizZJ-U7iQ@mail.gmail.com>
- <CAEf4BzazvGOoJbm+zNMqTjhTPJAnVLVv9V=rXkdXZELJ4FPtiA@mail.gmail.com>
- <CAG=TAF6aqo-sT2YE30riqp7f47KyXH_uhNJ=M9L12QU6EEEfqQ@mail.gmail.com>
- <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
-Message-ID: <45f9ef5d-18e3-c92f-e7a9-1c6d6405e478@fb.com>
-Date:   Mon, 18 May 2020 18:00:01 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR04CA0027.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::37) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+References: <20200516005149.3841-1-quentin@isovalent.com>
+ <CAEf4BzZDC9az2vFPTNW03gSUZiYdc9-XeyP+1h8WkAKHagkUTg@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <3ffe7cc3-01da-1862-d734-b7a8b1d7c63d@isovalent.com>
+Date:   Tue, 19 May 2020 02:03:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from stephyma-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:f205) by BY5PR04CA0027.namprd04.prod.outlook.com (2603:10b6:a03:1d0::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25 via Frontend Transport; Tue, 19 May 2020 01:00:10 +0000
-X-Originating-IP: [2620:10d:c090:400::5:f205]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8b9e7b90-6731-4acc-146b-08d7fb8ffb2f
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2550:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2550E01FA0A2B4514F835580D3B90@BYAPR15MB2550.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 040866B734
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NBRuypD9zcY0exa9EGlTLHZpkShmpAtkFHcB4u/icmsyoqTy6A38yyf/G9BXbyfmVuTUIbGIZf1NY4uanu8SJ875VWmepI1ZZGsXsRp+6GsF2slzutl+pKcgRdp0nPxB5S8emJbaypvMYDAhuTUUcIewX779kOIWgD9yncO8QNykdw6gAHMmnTTZen6CsmYLZWDpPhzcpzu7LJl5w1inHUGv16owPL1an3Yk8+oDgDPy9K7QKzX4iLktcftIDPk/Qs9FZbVeMD0djVsaulYU2jajwQqp7jw854s3wwBKCNAh5P79nBcM7UDqA6bowVSoE9gSStq+CiMw4377c0gpFq52g9NHUomtViBtsFCM3ZYWeU0abDsS6jRXPOVyUUq/6NKuNHCixPsBLSt/XG2cBIJaI1Ag55hc5BBDqJv9dOkwJ8xsSp1DhiL5LtWyPERFKd0R9FmalovbYGtAdPfhw+kk9itgUjDVCVYtNYOcokU7yzrrCjHYUm4ZjAYHFQy6/RdL5QUDuTFlg1+5kAFhpISfrx/FrazjW2glKf1xGDx2oIh5QNvbfUPHIahS2JSiNy9RkNKyB6OghZMFZbqwn9G1oRbuIbhWxh/IiQAcqZBUBQnm3N+gQUVp1d40y6EmG4D3Knslpkqi76TmYoyRizgtyQs9rXOUvQbo2ppnOVoH5dwNu0gUClXfojOET2VS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10001)(346002)(136003)(39860400002)(376002)(366004)(396003)(8936002)(8676002)(36756003)(2906002)(53546011)(31686004)(6512007)(6506007)(52116002)(6666004)(316002)(86362001)(16526019)(31696002)(54906003)(110136005)(4326008)(186003)(66556008)(66946007)(6486002)(5660300002)(2616005)(478600001)(7416002)(66476007)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: I2eWxsK6ijGKntgdNnC59BcR3YygcENTRtuQaKkTsjfo2+9NPBm5vmt98ajwXzmFn8nTLKikh7dy2WcbZwG65LF8RmejQk6gge+YUNByEesYOgHjtq+aoEJSioMgoAH2Z3xf6FQKu3GN6tKbuYfGnFrK+NE26AoV6pUITusgiZFGVDg2FdXNm8PeOzPsXSJWoAfldNZo+BT67V4mdiDbCtL9McIVL1Hr51nWGDh6QejFRanTetH9+lT8091HGUldZjyuxlkoY13tPp3/zujCDSOi4w/wiQyivyup7UIdjYWA2cWMPYTz7z5wmfjJW6LvqOjCOd8rhNAD969RdiW5Tj71UJV/wTqhD1/jZCUvOThE7LyIes18MOC8L3qRGEAOHRtI1r4cs8VaYcslu9+7TEjJrRxVaWV/6rCoPYOYvLD0TVJwQXq7+mFKLj4zwuyGMBGvESvVd3c6NSAXWpD2wa3qhely1+5byA6GeDczr4bCzpwucNs0/bMlZHHZ+cnaxXF9nlRSfOOtQc94/o0Y+g==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b9e7b90-6731-4acc-146b-08d7fb8ffb2f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2020 01:00:11.3014
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SDHabtcaoouTk0cFSHhZfHwG2/cutGnzw0xNPKSa1CZ1pQ6FSQNd7piWZQ2SAxgq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2550
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-18_06:2020-05-15,2020-05-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=27
- bulkscore=0 impostorscore=0 spamscore=0 phishscore=0 malwarescore=0
- mlxlogscore=999 priorityscore=1501 adultscore=0 clxscore=1011
- cotscore=-2147483648 mlxscore=0 lowpriorityscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005190007
-X-FB-Internal: deliver
+In-Reply-To: <CAEf4BzZDC9az2vFPTNW03gSUZiYdc9-XeyP+1h8WkAKHagkUTg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/18/20 5:25 PM, Andrii Nakryiko wrote:
-> On Mon, May 18, 2020 at 5:09 PM Qian Cai <cai@lca.pw> wrote:
+2020-05-18 17:07 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Fri, May 15, 2020 at 5:52 PM Quentin Monnet <quentin@isovalent.com> wrote:
 >>
->> On Mon, May 18, 2020 at 7:55 PM Andrii Nakryiko
->> <andrii.nakryiko@gmail.com> wrote:
->>>
->>> On Sun, May 17, 2020 at 7:45 PM Qian Cai <cai@lca.pw> wrote:
->>>>
->>>> With Clang 9.0.1,
->>>>
->>>> return array->value + array->elem_size * (index & array->index_mask);
->>>>
->>>> but array->value is,
->>>>
->>>> char value[0] __aligned(8);
->>>
->>> This, and ptrs and pptrs, should be flexible arrays. But they are in a
->>> union, and unions don't support flexible arrays. Putting each of them
->>> into anonymous struct field also doesn't work:
->>>
->>> /data/users/andriin/linux/include/linux/bpf.h:820:18: error: flexible
->>> array member in a struct with no named members
->>>     struct { void *ptrs[] __aligned(8); };
->>>
->>> So it probably has to stay this way. Is there a way to silence UBSAN
->>> for this particular case?
+>> Following the introduction of CAP_BPF, and the switch from CAP_SYS_ADMIN
+>> to other capabilities for various BPF features, update the capability
+>> checks (and potentially, drops) in bpftool for feature probes. Because
+>> bpftool and/or the system might not know of CAP_BPF yet, some caution is
+>> necessary:
 >>
->> I am not aware of any way to disable a particular function in UBSAN
->> except for the whole file in kernel/bpf/Makefile,
+>> - If compiled and run on a system with CAP_BPF, check CAP_BPF,
+>>   CAP_SYS_ADMIN, CAP_PERFMON, CAP_NET_ADMIN.
 >>
->> UBSAN_SANITIZE_arraymap.o := n
+>> - Guard against CAP_BPF being undefined, to allow compiling bpftool from
+>>   latest sources on older systems. If the system where feature probes
+>>   are run does not know of CAP_BPF, stop checking after CAP_SYS_ADMIN,
+>>   as this should be the only capability required for all the BPF
+>>   probing.
 >>
->> If there is no better way to do it, I'll send a patch for it.
+>> - If compiled from latest sources on a system without CAP_BPF, but later
+>>   executed on a newer system with CAP_BPF knowledge, then we only test
+>>   CAP_SYS_ADMIN. Some probes may fail if the bpftool process has
+>>   CAP_SYS_ADMIN but misses the other capabilities. The alternative would
+>>   be to redefine the value for CAP_BPF in bpftool, but this does not
+>>   look clean, and the case sounds relatively rare anyway.
+>>
+>> Note that libcap offers a cap_to_name() function to retrieve the name of
+>> a given capability (e.g. "cap_sys_admin"). We do not use it because
+>> deriving the names from the macros looks simpler than using
+>> cap_to_name() (doing a strdup() on the string) + cap_free() + handling
+>> the case of failed allocations, when we just want to use the name of the
+>> capability in an error message.
+>>
+>> The checks when compiling without libcap (i.e. root versus non-root) are
+>> unchanged.
+>>
+>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>> ---
+>>  tools/bpf/bpftool/feature.c | 85 +++++++++++++++++++++++++++++--------
+>>  1 file changed, 67 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+>> index 1b73e63274b5..3c3d779986c7 100644
+>> --- a/tools/bpf/bpftool/feature.c
+>> +++ b/tools/bpf/bpftool/feature.c
+>> @@ -758,12 +758,32 @@ static void section_misc(const char *define_prefix, __u32 ifindex)
+>>         print_end_section();
+>>  }
+>>
+>> +#ifdef USE_LIBCAP
+>> +#define capability(c) { c, #c }
+>> +#endif
+>> +
+>>  static int handle_perms(void)
+>>  {
+>>  #ifdef USE_LIBCAP
+>> -       cap_value_t cap_list[1] = { CAP_SYS_ADMIN };
+>> -       bool has_sys_admin_cap = false;
+>> +       struct {
+>> +               cap_value_t cap;
+>> +               char name[14];  /* strlen("CAP_SYS_ADMIN") */
+>> +       } required_caps[] = {
+>> +               capability(CAP_SYS_ADMIN),
+>> +#ifdef CAP_BPF
+>> +               /* Leave CAP_BPF in second position here: We will stop checking
+>> +                * if the system does not know about it, since it probably just
+>> +                * needs CAP_SYS_ADMIN to run all the probes in that case.
+>> +                */
+>> +               capability(CAP_BPF),
+>> +               capability(CAP_NET_ADMIN),
+>> +               capability(CAP_PERFMON),
+>> +#endif
+>> +       };
+>> +       bool has_admin_caps = true;
+>> +       cap_value_t *cap_list;
+>>         cap_flag_value_t val;
+>> +       unsigned int i;
+>>         int res = -1;
+>>         cap_t caps;
+>>
+>> @@ -774,41 +794,70 @@ static int handle_perms(void)
+>>                 return -1;
+>>         }
+>>
+>> -       if (cap_get_flag(caps, CAP_SYS_ADMIN, CAP_EFFECTIVE, &val)) {
+>> -               p_err("bug: failed to retrieve CAP_SYS_ADMIN status");
+>> +       cap_list = malloc(sizeof(cap_value_t) * ARRAY_SIZE(required_caps));
 > 
+> I fail to see why you need to dynamically allocate cap_list?
+> cap_value_t cap_list[ARRAY_SIZE(required_caps)] wouldn't work?
+
+Oh I should have thought about that, thanks! I'll fix it.
+
+>> +       if (!cap_list) {
+>> +               p_err("failed to allocate cap_list: %s", strerror(errno));
+>>                 goto exit_free;
+>>         }
+>> -       if (val == CAP_SET)
+>> -               has_sys_admin_cap = true;
+>>
+>> -       if (!run_as_unprivileged && !has_sys_admin_cap) {
+>> -               p_err("full feature probing requires CAP_SYS_ADMIN, run as root or use 'unprivileged'");
+>> -               goto exit_free;
+>> +       for (i = 0; i < ARRAY_SIZE(required_caps); i++) {
+>> +               const char *cap_name = required_caps[i].name;
+>> +               cap_value_t cap = required_caps[i].cap;
+>> +
+>> +#ifdef CAP_BPF
+>> +               if (cap == CAP_BPF && !CAP_IS_SUPPORTED(cap))
+>> +                       /* System does not know about CAP_BPF, meaning
+>> +                        * that CAP_SYS_ADMIN is the only capability
+>> +                        * required. We already checked it, break.
+>> +                        */
+>> +                       break;
+>> +#endif
 > 
-> That's probably going to be too drastic, we still would want to
-> validate the rest of arraymap.c code, probably. Not sure, maybe
-> someone else has better ideas.
+> Seems more reliable to check all 4 capabilities independently (so
+> don't stop if !CAP_IS_SUPPORTED(cap)), and drop those that you have
+> set. Or there are some downsides to that?
 
-Maybe something like below?
+If CAP_BPF is not supported, there is simply no point in going on
+checking the other capabilities, since CAP_SYS_ADMIN is the only one we
+need to do the feature probes. So in that case I see little point in
+checking the others.
 
-   struct bpf_array {
-         struct bpf_map map;
-         u32 elem_size;
-         u32 index_mask;
-         struct bpf_array_aux *aux;
-         union {
-                 char value;
-                 void *ptrs;
-                 void __percpu *pptrs;
-         } u[] __aligned(8);
-   };
+But if I understand your concern, you're right in the sense that the
+current code would consider a user as "unprivileged" if they do not have
+all four capabilities (in the case where CAP_BPF is supported); but they
+may still have a subset of them and not be completely unprivileged, and
+in that case we would have has_admin_caps at false and skip capabilities
+drop.
+
+I will fix that in next version. I am not sure about the advantage of
+keeping track of the capabilities and building a list just for dropping
+only the ones we have, but I can do that if you prefer.
+
+Thanks a lot for the review!
+Quentin
