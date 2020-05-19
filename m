@@ -2,259 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A33B1DA25B
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 22:16:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CF01DA265
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 22:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgESUPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 16:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
+        id S1726455AbgESUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 16:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726545AbgESUPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 16:15:55 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AD5C08C5C2
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:15:54 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id s1so1068887qkf.9
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:15:54 -0700 (PDT)
+        with ESMTP id S1726290AbgESUSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 16:18:44 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF4EC08C5C0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:18:44 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id l21so523967eji.4
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 13:18:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=lca.pw; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TO5dMGuoi1kCRRb/+6qO1E4s7zpB8nWv0o7765YzP7M=;
-        b=tFpDa+SIF8J9hbLHG5GILLdJuWlP+vg72DAqF3ts8lf8v3hE4zugMieXVzFQflly/V
-         TQAbRleTds+7OpbV0WPkI5sAWD9OKkAdjXJj7KakwQwWxf5dYRGRooPRl58kdcFySBKS
-         Wx1lNQN604Mr6KzIv+ObErS6SOS6mpzTkW2TQ8g1D/sk6B62pLByagTT9UCqaE/rUd53
-         RXEyBeLTNqIPBFPJRWmocmSu92fWIWMMUY4aEdywN+mnjw7+HiDv6045xix+LFM4wvk2
-         ggFvva9bzwu20lIl+F+Exs+l5PyeF01FayycjxF5hfXLMIHBg2+/OU7tzpW6wxPLPLXN
-         VbiQ==
+        bh=lL4ozjO7sIu89/0ZdtpZ+grNZO7La5memrjZAz9fUk0=;
+        b=ZByOxcWZEGVSx0wUUQIKY6Lw/heX5sMkMCAxTHHPK+6ioi6FiW5Ivw4Z7T0/Nsu58c
+         KBdpFSMR5DZ9/Fan6TguF2CqRqBB1RiOHXF7adO0G8p+vAKeUpTqfShVLpqLUMDmSLi1
+         EQ9HfNNyPLSZop4afoNbYFWcjitqlo7fgxaKoCCTWTuiFmdSvBW7XY0iiFNWqgGj7KRs
+         TC/MqL75oZY1jUN8E7jzoZ3x0UqfnmePmTE/KV1JCoRkX+RpHBWDUXURu+joTefkXso/
+         Zzj2NcqozV3LUz+vL8gbiGipZCgL0mKs7ynTlmNA5D2yFrKQ+OioPOkKCO8FSJo0vylo
+         /yNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TO5dMGuoi1kCRRb/+6qO1E4s7zpB8nWv0o7765YzP7M=;
-        b=cOeGLyskHzgrCvnumooYtIQx4oFZ5gn7v9vJ7+83Ota1uGHghCODWLM87iQ6EoqnEp
-         wE+LxI3xHoEMyGPCWrfP74sxOUmDqciKBbPSsizeF/eiV34B/rZoV+XHkG7UDQT7+bo2
-         vu+EV7/Ux4fTD+QWEohmKnaqw5TbfRC0DSLCySKcGN3Zt62F6qNrV+ZlRQ9poNuTyNPj
-         VpfyjtL8Xm+Qbd7xjk/FnOSOvCqMOt5SpdQXG3Sq4y56XgS4KN8K8tZh93ncTbRPdj6F
-         pYc38rKTs77Lig2xHYsOhq1ju3unW4WqlJ1QPEy4sDZzgi+qkM1KUEEOB/mmG49QrhsN
-         phZA==
-X-Gm-Message-State: AOAM532qEcRQOwZWoww8u6xSBiyCKoOu4F22gs+bE7sCnMPNAFx/crbQ
-        sWM54uvj298Auqce3CVKGdduZPwAS8fz3saMAwrUfw==
-X-Google-Smtp-Source: ABdhPJyn2v4e6S+RNRBx13hLKpD3vGX1DVudWBoUdwMBu5NoaK5swkGvyds93T0lv3JKzDVZMnnKMw8fCOiZm3FUDow=
-X-Received: by 2002:a25:be81:: with SMTP id i1mr1771591ybk.184.1589919353706;
- Tue, 19 May 2020 13:15:53 -0700 (PDT)
+        bh=lL4ozjO7sIu89/0ZdtpZ+grNZO7La5memrjZAz9fUk0=;
+        b=lLxttvJ7zdSxPFXAFTeWDaQsX5y8eOepqjaduDl87B78/OYLgWhu+MO6Zyuqw1sUQQ
+         cOrcYa9X5N+K43fCH3+2pEK46MwhaCqmIpcBoMvJTS1j18PEzES0DDadW6C/1Kz3wdgb
+         r7zDwUKenLWfqdsGLGh22dcnuaQQhePswXBuOPHfnUn1wCMQn4R8gvLvPxmoFzxz9cvG
+         1QnCFjYEz4A3r9pZKmUYT/E6BMBolth4UEKwGiFMRScuMlHtbjD2pPQpp0whm873DQSc
+         bwM1pjjQLI3MQ8t4krM8JbOw60wju5UmhZ9SuNjwoM5ly3xXjT6nDMSUn1LixrHQUt8O
+         ahaA==
+X-Gm-Message-State: AOAM530V7z/ZesTtTtt6lT2J9Zm/7PXxjJFFrJYF4LdvBO5p0IQJKbGz
+        /bc62GFno8O0FKIOxBDduInIlJiU8/WBh0xg3vawcw==
+X-Google-Smtp-Source: ABdhPJzmLJ2VE1XY5jhp3oLT94K798EgEIL11S0+1hP87wWAtRinPfX07mNjAjt65tc4uEKH4OGuafZh3NS7Q2bYA/g=
+X-Received: by 2002:a17:906:934d:: with SMTP id p13mr869611ejw.452.1589919522687;
+ Tue, 19 May 2020 13:18:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200515221732.44078-1-irogers@google.com> <20200515221732.44078-7-irogers@google.com>
- <20200519190602.GB28228@kernel.org>
-In-Reply-To: <20200519190602.GB28228@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 May 2020 13:15:41 -0700
-Message-ID: <CAP-5=fVdDjazSdzfTXeuWwqCSh0zURp3M8QZpYK=qd92GeyrRw@mail.gmail.com>
-Subject: Re: [PATCH v3 6/7] perf test: Improve pmu event metric testing
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <CAG=TAF6mfrwxF1-xEJJ9dL675uMUa7RZrOa_eL2mJizZJ-U7iQ@mail.gmail.com>
+ <CAEf4BzazvGOoJbm+zNMqTjhTPJAnVLVv9V=rXkdXZELJ4FPtiA@mail.gmail.com>
+ <CAG=TAF6aqo-sT2YE30riqp7f47KyXH_uhNJ=M9L12QU6EEEfqQ@mail.gmail.com>
+ <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
+ <CAG=TAF5rYmMXBcxno0pPxVZdcyz=ik-enh03E-V8wupjDS0K5g@mail.gmail.com> <CAEf4BzYZ9LkYtmiukToJDw1-V-AFbwfB2jysMU9mM3ie9=qWHw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYZ9LkYtmiukToJDw1-V-AFbwfB2jysMU9mM3ie9=qWHw@mail.gmail.com>
+From:   Qian Cai <cai@lca.pw>
+Date:   Tue, 19 May 2020 16:18:31 -0400
+Message-ID: <CAG=TAF45T4pKew6U2kPNBK0qSAjgoECAX81obmKmFnv0cjE-oA@mail.gmail.com>
+Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>,
-        Paul Clarke <pc@us.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Linux Netdev List <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Kees Cook <keescook@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 12:06 PM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
+On Tue, May 19, 2020 at 3:30 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Em Fri, May 15, 2020 at 03:17:31PM -0700, Ian Rogers escreveu:
-> > Break pmu-events test into 2 and add a test to verify that all pmu
-> > metric expressions simply parse. Try to parse all metric ids/events,
-> > skip/warn if metrics for the current architecture fail to parse. To
-> > support warning for a skip, and an ability for a subtest to describe why
-> > it skips.
+> On Tue, May 19, 2020 at 8:00 AM Qian Cai <cai@lca.pw> wrote:
 > >
-> > Tested on power9, skylakex, haswell, broadwell, westmere, sandybridge and
-> > ivybridge.
+> > On Mon, May 18, 2020 at 8:25 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Mon, May 18, 2020 at 5:09 PM Qian Cai <cai@lca.pw> wrote:
+> > > >
+> > > > On Mon, May 18, 2020 at 7:55 PM Andrii Nakryiko
+> > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > >
+> > > > > On Sun, May 17, 2020 at 7:45 PM Qian Cai <cai@lca.pw> wrote:
+> > > > > >
+> > > > > > With Clang 9.0.1,
+> > > > > >
+> > > > > > return array->value + array->elem_size * (index & array->index_mask);
+> > > > > >
+> > > > > > but array->value is,
+> > > > > >
+> > > > > > char value[0] __aligned(8);
+> > > > >
+> > > > > This, and ptrs and pptrs, should be flexible arrays. But they are in a
+> > > > > union, and unions don't support flexible arrays. Putting each of them
+> > > > > into anonymous struct field also doesn't work:
+> > > > >
+> > > > > /data/users/andriin/linux/include/linux/bpf.h:820:18: error: flexible
+> > > > > array member in a struct with no named members
+> > > > >    struct { void *ptrs[] __aligned(8); };
+> > > > >
+> > > > > So it probably has to stay this way. Is there a way to silence UBSAN
+> > > > > for this particular case?
+> > > >
+> > > > I am not aware of any way to disable a particular function in UBSAN
+> > > > except for the whole file in kernel/bpf/Makefile,
+> > > >
+> > > > UBSAN_SANITIZE_arraymap.o := n
+> > > >
+> > > > If there is no better way to do it, I'll send a patch for it.
+> > >
+> > >
+> > > That's probably going to be too drastic, we still would want to
+> > > validate the rest of arraymap.c code, probably. Not sure, maybe
+> > > someone else has better ideas.
 > >
-> > May skip/warn on other architectures if metrics are invalid. In
-> > particular s390 is untested, but its expressions are trivial. The
-> > untested architectures with expressions are power8, cascadelakex,
-> > tremontx, skylake, jaketown, ivytown and variants of haswell and
-> > broadwell.
+> > This works although it might makes sense to create a pair of
+> > ubsan_disable_current()/ubsan_enable_current() for it.
 > >
-> > v3. addresses review comments from John Garry <john.garry@huawei.com>,
-> > Jiri Olsa <jolsa@redhat.com> and Arnaldo Carvalho de Melo
-> > <acme@kernel.org>.
-> > v2. changes the commit message as event parsing errors no longer cause
-> > the test to fail.
-> >
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > Cc: Adrian Hunter <adrian.hunter@intel.com>
-> > Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-> > Cc: Andi Kleen <ak@linux.intel.com>
-> > Cc: Jin Yao <yao.jin@linux.intel.com>
-> > Cc: Jiri Olsa <jolsa@redhat.com>
-> > Cc: John Garry <john.garry@huawei.com>
-> > Cc: Kajol Jain <kjain@linux.ibm.com>
-> > Cc: Kan Liang <kan.liang@linux.intel.com>
-> > Cc: Leo Yan <leo.yan@linaro.org>
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Namhyung Kim <namhyung@kernel.org>
-> > Cc: Paul Clarke <pc@us.ibm.com>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Stephane Eranian <eranian@google.com>
-> > Link: http://lore.kernel.org/lkml/20200513212933.41273-1-irogers@google.com
-> > [ split from a larger patch ]
-> > Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > ---
-> >  tools/perf/tests/builtin-test.c |   7 ++
-> >  tools/perf/tests/pmu-events.c   | 168 ++++++++++++++++++++++++++++++--
-> >  tools/perf/tests/tests.h        |   3 +
-> >  3 files changed, 172 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/tools/perf/tests/builtin-test.c b/tools/perf/tests/builtin-test.c
-> > index baee735e6aa5..9553f8061772 100644
-> > --- a/tools/perf/tests/builtin-test.c
-> > +++ b/tools/perf/tests/builtin-test.c
-> > @@ -75,6 +75,13 @@ static struct test generic_tests[] = {
-> >       {
-> >               .desc = "PMU events",
-> >               .func = test__pmu_events,
-> > +             .subtest = {
-> > +                     .skip_if_fail   = false,
-> > +                     .get_nr         = test__pmu_events_subtest_get_nr,
-> > +                     .get_desc       = test__pmu_events_subtest_get_desc,
-> > +                     .skip_reason    = test__pmu_events_subtest_skip_reason,
-> > +             },
-> > +
-> >       },
-> >       {
-> >               .desc = "DSO data read",
-> > diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
-> > index d64261da8bf7..e21f0addcfbb 100644
-> > --- a/tools/perf/tests/pmu-events.c
-> > +++ b/tools/perf/tests/pmu-events.c
-> > @@ -8,6 +8,9 @@
-> >  #include <linux/zalloc.h>
-> >  #include "debug.h"
-> >  #include "../pmu-events/pmu-events.h"
-> > +#include "util/evlist.h"
-> > +#include "util/expr.h"
-> > +#include "util/parse-events.h"
-> >
-> >  struct perf_pmu_test_event {
-> >       struct pmu_event event;
-> > @@ -144,7 +147,7 @@ static struct pmu_events_map *__test_pmu_get_events_map(void)
-> >  }
-> >
-> >  /* Verify generated events from pmu-events.c is as expected */
-> > -static int __test_pmu_event_table(void)
-> > +static int test_pmu_event_table(void)
+> > diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> > index 11584618e861..6415b089725e 100644
+> > --- a/kernel/bpf/arraymap.c
+> > +++ b/kernel/bpf/arraymap.c
+> > @@ -170,11 +170,16 @@ static void *array_map_lookup_elem(struct
+> > bpf_map *map, void *key)
 > >  {
-> >       struct pmu_events_map *map = __test_pmu_get_events_map();
-> >       struct pmu_event *table;
-> > @@ -347,14 +350,11 @@ static int __test__pmu_event_aliases(char *pmu_name, int *count)
-> >       return res;
-> >  }
+> >         struct bpf_array *array = container_of(map, struct bpf_array, map);
+> >         u32 index = *(u32 *)key;
+> > +       void *elem;
 > >
-> > -int test__pmu_events(struct test *test __maybe_unused,
-> > -                  int subtest __maybe_unused)
-> > +
-> > +static int test_aliases(void)
-> >  {
-> >       struct perf_pmu *pmu = NULL;
+> >         if (unlikely(index >= array->map.max_entries))
+> >                 return NULL;
 > >
-> > -     if (__test_pmu_event_table())
-> > -             return -1;
-> > -
-> >       while ((pmu = perf_pmu__scan(pmu)) != NULL) {
-> >               int count = 0;
-> >
-> > @@ -377,3 +377,159 @@ int test__pmu_events(struct test *test __maybe_unused,
-> >
-> >       return 0;
-> >  }
-> > +
-> > +static bool is_number(const char *str)
-> > +{
-> > +     char *end_ptr;
-> > +
-> > +     strtod(str, &end_ptr);
-> > +     return end_ptr != str;
-> > +}
+> > -       return array->value + array->elem_size * (index & array->index_mask);
+> > +       current->in_ubsan++;
+> > +       elem = array->value + array->elem_size * (index & array->index_mask);
+> > +       current->in_ubsan--;
 >
-> So, this breaks in some systems:
->
-> cc1: warnings being treated as errors
-> tests/pmu-events.c: In function 'is_number':
-> tests/pmu-events.c:385: error: ignoring return value of 'strtod', declared with attribute warn_unused_result
-> mv: cannot stat `/tmp/build/perf/tests/.pmu-events.o.tmp': No such file or director
->
-> So I'm changing it to verify the result of strtod() which is, humm,
-> interesting, please check:
+> This is an unnecessary performance hit for silencing what is clearly a
+> false positive. I'm not sure that's the right solution here. It seems
+> like something that's lacking on the tooling side instead. C language
+> doesn't allow to express the intent here using flexible array
+> approach. That doesn't mean that what we are doing here is wrong or
+> undefined.
 
-Thanks Arnaldo and sorry for the difficulty. This looks like a good fix.
+Oh, so you worry about this ++ and -- hurt the performance? If so, how
+about this?
 
-> diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
-> index 3de59564deb0..6c58c3a89e6b 100644
-> --- a/tools/perf/tests/pmu-events.c
-> +++ b/tools/perf/tests/pmu-events.c
-> @@ -1,4 +1,5 @@
->  // SPDX-License-Identifier: GPL-2.0
-> +#include "math.h"
->  #include "parse-events.h"
->  #include "pmu.h"
->  #include "tests.h"
-> @@ -381,8 +382,12 @@ static int test_aliases(void)
->  static bool is_number(const char *str)
->  {
->         char *end_ptr;
-> +       double v;
->
-> -       strtod(str, &end_ptr);
-> +       errno = 0;
-> +       v = strtod(str, &end_ptr);
-> +       if ((errno == ERANGE && (v == HUGE_VAL || v == -HUGE_VAL)) || (errno != 0 && v == 0.0))
+ubsan_disable_current();
+elem = array->value + array->elem_size * (index & array->index_mask);
+ubsan_enable_current();
 
-errno can either be 0 or ERANGE here, but we test both. Perhaps use
-errno != 0 for both cases as the man page notes suggest doing this.
-The tests using v are necessary to avoid the unused result, but
-presumably any errno case should return false here? I guess testing
-that is redundant as the return below will catch it. Perhaps this
-should be:
+#ifdef UBSAN
+ubsan_disable_current()
+{
+      current->in_ubsan++;
+}
+#else
+ubsan_disable_current() {}
+#endif
 
-errno = 0;
-v = strtod(str, &end_ptr);
-(void)v;  /* We don't care for the value of the double, just that it
-converts. Avoid unused result warnings. */
-return errno == 0 && end_ptr != str;
+etc
 
-Thanks,
-Ian
+Production kernel would normally have UBSAN=n, so it is an noop.
 
-> +               return false;
->         return end_ptr != str;
->  }
->
+Leaving this false positive unsilenced may also waste many people's
+time over and over again, and increase the noisy level. Especially, it
+seems this is one-off (not seen other parts of kernel doing like this)
+and rather expensive to silence it in the UBSAN or/and compilers.
