@@ -2,1465 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A02A1D8F16
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 771B01D8F1B
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgESFPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 01:15:42 -0400
-Received: from mta-out1.inet.fi ([62.71.2.194]:53320 "EHLO johanna3.inet.fi"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726323AbgESFPl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 01:15:41 -0400
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedruddtiedgleduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuhffvfhfkffgfgggjtgesmhdtreertdefjeenucfhrhhomhepnfgruhhrihculfgrkhhkuhcuoehlrghurhhirdhjrghkkhhusehpphdrihhnvghtrdhfiheqnecuggftrfgrthhtvghrnhepkeetuddugeegfedvgffgfefhgfejuefgfefgkedtgfehudegtddvgefgteduieefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdrihhnpdhthhgvnhdrnhgvthenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudekvdgnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
-Received: from [192.168.1.182] (84.248.30.195) by johanna3.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
-        id 5E1C39D564E7BCFB; Tue, 19 May 2020 08:15:09 +0300
-Subject: Re: NET: r8168/r8169 identifying fix
-From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        nic_swsd@realtek.com
-References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
- <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
- <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
- <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
- <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
- <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
- <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
- <db508b70-e5fb-2abf-8012-c168fe7535a7@pp.inet.fi>
- <f3faeea9-13b7-d6ca-7cce-6ec0278d7437@pp.inet.fi>
- <2c9b8110-3be9-28d8-a5e1-729686fe6f12@gmail.com>
- <2359c10c-0f62-c12a-645b-b7f9db315fc4@pp.inet.fi>
- <7deca6c4-90f4-3030-1284-0be33990d0f0@pp.inet.fi>
- <5cdc7f73-b109-2a37-8473-12889506b6a9@pp.inet.fi>
- <d3d950f5-f33f-8bc4-f696-ae68ed936cc0@gmail.com>
- <46c69f39-278c-405f-3557-c21ee2ccd8e5@pp.inet.fi>
- <b2b48c49-2f9f-57fb-ab2f-5eadac3aa403@pp.inet.fi>
- <d047c73c-7781-40f7-3f2b-6bdcc307e6f5@pp.inet.fi>
- <a8b0ed06-e308-7039-737d-cb9396f51a72@gmail.com>
- <e637a252-26a8-fd7b-3112-75a87525fbe6@pp.inet.fi>
-Message-ID: <b8567abc-6eaa-0109-4a75-6d68da2c896b@pp.inet.fi>
-Date:   Tue, 19 May 2020 08:15:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <e637a252-26a8-fd7b-3112-75a87525fbe6@pp.inet.fi>
-Content-Type: multipart/mixed;
- boundary="------------6DAEF96B9F129FD60CC37854"
+        id S1727060AbgESFRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 01:17:34 -0400
+Received: from mail-vi1eur05on2049.outbound.protection.outlook.com ([40.107.21.49]:34049
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726323AbgESFRe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 01:17:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TF81s9cCKQZ3Vij8QvFuUO0yhfLZRWEe3gH74p6I3lEEwpm2KNqaXLDVm1vKhTnYuVMgaFyPUmqrylBvR0icntnL+o/tDv82cRCQI0MqN5E+VE23gwtlqx+fwfnMDwALN+JyaGrt9FYbf+rTzjGHwLVdo8L5ucjGl582LgpzcKPT9uEVUkusAjwrBRakgAaETKtS93HiGFLVlT/z94a9nPVLV19OsXi6o2X0+NlB4dxzREDBwPnJUWUPhBWVE2PpxPwSiANt4gejQ/XsfpCzraZrJCMEfzKiuDjM1d8dECcbSNqkYRv2KaN3iuabR0vKfEyX6N8QOqLY9Bm6wkXbBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=umNTEQ3QOi+1GTe2AtCgLtbGRSWIbWTFd2nEFEqCU7g=;
+ b=AT/C444KIZHGKW4DkkzBefKPpvBmqoJzXRefAxtH86dQLfIpY6n8d5Jij1XclL2EMrNgPyZb5oqLRFnEMd9d8JBHOR038k6hwq9lfhOzvM52BhXbx0BNjUxCjUqxvkzPMIMt6ptEfQwZvq1GwI+BV6KGYF+WCJzUo1RpkneBuUa1vQx/KcDyY3lQM3WIrcHu1YU+Qy+32svuzvSWP01pZb6eq7824oXlRi1ZgE0JDVPMF5X1+XnsPDFAXNAMWEK1VFQkEaHnUroG4sAdwW0DuZZZwIpsWtgDE2OhWcLgvWSJgDoWWCOTmoVD0aRZt4axt9VFcFGqf/4r4sPDywjNeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=umNTEQ3QOi+1GTe2AtCgLtbGRSWIbWTFd2nEFEqCU7g=;
+ b=eWyCsFytDcQK3zkfwmepQMxAfKS4uh9ooMZtUQme6/8tMO8QNfvcYPDx1zVr5cz5R7kbZ/PJR0JGalUHkUO/wQdm3jZODWCH0ZVS5w/qHNGUBe65+nrUhcghnEpGjopIDl6mntxfVXnP3upFCHPoYUnhuTj+rLIClb+jjLKWRB4=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
+ by AM0PR05MB6482.eurprd05.prod.outlook.com (2603:10a6:208:146::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Tue, 19 May
+ 2020 05:17:28 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::5dd6:fa09:c5d1:b387]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::5dd6:fa09:c5d1:b387%7]) with mapi id 15.20.3000.034; Tue, 19 May 2020
+ 05:17:27 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>
+Subject: RE: [RFC v2] current devlink extension plan for NICs
+Thread-Topic: [RFC v2] current devlink extension plan for NICs
+Thread-Index: AQHWH5j86VY8EpKiG0SvO1qzzv+snaioVl8AgAChUQCAAMrbgIADv/OAgADugYCAAIUywA==
+Date:   Tue, 19 May 2020 05:17:27 +0000
+Message-ID: <AM0PR05MB4866687F67EE56BEBB0D9B3AD1B90@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20200501091449.GA25211@nanopsycho.orion>
+ <b0f75e76-e6cb-a069-b863-d09f77bc67f6@intel.com>
+ <20200515093016.GE2676@nanopsycho>
+ <e3aa20ec-a47e-0b91-d6d5-1ad2020eca28@intel.com>
+ <20200518065207.GA2193@nanopsycho>
+ <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
+In-Reply-To: <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [106.51.29.144]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: eca047a7-7455-4f72-2bd4-08d7fbb3ec63
+x-ms-traffictypediagnostic: AM0PR05MB6482:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB6482EA876954A604C1D756FDD1B90@AM0PR05MB6482.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 040866B734
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 48Pv7ZmIfaveC0d8KXGwEiJYkgpH1qgqzdtlJPPQmp/qkpssDxkEGHTKP62lINQBr28to3sGHFix/sGKmRD074RokEIEV9UYmtOqofajHEsW+QOt0iRyYDXonwiQhNE8UJSOUs6l1Lh2lfc5rvSxzkaRzhSBfeQNH7z15/xmImf/IRXG+QqTVAnbdRC+H3X/FsaLcrtOi84v4vXrjpOYko8BW/dOXmNEqnIjsDp6/0KsDOkmyZSiH+xWVK7Nn7eQRzYZqsvShF//w6LXIsBwaQpXlllwicXcj4rAz31MK3zq/eTPjvJIP/CCkYPya1mMsGZSwzo2RNsosc6WQog/zWNY5PHMTLh7trCgXrGiXLrHGtvLKjuqoitWoqDTHXBLExeyPG84l2tp0KHvZx3JLuU29RqcFaCNzvcA7WDsCVwWjD7T/7apoDcKhwG1ECkWj65JT3kcO1/PPy+kdxNc5hXRbzmI0hdc46K5dJCsk97yqpfj3usl+gEHJrdFziPP37jG4HLfSxfgrHvKkm2QODeWHiM65eZ1rOnzGQWeT8/FBuTFUS0IXO6OlZLSS2rA
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(4326008)(9686003)(52536014)(26005)(186003)(966005)(71200400001)(478600001)(33656002)(55016002)(5660300002)(2906002)(53546011)(8936002)(8676002)(55236004)(66446008)(64756008)(66476007)(66556008)(66946007)(76116006)(110136005)(7416002)(7696005)(316002)(6506007)(86362001)(54906003)(6606295002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: YjP3lWGwKOsM7UYfMWANnfDbQY2g8dzqEcvWd1y70AmHuwB+Ygi4x88hQn/sK+WTlwO3iQG255AR3gWBUNAUuLqVFksQ4uHl9/LGHt9E/nDkZngVdYUzVD/37FPpvWviFRq0ilKn5ocZnpuBLeHtSenEz/dYgAWHgA30MgAHYv2jivVFUHOXI5Cu20mCpd1decrSnnX4TDGXPSTWMGB5+TlxfLrrB69gTwCJQfs2uMq7FrQudnFRo0bC1QAFv98nzix+/PintNXHa2JIoQed1B6wjBPIh4wskbqgWiE3K+P8SRQhtlAMvD7MxgQJLtFaOg5J9K73mgfGgTy27o72r3qvS7ArSTbJYz+ByW4wRq+DKqJUCFZmaH7ZQ5AxA4SVmMqEUPNA9kVvb0onwjQNume7yHFMvbgqzzXYevCe9QSpoQinlfle9xVhhR0AVzRkoXE9haQzO5OVK4dNr770r6/ZX6sNLMpVToYJIjH3gMNqE3nA4HucR0N/nKH7Q65+
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eca047a7-7455-4f72-2bd4-08d7fbb3ec63
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2020 05:17:27.8215
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: glozakZsdgzkYRF6wkAZtyA564lcRM90eWEQbpUSTp1hhGTswb+yQf3DBzb5CtnofgBHRB3IV3XBVhPlDB2/Og==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6482
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------6DAEF96B9F129FD60CC37854
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-Hi,
-
-On 3.5.2020 16.54, Lauri Jakku wrote:
-> Hi,
->
-> On 3.5.2020 11.33, Heiner Kallweit wrote:
->> On 03.05.2020 04:28, Lauri Jakku wrote:
->>> Hi,
->>>
->>> On 3.5.2020 4.34, Lauri Jakku wrote:
->>>> Hi,
->>>>
->>>>
->>>> On 3.5.2020 3.11, Lauri Jakku wrote:
->>>>> On 3.5.2020 2.15, Heiner Kallweit wrote:
->>>>>> On 03.05.2020 00:42, Lauri Jakku wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> On 2.5.2020 20.56, Lauri Jakku wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> On 1.5.2020 22.12, Lauri Jakku wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> On 19.4.2020 19.00, Heiner Kallweit wrote:
->>>>>>>>>> On 19.04.2020 18:49, Lauri Jakku wrote:
->>>>>>>>>>> Hi,
->>>>>>>>>>>
->>>>>>>>>>> On 19.4.2020 18.09, Lauri Jakku wrote:
->>>>>>>>>>>> Hi,
->>>>>>>>>>>>
->>>>>>>>>>>> On 18.4.2020 21.46, Lauri Jakku wrote:
->>>>>>>>>>>>
->>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>
->>>>>>>>>>>>> On 18.4.2020 14.06, Lauri Jakku wrote:
->>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> On 17.4.2020 10.30, Lauri Jakku wrote:
->>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> On 17.4.2020 9.23, Lauri Jakku wrote:
->>>>>>>>>>>>>>>> On 16.4.2020 23.50, Heiner Kallweit wrote:
->>>>>>>>>>>>>>>>> On 16.04.2020 22:38, Lauri Jakku wrote:
->>>>>>>>>>>>>>>>>> Hi
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
->>>>>>>>>>>>>>>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
->>>>>>>>>>>>>>>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
->>>>>>>>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
->>>>>>>>>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
->>>>>>>>>>>>>>>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
->>>>>>>>>>>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without 
->>>>>>>>>>>>>>>>>>>>>>>> modifications --> network does not work
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified 
->>>>>>>>>>>>>>>>>>>>>>>> kernel (r8169 mods only) --> network does not work
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy 
->>>>>>>>>>>>>>>>>>>>>>>> patched + r8169 mods -> devices show up ok, 
->>>>>>>>>>>>>>>>>>>>>>>> network works
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>>> All different initcpio's have realtek.ko in them.
->>>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>>> Thanks for the logs. Based on the logs you're 
->>>>>>>>>>>>>>>>>>>>>>> presumable affected by a known BIOS bug.
->>>>>>>>>>>>>>>>>>>>>>> Check bug tickets 202275 and 207203 at 
->>>>>>>>>>>>>>>>>>>>>>> bugzilla.kernel.org.
->>>>>>>>>>>>>>>>>>>>>>> In the first referenced tickets it's about the 
->>>>>>>>>>>>>>>>>>>>>>> same mainboard (with earlier BIOS version).
->>>>>>>>>>>>>>>>>>>>>>> BIOS on this mainboard seems to not initialize 
->>>>>>>>>>>>>>>>>>>>>>> the network chip / PHY correctly, it reports
->>>>>>>>>>>>>>>>>>>>>>> a random number as PHY ID, resulting in no PHY 
->>>>>>>>>>>>>>>>>>>>>>> driver being found.
->>>>>>>>>>>>>>>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and 
->>>>>>>>>>>>>>>>>>>>>>> your problem should be gone.
->>>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>> OK, I try that, thank you :)
->>>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> It seems that i DO have the ROM's enabled, i'm now 
->>>>>>>>>>>>>>>>>>>>> testing some mutex guard for phy state and try to 
->>>>>>>>>>>>>>>>>>>>> use it as indicator
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> that attach has been done. One thing i've noticed 
->>>>>>>>>>>>>>>>>>>>> is that driver needs to be reloaded to allow 
->>>>>>>>>>>>>>>>>>>>> traffic (ie. ping works etc.)
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>> All that shouldn't be needed. Just check with which 
->>>>>>>>>>>>>>>>>>>> PHY ID the PHY comes up.
->>>>>>>>>>>>>>>>>>>> And what do you mean with "it seems"? Is the option 
->>>>>>>>>>>>>>>>>>>> enabled or not?
->>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> I do have ROM's enabled, and it does not help with 
->>>>>>>>>>>>>>>>>>> my issue.
->>>>>>>>>>>>>>>>> Your BIOS is a beta version, downgrading to F7 may 
->>>>>>>>>>>>>>>>> help. Then you have the same
->>>>>>>>>>>>>>>>> mainboard + BIOS as the user who opened bug ticket 
->>>>>>>>>>>>>>>>> 202275.
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0xc2077002
->>>>>>>>>>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:03:00.0: MAC version: 23
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> ....
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:02:00.0: MAC version: 23
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> .. after module unload & load cycle:
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>>> 0000:02:00.0: MAC version: 23
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> it seem to be the case that the phy_id chances onetime, 
->>>>>>>>>>>>>>>> then stays the same. I'll do few shutdowns and see
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> is there a pattern at all .. next i'm going to try how 
->>>>>>>>>>>>>>>> it behaves, if i read mac/phy versions twice on MAC 
->>>>>>>>>>>>>>>> version 23.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> The BIOS downgrade: I'd like to solve this without 
->>>>>>>>>>>>>>>> downgrading BIOS. If I can't, then I'll do 
->>>>>>>>>>>>>>>> systemd-service that
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> reloads r8169 driver at boot, cause then network is 
->>>>>>>>>>>>>>>> just fine.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> What i've gathered samples now, there is three values 
->>>>>>>>>>>>>>> for PHY ID:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo 
->>>>>>>>>>>>>>> journalctl |grep "PHY ver"
->>>>>>>>>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0xc2077002
->>>>>>>>>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0xc2077002
->>>>>>>>>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0xc1071002
->>>>>>>>>>>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 
->>>>>>>>>>>>>>> 0000:03:00.0: PHY version: 0x1cc912
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> I dont know are those hard coded or what, and are they 
->>>>>>>>>>>>>>> device specific how much.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> i haven't coldbooted things up, that may be that 
->>>>>>>>>>>>>>> something to check do they vary how per coldboot.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> I check the ID, and revert all other changes, and 
->>>>>>>>>>>>>>>>>> check how it is working after adding the PHY id to list.
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>> What i've now learned: the patch + script + journald 
->>>>>>>>>>>>>> services -> Results working network, but it is still a 
->>>>>>>>>>>>>> workaround.
->>>>>>>>>>>>>>
->>>>>>>>>>>>> Following patch trusts the MAC version, another thing 
->>>>>>>>>>>>> witch could help is to derive method to do 2dn pass of the 
->>>>>>>>>>>>> probeing:
->>>>>>>>>>>>>
->>>>>>>>>>>>> if specific MAC version is found.
->>>>>>>>>>>>>
->>>>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
->>>>>>>>>>>>> b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>> index acd122a88d4a..62b37a1abc24 100644
->>>>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>> @@ -5172,13 +5172,18 @@ static int 
->>>>>>>>>>>>> r8169_mdio_register(struct rtl8169_private *tp)
->>>>>>>>>>>>>            if (!tp->phydev) {
->>>>>>>>>>>>> mdiobus_unregister(new_bus);
->>>>>>>>>>>>>                    return -ENODEV;
->>>>>>>>>>>>> -       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>>>>>>>>>>> -               /* Most chip versions fail with the genphy 
->>>>>>>>>>>>> driver.
->>>>>>>>>>>>> -                * Therefore ensure that the dedicated PHY 
->>>>>>>>>>>>> driver is loaded.
->>>>>>>>>>>>> -                */
->>>>>>>>>>>>> -               dev_err(&pdev->dev, "Not known MAC 
->>>>>>>>>>>>> version.\n");
->>>>>>>>>>>>> - mdiobus_unregister(new_bus);
->>>>>>>>>>>>> -               return -EUNATCH;
->>>>>>>>>>>>> +       } else {
->>>>>>>>>>>>> + dev_info(&pdev->dev, "PHY version: 0x%x\n", 
->>>>>>>>>>>>> tp->phydev->phy_id);
->>>>>>>>>>>>> + dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
->>>>>>>>>>>>> +
->>>>>>>>>>>>> +               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>>>>>>>>>>> +                       /* Most chip versions fail with 
->>>>>>>>>>>>> the genphy driver.
->>>>>>>>>>>>> +                        * Therefore ensure that the 
->>>>>>>>>>>>> dedicated PHY driver is loaded.
->>>>>>>>>>>>> +                        */
->>>>>>>>>>>>> + dev_err(&pdev->dev, "Not known MAC/PHY version.\n", 
->>>>>>>>>>>>> tp->phydev->phy_id);
->>>>>>>>>>>>> + mdiobus_unregister(new_bus);
->>>>>>>>>>>>> +                       return -EUNATCH;
->>>>>>>>>>>>> +               }
->>>>>>>>>>>>>            }
->>>>>>>>>>>>>
->>>>>>>>>>>>>            /* PHY will be woken up in rtl_open() */
->>>>>>>>>>>>>
->>>>>>>>>>>> I just got bleeding edge 5.7.0-1 kernel compiled + 
->>>>>>>>>>>> firmware's updated.. and  now up'n'running. There is one 
->>>>>>>>>>>> (WARN_ONCE) stack trace coming from driver, i think i 
->>>>>>>>>>>> tinker with it next, with above patch the network devices 
->>>>>>>>>>>> shows up and they can be configured.
->>>>>>>>>>>>
->>>>>>>>>>> I tought to ask first, before going to make new probe_type 
->>>>>>>>>>> for errorneus hw (propetype + retry counter) to do re-probe 
->>>>>>>>>>> if requested, N times. Or should the r8169_main.c return 
->>>>>>>>>>> deferred probe on error on some MAC enums ? Which approach 
->>>>>>>>>>> is design-wise sound ?
->>>>>>>>>>>
->>>>>>>>>>> I just tought that the DEFERRED probe may just do the trick 
->>>>>>>>>>> i'm looking ways to implement the re-probeing... hmm. I try 
->>>>>>>>>>> the deferred thing and check would that help.
->>>>>>>>>>>
->>>>>>>>>> Playing with options to work around the issue is of course a 
->>>>>>>>>> great way to
->>>>>>>>>> learn about the kernel. However it's questionable whether a 
->>>>>>>>>> workaround in
->>>>>>>>>> the driver is acceptable for dealing with the broken BIOS of 
->>>>>>>>>> exactly one
->>>>>>>>>>> 10 yrs old board (for which even a userspace workaround 
->>>>>>>>>>> exists).
->>>>>>>>> problem recognized: libphy-module get's unloaded for some 
->>>>>>>>> reason before r8169 driver loads -> missing lowlevel 
->>>>>>>>> functionality -> not working driver. This only occurs at 1st 
->>>>>>>>> load of module.. seeking solution.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> There is [last unloaded: libphy] entries in log BEFORE r8169 
->>>>>>>>> is probed first time.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> Any clue what is responsible for unloading to occur ?
->>>>>>>>>
->>>>>>>>>
->>>>>>>> Right now I'm debugging what is the reason, behind that the 
->>>>>>>> module starts to work properly only when
->>>>>>>>
->>>>>>>> unload & reload cycle is done.
->>>>>>>>
->>>>>>>>
->>>>>>>> The libphy is listed as loaded, but the check for low level 
->>>>>>>> read/write function is not set -> r8169 modules rlt_open() fails.
->>>>>>>>
->>>>>>>> See here:
->>>>>>>>
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: ------------[ cut 
->>>>>>>> here ]------------
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: read_page 
->>>>>>>> callback not available, PHY driver not loaded?
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: WARNING: CPU: 3 
->>>>>>>> PID: 787 at drivers/net/phy/phy-core.c:750 
->>>>>>>> phy_save_page+0xb1/0xe3 [libph
->>>>>>>> y]
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: Modules linked 
->>>>>>>> in: cmac algif_hash algif_skcipher af_alg bnep btusb btrtl 
->>>>>>>> btbcm btintel b
->>>>>>>> luetooth ecdh_generic rfkill ecc uvcvideo videobuf2_vmalloc 
->>>>>>>> videobuf2_memops snd_usb_audio videobuf2_v4l2 videobuf2_common 
->>>>>>>> snd_usbmidi_
->>>>>>>> lib videodev snd_rawmidi snd_seq_device mc input_leds joydev 
->>>>>>>> mousedev squashfs loop amdgpu snd_hda_codec_realtek gpu_sched 
->>>>>>>> i2c_algo_bit
->>>>>>>>    ttm snd_hda_codec_generic drm_kms_helper edac_mce_amd 
->>>>>>>> ledtrig_audio cec rc_core kvm_amd drm ccp snd_hda_codec_hdmi 
->>>>>>>> agpgart rng_core kv
->>>>>>>> m snd_hda_intel syscopyarea sysfillrect ppdev sysimgblt 
->>>>>>>> snd_intel_dspcfg fb_sys_fops snd_hda_codec snd_hda_core 
->>>>>>>> snd_hwdep irqbypass wmi
->>>>>>>> _bmof snd_pcm snd_timer snd evdev pcspkr soundcore parport_pc 
->>>>>>>> parport sp5100_tco mac_hid i2c_piix4 k10temp acpi_cpufreq 
->>>>>>>> uinput crypto_u
->>>>>>>> ser ip_tables x_tables hid_generic usbhid hid ohci_pci 
->>>>>>>> virtio_net net_failover failover firewire_ohci firewire_core 
->>>>>>>> crc_itu_t pata_atii
->>>>>>>> xp ehci_pci ehci_hcd sr_mod cdrom ohci_hcd ata_generic 
->>>>>>>> pata_acpi pata_jmicron wmi floppy
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel:  r8169 realtek 
->>>>>>>> libphy
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: CPU: 3 PID: 787 
->>>>>>>> Comm: NetworkManager Not tainted 5.7.0-1-raw #12
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: Hardware name: 
->>>>>>>> Gigabyte Technology Co., Ltd. 
->>>>>>>> GA-MA790FXT-UD5P/GA-MA790FXT-UD5P, BIOS F8l 07/15/2010
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: RIP: 
->>>>>>>> 0010:phy_save_page+0xb1/0xe3 [libphy]
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: Code: c8 82 11 c0 
->>>>>>>> e8 06 28 ff cc 85 db 74 47 48 8b 85 48 03 00 00 48 83 b8 68 01 
->>>>>>>> 00 00 00 75 10 48 c7 c7 e8 82 11 c0 e8 a9 dd f7 cc <0f> 0b eb 
->>>>>>>> 26 48 c7 c7 52 78 11 c0 e8 99 dd f7 cc 0f 0b 48 8b 85 48
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: RSP: 
->>>>>>>> 0018:ffff962c408ef370 EFLAGS: 00010282
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: RAX: 
->>>>>>>> 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
->>>>>>>> touko 02 20:40:04 MinistryOfSillyWalk kernel: RDX: 
->>>>>>>> 0000000000000001 RSI: 0000000000000092 RDI: 00000000ffffffff
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: RBP: 
->>>>>>>> ffff8b1af3eb8800 R08: 00000000000004b3 R09: 0000000000000004
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: R10: 
->>>>>>>> 0000000000000000 R11: 0000000000000001 R12: 00000000ffffffa1
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: R13: 
->>>>>>>> 0000000000000002 R14: 0000000000000002 R15: ffff8b1af3eb8800
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: FS: 
->>>>>>>> 00007f07be5d4d80(0000) GS:ffff8b1af7cc0000(0000) 
->>>>>>>> knlGS:0000000000000000
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: CS: 0010 DS: 0000 
->>>>>>>> ES: 0000 CR0: 0000000080050033
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: CR2: 
->>>>>>>> 000055b83aecb008 CR3: 00000002246b0000 CR4: 00000000000006e0
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: Call Trace:
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> phy_select_page+0x53/0x7a [libphy]
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> phy_write_paged+0x5c/0xa0 [libphy]
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> rtl8168d_1_hw_phy_config+0x9d/0x210 [r8169]
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> rtl8169_init_phy+0x19/0x110 [r8169]
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> rtl_open+0x354/0x4d0 [r8169]
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> __dev_open+0xe0/0x170
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> __dev_change_flags+0x188/0x1e0
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> dev_change_flags+0x21/0x60
->>>>>>>> touko 02 20:40:05 MinistryOfSillyWalk kernel: 
->>>>>>>> do_setlink+0x78a/0xfd0
->>>>>>>>
->>>>>>>>
->>>>>>>> Something does not setup/register properly at first the way it 
->>>>>>>> should.
->>>>>>>>
->>>>>>>>
->>>>>>> I think i solved it: realtek (the phy driver) was missing device 
->>>>>>> entry for the PHY ID reported by the NIC to match -> read_page 
->>>>>>> and write_page function pointers should now be set. The generic 
->>>>>>> PHY does not fill
->>>>>>>
->>>>>>> the driver's functionality to read or write pages. It happens to 
->>>>>>> be so that the drivers for |RTL8211B Gigabit Ethernet seems to 
->>>>>>> work just fine for my NIC's.
->>>>>> The analysis is wrong. The incorrect PHY ID is not root cause of the
->>>>>> problem, it's caused by a BIOS bug. It's not a valid PHY ID. If 
->>>>>> you want
->>>>>> to do something, then you could try to inject a PHY soft reset 
->>>>>> before
->>>>>> the MII bus is registered. This should be board-specific, e.g. using
->>>>>> dmi_check_system().
->>>>> Ok, i'll try that approach, thanks for the tip. Hmm, I'll do 
->>>>> similar function mapping what the HW init/config function does 
->>>>> determine
->>>>>
->>>>> function to use.
->>>>>
->>>>>
->>>>> I'll get back to you when I got something new developed.
->>>>>
->>>> Oujeah, now it works OK.. the soft reset was all it needed.
->>>>
->>>>
->>>> Here's the patch:
->>>>
->>>>  From 06c5deacf3ca9f9258431756a41ff0ba1792f1f7 Mon Sep 17 00:00:00 
->>>> 2001
->>>> From: Lauri Jakku <lja@iki.fi>
->>>> Date: Thu, 16 Apr 2020 00:38:51 +0300
->>>> Subject: [PATCH] NET: r8169 driver identifying improvement.
->>>>
->>>> Trust device MAC enum + r8169d NIC soft reset
->>>> before configuration.
->>>>
->>>> This commit adds enumeration check and allows
->>>> driver to be slow to attach.
->>>>
->>>> Signed-off-by: Lauri Jakku <lja@iki.fi>
->>>> ---
->>>>   drivers/net/ethernet/realtek/r8169_main.c     | 24 +++--
->>>>   .../net/ethernet/realtek/r8169_phy_config.c   | 80 ++++++++++++++++
->>>>   drivers/net/phy/phy-core.c                    | 91 
->>>> ++++++++++++++++++-
->>>>   3 files changed, 182 insertions(+), 13 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
->>>> b/drivers/net/ethernet/realtek/r8169_main.c
->>>> index bf5bf05970a2..a85764f6e448 100644
->>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>> @@ -640,7 +640,6 @@ MODULE_AUTHOR("Realtek and the Linux r8169 crew 
->>>> <netdev@vger.kernel.org>");
->>>>   MODULE_DESCRIPTION("RealTek RTL-8169 Gigabit Ethernet driver");
->>>>   module_param_named(debug, debug.msg_enable, int, 0);
->>>>   MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 
->>>> 16=all)");
->>>> -MODULE_SOFTDEP("pre: realtek");
->>>>   MODULE_LICENSE("GPL");
->>>>   MODULE_FIRMWARE(FIRMWARE_8168D_1);
->>>>   MODULE_FIRMWARE(FIRMWARE_8168D_2);
->>>> @@ -5172,13 +5171,18 @@ static int r8169_mdio_register(struct 
->>>> rtl8169_private *tp)
->>>>       if (!tp->phydev) {
->>>>           mdiobus_unregister(new_bus);
->>>>           return -ENODEV;
->>>> -    } else if (!tp->phydev->drv) {
->>>> -        /* Most chip versions fail with the genphy driver.
->>>> -         * Therefore ensure that the dedicated PHY driver is loaded.
->>>> -         */
->>>> -        dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs 
->>>> to be added to initramfs?\n");
->>>> -        mdiobus_unregister(new_bus);
->>>> -        return -EUNATCH;
->>>> +    } else {
->>>> +        dev_info(&pdev->dev, "PHY version: 0x%x\n", 
->>>> tp->phydev->phy_id);
->>>> +        dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
->>>> +
->>>> +        if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>> +            /* Most chip versions fail with the genphy driver.
->>>> +             * Therefore ensure that the dedicated PHY driver is 
->>>> loaded.
->>>> +             */
->>>> +            dev_err(&pdev->dev, "Not known MAC/PHY version.\n");
->>>> +            mdiobus_unregister(new_bus);
->>>> +            return -EUNATCH;
->>>> +        }
->>>>       }
->>>>
->>>>       /* PHY will be woken up in rtl_open() */
->>>> @@ -5513,6 +5517,9 @@ static int rtl_init_one(struct pci_dev *pdev, 
->>>> const struct pci_device_id *ent)
->>>>              rtl_chip_infos[chipset].name, dev->dev_addr, xid,
->>>>              pci_irq_vector(pdev, 0));
->>>>
->>>> +    dev_info(&pdev->dev, "PHY version: 0x%x\n", tp->phydev->phy_id);
->>>> +    dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
->>>> +
->>>>       if (jumbo_max)
->>>>           netif_info(tp, probe, dev,
->>>>                  "jumbo features [frames: %d bytes, tx 
->>>> checksumming: %s]\n",
->>>> @@ -5532,6 +5539,7 @@ static int rtl_init_one(struct pci_dev *pdev, 
->>>> const struct pci_device_id *ent)
->>>>       return rc;
->>>>   }
->>>>
->>>> +
->>>>   static struct pci_driver rtl8169_pci_driver = {
->>>>       .name        = MODULENAME,
->>>>       .id_table    = rtl8169_pci_tbl,
->>>> diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c 
->>>> b/drivers/net/ethernet/realtek/r8169_phy_config.c
->>>> index b73f7d023e99..73d604c7a8a8 100644
->>>> --- a/drivers/net/ethernet/realtek/r8169_phy_config.c
->>>> +++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
->>>> @@ -1243,6 +1243,84 @@ static void rtl8125_2_hw_phy_config(struct 
->>>> rtl8169_private *tp,
->>>>       rtl8125_config_eee_phy(phydev);
->>>>   }
->>>>
->>>> +
->>>> +static void rtl8168d_hw_phy_pre_config_actions(struct 
->>>> rtl8169_private *tp,
->>>> +                            struct phy_device *phydev)
->>>> +{
->>>> +    /* Reset the PHY before configuration. There is BIOS bug that 
->>>> gives
->>>> +     * random PHY ID when device is not soft resetted first. --lja
->>>> +     */
->>>> +    genphy_soft_reset(phydev);
->>>> +}
->>>> +
->>>> +
->>>> +
->>>> +void r8169_hw_phy_pre_config_actions(struct rtl8169_private *tp, 
->>>> struct phy_device *phydev,
->>>> +                    enum mac_version ver)
->>>> +{
->>>> +    static const rtl_phy_cfg_fct phy_pre_config_actions[] = {
->>>> +        /* PCI devices. */
->>>> +        [RTL_GIGA_MAC_VER_02] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_03] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_04] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_05] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_06] = NULL,
->>>> +        /* PCI-E devices. */
->>>> +        [RTL_GIGA_MAC_VER_07] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_08] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_09] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_10] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_11] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_12] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_13] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_14] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_15] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_16] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_17] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_18] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_19] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_20] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_21] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_22] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_23] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_24] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_25] = rtl8168d_hw_phy_pre_config_actions,
->>>> +        [RTL_GIGA_MAC_VER_26] = rtl8168d_hw_phy_pre_config_actions,
->>>> +        [RTL_GIGA_MAC_VER_27] = rtl8168d_hw_phy_pre_config_actions,
->>>> +        [RTL_GIGA_MAC_VER_28] = rtl8168d_hw_phy_pre_config_actions,
->>>> +        [RTL_GIGA_MAC_VER_29] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_30] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_31] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_32] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_33] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_34] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_35] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_36] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_37] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_38] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_39] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_40] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_41] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_42] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_43] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_44] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_45] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_46] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_47] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_48] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_49] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_50] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_51] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_52] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_60] = NULL,
->>>> +        [RTL_GIGA_MAC_VER_61] = NULL,
->>>> +    };
->>>> +
->>>> +    if (phy_pre_config_actions[ver])
->>>> +        phy_pre_config_actions[ver](tp, phydev);
->>>> +}
->>>> +
->>>> +
->>>>   void r8169_hw_phy_config(struct rtl8169_private *tp, struct 
->>>> phy_device *phydev,
->>>>                enum mac_version ver)
->>>>   {
->>>> @@ -1303,6 +1381,8 @@ void r8169_hw_phy_config(struct 
->>>> rtl8169_private *tp, struct phy_device *phydev,
->>>>           [RTL_GIGA_MAC_VER_60] = rtl8125_1_hw_phy_config,
->>>>           [RTL_GIGA_MAC_VER_61] = rtl8125_2_hw_phy_config,
->>>>       };
->>>> +
->>>> +    r8169_hw_phy_pre_config_actions(tp, phydev);
->>>>
->>>>       if (phy_configs[ver])
->>>>           phy_configs[ver](tp, phydev);
->>>> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
->>>> index 66b8c61ca74c..b170185a1ed1 100644
->>>> --- a/drivers/net/phy/phy-core.c
->>>> +++ b/drivers/net/phy/phy-core.c
->>>> @@ -151,6 +151,25 @@ static const struct phy_setting settings[] = {
->>>>   };
->>>>   #undef PHY_SETTING
->>>>
->>>> +#ifdef DEBUG
->>>> +#define R8169_ATTACHED_PRINTK \
->>>> +    printk("Phy is attached check %s @ %d: %d\n", \
->>>> +    __FUNC__, __LINE__, is_attached_check);
->>>> +
->>>> +#else
->>>> +#define R8169_ATTACHED_PRINTK
->>>> +#endif
->>>> +
->>>> +#define PHY_NOT_ATTACHED_CHECK \
->>>> +    { \
->>>> +        void *attached_dev_ptr = (phydev) ? phydev->attached_dev : 
->>>> NULL; \
->>>> +        int is_attached_check = (attached_dev_ptr != NULL) && \
->>>> +                                ((phydev) && (phydev->state >= 
->>>> PHY_READY)); \
->>>> +        R8169_ATTACHED_PRINTK \
->>>> +        if (! is_attached_check ) return -EOPNOTSUPP; \
->>>> +    };
->>>> +
->>>> +
->>>>   /**
->>>>    * phy_lookup_setting - lookup a PHY setting
->>>>    * @speed: speed to match
->>>> @@ -457,6 +476,9 @@ int phy_read_mmd(struct phy_device *phydev, int 
->>>> devad, u32 regnum)
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_read_mmd(phydev, devad, regnum);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -479,6 +501,9 @@ int __phy_write_mmd(struct phy_device *phydev, 
->>>> int devad, u32 regnum, u16 val)
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       if (regnum > (u16)~0 || devad > 32)
->>>>           return -EINVAL;
->>>>
->>>> @@ -518,6 +543,9 @@ int phy_write_mmd(struct phy_device *phydev, 
->>>> int devad, u32 regnum, u16 val)
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_write_mmd(phydev, devad, regnum, val);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -543,6 +571,10 @@ int phy_modify_changed(struct phy_device 
->>>> *phydev, u32 regnum, u16 mask, u16 set)
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_modify_changed(phydev, regnum, mask, set);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -587,6 +619,9 @@ int phy_modify(struct phy_device *phydev, u32 
->>>> regnum, u16 mask, u16 set)
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_modify(phydev, regnum, mask, set);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -613,6 +648,9 @@ int __phy_modify_mmd_changed(struct phy_device 
->>>> *phydev, int devad, u32 regnum,
->>>>   {
->>>>       int new, ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       ret = __phy_read_mmd(phydev, devad, regnum);
->>>>       if (ret < 0)
->>>>           return ret;
->>>> @@ -646,6 +684,10 @@ int phy_modify_mmd_changed(struct phy_device 
->>>> *phydev, int devad, u32 regnum,
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_modify_mmd_changed(phydev, devad, regnum, mask, 
->>>> set);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -671,6 +713,9 @@ int __phy_modify_mmd(struct phy_device *phydev, 
->>>> int devad, u32 regnum,
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       ret = __phy_modify_mmd_changed(phydev, devad, regnum, mask, 
->>>> set);
->>>>
->>>>       return ret < 0 ? ret : 0;
->>>> @@ -694,6 +739,9 @@ int phy_modify_mmd(struct phy_device *phydev, 
->>>> int devad, u32 regnum,
->>>>   {
->>>>       int ret;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       phy_lock_mdio_bus(phydev);
->>>>       ret = __phy_modify_mmd(phydev, devad, regnum, mask, set);
->>>>       phy_unlock_mdio_bus(phydev);
->>>> @@ -704,7 +752,11 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
->>>>
->>>>   static int __phy_read_page(struct phy_device *phydev)
->>>>   {
->>>> -    if (WARN_ONCE(!phydev->drv->read_page, "read_page callback not 
->>>> available, PHY driver not loaded?\n"))
->>>> +
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +    if (WARN(!phydev->drv->read_page, "read_page callback not 
->>>> available, PHY driver not loaded?\n"))
->>>>           return -EOPNOTSUPP;
->>>>
->>>>       return phydev->drv->read_page(phydev);
->>>> @@ -712,12 +764,16 @@ static int __phy_read_page(struct phy_device 
->>>> *phydev)
->>>>
->>>>   static int __phy_write_page(struct phy_device *phydev, int page)
->>>>   {
->>>> -    if (WARN_ONCE(!phydev->drv->write_page, "write_page callback 
->>>> not available, PHY driver not loaded?\n"))
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +    if (WARN(!phydev->drv->write_page, "write_page callback not 
->>>> available, PHY driver not loaded?\n"))
->>>>           return -EOPNOTSUPP;
->>>>
->>>>       return phydev->drv->write_page(phydev, page);
->>>>   }
->>>>
->>>> +
->>>>   /**
->>>>    * phy_save_page() - take the bus lock and save the current page
->>>>    * @phydev: a pointer to a &struct phy_device
->>>> @@ -728,7 +784,11 @@ static int __phy_write_page(struct phy_device 
->>>> *phydev, int page)
->>>>    */
->>>>   int phy_save_page(struct phy_device *phydev)
->>>>   {
->>>> -    phy_lock_mdio_bus(phydev);
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +
->>>> +    phy_lock_mdio_bus(phydev);
->>>>       return __phy_read_page(phydev);
->>>>   }
->>>>   EXPORT_SYMBOL_GPL(phy_save_page);
->>>> @@ -748,7 +808,10 @@ int phy_select_page(struct phy_device *phydev, 
->>>> int page)
->>>>   {
->>>>       int ret, oldpage;
->>>>
->>>> -    oldpage = ret = phy_save_page(phydev);
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +    oldpage = ret = phy_save_page(phydev);
->>>>       if (ret < 0)
->>>>           return ret;
->>>>
->>>> @@ -782,6 +845,9 @@ int phy_restore_page(struct phy_device *phydev, 
->>>> int oldpage, int ret)
->>>>   {
->>>>       int r;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>>       if (oldpage >= 0) {
->>>>           r = __phy_write_page(phydev, oldpage);
->>>>
->>>> @@ -812,6 +878,9 @@ EXPORT_SYMBOL_GPL(phy_restore_page);
->>>>   int phy_read_paged(struct phy_device *phydev, int page, u32 regnum)
->>>>   {
->>>>       int ret = 0, oldpage;
->>>> +
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>>
->>>>       oldpage = phy_select_page(phydev, page);
->>>>       if (oldpage >= 0)
->>>> @@ -834,6 +903,10 @@ int phy_write_paged(struct phy_device *phydev, 
->>>> int page, u32 regnum, u16 val)
->>>>   {
->>>>       int ret = 0, oldpage;
->>>>
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +
->>>>       oldpage = phy_select_page(phydev, page);
->>>>       if (oldpage >= 0)
->>>>           ret = __phy_write(phydev, regnum, val);
->>>> @@ -856,6 +929,9 @@ int phy_modify_paged_changed(struct phy_device 
->>>> *phydev, int page, u32 regnum,
->>>>                    u16 mask, u16 set)
->>>>   {
->>>>       int ret = 0, oldpage;
->>>> +
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>>
->>>>       oldpage = phy_select_page(phydev, page);
->>>>       if (oldpage >= 0)
->>>> @@ -878,7 +954,12 @@ EXPORT_SYMBOL(phy_modify_paged_changed);
->>>>   int phy_modify_paged(struct phy_device *phydev, int page, u32 
->>>> regnum,
->>>>                u16 mask, u16 set)
->>>>   {
->>>> -    int ret = phy_modify_paged_changed(phydev, page, regnum, mask, 
->>>> set);
->>>> +    int ret = -1;
->>>> +
->>>> +    /* If not attached, do nothing. */
->>>> +    PHY_NOT_ATTACHED_CHECK;
->>>> +
->>>> +    ret = phy_modify_paged_changed(phydev, page, regnum, mask, set);
->>>>
->>>>       return ret < 0 ? ret : 0;
->>>>   }
->>> here is the polished patch:
->>>
->>>  From 6dd6f2813c543dc728efb8dca796bbbe870bd031 Mon Sep 17 00:00:00 2001
->>> From: Lauri Jakku <lja@iki.fi>
->>> Date: Thu, 16 Apr 2020 00:38:51 +0300
->>> Subject: [PATCH] NET: r8169 driver identifying improvement.
->>>
->>> Trust device MAC enum + r8169d NIC soft reset
->>> before configuration.
->>>
->>> This commit adds enumeration check and allows
->>> driver to be slow to attach.
->>>
->>> Signed-off-by: Lauri Jakku <lja@iki.fi>
->>> ---
->>>   drivers/net/ethernet/realtek/r8169_main.c     | 21 +++--
->>>   .../net/ethernet/realtek/r8169_phy_config.c   | 80 
->>> +++++++++++++++++++
->>>   2 files changed, 93 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
->>> b/drivers/net/ethernet/realtek/r8169_main.c
->>> index bf5bf05970a2..6828e755a460 100644
->>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>> @@ -640,7 +640,6 @@ MODULE_AUTHOR("Realtek and the Linux r8169 crew 
->>> <netdev@vger.kernel.org>");
->>>   MODULE_DESCRIPTION("RealTek RTL-8169 Gigabit Ethernet driver");
->>>   module_param_named(debug, debug.msg_enable, int, 0);
->>>   MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 
->>> 16=all)");
->>> -MODULE_SOFTDEP("pre: realtek");
->>>   MODULE_LICENSE("GPL");
->>>   MODULE_FIRMWARE(FIRMWARE_8168D_1);
->>>   MODULE_FIRMWARE(FIRMWARE_8168D_2);
->>> @@ -5172,13 +5171,18 @@ static int r8169_mdio_register(struct 
->>> rtl8169_private *tp)
->>>       if (!tp->phydev) {
->>>           mdiobus_unregister(new_bus);
->>>           return -ENODEV;
->>> -    } else if (!tp->phydev->drv) {
->>> -        /* Most chip versions fail with the genphy driver.
->>> -         * Therefore ensure that the dedicated PHY driver is loaded.
->>> -         */
->>> -        dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs 
->>> to be added to initramfs?\n");
->>> -        mdiobus_unregister(new_bus);
->>> -        return -EUNATCH;
->>> +    } else {
->>> +        dev_info(&pdev->dev, "PHY version: 0x%x\n", 
->>> tp->phydev->phy_id);
->>> +        dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
->>> +
->>> +        if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>> +            /* Most chip versions fail with the genphy driver.
->>> +             * Therefore ensure that the dedicated PHY driver is 
->>> loaded.
->>> +             */
->>> +            dev_err(&pdev->dev, "Not known MAC/PHY version.\n");
->>> +            mdiobus_unregister(new_bus);
->>> +            return -EUNATCH;
->>> +        }
->>>       }
->>>
->>>       /* PHY will be woken up in rtl_open() */
->>> @@ -5532,6 +5536,7 @@ static int rtl_init_one(struct pci_dev *pdev, 
->>> const struct pci_device_id *ent)
->>>       return rc;
->>>   }
->>>
->>> +
->>>   static struct pci_driver rtl8169_pci_driver = {
->>>       .name        = MODULENAME,
->>>       .id_table    = rtl8169_pci_tbl,
->>> diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c 
->>> b/drivers/net/ethernet/realtek/r8169_phy_config.c
->>> index b73f7d023e99..f13f68b79a92 100644
->>> --- a/drivers/net/ethernet/realtek/r8169_phy_config.c
->>> +++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
->>> @@ -1243,6 +1243,84 @@ static void rtl8125_2_hw_phy_config(struct 
->>> rtl8169_private *tp,
->>>       rtl8125_config_eee_phy(phydev);
->>>   }
->>>
->>> +
->>> +static void rtl8168d_hw_phy_pre_config_actions(struct 
->>> rtl8169_private *tp,
->>> +                            struct phy_device *phydev)
->>> +{
->>> +    /* Reset the PHY before configuration. There is BIOS bug that 
->>> gives
->>> +     * random PHY ID when device is not soft resetted first. --lja
->>> +     */
->>> +    genphy_soft_reset(phydev);
->>> +}
->>> +
->>> +
->>> +
->>> +void r8169_hw_phy_pre_config_actions(struct rtl8169_private *tp, 
->>> struct phy_device *phydev,
->>> +                    enum mac_version ver)
->>> +{
->>> +    static const rtl_phy_cfg_fct phy_pre_config_actions[] = {
->>> +        /* PCI devices. */
->>> +        [RTL_GIGA_MAC_VER_02] = NULL,
->>> +        [RTL_GIGA_MAC_VER_03] = NULL,
->>> +        [RTL_GIGA_MAC_VER_04] = NULL,
->>> +        [RTL_GIGA_MAC_VER_05] = NULL,
->>> +        [RTL_GIGA_MAC_VER_06] = NULL,
->>> +        /* PCI-E devices. */
->>> +        [RTL_GIGA_MAC_VER_07] = NULL,
->>> +        [RTL_GIGA_MAC_VER_08] = NULL,
->>> +        [RTL_GIGA_MAC_VER_09] = NULL,
->>> +        [RTL_GIGA_MAC_VER_10] = NULL,
->>> +        [RTL_GIGA_MAC_VER_11] = NULL,
->>> +        [RTL_GIGA_MAC_VER_12] = NULL,
->>> +        [RTL_GIGA_MAC_VER_13] = NULL,
->>> +        [RTL_GIGA_MAC_VER_14] = NULL,
->>> +        [RTL_GIGA_MAC_VER_15] = NULL,
->>> +        [RTL_GIGA_MAC_VER_16] = NULL,
->>> +        [RTL_GIGA_MAC_VER_17] = NULL,
->>> +        [RTL_GIGA_MAC_VER_18] = NULL,
->>> +        [RTL_GIGA_MAC_VER_19] = NULL,
->>> +        [RTL_GIGA_MAC_VER_20] = NULL,
->>> +        [RTL_GIGA_MAC_VER_21] = NULL,
->>> +        [RTL_GIGA_MAC_VER_22] = NULL,
->>> +        [RTL_GIGA_MAC_VER_23] = NULL,
->>> +        [RTL_GIGA_MAC_VER_24] = NULL,
->>> +        [RTL_GIGA_MAC_VER_25] = rtl8168d_hw_phy_pre_config_actions,
->>> +        [RTL_GIGA_MAC_VER_26] = rtl8168d_hw_phy_pre_config_actions,
->>> +        [RTL_GIGA_MAC_VER_27] = rtl8168d_hw_phy_pre_config_actions,
->>> +        [RTL_GIGA_MAC_VER_28] = rtl8168d_hw_phy_pre_config_actions,
->>> +        [RTL_GIGA_MAC_VER_29] = NULL,
->>> +        [RTL_GIGA_MAC_VER_30] = NULL,
->>> +        [RTL_GIGA_MAC_VER_31] = NULL,
->>> +        [RTL_GIGA_MAC_VER_32] = NULL,
->>> +        [RTL_GIGA_MAC_VER_33] = NULL,
->>> +        [RTL_GIGA_MAC_VER_34] = NULL,
->>> +        [RTL_GIGA_MAC_VER_35] = NULL,
->>> +        [RTL_GIGA_MAC_VER_36] = NULL,
->>> +        [RTL_GIGA_MAC_VER_37] = NULL,
->>> +        [RTL_GIGA_MAC_VER_38] = NULL,
->>> +        [RTL_GIGA_MAC_VER_39] = NULL,
->>> +        [RTL_GIGA_MAC_VER_40] = NULL,
->>> +        [RTL_GIGA_MAC_VER_41] = NULL,
->>> +        [RTL_GIGA_MAC_VER_42] = NULL,
->>> +        [RTL_GIGA_MAC_VER_43] = NULL,
->>> +        [RTL_GIGA_MAC_VER_44] = NULL,
->>> +        [RTL_GIGA_MAC_VER_45] = NULL,
->>> +        [RTL_GIGA_MAC_VER_46] = NULL,
->>> +        [RTL_GIGA_MAC_VER_47] = NULL,
->>> +        [RTL_GIGA_MAC_VER_48] = NULL,
->>> +        [RTL_GIGA_MAC_VER_49] = NULL,
->>> +        [RTL_GIGA_MAC_VER_50] = NULL,
->>> +        [RTL_GIGA_MAC_VER_51] = NULL,
->>> +        [RTL_GIGA_MAC_VER_52] = NULL,
->>> +        [RTL_GIGA_MAC_VER_60] = NULL,
->>> +        [RTL_GIGA_MAC_VER_61] = NULL,
->>> +    };
->>> +
->>> +    if (phy_pre_config_actions[ver])
->>> +        phy_pre_config_actions[ver](tp, phydev);
->>> +}
->>> +
->>> +
->>>   void r8169_hw_phy_config(struct rtl8169_private *tp, struct 
->>> phy_device *phydev,
->>>                enum mac_version ver)
->>>   {
->>> @@ -1304,6 +1382,8 @@ void r8169_hw_phy_config(struct 
->>> rtl8169_private *tp, struct phy_device *phydev,
->>>           [RTL_GIGA_MAC_VER_61] = rtl8125_2_hw_phy_config,
->>>       };
->>>
->>> +    r8169_hw_phy_pre_config_actions(tp, phydev, ver);
->>> +
->>>       if (phy_configs[ver])
->>>           phy_configs[ver](tp, phydev);
->>>   }
->> The PHY ID is checked from devm_mdiobus_register(), you're way too late
->> with the soft reset. Also I said if a quirk is needed then it has to be
->> board-specific. This is not a problem of the chip version in general.
->> What you do in r8169_mdio_register() is simply wrong.
->> Last but not least you mix 100 different things in one patch.
->
-> There is no devm_mdiobus_register() and the (pre) configuration is 
-> done way before any registering is done? I check few boots and clean 
-> up the patch with check tool, and post then.
->
->
-net: ethernet: realtek: r8168 / r8169 driver fix.
-
-There is issue with tp->phydev->drv: It never gets non-null value
-while driver is probed first time -> modify the driver check to
-trust MAC information fetched from HW.
-
-Something does not run/register PHY interface properly ->
-the attachment is done way later -> driver does not work
-properly.
-
-Function phy_probe is not called in first module loading.
-
-Line from drivers/net/phy/phy_device.c witch is not executed when
-loading first time:
---------------------
-static int phy_probe(struct device *dev)
-{
-         struct phy_device *phydev = to_phy_device(dev);
-         struct device_driver *drv = phydev->mdio.dev.driver;
-         struct phy_driver *phydrv = to_phy_driver(drv);
-         int err = 0;
-
-         phydev->drv = phydrv; <--- This is never done in probe
-                                    of r8169_main.c
--------------------
-
-That line is not executed when driver is loaded with modprobe,
-but when unload->reload is done, it is ok.
-
-
-
---------------6DAEF96B9F129FD60CC37854
-Content-Type: text/x-patch; charset=UTF-8;
- name="0001-net-ethernet-realtek-r8168-r8169-driver-fix.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="0001-net-ethernet-realtek-r8168-r8169-driver-fix.patch"
-
-From 8e687ddb949214d5f9cb581db7d0246af3556a54 Mon Sep 17 00:00:00 2001
-From: Lauri Jakku <lja@iki.fi>
-Date: Sun, 17 May 2020 15:04:51 +0300
-Subject: [PATCH] net: ethernet: realtek: r8168 / r8169 driver fix.
-
-There is issue with tp->phydev->drv: It never gets non-null value
-while driver is probed first time -> modify the driver check to
-trust MAC information fetched from HW.
-
-Something does not run/register PHY interface properly ->
-the attachment is done way later -> driver does not work
-properly.
-
-Function phy_probe is not called in first module loading.
-
-Line from drivers/net/phy/phy_device.c witch is not executed when
-loading first time:
---------------------
-static int phy_probe(struct device *dev)
-{
-        struct phy_device *phydev = to_phy_device(dev);
-        struct device_driver *drv = phydev->mdio.dev.driver;
-        struct phy_driver *phydrv = to_phy_driver(drv);
-        int err = 0;
-
-        phydev->drv = phydrv; <--- This is never done in probe
-                                   of r8169_main.c
--------------------
-
-That line is not executed when driver is loaded with modprobe,
-but when load->remove->reload cycle is done, it is ok.
----
- drivers/net/ethernet/realtek/r8169_main.c | 20 +++---
- drivers/net/phy/phy-core.c                | 76 ++++++++++++++++++++++-
- drivers/net/phy/phy_device.c              |  4 +-
- 3 files changed, 89 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index bf5bf05970a2..1ad5fb591621 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5172,15 +5172,19 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 	if (!tp->phydev) {
- 		mdiobus_unregister(new_bus);
- 		return -ENODEV;
--	} else if (!tp->phydev->drv) {
--		/* Most chip versions fail with the genphy driver.
--		 * Therefore ensure that the dedicated PHY driver is loaded.
--		 */
--		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
--		mdiobus_unregister(new_bus);
--		return -EUNATCH;
-+       } else {
-+               dev_info(&pdev->dev, "PHY version: 0x%x\n", tp->phydev->phy_id);
-+               dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
-+
-+               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
-+                       /* Most chip versions fail with the genphy driver.
-+                        * Therefore ensure that the dedicated PHY driver is loaded.
-+                        */
-+                       dev_err(&pdev->dev, "Not known MAC/PHY version.\n", tp->phydev->phy_id);
-+                       mdiobus_unregister(new_bus);
-+                       return -EUNATCH;
-+               }
- 	}
--
- 	/* PHY will be woken up in rtl_open() */
- 	phy_suspend(tp->phydev);
- 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 66b8c61ca74c..809ad2f943d3 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -151,6 +151,18 @@ static const struct phy_setting settings[] = {
- };
- #undef PHY_SETTING
- 
-+#define PHY_NOT_ATTACHED_CHECK \
-+       { \
-+               void *attached_dev_ptr = (phydev) ? phydev->attached_dev : NULL; \
-+               if (! ( \
-+                       (attached_dev_ptr) && \
-+                       (phydev->state >= PHY_READY) \
-+                      ) \
-+                  ) \
-+                       return -EOPNOTSUPP; \
-+       };
-+
-+
- /**
-  * phy_lookup_setting - lookup a PHY setting
-  * @speed: speed to match
-@@ -457,6 +469,9 @@ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_read_mmd(phydev, devad, regnum);
- 	phy_unlock_mdio_bus(phydev);
-@@ -479,6 +494,9 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	if (regnum > (u16)~0 || devad > 32)
- 		return -EINVAL;
- 
-@@ -518,6 +536,9 @@ int phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_write_mmd(phydev, devad, regnum, val);
- 	phy_unlock_mdio_bus(phydev);
-@@ -543,6 +564,9 @@ int phy_modify_changed(struct phy_device *phydev, u32 regnum, u16 mask, u16 set)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_modify_changed(phydev, regnum, mask, set);
- 	phy_unlock_mdio_bus(phydev);
-@@ -566,6 +590,9 @@ int __phy_modify(struct phy_device *phydev, u32 regnum, u16 mask, u16 set)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	ret = __phy_modify_changed(phydev, regnum, mask, set);
- 
- 	return ret < 0 ? ret : 0;
-@@ -587,6 +614,9 @@ int phy_modify(struct phy_device *phydev, u32 regnum, u16 mask, u16 set)
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_modify(phydev, regnum, mask, set);
- 	phy_unlock_mdio_bus(phydev);
-@@ -613,6 +643,9 @@ int __phy_modify_mmd_changed(struct phy_device *phydev, int devad, u32 regnum,
- {
- 	int new, ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	ret = __phy_read_mmd(phydev, devad, regnum);
- 	if (ret < 0)
- 		return ret;
-@@ -646,6 +679,9 @@ int phy_modify_mmd_changed(struct phy_device *phydev, int devad, u32 regnum,
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_modify_mmd_changed(phydev, devad, regnum, mask, set);
- 	phy_unlock_mdio_bus(phydev);
-@@ -671,6 +707,9 @@ int __phy_modify_mmd(struct phy_device *phydev, int devad, u32 regnum,
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	ret = __phy_modify_mmd_changed(phydev, devad, regnum, mask, set);
- 
- 	return ret < 0 ? ret : 0;
-@@ -694,6 +733,9 @@ int phy_modify_mmd(struct phy_device *phydev, int devad, u32 regnum,
- {
- 	int ret;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	ret = __phy_modify_mmd(phydev, devad, regnum, mask, set);
- 	phy_unlock_mdio_bus(phydev);
-@@ -704,6 +746,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
- 
- static int __phy_read_page(struct phy_device *phydev)
- {
-+
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	if (WARN_ONCE(!phydev->drv->read_page, "read_page callback not available, PHY driver not loaded?\n"))
- 		return -EOPNOTSUPP;
- 
-@@ -712,6 +758,10 @@ static int __phy_read_page(struct phy_device *phydev)
- 
- static int __phy_write_page(struct phy_device *phydev, int page)
- {
-+
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	if (WARN_ONCE(!phydev->drv->write_page, "write_page callback not available, PHY driver not loaded?\n"))
- 		return -EOPNOTSUPP;
- 
-@@ -728,6 +778,10 @@ static int __phy_write_page(struct phy_device *phydev, int page)
-  */
- int phy_save_page(struct phy_device *phydev)
- {
-+
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	phy_lock_mdio_bus(phydev);
- 	return __phy_read_page(phydev);
- }
-@@ -748,6 +802,9 @@ int phy_select_page(struct phy_device *phydev, int page)
- {
- 	int ret, oldpage;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	oldpage = ret = phy_save_page(phydev);
- 	if (ret < 0)
- 		return ret;
-@@ -782,6 +839,9 @@ int phy_restore_page(struct phy_device *phydev, int oldpage, int ret)
- {
- 	int r;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	if (oldpage >= 0) {
- 		r = __phy_write_page(phydev, oldpage);
- 
-@@ -813,6 +873,9 @@ int phy_read_paged(struct phy_device *phydev, int page, u32 regnum)
- {
- 	int ret = 0, oldpage;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	oldpage = phy_select_page(phydev, page);
- 	if (oldpage >= 0)
- 		ret = __phy_read(phydev, regnum);
-@@ -834,6 +897,9 @@ int phy_write_paged(struct phy_device *phydev, int page, u32 regnum, u16 val)
- {
- 	int ret = 0, oldpage;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	oldpage = phy_select_page(phydev, page);
- 	if (oldpage >= 0)
- 		ret = __phy_write(phydev, regnum, val);
-@@ -857,6 +923,9 @@ int phy_modify_paged_changed(struct phy_device *phydev, int page, u32 regnum,
- {
- 	int ret = 0, oldpage;
- 
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
- 	oldpage = phy_select_page(phydev, page);
- 	if (oldpage >= 0)
- 		ret = __phy_modify_changed(phydev, regnum, mask, set);
-@@ -878,7 +947,12 @@ EXPORT_SYMBOL(phy_modify_paged_changed);
- int phy_modify_paged(struct phy_device *phydev, int page, u32 regnum,
- 		     u16 mask, u16 set)
- {
--	int ret = phy_modify_paged_changed(phydev, page, regnum, mask, set);
-+	int ret;
-+
-+	/* If phy not attached, do nothing */
-+	PHY_NOT_ATTACHED_CHECK
-+
-+	ret = phy_modify_paged_changed(phydev, page, regnum, mask, set);
- 
- 	return ret < 0 ? ret : 0;
- }
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ac2784192472..3aff74bfead0 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1352,8 +1352,6 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 
- 	phydev->interface = interface;
- 
--	phydev->state = PHY_READY;
--
- 	/* Initial carrier state is off as the phy is about to be
- 	 * (re)initialized.
- 	 */
-@@ -1371,6 +1369,8 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 	phy_resume(phydev);
- 	phy_led_triggers_register(phydev);
- 
-+	phydev->state = PHY_READY;
-+
- 	return err;
- 
- error:
--- 
-2.26.2
-
-
---------------6DAEF96B9F129FD60CC37854--
+SGkgSmFrZSwNCg0KPiBGcm9tOiBuZXRkZXYtb3duZXJAdmdlci5rZXJuZWwub3JnIDxuZXRkZXYt
+b3duZXJAdmdlci5rZXJuZWwub3JnPiBPbg0KPiBCZWhhbGYgT2YgSmFjb2IgS2VsbGVyDQo+IA0K
+PiANCj4gT24gNS8xNy8yMDIwIDExOjUyIFBNLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiA+IEZyaSwg
+TWF5IDE1LCAyMDIwIGF0IDExOjM2OjE5UE0gQ0VTVCwgamFjb2IuZS5rZWxsZXJAaW50ZWwuY29t
+IHdyb3RlOg0KPiA+Pg0KPiA+Pg0KPiA+PiBPbiA1LzE1LzIwMjAgMjozMCBBTSwgSmlyaSBQaXJr
+byB3cm90ZToNCj4gPj4+IEZyaSwgTWF5IDE1LCAyMDIwIGF0IDAxOjUyOjU0QU0gQ0VTVCwgamFj
+b2IuZS5rZWxsZXJAaW50ZWwuY29tIHdyb3RlOg0KPiA+Pj4+PiAkIGRldmxpbmsgcG9ydCBhZGQg
+cGNpLzAwMDAuMDYuMDAuMC8xMDAgZmxhdm91ciBwY2lzZiBwZm51bSAxDQo+ID4+Pj4+IHNmbnVt
+IDEwDQo+ID4+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBDYW4geW91IGNsYXJpZnkgd2hhdCBzZm51bSBt
+ZWFucyBoZXJlPyBhbmQgd2h5IGlzIGl0IGRpZmZlcmVudCBmcm9tDQo+ID4+Pj4gdGhlIGluZGV4
+PyBJIGdldCB0aGF0IHRoZSBpbmRleCBpcyBhIHVuaXF1ZSBudW1iZXIgdGhhdCBpZGVudGlmaWVz
+DQo+ID4+Pj4gdGhlIHBvcnQgcmVnYXJkbGVzcyBvZiB0eXBlLCBzbyBzZm51bSBtdXN0IGJlIHNv
+bWUgc29ydCBvZiBoYXJkd2FyZQ0KPiA+Pj4+IGludGVybmFsIGlkZW50aWZpZXI/DQo+ID4+Pg0K
+PiA+Pj4gQmFzaWNhbGx5IHBmbnVtLCBzZm51bSBhbmQgdmZudW0gY291bGQgb3ZlcmxhcC4gSW5k
+ZXggaXMgdW5pcXVlDQo+ID4+PiB3aXRoaW4gYWxsIGdyb3VwcyB0b2dldGhlci4NCj4gPj4+DQo+
+ID4+DQo+ID4+IFJpZ2h0LiBJbmRleCBpcyBqdXN0IGFuIGlkZW50aWZpZXIgZm9yIHdoaWNoIHBv
+cnQgdGhpcyBpcy4NCj4gPj4NCj4gDQo+IE9rLCBzbyB3aGV0aGVyIG9yIG5vdCBhIGRyaXZlciB1
+c2VzIHRoaXMgaW50ZXJuYWxseSBpcyBhbiBpbXBsZW1lbnRhdGlvbg0KPiBkZXRhaWwgdGhhdCBk
+b2Vzbid0IG1hdHRlciB0byB0aGUgaW50ZXJmYWNlLg0KPiANCj4gDQo+ID4+Pg0KPiA+Pj4+DQo+
+ID4+Pj4gV2hlbiBsb29raW5nIGF0IHRoaXMgd2l0aCBjb2xsZWFndWVzLCB0aGVyZSB3YXMgYSBs
+b3Qgb2YgY29uZnVzaW9uDQo+ID4+Pj4gYWJvdXQgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUg
+aW5kZXggYW5kIHRoZSBzZm51bS4NCj4gPj4+DQo+ID4+PiBObyBjb25mdXNpb24gYWJvdXQgaW5k
+ZXggYW5kIHBmbnVtL3ZmbnVtPyBUaGV5IGJlaGF2ZSB0aGUgc2FtZS4NCj4gPj4+IEluZGV4IGlz
+IGp1c3QgYSBwb3J0IGhhbmRsZS4NCj4gPj4+DQo+ID4+DQo+ID4+IEknbSBsZXNzIGNvbmZ1c2Vk
+IGFib3V0IHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gaW5kZXggYW5kIHRoZXNlDQo+ID4+ICJudW1z
+IiwgYW5kIG1vcmUgc28gcXVlc3Rpb25pbmcgd2hhdCBwZm51bS92Zm51bS9zZm51bSByZXByZXNl
+bnQ/DQo+IEFyZQ0KPiA+PiB0aGV5IHNpbWlsYXIgdG8gdGhlIHZmIElEIHRoYXQgd2UgaGF2ZSBp
+biB0aGUgbGVnYWN5IFNSSU9WIGZ1bmN0aW9ucz8NCj4gPj4gSS5lLiBhIGhhcmR3YXJlIGluZGV4
+Pw0KPiA+Pg0KPiA+PiBJIGRvbid0IHRoaW5rIGluIGdlbmVyYWwgdXNlcnMgbmVjZXNzYXJpbHkg
+Y2FyZSB3aGljaCAiaW5kZXgiIHRoZXkNCj4gPj4gZ2V0IHVwZnJvbnQuIFRoZXkgb2J2aW91c2x5
+IHZlcnkgbXVjaCBjYXJlIGFib3V0IHRoZSBpbmRleCBvbmNlIGl0J3MNCj4gPj4gc2VsZWN0ZWQu
+IEkgZG8gYmVsaWV2ZSB0aGUgaW50ZXJmYWNlcyBzaG91bGQgc3RhcnQgd2l0aCB0aGUNCj4gPj4g
+Y2FwYWJpbGl0eSBmb3IgdGhlIGluZGV4IHRvIGJlIHNlbGVjdGVkIGF1dG9tYXRpY2FsbHkgYXQg
+Y3JlYXRpb24NCj4gPj4gKHdpdGggdGhlIG9wdGlvbmFsIGNhcGFiaWxpdHkgdG8gc2VsZWN0IGEg
+c3BlY2lmaWMgaW5kZXggaWYgZGVzaXJlZCwgYXMgc2hvd24NCj4gaGVyZSkuDQo+ID4+DQo+ID4+
+IEkgZG8gbm90IHRoaW5rIG1vc3QgdXNlcnMgd2FudCB0byBjYXJlIGFib3V0IHdoYXQgdG8gcGlj
+ayBmb3IgdGhpcw0KPiA+PiBudW1iZXIuIChKdXN0IGFzIHRoZXkgd291bGQgbm90IHdhbnQgdG8g
+cGljayBhIG51bWJlciBmb3IgdGhlIHBvcnQNCj4gPj4gaW5kZXggZWl0aGVyKS4NCj4gPg0KPiA+
+IEkgc2VlIHlvdXIgcG9pbnQuIEhvd2V2ZXIgSSBkb24ndCB0aGluayBpdCBpcyBhbHdheXMgdGhl
+IHJpZ2h0DQo+ID4gc2NlbmFyaW8uIFRoZSAibnVtcyIgYXJlIHVzZWQgZm9yIG5hbWluZyBvZiB0
+aGUgbmV0ZGV2aWNlcywgYm90aCB0aGUNCj4gPiBlc3dpdGNoIHBvcnQgcmVwcmVzZW50b3IgYW5k
+IHRoZSBhY3R1YWwgU0YgKGluIGNhc2Ugb2YgU0YpLg0KPiA+DQo+ID4gSSB0aGluayB0aGF0IGlu
+IGxvdCBvZiB1c2VjYXNlcyBpcyBtb3JlIGNvbnZlbmllbnQgZm9yIHVzZXIgdG8gc2VsZWN0DQo+
+ID4gdGhlICJudW0iIG9uIHRoZSBjbWRsaW5lLg0KPiA+DQo+IA0KPiBBZ3JlZWQsIGJhc2VkIG9u
+IHRoZSBiZWxvdyBzdGF0ZW1lbnRzLiBCYXNpY2FsbHkgImxldCB1c2VycyBzcGVjaWZ5IG9yIGdl
+dCBpdA0KPiBhdXRvbWF0aWNhbGx5IGNob3NlbiIsIGp1c3QgbGlrZSB3aXRoIHRoZSBwb3J0IGlk
+ZW50aWZpZXIgYW5kIHdpdGggdGhlIHJlZ2lvbg0KPiBudW1iZXJzIG5vdy4NCj4gDQo+IA0KPiBU
+aGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbnMhDQo+IA0KPiA+Pg0KPiA+Pj4+IE9idmlvdXNseSB0
+aGlzIGlzIGEgVE9ETywgYnV0IGhvdyBkb2VzIHRoaXMgZGlmZmVyIGZyb20gdGhlIGN1cnJlbnQN
+Cj4gPj4+PiBwb3J0X3NwbGl0IGFuZCBwb3J0X3Vuc3BsaXQ/DQo+ID4+Pg0KPiA+Pj4gRG9lcyBu
+b3QgaGF2ZSBhbnl0aGluZyB0byBkbyB3aXRoIHBvcnQgc3BsaXR0aW5nLiBUaGlzIGlzIGFib3V0
+DQo+ID4+PiBjcmVhdGluZyBhICJjaGlsZCBQRiIgZnJvbSB0aGUgc2VjdGlvbiBhYm92ZS4NCj4g
+Pj4+DQo+ID4+DQo+ID4+IEhtbS4gT2sgc28gdGhpcyBpcyBhYm91dCBpbnRlcm5hbCBjb25uZWN0
+aW9ucyBpbiB0aGUgc3dpdGNoLCB0aGVuPw0KPiA+DQo+ID4gWWVzLiBUYWtlIHRoZSBzbWFydG5p
+YyBhcyBhbiBleGFtcGxlLiBPbiB0aGUgc21hcnRuaWMgY3B1LCB0aGUgZXN3aXRjaA0KPiA+IG1h
+bmFnZW1lbnQgaXMgYmVpbmcgZG9uZS4gVGhlcmUncyBkZXZsaW5rIGluc3RhbmNlIHdpdGggYWxs
+IGVzd2l0Y2gNCj4gPiBwb3J0IHZpc2libGUgYXMgZGV2bGluayBwb3J0cy4gT25lIFBGLXR5cGUg
+ZGV2bGluayBwb3J0IHBlciBob3N0LiBUaGF0DQo+ID4gYXJlIHRoZSAiY2hpbGQgUEZzIi4NCj4g
+Pg0KPiA+IE5vdyBmcm9tIHBlcnNwZWN0aXZlIG9mIHRoZSBob3N0LCB0aGVyZSBhcmUgMiBzY2Vu
+YXJpb3M6DQo+ID4gMSkgaGF2ZSB0aGUgInNpbXBsZSBkdW1iIiBQRiwgd2hpY2gganVzdCBleHBv
+c2VzIDEgbmV0ZGV2IGZvciBob3N0IHRvDQo+ID4gICAgcnVuIHRyYWZmaWMgb3Zlci4gc21hcnRu
+aWMgY3B1IG1hbmFnZXMgdGhlIFZGcy9TRnMgYW5kIHNlZXMgdGhlDQo+ID4gICAgZGV2bGluayBw
+b3J0cyBmb3IgdGhlbS4gVGhpcyBpcyAxIGxldmVsIHN3aXRjaCAtIG1lcmdlZCBzd2l0Y2gNCj4g
+Pg0KPiA+IDIpIFBGIG1hbmFnZXMgYSBzdWItc3dpdGNoL25lc3RlZC1zd2l0Y2guIFRoZSBkZXZs
+aW5rL2RldmxpbmsgcG9ydHMgYXJlDQo+ID4gICAgY3JlYXRlZCBvbiB0aGUgaG9zdCBhbmQgdGhl
+IGRldmxpbmsgcG9ydHMgZm9yIFNGcy9WRnMgYXJlIGNyZWF0ZWQNCj4gPiAgICB0aGVyZS4gVGhp
+cyBpcyBtdWx0aS1sZXZlbCBlc3dpdGNoLiBFYWNoICJjaGlsZCBQRiIgb24gYSBwYXJlbnQNCj4g
+PiAgICBtYW5hZ2VzIGEgbmVzdGVkIHN3aXRjaC4gQW5kIGNvdWxkIGluIHRoZW9yeSBoYXZlIG90
+aGVyIFBGIGNoaWxkIHdpdGgNCj4gPiAgICBhbm90aGVyIG5lc3RlZCBzd2l0Y2guDQo+ID4NCj4g
+DQo+IE9rLiBTbyBpbiB0aGUgc21hcnQgTklDIENQVSwgd2UnZCBzZWUgdGhlIHByaW1hcnkgUEYg
+YW5kIHNvbWUgY2hpbGQgUEZzLA0KPiBhbmQgaW4gdGhlIGhvc3Qgc3lzdGVtIHdlJ2Qgc2VlIGEg
+InByaW1hcnkgUEYiIHRoYXQgaXMgdGhlIG90aGVyIGVuZCBvZiB0aGUNCj4gYXNzb2NpYXRlZCBD
+aGlsZCBQRiwgYW5kIG1pZ2h0IGJlIGFibGUgdG8gbWFuYWdlIGl0cyBvd24gc3Vic3dpdGNoLg0K
+PiANCj4gT2sgdGhpcyBpcyBtYWtpbmcgbW9yZSBzZW5zZSBub3cuDQo+IA0KPiBJIHRoaW5rIEkg
+aGFkIGltYWdpbmVkIHRoYXQgd2FzIHdoYXQgc3ViZnVudGlvbnMgd2VyZS4gQnV0IHJlYWxseQ0K
+PiBzdWJmdW5jdGlvbnMgYXJlIGEgYml0IGRpZmZlcmVudCwgdGhleSdyZSBtb3JlIHNpbWlsYXIg
+dG8gZXhwYW5kZWQgVkZzPw0KPg0KIA0KMS4gU3ViIGZ1bmN0aW9ucyBhcmUgbW9yZSBsaWdodCB3
+ZWlnaHQgdGhhbiBWRnMgYmVjYXVzZSwNCjIuIFRoZXkgc2hhcmUgdGhlIHNhbWUgUENJIGRldmlj
+ZSAoQkFSLCBJUlFzKSBhcyB0aGF0IG9mIFBGL1ZGIG9uIHdoaWNoIGl0IGlzIGRlcGxveWVkLg0K
+My4gVW5saWtlIFZGcyB3aGljaCBhcmUgZW5hYmxlZC9kaXNhYmxlZCBpbiBidWxrLCBzdWJmdW5j
+dGlvbnMgYXJlIGNyZWF0ZWQsIGRlcGxveWVkIGluIHVuaXQgb2YgMS4NCg0KU2luY2UgdGhpcyBS
+RkMgY29udGVudCBpcyBvdmVyd2hlbG1pbmcsIEkgZXhwYW5kZWQgdGhlIFNGIHBsdW1iaW5nIGRl
+dGFpbHMgbW9yZSBpbiBbMV0gaW4gcHJldmlvdXMgUkZDIHZlcnNpb24uDQpZb3UgY2FuIHJlcGxh
+Y2UgJ2Rldmxpbmsgc2xpY2UnIHdpdGggJ2RldmxpbmsgcG9ydCBmdW5jJyBpbiBbMV0uDQoNClsx
+XSBodHRwczovL21hcmMuaW5mby8/bD1saW51eC1uZXRkZXYmbT0xNTg1NTU5Mjg1MTc3Nzcmdz0y
+DQo=
