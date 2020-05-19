@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E45D51D9C5D
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F921D9C70
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729473AbgESQUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 12:20:14 -0400
-Received: from mga11.intel.com ([192.55.52.93]:9797 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729001AbgESQUO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 12:20:14 -0400
-IronPort-SDR: o3RNfQZBKwvz4Azsv4w4nCsmLeeCOymg4C4ySIZDif8HUEJwXMtbyNHl0p5f1TAZLHGDpu6l8r
- /W7gN+x1SsoQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 09:20:14 -0700
-IronPort-SDR: eirhOS9d5jbEnEJW7qcNvSY8CvMw3KNxz3F3nzI3oNMNIvzXku6lZAwphlIZ54DxxvP2rce+z7
- 4XKPKDRag0ig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
-   d="scan'208";a="439672455"
-Received: from shochwel-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.38.72])
-  by orsmga005.jf.intel.com with ESMTP; 19 May 2020 09:20:10 -0700
-Subject: Re: [PATCH bpf-next v3 07/15] i40e: separate kernel allocated rx_bi
- rings from AF_XDP rings
-To:     kbuild test robot <lkp@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        jeffrey.t.kirsher@intel.com
-Cc:     kbuild-all@lists.01.org, maximmi@mellanox.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org
-References: <20200519085724.294949-8-bjorn.topel@gmail.com>
- <202005192351.j1H08VpV%lkp@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <c81b36a0-11dd-4b7f-fad8-85f31dced58c@intel.com>
-Date:   Tue, 19 May 2020 18:20:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729386AbgESQZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 12:25:00 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51041 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728689AbgESQZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:25:00 -0400
+Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7CBCF5C00D1;
+        Tue, 19 May 2020 12:24:58 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute7.internal (MEProxy); Tue, 19 May 2020 12:24:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=benboeckel.net;
+         h=date:from:to:cc:subject:message-id:reply-to:references
+        :mime-version:content-type:in-reply-to; s=fm1; bh=7/52dq5GxyiFcd
+        dCLps86QCxmzKufuJnLl7OH1657qI=; b=c1zsJqiWBgruzDh/25LryFc4I/tJS+
+        KejzuOJ1efDWpsQMaT/iI4KAnDS8jXkboxzHQy4d076P8VZSYja7C1lqXzJAxwOU
+        /hHqX9Vh52Pk30pdFhFxBvtUvWJnCkP/6ZXnwYHBHf/wv8gK+uHbv3hQusJ8DlUB
+        tJgDY6o2zq2Rqj2G0aw14HNItLTKTgwuZCvTalwVu09DNN+r39xi3yiS0Fu4am2u
+        TfYm1o6nbLAxFMsajd7qy/8HN6kEkoapPVwE2rrpHeNfQntfA85cDt453wuUY2nc
+        4QmbMa00jCapZPZ8WeUbwAMb1HZBpHhCVqxFjQuXmt/PfKVCz/8cjO0A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:reply-to:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=7/52dq5GxyiFcddCLps86QCxmzKufuJnLl7OH1657qI=; b=fZkGF6+s
+        2NFay7YhJ+tKBb+twAe0shLDdn1FlFIJBQuxiomMjsGpQ/K8Vfjw7b8lrfWLGyAl
+        ASpfsxFhO1xrM3d/4JB2/9oQl7GK0irtWZY4mvvQFOGTKR3qLeATNUztzFFkG9hj
+        mJ3vXnWYEyhcD1gj+PJ/ijWHDqJpjpC7du7daw3nn+lGpeREw/9mjYfHF5MJMevQ
+        W9+49sDoDe2ddx0oK72Pr/S30OX5LWMdFSoN+pM6Ge8CFhZoQIp1gtAr2Y+zWUY3
+        gDuv/2jlCR3X3zZXxA3jj2W0qMeJMvTo2VfhJnb++3fCWmWkExulf7TzjItqUtM0
+        MufBtLPvlovf7A==
+X-ME-Sender: <xms:VQjEXlRLzugsFLKbHpleHm2R5P4Xz3dzQH6kstjIiDtNAwXKpJnfTQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddtjedgleelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhrfhggtggujggfsehttdertddtreejnecuhfhrohhmpeeuvghn
+    uceuohgvtghkvghluceomhgvsegsvghnsghovggtkhgvlhdrnhgvtheqnecuggftrfgrth
+    htvghrnhepjedtvdffheetgfektdehvefgieelgeefheejvdehtdduieetgedtfedtleev
+    vdffnecukfhppeeiledrvddtgedrudeikedrvdeffeenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmvgessggvnhgsohgvtghkvghlrdhnvght
+X-ME-Proxy: <xmx:VQjEXuym6QgehtMSmMpoV9E7TnaLg9GXaX3mTvL85qC7i3EAwGH9uQ>
+    <xmx:VQjEXq1yZDifEBgM-BnSBJ_sg8hMsS0yLWT_4Yka9-rkqVDOO7U70w>
+    <xmx:VQjEXtCtK0SpOh7vIKzJBJRtA5Rsv4RchA3niV5yLgsDwRm_jqcpyw>
+    <xmx:WgjEXga2rAiJlnRndipxaz5S5Xibw8t-qKafQBRhmbZN_wm9Ok0GLw>
+Received: from localhost (cpe-69-204-168-233.nycap.res.rr.com [69.204.168.233])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 63B91306643B;
+        Tue, 19 May 2020 12:24:53 -0400 (EDT)
+Date:   Tue, 19 May 2020 12:24:52 -0400
+From:   Ben Boeckel <me@benboeckel.net>
+To:     David Howells <dhowells@redhat.com>
+Cc:     fweimer@redhat.com, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dns: Apply a default TTL to records obtained from
+ getaddrinfo()
+Message-ID: <20200519162452.GA3010828@erythro.dev.benboeckel.internal>
+Reply-To: me@benboeckel.net
+References: <20200519141432.GA2949457@erythro.dev.benboeckel.internal>
+ <20200518155148.GA2595638@erythro.dev.benboeckel.internal>
+ <158981176590.872823.11683683537698750702.stgit@warthog.procyon.org.uk>
+ <1080378.1589895580@warthog.procyon.org.uk>
+ <1512927.1589904409@warthog.procyon.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <202005192351.j1H08VpV%lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1512927.1589904409@warthog.procyon.org.uk>
+User-Agent: Mutt/1.13.3 (2020-01-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-19 17:18, kbuild test robot wrote:
-> Hi "Björn,
-> 
-> I love your patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on bpf-next/master]
-> [also build test WARNING on jkirsher-next-queue/dev-queue next-20200518]
-> [cannot apply to bpf/master linus/master v5.7-rc6]
-> [if your patch is applied to the wrong git tree, please drop us a note to help
-> improve the system. BTW, we also suggest to use '--base' option to specify the
-> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Bj-rn-T-pel/Introduce-AF_XDP-buffer-allocation-API/20200519-203122
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> config: riscv-allyesconfig (attached as .config)
-> compiler: riscv64-linux-gcc (GCC) 9.3.0
-> reproduce:
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # save the attached .config to linux build tree
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=riscv
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kbuild test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>, old ones prefixed by <<):
-> 
->>> drivers/net/ethernet/intel/i40e/i40e_txrx.c:531:6: warning: no previous prototype for 'i40e_fd_handle_status' [-Wmissing-prototypes]
-> 531 | void i40e_fd_handle_status(struct i40e_ring *rx_ring, u64 qword0_raw,
-> |      ^~~~~~~~~~~~~~~~~~~~~
->
+On Tue, May 19, 2020 at 17:06:49 +0100, David Howells wrote:
+> Okay, how about this incremental change, then?  If fixes the typo, only prints
+> the "READ CONFIG" line in verbose mode, filters escape chars in the config
+> file and reduces the expiration time to 5s.
 
-Yes, this could indeed be made static. Hmm, I wonder why I didn't get
-that warning on my x86-64 build!? I'll spin a v4 (or do a follow-up?).
+Thanks! Looks good to me.
 
+Reviewed-by: Ben Boeckel <me@benboeckel.net>
 
-Björn
+--Ben
