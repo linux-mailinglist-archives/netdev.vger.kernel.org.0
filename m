@@ -2,161 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAC51D93F4
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 12:04:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3371D9404
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 12:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728640AbgESKEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 06:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728633AbgESKEH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 06:04:07 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41635C061A0C
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 03:04:06 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id m18so4666031ljo.5
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 03:04:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dSgfGSiNnkbOZ8VPXvhcr90CHXRE+3/2DUWDJQppWe0=;
-        b=JR1/7/YYQFwYrnKlWsTHkrsd+uf0HL5hTGgX6xUzM0pu4VZeydp0HrukGPUNFXU0y/
-         LR+LUeUs/fd+c8mNF1m9A8xEoC7azf10uJ3FEWMY4jjyepV5LNsjdJ6RAfy1Ia+FlUVv
-         QvJRXtFC1+PvUEVHLFvNuaxIwe9r32fa+6ABE=
+        id S1728719AbgESKGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 06:06:03 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38930 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726333AbgESKGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 06:06:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589882759;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i7Pb0OijTA+irttwxC+dxELBnYCuz9NJOuNYknbTw1Q=;
+        b=WLNGyhE59TAn+NOIB3tfIp1NHP6D6qhXpXRogSNh2raDSZe+ImnAtCoZf5Wb0PyScLdoV8
+        E5oM/Jfx84pRPBj+O1G6XbsN2uqYMw5Oo+gO3RetgIZlOUcCpgblV3r0uteTyE2HEkb00j
+        JwJKnE5t/XfRwUCAYAzFHaNnlc3yRnA=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-89-7hIPIKxGNr-mwmGk74P7-w-1; Tue, 19 May 2020 06:05:58 -0400
+X-MC-Unique: 7hIPIKxGNr-mwmGk74P7-w-1
+Received: by mail-ed1-f72.google.com with SMTP id f18so4670310eds.6
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 03:05:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dSgfGSiNnkbOZ8VPXvhcr90CHXRE+3/2DUWDJQppWe0=;
-        b=DjGxz/MYOKit2VY38oj4bgHm20XKmEdFX5WV95pQI2B+eXFYkVCyQnjwZweULbb/Sp
-         NuV0haN3VqfBq+l+t8VO7f/+H9NknX/XIRd1VzfCCGw4nXgZA2vOI5N2VeB36+Gof82y
-         v6PFXHn1eEv7/gxMWeYIaLhq3CPi8JGqngujpRKvzSi4dKdGogBjwKDn/HuFtvB/8vxp
-         KdAp0wHVT6B71H/THrmrkHve3EdXeAokTXpCuqQC5vzAyzg7k0ly84hYXV8bgzex7+UE
-         5nDEh+U9FRIyH0YpqtMH5SMbD1ygh3Y2BgGpiJjFlkMp7iM0dWnD4p+payjNbUYdN03q
-         S+AQ==
-X-Gm-Message-State: AOAM532M+bWkOmdZoKyZfHi8QmLKoaS9w2cqcGnAVM/t1KCvWvQopt94
-        rJRtDk2IOKZrBhI8j6luEp9pgQ==
-X-Google-Smtp-Source: ABdhPJyq6krE0Ult81m5qKpR5JAUbt4Nc4a1+QGMN3KOBfXCY6aVn/WEERZgZWtFJVHPr61Cd4ZzCA==
-X-Received: by 2002:a2e:8e7a:: with SMTP id t26mr6318154ljk.150.1589882644625;
-        Tue, 19 May 2020 03:04:04 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x28sm2785910lfg.86.2020.05.19.03.04.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2020 03:04:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/6] nexthop: dereference nh only once in
- nexthop_select_path
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, idosch@mellanox.com,
-        petrm@mellanox.com
-References: <1589854474-26854-1-git-send-email-roopa@cumulusnetworks.com>
- <1589854474-26854-2-git-send-email-roopa@cumulusnetworks.com>
- <ecd765d8-4e83-dd20-5d71-8c4bb7b30639@gmail.com>
- <999e09f0-2593-d079-e8f4-f9db6f2f85af@cumulusnetworks.com>
-Message-ID: <fb3a4d02-8656-abda-a36e-becaee9da36e@cumulusnetworks.com>
-Date:   Tue, 19 May 2020 13:04:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i7Pb0OijTA+irttwxC+dxELBnYCuz9NJOuNYknbTw1Q=;
+        b=bKZ9jo9U22tfjk+XBcd6gS5gYK2hDNBfhOVUfQSQR1ooipP1D53PO6BSn2pyFsVLe+
+         vZHv0e2Eb3WoyeIwvkQQvhGaunloBAAFYj0cIW67jR+MBHYR+M4i6LyRvB/zA6CxsRO3
+         fw+4X/8+xGUIaKmVn+apOZYCxuqyDFL6JU0BFOL41rHJT7Z7mHm6PFZpCa3Vu37VFbI8
+         vA8ftD2793tVuJdZDHuLa+locvIs7MlOQSSua8GC1rPQXUtFWC4nTC8XOZqnXEpOHbYy
+         vbsLo7hUXDgO96AXRQClYNVz9NSVl4uI0sg4Bq1wXbg8X2JEIUvjGi+PYlFGi696WNCZ
+         RUSg==
+X-Gm-Message-State: AOAM530aFGYEc+p+AxnWYt7+YTh2Cf+pLBHqcdzT8ELztxjzC4hhELAQ
+        Z4XD6PIQgwuJsHsBlsU1pn9efgw/fMJwDFRl7tpkqhMnlJ8APS7bewiIR8C27Ps9WHiEW4aX+d0
+        ld3s2lbv9RRgZgIOK8gsDrWEwwJucEhOi
+X-Received: by 2002:a17:906:2503:: with SMTP id i3mr17354035ejb.293.1589882756926;
+        Tue, 19 May 2020 03:05:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxJ1McJxtcCmjVmosQ2avZ2PtCSSDCXz2Om0hD2da3gdN7fS7o6Mf8E32HG29p7gwidi7B2T3qwUaeoW85+L6Q=
+X-Received: by 2002:a17:906:2503:: with SMTP id i3mr17354012ejb.293.1589882756498;
+ Tue, 19 May 2020 03:05:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <999e09f0-2593-d079-e8f4-f9db6f2f85af@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190524100554.8606-1-maxime.chevallier@bootlin.com>
+ <20190524100554.8606-4-maxime.chevallier@bootlin.com> <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
+ <20200423170003.GT25745@shell.armlinux.org.uk> <CAGnkfhwOavaeUjcm4_+TG-xLxQA519o+fR8hxBCCfSy3qpcYhQ@mail.gmail.com>
+ <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
+ <20200509114518.GB1551@shell.armlinux.org.uk> <CAGnkfhx8fEZCoLPzGxSzQnj1ZWcQtBMn+g_jO1Jxc4zF7pQwjQ@mail.gmail.com>
+ <20200509195246.GJ1551@shell.armlinux.org.uk> <20200509202050.GK1551@shell.armlinux.org.uk>
+ <20200519095330.GA1551@shell.armlinux.org.uk>
+In-Reply-To: <20200519095330.GA1551@shell.armlinux.org.uk>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Tue, 19 May 2020 12:05:20 +0200
+Message-ID: <CAGnkfhzuyxJDo-DXPHPiNtP4RbRpry+3M9eoiTknGR0zvgPuoA@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts
+ to handle RSS tables
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev <netdev@vger.kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/05/2020 11:48, Nikolay Aleksandrov wrote:
-> On 19/05/2020 06:25, David Ahern wrote:
->> On 5/18/20 8:14 PM, Roopa Prabhu wrote:
->>> From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
->>>
->>> the ->nh pointer might become suddenly null while we're selecting the
->>> path and we may dereference it. Dereference it only once in the
->>> beginning and use that if it's not null, we rely on the refcounting and
->>> rcu to protect against use-after-free. (This is needed for later
->>> vxlan patches that exposes the problem)
->>>
->>> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
->>> Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
->>> ---
->>>  net/ipv4/nexthop.c | 13 +++++++++----
->>>  1 file changed, 9 insertions(+), 4 deletions(-)
->>>
->>
->> Reviewed-by: David Ahern <dsahern@gmail.com>
->>
->> Should this be a bug fix? Any chance the route path can hit it?
->>
-> 
-> That was fast, I didn't expect to see it on upstream so quickly. :)
-> So I haven't had time to inspect it in detail, but it did seem to me
-> that it should be possible to hit from the route path. When I tried
-> running a few basic tests to make it happen I couldn't mainly due to the
-> fib flush done at nexthop removal, but I still believe with the right
-> timing one could hit it.
-> 
-> In fact I'd go 1 step further and add a null check from the return
-> of nexthop_select_path() in the helpers which dereference the value it
-> returns like:  nexthop_path_fib6_result() and nexthop_path_fib_result()
-> 
-> The reason is that the .nh ptr is set and read without any sync primitives
-> so in theory it can become null at any point (being cleared on nh group removal),
-> and also the nh count in a group (num_nh), when it becomes == 0 while destroying a nh group
-> and we hit it then in nexthop_select_path() rc would remain == NULL and we'll
-> deref a null ptr. We did see the above with the vxlan code due to it missing the equivalent
-> of a fib flush (or rather it being more relaxed), but I haven't had time to see how feasible
-> it is to hit it via the route path yet.
-> 
+On Tue, May 19, 2020 at 11:54 AM Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Sat, May 09, 2020 at 09:20:50PM +0100, Russell King - ARM Linux admin wrote:
+> > On Sat, May 09, 2020 at 08:52:46PM +0100, Russell King - ARM Linux admin wrote:
+> > > It is highly likely that 895586d5dc32 is responsible for this breakage.
+> > > I've been investigating this afternoon, and what I've found, comparing
+> > > a kernel without 895586d5dc32 and with 895586d5dc32 applied is:
+> > >
+> > > - The table programmed into the hardware via mvpp22_rss_fill_table()
+> > >   appears to be identical with or without the commit.
+> > >
+> > > - When rxhash is enabled on eth2, mvpp2_rss_port_c2_enable() reports
+> > >   that c2.attr[0] and c2.attr[2] are written back containing:
+> > >
+> > >    - with 895586d5dc32, failing:    00200000 40000000
+> > >    - without 895586d5dc32, working: 04000000 40000000
+> > >
+> > > - When disabling rxhash, c2.attr[0] and c2.attr[2] are written back as:
+> > >
+> > >    04000000 00000000
+> > >
+> > > The second value represents the MVPP22_CLS_C2_ATTR2_RSS_EN bit, the
+> > > first value is the queue number, which comprises two fields.  The high
+> > > 5 bits are 24:29 and the low three are 21:23 inclusive.  This comes
+> > > from:
+> > >
+> > >        c2.attr[0] = MVPP22_CLS_C2_ATTR0_QHIGH(qh) |
+> > >                      MVPP22_CLS_C2_ATTR0_QLOW(ql);
+> > > #define     MVPP22_CLS_C2_ATTR0_QHIGH(qh)       (((qh) & 0x1f) << 24)
+> > > #define     MVPP22_CLS_C2_ATTR0_QLOW(ql)        (((ql) & 0x7) << 21)
+> > >
+> > > So, the working case gives eth2 a queue id of 4.0, or 32 as per
+> > > port->first_rxq, and the non-working case a queue id of 0.1, or 1.
+> > >
+> > > The allocation of queue IDs seems to be in mvpp2_port_probe():
+> > >
+> > >         if (priv->hw_version == MVPP21)
+> > >                 port->first_rxq = port->id * port->nrxqs;
+> > >         else
+> > >                 port->first_rxq = port->id * priv->max_port_rxqs;
+> > >
+> > > Where:
+> > >
+> > >         if (priv->hw_version == MVPP21)
+> > >                 priv->max_port_rxqs = 8;
+> > >         else
+> > >                 priv->max_port_rxqs = 32;
+> > >
+> > > Making the port 0 (eth0 / eth1) have port->first_rxq = 0, and port 1
+> > > (eth2) be 32.  It seems the idea is that the first 32 queues belong to
+> > > port 0, the second 32 queues belong to port 1, etc.
+> > >
+> > > mvpp2_rss_port_c2_enable() gets the queue number from it's parameter,
+> > > 'ctx', which comes from mvpp22_rss_ctx(port, 0).  This returns
+> > > port->rss_ctx[0].
+> > >
+> > > mvpp22_rss_context_create() is responsible for allocating that, which
+> > > it does by looking for an unallocated priv->rss_tables[] pointer.  This
+> > > table is shared amongst all ports on the CP silicon.
+> > >
+> > > When we write the tables in mvpp22_rss_fill_table(), the RSS table
+> > > entry is defined by:
+> > >
+> > >             u32 sel = MVPP22_RSS_INDEX_TABLE(rss_ctx) |
+> > >                           MVPP22_RSS_INDEX_TABLE_ENTRY(i);
+> > >
+> > > where rss_ctx is the context ID (queue number) and i is the index in
+> > > the table.
+> > >
+> > > #define     MVPP22_RSS_INDEX_TABLE_ENTRY(idx)   (idx)
+> > > #define     MVPP22_RSS_INDEX_TABLE(idx)         ((idx) << 8)
+> > > #define     MVPP22_RSS_INDEX_QUEUE(idx)         ((idx) << 16)
+> > >
+> > > If we look at what is written:
+> > >
+> > > - The first table to be written has "sel" values of 00000000..0000001f,
+> > >   containing values 0..3. This appears to be for eth1.  This is table 0,
+> > >   RX queue number 0.
+> > > - The second table has "sel" values of 00000100..0000011f, and appears
+> > >   to be for eth2.  These contain values 0x20..0x23.  This is table 1,
+> > >   RX queue number 0.
+> > > - The third table has "sel" values of 00000200..0000021f, and appears
+> > >   to be for eth3.  These contain values 0x40..0x43.  This is table 2,
+> > >   RX queue number 0.
+> > >
+> > > Okay, so how do queue numbers translate to the RSS table?  There is
+> > > another table - the RXQ2RSS table, indexed by the MVPP22_RSS_INDEX_QUEUE
+> > > field of MVPP22_RSS_INDEX and accessed through the MVPP22_RXQ2RSS_TABLE
+> > > register.  Before 895586d5dc32, it was:
+> > >
+> > >        mvpp2_write(priv, MVPP22_RSS_INDEX,
+> > >                    MVPP22_RSS_INDEX_QUEUE(port->first_rxq));
+> > >        mvpp2_write(priv, MVPP22_RXQ2RSS_TABLE,
+> > >                    MVPP22_RSS_TABLE_POINTER(port->id));
+> > >
+> > > and after:
+> > >
+> > >        mvpp2_write(priv, MVPP22_RSS_INDEX, MVPP22_RSS_INDEX_QUEUE(ctx));
+> > >        mvpp2_write(priv, MVPP22_RXQ2RSS_TABLE, MVPP22_RSS_TABLE_POINTER(ctx));
+> > >
+> > > So, before the commit, for eth2, that would've contained '32' for the
+> > > index and '1' for the table pointer - mapping queue 32 to table 1.
+> > > Remember that this is queue-high.queue-low of 4.0.
+> > >
+> > > After the commit, we appear to map queue 1 to table 1.  That again
+> > > looks fine on the face of it.
+> > >
+> > > Section 9.3.1 of the A8040 manual seems indicate the reason that the
+> > > queue number is separated.  queue-low seems to always come from the
+> > > classifier, whereas queue-high can be from the ingress physical port
+> > > number or the classifier depending on the MVPP2_CLS_SWFWD_PCTRL_REG.
+> > >
+> > > We set the port bit in MVPP2_CLS_SWFWD_PCTRL_REG, meaning that queue-high
+> > > comes from the MVPP2_CLS_SWFWD_P2HQ_REG() register... and this seems to
+> > > be where our bug comes from.
+> > >
+> > > mvpp2_cls_oversize_rxq_set() sets this up as:
+> > >
+> > >         mvpp2_write(port->priv, MVPP2_CLS_SWFWD_P2HQ_REG(port->id),
+> > >                     (port->first_rxq >> MVPP2_CLS_OVERSIZE_RXQ_LOW_BITS));
+> > >
+> > >         val = mvpp2_read(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG);
+> > >         val |= MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
+> > >         mvpp2_write(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG, val);
+> > >
+> > > so, the queue-high for eth2 is _always_ 4, meaning that only queues
+> > > 32 through 39 inclusive are available to eth2.  Yet, we're trying to
+> > > tell the classifier to set queue-high, which will be ignored, to zero.
+> > >
+> > > So we end up directing traffic from eth2 not to queue 1, but to queue
+> > > 33, and then we tell it to look up queue 33 in the RSS table.  However,
+> > > RSS table has not been programmed for queue 33, and so it ends up
+> > > (presumably) dropping the packets.
+> > >
+> > > It seems that mvpp22_rss_context_create() doesn't take account of the
+> > > fact that the upper 5 bits of the queue ID can't actually be changed
+> > > due to the settings in mvpp2_cls_oversize_rxq_set(), _or_ it seems
+> > > that mvpp2_cls_oversize_rxq_set() has been missed in this commit.
+> > > Either way, these two functions mutually disagree with what queue
+> > > number should be used.
+> > >
+> > > So, 895586d5dc32 is indeed the cause of this problem.
+> >
+> > Looking deeper into what mvpp2_cls_oversize_rxq_set() and the MTU
+> > validation is doing, it seems that MVPP2_CLS_SWFWD_P2HQ_REG() is
+> > used for at least a couple of things.
+> >
+> > So, with the classifier having had RSS enabled and directing eth2
+> > traffic to queue 1, we can not ignore the fact that we may have
+> > packets appearing on queue 32 for this port.
+> >
+> > One of the things that queue 32 will be used for is if an over-sized
+> > packet attempts to egress through eth2 - it seems that the A8040 has
+> > the ability to forward frames between its ports.  However, afaik we
+> > don't support that feature, and the kernel restricts the packet size,
+> > so we should never violate the MTU validator and end up with such a
+> > packet.  In any case, _if_ we were to attempt to transmit an oversized
+> > packet, we have no support in the kernel to deal with that appearing
+> > in the port's receive queue.
+> >
+> > Maybe it would be safe to clear the MVPP2_CLS_SWFWD_PCTRL_MASK() bit?
+> >
+> > My testing seems to confirm my findings above - clearing this bit
+> > means that if I enable rxhash on eth2, the interface can then pass
+> > traffic, as we are now directing traffic to RX queue 1 rather than
+> > queue 33.  Traffic still seems to work with rxhash off as well.
+> >
+> > So, I think it's clear where the problem lies, but not what the correct
+> > solution is; someone with more experience of packet classifiers (this
+> > one?) needs to look at this - this is my first venture into these
+> > things, and certainly the first time I've traced through how this is
+> > trying to work (or not)...
+>
+> This is what I was using here to work around the problem, and what I
+> mentioned above.
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+> index fd221d88811e..0dd3b65822dd 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+> @@ -1058,7 +1058,7 @@ void mvpp2_cls_oversize_rxq_set(struct mvpp2_port *port)
+>                     (port->first_rxq >> MVPP2_CLS_OVERSIZE_RXQ_LOW_BITS));
+>
+>         val = mvpp2_read(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG);
+> -       val |= MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
+> +       val &= ~MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
+>         mvpp2_write(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG, val);
+>  }
+>
+>
 
-Actually got it pretty easy via nexthop replace, that nulls .nh and can cause the above
-very quickly if running in parallel with some traffic to those routes.
+Hi,
 
-Here's the route NULL ptr deref:
-[  322.517290] BUG: kernel NULL pointer dereference, address: 0000000000000070
-[  322.517670] #PF: supervisor read access in kernel mode
-[  322.517935] #PF: error_code(0x0000) - not-present page
-[  322.518213] PGD 0 P4D 0 
-[  322.518388] Oops: 0000 [#1] SMP PTI
-[  322.518601] CPU: 1 PID: 58185 Comm: ping Not tainted 5.7.0-rc5+ #190
-[  322.518911] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-[  322.519490] RIP: 0010:fib_select_multipath+0x5a/0x2ac
-[  322.519776] Code: 85 db 48 89 44 24 08 40 0f 95 c6 31 c9 31 d2 e8 29 13 93 ff 48 85 db 74 58 48 8b 45 18 8b 74 24 04 48 8b 78 68 e8 81 b7 00 00 <48> 8b 58 70 e8 6c 04 8b ff 85 c0 74 31 80 3d cd 89 d4 00 00 75 28
-[  322.520536] RSP: 0018:ffff888228f6bac0 EFLAGS: 00010286
-[  322.520813] RAX: 0000000000000000 RBX: ffff888228cc3c00 RCX: 0000000000000000
-[  322.521152] RDX: ffff888222215080 RSI: ffff888222215930 RDI: ffff888222215080
-[  322.521478] RBP: ffff888228f6bbd8 R08: ffff888222215930 R09: 0000000000020377
-[  322.521815] R10: 0000000000000000 R11: 784deca9f66dea1e R12: 0000000000000000
-[  322.522143] R13: ffff88822a099000 R14: ffff888228f6bbd8 R15: ffffffff8258cc80
-[  322.522491] FS:  00007fc5ee6a8000(0000) GS:ffff88822bc80000(0000) knlGS:0000000000000000
-[  322.522862] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  322.523236] CR2: 0000000000000070 CR3: 0000000222954001 CR4: 0000000000360ee0
-[  322.523657] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  322.524060] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  322.524461] Call Trace:
-[  322.524707]  fib_select_path+0x5a/0x2c8
-[  322.524998]  ip_route_output_key_hash_rcu+0x2d6/0x636
-[  322.525372]  ip_route_output_key_hash+0x9f/0xb6
-[  322.525697]  ip_route_output_flow+0x1c/0x58
-[  322.525990]  raw_sendmsg+0x5e9/0xca4
-[  322.526261]  ? mark_lock+0x68/0x24d
-[  322.526536]  ? lock_acquire+0x233/0x24f
-[  322.526823]  ? raw_abort+0x3f/0x3f
-[  322.527086]  ? inet_send_prepare+0x3b/0x3b
-[  322.527418]  ? sock_sendmsg_nosec+0x4f/0x9b
-[  322.527721]  ? raw_abort+0x3f/0x3f
-[  322.527984]  sock_sendmsg_nosec+0x4f/0x9b
-[  322.528274]  __sys_sendto+0xdd/0x100
-[  322.528551]  ? sockfd_lookup_light+0x72/0x96
-[  322.528851]  ? trace_hardirqs_on_thunk+0x1a/0x1c
-[  322.529159]  __x64_sys_sendto+0x25/0x28
-[  322.529442]  do_syscall_64+0xd1/0xe1
-[  322.529719]  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+I will try this change and let you know if it works.
 
+Thanks
 
-
+-- 
+Matteo Croce
+per aspera ad upstream
 
