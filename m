@@ -2,111 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5C61D8E34
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 05:28:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7D51D8E65
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 05:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbgESD2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 23:28:04 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45489 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726293AbgESD2D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 23:28:03 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49R1YD0kt3z9sTC;
-        Tue, 19 May 2020 13:27:59 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1589858881;
-        bh=cZmRISKrI+RYRn17j7r5WAvmlVlJYEo6WE9o3Prs4qY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=RYZE/KvSSLbpmyc5P88oI+NdYktrTk+GX1g00WdrEmpT/bgKMs0YDUaek/5Xt6r7y
-         tMPPnHBtFoeZUcCwneMlmqNVBxZagXRLYeDXdOZe8a5z3Jh+XEM7sBUK8DeT+syunc
-         pZT8TDuR0PQyx6pMK0NHaIkM3b/7ygvGvZwhUgXU8x/YtVSQ3l8zuP9PQskyO6AR9/
-         RhJPQ98ZgixDf9e5HKjyeyehYHJFBPjA2/Zpkvrfqx8gPW8a8KC68Wg0YU5Ci4kgcp
-         iRNbVjGyL96Yxp9D0c5R+Quni4lM75tbfliTA9c+1GdRvNE3TtPuiPEBh+pWdniNlX
-         15FUzTM26oAIA==
-Date:   Tue, 19 May 2020 13:27:58 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: linux-next: manual merge of the ipsec-next tree with the net-next
- tree
-Message-ID: <20200519132758.56a187a2@canb.auug.org.au>
+        id S1728210AbgESDyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 23:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726724AbgESDyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 23:54:02 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAB2C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 20:54:02 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id b6so13117730qkh.11
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 20:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jdAdQiSqC6E9/DnvU8XM55rRUljUrjeKNvvg0xSeMYc=;
+        b=G6ZfX6QEOsYFB2xzVWxjjBuDKRHs8M4Ek9R7rFNofPSsFNFN0YPHGMoSf2Q1/lJTBc
+         5oOJ+hHV2bYYVJakQL2pp4R+YcLVZrZ+6L158jWmuBDE/lWiqOXP3ygkdRBxZcGDSTZF
+         cRxv/818/GOW3+mbxnVKgvUFp6ny0jMJO2hmWHWNVCsTRQCk48hJVeVkbA2H7ULg200W
+         WEbN3TnSLPTMQ70hZX/vVMIqmGumQdvxJiLrR9HB5t+4FHFqrVSgkoqrjNjs2pbpiVWU
+         W4gLzLa9NiIks8eJaNhBm4MV6rQDgvFVxz3j9Wl7hWZrPJ1ioaLMPoGby5yZjX7KBEXP
+         072Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jdAdQiSqC6E9/DnvU8XM55rRUljUrjeKNvvg0xSeMYc=;
+        b=ikn7rpomyLNyBPi0QcvOvX/cwDJvENRTLF3PJQJxopeuJ/wwk9RZNB7qYZ84LkzXVt
+         RLhbAe/NTL5DrzQg31fgaLp3uu7uWmA4IUA+NSokVnhKBrDEFqzwiI+Umixe0VF937lx
+         vCCFZ8Cusr8jMcI3v4Ll/TP92OdY2PJwK/uHJss6madcCB1DN+d3fNw3tEi58nZ8+kfE
+         ftGUweeMTcudHkbEjCgeOQhKQMlSnIgQLi0iQSTz7/Py9r9Cb7mP/Ehi7QGqFfl0b6Yy
+         dIVSRnqKBnj9hbR4LELJvXUvYL4FEd4pOsvFuupKFwYbu1z3LgPa5Y9lZAVG4ktmf4gf
+         CJqA==
+X-Gm-Message-State: AOAM533bPzbwUP/e9Gr+BWX/m50QLckPUiUYA7TCX6UxWyzOsLERYvwv
+        b1W95vDOu/eZDxcgc4LO1qw=
+X-Google-Smtp-Source: ABdhPJyG1sMPXZsMjGTXRdwVCvSgQE2blEow1W6vr0zQmctdoTkSB10ioZs5ugppdhG21D4xfyCSCw==
+X-Received: by 2002:a05:620a:792:: with SMTP id 18mr17211163qka.181.1589860441680;
+        Mon, 18 May 2020 20:54:01 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c5f3:7fed:e95c:6b74? ([2601:282:803:7700:c5f3:7fed:e95c:6b74])
+        by smtp.googlemail.com with ESMTPSA id l133sm9771800qke.105.2020.05.18.20.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 May 2020 20:54:01 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/6] nexthop: support for fdb ecmp nexthops
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
+References: <1589854474-26854-1-git-send-email-roopa@cumulusnetworks.com>
+ <1589854474-26854-3-git-send-email-roopa@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4a103e6c-9b23-cbfc-b759-d2ff0c70668d@gmail.com>
+Date:   Mon, 18 May 2020 21:53:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/liktNAd7tVSiXK0VUsJftfo";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <1589854474-26854-3-git-send-email-roopa@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/liktNAd7tVSiXK0VUsJftfo
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 5/18/20 8:14 PM, Roopa Prabhu wrote:
 
-Hi all,
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index b607ea6..37e4dba 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -1771,6 +1771,7 @@ static struct neigh_table *neigh_find_table(int family)
+>  }
+>  
+>  const struct nla_policy nda_policy[NDA_MAX+1] = {
+> +	[NDA_UNSPEC]		= { .strict_start_type = NDA_NH_ID },
+>  	[NDA_DST]		= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
+>  	[NDA_LLADDR]		= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
+>  	[NDA_CACHEINFO]		= { .len = sizeof(struct nda_cacheinfo) },
+> @@ -1781,6 +1782,7 @@ const struct nla_policy nda_policy[NDA_MAX+1] = {
+>  	[NDA_IFINDEX]		= { .type = NLA_U32 },
+>  	[NDA_MASTER]		= { .type = NLA_U32 },
+>  	[NDA_PROTOCOL]		= { .type = NLA_U8 },
+> +	[NDA_NH_ID]		= { .type = NLA_U32 },
 
-Today's linux-next merge of the ipsec-next tree got a conflict in:
+I think you also need a checks where nda_policy is used to detect if
+NDA_NH_ID is set. Since the neighbor code ignores the attribute it
+should send back an error if set.
 
-  net/ipv6/af_inet6.c
+Otherwise looks ok to me.
 
-between commit:
-
-  3986912f6a9a ("ipv6: move SIOCADDRT and SIOCDELRT handling into ->compat_=
-ioctl")
-
-from the net-next tree and commit:
-
-  0146dca70b87 ("xfrm: add support for UDPv6 encapsulation of ESP")
-
-from the ipsec-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv6/af_inet6.c
-index b69496eaf922,aa4882929fd0..000000000000
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@@ -60,7 -60,7 +60,8 @@@
-  #include <net/calipso.h>
-  #include <net/seg6.h>
-  #include <net/rpl.h>
- +#include <net/compat.h>
-+ #include <net/xfrm.h>
- =20
-  #include <linux/uaccess.h>
-  #include <linux/mroute6.h>
-
---Sig_/liktNAd7tVSiXK0VUsJftfo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7DUj4ACgkQAVBC80lX
-0GxoSAgApEQQagmIGKqn8Qa5Nm3riSF5J8LlYFILdlec/nxuKS2pL3Vn72YAS0Ln
-pJc+wZde8Ha7ywbllIzq08xaDnXrH5EIlF1Kmo/RYKnSzAyOZUBMsLEi6rcN2RIg
-3UJcSF85x79NksGwd7PeCM/NJcwHLjMyrFZZKPxu+W98C58KyeECTTRmZe2l5zZ4
-8JBX0szMTUbQafRfRRSuRrRhx30Wc2SSII0Z6+T9jLwIXK6zAZLxWpzjHyNGpSMY
-tnluq4jqxWoYyyj7Am2VVD4AzTMK3a69iz8qdgwXgDGhhUz1nzuf9sNRngU69nvN
-ncs8u/ETIB+JBo+MIASyCxcBeRr7+Q==
-=mIB0
------END PGP SIGNATURE-----
-
---Sig_/liktNAd7tVSiXK0VUsJftfo--
+Reviewed-by: David Ahern <dsahern@gmail.com>
