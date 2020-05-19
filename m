@@ -2,105 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6EC1D9B4D
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 17:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DC341D9BAD
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 17:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbgESPcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 11:32:42 -0400
-Received: from mga05.intel.com ([192.55.52.43]:1474 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728725AbgESPcl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 11:32:41 -0400
-IronPort-SDR: WnHdYLnlPULpxuQk7nzd7S1pqAPGA/b2X+IZoA9Oy2QKBM6FKZJlDCsgYtQM5S+lOpjl5KBqZq
- yBA805IQ+yzg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 08:32:41 -0700
-IronPort-SDR: /D8eAVIdFAdKR2ZCtY+BpIV7wTp3ROMhUFbR0tChvaBGec4BDg2JXDjaXjdhNNtswao3uiQm2d
- eZOPASOl7pog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
-   d="scan'208";a="466165188"
-Received: from stputhen-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.5.127])
-  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 08:32:40 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
-        vladimir.oltean@nxp.com, po.liu@nxp.com, Jose.Abreu@synopsys.com
-Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
-In-Reply-To: <b33e582f-e0e6-467a-636a-674322108855@ti.com>
-References: <20200516012948.3173993-1-vinicius.gomes@intel.com> <b33e582f-e0e6-467a-636a-674322108855@ti.com>
-Date:   Tue, 19 May 2020 08:32:40 -0700
-Message-ID: <87v9ksndnr.fsf@intel.com>
+        id S1729238AbgESPu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 11:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728534AbgESPu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 11:50:28 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FACC08C5C0;
+        Tue, 19 May 2020 08:50:27 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ci21so1554973pjb.3;
+        Tue, 19 May 2020 08:50:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AHB18FnKAoqJzm0hykNiv4yZDqIuhCRDkCqTAP0Fza4=;
+        b=QnNPvhaHvPjBVI/mG9O+hAmqbMjquL9s/zmkb+9meC8rSuBDLe7FQ8nMwG+U8ZxSEi
+         F6PjYH8sX+az7OnVlmnLh9hn1LLMNXj9d2qenWkcW+/W0YDcYh+rIXZM4W913siZRXuW
+         KQKN897o5aLdFm/g8wz6Z/xwA92k2ifVjZOJn9V+2D9H/7LIyw3eX28YsA39YDdQGHJ8
+         +ww4Ae9hT+klcE06nFRFvdahB4hoi5l4j8ZcV/g/Zi0zT6OGwvqMIrOo+Ya0/DU5BdQo
+         DYH0rMRpgsLYv0T262RO87DhjL7iJRhbYvBHYuND/jI8xPNJNBt/maG7/bmhQGQrbtxa
+         I9CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AHB18FnKAoqJzm0hykNiv4yZDqIuhCRDkCqTAP0Fza4=;
+        b=YpVXSdKVt4Sa0z6xeodaRR4y2gGy7DaD38egNGo5Z/oIfUpla+XX/XH+N2wTrWoGy4
+         zf1Abub+X4Ai4kZOldGl6SA62mNgBG410djRkxS0vpMZh/5ToFl1NZIgVaBq8bdzZHsS
+         F4Ul+2HORkhYpRntnHT20K1czaVuv3YRrayBNpX7dBKvfUCT+12/aFdNA7vcjv1SPLgA
+         BjtcgW5htjVJdQUIeAiAMCqlqpiJLoRz5spvH0cKJtGUULH9sCX5ceVuVvUsSKLAeysv
+         CQj80ko7E1Fjye7qWZPu0P3XvbYpoQND/oPrKtzyqUXcn5mPThh6/ICBqvj1RM3htMq7
+         2xiA==
+X-Gm-Message-State: AOAM5318LEkkmq+rzUfi6G92K5S+gh4ZhAm8izjGhlu6TV34CNk1BQNZ
+        tW48zWGcxAys8Eze5valYdA=
+X-Google-Smtp-Source: ABdhPJxcFDvvZRcc6B2dds0KSXBbh7Kpiwc0U5r6qb5JbXZg+WDQ8gRZfYUL49kKtBH7JSaQAfrzuA==
+X-Received: by 2002:a17:902:599b:: with SMTP id p27mr129948pli.75.1589903426596;
+        Tue, 19 May 2020 08:50:26 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7206])
+        by smtp.gmail.com with ESMTPSA id s13sm7769280pfh.118.2020.05.19.08.50.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 08:50:24 -0700 (PDT)
+Date:   Tue, 19 May 2020 08:50:21 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andriin@fb.com, bpf@vger.kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next] selftests/bpf: add general instructions for
+ test execution
+Message-ID: <20200519155021.6tag46i57z2hsivj@ast-mbp.dhcp.thefacebook.com>
+References: <1589800990-11209-1-git-send-email-alan.maguire@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1589800990-11209-1-git-send-email-alan.maguire@oracle.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri <m-karicheri2@ti.com> writes:
+On Mon, May 18, 2020 at 12:23:10PM +0100, Alan Maguire wrote:
+> Getting a clean BPF selftests run involves ensuring latest trunk LLVM/clang
+> are used, pahole is recent (>=1.16) and config matches the specified
+> config file as closely as possible.  Document all of this in the general
+> README.rst file.  Also note how to work around timeout failures.
+> 
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
+>  tools/testing/selftests/bpf/README.rst | 46 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/bpf/README.rst b/tools/testing/selftests/bpf/README.rst
+> index 0f67f1b..b00eebb 100644
+> --- a/tools/testing/selftests/bpf/README.rst
+> +++ b/tools/testing/selftests/bpf/README.rst
+> @@ -1,6 +1,52 @@
+>  ==================
+>  BPF Selftest Notes
+>  ==================
+> +First verify the built kernel config options match the config options
+> +specified in the config file in this directory.  Test failures for
+> +unknown helpers, inability to find BTF etc will be observed otherwise.
+> +
+> +To ensure the maximum number of tests pass, it is best to use the latest
+> +trunk LLVM/clang, i.e.
+> +
+> +git clone https://github.com/llvm/llvm-project
+> +
+> +Build/install trunk LLVM:
+> +
+> +.. code-block:: bash
+> +  git clone https://github.com/llvm/llvm-project
+> +  cd llvm-project
+> +  mkdir build/llvm
+> +  cd build/llvm
+> +  cmake ../../llvm/
+> +  make
+> +  sudo make install
+> +  cd ../../
+> +
+> +Build/install trunk clang:
+> +
+> +.. code-block:: bash
+> +  mkdir -p build/clang
+> +  cd build/clang
+> +  cmake ../../clang
+> +  make
+> +  sudo make install
+> +
 
->> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
->> Frame preemption settings for enp3s0:
->> 	support: supported
->> 	active: active
->> 	supported queues: 0xf
->
-> I assume this is will be in sync with ethtool -L output which indicates
-> how many tx h/w queues present? I mean if there are 8 h/w queues,
-> supported queues will show 0xff.
+these instructions are obsolete and partially incorrect.
+May be refer to Documentation/bpf/bpf_devel_QA.rst instead?
 
-In this approach, the driver builds these bitmasks, so it's responsible
-to keep it consistent with the rest of the stuff that's exposed in
-ethtool.
+> +When building the kernel with CONFIG_DEBUG_INFO_BTF, pahole
+> +version 16 or later is also required for BTF function
+> +support. pahole can be built from the source at
+> +
+> +https://github.com/acmel/dwarves
+> +
+> +It is often available in "dwarves/libdwarves" packages also,
+> +but be aware that versions prior to 1.16 will fail with
+> +errors that functions cannot be found in BTF.
+> +
+> +When running selftests, the default timeout of 45 seconds
+> +can be exceeded by some tests.  We can override the default
+> +timeout via a "settings" file; for example:
+> +
+> +.. code-block:: bash
+> +  echo "timeout=120" > tools/testing/selftests/bpf/settings
 
->
->> 	supported queues: 0xe
->  From the command below, it appears this is the preemptible queue mask.
-> bit 0  is Q0, bit 1 Q1 and so forth. Right? In that case isn't it more
-> clear to display
->          preemptible queues : 0xef
->
-> In the above Q7 is express queue and Q6-Q0 are preemptible.
-
-In my case, the controller I have here only has 4 queues, and Queue 0 is
-the highest priority one, and it's marked as express.
-
->
-> Also there is a handshake called verify that happens which initiated
-> by the h/w to check the capability of peer. It looks like
-> not all vendor's hardware supports it and good to have it displayed
-> something like
->
->          Verify supported/{not supported}
->
-> If Verify is supported, FPE is enabled only if it succeeds. So may be
-> good to show a status of Verify if it is supported something like
->          Verify success/Failed
->
->> 	minimum fragment size: 68
->> 
->> 
->> $ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 preemptible-queues-mask 0xe
->> 
->> This is a RFC because I wanted to have feedback on some points:
->> 
->>    - The parameters added are enough for the hardware I have, is it
->>      enough in general?
->
-> As described above, it would be good to add an optional parameter for
-> verify
->
-> ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 
-> preemptible-queues-mask 0xe verify on
->
-
-The hardware I have do not support this, but this makes sense.
-
-
-Cheers,
--- 
-Vinicius
+Is it really the case?
+I've never seen anything like this.
