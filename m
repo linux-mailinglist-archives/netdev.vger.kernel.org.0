@@ -2,143 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7381DA0F6
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E630E1DA0FE
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgESTYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 15:24:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        id S1726436AbgEST2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 15:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbgESTYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:24:12 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF59C08C5C0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:12 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id s69so106478pjb.4
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 12:24:12 -0700 (PDT)
+        with ESMTP id S1726059AbgEST2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:28:25 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B191C08C5C0;
+        Tue, 19 May 2020 12:28:25 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id ee19so168723qvb.11;
+        Tue, 19 May 2020 12:28:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=481jJeyXaoRAJoR7uKEVrBmi6B97KiyVLVF9TF6+jqg=;
-        b=fxkvz6sCj3xc2xESMvj5XP4jU3Gwq3pVKSELbqNTV2FqEDbUEvGihz734/gEucUVvA
-         d7hTs72+0ctSY4oA7oH1BCfUhpcRkkx8Q42toreNMf5uqVGoMAHvcpGeOtce2ChY/13X
-         SFIeIVyS4WHQvDEeU1YM1U6EnSBjOqNw2fwsl3ACq8cNBlV6/gqKCIn5r4yAnRtzzt5w
-         vKg8HoGZcde2C59KOvavLBT3OcfcqiABApYbUXask+stvkTJAba8BKq/Fsmm1vHmEKq+
-         6mJbUFtZNkePYm4pG71On4kK0Lq6DGH6KSoFBZwvc+2S1DzpVLWlmVtYQym1/wAyUl9Y
-         VIYA==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sJ2WtymJ/44ukH73/nmAxCbRKt4OtZ9J3eO3Z1WCx+s=;
+        b=bmQ+YeugrD0P0y8R1+JB/gALpn6SNySKmGjb+J9kkUSjlI/t+EbizeE4z/gyb8qo4y
+         GqhM/bjwtEUJQU65fTXJ8yCTJnwoz1J6pE0MdL/A2Qjl4Q+AEe7sq6w/wYlAaAL4WjKN
+         FAKYvqSr1P6krmgL/EVrghAdWjfv1GkQ/7Ii65Q16+kwIbrJuTJJXh/p1iwpSPA2IiXs
+         ZXR4rs9p2ZsjPNyc1Pn2dR9ankY5kSbzKIW7CgDj01vXJrbX7W+7GqUEiO7OE+vS58SG
+         +FMRIU5HhTWdwC1RsYrRg2IVOHRm++eAQzJ8XBvBtCYv3pj9x3ovMPvHWIIK7Z1ozem4
+         QSeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=481jJeyXaoRAJoR7uKEVrBmi6B97KiyVLVF9TF6+jqg=;
-        b=Avy7FtkgjS3Av/pZPvof6jujJ2Ti7NlA3wbYjhs8maiLUiGf8tCQTg3sHiZ3rwn7RE
-         UiTb6dxsd3vddk2fl/jQ6dqUV5j//9sl4CTJKof3XphqspgGmmwfP1KZu+rLUAC+kgBn
-         KccZTcMSZm2bf5NQQYrxSlrlWIGzYdLdVvN/+ZciM600HUDZvkGp9aRH28l939l7PTCP
-         1SRBSg7TcrOPSjCCazdNDztWbv6GK9WQcRUGmBLQ1bBJMNqxHNRvZsvoKguswkCKGzmg
-         wf0Z1GQJISfYoNgM8u+4roDnxnLiqon1xJNOjZzf4YqGrpicoNouY7CMquXZa27KKbbw
-         ymjA==
-X-Gm-Message-State: AOAM531v0Pyhcr/vrVTR//MPgxAmv/kxtPbsXQNm39Olun9yLhRHAMfX
-        JlWdTw5HkarwTVBF86TzxiVCzQ==
-X-Google-Smtp-Source: ABdhPJwMVw3667hRv6pWEcjInFOlyhCwhXNet5lLnh+lSbHDagcO+F7vLVgVcEQz2eCE8vvTSxocwA==
-X-Received: by 2002:a17:90a:d3ca:: with SMTP id d10mr1084701pjw.42.1589916251823;
-        Tue, 19 May 2020 12:24:11 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id f11sm234059pfa.32.2020.05.19.12.24.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2020 12:24:11 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/3] devlink: Add a new devlink port width
- attribute and pass to netlink
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        danieller@mellanox.com, mlxsw@mellanox.com,
-        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
-        saeedm@mellanox.com, leon@kernel.org, drivers@pensando.io,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20200519134032.1006765-1-idosch@idosch.org>
- <20200519134032.1006765-3-idosch@idosch.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <82d5a049-293d-b7ed-615e-e11abc81f4dd@pensando.io>
-Date:   Tue, 19 May 2020 12:24:09 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sJ2WtymJ/44ukH73/nmAxCbRKt4OtZ9J3eO3Z1WCx+s=;
+        b=Vl+I4nNx1DH8P8ZmRa2TnY6tuiDpG/bgAetTNj++Ivr2MqXskxGW7tyVhNlN99bjRd
+         fzdKGq3HP1qbmfuRmk1zRkfdFxcTK+julNWIBI4TTTD9MvAtpO6R9cYJHTkq84ARic9e
+         CyVxb8LKVSUyuzVAsP7txs/7eduOyg3b+LVEr241UIhNqnngUgrTTbq0NwiJa33yuZge
+         6P+zTEsT+DNpY1I31GW9RQl9qwoWFYxvhCbf8KzyguWQaJlAXFLvrg9ijXvEFE1bgykh
+         IJDpKdKP+CKYxgvWPWMNkBh+Ws440oZ0EbG5WdXaRaMMQ0P7aL8FH2lOTTGc+lFIFOZM
+         jYqQ==
+X-Gm-Message-State: AOAM531RNwtONji/6WRqzvEEjmnHQBOv4H6PKvWJmM/0K7hZMDY0OYGK
+        /Pkf9cU0t63EB/DpaBUOsp0=
+X-Google-Smtp-Source: ABdhPJz0uBnKIXEfrTulqlvs6UK2lZUeYHabJFqmgAMRHk9g9NbIOh8l60tueo4Ud8wq6kVNiTiOqQ==
+X-Received: by 2002:a0c:a993:: with SMTP id a19mr1231250qvb.57.1589916503962;
+        Tue, 19 May 2020 12:28:23 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id u41sm656836qte.28.2020.05.19.12.28.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 12:28:22 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id C333740AFD; Tue, 19 May 2020 16:28:19 -0300 (-03)
+Date:   Tue, 19 May 2020 16:28:19 -0300
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v3 7/7] perf expr: Migrate expr ids table to a hashmap
+Message-ID: <20200519192819.GC28228@kernel.org>
+References: <20200515221732.44078-1-irogers@google.com>
+ <20200515221732.44078-8-irogers@google.com>
+ <20200518154505.GE24211@kernel.org>
+ <CAP-5=fWZwuSLaFX+-pgeE_H92Mtp7+_NrwBeRFTqyfPjVRkbWg@mail.gmail.com>
+ <20200518160648.GI24211@kernel.org>
+ <20200518161137.GK24211@kernel.org>
+ <CAP-5=fWzb5XxcFishFErRtdc-Gvv-7DkVpd6HSiy2_RswfjeDg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200519134032.1006765-3-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fWzb5XxcFishFErRtdc-Gvv-7DkVpd6HSiy2_RswfjeDg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/19/20 6:40 AM, Ido Schimmel wrote:
-> From: Danielle Ratson <danieller@mellanox.com>
->
-> Add a new devlink port attribute that indicates the port's width.
-> Drivers are expected to set it via devlink_port_attrs_set(), before
-> registering the port.
->
-> The attribute is not passed to user space in case the width is invalid
-> (0).
->
-> Signed-off-by: Danielle Ratson <danieller@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
+Em Mon, May 18, 2020 at 09:29:06AM -0700, Ian Rogers escreveu:
+> I had some issues here too:
+> https://lore.kernel.org/lkml/CAEf4BzYxTTND7T7X0dLr2CbkEvUuKtarOeoJYYROefij+qds0w@mail.gmail.com/
+> The only reason for the bits/reg.h inclusion is for __WORDSIZE for the
+> hash_bits operation. As shown below:
 
-[...]
+So, to have perf building in all the systems I have test build
+containers for I have this in:
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> index 273c889faaad..a21a10307ecc 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> @@ -82,7 +82,7 @@ int ionic_devlink_register(struct ionic *ionic)
->   		return 0;
->   
->   	devlink_port_attrs_set(&ionic->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-> -			       0, false, 0, NULL, 0);
-> +			       0, false, 0, 0, NULL, 0);
->   	err = devlink_port_register(dl, &ionic->dl_port, 0);
->   	if (err)
->   		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
-for ionic
-Acked-by: Shannon Nelson <snelson@pensando.io>
+tools/include/linux/bitops.h
 
-[...]
+#include <asm/types.h>
+#include <limits.h>
+#ifndef __WORDSIZE
+#define __WORDSIZE (__SIZEOF_LONG__ * 8)
+#endif
 
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 7b76e5fffc10..9887fba60a7a 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -526,6 +526,10 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
->   
->   	if (!attrs->set)
->   		return 0;
-> +	if (attrs->width) {
-> +		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_WIDTH, attrs->width))
-> +			return -EMSGSIZE;
-> +	}
->   	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
->   		return -EMSGSIZE;
->   	switch (devlink_port->attrs.flavour) {
-> @@ -7408,6 +7412,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
->    *	@split: indicates if this is split port
->    *	@split_subport_number: if the port is split, this is the number
->    *	                       of subport.
-> + *	@width: width of the port. 0 value is not passed to netlink.
+With that it works everywhere, Android cross NDK for arm64, older
+systems, cross compilers to many arches, Musl libc, uclibc, etc.
 
-A little more explanation here would help - basically something like
-     @width: number of ways the port can be split.  0 value is not 
-passed to netlink.
+So I'm trying, just to check, that this change will make this build
+everywhere:
 
-Is this always going to be an even number, or a power-of-2?  If so, 
-perhaps that should be noted here.
+commit ef4c968ccbd52d6a02553719ac7e97f70c65ba47
+Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date:   Tue May 19 16:26:14 2020 -0300
+
+    WIP
+    
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+diff --git a/tools/perf/util/hashmap.h b/tools/perf/util/hashmap.h
+index e823b35e7371..df59fd4fc95b 100644
+--- a/tools/perf/util/hashmap.h
++++ b/tools/perf/util/hashmap.h
+@@ -10,10 +10,9 @@
+ 
+ #include <stdbool.h>
+ #include <stddef.h>
+-#ifdef __GLIBC__
+-#include <bits/wordsize.h>
+-#else
+-#include <bits/reg.h>
++#include <limits.h>
++#ifndef __WORDSIZE
++#define __WORDSIZE (__SIZEOF_LONG__ * 8)
+ #endif
+ 
+ static inline size_t hash_bits(size_t h, int bits)
 
 
-Thanks,
-sln
+> #ifdef __GLIBC__
+> #include <bits/wordsize.h>
+> #else
+> #include <bits/reg.h>
+> #endif
+> static inline size_t hash_bits(size_t h, int bits)
+> {
+> /* shuffle bits and return requested number of upper bits */
+> return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+> }
+> 
+> It'd be possible to change the definition of hash_bits and remove the
+> #includes by:
+> 
+> static inline size_t hash_bits(size_t h, int bits)
+> {
+> /* shuffle bits and return requested number of upper bits */
+> #ifdef __LP64__
+>   int shift = 64 - bits;
+> #else
+>   int shift = 32 - bits;
+> #endif
+> return (h * 11400714819323198485llu) >> shift;
+> }
+> 
+> Others may have a prefered more portable solution. A separate issue
+> with this same function is undefined behavior getting flagged
+> (unnecessarily) by sanitizers:
+> https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
+> 
+> I was planning to come back to that once we got these changes landed.
+> 
+> Thanks!
+> Ian
 
+-- 
 
+- Arnaldo
