@@ -2,92 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1881DA4A7
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B991DA4A8
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgESWkV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 19 May 2020 18:40:21 -0400
-Received: from mga04.intel.com ([192.55.52.120]:18031 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726064AbgESWkV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 18:40:21 -0400
-IronPort-SDR: PxqtmizAMerb1n5uX5CQ+VBFKZMD6EZzFtqMnAbtJySmgzw6WbZ7k5VpzU36f4J3jwYS6/H2vN
- vsV9PsGZe0Yg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 15:40:21 -0700
-IronPort-SDR: +BN4Yym2B6TWMFv6ypI0zhTt651+8uVBVqZPOLQpuGgIlbagG4URnZ+OfglZBTkQwx6tDtjJ3G
- NafzmltzxugQ==
-X-IronPort-AV: E=Sophos;i="5.73,411,1583222400"; 
-   d="scan'208";a="268048035"
-Received: from twxiong-mobl.amr.corp.intel.com (HELO localhost) ([10.254.97.160])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 15:40:19 -0700
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <87sgfxox4x.fsf@intel.com>
-References: <20200516012948.3173993-1-vinicius.gomes@intel.com> <20200516093317.GJ21714@lion.mk-sys.cz> <87sgfxox4x.fsf@intel.com>
-Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
-From:   Andre Guedes <andre.guedes@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
-        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com
-To:     Michal Kubecek <mkubecek@suse.cz>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org
-Date:   Tue, 19 May 2020 15:40:14 -0700
-Message-ID: <158992801438.36166.9692784713665851855@twxiong-mobl.amr.corp.intel.com>
-User-Agent: alot/0.9
+        id S1727063AbgESWkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 18:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726938AbgESWkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:40:23 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609C2C061A0E
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 15:40:21 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6863E128EDAD5;
+        Tue, 19 May 2020 15:40:20 -0700 (PDT)
+Date:   Tue, 19 May 2020 15:40:19 -0700 (PDT)
+Message-Id: <20200519.154019.1247104207621510920.davem@davemloft.net>
+To:     a@unstable.cc
+Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net, toke@toke.dk,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        stephen@networkplumber.org
+Subject: Re: [PATCH] net/sch_generic.h: use sizeof_member() and get rid of
+ unused variable
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200519091333.20923-1-a@unstable.cc>
+References: <20200519091333.20923-1-a@unstable.cc>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 May 2020 15:40:20 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Quoting Vinicius Costa Gomes (2020-05-18 12:34:22)
-> Hi,
-> 
-> Michal Kubecek <mkubecek@suse.cz> writes:
-> 
-> > On Fri, May 15, 2020 at 06:29:44PM -0700, Vinicius Costa Gomes wrote:
-> >> Hi,
-> >> 
-> >> This series adds support for configuring frame preemption, as defined
-> >> by IEEE 802.1Q-2018 (previously IEEE 802.1Qbu) and IEEE 802.3br.
-> >> 
-> >> Frame preemption allows a packet from a higher priority queue marked
-> >> as "express" to preempt a packet from lower priority queue marked as
-> >> "preemptible". The idea is that this can help reduce the latency for
-> >> higher priority traffic.
-> >> 
-> >> Previously, the proposed interface for configuring these features was
-> >> using the qdisc layer. But as this is very hardware dependent and all
-> >> that qdisc did was pass the information to the driver, it makes sense
-> >> to have this in ethtool.
-> >> 
-> >> One example, for retrieving and setting the configuration:
-> >> 
-> >> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
-> >> Frame preemption settings for enp3s0:
-> >>      support: supported
-> >
-> > IMHO we don't need a special bool for this. IIUC this is not a state
-> > flag that would change value for a particular device; either the device
-> > supports the feature or it does not. If it does not, the ethtool_ops
-> > callbacks would return -EOPNOTSUPP (or would not even exist if the
-> > driver has no support) and ethtool would say so.
-> 
-> (I know that the comments below only apply if "ethtool-way" is what's
-> decided)
-> 
-> Cool. Will remove the supported bit.
-> 
-> >
-> >>      active: active
-> >>      supported queues: 0xf
-
-Following the same rationale, is this 'supported queue' going aways as well?
-
-- Andre
+RnJvbTogQW50b25pbyBRdWFydHVsbGkgPGFAdW5zdGFibGUuY2M+DQpEYXRlOiBUdWUsIDE5IE1h
+eSAyMDIwIDExOjEzOjMzICswMjAwDQoNCj4gQ29tcGlsaW5nIHdpdGggLVd1bnVzZWQgdHJpZ2dl
+cnMgdGhlIGZvbGxvd2luZyB3YXJuaW5nOg0KPiANCj4gLi9pbmNsdWRlL25ldC9zY2hfZ2VuZXJp
+Yy5oOiBJbiBmdW5jdGlvbiChcWRpc2NfY2JfcHJpdmF0ZV92YWxpZGF0ZaI6DQo+IC4vaW5jbHVk
+ZS9uZXQvc2NoX2dlbmVyaWMuaDo0NjQ6MjM6IHdhcm5pbmc6IHVudXNlZCB2YXJpYWJsZSChcWNi
+oiBbLVd1bnVzZWQtdmFyaWFibGVdDQo+ICAgNDY0IHwgIHN0cnVjdCBxZGlzY19za2JfY2IgKnFj
+YjsNCj4gICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgXn5+DQo+IA0KPiBhcyB0aGUgcWNi
+IHZhcmlhYmxlIGlzIG9ubHkgdXNlZCB0byBjb21wdXRlIHRoZSBzaXplb2Ygb25lIG9mIGl0cyBt
+ZW1iZXJzLg0KDQpJdCdzIHJlZmVyZW5jZWQgaW4gdGhlIGNvZGUsIHRoZXJlZm9yZSBpdCBpcyBu
+b3QgInVudXNlZCIuDQoNCklmIGluIHNvbWUgY29uZmlndXJhdGlvbiBCVUlMRF9CVUdfT04oKSBk
+b2VzIG5vdCByZWZlcmVuY2UgaXQncyBhcmd1bWVudHMsDQp0aGF0J3MgdGhlIGJ1ZyB0aGF0IG5l
+ZWRzIHRvIGJlIGZpeGVkLg0K
