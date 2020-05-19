@@ -2,94 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3806A1D95DB
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 14:06:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1183D1D95E6
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 14:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728836AbgESMGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 08:06:38 -0400
-Received: from smtprelay0059.hostedemail.com ([216.40.44.59]:58298 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726949AbgESMGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 08:06:37 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 596C118223C6E;
-        Tue, 19 May 2020 12:06:35 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2551:2553:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3870:3871:3872:3874:4321:4605:5007:6119:7576:7903:7904:9545:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12050:12296:12297:12663:12740:12760:12895:13095:13436:13439:13846:14093:14097:14181:14659:14721:21080:21433:21451:21627:21990:30054:30055:30056:30063:30064:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: meal12_2301a9026d0c
-X-Filterd-Recvd-Size: 3695
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf09.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 19 May 2020 12:06:33 +0000 (UTC)
-Message-ID: <eed06e1b6a2ee736dd9d520962aacb31bce88c18.camel@perches.com>
-Subject: Re: [net-next v5 4/9] igc: Use netdev log helpers in igc_ethtool.c
-From:   Joe Perches <joe@perches.com>
-To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "Guedes, Andre" <andre.guedes@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>
-Date:   Tue, 19 May 2020 05:06:32 -0700
-In-Reply-To: <61CC2BC414934749BD9F5BF3D5D94044986A0C1E@ORSMSX112.amr.corp.intel.com>
-References: <20200519010343.2386401-1-jeffrey.t.kirsher@intel.com>
-         <20200519010343.2386401-5-jeffrey.t.kirsher@intel.com>
-         <697e1cc89bec1cbe18d6e1c155a5ca1c9ac05e4a.camel@perches.com>
-         <61CC2BC414934749BD9F5BF3D5D94044986A0C1E@ORSMSX112.amr.corp.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1728652AbgESMIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 08:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726196AbgESMIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 08:08:16 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A3FC08C5C0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 05:08:16 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id x26so14917429qvd.20
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 05:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=kWezCtzq0O0uVCqfdC9/X6n91CgK/OQqvubuuUjJ1/Q=;
+        b=AXmjMopp67fJCgCpQ+O9qC+JKnk6Mb9rePxzoDz1afo3/rZOUkUL+9p7NGI6u2Jrtk
+         Z7SpCRJ1xHJKvPTHrFSgk3dMwB6aFGsY2s+J35wiq2EjTCX7uLCYc3KPYwszA8m5S153
+         tJ/rs8lCsoEXtI6UaKYy6swQqn9MAJMrunInyUKLXpXMfwTlLLdN+hOV6ZzdnPLe1wpE
+         x5kVSFKSpeNaQHWjnAOncRtfEfRaN3WUDGDgzvjbr3qpwuD3CQ8XlUS9+DL7XvivoQXq
+         uFcQVrdZDtzIef26EFBg08Q4/wvOK7/f+Uj6lDxEZHhQU80t9PRDDqe4XG3bxs48d9be
+         sOsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=kWezCtzq0O0uVCqfdC9/X6n91CgK/OQqvubuuUjJ1/Q=;
+        b=VmZoMVZeQcWUloS9Sc/zWL33nzYWA+bk1espTSpUBGnZNheQBpo6szvOBsgDuaDIal
+         AaQkvmTFFSEtx3KtOWbExu8An09Z4hxHA4d1mhnMF0cvVi3NfGQFZ/U6awQX/W1bUr7H
+         Vus4oxYT0FPn/dpVPbk/vqnfhDce+ZB5TM75woSggHs561Q66fCi2PK6iHnSLvZCGzaR
+         8Hg6UaybNw1/it5ATd8/nKmpyhnNalsp/s6Qu3nh+YWF8wxYtrc8e45UiFSmlRduxDq4
+         zpdVGwCohETc7fqjlHPNqXCMV3s3ZhxnH2Ouzrpaa0uGH2b7IGdNla039NdHQfRKFtgH
+         uF4A==
+X-Gm-Message-State: AOAM531b+cp4VfaFW4+mf7uBGfRYVczSbxqiUtROCta5Daqq+PUqhCrl
+        3Ssg7B5r4H5fo6GfTYcf4eB7N3jhYc24DGk=
+X-Google-Smtp-Source: ABdhPJzdkkmSUsHG4JKhglcwr+I+sRLNiE4xVyFTKrJmw0wgRIxuW/7KvHYiI5/NwaesjO5nKVUvs58Fk+HYWGA=
+X-Received: by 2002:a25:d7c1:: with SMTP id o184mr35727924ybg.94.1589890095543;
+ Tue, 19 May 2020 05:08:15 -0700 (PDT)
+Date:   Tue, 19 May 2020 14:07:48 +0200
+Message-Id: <20200519120748.115833-1-brambonne@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.761.g0e0b3e54be-goog
+Subject: [PATCH] ipv6: Add IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC mode
+From:   "=?UTF-8?q?Bram=20Bonn=C3=A9?=" <brambonne@google.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc:     netdev@vger.kernel.org, Jeffrey Vander Stoep <jeffv@google.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        "=?UTF-8?q?Bram=20Bonn=C3=A9?=" <brambonne@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-05-19 at 01:35 +0000, Kirsher, Jeffrey T wrote:
-> > -----Original Message-----
-> > From: Joe Perches <joe@perches.com>
-> > Sent: Monday, May 18, 2020 18:22
-> > To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net
-> > Cc: Guedes, Andre <andre.guedes@intel.com>; netdev@vger.kernel.org;
-> > nhorman@redhat.com; sassmann@redhat.com; Brown, Aaron F
-> > <aaron.f.brown@intel.com>
-> > Subject: Re: [net-next v5 4/9] igc: Use netdev log helpers in igc_ethtool.c
-> > 
-> > On Mon, 2020-05-18 at 18:03 -0700, Jeff Kirsher wrote:
-> > > This patch converts all dev_* calls to netdev_*.
-> > []
-> > > diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-> > > b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-> > []
-> > > @@ -1904,7 +1905,7 @@ static void igc_diag_test(struct net_device
-> > *netdev,
-> > >  	bool if_running = netif_running(netdev);
-> > > 
-> > >  	if (eth_test->flags == ETH_TEST_FL_OFFLINE) {
-> > > -		netdev_info(adapter->netdev, "offline testing starting");
-> > > +		netdev_info(adapter->netdev, "Offline testing starting");
-> > 
-> > several missing '\n' format terminations
-> [Kirsher, Jeffrey T] 
-> 
-> Your right, these never had them, which is why it was not caught.
-> I am fine with adding the terminating \n, if that is what is requested.
-> Andre was just trying to fix the message to properly capitalize the first letter of the message.
+IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC behaves like the existing
+IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, but uses the software-defined MAC
+address (dev_addr) instead of the permanent, hardware-defined MAC
+address (perm_addr) when generating IPv6 link-local addresses.
 
-What's odd is no other intel driver uses the same logging
-format even though many use the same message.
+This mode allows the IPv6 link-local address to change in line with the
+MAC address when per-network MAC address randomization is used. In this
+case, the MAC address fulfills the role of both the Net_Iface and the
+Network_ID parameters in RFC7217.
 
-Likely there's little value in capitalization.
+Signed-off-by: Bram Bonn=C3=A9 <brambonne@google.com>
+---
+ include/uapi/linux/if_link.h |  1 +
+ net/ipv6/addrconf.c          | 29 ++++++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 5 deletions(-)
 
-$ git grep -i -n "offline testing starting" drivers/net/ethernet/intel
-drivers/net/ethernet/intel/e1000/e1000_ethtool.c:1524:          e_info(hw, "offline testing starting\n");
-drivers/net/ethernet/intel/e1000e/ethtool.c:1818:               e_info("offline testing starting\n");
-drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2536:            netif_info(pf, drv, netdev, "offline testing starting\n");
-drivers/net/ethernet/intel/ice/ice_ethtool.c:807:               netdev_info(netdev, "offline testing starting\n");
-drivers/net/ethernet/intel/igb/igb_ethtool.c:2025:              dev_info(&adapter->pdev->dev, "offline testing starting\n");
-drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:2095:          e_info(hw, "offline testing starting\n");
-drivers/net/ethernet/intel/ixgbevf/ethtool.c:744:               hw_dbg(&adapter->hw, "offline testing starting\n");
-
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index a009365ad67b..0de71cfdcd84 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -240,6 +240,7 @@ enum in6_addr_gen_mode {
+ 	IN6_ADDR_GEN_MODE_NONE,
+ 	IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+ 	IN6_ADDR_GEN_MODE_RANDOM,
++	IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC,
+ };
+=20
+ /* Bridge section */
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index ab7e839753ae..02d999ca332c 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -142,6 +142,7 @@ static int ipv6_count_addresses(const struct inet6_dev =
+*idev);
+ static int ipv6_generate_stable_address(struct in6_addr *addr,
+ 					u8 dad_count,
+ 					const struct inet6_dev *idev);
++static bool ipv6_addr_gen_use_softmac(const struct inet6_dev *idev);
+=20
+ #define IN6_ADDR_HSIZE_SHIFT	8
+ #define IN6_ADDR_HSIZE		(1 << IN6_ADDR_HSIZE_SHIFT)
+@@ -381,7 +382,8 @@ static struct inet6_dev *ipv6_add_dev(struct net_device=
+ *dev)
+ 	timer_setup(&ndev->rs_timer, addrconf_rs_timer, 0);
+ 	memcpy(&ndev->cnf, dev_net(dev)->ipv6.devconf_dflt, sizeof(ndev->cnf));
+=20
+-	if (ndev->cnf.stable_secret.initialized)
++	if (ndev->cnf.stable_secret.initialized &&
++	    !ipv6_addr_gen_use_softmac(ndev))
+ 		ndev->cnf.addr_gen_mode =3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+=20
+ 	ndev->cnf.mtu6 =3D dev->mtu;
+@@ -2540,6 +2542,8 @@ static void manage_tempaddrs(struct inet6_dev *idev,
+ static bool is_addr_mode_generate_stable(struct inet6_dev *idev)
+ {
+ 	return idev->cnf.addr_gen_mode =3D=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY ||
++	       idev->cnf.addr_gen_mode =3D=3D
++		       IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC ||
+ 	       idev->cnf.addr_gen_mode =3D=3D IN6_ADDR_GEN_MODE_RANDOM;
+ }
+=20
+@@ -3191,6 +3195,12 @@ static bool ipv6_reserved_interfaceid(struct in6_add=
+r address)
+ 	return false;
+ }
+=20
++static inline bool ipv6_addr_gen_use_softmac(const struct inet6_dev *idev)
++{
++	return idev->cnf.addr_gen_mode =3D=3D
++	    IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC;
++}
++
+ static int ipv6_generate_stable_address(struct in6_addr *address,
+ 					u8 dad_count,
+ 					const struct inet6_dev *idev)
+@@ -3212,6 +3222,7 @@ static int ipv6_generate_stable_address(struct in6_ad=
+dr *address,
+ 	struct in6_addr secret;
+ 	struct in6_addr temp;
+ 	struct net *net =3D dev_net(idev->dev);
++	unsigned char *hwaddr;
+=20
+ 	BUILD_BUG_ON(sizeof(data.__data) !=3D sizeof(data));
+=20
+@@ -3222,13 +3233,16 @@ static int ipv6_generate_stable_address(struct in6_=
+addr *address,
+ 	else
+ 		return -1;
+=20
++	hwaddr =3D ipv6_addr_gen_use_softmac(idev) ?
++			idev->dev->dev_addr : idev->dev->perm_addr;
++
+ retry:
+ 	spin_lock_bh(&lock);
+=20
+ 	sha_init(digest);
+ 	memset(&data, 0, sizeof(data));
+ 	memset(workspace, 0, sizeof(workspace));
+-	memcpy(data.hwaddr, idev->dev->perm_addr, idev->dev->addr_len);
++	memcpy(data.hwaddr, hwaddr, idev->dev->addr_len);
+ 	data.prefix[0] =3D address->s6_addr32[0];
+ 	data.prefix[1] =3D address->s6_addr32[1];
+ 	data.secret =3D secret;
+@@ -3283,6 +3297,7 @@ static void addrconf_addr_gen(struct inet6_dev *idev,=
+ bool prefix_route)
+ 		ipv6_gen_mode_random_init(idev);
+ 		fallthrough;
+ 	case IN6_ADDR_GEN_MODE_STABLE_PRIVACY:
++	case IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC:
+ 		if (!ipv6_generate_stable_address(&addr, 0, idev))
+ 			addrconf_add_linklocal(idev, &addr,
+ 					       IFA_F_STABLE_PRIVACY);
+@@ -5726,6 +5741,7 @@ static int check_addr_gen_mode(int mode)
+ 	if (mode !=3D IN6_ADDR_GEN_MODE_EUI64 &&
+ 	    mode !=3D IN6_ADDR_GEN_MODE_NONE &&
+ 	    mode !=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY &&
++	    mode !=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC &&
+ 	    mode !=3D IN6_ADDR_GEN_MODE_RANDOM)
+ 		return -EINVAL;
+ 	return 1;
+@@ -5734,7 +5750,8 @@ static int check_addr_gen_mode(int mode)
+ static int check_stable_privacy(struct inet6_dev *idev, struct net *net,
+ 				int mode)
+ {
+-	if (mode =3D=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY &&
++	if ((mode =3D=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY ||
++	     mode =3D=3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY) &&
+ 	    !idev->cnf.stable_secret.initialized &&
+ 	    !net->ipv6.devconf_dflt->stable_secret.initialized)
+ 		return -EINVAL;
+@@ -6355,7 +6372,7 @@ static int addrconf_sysctl_stable_secret(struct ctl_t=
+able *ctl, int write,
+ 		for_each_netdev(net, dev) {
+ 			struct inet6_dev *idev =3D __in6_dev_get(dev);
+=20
+-			if (idev) {
++			if (idev && !ipv6_addr_gen_use_softmac(idev)) {
+ 				idev->cnf.addr_gen_mode =3D
+ 					IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+ 			}
+@@ -6363,7 +6380,9 @@ static int addrconf_sysctl_stable_secret(struct ctl_t=
+able *ctl, int write,
+ 	} else {
+ 		struct inet6_dev *idev =3D ctl->extra1;
+=20
+-		idev->cnf.addr_gen_mode =3D IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
++		if (idev && !ipv6_addr_gen_use_softmac(idev))
++			idev->cnf.addr_gen_mode =3D
++				IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+ 	}
+=20
+ out:
+--=20
+2.26.2.761.g0e0b3e54be-goog
 
