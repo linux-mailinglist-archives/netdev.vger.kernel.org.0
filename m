@@ -2,102 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C43DF1D9BDC
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A92D1D9BFB
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729338AbgESQAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 12:00:19 -0400
-Received: from foss.arm.com ([217.140.110.172]:35518 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729211AbgESQAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 12:00:18 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 018FE30E;
-        Tue, 19 May 2020 09:00:18 -0700 (PDT)
-Received: from [192.168.122.166] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B80493F305;
-        Tue, 19 May 2020 09:00:17 -0700 (PDT)
-Subject: Re: [PATCH] net: phy: Fix c45 no phy detected logic
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net,
-        linux-kernel@vger.kernel.org,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>
-References: <20200514170025.1379981-1-jeremy.linton@arm.com>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <63b1db19-4744-417a-cd26-1e15e60fa571@arm.com>
-Date:   Tue, 19 May 2020 11:00:13 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729332AbgESQHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 12:07:05 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:58303 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729316AbgESQHE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:07:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589904423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T+1wIgatcNw+bs4bC4UVA93HHDhP2YXSs8RVpPtE368=;
+        b=DFmkMrV+CuRyu3A3zxAme4y4b73fV/uH7dZ2qiCJmtMjIX4yThtk9PHwHpeQvhXpz0s4jq
+        cDLnHetNLhmjNbrf9VG+RU0A34+3CgZprPeADzHFt+S4IqWevs+byhpX9UI3atdBJODC1N
+        Sdxzy1k8GiHkBp63aL+9ndoJ/e9YTSo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-KfD76cAVOHCMJEdCOgDVPQ-1; Tue, 19 May 2020 12:06:57 -0400
+X-MC-Unique: KfD76cAVOHCMJEdCOgDVPQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 350021005510;
+        Tue, 19 May 2020 16:06:55 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-95.rdu2.redhat.com [10.10.112.95])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7730F5D9C5;
+        Tue, 19 May 2020 16:06:53 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20200519141432.GA2949457@erythro.dev.benboeckel.internal>
+References: <20200519141432.GA2949457@erythro.dev.benboeckel.internal> <20200518155148.GA2595638@erythro.dev.benboeckel.internal> <158981176590.872823.11683683537698750702.stgit@warthog.procyon.org.uk> <1080378.1589895580@warthog.procyon.org.uk>
+To:     me@benboeckel.net, fweimer@redhat.com
+Cc:     dhowells@redhat.com, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dns: Apply a default TTL to records obtained from getaddrinfo()
 MIME-Version: 1.0
-In-Reply-To: <20200514170025.1379981-1-jeremy.linton@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1512926.1589904409.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 19 May 2020 17:06:49 +0100
+Message-ID: <1512927.1589904409@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Okay, how about this incremental change, then?  If fixes the typo, only pr=
+ints
+the "READ CONFIG" line in verbose mode, filters escape chars in the config
+file and reduces the expiration time to 5s.
 
-On 5/14/20 12:00 PM, Jeremy Linton wrote:
-> The commit "disregard Clause 22 registers present bit..." clears
-> the low bit of the devices_in_package data which is being used
-> in get_phy_c45_ids() to determine if a phy/register is responding
-> correctly. That check is against 0x1FFFFFFF, but since the low
-> bit is always cleared, the check can never be true. This leads to
-> detecting c45 phy devices where none exist.
-> 
-> Lets fix this by also clearing the low bit in the mask to 0x1FFFFFFE.
-> This allows us to continue to autoprobe standards compliant devices
-> without also gaining a large number of bogus ones.
+David
+---
+diff --git a/key.dns_resolver.c b/key.dns_resolver.c
+index c241eda3..7a7ec424 100644
+--- a/key.dns_resolver.c
++++ b/key.dns_resolver.c
+@@ -52,7 +52,7 @@ key_serial_t key;
+ static int verbose;
+ int debug_mode;
+ unsigned mask =3D INET_ALL;
+-unsigned int key_expiry =3D 10 * 60;
++unsigned int key_expiry =3D 5;
+ =
 
-So, I've been reworking the c45 ID detection logic, with an aim to 
-hinting to the scanner that it should fallback to c22 for a given phy 
-address (as well as giving it some additional standardized areas to 
-probe for phy ids). It turns out that the c22 registers present bit is a 
-pretty useful signal that this needs to happen. So, I think this patch 
-really should move the BIT(0) sanitation after the MMD detection loop in 
-get_phy_c45_ids().
+ =
 
-But having dug into this code for a while now, I'm hard pressed to 
-understand the case that the original 3b5e74e0afe3 commit fixed. The 
-only thing I can see is that the "bug" i'm fixing here was intentionally 
-creating bogus phy nodes when the MMDs weren't responding.
+ /*
+@@ -109,7 +109,7 @@ void _error(const char *fmt, ...)
+ }
+ =
 
+ /*
+- * Pring a warning to stderr or the syslog
++ * Print a warning to stderr or the syslog
+  */
+ void warning(const char *fmt, ...)
+ {
+@@ -454,7 +454,7 @@ static void read_config(void)
+ 	unsigned int line =3D 0, u;
+ 	int n;
+ =
 
-Thanks,
+-	printf("READ CONFIG %s\n", config_file);
++	info("READ CONFIG %s", config_file);
+ =
 
-> 
-> Fixes: 3b5e74e0afe3 ("net: phy: disregard "Clause 22 registers present" bit in get_phy_c45_devs_in_pkg")
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> ---
->   drivers/net/phy/phy_device.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index ac2784192472..b93d984d35cc 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -723,7 +723,7 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
->   		if (phy_reg < 0)
->   			return -EIO;
->   
-> -		if ((*devs & 0x1fffffff) == 0x1fffffff) {
-> +		if ((*devs & 0x1ffffffe) == 0x1ffffffe) {
->   			/*  If mostly Fs, there is no device there,
->   			 *  then let's continue to probe more, as some
->   			 *  10G PHYs have zero Devices In package,
-> @@ -733,7 +733,7 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
->   			if (phy_reg < 0)
->   				return -EIO;
->   			/* no device there, let's get out of here */
-> -			if ((*devs & 0x1fffffff) == 0x1fffffff) {
-> +			if ((*devs & 0x1ffffffe) == 0x1ffffffe) {
->   				*phy_id = 0xffffffff;
->   				return 0;
->   			} else {
-> 
+ 	f =3D fopen(config_file, "r");
+ 	if (!f) {
+@@ -514,6 +514,16 @@ static void read_config(void)
+ 			v =3D p =3D b;
+ 			while (*b) {
+ 				if (esc) {
++					switch (*b) {
++					case ' ':
++					case '\t':
++					case '"':
++					case '\'':
++					case '\\':
++						break;
++					default:
++						goto invalid_escape_char;
++					}
+ 					esc =3D false;
+ 					*p++ =3D *b++;
+ 					continue;
+@@ -563,6 +573,8 @@ static void read_config(void)
+ =
+
+ missing_value:
+ 	error("%s:%u: %s: Missing value", config_file, line, k);
++invalid_escape_char:
++	error("%s:%u: %s: Invalid char in escape", config_file, line, k);
+ post_quote_data:
+ 	error("%s:%u: %s: Data after closing quote", config_file, line, k);
+ bad_value:
+diff --git a/man/key.dns_resolver.conf.5 b/man/key.dns_resolver.conf.5
+index 03d04049..c944ad55 100644
+--- a/man/key.dns_resolver.conf.5
++++ b/man/key.dns_resolver.conf.5
+@@ -34,7 +34,7 @@ Available options include:
+ The number of seconds to set as the expiration on a cached record.  This =
+will
+ be overridden if the program manages to retrieve TTL information along wi=
+th
+ the addresses (if, for example, it accesses the DNS directly).  The defau=
+lt is
+-600 seconds.  The value must be in the range 1 to INT_MAX.
++5 seconds.  The value must be in the range 1 to INT_MAX.
+ .P
+ The file can also include comments beginning with a '#' character unless
+ otherwise suppressed by being inside a quoted value or being escaped with=
+ a
 
