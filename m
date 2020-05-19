@@ -2,113 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 705FC1DA44A
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:10:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 419421DA44C
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728004AbgESWJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 18:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbgESWJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:09:56 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8CFC061A0F
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 15:09:56 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id f189so1577246qkd.5
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 15:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=OYamTGdOPhCVNI1QvW1e3g2+Fi4dcV776yPbpbLu8pw=;
-        b=WIXmMO/PbE33x8nwzxIRp5yg7DND1PNW+0NrqgaXv7nzawsT6IhC2eCjvvh40mto7r
-         SbLz78dwf6iEHEr4KYAH+cU2l4PBJ2PrrcDClxHMkw/kkgOQhtdmtWPXcg3ZURXayCr2
-         wehkLzF5xNF6iBajUpaU+Ws/Ub+1mzK+4bViN0VclKtFMeGNTATrGWuQxqzfnPZf2SWO
-         7Qpr0UGpRqLCkg/a/v4o8r+1ZwKlN7vTRPy5jd80gADil2evZOn/Js+FOeY/o+Iy4E+2
-         y1n1rsM/Jx14MXrBgnETdN/XmAZLa+A/ZzsNF5opqItPPsetHWuNFqJ7bQdmvm5cDT01
-         igCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=OYamTGdOPhCVNI1QvW1e3g2+Fi4dcV776yPbpbLu8pw=;
-        b=W4Azn9otRGiwEW8/w6Qs5JdNAhEQ1BdUQ926ZJ5YH1Ey5zwLRkqvEQh0R2k4mSCKsM
-         408iJ1wwcbUu7PB/biEEJ6ua6G7w0rD3qFtnGYnAdThCAitcrLJPEvpHBfkw/RliZff+
-         GSKrj1G/182uv3/IsI3Q/CVNazc6TAxKUFoMmvLNghKhA3OdmzWdr8Q/DaG1XfPoTNOV
-         RX2vGnQMnRIGDMHcrPrSuuy3cgYTaud8su2KieZo6jfXVGclWgT0isjphhuGcFedkgJo
-         8dFsHYqXQ2njbPp8LBwxdVteDivQKaM/6+TQoE79DuMRsj0mWHv4uKYXPPZ5Yv6fZTDR
-         PQxw==
-X-Gm-Message-State: AOAM532wRxue5NMQuPoKt4sjK39zM1FqSbe+BvL7Hljhvptkm6f/Pk2J
-        GhL1Qd05fTCEgGbNXQDm9KqekQ==
-X-Google-Smtp-Source: ABdhPJz/kWlMCT7BckmPKCO+bE/Rv6NJIjYq2GjNu6FNQX7xlYSGd2IEAFANX3UM4fOtg/schkqnvA==
-X-Received: by 2002:a37:3d7:: with SMTP id 206mr1813641qkd.202.1589926195711;
-        Tue, 19 May 2020 15:09:55 -0700 (PDT)
-Received: from sevai ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id i24sm858519qtm.85.2020.05.19.15.09.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 May 2020 15:09:54 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, kernel@mojatatu.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH iproute2 1/1] tc: action: fix time values output in JSON format
-References: <1589822958-30545-1-git-send-email-mrv@mojatatu.com>
-        <20200519142925.282bf732@hermes.lan>
-Date:   Tue, 19 May 2020 18:09:38 -0400
-In-Reply-To: <20200519142925.282bf732@hermes.lan> (Stephen Hemminger's message
-        of "Tue, 19 May 2020 14:29:25 -0700")
-Message-ID: <85lflnmva5.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726871AbgESWLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 18:11:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55372 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725885AbgESWLR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 18:11:17 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 50EB32075F;
+        Tue, 19 May 2020 22:11:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589926277;
+        bh=VL8Cv8XTxPnMHopYILFcsAeZXF8sqfXpNDn4awZ5fU4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=drdQvxn/mSNvypkNwXszeT6EryRNBS83oTfGDp543T58ag/IkLAucbYC92dU90Ifv
+         LBvOQ0w1qc3tiymYsQrRGkTVOC9JWnb7zv8VSmJV1rajC0I/WyTXj27tbwacTEWGjk
+         8u97XWfLa5KEsVVZUa6Pw0hlk/63MkIjcodK7bE4=
+Date:   Tue, 19 May 2020 15:11:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+Subject: Re: [PATCH net-next v2 0/2] nfp: flower: feature bit updates
+Message-ID: <20200519151115.179d01ea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200519141502.18676-1-simon.horman@netronome.com>
+References: <20200519141502.18676-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+On Tue, 19 May 2020 16:15:00 +0200 Simon Horman wrote:
+> this short series has two parts.
+> 
+> * The first patch cleans up the treatment of existing feature bits.
+>   There are two distinct methods used and the code now reflects this
+>   more clearly.
+> * The second patch informs firmware of flower features. This allows
+>   the firmware to disable certain features in the absence of of host support.
 
-> On Mon, 18 May 2020 13:29:18 -0400
-> Roman Mashak <mrv@mojatatu.com> wrote:
->
->> Report tcf_t values in seconds, not jiffies, in JSON format as it is now
->> for stdout.
->> 
->> Fixes: 2704bd625583 ("tc: jsonify actions core")
->> Cc: Jiri Pirko <jiri@mellanox.com>
->> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
->> ---
->>  tc/tc_util.c | 9 ++++++---
->>  1 file changed, 6 insertions(+), 3 deletions(-)
->> 
->> diff --git a/tc/tc_util.c b/tc/tc_util.c
->> index 12f865cc71bf..118e19da35bb 100644
->> --- a/tc/tc_util.c
->> +++ b/tc/tc_util.c
->> @@ -751,17 +751,20 @@ void print_tm(FILE *f, const struct tcf_t *tm)
->>  	int hz = get_user_hz();
->>  
->>  	if (tm->install != 0) {
->> -		print_uint(PRINT_JSON, "installed", NULL, tm->install);
->> +		print_uint(PRINT_JSON, "installed", NULL,
->> +			   (unsigned int)(tm->install/hz));
->>  		print_uint(PRINT_FP, NULL, " installed %u sec",
->>  			   (unsigned int)(tm->install/hz));
->>  	}
->
-> Please use PRINT_ANY, drop the useless casts and fix the style.
->
 
-Thanks Stephen. I will send v2.
-
-> diff --git a/tc/tc_util.c b/tc/tc_util.c
-> index 12f865cc71bf..fd5fcb242b64 100644
-> --- a/tc/tc_util.c
-> +++ b/tc/tc_util.c
-> @@ -750,21 +750,17 @@ void print_tm(FILE *f, const struct tcf_t *tm)
->  {
->         int hz = get_user_hz();
-
-[...]
-
+Acked-by: Jakub Kicinski <kuba@kernel.org>
