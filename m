@@ -2,65 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950801D9F80
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC8951D9FA8
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729519AbgESS30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 14:29:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39514 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726161AbgESS3Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 14:29:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6uCQIOARttavPA6jMK2O27q7AM5rPupXUJtqotwWi1Q=; b=1XVZ5oVE7XtBh5zBkgH16yxly3
-        xp6tfNbcdSexEsqB5s7AEL7MkxuYEty1CC6UvPZUUq6Szy9LXuMzbIn55KqlHvn2U5ufQxSaaA3Pf
-        l3hZiuWdZwbempjBz5K+jItnAO5s+IzBS3qxDa+/xnBOtl02rgMMs5TVRzptC6dbvYCY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jb6zM-002jfC-Pp; Tue, 19 May 2020 20:29:16 +0200
-Date:   Tue, 19 May 2020 20:29:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dan Murphy <dmurphy@ti.com>, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 2/4] net: phy: dp83869: Set opmode from straps
-Message-ID: <20200519182916.GM624248@lunn.ch>
-References: <20200519141813.28167-1-dmurphy@ti.com>
- <20200519141813.28167-3-dmurphy@ti.com>
- <20200519095818.425d227b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726623AbgESSji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 14:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgESSji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 14:39:38 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFBEC08C5C0;
+        Tue, 19 May 2020 11:39:36 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id h26so389368lfg.6;
+        Tue, 19 May 2020 11:39:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ht18e3/b8LUg9GRO7A4JDM825wTuZwp2FHCzvB2EzRY=;
+        b=atmvRw2S5iGtPzdEVtUMoZRcnfrqjmz5fTSuvApyoCQf3p2WndOOedXrLsKFyCumII
+         lPqBND+7OXp1zn+i3rBm2XjkKIz1mrODo8AyZvN++tJa8l+NM8UA592Wv/xrw9jX+HDS
+         hHM0lsnAgRl4K8BaowE4RzXT+6uTwIxMtv46w3GBat/0mA0V0pJBJQzQcxXFEYpgRCpQ
+         ofPbkFhnhDNaj9kVui7NMYKUW3Dmy9ThCelv+tvJHJJDvX3LN0gWdcOneZ8g4xElK9ie
+         9nrt5NG/z2GuOPE61c14L/Y3Oyr8RCvhVtC9mG77gSl3BdrFQrbq9A7equ1NscZiLQrf
+         KV7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ht18e3/b8LUg9GRO7A4JDM825wTuZwp2FHCzvB2EzRY=;
+        b=oVBTXLbBPWzcsHbaxKXzDH5lRPxc077122OYa3zNQnZRcpreBNgvjwHGjGmbJ25pYc
+         iur/F8CF8szU+3LbjLCDs76YWCIJMsm2XE8Bp3ZgI0Hg67jPocGzULVOQoWSfrb+WqRp
+         zk9IhPzfMF0OTqtb2oBF0y7gwZJKm1HoOR0FDE6qWsuHscJxcTpbDxmX93ZTZYVt5r9r
+         ieLYXPA5SjupJLADb1QnfmFfW7gT6Tq2B1XEf8TqnPU5FbEBCUqnx83MSpcYFy784N42
+         ybLY7TyB7WICEVMxd3DPrQwq+PJyRUpTHNC1EZQxWPy99RBkIG7ZM27VvN0avc7vUh/H
+         PN4w==
+X-Gm-Message-State: AOAM531VJtg0Y9OOEmpMOYHirtRscK+vsEH4w9aVXgqB0wvdmJabUzzP
+        JRpJe+lbB6pbdWqqtvSCefhdvt2hl4OyCEFkG/M=
+X-Google-Smtp-Source: ABdhPJx3q6pqAWmEllNWr6daN4nUSLjYnTst7p/cE2pOlqOMo9XftK+UVzK13vgmhOLiVHy3lQ2B/XkzM6nBJBOV4gM=
+X-Received: by 2002:ac2:58d7:: with SMTP id u23mr138673lfo.119.1589913575212;
+ Tue, 19 May 2020 11:39:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200519095818.425d227b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <cover.1589841594.git.daniel@iogearbox.net>
+In-Reply-To: <cover.1589841594.git.daniel@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 19 May 2020 11:39:23 -0700
+Message-ID: <CAADnVQ+maFHVyyA+Vh4g8PPiVuHtxCtmiacv_yB1s6BGZwLgJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/4] Add get{peer,sock}name cgroup attach types
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 09:58:18AM -0700, Jakub Kicinski wrote:
-> On Tue, 19 May 2020 09:18:11 -0500 Dan Murphy wrote:
-> > If the op-mode for the device is not set in the device tree then set
-> > the strapped op-mode and store it for later configuration.
-> > 
-> > Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> 
-> ../drivers/net/phy/dp83869.c: In function0 dp83869_set_strapped_mode:
-> ../drivers/net/phy/dp83869.c:171:10: warning: comparison is always false due to limited range of data type [-Wtype-limits]
->   171 |  if (val < 0)
->       |          ^
+On Mon, May 18, 2020 at 3:46 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Trivial patch to add get{peer,sock}name cgroup attach types to the BPF
+> sock_addr programs in order to enable rewriting sockaddr structs from
+> both calls along with libbpf and bpftool support as well as selftests.
+>
+> Thanks!
+>
+> v1 -> v2:
+>   - use __u16 for ports in start_server_with_port() signature and in
+>     expected_{local,peer} ports in the test case (Andrey)
+>   - Added both Andrii's and Andrey's ACKs
 
-Hi Jakub
-
-This happens a lot with PHY drivers. The register being read is a u16,
-so that is what people use.
-
-Is this now a standard GCC warning? Or have you turned on extra
-checking?
-
-	Andrew
+Applied. Thanks
