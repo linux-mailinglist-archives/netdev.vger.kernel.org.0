@@ -2,191 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8209E1D8F22
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE4B1D8F28
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728184AbgESFTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 01:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        id S1726396AbgESFYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 01:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726323AbgESFTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:19:13 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65860C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:19:13 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id z4so1653772wmi.2
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:19:13 -0700 (PDT)
+        with ESMTP id S1726272AbgESFYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:24:04 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BC9C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:24:04 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id l18so14334462wrn.6
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:24:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=pcHDjg+HOYIROAS36NtMZdtFRJI62FcrI/rUmEqAQ0c=;
-        b=O1d8dfNRLjftx1gBOUEyIbSyAEzvLDqj4VesUfWMMXHOzh4Ptka+HApF4dCXtttwD0
-         fpW2trtQl9LnEXbxHm55t+cnloK4RE9dwu/CJ8J6xPxHoty94dUTv7fTbt5GuhJaWtHt
-         opUubgoCPbsklpxqbpY0qqTjh2G8m+K5xSNCSp/6bpG8cwXQkp3IQEIKkyeLEMbhxYhJ
-         9sEy/hfxGQoppjRtAmR8UtGweO7KMs+yxfkMyv3jQQfVl0goc02agDEKXw9HwGiKwy1c
-         r9YZu+WnZxoSKh90Bnl5ewAoXdV36b5H/lRPFaZLjvrFDsO5x7v0WmyvU1erLdxKQVDm
-         tYrQ==
+        bh=X+FLDdorLQO46OV637APXfw4qzvEWGK5z2jSLLwoK7Y=;
+        b=Wt74CKu4XkAIyu1x7Fxqj05WDllZA+UzP+hYzkwogFFc++obfxdhQDLEtNvhP1oWo1
+         F7Ub2wBNkmtX0xE2VrKhDFVFMP4utXNe3MhE/n2Vr/WvTB0FSpEW3tR8wz0DJqjun4u0
+         /d2xUEAJjSzoZNfCn6H+ItbdGkA1XVkcjY1+R5Z5lJ9Ir/jita0UPTTCddVgENtJyGqB
+         JWAvmCawSz1LMGeTzCEuCZvFvKJjDiKiqw3VtV0X4rsngP6X04iJ8lBzJsdmgDOc2Hse
+         GhqGQi+FoGBwco5Mpz7TEDh7sgQbIkTF2Cz3i0mR+C8OAEzoxETi15hgTOD3INQGaNr7
+         6spQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=pcHDjg+HOYIROAS36NtMZdtFRJI62FcrI/rUmEqAQ0c=;
-        b=KItillFvF8eyzTM3Pll0yrIanCa6Ib5EHDllOB8lvqFSmaNGPy9BHj3PNv8GWvc+Mi
-         BYG+hvPQzIQYSsV69h3pInWUvksusmchjCxVU/CC8rq4WqWmnDRdgQzSgRlaB8Iy0eMV
-         5ee6OfvudEctT22wnKbc/Gf2MeqD7w6mtQBuWrO88tjfmUKh54knbGp+5zdaMma0IcFV
-         lbIAQ5V2sIj6ReBsPn+7sA2nDVXwXZ+soko+LW3/ac9U1QnTdnQBQAVp0FyZbMcfC/Ra
-         LL37SjLV6TZ/OQ1qrnaseOwdR5BBMwsvNqy1ewCEMk1p0A+BwnH6RHDoLyg16AauO9w1
-         EqvQ==
-X-Gm-Message-State: AOAM531YOg1Mms/t7zpjN0jsdOhsd/9WDro+ScgkzC1JZKHYvWJRtSHJ
-        GVdhBEiK0oA9Y5TEyryLzm+JcA==
-X-Google-Smtp-Source: ABdhPJzapb+q5gpKv30YdXgeA69G1JGoh/UUjwRujRTJIWT2Ouv6X6rBs6ajZPZXp/s3Gc7yvtADeg==
-X-Received: by 2002:a1c:2e41:: with SMTP id u62mr3313983wmu.91.1589865552115;
-        Mon, 18 May 2020 22:19:12 -0700 (PDT)
+        bh=X+FLDdorLQO46OV637APXfw4qzvEWGK5z2jSLLwoK7Y=;
+        b=GIZbIl0M4TKWjmx4Y1BpPqKULJnnB+DirKL/JMgLxk/hHc6wqMu0zZ4kdwxd1+P4wZ
+         Odar3dbXo+cRMeud85dBqKeXmNkKW29lDW7zFqekNvDvw3mH0yO2+EYmpn1K8rI9kNVW
+         43+Z9mOiZy0QyJACAhqAR01POxyAwpkbucS28OUuJHDUSd0YbbXNRlE4sJPnrK6Px+Gz
+         WruIu9gmKG6Ds8ETUi+hXOImRMtQRDmFlhbvkO4+sJu5uFDvgbnibge9kaUHcDaqSuV2
+         ByNHjxK0Q9mEgjfb5K7Ih88w3eahnZJsc4NP0FpLpH8xO3XRj1vAOz5313X3pbWDLFHA
+         ORSQ==
+X-Gm-Message-State: AOAM532b/E1o6RdT2hK8G7v2ZBYHvStogFZdwKbojW4K+ZX68vKq/Rew
+        Bu/WGcV12Qno9zSN+9MnKHIbQF40aA0=
+X-Google-Smtp-Source: ABdhPJy8scqPPVsjPry1cTNeyxaEJ5DNtjp3D7yv04EhSFk0faOMqdW4OqQ1YYbgQs+J/L+WXffrPA==
+X-Received: by 2002:adf:a51a:: with SMTP id i26mr22663879wrb.332.1589865842176;
+        Mon, 18 May 2020 22:24:02 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 94sm19508818wrf.74.2020.05.18.22.19.11
+        by smtp.gmail.com with ESMTPSA id s11sm18965668wrp.79.2020.05.18.22.24.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 22:19:11 -0700 (PDT)
-Date:   Tue, 19 May 2020 07:19:10 +0200
+        Mon, 18 May 2020 22:24:01 -0700 (PDT)
+Date:   Tue, 19 May 2020 07:24:00 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
-        saeedm@mellanox.com, leon@kernel.org,
-        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
-        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
-        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
-        oss-drivers@netronome.com, snelson@pensando.io,
-        drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        valex@mellanox.com, linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
-Subject: Re: [RFC v2] current devlink extension plan for NICs
-Message-ID: <20200519051910.GA4655@nanopsycho>
-References: <20200501091449.GA25211@nanopsycho.orion>
- <b0f75e76-e6cb-a069-b863-d09f77bc67f6@intel.com>
- <20200515093016.GE2676@nanopsycho>
- <e3aa20ec-a47e-0b91-d6d5-1ad2020eca28@intel.com>
- <20200518065207.GA2193@nanopsycho>
- <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] bnxt_en: Add new "enable_hot_fw_reset"
+ generic devlink parameter
+Message-ID: <20200519052400.GB4655@nanopsycho>
+References: <1589790439-10487-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200518110152.GB2193@nanopsycho>
+ <20200518164309.2065f489@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <17405a27-cd38-03c6-5ee3-0c9f8b643bfc@intel.com>
+In-Reply-To: <20200518164309.2065f489@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, May 18, 2020 at 11:05:45PM CEST, jacob.e.keller@intel.com wrote:
->
->
->On 5/17/2020 11:52 PM, Jiri Pirko wrote:
->> Fri, May 15, 2020 at 11:36:19PM CEST, jacob.e.keller@intel.com wrote:
->>>
->>>
->>> On 5/15/2020 2:30 AM, Jiri Pirko wrote:
->>>> Fri, May 15, 2020 at 01:52:54AM CEST, jacob.e.keller@intel.com wrote:
->>>>>> $ devlink port add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10
->>>>>>
->>>>>
->>>>> Can you clarify what sfnum means here? and why is it different from the
->>>>> index? I get that the index is a unique number that identifies the port
->>>>> regardless of type, so sfnum must be some sort of hardware internal
->>>>> identifier?
->>>>
->>>> Basically pfnum, sfnum and vfnum could overlap. Index is unique within
->>>> all groups together.
->>>>
->>>
->>> Right. Index is just an identifier for which port this is.
->>>
->
->Ok, so whether or not a driver uses this internally is an implementation
->detail that doesn't matter to the interface.
->
->
->>>>
->>>>>
->>>>> When looking at this with colleagues, there was a lot of confusion about
->>>>> the difference between the index and the sfnum.
->>>>
->>>> No confusion about index and pfnum/vfnum? They behave the same.
->>>> Index is just a port handle.
->>>>
->>>
->>> I'm less confused about the difference between index and these "nums",
->>> and more so questioning what pfnum/vfnum/sfnum represent? Are they
->>> similar to the vf ID that we have in the legacy SRIOV functions? I.e. a
->>> hardware index?
->>>
->>> I don't think in general users necessarily care which "index" they get
->>> upfront. They obviously very much care about the index once it's
->>> selected. I do believe the interfaces should start with the capability
->>> for the index to be selected automatically at creation (with the
->>> optional capability to select a specific index if desired, as shown here).
->>>
->>> I do not think most users want to care about what to pick for this
->>> number. (Just as they would not want to pick a number for the port index
->>> either).
+Tue, May 19, 2020 at 01:43:09AM CEST, kuba@kernel.org wrote:
+>On Mon, 18 May 2020 13:01:52 +0200 Jiri Pirko wrote:
+>> Mon, May 18, 2020 at 10:27:15AM CEST, vasundhara-v.volam@broadcom.com wrote:
+>> >This patchset adds support for a "enable_hot_fw_reset" generic devlink
+>> >parameter and use it in bnxt_en driver.
+>> >
+>> >Also, firmware spec. is updated to 1.10.1.40.  
 >> 
->> I see your point. However I don't think it is always the right
->> scenario. The "nums" are used for naming of the netdevices, both the
->> eswitch port representor and the actual SF (in case of SF).
+>> Hi.
 >> 
->> I think that in lot of usecases is more convenient for user to select
->> the "num" on the cmdline.
+>> We've been discussing this internally for some time.
+>> I don't like to use params for this purpose.
+>> We already have "devlink dev flash" and "devlink dev reload" commands.
+>> Combination of these two with appropriate attributes should provide what
+>> you want. The "param" you are introducing is related to either "flash"
+>> or "reload", so I don't think it is good to have separate param, when we
+>> can extend the command attributes.
 >> 
->
->Agreed, based on the below statements. Basically "let users specify or
->get it automatically chosen", just like with the port identifier and
->with the region numbers now.
->
->
->Thanks for the explanations!
->
->>>
->>>>> Obviously this is a TODO, but how does this differ from the current
->>>>> port_split and port_unsplit?
->>>>
->>>> Does not have anything to do with port splitting. This is about creating
->>>> a "child PF" from the section above.
->>>>
->>>
->>> Hmm. Ok so this is about internal connections in the switch, then?
+>> How does flash&reload work for mlxsw now:
 >> 
->> Yes. Take the smartnic as an example. On the smartnic cpu, the
->> eswitch management is being done. There's devlink instance with all
->> eswitch port visible as devlink ports. One PF-type devlink port per
->> host. That are the "child PFs".
+>> # devlink flash
+>> Now new version is pending, old FW is running
+>> # devlink reload
+>> Driver resets the device, new FW is loaded
 >> 
->> Now from perspective of the host, there are 2 scenarios:
->> 1) have the "simple dumb" PF, which just exposes 1 netdev for host to
->>    run traffic over. smartnic cpu manages the VFs/SFs and sees the
->>    devlink ports for them. This is 1 level switch - merged switch
+>> I propose to extend reload like this:
 >> 
->> 2) PF manages a sub-switch/nested-switch. The devlink/devlink ports are
->>    created on the host and the devlink ports for SFs/VFs are created
->>    there. This is multi-level eswitch. Each "child PF" on a parent
->>    manages a nested switch. And could in theory have other PF child with
->>    another nested switch.
+>>  devlink dev reload DEV [ level { driver-default | fw-reset | driver-only | fw-live-patch } ]
+>>    driver-default - means one of following to, according to what is
+>>                     default for the driver
+>>    fw-reset - does FW reset and driver entities re-instantiation
+>>    driver-only - does driver entities re-instantiation only
+>>    fw-live-patch - does only FW live patching - no effect on kernel
 >> 
+>> Could be an enum or bitfield. Does not matter. The point is to use
+>> reload with attribute to achieve what user wants. In your usecase, user
+>> would do:
+>> 
+>> # devlink flash
+>> # devlink reload level fw-live-patch
 >
->Ok. So in the smart NIC CPU, we'd see the primary PF and some child PFs,
->and in the host system we'd see a "primary PF" that is the other end of
->the associated Child PF, and might be able to manage its own subswitch.
->
->Ok this is making more sense now.
->
->I think I had imagined that was what subfuntions were. But really
->subfunctions are a bit different, they're more similar to expanded VFs?
+>Unfortunately for SmartNICs and MultiHost systems the reset may not be
+>initiated locally. I agree it'd be great to have a normal netlink knob
 
-Yeah, they are basically VFs without separate pci BDF. They reside on a
-BDF of the PF they are created on. Basically a lightweight VFs.
+I don't follow. Locally initiated or not, why what I suggested is not
+enough to cover that?
+
+
+>for this instead of a param. But it has to be some form of a policy of
+>allowing the reset to happen, rather than an action/trigger kind of
+>thing.
+
+The "host" allows to reset himself by the "smartnic", right? For that, I
+can imagine a param. But that is not the case of this patchset.
 
 
 >
->Thanks,
->Jake
+>Also user space notification should be generated when reset happens,
+>IMO. devlink dev info contents will likely change after reset, if
+>nothing else.
+
+I agree.
+
+
+>
+>Plus this functionality will need proper documentation.
+
+Also agreed.
+
+
+>
+>FWIW - I am unconvinced that applications will be happy to experience
+>network black outs, rather than being fully killed and re-spawned. For
+>a micro-service worker shutdown + re-spawn should be bread and butter.
+>But we already have ionic doing this, so seems like vendors are
+>convinced otherwise, so a common interface is probably a good step.
+
+Hmm, not sure I follow what you mean by this para in context of this
+patchset. Could you please explain? Thanks!
+
