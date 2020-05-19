@@ -2,171 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 067601D8F43
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:38:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEBEE1D8F4D
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 07:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728311AbgESFif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 01:38:35 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38982 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728286AbgESFif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:38:35 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04J5ZeNr027556
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:38:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=00xUswIbeRJGH5jsv7eXa569UtJ4s0JBcChANTcbHQo=;
- b=ZmrHplqIAx6Hnv+Z8CcgoSSn8NxJVoYXBf68HR45ElThLss6SAjTt40o8mPt2t2ZjVSN
- BWJkAnujEf9mrjO6OD/ykEF4t15u4dac8eX6bgNajzjh3xegLexfSz5NID/MpZUZcPkd
- xMtTksPVGaU+KkCrM58QoIS2qRGcot8ctT0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3130eun271-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:38:34 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 18 May 2020 22:38:33 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 723AB2EC35C1; Mon, 18 May 2020 22:38:29 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, Jann Horn <jannh@google.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: prevent mmap()'ing read-only maps as writable
-Date:   Mon, 18 May 2020 22:38:24 -0700
-Message-ID: <20200519053824.1089415-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726786AbgESFnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 01:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbgESFnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 01:43:14 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ECBC061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:43:14 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id z18so4119810lji.12
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 22:43:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T6PyjHGNw0rF5Q2n//5tbl/g1x2mjsxnt8B1kRrCfUw=;
+        b=c4qrwDKX+tWa8jA5sfPyFzIIXx8gw+wGU/zSATmv7WJV/PLPIxu6vZ91e+/4O7Wfq0
+         gqpYdIODefbOidkq7X1khGuQIk0j1EKgLbmiK5rFDly0+o8EfVTAhqu1pM6FhiHTvWKy
+         apNSredDB7cRrz/ca+q16rQ6t8dkCNnLa00jQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T6PyjHGNw0rF5Q2n//5tbl/g1x2mjsxnt8B1kRrCfUw=;
+        b=Vi99iXPrY9VhitEsiyUHr/RXF49cXDcPVa7XSItGth8HThWnMZgGdQzZR5N1tlPCiA
+         tjzqaOLvMtKWtZDqO8OKfqiBS806R+sT5fPk1FQAKCvU/EZNGUYFYdOsnWsOMiPwgHZW
+         kxEGx/wmNYGwMr7nkk/zpgeU7vDORddgKPTezbXd0tqJfUBxHegW6H3BrAOEIxBWrQhJ
+         PzfWXY61yfLPyPvwo1oxOCLQ99V5sGLFbTUk5iuUTkAHUWMFYfGtT3EKsmy+xriy3GWw
+         Bo8N/Anq16eXEuRjcLcZabsV80AkQq0yLgnKw+f7CIVTCfFtfOrDxGdfLBqs9SsudWU9
+         IAIg==
+X-Gm-Message-State: AOAM5338PFw9wpxHylqGPeW2cE++C3FbJF+fpUTSroYY428eojVe90xH
+        ToSL8PK1kaOHYA8jXH1/b8rZth9iqy8UVecqmDXY1De+oAU=
+X-Google-Smtp-Source: ABdhPJz/G7ZrqynKbnysAvDmB/eRvCZHjMwRmYeAi6yEngAB86FA8mH6Aa01JfN5NTEbLPPEA6QxDtRaNYIPd/p28uw=
+X-Received: by 2002:a2e:9b48:: with SMTP id o8mr4982072ljj.130.1589866992649;
+ Mon, 18 May 2020 22:43:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-19_01:2020-05-15,2020-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- malwarescore=0 bulkscore=0 suspectscore=0 mlxlogscore=685
- priorityscore=1501 phishscore=0 spamscore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 cotscore=-2147483648 adultscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005190049
-X-FB-Internal: deliver
+References: <1589790439-10487-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200518110152.GB2193@nanopsycho> <CAACQVJpFB9OBLFThgjeC4L0MTiQ88FGQX0pp+33rwS9_SOiX7w@mail.gmail.com>
+ <20200519052745.GC4655@nanopsycho>
+In-Reply-To: <20200519052745.GC4655@nanopsycho>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Tue, 19 May 2020 11:13:01 +0530
+Message-ID: <CAACQVJpAYuJJC3tyBkhYkLVQYypuaWEPk_+NhSncAUg2g7h5SQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/4] bnxt_en: Add new "enable_hot_fw_reset"
+ generic devlink parameter
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As discussed in [0], it's dangerous to allow mapping BPF map, that's mean=
-t to
-be frozen and is read-only on BPF program side, because that allows user-=
-space
-to actually store a writable view to the page even after it is frozen. Th=
-is is
-exacerbated by BPF verifier making a strong assumption that contents of s=
-uch
-frozen map will remain unchanged. To prevent this, disallow mapping
-BPF_F_RDONLY_PROG mmap()'able BPF maps as writable, ever.
+On Tue, May 19, 2020 at 10:57 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Tue, May 19, 2020 at 06:31:27AM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >On Mon, May 18, 2020 at 4:31 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> >>
+> >> Mon, May 18, 2020 at 10:27:15AM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >> >This patchset adds support for a "enable_hot_fw_reset" generic devlink
+> >> >parameter and use it in bnxt_en driver.
+> >> >
+> >> >Also, firmware spec. is updated to 1.10.1.40.
+> >>
+> >> Hi.
+> >>
+> >> We've been discussing this internally for some time.
+> >> I don't like to use params for this purpose.
+> >> We already have "devlink dev flash" and "devlink dev reload" commands.
+> >> Combination of these two with appropriate attributes should provide what
+> >> you want. The "param" you are introducing is related to either "flash"
+> >> or "reload", so I don't think it is good to have separate param, when we
+> >> can extend the command attributes.
+> >>
+> >> How does flash&reload work for mlxsw now:
+> >>
+> >> # devlink flash
+> >> Now new version is pending, old FW is running
+> >> # devlink reload
+> >> Driver resets the device, new FW is loaded
+> >>
+> >> I propose to extend reload like this:
+> >>
+> >>  devlink dev reload DEV [ level { driver-default | fw-reset | driver-only | fw-live-patch } ]
+> >>    driver-default - means one of following to, according to what is
+> >>                     default for the driver
+> >>    fw-reset - does FW reset and driver entities re-instantiation
+> >>    driver-only - does driver entities re-instantiation only
+> >>    fw-live-patch - does only FW live patching - no effect on kernel
+> >>
+> >> Could be an enum or bitfield. Does not matter. The point is to use
+> >> reload with attribute to achieve what user wants. In your usecase, user
+> >> would do:
+> >>
+> >> # devlink flash
+> >> # devlink reload level fw-live-patch
+> >
+> >Jiri,
+> >
+> >I am adding this param to control the fw hot reset capability of the device.
+>
+> I don't follow, sorry. Could you be more verbose about what you are
+> trying to achieve here?
+As mentioned below, hot_fw_reset is a device capability similar to roce.
+Capability can be enabled or disabled on the device, if the device supports.
+When enabled and if supported firmware and driver are loaded, user can
+utilise the capability to fw_reset or fw_live_patch.
 
-  [0] https://lore.kernel.org/bpf/CAEf4BzYGWYhXdp6BJ7_=3D9OQPJxQpgug080MM=
-jdSB72i9R+5c6g@mail.gmail.com/
+So, we need a policy to enable/disable the capability.
 
-Suggested-by: Jann Horn <jannh@google.com>
-Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- kernel/bpf/syscall.c                          | 17 ++++++++++++++---
- tools/testing/selftests/bpf/prog_tests/mmap.c | 13 ++++++++++++-
- tools/testing/selftests/bpf/progs/test_mmap.c |  8 ++++++++
- 3 files changed, 34 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 2843bbba9ca1..874bd247d527 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -623,9 +623,20 @@ static int bpf_map_mmap(struct file *filp, struct vm=
-_area_struct *vma)
-=20
- 	mutex_lock(&map->freeze_mutex);
-=20
--	if ((vma->vm_flags & VM_WRITE) && map->frozen) {
--		err =3D -EPERM;
--		goto out;
-+	if (vma->vm_flags & VM_WRITE) {
-+		if (map->frozen) {
-+			err =3D -EPERM;
-+			goto out;
-+		}
-+		/* map is meant to be read-only, so do not allow mapping as
-+		 * writable, because it's possible to leak a writable page=20
-+		 * reference and allows user-space to still modify it after
-+		 * freezing, while verifier will assume contents do not change
-+		 */
-+		if (map->map_flags & BPF_F_RDONLY_PROG) {
-+			err =3D -EACCES;
-+			goto out;
-+		}
- 	}
-=20
- 	/* set default open/close callbacks */
-diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testin=
-g/selftests/bpf/prog_tests/mmap.c
-index 6b9dce431d41..43d0b5578f46 100644
---- a/tools/testing/selftests/bpf/prog_tests/mmap.c
-+++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
-@@ -19,7 +19,7 @@ void test_mmap(void)
- 	const size_t map_sz =3D roundup_page(sizeof(struct map_data));
- 	const int zero =3D 0, one =3D 1, two =3D 2, far =3D 1500;
- 	const long page_size =3D sysconf(_SC_PAGE_SIZE);
--	int err, duration =3D 0, i, data_map_fd, data_map_id, tmp_fd;
-+	int err, duration =3D 0, i, data_map_fd, data_map_id, tmp_fd, rdmap_fd;
- 	struct bpf_map *data_map, *bss_map;
- 	void *bss_mmaped =3D NULL, *map_mmaped =3D NULL, *tmp1, *tmp2;
- 	struct test_mmap__bss *bss_data;
-@@ -37,6 +37,17 @@ void test_mmap(void)
- 	data_map =3D skel->maps.data_map;
- 	data_map_fd =3D bpf_map__fd(data_map);
-=20
-+	rdmap_fd =3D bpf_map__fd(skel->maps.rdonly_map);
-+	tmp1 =3D mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, rdmap_fd,=
- 0);
-+	if (CHECK(tmp1 !=3D MAP_FAILED, "rdonly_write_mmap", "unexpected succes=
-s\n")) {
-+		munmap(tmp1, 4096);
-+		goto cleanup;
-+	}
-+	/* now double-check if it's mmap()'able at all */
-+	tmp1 =3D mmap(NULL, 4096, PROT_READ, MAP_SHARED, rdmap_fd, 0);
-+	if (CHECK(tmp1 =3D=3D MAP_FAILED, "rdonly_read_mmap", "failed: %d\n", e=
-rrno))
-+		goto cleanup;
-+
- 	/* get map's ID */
- 	memset(&map_info, 0, map_info_sz);
- 	err =3D bpf_obj_get_info_by_fd(data_map_fd, &map_info, &map_info_sz);
-diff --git a/tools/testing/selftests/bpf/progs/test_mmap.c b/tools/testin=
-g/selftests/bpf/progs/test_mmap.c
-index 6239596cd14e..4eb42cff5fe9 100644
---- a/tools/testing/selftests/bpf/progs/test_mmap.c
-+++ b/tools/testing/selftests/bpf/progs/test_mmap.c
-@@ -7,6 +7,14 @@
-=20
- char _license[] SEC("license") =3D "GPL";
-=20
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 4096);
-+	__uint(map_flags, BPF_F_MMAPABLE | BPF_F_RDONLY_PROG);
-+	__type(key, __u32);
-+	__type(value, char);
-+} rdonly_map SEC(".maps");
-+
- struct {
- 	__uint(type, BPF_MAP_TYPE_ARRAY);
- 	__uint(max_entries, 512 * 4); /* at least 4 pages of data */
---=20
-2.24.1
-
+Thanks.
+>
+> >Permanent configuration mode will toggle the NVM config space which is
+> >very similar to enable_roce/enable_sriov param and runtime configuration
+> >mode will toggle the driver level knob to avoid/allow fw-live-reset.
+> >
+> >From above. I see that you are suggesting how to trigger the fw hot reset.
+> >This is good to have, but does not serve the purpose of enabling or disabling
+> >of the feature. Our driver is currently using "ethtool --reset" for
+> >triggering fw-reset
+> >or fw-live-patch.
+> >
+> >Thanks,
+> >Vasundhara
