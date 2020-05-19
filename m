@@ -2,69 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A769B1DA4A4
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C37F21DA4A5
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbgESWjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 18:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgESWjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:39:08 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A21C061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 15:39:08 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D7278128EDAA1;
-        Tue, 19 May 2020 15:39:07 -0700 (PDT)
-Date:   Tue, 19 May 2020 15:39:07 -0700 (PDT)
-Message-Id: <20200519.153907.1979252396950846339.davem@davemloft.net>
-To:     boris.sukholitko@broadcom.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] __netif_receive_skb_core: pass skb by reference
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200519073229.GA20624@noodle>
-References: <20200519073229.GA20624@noodle>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 May 2020 15:39:07 -0700 (PDT)
+        id S1726723AbgESWkC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 19 May 2020 18:40:02 -0400
+Received: from mga12.intel.com ([192.55.52.136]:15184 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726283AbgESWkC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 18:40:02 -0400
+IronPort-SDR: US3O/oWUdiGEA6vDld15I7eRMdTBV1kSLP7QtlkI5+EcQzxbSbYPz3gfduzPQaAvN3Dkk0D9p1
+ 7/Yh7ynPKRgA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 15:40:02 -0700
+IronPort-SDR: /Th1+z8ehhqt38oT9/3cHmqcYgThu7VTOmYANFyXjdfXxutI415n3IMm2hMdxZtfJRnmt0ojIQ
+ mHReObVM8IJw==
+X-IronPort-AV: E=Sophos;i="5.73,411,1583222400"; 
+   d="scan'208";a="289134456"
+Received: from twxiong-mobl.amr.corp.intel.com (HELO localhost) ([10.254.97.160])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 15:39:58 -0700
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+From:   Andre Guedes <andre.guedes@intel.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+Date:   Tue, 19 May 2020 15:39:54 -0700
+Message-ID: <158992799425.36166.17850279656312622646@twxiong-mobl.amr.corp.intel.com>
+User-Agent: alot/0.9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Boris Sukholitko <boris.sukholitko@broadcom.com>
-Date: Tue, 19 May 2020 10:32:37 +0300
+Hi,
 
-> __netif_receive_skb_core may change the skb pointer passed into it (e.g.
-> in rx_handler). The original skb may be freed as a result of this
-> operation.
+Quoting Vinicius Costa Gomes (2020-05-15 18:29:44)
+> One example, for retrieving and setting the configuration:
 > 
-> The callers of __netif_receive_skb_core may further process original skb
-> by using pt_prev pointer returned by __netif_receive_skb_core thus
-> leading to unpleasant effects.
-> 
-> The solution is to pass skb by reference into __netif_receive_skb_core.
-> 
-> v2: Added Fixes tag and comment regarding ppt_prev and skb invariant.
-> 
-> Fixes: 88eb1944e18c ("net: core: propagate SKB lists through packet_type lookup")
-> Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
+> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+> Frame preemption settings for enp3s0:
+>         support: supported
+>         active: active
 
-Applied and queued up for -stable.
+IIUC the code in patch 2, 'active' is the actual configuration knob that
+enables or disables the FP functionality on the NIC.
 
-> @@ -4997,6 +4997,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
->  	bool deliver_exact = false;
->  	int ret = NET_RX_DROP;
->  	__be16 type;
-> +	struct sk_buff *skb = *pskb;
+That sounded a bit confusing to me since the spec uses the term 'active' to
+indicate FP is currently enabled at both ends, and it is a read-only
+information (see 12.30.1.4 from IEEE 802.1Q-2018). Maybe if we called this
+'enabled' it would be more clear.
 
-I fixed up the reverse christmas tree variable ordering here, please take
-care in this area next time.
+>         supported queues: 0xf
+>         supported queues: 0xe
+>         minimum fragment size: 68
 
-Thank you.
+I'm assuming this is the configuration knob for the minimal non-final fragment
+defined in 802.3br.
+
+My understanding from the specs is that this value must be a multiple from 64
+and cannot assume arbitrary values like shown here. See 99.4.7.3 from IEEE
+802.3 and Note 1 in S.2 from IEEE 802.1Q. In the previous discussion about FP,
+we had this as a multiplier factor, not absolute value.
+
+Regards,
+
+Andre
