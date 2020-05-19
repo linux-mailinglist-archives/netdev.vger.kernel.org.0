@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 845CF1D9CF2
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DDE1D9CFB
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbgESQhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 12:37:08 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:51406 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729053AbgESQhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:37:07 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JGar61095144;
-        Tue, 19 May 2020 11:36:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589906214;
-        bh=MjZWN4eqirmO1zuXVKMZpWj6DU/BB9Bkdv6KoUQdtQk=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=skCDIsblKHQ7PUW/UG6OuYZtdGL+FSnvUL4pGkkNk6ZEwC0nPCbv7KlUwMZBDX37h
-         vbNypycxgUPA46ikXXt1Gd+bWrcu3BcR1jgHloLVmKKU4g1ZukhS3D0iq+po0hFe/O
-         BOaWwyfGphh4cAvwZrLH5pHnCwbDzYIgDpuOpFC4=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04JGarZK011048
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 May 2020 11:36:53 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
- May 2020 11:36:53 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 19 May 2020 11:36:53 -0500
-Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JGarcv052103;
-        Tue, 19 May 2020 11:36:53 -0500
-Subject: Re: [next-queue RFC 3/4] igc: Add support for configuring frame
- preemption
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>
-CC:     <jeffrey.t.kirsher@intel.com>, <netdev@vger.kernel.org>,
-        <vladimir.oltean@nxp.com>, <po.liu@nxp.com>,
-        <Jose.Abreu@synopsys.com>
-References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
- <20200516012948.3173993-4-vinicius.gomes@intel.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <e9e21a52-9f7f-bd5e-4656-45ca748f845b@ti.com>
-Date:   Tue, 19 May 2020 12:36:52 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729391AbgESQhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 12:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729219AbgESQhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:37:43 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AEEC08C5C0
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 09:37:42 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id dh1so2933026qvb.13
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 09:37:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ev5T6vjJH0oC12FklJIvFbNYx7YAnVtic5fHIwuhCWA=;
+        b=Vq1x5ICrMOI0+IrTgm+EwOxDyQ1wAQ5K7dW8D6yWR8cBkhwZzYpco+wDWTE9l05n1g
+         xGnVjQ+X6kXw7LQAQRGxqtw54pDAR4RwVPh5EhlsFZ0XHSfs+9cCqtPa3hdgt3/OAxeq
+         +BkEewxFYayBTPoCTQ9g2Tz0b0JZDPwXmew0jNSyvtaIrzwInb8C9M8/XiHN2ZBeO7/a
+         GPndy/zWIqFtB9i88FayzNOmTFY2ircd67HyUOf5I5zg75fxcCm13ovztftMOABEdk46
+         nWMCjGMnLLOUuArHiS5ObMj+5OHIzXXUqhLDjUyPeW0do9qLZ6i//zeI+r8P8aa9J3z1
+         kWYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ev5T6vjJH0oC12FklJIvFbNYx7YAnVtic5fHIwuhCWA=;
+        b=al4SaH9I/aVS1ga2+xC9JpKs6oXlynSMvLHPrqo4rkHcYzeSRnEOYEOehCUFQBBHlp
+         h3OHe7OkE81BebmvaVubX5Qts0xd10kIlCBeFabaZ59YVqgwIbktc7I0YS0gZ+keqhW5
+         y7t278mugfSvtVx5hFob5xoG0+PfLo7IQYDiBuNRZJKgvLOEZ03KUrY1mNi5XfClLxax
+         cqq47rPp1/BFzYXXv5pQSeVHmle7hOGXNw9If0do7lgqd2QclajG2BMJqBZKS89xG2GR
+         UeNMSiHSEocmsdNYh9jU/jCK3qmsavdHBx49RnpjUNuw8Sex7kRC8fhXLFL5iuMUH0qs
+         X3Sg==
+X-Gm-Message-State: AOAM531/WnnuCfARh1N+TEugqdtGeQDd/AUfyhA0hOBAX6uAwe3Yi9tK
+        yC4r39qmFCNSOhrPdf2PRPg=
+X-Google-Smtp-Source: ABdhPJxqSwh3rCDEkzUbWOqYrK9aeCvbUi4IxY6R/Jiw60Ljc2Olxy52yHv+dSsc7GS5SNhu2/bXFw==
+X-Received: by 2002:a0c:b44c:: with SMTP id e12mr488349qvf.30.1589906262123;
+        Tue, 19 May 2020 09:37:42 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c5f3:7fed:e95c:6b74? ([2601:282:803:7700:c5f3:7fed:e95c:6b74])
+        by smtp.googlemail.com with ESMTPSA id y28sm138229qtc.62.2020.05.19.09.37.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 May 2020 09:37:40 -0700 (PDT)
+Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
+To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, brouer@redhat.com,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+References: <20200513014607.40418-1-dsahern@kernel.org>
+ <87sgg4t8ro.fsf@toke.dk> <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
+ <87lflppq38.fsf@toke.dk> <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
+ <87h7wdnmwi.fsf@toke.dk> <dcdfe5ab-138f-bf10-4c69-9dee1c863cb8@iogearbox.net>
+ <3d599bee-4fae-821d-b0df-5c162e81dd01@gmail.com>
+ <d705cf50-b5b3-8778-16fe-3a29b9eb1e85@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1b8c2a50-b78f-7525-4f80-58bae966c1bc@gmail.com>
+Date:   Tue, 19 May 2020 10:37:38 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200516012948.3173993-4-vinicius.gomes@intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <d705cf50-b5b3-8778-16fe-3a29b9eb1e85@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+On 5/19/20 7:31 AM, Daniel Borkmann wrote:
+> I meant that the dev{map,hash} would get extended in a way where the
+> __dev_map_update_elem() receives an (ifindex, BPF prog fd) tuple from
+> user space and holds the program's ref as long as it is in the map slot.
+> Then, upon redirect to the given device in the devmap, we'd execute the
+> prog as well in order to also allow for XDP_DROP policy in there. Upon
+> map update when we drop the dev from the map slot, we also release the
+> reference to the associated BPF prog. What I mean to say wrt 'property
+> of the devmap' is that this program is _only_ used in combination with
+> redirection to devmap, so given we are not solving all the other egress
+> cases for reasons mentioned, it would make sense to tie it logically to
+> the devmap which would also make it clear from a user perspective _when_
+> the prog is expected to run.
 
-On 5/15/20 9:29 PM, Vinicius Costa Gomes wrote:
-> WIP
-> 
-- cut -
->   
->   /* forward declaration */
->   struct igc_stats {
-> @@ -1549,6 +1550,71 @@ static int igc_ethtool_set_priv_flags(struct net_device *netdev, u32 priv_flags)
->   	return 0;
->   }
->   
-> +static int igc_ethtool_get_preempt(struct net_device *netdev,
-> +				   struct ethtool_fp *fpcmd)
-> +{
-> +	struct igc_adapter *adapter = netdev_priv(netdev);
-> +	int i;
-> +
-> +	fpcmd->fp_supported = 1;
-> +	fpcmd->fp_enabled = adapter->frame_preemption_active;
-> +	fpcmd->min_frag_size = adapter->min_frag_size;
-> +
-> +	for (i = 0; i < adapter->num_tx_queues; i++) {
-> +		struct igc_ring *ring = adapter->tx_ring[i];
-> +
-> +		fpcmd->supported_queues_mask |= BIT(i);
-> +
-> +		if (ring->preemptible)
-> +			fpcmd->preemptible_queues_mask |= BIT(i);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-Is this something that can be provided by the driver when netdevice
-is registered so that a common function at net core layer be
-implemented instead of duplicating this in individual device drivers?
-
-> +static int igc_ethtool_set_preempt(struct net_device *netdev,
-> +				   struct ethtool_fp *fpcmd)
-> +{
-> +	struct igc_adapter *adapter = netdev_priv(netdev);
-> +	int i;
-> +
-> +	/* The formula is (Section 8.12.4 of the datasheet):
-> +	 *   MIN_FRAG_SIZE = 4 + (1 + MIN_FRAG)*64
-> +	 * MIN_FRAG is represented by two bits, so we can only have
-> +	 * min_frag_size between 68 and 260.
-> +	 */
-> +	if (fpcmd->min_frag_size < 68 || fpcmd->min_frag_size > 260)
-> +		return -EINVAL;
-
-- cut-
-
--- 
-Murali Karicheri
-Texas Instruments
+Thanks. I will take a look at this.
