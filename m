@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 050B71DA4F2
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E201DA4F9
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 00:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbgESWsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 18:48:33 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37571 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgESWsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 18:48:32 -0400
-Received: from [82.43.126.140] (helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jbB24-0000fU-F4; Tue, 19 May 2020 22:48:20 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mt76: mt7915: fix a handful of spelling mistakes
-Date:   Tue, 19 May 2020 23:48:20 +0100
-Message-Id: <20200519224820.6391-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726862AbgESWti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 18:49:38 -0400
+Received: from novek.ru ([213.148.174.62]:46236 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726318AbgESWti (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 18:49:38 -0400
+Received: from [10.0.1.119] (unknown [62.76.204.32])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 4D0355028F3;
+        Wed, 20 May 2020 01:49:32 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 4D0355028F3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1589928572; bh=nf3XNoiCy9/fUfMf2OIY9gSgW5Gm2zxWhgjLaW7RdSw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=OnPHOvdOjBLxVXezx+JEz1asRbtmYvbQ5G945f6jzDwbGpxnXMEq/mAYQzGoLYZX5
+         aobUliGgyAohy7FwaLi4AWCpFeppFjwFdODtBr9ZiBLzXNsXwruP8XOXwI9zImqRRv
+         MQza92GvE4eYW5ATeckcg1ixQ2k1SMH+g8xLTTzY=
+Subject: Re: [PATCH v2 net] net/tls: fix encryption error checking
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1589883643-6939-1-git-send-email-vfedorenko@novek.ru>
+ <20200519150420.485c800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <e4ec82ba-10e5-8b23-4da5-5883f3a89b92@novek.ru>
+Date:   Wed, 20 May 2020 01:49:33 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200519150420.485c800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=2.2 required=5.0 tests=RDNS_NONE,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.1
+X-Spam-Level: **
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On 20.05.2020 01:04, Jakub Kicinski wrote:
+> On Tue, 19 May 2020 13:20:43 +0300 Vadim Fedorenko wrote:
+>> bpf_exec_tx_verdict() can return negative value for copied
+>> variable. In that case this value will be pushed back to caller
+>> and the real error code will be lost. Fix it using signed type and
+>> checking for positive value.
+>>
+>> Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
+>> Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> If the error encountered is transient we will still drop some data from
+> the stream, because the record that was freed may have included data
+> from a previous send call. Still, cleaning up the error code seems like
+> an improvement.
+>
+> John, do you have an opinion on this?
 
-There are some spelling mistakes in some literal strings. Fix these.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-index ee0066fedd04..5278bee812f1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-@@ -173,14 +173,14 @@ mt7915_txbf_stat_read_phy(struct mt7915_phy *phy, struct seq_file *s)
- 
- 	/* Tx Beamformee Rx NDPA & Tx feedback report */
- 	cnt = mt76_rr(dev, MT_ETBF_TX_NDP_BFRP(ext_phy));
--	seq_printf(s, "Tx Beamformee sucessful feedback frames: %ld\n",
-+	seq_printf(s, "Tx Beamformee successful feedback frames: %ld\n",
- 		   FIELD_GET(MT_ETBF_TX_FB_CPL, cnt));
--	seq_printf(s, "Tx Beamformee feedback triggerd counts: %ld\n",
-+	seq_printf(s, "Tx Beamformee feedback triggered counts: %ld\n",
- 		   FIELD_GET(MT_ETBF_TX_FB_TRI, cnt));
- 
- 	/* Tx SU counters */
- 	cnt = mt76_rr(dev, MT_MIB_DR11(ext_phy));
--	seq_printf(s, "Tx single-user sucessful MPDU counts: %d\n", cnt);
-+	seq_printf(s, "Tx single-user successful MPDU counts: %d\n", cnt);
- 
- 	seq_puts(s, "\n");
- }
--- 
-2.25.1
-
+Jakub, maybe it is better to free only in case of fatal encryption error? I mean
+when sk->sk_err is EBADMSG. Because in case of ENOMEM we will iterate to
+alloc_payload and in case of ENOSPC we will return good return code and send
+open_rec again on next call. The EBADMSG state is the only fatal state that needs
+freeing of allocated record.
