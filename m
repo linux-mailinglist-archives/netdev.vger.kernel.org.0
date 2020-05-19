@@ -2,93 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC6EB1D9FBA
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:42:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32B1B1D9FC3
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 20:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727803AbgESSlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 14:41:53 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:51672 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbgESSlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 14:41:53 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JIfjkO053693;
-        Tue, 19 May 2020 13:41:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589913705;
-        bh=GLDfaTKUNFaww2qeQ7ar1unuT0uERBavkAEEdjsusNs=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=e/KIP5lJA1mE1DLItbytQN+Xfjlt3S7jX4LTz+S1WE1By8Q1iWr8cZ2tZAABix1yJ
-         lf8zhJo4/r2lfJ4gVnXFn+1Ti3uoNVKzx0AMY3wLwANtK+49H6AkQ5GK4J3Gs6ZvK3
-         7guPrn9jyd716CHgCGS28zgHZO/pIq+ovoRdUj64=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JIfjjD001933;
-        Tue, 19 May 2020 13:41:45 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
- May 2020 13:41:45 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 19 May 2020 13:41:45 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JIfjMK076058;
-        Tue, 19 May 2020 13:41:45 -0500
-Subject: Re: [PATCH net-next 2/4] net: phy: dp83869: Set opmode from straps
-To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200519141813.28167-1-dmurphy@ti.com>
- <20200519141813.28167-3-dmurphy@ti.com>
- <20200519095818.425d227b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200519182916.GM624248@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <c45bae32-d26f-cbe5-626b-2afae4a557b3@ti.com>
-Date:   Tue, 19 May 2020 13:41:40 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726502AbgESSnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 14:43:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48062 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726059AbgESSnp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 14:43:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AE74207D3;
+        Tue, 19 May 2020 18:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589913825;
+        bh=t0V7sRQBTN6xmjvm4XJ02g4tMoK119eArIOfsK3lGMA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v9ZxN+gIpenydRDk4w0Uf9BTfRzfc11ZwGkogzyjxgRH6ug9RBGxNZ0pl+gp3YRGo
+         I87o8qlSJgOYnamTFJguqCIf9tVb7fX2oSFXHraf4A1SsThcqovfNkXzpGlHT2iBj4
+         gEKIMKBK5SIuU28auQ2cCO0mBOjgJEs385xX0jKs=
+Date:   Tue, 19 May 2020 11:43:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Message-ID: <20200519114342.331ff0f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <VI1PR0402MB387101A0B3D3382B08DBE07CE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
+        <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387165B351F0DF0FA1E78BF4E0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515124059.33c43d03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB3871F0358FE1369A2F00621DE0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515152500.158ca070@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB38719FE975320D9E0E47A6F9E0BA0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200518123540.3245b949@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387101A0B3D3382B08DBE07CE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20200519182916.GM624248@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On Tue, 19 May 2020 07:38:57 +0000 Ioana Ciornei wrote:
+> > Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic classes
+> > 
+> > On Sat, 16 May 2020 08:16:47 +0000 Ioana Ciornei wrote:  
+> > > > With the Rx QoS features users won't even be able to tell via
+> > > > standard Linux interfaces what the config was.  
+> > >
+> > > Ok, that is true. So how should this information be exported to the user?  
+> > 
+> > I believe no such interface currently exists.  
+> 
+> I am having a bit of trouble understanding what should be the route
+> for this feature to get accepted.
 
-On 5/19/20 1:29 PM, Andrew Lunn wrote:
-> On Tue, May 19, 2020 at 09:58:18AM -0700, Jakub Kicinski wrote:
->> On Tue, 19 May 2020 09:18:11 -0500 Dan Murphy wrote:
->>> If the op-mode for the device is not set in the device tree then set
->>> the strapped op-mode and store it for later configuration.
->>>
->>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ../drivers/net/phy/dp83869.c: In function0 dp83869_set_strapped_mode:
->> ../drivers/net/phy/dp83869.c:171:10: warning: comparison is always false due to limited range of data type [-Wtype-limits]
->>    171 |  if (val < 0)
->>        |          ^
-> Hi Jakub
->
-> This happens a lot with PHY drivers. The register being read is a u16,
-> so that is what people use.
+What's the feature you're trying to get accepted? Driver's datapath to
+behave correctly when some proprietary out-of-tree API is used to do the
+actual configuration? Unexciting.
 
-Yes this is what happened but phy_read_mmd returns an int so the 
-declaration of val should be an int.
+> Is the problem having the classification to a TC based on the VLAN
+> PCP or is there anything else?
 
-I will update that in v2
-
-
-> Is this now a standard GCC warning? Or have you turned on extra
-> checking?
-I still was not able to reproduce this warning with gcc-9.2.  I would 
-like to know the same
-
-
-Dan
-
+What you have is basically RX version of mqprio, right? Multiple rings
+per "channel" each gets frames with specific priorities? This needs to
+be well integrated with the rest of the stack, but I don't think TC
+qdisc offload is a fit. Given we don't have qdiscs on ingress. As I
+said a new API for this would most likely have to be created.
