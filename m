@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E481D9969
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 16:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2311D99C3
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 16:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728795AbgESOVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 10:21:52 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:46694 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726203AbgESOVw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 10:21:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589898110;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bjSMUopkgj88ItQVm6fnWGeCUw8GYSQprXAblV6LgFc=;
-        b=LPPDZW73Ov3X/uniW3FvLrWpMQHYJPbm6VHQIrLFqyYaXC4YQby5VmBe6VkWXDDBk7Pr39
-        U6flBHXqCeliKXKwLEA8Ep++ZrV67AWTLNy7E3PcbIo5uucNjLrpa58x8zeCR1aedo6mj/
-        CXVa2TEvz2WuV9zUzS7iWFdbswPinx0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-eUx_LJciMrOHlraZoOVM_Q-1; Tue, 19 May 2020 10:21:46 -0400
-X-MC-Unique: eUx_LJciMrOHlraZoOVM_Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728912AbgESObb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 10:31:31 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:35948 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726203AbgESObb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 10:31:31 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id BFD0960055;
+        Tue, 19 May 2020 14:31:30 +0000 (UTC)
+Received: from us4-mdac16-4.ut7.mdlocal (unknown [10.7.65.72])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A74E78009B;
+        Tue, 19 May 2020 14:31:30 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.40])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7585F280053;
+        Tue, 19 May 2020 14:31:29 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 408EB18FE867;
-        Tue, 19 May 2020 14:21:44 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 203DF2BFCC;
-        Tue, 19 May 2020 14:21:28 +0000 (UTC)
-Date:   Tue, 19 May 2020 16:21:27 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
-        <toke@redhat.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, john.fastabend@gmail.com,
-        ast@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        andriin@fb.com, David Ahern <dahern@digitalocean.com>,
-        brouer@redhat.com, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress
- path
-Message-ID: <20200519162127.00308f3b@carbon>
-In-Reply-To: <d705cf50-b5b3-8778-16fe-3a29b9eb1e85@iogearbox.net>
-References: <20200513014607.40418-1-dsahern@kernel.org>
-        <87sgg4t8ro.fsf@toke.dk>
-        <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
-        <87lflppq38.fsf@toke.dk>
-        <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
-        <87h7wdnmwi.fsf@toke.dk>
-        <dcdfe5ab-138f-bf10-4c69-9dee1c863cb8@iogearbox.net>
-        <3d599bee-4fae-821d-b0df-5c162e81dd01@gmail.com>
-        <d705cf50-b5b3-8778-16fe-3a29b9eb1e85@iogearbox.net>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D6BB0BC0087;
+        Tue, 19 May 2020 14:31:28 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 19 May
+ 2020 15:31:02 +0100
+Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump
+ mode
+To:     Vlad Buslov <vladbu@mellanox.com>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <dcaratti@redhat.com>, <marcelo.leitner@gmail.com>,
+        <kuba@kernel.org>
+References: <20200515114014.3135-1-vladbu@mellanox.com>
+ <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
+ <vbfo8qkb8ip.fsf@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <1581796d-2f28-397b-d234-2614b1e64f8a@solarflare.com>
+Date:   Tue, 19 May 2020 15:30:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <vbfo8qkb8ip.fsf@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25428.003
+X-TM-AS-Result: No-6.646500-8.000000-10
+X-TMASE-MatchedRID: QfHZjzml1E/mLzc6AOD8DfHkpkyUphL9SeIjeghh/zPCtB5AXGRY23CP
+        Z1ohdVsRIWlA6ZCW3oaXeiT2Em65KNce6ujdrJ2nwY28o+cGA5rJ5SXtoJPLyEl/J9Ro+MABE8O
+        4wkrUNK7XgPU09aUnZKgmldVr64sMggzbwPvflRvPkJgNw33UmwGZ/+APXW9kFBNfI88/d9rRzj
+        70RhS7/HjlNG5fNlWM7rkZhvF7EUgPkUPAqVjHplLduNeqG/eIxlTeSbP0L8eR4iYpgCc6d7p0J
+        rjcBDnf585VzGMOFzAQVjqAOZ5cjQtuKBGekqUpbGVEmIfjf3t+LOq4wPSOgcR8+so1gtfr/Nqf
+        B+xGwLutZylpMji8RrlcEQyzoh26
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.646500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25428.003
+X-MDID: 1589898689-RMe_Jp-r6ETk
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 May 2020 15:31:20 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+On 19/05/2020 10:04, Vlad Buslov wrote:
+> On Mon 18 May 2020 at 18:37, Edward Cree <ecree@solarflare.com> wrote:
+>> I.e. if next year it turns out that some
+>>  user needs one parameter that's been omitted here, but not the whole dump,
+>>  are they going to want to add another mode to the uapi?
+> Why not just extend terse dump? I won't break user land unless you are
+> removing something from it.
+But then all terse dump users pay the performance cost for thatone
+ app's extra need.
 
-> On 5/19/20 2:02 AM, David Ahern wrote:
-> > On 5/18/20 3:06 PM, Daniel Borkmann wrote:  
-> >>
-> >> So given we neither call this hook on the skb path, nor XDP_TX nor
-> >> AF_XDP's TX path, I was wondering also wrt the discussion with
-> >> John if it makes sense to make this hook a property of the devmap
-> >> _itself_, for example, to have a default BPF prog upon devmap
-> >> creation or a dev-specific override that is passed on map update
-> >> along with the dev. At least this would make it very clear where
-> >> this is logically tied to and triggered from, and if needed (?)
-> >> would provide potentially more flexibility on specifiying BPF
-> >> progs to be called while also solving your use-case.  
-> > 
-> > You lost me on the 'property of the devmap.' The programs need to be per
-> > netdevice, and devmap is an array of devices. Can you elaborate?  
-> 
-> I meant that the dev{map,hash} would get extended in a way where the
-> __dev_map_update_elem() receives an (ifindex, BPF prog fd) tuple from
-> user space and holds the program's ref as long as it is in the map slot.
-> Then, upon redirect to the given device in the devmap, we'd execute the
-> prog as well in order to also allow for XDP_DROP policy in there. Upon
-> map update when we drop the dev from the map slot, we also release the
-> reference to the associated BPF prog. What I mean to say wrt 'property
-> of the devmap' is that this program is _only_ used in combination with
-> redirection to devmap, so given we are not solving all the other egress
-> cases for reasons mentioned, it would make sense to tie it logically to
-> the devmap which would also make it clear from a user perspective _when_
-> the prog is expected to run.
+> - Generic data is covered by current terse dump implementation.
+>   Everything else will be act or cls specific
+Fair point.
+I don't suppose something something BPF mumble solve this? I haven't
+ been following the BPF dumping work in detail but it sounds like it
+ might be a cheap way to get the 'more performant next step' that
+ was mentioned in the subthread with David.  Just a thought.
 
-Yes, I agree.
-
-I also have a use-case for 'cpumap' (cc. Lorenzo as I asked him to
-work on it).  We want to run another XDP program on the CPU that
-receives the xdp_frame, and then allow it to XDP redirect again.
-It would make a lot of sense, to attach this XDP program via inserting
-an BPF-prog-fd into the map as a value.
-
-Notice that we would also need another expected-attach-type for this
-case, as we want to allow XDP program to read xdp_md->ingress_ifindex,
-but we don't have xdp_rxq_info any-longer. Thus, we need to remap that
-to xdp_frame->dev_rx->ifindex (instead of rxq->dev->ifindex).
-
-The practical use-case is the espressobin mvneta based ARM64 board,
-that can only receive IRQs + RX-frames on CPU-0, but hardware have more
-TX-queues that we would like to take advantage of on both CPUs.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+-ed
