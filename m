@@ -2,111 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 416791D9CD2
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:33:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9404B1D9CE4
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 18:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729464AbgESQdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 12:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729338AbgESQd3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:33:29 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBE2C08C5C0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 09:33:29 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id u15so432516ljd.3
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 09:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TFvy+u64rADS0X9wXPVDcnjojb1U9iWCN3n097gO97s=;
-        b=KITgpUd5bP2WD+I3Ft3adLmt6MH7MS4MFJexni61RXcXlzD9Gqjwa8Lmdkq9TYyfqS
-         KL4aFjs9x04ZYvGYs2IsxZG5dgyhwKLIBJrjoMKhrn6xZPweQeBnKjN1RmntmQCr96TY
-         jycjBR645lH/xqU7rOHokwZ9wup3usfS+9Z3A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TFvy+u64rADS0X9wXPVDcnjojb1U9iWCN3n097gO97s=;
-        b=fCwENjEdcn5tSuXaOG9J9Av/2wyG63jGO4LuEb926bKdLBIQfcbUmFlPNPpvSHS1nl
-         KXxia0OdrCGhgDREGkibIHPQKNQuB86580qZTXWTjr44Ht36NSJgNjNECwtUXaWGBqUx
-         yGocvgDyai7WzRt9mbNVjiUWlhbZcJ+k5nZYzRsCw6B/k6nWOrLyLY0seqs2zE3KfvTL
-         hnmvabPoTLRPW42uVcUR1I+cBOBYieqyYcsRYPiT78FgXEgoFLHtPxThvyTlOTxBrCRz
-         hcJg42s2Jygol6ddsHQkCauVKJ/TT/cOqFuAEqAN+vmE85UqPGjAkgynyR1t+PcDe0hk
-         PZGw==
-X-Gm-Message-State: AOAM5333zADidBAzrbtdEcTIOjDYvf4Ohqnk/ocK1ap89YcpRj0hbqD/
-        ObY1GaSJzAMYrlIQJmIdyBtXcThvIWI=
-X-Google-Smtp-Source: ABdhPJzgGv+zqGk65CviUE0cR6KElsIjQahICPi4FRs/6zqYNwsfvl0VRv+o7GOm1dO65FSmJldHVA==
-X-Received: by 2002:a05:651c:3ce:: with SMTP id f14mr172832ljp.232.1589906004644;
-        Tue, 19 May 2020 09:33:24 -0700 (PDT)
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
-        by smtp.gmail.com with ESMTPSA id f24sm9244501lfc.43.2020.05.19.09.33.22
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2020 09:33:22 -0700 (PDT)
-Received: by mail-lj1-f171.google.com with SMTP id u15so432207ljd.3
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 09:33:22 -0700 (PDT)
-X-Received: by 2002:a2e:9641:: with SMTP id z1mr145949ljh.201.1589906002260;
- Tue, 19 May 2020 09:33:22 -0700 (PDT)
+        id S1729238AbgESQes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 12:34:48 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:58766 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728775AbgESQes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 12:34:48 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JGYVRH038062;
+        Tue, 19 May 2020 11:34:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589906071;
+        bh=/vOqGrqZKFEISSBDGaUAsu38PgJE2S0bQf4x+D43qGc=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=oS7HJU0w57Y720J+uVw+hhQwcf/pxqv8iCO/mP9lSKjM36MRjDOetWPjdDb3g/hdu
+         06kGAQurGlp1gRWxO57EWDghp+AY0YFHPH/YpXAdOSBcXElnrnmAYTGPuUaKMwbWRO
+         0MsSt57DwYXSIFSRibut8/AH29BH2AeD83ikwlfk=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04JGYVK3122996
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 19 May 2020 11:34:31 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
+ May 2020 11:34:31 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 19 May 2020 11:34:31 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JGYUrS115717;
+        Tue, 19 May 2020 11:34:30 -0500
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     David Miller <davem@davemloft.net>, <olteanv@gmail.com>,
+        <intel-wired-lan@lists.osuosl.org>, <jeffrey.t.kirsher@intel.com>,
+        <netdev@vger.kernel.org>, <vladimir.oltean@nxp.com>,
+        <po.liu@nxp.com>, <Jose.Abreu@synopsys.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+ <20200516.133739.285740119627243211.davem@davemloft.net>
+ <CA+h21hoNW_++QHRob+NbWC2k7y7sFec3kotSjTL6s8eZGGT+2Q@mail.gmail.com>
+ <20200516.151932.575795129235955389.davem@davemloft.net>
+ <87wo59oyhr.fsf@intel.com>
+ <20200518135613.379f6a63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87h7wcq4nx.fsf@intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <29959a1a-fc45-6870-fa11-311866b51aa0@ti.com>
+Date:   Tue, 19 May 2020 12:34:30 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200519134449.1466624-1-hch@lst.de> <20200519134449.1466624-14-hch@lst.de>
-In-Reply-To: <20200519134449.1466624-14-hch@lst.de>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 19 May 2020 09:33:06 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjg6v1NU31ku2aAMfX7Yu0oDKRvKeBJVGZFQB7AjcwhAA@mail.gmail.com>
-Message-ID: <CAHk-=wjg6v1NU31ku2aAMfX7Yu0oDKRvKeBJVGZFQB7AjcwhAA@mail.gmail.com>
-Subject: Re: [PATCH 13/20] maccess: always use strict semantics for probe_kernel_read
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87h7wcq4nx.fsf@intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 6:45 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> +
-> +       if (IS_ENABLED(CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE) &&
-> +           compat && (unsigned long)unsafe_ptr < TASK_SIZE)
-> +               ret = probe_user_read(dst, user_ptr, size);
-> +       else
-> +               ret = probe_kernel_read(dst, unsafe_ptr, size);
-...
-> -               ret = probe_kernel_read(&c, (u8 *)addr + len, 1);
-> +               if (IS_ENABLED(CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE) &&
-> +                   (unsigned long)addr < TASK_SIZE) {
-> +                       ret = probe_user_read(&c,
-> +                               (__force u8 __user *)addr + len, 1);
-> +               } else {
-> +                       ret = probe_kernel_read(&c, (u8 *)addr + len, 1);
-> +               }
-...
-> +       if (IS_ENABLED(CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE) &&
-> +           (unsigned long)src < TASK_SIZE) {
-> +               return probe_user_read(dest, (__force const void __user *)src,
-> +                               size);
 
-If you can't make the conditional legible and fit on a single line and
-make it obvious _why_ you have that conditional, just use a helper
-function.
 
-Either for just the conditional itself, or for the whole operation.
-And at least for the bpf case, since you want the whole operation for
-that error handling and clearing of the result buffer anyway, I
-suspect it would be cleaner to have that kind of
-"bpf_copy_legacy_nofault()" function or whatever.
+On 5/18/20 6:06 PM, Vinicius Costa Gomes wrote:
+> Hi,
+> 
+> Jakub Kicinski <kuba@kernel.org> writes:
+>>
+>> Please take a look at the example from the cover letter:
+>>
+>> $ ethtool $ sudo ./ethtool --show-frame-preemption
+>> enp3s0 Frame preemption settings for enp3s0:
+>> 	support: supported
+>> 	active: active
+>> 	supported queues: 0xf
+>> 	supported queues: 0xe
+>> 	minimum fragment size: 68
+>>
+>> Reading this I have no idea what 0xe is. I have to go and query TC API
+>> to see what priorities and queues that will be. Which IMHO is a strong
+>> argument that this information belongs there in the first place.
+> 
+> That was the (only?) strong argument in favor of having frame preemption
+> in the TC side when this was last discussed.
+> 
+> We can have a hybrid solution, we can move the express/preemptible per
+> queue map to mqprio/taprio/whatever. And have the more specific
+> configuration knobs, minimum fragment size, etc, in ethtool.
 
-(And see previous email why I dislike that "compat" naming in the bpf case)
+Isn't this a pure h/w feature? FPE is implemented at L2 and involves
+fragments that are only seen by h/w and never at Linux network core
+unlike IP fragments and is transparent to network stack. However it
+enhances priority handling at h/w to the next level by pre-empting 
+existing lower priority traffic to give way to express queue traffic
+and improve latency. So everything happens in h/w. So ethtool makes
+perfect sense here as it is a queue configuration. I agree with Vinicius
+and Vladmir to support this in ethtool instead of TC.
 
-                    Linus
+Murali
+> 
+> What do you think?
+> 
+> 
+> Cheers,
+> 
+
+-- 
+Murali Karicheri
+Texas Instruments
