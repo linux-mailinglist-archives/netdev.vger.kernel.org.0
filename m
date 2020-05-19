@@ -2,61 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53CEB1D8C87
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 02:46:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED0C1D8CCB
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 03:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgESAqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 20:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
+        id S1727819AbgESA7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 20:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726374AbgESAqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 20:46:48 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B44C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 17:46:48 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 01ACC12736953;
-        Mon, 18 May 2020 17:46:47 -0700 (PDT)
-Date:   Mon, 18 May 2020 17:46:47 -0700 (PDT)
-Message-Id: <20200518.174647.36183883217230643.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     nic_swsd@realtek.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] r8169: work around an irq coalescing
- related tx timeout
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <a979ac70-de91-aa66-f401-e61d31d04183@gmail.com>
-References: <a979ac70-de91-aa66-f401-e61d31d04183@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
+        with ESMTP id S1726696AbgESA73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 20:59:29 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79387C061A0C;
+        Mon, 18 May 2020 17:59:29 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49QyFn2C35z9sT3;
+        Tue, 19 May 2020 10:59:25 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
+        t=1589849966; bh=8/+JurzWor9GOkMEO6UBnJlAsXzwZLYg4x/TZn37qos=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=iIVVHUQASagv59C+VIQOnQtpogsxpFdYvze4yvfpBcmwuNCyaevLKzU9l2sIp0ilw
+         +DYckKCW1ryryi5bRywI8FSOStoP5rWY1J9s9Ts4y7BqkJlZoDorFB3x2KPXE9Es3b
+         0JxJQXpDh8S/Ce+oL/DjZ2jkta34Dv6kCHqqix+yWfD8flS0vD8QQDt0ikHXmU6NNj
+         gzOyPPDAvx0aRDJZpE5PwnF3W5N1fpOW1oOpAuzeKOBJbh3muK4kjcFquhKXzsmGuK
+         Xfs/D5kHCefQ26xWcxTgb0a+WrZzXmdb5tssO2YA/U15uSeIf2Q222xIsAAGrZrDY8
+         0uT1DOQn/49bg==
+Message-ID: <f23cf92ee3639e0112e67051009651a88dd0b53b.camel@ozlabs.org>
+Subject: Re: [PATCH] net: bmac: Fix stack corruption panic in bmac_probe()
+From:   Jeremy Kerr <jk@ozlabs.org>
+To:     userm57@yahoo.com, Finn Thain <fthain@telegraphics.com.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Paul Mackerras <paulus@samba.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Date:   Tue, 19 May 2020 08:59:24 +0800
+In-Reply-To: <05aa357d-4b9c-4038-c0f4-1bfea613c6e4@yahoo.com>
+References: <769e9041942802d0e9ff272c12ee359a04b84a90.1589761211.git.fthain@telegraphics.com.au>
+         <43d5717e7157fd300fd5bf893e517bbdf65c36f4.camel@ozlabs.org>
+         <05aa357d-4b9c-4038-c0f4-1bfea613c6e4@yahoo.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 18 May 2020 17:46:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Mon, 18 May 2020 22:47:16 +0200
+Hi Stan,
 
-> In [0] a user reported reproducible tx timeouts on RTL8168f except
-> PktCntrDisable is set and irq coalescing is enabled.
-> Realtek told me that they are not aware of any related hw issue on
-> this chip version, therefore root cause is still unknown. It's not
-> clear whether the issue affects one or more chip versions in general,
-> or whether issue is specific to reporter's system.
-> Due to this level of uncertainty, and due to the fact that I'm aware
-> of this one report only, let's apply the workaround on net-next only.
-> After this change setting irq coalescing via ethtool can reliably
-> avoid the issue on the affected system.
+> The new kernel compiled and booted with no errors, with these
+> STACKPROTECTOR options in .config (the last two revealed the bug):
 > 
-> [0] https://bugzilla.kernel.org/show_bug.cgi?id=207205
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> - remove orphaned Reported-by from commit message
+> CONFIG_HAVE_STACKPROTECTOR=y
+> CONFIG_CC_HAS_STACKPROTECTOR_NONE=y
+> CONFIG_STACKPROTECTOR=y
+> CONFIG_STACKPROTECTOR_STRONG=y
 
-Applied.
+Brilliant, thanks for testing. I'll send a standalone patch to netdev.
+
+Cheers,
+
+
+Jeremy
+
