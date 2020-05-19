@@ -2,123 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6B21D9E1C
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C34C51D9E2D
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 19:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729439AbgESRpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 13:45:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46394 "EHLO mail.kernel.org"
+        id S1729417AbgESRtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 13:49:20 -0400
+Received: from mga01.intel.com ([192.55.52.88]:44933 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726059AbgESRpC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 13:45:02 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42ABE20708;
-        Tue, 19 May 2020 17:45:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589910301;
-        bh=dk0GMnKwHWHD8WPCX9zD8aKuiqpSbLozIhxzMKjU+jI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nE3SLYSdp/G+yES8T1xHLddtRbdGhNfyBn3l0/Bv2Bov5OpjQYTOJkSazMSkWS39C
-         fA9HQMjc8p0pYeJ8AgxD8aAMZtgFtxYCEvC1BGJH8dfidtimDtcU405ez9u+d6Pbop
-         2b5CjVbQsAtZZj/nHE2dfXiCj6OsGj+Pwh2MLVq0=
-Date:   Tue, 19 May 2020 10:44:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] bnxt_en: Add new "enable_hot_fw_reset"
- generic devlink parameter
-Message-ID: <20200519104459.56a9dff2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200519052400.GB4655@nanopsycho>
-References: <1589790439-10487-1-git-send-email-vasundhara-v.volam@broadcom.com>
-        <20200518110152.GB2193@nanopsycho>
-        <20200518164309.2065f489@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200519052400.GB4655@nanopsycho>
+        id S1726059AbgESRtT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 13:49:19 -0400
+IronPort-SDR: mHE+khGHz4PSIQ7vDLaSQ5z0KT5oaTPzKfMifC1FMP4x8sEGJCY7DWObytRrKIkDff+XfU8KrQ
+ wjNEMa6KkKmQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 10:49:05 -0700
+IronPort-SDR: MYW1UuulTzlhBMvTgl1szX1qyh5J9CHwu/jTPJeIQLCFA3iFS92wri7b23GBe48OFv0XFwY6xG
+ nUT8iY49OnXQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
+   d="scan'208";a="466218150"
+Received: from stputhen-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.5.127])
+  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 10:49:05 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, olteanv@gmail.com,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
+        netdev@vger.kernel.org, vladimir.oltean@nxp.com, po.liu@nxp.com,
+        Jose.Abreu@synopsys.com
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+In-Reply-To: <29959a1a-fc45-6870-fa11-311866b51aa0@ti.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com> <20200516.133739.285740119627243211.davem@davemloft.net> <CA+h21hoNW_++QHRob+NbWC2k7y7sFec3kotSjTL6s8eZGGT+2Q@mail.gmail.com> <20200516.151932.575795129235955389.davem@davemloft.net> <87wo59oyhr.fsf@intel.com> <20200518135613.379f6a63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <87h7wcq4nx.fsf@intel.com> <29959a1a-fc45-6870-fa11-311866b51aa0@ti.com>
+Date:   Tue, 19 May 2020 10:49:04 -0700
+Message-ID: <87ftbvolwv.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 May 2020 07:24:00 +0200 Jiri Pirko wrote:
-> Tue, May 19, 2020 at 01:43:09AM CEST, kuba@kernel.org wrote:
-> >On Mon, 18 May 2020 13:01:52 +0200 Jiri Pirko wrote:  
-> >> Mon, May 18, 2020 at 10:27:15AM CEST, vasundhara-v.volam@broadcom.com wrote:  
-> >> >This patchset adds support for a "enable_hot_fw_reset" generic devlink
-> >> >parameter and use it in bnxt_en driver.
-> >> >
-> >> >Also, firmware spec. is updated to 1.10.1.40.    
-> >> 
-> >> Hi.
-> >> 
-> >> We've been discussing this internally for some time.
-> >> I don't like to use params for this purpose.
-> >> We already have "devlink dev flash" and "devlink dev reload" commands.
-> >> Combination of these two with appropriate attributes should provide what
-> >> you want. The "param" you are introducing is related to either "flash"
-> >> or "reload", so I don't think it is good to have separate param, when we
-> >> can extend the command attributes.
-> >> 
-> >> How does flash&reload work for mlxsw now:
-> >> 
-> >> # devlink flash
-> >> Now new version is pending, old FW is running
-> >> # devlink reload
-> >> Driver resets the device, new FW is loaded
-> >> 
-> >> I propose to extend reload like this:
-> >> 
-> >>  devlink dev reload DEV [ level { driver-default | fw-reset | driver-only | fw-live-patch } ]
-> >>    driver-default - means one of following to, according to what is
-> >>                     default for the driver
-> >>    fw-reset - does FW reset and driver entities re-instantiation
-> >>    driver-only - does driver entities re-instantiation only
-> >>    fw-live-patch - does only FW live patching - no effect on kernel
-> >> 
-> >> Could be an enum or bitfield. Does not matter. The point is to use
-> >> reload with attribute to achieve what user wants. In your usecase, user
-> >> would do:
-> >> 
-> >> # devlink flash
-> >> # devlink reload level fw-live-patch  
-> >
-> >Unfortunately for SmartNICs and MultiHost systems the reset may not be
-> >initiated locally. I agree it'd be great to have a normal netlink knob  
-> 
-> I don't follow. Locally initiated or not, why what I suggested is not
-> enough to cover that?
+Murali Karicheri <m-karicheri2@ti.com> writes:
 
-Hopefully clear now after Michael's explanation :)
+>> That was the (only?) strong argument in favor of having frame preemption
+>> in the TC side when this was last discussed.
+>> 
+>> We can have a hybrid solution, we can move the express/preemptible per
+>> queue map to mqprio/taprio/whatever. And have the more specific
+>> configuration knobs, minimum fragment size, etc, in ethtool.
+>
+> Isn't this a pure h/w feature? FPE is implemented at L2 and involves
+> fragments that are only seen by h/w and never at Linux network core
+> unlike IP fragments and is transparent to network stack. However it
+> enhances priority handling at h/w to the next level by pre-empting 
+> existing lower priority traffic to give way to express queue traffic
+> and improve latency. So everything happens in h/w. So ethtool makes
+> perfect sense here as it is a queue configuration. I agree with Vinicius
+> and Vladmir to support this in ethtool instead of TC.
 
-> >for this instead of a param. But it has to be some form of a policy of
-> >allowing the reset to happen, rather than an action/trigger kind of
-> >thing.  
-> 
-> The "host" allows to reset himself by the "smartnic", right? For that, I
-> can imagine a param. But that is not the case of this patchset.
-> 
-> >Also user space notification should be generated when reset happens,
-> >IMO. devlink dev info contents will likely change after reset, if
-> >nothing else.  
-> 
-> I agree.
-> 
-> >Plus this functionality will need proper documentation.  
-> 
-> Also agreed.
-> 
-> >FWIW - I am unconvinced that applications will be happy to experience
-> >network black outs, rather than being fully killed and re-spawned. For
-> >a micro-service worker shutdown + re-spawn should be bread and butter.
-> >But we already have ionic doing this, so seems like vendors are
-> >convinced otherwise, so a common interface is probably a good step.  
-> 
-> Hmm, not sure I follow what you mean by this para in context of this
-> patchset. Could you please explain? Thanks!
+The way I see, the issue that Jakub is pointing here is more of
+usability/understandability.
 
-I'm saying I'm dubious users will actually enable the async remote
-reset.
+By having the express/preemptible queue mapping in TC, we have the
+configuration near where the "priority to queue" mapping happens. That
+improves the ease of configuration, makes it easier to spot mistakes,
+that kind of thing, all of which are a big plus.
+
+Right now, I am seeing this hybrid approach as a good compromise, we
+have the queue settings near to where the kinds of traffic are mapped to
+queues, and we have the rest of the hardware configuration in ethtool.
+
+
+Cheers,
+-- 
+Vinicius
