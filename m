@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B081DA57D
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD8C1DA583
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728279AbgESX22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 19:28:28 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:29790 "EHLO
+        id S1728476AbgESX2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 19:28:43 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:29867 "EHLO
         smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbgESX21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 19:28:27 -0400
+        with ESMTP id S1726536AbgESX2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 19:28:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1589930906; x=1621466906;
+  t=1589930920; x=1621466920;
   h=date:from:to:subject:message-id:references:mime-version:
    in-reply-to;
-  bh=zbQMNYLtIoa4kLlnYGSDNfjwBBSpQp5232b6Reef8GY=;
-  b=uez2FhW/pzO0eehs75k7xrrklrwkY6NDJ2FuHRxczcHyE7a7jqDRE2Sh
-   AFNv+kBc7NH55VUqvi1xA3yA6CmRwksy2qTQfTepq8moarmI97am16VoL
-   ffYSnqFmgL+1AgpFDGsURV++uzUNnuHW7rxjFZgwTKx3ds62b3qiL9UoC
-   Y=;
-IronPort-SDR: yjilb6+ifEVyXCjPbp681nPaYveCia7d74ArrOmgBsV4eZPeHO69p3DRLt0zG/aIApuBmDvFcZ
- uua+tOHnry/g==
+  bh=8oFwSiGiXazezHFt6ilNhdZTejmHfEW4a5eyQv6e/gQ=;
+  b=rfzpMep9LFWBd/N2D7eR5ym3SsoZl+bxPrEntwVEPAChnja6g+2geCSk
+   fdp3E1eu6JLnV5RzP9iFK8bRlWiP0XuLfIwrr1n5anQ0NBan+zceib0bS
+   qmogj+cpla7fCMQFwOuUoYSZSyb099YFk6LOByF1mw4TFbCbxSm8NW8+r
+   o=;
+IronPort-SDR: ypi20ESB/vUTFj2KU/00Es79bg7nB7GrK8X0Zx694qkzKCpMWUQK1Y3nZ8y0w9sxgpu4l6EFGx
+ eREArqyAyGtA==
 X-IronPort-AV: E=Sophos;i="5.73,411,1583193600"; 
-   d="scan'208";a="31067017"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-859fe132.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 19 May 2020 23:28:23 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-859fe132.us-west-2.amazon.com (Postfix) with ESMTPS id 8AD99223413;
-        Tue, 19 May 2020 23:28:21 +0000 (UTC)
-Received: from EX13D07UWA003.ant.amazon.com (10.43.160.35) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 19 May 2020 23:28:08 +0000
+   d="scan'208";a="31067058"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 19 May 2020 23:28:37 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id 03FA7A1E06;
+        Tue, 19 May 2020 23:28:35 +0000 (UTC)
+Received: from EX13D07UWA001.ant.amazon.com (10.43.160.145) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 19 May 2020 23:28:30 +0000
 Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D07UWA003.ant.amazon.com (10.43.160.35) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 19 May 2020 23:28:08 +0000
+ EX13D07UWA001.ant.amazon.com (10.43.160.145) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 19 May 2020 23:28:30 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
  (172.22.96.68) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Tue, 19 May 2020 23:28:08 +0000
+ Server id 15.0.1497.2 via Frontend Transport; Tue, 19 May 2020 23:28:30 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 35D9940712; Tue, 19 May 2020 23:28:08 +0000 (UTC)
-Date:   Tue, 19 May 2020 23:28:08 +0000
+        id 8B45240712; Tue, 19 May 2020 23:28:30 +0000 (UTC)
+Date:   Tue, 19 May 2020 23:28:30 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -55,9 +55,8 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH 07/12] xen-netfront: add callbacks for PM suspend and
- hibernation
-Message-ID: <d0371ece7f89c6c0a33fe51567878c3151ec0256.1589926004.git.anchalag@amazon.com>
+Subject: [PATCH 08/12] xen/time: introduce xen_{save,restore}_steal_clock
+Message-ID: <ae90ece495d29f54fc9986a07f45ab6659136573.1589926004.git.anchalag@amazon.com>
 References: <cover.1589926004.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -71,204 +70,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Munehisa Kamata <kamatam@amazon.com>
 
-Add freeze, thaw and restore callbacks for PM suspend and hibernation
-support. The freeze handler simply disconnects the frotnend from the
-backend and frees resources associated with queues after disabling the
-net_device from the system. The restore handler just changes the
-frontend state and let the xenbus handler to re-allocate the resources
-and re-connect to the backend. This can be performed transparently to
-the rest of the system. The handlers are used for both PM suspend and
-hibernation so that we can keep the existing suspend/resume callbacks
-for Xen suspend without modification. Freezing netfront devices is
-normally expected to finish within a few hundred milliseconds, but it
-can rarely take more than 5 seconds and hit the hard coded timeout,
-it would depend on backend state which may be congested and/or have
-complex configuration. While it's rare case, longer default timeout
-seems a bit more reasonable here to avoid hitting the timeout.
-Also, make it configurable via module parameter so that we can cover
-broader setups than what we know currently.
+Currently, steal time accounting code in scheduler expects steal clock
+callback to provide monotonically increasing value. If the accounting
+code receives a smaller value than previous one, it uses a negative
+value to calculate steal time and results in incorrectly updated idle
+and steal time accounting. This breaks userspace tools which read
+/proc/stat.
 
-[Anchal changelog: Variable name fix and checkpatch.pl fixes]
-Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
+Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,-1253874204672.0%st
+
+This can actually happen when a Xen PVHVM guest gets restored from
+hibernation, because such a restored guest is just a fresh domain from
+Xen perspective and the time information in runstate info starts over
+from scratch.
+
+This patch introduces xen_save_steal_clock() which saves current values
+in runstate info into per-cpu variables. Its couterpart,
+xen_restore_steal_clock(), sets offset if it found the current values in
+runstate info are smaller than previous ones. xen_steal_clock() is also
+modified to use the offset to ensure that scheduler only sees
+monotonically increasing number.
+
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 ---
- drivers/net/xen-netfront.c | 98 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 97 insertions(+), 1 deletion(-)
+ drivers/xen/time.c    | 29 ++++++++++++++++++++++++++++-
+ include/xen/xen-ops.h |  2 ++
+ 2 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 482c6c8b0fb7..65edcdd6e05f 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -43,6 +43,7 @@
- #include <linux/moduleparam.h>
- #include <linux/mm.h>
- #include <linux/slab.h>
-+#include <linux/completion.h>
- #include <net/ip.h>
+diff --git a/drivers/xen/time.c b/drivers/xen/time.c
+index 0968859c29d0..3560222cc0dd 100644
+--- a/drivers/xen/time.c
++++ b/drivers/xen/time.c
+@@ -23,6 +23,9 @@ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
  
- #include <xen/xen.h>
-@@ -56,6 +57,12 @@
- #include <xen/interface/memory.h>
- #include <xen/interface/grant_table.h>
+ static DEFINE_PER_CPU(u64[4], old_runstate_time);
  
-+enum netif_freeze_state {
-+	NETIF_FREEZE_STATE_UNFROZEN,
-+	NETIF_FREEZE_STATE_FREEZING,
-+	NETIF_FREEZE_STATE_FROZEN,
-+};
++static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
++static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
 +
- /* Module parameters */
- #define MAX_QUEUES_DEFAULT 8
- static unsigned int xennet_max_queues;
-@@ -63,6 +70,12 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
- 
-+static unsigned int netfront_freeze_timeout_secs = 10;
-+module_param_named(freeze_timeout_secs,
-+		   netfront_freeze_timeout_secs, uint, 0644);
-+MODULE_PARM_DESC(freeze_timeout_secs,
-+		 "timeout when freezing netfront device in seconds");
-+
- static const struct ethtool_ops xennet_ethtool_ops;
- 
- struct netfront_cb {
-@@ -160,6 +173,10 @@ struct netfront_info {
- 	struct netfront_stats __percpu *tx_stats;
- 
- 	atomic_t rx_gso_checksum_fixup;
-+
-+	int freeze_state;
-+
-+	struct completion wait_backend_disconnected;
- };
- 
- struct netfront_rx_info {
-@@ -721,6 +738,21 @@ static int xennet_close(struct net_device *dev)
- 	return 0;
- }
- 
-+static int xennet_disable_interrupts(struct net_device *dev)
-+{
-+	struct netfront_info *np = netdev_priv(dev);
-+	unsigned int num_queues = dev->real_num_tx_queues;
-+	unsigned int queue_index;
-+	struct netfront_queue *queue;
-+
-+	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
-+		queue = &np->queues[queue_index];
-+		disable_irq(queue->tx_irq);
-+		disable_irq(queue->rx_irq);
-+	}
-+	return 0;
-+}
-+
- static void xennet_move_rx_slot(struct netfront_queue *queue, struct sk_buff *skb,
- 				grant_ref_t ref)
+ /* return an consistent snapshot of 64-bit time/counter value */
+ static u64 get64(const u64 *p)
  {
-@@ -1301,6 +1333,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
- 
- 	np->queues = NULL;
- 
-+	init_completion(&np->wait_backend_disconnected);
-+
- 	err = -ENOMEM;
- 	np->rx_stats = netdev_alloc_pcpu_stats(struct netfront_stats);
- 	if (np->rx_stats == NULL)
-@@ -1794,6 +1828,50 @@ static int xennet_create_queues(struct netfront_info *info,
- 	return 0;
+@@ -149,7 +152,7 @@ bool xen_vcpu_stolen(int vcpu)
+ 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
  }
  
-+static int netfront_freeze(struct xenbus_device *dev)
+-u64 xen_steal_clock(int cpu)
++static u64 __xen_steal_clock(int cpu)
+ {
+ 	struct vcpu_runstate_info state;
+ 
+@@ -157,6 +160,30 @@ u64 xen_steal_clock(int cpu)
+ 	return state.time[RUNSTATE_runnable] + state.time[RUNSTATE_offline];
+ }
+ 
++u64 xen_steal_clock(int cpu)
 +{
-+	struct netfront_info *info = dev_get_drvdata(&dev->dev);
-+	unsigned long timeout = netfront_freeze_timeout_secs * HZ;
-+	int err = 0;
++	return __xen_steal_clock(cpu) + per_cpu(xen_steal_clock_offset, cpu);
++}
 +
-+	xennet_disable_interrupts(info->netdev);
++void xen_save_steal_clock(int cpu)
++{
++	per_cpu(xen_prev_steal_clock, cpu) = xen_steal_clock(cpu);
++}
 +
-+	netif_device_detach(info->netdev);
++void xen_restore_steal_clock(int cpu)
++{
++	u64 steal_clock = __xen_steal_clock(cpu);
 +
-+	info->freeze_state = NETIF_FREEZE_STATE_FREEZING;
-+
-+	/* Kick the backend to disconnect */
-+	xenbus_switch_state(dev, XenbusStateClosing);
-+
-+	/* We don't want to move forward before the frontend is diconnected
-+	 * from the backend cleanly.
-+	 */
-+	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
-+					      timeout);
-+	if (!timeout) {
-+		err = -EBUSY;
-+		xenbus_dev_error(dev, err, "Freezing timed out;"
-+				 "the device may become inconsistent state");
-+		return err;
++	if (per_cpu(xen_prev_steal_clock, cpu) > steal_clock) {
++		/* Need to update the offset */
++		per_cpu(xen_steal_clock_offset, cpu) =
++		    per_cpu(xen_prev_steal_clock, cpu) - steal_clock;
++	} else {
++		/* Avoid unnecessary steal clock warp */
++		per_cpu(xen_steal_clock_offset, cpu) = 0;
 +	}
-+
-+	/* Tear down queues */
-+	xennet_disconnect_backend(info);
-+	xennet_destroy_queues(info);
-+
-+	info->freeze_state = NETIF_FREEZE_STATE_FROZEN;
-+
-+	return err;
 +}
 +
-+static int netfront_restore(struct xenbus_device *dev)
-+{
-+	/* Kick the backend to re-connect */
-+	xenbus_switch_state(dev, XenbusStateInitialising);
-+
-+	return 0;
-+}
-+
- /* Common code used when first setting up, and when resuming. */
- static int talk_to_netback(struct xenbus_device *dev,
- 			   struct netfront_info *info)
-@@ -1999,6 +2077,8 @@ static int xennet_connect(struct net_device *dev)
- 		spin_unlock_bh(&queue->rx_lock);
- 	}
+ void xen_setup_runstate_info(int cpu)
+ {
+ 	struct vcpu_register_runstate_memory_area area;
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index 89b1e88712d6..74fb5eb3aad8 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -37,6 +37,8 @@ void xen_time_setup_guest(void);
+ void xen_manage_runstate_time(int action);
+ void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
+ u64 xen_steal_clock(int cpu);
++void xen_save_steal_clock(int cpu);
++void xen_restore_steal_clock(int cpu);
  
-+	np->freeze_state = NETIF_FREEZE_STATE_UNFROZEN;
-+
- 	return 0;
- }
- 
-@@ -2036,10 +2116,23 @@ static void netback_changed(struct xenbus_device *dev,
- 		break;
- 
- 	case XenbusStateClosed:
--		if (dev->state == XenbusStateClosed)
-+		if (dev->state == XenbusStateClosed) {
-+		     /* dpm context is waiting for the backend */
-+			if (np->freeze_state == NETIF_FREEZE_STATE_FREEZING)
-+				complete(&np->wait_backend_disconnected);
- 			break;
-+		}
-+
- 		/* Fall through - Missed the backend's CLOSING state. */
- 	case XenbusStateClosing:
-+	       /* We may see unexpected Closed or Closing from the backend.
-+		* Just ignore it not to prevent the frontend from being
-+		* re-connected in the case of PM suspend or hibernation.
-+		*/
-+		if (np->freeze_state == NETIF_FREEZE_STATE_FROZEN &&
-+		    dev->state == XenbusStateInitialising) {
-+			break;
-+		}
- 		xenbus_frontend_closed(dev);
- 		break;
- 	}
-@@ -2186,6 +2279,9 @@ static struct xenbus_driver netfront_driver = {
- 	.probe = netfront_probe,
- 	.remove = xennet_remove,
- 	.resume = netfront_resume,
-+	.freeze = netfront_freeze,
-+	.thaw	= netfront_restore,
-+	.restore = netfront_restore,
- 	.otherend_changed = netback_changed,
- };
+ int xen_setup_shutdown_event(void);
  
 -- 
 2.24.1.AMZN
