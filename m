@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E50F1D9065
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 08:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC881D909E
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 09:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgESG4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 02:56:09 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:47579 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726886AbgESG4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 02:56:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589871368; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=0qIm7vciFqshx69ineP5uqBYK6jDShcXu+uD5JF18EY=;
- b=hT6h04N9U2Gdm4kxwDHiA302IsNj+F1DtNBlsK7Oan8vP56XxLl13uzKmMQyJSXJ9YzRn21j
- h+e1WUuO6+zr02ZqqFqd3IW2swuKDpge0lMaW1cdh8l596aqnL/TF+cHAL1t0oSths9OAdAi
- 1tojpMxK4YXkVxVKygM+orGiUWI=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 5ec383018ebbf95ecbd06850 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 May 2020 06:56:01
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C7ADBC44788; Tue, 19 May 2020 06:56:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728159AbgESHBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 03:01:39 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42024 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726881AbgESHBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 03:01:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589871697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yf2My6h6KwN48RRp5ClQBSdmf3dz99WGO2io9IXtB38=;
+        b=QgxDGdUNzquX8vP5SjPnRenAuOyrZKAxDw1LCvwxutlVeJ974CWOnKvoC+UCVjIzcCAjrJ
+        GgvaaO17N3paY3JplMgwWaVrR2M1N5Nqji0btJTWJa3SVgnrjmWgbUp5bP7v+iKAVwPjE/
+        HVfnwksYz+mXDXWUVD8Gq8GPH63Jx/4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-zRwkP1ITMhOccJptVVvoTg-1; Tue, 19 May 2020 03:01:34 -0400
+X-MC-Unique: zRwkP1ITMhOccJptVVvoTg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 00283C432C2;
-        Tue, 19 May 2020 06:55:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 00283C432C2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB91DEC1A4;
+        Tue, 19 May 2020 07:01:32 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 268905C1BB;
+        Tue, 19 May 2020 07:01:26 +0000 (UTC)
+Date:   Tue, 19 May 2020 09:01:25 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next] selftest/bpf: make bpf_iter selftest
+ compilable against old vmlinux.h
+Message-ID: <20200519090125.2612b00c@carbon>
+In-Reply-To: <6633a04c-aab4-5182-2bed-28b235436932@fb.com>
+References: <20200518234516.3915052-1-andriin@fb.com>
+        <6633a04c-aab4-5182-2bed-28b235436932@fb.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: Fix some resource leaks in error path in
- 'ath11k_thermal_register()'
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200513201454.258111-1-christophe.jaillet@wanadoo.fr>
-References: <20200513201454.258111-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, pradeepc@codeaurora.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200519065600.C7ADBC44788@smtp.codeaurora.org>
-Date:   Tue, 19 May 2020 06:56:00 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+On Mon, 18 May 2020 18:42:24 -0700
+Yonghong Song <yhs@fb.com> wrote:
 
-> If 'thermal_cooling_device_register()' fails, we must undo what has been
-> allocated so far. So we must go to 'err_thermal_destroy' instead of
-> returning directly
+> On 5/18/20 4:45 PM, Andrii Nakryiko wrote:
+> > It's good to be able to compile bpf_iter selftest even on systems that don't
+> > have the very latest vmlinux.h, e.g., for libbpf tests against older kernels in
+> > Travis CI. To that extent, re-define bpf_iter_meta and corresponding bpf_iter
+> > context structs in each selftest. To avoid type clashes with vmlinux.h, rename
+> > vmlinux.h's definitions to get them out of the way.
+> > 
+> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>  
 > 
-> In case of error in 'ath11k_thermal_register()', the previous
-> 'thermal_cooling_device_register()' call must also be undone. Move the
-> 'ar->thermal.cdev = cdev' a few lines above in order for this to be done
-> in 'ath11k_thermal_unregister()' which is called in the error handling
-> path.
-> 
-> Fixes: 2a63bbca06b2 ("ath11k: add thermal cooling device support")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> Acked-by: Yonghong Song <yhs@fb.com>
 
-Patch applied to ath-next branch of ath.git, thanks.
+Thanks for looking into this Andrii :-)
 
-25ca180ad380 ath11k: Fix some resource leaks in error path in 'ath11k_thermal_register()'
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
 -- 
-https://patchwork.kernel.org/patch/11547195/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
