@@ -2,188 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E630E1DA0FE
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:28:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 687C11DA107
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 21:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbgEST2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 15:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
+        id S1726806AbgESTaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 15:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbgEST2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:28:25 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B191C08C5C0;
-        Tue, 19 May 2020 12:28:25 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id ee19so168723qvb.11;
-        Tue, 19 May 2020 12:28:25 -0700 (PDT)
+        with ESMTP id S1726059AbgESTaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 15:30:10 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F096CC08C5C0;
+        Tue, 19 May 2020 12:30:09 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id n22so567438qtv.12;
+        Tue, 19 May 2020 12:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sJ2WtymJ/44ukH73/nmAxCbRKt4OtZ9J3eO3Z1WCx+s=;
-        b=bmQ+YeugrD0P0y8R1+JB/gALpn6SNySKmGjb+J9kkUSjlI/t+EbizeE4z/gyb8qo4y
-         GqhM/bjwtEUJQU65fTXJ8yCTJnwoz1J6pE0MdL/A2Qjl4Q+AEe7sq6w/wYlAaAL4WjKN
-         FAKYvqSr1P6krmgL/EVrghAdWjfv1GkQ/7Ii65Q16+kwIbrJuTJJXh/p1iwpSPA2IiXs
-         ZXR4rs9p2ZsjPNyc1Pn2dR9ankY5kSbzKIW7CgDj01vXJrbX7W+7GqUEiO7OE+vS58SG
-         +FMRIU5HhTWdwC1RsYrRg2IVOHRm++eAQzJ8XBvBtCYv3pj9x3ovMPvHWIIK7Z1ozem4
-         QSeQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JLNTKuWXG5RL22GiqkJEO67M5+yDAhwqj8vxR1pC9Pc=;
+        b=EmfmIBE2lvjkW0+zUQudmRZciASPLFo2EKpqAG/Tz9Uw9YulJE1h0sVQPNn7eIjH77
+         MDYOvZ07qpNts20VQPNDx5dMX8cIesvElbn4ICM80h0kR3yoRXXicI0fvj52xGv4c/Bv
+         kJeyVmKHuLsYCP0DW6c+HxtMqXPzR1Vf1SnDsamSEsbaVgtgo7BG4oi525yT8Hxadx/z
+         BmIaFhw+MSqgffVhBNiEC8EYkAPM7RYwDcn1fBiPxV7zwCuTSnAlEHRqPqC82grv3dR+
+         UjA/whjYPkottaONimBQxVeLe9tdFMww8nDqdEWSUck7RHwmVxQd2WHmQFchcStMpzBP
+         jHmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sJ2WtymJ/44ukH73/nmAxCbRKt4OtZ9J3eO3Z1WCx+s=;
-        b=Vl+I4nNx1DH8P8ZmRa2TnY6tuiDpG/bgAetTNj++Ivr2MqXskxGW7tyVhNlN99bjRd
-         fzdKGq3HP1qbmfuRmk1zRkfdFxcTK+julNWIBI4TTTD9MvAtpO6R9cYJHTkq84ARic9e
-         CyVxb8LKVSUyuzVAsP7txs/7eduOyg3b+LVEr241UIhNqnngUgrTTbq0NwiJa33yuZge
-         6P+zTEsT+DNpY1I31GW9RQl9qwoWFYxvhCbf8KzyguWQaJlAXFLvrg9ijXvEFE1bgykh
-         IJDpKdKP+CKYxgvWPWMNkBh+Ws440oZ0EbG5WdXaRaMMQ0P7aL8FH2lOTTGc+lFIFOZM
-         jYqQ==
-X-Gm-Message-State: AOAM531RNwtONji/6WRqzvEEjmnHQBOv4H6PKvWJmM/0K7hZMDY0OYGK
-        /Pkf9cU0t63EB/DpaBUOsp0=
-X-Google-Smtp-Source: ABdhPJz0uBnKIXEfrTulqlvs6UK2lZUeYHabJFqmgAMRHk9g9NbIOh8l60tueo4Ud8wq6kVNiTiOqQ==
-X-Received: by 2002:a0c:a993:: with SMTP id a19mr1231250qvb.57.1589916503962;
-        Tue, 19 May 2020 12:28:23 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.37.151])
-        by smtp.gmail.com with ESMTPSA id u41sm656836qte.28.2020.05.19.12.28.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2020 12:28:22 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C333740AFD; Tue, 19 May 2020 16:28:19 -0300 (-03)
-Date:   Tue, 19 May 2020 16:28:19 -0300
-To:     Ian Rogers <irogers@google.com>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JLNTKuWXG5RL22GiqkJEO67M5+yDAhwqj8vxR1pC9Pc=;
+        b=pcC1EWUABJd0XXMEM+8Z06lQLbluilNgeHW6RJus2o3Ws0H0mhv64XJRuXjaZgbu3V
+         5LRnv4d8HWu9dXCc/py89O+7S4kyJVFPh5pATl6qilWp6fQyVhX6B+hFwHw/7Rdt7c06
+         JeoAVbgjPAiWSfvhGyDzhbSosY1Q5SQ8u174F3OtyW73uhSu+Fj0V/wbrLqOUP2eZXft
+         oxmVb6li3w2Wj2svtrG+CnRDpybqZ2bUoQPpuE6QjybAQOrwb3LXJPDRMJC0haWrpGcf
+         xvGTjz5Pm9J02DDR0Onx4/qkUHauRwjjZteZkSzyyJvmjFk+vfZhwBhtQ2tbDAXedjWL
+         PtAA==
+X-Gm-Message-State: AOAM531t3VJ6V3lY0tguXuQZjFZucDFMrcDesT0I6woqoop+3EzkjUrA
+        u6hgbKINrw4UNu7vcBv55T8Vs9ez/hyVbo75e3M=
+X-Google-Smtp-Source: ABdhPJwRaU0akqgR7ea2OCOB05lC2WOR2l+OUAjjbltd9BouYVuxmZ60MdRKIvD/l1Eiowo03a/JD2Gk3HRI6dpjqyA=
+X-Received: by 2002:ac8:1ae7:: with SMTP id h36mr1504281qtk.59.1589916609195;
+ Tue, 19 May 2020 12:30:09 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAG=TAF6mfrwxF1-xEJJ9dL675uMUa7RZrOa_eL2mJizZJ-U7iQ@mail.gmail.com>
+ <CAEf4BzazvGOoJbm+zNMqTjhTPJAnVLVv9V=rXkdXZELJ4FPtiA@mail.gmail.com>
+ <CAG=TAF6aqo-sT2YE30riqp7f47KyXH_uhNJ=M9L12QU6EEEfqQ@mail.gmail.com>
+ <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com> <CAG=TAF5rYmMXBcxno0pPxVZdcyz=ik-enh03E-V8wupjDS0K5g@mail.gmail.com>
+In-Reply-To: <CAG=TAF5rYmMXBcxno0pPxVZdcyz=ik-enh03E-V8wupjDS0K5g@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 19 May 2020 12:29:58 -0700
+Message-ID: <CAEf4BzYZ9LkYtmiukToJDw1-V-AFbwfB2jysMU9mM3ie9=qWHw@mail.gmail.com>
+Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
+To:     Qian Cai <cai@lca.pw>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v3 7/7] perf expr: Migrate expr ids table to a hashmap
-Message-ID: <20200519192819.GC28228@kernel.org>
-References: <20200515221732.44078-1-irogers@google.com>
- <20200515221732.44078-8-irogers@google.com>
- <20200518154505.GE24211@kernel.org>
- <CAP-5=fWZwuSLaFX+-pgeE_H92Mtp7+_NrwBeRFTqyfPjVRkbWg@mail.gmail.com>
- <20200518160648.GI24211@kernel.org>
- <20200518161137.GK24211@kernel.org>
- <CAP-5=fWzb5XxcFishFErRtdc-Gvv-7DkVpd6HSiy2_RswfjeDg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fWzb5XxcFishFErRtdc-Gvv-7DkVpd6HSiy2_RswfjeDg@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+        Linux Netdev List <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Mon, May 18, 2020 at 09:29:06AM -0700, Ian Rogers escreveu:
-> I had some issues here too:
-> https://lore.kernel.org/lkml/CAEf4BzYxTTND7T7X0dLr2CbkEvUuKtarOeoJYYROefij+qds0w@mail.gmail.com/
-> The only reason for the bits/reg.h inclusion is for __WORDSIZE for the
-> hash_bits operation. As shown below:
+On Tue, May 19, 2020 at 8:00 AM Qian Cai <cai@lca.pw> wrote:
+>
+> On Mon, May 18, 2020 at 8:25 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Mon, May 18, 2020 at 5:09 PM Qian Cai <cai@lca.pw> wrote:
+> > >
+> > > On Mon, May 18, 2020 at 7:55 PM Andrii Nakryiko
+> > > <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > On Sun, May 17, 2020 at 7:45 PM Qian Cai <cai@lca.pw> wrote:
+> > > > >
+> > > > > With Clang 9.0.1,
+> > > > >
+> > > > > return array->value + array->elem_size * (index & array->index_mask);
+> > > > >
+> > > > > but array->value is,
+> > > > >
+> > > > > char value[0] __aligned(8);
+> > > >
+> > > > This, and ptrs and pptrs, should be flexible arrays. But they are in a
+> > > > union, and unions don't support flexible arrays. Putting each of them
+> > > > into anonymous struct field also doesn't work:
+> > > >
+> > > > /data/users/andriin/linux/include/linux/bpf.h:820:18: error: flexible
+> > > > array member in a struct with no named members
+> > > >    struct { void *ptrs[] __aligned(8); };
+> > > >
+> > > > So it probably has to stay this way. Is there a way to silence UBSAN
+> > > > for this particular case?
+> > >
+> > > I am not aware of any way to disable a particular function in UBSAN
+> > > except for the whole file in kernel/bpf/Makefile,
+> > >
+> > > UBSAN_SANITIZE_arraymap.o := n
+> > >
+> > > If there is no better way to do it, I'll send a patch for it.
+> >
+> >
+> > That's probably going to be too drastic, we still would want to
+> > validate the rest of arraymap.c code, probably. Not sure, maybe
+> > someone else has better ideas.
+>
+> This works although it might makes sense to create a pair of
+> ubsan_disable_current()/ubsan_enable_current() for it.
+>
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index 11584618e861..6415b089725e 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -170,11 +170,16 @@ static void *array_map_lookup_elem(struct
+> bpf_map *map, void *key)
+>  {
+>         struct bpf_array *array = container_of(map, struct bpf_array, map);
+>         u32 index = *(u32 *)key;
+> +       void *elem;
+>
+>         if (unlikely(index >= array->map.max_entries))
+>                 return NULL;
+>
+> -       return array->value + array->elem_size * (index & array->index_mask);
+> +       current->in_ubsan++;
+> +       elem = array->value + array->elem_size * (index & array->index_mask);
+> +       current->in_ubsan--;
 
-So, to have perf building in all the systems I have test build
-containers for I have this in:
+This is an unnecessary performance hit for silencing what is clearly a
+false positive. I'm not sure that's the right solution here. It seems
+like something that's lacking on the tooling side instead. C language
+doesn't allow to express the intent here using flexible array
+approach. That doesn't mean that what we are doing here is wrong or
+undefined.
 
-tools/include/linux/bitops.h
-
-#include <asm/types.h>
-#include <limits.h>
-#ifndef __WORDSIZE
-#define __WORDSIZE (__SIZEOF_LONG__ * 8)
-#endif
-
-With that it works everywhere, Android cross NDK for arm64, older
-systems, cross compilers to many arches, Musl libc, uclibc, etc.
-
-So I'm trying, just to check, that this change will make this build
-everywhere:
-
-commit ef4c968ccbd52d6a02553719ac7e97f70c65ba47
-Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-Date:   Tue May 19 16:26:14 2020 -0300
-
-    WIP
-    
-    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-
-diff --git a/tools/perf/util/hashmap.h b/tools/perf/util/hashmap.h
-index e823b35e7371..df59fd4fc95b 100644
---- a/tools/perf/util/hashmap.h
-+++ b/tools/perf/util/hashmap.h
-@@ -10,10 +10,9 @@
- 
- #include <stdbool.h>
- #include <stddef.h>
--#ifdef __GLIBC__
--#include <bits/wordsize.h>
--#else
--#include <bits/reg.h>
-+#include <limits.h>
-+#ifndef __WORDSIZE
-+#define __WORDSIZE (__SIZEOF_LONG__ * 8)
- #endif
- 
- static inline size_t hash_bits(size_t h, int bits)
-
-
-> #ifdef __GLIBC__
-> #include <bits/wordsize.h>
-> #else
-> #include <bits/reg.h>
-> #endif
-> static inline size_t hash_bits(size_t h, int bits)
-> {
-> /* shuffle bits and return requested number of upper bits */
-> return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
-> }
-> 
-> It'd be possible to change the definition of hash_bits and remove the
-> #includes by:
-> 
-> static inline size_t hash_bits(size_t h, int bits)
-> {
-> /* shuffle bits and return requested number of upper bits */
-> #ifdef __LP64__
->   int shift = 64 - bits;
-> #else
->   int shift = 32 - bits;
-> #endif
-> return (h * 11400714819323198485llu) >> shift;
-> }
-> 
-> Others may have a prefered more portable solution. A separate issue
-> with this same function is undefined behavior getting flagged
-> (unnecessarily) by sanitizers:
-> https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
-> 
-> I was planning to come back to that once we got these changes landed.
-> 
-> Thanks!
-> Ian
-
--- 
-
-- Arnaldo
+> +
+> +       return elem;
+>  }
