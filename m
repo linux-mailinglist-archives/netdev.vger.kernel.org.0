@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E46821DA56D
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:26:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F30B1DA573
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 01:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbgESX0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 19:26:39 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:64802 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbgESX0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 19:26:38 -0400
+        id S1728433AbgESX06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 19:26:58 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:50716 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgESX05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 19:26:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1589930798; x=1621466798;
+  t=1589930816; x=1621466816;
   h=date:from:to:subject:message-id:references:mime-version:
    in-reply-to;
-  bh=+5sqW/9tRYGzDifQrxQJ7j+i6WgVO1jvWkTIJZXYHhc=;
-  b=K46XGdq+bQjjsBSF58nOLshjyQJUeGKZesZ9jXdJfsN/covNZ3BRqVU/
-   tGtr/k9ujNTkUHmXPTzVco+WvZo0/HKbfy54uVrjU49o5CA54bJ8MVNWP
-   rwysXkR544eRybIl/BESTHj2ng4qsUgqFYGKKqACW/qPKEdfAMH2a6b71
-   Q=;
-IronPort-SDR: mWw8AR8ej5ULAmO2NWPA9U3fjvDcfrEySiPbnKH0hbJ0nS6cPVOD41yjXFXqxCxYYtwfKRalTW
- k2MS/P3b7VvQ==
+  bh=w1eiGIKxH2xekT/yRQZeyaclvCGnjD5HhlMWQPvovNo=;
+  b=CWYHgZqJRdDUtM1HZJEGRWcWAJhyfV/299740EWmc5U8hjOXiYBPwq2k
+   XZLmN2NXcD22S4OkWbBa7j+affNhg+dW3gyT+yMKUr+RDrzfI6hylDE91
+   JRZpTKEgBKL1zJ1tbLmqrX4LuTXovcH1R+Ts3aJCsPdrgREjwWcRQGxLn
+   w=;
+IronPort-SDR: 4zrULB5uLUcsAKAcAvhwiqdH17+b0NBjaHt+iOUxEhsVwTPymE9d12KL3WpgGQklo1tYTus5RN
+ BWO//n740XSQ==
 X-IronPort-AV: E=Sophos;i="5.73,411,1583193600"; 
-   d="scan'208";a="31243916"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 19 May 2020 23:26:23 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com (Postfix) with ESMTPS id CA0F8A1EEC;
-        Tue, 19 May 2020 23:26:20 +0000 (UTC)
-Received: from EX13D01UWB002.ant.amazon.com (10.43.161.136) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 19 May 2020 23:26:15 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13d01UWB002.ant.amazon.com (10.43.161.136) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 19 May 2020 23:26:15 +0000
+   d="scan'208";a="31182266"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-69849ee2.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 19 May 2020 23:26:53 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-69849ee2.us-west-2.amazon.com (Postfix) with ESMTPS id BDAEFA20D6;
+        Tue, 19 May 2020 23:26:51 +0000 (UTC)
+Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 19 May 2020 23:26:37 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 19 May 2020 23:26:37 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Tue, 19 May 2020 23:26:15 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Tue, 19 May 2020 23:26:37 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 5012E40712; Tue, 19 May 2020 23:26:15 +0000 (UTC)
-Date:   Tue, 19 May 2020 23:26:15 +0000
+        id 3BF6D40712; Tue, 19 May 2020 23:26:37 +0000 (UTC)
+Date:   Tue, 19 May 2020 23:26:37 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -55,8 +55,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH 04/12] x86/xen: add system core suspend and resume callbacks
-Message-ID: <79cf02631dc00e62ebf90410bfbbdb52fe7024cb.1589926004.git.anchalag@amazon.com>
+Subject: [PATCH 05/12] genirq: Shutdown irq chips in suspend/resume during
+ hibernation
+Message-ID: <fce013fc1348f02b8e4ec61e7a631093c72f993c.1589926004.git.anchalag@amazon.com>
 References: <cover.1589926004.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -68,128 +69,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Munehisa Kamata <kamatam@amazon.com>
+Many legacy device drivers do not implement power management (PM)
+functions which means that interrupts requested by these drivers stay
+in active state when the kernel is hibernated.
 
-Add Xen PVHVM specific system core callbacks for PM suspend and
-hibernation support. The callbacks suspend and resume Xen
-primitives,like shared_info, pvclock and grant table. Note that
-Xen suspend can handle them in a different manner, but system
-core callbacks are called from the context. So if the callbacks
-are called from Xen suspend context, return immediately.
+This does not matter on bare metal and on most hypervisors because the
+interrupt is restored on resume without any noticable side effects as
+it stays connected to the same physical or virtual interrupt line.
 
-Signed-off-by: Agarwal Anchal <anchalag@amazon.com>
-Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+The XEN interrupt mechanism is different as it maintains a mapping
+between the Linux interrupt number and a XEN event channel. If the
+interrupt stays active on hibernation this mapping is preserved but
+there is unfortunately no guarantee that on resume the same event
+channels are reassigned to these devices. This can result in event
+channel conflicts which prevent the affected devices from being
+restored correctly.
+
+One way to solve this would be to add the necessary power management
+functions to all affected legacy device drivers, but that's a
+questionable effort which does not provide any benefits on non-XEN
+environments.
+
+The least intrusive and most efficient solution is to provide a
+mechanism which allows the core interrupt code to tear down these
+interrupts on hibernation and bring them back up again on resume. This
+allows the XEN event channel mechanism to assign an arbitrary event
+channel on resume without affecting the functionality of these
+devices.
+
+Fortunately all these device interrupts are handled by a dedicated XEN
+interrupt chip so the chip can be marked that all interrupts connected
+to it are handled this way. This is pretty much in line with the other
+interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
+
+Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
+it the core interrupt suspend/resume paths.
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off--by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/xen/enlighten_hvm.c |  1 +
- arch/x86/xen/suspend.c       | 53 ++++++++++++++++++++++++++++++++++++
- include/xen/xen-ops.h        |  3 ++
- 3 files changed, 57 insertions(+)
+ drivers/xen/events/events_base.c |  1 +
+ include/linux/irq.h              |  2 ++
+ kernel/irq/chip.c                |  2 +-
+ kernel/irq/internals.h           |  1 +
+ kernel/irq/pm.c                  | 31 ++++++++++++++++++++++---------
+ 5 files changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 75b1ec7a0fcd..138e71786e03 100644
---- a/arch/x86/xen/enlighten_hvm.c
-+++ b/arch/x86/xen/enlighten_hvm.c
-@@ -204,6 +204,7 @@ static void __init xen_hvm_guest_init(void)
- 	if (xen_feature(XENFEAT_hvm_callback_vector))
- 		xen_have_vector_callback = 1;
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index 3a791c8485d0..decf65bd3451 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -1613,6 +1613,7 @@ static struct irq_chip xen_pirq_chip __read_mostly = {
+ 	.irq_set_affinity	= set_affinity_irq,
  
-+	xen_setup_syscore_ops();
- 	xen_hvm_smp_init();
- 	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
- 	xen_unplug_emulated_devices();
-diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 1d83152c761b..784c4484100b 100644
---- a/arch/x86/xen/suspend.c
-+++ b/arch/x86/xen/suspend.c
-@@ -2,17 +2,22 @@
- #include <linux/types.h>
- #include <linux/tick.h>
- #include <linux/percpu-defs.h>
-+#include <linux/syscore_ops.h>
-+#include <linux/kernel_stat.h>
+ 	.irq_retrigger		= retrigger_dynirq,
++	.flags                  = IRQCHIP_SHUTDOWN_ON_SUSPEND,
+ };
  
- #include <xen/xen.h>
- #include <xen/interface/xen.h>
-+#include <xen/interface/memory.h>
- #include <xen/grant_table.h>
- #include <xen/events.h>
-+#include <xen/xen-ops.h>
+ static struct irq_chip xen_percpu_chip __read_mostly = {
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 8d5bc2c237d7..94cb8c994d06 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -542,6 +542,7 @@ struct irq_chip {
+  * IRQCHIP_EOI_THREADED:	Chip requires eoi() on unmask in threaded mode
+  * IRQCHIP_SUPPORTS_LEVEL_MSI	Chip can provide two doorbells for Level MSIs
+  * IRQCHIP_SUPPORTS_NMI:	Chip can deliver NMIs, only for root irqchips
++ * IRQCHIP_SHUTDOWN_ON_SUSPEND: Shutdown non wake irqs in the suspend path
+  */
+ enum {
+ 	IRQCHIP_SET_TYPE_MASKED		= (1 <<  0),
+@@ -553,6 +554,7 @@ enum {
+ 	IRQCHIP_EOI_THREADED		= (1 <<  6),
+ 	IRQCHIP_SUPPORTS_LEVEL_MSI	= (1 <<  7),
+ 	IRQCHIP_SUPPORTS_NMI		= (1 <<  8),
++	IRQCHIP_SHUTDOWN_ON_SUSPEND     = (1 <<  9),
+ };
  
- #include <asm/cpufeatures.h>
- #include <asm/msr-index.h>
- #include <asm/xen/hypercall.h>
- #include <asm/xen/page.h>
- #include <asm/fixmap.h>
-+#include <asm/pvclock.h>
- 
- #include "xen-ops.h"
- #include "mmu.h"
-@@ -82,3 +87,51 @@ void xen_arch_suspend(void)
- 
- 	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
+ #include <linux/irqdesc.h>
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 41e7e37a0928..fd59489ff14b 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -233,7 +233,7 @@ __irq_startup_managed(struct irq_desc *desc, struct cpumask *aff, bool force)
  }
-+
-+static int xen_syscore_suspend(void)
-+{
-+	struct xen_remove_from_physmap xrfp;
-+	int ret;
-+
-+	/* Xen suspend does similar stuffs in its own logic */
-+	if (xen_suspend_mode_is_xen_suspend())
-+		return 0;
-+
-+	xrfp.domid = DOMID_SELF;
-+	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
-+
-+	ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
-+	if (!ret)
-+		HYPERVISOR_shared_info = &xen_dummy_shared_info;
-+
-+	return ret;
-+}
-+
-+static void xen_syscore_resume(void)
-+{
-+	/* Xen suspend does similar stuffs in its own logic */
-+	if (xen_suspend_mode_is_xen_suspend())
-+		return;
-+
-+	/* No need to setup vcpu_info as it's already moved off */
-+	xen_hvm_map_shared_info();
-+
-+	pvclock_resume();
-+
-+	gnttab_resume();
-+}
-+
-+/*
-+ * These callbacks will be called with interrupts disabled and when having only
-+ * one CPU online.
-+ */
-+static struct syscore_ops xen_hvm_syscore_ops = {
-+	.suspend = xen_syscore_suspend,
-+	.resume = xen_syscore_resume
-+};
-+
-+void __init xen_setup_syscore_ops(void)
-+{
-+	if (xen_hvm_domain())
-+		register_syscore_ops(&xen_hvm_syscore_ops);
-+}
-diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 4ffe031adfc7..89b1e88712d6 100644
---- a/include/xen/xen-ops.h
-+++ b/include/xen/xen-ops.h
-@@ -43,6 +43,9 @@ int xen_setup_shutdown_event(void);
- bool xen_suspend_mode_is_xen_suspend(void);
- bool xen_suspend_mode_is_pm_suspend(void);
- bool xen_suspend_mode_is_pm_hibernation(void);
-+
-+void xen_setup_syscore_ops(void);
-+
- extern unsigned long *xen_contiguous_bitmap;
+ #endif
  
- #if defined(CONFIG_XEN_PV) || defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+-static int __irq_startup(struct irq_desc *desc)
++int __irq_startup(struct irq_desc *desc)
+ {
+ 	struct irq_data *d = irq_desc_get_irq_data(desc);
+ 	int ret = 0;
+diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
+index 7db284b10ac9..b6fca5eacff7 100644
+--- a/kernel/irq/internals.h
++++ b/kernel/irq/internals.h
+@@ -80,6 +80,7 @@ extern void __enable_irq(struct irq_desc *desc);
+ extern int irq_activate(struct irq_desc *desc);
+ extern int irq_activate_and_startup(struct irq_desc *desc, bool resend);
+ extern int irq_startup(struct irq_desc *desc, bool resend, bool force);
++extern int __irq_startup(struct irq_desc *desc);
+ 
+ extern void irq_shutdown(struct irq_desc *desc);
+ extern void irq_shutdown_and_deactivate(struct irq_desc *desc);
+diff --git a/kernel/irq/pm.c b/kernel/irq/pm.c
+index 8f557fa1f4fe..dc48a25f1756 100644
+--- a/kernel/irq/pm.c
++++ b/kernel/irq/pm.c
+@@ -85,16 +85,25 @@ static bool suspend_device_irq(struct irq_desc *desc)
+ 	}
+ 
+ 	desc->istate |= IRQS_SUSPENDED;
+-	__disable_irq(desc);
+-
+ 	/*
+-	 * Hardware which has no wakeup source configuration facility
+-	 * requires that the non wakeup interrupts are masked at the
+-	 * chip level. The chip implementation indicates that with
+-	 * IRQCHIP_MASK_ON_SUSPEND.
++	 * Some irq chips (e.g. XEN PIRQ) require a full shutdown on suspend
++	 * as some of the legacy drivers(e.g. floppy) do nothing during the
++	 * suspend path
+ 	 */
+-	if (irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
+-		mask_irq(desc);
++	if (irq_desc_get_chip(desc)->flags & IRQCHIP_SHUTDOWN_ON_SUSPEND) {
++		irq_shutdown(desc);
++	} else {
++		__disable_irq(desc);
++
++	       /*
++		* Hardware which has no wakeup source configuration facility
++		* requires that the non wakeup interrupts are masked at the
++		* chip level. The chip implementation indicates that with
++		* IRQCHIP_MASK_ON_SUSPEND.
++		*/
++		if (irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
++			mask_irq(desc);
++	}
+ 	return true;
+ }
+ 
+@@ -152,7 +161,11 @@ static void resume_irq(struct irq_desc *desc)
+ 	irq_state_set_masked(desc);
+ resume:
+ 	desc->istate &= ~IRQS_SUSPENDED;
+-	__enable_irq(desc);
++
++	if (irq_desc_get_chip(desc)->flags & IRQCHIP_SHUTDOWN_ON_SUSPEND)
++		__irq_startup(desc);
++	else
++		__enable_irq(desc);
+ }
+ 
+ static void resume_irqs(bool want_early)
 -- 
 2.24.1.AMZN
 
