@@ -2,180 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A541D9A71
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 16:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E061D9A91
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 17:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728968AbgESOx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 10:53:57 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56546 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727904AbgESOx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 10:53:56 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04JErjRj129496;
-        Tue, 19 May 2020 09:53:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589900025;
-        bh=Xp+6mRG+txeiaoUM/vnEKlmryO/oJiJW2WfO1OB1hXk=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=IQFtqNmiW9FQxRieiH0ZXdTwjv13TPVC0+o/0MH8Bz9chOV07zz9RIK4emPXDdgGD
-         5pefySVpNc5MgTc8Y7IERePvDBaFPykUmGvGoTgcpt0anKwnzt0GcSH7igRqv9vNVs
-         VMO0xc2w6qizWdm6wMENJScEDyYURF1gDK/oPQKY=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04JErjB5082138
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 May 2020 09:53:45 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 19
- May 2020 09:53:44 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 19 May 2020 09:53:45 -0500
-Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04JErhip050463;
-        Tue, 19 May 2020 09:53:43 -0500
-Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>
-CC:     <jeffrey.t.kirsher@intel.com>, <netdev@vger.kernel.org>,
-        <vladimir.oltean@nxp.com>, <po.liu@nxp.com>,
-        <Jose.Abreu@synopsys.com>
-References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <b33e582f-e0e6-467a-636a-674322108855@ti.com>
-Date:   Tue, 19 May 2020 10:53:42 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729185AbgESPAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 11:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728775AbgESPAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 11:00:44 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF600C08C5C1
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 08:00:43 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id g9so11737240edw.10
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 08:00:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=olWeaL9L3Th4SH3qpwoevbMzoFhixmGWtefArTEgTk4=;
+        b=bEyFs82H4jPOzYgYPlYzidt1XghxF9RQPbBVSYNlHHo+64d1MNTn8faNwlkFFp8XOf
+         gG93TwfVwkG1x1SYSw+sjMMWFJkF7MEU4WVXqVGtcdcINUqMvvJ0+cCULgJtCQLQs61K
+         vXj6dXSp1aRiCwt0AazexjVnkE4ZNAkpCDQS9XxiM0RaP1T3r5NtDEln4DdTvI5ROC75
+         IyyM7+pvwZ7/s+bKvbD/iAAfpgQHgYVyLMUKpVP+x5wk348rr8fMWFwaLt3cdSNfwjEe
+         PHIFvD/DButvkbeAQN6sl0IFWPv3XAMn/cdJYslshqL4n0Fjc65uCPcTOXm8wnzgg8Ac
+         dmKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=olWeaL9L3Th4SH3qpwoevbMzoFhixmGWtefArTEgTk4=;
+        b=mr5KJvHTtBPBz53EX8OtxJMcHPAxwdIvbRbXvUES/Hh55KoaQjD+ELqLxCjb9vzQYM
+         I41slxb17bm+bS3/26tqnayYYUUuwghEjChhVFllsUeWgk4ty6GBvCP6TR/iAg1NjDRz
+         JW+VtfrsEqADfBuGCvoKi9dWkXy3/QU7erRHYk8mivU4zSNfUSLNR60KyT4NlvwyHTXA
+         1WUcW27bj6tVHZsVjFNMOeA4QEK+82MVl+PqmJg5NYlSdY3I/E8MZcM01gSJ1n+k4XhK
+         h4OdxzyoRP00g+0VNyiXyIocjbFRHoMPMQuLCJv8FIDpCfvlf+ODF7YWeRciaF2nNSfd
+         FIlg==
+X-Gm-Message-State: AOAM531XyiFEQq3iYUgRQ0Xl1CXle1ACymPxL8pBvDUKKI6qY2bvdPOw
+        FFjpLXJEWE3okYU3siEAH6RakfMzSp7gHuAgybWdPw==
+X-Google-Smtp-Source: ABdhPJz+lhIpPKFIwyc4CnD865mj0YwvB2BjckQu7J/mXksfcTixa7jQ+FQ7BA5W++Bj57SzGGXmJbtqvWOZOvNVKQg=
+X-Received: by 2002:a50:ee1a:: with SMTP id g26mr17925721eds.18.1589900442359;
+ Tue, 19 May 2020 08:00:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200516012948.3173993-1-vinicius.gomes@intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <CAG=TAF6mfrwxF1-xEJJ9dL675uMUa7RZrOa_eL2mJizZJ-U7iQ@mail.gmail.com>
+ <CAEf4BzazvGOoJbm+zNMqTjhTPJAnVLVv9V=rXkdXZELJ4FPtiA@mail.gmail.com>
+ <CAG=TAF6aqo-sT2YE30riqp7f47KyXH_uhNJ=M9L12QU6EEEfqQ@mail.gmail.com> <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
+In-Reply-To: <CAEf4BzaBfnDL=WpRP-7rYFhocOsCQyFuZaLvM0+k9sv2t_=rVw@mail.gmail.com>
+From:   Qian Cai <cai@lca.pw>
+Date:   Tue, 19 May 2020 11:00:31 -0400
+Message-ID: <CAG=TAF5rYmMXBcxno0pPxVZdcyz=ik-enh03E-V8wupjDS0K5g@mail.gmail.com>
+Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+On Mon, May 18, 2020 at 8:25 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Mon, May 18, 2020 at 5:09 PM Qian Cai <cai@lca.pw> wrote:
+> >
+> > On Mon, May 18, 2020 at 7:55 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Sun, May 17, 2020 at 7:45 PM Qian Cai <cai@lca.pw> wrote:
+> > > >
+> > > > With Clang 9.0.1,
+> > > >
+> > > > return array->value + array->elem_size * (index & array->index_mask);
+> > > >
+> > > > but array->value is,
+> > > >
+> > > > char value[0] __aligned(8);
+> > >
+> > > This, and ptrs and pptrs, should be flexible arrays. But they are in a
+> > > union, and unions don't support flexible arrays. Putting each of them
+> > > into anonymous struct field also doesn't work:
+> > >
+> > > /data/users/andriin/linux/include/linux/bpf.h:820:18: error: flexible
+> > > array member in a struct with no named members
+> > >    struct { void *ptrs[] __aligned(8); };
+> > >
+> > > So it probably has to stay this way. Is there a way to silence UBSAN
+> > > for this particular case?
+> >
+> > I am not aware of any way to disable a particular function in UBSAN
+> > except for the whole file in kernel/bpf/Makefile,
+> >
+> > UBSAN_SANITIZE_arraymap.o := n
+> >
+> > If there is no better way to do it, I'll send a patch for it.
+>
+>
+> That's probably going to be too drastic, we still would want to
+> validate the rest of arraymap.c code, probably. Not sure, maybe
+> someone else has better ideas.
 
-On 5/15/20 9:29 PM, Vinicius Costa Gomes wrote:
-> Hi,
-> 
-> This series adds support for configuring frame preemption, as defined
-> by IEEE 802.1Q-2018 (previously IEEE 802.1Qbu) and IEEE 802.3br.
-> 
-> Frame preemption allows a packet from a higher priority queue marked
-> as "express" to preempt a packet from lower priority queue marked as
-> "preemptible". The idea is that this can help reduce the latency for
-> higher priority traffic.
-> 
-> Previously, the proposed interface for configuring these features was
-> using the qdisc layer. But as this is very hardware dependent and all
-> that qdisc did was pass the information to the driver, it makes sense
-> to have this in ethtool.
-> 
-> One example, for retrieving and setting the configuration:
-> 
-> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
-> Frame preemption settings for enp3s0:
-> 	support: supported
-> 	active: active
-> 	supported queues: 0xf
+This works although it might makes sense to create a pair of
+ubsan_disable_current()/ubsan_enable_current() for it.
 
-I assume this is will be in sync with ethtool -L output which indicates
-how many tx h/w queues present? I mean if there are 8 h/w queues,
-supported queues will show 0xff.
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index 11584618e861..6415b089725e 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -170,11 +170,16 @@ static void *array_map_lookup_elem(struct
+bpf_map *map, void *key)
+ {
+        struct bpf_array *array = container_of(map, struct bpf_array, map);
+        u32 index = *(u32 *)key;
++       void *elem;
 
-> 	supported queues: 0xe
- From the command below, it appears this is the preemptible queue mask.
-bit 0  is Q0, bit 1 Q1 and so forth. Right? In that case isn't it more
-clear to display
-         preemptible queues : 0xef
+        if (unlikely(index >= array->map.max_entries))
+                return NULL;
 
-In the above Q7 is express queue and Q6-Q0 are preemptible.
-
-Also there is a handshake called verify that happens which initiated
-by the h/w to check the capability of peer. It looks like
-not all vendor's hardware supports it and good to have it displayed
-something like
-
-         Verify supported/{not supported}
-
-If Verify is supported, FPE is enabled only if it succeeds. So may be
-good to show a status of Verify if it is supported something like
-         Verify success/Failed
-
-> 	minimum fragment size: 68
-> 
-> 
-> $ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 preemptible-queues-mask 0xe
-> 
-> This is a RFC because I wanted to have feedback on some points:
-> 
->    - The parameters added are enough for the hardware I have, is it
->      enough in general?
-
-As described above, it would be good to add an optional parameter for
-verify
-
-ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 
-preemptible-queues-mask 0xe verify on
-
-> 
->    - even with the ethtool via netlink effort, I chose to keep the
->      ioctl() way, in case someone wants to backport this to an older
->      kernel, is there a problem with this?
-> 
->    - Some space for bikeshedding the names and location (for example,
->      does it make sense for these settings to be per-queue?), as I am
->      not quite happy with them, one example, is the use of preemptible
->      vs. preemptable;
-> 
-> 
-> About the patches, should be quite straightforward:
-> 
-> Patch 1, adds the ETHTOOL_GFP and ETHOOL_SFP commands and the
-> associated data structures;
-> 
-> Patch 2, adds the ETHTOOL_MSG_PREEMPT_GET and ETHTOOL_MSG_PREEMPT_SET
-> netlink messages and the associated attributes;
-> 
-> Patch 3, is the example implementation for the igc driver, the catch
-> here is that frame preemption in igc is dependent on the TSN "mode"
-> being enabled;
-> 
-> Patch 4, adds some registers that helped during implementation.
-> 
-> Another thing is that because igc is still under development, to avoid
-> conflicts, I think it might be easier for the PATCH version of this
-> series to go through Jeff Kirsher's tree.
-> 
-> Vinicius Costa Gomes (4):
->    ethtool: Add support for configuring frame preemption
->    ethtool: Add support for configuring frame preemption via netlink
->    igc: Add support for configuring frame preemption
->    igc: Add support for exposing frame preemption stats registers
-> 
->   drivers/net/ethernet/intel/igc/igc.h         |   3 +
->   drivers/net/ethernet/intel/igc/igc_defines.h |   6 +
->   drivers/net/ethernet/intel/igc/igc_ethtool.c |  77 ++++++++
->   drivers/net/ethernet/intel/igc/igc_regs.h    |  10 +
->   drivers/net/ethernet/intel/igc/igc_tsn.c     |  46 ++++-
->   include/linux/ethtool.h                      |   6 +
->   include/uapi/linux/ethtool.h                 |  25 +++
->   include/uapi/linux/ethtool_netlink.h         |  19 ++
->   net/ethtool/Makefile                         |   3 +-
->   net/ethtool/ioctl.c                          |  36 ++++
->   net/ethtool/netlink.c                        |  15 ++
->   net/ethtool/netlink.h                        |   2 +
->   net/ethtool/preempt.c                        | 181 +++++++++++++++++++
->   13 files changed, 423 insertions(+), 6 deletions(-)
->   create mode 100644 net/ethtool/preempt.c
-> 
-
--- 
-Murali Karicheri
-Texas Instruments
+-       return array->value + array->elem_size * (index & array->index_mask);
++       current->in_ubsan++;
++       elem = array->value + array->elem_size * (index & array->index_mask);
++       current->in_ubsan--;
++
++       return elem;
+ }
