@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73DB11DA60C
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 02:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 142121DA607
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 02:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgETAEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 20:04:47 -0400
-Received: from mga01.intel.com ([192.55.52.88]:15429 "EHLO mga01.intel.com"
+        id S1728283AbgETAEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 20:04:40 -0400
+Received: from mga01.intel.com ([192.55.52.88]:15430 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728056AbgETAEd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728100AbgETAEd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 19 May 2020 20:04:33 -0400
-IronPort-SDR: VGmx3va2HpuGhAqWrgVkBzCpzaSMeLsSk6562U6mWh4MyDAeAz67ZvA0jiaPkGGH8YfEBlvsvc
- SispnBzbb0oQ==
+IronPort-SDR: Z2G8beMZf1T8N24bSYJazJ/IhyiPSNvqAt6U/7nnif4dTk5bzxh5r208Jubxqt4EWai7jcyUuK
+ onenUOt48qIA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 17:04:24 -0700
-IronPort-SDR: g89GgPz5n2rd3N1m4/lyNE44iCq4p5A22Hgjt1Z+FByVkdAoZ05F7OQxUBM7aGlNLbRIy8vxCW
- 0cfwttW5skoA==
+IronPort-SDR: iwBWmBL7dgVA4zETHSXyp2FMG4sxV4lZIx3v4UxvFCc4hfjHRo4IFce2KrzNGaYYZEjmsnssM8
+ lG0LIQIzg/KA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,411,1583222400"; 
-   d="scan'208";a="466324793"
+   d="scan'208";a="466324801"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 17:04:23 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 17:04:24 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 10/14] igc: Fix MAX_ETYPE_FILTER value
-Date:   Tue, 19 May 2020 17:04:15 -0700
-Message-Id: <20200520000419.1595788-11-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 11/14] igc: Refactor ethertype filtering code
+Date:   Tue, 19 May 2020 17:04:16 -0700
+Message-Id: <20200520000419.1595788-12-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
 References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
@@ -45,29 +45,262 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andre Guedes <andre.guedes@intel.com>
 
-The I225 controller has 8 ethertype filters, not 4. This patch fixes the
-MAX_ETYPE_FILTER macro accordingly.
+The whole ethertype filtering code is implemented in igc_ethtool.c and
+mixes logic from ethtool and core parts. This patch refactors it so core
+logic is moved to igc_main.c, aligning the ethertype filtering code
+organization with the rest of the filtering code from the driver (MAC
+address and VLAN priority).
+
+Besides moving code to igc_main.c, this patch also does some minor
+improvements to the code. Below are some highlights.
+
+In case all filters are already in use and the user tries to add another
+filter, we return -ENOSPC instead of -EINVAL so a more meaningful error
+code is provided. This also aligns with the behavior implemented in MAC
+address filtering code.
+
+With this code refactoring, 'etype_bitmap' array in struct igc_adapter
+and 'etype_reg_index' in struct igc_nfc_filter are not needed anymore
+and are removed.
+
+Log messages are added to help debugging the ethertype filtering code.
 
 Signed-off-by: Andre Guedes <andre.guedes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc.h         |  4 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 67 ++------------
+ drivers/net/ethernet/intel/igc/igc_main.c    | 93 ++++++++++++++++++++
+ 3 files changed, 103 insertions(+), 61 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index e4169fe955d8..8389569aea8a 100644
+index 8389569aea8a..812e1cd695cf 100644
 --- a/drivers/net/ethernet/intel/igc/igc.h
 +++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -26,7 +26,7 @@ void igc_set_ethtool_ops(struct net_device *);
- #define MAX_Q_VECTORS			8
- #define MAX_STD_JUMBO_FRAME_SIZE	9216
+@@ -189,7 +189,6 @@ struct igc_adapter {
  
--#define MAX_ETYPE_FILTER		4
-+#define MAX_ETYPE_FILTER		8
- #define IGC_RETA_SIZE			128
+ 	/* lock for RX network flow classification filter */
+ 	spinlock_t nfc_lock;
+-	bool etype_bitmap[MAX_ETYPE_FILTER];
  
- struct igc_tx_queue_stats {
+ 	struct igc_mac_addr *mac_table;
+ 
+@@ -238,6 +237,8 @@ int igc_del_mac_filter(struct igc_adapter *adapter, const u8 *addr,
+ int igc_add_vlan_prio_filter(struct igc_adapter *adapter, int prio,
+ 			     int queue);
+ void igc_del_vlan_prio_filter(struct igc_adapter *adapter, int prio);
++int igc_add_etype_filter(struct igc_adapter *adapter, u16 etype, int queue);
++int igc_del_etype_filter(struct igc_adapter *adapter, u16 etype);
+ void igc_update_stats(struct igc_adapter *adapter);
+ 
+ /* igc_dump declarations */
+@@ -466,7 +467,6 @@ struct igc_nfc_filter {
+ 	struct hlist_node nfc_node;
+ 	struct igc_nfc_input filter;
+ 	unsigned long cookie;
+-	u16 etype_reg_index;
+ 	u16 sw_idx;
+ 	u16 action;
+ };
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index c5be8b936963..3cdb88a5eb01 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -1183,46 +1183,6 @@ static int igc_set_rss_hash_opt(struct igc_adapter *adapter,
+ 	return 0;
+ }
+ 
+-static int igc_rxnfc_write_etype_filter(struct igc_adapter *adapter,
+-					struct igc_nfc_filter *input)
+-{
+-	struct igc_hw *hw = &adapter->hw;
+-	u8 i;
+-	u32 etqf;
+-	u16 etype;
+-
+-	/* find an empty etype filter register */
+-	for (i = 0; i < MAX_ETYPE_FILTER; ++i) {
+-		if (!adapter->etype_bitmap[i])
+-			break;
+-	}
+-	if (i == MAX_ETYPE_FILTER) {
+-		netdev_err(adapter->netdev,
+-			   "ethtool -N: etype filters are all used\n");
+-		return -EINVAL;
+-	}
+-
+-	adapter->etype_bitmap[i] = true;
+-
+-	etqf = rd32(IGC_ETQF(i));
+-	etype = ntohs(input->filter.etype & ETHER_TYPE_FULL_MASK);
+-
+-	etqf |= IGC_ETQF_FILTER_ENABLE;
+-	etqf &= ~IGC_ETQF_ETYPE_MASK;
+-	etqf |= (etype & IGC_ETQF_ETYPE_MASK);
+-
+-	etqf &= ~IGC_ETQF_QUEUE_MASK;
+-	etqf |= ((input->action << IGC_ETQF_QUEUE_SHIFT)
+-		& IGC_ETQF_QUEUE_MASK);
+-	etqf |= IGC_ETQF_QUEUE_ENABLE;
+-
+-	wr32(IGC_ETQF(i), etqf);
+-
+-	input->etype_reg_index = i;
+-
+-	return 0;
+-}
+-
+ int igc_add_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
+ {
+ 	struct igc_hw *hw = &adapter->hw;
+@@ -1236,7 +1196,9 @@ int igc_add_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
+ 	}
+ 
+ 	if (input->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
+-		err = igc_rxnfc_write_etype_filter(adapter, input);
++		u16 etype = ntohs(input->filter.etype);
++
++		err = igc_add_etype_filter(adapter, etype, input->action);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -1267,26 +1229,13 @@ int igc_add_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
+ 	return 0;
+ }
+ 
+-static void igc_clear_etype_filter_regs(struct igc_adapter *adapter,
+-					u16 reg_index)
+-{
+-	struct igc_hw *hw = &adapter->hw;
+-	u32 etqf = rd32(IGC_ETQF(reg_index));
+-
+-	etqf &= ~IGC_ETQF_QUEUE_ENABLE;
+-	etqf &= ~IGC_ETQF_QUEUE_MASK;
+-	etqf &= ~IGC_ETQF_FILTER_ENABLE;
+-
+-	wr32(IGC_ETQF(reg_index), etqf);
+-
+-	adapter->etype_bitmap[reg_index] = false;
+-}
+-
+ int igc_erase_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
+ {
+-	if (input->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE)
+-		igc_clear_etype_filter_regs(adapter,
+-					    input->etype_reg_index);
++	if (input->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
++		u16 etype = ntohs(input->filter.etype);
++
++		igc_del_etype_filter(adapter, etype);
++	}
+ 
+ 	if (input->filter.match_flags & IGC_FILTER_FLAG_VLAN_TCI) {
+ 		int prio = (ntohs(input->filter.vlan_tci) & VLAN_PRIO_MASK) >>
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 7e59c0393dbc..0df5617eb9d0 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2366,6 +2366,99 @@ void igc_del_vlan_prio_filter(struct igc_adapter *adapter, int prio)
+ 		   prio);
+ }
+ 
++static int igc_get_avail_etype_filter_slot(struct igc_adapter *adapter)
++{
++	struct igc_hw *hw = &adapter->hw;
++	int i;
++
++	for (i = 0; i < MAX_ETYPE_FILTER; i++) {
++		u32 etqf = rd32(IGC_ETQF(i));
++
++		if (!(etqf & IGC_ETQF_FILTER_ENABLE))
++			return i;
++	}
++
++	return -1;
++}
++
++/**
++ * igc_add_etype_filter() - Add ethertype filter
++ * @adapter: Pointer to adapter where the filter should be added
++ * @etype: Ethertype value
++ * @queue: If non-negative, queue assignment feature is enabled and frames
++ *         matching the filter are enqueued onto 'queue'. Otherwise, queue
++ *         assignment is disabled.
++ *
++ * Return: 0 in case of success, negative errno code otherwise.
++ */
++int igc_add_etype_filter(struct igc_adapter *adapter, u16 etype, int queue)
++{
++	struct igc_hw *hw = &adapter->hw;
++	int index;
++	u32 etqf;
++
++	index = igc_get_avail_etype_filter_slot(adapter);
++	if (index < 0)
++		return -ENOSPC;
++
++	etqf = rd32(IGC_ETQF(index));
++
++	etqf &= ~IGC_ETQF_ETYPE_MASK;
++	etqf |= etype;
++
++	if (queue >= 0) {
++		etqf &= ~IGC_ETQF_QUEUE_MASK;
++		etqf |= (queue << IGC_ETQF_QUEUE_SHIFT);
++		etqf |= IGC_ETQF_QUEUE_ENABLE;
++	}
++
++	etqf |= IGC_ETQF_FILTER_ENABLE;
++
++	wr32(IGC_ETQF(index), etqf);
++
++	netdev_dbg(adapter->netdev, "Add ethertype filter: etype %04x queue %d\n",
++		   etype, queue);
++	return 0;
++}
++
++static int igc_find_etype_filter(struct igc_adapter *adapter, u16 etype)
++{
++	struct igc_hw *hw = &adapter->hw;
++	int i;
++
++	for (i = 0; i < MAX_ETYPE_FILTER; i++) {
++		u32 etqf = rd32(IGC_ETQF(i));
++
++		if ((etqf & IGC_ETQF_ETYPE_MASK) == etype)
++			return i;
++	}
++
++	return -1;
++}
++
++/**
++ * igc_del_etype_filter() - Delete ethertype filter
++ * @adapter: Pointer to adapter where the filter should be deleted from
++ * @etype: Ethertype value
++ *
++ * Return: 0 in case of success, negative errno code otherwise.
++ */
++int igc_del_etype_filter(struct igc_adapter *adapter, u16 etype)
++{
++	struct igc_hw *hw = &adapter->hw;
++	int index;
++
++	index = igc_find_etype_filter(adapter, etype);
++	if (index < 0)
++		return -ENOENT;
++
++	wr32(IGC_ETQF(index), 0);
++
++	netdev_dbg(adapter->netdev, "Delete ethertype filter: etype %04x\n",
++		   etype);
++	return 0;
++}
++
+ static int igc_uc_sync(struct net_device *netdev, const unsigned char *addr)
+ {
+ 	struct igc_adapter *adapter = netdev_priv(netdev);
 -- 
 2.26.2
 
