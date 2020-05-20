@@ -2,186 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 209F41DC14B
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1111DC158
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728108AbgETVXG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 17:23:06 -0400
-Received: from mout.kundenserver.de ([217.72.192.74]:52935 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbgETVXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 17:23:06 -0400
-Received: from mail-qk1-f177.google.com ([209.85.222.177]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MDhth-1jjWFd3pd1-00AjXF; Wed, 20 May 2020 23:23:03 +0200
-Received: by mail-qk1-f177.google.com with SMTP id z80so5241757qka.0;
-        Wed, 20 May 2020 14:23:02 -0700 (PDT)
-X-Gm-Message-State: AOAM530+4XTsxvzjPhSLBin0cpDLo9y2f91Y0R2+LF80GcbwIikIORur
-        pBa53MPvHr1pB0CXehBARuUBDyut2h3N5t2OiKQ=
-X-Google-Smtp-Source: ABdhPJwZcCZSxDynCH3r3gKmPJPpPeE9FrIMPWva+zbjlW1lcOdkg0GE0sngrt5N6VQ/g7lU1Cjl02NdfnJS0lbfHTc=
-X-Received: by 2002:a37:46c9:: with SMTP id t192mr3853110qka.3.1590009781522;
- Wed, 20 May 2020 14:23:01 -0700 (PDT)
+        id S1728182AbgETV0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 17:26:21 -0400
+Received: from s2.neomailbox.net ([5.148.176.60]:6572 "EHLO s2.neomailbox.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726892AbgETV0U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 17:26:20 -0400
+Subject: Re: [PATCH] net/sch_generic.h: use sizeof_member() and get rid of
+ unused variable
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net, toke@toke.dk,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        stephen@networkplumber.org
+References: <20200519091333.20923-1-a@unstable.cc>
+ <20200519.154019.1247104207621510920.davem@davemloft.net>
+ <2a6a8d4b-cb78-f717-5ede-29a921c5cb05@unstable.cc>
+ <20200520.111717.835995575109387492.davem@davemloft.net>
+From:   Antonio Quartulli <a@unstable.cc>
+Autocrypt: addr=a@unstable.cc; prefer-encrypt=mutual; keydata=
+ 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
+ qxdgy3a76luREOncW7wRQGcFPk2uYAg=
+Message-ID: <6759d98f-03fd-672c-e1eb-22ccc37e2b5d@unstable.cc>
+Date:   Wed, 20 May 2020 23:25:38 +0200
 MIME-Version: 1.0
-References: <20200520112523.30995-1-brgl@bgdev.pl> <20200520112523.30995-7-brgl@bgdev.pl>
- <CAK8P3a3jhrQ3p1JsqMNMOOnfo9t=rAPWaOAwAdDuFMh7wUtZQw@mail.gmail.com> <CAMRc=MeuQk9rFDFGWK0ijsiM-r296cVz9Rth8hWhW5Aeeti_cA@mail.gmail.com>
-In-Reply-To: <CAMRc=MeuQk9rFDFGWK0ijsiM-r296cVz9Rth8hWhW5Aeeti_cA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 20 May 2020 23:22:45 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
-Message-ID: <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
-Subject: Re: [PATCH v4 06/11] net: ethernet: mtk-eth-mac: new driver
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        DTML <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:/gC/5Naxf714EfIF7VfC28t3aDY3Z5zwTf0bIDD9BdZYwi1aXcQ
- wOAjoLgJmY8yqt0tKwvjPxlYQ+YHeUWSIugxeSDb9jafNiVALoWHpxKqOE0Fe00bZNgWbGx
- iEyFxQ3un9OWUbA9NjfuAGpCULoebm33vwCBY8/VOyy+DRplmE4KqkhuQQwTIRAMIvrYGOy
- w9+U66RvOrIdXm53Qth/A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5ZVhrGWEVig=:MlewIc1FlCowA24CzIifiW
- my+BBmPcV4f7xG20qgT44Dniq/cekNL0vxCJFHqfgv295t3XjNGj1Z8+/C+QBDDIw2Fl+iEzd
- GjUpQm0FZn4bGKRO1MLD2kb4ETS6EzCBoOY73Hl1LZ8Zz8dssR2HVWtlmgHHWe8nEouK1TMGG
- BzCw6+EeQGg9ZbSNmNRnxy6JS7DR22doUghbO5SUD8gLQoeIiiiBHu6vTx1FiwZ901OBOHcTJ
- Otlcf8hZ0axSrjU7i2dwXA6vdPkorfuxxjgDTySPwp9f/2CFQFDg/CBjoWian5nmBPKgDKnzm
- LJeIfeACi2ptva/SS/mfAmeDe12mrScIm7HCzCYd9rtMhfvNhhWnhHRXIJVMsMWRh1IBOMg1s
- 3REl8+v6LKhC1V7NoEvT2rfTTOQ/hmwQg7hDUjl1dJcWdZu20swCmK06z0LG+3XNwNu/54+y1
- lcG+JiEvK3ySHgdp0Q1jXRVXiVmNYZG+dvsiHYOcR8Q/Xt7refjI0rC7mO82P1IaCSk62ykvL
- wER9MK6H9YleFs2FHk0VvqGSir5+ifjDx+N7hJ13yJDUy6tRRI6DymSkJonDzJMWnd8b/Hde6
- pjn1HRmWOxEwj0fbFtNn3hKToZoNEJm2itITl/X9PxDdlrjSYL/hWxAV0kpOFPiQV7KWLRidK
- mOxI+/NnX7fqmQubUWr8ASozgGWcx67roHtxljG84+wZr1efzQ0XKgzzxEUKMURPZi1ZYZFEt
- 5h3+ONVmZCrYln6pbM63bB+kz2syqE1ioEzLO/CjkVMfqqqS0JUf96/CUWrI5Eym50SeFdZdx
- k2Lev8IcWKg8EEU9a7GOqTeFqxseVkdqdS2zl6WWStvjErVoFM=
+In-Reply-To: <20200520.111717.835995575109387492.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 7:35 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> śr., 20 maj 2020 o 16:37 Arnd Bergmann <arnd@arndb.de> napisał(a):
+On 20/05/2020 20:17, David Miller wrote:
+> From: Antonio Quartulli <a@unstable.cc>
+> Date: Wed, 20 May 2020 10:39:33 +0200
+> 
+>> I don't think it's BUILD_BUG_ON()'s fault, because qcb->data is passed
+>> to sizeof() first.
+>>
+>> My best guess is that gcc is somewhat optimizing the sizeof(gcb->data)
+>> and thus leaving the gcb variable unused.
+> 
+> If you remove the argument from the function but leave the BUILD_BUG_ON()
+> calls the same, the compilation will fail.
+> 
+> Any such optimization is therefore unreasonable.
+> 
+> The variable is used otherwise compilation would not fail when you
+> remove it right?
 
-> > I just noticed how the naming of NET_MEDIATEK_MAC and NET_MEDIATEK_SOC
-> > for two different drivers doing the same thing is really confusing.
-> >
-> > Maybe someone can come up with a better name, such as one
-> > based on the soc it first showed up in.
-> >
->
-> This has been discussed under one of the previous submissions.
-> MediaTek wants to use this IP on future designs as well and it's
-> already used on multiple SoCs so they want the name to be generic. I
-> also argued that this is a driver strongly tied to a specific
-> platform(s) so if someone wants to compile it - they probably know
-> what they're doing.
->
-> That being said: I verified with MediaTek and the name of the IP I can
-> use is "star" so they proposed "mtk-star-eth". I would personally
-> maybe go with "mtk-star-mac". How about those two?
+You're correct.
+I guess this should be reported to gcc then.
 
-Both seem fine to me. If this was previously discussed, I don't want
-do further bike-shedding and I'd trust you to pick a sensible name
-based on the earlier discussions.
 
-> >  +               /* One of the counters reached 0x8000000 - update stats and
-> > > +                * reset all counters.
-> > > +                */
-> > > +               if (unlikely(status & MTK_MAC_REG_INT_STS_MIB_CNT_TH)) {
-> > > +                       mtk_mac_intr_disable_stats(priv);
-> > > +                       schedule_work(&priv->stats_work);
-> > > +               }
-> > > + befor
-> > > +               mtk_mac_intr_ack_all(priv);
-> >
-> > The ack here needs to be dropped, otherwise you can get further
-> > interrupts before the bottom half has had a chance to run.
-> >
->
-> My thinking was this: if I mask the relevant interrupt (TX/RX
-> complete) and ack it right away, the status bit will be asserted on
-> the next packet received/sent but the process won't get interrupted
-> and when I unmask it, it will fire right away and I won't have to
-> recheck the status register. I noticed that if I ack it at the end of
-> napi poll callback, I end up missing certain TX complete interrupts
-> and end up seeing a lot of retransmissions even if I reread the status
-> register. I'm not yet sure where this race happens.
+Regards,
 
-Right, I see. If you just ack at the end of the poll function, you need
-to check the rings again to ensure you did not miss an interrupt
-between checking observing both rings to be empty and the irq-ack.
-
-I suspect it's still cheaper to check the two rings with an uncached
-read from memory than to to do the read-modify-write on the mmio,
-but you'd have to measure that to be sure.
-
-> > > +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
-> > > +{
-> > > +       struct mtk_mac_ring *ring = &priv->tx_ring;
-> > > +       struct net_device *ndev = priv->ndev;
-> > > +       int ret, pkts_compl, bytes_compl;
-> > > +       bool wake = false;
-> > > +
-> > > +       mtk_mac_lock(priv);
-> > > +
-> > > +       for (pkts_compl = 0, bytes_compl = 0;;
-> > > +            pkts_compl++, bytes_compl += ret, wake = true) {
-> > > +               if (!mtk_mac_ring_descs_available(ring))
-> > > +                       break;
-> > > +
-> > > +               ret = mtk_mac_tx_complete_one(priv);
-> > > +               if (ret < 0)
-> > > +                       break;
-> > > +       }
-> > > +
-> > > +       netdev_completed_queue(ndev, pkts_compl, bytes_compl);
-> > > +
-> > > +       if (wake && netif_queue_stopped(ndev))
-> > > +               netif_wake_queue(ndev);
-> > > +
-> > > +       mtk_mac_intr_enable_tx(priv);
-> >
-> > No need to ack the interrupt here if napi is still active. Just
-> > ack both rx and tx when calling napi_complete().
-> >
-> > Some drivers actually use the napi budget for both rx and tx:
-> > if you have more than 'budget' completed tx frames, return
-> > early from this function and skip the napi_complete even
-> > when less than 'budget' rx frames have arrived.
-> >
->
-> IIRC Jakub said that the most seen approach is to free all TX descs
-> and receive up to budget packets, so this is what I did. I think it
-> makes the most sense.
-
-Ok, he's probably right then.
-
-My idea was that the dma_unmap operation for the tx cleanup is
-rather expensive on chips without cache-coherent DMA, so you
-might not want to do too much of it but rather do it in reasonably
-sized batches. It would also avoid the case where you renable the
-tx-complete interrupt after cleaning the already-sent frames but
-then immediately get an irq when the next frame that is already
-queued is done.
-
-This probably depends on the specific workload which one works
-better here.
-
-         Arnd
+-- 
+Antonio Quartulli
