@@ -2,126 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9196B1DB4C6
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 15:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D9E1DB4CB
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 15:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbgETNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 09:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgETNRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 09:17:07 -0400
-Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EBCC061A0E
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 06:17:07 -0700 (PDT)
-Received: by mail-vk1-xa43.google.com with SMTP id z3so729010vka.10
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 06:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IB2ji97TeXrARDidiQkz70uOOho4XrDGY3ggn3bxND4=;
-        b=cOBHw03XPgDYTX7PqqtBbyX5ZKvTPcRExEehiiKJ/Z9R4gFAdx5G6aLd6bUS9VHier
-         uFmvmzzmbarq/WgKqg38N137Aa84MNlnxRYrD0tY2J+YmCm2/swpcnmKdGKZOINs24Mi
-         AuiQDuFa1xtPS6lxEpoLqoq42uzeOSP2j+PsioeL5qVjLxHklPHqz3Yqd86lQcJLCdOD
-         K+SkPgZdgTCrH2mBrwS+vyQJCwZUPpQuK722h+WjwAiK8AjP3mt+5eXVJ2g9JN2tNvqG
-         DCYYa6xVk58++V5otqlwLPETdZieFka/ScRxbbJtk5b1VDuQbgEsUXeJCNORAujO7jLR
-         Iu3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IB2ji97TeXrARDidiQkz70uOOho4XrDGY3ggn3bxND4=;
-        b=iWvn4jUme09R1zvT+xWm4CF3D08gd+yQbvJuH4K2WNARLOemjixBpby/UMEkzQUxMd
-         vOAiGMVHlkeizWVU20sfx4fi79L9niIJyczDykdFoyONczD/nQ2+7FNgZbeBuOYLf3cd
-         fr/W21beL/JRJBDSKvO7/eLT+LByj4Nldg+UXzoIMXHErF3K3ZLCKQdpvVwkOw0t55b8
-         M89/COOTTVOPbJVGLVtDeC8CRPce6dscOlVSr6CADtJ+Vg6t2HmmXIiiufH4IFPX65iH
-         Hrrwv8VuUgX/9S4sZsWdLko2SGupX1YMIUKCD2iUbfQvm23n9Cyh0L8DAi4OG46XjfT/
-         5VNQ==
-X-Gm-Message-State: AOAM530ZgzBL98OkpAutSN6pkr9xUnmdVygZe5aim3CeJJP4C28SaJrQ
-        Rvyg1a83SDTHiN0d0y1oP2HIZImGmxSBOmsz7VTrxQ==
-X-Google-Smtp-Source: ABdhPJw6KEaxkaaNNLQucc/piNIN5NIiHpL8mMobgcAXz7wLmxdRdmbm45Y4iSms+nrm4VPKPFG4lPrR9MqxNomucIs=
-X-Received: by 2002:a1f:2bd7:: with SMTP id r206mr3739251vkr.28.1589980626036;
- Wed, 20 May 2020 06:17:06 -0700 (PDT)
+        id S1726691AbgETNSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 09:18:37 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29894 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726560AbgETNSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 09:18:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589980714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OHGYUKfvJ5M3zCTUp9P9l18wl3V5wBTvg9xasGTVV6E=;
+        b=FHxjzkVtEl2KswtBl9Xu8K4FSppmIdV9NID2Rk1XTBEKheEYrm0lr92iGcQOJ6jgetpKts
+        PJ6tYKwRy6ulIrGIyOtakCKO6rgYQKTa/AvxNjrboy14m73f9G75N9ggX/s9wXmNlij9de
+        tVq5AybpwsB7gyaCnjawcxbpbacGBqQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-365-w2Eb611aNJiVTHh8dLMl_A-1; Wed, 20 May 2020 09:18:29 -0400
+X-MC-Unique: w2Eb611aNJiVTHh8dLMl_A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E003B1005510;
+        Wed, 20 May 2020 13:18:26 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C3562E05A;
+        Wed, 20 May 2020 13:18:21 +0000 (UTC)
+Date:   Wed, 20 May 2020 15:18:19 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        jeffrey.t.kirsher@intel.com,
+        =?UTF-8?B?QmrDtnJu?= =?UTF-8?B?IFTDtnBlbA==?= 
+        <bjorn.topel@intel.com>, maximmi@mellanox.com,
+        maciej.fijalkowski@intel.com
+Subject: Re: [PATCH bpf-next v4 01/15] xsk: fix xsk_umem_xdp_frame_sz()
+Message-ID: <20200520151819.1d2254b7@carbon>
+In-Reply-To: <20200520094742.337678-2-bjorn.topel@gmail.com>
+References: <20200520094742.337678-1-bjorn.topel@gmail.com>
+        <20200520094742.337678-2-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-References: <20200519120748.115833-1-brambonne@google.com> <CAKD1Yr2T2S__ZpPOwvwcUqbm=60E9OGODD7RXq+dUFAGQkWPWA@mail.gmail.com>
-In-Reply-To: <CAKD1Yr2T2S__ZpPOwvwcUqbm=60E9OGODD7RXq+dUFAGQkWPWA@mail.gmail.com>
-From:   =?UTF-8?Q?Bram_Bonn=C3=A9?= <brambonne@google.com>
-Date:   Wed, 20 May 2020 15:16:53 +0200
-Message-ID: <CABWXKLxGwWdYhzuUPFukUZ4F7=yHsYg+BJBi=OViyc42WSfKJg@mail.gmail.com>
-Subject: Re: [PATCH] ipv6: Add IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC mode
-To:     Lorenzo Colitti <lorenzo@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Jeffrey Vander Stoep <jeffv@google.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for your comments Lorenzo!
+On Wed, 20 May 2020 11:47:28 +0200
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
 
-On Tue, May 19, 2020 at 6:11 PM Lorenzo Colitti <lorenzo@google.com> wrote:
->
-> On Tue, May 19, 2020 at 9:08 PM Bram Bonn=C3=A9 <brambonne@google.com> wr=
-ote:
-> > @@ -381,7 +382,8 @@ static struct inet6_dev *ipv6_add_dev(struct net_de=
-vice *dev)
-> >         timer_setup(&ndev->rs_timer, addrconf_rs_timer, 0);
-> >         memcpy(&ndev->cnf, dev_net(dev)->ipv6.devconf_dflt, sizeof(ndev=
-->cnf));
-> >
-> > -       if (ndev->cnf.stable_secret.initialized)
-> > +       if (ndev->cnf.stable_secret.initialized &&
-> > +           !ipv6_addr_gen_use_softmac(ndev))
-> >                 ndev->cnf.addr_gen_mode =3D IN6_ADDR_GEN_MODE_STABLE_PR=
-IVACY;
->
-> Looks like if stable_secret is set, then when the interface is brought
-> up it defaults to stable privacy addresses. But if
-> ipv6_addr_gen_use_softmac(), then this remains unset (which means...
-> EUI-64?) Any reason you don't set it to
-> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC in this case?
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>=20
+> Calculating the "data_hard_end" for an XDP buffer coming from AF_XDP
+> zero-copy mode, the return value of xsk_umem_xdp_frame_sz() is added
+> to "data_hard_start".
+>=20
+> Currently, the chunk size of the UMEM is returned by
+> xsk_umem_xdp_frame_sz(). This is not correct, if the fixed UMEM
+> headroom is non-zero. Fix this by returning the chunk_size without the
+> UMEM headroom.
+>=20
+> Fixes: 2a637c5b1aaf ("xdp: For Intel AF_XDP drivers add XDP frame_sz")
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  include/net/xdp_sock.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> index abd72de25fa4..6b1137ce1692 100644
+> --- a/include/net/xdp_sock.h
+> +++ b/include/net/xdp_sock.h
+> @@ -239,7 +239,7 @@ static inline u64 xsk_umem_adjust_offset(struct xdp_u=
+mem *umem, u64 address,
+> =20
+>  static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
+>  {
+> -	return umem->chunk_size_nohr + umem->headroom;
+> +	return umem->chunk_size_nohr;
 
-ipv6_addr_gen_use_softmac() means that addr_gen_mode is set to
-IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC. I was debating making that
-explicit here, instead of using the inline function. It sounds like
-that might be a better idea to make the implementation clearer?
+Hmm, is this correct?
 
-The intention here (and below) was to keep the existing default
-behavior of using IN6_ADDR_GEN_MODE_STABLE_PRIVACY if stable_secret is
-set, while allowing to override this behavior by setting add_gen_mode
-to IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC. I tested this locally,
-and it seems to work as expected, but please let me know if you think
-the above approach does not make sense (or if you'd prefer
-IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC to be the default instead).
+As you write "xdp_data_hard_end" is calculated as an offset from
+xdp->data_hard_start pointer based on the frame_sz.  Will your
+xdp->data_hard_start + frame_sz point to packet end?
 
-> Since you haven't changed the netlink code, I assume that this address
-> is going to appear to userspace as IFA_F_STABLE_PRIVACY. I assume
-> that's what we want here? It's not really "stable", it's only as
-> stable as the MAC address. Does the text of the RFC support this
-> definition of "stable"?
+#define xdp_data_hard_end(xdp)                          \
+        ((xdp)->data_hard_start + (xdp)->frame_sz -     \
+         SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
-The RFC considers the generated identifiers as: "stable for each
-network interface within each subnet, but [changing] as a host moves
-from one network to another". If the MAC address stays stable for a
-specific subnet, this implementation fits that definition.
-That being said, if you think it makes sense to define a separate
-IFA_F_STABLE_PRIVACY_SOFTMAC flag (or some better name), I'm happy to
-add that in.
+Note the macro reserves the last 320 bytes (for skb_shared_info), but
+for AF_XDP zero-copy mode, it will never create an SKB that use this
+area.   Thus, in principle we can allow XDP-progs to extend/grow tail
+into this area, but I don't think there is any use-case for this, as
+it's much easier to access packet-data in userspace application.
+(Thus, it might not be worth the complexity to give AF_XDP
+bpf_xdp_adjust_tail access to this area, by e.g. "lying" via adding 320
+bytes to frame_sz).
 
-> Can it happen that the MAC address when the device is up and an IPv6
-> address already exists? If so, what happens to the address? Will the
-> system create a second stable privacy address when the next RA
-> arrives? That seems bad. But perhaps this cannot happen.
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Trying to change the MAC when the device is up errors with EBUSY on my
-machines, so I was under the assumption that the device needs to be
-down to change the MAC. I could very well be wrong though.
