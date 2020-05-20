@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 659171DB8D2
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 17:57:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1511DB8EF
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 18:04:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbgETP46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 11:56:58 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:52872 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726856AbgETP45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 11:56:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589990216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sno0GmQ/eQv+Rs74eF1UQLVprtgb41HhzSqFhBF9Z8s=;
-        b=RScn9haiZyNpcqVRHR2LISRYxtfzc/yjpW5MALnYdN7PdzY5h5TJHqhxpdcClvWPcIYAdE
-        Qs8QDbTTKz+LAVy48/4kK8k/i+B4Yp0DhLEtuOlRK1eNrgOtcJaDG4PgKWC6IrJsq1C0kZ
-        0koJdXL07hlnXmJZAaMzqcLMuLmNbNk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-sIzVUj7MM16DmhemM8TuYQ-1; Wed, 20 May 2020 11:56:52 -0400
-X-MC-Unique: sIzVUj7MM16DmhemM8TuYQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CF91580183C;
-        Wed, 20 May 2020 15:56:50 +0000 (UTC)
-Received: from ceranb (unknown [10.40.192.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ECE755D9CA;
-        Wed, 20 May 2020 15:56:47 +0000 (UTC)
-Date:   Wed, 20 May 2020 17:56:47 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <jiri@resnulli.us>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH 2/3] switchdev: mrp: Remove the variable mrp_ring_state
-Message-ID: <20200520175647.32e6f5eb@ceranb>
-In-Reply-To: <20200520130923.3196432-3-horatiu.vultur@microchip.com>
-References: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
-        <20200520130923.3196432-3-horatiu.vultur@microchip.com>
+        id S1726846AbgETQDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 12:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbgETQDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 12:03:55 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE56C061A0E;
+        Wed, 20 May 2020 09:03:55 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id d10so1640823pgn.4;
+        Wed, 20 May 2020 09:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OOwuxWEO/Sl8yx5TsqcCpHvO91TmRIyEZirMBX+Uvb0=;
+        b=tqYfNJBqFCzIdnyTQnESaY2EhitXzArebVnBxAmiWUH31YSwGkyxGT0bxmjdCnNP3I
+         doqAT4kPg0MYs4+BiQ1Z3U1ofhnEK7ta3Pg1xLEAVVEBIzepp2mPu65oNVqpTA9bQB8b
+         BH5ZCfTfUNCJzdtBjLYpmc20KA7BhcXfs8NywHaFaxxnayfjpnQLC9neSD3GFyRNHM89
+         NCu07RBOShh6FI8LU3twTebMt0uAnwfJJTbpsKJHe1sUBcZIRdUKl5PcTpo7c2QFxqZZ
+         QO2rjpg22xaV7mFRc5Iowj9Z6nkp2FIIOKvZ947SgpukLUqvIo+PwalmnOLcrrr6llAB
+         P0Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OOwuxWEO/Sl8yx5TsqcCpHvO91TmRIyEZirMBX+Uvb0=;
+        b=T18iy+PF1ETZQ8uWvFNV2KApObosuFGblXWl9pA8/LSOI4sySzDQpaBHONwST/fvo9
+         lkENUP2EJ2WuvctEtYo/EHNZVuoXqdg3aCjnWc4zEgVE2C4M5YpPCbh4w4FmtEpR8CoD
+         VpErf4N+rba5ef9D0AUeKZDHfObWIzkGyUYBerQI/hBVsgrCyctLq6v1NCFYMSFw3y7N
+         k+CX/ZcL/btsFE9hQxpS1VCVUojq6wy7S80Kpdq3akLOp6FhaolEV0oNJc00TYO0WmfG
+         h66YhiO33gVgzhmZ9I3cdthVZzzX6SocQX/QKbgbZggy5biJpyIvuspTaaM6gLO8lnzl
+         vsQA==
+X-Gm-Message-State: AOAM53257m8vzqvYKfvZD91iF8EKUGMNthUgOYTb1VMKDBFGatFa4EJn
+        3JYAHb4s2j1pGSql+tw7nqMru/sL
+X-Google-Smtp-Source: ABdhPJyzKgk4okw2I5EAYp6yP9oqV+jg1QwGBzglmgRe4hDbyE6yihw912kZx/Hr1COTy0fgNciqFw==
+X-Received: by 2002:a63:2347:: with SMTP id u7mr4590793pgm.183.1589990634413;
+        Wed, 20 May 2020 09:03:54 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id w7sm2381841pfw.82.2020.05.20.09.03.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 May 2020 09:03:53 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
+ delay for DP83869
+To:     Dan Murphy <dmurphy@ti.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20200520121835.31190-1-dmurphy@ti.com>
+ <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
+ <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
+ <20200520153631.GH652285@lunn.ch>
+ <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <0d80a7f6-35a9-9b3f-2a8f-65b793d1ce98@gmail.com>
+Date:   Wed, 20 May 2020 09:03:52 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 May 2020 13:09:22 +0000
-Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
 
-> Remove the variable mrp_ring_state from switchdev_attr because is not
-> used anywhere.
-> The ring state is set using SWITCHDEV_OBJ_ID_RING_STATE_MRP.
+
+On 5/20/2020 8:56 AM, Dan Murphy wrote:
+> Andrew
 > 
-> Fixes: c284b5459008 ("switchdev: mrp: Extend switchdev API to offload MRP")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  include/net/switchdev.h | 1 -
->  1 file changed, 1 deletion(-)
+> On 5/20/20 10:36 AM, Andrew Lunn wrote:
+>>>> Hi Dan
+>>>>
+>>>> Having it required with PHY_INTERFACE_MODE_RGMII_ID or
+>>>> PHY_INTERFACE_MODE_RGMII_RXID is pretty unusual. Normally these
+>>>> properties are used to fine tune the delay, if the default of 2ns does
+>>>> not work.
+>>> Also if the MAC phy-mode is configured with RGMII-ID and no internal
+>>> delay
+>>> values defined wouldn't that be counter intuitive?
+>> Most PHYs don't allow the delay to be fine tuned. You just pass for
+>> example PHY_INTERFACE_MODE_RGMII_ID to the PHY driver and it enables a
+>> 2ns delay. That is what people expect, and is documented.
 > 
-> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> index ae7aeb0d1f9ca..db519957e134b 100644
-> --- a/include/net/switchdev.h
-> +++ b/include/net/switchdev.h
-> @@ -62,7 +62,6 @@ struct switchdev_attr {
->  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
->  		u8 mrp_port_state;			/* MRP_PORT_STATE */
->  		u8 mrp_port_role;			/* MRP_PORT_ROLE */
-> -		u8 mrp_ring_state;			/* MRP_RING_STATE */
->  #endif
->  	} u;
->  };
+>> Being able to tune the delay is an optional extra, which some PHYs
+>> support, but that is always above and beyond
+>> PHY_INTERFACE_MODE_RGMII_ID.
+> 
+> I am interested in knowing where that is documented.  I want to RTM I
+> grepped for a few different words but came up empty
+> 
+> Since this is a tuneable phy we need to program the ID.  2ns is the
+> default value
+> 
+> Maybe I can change it from Required to Configurable or Used.
 
-Acked-by: Ivan Vecera <ivecera@redhat.com>
-
+I do not think this is properly documented, it is an established
+practice, but it should be clearly documented somewhere, I do not know
+whether that belongs in the PHY Device Tree binding or if this belongs
+to the PHY documentation.
+-- 
+Florian
