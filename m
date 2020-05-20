@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C22991DBB03
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377521DBB0D
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgETRTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 13:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54514 "EHLO
+        id S1727794AbgETRTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726548AbgETRTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:19:03 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623A6C061A0E;
-        Wed, 20 May 2020 10:19:02 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id e1so3969168wrt.5;
-        Wed, 20 May 2020 10:19:02 -0700 (PDT)
+        with ESMTP id S1726548AbgETRTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:19:36 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF942C061A0E;
+        Wed, 20 May 2020 10:19:35 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id w64so3703969wmg.4;
+        Wed, 20 May 2020 10:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=WjoBWssVHBqyFxbEQ95THjA8DwdaA15bcQxmRjylmZg=;
-        b=smVMN+odCBqaMwnw8ELsWxRi0g2b8Dea1GDPoSNlGKc9bqV9kiVDTqHpCLmee2h6vA
-         9az6vKmyX1eDQzNIhrFuWAR1UyCLsDArmdY/yFdhxYG3t7Q6KVr/6/tXHdx4S27rDljv
-         wwWgvXYvsWTuGsSrWivIGnPH4Cd8uts5/8xBpQWzDBVN+fo66BHwu9onOVvevV80/SMk
-         J7NU8rUTSGM+ckuNCagujX8hsbFGvGD09cbXyOAqzrZYJDppzhY/QIlhjrU1NHAykaKa
-         pmQVTsZFVkCv8mTsRcPyTmBcTvDhiMD0iIG9eRxEMGD1J3AL5QeCQh8DDrfJ5Lu5S7kJ
-         tTmQ==
+        bh=y8yUyVm1iQo/mod3v/ZorgdMr0NOkedItsaMzyWnI3k=;
+        b=i+sEwVLCyBecdxxNGXrvdzLG4bFDyxadl2RsVH2OklScUeAFcJ9HmNEdo6usZqYSIy
+         OkaJGdMvq5MGmNBCLM0I892EhrkWR0r8Kxht1UfRb9OvZISLphzQuvaYumVsGiPcbqBm
+         Gko9HPAXaxEGlmID966izg0FhQP+H0i6UlLxnjlak/SrJAmpHHVCI5qTLon1Fc979Auy
+         iuGWPuTyx04O+in+Y4Q5MqoqCS+YCMh8m+ublZtIdGJkN1vPnExkbAU72JA62MDvIezw
+         Pz5GcZ6oYsSVF+gtV6TpuVYtqBT3no0m/zRGod5s+h8QUzQeSaKAPohpL/Y8YbnPy90U
+         ndEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WjoBWssVHBqyFxbEQ95THjA8DwdaA15bcQxmRjylmZg=;
-        b=aIJHLJRa+qbCjh7zgOlgcKOL5U0AH5Bf0mO0Yp+9Wd2wKN31vqO/rLjMf0t/WTBBaD
-         4hK1/TzwsWpVm6/B7TaWI8TLdRm/Dn03YeKHB6TQk3q11NrwcnKn89dzhto/qImkSAPV
-         K9ka1MH3ZH0Ui1FeNDE3S3abokA51YItfL0/cypiW/0KrhuTsDCKL4fzrdXAKL+F0mT/
-         NgXXK7rgzE+02SRBZlGc8M21DRN0nQqtPJhz9Bs282sF3RC/p9wFD5veE+LqHiahJe/e
-         4S/HgGO7/HzEptPvYzp4kOtlvEQTPHzXeaVgcnFEICR02wmJnWLhkV9n9XL0GXdv4t50
-         +Meg==
-X-Gm-Message-State: AOAM530dRl4EAV6QOfimF7/tVOoCEVnqH6ZKdL8MFNsSn2TcyqK72C2G
-        w2x0LXmDpCRXi5K5sSdFdGVR8eRub9YkC0Tf2SQ=
-X-Google-Smtp-Source: ABdhPJyZBIZqLYSG4g785vCGsXo0DwKM/I7MoLWiEIcWCbvk0lXAiMYbJ38VU2g5O3IRznEAv7e7WWgWLGb51/knXQ4=
-X-Received: by 2002:a5d:5642:: with SMTP id j2mr4942061wrw.52.1589995141127;
- Wed, 20 May 2020 10:19:01 -0700 (PDT)
+        bh=y8yUyVm1iQo/mod3v/ZorgdMr0NOkedItsaMzyWnI3k=;
+        b=ZEb7Ek3qFktgO1FMpjRMqyqkE+heAC54t35DNPqmPpnyyPaNwN839Xl2qqiy/nkNUU
+         5Y6XpXOlfWcTn8RdWHRvye9S4qLI3jEIYpB5q9FQq0vp8SmuvqvCWMWlWtzGbeqgE9XT
+         C7kutdOow1p33VcL1a5jh1EtVaF+FM5zbtfARzNytq37kNkEKiFXaW/50m2Ma7ZTFRug
+         PGhUFPvfOIG0fGAlXQ/6Vu0Nl2scNdn59AoI2W+9Z+NT+TRwdSSmHC44Zhc0nX9nu10e
+         fwXpDVIJq8Qta9/QHpihCpxPmzkuuAtAe8qnJeWY30mvdvF2kpHTr0CtqpE/z1ePzA3F
+         iueQ==
+X-Gm-Message-State: AOAM533l3nwDyu4iJLzE0JPqsOx00wHx3P0jgkAiNEDuJ0xdDDyNNiLn
+        cj9Qetz7hhoU4wmtg4qeU5YFxB48pqTIU0rdo+E=
+X-Google-Smtp-Source: ABdhPJyHqLx5nZUFccD6mBIJZ0Sj6jqebi2SOcGJxSylM31RSSLDJaUMgq5UtSHHT/NBLm7NS0684QV+bsyGj9eIhLY=
+X-Received: by 2002:a1c:3281:: with SMTP id y123mr5449288wmy.30.1589995174436;
+ Wed, 20 May 2020 10:19:34 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200520094742.337678-1-bjorn.topel@gmail.com>
- <20200520094742.337678-4-bjorn.topel@gmail.com> <20200520095743.0d6dda04@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200520095743.0d6dda04@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200520094742.337678-8-bjorn.topel@gmail.com> <20200520100218.56e4ee2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200520100218.56e4ee2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 20 May 2020 19:18:49 +0200
-Message-ID: <CAJ+HfNgxH0xLUvm=MPpF-VhoGLPYF2=gJMAw3VkmduO2SJhy=Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 03/15] xsk: move driver interface to xdp_sock_drv.h
+Date:   Wed, 20 May 2020 19:19:22 +0200
+Message-ID: <CAJ+HfNgE5TTFfGa-XNS7_=ukcNJ=jMUoBLmmA_c=iVY3C_DXZA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 07/15] i40e: separate kernel allocated rx_bi
+ rings from AF_XDP rings
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -61,9 +62,10 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         "Karlsson, Magnus" <magnus.karlsson@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -71,43 +73,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 May 2020 at 18:57, Jakub Kicinski <kuba@kernel.org> wrote:
+On Wed, 20 May 2020 at 19:02, Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Wed, 20 May 2020 11:47:30 +0200 Bj=C3=B6rn T=C3=B6pel wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> On Wed, 20 May 2020 11:47:34 +0200 Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 > >
-> > Move the AF_XDP zero-copy driver interface to its own include file
-> > called xdp_sock_drv.h. This, hopefully, will make it more clear for
-> > NIC driver implementors to know what functions to use for zero-copy
-> > support.
+> > Continuing the path to support MEM_TYPE_XSK_BUFF_POOL, the AF_XDP
+> > zero-copy/sk_buff rx_bi rings are now separate. Functions to properly
+> > allocate the different rings are added as well.
 > >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > v3->v4: Made i40e_fd_handle_status() static. (kbuild test robot)
+> >
+> > Cc: intel-wired-lan@lists.osuosl.org
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 >
-> With W=3D1:
+> There is a new warning here, at least one. But i40e has so many
+> existing warnings with W=3D1, I can't figure out which one is new :(
 >
-> net/xdp/xsk_queue.c:67:26: warning: symbol 'xsk_reuseq_prepare' was not d=
-eclared. Should it be static?
-> net/xdp/xsk_queue.c:86:26: warning: symbol 'xsk_reuseq_swap' was not decl=
-ared. Should it be static?
-> net/xdp/xsk_queue.c:108:6: warning: symbol 'xsk_reuseq_free' was not decl=
-ared. Should it be static?
-> net/xdp/xsk_queue.c:67:27: warning: no previous prototype for xsk_reuseq_=
-prepare [-Wmissing-prototypes]
->   67 | struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries)
->      |                           ^~~~~~~~~~~~~~~~~~
-> net/xdp/xsk_queue.c:86:27: warning: no previous prototype for xsk_reuseq_=
-swap [-Wmissing-prototypes]
->   86 | struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
->      |                           ^~~~~~~~~~~~~~~
-> net/xdp/xsk_queue.c:108:6: warning: no previous prototype for xsk_reuseq_=
-free [-Wmissing-prototypes]
->  108 | void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq)
->      |      ^~~~~~~~~~~~~~~
+> You most likely forgot to adjust kdoc somewhere after adding or
+> removing a function parameter.
 
-Yes, missing include there. After the series these functions are
-removed, but still good to get rid of the (bisect) noise.
-
-I'll fix this in a v5. Thanks, Jakub!
-
-
-Bj=C3=B6rn
+Hmm, yes. A lot of warnings there. I'll see if I can find it. Thanks!
