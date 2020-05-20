@@ -2,120 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE39E1DAD80
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 10:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6F51DADBA
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 10:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgETIcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 04:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgETIcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 04:32:45 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCDFC061A0E;
-        Wed, 20 May 2020 01:32:45 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id s10so1117264pgm.0;
-        Wed, 20 May 2020 01:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LdXCTub4Z9kDMOSy0ARQdskJN6lbu+XKJdQ8G1oxt2w=;
-        b=ioWZhImdJDpldT4SXJ9FDSvyluvAVlamd6Z0TPO1ZCr3WXm+XVbBYF9lRlMTGfKiKP
-         fwn6gWXg/dMeYxmVmC6VCbCS813r3sF8ENw447F9cDZN7o+4jwf/ATR4C4xfJlmDxPr6
-         VvHSR5zXvxwrCQdrSC+eNGxlXV8KtMFitR4k98f+Y0AFsYmu9xI/EeJblOAhUJIrQ5ti
-         HTZW/41UyGeg1taV1I3LZpMGDmng67TjVIn+9Hs+NVuh39gvBCX9vwCElmWiHsoRqEtd
-         arPVZp8aD9G1ASHPX4AFLYDGOMNVtJ61wePi0FfgHxsfz80qD6WMxu2KD0EaSyqsNnzG
-         iDww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LdXCTub4Z9kDMOSy0ARQdskJN6lbu+XKJdQ8G1oxt2w=;
-        b=C3l8BkhOJdmvflCPcVPjjshjZCKson+EJG8NP7+WTBU7exZ5yOPh2OJHtRjjviSRT6
-         s3TXMBJGcKzY798r0sxwCslebdjTpXaVQdVx1Y1QSHcIBKQIq+XC8z2+ookjvNrlXxZE
-         yiDZfhaddE+jPu+UxL3G1I4ofDJ+x44uHMC7XYHuj6820TSiRGNexJDrGQbJo8OZWLwl
-         boiUJmOll9o1vO3oPacxgplKyvJJixOsFYd14DTdtNy83rICsfqo+5k/UNFz2Rqg1x1t
-         066HnRZ3HZkudM9mbCja/Uygrzat/SxCpojKio+U5w3BxkIilH9NGbpSLTf7N3nnsN2P
-         GINg==
-X-Gm-Message-State: AOAM530Wb8RToELmJqzR3FBKQR9ahXBX+MUO+a0h6H3+/g+UYGHisNJC
-        WE9omyaJF/AkZN2wshbmrDfiFpN5xB0aFPKrh+M=
-X-Google-Smtp-Source: ABdhPJxyc7lGecCf47GbjoOmrlktPAZ4hEbvxvpm/3E/o9ZhCs/tLKv3L7khmH+4TruBr0WdnFND/2t3RPZbLKPE2F0=
-X-Received: by 2002:a65:6251:: with SMTP id q17mr3051810pgv.4.1589963564573;
- Wed, 20 May 2020 01:32:44 -0700 (PDT)
+        id S1726754AbgETIkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 04:40:17 -0400
+Received: from s2.neomailbox.net ([5.148.176.60]:18446 "EHLO s2.neomailbox.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726486AbgETIkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 04:40:16 -0400
+Subject: Re: [PATCH] net/sch_generic.h: use sizeof_member() and get rid of
+ unused variable
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net, toke@toke.dk,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        stephen@networkplumber.org
+References: <20200519091333.20923-1-a@unstable.cc>
+ <20200519.154019.1247104207621510920.davem@davemloft.net>
+From:   Antonio Quartulli <a@unstable.cc>
+Autocrypt: addr=a@unstable.cc; prefer-encrypt=mutual; keydata=
+ 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
+ qxdgy3a76luREOncW7wRQGcFPk2uYAg=
+Message-ID: <2a6a8d4b-cb78-f717-5ede-29a921c5cb05@unstable.cc>
+Date:   Wed, 20 May 2020 10:39:33 +0200
 MIME-Version: 1.0
-References: <20200515212846.1347-1-mcgrof@kernel.org> <20200515212846.1347-13-mcgrof@kernel.org>
- <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
- <7306323c35e6f44d7c569e689b48f380f80da5e5.camel@sipsolutions.net>
- <CA+ASDXOg9oKeMJP1Mf42oCMMM3sVe0jniaWowbXVuaYZ=ZpDjQ@mail.gmail.com>
- <20200519140212.GT11244@42.do-not-panic.com> <CA+ASDXMUHOcvJ_7UWgyANMxSz15Ji7TcLDXVCtSPa+fOr=+FGA@mail.gmail.com>
- <CANUX_P1pnV46gOo0aL6QV0b+49ubB7C5nuUOuOfoT7aOM+ye9w@mail.gmail.com>
-In-Reply-To: <CANUX_P1pnV46gOo0aL6QV0b+49ubB7C5nuUOuOfoT7aOM+ye9w@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 20 May 2020 11:32:32 +0300
-Message-ID: <CAHp75VfOvABsQyxdy9j-On6pTunM1+uisoWQOmoNa7wLWJ+CSw@mail.gmail.com>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-To:     Emmanuel Grumbach <egrumbach@gmail.com>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        aquini@redhat.com, "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Will Deacon <will@kernel.org>, Baoquan He <bhe@redhat.com>,
-        ath10k@lists.infradead.org, Takashi Iwai <tiwai@suse.de>,
-        Ingo Molnar <mingo@redhat.com>, Dave Young <dyoung@redhat.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, gpiccoli@canonical.com,
-        Steven Rostedt <rostedt@goodmis.org>, cai@lca.pw,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        schlad@suse.de, Linux Kernel <linux-kernel@vger.kernel.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200519.154019.1247104207621510920.davem@davemloft.net>
+Content-Type: text/plain; charset=iso-8859-7
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 8:40 AM Emmanuel Grumbach <egrumbach@gmail.com> wrote:
+Hi David,
 
-> Since I have been involved quite a bit in the firmware debugging
-> features in iwlwifi, I think I can give a few insights here.
->
-> But before this, we need to understand that there are several sources of issues:
-> 1) the firmware may crash but the bus is still alive, you can still
-> use the bus to get the crash data
-> 2) the bus is dead, when that happens, the firmware might even be in a
-> good condition, but since the bus is dead, you stop getting any
-> information about the firmware, and then, at some point, you get to
-> the conclusion that the firmware is dead. You can't get the crash data
-> that resides on the other side of the bus (you may have gathered data
-> in the DRAM directly, but that's a different thing), and you don't
-> have much recovery to do besides re-starting the PCI enumeration.
->
-> At Intel, we have seen both unfortunately. The bus issues are the ones
-> that are trickier obviously. Trickier to detect (because you just get
-> garbage from any request you issue on the bus), and trickier to
-> handle. One can argue that the kernel should *not* handle those and
-> let this in userspace hands. I guess it all depends on what component
-> you ship to your customer and what you customer asks from you  :).
+On 20/05/2020 00:40, David Miller wrote:
+> From: Antonio Quartulli <a@unstable.cc>
+> Date: Tue, 19 May 2020 11:13:33 +0200
+> 
+>> Compiling with -Wunused triggers the following warning:
+>>
+>> ./include/net/sch_generic.h: In function ¡qdisc_cb_private_validate¢:
+>> ./include/net/sch_generic.h:464:23: warning: unused variable ¡qcb¢ [-Wunused-variable]
+>>   464 |  struct qdisc_skb_cb *qcb;
+>>       |                       ^~~
+>>
+>> as the qcb variable is only used to compute the sizeof one of its members.
+> 
+> It's referenced in the code, therefore it is not "unused".
 
-Or the two best approaches:
-1) get rid of firmware completely;
-2) make it OSS (like SOF).
+True.
 
-I think any of these is a right thing to do in long-term perspective.
+> 
+> If in some configuration BUILD_BUG_ON() does not reference it's arguments,
+> that's the bug that needs to be fixed.
+> 
 
-How many firmwares average computer has? 50? 100? Any of them is a
-burden and PITA.
+I don't think it's BUILD_BUG_ON()'s fault, because qcb->data is passed
+to sizeof() first.
+
+My best guess is that gcc is somewhat optimizing the sizeof(gcb->data)
+and thus leaving the gcb variable unused.
+
+
+This said, I think it's better for the code style (and for the compiler)
+if we used sizeof_member().
+
+Should I resend the patch with a commit message that does not mention
+the "unused" warning?
+
+
+Thanks a lot.
+Best Regards,
+
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Antonio Quartulli
