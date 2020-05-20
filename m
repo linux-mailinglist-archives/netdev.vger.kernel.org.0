@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DDA1DADFD
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 10:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F7E1DAE07
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 10:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgETIu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 04:50:57 -0400
-Received: from novek.ru ([213.148.174.62]:52512 "EHLO novek.ru"
+        id S1726737AbgETIwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 04:52:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbgETIu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 04:50:57 -0400
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        id S1726596AbgETIwb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 04:52:31 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 987D5502966;
-        Wed, 20 May 2020 11:50:52 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 987D5502966
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1589964653; bh=mRPZeBU0KCrXOT6Paa9QbaCLs5ELHEOoIttm/UBgtZI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vtPsXrcVWBOLlTXlFsiaRxKCyHVI6mFgh6hSbL7kauuKdDOCzDHFzPA3KIL2+KhPY
-         F6/yuzzt9vqKa/xtZTc9FwecOkBzrCDGxEqvZVo78yu6BqFibDFPbqsVKpAYXNak6r
-         Q2qFxUMG8O+91wcLCe9NZGXgnRrC3uZ2KsV6Zvuw=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Subject: [net] net: ipip: fix wrong address family in init error path
-Date:   Wed, 20 May 2020 11:50:48 +0300
-Message-Id: <1589964648-12516-1-git-send-email-vfedorenko@novek.ru>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=1.7 required=5.0 tests=UNPARSEABLE_RELAY,URIBL_BLACK
-        autolearn=no autolearn_force=no version=3.4.1
-X-Spam-Level: *
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        by mail.kernel.org (Postfix) with ESMTPSA id 6B06C2075F;
+        Wed, 20 May 2020 08:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589964750;
+        bh=XLMVasPRMp/XY7j8mB0G8O5n6GWEn6WEmxfjRYS3eSA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cg45fzsc9lb0qbz/IHTAlnYQJm5gzL/HTkOHYpAU9PRTzesGodrfzIdiedYBgHoDM
+         5t4F4XED7m2pJ51kP+C4RkZYRvd1R1yqo6qDseLF0pEZNs9Z+ofvYX3AAQucByY7N7
+         Z4sRcjnSU54bTQPtzTooa8AVtxfjP8EI1OyWUmVU=
+Date:   Wed, 20 May 2020 10:52:28 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Gal Pressman <galpress@amazon.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, dledford@redhat.com,
+        jgg@mellanox.com, davem@davemloft.net,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, poswald@suse.com,
+        Shiraz Saleem <shiraz.saleem@intel.com>
+Subject: Re: [RDMA RFC v6 14/16] RDMA/irdma: Add ABI definitions
+Message-ID: <20200520085228.GF2837844@kroah.com>
+References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
+ <20200520070415.3392210-15-jeffrey.t.kirsher@intel.com>
+ <34ea2c1d-538c-bcb7-b312-62524f31a8dd@amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <34ea2c1d-538c-bcb7-b312-62524f31a8dd@amazon.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of error with MPLS support the code is misusing AF_INET
-instead of AF_MPLS.
+On Wed, May 20, 2020 at 10:54:25AM +0300, Gal Pressman wrote:
+> On 20/05/2020 10:04, Jeff Kirsher wrote:
+> > +struct i40iw_create_qp_resp {
+> > +	__u32 qp_id;
+> > +	__u32 actual_sq_size;
+> > +	__u32 actual_rq_size;
+> > +	__u32 i40iw_drv_opt;
+> > +	__u16 push_idx;
+> > +	__u8 lsmm;
+> > +	__u8 rsvd;
+> > +};
+> 
+> This struct size should be 8 bytes aligned.
 
-Fixes: 1b69e7e6c4da ("ipip: support MPLS over IPv4")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- net/ipv4/ipip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Aligned in what way?  Seems sane to me, what would you want it to look
+like instead?
 
-diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 2f01cf6..678575a 100644
---- a/net/ipv4/ipip.c
-+++ b/net/ipv4/ipip.c
-@@ -698,7 +698,7 @@ static int __init ipip_init(void)
- 
- rtnl_link_failed:
- #if IS_ENABLED(CONFIG_MPLS)
--	xfrm4_tunnel_deregister(&mplsip_handler, AF_INET);
-+	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
- xfrm_tunnel_mplsip_failed:
- 
- #endif
--- 
-1.8.3.1
+thanks,
 
+greg k-h
