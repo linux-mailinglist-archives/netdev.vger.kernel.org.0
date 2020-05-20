@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 483291DB721
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 16:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FA21DB728
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 16:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbgETOdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 10:33:37 -0400
-Received: from correo.us.es ([193.147.175.20]:53526 "EHLO mail.us.es"
+        id S1727044AbgETOeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 10:34:17 -0400
+Received: from mga01.intel.com ([192.55.52.88]:26290 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726596AbgETOdh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 10:33:37 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id AAF4112082D
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 16:33:32 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9E544DA70E
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 16:33:32 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 92F09DA710; Wed, 20 May 2020 16:33:32 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AA720DA703;
-        Wed, 20 May 2020 16:33:30 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 20 May 2020 16:33:30 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 8C0EE42EF42B;
-        Wed, 20 May 2020 16:33:30 +0200 (CEST)
-Date:   Wed, 20 May 2020 16:33:30 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, jiri@resnulli.us, kuba@kernel.org
-Subject: Re: [PATCH net-next v2] net: flow_offload: simplify hw stats check
- handling
-Message-ID: <20200520143330.GA23050@salvia>
-References: <cf0d731d-cb34-accd-ff40-6be013dd9972@solarflare.com>
- <20200519171923.GA16785@salvia>
- <6013b7ce-48c9-7169-c945-01b2226638e4@solarflare.com>
- <20200519173508.GA17141@salvia>
- <dc732572-6f69-6cbe-5df1-ca4d6e6ed131@solarflare.com>
+        id S1726943AbgETOeR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 10:34:17 -0400
+IronPort-SDR: B+3LPz5J8KvRyoG2J35sy2xsZYCV501Ng39Ij+l9MBO9a472nkp+Slf1LqxJpiwAjrri9aVCsd
+ YXio1EbeOyXg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2020 07:34:16 -0700
+IronPort-SDR: KT0TlJdT5CgYsXjQIEQi3y1yaUTbjn4SqyAukPNeonzcKiY/z1feQYVSQcBk4KzOK6uRTriwHM
+ zMsxDpA/r1yw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,414,1583222400"; 
+   d="scan'208";a="308739120"
+Received: from sbaldwin-mobl3.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.56.131])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 May 2020 07:34:06 -0700
+Subject: Re: [PATCH bpf-next v4 01/15] xsk: fix xsk_umem_xdp_frame_sz()
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        jeffrey.t.kirsher@intel.com, maximmi@mellanox.com,
+        maciej.fijalkowski@intel.com
+References: <20200520094742.337678-1-bjorn.topel@gmail.com>
+ <20200520094742.337678-2-bjorn.topel@gmail.com>
+ <20200520151819.1d2254b7@carbon>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <17701885-c91d-5bfc-b96d-29263a0d08ab@intel.com>
+Date:   Wed, 20 May 2020 16:34:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20200520151819.1d2254b7@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <dc732572-6f69-6cbe-5df1-ca4d6e6ed131@solarflare.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 07:26:42PM +0100, Edward Cree wrote:
-> On 19/05/2020 18:35, Pablo Neira Ayuso wrote:
-[...]
-> > Netfilter is a client of this flow offload API, you have to test that
-> > your core updates do not break any of existing clients.
+On 2020-05-20 15:18, Jesper Dangaard Brouer wrote:
+> On Wed, 20 May 2020 11:47:28 +0200
+> Björn Töpel <bjorn.topel@gmail.com> wrote:
+> 
+>> From: Björn Töpel <bjorn.topel@intel.com>
+>>
+>> Calculating the "data_hard_end" for an XDP buffer coming from AF_XDP
+>> zero-copy mode, the return value of xsk_umem_xdp_frame_sz() is added
+>> to "data_hard_start".
+>>
+>> Currently, the chunk size of the UMEM is returned by
+>> xsk_umem_xdp_frame_sz(). This is not correct, if the fixed UMEM
+>> headroom is non-zero. Fix this by returning the chunk_size without the
+>> UMEM headroom.
+>>
+>> Fixes: 2a637c5b1aaf ("xdp: For Intel AF_XDP drivers add XDP frame_sz")
+>> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+>> ---
+>>   include/net/xdp_sock.h | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+>> index abd72de25fa4..6b1137ce1692 100644
+>> --- a/include/net/xdp_sock.h
+>> +++ b/include/net/xdp_sock.h
+>> @@ -239,7 +239,7 @@ static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 address,
+>>   
+>>   static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
+>>   {
+>> -	return umem->chunk_size_nohr + umem->headroom;
+>> +	return umem->chunk_size_nohr;
+> 
+> Hmm, is this correct?
+> 
+> As you write "xdp_data_hard_end" is calculated as an offset from
+> xdp->data_hard_start pointer based on the frame_sz.  Will your
+> xdp->data_hard_start + frame_sz point to packet end?
 >
-> Okay, but can we distinguish between "this needs to be tested with
-> �netfilter before it can be merged" and "this is breaking netfilter"?
-> Or do you have a specific reason why you think this is broken, beyond
-> �merely 'it isn't tested'?
 
-This breaks netfilter in two ways !
+Yes, I believe this is correct.
 
-#1 Drivers calling flow_action_hw_stats_check() fall within the
-second branch (check_allow_bit is set on).
+Say that a user uses a chunk size of 2k, and a umem headroom of, say,
+64. This means that the kernel should (at least) leave 64B which the
+kernel shouldn't touch.
 
-        } else if (check_allow_bit &&
+umem->headroom | XDP_PACKET_HEADROOM | packet |          |
+                ^                     ^        ^      ^   ^
+                a                     b        c      d   e
 
-@@ -340,11 +342,9 @@ __flow_action_hw_stats_check(const struct flow_action *action,
-                return false;
+a: data_hard_start
+b: data
+c: data_end
+d: data_hard_end, (e - 320)
+e: hardlimit of chunk, a + umem->chunk_size_nohr
 
-        action_entry = flow_action_first_entry_get(action);
--       if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
--               return true;
+Prior this fix the umem->headroom was *included* in frame_sz.
 
-        if (!check_allow_bit &&
--           action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
-+           ~action_entry->hw_stats & FLOW_ACTION_HW_STATS_ANY) {
-                NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
-                return false;
-        } else if (check_allow_bit &&         <------ HERE
+> #define xdp_data_hard_end(xdp)                          \
+>          ((xdp)->data_hard_start + (xdp)->frame_sz -     \
+>           SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> 
+> Note the macro reserves the last 320 bytes (for skb_shared_info), but
+> for AF_XDP zero-copy mode, it will never create an SKB that use this
+> area.   Thus, in principle we can allow XDP-progs to extend/grow tail
+> into this area, but I don't think there is any use-case for this, as
+> it's much easier to access packet-data in userspace application.
+> (Thus, it might not be worth the complexity to give AF_XDP
+> bpf_xdp_adjust_tail access to this area, by e.g. "lying" via adding 320
+> bytes to frame_sz).
+> 
 
-These drivers are not honoring the _DONT_CARE bit,
-__flow_action_hw_stats_check() with check_allow_bit set on does not
-honor the _DONT_CARE bit.
+I agree, and in the picture (well...) above that would be "d". IOW
+data_hard_end is 320 "off" the real end.
 
-#2 Your patch needs to update Netfilter to set hw_stats to
-   FLOW_ACTION_HW_STATS_DONT_CARE explicitly.
+
+Björn
