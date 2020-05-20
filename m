@@ -2,117 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D5D1DB752
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 16:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0231DB769
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 16:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgETOps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 10:45:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56556 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726510AbgETOpr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 10:45:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 4275AAB5C;
-        Wed, 20 May 2020 14:45:48 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 25BD2604F6; Wed, 20 May 2020 16:45:44 +0200 (CEST)
-Date:   Wed, 20 May 2020 16:45:44 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY Signal
- Quality Index (SQI)
-Message-ID: <20200520144544.GB8771@lion.mk-sys.cz>
-References: <20200520062915.29493-1-o.rempel@pengutronix.de>
- <20200520062915.29493-2-o.rempel@pengutronix.de>
+        id S1726856AbgETOun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 10:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbgETOun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 10:50:43 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B0AC05BD43
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 07:50:42 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id s37so1111662ybe.13
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 07:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ajOsEVzBBmvLmCdJ2Fdc///Cfm2T2Xmx2TMwaA04DAo=;
+        b=I8m8YrPTQXsy55nnqHyJdwIhm6QdarEOtspEoGcg9nkXM0Ew5AiYBTRIXjdtZxXD6S
+         izOaYJYXE9XhaKVivA15X9QwZB3PnP3Qtl7QtzesZcYYMbCOjlRer0BjLRwvbWrr3bKz
+         vk+zY7elcJGaeObSkGHGPxyQecLQW8tuncrc2tGZPsmNSar4qJEW9mJ2sKXaBeXLnFb1
+         knwneHaygvC8zuiYEbffnkfuYqr7AB8BPsN2D0fzE8BkWD983alvNMTYO3pCTscKsJsU
+         UoCgPcIVR5XrlFoUhmm56VsMLBd29uLTatSh8xwvQO3OY7NoruCYGaLLv2KyCDTa7hrJ
+         7ZHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ajOsEVzBBmvLmCdJ2Fdc///Cfm2T2Xmx2TMwaA04DAo=;
+        b=BTJuCHQr/7rbwup12AMy7g8/zg80HtygYNsw00Nfg3XdNR2AZsxKO8x71HUIsg+jsx
+         HayBJ3bOnajdoOuE6rFiiIAJwFroQJMlnU9rX/QjaqIMrdBulWbOIwZu39t2gbL/7ktY
+         TMhL/WsGsYVIWxfH3fLOfSr7WFpeaousdjaPOeFfc0ywEvO4LydgDIuaS432KBDtlh4v
+         z9R3gzeG2P8Zcf3YjCnxI6Vd5nt3AQXxxC4LMfwM5CHf4oQtQFFJv7o0MKq0QiC/JhVY
+         P3JuWjoFr+m5TZ6bly9vVP5Zib14TQ5YoqKOp+qTq+U+BIkWb9M/MyNP6iKwpXThOUSL
+         cGIg==
+X-Gm-Message-State: AOAM531+D3Eq9lePUms8yfZ/cqskjaJ02tt1yxk48si9P/EB/XD0vr+b
+        7l1MtxPF/UncOvobD7h7lM8r/kCkkqjAaAiPUEzSDg==
+X-Google-Smtp-Source: ABdhPJwUG/n0zhdUFbriSJsXmMxGywwDOeEtiLHjve+29uytAAbLo+u0KRAoTbKvizTmfvhGt1A2X7ckmp17h3/0lU0=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr7502533yba.41.1589986241692;
+ Wed, 20 May 2020 07:50:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="cvVnyQ+4j833TQvp"
-Content-Disposition: inline
-In-Reply-To: <20200520062915.29493-2-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200520072814.128267-1-irogers@google.com> <20200520131359.GJ157452@krava>
+In-Reply-To: <20200520131359.GJ157452@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 20 May 2020 07:50:30 -0700
+Message-ID: <CAP-5=fXZVmjuiGyRsjzjfsBOpN50SeA+Gi66Of_wa61j7f6X5Q@mail.gmail.com>
+Subject: Re: [PATCH 0/7] Share events between metrics
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Paul Clarke <pc@us.ibm.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Vince Weaver <vincent.weaver@maine.edu>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 20, 2020 at 6:14 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Wed, May 20, 2020 at 12:28:07AM -0700, Ian Rogers wrote:
+> > Metric groups contain metrics. Metrics create groups of events to
+> > ideally be scheduled together. Often metrics refer to the same events,
+> > for example, a cache hit and cache miss rate. Using separate event
+> > groups means these metrics are multiplexed at different times and the
+> > counts don't sum to 100%. More multiplexing also decreases the
+> > accuracy of the measurement.
+> >
+> > This change orders metrics from groups or the command line, so that
+> > the ones with the most events are set up first. Later metrics see if
+> > groups already provide their events, and reuse them if
+> > possible. Unnecessary events and groups are eliminated.
+> >
+> > The option --metric-no-group is added so that metrics aren't placed in
+> > groups. This affects multiplexing and may increase sharing.
+> >
+> > The option --metric-mo-merge is added and with this option the
+> > existing grouping behavior is preserved.
+> >
+> > Using skylakex metrics I ran the following shell code to count the
+> > number of events for each metric group (this ignores metric groups
+> > with a single metric, and one of the duplicated TopdownL1 and
+> > TopDownL1 groups):
+>
+> hi,
+> I'm getting parser error with:
+>
+> [jolsa@krava perf]$ sudo ./perf stat -M IPC,CPI -a -I 1000
+> event syntax error: '..ed.thread}:W{inst_retired.any,cpu_clk_unhalted.thread}:W,{inst_retired.any,cycles}:W'
+>                                   \___ parser error
+>
+> jirka
 
---cvVnyQ+4j833TQvp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ah, looks like an issue introduced by:
+https://lore.kernel.org/lkml/20200520072814.128267-8-irogers@google.com/
+as there is a missing comma. I'll investigate after some breakfast.
 
-On Wed, May 20, 2020 at 08:29:14AM +0200, Oleksij Rempel wrote:
-> Signal Quality Index is a mandatory value required by "OPEN Alliance
-> SIG" for the 100Base-T1 PHYs [1]. This indicator can be used for cable
-> integrity diagnostic and investigating other noise sources and
-> implement by at least two vendors: NXP[2] and TI[3].
->=20
-> [1] http://www.opensig.org/download/document/218/Advanced_PHY_features_fo=
-r_automotive_Ethernet_V1.0.pdf
-> [2] https://www.nxp.com/docs/en/data-sheet/TJA1100.pdf
-> [3] https://www.ti.com/product/DP83TC811R-Q1
->=20
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-
-This looks good to me, there is just one thing I'm not sure about:
-
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 59344db43fcb1..950ba479754bd 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -706,6 +706,8 @@ struct phy_driver {
->  			    struct ethtool_tunable *tuna,
->  			    const void *data);
->  	int (*set_loopback)(struct phy_device *dev, bool enable);
-> +	int (*get_sqi)(struct phy_device *dev);
-> +	int (*get_sqi_max)(struct phy_device *dev);
->  };
->  #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
->  				      struct phy_driver, mdiodrv)
-
-I'm not sure if it's a good idea to define two separate callbacks. It
-means adding two pointers instead of one (for every instance of the
-structure, not only those implementing them), doing two calls, running
-the same checks twice, locking twice, checking the result twice.
-
-Also, passing a structure pointer would mean less code changed if we
-decide to add more related state values later.
-
-What do you think?
-
-If you don't agree, I have no objections so
-
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-
-Michal
-
---cvVnyQ+4j833TQvp
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl7FQpIACgkQ538sG/LR
-dpV0dgf9EtLDViFGNOKw6wA8VFfIA2ANEsV19HAMn4YfQZ8pORVhIoJsKw8sAK64
-l9xidgkJ+CuzNSzsynX7a1jQc8inPdZ2qNsQwi6f6q/5ndtGoGtieEvMU+4EvlnN
-J0DehPfI9geLnzz7PjTuCYVbhBryTZoi0+otYDPPS1b1xhKlPdnNBHjnK2bsTrO4
-7ysx/iQT4PRhuy8R7+1c3BwHKpq0Ofhk3zFZtrIahQF4dUIcNFSec+Hs5LEb9wwt
-w96SKsAhwpgUeqMs/+eHHNIbjGQtrM42Kl2oA0MIUqW72rVETsnmlVyZH8gJVwWo
-mgAqSTHL0MtZKJR0/Guq+4KM1AVKsQ==
-=uNvL
------END PGP SIGNATURE-----
-
---cvVnyQ+4j833TQvp--
+Thanks,
+Ian
