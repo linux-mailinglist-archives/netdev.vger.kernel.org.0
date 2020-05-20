@@ -2,142 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFB21DABEB
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59A51DABED
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgETHYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 03:24:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54742 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbgETHYB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 03:24:01 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56FFA207D3;
-        Wed, 20 May 2020 07:23:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589959439;
-        bh=023MqEfgvspdJhXwN7Da0dbwG+Ey+EkpG6YmIhdB9KU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IrucS0inRhPqSOWtzuS4674WiDzfJO+0Iq6vWMzch084LHkQeOzFrLQEhtTHkswZM
-         HFaNvorSGr8EucjZmXAEUsWSHbtcNZ2bgupaVDgGMWA1XU08mMODwPQxZJbxgbyuVb
-         EcuegYnPP0Xu15u2it4VeLYv6BaZMYzED3UQ9yNY=
-Date:   Wed, 20 May 2020 09:23:57 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
-        pierre-louis.bossart@linux.intel.com,
-        Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 12/12] ASoC: SOF: ops: Add new op for client
- registration
-Message-ID: <20200520072357.GD2365898@kroah.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-13-jeffrey.t.kirsher@intel.com>
+        id S1726534AbgETHYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 03:24:25 -0400
+Received: from mail-eopbgr00049.outbound.protection.outlook.com ([40.107.0.49]:64599
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726224AbgETHYX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 03:24:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E1OXjMy7UfTan/KTD3Sb/3qtnr8OdhuPZYC4FDZHOThrWHHa8eDaRx9xsgZ8UJGAsU+nn+iJ+6YwXyYT4EUqvM+p5rzIGeFF0xobPkrm1arb2RPLcLeu5oKt+dA2mNu2PYlzOgQmBaz5Pgw5HCJnhxQtyOAUPwU2puA3/AYQ680OE1YTrdjwZXSLtUGOqjd0G9eVQ0TDJX2R5jqAivqt1IDNM7S7awM8c5cQ5hO3ylSV5O9XT6MZvR30iA9s41aBcUmX6OOacBGfgqCRuQe7ZzJ+G/hum01N7Oug2r2kHWJIe79NmUuT3IQg7pAi5GYGkQnSldotfiqpn174W2hqEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pVGlsDAUBH+/muDZHDZIb6ExNguNUgiT6MtYOueybKg=;
+ b=THvsnGImGY85AHiCxmI0I87nf30B1eLCMU/Zci310xEtBVPsU6cx0vtmeqD9P8Wv68btTkczLq6XK/DU4KYAJj00AFgkAp5D8y7VMEtfTJIkiLaHIi9rlEIvo6peCpyHHXA4HYfMp5siuzsOcgQj2AZBc6aFWhr95mHfyN6y5tkww8wp/sDcVgKEMM0tCRPDEmxDe4by0Mk5eQuXss78uV4iRYhD7RT1MUl44ooHCkfr+g2KGAIQqH16E14YWYordalmIp7W6+0JAd9J69alr+2ADYVNCEQxEnvt0vnHZuKRujLRPyPYRUGfsOtCD+hoqNIrDpovSblvq7q5wNQPYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pVGlsDAUBH+/muDZHDZIb6ExNguNUgiT6MtYOueybKg=;
+ b=eqQBsII/NqUT5+EKE6aLByAlXnlfapsoEaXomGNFxfUgqCYpeSKuYqIvUXdus5VPOIIkQ09xOZZ9iUXhc86r4xozFm4O1rsLHWWvN3ADi/GUh9QSRg1EEEY0hORH9woOEXJIIvpMB0rVYyaNJ1eSZ8Q1fY52QpvFgTUIukiG7AA=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com (2603:10a6:20b:1ad::15)
+ by AM7PR05MB7058.eurprd05.prod.outlook.com (2603:10a6:20b:1ab::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Wed, 20 May
+ 2020 07:24:20 +0000
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::e135:3e43:e5e5:860d]) by AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::e135:3e43:e5e5:860d%8]) with mapi id 15.20.3021.020; Wed, 20 May 2020
+ 07:24:19 +0000
+References: <20200515114014.3135-1-vladbu@mellanox.com> <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com> <vbfo8qkb8ip.fsf@mellanox.com> <CAM_iQpXqLdAJOcwyQ=DZs5zi=zEtr97_LT9uhPtTTPke=8Vvdw@mail.gmail.com>
+User-agent: mu4e 1.2.0; emacs 26.2.90
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
+In-reply-to: <CAM_iQpXqLdAJOcwyQ=DZs5zi=zEtr97_LT9uhPtTTPke=8Vvdw@mail.gmail.com>
+Date:   Wed, 20 May 2020 10:24:16 +0300
+Message-ID: <vbfv9krvzkv.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM4PR0302CA0019.eurprd03.prod.outlook.com
+ (2603:10a6:205:2::32) To AM7PR05MB6995.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1ad::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200520070227.3392100-13-jeffrey.t.kirsher@intel.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by AM4PR0302CA0019.eurprd03.prod.outlook.com (2603:10a6:205:2::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Wed, 20 May 2020 07:24:18 +0000
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3a4511fc-9c7b-402b-fa6f-08d7fc8ecfb6
+X-MS-TrafficTypeDiagnostic: AM7PR05MB7058:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM7PR05MB705811FF8B3E4841A98E351EADB60@AM7PR05MB7058.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Forefront-PRVS: 04097B7F7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IhX8tin7mbuWUned0wkCI/Lk49LDdU53XyZn5Appz7fCmZxZB04KnTtCU7Bv4gwvVtR8S4J17IKyW0ni5Uv7Fg3/4+Bw/n2GQY0P8zc59hSKSk/RVrHHknpaVmYnyMmzngyyPQoQnzLrD70BS1nEqcnNvZw3r0ellx21CR+7dirwmWXW3CEOcJHhUojo5Wn9dc4gwLGPPALbeiEJf0n4b2g6nrP9pVzz/OnZb2veA/352m9lv3dUG81YF5txRwb1/AT59tei6wGNIollnuSmYuyhK+ABsMhKUefHzTeznx6RgkwbLr72HNJRF9HUYSFpeT76l/kCARjK6PT4IyCTf9pjbDrulBGldSo9pDojj6jozCnUOUMN31zzHrrZtYSVrKA6qBwrSy0YfQ1AT/pc4jevEeHsVu7fhmLFD5n3LKPv9Li6yAHxkJyqddzuKikJL2rG+DxiMWbEn9shveJxUzgHIFvGU90GDar+9zSS91l8jHoIPezmfmtdPgjHamFM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6995.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(346002)(396003)(136003)(39860400002)(86362001)(26005)(478600001)(66556008)(956004)(2616005)(316002)(54906003)(53546011)(7696005)(36756003)(6486002)(66946007)(52116002)(66476007)(186003)(5660300002)(8676002)(8936002)(4326008)(6916009)(16526019)(2906002)(21314003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: ahIDogO64Orms2gFENgEovCmpTFuprB1pYIlLIHQPbXTPPYND3rQtpJaIZBD08QaUPGnzyXB0BGU+EXSQO63/qCk9eIkYLB74MjUieL4SzuNW10bTqvhoYrRpu1cwy6yj8ahmBfsCJUwNdd+TXYvZjDgMEzGOChvvA4kc3aCdMj6mPOnqzUjxcTSQkX21KPKhKYtPqy0UQDlXzvsy6a5O4BIjIQ+qgKkwf6yxb0FGDNiC7gQHYqxjyz7BcPFrZ3bTRUzEKTYZrglHAEBsaVVPtjRZE5B5svbOYtmImb21ndcGwrg1BXQrHGgmL026hJlWUli17+AtUGCKhLXJGTS5zVkwYua3qlevOfj82VscAbXXDxKH2BJFEJ/xwYd0DXnDJwKjPni+jXnNTODf+w5UwBFUjN4ZWYhcp/wFBoz28qztxwPcGbeg9RTy432cxHHK7ie+WGF//QdjJM6R7IRyKrJTd19NMA0gMELa/iXgl4=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a4511fc-9c7b-402b-fa6f-08d7fc8ecfb6
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2020 07:24:19.8357
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YfMFcChZL+/WHwamaO+zDjcyWvcHBOgmDKbPzyJ/zhtlZv2qkzdOhJVqR6ZyTe+3eREGqBoX8WxT4Y2L/VdVIA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB7058
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 12:02:27AM -0700, Jeff Kirsher wrote:
-> From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> 
-> Add a new op for registering clients. The clients to be
-> registered depend on the DSP capabilities and the ACPI/DT
-> information. For now, we only add 2 IPC test clients that
-> will be used for run tandem IPC flood tests for all Intel
-> platforms.
-> 
-> For ACPI platforms, change the Kconfig to select
-> SND_SOC_SOF_PROBE_WORK_QUEUE to allow the virtbus driver
-> to probe when the client is registered.
-> 
-> Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> ---
->  sound/soc/sof/core.c        |  8 ++++++++
->  sound/soc/sof/intel/Kconfig |  1 +
->  sound/soc/sof/intel/apl.c   | 26 ++++++++++++++++++++++++++
->  sound/soc/sof/intel/bdw.c   | 25 +++++++++++++++++++++++++
->  sound/soc/sof/intel/byt.c   | 28 ++++++++++++++++++++++++++++
->  sound/soc/sof/intel/cnl.c   | 26 ++++++++++++++++++++++++++
->  sound/soc/sof/ops.h         | 34 ++++++++++++++++++++++++++++++++++
->  sound/soc/sof/sof-priv.h    |  3 +++
->  8 files changed, 151 insertions(+)
-> 
-> diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
-> index fdfed157e6c0..a0382612b9e7 100644
-> --- a/sound/soc/sof/core.c
-> +++ b/sound/soc/sof/core.c
-> @@ -245,6 +245,12 @@ static int sof_probe_continue(struct snd_sof_dev *sdev)
->  	if (plat_data->sof_probe_complete)
->  		plat_data->sof_probe_complete(sdev->dev);
->  
-> +	/*
-> +	 * Register client devices. This can fail but errors cannot be
-> +	 * propagated.
-> +	 */
-> +	snd_sof_register_clients(sdev);
-> +
->  	return 0;
->  
->  fw_trace_err:
-> @@ -349,6 +355,7 @@ int snd_sof_device_remove(struct device *dev)
->  		cancel_work_sync(&sdev->probe_work);
->  
->  	if (sdev->fw_state > SOF_FW_BOOT_NOT_STARTED) {
-> +		snd_sof_unregister_clients(sdev);
->  		snd_sof_fw_unload(sdev);
->  		snd_sof_ipc_free(sdev);
->  		snd_sof_free_debug(sdev);
-> @@ -382,4 +389,5 @@ EXPORT_SYMBOL(snd_sof_device_remove);
->  MODULE_AUTHOR("Liam Girdwood");
->  MODULE_DESCRIPTION("Sound Open Firmware (SOF) Core");
->  MODULE_LICENSE("Dual BSD/GPL");
-> +MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
->  MODULE_ALIAS("platform:sof-audio");
-> diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-> index c9a2bee4b55c..002fd426ee53 100644
-> --- a/sound/soc/sof/intel/Kconfig
-> +++ b/sound/soc/sof/intel/Kconfig
-> @@ -13,6 +13,7 @@ config SND_SOC_SOF_INTEL_ACPI
->  	def_tristate SND_SOC_SOF_ACPI
->  	select SND_SOC_SOF_BAYTRAIL  if SND_SOC_SOF_BAYTRAIL_SUPPORT
->  	select SND_SOC_SOF_BROADWELL if SND_SOC_SOF_BROADWELL_SUPPORT
-> +	select SND_SOC_SOF_PROBE_WORK_QUEUE if SND_SOC_SOF_CLIENT
->  	help
->  	  This option is not user-selectable but automagically handled by
->  	  'select' statements at a higher level
-> diff --git a/sound/soc/sof/intel/apl.c b/sound/soc/sof/intel/apl.c
-> index 02218d22e51f..547b2b0ccb9a 100644
-> --- a/sound/soc/sof/intel/apl.c
-> +++ b/sound/soc/sof/intel/apl.c
-> @@ -15,9 +15,13 @@
->   * Hardware interface for audio DSP on Apollolake and GeminiLake
->   */
->  
-> +#include <linux/module.h>
->  #include "../sof-priv.h"
->  #include "hda.h"
->  #include "../sof-audio.h"
-> +#if IS_ENABLED(CONFIG_SND_SOC_SOF_CLIENT)
-> +#include "../sof-client.h"
-> +#endif
 
-The amount of #if additions in this patch is crazy.  That should never
-be needed for a .h file like this, nor should it be needed for all of
-the other times it is used in this patch.  Please fix up your api to not
-need that at all, as it's really messy, don't you think?
+On Tue 19 May 2020 at 21:58, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Tue, May 19, 2020 at 2:04 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+>> I considered that approach initially but decided against it for
+>> following reasons:
+>>
+>> - Generic data is covered by current terse dump implementation.
+>>   Everything else will be act or cls specific which would result long
+>>   list of flag values like: TCA_DUMP_FLOWER_KEY_ETH_DST,
+>>   TCA_DUMP_FLOWER_KEY_ETH_DST, TCA_DUMP_FLOWER_KEY_VLAN_ID, ...,
+>>   TCA_DUMP_TUNNEL_KEY_ENC_KEY_ID, TCA_DUMP_TUNNEL_KEY_ENC_TOS. All of
+>>   these would require a lot of dedicated logic in act and cls dump
+>>   callbacks. Also, it would be quite a challenge to test all possible
+>>   combinations.
+>
+> Well, if you consider netlink dump as a database query, what Edward
+> proposed is merely "select COLUMN1 COLUMN2 from cls_db" rather
+> than "select * from cls_db".
+>
+> No one said it is easy to implement, it is just more elegant than you
+> select a hardcoded set of columns for the user.
 
-thanks,
+As I explained to Edward, having denser netlink packets with more
+filters per packet is only part of optimization. Another part is not
+executing some code at all. Consider fl_dump_key() which is 200 lines
+function with bunch of conditionals like that:
 
-greg k-h
+static int fl_dump_key(struct sk_buff *skb, struct net *net,
+		       struct fl_flow_key *key, struct fl_flow_key *mask)
+{
+	if (mask->meta.ingress_ifindex) {
+		struct net_device *dev;
+
+		dev = __dev_get_by_index(net, key->meta.ingress_ifindex);
+		if (dev && nla_put_string(skb, TCA_FLOWER_INDEV, dev->name))
+			goto nla_put_failure;
+	}
+
+	if (fl_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
+			    mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
+			    sizeof(key->eth.dst)) ||
+	    fl_dump_key_val(skb, key->eth.src, TCA_FLOWER_KEY_ETH_SRC,
+			    mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
+			    sizeof(key->eth.src)) ||
+	    fl_dump_key_val(skb, &key->basic.n_proto, TCA_FLOWER_KEY_ETH_TYPE,
+			    &mask->basic.n_proto, TCA_FLOWER_UNSPEC,
+			    sizeof(key->basic.n_proto)))
+		goto nla_put_failure;
+
+	if (fl_dump_key_mpls(skb, &key->mpls, &mask->mpls))
+		goto nla_put_failure;
+
+	if (fl_dump_key_vlan(skb, TCA_FLOWER_KEY_VLAN_ID,
+			     TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan, &mask->vlan))
+		goto nla_put_failure;
+    ...
+
+
+Now imagine all of these are extended with additional if (flags &
+TCA_DUMP_XXX). All gains from not outputting some other minor stuff into
+netlink packet will be negated by it.
+
+
+>
+> Think about it, what if another user wants a less terse dump but still
+> not a full dump? Would you implement ops->terse_dump2()? Or
+> what if people still think your terse dump is not as terse as she wants?
+> ops->mini_dump()? How many ops's we would end having?
+
+User can discard whatever he doesn't need in user land code. The goal of
+this change is performance optimization, not designing a generic
+kernel-space data filtering mechanism.
+
+>
+>
+>>
+>> - It is hard to come up with proper validation for such implementation.
+>>   In case of terse dump I just return an error if classifier doesn't
+>>   implement the callback (and since current implementation only outputs
+>>   generic action info, it doesn't even require support from
+>>   action-specific dump callbacks). But, for example, how do we validate
+>>   a case where user sets some flower and tunnel_key act dump flags from
+>>   previous paragraph, but Qdisc contains some other classifier? Or
+>>   flower classifier points to other types of actions? Or when flower
+>>   classifier has and tunnel_key actions but also mirred? Should the
+>
+> Each action should be able to dump selectively too. If you think it
+> as a database, it is just a different table with different schemas.
+
+How is designing custom SQL-like query language (according to your
+example at the beginning of the mail) for filter dump is going to
+improve performance? If there is a way to do it in fast a generic manner
+with BPF, then I'm very interested to hear the details. But adding
+hundred more hardcoded conditionals is just not a solution considering
+main motivations for this change is performance.
