@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D121DBF09
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A801DBEFA
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgETT6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 15:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
+        id S1728527AbgETT5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 15:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728371AbgETT5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 15:57:01 -0400
+        with ESMTP id S1728392AbgETT5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 15:57:03 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8364CC05BD43;
-        Wed, 20 May 2020 12:57:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAB1C061A0F;
+        Wed, 20 May 2020 12:57:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=QpRXC42itvlGOi08tyVGrkTiIRJQe8NZz0la886kVrU=; b=POxklY3SAoFJcV5oDcgNcUrg3i
-        FT8KgMl+vy4XUfxzGGdCoHidgqjoozwit5FtHPdC1fo7czuo90Ek6OenSVyyVM1c5d3GzzoxxEciE
-        Tb9s4UASZE5uz13a458/guPdGY4Gfpzc9dIoil4bULl7T08MfFuqqCBCzvMOasvu4ZIkbR2D8IiO1
-        H0FzWz6Tl4WClnHTj4VNf87cJc9pjbyrMicR6Ydl/f38IrgnEtKglcV1xWWE5gaDrkar0j39Wsu4c
-        a/9Rt6FHK+HtV8iajChZDD+06UHzAQR3h4TRuiqDT6NUVEIiip1Iwc7kYgpvcQYjbfwsYqi9m3PIW
-        ixRDwuRw==;
+        bh=TdxZOAuFy69KHn/dIFhOGI32U8H99MaSy14m7/E8SrM=; b=caFkmXfUsLNb9SZxDTt3hdNDl4
+        6a9x3Cx/9e5I899dMA+Ip5zzKxO8EDimI1c3WV1JTZW/H/jyz8KkpWqa+iqSOzZ7Bw9Z/Mb0Co3Ml
+        uRNInlY+rOAuGQL46+AxMN8+QGuTpTd4qKst5g9zXNoTXHEJ6ifsT3mFauWseMxvL/jXjsboqnBC6
+        fVz/IlgMqTQ0VFU4f7SZzy+IC3jhtq/VmfxMgrHVUMkmBOOtnW1I0RtoYAkZVRzoTIlL7nsDAhsU5
+        5UkcJkQARWOe3SYdH/R7a0wAAj6KJiqCXf43xx9Pj5OLfxrVt2mGvghBfjI/J8Mx+WUo6pNWWxChF
+        4VOY/EJQ==;
 Received: from [2001:4bb8:188:1506:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbUpH-0003Kh-Sb; Wed, 20 May 2020 19:56:28 +0000
+        id 1jbUpK-0003Nh-KO; Wed, 20 May 2020 19:56:31 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
         ceph-devel@vger.kernel.org, rds-devel@oss.oracle.com,
         linux-nfs@vger.kernel.org
-Subject: [PATCH 27/33] ipv6: add ip6_sock_set_addr_preferences
-Date:   Wed, 20 May 2020 21:55:03 +0200
-Message-Id: <20200520195509.2215098-28-hch@lst.de>
+Subject: [PATCH 28/33] ipv6: add ip6_sock_set_recvpktinfo
+Date:   Wed, 20 May 2020 21:55:04 +0200
+Message-Id: <20200520195509.2215098-29-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200520195509.2215098-1-hch@lst.de>
 References: <20200520195509.2215098-1-hch@lst.de>
@@ -59,190 +59,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper to directly set the IPV6_ADD_PREFERENCES sockopt from kernel
+Add a helper to directly set the IPV6_RECVPKTINFO sockopt from kernel
 space without going through a fake uaccess.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/net/ipv6.h       | 67 ++++++++++++++++++++++++++++++++++++++++
- net/ipv6/ipv6_sockglue.c | 59 +----------------------------------
- net/sunrpc/xprtsock.c    |  7 +++--
- 3 files changed, 72 insertions(+), 61 deletions(-)
+ include/net/ipv6.h   |  7 +++++++
+ net/sunrpc/svcsock.c | 10 ++--------
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 3b02049d2e582..80260cff7e0c0 100644
+index 80260cff7e0c0..79b68ee3820e7 100644
 --- a/include/net/ipv6.h
 +++ b/include/net/ipv6.h
-@@ -1194,4 +1194,71 @@ static inline void ip6_sock_set_recverr(struct sock *sk)
- 	release_sock(sk);
+@@ -1261,4 +1261,11 @@ static inline int ip6_sock_set_addr_preferences(struct sock *sk, bool val)
+ 	return ret;
  }
  
-+static inline int __ip6_sock_set_addr_preferences(struct sock *sk, int val)
++static inline void ip6_sock_set_recvpktinfo(struct sock *sk)
 +{
-+	unsigned int pref = 0;
-+	unsigned int prefmask = ~0;
-+
-+	/* check PUBLIC/TMP/PUBTMP_DEFAULT conflicts */
-+	switch (val & (IPV6_PREFER_SRC_PUBLIC |
-+		       IPV6_PREFER_SRC_TMP |
-+		       IPV6_PREFER_SRC_PUBTMP_DEFAULT)) {
-+	case IPV6_PREFER_SRC_PUBLIC:
-+		pref |= IPV6_PREFER_SRC_PUBLIC;
-+		prefmask &= ~(IPV6_PREFER_SRC_PUBLIC |
-+			      IPV6_PREFER_SRC_TMP);
-+		break;
-+	case IPV6_PREFER_SRC_TMP:
-+		pref |= IPV6_PREFER_SRC_TMP;
-+		prefmask &= ~(IPV6_PREFER_SRC_PUBLIC |
-+			      IPV6_PREFER_SRC_TMP);
-+		break;
-+	case IPV6_PREFER_SRC_PUBTMP_DEFAULT:
-+		prefmask &= ~(IPV6_PREFER_SRC_PUBLIC |
-+			      IPV6_PREFER_SRC_TMP);
-+		break;
-+	case 0:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* check HOME/COA conflicts */
-+	switch (val & (IPV6_PREFER_SRC_HOME | IPV6_PREFER_SRC_COA)) {
-+	case IPV6_PREFER_SRC_HOME:
-+		prefmask &= ~IPV6_PREFER_SRC_COA;
-+		break;
-+	case IPV6_PREFER_SRC_COA:
-+		pref |= IPV6_PREFER_SRC_COA;
-+		break;
-+	case 0:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* check CGA/NONCGA conflicts */
-+	switch (val & (IPV6_PREFER_SRC_CGA|IPV6_PREFER_SRC_NONCGA)) {
-+	case IPV6_PREFER_SRC_CGA:
-+	case IPV6_PREFER_SRC_NONCGA:
-+	case 0:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	inet6_sk(sk)->srcprefs = (inet6_sk(sk)->srcprefs & prefmask) | pref;
-+	return 0;
-+}
-+
-+static inline int ip6_sock_set_addr_preferences(struct sock *sk, bool val)
-+{
-+	int ret;
-+
 +	lock_sock(sk);
-+	ret = __ip6_sock_set_addr_preferences(sk, val);
++	inet6_sk(sk)->rxopt.bits.rxinfo = true;
 +	release_sock(sk);
-+	return ret;
 +}
 +
  #endif /* _NET_IPV6_H */
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a0e50cc57e545..6bcd2e0967df9 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -838,67 +838,10 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index a391892977cd2..e7a0037d9b56c 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -595,8 +595,6 @@ static struct svc_xprt_class svc_udp_class = {
+ 
+ static void svc_udp_init(struct svc_sock *svsk, struct svc_serv *serv)
+ {
+-	int err, level, optname, one = 1;
+-
+ 	svc_xprt_init(sock_net(svsk->sk_sock->sk), &svc_udp_class,
+ 		      &svsk->sk_xprt, serv);
+ 	clear_bit(XPT_CACHE_AUTH, &svsk->sk_xprt.xpt_flags);
+@@ -617,17 +615,13 @@ static void svc_udp_init(struct svc_sock *svsk, struct svc_serv *serv)
+ 	switch (svsk->sk_sk->sk_family) {
+ 	case AF_INET:
+ 		ip_sock_set_pktinfo(svsk->sk_sock->sk);
+-		return;
++		break;
+ 	case AF_INET6:
+-		level = SOL_IPV6;
+-		optname = IPV6_RECVPKTINFO;
++		ip6_sock_set_recvpktinfo(svsk->sk_sock->sk);
  		break;
+ 	default:
+ 		BUG();
+ 	}
+-	err = kernel_setsockopt(svsk->sk_sock, level, optname,
+-					(char *)&one, sizeof(one));
+-	dprintk("svc: kernel_setsockopt returned %d\n", err);
+ }
  
- 	case IPV6_ADDR_PREFERENCES:
--	    {
--		unsigned int pref = 0;
--		unsigned int prefmask = ~0;
--
- 		if (optlen < sizeof(int))
- 			goto e_inval;
--
--		retv = -EINVAL;
--
--		/* check PUBLIC/TMP/PUBTMP_DEFAULT conflicts */
--		switch (val & (IPV6_PREFER_SRC_PUBLIC|
--			       IPV6_PREFER_SRC_TMP|
--			       IPV6_PREFER_SRC_PUBTMP_DEFAULT)) {
--		case IPV6_PREFER_SRC_PUBLIC:
--			pref |= IPV6_PREFER_SRC_PUBLIC;
--			break;
--		case IPV6_PREFER_SRC_TMP:
--			pref |= IPV6_PREFER_SRC_TMP;
--			break;
--		case IPV6_PREFER_SRC_PUBTMP_DEFAULT:
--			break;
--		case 0:
--			goto pref_skip_pubtmp;
--		default:
--			goto e_inval;
--		}
--
--		prefmask &= ~(IPV6_PREFER_SRC_PUBLIC|
--			      IPV6_PREFER_SRC_TMP);
--pref_skip_pubtmp:
--
--		/* check HOME/COA conflicts */
--		switch (val & (IPV6_PREFER_SRC_HOME|IPV6_PREFER_SRC_COA)) {
--		case IPV6_PREFER_SRC_HOME:
--			break;
--		case IPV6_PREFER_SRC_COA:
--			pref |= IPV6_PREFER_SRC_COA;
--		case 0:
--			goto pref_skip_coa;
--		default:
--			goto e_inval;
--		}
--
--		prefmask &= ~IPV6_PREFER_SRC_COA;
--pref_skip_coa:
--
--		/* check CGA/NONCGA conflicts */
--		switch (val & (IPV6_PREFER_SRC_CGA|IPV6_PREFER_SRC_NONCGA)) {
--		case IPV6_PREFER_SRC_CGA:
--		case IPV6_PREFER_SRC_NONCGA:
--		case 0:
--			break;
--		default:
--			goto e_inval;
--		}
--
--		np->srcprefs = (np->srcprefs & prefmask) | pref;
--		retv = 0;
--
-+		retv = __ip6_sock_set_addr_preferences(sk, val);
- 		break;
--	    }
- 	case IPV6_MINHOPCOUNT:
- 		if (optlen < sizeof(int))
- 			goto e_inval;
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 0d3ec055bc12f..3a143e250b9ac 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2150,7 +2150,6 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
- 
- 	if (!transport->inet) {
- 		struct sock *sk = sock->sk;
--		unsigned int addr_pref = IPV6_PREFER_SRC_PUBLIC;
- 
- 		/* Avoid temporary address, they are bad for long-lived
- 		 * connections such as NFS mounts.
-@@ -2159,8 +2158,10 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
- 		 *    knowledge about the normal duration of connections,
- 		 *    MAY override this as appropriate.
- 		 */
--		kernel_setsockopt(sock, SOL_IPV6, IPV6_ADDR_PREFERENCES,
--				(char *)&addr_pref, sizeof(addr_pref));
-+		if (xs_addr(xprt)->sa_family == PF_INET6) {
-+			ip6_sock_set_addr_preferences(sk,
-+				IPV6_PREFER_SRC_PUBLIC);
-+		}
- 
- 		xs_tcp_set_socket_timeouts(xprt, sock);
- 
+ /*
 -- 
 2.26.2
 
