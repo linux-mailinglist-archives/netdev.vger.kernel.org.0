@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B29301DA7A9
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 04:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10CC1DA811
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 04:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728258AbgETCDI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 19 May 2020 22:03:08 -0400
-Received: from mga14.intel.com ([192.55.52.115]:1550 "EHLO mga14.intel.com"
+        id S1728489AbgETCeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 22:34:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726379AbgETCDH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 22:03:07 -0400
-IronPort-SDR: ScJqahLTVYw8PY7IfZAkCJg3L0Uhe38mm4NowYg5b3HW+bzzyGGNKxTZgAxpkAEfHJoyKaxL0H
- 3O+dv6F9Xijg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 19:03:07 -0700
-IronPort-SDR: S3lvo9b5n1NV8B1tPpM4iHh4tBhSgIgN98HG7rnUMaKWHrRUOiqrfToyc9xK/MCu6OzwI51AJs
- 6/0rWL0RoQ4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,412,1583222400"; 
-   d="scan'208";a="282520023"
-Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
-  by orsmga002.jf.intel.com with ESMTP; 19 May 2020 19:03:07 -0700
-Received: from orsmsx158.amr.corp.intel.com (10.22.240.20) by
- ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 19 May 2020 19:03:07 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.61]) by
- ORSMSX158.amr.corp.intel.com ([169.254.10.218]) with mapi id 14.03.0439.000;
- Tue, 19 May 2020 19:03:06 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>,
-        "Guedes, Andre" <andre.guedes@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: RE: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
- Updates 2020-05-19
-Thread-Topic: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
- Updates 2020-05-19
-Thread-Index: AQHWLjo4zxakhy/5jEi2QtFU4xpWyaiwrcAA//+LEQA=
-Date:   Wed, 20 May 2020 02:03:06 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D94044986C170F@ORSMSX112.amr.corp.intel.com>
-References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
- <20200519190026.5334f3c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200519190026.5334f3c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726352AbgETCep (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 22:34:45 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19D9F2075F;
+        Wed, 20 May 2020 02:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589942085;
+        bh=5TX6blDXQ6f+6hKSGCxomiV/h9BfQhuTdQ1tm+sld0Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=klTWpgECYRftIP9DfV5mt0U3/nHgbW3YxUGGev8YNKgKYSbR6PX904dQj9BXy+wwR
+         Z57gcVqNNDl8oZQ0XqQt4jR8uStgPIqDNn91m1Hty6nAQEazs44wW6mpqpznPL70Lr
+         2SM+1MGRt9qkjE38McwUKkvY60bdDnwI6cC1wIjI=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0C7C740AFD; Tue, 19 May 2020 23:34:43 -0300 (-03)
+Date:   Tue, 19 May 2020 23:34:43 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>,
+        Paul Clarke <pc@us.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>
+Subject: Re: [PATCH v3 6/7] perf test: Improve pmu event metric testing
+Message-ID: <20200520023443.GE32678@kernel.org>
+References: <20200515221732.44078-1-irogers@google.com>
+ <20200515221732.44078-7-irogers@google.com>
+ <20200519190602.GB28228@kernel.org>
+ <CAP-5=fVdDjazSdzfTXeuWwqCSh0zURp3M8QZpYK=qd92GeyrRw@mail.gmail.com>
+ <20200520011548.GD28228@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200520011548.GD28228@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, May 19, 2020 19:00
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; nhorman@redhat.com;
-> sassmann@redhat.com
-> Subject: Re: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
-> Updates 2020-05-19
+Em Tue, May 19, 2020 at 10:15:48PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Tue, May 19, 2020 at 01:15:41PM -0700, Ian Rogers escreveu:
+> > On Tue, May 19, 2020 at 12:06 PM Arnaldo Carvalho de Melo
+> > errno != 0 for both cases as the man page notes suggest doing this.
+> > The tests using v are necessary to avoid the unused result, but
+> > presumably any errno case should return false here? I guess testing
+> > that is redundant as the return below will catch it. Perhaps this
+> > should be:
+> > 
+> > errno = 0;
+> > v = strtod(str, &end_ptr);
+> > (void)v;  /* We don't care for the value of the double, just that it
+> > converts. Avoid unused result warnings. */
+> > return errno == 0 && end_ptr != str;
 > 
-> On Tue, 19 May 2020 17:04:05 -0700 Jeff Kirsher wrote:
-> > This series contains updates to igc only.
-> >
-> > Sasha cleans up the igc driver code that is not used or needed.
-> >
-> > Vitaly cleans up driver code that was used to support Virtualization
-> > on a device that is not supported by igc, so remove the dead code.
-> >
-> > Andre renames a few macros to align with register and field names
-> > described in the data sheet.  Also adds the VLAN Priority Queue Fliter
-> > and EType Queue Filter registers to the list of registers dumped by
-> > igc_get_regs().  Added additional debug messages and updated return
-> > codes for unsupported features.  Refactored the VLAN priority
-> > filtering code to move the core logic into igc_main.c.  Cleaned up
-> > duplicate code and useless code.
-> 
-> No automated warnings :)
-> 
-> It's a little strange how both TCI and ETYPE filters take the queue ID.
-> Looking at the code it's not immediately clear which one take precedence. Can
-> I install two rules for the same TCI and different ETYPE or vice versa?
-[Kirsher, Jeffrey T] 
+> Ok, I'll try that one.
 
-Adding Andre and Sasha to answer your questions, Jakub...
+What I have is in my tmp.perf/core branch, this and the hashmap.h
+__WORDSIZE fixups, with those all the alpine Linux containers, that use
+Musl libc passed, waiting for the remaining 80 other containers to
+finish, now lots of these containers build with and without NO_LIBBPF=1
+to make sure we test both variants,
+
+- Arnaldo
