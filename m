@@ -2,251 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBB5B1DA797
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 03:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C11C1DA79E
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 04:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728176AbgETB54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 21:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbgETB5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 21:57:55 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88936C061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:57:55 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id z5so646982qvw.4
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WYm4nui0GOa4k/w+I9y48egxObrMVJ3JFwEqP+/6rvk=;
-        b=DpPbki4gNyUMGWog7u5wpvc5VnJI9l2GSaNq+b9mVGprOnocjJTeIuZbdOcYLVbjVu
-         B2BQSfRQOdPgDVjWOVUfo575B8p7/sD8d1eWv+ebdUMSH4cdGGd1eWK8Wktf02lJwi+A
-         Jt3p0NQ9NwxUMoDUuqshkzppbA8wsDeRn0hD4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WYm4nui0GOa4k/w+I9y48egxObrMVJ3JFwEqP+/6rvk=;
-        b=CNOSrkCCZM458RGVxojsFc+VGcPGikz3mMAjBi0rTV6UDw3Jf09RvjeRBER3HqKhkY
-         yvNAljXBqEhA5xyttR59rGUX+K9rD4KxnwkjZkfHnM4IVy24IaoFdjkVyZKnLiA49O0t
-         kPqljI3zRxHaYS+w+hK6ht9cnIgyMTa7IDkADDXYHfrbIJNREDzpeotCrxU0tOSV9hdM
-         EXrCU8Sj8b0RX0tfqRlw3PdvfMI0rwaItuWG08B1lE/py7i99gpZegnnlBJD6kcgCKNf
-         oxWm4aH8+gJuiKX2Mkq/gUmN1r2r10rr/dymMrtdId2NyNqJq72jrkh+AUaw2iXfgT2r
-         hM6A==
-X-Gm-Message-State: AOAM531C7FypmB8T1LcaPW0WaSTPMuef0o5TDYuZF7Tct9sOJdgD5wYq
-        EMBiBmayhVZgCPQGE4yYbWOb6YgrThYAp670
-X-Google-Smtp-Source: ABdhPJyOSdxgxfEKdwqxa3QlEtmLxyWq4E4l1jVmu+JH+UC1BjzCx32922uQxU1jETHtWILEH1NhFA==
-X-Received: by 2002:ad4:44e3:: with SMTP id p3mr2688919qvt.166.1589939874214;
-        Tue, 19 May 2020 18:57:54 -0700 (PDT)
-Received: from alfred.cumulusnetworks.com ([216.129.126.118])
-        by smtp.gmail.com with ESMTPSA id c197sm1109594qkg.133.2020.05.19.18.57.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2020 18:57:53 -0700 (PDT)
-From:   Stephen Worley <sworley@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, davem@davemloft.net, sharpd@cumulusnetworks.com,
-        anuradhak@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        sworley1995@gmail.com, Stephen Worley <sworley@cumulusnetworks.com>
-Subject: [PATCH] net: nlmsg_cancel() if put fails for nhmsg
-Date:   Tue, 19 May 2020 21:57:12 -0400
-Message-Id: <20200520015712.1693005-1-sworley@cumulusnetworks.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728408AbgETCAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 22:00:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51676 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726348AbgETCAa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 22:00:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C05620708;
+        Wed, 20 May 2020 02:00:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589940029;
+        bh=/ARJmCX4Iyhnm69tSmCYn4J4+VuEQhIBjrbBcAc5Xjg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ThDqh31y9fS/ccSfQ8lB+osktIk0VZ1VjseHlt/rniGaH1kFnvU5dW9c4TsaKSH19
+         nqre8L73n1KnEunnZTOuavxOXggT5Lj/ahFVzrR+a0z4A+j7GfUhjvIpD58+CdbHf0
+         OcxfNTWp1cQ1hDCRPPNFxp2tHwaPZ5bE0azXeegY=
+Date:   Tue, 19 May 2020 19:00:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2020-05-19
+Message-ID: <20200519190026.5334f3c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
+References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes data remnant seen when we fail to reserve space for a
-nexthop group during a larger dump.
+On Tue, 19 May 2020 17:04:05 -0700 Jeff Kirsher wrote:
+> This series contains updates to igc only.
+> 
+> Sasha cleans up the igc driver code that is not used or needed.
+> 
+> Vitaly cleans up driver code that was used to support Virtualization on
+> a device that is not supported by igc, so remove the dead code.
+> 
+> Andre renames a few macros to align with register and field names
+> described in the data sheet.  Also adds the VLAN Priority Queue Fliter
+> and EType Queue Filter registers to the list of registers dumped by
+> igc_get_regs().  Added additional debug messages and updated return codes
+> for unsupported features.  Refactored the VLAN priority filtering code to
+> move the core logic into igc_main.c.  Cleaned up duplicate code and
+> useless code.
 
-If we fail the reservation, we goto nla_put_failure and
-cancel the message.
+No automated warnings :)
 
-Reproduce with the following iproute2 commands:
-=====================
-ip link add dummy1 type dummy
-ip link add dummy2 type dummy
-ip link add dummy3 type dummy
-ip link add dummy4 type dummy
-ip link add dummy5 type dummy
-ip link add dummy6 type dummy
-ip link add dummy7 type dummy
-ip link add dummy8 type dummy
-ip link add dummy9 type dummy
-ip link add dummy10 type dummy
-ip link add dummy11 type dummy
-ip link add dummy12 type dummy
-ip link add dummy13 type dummy
-ip link add dummy14 type dummy
-ip link add dummy15 type dummy
-ip link add dummy16 type dummy
-ip link add dummy17 type dummy
-ip link add dummy18 type dummy
-ip link add dummy19 type dummy
-ip link add dummy20 type dummy
-ip link add dummy21 type dummy
-ip link add dummy22 type dummy
-ip link add dummy23 type dummy
-ip link add dummy24 type dummy
-ip link add dummy25 type dummy
-ip link add dummy26 type dummy
-ip link add dummy27 type dummy
-ip link add dummy28 type dummy
-ip link add dummy29 type dummy
-ip link add dummy30 type dummy
-ip link add dummy31 type dummy
-ip link add dummy32 type dummy
-
-ip link set dummy1 up
-ip link set dummy2 up
-ip link set dummy3 up
-ip link set dummy4 up
-ip link set dummy5 up
-ip link set dummy6 up
-ip link set dummy7 up
-ip link set dummy8 up
-ip link set dummy9 up
-ip link set dummy10 up
-ip link set dummy11 up
-ip link set dummy12 up
-ip link set dummy13 up
-ip link set dummy14 up
-ip link set dummy15 up
-ip link set dummy16 up
-ip link set dummy17 up
-ip link set dummy18 up
-ip link set dummy19 up
-ip link set dummy20 up
-ip link set dummy21 up
-ip link set dummy22 up
-ip link set dummy23 up
-ip link set dummy24 up
-ip link set dummy25 up
-ip link set dummy26 up
-ip link set dummy27 up
-ip link set dummy28 up
-ip link set dummy29 up
-ip link set dummy30 up
-ip link set dummy31 up
-ip link set dummy32 up
-
-ip link set dummy33 up
-ip link set dummy34 up
-
-ip link set vrf-red up
-ip link set vrf-blue up
-
-ip link set dummyVRFred up
-ip link set dummyVRFblue up
-
-ip ro add 1.1.1.1/32 dev dummy1
-ip ro add 1.1.1.2/32 dev dummy2
-ip ro add 1.1.1.3/32 dev dummy3
-ip ro add 1.1.1.4/32 dev dummy4
-ip ro add 1.1.1.5/32 dev dummy5
-ip ro add 1.1.1.6/32 dev dummy6
-ip ro add 1.1.1.7/32 dev dummy7
-ip ro add 1.1.1.8/32 dev dummy8
-ip ro add 1.1.1.9/32 dev dummy9
-ip ro add 1.1.1.10/32 dev dummy10
-ip ro add 1.1.1.11/32 dev dummy11
-ip ro add 1.1.1.12/32 dev dummy12
-ip ro add 1.1.1.13/32 dev dummy13
-ip ro add 1.1.1.14/32 dev dummy14
-ip ro add 1.1.1.15/32 dev dummy15
-ip ro add 1.1.1.16/32 dev dummy16
-ip ro add 1.1.1.17/32 dev dummy17
-ip ro add 1.1.1.18/32 dev dummy18
-ip ro add 1.1.1.19/32 dev dummy19
-ip ro add 1.1.1.20/32 dev dummy20
-ip ro add 1.1.1.21/32 dev dummy21
-ip ro add 1.1.1.22/32 dev dummy22
-ip ro add 1.1.1.23/32 dev dummy23
-ip ro add 1.1.1.24/32 dev dummy24
-ip ro add 1.1.1.25/32 dev dummy25
-ip ro add 1.1.1.26/32 dev dummy26
-ip ro add 1.1.1.27/32 dev dummy27
-ip ro add 1.1.1.28/32 dev dummy28
-ip ro add 1.1.1.29/32 dev dummy29
-ip ro add 1.1.1.30/32 dev dummy30
-ip ro add 1.1.1.31/32 dev dummy31
-ip ro add 1.1.1.32/32 dev dummy32
-
-ip next add id 1 via 1.1.1.1 dev dummy1
-ip next add id 2 via 1.1.1.2 dev dummy2
-ip next add id 3 via 1.1.1.3 dev dummy3
-ip next add id 4 via 1.1.1.4 dev dummy4
-ip next add id 5 via 1.1.1.5 dev dummy5
-ip next add id 6 via 1.1.1.6 dev dummy6
-ip next add id 7 via 1.1.1.7 dev dummy7
-ip next add id 8 via 1.1.1.8 dev dummy8
-ip next add id 9 via 1.1.1.9 dev dummy9
-ip next add id 10 via 1.1.1.10 dev dummy10
-ip next add id 11 via 1.1.1.11 dev dummy11
-ip next add id 12 via 1.1.1.12 dev dummy12
-ip next add id 13 via 1.1.1.13 dev dummy13
-ip next add id 14 via 1.1.1.14 dev dummy14
-ip next add id 15 via 1.1.1.15 dev dummy15
-ip next add id 16 via 1.1.1.16 dev dummy16
-ip next add id 17 via 1.1.1.17 dev dummy17
-ip next add id 18 via 1.1.1.18 dev dummy18
-ip next add id 19 via 1.1.1.19 dev dummy19
-ip next add id 20 via 1.1.1.20 dev dummy20
-ip next add id 21 via 1.1.1.21 dev dummy21
-ip next add id 22 via 1.1.1.22 dev dummy22
-ip next add id 23 via 1.1.1.23 dev dummy23
-ip next add id 24 via 1.1.1.24 dev dummy24
-ip next add id 25 via 1.1.1.25 dev dummy25
-ip next add id 26 via 1.1.1.26 dev dummy26
-ip next add id 27 via 1.1.1.27 dev dummy27
-ip next add id 28 via 1.1.1.28 dev dummy28
-ip next add id 29 via 1.1.1.29 dev dummy29
-ip next add id 30 via 1.1.1.30 dev dummy30
-ip next add id 31 via 1.1.1.31 dev dummy31
-ip next add id 32 via 1.1.1.32 dev dummy32
-
-i=100
-
-while [ $i -le 200 ]
-do
-ip next add id $i group 1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19
-
-	echo $i
-
-	((i++))
-
-done
-
-ip next add id 999 group 1/2/3/4/5/6
-
-ip next ls
-
-========================
-
-Fixes: ab84be7e54fc ("net: Initial nexthop code")
-Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
----
- net/ipv4/nexthop.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 2a31c4af845e..715e14475220 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -276,6 +276,7 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 	return 0;
- 
- nla_put_failure:
-+	nlmsg_cancel(skb, nlh);
- 	return -EMSGSIZE;
- }
- 
-
-base-commit: 20a785aa52c82246055a089e55df9dac47d67da1
--- 
-2.26.2
-
+It's a little strange how both TCI and ETYPE filters take the queue ID.
+Looking at the code it's not immediately clear which one take
+precedence. Can I install two rules for the same TCI and different ETYPE
+or vice versa?
