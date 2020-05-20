@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2581B1DD56D
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1101DB0E2
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729391AbgEUR7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:59:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59468 "EHLO mail.kernel.org"
+        id S1726566AbgETLDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 07:03:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727883AbgEUR7f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 13:59:35 -0400
-Received: from localhost (unknown [213.57.247.131])
+        id S1726403AbgETLDC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 07:03:02 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7964C20759;
-        Thu, 21 May 2020 17:59:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 54C63206F1;
+        Wed, 20 May 2020 11:02:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590083975;
-        bh=Ch0yiFmzDb9EKSkeM6eI9ZKlxMrabp38Wq/XMA+m5us=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WtHjzCTCi6mOX8dhw1HOqDzPIJmHXvQ5uc6mZRQF+gigisrbcJuPbrGqTtFuaG2lW
-         TVFmwrg9tE6d+xkilWMFo0jVDTs2qUbxwq0erDOVFdzrzu4uaSgZzgTLzndCGuMV+2
-         yIsf7yO2sIDFYwhsvrqbns9fr7P4EApZBA9MPCzg=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Maor Gottlieb <maorg@mellanox.com>,
-        netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 4/4] rdma: Add support to get MR in raw format
-Date:   Wed, 20 May 2020 13:25:39 +0300
-Message-Id: <20200520102539.458983-5-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200520102539.458983-1-leon@kernel.org>
-References: <20200520102539.458983-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        s=default; t=1589972581;
+        bh=utyPQ/u7bwlzb7x8dQEbcEoU71e3JC9vp1bcYs20I9U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rngQvLz2MUGKZpewOVsH0Gp996X30NtOhiZA6Cbl0hEqhTknZQkQtDQFiHZHAEToY
+         fgDm7RfVUybJvMWZuXAQNFp0jtJjFgHde5QiBByfKknhdpkLQu8UBIfHPc464pgZrb
+         8JcdoCjPSOev7Zt6WeeVeI+PkJexXjdwsOwSI3WI=
+Date:   Wed, 20 May 2020 20:02:55 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 20/20] maccess: return -ERANGE when
+ copy_from_kernel_nofault_allowed fails
+Message-Id: <20200520200255.3db6d27304f0b4c29c52ebcc@kernel.org>
+In-Reply-To: <20200519134449.1466624-21-hch@lst.de>
+References: <20200519134449.1466624-1-hch@lst.de>
+        <20200519134449.1466624-21-hch@lst.de>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@mellanox.com>
+On Tue, 19 May 2020 15:44:49 +0200
+Christoph Hellwig <hch@lst.de> wrote:
 
-Add the required support to print MR data in raw format.
-Example:
+> Allow the callers to distinguish a real unmapped address vs a range
+> that can't be probed.
+> 
+> Suggested-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-$rdma res show mr dev mlx5_1 mrn 2 -r -j
-[{"ifindex":7,"ifname":"mlx5_1","mrn":2,"mrlen":4096,"pdn":5, pid":24336,
-"comm":"ibv_rc_pingpong","data":[0,4,255,254,0,0,0,0,0,0,0,0,16,28,0,216,...]}]
+Hi Christoph,
 
-Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- rdma/res-mr.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+Can you also update the kerneldoc comment too?
+Other than that, this looks good to me.
 
-diff --git a/rdma/res-mr.c b/rdma/res-mr.c
-index c1366035..b6e0a6a9 100644
---- a/rdma/res-mr.c
-+++ b/rdma/res-mr.c
-@@ -7,17 +7,27 @@
- #include "res.h"
- #include <inttypes.h>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
 
-+static bool resp_is_valid(struct nlattr **nla_line, bool raw)
-+{
-+	if (raw)
-+		return nla_line[RDMA_NLDEV_ATTR_RES_RAW] ? true : false;
-+	if (!nla_line[RDMA_NLDEV_ATTR_RES_MRLEN])
-+		return MNL_CB_ERROR;
-+	return true;
-+}
-+
- static int res_mr_line(struct rd *rd, const char *name, int idx,
- 		       struct nlattr **nla_line)
- {
- 	uint32_t rkey = 0, lkey = 0;
- 	uint64_t iova = 0, mrlen;
-+	bool raw = rd->show_raw;
- 	char *comm = NULL;
- 	uint32_t pdn = 0;
- 	uint32_t mrn = 0;
- 	uint32_t pid = 0;
+Thank you!
 
--	if (!nla_line[RDMA_NLDEV_ATTR_RES_MRLEN])
-+	if (!resp_is_valid(nla_line, raw))
- 		return MNL_CB_ERROR;
+> ---
+>  mm/maccess.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index 1e7d77656c596..4010d64189d21 100644
+> --- a/mm/maccess.c
+> +++ b/mm/maccess.c
+> @@ -25,7 +25,7 @@ bool __weak copy_from_kernel_nofault_allowed(void *dst, const void *unsafe_src,
+>  long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
+>  {
+>  	if (!copy_from_kernel_nofault_allowed(dst, src, size))
+> -		return -EFAULT;
+> +		return -ERANGE;
+>  
+>  	pagefault_disable();
+>  	copy_from_kernel_nofault_loop(dst, src, size, u64, Efault);
+> @@ -69,7 +69,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
+>  	if (unlikely(count <= 0))
+>  		return 0;
+>  	if (!copy_from_kernel_nofault_allowed(dst, unsafe_addr, count))
+> -		return -EFAULT;
+> +		return -ERANGE;
+>  
+>  	pagefault_disable();
+>  	do {
+> @@ -107,7 +107,7 @@ long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
+>  	mm_segment_t old_fs = get_fs();
+>  
+>  	if (!copy_from_kernel_nofault_allowed(dst, src, size))
+> -		return -EFAULT;
+> +		return -ERANGE;
+>  
+>  	set_fs(KERNEL_DS);
+>  	pagefault_disable();
+> @@ -174,7 +174,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
+>  	if (unlikely(count <= 0))
+>  		return 0;
+>  	if (!copy_from_kernel_nofault_allowed(dst, unsafe_addr, count))
+> -		return -EFAULT;
+> +		return -ERANGE;
+>  
+>  	set_fs(KERNEL_DS);
+>  	pagefault_disable();
+> -- 
+> 2.26.2
+> 
 
- 	if (nla_line[RDMA_NLDEV_ATTR_RES_RKEY])
-@@ -69,6 +79,7 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
- 	print_comm(rd, comm, nla_line);
 
- 	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
-+	print_raw_data(rd, nla_line);
- 	newline(rd);
-
- out:
---
-2.26.2
-
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
