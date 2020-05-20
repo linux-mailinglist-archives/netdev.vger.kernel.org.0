@@ -2,127 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E711DAC83
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3CF1DAC8D
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:49:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgETHqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 03:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgETHqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 03:46:37 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01699C061A0E
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 00:46:37 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id a10so514043ybc.3
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 00:46:36 -0700 (PDT)
+        id S1726791AbgETHtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 03:49:23 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:41284 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbgETHtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 03:49:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GcskknYh95Rq/Z6Azk62iLDMqUdVtj6gS2U77ZaIoIU=;
-        b=O44tJvlv/WeGAb2EUW5U1b7mccht+alKed3ccPJygFxfgOiFTPk1FratyivkGc09Lv
-         xuzcQDqx5Hgm7ZErC5Ll1kGXoT8P4VVHw2p3iW54tOUCLs9CpnclbpknkrOPV24VSlU8
-         8wM2T9eqOBFTanPK5rnk4LgPYPh3A7PxoiRB+LYZH1PxDB41pN1I8QZSzz1UT02PB29S
-         FjvcxIKv5zbe9M1/LHogO3Ebj+KEt43IIO0zhchKc2GKE3vBi+nJAUELFit5FR/l2A4Y
-         WYHNbIuCWPW8qutZwXV/iekANN7iMF5zJZu9FWhBbj+NHjs7eUbFUsYfOb/oRT3x4FVC
-         xh1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GcskknYh95Rq/Z6Azk62iLDMqUdVtj6gS2U77ZaIoIU=;
-        b=b9FM3vZpg+yZfrj4+s2Fpg3EOJrYRvjyoVAS2JatG5BVjSYqqgLSlflCOJ1S4tlQM8
-         caiV0CCVoqkpKNR3VAY7xx4M2nf739gUyRrnCHDALqVao0bb+IU7g724zYecKUHZGInt
-         1x+i+GP4S6Z9zb62/aP6x0ek9qIk8RzmNA8OtB4YplCV9aGi+DgpDxQ6G6CqkrKHpDfw
-         ZDnhe+z7UIL/Gnpioq9WEkMZxEM6DONuwzWfSnjqNgC6Nq/0grzYAxdFXMQJYSjQIemn
-         2zuapLDzvSlE7V2DQK0N6B9WZVnd+jhGJ2aQFvI6ggMe72q1gujgu5sgDXHoKQ7wXeDJ
-         fdmA==
-X-Gm-Message-State: AOAM530+m7Z2VuFBNVRBJsMDTa6nU4ryUX2C9Rs85JAVAv6ki2x5j2MJ
-        g8jCcHcl1ERaU+T7azXj6ELJSqeXYodH5BxzBQafFg==
-X-Google-Smtp-Source: ABdhPJwGvKZvdPEjgUaNjoxgTzneBcLyd71wFjTYqOE86+SlBKa4uqcqVAnujdHK89IgJTKnEatAb+OEoATUC4Gc+x0=
-X-Received: by 2002:a25:7cc1:: with SMTP id x184mr5135676ybc.403.1589960793022;
- Wed, 20 May 2020 00:46:33 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1589960963; x=1621496963;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=rTYTPJVkVmrz3UNzCa73++gwpoLBVccJrDkW+WcLEaI=;
+  b=a1Xu2MFv1D0x3yRg0cQrE+g8eWoCjowMbATUNtjbc8VEPOuhj3k2akYI
+   X6BnFSbv0deKiqjXRN81ws391+xnQkE61Q6pmqCvoUcf0Tr2Tt+zdX0n9
+   ZcyR4C+6lHiTGiUpb46lf0+4k1YUdstGuAYxzE+y95q8gwcOlkAeqTsms
+   w=;
+IronPort-SDR: 6LnKk3NjUM1ekH881SPxcvPgnhf5/G6vLhn4YWpJmxetWRe595OAIxwhwBWU85Vx7wWXjP2J2k
+ MU3RkWplf/Gg==
+X-IronPort-AV: E=Sophos;i="5.73,413,1583193600"; 
+   d="scan'208";a="46037374"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 20 May 2020 07:49:20 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 323F5A20C3;
+        Wed, 20 May 2020 07:49:19 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 20 May 2020 07:49:18 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.161.175) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 20 May 2020 07:49:12 +0000
+Subject: Re: [RDMA RFC v6 16/16] RDMA/irdma: Update MAINTAINERS file
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, <dledford@redhat.com>,
+        <jgg@mellanox.com>, <davem@davemloft.net>,
+        <gregkh@linuxfoundation.org>
+CC:     Shiraz Saleem <shiraz.saleem@intel.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <nhorman@redhat.com>, <sassmann@redhat.com>, <poswald@suse.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>
+References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
+ <20200520070415.3392210-17-jeffrey.t.kirsher@intel.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <7a82fb8b-b16e-3b40-1d30-d9f52d0ff496@amazon.com>
+Date:   Wed, 20 May 2020 10:49:07 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200508053629.210324-1-irogers@google.com> <20200508053629.210324-13-irogers@google.com>
- <20200509002518.GF3538@tassilo.jf.intel.com> <CAP-5=fWYO2e9yVPuXGVKZ7TBP4PP6MjyEFiSd+20DOxYSLC--w@mail.gmail.com>
- <20200509024019.GI3538@tassilo.jf.intel.com>
-In-Reply-To: <20200509024019.GI3538@tassilo.jf.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 20 May 2020 00:46:22 -0700
-Message-ID: <CAP-5=fVPh0og6CmjM4G1bDGB_S+Sp4v_4WM3r5XqwQPbk7ASdg@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 12/14] perf metricgroup: order event groups by size
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200520070415.3392210-17-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.161.175]
+X-ClientProxiedBy: EX13D31UWA003.ant.amazon.com (10.43.160.130) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 7:40 PM Andi Kleen <ak@linux.intel.com> wrote:
->
-> > > I'm not sure if size is that great an heuristic. The dedup algorithm should
-> > > work in any case even if you don't order by size, right?
-> >
-> > Consider two metrics:
-> >  - metric 1 with events {A,B}
-> >  - metric 2 with events {A,B,C,D}
-> > If the list isn't sorted then as the matching takes the first group
-> > with all the events, metric 1 will match {A,B} and metric 2 {A,B,C,D}.
-> > If the order is sorted to {A,B,C,D},{A,B} then metric 1 matches within
-> > the {A,B,C,D} group as does metric 2. The events in metric 1 aren't
-> > used and are removed.
->
-> Ok. It's better for the longer metric if they stay together.
->
-> >
-> > The dedup algorithm is very naive :-)
->
-> I guess what matters is that it gives reasonable results on the current
-> metrics. I assume it does?
->
-> How much deduping is happening if you run all metrics?
+On 20/05/2020 10:04, Jeff Kirsher wrote:
+> From: Shiraz Saleem <shiraz.saleem@intel.com>
+> 
+> Add maintainer entry for irdma driver.
+> 
+> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> ---
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 598d0e1b3501..8b8e3e0064cf 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8745,6 +8745,14 @@ L:	linux-pm@vger.kernel.org
+>  S:	Supported
+>  F:	drivers/cpufreq/intel_pstate.c
+>  
+> +INTEL ETHERNET PROTOCL DRIVER FOR RDMA
+> +M:	Mustafa Ismail <mustafa.ismail@intel.com>
+> +M:	Shiraz Saleem <shiraz.saleem@intel.com>
+> +L:	linux-rdma@vger.kernel.org
+> +S:	Supported
+> +F:	drivers/infiniband/hw/irdma/
+> +F:	include/uapi/rdma/irdma-abi.h
 
-Hi Andi,
+This list should be sorted alphabetically.
 
-I included this data in the latest cover-letter:
-https://lore.kernel.org/lkml/20200520072814.128267-1-irogers@google.com/
+>  INTEL SPEED SELECT TECHNOLOGY
+>  M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>  L:	platform-driver-x86@vger.kernel.org
+> 
 
-> For toplev on my long term todo list was to compare it against
-> a hopefully better schedule generated by or-tools, but I never
-> got around to coding that up.
->
-> -Andi
-
-Agreed, and this relates to your comments about doing the algorithm as
-a separate pass outside of find_evsel_group. For that, I don't
-disagree but would like to land what we have and then follow up with
-improvements.
-
-Thanks,
-Ian
