@@ -2,55 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 172CF1DBD45
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 20:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7291DBD48
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 20:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbgETStA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 14:49:00 -0400
-Received: from muru.com ([72.249.23.125]:55178 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726510AbgETStA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 14:49:00 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 1B2508108;
-        Wed, 20 May 2020 18:49:46 +0000 (UTC)
-Date:   Wed, 20 May 2020 11:48:54 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Dinghao Liu <dinghao.liu@zju.edu.cn>
-Cc:     kjlu@umn.edu, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maital Hahn <maitalm@ti.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wlcore: fix runtime pm imbalance in wl1271_op_suspend
-Message-ID: <20200520184854.GY37466@atomide.com>
-References: <20200520125724.12832-1-dinghao.liu@zju.edu.cn>
+        id S1726984AbgETStW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 14:49:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbgETStW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 14:49:22 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77240C061A0E;
+        Wed, 20 May 2020 11:49:21 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id n18so3982562wmj.5;
+        Wed, 20 May 2020 11:49:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9MAZUaH2FpicdvVI3HcykUlAGlRNDh7OXyxReOax4TM=;
+        b=r7zQmQSNU1Fo1td8Pe/7x/xmeyQTZotByhyQ+YR2sGFOX+XK1mWv6zLbGS9yiAbqKX
+         W3yhBBrTZCDH2crFbO06NgMNkPYQi/gdUSJghnXgyh/46c43dq3tVyBHY3tlx25CuShI
+         TFz77nWTFNazE3FJ0F77apYOLZrDPqLmxEhMcy1LjOJm2qSQX7w0RUdzIYckcV9UnfuG
+         amT+0RiM1npCuo6NwH84rXTUrbYQULf2lk4L+l17iOt6rhvdFttdHu4O+LBSvtG1U1f/
+         4J7DXaYbLzow59uykTpyPlzEUY97tLd0ZC3Jjqv7pBjOQLTgo0fHK767h6MVbH1RvQyb
+         Begw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9MAZUaH2FpicdvVI3HcykUlAGlRNDh7OXyxReOax4TM=;
+        b=p5v+NGeqgNjgbeydF60dam4dAr4BvqIBIpTSi2J+xB8wz0RaaodFeo3fmRCCCWmO/q
+         cpQP04nn4kNvU6iY+uPMEmscUlPbtdaQFc4JXkZttTYUH1THaUbj7evGjlqF+lZhH433
+         wzS0zHHDU+xyT6QoljDXen5HcanSO+nLSUjg0e3NRjfyVUgzcjDyt8VbAlUPT5+qLIko
+         O5Y4WSjvx4/LZi/aQ2EaVudyCBCCoOmwkzrKOTUZ6X9AtnEq5ZoPsfM8UaTwnZcEpB0q
+         9/pND4tSToFjPXZD2uA7nhk+4Cn1qCZzAxUNxoVi+7l6Y8SLk+CBtpyjBb+sLpOz6Hn6
+         okDA==
+X-Gm-Message-State: AOAM533NiEsany+bp9n1rXvTodcHHEdrGf0ZbsRWpq0NiN78ih2JbHrp
+        44P5o2tlNew1gTEW04B5qHvJYXik300Ka5Y1L/w=
+X-Google-Smtp-Source: ABdhPJxLkp2Xmd8sAvxhzriGAbPzwFmT1KKfc9VIbsXtX2tfnURnEVwfwFYrt1091BD4Y3W3QMHnigOJ5XKZPAFzGsI=
+X-Received: by 2002:a7b:cfc9:: with SMTP id f9mr5686176wmm.107.1590000559656;
+ Wed, 20 May 2020 11:49:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200520125724.12832-1-dinghao.liu@zju.edu.cn>
+References: <20200520094742.337678-1-bjorn.topel@gmail.com>
+ <20200520094742.337678-10-bjorn.topel@gmail.com> <20200520100342.620a0979@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200520100342.620a0979@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 20 May 2020 20:49:08 +0200
+Message-ID: <CAJ+HfNiy3YQmOEs0OzM+LLU6h0vM40gM7eHrVNoH_PFCOdtSZw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 09/15] ice, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Dinghao Liu <dinghao.liu@zju.edu.cn> [200520 12:58]:
-> When wlcore_hw_interrupt_notify() returns an error code,
-> a pairing runtime PM usage counter decrement is needed to
-> keep the counter balanced.
+On Wed, 20 May 2020 at 19:03, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+[...]
+>
+> patch 8 also has a warning I can't figure out.
+>
 
-We should probably keep the warning though, nothing will
-get shown for wl1271_configure_suspend_ap() errors.
+Found and fixed. Thanks Jakub!
 
-Otherwise looks good to me.
 
-Regards,
-
-Tony
+Bj=C3=B6rn
