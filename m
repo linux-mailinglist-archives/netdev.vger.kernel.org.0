@@ -2,258 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C22A01DBCBD
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 20:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928971DBCBB
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 20:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727033AbgETSXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 14:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727018AbgETSXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 14:23:24 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B18CC061A0F
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 11:23:24 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id a5so1706326pjh.2
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 11:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NbHuIneciORfMrm1zEUP5bKbfSmBg1mqKOmjceTXpnQ=;
-        b=QZMofXC8PG9GhCfbs6UJ7j3r3eXAtkFGTqdC4dwND7yjMc55DYrkYX7ez7kkT6cET5
-         3GH3LKq4CG9FVCfQBI4qad848Wp9pZv1W+AwDvndTk96t0A5rkgFDtZJREKeKBG+rwj2
-         Y8JHLihGxdz/uQUjN9BoNjrZqEBczvOHJNg3U=
+        id S1727052AbgETSXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 14:23:25 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:37329 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726939AbgETSXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 14:23:20 -0400
+Received: by mail-il1-f199.google.com with SMTP id k18so3458269ilq.4
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 11:23:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=NbHuIneciORfMrm1zEUP5bKbfSmBg1mqKOmjceTXpnQ=;
-        b=fix812EbNM0KqHJeC5OYxsSO4A7mvH5urDUAcJtIWP+QKNjRmOvJliskodJQGG97yF
-         0kkm3Fpu0s7Xo20ra3S4OqtjBNAoBcyW1GuQUz0C7CvGKeey9W70zoSr1LCTxxWeKefg
-         Zec4Qs0nZlVd83Cinf3DD0GHPQ/wwwKR3UxCZ1YN70xy6xqFTj8HWZANH+QhU12J/FkO
-         zsf+ynEWJMj52NJaDirgaP4k7HQs67ReGiOAa5BmSMjJ2gy1/mNyw5NVT2bcPU/aYmcv
-         wWifStPGPOrssogCzGSh3uIvarJFUYySFMjnJ0LdKbG4b/dKNKql3Q57lK2zmy/gc9EN
-         pOkQ==
-X-Gm-Message-State: AOAM532aUJ1MTYybycytdzlZ6cxgd9CVt7JkzJYKydSjyA+/KsIN7SEH
-        IoHJNcuLbFJdr2XbDWbz4Zp8sw==
-X-Google-Smtp-Source: ABdhPJyaczonIQ2yzSURGhlDxSnSIG9ybS8fF+f2sTc/BBg4nY9IU7F3HFNLgrD7OQGbvbCIiuPFTw==
-X-Received: by 2002:a17:902:bcc4:: with SMTP id o4mr5324174pls.275.1589999003429;
-        Wed, 20 May 2020 11:23:23 -0700 (PDT)
-Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id d184sm2490238pfc.130.2020.05.20.11.23.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 May 2020 11:23:22 -0700 (PDT)
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-X-Google-Original-From: Roopa Prabhu
-To:     dsahern@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
-Subject: [PATCH net-next v3 5/5] selftests: net: add fdb nexthop tests
-Date:   Wed, 20 May 2020 11:23:11 -0700
-Message-Id: <1589998991-40120-6-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: git-send-email 2.1.4
-In-Reply-To: <1589998991-40120-1-git-send-email-roopa@cumulusnetworks.com>
-References: <1589998991-40120-1-git-send-email-roopa@cumulusnetworks.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=eNV/gcvohQYiWw7CuSofKZfplESLdrwFUzrwQcxhix4=;
+        b=ozSe+rDu/3T+PkSmFPAOdGZNbIFc8QxKv1h73XsjGhpaSsB42CEKmoeIEGwzCYV3bG
+         yqRJnap+Dp2hmj2D1KyH+uUhXFzgQmovD4TtpHg3HJxEUCB5Wn479WQ3Dqs8sMR2ztPc
+         TvRXBl8ZT6yyUuU8mlcu0+M/JiaF9P2gEzaV22tz13+SbWHMkNGPySPq4BLjh6fu5hAY
+         s/gMoqxZY5k4X9E+jySOEYfESZFdMHdMIlEh/8rdUpObFYokBFapnxbQLvh12jPXJFmx
+         3IrJtvJGAEjVnisuRUQzhtApNofPCXOT6PWqzXz2RlMQC437vOn+2ku+ZQbjepYrLD8L
+         qHSg==
+X-Gm-Message-State: AOAM530rPCc2NTFXDPK2Sj2YBqIL+twD14zv6pp0b+ZVriuiLse+bQ78
+        yuQvhIlNHZ92SsrVXTp5GrrLS8CXqZb8FKDzt/mZg8SgDeAZ
+X-Google-Smtp-Source: ABdhPJy0f1uR3u/nCL98sxbemLWlycv9b/Flaa1EtG80uoOcStu5iWGKPnWugtydu1PTLBdOusCylbMfsn1TzCYptBX+MFjNQbDE
+MIME-Version: 1.0
+X-Received: by 2002:a05:6602:2c88:: with SMTP id i8mr2439676iow.74.1589998998198;
+ Wed, 20 May 2020 11:23:18 -0700 (PDT)
+Date:   Wed, 20 May 2020 11:23:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007b211005a6187dc9@google.com>
+Subject: KASAN: slab-out-of-bounds Read in br_mrp_parse
+From:   syzbot <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>
+To:     bridge@lists.linux-foundation.org, davem@davemloft.net,
+        horatiu.vultur@microchip.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Hello,
 
-This commit adds ipv4 and ipv6 fdb nexthop api tests to fib_nexthops.sh.
+syzbot found the following crash on:
 
-Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
+HEAD commit:    dda18a5c selftests/bpf: Convert bpf_iter_test_kern{3, 4}.c..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c4e63c100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=668983fd3dd1087e
+dashboard link: https://syzkaller.appspot.com/bug?extid=9c6f0f1f8e32223df9a4
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17eaba3c100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=128598f6100000
+
+The bug was bisected to:
+
+commit 6536993371fab3de4e8379649b60e94d03e6ff37
+Author: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date:   Sun Apr 26 13:22:07 2020 +0000
+
+    bridge: mrp: Integrate MRP into the bridge
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1187c352100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1387c352100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1587c352100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com
+Fixes: 6536993371fa ("bridge: mrp: Integrate MRP into the bridge")
+
+batman_adv: batadv0: Interface activated: batadv_slave_1
+==================================================================
+BUG: KASAN: slab-out-of-bounds in br_mrp_parse+0x362/0x450 net/bridge/br_mrp_netlink.c:30
+Read of size 4 at addr ffff888094d96f24 by task syz-executor481/7028
+
+CPU: 0 PID: 7028 Comm: syz-executor481 Not tainted 5.7.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x413 mm/kasan/report.c:382
+ __kasan_report.cold+0x20/0x38 mm/kasan/report.c:511
+ kasan_report+0x33/0x50 mm/kasan/common.c:625
+ br_mrp_parse+0x362/0x450 net/bridge/br_mrp_netlink.c:30
+ br_afspec+0x328/0x490 net/bridge/br_netlink.c:677
+ br_setlink+0x363/0x610 net/bridge/br_netlink.c:934
+ rtnl_bridge_setlink+0x279/0x6d0 net/core/rtnetlink.c:4803
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x4438f9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 6b 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc8cfd2528 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004438f9
+RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+RBP: 00007ffc8cfd2540 R08: 00000000bb1414ac R09: 00000000bb1414ac
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc8cfd2570
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 7028:
+ save_stack+0x1b/0x40 mm/kasan/common.c:49
+ set_track mm/kasan/common.c:57 [inline]
+ __kasan_kmalloc mm/kasan/common.c:495 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:468
+ kmalloc_node include/linux/slab.h:578 [inline]
+ kvmalloc_node+0x61/0xf0 mm/util.c:574
+ kvmalloc include/linux/mm.h:757 [inline]
+ kvzalloc include/linux/mm.h:765 [inline]
+ alloc_netdev_mqs+0x97/0xdc0 net/core/dev.c:9899
+ rtnl_create_link+0x219/0xac0 net/core/rtnetlink.c:3068
+ __rtnl_newlink+0xe2e/0x1590 net/core/rtnetlink.c:3330
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ __sys_sendto+0x219/0x330 net/socket.c:1995
+ __do_sys_sendto net/socket.c:2007 [inline]
+ __se_sys_sendto net/socket.c:2003 [inline]
+ __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2003
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+
+Freed by task 0:
+(stack is not available)
+
+The buggy address belongs to the object at ffff888094d96000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 3876 bytes inside of
+ 4096-byte region [ffff888094d96000, ffff888094d97000)
+The buggy address belongs to the page:
+page:ffffea0002536580 refcount:1 mapcount:0 mapping:00000000c278d3e1 index:0x0 head:ffffea0002536580 order:1 compound_mapcount:0
+flags: 0xfffe0000010200(slab|head)
+raw: 00fffe0000010200 ffffea00024d5088 ffffea0002a47788 ffff8880aa002000
+raw: 0000000000000000 ffff888094d96000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff888094d96e00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888094d96e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888094d96f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                               ^
+ ffff888094d96f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888094d97000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
- tools/testing/selftests/net/fib_nexthops.sh | 160 +++++++++++++++++++++++++++-
- 1 file changed, 158 insertions(+), 2 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 50d822f..51f8e9a 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -19,8 +19,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode ipv4_fdb_grp_fcnal"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode ipv6_fdb_grp_fcnal"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -146,6 +146,7 @@ setup()
- 	create_ns remote
- 
- 	IP="ip -netns me"
-+	BRIDGE="bridge -netns me"
- 	set -e
- 	$IP li add veth1 type veth peer name veth2
- 	$IP li set veth1 up
-@@ -280,6 +281,161 @@ stop_ip_monitor()
- 	return $rc
- }
- 
-+check_nexthop_fdb_support()
-+{
-+	$IP nexthop help 2>&1 | grep -q fdb
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: iproute2 too old, missing fdb nexthop support"
-+		return $ksft_skip
-+	fi
-+}
-+
-+ipv6_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 61 via 2001:db8:91::2 fdb"
-+	run_cmd "$IP nexthop add id 62 via 2001:db8:91::3 fdb"
-+	run_cmd "$IP nexthop add id 102 group 61/62 fdb"
-+	check_nexthop "id 102" "id 102 group 61/62 fdb"
-+	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-+
-+	## get nexthop group
-+	run_cmd "$IP nexthop get id 102"
-+	check_nexthop "id 102" "id 102 group 61/62 fdb"
-+	log_test $? 0 "Get Fdb nexthop group by id"
-+
-+	# fdb nexthop group can only contain fdb nexthops
-+	run_cmd "$IP nexthop add id 63 via 2001:db8:91::4"
-+	run_cmd "$IP nexthop add id 64 via 2001:db8:91::5"
-+	run_cmd "$IP nexthop add id 103 group 63/64 fdb"
-+	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-+
-+	# Non fdb nexthop group can not contain fdb nexthops
-+	run_cmd "$IP nexthop add id 65 via 2001:db8:91::5 fdb"
-+	run_cmd "$IP nexthop add id 66 via 2001:db8:91::6 fdb"
-+	run_cmd "$IP nexthop add id 104 group 65/66"
-+	log_test $? 2 "Non-Fdb Nexthop group with fdb nexthops"
-+
-+	# fdb nexthop cannot have blackhole
-+	run_cmd "$IP nexthop add id 67 blackhole fdb"
-+	log_test $? 2 "Fdb Nexthop with blackhole"
-+
-+	# fdb nexthop with oif
-+	run_cmd "$IP nexthop add id 68 via 2001:db8:91::7 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with oif"
-+
-+	# fdb nexthop with onlink
-+	run_cmd "$IP nexthop add id 68 via 2001:db8:91::7 onlink fdb"
-+	log_test $? 2 "Fdb Nexthop with onlink"
-+
-+	# fdb nexthop with encap
-+	run_cmd "$IP nexthop add id 69 encap mpls 101 via 2001:db8:91::8 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with encap"
-+
-+	run_cmd "$IP link add name vx10 type vxlan id 1010 local 2001:db8:91::9 remote 2001:db8:91::10 dstport 4789 nolearning noudpcsum tos inherit ttl 100"
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self"
-+	log_test $? 0 "Fdb mac add with nexthop group"
-+
-+	## fdb nexthops can only reference nexthop groups and not nexthops
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:14 dev vx10 nhid 61 self"
-+	log_test $? 255 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 66"
-+	log_test $? 2 "Route add with fdb nexthop"
-+
-+	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 103"
-+	log_test $? 2 "Route add with fdb nexthop group"
-+
-+	run_cmd "$IP nexthop del id 102"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
-+ipv4_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 fdb"
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 fdb"
-+	run_cmd "$IP nexthop add id 102 group 12/13 fdb"
-+	check_nexthop "id 102" "id 102 group 12/13 fdb"
-+	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 102"
-+	check_nexthop "id 102" "id 102 group 12/13 fdb"
-+	log_test $? 0 "Get Fdb nexthop group by id"
-+
-+	# fdb nexthop group can only contain fdb nexthops
-+	run_cmd "$IP nexthop add id 14 via 172.16.1.2"
-+	run_cmd "$IP nexthop add id 15 via 172.16.1.3"
-+	run_cmd "$IP nexthop add id 103 group 14/15 fdb"
-+	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-+
-+	# Non fdb nexthop group can not contain fdb nexthops
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 fdb"
-+	run_cmd "$IP nexthop add id 17 via 172.16.1.3 fdb"
-+	run_cmd "$IP nexthop add id 104 group 14/15"
-+	log_test $? 2 "Non-Fdb Nexthop group with fdb nexthops"
-+
-+	# fdb nexthop cannot have blackhole
-+	run_cmd "$IP nexthop add id 18 blackhole fdb"
-+	log_test $? 2 "Fdb Nexthop with blackhole"
-+
-+	# fdb nexthop with oif
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with oif"
-+
-+	# fdb nexthop with onlink
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 onlink fdb"
-+	log_test $? 2 "Fdb Nexthop with onlink"
-+
-+	# fdb nexthop with encap
-+	run_cmd "$IP nexthop add id 17 encap mpls 101 via 172.16.1.2 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with encap"
-+
-+	run_cmd "$IP link add name vx10 type vxlan id 1010 local 10.0.0.1 remote 10.0.0.2 dstport 4789 nolearning noudpcsum tos inherit ttl 100"
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self"
-+	log_test $? 0 "Fdb mac add with nexthop group"
-+
-+	# fdb nexthops can only reference nexthop groups and not nexthops
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:14 dev vx10 nhid 12 self"
-+	log_test $? 255 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP ro add 172.16.0.0/22 nhid 15"
-+	log_test $? 2 "Route add with fdb nexthop"
-+
-+	run_cmd "$IP ro add 172.16.0.0/22 nhid 103"
-+	log_test $? 2 "Route add with fdb nexthop group"
-+
-+	run_cmd "$IP nexthop del id 102"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
- ################################################################################
- # basic operations (add, delete, replace) on nexthops and nexthop groups
- #
--- 
-2.1.4
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
