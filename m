@@ -2,118 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1101DB0E2
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:03:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A4A1DB0E7
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbgETLDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 07:03:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53600 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726403AbgETLDC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 07:03:02 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        id S1726799AbgETLDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 07:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726403AbgETLDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 07:03:24 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52835C061A0E;
+        Wed, 20 May 2020 04:03:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=VNz0a2EJj80b4yeRQXHVRRn3nEHHKr03ijj9QvQzWgw=; b=HACMClLgVKLQEUF7EKFXvEb1cy
+        1Lk9V8pnMfXwLY407L0lnny9mSZtKC8kQ7gw1b+b+D8D0SBJWuLPqCm8Pr5cuCVy6Brer5QF5bUx6
+        8rGK+97dKCunJglGFg6pLAP66awTkvWhqgMKUxv/EYi4YdTN19YiUGU9E3MhxA8IsvpO7nEzI+8nn
+        dbQGU9XfqCPcjfN8EUHXFQlRUGVL1UWH8VvFBUuZfZLkdZTwK4l1VASFU9VPPsFZm+IPvmPJbAKyt
+        fa/tK6UrAQyhCU09gXfUrmNcRbVwYKn5rihAXcnAY3OQf3bMS/DwlXg2/E4w8P+gm+Iysk6XWZqRc
+        voQxD5jg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jbMVI-0004qO-T0; Wed, 20 May 2020 11:03:17 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 54C63206F1;
-        Wed, 20 May 2020 11:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589972581;
-        bh=utyPQ/u7bwlzb7x8dQEbcEoU71e3JC9vp1bcYs20I9U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rngQvLz2MUGKZpewOVsH0Gp996X30NtOhiZA6Cbl0hEqhTknZQkQtDQFiHZHAEToY
-         fgDm7RfVUybJvMWZuXAQNFp0jtJjFgHde5QiBByfKknhdpkLQu8UBIfHPc464pgZrb
-         8JcdoCjPSOev7Zt6WeeVeI+PkJexXjdwsOwSI3WI=
-Date:   Wed, 20 May 2020 20:02:55 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 152FD306089;
+        Wed, 20 May 2020 13:03:15 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id F1A6629D896D8; Wed, 20 May 2020 13:03:14 +0200 (CEST)
+Date:   Wed, 20 May 2020 13:03:14 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 20/20] maccess: return -ERANGE when
- copy_from_kernel_nofault_allowed fails
-Message-Id: <20200520200255.3db6d27304f0b4c29c52ebcc@kernel.org>
-In-Reply-To: <20200519134449.1466624-21-hch@lst.de>
-References: <20200519134449.1466624-1-hch@lst.de>
-        <20200519134449.1466624-21-hch@lst.de>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mike Galbraith <umgwanakikbuti@gmail.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 6/8] connector/cn_proc: Protect send_msg() with a local
+ lock
+Message-ID: <20200520110314.GI317569@hirez.programming.kicks-ass.net>
+References: <20200519201912.1564477-1-bigeasy@linutronix.de>
+ <20200519201912.1564477-7-bigeasy@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200519201912.1564477-7-bigeasy@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 May 2020 15:44:49 +0200
-Christoph Hellwig <hch@lst.de> wrote:
-
-> Allow the callers to distinguish a real unmapped address vs a range
-> that can't be probed.
-> 
-> Suggested-by: Masami Hiramatsu <mhiramat@kernel.org>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-Hi Christoph,
-
-Can you also update the kerneldoc comment too?
-Other than that, this looks good to me.
-
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-Thank you!
-
-> ---
->  mm/maccess.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/maccess.c b/mm/maccess.c
-> index 1e7d77656c596..4010d64189d21 100644
-> --- a/mm/maccess.c
-> +++ b/mm/maccess.c
-> @@ -25,7 +25,7 @@ bool __weak copy_from_kernel_nofault_allowed(void *dst, const void *unsafe_src,
->  long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
->  {
->  	if (!copy_from_kernel_nofault_allowed(dst, src, size))
-> -		return -EFAULT;
-> +		return -ERANGE;
+On Tue, May 19, 2020 at 10:19:10PM +0200, Sebastian Andrzej Siewior wrote:
+> @@ -40,10 +41,11 @@ static struct cb_id cn_proc_event_id = { CN_IDX_PROC, CN_VAL_PROC };
 >  
->  	pagefault_disable();
->  	copy_from_kernel_nofault_loop(dst, src, size, u64, Efault);
-> @@ -69,7 +69,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
->  	if (unlikely(count <= 0))
->  		return 0;
->  	if (!copy_from_kernel_nofault_allowed(dst, unsafe_addr, count))
-> -		return -EFAULT;
-> +		return -ERANGE;
->  
->  	pagefault_disable();
->  	do {
-> @@ -107,7 +107,7 @@ long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
->  	mm_segment_t old_fs = get_fs();
->  
->  	if (!copy_from_kernel_nofault_allowed(dst, src, size))
-> -		return -EFAULT;
-> +		return -ERANGE;
->  
->  	set_fs(KERNEL_DS);
->  	pagefault_disable();
-> @@ -174,7 +174,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
->  	if (unlikely(count <= 0))
->  		return 0;
->  	if (!copy_from_kernel_nofault_allowed(dst, unsafe_addr, count))
-> -		return -EFAULT;
-> +		return -ERANGE;
->  
->  	set_fs(KERNEL_DS);
->  	pagefault_disable();
-> -- 
-> 2.26.2
-> 
+>  /* proc_event_counts is used as the sequence number of the netlink message */
+>  static DEFINE_PER_CPU(__u32, proc_event_counts) = { 0 };
+> +static DEFINE_LOCAL_LOCK(send_msg_lock);
 
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+Put it in a struct ?
