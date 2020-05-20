@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA331DB499
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 15:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8191DB120
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgETNIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 09:08:42 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:12684 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726525AbgETNIm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 09:08:42 -0400
-Received: from localhost.localdomain (unknown [222.205.77.158])
-        by mail-app2 (Coremail) with SMTP id by_KCgCnHr63K8VezDqOAQ--.14485S4;
-        Wed, 20 May 2020 21:08:12 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maital Hahn <maitalm@ti.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] wlcore: fix runtime pm imbalance in __wl1271_op_remove_interface
-Date:   Wed, 20 May 2020 21:08:04 +0800
-Message-Id: <20200520130806.14789-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgCnHr63K8VezDqOAQ--.14485S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7JrWfWFyDZrW5ury3AF48Xrb_yoWDCFb_Gr
-        s7ZF1kur4kC34Ikr4UCan8XrW09ryDu3Z5urWIvF9xJayj9rZ5tr1rZ3sxZr4fC3yUuF13
-        Jwn8AF15Aa4DujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb6AFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
-        JrylYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
-        wVAFwVW5GwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2IqxVAqx4xG67AKxVWUJVWU
-        GwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI4
-        8JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4U
-        MIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42
-        IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUb_gA7UUUUU=
-        =
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/
+        id S1726729AbgETLLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 07:11:19 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:4072 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbgETLLT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 07:11:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1589973078; x=1621509078;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JsYCUzXlsDfKtKNFoYWxhgyWbE9JFx+fChYZvOyLb/8=;
+  b=SUYQ1pucnAgYEwtQuj2gjBGZwjgXq454vsILk42bKqWu5a8oNbqXd6J6
+   PZlBny0nuZciH4T2iTdqjARlNajgkMi6iZom5p9xgDlmpl5pAA3PsgtbX
+   v/poxcSekk8fig4KObsS1toDVxctS0Mdb3EbPFW0kWCzrR3LS8+xzx/Nb
+   dTmcS7MP3yB95pc+u7ngDp8rLjVXPGP5rKrnyViBt8J+8v+Tida0esDiN
+   NNBFojgowf53pZfBoPoHo0KiKlUoqS0iJ+3FekcTTHOUtJEGp7zEfc30/
+   sfARI+jno19elgLCtzckg9GwBM/9+JNNP7bqiSAxysfoPrSouuPuZ+EQ4
+   A==;
+IronPort-SDR: hULINyyKvQELhKkzLfoNOWo8H94vU3VkTHKWL7m5CJNyeDJEKBR7za+GwI7t1sDbkib2qZJ/PF
+ Kgfgk3nhWAqlM6tijoAOM6Nr+ZL388Z2Bc6TPfwA9LX9oqrxAnIXsaJyGfm0Af2jE/+qXfaqqZ
+ ogNDnJNELpXYKl9PEb2XF9f8XiCwb+1x+egtNYLCu9BYnTTdAemaynnesU2muKjdsy2hdN0CUS
+ t+mKg0MJ6jF98Z3gyi5WGyad/BTjqtLM9vkkp2g1ZkJsNZbnLe3lEMzpBS21enjtOLeqmvS8zg
+ 6CE=
+X-IronPort-AV: E=Sophos;i="5.73,413,1583218800"; 
+   d="scan'208";a="77278923"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 May 2020 04:11:17 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 20 May 2020 04:11:17 -0700
+Received: from soft-dev3.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Wed, 20 May 2020 04:11:14 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <nikolay@cumulusnetworks.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH 0/3] net: bridge: mrp: Add small fixes to MRP
+Date:   Wed, 20 May 2020 13:09:20 +0000
+Message-ID: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When wl12xx_cmd_role_disable() returns an error code,
-a pairing runtime PM usage counter decrement is needed to
-keep the counter balanced.
+This patch series adds small fixes to MRP implementation.
+The following are fixed in this patch series:
+- now is not allow to add the same port to multiple MRP rings
+- remove unused variable
+- restore the port state according to the bridge state when the MRP instance
+  is deleted
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- drivers/net/wireless/ti/wlcore/main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Horatiu Vultur (3):
+  bridge: mrp: Add br_mrp_unique_ifindex function
+  switchdev: mrp: Remove the variable mrp_ring_state
+  bridge: mrp: Restore port state when deleting MRP instance
 
-diff --git a/drivers/net/wireless/ti/wlcore/main.c b/drivers/net/wireless/ti/wlcore/main.c
-index f140f7d7f553..e6c299efbc2e 100644
---- a/drivers/net/wireless/ti/wlcore/main.c
-+++ b/drivers/net/wireless/ti/wlcore/main.c
-@@ -2698,12 +2698,16 @@ static void __wl1271_op_remove_interface(struct wl1271 *wl,
- 
- 		if (!wlcore_is_p2p_mgmt(wlvif)) {
- 			ret = wl12xx_cmd_role_disable(wl, &wlvif->role_id);
--			if (ret < 0)
-+			if (ret < 0) {
-+				pm_runtime_put_noidle(wl->dev);
- 				goto deinit;
-+			}
- 		} else {
- 			ret = wl12xx_cmd_role_disable(wl, &wlvif->dev_role_id);
--			if (ret < 0)
-+			if (ret < 0) {
-+				pm_runtime_put_noidle(wl->dev);
- 				goto deinit;
-+			}
- 		}
- 
- 		pm_runtime_mark_last_busy(wl->dev);
+ include/net/switchdev.h |  1 -
+ net/bridge/br_mrp.c     | 44 +++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 40 insertions(+), 5 deletions(-)
+
 -- 
-2.17.1
+2.26.2
 
