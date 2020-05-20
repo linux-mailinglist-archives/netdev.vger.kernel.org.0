@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C518D1DBE3D
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C63D1DBE3F
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbgETTp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 15:45:57 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:37278 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726548AbgETTp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 15:45:56 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04KJRr4m063954;
-        Wed, 20 May 2020 19:45:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=uK5Lcdw4NGbEJFHC3Vv/WDvbuBjG0vtZ2idMT/tLedo=;
- b=fWRZRQBt2ZL6U+Dc1kee8uHj0a7B/lWVBTlYYS/wW47o9hDTAAiBW53+vF6djqgz/DdZ
- BedVe0daUpOj6iedd5CANaiTGY1x3Ha3eu03e6FGWscz4BbG5xdZRM4mJ781VDYowXI/
- GNPROm6sp7JxMXGciSVDGUvFgR9zUI6j25L+AtBcg/PtCM6NDvjz/KgSov+lkrJ4hOjD
- Y4WLWflBe9fl73Be5p5zPBgoYh7WCUlgKS3/gEk+ipy8Rv4cb3O2X469A5S2qkv5RO1L
- ITnU09AkdwlPcQHzMx6S0MRUuFdo76jC7QAwc6rcE4f5I3oFNZf9UBTPc6Tu5Z4zcC6g ow== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 31284m52ra-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 19:45:44 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04KJSeAC099029;
-        Wed, 20 May 2020 19:43:44 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 313gj43u34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 19:43:44 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 04KJev92134964;
-        Wed, 20 May 2020 19:43:43 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 313gj43u13-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 May 2020 19:43:43 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04KJhftj025589;
-        Wed, 20 May 2020 19:43:42 GMT
-Received: from [10.74.108.67] (/10.74.108.67)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 20 May 2020 12:43:41 -0700
-Subject: Re: [PATCH] rds: fix crash in rds_info_getsockopt()
-To:     John Hubbard <jhubbard@nvidia.com>,
-        syzbot+118ac0af4ac7f785a45b@syzkaller.appspotmail.com
-Cc:     akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        rds-devel@oss.oracle.com, syzkaller-bugs@googlegroups.com
-References: <00000000000000d71e05a6185662@google.com>
- <20200520194147.127137-1-jhubbard@nvidia.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <d848c10e-1d04-3669-0d0f-5b53505686b1@oracle.com>
-Date:   Wed, 20 May 2020 12:43:39 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S1726990AbgETTqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 15:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726548AbgETTqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 15:46:34 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF20C061A0E;
+        Wed, 20 May 2020 12:46:33 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 190so4932136qki.1;
+        Wed, 20 May 2020 12:46:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=mcSZw5KQg0kqjmS62PMSqZhL7vTqW0Zf7EDd/hel+bo=;
+        b=V3E1P7uOlaVf4R+IBcr4uVVWw6zRKqHOzbqulZ5klHKdMDjgUjLp3/shiXJ8A3YkqT
+         jt4nuktv10HrLWttY1hUvskeRfk3UnDrskbBhWPmWWwZTnkr1lPN6UyJHQJBgU2t7m3e
+         WWA0nNMTIlEv93GHftDRHYPd3Hwgf/heUClrsaeOAHy/qPftOS0Oszdw/30MmaSNZkFK
+         OKH6Q8BV7ulPqbY01vgPaqTzLsoX/T56DJEwCuecpLrN7YqvPLonkSd+EeL94HETyQbg
+         iI4yAfSSse0pgwh5jhOHv0CbvCRBHKWIBChFjgJFPOSDixblLFpsbeNE7mgesaUyF5tP
+         /PNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mcSZw5KQg0kqjmS62PMSqZhL7vTqW0Zf7EDd/hel+bo=;
+        b=O3T0uslRaBe1lTZFHb+FrGbSAfjr03Q3UvzONVy6npQr9Iv7bjDTC5XKrPPWYda/kM
+         AdCMYw3DdgVLVhiAJRggpxuAYAME1VIjng5A7tt1eQc/aQGiQovmJYUGo1ZcPYwcK5sI
+         5OeM7thvNdG053s5iQKvPA/anGMV0CMW+/NCZr8Hv+BAKf2zbJ0xBvzZSZgvAKzGaSs8
+         GpDjfaHBw827+OkWXIuDyT0Q5RoHQ3qjZuygYymFlC6U5rdz3tXJvyqCZvqxyT9pI2eM
+         9is3CXU8mpbMlI0a4xMRfoe9pGOTVAGDenLXcGxXCu9zkyuzeXRfXEYbhnay+cG4p3jA
+         OfLg==
+X-Gm-Message-State: AOAM530nfrkXjPFB3fT1x4XdXI6nhFLB8ikVfFPI/O0P4t8FsDb8T2rz
+        0Keo4QIXxZeRmGJXarZPD5U=
+X-Google-Smtp-Source: ABdhPJwXMNHYdNUmsn0BkW9kEShhhi96KYLxfmtDHutfxLF7tn3wmi/HCvfCxR0EDpk8Fa3jPBgM+A==
+X-Received: by 2002:a05:620a:846:: with SMTP id u6mr3993303qku.346.1590003993045;
+        Wed, 20 May 2020 12:46:33 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:fa5d:572c:344c:b561:94e0])
+        by smtp.gmail.com with ESMTPSA id k25sm2884082qki.135.2020.05.20.12.46.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 12:46:32 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 9698DC0A6B; Wed, 20 May 2020 16:46:29 -0300 (-03)
+Date:   Wed, 20 May 2020 16:46:29 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jere =?iso-8859-1?Q?Lepp=E4nen?= <jere.leppanen@nokia.com>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: [PATCH net 1/1] sctp: Start shutdown on association restart if
+ in SHUTDOWN-SENT state and socket is closed
+Message-ID: <20200520194629.GS2491@localhost.localdomain>
+References: <20200520151531.787414-1-jere.leppanen@nokia.com>
 MIME-Version: 1.0
-In-Reply-To: <20200520194147.127137-1-jhubbard@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9627 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0
- cotscore=-2147483648 impostorscore=0 malwarescore=0 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 spamscore=0 bulkscore=0 adultscore=0
- priorityscore=1501 clxscore=1011 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005200155
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200520151531.787414-1-jere.leppanen@nokia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/20 12:41 PM, John Hubbard wrote:
-> The conversion to pin_user_pages() had a bug: it overlooked
-> the case of allocation of pages failing. Fix that by restoring
-> an equivalent check.
+On Wed, May 20, 2020 at 06:15:31PM +0300, Jere Leppänen wrote:
+> Commit bdf6fa52f01b ("sctp: handle association restarts when the
+> socket is closed.") starts shutdown when an association is restarted,
+> if in SHUTDOWN-PENDING state and the socket is closed. However, the
+> rationale stated in that commit applies also when in SHUTDOWN-SENT
+> state - we don't want to move an association to ESTABLISHED state when
+> the socket has been closed, because that results in an association
+> that is unreachable from user space.
 > 
-> Reported-by: syzbot+118ac0af4ac7f785a45b@syzkaller.appspotmail.com
-> Fixes: dbfe7d74376e ("rds: convert get_user_pages() --> pin_user_pages()")
+> The problem scenario:
 > 
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> Cc: rds-devel@oss.oracle.com
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> 1.  Client crashes and/or restarts.
+> 
+> 2.  Server (using one-to-one socket) calls close(). SHUTDOWN is lost.
+> 
+> 3.  Client reconnects using the same addresses and ports.
+> 
+> 4.  Server's association is restarted. The association and the socket
+>     move to ESTABLISHED state, even though the server process has
+>     closed its descriptor.
+> 
+> Also, after step 4 when the server process exits, some resources are
+> leaked in an attempt to release the underlying inet sock structure in
+> ESTABLISHED state:
+> 
+>     IPv4: Attempt to release TCP socket in state 1 00000000377288c7
+> 
+> Fix by acting the same way as in SHUTDOWN-PENDING state. That is, if
+> an association is restarted in SHUTDOWN-SENT state and the socket is
+> closed, then start shutdown and don't move the association or the
+> socket to ESTABLISHED state.
+> 
+> Fixes: bdf6fa52f01b ("sctp: handle association restarts when the socket is closed.")
+> Signed-off-by: Jere Leppänen <jere.leppanen@nokia.com>
 > ---
-Thanks John !!
+>  net/sctp/sm_statefuns.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+> index 26788f4a3b9e..e86620fbd90f 100644
+> --- a/net/sctp/sm_statefuns.c
+> +++ b/net/sctp/sm_statefuns.c
+> @@ -1856,12 +1856,13 @@ static enum sctp_disposition sctp_sf_do_dupcook_a(
+>  	/* Update the content of current association. */
+>  	sctp_add_cmd_sf(commands, SCTP_CMD_UPDATE_ASSOC, SCTP_ASOC(new_asoc));
+>  	sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
+> -	if (sctp_state(asoc, SHUTDOWN_PENDING) &&
+> +	if ((sctp_state(asoc, SHUTDOWN_PENDING) ||
+> +	     sctp_state(asoc, SHUTDOWN_SENT)) &&
+>  	    (sctp_sstate(asoc->base.sk, CLOSING) ||
+>  	     sock_flag(asoc->base.sk, SOCK_DEAD))) {
+> -		/* if were currently in SHUTDOWN_PENDING, but the socket
+> -		 * has been closed by user, don't transition to ESTABLISHED.
+> -		 * Instead trigger SHUTDOWN bundled with COOKIE_ACK.
+> +		/* If the socket has been closed by user, don't
+> +		 * transition to ESTABLISHED. Instead trigger SHUTDOWN
+> +		 * bundled with COOKIE_ACK.
+>  		 */
+>  		sctp_add_cmd_sf(commands, SCTP_CMD_REPLY, SCTP_CHUNK(repl));
+>  		return sctp_sf_do_9_2_start_shutdown(net, ep, asoc,
+> 
+> base-commit: 20a785aa52c82246055a089e55df9dac47d67da1
 
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+This last line is not standard, but git didn't complain about it here.
+
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
