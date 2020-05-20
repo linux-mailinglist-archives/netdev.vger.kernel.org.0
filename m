@@ -2,115 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0B61DB58F
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 15:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E11E1DB5AB
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 15:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgETNtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 09:49:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40885 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726570AbgETNtB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 09:49:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589982540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a816W8Z5hp9K0nG+dy2LJ94rdDDToT47/ru3WqNRsNQ=;
-        b=iXLUJwYxYGP/SkkPVywn7SleB/SImDDE7f5MlyAugUmXwJydPQj7YQowJLBM6S9TX3jbg5
-        d90uCmewab+pxDHd5bxI6HtdBF9p8BNFCIPZ2dzlsIKCdllUO38GQ/MyozFRtD78dzQ6O2
-        WFE72Ys2vTEVLUxrlcQ6baE6lZqEPYQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-191-Of_ePFwOOx-1njuz7CnsEg-1; Wed, 20 May 2020 09:48:56 -0400
-X-MC-Unique: Of_ePFwOOx-1njuz7CnsEg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3300E80B71E;
-        Wed, 20 May 2020 13:48:53 +0000 (UTC)
-Received: from krava (unknown [10.40.193.10])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 373567958D;
-        Wed, 20 May 2020 13:48:48 +0000 (UTC)
-Date:   Wed, 20 May 2020 15:48:47 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Paul Clarke <pc@us.ibm.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH 5/7] perf metricgroup: Remove duped metric group events
-Message-ID: <20200520134847.GM157452@krava>
-References: <20200520072814.128267-1-irogers@google.com>
- <20200520072814.128267-6-irogers@google.com>
+        id S1726868AbgETNxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 09:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbgETNxt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 09:53:49 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D430C061A0E
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 06:53:49 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j5so3268947wrq.2
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 06:53:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BxU0RbOHERDPAaEh9K1DdaEzRKgN2BpIjZ+4RuGp5w0=;
+        b=xNIrMgWXi5At6b4pUzXwJuiu0ovjNmXESnnb7aTeg2/1PSTbMjDwUHOse0+9V79v/6
+         2J4V7WVQoexK01HOgSaj4BhUU8Unrd9lsfrPCvTQ/bFlD0ws1Cez7i9MADoQl7pUt8jR
+         5MYwdDMzNWCVVEy5jEDmI1Ds0UZUHpxCRnd9fcETuYgHMLML4G55VL2xb6F9KPMl5CCt
+         rV08Ozx1fQYdkPChaMtsNl+8X+jY0SYVzvRmdv7fSNbqmhnPP4tLWvCAmr2oGDZi3ooE
+         ZhHhX4pocHICFp9stOltf6n1hJld/ZW2898eHFR0A7NBkfve+s4q8MGJAOrJj6iJgBos
+         bSAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BxU0RbOHERDPAaEh9K1DdaEzRKgN2BpIjZ+4RuGp5w0=;
+        b=oPk/q8hfHcoZj34c6D50LnomwckpowyG4XiKJsZEtW/IkYfY5Eyvs4npjE/EUfmzfv
+         3cOy7glF7IxW9S7l6kFV6IgfxhQXgrEGZ3h2YLMyMtc83+pfU0eSEaeKIs9ZE7oeOtR8
+         u0CHoCUYQpREnB2CBxPK1ZWDMABxov8c8OrUOH27Bz+L4+Cv9feSGUcjU4O1twMVhj6x
+         vlCgci3TY6DhKdvYDaCzWjGUpypwrPaDsiP3PMl1bNImE4WOBFAfeRbBj5TSNdEIwxJ4
+         nmRX9admzYxY/5jx73zhOToIHdZhBgMwVddRusvsUvxztl5knvu/OjNjqu5vgRRSyXql
+         m23A==
+X-Gm-Message-State: AOAM533KNIWVdH0G6RtG3fItxLfK0NMOweNgsIMQ6vyTkHg6BAfnybHE
+        rUxdA/d2DTTLiq/uYLkPjxV7R5Ww9sI=
+X-Google-Smtp-Source: ABdhPJzp1Cv0aJmUuGkxRoue8HweeWnRZC6ZFJAKdb6pAn2/RnkDMWlF4/7eqDrCFVUJqVOpz12Tjw==
+X-Received: by 2002:a05:6000:10d:: with SMTP id o13mr2744184wrx.328.1589982828065;
+        Wed, 20 May 2020 06:53:48 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id v126sm3606787wma.9.2020.05.20.06.53.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 06:53:47 -0700 (PDT)
+Date:   Wed, 20 May 2020 15:53:46 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        danieller@mellanox.com, mlxsw@mellanox.com,
+        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
+        saeedm@mellanox.com, leon@kernel.org, snelson@pensando.io,
+        drivers@pensando.io, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 3/3] selftests: net: Add port split test
+Message-ID: <20200520135346.GA2478@nanopsycho>
+References: <20200519134032.1006765-1-idosch@idosch.org>
+ <20200519134032.1006765-4-idosch@idosch.org>
+ <20200519141541.GJ624248@lunn.ch>
+ <20200519185642.GA1016583@splinter>
+ <20200519193306.GB652285@lunn.ch>
+ <20200520134340.GA1050786@splinter>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200520072814.128267-6-irogers@google.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20200520134340.GA1050786@splinter>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 12:28:12AM -0700, Ian Rogers wrote:
+Wed, May 20, 2020 at 03:43:40PM CEST, idosch@idosch.org wrote:
+>On Tue, May 19, 2020 at 09:33:06PM +0200, Andrew Lunn wrote:
+>> > It's basically the number of lanes
+>> 
+>> Then why not call it lanes? It makes it clearer how this maps to the
+>> hardware?
+>
+>I'm not against it. We discussed it and decided to go with width. Jiri /
+>Danielle, are you OK with changing to lanes?
 
-SNIP
-
->  
-> @@ -157,7 +183,7 @@ static int metricgroup__setup_events(struct list_head *groups,
->  	int i = 0;
->  	int ret = 0;
->  	struct egroup *eg;
-> -	struct evsel *evsel;
-> +	struct evsel *evsel, *tmp;
->  	unsigned long *evlist_used;
->  
->  	evlist_used = bitmap_alloc(perf_evlist->core.nr_entries);
-> @@ -173,7 +199,8 @@ static int metricgroup__setup_events(struct list_head *groups,
->  			ret = -ENOMEM;
->  			break;
->  		}
-> -		evsel = find_evsel_group(perf_evlist, &eg->pctx, metric_events,
-> +		evsel = find_evsel_group(perf_evlist, &eg->pctx,
-> +					eg->has_constraint, metric_events,
->  					evlist_used);
->  		if (!evsel) {
->  			pr_debug("Cannot resolve %s: %s\n",
-> @@ -200,6 +227,12 @@ static int metricgroup__setup_events(struct list_head *groups,
->  		list_add(&expr->nd, &me->head);
->  	}
->  
-> +	evlist__for_each_entry_safe(perf_evlist, tmp, evsel) {
-> +		if (!test_bit(evsel->idx, evlist_used)) {
-> +			evlist__remove(perf_evlist, evsel);
-> +			evsel__delete(evsel);
-> +		}
-
-is the groupping still enabled when we merge groups? could part
-of the metric (events) be now computed in different groups?
-
-I was wondering if we could merge all the hasmaps into single
-one before the parse the evlist.. this way we won't need removing
-later.. but I did not thought this through completely, so it
-might not work at some point
-
-jirka
-
+Sure, no problem.
