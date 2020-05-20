@@ -2,96 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A12361DBBFA
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B20E1DBBFD
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:53:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgETRw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 13:52:28 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:34676 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726436AbgETRw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:52:27 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D8F11200BB;
-        Wed, 20 May 2020 17:52:26 +0000 (UTC)
-Received: from us4-mdac16-38.at1.mdlocal (unknown [10.110.51.53])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D6F0E8009B;
-        Wed, 20 May 2020 17:52:26 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.8])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 61FD740061;
-        Wed, 20 May 2020 17:52:26 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F089D4C009B;
-        Wed, 20 May 2020 17:52:25 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 20 May
- 2020 18:52:19 +0100
-Subject: Re: [PATCH v3 net-next] net: flow_offload: simplify hw stats check
- handling
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <jiri@resnulli.us>,
-        <kuba@kernel.org>
-References: <2cf9024d-1568-4594-5763-6c4e4e8fe47b@solarflare.com>
- <f2586a0e-fce1-cee9-e2dc-f3dc73500515@solarflare.com>
- <20200520173216.GA28641@salvia>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <6e83fd83-86fd-981a-d080-269b9fd3e20f@solarflare.com>
-Date:   Wed, 20 May 2020 18:52:15 +0100
+        id S1726891AbgETRxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:53:04 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:38238 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726729AbgETRxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:53:04 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KHqxnO082673;
+        Wed, 20 May 2020 12:52:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589997179;
+        bh=SMQCS5BSmnxFa3H5C1NH1s5D+HnAPmg4JMl1668xgyk=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=dyYg60zw1ySiaIyZRM5p11q9kuuiMv8NHWPI4TdTk63YMLiREgGYPxMEXmyRXoPfO
+         PFrRJCD23iboJFkIrXzbziBc6O59UMetynvTUjUBXqVytAdEwRoUjKEJXp6xkvmg/G
+         xMWR0ZllagvfR9c9ul+z5B9SCkUzKRoYi3PEerTU=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KHqwVi036168
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 20 May 2020 12:52:59 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
+ May 2020 12:52:58 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 20 May 2020 12:52:58 -0500
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KHqw5O074199;
+        Wed, 20 May 2020 12:52:58 -0500
+Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
+ delay for DP83869
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     <hkallweit1@gmail.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+References: <20200520121835.31190-1-dmurphy@ti.com>
+ <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
+ <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
+ <20200520153631.GH652285@lunn.ch>
+ <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
+ <20200520164313.GI652285@lunn.ch>
+ <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
+ <41101897-5b29-4a9d-0c14-9b8080089850@gmail.com>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <7e117c01-fa6e-45f3-05b7-4efe7a3c1943@ti.com>
+Date:   Wed, 20 May 2020 12:52:58 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200520173216.GA28641@salvia>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <41101897-5b29-4a9d-0c14-9b8080089850@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25430.003
-X-TM-AS-Result: No-5.158100-8.000000-10
-X-TMASE-MatchedRID: scwq2vQP8OG8rRvefcjeTR4ejJMDGBzF69aS+7/zbj+qvcIF1TcLYD6P
-        hj6DfZCEcf+//KzNhNGE/M8/lUcrM8e3wV6A2hchBWXr+dSZ1T0GchEhVwJY39Uf6bWFkfAuMk2
-        soYXYWBKPKEoHTEz5lLZO1++fulf40YRMm/X9bI5JUdgxNDUXWjg6RKCx6bV17K5p55rm0/Nxmp
-        lAleOtpEPoNa37ZjLwcskIOhkWTOL4miWUEaTQPqMY62qeQBkLfS0Ip2eEHnzWRN8STJpl3PoLR
-        4+zsDTtJC9jS54qtzWrM9sujA4gXlbniNbrVL0vVpZITW7Nwiak6fA/SZcZ9g==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.158100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25430.003
-X-MDID: 1589997146-dWzB2_nHfUAg
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/05/2020 18:32, Pablo Neira Ayuso wrote:
-> On Wed, May 20, 2020 at 06:31:05PM +0100, Edward Cree wrote:
->> On 20/05/2020 18:21, Edward Cree wrote:
->>> @@ -582,7 +590,7 @@ nf_flow_offload_rule_alloc(struct net *net,
->>>  	const struct flow_offload_tuple *tuple;
->>>  	struct nf_flow_rule *flow_rule;
->>>  	struct dst_entry *other_dst;
->>> -	int err = -ENOMEM;
->>> +	int err = -ENOMEM, i;
->>>  
->>>  	flow_rule = kzalloc(sizeof(*flow_rule), GFP_KERNEL);
->>>  	if (!flow_rule)
->> Whoops, this changebar isn't meant to be there.  Somehow I missed
->>  the unused var warning when I built it, too.
->> Drop this, I'll spin v4.
-> The nf_tables_offload.c update is missing, please include this in v4.
-Hmm.  Rather than me trying to whack-a-mole all the places in
- netfilter that create actions... given that the other user is TC,
- which explicitly sets hw_stats, maybe I should instead make
- flow_rule_alloc() populate all the hw_stats with DONT_CARE?
-It certainly makes for a shorter patch, and makes it less likely
- that bugs will be introduced later when new action offloads get
- added to netfilter by forgetting to set hw_stats.
-And it means the patch doesn't rely on me knowing things about
- netfilter internals which I apparently don't.
+Florian
 
--ed
+On 5/20/20 12:45 PM, Florian Fainelli wrote:
+>
+> On 5/20/2020 10:20 AM, Dan Murphy wrote:
+>> Andrew/Florian
+>>
+>> On 5/20/20 11:43 AM, Andrew Lunn wrote:
+>>>> I am interested in knowing where that is documented.  I want to RTM I
+>>>> grepped for a few different words but came up empty
+>>> Hi Dan
+>>>
+>>> It probably is not well documented, but one example would be
+>>>
+>>> Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>>
+>>> says:
+>>>
+>>>         # RX and TX delays are added by the MAC when required
+>>>         - rgmii
+>>>
+>>>         # RGMII with internal RX and TX delays provided by the PHY,
+>>>         # the MAC should not add the RX or TX delays in this case
+>>>         - rgmii-id
+>>>
+>>>         # RGMII with internal RX delay provided by the PHY, the MAC
+>>>         # should not add an RX delay in this case
+>>>         - rgmii-rxid
+>>>
+>>>         # RGMII with internal TX delay provided by the PHY, the MAC
+>>>         # should not add an TX delay in this case
+>>>
+>>>         Andrew
+>> OKI I read that.  I also looked at a couple other drivers too.
+>>
+>> I am wondering if rx-internal-delay and tx-internal-delay should become
+>> a common property like tx/rx fifo-depth
+>>> And properly document how to use it or at least the expectation on use.
+> Yes they should, and they should have an unit associated with the name.
+
+
+UGH I think I just got volunteered to do make them common.
+
+Dan
+
