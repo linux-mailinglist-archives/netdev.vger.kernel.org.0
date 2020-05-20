@@ -2,83 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FDB1DB411
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:47:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CB281DB415
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgETMrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 08:47:15 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:10580 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726224AbgETMrP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 08:47:15 -0400
-Received: from localhost.localdomain (unknown [222.205.77.158])
-        by mail-app2 (Coremail) with SMTP id by_KCgA3H5K5JsVeuAGOAQ--.52762S4;
-        Wed, 20 May 2020 20:46:54 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Tony Lindgren <tony@atomide.com>, Maital Hahn <maitalm@ti.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] wlcore: fix runtime pm imbalance in wlcore_regdomain_config
-Date:   Wed, 20 May 2020 20:46:47 +0800
-Message-Id: <20200520124649.10848-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgA3H5K5JsVeuAGOAQ--.52762S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrKrWrZF15CFyUGr4xXF1UKFg_yoWfWFg_Kw
-        n5XFnrWr48Cayjgr4UCa15ZrWS9ryDu3Z3u3y0vFy3Ga1UZrZ7Jry5ZasxZrnrWrW7Zr1x
-        ArZ8GFyxZ3sFvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb-AFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
-        JrylYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
-        wVAFwVW5JwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
-        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
-        rVW3JVWrJr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr
-        0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUAR6wUUUUU=
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/
+        id S1726748AbgETMrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 08:47:45 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:53780 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbgETMro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:47:44 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KClbBh051869;
+        Wed, 20 May 2020 07:47:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589978857;
+        bh=AqvDDiNjhhJJhH+2Iuzf1KQzaudYFdiwJFg+rGhVDtI=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=OTkEIzZ04akVj95vxKCo/fEJGIogs0keHAhPYz7nPnkDbD9MNwcZy6km1ASENQhXj
+         D6itTR60obTCXXgXw1gA4b/TA1wES0D9ffHvV5oP3NJKS2T1XikhKIn5xHgxAXfz+y
+         4/3LADkD7ZB8L2Up7CcpZ0Tr2705zv0P0TjZb2RU=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KClbLc110251
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 20 May 2020 07:47:37 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
+ May 2020 07:47:36 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 20 May 2020 07:47:36 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KClaIm129871;
+        Wed, 20 May 2020 07:47:36 -0500
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Andre Guedes <andre.guedes@intel.com>,
+        <intel-wired-lan@lists.osuosl.org>
+CC:     <jeffrey.t.kirsher@intel.com>, <netdev@vger.kernel.org>,
+        <vladimir.oltean@nxp.com>, <po.liu@nxp.com>,
+        <Jose.Abreu@synopsys.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+ <158992799425.36166.17850279656312622646@twxiong-mobl.amr.corp.intel.com>
+ <87y2pnmr83.fsf@intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <13d8b7ba-8afd-cb67-c782-56aff1412bcd@ti.com>
+Date:   Wed, 20 May 2020 08:47:36 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <87y2pnmr83.fsf@intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pm_runtime_get_sync() increments the runtime PM usage counter even
-the call returns an error code. Thus a pairing decrement is needed
-on the error handling path to keep the counter balanced.
+Hi Vinicius,
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- drivers/net/wireless/ti/wlcore/main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On 5/19/20 7:37 PM, Vinicius Costa Gomes wrote:
+> Andre Guedes <andre.guedes@intel.com> writes:
+> 
+>> Hi,
+>>
+>> Quoting Vinicius Costa Gomes (2020-05-15 18:29:44)
+>>> One example, for retrieving and setting the configuration:
+>>>
+>>> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+>>> Frame preemption settings for enp3s0:
+>>>          support: supported
+>>>          active: active
+>>
+>> IIUC the code in patch 2, 'active' is the actual configuration knob that
+>> enables or disables the FP functionality on the NIC.
+>>
+>> That sounded a bit confusing to me since the spec uses the term 'active' to
+>> indicate FP is currently enabled at both ends, and it is a read-only
+>> information (see 12.30.1.4 from IEEE 802.1Q-2018). Maybe if we called this
+>> 'enabled' it would be more clear.
+> 
+> Good point. Will rename this to "enabled".
+> 
+>>
+>>>          supported queues: 0xf
+>>>          supported queues: 0xe
+>>>          minimum fragment size: 68
+>>
+>> I'm assuming this is the configuration knob for the minimal non-final fragment
+>> defined in 802.3br.
+>>
+>> My understanding from the specs is that this value must be a multiple from 64
+>> and cannot assume arbitrary values like shown here. See 99.4.7.3 from IEEE
+>> 802.3 and Note 1 in S.2 from IEEE 802.1Q. In the previous discussion about FP,
+>> we had this as a multiplier factor, not absolute value.
+> 
+> I thought that exposing this as "(1 + N)*64" (with 0 <= N <= 3) that it
+> was more related to what's exposed via LLDP than the actual capabilities
+> of the hardware. And for the hardware I have actually the values
+> supported are: (1 + N)*64 + 4 (for N = 0, 1, 2, 3).
+> 
+> So I thought I was better to let the driver decide what values are
+> acceptable.
+> 
+> This is a good question for people working with other hardware.
+> 
+> 
+AM65 CPSW supports this as a multiple of 64. Since this ethtool
+configuration is for the hardware, might want to make it as a multiple
+of 64.
 
-diff --git a/drivers/net/wireless/ti/wlcore/main.c b/drivers/net/wireless/ti/wlcore/main.c
-index f140f7d7f553..c7e4f5a80b9e 100644
---- a/drivers/net/wireless/ti/wlcore/main.c
-+++ b/drivers/net/wireless/ti/wlcore/main.c
-@@ -3662,8 +3662,10 @@ void wlcore_regdomain_config(struct wl1271 *wl)
- 		goto out;
- 
- 	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_autosuspend(wl->dev);
- 		goto out;
-+	}
- 
- 	ret = wlcore_cmd_regdomain_config_locked(wl);
- 	if (ret < 0) {
+Murali
+
 -- 
-2.17.1
-
+Murali Karicheri
+Texas Instruments
