@@ -2,137 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F69A1DAA99
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 08:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B621DAADE
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 08:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726586AbgETG36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 02:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
+        id S1726517AbgETGnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 02:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726528AbgETG35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 02:29:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5C5C061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 23:29:57 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jbIEf-00079z-7S; Wed, 20 May 2020 08:29:49 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jbIEV-0007jK-N7; Wed, 20 May 2020 08:29:39 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1726224AbgETGnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 02:43:13 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412C1C061A0E;
+        Tue, 19 May 2020 23:43:12 -0700 (PDT)
+Received: from [5.158.153.53] (helo=debian-buster-darwi.lab.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <a.darwish@linutronix.de>)
+        id 1jbIRD-00012D-Ma; Wed, 20 May 2020 08:42:47 +0200
+Date:   Wed, 20 May 2020 08:42:46 +0200
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: [PATCH net-next v3 2/2] net: phy: tja11xx: add SQI support
-Date:   Wed, 20 May 2020 08:29:15 +0200
-Message-Id: <20200520062915.29493-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200520062915.29493-1-o.rempel@pengutronix.de>
-References: <20200520062915.29493-1-o.rempel@pengutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of
+ a seqcount
+Message-ID: <20200520064246.GA353513@debian-buster-darwi.lab.linutronix.de>
+References: <20200519214547.352050-1-a.darwish@linutronix.de>
+ <20200519214547.352050-2-a.darwish@linutronix.de>
+ <33cec6a9-2f6e-3d3c-99ac-9b2a3304ec26@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <33cec6a9-2f6e-3d3c-99ac-9b2a3304ec26@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements reading of the Signal Quality Index for better
-cable/link troubleshooting.
+Hello Eric,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/nxp-tja11xx.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+On Tue, May 19, 2020 at 07:01:38PM -0700, Eric Dumazet wrote:
+>
+> On 5/19/20 2:45 PM, Ahmed S. Darwish wrote:
+> > Sequence counters write paths are critical sections that must never be
+> > preempted, and blocking, even for CONFIG_PREEMPTION=n, is not allowed.
+> >
+> > Commit 5dbe7c178d3f ("net: fix kernel deadlock with interface rename and
+> > netdev name retrieval.") handled a deadlock, observed with
+> > CONFIG_PREEMPTION=n, where the devnet_rename seqcount read side was
+> > infinitely spinning: it got scheduled after the seqcount write side
+> > blocked inside its own critical section.
+> >
+> > To fix that deadlock, among other issues, the commit added a
+> > cond_resched() inside the read side section. While this will get the
+> > non-preemptible kernel eventually unstuck, the seqcount reader is fully
+> > exhausting its slice just spinning -- until TIF_NEED_RESCHED is set.
+> >
+> > The fix is also still broken: if the seqcount reader belongs to a
+> > real-time scheduling policy, it can spin forever and the kernel will
+> > livelock.
+> >
+> > Disabling preemption over the seqcount write side critical section will
+> > not work: inside it are a number of GFP_KERNEL allocations and mutex
+> > locking through the drivers/base/ :: device_rename() call chain.
+> >
+> > From all the above, replace the seqcount with a rwsem.
+> >
+> > Fixes: 5dbe7c178d3f (net: fix kernel deadlock with interface rename and netdev name retrieval.)
+> > Fixes: 30e6c9fa93cf (net: devnet_rename_seq should be a seqcount)
+> > Fixes: c91f6df2db49 (sockopt: Change getsockopt() of SO_BINDTODEVICE to return an interface name)
+> > Cc: <stable@vger.kernel.org>
+> > Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+> > Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > ---
+> >  net/core/dev.c | 30 ++++++++++++------------------
+> >  1 file changed, 12 insertions(+), 18 deletions(-)
+> >
+>
+> Seems fine to me, assuming rwsem prevent starvation of the writer.
+>
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index 0d4f9067ca715..1e79c30ca81a5 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -53,6 +53,8 @@
- 
- #define MII_COMMSTAT			23
- #define MII_COMMSTAT_LINK_UP		BIT(15)
-+#define MII_COMMSTAT_SQI_STATE		GENMASK(7, 5)
-+#define MII_COMMSTAT_SQI_MAX		7
- 
- #define MII_GENSTAT			24
- #define MII_GENSTAT_PLL_LOCKED		BIT(14)
-@@ -329,6 +331,22 @@ static int tja11xx_read_status(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int tja11xx_get_sqi(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_COMMSTAT);
-+	if (ret < 0)
-+		return ret;
-+
-+	return FIELD_GET(MII_COMMSTAT_SQI_STATE, ret);
-+}
-+
-+static int tja11xx_get_sqi_max(struct phy_device *phydev)
-+{
-+	return MII_COMMSTAT_SQI_MAX;
-+}
-+
- static int tja11xx_get_sset_count(struct phy_device *phydev)
- {
- 	return ARRAY_SIZE(tja11xx_hw_stats);
-@@ -683,6 +701,8 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
-+		.get_sqi_max	= tja11xx_get_sqi_max,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
- 		.set_loopback   = genphy_loopback,
-@@ -699,6 +719,8 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
-+		.get_sqi_max	= tja11xx_get_sqi_max,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
- 		.set_loopback   = genphy_loopback,
-@@ -715,6 +737,8 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
-+		.get_sqi_max	= tja11xx_get_sqi_max,
- 		.match_phy_device = tja1102_p0_match_phy_device,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-@@ -736,6 +760,8 @@ static struct phy_driver tja11xx_driver[] = {
- 		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
-+		.get_sqi	= tja11xx_get_sqi,
-+		.get_sqi_max	= tja11xx_get_sqi_max,
- 		.match_phy_device = tja1102_p1_match_phy_device,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
--- 
-2.26.2
+Thanks for the review.
 
+AFAIK, due to 5cfd92e12e13 ("locking/rwsem: Adaptive disabling of reader
+optimistic spinning"), using a rwsem shouldn't lead to writer starvation
+in the contended case.
+
+--
+Ahmed S. Darwish
+Linutronix GmbH
