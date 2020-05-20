@@ -2,95 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5851DA792
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 03:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB5B1DA797
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 03:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728395AbgETBzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 21:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        id S1728176AbgETB54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 21:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgETBzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 21:55:47 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE307C08C5C0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:55:47 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id er16so657168qvb.0
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:55:47 -0700 (PDT)
+        with ESMTP id S1726379AbgETB5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 21:57:55 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88936C061A0E
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:57:55 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id z5so646982qvw.4
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=ghTZqejRfgfS5fU2jVg75uMDbgGX4TrDcdfAaAdauPM=;
-        b=ZOSedoTXRdCITrmaNoTnIMCXK7FvETKzbgoMB6JrmV4a5WGgI4bUyJioFolzQmGVrq
-         o84jZ9Q029nIsm59ickCSKRAQ01KYsQEUK+O0c4WczRv54WM0OVp426vCrLLCpKR37Mw
-         m5+8b6DcRSebQJ0RTOCsPoR2ZIbKjuquYzCasav1Nxy8+/U0kUkQUoatHY5OrIxy9YtL
-         yAVmCyNuLc+1DjGAfNtUnT7YgFJbNpFsbuQn2zlgnGL6qXiPYNQ0+P32QGnABRJpe8HR
-         nVBWLJcjfkd+mQxUSjqqoCgfYXpimBamkomH/UGmqkYwxDWuFhnC7r08aRZk4wq13M7K
-         eJcw==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WYm4nui0GOa4k/w+I9y48egxObrMVJ3JFwEqP+/6rvk=;
+        b=DpPbki4gNyUMGWog7u5wpvc5VnJI9l2GSaNq+b9mVGprOnocjJTeIuZbdOcYLVbjVu
+         B2BQSfRQOdPgDVjWOVUfo575B8p7/sD8d1eWv+ebdUMSH4cdGGd1eWK8Wktf02lJwi+A
+         Jt3p0NQ9NwxUMoDUuqshkzppbA8wsDeRn0hD4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=ghTZqejRfgfS5fU2jVg75uMDbgGX4TrDcdfAaAdauPM=;
-        b=tBKvIjeFlo/Y+dFhjw98doJgIdu+NbpRd6MahK9ekIUAaUuxr1YFxrDhP0EL8apMdC
-         uoUY6bLNrgzkeY/RYd/LBguXClaeW2uU9SwZieVddwlJ4T+cESmTH4VvhaLvpT48aCqi
-         GW7rr+9oO/8/IGoPgK9iJCW6h90BCdgEfmXkZUsDy+m6ZpNfNamFNnBCp0t3bnX7pboR
-         xCchaALER/Gj6SNZct46J4mQSTiZjLtgj9qL82N1KEagdkz7YHhih4Wst/pAQNcKJyaI
-         +oQPEqvvdjXDfvQqgWBwOIxO29PbnT1YpyE3yzCZmudAuPSUSmeHAoescIxBMcueV86u
-         cAnQ==
-X-Gm-Message-State: AOAM533RywUP5soUH0+kW4NuL5vtMDWAjX0M0cINBuhpp0o2nIFLsItY
-        +ZfiEIEtke+EFwBLDdqJvT4xbw==
-X-Google-Smtp-Source: ABdhPJyy1uyJk+Gqjg5bwcSBKIbQNOr6J5nfgaVGYYnWbcx1hDrSKyd/Hr8zTt2MLIvCkn1/+n7iIQ==
-X-Received: by 2002:ad4:466f:: with SMTP id z15mr2750441qvv.101.1589939746442;
-        Tue, 19 May 2020 18:55:46 -0700 (PDT)
-Received: from [192.168.1.183] (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
-        by smtp.gmail.com with ESMTPSA id j3sm1007064qkf.9.2020.05.19.18.55.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2020 18:55:45 -0700 (PDT)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-From:   Qian Cai <cai@lca.pw>
-Mime-Version: 1.0 (1.0)
-Subject: Re: UBSAN: array-index-out-of-bounds in kernel/bpf/arraymap.c:177
-Date:   Tue, 19 May 2020 21:55:45 -0400
-Message-Id: <FE7742FF-713E-4310-95E7-9B217662E53E@lca.pw>
-References: <CAEf4BzZKCh7+2TL8GVetxrOKYCoL0U7jTGsO5CbDExs7Px+bYQ@mail.gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Kees Cook <keescook@chromium.org>
-In-Reply-To: <CAEf4BzZKCh7+2TL8GVetxrOKYCoL0U7jTGsO5CbDExs7Px+bYQ@mail.gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-X-Mailer: iPhone Mail (17E262)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WYm4nui0GOa4k/w+I9y48egxObrMVJ3JFwEqP+/6rvk=;
+        b=CNOSrkCCZM458RGVxojsFc+VGcPGikz3mMAjBi0rTV6UDw3Jf09RvjeRBER3HqKhkY
+         yvNAljXBqEhA5xyttR59rGUX+K9rD4KxnwkjZkfHnM4IVy24IaoFdjkVyZKnLiA49O0t
+         kPqljI3zRxHaYS+w+hK6ht9cnIgyMTa7IDkADDXYHfrbIJNREDzpeotCrxU0tOSV9hdM
+         EXrCU8Sj8b0RX0tfqRlw3PdvfMI0rwaItuWG08B1lE/py7i99gpZegnnlBJD6kcgCKNf
+         oxWm4aH8+gJuiKX2Mkq/gUmN1r2r10rr/dymMrtdId2NyNqJq72jrkh+AUaw2iXfgT2r
+         hM6A==
+X-Gm-Message-State: AOAM531C7FypmB8T1LcaPW0WaSTPMuef0o5TDYuZF7Tct9sOJdgD5wYq
+        EMBiBmayhVZgCPQGE4yYbWOb6YgrThYAp670
+X-Google-Smtp-Source: ABdhPJyOSdxgxfEKdwqxa3QlEtmLxyWq4E4l1jVmu+JH+UC1BjzCx32922uQxU1jETHtWILEH1NhFA==
+X-Received: by 2002:ad4:44e3:: with SMTP id p3mr2688919qvt.166.1589939874214;
+        Tue, 19 May 2020 18:57:54 -0700 (PDT)
+Received: from alfred.cumulusnetworks.com ([216.129.126.118])
+        by smtp.gmail.com with ESMTPSA id c197sm1109594qkg.133.2020.05.19.18.57.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 18:57:53 -0700 (PDT)
+From:   Stephen Worley <sworley@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, davem@davemloft.net, sharpd@cumulusnetworks.com,
+        anuradhak@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        sworley1995@gmail.com, Stephen Worley <sworley@cumulusnetworks.com>
+Subject: [PATCH] net: nlmsg_cancel() if put fails for nhmsg
+Date:   Tue, 19 May 2020 21:57:12 -0400
+Message-Id: <20200520015712.1693005-1-sworley@cumulusnetworks.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fixes data remnant seen when we fail to reserve space for a
+nexthop group during a larger dump.
 
+If we fail the reservation, we goto nla_put_failure and
+cancel the message.
 
-> On May 19, 2020, at 7:23 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> w=
-rote:
->=20
-> I agree, it's bad to have this noise. But again, there is nothing
-> wrong with the way it's used in BPF code base. We'd gladly use
-> flexible array, if we could. But given we can't, I'd say the proper
-> solution (in order of my preference) would be:
->=20
->  - don't trigger false error, if zero-sized array is the member of union;
->  - or have some sort of annotation at field declaration site (not a
-> field access site).
->=20
-> Is that possible?
+Reproduce with the following iproute2 commands:
+=====================
+ip link add dummy1 type dummy
+ip link add dummy2 type dummy
+ip link add dummy3 type dummy
+ip link add dummy4 type dummy
+ip link add dummy5 type dummy
+ip link add dummy6 type dummy
+ip link add dummy7 type dummy
+ip link add dummy8 type dummy
+ip link add dummy9 type dummy
+ip link add dummy10 type dummy
+ip link add dummy11 type dummy
+ip link add dummy12 type dummy
+ip link add dummy13 type dummy
+ip link add dummy14 type dummy
+ip link add dummy15 type dummy
+ip link add dummy16 type dummy
+ip link add dummy17 type dummy
+ip link add dummy18 type dummy
+ip link add dummy19 type dummy
+ip link add dummy20 type dummy
+ip link add dummy21 type dummy
+ip link add dummy22 type dummy
+ip link add dummy23 type dummy
+ip link add dummy24 type dummy
+ip link add dummy25 type dummy
+ip link add dummy26 type dummy
+ip link add dummy27 type dummy
+ip link add dummy28 type dummy
+ip link add dummy29 type dummy
+ip link add dummy30 type dummy
+ip link add dummy31 type dummy
+ip link add dummy32 type dummy
 
-I am not a compiler expert, but with my experience with all those compiler i=
-nstrumental technology like KCSAN, KASAN and UBSAN, it seems both options yo=
-u prop need to modify compilers, i.e., -fsanitize=3Dundefined=
+ip link set dummy1 up
+ip link set dummy2 up
+ip link set dummy3 up
+ip link set dummy4 up
+ip link set dummy5 up
+ip link set dummy6 up
+ip link set dummy7 up
+ip link set dummy8 up
+ip link set dummy9 up
+ip link set dummy10 up
+ip link set dummy11 up
+ip link set dummy12 up
+ip link set dummy13 up
+ip link set dummy14 up
+ip link set dummy15 up
+ip link set dummy16 up
+ip link set dummy17 up
+ip link set dummy18 up
+ip link set dummy19 up
+ip link set dummy20 up
+ip link set dummy21 up
+ip link set dummy22 up
+ip link set dummy23 up
+ip link set dummy24 up
+ip link set dummy25 up
+ip link set dummy26 up
+ip link set dummy27 up
+ip link set dummy28 up
+ip link set dummy29 up
+ip link set dummy30 up
+ip link set dummy31 up
+ip link set dummy32 up
+
+ip link set dummy33 up
+ip link set dummy34 up
+
+ip link set vrf-red up
+ip link set vrf-blue up
+
+ip link set dummyVRFred up
+ip link set dummyVRFblue up
+
+ip ro add 1.1.1.1/32 dev dummy1
+ip ro add 1.1.1.2/32 dev dummy2
+ip ro add 1.1.1.3/32 dev dummy3
+ip ro add 1.1.1.4/32 dev dummy4
+ip ro add 1.1.1.5/32 dev dummy5
+ip ro add 1.1.1.6/32 dev dummy6
+ip ro add 1.1.1.7/32 dev dummy7
+ip ro add 1.1.1.8/32 dev dummy8
+ip ro add 1.1.1.9/32 dev dummy9
+ip ro add 1.1.1.10/32 dev dummy10
+ip ro add 1.1.1.11/32 dev dummy11
+ip ro add 1.1.1.12/32 dev dummy12
+ip ro add 1.1.1.13/32 dev dummy13
+ip ro add 1.1.1.14/32 dev dummy14
+ip ro add 1.1.1.15/32 dev dummy15
+ip ro add 1.1.1.16/32 dev dummy16
+ip ro add 1.1.1.17/32 dev dummy17
+ip ro add 1.1.1.18/32 dev dummy18
+ip ro add 1.1.1.19/32 dev dummy19
+ip ro add 1.1.1.20/32 dev dummy20
+ip ro add 1.1.1.21/32 dev dummy21
+ip ro add 1.1.1.22/32 dev dummy22
+ip ro add 1.1.1.23/32 dev dummy23
+ip ro add 1.1.1.24/32 dev dummy24
+ip ro add 1.1.1.25/32 dev dummy25
+ip ro add 1.1.1.26/32 dev dummy26
+ip ro add 1.1.1.27/32 dev dummy27
+ip ro add 1.1.1.28/32 dev dummy28
+ip ro add 1.1.1.29/32 dev dummy29
+ip ro add 1.1.1.30/32 dev dummy30
+ip ro add 1.1.1.31/32 dev dummy31
+ip ro add 1.1.1.32/32 dev dummy32
+
+ip next add id 1 via 1.1.1.1 dev dummy1
+ip next add id 2 via 1.1.1.2 dev dummy2
+ip next add id 3 via 1.1.1.3 dev dummy3
+ip next add id 4 via 1.1.1.4 dev dummy4
+ip next add id 5 via 1.1.1.5 dev dummy5
+ip next add id 6 via 1.1.1.6 dev dummy6
+ip next add id 7 via 1.1.1.7 dev dummy7
+ip next add id 8 via 1.1.1.8 dev dummy8
+ip next add id 9 via 1.1.1.9 dev dummy9
+ip next add id 10 via 1.1.1.10 dev dummy10
+ip next add id 11 via 1.1.1.11 dev dummy11
+ip next add id 12 via 1.1.1.12 dev dummy12
+ip next add id 13 via 1.1.1.13 dev dummy13
+ip next add id 14 via 1.1.1.14 dev dummy14
+ip next add id 15 via 1.1.1.15 dev dummy15
+ip next add id 16 via 1.1.1.16 dev dummy16
+ip next add id 17 via 1.1.1.17 dev dummy17
+ip next add id 18 via 1.1.1.18 dev dummy18
+ip next add id 19 via 1.1.1.19 dev dummy19
+ip next add id 20 via 1.1.1.20 dev dummy20
+ip next add id 21 via 1.1.1.21 dev dummy21
+ip next add id 22 via 1.1.1.22 dev dummy22
+ip next add id 23 via 1.1.1.23 dev dummy23
+ip next add id 24 via 1.1.1.24 dev dummy24
+ip next add id 25 via 1.1.1.25 dev dummy25
+ip next add id 26 via 1.1.1.26 dev dummy26
+ip next add id 27 via 1.1.1.27 dev dummy27
+ip next add id 28 via 1.1.1.28 dev dummy28
+ip next add id 29 via 1.1.1.29 dev dummy29
+ip next add id 30 via 1.1.1.30 dev dummy30
+ip next add id 31 via 1.1.1.31 dev dummy31
+ip next add id 32 via 1.1.1.32 dev dummy32
+
+i=100
+
+while [ $i -le 200 ]
+do
+ip next add id $i group 1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19
+
+	echo $i
+
+	((i++))
+
+done
+
+ip next add id 999 group 1/2/3/4/5/6
+
+ip next ls
+
+========================
+
+Fixes: ab84be7e54fc ("net: Initial nexthop code")
+Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
+---
+ net/ipv4/nexthop.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 2a31c4af845e..715e14475220 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -276,6 +276,7 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
+ 	return 0;
+ 
+ nla_put_failure:
++	nlmsg_cancel(skb, nlh);
+ 	return -EMSGSIZE;
+ }
+ 
+
+base-commit: 20a785aa52c82246055a089e55df9dac47d67da1
+-- 
+2.26.2
+
