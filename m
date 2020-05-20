@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3CF1DAC8D
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 777661DACA0
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbgETHtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 03:49:23 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:41284 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgETHtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 03:49:22 -0400
+        id S1726525AbgETHy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 03:54:58 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:38175 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbgETHy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 03:54:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1589960963; x=1621496963;
-  h=subject:to:cc:references:from:message-id:date:
+  t=1589961297; x=1621497297;
+  h=from:subject:to:cc:references:message-id:date:
    mime-version:in-reply-to:content-transfer-encoding;
-  bh=rTYTPJVkVmrz3UNzCa73++gwpoLBVccJrDkW+WcLEaI=;
-  b=a1Xu2MFv1D0x3yRg0cQrE+g8eWoCjowMbATUNtjbc8VEPOuhj3k2akYI
-   X6BnFSbv0deKiqjXRN81ws391+xnQkE61Q6pmqCvoUcf0Tr2Tt+zdX0n9
-   ZcyR4C+6lHiTGiUpb46lf0+4k1YUdstGuAYxzE+y95q8gwcOlkAeqTsms
-   w=;
-IronPort-SDR: 6LnKk3NjUM1ekH881SPxcvPgnhf5/G6vLhn4YWpJmxetWRe595OAIxwhwBWU85Vx7wWXjP2J2k
- MU3RkWplf/Gg==
+  bh=OVuL/gr+2PFJGhSd/Q6dWVHNvqpTt2jED+RGUKD01eQ=;
+  b=cDj//kyPybOE5EKT+3M3qovVmtXoaB/zPr1jbxaby0T1esEhtnWIqYZB
+   1+sX4DOr9W3D0nIoTAnKBsVN5qgPreA8Oxt2A0MrFcT2bo3n+bCw+mg12
+   g/5vFlcPsJEgSrlsBIH2ZuD+obuSc8c/YHJPDVAR3YngAgHsmvRhwKXhZ
+   U=;
+IronPort-SDR: mBHHSQrpqsEGscXgJiOvQD0Q2HbieibP4NdVkoTNYKwXV6cKG2NSzQKZfy7XLJarNZt/ZxUf2h
+ wXoYnxcLtmrg==
 X-IronPort-AV: E=Sophos;i="5.73,413,1583193600"; 
-   d="scan'208";a="46037374"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 20 May 2020 07:49:20 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 323F5A20C3;
-        Wed, 20 May 2020 07:49:19 +0000 (UTC)
+   d="scan'208";a="31308489"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-27fb8269.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 20 May 2020 07:54:44 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-27fb8269.us-east-1.amazon.com (Postfix) with ESMTPS id 33EC4A1CD6;
+        Wed, 20 May 2020 07:54:40 +0000 (UTC)
 Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
  EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 20 May 2020 07:49:18 +0000
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.175) by
+ id 15.0.1497.2; Wed, 20 May 2020 07:54:40 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.160.26) by
  EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 20 May 2020 07:49:12 +0000
-Subject: Re: [RDMA RFC v6 16/16] RDMA/irdma: Update MAINTAINERS file
+ id 15.0.1497.2; Wed, 20 May 2020 07:54:34 +0000
+From:   Gal Pressman <galpress@amazon.com>
+Subject: Re: [RDMA RFC v6 14/16] RDMA/irdma: Add ABI definitions
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, <dledford@redhat.com>,
         <jgg@mellanox.com>, <davem@davemloft.net>,
         <gregkh@linuxfoundation.org>
-CC:     Shiraz Saleem <shiraz.saleem@intel.com>,
+CC:     Mustafa Ismail <mustafa.ismail@intel.com>,
         <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
         <nhorman@redhat.com>, <sassmann@redhat.com>, <poswald@suse.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>
+        Shiraz Saleem <shiraz.saleem@intel.com>
 References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
- <20200520070415.3392210-17-jeffrey.t.kirsher@intel.com>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <7a82fb8b-b16e-3b40-1d30-d9f52d0ff496@amazon.com>
-Date:   Wed, 20 May 2020 10:49:07 +0300
+ <20200520070415.3392210-15-jeffrey.t.kirsher@intel.com>
+Message-ID: <34ea2c1d-538c-bcb7-b312-62524f31a8dd@amazon.com>
+Date:   Wed, 20 May 2020 10:54:25 +0300
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200520070415.3392210-17-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20200520070415.3392210-15-jeffrey.t.kirsher@intel.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.175]
-X-ClientProxiedBy: EX13D31UWA003.ant.amazon.com (10.43.160.130) To
+X-Originating-IP: [10.43.160.26]
+X-ClientProxiedBy: EX13D35UWC001.ant.amazon.com (10.43.162.197) To
  EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -65,36 +65,14 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 20/05/2020 10:04, Jeff Kirsher wrote:
-> From: Shiraz Saleem <shiraz.saleem@intel.com>
-> 
-> Add maintainer entry for irdma driver.
-> 
-> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  MAINTAINERS | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 598d0e1b3501..8b8e3e0064cf 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -8745,6 +8745,14 @@ L:	linux-pm@vger.kernel.org
->  S:	Supported
->  F:	drivers/cpufreq/intel_pstate.c
->  
-> +INTEL ETHERNET PROTOCL DRIVER FOR RDMA
-> +M:	Mustafa Ismail <mustafa.ismail@intel.com>
-> +M:	Shiraz Saleem <shiraz.saleem@intel.com>
-> +L:	linux-rdma@vger.kernel.org
-> +S:	Supported
-> +F:	drivers/infiniband/hw/irdma/
-> +F:	include/uapi/rdma/irdma-abi.h
+> +struct i40iw_create_qp_resp {
+> +	__u32 qp_id;
+> +	__u32 actual_sq_size;
+> +	__u32 actual_rq_size;
+> +	__u32 i40iw_drv_opt;
+> +	__u16 push_idx;
+> +	__u8 lsmm;
+> +	__u8 rsvd;
+> +};
 
-This list should be sorted alphabetically.
-
->  INTEL SPEED SELECT TECHNOLOGY
->  M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->  L:	platform-driver-x86@vger.kernel.org
-> 
-
+This struct size should be 8 bytes aligned.
