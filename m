@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB281DB415
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D07251DB423
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbgETMrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 08:47:45 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:53780 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgETMro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:47:44 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KClbBh051869;
-        Wed, 20 May 2020 07:47:37 -0500
+        id S1726693AbgETMui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 08:50:38 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:34740 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbgETMuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:50:37 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KCoSm9119777;
+        Wed, 20 May 2020 07:50:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589978857;
-        bh=AqvDDiNjhhJJhH+2Iuzf1KQzaudYFdiwJFg+rGhVDtI=;
+        s=ti-com-17Q1; t=1589979028;
+        bh=1HPHxke/GLTndyiadBmZjj59LiCjt8Qr0u6wBUQqrnk=;
         h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=OTkEIzZ04akVj95vxKCo/fEJGIogs0keHAhPYz7nPnkDbD9MNwcZy6km1ASENQhXj
-         D6itTR60obTCXXgXw1gA4b/TA1wES0D9ffHvV5oP3NJKS2T1XikhKIn5xHgxAXfz+y
-         4/3LADkD7ZB8L2Up7CcpZ0Tr2705zv0P0TjZb2RU=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KClbLc110251
+        b=VQ4gHkMEM4yqTablEOJ04136nTG7hsJ9igM0ba5Fs9MrZ0jkWlPTNNt6VVMe8kHdd
+         +JGWa95Ala3Tdq2ovgz6XCI08klr0MibWmXgCKpe1/qCJK3EgPMe4e6k0WHx6kuTAo
+         XqyIjrRsQw23DWtOIFfgugabw3F1u7Hc6cfKt6JM=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KCoSpv008369
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 07:47:37 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 20 May 2020 07:50:28 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
- May 2020 07:47:36 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ May 2020 07:50:27 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 20 May 2020 07:47:36 -0500
+ Frontend Transport; Wed, 20 May 2020 07:50:27 -0500
 Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KClaIm129871;
-        Wed, 20 May 2020 07:47:36 -0500
-Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KCoRHb117631;
+        Wed, 20 May 2020 07:50:27 -0500
+Subject: Re: [next-queue RFC 4/4] igc: Add support for exposing frame
+ preemption stats registers
 To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Andre Guedes <andre.guedes@intel.com>,
         <intel-wired-lan@lists.osuosl.org>
 CC:     <jeffrey.t.kirsher@intel.com>, <netdev@vger.kernel.org>,
         <vladimir.oltean@nxp.com>, <po.liu@nxp.com>,
         <Jose.Abreu@synopsys.com>
 References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
- <158992799425.36166.17850279656312622646@twxiong-mobl.amr.corp.intel.com>
- <87y2pnmr83.fsf@intel.com>
+ <20200516012948.3173993-5-vinicius.gomes@intel.com>
 From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <13d8b7ba-8afd-cb67-c782-56aff1412bcd@ti.com>
-Date:   Wed, 20 May 2020 08:47:36 -0400
+Message-ID: <92daa9e5-fd76-3801-a485-36f1be59cfd6@ti.com>
+Date:   Wed, 20 May 2020 08:50:27 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <87y2pnmr83.fsf@intel.com>
+In-Reply-To: <20200516012948.3173993-5-vinicius.gomes@intel.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,61 +61,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+Hi Vinicious,
 
-On 5/19/20 7:37 PM, Vinicius Costa Gomes wrote:
-> Andre Guedes <andre.guedes@intel.com> writes:
+On 5/15/20 9:29 PM, Vinicius Costa Gomes wrote:
+> [WIP]
 > 
->> Hi,
->>
->> Quoting Vinicius Costa Gomes (2020-05-15 18:29:44)
->>> One example, for retrieving and setting the configuration:
->>>
->>> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
->>> Frame preemption settings for enp3s0:
->>>          support: supported
->>>          active: active
->>
->> IIUC the code in patch 2, 'active' is the actual configuration knob that
->> enables or disables the FP functionality on the NIC.
->>
->> That sounded a bit confusing to me since the spec uses the term 'active' to
->> indicate FP is currently enabled at both ends, and it is a read-only
->> information (see 12.30.1.4 from IEEE 802.1Q-2018). Maybe if we called this
->> 'enabled' it would be more clear.
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_ethtool.c |  9 +++++++++
+>   drivers/net/ethernet/intel/igc/igc_regs.h    | 10 ++++++++++
+>   2 files changed, 19 insertions(+)
 > 
-> Good point. Will rename this to "enabled".
+> diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+> index 48d5d18..09d72f7 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+> @@ -322,6 +322,15 @@ static void igc_ethtool_get_regs(struct net_device *netdev,
+>   
+>   	for (i = 0; i < 8; i++)
+>   		regs_buff[205 + i] = rd32(IGC_ETQF(i));
+> +
+> +	regs_buff[214] = rd32(IGC_PRMPTDTCNT);
+> +	regs_buff[215] = rd32(IGC_PRMEVNTTCNT);
+> +	regs_buff[216] = rd32(IGC_PRMPTDRCNT);
+> +	regs_buff[217] = rd32(IGC_PRMEVNTRCNT);
+> +	regs_buff[218] = rd32(IGC_PRMPBLTCNT);
+> +	regs_buff[219] = rd32(IGC_PRMPBLRCNT);
+> +	regs_buff[220] = rd32(IGC_PRMEXPTCNT);
+> +	regs_buff[221] = rd32(IGC_PRMEXPRCNT);
+>   }
+>   
+>   static void igc_ethtool_get_wol(struct net_device *netdev,
+> diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
+> index 7f999cf..010bb48 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_regs.h
+> +++ b/drivers/net/ethernet/intel/igc/igc_regs.h
+> @@ -211,6 +211,16 @@
+>   
+>   #define IGC_FTQF(_n)	(0x059E0 + (4 * (_n)))  /* 5-tuple Queue Fltr */
+>   
+> +/* Time sync registers - preemption statistics */
+> +#define IGC_PRMPTDTCNT	0x04280  /* Good TX Preempted Packets */
+> +#define IGC_PRMEVNTTCNT	0x04298  /* TX Preemption event counter */
+> +#define IGC_PRMPTDRCNT	0x04284  /* Good RX Preempted Packets */
+> +#define IGC_PRMEVNTRCNT	0x0429C  /* RX Preemption event counter */
+> +#define IGC_PRMPBLTCNT	0x04288  /* Good TX Preemptable Packets */
+> +#define IGC_PRMPBLRCNT	0x0428C  /* Good RX Preemptable Packets */
+> +#define IGC_PRMEXPTCNT	0x04290  /* Good TX Express Packets */
+> +#define IGC_PRMEXPRCNT	0x042A0  /* Preemption Exception Counter */
+> +
+>   /* Transmit Scheduling Registers */
+>   #define IGC_TQAVCTRL		0x3570
+>   #define IGC_TXQCTL(_n)		(0x3344 + 0x4 * (_n))
 > 
->>
->>>          supported queues: 0xf
->>>          supported queues: 0xe
->>>          minimum fragment size: 68
->>
->> I'm assuming this is the configuration knob for the minimal non-final fragment
->> defined in 802.3br.
->>
->> My understanding from the specs is that this value must be a multiple from 64
->> and cannot assume arbitrary values like shown here. See 99.4.7.3 from IEEE
->> 802.3 and Note 1 in S.2 from IEEE 802.1Q. In the previous discussion about FP,
->> we had this as a multiplier factor, not absolute value.
-> 
-> I thought that exposing this as "(1 + N)*64" (with 0 <= N <= 3) that it
-> was more related to what's exposed via LLDP than the actual capabilities
-> of the hardware. And for the hardware I have actually the values
-> supported are: (1 + N)*64 + 4 (for N = 0, 1, 2, 3).
-> 
-> So I thought I was better to let the driver decide what values are
-> acceptable.
-> 
-> This is a good question for people working with other hardware.
-> 
-> 
-AM65 CPSW supports this as a multiple of 64. Since this ethtool
-configuration is for the hardware, might want to make it as a multiple
-of 64.
+There are some statistics supported by AM65 CPSW as well. So do you plan
+to add this to ethtool stats that is dumped using ethtool -S option?
 
-Murali
-
+Thanks and regards,
 -- 
 Murali Karicheri
 Texas Instruments
