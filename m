@@ -2,107 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A84731DAE5E
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 11:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6BC1DAE7A
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 11:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgETJKa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 05:10:30 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:57863 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726403AbgETJKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 05:10:30 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-50-tluLY8XmNuuDjM3-9TBDiA-1; Wed, 20 May 2020 10:10:26 +0100
-X-MC-Unique: tluLY8XmNuuDjM3-9TBDiA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 20 May 2020 10:10:25 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 20 May 2020 10:10:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: RE: sctp doesn't honour net.ipv6.bindv6only
-Thread-Topic: sctp doesn't honour net.ipv6.bindv6only
-Thread-Index: AdYtySwMD5fuoEShRtCmkqkLr9/ogQARLsAAABzoS0A=
-Date:   Wed, 20 May 2020 09:10:23 +0000
-Message-ID: <2889b2f6b55f42fcaa1dc8552df33911@AcuMS.aculab.com>
-References: <62ff05456c5d4ab5953b85fff3934ba9@AcuMS.aculab.com>
- <20200519194710.GP2491@localhost.localdomain>
-In-Reply-To: <20200519194710.GP2491@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726789AbgETJQK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 05:16:10 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28481 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726691AbgETJQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 05:16:10 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-464-yKBxMkvDNEOkWjf3VDffgw-1; Wed, 20 May 2020 05:16:04 -0400
+X-MC-Unique: yKBxMkvDNEOkWjf3VDffgw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CC481800D42;
+        Wed, 20 May 2020 09:16:03 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.194.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D5325D9CA;
+        Wed, 20 May 2020 09:16:02 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net] net: don't return invalid table id error when we fall back to PF_UNSPEC
+Date:   Wed, 20 May 2020 11:15:46 +0200
+Message-Id: <fc61912d585ccf3999c3cba5e481c1920af17ca6.1589961603.git.sd@queasysnail.net>
 MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcelo Ricardo Leitner
-> Sent: 19 May 2020 20:47
-> 
-> On Tue, May 19, 2020 at 10:47:17AM +0000, David Laight wrote:
-> > The sctp code doesn't use sk->sk_ipv6only (which is initialised
-> > from net.ipv6.bindv6only) but instead uses its own flag
-> 
-> It actually does, via [__]ipv6_only_sock() calls since 7dab83de50c7
-> ("sctp: Support ipv6only AF_INET6 sockets.").
-> 
-> > sp->v4mapped which always defaults to 1.
-> >
-> > There may also be an expectation that
-> >   [gs]etsockopt(sctp_fd, IPPROTO_IPV6, IPV6_V6ONLY,...)
-> > will access the flag that sctp uses internally.
-> > (Matching TCP and UDP.)
-> 
-> My understanding is that these are slightly different.
-> 
-> v4mapped, if false, will allow the socket to deal with both address
-> types, without mapping. If true, it will map v4 into v6.
-> v6only, if false, it will do mapping for tcp/udp, but sctp won't use
-> it. If true, it will deny using v4, which is complementary to v4mapped
-> for sctp.
-> 
-> Did I miss anything?
+In case we can't find a ->dumpit callback for the requested
+(family,type) pair, we fall back to (PF_UNSPEC,type). In effect, we're
+in the same situation as if userspace had requested a PF_UNSPEC
+dump. For RTM_GETROUTE, that handler is rtnl_dump_all, which calls all
+the registered RTM_GETROUTE handlers.
 
-Possibly I did, I wasn't looking much beyond the [sg]etsockopt code.
-Although our code supports SCTP/IPv6 and I have tested it a bit
-I don't think any of our customers use it (yet).
-We default to creating IPv6 listening sockets but all the connections
-are IPv4.
+The requested table id may or may not exist for all of those
+families. commit ae677bbb4441 ("net: Don't return invalid table id
+error when dumping all families") fixed the problem when userspace
+explicitly requests a PF_UNSPEC dump, but missed the fallback case.
 
-I think I'm still confused though:
+For example, when we pass ipv6.disable=1 to a kernel with
+CONFIG_IP_MROUTE=y and CONFIG_IP_MROUTE_MULTIPLE_TABLES=y,
+the (PF_INET6, RTM_GETROUTE) handler isn't registered, so we end up in
+rtnl_dump_all, and listing IPv6 routes will unexpectedly print:
 
-IIRC v6only (mainly) affects listening sockets.
-If 0 (the default on Linux) an IPv4 connection will 'attach to' an
-IPv6 socket and the application will see v4mapped addresses [1].
-If 1 the application needs to create two separate sockets to receive
-both IPv4 and IPV6 connections.
+  # ip -6 r
+  Error: ipv4: MR table does not exist.
+  Dump terminated
 
-I can't see how SCTP would be any different to TCP and UDP.
-It can't make any sense to dual-home with a mixture of IPv4/6 addresses.
+commit ae677bbb4441 introduced the dump_all_families variable, which
+gets set when userspace requests a PF_UNSPEC dump. However, we can't
+simply set the family to PF_UNSPEC in rtnetlink_rcv_msg in the
+fallback case to get dump_all_families == true, because some messages
+types (for example RTM_GETRULE and RTM_GETNEIGH) only register the
+PF_UNSPEC handler and use the family to filter in the kernel what is
+dumped to userspace. We would then export more entries, that userspace
+would have to filter. iproute does that, but other programs may not.
 
-So does v4mapped just control the format of the addresses on the socket
-interface when an IPv4 connection is using an IPv6 socket? 
+Instead, this patch removes dump_all_families and updates the
+RTM_GETROUTE handlers to check if the family that is being dumped is
+their own. When it's not, which covers both the intentional PF_UNSPEC
+dumps (as dump_all_families did) and the fallback case, ignore the
+missing table id error.
 
-[1] Actually, thinking further I can't remember whether this is true.
-All our code allows for v4mapped addresses and decodes them for printing.
+Fixes: cb167893f41e ("net: Plumb support for filtering ipv4 and ipv6 multicast route dumps")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ include/net/ip_fib.h    | 1 -
+ net/ipv4/fib_frontend.c | 3 +--
+ net/ipv4/ipmr.c         | 2 +-
+ net/ipv6/ip6_fib.c      | 2 +-
+ net/ipv6/ip6mr.c        | 2 +-
+ 5 files changed, 4 insertions(+), 6 deletions(-)
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index 59e0d4e99f94..b219a8fe0950 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -257,7 +257,6 @@ struct fib_dump_filter {
+ 	u32			table_id;
+ 	/* filter_set is an optimization that an entry is set */
+ 	bool			filter_set;
+-	bool			dump_all_families;
+ 	bool			dump_routes;
+ 	bool			dump_exceptions;
+ 	unsigned char		protocol;
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 213be9c050ad..1bf9da3a75f9 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -918,7 +918,6 @@ int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
+ 	else
+ 		filter->dump_exceptions = false;
+ 
+-	filter->dump_all_families = (rtm->rtm_family == AF_UNSPEC);
+ 	filter->flags    = rtm->rtm_flags;
+ 	filter->protocol = rtm->rtm_protocol;
+ 	filter->rt_type  = rtm->rtm_type;
+@@ -990,7 +989,7 @@ static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
+ 	if (filter.table_id) {
+ 		tb = fib_get_table(net, filter.table_id);
+ 		if (!tb) {
+-			if (filter.dump_all_families)
++			if (rtnl_msg_family(cb->nlh) != PF_INET)
+ 				return skb->len;
+ 
+ 			NL_SET_ERR_MSG(cb->extack, "ipv4: FIB table does not exist");
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 5c218db2dede..b2363b82b48d 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -2613,7 +2613,7 @@ static int ipmr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 		mrt = ipmr_get_table(sock_net(skb->sk), filter.table_id);
+ 		if (!mrt) {
+-			if (filter.dump_all_families)
++			if (rtnl_msg_family(cb->nlh) != RTNL_FAMILY_IPMR)
+ 				return skb->len;
+ 
+ 			NL_SET_ERR_MSG(cb->extack, "ipv4: MR table does not exist");
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 46ed56719476..20314895509c 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -664,7 +664,7 @@ static int inet6_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
+ 	if (arg.filter.table_id) {
+ 		tb = fib6_get_table(net, arg.filter.table_id);
+ 		if (!tb) {
+-			if (arg.filter.dump_all_families)
++			if (rtnl_msg_family(cb->nlh) != PF_INET6)
+ 				goto out;
+ 
+ 			NL_SET_ERR_MSG_MOD(cb->extack, "FIB table does not exist");
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 1e223e26f079..1f4d20e97c07 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -2503,7 +2503,7 @@ static int ip6mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 		mrt = ip6mr_get_table(sock_net(skb->sk), filter.table_id);
+ 		if (!mrt) {
+-			if (filter.dump_all_families)
++			if (rtnl_msg_family(cb->nlh) != RTNL_FAMILY_IP6MR)
+ 				return skb->len;
+ 
+ 			NL_SET_ERR_MSG_MOD(cb->extack, "MR table does not exist");
+-- 
+2.26.2
 
