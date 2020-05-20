@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70DB1DBFDA
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 22:03:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E93A1DBFF2
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 22:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbgETUCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 16:02:35 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:47190 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726964AbgETUCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 16:02:34 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KK2Ree059688;
-        Wed, 20 May 2020 15:02:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590004947;
-        bh=Jlv71XRhYvS94aqoB9HV5Z9r9HYEVNg9gj2FL6x/cOU=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=bX8NyOa8WhyNk1kme0Ol5d4SFgz4V9Pcvi0kj3nadBNqeURZ08n3uwL4ltrKmUcsY
-         +hSZ01qy6SNvf1vtFrHOV1hZ2lu1r7NgxVx4LY1QMwp12Zt5hb1uqbFZHJIezOi9+E
-         9bAK8kNa+qbB+Ig53lAcB5rDIqVElT4xqVSg9pq4=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KK2Rfb071370
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 15:02:27 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
- May 2020 15:02:27 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 20 May 2020 15:02:27 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KK2PFc102988;
-        Wed, 20 May 2020 15:02:25 -0500
-Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
- delay for DP83869
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200520121835.31190-1-dmurphy@ti.com>
- <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
- <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
- <20200520153631.GH652285@lunn.ch>
- <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
- <20200520164313.GI652285@lunn.ch>
- <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
- <41101897-5b29-4a9d-0c14-9b8080089850@gmail.com>
- <7e117c01-fa6e-45f3-05b7-4efe7a3c1943@ti.com>
- <20200520192719.GK652285@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <0bba1378-0847-491f-8f21-ac939ac48820@ti.com>
-Date:   Wed, 20 May 2020 15:02:24 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1727072AbgETUMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 16:12:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726860AbgETUMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 16:12:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E5EA8207F9;
+        Wed, 20 May 2020 20:12:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590005549;
+        bh=VsVClakRPy6bGHvaGlANEDqYRriY8y9RpxmChK/x+YA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0imO1Vk6PRg7NQ7LjGO2L4xQ9+twoTEJYqJaGHCmrN0XSOdDuvIofkVwzRS1/STHv
+         MUfpQvL8OgkrxTjqE9XJhvtIOT1NrOz7txuYr1gaxJEi4orQeCLXUF+DLJrqgR9bL4
+         aC5U5UAyIZZPbNoyPK9DJrjn9eme0Mf2n2xQjeIQ=
+Date:   Wed, 20 May 2020 13:12:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pooja Trivedi <poojatrivedi@gmail.com>
+Cc:     borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        davem@davemloft.net, vakul.garg@nxp.com, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        mallesham.jatharkonda@oneconvergence.com, josh.tway@stackpath.com,
+        Pooja Trivedi <pooja.trivedi@stackpath.com>
+Subject: Re: [PATCH net] net/tls(TLS_SW): Fix integrity issue with
+ non-blocking sw KTLS request
+Message-ID: <20200520131227.6f4301ff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAOrEds=e62EnDiB5b-5Btukp83OASVaVgBG28GkxSBw1F8sLSQ@mail.gmail.com>
+References: <1589732796-22839-1-git-send-email-pooja.trivedi@stackpath.com>
+        <20200518155016.75be3663@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAOrEds=Mo4YHm1CPrgVmPhsJagUAQ0PzyDPk9Cq3URq-7vfCWA@mail.gmail.com>
+        <20200519144255.3a7416c4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAOrEds=e62EnDiB5b-5Btukp83OASVaVgBG28GkxSBw1F8sLSQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200520192719.GK652285@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On Wed, 20 May 2020 15:56:56 -0400 Pooja Trivedi wrote:
+> On Tue, May 19, 2020 at 5:43 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 19 May 2020 13:21:56 -0400 Pooja Trivedi wrote:  
+> > > On Mon, May 18, 2020 at 6:50 PM Jakub Kicinski <kuba@kernel.org> wrote:  
+> > > > On Sun, 17 May 2020 16:26:36 +0000 Pooja Trivedi wrote:  
+> > > > > In pure sw ktls(AES-NI), -EAGAIN from tcp layer (do_tcp_sendpages for
+> > > > > encrypted record) gets treated as error, subtracts the offset, and
+> > > > > returns to application. Because of this, application sends data from
+> > > > > subtracted offset, which leads to data integrity issue. Since record is
+> > > > > already encrypted, ktls module marks it as partially sent and pushes the
+> > > > > packet to tcp layer in the following iterations (either from bottom half
+> > > > > or when pushing next chunk). So returning success in case of EAGAIN
+> > > > > will fix the issue.
+> > > > >
+> > > > > Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption")
+> > > > > Signed-off-by: Pooja Trivedi <pooja.trivedi@stackpath.com>
+> > > > > Reviewed-by: Mallesham Jatharkonda <mallesham.jatharkonda@oneconvergence.com>
+> > > > > Reviewed-by: Josh Tway <josh.tway@stackpath.com>  
+> > > >
+> > > > This looks reasonable, I think. Next time user space calls if no new
+> > > > buffer space was made available it will get a -EAGAIN, right?  
+> > >
+> > > Yes, this fix should only affect encrypted record. Plain text calls from
+> > > user space should be unaffected.  
+> >
+> > AFAICS if TCP layer is full next call from user space should hit
+> > sk_stream_wait_memory() immediately and if it has MSG_DONTWAIT set
+> > exit with EAGAIN. Which I believe to be correct behavior.
+> >  
+> 
+> The flow is tls_sw_sendmsg/tls_sw_do_sendpage --> bpf_exec_tx_verdict -->
+> tls_push_record --> tls_tx_records --> tls_push_sg --> do_tcp_sendpages
+> 
+> do_tcp_sendpages() sends partial record, 'retry:' label is exercised wherein
+> do_tcp_sendpages gets called again and returns -EAGAIN.
+> tls_push_sg sets partially_sent_record/partially_sent_offset and
+> returns -EAGAIN. -EAGAIN bubbles up to bpf_exec_tx_verdict.
+> In bpf_exec_tx_verdict, the following code causes 'copied' variable to
+> get updated to a negative value and returns -EAGAIN.
+> 
+>                 err = tls_push_record(sk, flags, record_type);
+>                 if (err && err != -EINPROGRESS) {
+>                         *copied -= sk_msg_free(sk, msg);
+>                         tls_free_open_rec(sk);
+>                 }
+>                 return err;
+> 
+> -EAGAIN returned by bpf_exec_tx_verdict causes
+> tls_sw_sendmsg/tls_sw_do_sendpage to 'continue' in the while loop and
+> call sk_stream_wait_memory(). sk_stream_wait_memory returns -EAGAIN
+> also and control reaches the 'send_end:' label. The following return
+> statement causes a negative 'copied' variable value to be returned to the
+> user space.
+> 
+>         return copied ? copied : ret;
+> 
+> User space applies this negative value as offset for the next send, causing
+> part of the record that was already sent to be pushed again.
+> 
+> Hope this clarifies it.
 
-On 5/20/20 2:27 PM, Andrew Lunn wrote:
-> Hi Dan
->
->> UGH I think I just got volunteered to do make them common.
-> There is code you can copy from PHY drivers. :-)
->
-> What would be kind of nice is if the validate was in the core as
-> well. Pass a list of possible delays in pS, and it will do a
-> phydev_err() if what is in DT does not match one of the listed
-> delays. Take a look around at what current drivers do and see if you
-> can find a nice abstraction which will work for a few drivers. We
-> cannot easily convert existing drivers without breaking DT, but a
-> design which works in theory for what we currently have has a good
-> chance of working for any new PHY driver.
+Oh yes, sorry I was talking about the behavior _after_ your patch, on
+the _next_ sendmsg/sendpage call.
 
-I think adding it in the core would be a bit of a challenge.  I think 
-each PHY driver needs to handle parsing and validating this property on 
-its own (like fifo-depth).  It is a PHY specific setting.
+It should now work like this:
 
-Take the DP83867/9 and the ADIN1200/ADIN1300.
+	bpf_exec_tx_verdict() returns success, next iteration of the
+	sendmsg/sendpage loop hits sk_stream_wait_memory(), we return
+	positive copied which is counts the entire record, even though
+	some of it is still in partially_sent_record. If user space
+	calls sendmsg again we will hit sk_stream_wait_memory() ->
+	send_end -> this time copied is 0, so user space will see
+	-EAGAIN.
 
-The 8386X devices has a delta granularity of 250pS and the AD devices is 
-200pS per each setting
-
-And the 867/9 has 3x more values (15) vs only 5 for the AD PHY.
-
-And the Atheros AR803x PHY does use rgmii-id in the yaml, which I guess 
-is what you were pointing out, that if set the PHY uses a default 2nS 
-delay and it is not configurable.
-
-Same with the Broadcomm.
-
-Ack to not changing already existing drivers which is only 2 the AD PHY 
-and the DP83867 PHY.  But I can update the yaml for the 83867 and mark 
-the TI specific properties as deprecated in favor of the new properties 
-like I did with fifo-depth.
-
-Dan
-
-
->       Andrew
+If I'm still not making sense don't worry about it, I think it should
+be easy to explain based on the selftest.
