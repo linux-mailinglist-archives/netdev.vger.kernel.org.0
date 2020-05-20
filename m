@@ -2,112 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744481DA6D9
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 03:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1001DA70B
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 03:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbgETBAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 21:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        id S1728354AbgETBPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 21:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgETBAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 21:00:24 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9277C061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:00:23 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id s10so1329605iog.7
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 18:00:23 -0700 (PDT)
+        with ESMTP id S1726318AbgETBPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 21:15:52 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D30AC061A0E;
+        Tue, 19 May 2020 18:15:52 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id z18so1357471qto.2;
+        Tue, 19 May 2020 18:15:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=mLs/n/z++VsFfH85lFX/BEIPBMSMOzlyTpaFM38CfdU=;
-        b=T8Fjpr0P65UCpLMV/vkwEhv5xPnDujCCLKB70r/Z1FTNO7burX/rlfbOz0y7P9X4o4
-         DfSMaESjHBG8uBliZSpnjNgL+3PsA/R3y5kCfVP8T/1SZo2G0zamnWPA9qwVkI5bZTHB
-         an2fHcMTm1tUtP+2VBSF6skEsAiI3334bKYq6bt5hd5/RrLnIKBSPX0l9WYaQ6XNupJ6
-         09JUhz9aHDHlSMe8Spt8mzA6xI5VlyPJH2nDzNMlo9AwriwnicHzB09+jTnboUDx9Zr4
-         2qH0+u8nhqRFRssopRZ6lnVfQjb1n7fu/RDrJ0jBv8GqaQ+ki8MPmuy39xDnwuOyPDfv
-         YkOQ==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F0EOqfvm+U8zbN9pe5EiZsUrr10V3e6VL6Vupxey0dY=;
+        b=lNhWJvRLcrONoH7dPuf9x5UbvN31JSgWvswrqUIV/RwxhvnILLFGkHeX1eYH4GI0Rr
+         BgxtEYcshqFvJXWPBsAWBlQ5HHPWtPx7tLds17GhnutpoTBXksrlPQtqeOOKnaXnMDQq
+         nuPqnHNA5gj+ZLqsVR/K3dwE/YUOyT1qqao958tKc8aUjW3G7wlZUE61AZ0rAEZsegwa
+         ApXsEkOY4Go8meMA1cEUVz7+za8CycaLEDSf5BwJENzA2ckbUUhDKvpncml6MQWZ/ho8
+         nCFiJF6r2maBfxLqBd5VriLR2LvYSE2l+e9uAAGZJhWx+KqXi2qPphuaXh4Lb+mJToob
+         sH2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mLs/n/z++VsFfH85lFX/BEIPBMSMOzlyTpaFM38CfdU=;
-        b=cLD3J5d1ru2gORcnpt7S40xNexZoRQ2HMR0RBuMwJOI5Us38ZhLCIrUuamhY4vH/P4
-         aO/0ECqV3PUQMMr35uetz6IUjti99WtcVIJ7tH03ksnuPL+5NvQ0MmhSq6sS2GahMcb/
-         i3DpUsv8RXNx0Xh/vl3Xo21+DY6kBkZzAaIfaA6KYKoeTipmrYtHP5LxX1nqrUj06E80
-         FsghOpSlo1T42Ln5G/D32gM7BiioEx3TIFnoAaaJ1BLc8h6OmAA+Dl+9jVNml5wMhaMN
-         /jje3xFute0Tms+eOJHOFGOv35PjAAvfE4pCfKX5inDOKytzyoFaDlove05LY5pUiEkp
-         d+Wg==
-X-Gm-Message-State: AOAM530Y2rNNbl1wHu8pmqTbdN/sme7eFI7oz+1KyNhSzEsIR8al8Ib8
-        6GlkQy6VEUot50W5Nd+Jd3ErZA==
-X-Google-Smtp-Source: ABdhPJycpJQcImXjllyWVBG+t311YnExktTcH6FDyKkFZ6uFj4oSyYFOgvOVmlHK0IbfBjItpXmbCw==
-X-Received: by 2002:a6b:3b94:: with SMTP id i142mr1609653ioa.76.1589936423149;
-        Tue, 19 May 2020 18:00:23 -0700 (PDT)
-Received: from mojatatu.com ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id f10sm494194ilj.85.2020.05.19.18.00.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 May 2020 18:00:22 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     stephen@networkplumber.org
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, kernel@mojatatu.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH iproute2 v2 1/1] tc: action: fix time values output in JSON format
-Date:   Tue, 19 May 2020 20:59:44 -0400
-Message-Id: <1589936384-29378-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F0EOqfvm+U8zbN9pe5EiZsUrr10V3e6VL6Vupxey0dY=;
+        b=OywxJFx5MzfxyP4vhVIXzOihi/BUfPvz2508PkDmZ/tc5OwULlpDkWvs4dWdMF7l85
+         JVCStbEc55G8UuvxvUNFJqKuRi5mrERnEy6xCsTkFQYOTx6tNKHKUMCdUWqyub8UuXua
+         gJJXHSze58mUQ3Y6suowlbT8T04ejAHc9vxU6rk7xdAkI59d9SbANRjHqhNT927HuFqF
+         jQ/Jj0b5BCBlhvMHhAt+RGl9YoSWsI7606zOf6MBo9ibEWoAWVoM6WGOJCCqUpkMM9em
+         300V9VA//mYhg1QBGTA6fZL0r9hb+V6wkhBMlnqZ5y0SyfLF80g8gzsEJCCTvUxot8OR
+         QjXA==
+X-Gm-Message-State: AOAM530HBWVUS5d2aS2OEu6Bs9jIrEwuCkxASFrx6IrzhkxhgQuz+N4U
+        0EOU/WvRGKNn1jhSwnFTaJ8=
+X-Google-Smtp-Source: ABdhPJxH8bYcoLXPIvoHq0XUc55akOke3gwiPVGAHZ5ScrPIEz1FexutApKgendi+ezUSBmu1A+1Pw==
+X-Received: by 2002:ac8:2dbc:: with SMTP id p57mr2915295qta.280.1589937351555;
+        Tue, 19 May 2020 18:15:51 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id k93sm1193432qte.74.2020.05.19.18.15.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 18:15:50 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1FFFA40AFD; Tue, 19 May 2020 22:15:48 -0300 (-03)
+Date:   Tue, 19 May 2020 22:15:48 -0300
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>,
+        Paul Clarke <pc@us.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH v3 6/7] perf test: Improve pmu event metric testing
+Message-ID: <20200520011548.GD28228@kernel.org>
+References: <20200515221732.44078-1-irogers@google.com>
+ <20200515221732.44078-7-irogers@google.com>
+ <20200519190602.GB28228@kernel.org>
+ <CAP-5=fVdDjazSdzfTXeuWwqCSh0zURp3M8QZpYK=qd92GeyrRw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fVdDjazSdzfTXeuWwqCSh0zURp3M8QZpYK=qd92GeyrRw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report tcf_t values in seconds, not jiffies, in JSON format as it is now
-for stdout.
+Em Tue, May 19, 2020 at 01:15:41PM -0700, Ian Rogers escreveu:
+> On Tue, May 19, 2020 at 12:06 PM Arnaldo Carvalho de Melo
+> <arnaldo.melo@gmail.com> wrote:
+> >
+> > Em Fri, May 15, 2020 at 03:17:31PM -0700, Ian Rogers escreveu:
+> > > Break pmu-events test into 2 and add a test to verify that all pmu
+> > > metric expressions simply parse. Try to parse all metric ids/events,
+> > > skip/warn if metrics for the current architecture fail to parse. To
+> > > support warning for a skip, and an ability for a subtest to describe why
+> > > it skips.
+> > >
+> > > Tested on power9, skylakex, haswell, broadwell, westmere, sandybridge and
+> > > ivybridge.
+> > >
+> > > May skip/warn on other architectures if metrics are invalid. In
+> > > particular s390 is untested, but its expressions are trivial. The
+> > > untested architectures with expressions are power8, cascadelakex,
+> > > tremontx, skylake, jaketown, ivytown and variants of haswell and
+> > > broadwell.
+> > >
+> > > v3. addresses review comments from John Garry <john.garry@huawei.com>,
+> > > Jiri Olsa <jolsa@redhat.com> and Arnaldo Carvalho de Melo
+> > > <acme@kernel.org>.
+> > > v2. changes the commit message as event parsing errors no longer cause
+> > > the test to fail.
+> > >
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > Cc: Adrian Hunter <adrian.hunter@intel.com>
+> > > Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+> > > Cc: Andi Kleen <ak@linux.intel.com>
+> > > Cc: Jin Yao <yao.jin@linux.intel.com>
+> > > Cc: Jiri Olsa <jolsa@redhat.com>
+> > > Cc: John Garry <john.garry@huawei.com>
+> > > Cc: Kajol Jain <kjain@linux.ibm.com>
+> > > Cc: Kan Liang <kan.liang@linux.intel.com>
+> > > Cc: Leo Yan <leo.yan@linaro.org>
+> > > Cc: Mark Rutland <mark.rutland@arm.com>
+> > > Cc: Namhyung Kim <namhyung@kernel.org>
+> > > Cc: Paul Clarke <pc@us.ibm.com>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: Stephane Eranian <eranian@google.com>
+> > > Link: http://lore.kernel.org/lkml/20200513212933.41273-1-irogers@google.com
+> > > [ split from a larger patch ]
+> > > Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > > ---
+> > >  tools/perf/tests/builtin-test.c |   7 ++
+> > >  tools/perf/tests/pmu-events.c   | 168 ++++++++++++++++++++++++++++++--
+> > >  tools/perf/tests/tests.h        |   3 +
+> > >  3 files changed, 172 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/tools/perf/tests/builtin-test.c b/tools/perf/tests/builtin-test.c
+> > > index baee735e6aa5..9553f8061772 100644
+> > > --- a/tools/perf/tests/builtin-test.c
+> > > +++ b/tools/perf/tests/builtin-test.c
+> > > @@ -75,6 +75,13 @@ static struct test generic_tests[] = {
+> > >       {
+> > >               .desc = "PMU events",
+> > >               .func = test__pmu_events,
+> > > +             .subtest = {
+> > > +                     .skip_if_fail   = false,
+> > > +                     .get_nr         = test__pmu_events_subtest_get_nr,
+> > > +                     .get_desc       = test__pmu_events_subtest_get_desc,
+> > > +                     .skip_reason    = test__pmu_events_subtest_skip_reason,
+> > > +             },
+> > > +
+> > >       },
+> > >       {
+> > >               .desc = "DSO data read",
+> > > diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
+> > > index d64261da8bf7..e21f0addcfbb 100644
+> > > --- a/tools/perf/tests/pmu-events.c
+> > > +++ b/tools/perf/tests/pmu-events.c
+> > > @@ -8,6 +8,9 @@
+> > >  #include <linux/zalloc.h>
+> > >  #include "debug.h"
+> > >  #include "../pmu-events/pmu-events.h"
+> > > +#include "util/evlist.h"
+> > > +#include "util/expr.h"
+> > > +#include "util/parse-events.h"
+> > >
+> > >  struct perf_pmu_test_event {
+> > >       struct pmu_event event;
+> > > @@ -144,7 +147,7 @@ static struct pmu_events_map *__test_pmu_get_events_map(void)
+> > >  }
+> > >
+> > >  /* Verify generated events from pmu-events.c is as expected */
+> > > -static int __test_pmu_event_table(void)
+> > > +static int test_pmu_event_table(void)
+> > >  {
+> > >       struct pmu_events_map *map = __test_pmu_get_events_map();
+> > >       struct pmu_event *table;
+> > > @@ -347,14 +350,11 @@ static int __test__pmu_event_aliases(char *pmu_name, int *count)
+> > >       return res;
+> > >  }
+> > >
+> > > -int test__pmu_events(struct test *test __maybe_unused,
+> > > -                  int subtest __maybe_unused)
+> > > +
+> > > +static int test_aliases(void)
+> > >  {
+> > >       struct perf_pmu *pmu = NULL;
+> > >
+> > > -     if (__test_pmu_event_table())
+> > > -             return -1;
+> > > -
+> > >       while ((pmu = perf_pmu__scan(pmu)) != NULL) {
+> > >               int count = 0;
+> > >
+> > > @@ -377,3 +377,159 @@ int test__pmu_events(struct test *test __maybe_unused,
+> > >
+> > >       return 0;
+> > >  }
+> > > +
+> > > +static bool is_number(const char *str)
+> > > +{
+> > > +     char *end_ptr;
+> > > +
+> > > +     strtod(str, &end_ptr);
+> > > +     return end_ptr != str;
+> > > +}
+> >
+> > So, this breaks in some systems:
+> >
+> > cc1: warnings being treated as errors
+> > tests/pmu-events.c: In function 'is_number':
+> > tests/pmu-events.c:385: error: ignoring return value of 'strtod', declared with attribute warn_unused_result
+> > mv: cannot stat `/tmp/build/perf/tests/.pmu-events.o.tmp': No such file or director
+> >
+> > So I'm changing it to verify the result of strtod() which is, humm,
+> > interesting, please check:
+> 
+> Thanks Arnaldo and sorry for the difficulty. This looks like a good fix.
+> 
+> > diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
+> > index 3de59564deb0..6c58c3a89e6b 100644
+> > --- a/tools/perf/tests/pmu-events.c
+> > +++ b/tools/perf/tests/pmu-events.c
+> > @@ -1,4 +1,5 @@
+> >  // SPDX-License-Identifier: GPL-2.0
+> > +#include "math.h"
+> >  #include "parse-events.h"
+> >  #include "pmu.h"
+> >  #include "tests.h"
+> > @@ -381,8 +382,12 @@ static int test_aliases(void)
+> >  static bool is_number(const char *str)
+> >  {
+> >         char *end_ptr;
+> > +       double v;
+> >
+> > -       strtod(str, &end_ptr);
+> > +       errno = 0;
+> > +       v = strtod(str, &end_ptr);
+> > +       if ((errno == ERANGE && (v == HUGE_VAL || v == -HUGE_VAL)) || (errno != 0 && v == 0.0))
+> 
+> errno can either be 0 or ERANGE here, but we test both. Perhaps use
+> errno != 0 for both cases as the man page notes suggest doing this.
+> The tests using v are necessary to avoid the unused result, but
+> presumably any errno case should return false here? I guess testing
+> that is redundant as the return below will catch it. Perhaps this
+> should be:
+> 
+> errno = 0;
+> v = strtod(str, &end_ptr);
+> (void)v;  /* We don't care for the value of the double, just that it
+> converts. Avoid unused result warnings. */
+> return errno == 0 && end_ptr != str;
 
-v2: use PRINT_ANY, drop the useless casts and fix the style (Stephen Hemminger)
+Ok, I'll try that one.
 
-Fixes: 2704bd625583 ("tc: jsonify actions core")
-Cc: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- tc/tc_util.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
-
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 12f865cc71bf..fd5fcb242b64 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -750,21 +750,17 @@ void print_tm(FILE *f, const struct tcf_t *tm)
- {
- 	int hz = get_user_hz();
+- Arnaldo
  
--	if (tm->install != 0) {
--		print_uint(PRINT_JSON, "installed", NULL, tm->install);
--		print_uint(PRINT_FP, NULL, " installed %u sec",
--			   (unsigned int)(tm->install/hz));
--	}
--	if (tm->lastuse != 0) {
--		print_uint(PRINT_JSON, "last_used", NULL, tm->lastuse);
--		print_uint(PRINT_FP, NULL, " used %u sec",
--			   (unsigned int)(tm->lastuse/hz));
--	}
--	if (tm->expires != 0) {
--		print_uint(PRINT_JSON, "expires", NULL, tm->expires);
--		print_uint(PRINT_FP, NULL, " expires %u sec",
--			   (unsigned int)(tm->expires/hz));
--	}
-+	if (tm->install != 0)
-+		print_uint(PRINT_ANY, "installed", " installed %u sec",
-+			   tm->install / hz);
-+
-+	if (tm->lastuse != 0)
-+		print_uint(PRINT_ANY, "last_used", " used %u sec",
-+			   tm->lastuse / hz);
-+
-+	if (tm->expires != 0)
-+		print_uint(PRINT_ANY, "expires", " expires %u sec",
-+			   tm->expires / hz);
- }
- 
- static void print_tcstats_basic_hw(struct rtattr **tbs, char *prefix)
+> Thanks,
+> Ian
+> 
+> > +               return false;
+> >         return end_ptr != str;
+> >  }
+> >
+
 -- 
-2.7.4
 
+- Arnaldo
