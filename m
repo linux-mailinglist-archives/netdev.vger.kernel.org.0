@@ -2,103 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 877491DBB1B
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A341DBB53
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727811AbgETRVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 13:21:05 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:40542 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbgETRVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:21:04 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KHKwHq020773;
-        Wed, 20 May 2020 12:20:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589995258;
-        bh=yrKwbAO5uhLlt/mQiD0EoGYC+VF09O7pczsKToEZH94=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=A1K4+hLRPyQxIGoro61sk9hld7QVYHYIQ39iV7K7YLq2iusgjGI99agLUY9uFUq4a
-         N76y38HGtQmugA0vaOnlLLCVyQ5v5/V04asTE1ND8x5vM9vT3d/Xsxo4xBZS03lr2a
-         GR01Y4d+580V16HR/P22TGZejnEu+geq+2JKOQY4=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KHKvpo014522
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 12:20:57 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
- May 2020 12:20:36 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 20 May 2020 12:20:36 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KHKaEO089527;
-        Wed, 20 May 2020 12:20:36 -0500
-Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
- delay for DP83869
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200520121835.31190-1-dmurphy@ti.com>
- <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
- <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
- <20200520153631.GH652285@lunn.ch>
- <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
- <20200520164313.GI652285@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
-Date:   Wed, 20 May 2020 12:20:31 -0500
+        id S1728331AbgETRXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:23:51 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53672 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727981AbgETRWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:22:05 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A480D200DF;
+        Wed, 20 May 2020 17:22:03 +0000 (UTC)
+Received: from us4-mdac16-69.at1.mdlocal (unknown [10.110.50.186])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A2E118009B;
+        Wed, 20 May 2020 17:22:03 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3404D40072;
+        Wed, 20 May 2020 17:22:03 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CB948280063;
+        Wed, 20 May 2020 17:22:02 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 20 May
+ 2020 18:21:56 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v3 net-next] net: flow_offload: simplify hw stats check
+ handling
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <jiri@resnulli.us>, <kuba@kernel.org>, <pablo@netfilter.org>
+Message-ID: <2cf9024d-1568-4594-5763-6c4e4e8fe47b@solarflare.com>
+Date:   Wed, 20 May 2020 18:21:53 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200520164313.GI652285@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25430.003
+X-TM-AS-Result: No-5.781900-8.000000-10
+X-TMASE-MatchedRID: huLetEq/dPSwwAVMmrrBx6iUivh0j2PvBGvINcfHqhcxORZj0djJkQOr
+        nVAKyYzuC75+d7CNAsqekg5BszIusyxMd3BG3hng/ccgt/EtX/1dA4rYaKGKwlJqwYCQ1BisMH1
+        xx17eFtQMgdTDHmTMF7r7cyh+G7QMHVikQ9YmLLPwqDryy7bDIUj2TRK4Wlr10yA6AM98FEFLxd
+        BSajtA2Hxs7qFZ9FbOAUZWrMnznJp7dpr6RvFomfUwiX15l0tvTySC+TZdy0WRDQkhZa5u72kny
+        jyxlh7mqneduEAVa+rqHEp2n5BcUGKztShDQzFutKR5FXfbyszqobkz1A0A7SgCoCrh9Y4lk66/
+        gtVjZsVnHQJ2jUDp75GTpe1iiCJq71zr0FZRMbALbigRnpKlKSPzRlrdFGDwknQQQGIVv41ASa6
+        U3AEcWXpTFh9eJy4/zF9z8yz1+epqbamnjuWv4A==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.781900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25430.003
+X-MDID: 1589995323-i9Z4x4UWyZan
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew/Florian
+Make FLOW_ACTION_HW_STATS_DONT_CARE be all bits, rather than none, so that
+ drivers and __flow_action_hw_stats_check can use simple bitwise checks.
+Also ensure that netfilter explicitly sets its actions to DONT_CARE, rather
+ than relying on implicit semantics of zero.
 
-On 5/20/20 11:43 AM, Andrew Lunn wrote:
->> I am interested in knowing where that is documented.  I want to RTM I
->> grepped for a few different words but came up empty
-> Hi Dan
->
-> It probably is not well documented, but one example would be
->
-> Documentation/devicetree/bindings/net/ethernet-controller.yaml
->
-> says:
->
->        # RX and TX delays are added by the MAC when required
->        - rgmii
->
->        # RGMII with internal RX and TX delays provided by the PHY,
->        # the MAC should not add the RX or TX delays in this case
->        - rgmii-id
->
->        # RGMII with internal RX delay provided by the PHY, the MAC
->        # should not add an RX delay in this case
->        - rgmii-rxid
->
->        # RGMII with internal TX delay provided by the PHY, the MAC
->        # should not add an TX delay in this case
->
->        Andrew
+Only the kernel's internal API semantics change; the TC uAPI is unaffected.
 
-OKI I read that.  I also looked at a couple other drivers too.
+v3: set DONT_CARE in nft and ct offload.  Tested the latter with an
+ experimental driver; conntrack entry actions had hw_stats=7, as expected.
 
-I am wondering if rx-internal-delay and tx-internal-delay should become 
-a common property like tx/rx fifo-depth
+v2: rebased on net-next, removed RFC tags.
 
-And properly document how to use it or at least the expectation on use.
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+I don't have hardware that does TC_SETUP_FT offload.  Could someone from
+ mlx test that nft offload comes through with hw_stats=DONT_CARE?
 
-Dan
+ .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  8 ++++----
+ include/net/flow_offload.h                         | 11 +++++++----
+ net/netfilter/nf_flow_table_offload.c              | 14 +++++++++++---
+ net/sched/act_ct.c                                 |  5 +++++
+ 4 files changed, 27 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index b286fe158820..51e1b3930c56 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -30,14 +30,14 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 		return -EOPNOTSUPP;
+ 
+ 	act = flow_action_first_entry_get(flow_action);
+-	if (act->hw_stats == FLOW_ACTION_HW_STATS_ANY ||
+-	    act->hw_stats == FLOW_ACTION_HW_STATS_IMMEDIATE) {
++	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
++		/* Nothing to do */
++	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_IMMEDIATE) {
+ 		/* Count action is inserted first */
+ 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
+ 		if (err)
+ 			return err;
+-	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED &&
+-		   act->hw_stats != FLOW_ACTION_HW_STATS_DONT_CARE) {
++	} else {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 4001ffb04f0d..95d633785ef9 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -168,10 +168,11 @@ enum flow_action_hw_stats_bit {
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+ 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+ 	FLOW_ACTION_HW_STATS_DISABLED_BIT,
++
++	FLOW_ACTION_HW_STATS_NUM_BITS
+ };
+ 
+ enum flow_action_hw_stats {
+-	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+ 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+ 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+@@ -179,6 +180,7 @@ enum flow_action_hw_stats {
+ 				   FLOW_ACTION_HW_STATS_DELAYED,
+ 	FLOW_ACTION_HW_STATS_DISABLED =
+ 		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
++	FLOW_ACTION_HW_STATS_DONT_CARE = BIT(FLOW_ACTION_HW_STATS_NUM_BITS) - 1,
+ };
+ 
+ typedef void (*action_destr)(void *priv);
+@@ -340,11 +342,12 @@ __flow_action_hw_stats_check(const struct flow_action *action,
+ 		return false;
+ 
+ 	action_entry = flow_action_first_entry_get(action);
+-	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
+-		return true;
++
++	/* Zero is not a legal value for hw_stats, catch anyone passing it */
++	WARN_ON_ONCE(!action_entry->hw_stats);
+ 
+ 	if (!check_allow_bit &&
+-	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
++	    ~action_entry->hw_stats & FLOW_ACTION_HW_STATS_ANY) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+ 		return false;
+ 	} else if (check_allow_bit &&
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index 2ff4087007a6..60f94a2d15cc 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -165,9 +165,17 @@ static void flow_offload_mangle(struct flow_action_entry *entry,
+ static inline struct flow_action_entry *
+ flow_action_entry_next(struct nf_flow_rule *flow_rule)
+ {
+-	int i = flow_rule->rule->action.num_entries++;
++	struct flow_action *acts = &flow_rule->rule->action;
++	struct flow_action_entry *act;
++	int i = acts->num_entries++;
+ 
+-	return &flow_rule->rule->action.entries[i];
++	act = acts->entries + i;
++	/* Pre-fill action hw_stats with DONT_CARE.  Caller can override this
++	 * if it wants stats for its action
++	 */
++	act->hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
++
++	return act;
+ }
+ 
+ static int flow_offload_eth_src(struct net *net,
+@@ -582,7 +590,7 @@ nf_flow_offload_rule_alloc(struct net *net,
+ 	const struct flow_offload_tuple *tuple;
+ 	struct nf_flow_rule *flow_rule;
+ 	struct dst_entry *other_dst;
+-	int err = -ENOMEM;
++	int err = -ENOMEM, i;
+ 
+ 	flow_rule = kzalloc(sizeof(*flow_rule), GFP_KERNEL);
+ 	if (!flow_rule)
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 9adff83b523b..b3b68dacadd0 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -61,6 +61,11 @@ tcf_ct_flow_table_flow_action_get_next(struct flow_action *flow_action)
+ {
+ 	int i = flow_action->num_entries++;
+ 
++	/* Pre-fill action hw_stats with DONT_CARE.  Caller can override this
++	 * if it wants stats for its action
++	 */
++	flow_action->entries[i].hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
++
+ 	return &flow_action->entries[i];
+ }
+ 
