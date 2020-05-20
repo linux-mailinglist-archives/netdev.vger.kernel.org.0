@@ -2,204 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD43E1DC247
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 00:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6751DC295
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 01:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728499AbgETWmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 18:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        id S1728666AbgETXAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 19:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728019AbgETWmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 18:42:15 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFF2C061A0E
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 15:42:15 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id 67so1772372ybn.11
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 15:42:15 -0700 (PDT)
+        with ESMTP id S1728019AbgETXAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 19:00:31 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E8FC061A0E;
+        Wed, 20 May 2020 16:00:30 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id g185so5432220qke.7;
+        Wed, 20 May 2020 16:00:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dvtn9Vcw9Mu98E89DI4uU9zUHcPKNAC6K0uYrY5V7wY=;
-        b=maeJMRB/Bw0/93huxTAw8NYf3nSth3kkbZ9jMF+IJqT2fe0A1xTTw4sEh4NoG95aLe
-         Po+q2bJp4eS3oJEc2sXJ28TdPUqHJomesT1sCV/yvkD5m2S/y+tyufRNDIthIIJSW7A7
-         4R74ipSexjHgkb5kBTwWB0n//Uv7rtfY+XcPhEdVvWr6PMUKImP+vDaym8neM/m/akuJ
-         x/ZIZragkSbzTAAi7cgYW+o7RWmwH7edNLhOggQ0iO1loGe/bCbX128N/G5Fp73Gojzp
-         4bQjoHC+yDjmPHbFXbQs4Rn9HfWdBHyr/2fLKdDeBB7OWbY00I7QzxbFcrtG1pesDBJG
-         jWXA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bxPhNLxEeIp1FyAEAyOXcpXoJGhcJI/9VkWQHjEBJu8=;
+        b=ABmm/w5ZxLmgIKDfTHVrUH4+roya8bvoORLSIFi8ftfcLjr/+lUQIQg1vCqbqW2lg9
+         Edg16ZlpvA+2Dlf7bVNlBaLPK1ZbW70B9d+eMKWgRWHc1obMDOhnkMACk5lCyH6afilN
+         oBX31hIJND3KTy6XaW00DzljepVXjloOTwRxZRLvAQKsNjUgvnW+LRhTtQZ8hzDo3kC9
+         nEaiPcTs5/ymUk2QJuXYVy0Cj6FQBr1kL/y4jcDd4Z/5qbXOnV8biHoU/FvLL+veSFMP
+         /oXIdwd3BivEoo89WKHE8GPd4JLIstozB1RtSZSt9AsbvQu1QY701U/rpBAvWqVzLnB2
+         HhPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dvtn9Vcw9Mu98E89DI4uU9zUHcPKNAC6K0uYrY5V7wY=;
-        b=RIZ4I/gsiOdoGAbxg5x7wLFyGlFQGC7qTZA9QnDke6c8kJ+vurNiWuaImdMMuRtNYd
-         jYI15xTzZ2j8WuBlzPerV/2M28OWW2RnRsl4673lIT2chxu2oL8cDHkspIRqJc9Cur0c
-         SxF2izrFeBOt3Ef0DcCSjKjaH+tGNWfs83Q0BO6KvlAq1mp6Ki0e3nsDsvQl7A9mvbyS
-         deuOGr3ny6lm8GAN6/tI8qjOou+c7/sfXXGquMMrs0nJ6Ob7/1MldyikuuuKOkCTqlfX
-         bUFtJ2nuu8cXSMZ7AjapL23yCV/+TrjCKCQjnw1PIAiwKHz3giXdP9X78RzVljxpirK6
-         yIpw==
-X-Gm-Message-State: AOAM532pKY2rjIYaMIQwJHlmU0W5YBObHWFpZ4ADWPtH0FhLi8DBGiiu
-        LsbmH3F/nFleWz5pYSnusuguaerSCOoJJ2HRYfjjfg==
-X-Google-Smtp-Source: ABdhPJzs+ERhRHgOSK3Jl85Xe9DI8Tn03w4ppBuvTG+XjaVacohus9qdYiAG5C64Y7dMx6LihN2Z+owKtQ2E0CUdUUI=
-X-Received: by 2002:a25:790e:: with SMTP id u14mr10909068ybc.324.1590014534392;
- Wed, 20 May 2020 15:42:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bxPhNLxEeIp1FyAEAyOXcpXoJGhcJI/9VkWQHjEBJu8=;
+        b=DPTNrEX9Paf6GhhsUzeFW8moIK4q0vqcsilRqDEDWukfuWkXCFRkDZTFS2zT4wSE2m
+         e4LGi8g7eLVaICULAHzL6IOIbFGhctNhgYUUw0JhJgEJTyk2pe5ZnnaJ/tthUPzck8pY
+         SoyOsFqQkAJPjUejKhn+Tyx9kisqYUqijc5n+C6PgBjc1v1/mJRQIQJ1irBy4lOSGS3m
+         q/De2L7FodBOnil+UxiRjaVv4GbmOEnsH7wn3FHuoTiFEFPsO4qXZhkdCh9yjLQKJ3lP
+         qnFhOR+9zoglz+6BrAKfH/ep4ddK2gN3iLXaXShxEbMj1LH1bLarTH0fOjVyojQ/B52n
+         HqMw==
+X-Gm-Message-State: AOAM533mXAv4/APXY6OpJ56TlwZn/dXJstukW4IiXyA19Nh18x4xuk33
+        B0yZdBQASNlbr4EtUFtCEDU=
+X-Google-Smtp-Source: ABdhPJz4+N4OAMnIZUpFPrMKKpxZ5ipr9THKmBgVoh+NUJRSoyJQeFfxBAyAvgR9uTfieJGBqFR7qw==
+X-Received: by 2002:a37:b244:: with SMTP id b65mr7801054qkf.329.1590015629321;
+        Wed, 20 May 2020 16:00:29 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.225])
+        by smtp.gmail.com with ESMTPSA id n68sm3102877qkb.58.2020.05.20.16.00.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 16:00:28 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 889A9C0DAC; Wed, 20 May 2020 20:00:25 -0300 (-03)
+Date:   Wed, 20 May 2020 20:00:25 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-nvme@lists.infradead.org, target-devel@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        ceph-devel@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-nfs@vger.kernel.org
+Subject: Re: [PATCH 32/33] net: add a new bind_add method
+Message-ID: <20200520230025.GT2491@localhost.localdomain>
+References: <20200520195509.2215098-1-hch@lst.de>
+ <20200520195509.2215098-33-hch@lst.de>
 MIME-Version: 1.0
-References: <20200520072814.128267-1-irogers@google.com> <20200520072814.128267-6-irogers@google.com>
- <20200520134847.GM157452@krava> <CAP-5=fVGf9i7hvQcht_8mnMMjzhQYdFqPzZFraE-iMR7Vcr1tw@mail.gmail.com>
- <20200520220912.GP157452@krava>
-In-Reply-To: <20200520220912.GP157452@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 20 May 2020 15:42:02 -0700
-Message-ID: <CAP-5=fU12vP45Sg3uRSuz-xoceTPTKw9-XZieKv1PaTnREMdrw@mail.gmail.com>
-Subject: Re: [PATCH 5/7] perf metricgroup: Remove duped metric group events
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Paul Clarke <pc@us.ibm.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200520195509.2215098-33-hch@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 3:09 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Wed, May 20, 2020 at 09:50:13AM -0700, Ian Rogers wrote:
->
-> SNIP
->
-> > > > +             }
-> > >
-> > > is the groupping still enabled when we merge groups? could part
-> > > of the metric (events) be now computed in different groups?
-> >
-> > By default the change will take two metrics and allow the shorter
-> > metric (in terms of number of events) to share the events of the
-> > longer metric. If the events for the shorter metric aren't in the
-> > longer metric then the shorter metric must use its own group of
-> > events. If sharing has occurred then the bitmap is used to work out
-> > which events and groups are no longer in use.
-> >
-> > With --metric-no-group then any event can be used for a metric as
-> > there is no grouping. This is why more events can be eliminated.
-> >
-> > With --metric-no-merge then the logic to share events between
-> > different metrics is disabled and every metric is in a group. This
-> > allows the current behavior to be had.
-> >
-> > There are some corner cases, such as metrics with constraints (that
-> > don't group) and duration_time that is never placed into a group.
-> >
-> > Partial sharing, with one event in 1 weak event group and 1 in another
-> > is never performed. Using --metric-no-group allows something similar.
-> > Given multiplexing, I'd be concerned about accuracy problems if events
-> > between groups were shared - say for IPC, were you measuring
-> > instructions and cycles at the same moment?
->
-> hum, I think that's also concern if you are multiplexing 2 groups and one
-> metric getting events from both groups that were not meassured together
->
-> it makes sense to me put all the merged events into single weak group
-> anything else will have the issue you described above, no?
->
-> and perhaps add command line option for merging that to make sure it's
-> what user actuly wants
+On Wed, May 20, 2020 at 09:55:08PM +0200, Christoph Hellwig wrote:
+> The SCTP protocol allows to bind multiple address to a socket.  That
+> feature is currently only exposed as a socket option.  Add a bind_add
+> method struct proto that allows to bind additional addresses, and
+> switch the dlm code to use the method instead of going through the
+> socket option from kernel space.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  fs/dlm/lowcomms.c  |  9 +++------
+>  include/net/sock.h |  6 +++++-
+>  net/core/sock.c    |  8 ++++++++
+>  net/sctp/socket.c  | 23 +++++++++++++++++++++++
+>  4 files changed, 39 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
+> index 9f1c3cdc9d653..3543a8fec9075 100644
+> --- a/fs/dlm/lowcomms.c
+> +++ b/fs/dlm/lowcomms.c
+> @@ -882,6 +882,7 @@ static void writequeue_entry_complete(struct writequeue_entry *e, int completed)
+>  static int sctp_bind_addrs(struct connection *con, uint16_t port)
+>  {
+>  	struct sockaddr_storage localaddr;
+> +	struct sockaddr *addr = (struct sockaddr *)&localaddr;
+>  	int i, addr_len, result = 0;
+>  
+>  	for (i = 0; i < dlm_local_count; i++) {
+> @@ -889,13 +890,9 @@ static int sctp_bind_addrs(struct connection *con, uint16_t port)
+>  		make_sockaddr(&localaddr, port, &addr_len);
+>  
+>  		if (!i)
+> -			result = kernel_bind(con->sock,
+> -					     (struct sockaddr *)&localaddr,
+> -					     addr_len);
+> +			result = kernel_bind(con->sock, addr, addr_len);
+>  		else
+> -			result = kernel_setsockopt(con->sock, SOL_SCTP,
+> -						   SCTP_SOCKOPT_BINDX_ADD,
+> -						   (char *)&localaddr, addr_len);
+> +			result = sock_bind_add(con->sock->sk, addr, addr_len);
+>  
+>  		if (result < 0) {
+>  			log_print("Can't bind to %d addr number %d, %d.\n",
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index d994daa418ec2..6e9f713a78607 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1156,7 +1156,9 @@ struct proto {
+>  	int			(*sendpage)(struct sock *sk, struct page *page,
+>  					int offset, size_t size, int flags);
+>  	int			(*bind)(struct sock *sk,
+> -					struct sockaddr *uaddr, int addr_len);
+> +					struct sockaddr *addr, int addr_len);
+> +	int			(*bind_add)(struct sock *sk,
+> +					struct sockaddr *addr, int addr_len);
+>  
+>  	int			(*backlog_rcv) (struct sock *sk,
+>  						struct sk_buff *skb);
+> @@ -2698,4 +2700,6 @@ void sock_set_reuseaddr(struct sock *sk);
+>  void sock_set_reuseport(struct sock *sk);
+>  void sock_set_sndtimeo(struct sock *sk, s64 secs);
+>  
+> +int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len);
+> +
+>  #endif	/* _SOCK_H */
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 2ca3425b519c0..61ec573221a60 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -3712,3 +3712,11 @@ bool sk_busy_loop_end(void *p, unsigned long start_time)
+>  }
+>  EXPORT_SYMBOL(sk_busy_loop_end);
+>  #endif /* CONFIG_NET_RX_BUSY_POLL */
+> +
+> +int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len)
+> +{
+> +	if (!sk->sk_prot->bind_add)
+> +		return -EOPNOTSUPP;
+> +	return sk->sk_prot->bind_add(sk, addr, addr_len);
+> +}
+> +EXPORT_SYMBOL(sock_bind_add);
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 827a9903ee288..8a0b9258f65c0 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -1057,6 +1057,27 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>  	return err;
+>  }
+>  
+> +static int sctp_bind_add(struct sock *sk, struct sockaddr *addr,
+> +		int addrlen)
+> +{
+> +	struct sctp_af *af = sctp_get_af_specific(addr->sa_family);
+> +	int err;
+> +
+> +	if (!af || af->sockaddr_len > addrlen)
+> +		return -EINVAL;
+> +	err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD, addr,
+> +			addrlen);
 
-I'm not sure I'm following. With the patch set if we have 3 metrics
-with the event groups shown:
-M1: {A,B,C}:W
-M2: {A,B}:W
-M3: {A,B,D}:W
+The security_ call above is done today within the sock lock.
+I couldn't find any issue through a code review, though, so I'm fine
+with leaving it as is. Just highlighting it..
 
-then what happens is we sort the metrics in to M1, M3, M2 then when we
-come to match the events:
+> +	if (err)
+> +		return err;
+> +
+> +	lock_sock(sk);
+> +	err = sctp_do_bind(sk, (union sctp_addr *)addr, af->sockaddr_len);
+> +	if (!err)
+> +		err = sctp_send_asconf_add_ip(sk, addr, 1);
 
- - by default: match events allowing sharing if all events come from
-the same group. So in the example M1 will first match with {A,B,C}
-then M3 will fail to match the group {A,B,C} but match {A,B,D}; M2
-will succeed with matching {A,B} from M1. The events/group for M2 can
-be removed as they are no longer used. This kind of sharing is
-opportunistic and respects existing groupings. While it may mean a
-metric is computed from a group that now multiplexes, that group will
-run for more of the time as there are fewer groups to multiplex with.
-In this example we've gone from 3 groups down to 2, 8 events down to
-6. An improvement would be to realize that A,B is in both M1 and M3,
-so when we print the stat we could combine these values.
+Some problems here.
+- addr may contain a list of addresses
+- the addresses, then, are not being validated
+- sctp_do_bind may fail, on which it requires some undoing
+  (like sctp_bindx_add does)
+- code duplication with sctp_setsockopt_bindx.
 
- - with --metric-no-merge: no events are shared by metrics M1, M2 and
-M3 have their events and computation as things currently are. There
-are 3 groups and 8 events.
+This patch will conflict with David's one,
+[PATCH net-next] sctp: Pull the user copies out of the individual sockopt functions.
+(I'll finish reviewing it in the sequence)
 
- - with --metric-no-group: all groups are removed and so the evlist
-has A,B,C,A,B,A,B,D in it. The matching will now match M1 to A,B,C at
-the beginning of the list, M2 to the first A,B and M3 to the same A,B
-and D at the end of the list. We've got no groups and the events have
-gone from 8 down to 4.
+AFAICT, this patch could reuse/build on his work in there. The goal is
+pretty much the same and would avoid the issues above.
 
-It is difficult to reason about which grouping is most accurate. If we
-have 4 counters (no NMI watchdog) then this example will fit with no
-multiplexing. The default above should achieve less multiplexing, in
-the same way merging PMU events currently does - this patch is trying
-to mirror the --no-merge functionality to a degree. Considering
-TopDownL1 then we go from metrics that never sum to 100%, to metrics
-that do in either the default or --metric-no-group cases.
+This patch could, then, point the new bind_add proto op to the updated
+sctp_setsockopt_bindx almost directly.
 
-I'm not sure what user option is missing with these combinations? The
-default is trying to strike a compromise and I think user interaction
-is unnecessary, just as --no-merge doesn't cause interaction. If the
-existing behavior is wanted using --metric-no-merge will give that.
-The new default and --metric-no-group are hopefully going to reduce
-the number of groups and events. I'm somewhat agnostic as to what the
-flag functionality should be as what I'm working with needs either the
-default or --metric-no-group, I can use whatever flag is agreed upon.
+Question then is: dlm never removes an addr from the bind list. Do we
+want to add ops for both? Or one that handles both operations?
+Anyhow, having the add operation but not the del seems very weird to
+me.
 
-Thanks,
-Ian
-
-> thanks,
-> jirka
->
->
-> >
-> > > I was wondering if we could merge all the hasmaps into single
-> > > one before the parse the evlist.. this way we won't need removing
-> > > later.. but I did not thought this through completely, so it
-> > > might not work at some point
-> >
-> > This could be done in the --metric-no-group case reasonably easily
-> > like the current hashmap. For groups you'd want something like a set
-> > of sets of events, but then you'd only be able to share events if the
-> > sets were the same. A directed acyclic graph could capture the events
-> > and the sharing relationships, it may be possible to optimize cases
-> > like {A,B,C}, {A,B,D}, {A,B} so that the small group on the end shares
-> > events with both the {A,B,C} and {A,B,D} group. This may be good
-> > follow up work. We could also solve this in the json, for example
-> > create a "phony" group of {A,B,C,D} that all three metrics share from.
-> > You could also use --metric-no-group to achieve that sharing now.
-> >
-> > Thanks,
-> > Ian
-> >
-> > > jirka
-> > >
-> >
->
+> +	release_sock(sk);
+> +	return err;
+> +}
+> +
+>  static int sctp_connect_new_asoc(struct sctp_endpoint *ep,
+>  				 const union sctp_addr *daddr,
+>  				 const struct sctp_initmsg *init,
+> @@ -9625,6 +9646,7 @@ struct proto sctp_prot = {
+>  	.sendmsg     =	sctp_sendmsg,
+>  	.recvmsg     =	sctp_recvmsg,
+>  	.bind        =	sctp_bind,
+> +	.bind_add    =  sctp_bind_add,
+>  	.backlog_rcv =	sctp_backlog_rcv,
+>  	.hash        =	sctp_hash,
+>  	.unhash      =	sctp_unhash,
+> @@ -9667,6 +9689,7 @@ struct proto sctpv6_prot = {
+>  	.sendmsg	= sctp_sendmsg,
+>  	.recvmsg	= sctp_recvmsg,
+>  	.bind		= sctp_bind,
+> +	.bind_add	= sctp_bind_add,
+>  	.backlog_rcv	= sctp_backlog_rcv,
+>  	.hash		= sctp_hash,
+>  	.unhash		= sctp_unhash,
+> -- 
+> 2.26.2
+> 
