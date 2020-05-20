@@ -2,153 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC7871DB15A
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9731D1DB177
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 13:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbgETLTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 07:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
+        id S1726224AbgETLZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 07:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726403AbgETLS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 07:18:59 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C636FC061A0E;
-        Wed, 20 May 2020 04:18:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=hhlHkN1kByydnEQWyR3TLw/SDjYVkMwsfp32OLQh57w=; b=b/Rf6crtBrbP3SO1KMLW4j7P/
-        1ln9lmZQherbT15oFm9GwUfUPH3isrOQ4HyLxU1wMNPn8+43TkHLHEeH7NQqeHrpdJ8VojCBHhto3
-        XIE8bNbe4K6YTdOJoMlK8L1HdHHgTEn9B0/dBtfVegdyXahpN0ftWujW8vFNCwI+DbwNUjpgM1OpU
-        LJRQYXgkrgGDeObQuTNmtgupE+VyR6nLsj7e2ip0Ryb0vQEgRjT8o/u4ESl/CJJPKwmiq9rA0OKTy
-        yyuYLe7PvoDB8ta97fOOoZqBBWphzDAEy3duy7tY2mTfEnFHsgN6QBPfnfQFqC0rwNynHIwsIPGOu
-        m3fISKySw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34586)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jbMkO-00085W-2L; Wed, 20 May 2020 12:18:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jbMkM-0006m8-DD; Wed, 20 May 2020 12:18:50 +0100
-Date:   Wed, 20 May 2020 12:18:50 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev <netdev@vger.kernel.org>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>,
+        with ESMTP id S1726757AbgETLZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 07:25:34 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA3DC08C5C0
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 04:25:32 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id h4so2187802wmb.4
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 04:25:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x8P07aSxqqSoef+7i1vZAK90p0VIQV5p/d9MbWzhwtk=;
+        b=l2llVtStUmtcCNTo5afEPmLyvTxIBdwXG1AUMYrSxn9vnU1okPRUTHjy7GcM5SDrIz
+         wnqrKQcQklVQ5Yexfv8vxze3+jIIlXWUB0X3CBgCKLBrvTTcBmTqMU33VKQ4MFS3Dw/Y
+         hbZ3aDfWsLuQs2OpjYbP9iBfDWXnc1oUCHzC3A6z6gd/c0xGKH5Pp514KF5//oqXI0mZ
+         Gxp5YCn4z394NNDDP/cxiFxHqmIcTmvF/1bLlk2eQlnS5o3slS7b8dDjlGpw6GC56jL3
+         2KhNbKDHE/CmlAJ0OylL/4CE2bAdvo0Z8522bcE6uAtv4pHLrCoCQk9UfRd+JAaA67S5
+         y5OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x8P07aSxqqSoef+7i1vZAK90p0VIQV5p/d9MbWzhwtk=;
+        b=rnZwsApRRM3KnXP1SJuJ8ED0Fx21yHzPbw/N7UCKUUmcYN43bp/X8oI2Blnvdu9EE1
+         m0RwQ4/kCNIaIhPCcx2GvQM2wEm4X5r7Sw5N21i4H80MNCkZn3vezQDOsmN/HuBUAyZT
+         SyMGExVofEut+r8WBQUoffXQ1p9J7s0YpmoILa6M50/z8OwGZ0WRQdo3thK7dgUF3oJX
+         2mpXYQ673ozVnVxHJ0sY2VLK30YN5MBpU1DoXWUPDvigLYqBIJf5xXcPthOhGX8A1Akp
+         2FcHeLnzsHdSY6BEr5BwW2Oee2NR/6eLdACRFLKdec2tq5DVgN/tExcB2C2p/Pcsupb8
+         WPVA==
+X-Gm-Message-State: AOAM530f+DRyyxXJ+ILA6dBwyrtjE4fZ12F431UGXjhnq7O68wOAroyx
+        KJ8O70yM8r87fpQ7xVWvpndwHQ==
+X-Google-Smtp-Source: ABdhPJzvgBbyoSwS9NaFCCfWo8VDWuaPCd7LiS7WAWX/txGuTULWv1jp3jF8u37ucf8wB3E+cz+ahA==
+X-Received: by 2002:a1c:df83:: with SMTP id w125mr4159276wmg.140.1589973931495;
+        Wed, 20 May 2020 04:25:31 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id v22sm2729265wml.21.2020.05.20.04.25.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 04:25:30 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Rob Herring <robh+dt@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts
- to handle RSS tables
-Message-ID: <20200520111850.GL1551@shell.armlinux.org.uk>
-References: <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
- <20200509114518.GB1551@shell.armlinux.org.uk>
- <CAGnkfhx8fEZCoLPzGxSzQnj1ZWcQtBMn+g_jO1Jxc4zF7pQwjQ@mail.gmail.com>
- <20200509195246.GJ1551@shell.armlinux.org.uk>
- <20200509202050.GK1551@shell.armlinux.org.uk>
- <20200519095330.GA1551@shell.armlinux.org.uk>
- <CAGnkfhzuyxJDo-DXPHPiNtP4RbRpry+3M9eoiTknGR0zvgPuoA@mail.gmail.com>
- <20200519190534.78bb8389@turbo.teknoraver.net>
- <20200520111043.GK1551@shell.armlinux.org.uk>
- <CAGnkfhx2qHVSBNTRQf+RQiRWBHxF5hPE=5m+YVKBv6C97P=BOw@mail.gmail.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v4 00/11] mediatek: add support for MediaTek Ethernet MAC
+Date:   Wed, 20 May 2020 13:25:12 +0200
+Message-Id: <20200520112523.30995-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGnkfhx2qHVSBNTRQf+RQiRWBHxF5hPE=5m+YVKBv6C97P=BOw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 01:16:25PM +0200, Matteo Croce wrote:
-> On Wed, May 20, 2020 at 1:11 PM Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Tue, May 19, 2020 at 07:05:34PM +0200, Matteo Croce wrote:
-> > > On Tue, 19 May 2020 12:05:20 +0200
-> > > Matteo Croce <mcroce@redhat.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > The patch seems to work. I'm generating traffic with random MAC and IP
-> > > addresses, to have many flows:
-> > >
-> > > # tcpdump -tenni eth2
-> > > 9a:a9:b1:3a:b1:6b > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.4.0 > 192.168.0.4.0: UDP, length 12
-> > > 9e:92:fd:f8:7f:0a > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.4.0 > 192.168.0.4.0: UDP, length 12
-> > > 66:b7:11:8a:c2:1f > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.1.0 > 192.168.0.1.0: UDP, length 12
-> > > 7a:ba:58:bd:9a:62 > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.1.0 > 192.168.0.1.0: UDP, length 12
-> > > 7e:78:a9:97:70:3a > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.2.0 > 192.168.0.2.0: UDP, length 12
-> > > b2:81:91:34:ce:42 > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.2.0 > 192.168.0.2.0: UDP, length 12
-> > > 2a:05:52:d0:d9:3f > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.3.0 > 192.168.0.3.0: UDP, length 12
-> > > ee:ee:47:35:fa:81 > 00:51:82:11:22:02, ethertype IPv4 (0x0800), length 60: 10.0.0.3.0 > 192.168.0.3.0: UDP, length 12
-> > >
-> > > This is the default rate, with rxhash off:
-> > >
-> > > # utraf eth2
-> > > tx: 0 bps 0 pps rx: 397.4 Mbps 827.9 Kpps
-> > > tx: 0 bps 0 pps rx: 396.3 Mbps 825.7 Kpps
-> > > tx: 0 bps 0 pps rx: 396.6 Mbps 826.3 Kpps
-> > > tx: 0 bps 0 pps rx: 396.5 Mbps 826.1 Kpps
-> > >
-> > >     PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
-> > >       9 root      20   0       0      0      0 R  99.7   0.0   7:02.58 ksoftirqd/0
-> > >      15 root      20   0       0      0      0 S   0.0   0.0   0:00.00 ksoftirqd/1
-> > >      20 root      20   0       0      0      0 S   0.0   0.0   2:01.48 ksoftirqd/2
-> > >      25 root      20   0       0      0      0 S   0.0   0.0   0:32.86 ksoftirqd/3
-> > >
-> > > and this with rx hashing enabled:
-> > >
-> > > # ethtool -K eth2 rxhash on
-> > > # utraf eth2
-> > > tx: 0 bps 0 pps rx: 456.4 Mbps 950.8 Kpps
-> > > tx: 0 bps 0 pps rx: 458.4 Mbps 955.0 Kpps
-> > > tx: 0 bps 0 pps rx: 457.6 Mbps 953.3 Kpps
-> > > tx: 0 bps 0 pps rx: 462.2 Mbps 962.9 Kpps
-> > >
-> > >     PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
-> > >      20 root      20   0       0      0      0 R   0.7   0.0   2:02.34 ksoftirqd/2
-> > >      25 root      20   0       0      0      0 S   0.3   0.0   0:33.25 ksoftirqd/3
-> > >       9 root      20   0       0      0      0 S   0.0   0.0   7:52.57 ksoftirqd/0
-> > >      15 root      20   0       0      0      0 S   0.0   0.0   0:00.00 ksoftirqd/1
-> > >
-> > >
-> > > The throughput doesn't increase so much, maybe we hit an HW limit of
-> > > the gigabit port. The interesting thing is how the global CPU usage
-> > > drops from 25% to 1%.
-> > > I can't explain this, it could be due to the reduced contention?
-> >
-> > Hi Matteo,
-> >
-> > Can I take that as a Tested-by ?
-> >
-> > Thanks.
-> >
-> > --
-> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
-> >
-> 
-> Tested-by: Matteo Croce <mcroce@redhat.com>
-> 
-> probably also:
-> 
-> Reported-by: Matteo Croce <mcroce@redhat.com>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Thanks!
+This adds support for the Ethernet Controller present on MediaTeK SoCs from
+the MT8* family.
+
+First we convert the existing DT bindings for the PERICFG controller to YAML
+and add a new compatible string for mt8516 variant of it. Then we add the DT
+bindings for the MAC.
+
+Next we do some cleanup of the mediatek ethernet drivers directory.
+
+The largest patch in the series adds the actual new driver.
+
+The rest of the patches add DT fixups for the boards already supported
+upstream.
+
+v1 -> v2:
+- add a generic helper for retrieving the net_device associated with given
+  private data
+- fix several typos in commit messages
+- remove MTK_MAC_VERSION and don't set the driver version
+- use NET_IP_ALIGN instead of a magic number (2) but redefine it as it defaults
+  to 0 on arm64
+- don't manually turn the carrier off in mtk_mac_enable()
+- process TX cleanup in napi poll callback
+- configure pause in the adjust_link callback
+- use regmap_read_poll_timeout() instead of handcoding the polling
+- use devres_find() to verify that struct net_device is managed by devres in
+  devm_register_netdev()
+- add a patch moving all networking devres helpers into net/devres.c
+- tweak the dma barriers: remove where unnecessary and add comments to the
+  remaining barriers
+- don't reset internal counters when enabling the NIC
+- set the net_device's mtu size instead of checking the framesize in
+  ndo_start_xmit() callback
+- fix a race condition in waking up the netif queue
+- don't emit log messages on OOM errors
+- use dma_set_mask_and_coherent()
+- use eth_hw_addr_random()
+- rework the receive callback so that we reuse the previous skb if unmapping
+  fails, like we already do if skb allocation fails
+- rework hash table operations: add proper timeout handling and clear bits when
+  appropriate
+
+v2 -> v3:
+- drop the patch adding priv_to_netdev() and store the netdev pointer in the
+  driver private data
+- add an additional dma_wmb() after reseting the descriptor in
+  mtk_mac_ring_pop_tail()
+- check the return value of dma_set_mask_and_coherent()
+- improve the DT bindings for mtk-eth-mac: make the reg property in the example
+  use single-cell address and size, extend the description of the PERICFG
+  phandle and document the mdio sub-node
+- add a patch converting the old .txt bindings for PERICFG to yaml
+- limit reading the DMA memory by storing the mapped addresses in the driver
+  private structure
+- add a patch documenting the existing networking devres helpers
+
+v3 -> v4:
+- drop the devres patches: they will be sent separately
+- call netdev_sent_queue() & netdev_completed_queue() where appropriate
+- don't redefine NET_IP_ALIGN: define a private constant in the driver
+- fix a couple typos
+- only disabe/enable the MAC in suspend/resume if netif is running
+- drop the count field from the ring structure and instead calculate the number
+  of used descriptors from the tail and head indicies
+- rework the locking used to protect the ring structures from concurrent
+  access: use cheaper spin_lock_bh() and completely disable the internal
+  spinlock used by regmap
+- rework the interrupt handling to make it more fine-grained: onle re-enable
+  TX and RX interrupts while they're needed, process the stats updates in a
+  workqueue, not in napi context
+- shrink the code responsible for unmapping and freeing skb memory
+- rework the barriers as advised by Arnd
+
+Bartosz Golaszewski (11):
+  dt-bindings: convert the binding document for mediatek PERICFG to yaml
+  dt-bindings: add new compatible to mediatek,pericfg
+  dt-bindings: net: add a binding document for MediaTek Ethernet MAC
+  net: ethernet: mediatek: rename Kconfig prompt
+  net: ethernet: mediatek: remove unnecessary spaces from Makefile
+  net: ethernet: mtk-eth-mac: new driver
+  ARM64: dts: mediatek: add pericfg syscon to mt8516.dtsi
+  ARM64: dts: mediatek: add the ethernet node to mt8516.dtsi
+  ARM64: dts: mediatek: add an alias for ethernet0 for pumpkin boards
+  ARM64: dts: mediatek: add ethernet pins for pumpkin boards
+  ARM64: dts: mediatek: enable ethernet on pumpkin boards
+
+ .../arm/mediatek/mediatek,pericfg.txt         |   36 -
+ .../arm/mediatek/mediatek,pericfg.yaml        |   64 +
+ .../bindings/net/mediatek,eth-mac.yaml        |   89 +
+ arch/arm64/boot/dts/mediatek/mt8516.dtsi      |   17 +
+ .../boot/dts/mediatek/pumpkin-common.dtsi     |   34 +
+ drivers/net/ethernet/mediatek/Kconfig         |    8 +-
+ drivers/net/ethernet/mediatek/Makefile        |    3 +-
+ drivers/net/ethernet/mediatek/mtk_eth_mac.c   | 1668 +++++++++++++++++
+ 8 files changed, 1881 insertions(+), 38 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_eth_mac.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+2.25.0
+
