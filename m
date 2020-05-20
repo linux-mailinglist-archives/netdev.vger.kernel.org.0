@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5061DB306
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8181DB2FB
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:19:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726737AbgETMSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 08:18:48 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:59118 "EHLO
+        id S1726862AbgETMSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 08:18:53 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:59128 "EHLO
         lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgETMSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:18:47 -0400
+        with ESMTP id S1726826AbgETMSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:18:50 -0400
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KCIfBW111632;
-        Wed, 20 May 2020 07:18:41 -0500
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KCIkbQ111640;
+        Wed, 20 May 2020 07:18:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589977121;
-        bh=lveTRFgFsCYfbjIVbrg/oRtKQhc97NWSLfFp+S3MDJ0=;
-        h=From:To:CC:Subject:Date;
-        b=EFifNyF26m64h5Ac9yQ+0nm+bLY7r2/UH38jlrHBRUegrUKRrEmlBnZRETB/fCpsn
-         DAMAKkZb18O8CNj7e7asLFKm8qBHbOcG9Nd7pou7/aJeowew+IVtzMO8EmpiiZzagL
-         duW2wsbAT3G8H7EP8ZkKwJykk/Nf4BYyEQl5xVrw=
+        s=ti-com-17Q1; t=1589977126;
+        bh=Flh0goqgDng7jM1nNd4yAiC2nJe1NMBBFdYh80Rm9b0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Ea1iryGeWODdNj9JCdj7nd8QCaZSAgIiIBvhc4Ev3zBZwpFWdR4VSzn+Y+/54zPxC
+         Ru1fGNZfph4v4/SNr01vp1KhBlqS8JzRwShtqcvXCm5+BwUGfR1DMKYQjsTgpgbLcp
+         BBoqMh5VYyspMq0DHuQKuW+gPa9n7yP21oO1jpNs=
 Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KCIf1F090299
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KCIkui090381
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 07:18:41 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE108.ent.ti.com
+        Wed, 20 May 2020 07:18:46 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE108.ent.ti.com
  (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
- May 2020 07:18:41 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ May 2020 07:18:46 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 20 May 2020 07:18:41 -0500
+ Frontend Transport; Wed, 20 May 2020 07:18:46 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KCIfmO108587;
-        Wed, 20 May 2020 07:18:41 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KCIkHY076844;
+        Wed, 20 May 2020 07:18:46 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
         <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v2 0/4] DP83869 Enhancements
-Date:   Wed, 20 May 2020 07:18:31 -0500
-Message-ID: <20200520121835.31190-1-dmurphy@ti.com>
+Subject: [PATCH net-next v2 1/4] net: phy: dp83869: Update port-mirroring to read straps
+Date:   Wed, 20 May 2020 07:18:32 -0500
+Message-ID: <20200520121835.31190-2-dmurphy@ti.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200520121835.31190-1-dmurphy@ti.com>
+References: <20200520121835.31190-1-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -54,28 +56,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+The device tree may not have the property set for port mirroring
+because the hardware may have it strapped. If the property is not in the
+DT then check the straps and set the port mirroring bit appropriately.
 
-These are improvements to the DP83869 Ethernet PHY driver.  OP-mode and port
-mirroring may be strapped on the device but the software only retrives these
-settings from the device tree.  Reading the straps and initializing the
-associated stored variables so when setting the PHY up and down the PHY's
-configuration values will be retained.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ drivers/net/phy/dp83869.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-The PHY also supports RGMII internal delays.  Implement this feature as it
-was done in the DP83867 device.
-
-Dan Murphy (4):
-  net: phy: dp83869: Update port-mirroring to read straps
-  net: phy: dp83869: Set opmode from straps
-  dt-bindings: net: Add RGMII internal delay for DP83869
-  net: dp83869: Add RGMII internal delay configuration
-
- .../devicetree/bindings/net/ti,dp83869.yaml   |  16 +++
- drivers/net/phy/dp83869.c                     | 120 +++++++++++++++++-
- include/dt-bindings/net/ti-dp83869.h          |  18 +++
- 3 files changed, 150 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 7996a4aea8d2..073a0f7754a5 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -66,6 +66,7 @@
+ 
+ /* STRAP_STS1 bits */
+ #define DP83869_STRAP_STS1_RESERVED		BIT(11)
++#define DP83869_STRAP_MIRROR_ENABLED           BIT(12)
+ 
+ /* PHYCTRL bits */
+ #define DP83869_RX_FIFO_SHIFT	12
+@@ -191,10 +192,18 @@ static int dp83869_of_init(struct phy_device *phydev)
+ 	else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
+ 		dp83869->io_impedance = DP83869_IO_MUX_CFG_IO_IMPEDANCE_MIN;
+ 
+-	if (of_property_read_bool(of_node, "enet-phy-lane-swap"))
++	if (of_property_read_bool(of_node, "enet-phy-lane-swap")) {
+ 		dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
+-	else
+-		dp83869->port_mirroring = DP83869_PORT_MIRRORING_DIS;
++	} else {
++		/* If the lane swap is not in the DT then check the straps */
++		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
++		if (ret < 0)
++			return ret;
++		if (ret & DP83869_STRAP_MIRROR_ENABLED)
++			dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
++		else
++			dp83869->port_mirroring = DP83869_PORT_MIRRORING_DIS;
++	}
+ 
+ 	if (of_property_read_u32(of_node, "rx-fifo-depth",
+ 				 &dp83869->rx_fifo_depth))
 -- 
 2.26.2
 
