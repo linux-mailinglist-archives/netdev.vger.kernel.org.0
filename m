@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5641D1DA610
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 02:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8090B1DA612
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 02:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbgETAE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 May 2020 20:04:57 -0400
-Received: from mga01.intel.com ([192.55.52.88]:15444 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728336AbgETAEz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 May 2020 20:04:55 -0400
-IronPort-SDR: 2k/4i8h9xhSTA1/u2Xs5/Res7t1+IOlfsDzoOEdqDvf4AewRqVn/BM9+CFw74eMeXFlDwn2Gfw
- cjwT/OXo2SFA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 17:04:25 -0700
-IronPort-SDR: HCmE3wN/bB9C+C3MHOa7OJe64RYDh3FLSPncZkOvglbqMrQu/iq5aoGpiRA1JgPBK+UVjYVKe+
- 0A9LdemeJwTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,411,1583222400"; 
-   d="scan'208";a="466324819"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga006.fm.intel.com with ESMTP; 19 May 2020 17:04:25 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 14/14] igc: Remove unused registers
-Date:   Tue, 19 May 2020 17:04:19 -0700
-Message-Id: <20200520000419.1595788-15-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
-References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
+        id S1728258AbgETAGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 20:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726535AbgETAGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 May 2020 20:06:46 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACFCC061A0F
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 17:06:46 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id j21so596864pgb.7
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 17:06:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vqQJphs4dbH8l1OCiHVqe97WM4gwnpKo7IbEOxUcuq8=;
+        b=WDGtbCVBE8fAUQyK7b2ulxbQd5NoTpIwjwmAiZ+xjWv23qgDFYqB+n3uEENMJF4evR
+         eQybQUIovab5oL9uP2JzO7/swZQR7Lac/N+9LuMDnYRN/vux1dRM8Ai+UvXrMQDNSXds
+         giu/CUiz0LCzZo+rFtSn5hr/VzyiBazjBkDWxSalBmaM+kZsF/jtgZp30ifXQT1tndDm
+         K+cmlhk0mNBeLKQKLjGb4kejQKR5OPHQmKhNzy3M33KYeBeHFzFAx78BBq1Ia0Aqb/q7
+         iy8kDskGmclrjdQEtx9kzAivf9ZcpoqlwCE0HuGoG13qLjJvN7c+Be8TZbWz/AnWavDM
+         W6Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vqQJphs4dbH8l1OCiHVqe97WM4gwnpKo7IbEOxUcuq8=;
+        b=A3rW0iB/NdYDqym57b2hSvZkheW0aSXy0k4UvNu7Q9C7EWFbke0wP5BxWNZLT09yAT
+         DHRRipDmhX5dZ9I+hI2Q4rxSFBeHszspmJrHM6GXcMd0kO89WcUdVhVMAmb9/q4RaQmt
+         SY+rtQn33jl++VdYcqE5V5qLK+M9d3kmSS6gR7cC9dn9YtIRRhhLb3JPYsh/wZCAdSfq
+         iqfAAtOh81piZOpgcG6OY5z7MzXDBQmEYDLv4afyKrovz/tgaReloFbtlKyyYBgC61Qu
+         ds1ZBTZHCl7CKqg3Z5Kzz1RAhzalKmWwwmadbp6A6JGN3HVxBA4gx31QP/Cf86Iau+FP
+         0ZOA==
+X-Gm-Message-State: AOAM530qIeQSRshYVapT047OXbHwZD/XzlArM9ipes6lWTY727/q/sG0
+        iAvlJeGHHoqm8sTvWiOLkTTrsAhyB6+j8Q==
+X-Google-Smtp-Source: ABdhPJxROAqekSmuMlHLMi/sAPCSy2KV5BTqjcZH0X10PmVEw2MHWo2h4USoKLaDBzISBwMyAVnWjg==
+X-Received: by 2002:a62:1cc9:: with SMTP id c192mr1482493pfc.197.1589933205590;
+        Tue, 19 May 2020 17:06:45 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v1sm452386pgl.11.2020.05.19.17.06.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 17:06:45 -0700 (PDT)
+Date:   Tue, 19 May 2020 17:06:37 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of
+ a seqcount
+Message-ID: <20200519170637.56d1a20a@hermes.lan>
+In-Reply-To: <87lfln5w61.fsf@nanos.tec.linutronix.de>
+References: <20200519214547.352050-1-a.darwish@linutronix.de>
+        <20200519214547.352050-2-a.darwish@linutronix.de>
+        <20200519150159.4d91af93@hermes.lan>
+        <87v9kr5zt7.fsf@nanos.tec.linutronix.de>
+        <20200519161141.5fbab730@hermes.lan>
+        <87lfln5w61.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+On Wed, 20 May 2020 01:42:30 +0200
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-Tx data FIFO Head/Tail, Saved and Packet Count registers
-not applicable for i225 LAN controller.
-This patch comes to clean up these registers.
+> Stephen Hemminger <stephen@networkplumber.org> writes:
+> > On Wed, 20 May 2020 00:23:48 +0200
+> > Thomas Gleixner <tglx@linutronix.de> wrote:  
+> >> No. We did not. -ENOTESTCASE  
+> >
+> > Please try, it isn't that hard..
+> >
+> > # time for ((i=0;i<1000;i++)); do ip li add dev dummy$i type dummy; done
+> >
+> > real	0m17.002s
+> > user	0m1.064s
+> > sys	0m0.375s  
+> 
+> And that solves the incorrectness of the current code in which way?
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_dump.c | 4 ----
- drivers/net/ethernet/intel/igc/igc_regs.h | 5 -----
- 2 files changed, 9 deletions(-)
+Agree that the current code is has evolved over time to a state where it is not
+correct in the case of Preempt-RT. The motivation for the changes to seqcount
+goes back many years when there were ISP's that were concerned about scaling of tunnels, vlans etc.
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_dump.c b/drivers/net/ethernet/intel/igc/igc_dump.c
-index 4ad32d98f77f..4b9ec7d0b727 100644
---- a/drivers/net/ethernet/intel/igc/igc_dump.c
-+++ b/drivers/net/ethernet/intel/igc/igc_dump.c
-@@ -35,10 +35,6 @@ static const struct igc_reg_info igc_reg_info_tbl[] = {
- 	{IGC_TDH(0), "TDH"},
- 	{IGC_TDT(0), "TDT"},
- 	{IGC_TXDCTL(0), "TXDCTL"},
--	{IGC_TDFH, "TDFH"},
--	{IGC_TDFT, "TDFT"},
--	{IGC_TDFHS, "TDFHS"},
--	{IGC_TDFPC, "TDFPC"},
- 
- 	/* List Terminator */
- 	{}
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index 763a24d52865..61db951f0947 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -17,11 +17,6 @@
- /* Internal Packet Buffer Size Registers */
- #define IGC_RXPBS		0x02404  /* Rx Packet Buffer Size - RW */
- #define IGC_TXPBS		0x03404  /* Tx Packet Buffer Size - RW */
--#define IGC_TDFH		0x03410  /* Tx Data FIFO Head - RW */
--#define IGC_TDFT		0x03418  /* Tx Data FIFO Tail - RW */
--#define IGC_TDFHS		0x03420  /* Tx Data FIFO Head Saved - RW */
--#define IGC_TDFTS		0x03428  /* Tx Data FIFO Tail Saved - RW */
--#define IGC_TDFPC		0x03430  /* Tx Data FIFO Packet Count - RW */
- 
- /* NVM  Register Descriptions */
- #define IGC_EERD		0x12014  /* EEprom mode read - RW */
--- 
-2.26.2
+Is it too much to ask for a simple before/after test of your patch as part 
+of the submission. You probably measure latency changes to the nanosecond.
+
+Getting it correct without causing user complaints.
+
 
