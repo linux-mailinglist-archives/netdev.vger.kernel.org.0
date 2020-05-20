@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9651DAB44
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15F81DAB46
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 09:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbgETHCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 03:02:43 -0400
-Received: from mga01.intel.com ([192.55.52.88]:53333 "EHLO mga01.intel.com"
+        id S1726623AbgETHCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 03:02:44 -0400
+Received: from mga01.intel.com ([192.55.52.88]:53335 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726455AbgETHCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 03:02:40 -0400
-IronPort-SDR: NfaQtjnNjH0snAIsB3vbEudxFEQe11gHWc6L7nXupmIwq5Zx5z5MbUI9XJNHfMVDCwfg4Br9g6
- 4MoLlgUbcAVg==
+        id S1726560AbgETHCl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 03:02:41 -0400
+IronPort-SDR: SETilFvCRSeeKInGLG9Cr4RJF2uqbc2pNeiyR00mz9dnLWv6e6jpekSECD6HLn7R89vBhWIV1d
+ b22unPyuXBCw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2020 00:02:32 -0700
-IronPort-SDR: umkTDJPyi0c6paFSLRv4Ia9yX4yffELPxO3MNJslus0+TTnwjn1hKyp1k06iORhFB9FoABq+6Q
- Qi0C2lWt728A==
+IronPort-SDR: ahfyLev2Y0QAkC28oEqgc1qvWDndLMA8pHYeAHFct5Pu39hYVXZCl7D/kxL7ZlUoPX6pqSFW//
+ GGh4fsZqvSzQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,413,1583222400"; 
-   d="scan'208";a="299841201"
+   d="scan'208";a="299841204"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga002.fm.intel.com with ESMTP; 20 May 2020 00:02:31 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 20 May 2020 00:02:32 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, jgg@ziepe.ca,
-        ranjani.sridharan@linux.intel.com,
+Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
         pierre-louis.bossart@linux.intel.com,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v4 09/12] i40e: Register a virtbus device to provide RDMA
-Date:   Wed, 20 May 2020 00:02:24 -0700
-Message-Id: <20200520070227.3392100-10-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF client
+Date:   Wed, 20 May 2020 00:02:25 -0700
+Message-Id: <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
 References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
@@ -47,322 +45,312 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-Register client virtbus device on the virtbus for the RDMA
-virtbus driver (irdma) to bind to. It allows to realize a
-single RDMA driver capable of working with multiple netdev
-drivers over multi-generation Intel HW supporting RDMA.
-There is also no load ordering dependencies between i40e and
-irdma.
+A client in the SOF (Sound Open Firmware) context is a
+device that needs to communicate with the DSP via IPC
+messages. The SOF core is responsible for serializing the
+IPC messages to the DSP from the different clients. One
+example of an SOF client would be an IPC test client that
+floods the DSP with test IPC messages to validate if the
+serialization works as expected. Multi-client support will
+also add the ability to split the existing audio cards
+into multiple ones, so as to e.g. to deal with HDMI with a
+dedicated client instead of adding HDMI to all cards.
 
-Summary of changes:
-* Support to add/remove virtbus devices
-* Add 2 new client ops.
-	* i40e_client_device_register() which is called during RDMA
-	  probe() per PF. Validate client drv OPs and schedule service
-	  task to call open()
-	* i40e_client_device_unregister() called during RDMA remove()
-	  per PF. Call client close() and release_qvlist.
-* The global register/unregister calls exported for i40iw are retained
-  until i40iw is removed from the kernel.
+This patch introduces descriptors for SOF client driver
+and SOF client device along with APIs for registering
+and unregistering a SOF client driver, sending IPCs from
+a client device and accessing the SOF core debugfs root entry.
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Along with this, add a couple of new members to struct
+snd_sof_dev that will be used for maintaining the list of
+clients.
+
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/Kconfig            |   1 +
- drivers/net/ethernet/intel/i40e/i40e_client.c | 131 +++++++++++++++---
- include/linux/net/intel/i40e_client.h         |  15 ++
- 3 files changed, 127 insertions(+), 20 deletions(-)
+ sound/soc/sof/Kconfig      | 20 +++++++++
+ sound/soc/sof/Makefile     |  1 +
+ sound/soc/sof/core.c       |  2 +
+ sound/soc/sof/sof-client.c | 91 ++++++++++++++++++++++++++++++++++++++
+ sound/soc/sof/sof-client.h | 84 +++++++++++++++++++++++++++++++++++
+ sound/soc/sof/sof-priv.h   |  6 +++
+ 6 files changed, 204 insertions(+)
+ create mode 100644 sound/soc/sof/sof-client.c
+ create mode 100644 sound/soc/sof/sof-client.h
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 814d6dcf8137..f5d55c3f7f70 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -241,6 +241,7 @@ config I40E
- 	tristate "Intel(R) Ethernet Controller XL710 Family support"
- 	imply PTP_1588_CLOCK
- 	depends on PCI
+diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
+index 4dda4b62509f..609989daf85b 100644
+--- a/sound/soc/sof/Kconfig
++++ b/sound/soc/sof/Kconfig
+@@ -50,6 +50,25 @@ config SND_SOC_SOF_DEBUG_PROBES
+ 	  Say Y if you want to enable probes.
+ 	  If unsure, select "N".
+ 
++config SND_SOC_SOF_CLIENT
++	tristate
 +	select VIRTUAL_BUS
- 	---help---
- 	  This driver supports Intel(R) Ethernet Controller XL710 Family of
- 	  devices.  For more information on how to identify your adapter, go
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
-index befd3018183f..fdce8af3ec4f 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_client.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright(c) 2013 - 2018 Intel Corporation. */
- 
-+#include <linux/net/intel/i40e_client.h>
- #include <linux/list.h>
- #include <linux/errno.h>
- #include <linux/net/intel/i40e_client.h>
-@@ -30,11 +31,17 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
- 				       bool is_vf, u32 vf_id,
- 				       u32 flag, u32 valid_flag);
- 
-+static int i40e_client_device_register(struct i40e_info *ldev);
++	help
++	  This option is not user-selectable but automagically handled by
++	  'select' statements at a higher level
 +
-+static void i40e_client_device_unregister(struct i40e_info *ldev);
++config SND_SOC_SOF_CLIENT_SUPPORT
++	bool "SOF enable clients"
++	depends on SND_SOC_SOF
++	help
++	  This adds support for client support with Sound Open Firmware.
++	  The SOF driver adds the capability to separate out the debug
++	  functionality for IPC tests, probes etc. into separate client
++	  devices. This option would also allow adding client devices
++	  based on DSP FW capabilities and ACPI/OF device information.
++	  Say Y if you want to enable clients with SOF.
++	  If unsure select "N".
 +
- static struct i40e_ops i40e_lan_ops = {
- 	.virtchnl_send = i40e_client_virtchnl_send,
- 	.setup_qvlist = i40e_client_setup_qvlist,
- 	.request_reset = i40e_client_request_reset,
- 	.update_vsi_ctxt = i40e_client_update_vsi_ctxt,
-+	.client_device_register = i40e_client_device_register,
-+	.client_device_unregister = i40e_client_device_unregister,
- };
+ config SND_SOC_SOF_DEVELOPER_SUPPORT
+ 	bool "SOF developer options support"
+ 	depends on EXPERT
+@@ -186,6 +205,7 @@ endif ## SND_SOC_SOF_DEVELOPER_SUPPORT
  
- /**
-@@ -275,6 +282,37 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
- 	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
- }
+ config SND_SOC_SOF
+ 	tristate
++	select SND_SOC_SOF_CLIENT if SND_SOC_SOF_CLIENT_SUPPORT
+ 	select SND_SOC_TOPOLOGY
+ 	select SND_SOC_SOF_NOCODEC if SND_SOC_SOF_NOCODEC_SUPPORT
+ 	help
+diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
+index 8eca2f85c90e..c819124c05bb 100644
+--- a/sound/soc/sof/Makefile
++++ b/sound/soc/sof/Makefile
+@@ -2,6 +2,7 @@
  
-+static void i40e_virtdev_release(struct virtbus_device *vdev)
+ snd-sof-objs := core.o ops.o loader.o ipc.o pcm.o pm.o debug.o topology.o\
+ 		control.o trace.o utils.o sof-audio.o
++snd-sof-$(CONFIG_SND_SOC_SOF_CLIENT) += sof-client.o
+ snd-sof-$(CONFIG_SND_SOC_SOF_DEBUG_PROBES) += probe.o compress.o
+ 
+ snd-sof-pci-objs := sof-pci-dev.o
+diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
+index 91acfae7935c..fdfed157e6c0 100644
+--- a/sound/soc/sof/core.c
++++ b/sound/soc/sof/core.c
+@@ -313,8 +313,10 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
+ 	INIT_LIST_HEAD(&sdev->widget_list);
+ 	INIT_LIST_HEAD(&sdev->dai_list);
+ 	INIT_LIST_HEAD(&sdev->route_list);
++	INIT_LIST_HEAD(&sdev->client_list);
+ 	spin_lock_init(&sdev->ipc_lock);
+ 	spin_lock_init(&sdev->hw_lock);
++	mutex_init(&sdev->client_mutex);
+ 
+ 	if (IS_ENABLED(CONFIG_SND_SOC_SOF_PROBE_WORK_QUEUE))
+ 		INIT_WORK(&sdev->probe_work, sof_probe_work);
+diff --git a/sound/soc/sof/sof-client.c b/sound/soc/sof/sof-client.c
+new file mode 100644
+index 000000000000..b46080aa062e
+--- /dev/null
++++ b/sound/soc/sof/sof-client.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0-only
++//
++// Copyright(c) 2020 Intel Corporation. All rights reserved.
++//
++// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
++//
++
++#include <linux/completion.h>
++#include <linux/debugfs.h>
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/jiffies.h>
++#include <linux/list.h>
++#include <linux/mutex.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/virtual_bus.h>
++#include "sof-client.h"
++#include "sof-priv.h"
++
++static void sof_client_virtdev_release(struct virtbus_device *vdev)
 +{
-+	struct i40e_virtbus_device *i40e_vdev =
-+			container_of(vdev, struct i40e_virtbus_device, vdev);
++	struct sof_client_dev *cdev = virtbus_dev_to_sof_client_dev(vdev);
 +
-+	kfree(i40e_vdev);
++	kfree(cdev);
 +}
 +
-+static int i40e_init_client_virtdev(struct i40e_info *ldev)
++int sof_client_dev_register(struct snd_sof_dev *sdev,
++			    const char *name)
 +{
-+	struct pci_dev *pdev = ldev->pcidev;
-+	struct i40e_virtbus_device *i40e_vdev;
++	struct sof_client_dev *cdev;
++	struct virtbus_device *vdev;
++	unsigned long time, timeout;
 +	int ret;
 +
-+	i40e_vdev = kzalloc(sizeof(*i40e_vdev), GFP_KERNEL);
-+	if (!i40e_vdev)
++	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
++	if (!cdev)
 +		return -ENOMEM;
 +
-+	i40e_vdev->vdev.match_name = I40E_PEER_RDMA_NAME;
-+	i40e_vdev->vdev.dev.parent = &pdev->dev;
-+	i40e_vdev->vdev.release = i40e_virtdev_release;
-+	i40e_vdev->ldev = ldev;
-+	ldev->vdev = &i40e_vdev->vdev;
++	cdev->sdev = sdev;
++	init_completion(&cdev->probe_complete);
++	vdev = &cdev->vdev;
++	vdev->match_name = name;
++	vdev->dev.parent = sdev->dev;
++	vdev->release = sof_client_virtdev_release;
 +
-+	ret = virtbus_register_device(&i40e_vdev->vdev);
-+	if (ret)
++	/*
++	 * Register virtbus device for the client.
++	 * The error path in virtbus_register_device() calls put_device(),
++	 * which will free cdev in the release callback.
++	 */
++	ret = virtbus_register_device(vdev);
++	if (ret < 0)
 +		return ret;
 +
-+	return 0;
-+}
-+
- /**
-  * i40e_client_add_instance - add a client instance struct to the instance list
-  * @pf: pointer to the board struct
-@@ -288,9 +326,6 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	struct netdev_hw_addr *mac = NULL;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 
--	if (!registered_client || pf->cinst)
--		return;
--
- 	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
- 	if (!cdev)
- 		return;
-@@ -310,11 +345,8 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->lan_info.fw_build = pf->hw.aq.fw_build;
- 	set_bit(__I40E_CLIENT_INSTANCE_NONE, &cdev->state);
- 
--	if (i40e_client_get_params(vsi, &cdev->lan_info.params)) {
--		kfree(cdev);
--		cdev = NULL;
--		return;
--	}
-+	if (i40e_client_get_params(vsi, &cdev->lan_info.params))
-+		goto free_cdev;
- 
- 	mac = list_first_entry(&cdev->lan_info.netdev->dev_addrs.list,
- 			       struct netdev_hw_addr, list);
-@@ -326,7 +358,17 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->client = registered_client;
- 	pf->cinst = cdev;
- 
--	i40e_client_update_msix_info(pf);
-+	cdev->lan_info.msix_count = pf->num_iwarp_msix;
-+	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
-+
-+	if (i40e_init_client_virtdev(&cdev->lan_info))
-+		goto free_cdev;
-+
-+	return;
-+
-+free_cdev:
-+	kfree(cdev);
-+	pf->cinst = NULL;
- }
- 
- /**
-@@ -347,7 +389,7 @@ void i40e_client_del_instance(struct i40e_pf *pf)
-  **/
- void i40e_client_subtask(struct i40e_pf *pf)
- {
--	struct i40e_client *client = registered_client;
-+	struct i40e_client *client;
- 	struct i40e_client_instance *cdev;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 	int ret = 0;
-@@ -361,9 +403,11 @@ void i40e_client_subtask(struct i40e_pf *pf)
- 	    test_bit(__I40E_CONFIG_BUSY, pf->state))
- 		return;
- 
--	if (!client || !cdev)
-+	if (!cdev || !cdev->client)
- 		return;
- 
-+	client = cdev->client;
-+
- 	/* Here we handle client opens. If the client is down, and
- 	 * the netdev is registered, then open the client.
- 	 */
-@@ -424,16 +468,8 @@ int i40e_lan_add_device(struct i40e_pf *pf)
- 		 pf->hw.pf_id, pf->hw.bus.bus_id,
- 		 pf->hw.bus.device, pf->hw.bus.func);
- 
--	/* If a client has already been registered, we need to add an instance
--	 * of it to our new LAN device.
--	 */
--	if (registered_client)
--		i40e_client_add_instance(pf);
-+	i40e_client_add_instance(pf);
- 
--	/* Since in some cases register may have happened before a device gets
--	 * added, we can schedule a subtask to go initiate the clients if
--	 * they can be launched at probe time.
--	 */
- 	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
- 	i40e_service_event_schedule(pf);
- 
-@@ -453,6 +489,8 @@ int i40e_lan_del_device(struct i40e_pf *pf)
- 	struct i40e_device *ldev, *tmp;
- 	int ret = -ENODEV;
- 
-+	virtbus_unregister_device(pf->cinst->lan_info.vdev);
-+
- 	/* First, remove any client instance. */
- 	i40e_client_del_instance(pf);
- 
-@@ -733,6 +771,59 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
- 	return err;
- }
- 
-+static int i40e_client_device_register(struct i40e_info *ldev)
-+{
-+	struct i40e_client *client;
-+	struct i40e_pf *pf;
-+
-+	if (!ldev) {
-+		pr_err("Failed to reg client dev: ldev ptr NULL\n");
-+		return -EINVAL;
++	/* make sure the probe is complete before updating client list */
++	timeout = msecs_to_jiffies(SOF_CLIENT_PROBE_TIMEOUT_MS);
++	time = wait_for_completion_timeout(&cdev->probe_complete, timeout);
++	if (!time) {
++		dev_err(sdev->dev, "error: probe of virtbus dev %s timed out\n",
++			name);
++		virtbus_unregister_device(vdev);
++		return -ETIMEDOUT;
 +	}
 +
-+	client = ldev->client;
-+	pf = ldev->pf;
-+	if (!client) {
-+		pr_err("Failed to reg client dev: client ptr NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!ldev->ops || !client->ops) {
-+		pr_err("Failed to reg client dev: client dev peer_ops/ops NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	pf->cinst->client = ldev->client;
-+	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
-+	i40e_service_event_schedule(pf);
++	/* add to list of SOF client devices */
++	mutex_lock(&sdev->client_mutex);
++	list_add(&cdev->list, &sdev->client_list);
++	mutex_unlock(&sdev->client_mutex);
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_NS_GPL(sof_client_dev_register, SND_SOC_SOF_CLIENT);
 +
-+static void i40e_client_device_unregister(struct i40e_info *ldev)
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header,
++			      void *msg_data, size_t msg_bytes,
++			      void *reply_data, size_t reply_bytes)
 +{
-+	struct i40e_pf *pf = ldev->pf;
-+	struct i40e_client_instance *cdev = pf->cinst;
-+
-+	while (test_and_set_bit(__I40E_SERVICE_SCHED, pf->state))
-+		usleep_range(500, 1000);
-+
-+	if (!cdev || !cdev->client || !cdev->client->ops ||
-+	    !cdev->client->ops->close) {
-+		dev_err(&pf->pdev->dev, "Cannot close client device\n");
-+		return;
-+	}
-+	cdev->client->ops->close(&cdev->lan_info, cdev->client, false);
-+	clear_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state);
-+	i40e_client_release_qvlist(&cdev->lan_info);
-+	pf->cinst->client = NULL;
-+	clear_bit(__I40E_SERVICE_SCHED, pf->state);
++	return sof_ipc_tx_message(cdev->sdev->ipc, header, msg_data, msg_bytes,
++				  reply_data, reply_bytes);
 +}
++EXPORT_SYMBOL_NS_GPL(sof_client_ipc_tx_message, SND_SOC_SOF_CLIENT);
 +
-+/* Retain legacy global registration/unregistration calls till i40iw is
-+ * deprecated from the kernel. The irdma unified driver does not use these
-+ * exported symbols.
-+ */
- /**
-  * i40e_register_client - Register a i40e client driver with the L2 driver
-  * @client: pointer to the i40e_client struct
-diff --git a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
-index 72994baf4941..4a83648cf5fd 100644
---- a/include/linux/net/intel/i40e_client.h
-+++ b/include/linux/net/intel/i40e_client.h
-@@ -4,6 +4,9 @@
- #ifndef _I40E_CLIENT_H_
- #define _I40E_CLIENT_H_
- 
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev)
++{
++	return cdev->sdev->debugfs_root;
++}
++EXPORT_SYMBOL_NS_GPL(sof_client_get_debugfs_root, SND_SOC_SOF_CLIENT);
++
++MODULE_AUTHOR("Ranjani Sridharan <ranjani.sridharan@linux.intel.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/sound/soc/sof/sof-client.h b/sound/soc/sof/sof-client.h
+new file mode 100644
+index 000000000000..fdc4b1511ffc
+--- /dev/null
++++ b/sound/soc/sof/sof-client.h
+@@ -0,0 +1,84 @@
++/* SPDX-License-Identifier: (GPL-2.0-only) */
++
++#ifndef __SOUND_SOC_SOF_CLIENT_H
++#define __SOUND_SOC_SOF_CLIENT_H
++
++#include <linux/completion.h>
++#include <linux/debugfs.h>
++#include <linux/device.h>
++#include <linux/device/driver.h>
++#include <linux/kernel.h>
++#include <linux/list.h>
 +#include <linux/virtual_bus.h>
 +
-+#define I40E_PEER_RDMA_NAME	"intel,i40e,rdma"
- #define I40E_CLIENT_STR_LENGTH 10
- 
- /* Client interface version should be updated anytime there is a change in the
-@@ -84,6 +87,7 @@ struct i40e_info {
- 	u8 lanmac[6];
- 	struct net_device *netdev;
- 	struct pci_dev *pcidev;
-+	struct virtbus_device *vdev;
- 	u8 __iomem *hw_addr;
- 	u8 fid;	/* function id, PF id or VF id */
- #define I40E_CLIENT_FTYPE_PF 0
-@@ -97,6 +101,7 @@ struct i40e_info {
- 	struct i40e_qvlist_info *qvlist_info;
- 	struct i40e_params params;
- 	struct i40e_ops *ops;
-+	struct i40e_client *client;
- 
- 	u16 msix_count;	 /* number of msix vectors*/
- 	/* Array down below will be dynamically allocated based on msix_count */
-@@ -107,6 +112,11 @@ struct i40e_info {
- 	u32 fw_build;                   /* firmware build number */
- };
- 
-+struct i40e_virtbus_device {
-+	struct virtbus_device vdev;
-+	struct i40e_info *ldev;
++#define SOF_CLIENT_PROBE_TIMEOUT_MS 2000
++
++struct snd_sof_dev;
++
++enum sof_client_type {
++	SOF_CLIENT_AUDIO,
++	SOF_CLIENT_IPC,
 +};
 +
- #define I40E_CLIENT_RESET_LEVEL_PF   1
- #define I40E_CLIENT_RESET_LEVEL_CORE 2
- #define I40E_CLIENT_VSI_FLAG_TCP_ENABLE  BIT(1)
-@@ -132,6 +142,11 @@ struct i40e_ops {
- 			       struct i40e_client *client,
- 			       bool is_vf, u32 vf_id,
- 			       u32 flag, u32 valid_flag);
++/* SOF client device */
++struct sof_client_dev {
++	struct virtbus_device vdev;
++	struct snd_sof_dev *sdev;
++	struct list_head list;	/* item in SOF core client drv list */
++	struct completion probe_complete;
++	void *data;
++};
 +
-+	int (*client_device_register)(struct i40e_info *ldev);
++/* client-specific ops, all optional */
++struct sof_client_ops {
++	int (*client_ipc_rx)(struct sof_client_dev *cdev, u32 msg_cmd);
++};
 +
-+	void (*client_device_unregister)(struct i40e_info *ldev);
++struct sof_client_drv {
++	const char *name;
++	enum sof_client_type type;
++	const struct sof_client_ops ops;
++	struct virtbus_driver virtbus_drv;
++};
 +
++#define virtbus_dev_to_sof_client_dev(virtbus_dev) \
++	container_of(virtbus_dev, struct sof_client_dev, vdev)
++
++static inline int sof_client_drv_register(struct sof_client_drv *drv)
++{
++	return virtbus_register_driver(&drv->virtbus_drv);
++}
++
++static inline void sof_client_drv_unregister(struct sof_client_drv *drv)
++{
++	virtbus_unregister_driver(&drv->virtbus_drv);
++}
++
++int sof_client_dev_register(struct snd_sof_dev *sdev,
++			    const char *name);
++
++static inline void sof_client_dev_unregister(struct sof_client_dev *cdev)
++{
++	virtbus_unregister_device(&cdev->vdev);
++}
++
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header,
++			      void *msg_data, size_t msg_bytes,
++			      void *reply_data, size_t reply_bytes);
++
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev);
++
++/**
++ * module_sof_client_driver() - Helper macro for registering an SOF Client
++ * driver
++ * @__sof_client_driver: SOF client driver struct
++ *
++ * Helper macro for SOF client drivers which do not do anything special in
++ * module init/exit. This eliminates a lot of boilerplate. Each module may only
++ * use this macro once, and calling it replaces module_init() and module_exit()
++ */
++#define module_sof_client_driver(__sof_client_driver) \
++	module_driver(__sof_client_driver, sof_client_drv_register, \
++			sof_client_drv_unregister)
++
++#endif
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index a4b297c842df..9da7f6f45362 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -438,6 +438,12 @@ struct snd_sof_dev {
+ 
+ 	bool msi_enabled;
+ 
++	/* list of client devices */
++	struct list_head client_list;
++
++	/* mutex to protect client list */
++	struct mutex client_mutex;
++
+ 	void *private;			/* core does not touch this */
  };
  
- struct i40e_client_ops {
 -- 
 2.26.2
 
