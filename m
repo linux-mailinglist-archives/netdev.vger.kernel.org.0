@@ -2,111 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C302C1DC18F
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32FF1DC19A
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728304AbgETVra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 17:47:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42144 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726510AbgETVra (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 17:47:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ajMWx+yytMgnzEmWmzTjT+rRlBFvqxpGMWsH1u6Yhxw=; b=KyFEWqql4G3ocyRVDQr9pPpMD6
-        rMycpRombqTwpMHi5LRF7J2ZYZcPRbcwg+E7JQltEvSKPJ+4NVsjb9oB7OKAnYxfhBYBHnKl4P5SD
-        rGuhG1phNB1B0jZRedhMteSeJ/yt7yJVUOCES7ATUgRsYRCxB/QgTKc3fVw+qtsCgZ0g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jbWYh-002qaf-K9; Wed, 20 May 2020 23:47:27 +0200
-Date:   Wed, 20 May 2020 23:47:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel =?iso-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: mvneta and phy_speed_up()
-Message-ID: <20200520214727.GB677363@lunn.ch>
+        id S1728209AbgETVvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 17:51:17 -0400
+Received: from mail-eopbgr40098.outbound.protection.outlook.com ([40.107.4.98]:55046
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726510AbgETVvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 17:51:16 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EOj7wtadohe1RTHP8EvgT4hCRLlIi1rNI5usegvJIazZwpB0wpQMbGGYPZwMIxSNVDD6SMGnD1xdansSNLnnXHc8ADbQulJca/k0xEe7dFRnOa9m2fv5lCOaMGBK+2Rpz7sJDHKfn+AFBrCQmbedhrknsGMA7NxRtnDCREQPGCo9EZZ4VHYT0jxjXWkFWH8UXrzMRgdxotwmbmx8KJtQ+0IAtnISRphhP1/6Y/MS7BZsEji2AX8P0J8TmlR0vUXanRjb4cpvFmsY0HwCkrEDEB6l+4tF3kAH3FpQ3sXpMJsW1924JFRXS7vExPjEBjV6eIivgi+tzanqpB3iEBUPGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OX62dhEOCWcNCxihQLstOKxL7p3S0PFSXXycQQIxMO4=;
+ b=oZ2zC8s9tQJtDmRIv1Zwbj5ohD1U8mqlvZPecycPytfRW0fXKFFt+HuCs/Jof1OfFBvOggt6QkVsBVPUC9Rw4ah96UVdhQ8O40suxRgN/mCEyv/r4ElGdHf7qg4NLUdBm9i9cbckks4MVkmqd1IIq6vTfQb9E+FbjiaDJuhNtd83CCBtCkNU2nRnMhdsCkMcYCgOUXGLTUqYKxaTI8MZIRb2Ir1qh+kKpD6YYVEbmaEKlJN9dgUlYz4oFyTHa75HFgwQJ6I6FzDKpMwDLwIos3Gqk62G1TMVaeD7oedFxLqrD4sp16Zn1iD3D5zMRcUiMp1TNiUgDDBsvHUpEERb7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OX62dhEOCWcNCxihQLstOKxL7p3S0PFSXXycQQIxMO4=;
+ b=OFHggydrFRnvkhES8cKoHa7WZXfUH3ywfDWaGhAvnmUTYOxveLQeO+ctOu431DWHAcI8Ig6tBEuT/L5HRTDGNRu616K7gS87d6RSPcUg3lTkErszGp0efyVAHQsCVKtZKIKDgi6LCXslnQQV+1YcNaiVvgJGbcrZXMcqa0P7JTk=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nokia.com;
+Received: from HE1PR0702MB3818.eurprd07.prod.outlook.com (2603:10a6:7:8c::18)
+ by HE1PR0702MB3561.eurprd07.prod.outlook.com (2603:10a6:7:8b::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.12; Wed, 20 May
+ 2020 21:51:11 +0000
+Received: from HE1PR0702MB3818.eurprd07.prod.outlook.com
+ ([fe80::f0bb:b1ae:bf22:4526]) by HE1PR0702MB3818.eurprd07.prod.outlook.com
+ ([fe80::f0bb:b1ae:bf22:4526%6]) with mapi id 15.20.3021.019; Wed, 20 May 2020
+ 21:51:11 +0000
+Date:   Thu, 21 May 2020 00:50:58 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Jere_Lepp=E4nen?= <jere.leppanen@nokia.com>
+X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+cc:     =?ISO-8859-15?Q?Jere_Lepp=E4nen?= <jere.leppanen@nokia.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: [PATCH net 1/1] sctp: Start shutdown on association restart if
+ in SHUTDOWN-SENT state and socket is closed
+In-Reply-To: <20200520194629.GS2491@localhost.localdomain>
+Message-ID: <alpine.LFD.2.21.2005210039550.789637@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net>
+References: <20200520151531.787414-1-jere.leppanen@nokia.com> <20200520194629.GS2491@localhost.localdomain>
+Content-Type: multipart/mixed; boundary="352996365-1605154134-1590011470=:789637"
+X-ClientProxiedBy: AM4P190CA0003.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:200:56::13) To HE1PR0702MB3818.eurprd07.prod.outlook.com
+ (2603:10a6:7:8c::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net (131.228.2.10) by AM4P190CA0003.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Wed, 20 May 2020 21:51:10 +0000
+X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
+X-Originating-IP: [131.228.2.10]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 71247082-4bd6-4629-7f37-08d7fd07e8b8
+X-MS-TrafficTypeDiagnostic: HE1PR0702MB3561:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR0702MB3561FA94AD4FA1B597B97721ECB60@HE1PR0702MB3561.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-Forefront-PRVS: 04097B7F7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sg5dAtlopGlyJjujvaDngI2/wDlTUmqBAxLtwTJiVvlwk4rzDHJhgubHS+Aia7mnXAkQJgB6+4Th//pMeunFZhfK6iyYzNhVabgq9Mz8oAcuyq4OX08WbWPusMerQLtZ5Sk4YxKFup5xx+Dpd83t9f/bkeYJbv3cmZWBTg9zBHSbw4dtKWLY/vewmp5bkH7HgkBk3M/3mZ3qLzp5wQeGMwQOeU/tiqWfZzFmmNby93zk4WtjVTwEZJIeR0s8GDDO9w2F148NmhnBtJ32XZVLXn3pLNfqOIUYIp24wBnK1K/vO5tnc7c74ySvSw7miYwD8egKSmzEGzP6BbQLhzsOHcbCYyKXW0SpMV6zOmPl8/28cxojyH4IVkvE2kitxEvP0Q2SdSA0aaqV1/o+H5GIPA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0702MB3818.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(346002)(136003)(39860400002)(396003)(52116002)(26005)(8676002)(66556008)(6666004)(7696005)(9686003)(66946007)(86362001)(8936002)(66476007)(316002)(55016002)(5660300002)(6506007)(478600001)(966005)(186003)(54906003)(2906002)(16526019)(6916009)(956004)(4326008)(66574014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 5DRFgc4NN4VMaCnX8fi5RqiHKGp1HeKhSZgZt5C0iE15OpbUwk1cAjrpRyXAD2/5DQ5PvmvkPdzAlNyYA64otVJCutYEwFSIhwVGH6XnNzKGxnej7arg0/9AmELbDIPYNuuaoIjQzpiSi079qwAeEj01PSZQBmaTZsddpcIQqKlB/7t3KUUk0SxVA3F2inQ4oj3AHeMmKFMlsy1Jk1CZLJ//sRF8Ad4VKoS6veVCBTtq9hu7JIpeQwlg5CRpaY42sRuyAT6pa49WZG5EhjdDTB7AXyDjbV0iNtKS+JjVK4jq+n32w8JBDMUKI+eQYUjIM6EV86pY4vmTObBbyYKCmNhb3vJfZhxa5D2YZD/OlE/N2RMbGOxCJFF5onpSnYlrKomK+gj9Q9RKgSZf2T2243B19h7Gt7SREgBSBrmTHUi2/P3GSe4IdxhAhpks/Q+jWSFRQMzxTAue79SNgY2ILExJoT3taeWOmjw2FxDvSR8=
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71247082-4bd6-4629-7f37-08d7fd07e8b8
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2020 21:51:11.2845
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ss0AjrrqP/zNdcWmG1ROX/tUEC4owX0ji8S/bePzCLjtwasEwR2If7XXjQ9NohOhFQwquc60/ZAHxp6EzfDaMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0702MB3561
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel
+--352996365-1605154134-1590011470=:789637
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
-I have a WRT1900AC which uses a Marvel XP SoC. One of its mvneta
-interfaces is connected to an Ethernet switch. I now get:
+On Wed, 20 May 2020, Marcelo Ricardo Leitner wrote:
 
-[   21.934996] mvneta f1070000.ethernet eth0: configuring for fixed/rgmii-id link mode
-[   21.942783] 8<--- cut here ---
-[   21.945876] Unable to handle kernel NULL pointer dereference at virtual address 0000024d
-[   21.954048] pgd = 0d7442d2
-[   21.956773] [0000024d] *pgd=00000000
-[   21.960438] Internal error: Oops: 15 [#1] SMP ARM
-[   21.965166] Modules linked in:
-[   21.968243] CPU: 0 PID: 2440 Comm: ip Not tainted 5.7.0-rc5-01775-gd7d2b59093bf #11
-[   21.975927] Hardware name: Marvell Armada 370/XP (Device Tree)
-[   21.981797] PC is at phy_speed_up+0x1c/0xd4
-[   21.985999] LR is at mvneta_start_dev+0x218/0x2bc
-[   21.990725] pc : [<c04c2ac4>]    lr : [<c04e802c>]    psr: 60050013
-[   21.997011] sp : cc103940  ip : 00000d53  fp : cdf726c0
-[   22.002260] r10: cc103c80  r9 : 00000004  r8 : c0b04020
-[   22.007503] r7 : c0b03fac  r6 : c0b03ee8  r5 : cf02b540  r4 : ff7f49e8
-[   22.014057] r3 : 00000000  r2 : cfdd34c0  r1 : 80050093  r0 : 00000000
-[   22.020615] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-[   22.027775] Control: 10c5387d  Table: 0c0e806a  DAC: 00000051
-[   22.033549] Process ip (pid: 2440, stack limit = 0x5369f874)
-[   22.039228] Stack: (0xcc103940 to 0xcc104000)
-....
-[   22.487185] [<c04c2ac4>] (phy_speed_up) from [<c04e802c>] (mvneta_start_dev+0x218/0x2bc)
-[   22.495319] [<c04e802c>] (mvneta_start_dev) from [<c04e86e8>] (mvneta_open+0x17c/0x2c8)
-[   22.503369] [<c04e86e8>] (mvneta_open) from [<c06179f0>] (__dev_open+0xd4/0x158)
-[   22.510808] [<c06179f0>] (__dev_open) from [<c0617dcc>] (__dev_change_flags+0x174/0x1d4)
-[   22.518928] [<c0617dcc>] (__dev_change_flags) from [<c0617e44>] (dev_change_flags+0x18/0x48)
-[   22.527410] [<c0617e44>] (dev_change_flags) from [<c0624484>] (do_setlink+0x268/0x910)
-[   22.535371] [<c0624484>] (do_setlink) from [<c062a48c>] (__rtnl_newlink+0x4f0/0x730)
-[   22.543158] [<c062a48c>] (__rtnl_newlink) from [<c062a70c>] (rtnl_newlink+0x40/0x60)
-[   22.550942] [<c062a70c>] (rtnl_newlink) from [<c06252d8>] (rtnetlink_rcv_msg+0x260/0x2e4)
-[   22.559153] [<c06252d8>] (rtnetlink_rcv_msg) from [<c065697c>] (netlink_rcv_skb+0xc0/0x120)
-[   22.567547] [<c065697c>] (netlink_rcv_skb) from [<c0656114>] (netlink_unicast+0x1a8/0x250)
-[   22.575856] [<c0656114>] (netlink_unicast) from [<c0656380>] (netlink_sendmsg+0x1c4/0x3fc)
-[   22.584168] [<c0656380>] (netlink_sendmsg) from [<c05f26f8>] (____sys_sendmsg+0x1b4/0x248)
-[   22.592477] [<c05f26f8>] (____sys_sendmsg) from [<c05f4008>] (___sys_sendmsg+0x70/0xa4)
-[   22.600522] [<c05f4008>] (___sys_sendmsg) from [<c05f442c>] (__sys_sendmsg+0x54/0x98)
-[   22.608381] [<c05f442c>] (__sys_sendmsg) from [<c0100060>] (ret_fast_syscall+0x0/0x54)
-[   22.616329] Exception stack(0xcc103fa8 to 0xcc103ff0)
-[   22.621411] 3fa0:                   00000078 004f4cb8 00000003 bea9a6c8 00000000 00000000
-[   22.629627] 3fc0: 00000078 004f4cb8 00000003 00000128 5e3af347 00000000 004f4cb8 004f4cb8
-[   22.637831] 3fe0: 00000128 bea9a678 b6e7277f b6dedcd6
-[   22.642913] Code: e34c3092 e5933000 e58d300c e3a03000 (e5d0324d) 
-[   22.649092] ---[ end trace 5a0f1861fece84f4 ]---
+> On Wed, May 20, 2020 at 06:15:31PM +0300, Jere Leppänen wrote:
+> > Commit bdf6fa52f01b ("sctp: handle association restarts when the
+> > socket is closed.") starts shutdown when an association is restarted,
+> > if in SHUTDOWN-PENDING state and the socket is closed. However, the
+> > rationale stated in that commit applies also when in SHUTDOWN-SENT
+> > state - we don't want to move an association to ESTABLISHED state when
+> > the socket has been closed, because that results in an association
+> > that is unreachable from user space.
+> > 
+> > The problem scenario:
+> > 
+> > 1.  Client crashes and/or restarts.
+> > 
+> > 2.  Server (using one-to-one socket) calls close(). SHUTDOWN is lost.
+> > 
+> > 3.  Client reconnects using the same addresses and ports.
+> > 
+> > 4.  Server's association is restarted. The association and the socket
+> >     move to ESTABLISHED state, even though the server process has
+> >     closed its descriptor.
+> > 
+> > Also, after step 4 when the server process exits, some resources are
+> > leaked in an attempt to release the underlying inet sock structure in
+> > ESTABLISHED state:
+> > 
+> >     IPv4: Attempt to release TCP socket in state 1 00000000377288c7
+> > 
+> > Fix by acting the same way as in SHUTDOWN-PENDING state. That is, if
+> > an association is restarted in SHUTDOWN-SENT state and the socket is
+> > closed, then start shutdown and don't move the association or the
+> > socket to ESTABLISHED state.
+> > 
+> > Fixes: bdf6fa52f01b ("sctp: handle association restarts when the socket is closed.")
+> > Signed-off-by: Jere Leppänen <jere.leppanen@nokia.com>
+> > ---
+> >  net/sctp/sm_statefuns.c | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+> > index 26788f4a3b9e..e86620fbd90f 100644
+> > --- a/net/sctp/sm_statefuns.c
+> > +++ b/net/sctp/sm_statefuns.c
+> > @@ -1856,12 +1856,13 @@ static enum sctp_disposition sctp_sf_do_dupcook_a(
+> >  	/* Update the content of current association. */
+> >  	sctp_add_cmd_sf(commands, SCTP_CMD_UPDATE_ASSOC, SCTP_ASOC(new_asoc));
+> >  	sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
+> > -	if (sctp_state(asoc, SHUTDOWN_PENDING) &&
+> > +	if ((sctp_state(asoc, SHUTDOWN_PENDING) ||
+> > +	     sctp_state(asoc, SHUTDOWN_SENT)) &&
+> >  	    (sctp_sstate(asoc->base.sk, CLOSING) ||
+> >  	     sock_flag(asoc->base.sk, SOCK_DEAD))) {
+> > -		/* if were currently in SHUTDOWN_PENDING, but the socket
+> > -		 * has been closed by user, don't transition to ESTABLISHED.
+> > -		 * Instead trigger SHUTDOWN bundled with COOKIE_ACK.
+> > +		/* If the socket has been closed by user, don't
+> > +		 * transition to ESTABLISHED. Instead trigger SHUTDOWN
+> > +		 * bundled with COOKIE_ACK.
+> >  		 */
+> >  		sctp_add_cmd_sf(commands, SCTP_CMD_REPLY, SCTP_CHUNK(repl));
+> >  		return sctp_sf_do_9_2_start_shutdown(net, ep, asoc,
+> > 
+> > base-commit: 20a785aa52c82246055a089e55df9dac47d67da1
+> 
+> This last line is not standard, but git didn't complain about it here.
 
-I've not done a bisect, but i suspect this change:
+The git format-patch --base option. It's mentioned in the docs:
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 51889770958d..e0e9e56830c0 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3561,6 +3561,10 @@ static void mvneta_start_dev(struct mvneta_port *pp)
-                    MVNETA_CAUSE_LINK_CHANGE);
- 
-        phylink_start(pp->phylink);
-+
-+       /* We may have called phy_speed_down before */
-+       phy_speed_up(pp->dev->phydev);
-+
-        netif_tx_start_all_queues(pp->dev);
- }
+https://www.kernel.org/doc/html/v5.6/process/submitting-patches.html#providing-base-tree-information
 
-mvneta uses phylink, not phydev directly. You cannot assume
-pp->dev->phydev is a valid pointer, e.g. when there is no PHY.
+> 
+> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-Please could you fix this.
-
-Thanks
-	Andrew
+Thanks for the speedy ack, Marcelo.
+--352996365-1605154134-1590011470=:789637--
