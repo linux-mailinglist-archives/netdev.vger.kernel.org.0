@@ -2,77 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D35881DBB6D
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBDD1DBB72
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727917AbgETR1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 13:27:53 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43318 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbgETR1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:27:53 -0400
-Received: from ip5f5af183.dynamic.kabel-deutschland.de ([95.90.241.131] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jbSVN-0000Gh-9u; Wed, 20 May 2020 17:27:45 +0000
-Date:   Wed, 20 May 2020 19:27:44 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv6/route: inherit max_sizes from current netns
-Message-ID: <20200520172744.fytw6aojounuf735@wittgenstein>
-References: <20200520145806.3746944-1-christian.brauner@ubuntu.com>
- <4b22a3bc-9dae-3f49-6748-ec45deb09a01@gmail.com>
- <20200520172417.4m7pyalpftdd2xrm@wittgenstein>
+        id S1726804AbgETR2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:28:43 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36644 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726439AbgETR2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:28:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589995721;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=8+Nb5pWCc1PiweMGC4fvcY+3IaqBgMHmVvPOxhCZdXk=;
+        b=CedGu80uZf7xFv9ZUpUln6GbysK+8PpLxNT3PylbT0Vel7YuUUaMTrwu28aimVvi/35JHO
+        SRLzRCVWOwEsy//wb2xxam4JJ+4I8+Hfsr+CSPvB5QlDgE36xdaHDuCGcvmTe6pzIBR+J2
+        56uUB2E2fKuMmXHMzIkDYER2u7+zb30=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-449-YH_2Y7BTM0ihZf4YYDNfcQ-1; Wed, 20 May 2020 13:28:39 -0400
+X-MC-Unique: YH_2Y7BTM0ihZf4YYDNfcQ-1
+Received: by mail-wr1-f69.google.com with SMTP id 90so1670973wrg.23
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 10:28:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=8+Nb5pWCc1PiweMGC4fvcY+3IaqBgMHmVvPOxhCZdXk=;
+        b=ag1NQ2kLApaw+/vJr/38elP4tly1R98bhyETbBAnwv5v5wyHaebB5XnHpNTdpEy2F6
+         bdEtiGPm3/sCJrnGMWsZvDfg8h0sPTlCOeL4q+5a0N9ZRfM3NvxP3l7B+AMdIvQ56vBw
+         ur0+6+NEpwjfL/6bgea0as/fSCUI6uONq7W8uqNydf7B2iy5eY5ti5hgv/FjM9zASNW5
+         bJIIlhrTwOam3RHzrFovg5FiYcMNufk0dyCnuzynmBsELQcdTjkFzg9MFka9WQna7i+T
+         2CFVPrnsurai4EU+H30DbUi5vElariHNbZFaqxhR7S1jh6x7qBamfo3YfwECAHS4yots
+         8V6w==
+X-Gm-Message-State: AOAM530OvkHLvsEAOB2QmAXnUuNbry96KcvLZfOapj0HDS7fL6MxjfKW
+        lwZahKJzHwkmVYPNgMKNDFnVzaqk1SLruudCF3/n/iYvfFw4ti21KTmTX4tvmmspHkdvVaNG8Wx
+        dhEMlEnViPEMK5Ji7
+X-Received: by 2002:adf:ec09:: with SMTP id x9mr4986001wrn.21.1589995718629;
+        Wed, 20 May 2020 10:28:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAuCmJSuZN5YbYAEWmCoUORKHjcxq+3ceW5zMqzsvIReDiR/K9ZjqJmPXVxGGNrcytHI8q3w==
+X-Received: by 2002:adf:ec09:: with SMTP id x9mr4985984wrn.21.1589995718431;
+        Wed, 20 May 2020 10:28:38 -0700 (PDT)
+Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id g187sm3733746wmf.30.2020.05.20.10.28.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 10:28:37 -0700 (PDT)
+Date:   Wed, 20 May 2020 19:28:36 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Benjamin LaHaise <benjamin.lahaise@netronome.com>,
+        Tom Herbert <tom@herbertland.com>,
+        Liel Shoshan <liels@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>
+Subject: [PATCH net-next 0/2] flow_dissector, cls_flower: Add support for
+ multiple MPLS Label Stack Entries
+Message-ID: <cover.1589993550.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200520172417.4m7pyalpftdd2xrm@wittgenstein>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 07:24:18PM +0200, Christian Brauner wrote:
-> On Wed, May 20, 2020 at 10:54:21AM -0600, David Ahern wrote:
-> > On 5/20/20 8:58 AM, Christian Brauner wrote:
-> > > During NorthSec (cf. [1]) a very large number of unprivileged
-> > > containers and nested containers are run during the competition to
-> > > provide a safe environment for the various teams during the event. Every
-> > > year a range of feature requests or bug reports come out of this and
-> > > this year's no different.
-> > > One of the containers was running a simple VPN server. There were about
-> > > 1.5k users connected to this VPN over ipv6 and the container was setup
-> > > with about 100 custom routing tables when it hit the max_sizes routing
-> > > limit. After this no new connections could be established anymore,
-> > > pinging didn't work anymore; you get the idea.
-> > > 
-> > 
-> > should have been addressed by:
-> > 
-> > commit d8882935fcae28bceb5f6f56f09cded8d36d85e6
-> > Author: Eric Dumazet <edumazet@google.com>
-> > Date:   Fri May 8 07:34:14 2020 -0700
-> >     ipv6: use DST_NOCOUNT in ip6_rt_pcpu_alloc()
-> >     We currently have to adjust ipv6 route gc_thresh/max_size depending
-> >     on number of cpus on a server, this makes very little sense.
-> > 
-> > 
-> > Did your tests include this patch?
-> 
-> No, it's also pretty hard to trigger. The conference was pretty good for
-> this.
-> I tested on top of rc6. I'm probably missing the big picture here, could
-> you briefy explain how this commit fixes the problem we ran into?
+Currently, the flow dissector and the Flower classifier can only handle
+the first entry of an MPLS label stack. This patch series generalises
+the code to allow parsing and matching the labels that follow.
 
-Hm, and it'd be great if we could expose the file - even just read-only
-- to network namespaces owned by non-initial user namespaces. It doesn't
-contain sensitive information and could probably be used to limit
-connections etc.
+Patch 1 extends the flow dissector to parse MPLS LSEs until the Bottom
+Of Stack bit is reached. The number of parsed LSEs is capped at
+FLOW_DIS_MPLS_MAX (arbitrarily set to 7).
 
-Christian
+Patch 2 extends Flower. It defines new netlink attributes, which are
+independent from the previous MPLS ones. Mixing the old and the new
+attributes in a same filter is not allowed. For backward compatibility,
+the old attributes are used when dumping filters that don't require the
+new ones.
+
+Guillaume Nault (2):
+  flow_dissector: Parse multiple MPLS Label Stack Entries
+  cls_flower: Support filtering on multiple MPLS Label Stack Entries
+
+ include/net/flow_dissector.h |  14 +-
+ include/uapi/linux/pkt_cls.h |  23 +++
+ net/core/flow_dissector.c    |  49 ++++--
+ net/sched/cls_flower.c       | 295 +++++++++++++++++++++++++++++++++--
+ 4 files changed, 347 insertions(+), 34 deletions(-)
+
+-- 
+2.21.1
+
