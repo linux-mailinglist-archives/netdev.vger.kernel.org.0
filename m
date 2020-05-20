@@ -2,105 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17CE1DBDEE
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E44D1DBDF8
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 21:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbgETTWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 15:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbgETTWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 15:22:41 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EC0C061A0E;
-        Wed, 20 May 2020 12:22:41 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id p30so1886026pgl.11;
-        Wed, 20 May 2020 12:22:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OVMLRI/qYuKHi4wFXwj/y3J+J9HuBJ9GEwbF/G1h7vs=;
-        b=vZ8IO5JvkRxbPEL5oIae2LPKd4XKGs0oq6d9USfSK9MbFesburkTyZANdAFl2/YkZb
-         m9mIVcA5FPwrpIo3W5NjuIqNAmUDjC5x8dYlUYDcDJb3nrkaT+GxVkNBHKOVX87U49PP
-         prMp2CVSQelpUMk0Gg3oY4At+STHy85+PzYR/THKXqL25+UIBad1lu18qT7mWCieV87W
-         H8HcFQwF56gZv50eYEcWQb+ckVgjsel6lBzAqKesCERsAmRLUMUxyk/4K9sPNEHJVtmV
-         BzqTLNpqMevZr8KANwNxrA5ILhxxtQIP7yr8kHEFYAnFC9kmjYMJseu7z5MBUUyVKlVM
-         dvag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OVMLRI/qYuKHi4wFXwj/y3J+J9HuBJ9GEwbF/G1h7vs=;
-        b=UStHcV+Fs830YS2pslFqTprmJ0eFydYXUq6SIcnTlJjfC7J0pisff8HGUcOXHlrCGd
-         SZsZ9vxa+2aGWAOZunrag68G2z00grcYXEe44hYcEuBnk/TNGcafNE+cQRadvK8Jqo1y
-         jxtmcHNTYlAl9mTmNrpBLhRRfvTToyOpz7vV4/G6+ZkNthcksQtUvPkelhXVbqjzm/Ct
-         tRmSvlh0Fjakhj61eMfvbjaGtZ5/mX/Kw6SbQv32ACwlvDm7GpdYqRrlYRYChkgBpHhj
-         WjwZqdnXedh7KvyW190RyxLGY3QvRkaecjQDer/R8pS6Rfezu3Yl3wBERO1PTM4I0Ktt
-         LQww==
-X-Gm-Message-State: AOAM530iLQrY6gD38emI9wU31VJaeIAoVR76/1WuAWHoSJZTUxlpJSCo
-        qfcXFEXQh/2+kicKi9AzYgU=
-X-Google-Smtp-Source: ABdhPJyKrkGByROGfhVaaKME8Vy/7DHu4vmtEFkG/CHCI2prtWxpATDGqiv8/kxH+eYbqS0iCcnfkQ==
-X-Received: by 2002:a63:f316:: with SMTP id l22mr5204505pgh.38.1590002561093;
-        Wed, 20 May 2020 12:22:41 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com (fmdmzpr03-ext.fm.intel.com. [192.55.54.38])
-        by smtp.gmail.com with ESMTPSA id 62sm2762424pfc.204.2020.05.20.12.22.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2020 12:22:40 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        jeffrey.t.kirsher@intel.com
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        maximmi@mellanox.com, maciej.fijalkowski@intel.com,
-        Joe Perches <joe@perches.com>
-Subject: [PATCH bpf-next v5 15/15] MAINTAINERS, xsk: update AF_XDP section after moves/adds
-Date:   Wed, 20 May 2020 21:21:03 +0200
-Message-Id: <20200520192103.355233-16-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200520192103.355233-1-bjorn.topel@gmail.com>
-References: <20200520192103.355233-1-bjorn.topel@gmail.com>
+        id S1726920AbgETT11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 15:27:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41932 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726893AbgETT10 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 May 2020 15:27:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4rHhSwlt0coVHMURe6/q1fSVBHKApGrHanOZroyRRls=; b=yJq3Ul7dmw24UfEWAAp7TeKPCO
+        EELwjXzfv5c4o0CwVxXIej+jkdnnHCqT+KiLG1fVR2qCgWRhVOvlJWpVZclLWBykY9TcP+pM09qKa
+        y6+ae1+zt8pEBsEiywLrG1G8Und2InNCz8uiuD2S8OU7QN8vGY9aC7OVG+/czQ6Lr+gM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jbUN5-002pxx-0p; Wed, 20 May 2020 21:27:19 +0200
+Date:   Wed, 20 May 2020 21:27:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
+ delay for DP83869
+Message-ID: <20200520192719.GK652285@lunn.ch>
+References: <20200520121835.31190-1-dmurphy@ti.com>
+ <20200520121835.31190-4-dmurphy@ti.com>
+ <20200520135624.GC652285@lunn.ch>
+ <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
+ <20200520153631.GH652285@lunn.ch>
+ <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
+ <20200520164313.GI652285@lunn.ch>
+ <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
+ <41101897-5b29-4a9d-0c14-9b8080089850@gmail.com>
+ <7e117c01-fa6e-45f3-05b7-4efe7a3c1943@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e117c01-fa6e-45f3-05b7-4efe7a3c1943@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Hi Dan
 
-Update MAINTAINERS to correctly mirror the current AF_XDP socket file
-layout. Also, add the AF_XDP files of libbpf.
+> UGH I think I just got volunteered to do make them common.
 
-rfc->v1: Sorted file entries. (Joe)
+There is code you can copy from PHY drivers. :-)
 
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- MAINTAINERS | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+What would be kind of nice is if the validate was in the core as
+well. Pass a list of possible delays in pS, and it will do a
+phydev_err() if what is in DT does not match one of the listed
+delays. Take a look around at what current drivers do and see if you
+can find a nice abstraction which will work for a few drivers. We
+cannot easily convert existing drivers without breaking DT, but a
+design which works in theory for what we currently have has a good
+chance of working for any new PHY driver.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b7844f6cfa4a..087e68b21f9f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18443,8 +18443,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Maintained
--F:	kernel/bpf/xskmap.c
-+F:	include/net/xdp_sock*
-+F:	include/net/xsk_buffer_pool.h
-+F:	include/uapi/linux/if_xdp.h
- F:	net/xdp/
-+F:	samples/bpf/xdpsock*
-+F:	tools/lib/bpf/xsk*
- 
- XEN BLOCK SUBSYSTEM
- M:	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
--- 
-2.25.1
-
+     Andrew
