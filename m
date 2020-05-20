@@ -2,147 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A10F1DC147
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 209F41DC14B
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 23:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgETVVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 17:21:01 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:61324 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727006AbgETVVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 17:21:00 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04KLF74f011440;
-        Wed, 20 May 2020 14:20:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=4owTVq2pFHzr88jEecRMzqh6XvDvsqQlqiMCaXgSAOI=;
- b=O94y9ZmxHYJ2IuDpbaQu+yQUZefh4gGu2wln3nUVGTh7kP3YGM2ZATGEPHwdfU1LoLL4
- NqcWzh0ZrHlwCrdpWLOyOziNcBs7NVdS2fA9RU5cPnZUd7hKWh6GEyZ0U9tf1IvQMTaz
- 9BcBT9mMQl6xNIt6/zMtFSTkScwzvLhYPei9/x1hi5p3QeqzFNb+EDSX/dz0ZUhY9qrY
- A5EGsltgHzttQKN9UYXM1XbWj61LE3sOf1Cf8Camlh5+fEsGf9QfS8oMxojw6XRB/Zh4
- IufMe3oPIXYskj0oaX/xm25AuhXTzHxvSD3qR7x4JtlCMgXq0WQa7OoQyBRnjQEwqEs1 kQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 312fppadj1-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 20 May 2020 14:20:56 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 20 May
- 2020 14:20:54 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 20 May 2020 14:20:54 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TzIzCcGZ+YfNk3iXo/FfDbUNR3ZNZJvQfEihcKQpdLvZCw2e7iDWbj7TBCZf6b3Bi+CFg7R4ywRM14mvs5uiBFHpTGuSZhJuEM0rZYEuK8JF8T/LbVKAhQbv/oHs92edPzpEovEnjh+8GGYlSvbzZBowFDngwru1du1Y6MBR6yQGBvnEvlPnZTiu87I30i6cx6I13qOIfzYPqIuinevriI4Sp1rJUqKmoiopG3FVUrxb9+TBDeZo3vAqLY5BNBRe2A8OvVgZ394D2KSuI4fHg8W9Vl/+sdfGyV/lN9MXd840FTOI3eBCMjr4S0Nv8vaQSp4yQJR+ILvGo1pGTtAjkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4owTVq2pFHzr88jEecRMzqh6XvDvsqQlqiMCaXgSAOI=;
- b=F+YPCAxFDkG5Z1sZQHs3qVBBZPlm+cDRc3o/dtS/udSHfkR83FYzSlc/uMtiw02k97jJZeXnu0uvhFhtUDwtruEJEHarLa1z4E7PEZ0iniZ5wPk6bEWwb4X0g7svu+BKtyNFSLtQLqo4xuS/ABROkP74KSQ/CYkeVXRJdHxJ/bshDZWQ35sOU/zde0lycIWTNtnk05RaTK/rLzJgRTl+jTkiIytgMUsH1oXQXN4SJBJ1SRoWan4LmziWgvhKP9B/tbVQRtoNssrVfHUKOBjjuDN2BYDet1SFvaKhgTLdVlOrq9iR3hKqdiv5AYzWbyJmgBN4xRj+ZO67wk+ZRqjIvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4owTVq2pFHzr88jEecRMzqh6XvDvsqQlqiMCaXgSAOI=;
- b=mHT1dh7IeBZHwCJRLJZ2WtHG/yZILY7wNSV6pFgZnUFwNybi1dxSzYsEN8DFFyjzg1QPhwa6syM0Sd1PYIlvfAtZxR+lOzcJAWXiEtZLvmHuRJGO+owYSEFg9DojRjkR3rWVy6+IsOK6JoG0G0E30vIDvxgcYAPtNVD095dp5CM=
-Received: from DM5PR18MB1387.namprd18.prod.outlook.com (2603:10b6:3:b3::23) by
- DM5PR18MB1193.namprd18.prod.outlook.com (2603:10b6:3:bf::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3000.26; Wed, 20 May 2020 21:20:53 +0000
-Received: from DM5PR18MB1387.namprd18.prod.outlook.com
- ([fe80::dd59:7969:71b8:5754]) by DM5PR18MB1387.namprd18.prod.outlook.com
- ([fe80::dd59:7969:71b8:5754%11]) with mapi id 15.20.3021.020; Wed, 20 May
- 2020 21:20:53 +0000
-From:   Yuval Basson <ybason@marvell.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Michal Kalderon <mkalderon@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next,v2 2/2] qed: Add XRC to RoCE
-Thread-Topic: [EXT] Re: [PATCH net-next,v2 2/2] qed: Add XRC to RoCE
-Thread-Index: AQHWLielGhnQs/Wa8kyF/4lkcPPdLaiv+/aAgAF+kjA=
-Date:   Wed, 20 May 2020 21:20:53 +0000
-Message-ID: <DM5PR18MB1387960C6A5D7E792A478DF9D0B60@DM5PR18MB1387.namprd18.prod.outlook.com>
-References: <20200519205126.26987-1-ybason@marvell.com>
-        <20200519205126.26987-3-ybason@marvell.com>
- <20200519.152335.968463052378721004.davem@davemloft.net>
-In-Reply-To: <20200519.152335.968463052378721004.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [5.102.238.63]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ef286da7-141b-4af3-75ae-08d7fd03ad96
-x-ms-traffictypediagnostic: DM5PR18MB1193:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB11936AA45C8ECE1892EECD2BD0B60@DM5PR18MB1193.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1284;
-x-forefront-prvs: 04097B7F7F
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HP7pQVSIjQ6vIX/WAhQLOKtVfTVhTrPKtoa+jX9TVvJ7iuc+bDl6ZmopHuF7tKJRa/EkOzG3EIzCOiT00QmTbLBJ3Yz0iH7BG0X0J6kQBQd57SNC0kAtXOEaPra+BJO1Fe8JbiwGavSS4O7QzrBm52RCpgx7AJ4OseEGxe2tK5O/Q+906NPj/Y7ZMZPChdwpLSbkRTAYOWX6SzbI3L38FWNG9Y8m/cxcMEXN5z/hPb/ff3tXCtx/SDNTTsKneYNEf3NBUFssIrVP+IrGoGGKrdp09pOhQSUahGkTJ84YO/EQ4E8DE7/0qeRGSYWRiCFdxK5/gijotNVd94wbDJypa4CXz30NOgZGFFR1E94RcrRq5+nSwxGUaZ+tOY0rF4dpxcHzgVKGU8rJzIK9lP35o/LMcbWjgq9lmoGqpLmdbtENv5QHU/HPvu9rxA7DG8+dGF97m1AIfA/SkCGT9upOYpq1/n/Ex6h+LB5i6T3jmkLDbvTd6ya7SINZPNKH3rHb
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR18MB1387.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(396003)(376002)(39860400002)(366004)(55016002)(52536014)(4326008)(2906002)(71200400001)(9686003)(86362001)(33656002)(26005)(76116006)(8676002)(54906003)(6916009)(7696005)(66556008)(66946007)(66476007)(64756008)(66446008)(316002)(6506007)(478600001)(5660300002)(8936002)(186003)(142933001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: NxsnbL2ipcniL3vG8SJvJMVRF9lee9Y/7LaPnvgKSBDWl1QzvjJybcUAtwIGb5ngVTplTIQpuTBOC388WYt4YevzpMrDJxeXMF6qd/wW0lRbwj7JG0zJFfP8jpqQcqlR0ygaca2cqp07bQ/CP2u8M8oWtkZSW+7YQhKnVtDhhKdkNbuMHYlbSzUfap5CStzNliMfhnSji9yOFBh9IosctPJwrjTbJwbphA0W742BeIoXUaPGYJN3WPpiJyHHlmFwZvipmRFMM+C3XEa4vm1Fg1LAuCo9u7fpZUHBfcLkcxyPXSRacimh52Cp7I8xAAVRW2Va6dt0bvX4HJ/A22uqEe6+z5cQW5Hm+zJ1UhcPzWZmNTSJC2sCc2eXihTPw2eGE7a6Fh0FzKGSY5g2Nj0TovA0IrC66G6JxGOWT3A1TToa646Kwi7UgRePDKz8CFFyE8tZWjRkwfVB9DQBm3OKLdI0pMN+gQm6sncwX7O2pxM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728108AbgETVXG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 17:23:06 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:52935 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726892AbgETVXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 17:23:06 -0400
+Received: from mail-qk1-f177.google.com ([209.85.222.177]) by
+ mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MDhth-1jjWFd3pd1-00AjXF; Wed, 20 May 2020 23:23:03 +0200
+Received: by mail-qk1-f177.google.com with SMTP id z80so5241757qka.0;
+        Wed, 20 May 2020 14:23:02 -0700 (PDT)
+X-Gm-Message-State: AOAM530+4XTsxvzjPhSLBin0cpDLo9y2f91Y0R2+LF80GcbwIikIORur
+        pBa53MPvHr1pB0CXehBARuUBDyut2h3N5t2OiKQ=
+X-Google-Smtp-Source: ABdhPJwZcCZSxDynCH3r3gKmPJPpPeE9FrIMPWva+zbjlW1lcOdkg0GE0sngrt5N6VQ/g7lU1Cjl02NdfnJS0lbfHTc=
+X-Received: by 2002:a37:46c9:: with SMTP id t192mr3853110qka.3.1590009781522;
+ Wed, 20 May 2020 14:23:01 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef286da7-141b-4af3-75ae-08d7fd03ad96
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2020 21:20:53.3743
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lhrojQWZoGfbY/kQu7rRSDr39NwhCUMgzHT2/A6rt7UM/RNNLPbvgJXWSLb5xGqZ4MNSuU54s0KOmGAftNnjpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB1193
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-20_16:2020-05-20,2020-05-20 signatures=0
+References: <20200520112523.30995-1-brgl@bgdev.pl> <20200520112523.30995-7-brgl@bgdev.pl>
+ <CAK8P3a3jhrQ3p1JsqMNMOOnfo9t=rAPWaOAwAdDuFMh7wUtZQw@mail.gmail.com> <CAMRc=MeuQk9rFDFGWK0ijsiM-r296cVz9Rth8hWhW5Aeeti_cA@mail.gmail.com>
+In-Reply-To: <CAMRc=MeuQk9rFDFGWK0ijsiM-r296cVz9Rth8hWhW5Aeeti_cA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 20 May 2020 23:22:45 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
+Message-ID: <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
+Subject: Re: [PATCH v4 06/11] net: ethernet: mtk-eth-mac: new driver
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        DTML <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:/gC/5Naxf714EfIF7VfC28t3aDY3Z5zwTf0bIDD9BdZYwi1aXcQ
+ wOAjoLgJmY8yqt0tKwvjPxlYQ+YHeUWSIugxeSDb9jafNiVALoWHpxKqOE0Fe00bZNgWbGx
+ iEyFxQ3un9OWUbA9NjfuAGpCULoebm33vwCBY8/VOyy+DRplmE4KqkhuQQwTIRAMIvrYGOy
+ w9+U66RvOrIdXm53Qth/A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5ZVhrGWEVig=:MlewIc1FlCowA24CzIifiW
+ my+BBmPcV4f7xG20qgT44Dniq/cekNL0vxCJFHqfgv295t3XjNGj1Z8+/C+QBDDIw2Fl+iEzd
+ GjUpQm0FZn4bGKRO1MLD2kb4ETS6EzCBoOY73Hl1LZ8Zz8dssR2HVWtlmgHHWe8nEouK1TMGG
+ BzCw6+EeQGg9ZbSNmNRnxy6JS7DR22doUghbO5SUD8gLQoeIiiiBHu6vTx1FiwZ901OBOHcTJ
+ Otlcf8hZ0axSrjU7i2dwXA6vdPkorfuxxjgDTySPwp9f/2CFQFDg/CBjoWian5nmBPKgDKnzm
+ LJeIfeACi2ptva/SS/mfAmeDe12mrScIm7HCzCYd9rtMhfvNhhWnhHRXIJVMsMWRh1IBOMg1s
+ 3REl8+v6LKhC1V7NoEvT2rfTTOQ/hmwQg7hDUjl1dJcWdZu20swCmK06z0LG+3XNwNu/54+y1
+ lcG+JiEvK3ySHgdp0Q1jXRVXiVmNYZG+dvsiHYOcR8Q/Xt7refjI0rC7mO82P1IaCSk62ykvL
+ wER9MK6H9YleFs2FHk0VvqGSir5+ifjDx+N7hJ13yJDUy6tRRI6DymSkJonDzJMWnd8b/Hde6
+ pjn1HRmWOxEwj0fbFtNn3hKToZoNEJm2itITl/X9PxDdlrjSYL/hWxAV0kpOFPiQV7KWLRidK
+ mOxI+/NnX7fqmQubUWr8ASozgGWcx67roHtxljG84+wZr1efzQ0XKgzzxEUKMURPZi1ZYZFEt
+ 5h3+ONVmZCrYln6pbM63bB+kz2syqE1ioEzLO/CjkVMfqqqS0JUf96/CUWrI5Eym50SeFdZdx
+ k2Lev8IcWKg8EEU9a7GOqTeFqxseVkdqdS2zl6WWStvjErVoFM=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Yuval Basson <ybason@marvell.com>
-> Date: Tue, 19 May 2020 23:51:26 +0300
->=20
-> > @@ -1748,24 +1839,26 @@ static int qed_rdma_modify_srq(void
-> *rdma_cxt,
-> >  	u16 opaque_fid, srq_id;
-> >  	struct qed_bmap *bmap;
-> >  	u32 returned_id;
-> > +	u16 offset;
-> >  	int rc;
+On Wed, May 20, 2020 at 7:35 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> śr., 20 maj 2020 o 16:37 Arnd Bergmann <arnd@arndb.de> napisał(a):
+
+> > I just noticed how the naming of NET_MEDIATEK_MAC and NET_MEDIATEK_SOC
+> > for two different drivers doing the same thing is really confusing.
 > >
-> > -	bmap =3D &p_hwfn->p_rdma_info->srq_map;
-> > +	bmap =3D qed_rdma_get_srq_bmap(p_hwfn, in_params->is_xrc);
-> >  	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
-> >  	rc =3D qed_rdma_bmap_alloc_id(p_hwfn, bmap, &returned_id);
-> >  	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
+> > Maybe someone can come up with a better name, such as one
+> > based on the soc it first showed up in.
 > >
-> >  	if (rc) {
-> > -		DP_NOTICE(p_hwfn, "failed to allocate srq id\n");
-> > +		DP_NOTICE(p_hwfn,
-> > +			  "failed to allocate xrc/srq id (is_xrc=3D%u)\n",
-> > +			  in_params->is_xrc);
-> >  		return rc;
-> >  	}
+>
+> This has been discussed under one of the previous submissions.
+> MediaTek wants to use this IP on future designs as well and it's
+> already used on multiple SoCs so they want the name to be generic. I
+> also argued that this is a driver strongly tied to a specific
+> platform(s) so if someone wants to compile it - they probably know
+> what they're doing.
+>
+> That being said: I verified with MediaTek and the name of the IP I can
+> use is "star" so they proposed "mtk-star-eth". I would personally
+> maybe go with "mtk-star-mac". How about those two?
+
+Both seem fine to me. If this was previously discussed, I don't want
+do further bike-shedding and I'd trust you to pick a sensible name
+based on the earlier discussions.
+
+> >  +               /* One of the counters reached 0x8000000 - update stats and
+> > > +                * reset all counters.
+> > > +                */
+> > > +               if (unlikely(status & MTK_MAC_REG_INT_STS_MIB_CNT_TH)) {
+> > > +                       mtk_mac_intr_disable_stats(priv);
+> > > +                       schedule_work(&priv->stats_work);
+> > > +               }
+> > > + befor
+> > > +               mtk_mac_intr_ack_all(priv);
 > >
-> > -	elem_type =3D QED_ELEM_SRQ;
-> > +	elem_type =3D (in_params->is_xrc) ? (QED_ELEM_XRC_SRQ) :
-> (QED_ELEM_SRQ);
-> >  	rc =3D qed_cxt_dynamic_ilt_alloc(p_hwfn, elem_type, returned_id);
-> >  	if (rc)
-> >  		goto err;
->=20
-> This "if (rc)" error path will leak 'returned_id' won't it?
-I don't think so.. this allocation is not part of this patch. It is handled=
- here -=20
-err:
-        spin_lock_bh(&p_hwfn->p_rdma_info->lock);
-        qed_bmap_release_id(p_hwfn, bmap, returned_id);
-        spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
+> > The ack here needs to be dropped, otherwise you can get further
+> > interrupts before the bottom half has had a chance to run.
+> >
+>
+> My thinking was this: if I mask the relevant interrupt (TX/RX
+> complete) and ack it right away, the status bit will be asserted on
+> the next packet received/sent but the process won't get interrupted
+> and when I unmask it, it will fire right away and I won't have to
+> recheck the status register. I noticed that if I ack it at the end of
+> napi poll callback, I end up missing certain TX complete interrupts
+> and end up seeing a lot of retransmissions even if I reread the status
+> register. I'm not yet sure where this race happens.
+
+Right, I see. If you just ack at the end of the poll function, you need
+to check the rings again to ensure you did not miss an interrupt
+between checking observing both rings to be empty and the irq-ack.
+
+I suspect it's still cheaper to check the two rings with an uncached
+read from memory than to to do the read-modify-write on the mmio,
+but you'd have to measure that to be sure.
+
+> > > +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
+> > > +{
+> > > +       struct mtk_mac_ring *ring = &priv->tx_ring;
+> > > +       struct net_device *ndev = priv->ndev;
+> > > +       int ret, pkts_compl, bytes_compl;
+> > > +       bool wake = false;
+> > > +
+> > > +       mtk_mac_lock(priv);
+> > > +
+> > > +       for (pkts_compl = 0, bytes_compl = 0;;
+> > > +            pkts_compl++, bytes_compl += ret, wake = true) {
+> > > +               if (!mtk_mac_ring_descs_available(ring))
+> > > +                       break;
+> > > +
+> > > +               ret = mtk_mac_tx_complete_one(priv);
+> > > +               if (ret < 0)
+> > > +                       break;
+> > > +       }
+> > > +
+> > > +       netdev_completed_queue(ndev, pkts_compl, bytes_compl);
+> > > +
+> > > +       if (wake && netif_queue_stopped(ndev))
+> > > +               netif_wake_queue(ndev);
+> > > +
+> > > +       mtk_mac_intr_enable_tx(priv);
+> >
+> > No need to ack the interrupt here if napi is still active. Just
+> > ack both rx and tx when calling napi_complete().
+> >
+> > Some drivers actually use the napi budget for both rx and tx:
+> > if you have more than 'budget' completed tx frames, return
+> > early from this function and skip the napi_complete even
+> > when less than 'budget' rx frames have arrived.
+> >
+>
+> IIRC Jakub said that the most seen approach is to free all TX descs
+> and receive up to budget packets, so this is what I did. I think it
+> makes the most sense.
+
+Ok, he's probably right then.
+
+My idea was that the dma_unmap operation for the tx cleanup is
+rather expensive on chips without cache-coherent DMA, so you
+might not want to do too much of it but rather do it in reasonably
+sized batches. It would also avoid the case where you renable the
+tx-complete interrupt after cleaning the already-sent frames but
+then immediately get an irq when the next frame that is already
+queued is done.
+
+This probably depends on the specific workload which one works
+better here.
+
+         Arnd
