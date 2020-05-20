@@ -2,146 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F17A1DB426
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7D71DB427
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 14:52:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbgETMvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 08:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbgETMvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:51:31 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC757C061A0E;
-        Wed, 20 May 2020 05:51:30 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id z15so2317843pjb.0;
-        Wed, 20 May 2020 05:51:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XVrZcEQ3Ohwq93lQaVh49GHURIxMEGS078tmEHwT2JQ=;
-        b=aOST2MULZ/U9WisiPYmah4vmhjjvFf/jMZY3I2re/kUa5PCYb2JOrvRfx6QapIT4PT
-         DdPWlxNkXXtABiJ8ZLQH8y+tCiMkVBQWvKF4e2r5teEkEILQrJS3mwV0fC/BwUE4SOYl
-         5rVAlIyi4b5/dEdVT5XZYzXE6e1RTsrPrBfaOzmhYJAzNkayzQaheIjaZhsNU9xer7RZ
-         eHtsX04xOAXnBxnfhnloASIpXviTlUD+5kQoMRjM0P8lrJdK81kDkxDJMwj2mpNAaJJ7
-         2pJTZ3q+BTp4lYWkc7Bl8sUZrWBba9QxiFNRZdlJijDTq67sB2lDV/CzXVP0OamL3PS4
-         Pshg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XVrZcEQ3Ohwq93lQaVh49GHURIxMEGS078tmEHwT2JQ=;
-        b=cP/9GVALplibfpPTuggHEiOCzkFtE+neE+68DxTy514ZEBwrBCC5795MJPt0x9qGID
-         pDlOqv2OibDAT33KPi2KjxeqofF1PLqYTrJT2XABs1sUFdRh2qNtFgTVjsabWrPsgKB9
-         xUz6WFHupDkd45LRvXZN4Cc44Q/6pCV5s5xoK7XnSwwsr0kj0M/TQzxFpfGQEvQcou1D
-         myC6EE+XBZzmd6MEj0T7maf/MhmrffsMDI3FDKAkIYA2fDXykfBYNOnNqBbjgBbI6Vtz
-         RXc9jWfpcXixKSOqTOtXE4LYRInXzWMTBzuLbaEFMR30EAzbNG/MFtJGMq4SCo2wLk3l
-         mDgw==
-X-Gm-Message-State: AOAM533dZe61vcyio66nBDvjgNqgMThKkaemjLOpi74FfLy/xPZmnJme
-        7AT4d4CobclGn5gmckqGKzMHcjKh
-X-Google-Smtp-Source: ABdhPJz/vfz6SPgr2I4WPUNz2HX9I6wa5WPDb+JOB4wSOa/i95lO65KxDD4uC82ktZiTA2FuyRsamg==
-X-Received: by 2002:a17:90b:1288:: with SMTP id fw8mr5179133pjb.160.1589979090211;
-        Wed, 20 May 2020 05:51:30 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id mn19sm2109266pjb.8.2020.05.20.05.51.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 May 2020 05:51:29 -0700 (PDT)
-Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of a
- seqcount
-To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20200519214547.352050-1-a.darwish@linutronix.de>
- <20200519214547.352050-2-a.darwish@linutronix.de>
- <33cec6a9-2f6e-3d3c-99ac-9b2a3304ec26@gmail.com>
- <20200520064246.GA353513@debian-buster-darwi.lab.linutronix.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1498089b-08bd-d776-1570-d8b34463c702@gmail.com>
-Date:   Wed, 20 May 2020 05:51:27 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726718AbgETMwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 08:52:34 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:22661 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgETMwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 08:52:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1589979154; x=1621515154;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Pmrtx5eXqbCxI6dGo1e/Adh6TjwHWVWJoZlKDTB14lY=;
+  b=JypEm3ttTACHI28s6GWVUQZc0Lt+Lf5PidZtxV1zV+dU4ew4zj1e6cCZ
+   gS8vBUrrhbWxhXD85anFUbK428E8xlswZqxRd50Cl+2bNT5tdBBTYgboe
+   Jklc7djSkRfkHoKlhRZJ7WodsHSATUOx08Aef71RAGZ9iKbaBtEn8nuXo
+   LOFf3dya7F4MhtnniNxasuQAB5GYp7kx75cua20Ry7coLTXJb5jlrq4U9
+   S4uKiUPDa66rZKCzJCzXofDBe9tD2hVEHYELEm8wPJSYPil5epiLoIT50
+   ba/vEtgU/6w8KkwpMtdw5815W3+/8w/5w8Gwn1BmJVXroambG6KzFn6We
+   g==;
+IronPort-SDR: 3q/NpLbeOzsh8aoH7SJjOMpaA5WaQxNVLFey39YBgI57Y4mXWDtzJO1uzyJlOamUXxJ0ZFmIZQ
+ vWZz7ewPjQQVyDquzdadzj1gfcKMavDFoZXm53TFuRq+h9s537CSgUBnvuWaTM8pFEfRRV5hVM
+ bBCAZi60WJfWER5Lv/sLLFAM8RGUQrGdiN7XOJSnByVNWYJn2uu9V71HQZBL6ldtyWIvWjXlxC
+ 3Kw4NvW+tRIO+zHMh9Bw/mkxhKJmAXlFI8S3/sEbe3vDZAtlYaUv1m3v4J/qs0QDqpCsLJ6oni
+ 2Bk=
+X-IronPort-AV: E=Sophos;i="5.73,414,1583218800"; 
+   d="scan'208";a="76490592"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 May 2020 05:52:33 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 20 May 2020 05:52:33 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 20 May 2020 05:52:33 -0700
+Date:   Wed, 20 May 2020 14:52:32 +0200
+From:   Joergen Andreasen <joergen.andreasen@microchip.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     Andre Guedes <andre.guedes@intel.com>,
+        <intel-wired-lan@lists.osuosl.org>, <jeffrey.t.kirsher@intel.com>,
+        <netdev@vger.kernel.org>, <vladimir.oltean@nxp.com>,
+        <po.liu@nxp.com>, <m-karicheri2@ti.com>, <Jose.Abreu@synopsys.com>
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+Message-ID: <20200520125232.s3zrmlnesqjilcf6@soft-dev16>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+ <158992799425.36166.17850279656312622646@twxiong-mobl.amr.corp.intel.com>
+ <87y2pnmr83.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200520064246.GA353513@debian-buster-darwi.lab.linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <87y2pnmr83.fsf@intel.com>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/19/20 11:42 PM, Ahmed S. Darwish wrote:
-> Hello Eric,
+The 05/19/2020 16:37, Vinicius Costa Gomes wrote:
 > 
-> On Tue, May 19, 2020 at 07:01:38PM -0700, Eric Dumazet wrote:
->>
->> On 5/19/20 2:45 PM, Ahmed S. Darwish wrote:
->>> Sequence counters write paths are critical sections that must never be
->>> preempted, and blocking, even for CONFIG_PREEMPTION=n, is not allowed.
->>>
->>> Commit 5dbe7c178d3f ("net: fix kernel deadlock with interface rename and
->>> netdev name retrieval.") handled a deadlock, observed with
->>> CONFIG_PREEMPTION=n, where the devnet_rename seqcount read side was
->>> infinitely spinning: it got scheduled after the seqcount write side
->>> blocked inside its own critical section.
->>>
->>> To fix that deadlock, among other issues, the commit added a
->>> cond_resched() inside the read side section. While this will get the
->>> non-preemptible kernel eventually unstuck, the seqcount reader is fully
->>> exhausting its slice just spinning -- until TIF_NEED_RESCHED is set.
->>>
->>> The fix is also still broken: if the seqcount reader belongs to a
->>> real-time scheduling policy, it can spin forever and the kernel will
->>> livelock.
->>>
->>> Disabling preemption over the seqcount write side critical section will
->>> not work: inside it are a number of GFP_KERNEL allocations and mutex
->>> locking through the drivers/base/ :: device_rename() call chain.
->>>
->>> From all the above, replace the seqcount with a rwsem.
->>>
->>> Fixes: 5dbe7c178d3f (net: fix kernel deadlock with interface rename and netdev name retrieval.)
->>> Fixes: 30e6c9fa93cf (net: devnet_rename_seq should be a seqcount)
->>> Fixes: c91f6df2db49 (sockopt: Change getsockopt() of SO_BINDTODEVICE to return an interface name)
->>> Cc: <stable@vger.kernel.org>
->>> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
->>> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->>> ---
->>>  net/core/dev.c | 30 ++++++++++++------------------
->>>  1 file changed, 12 insertions(+), 18 deletions(-)
->>>
->>
->> Seems fine to me, assuming rwsem prevent starvation of the writer.
->>
+> Andre Guedes <andre.guedes@intel.com> writes:
 > 
-> Thanks for the review.
+> > Hi,
+> >
+> > Quoting Vinicius Costa Gomes (2020-05-15 18:29:44)
+> >> One example, for retrieving and setting the configuration:
+> >>
+> >> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+> >> Frame preemption settings for enp3s0:
+> >>         support: supported
+> >>         active: active
+> >
+> > IIUC the code in patch 2, 'active' is the actual configuration knob that
+> > enables or disables the FP functionality on the NIC.
+> >
+> > That sounded a bit confusing to me since the spec uses the term 'active' to
+> > indicate FP is currently enabled at both ends, and it is a read-only
+> > information (see 12.30.1.4 from IEEE 802.1Q-2018). Maybe if we called this
+> > 'enabled' it would be more clear.
 > 
-> AFAIK, due to 5cfd92e12e13 ("locking/rwsem: Adaptive disabling of reader
-> optimistic spinning"), using a rwsem shouldn't lead to writer starvation
-> in the contended case.
+> Good point. Will rename this to "enabled".
+> 
+> >
+> >>         supported queues: 0xf
+> >>         supported queues: 0xe
+> >>         minimum fragment size: 68
+> >
+> > I'm assuming this is the configuration knob for the minimal non-final fragment
+> > defined in 802.3br.
+> >
+> > My understanding from the specs is that this value must be a multiple from 64
+> > and cannot assume arbitrary values like shown here. See 99.4.7.3 from IEEE
+> > 802.3 and Note 1 in S.2 from IEEE 802.1Q. In the previous discussion about FP,
+> > we had this as a multiplier factor, not absolute value.
+> 
+> I thought that exposing this as "(1 + N)*64" (with 0 <= N <= 3) that it
+> was more related to what's exposed via LLDP than the actual capabilities
+> of the hardware. And for the hardware I have actually the values
+> supported are: (1 + N)*64 + 4 (for N = 0, 1, 2, 3).
+> 
+> So I thought I was better to let the driver decide what values are
+> acceptable.
+> 
+> This is a good question for people working with other hardware.
+> 
 
-Hmm this was in linux-5.3, so very recent stuff.
+I think it's most intuitive to use the values for AddFragSize as described in
+802.3br (N = 0, 1, 2, 3).
+You will anyway have to use one of these values when you want to expose the
+requirements of your receiver through LLDP.
 
-Has this patch been backported to stable releases ?
+> 
+> --
+> Vinicius
 
-With all the Fixes: tags you added, stable teams will backport this networking patch to
-all stable versions.
-
-Do we have a way to tune a dedicare rwsem to 'give preference to the (unique in this case) writer" over
-a myriad of potential readers ?
-
-Thanks.
-
+-- 
+Joergen Andreasen, Microchip
