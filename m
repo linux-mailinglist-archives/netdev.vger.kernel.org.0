@@ -2,154 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2271DB793
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 16:58:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EEF1DB7B0
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 17:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgETO6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 10:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        id S1726823AbgETPHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 11:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbgETO6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 10:58:37 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E7BC061A0F
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 07:58:37 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id w4so3208395oia.1
-        for <netdev@vger.kernel.org>; Wed, 20 May 2020 07:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=K0LyoL+2AU2n4TQdOPFf+OzPcMFGocE8oRaCR1biBQo=;
-        b=XL4rQhvdzmCjkXpugkBL3h8pImBlm6sUMBIZALBZRSJ0b/KsawmziCdSXHGQhHIMpn
-         Py0ENFbwDqcRf9whNAAOCCiTQRFzK2l3UXVm96GKUAsYcjfRIFfaRWWBblAKyFHTOrpA
-         24INFHOP/J74aQaHrfWnG1h7Y2p6tJpEdiqsdPGXtTYV2XJQsmHlUfdGUDw1TGYN7NSa
-         JWhEyFjbsgYoe+DEj6lBsZBFl39vWYh98dTP52nfVcyqNYh6KXgxspUtCjf0ds/LzbLr
-         gBctqYxuHvcMtCvaXr7isYyqaZcra7QXxL+1HwhemmkKL9X8nw5hcN0wOYBqS4/ubX8R
-         XkFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=K0LyoL+2AU2n4TQdOPFf+OzPcMFGocE8oRaCR1biBQo=;
-        b=j/SzJMfIc44AAEKX4UhDDAIDZ1JhCWdplq7TTYWl36jEbr3x/gywtxRHH+WUZ5eQsN
-         D11j4vNaS8zGKCgBPT/Lp1PxK2agW674ujyveFOivCPaOVsUrDUCId+NK/TcqhIe9jKU
-         qemFnfscgiVk2+IZm11/bvmTq+VOPgiwnkOjv4X5e2TFDrMz9YkcbG0Pw5sxc4hOCfuP
-         y5bJ25TBOIcOQhVvOeH1jEZJ16Mr+FmbVHjjvPj+dHzHqPISBbFhuVlCq2Qpxgy/bsHV
-         BwhIRK22sa8qdUi2sdM6HwQcQCNh0GmA38R6N3oYqQbGiF2ATTF5ML3gZCqz5Fmd4sBX
-         1wZw==
-X-Gm-Message-State: AOAM530GQtiW9JIdXvQzZbSScSCFt3KhP5dqc2Nu8NWqPQqZJ1IxV05q
-        IHKEiuHYzOo+1n7HteN4/Ho=
-X-Google-Smtp-Source: ABdhPJyjlQ684Ky1ixytrRBeIs83XJCWz2Ifwlac1LuiFWG9oIrI2EoXgzU/z8nzynpnMIvEs1QaVg==
-X-Received: by 2002:aca:cf12:: with SMTP id f18mr3270288oig.117.1589986716635;
-        Wed, 20 May 2020 07:58:36 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:d5aa:9958:3110:547b? ([2601:282:803:7700:d5aa:9958:3110:547b])
-        by smtp.googlemail.com with ESMTPSA id j25sm831359oot.7.2020.05.20.07.58.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 May 2020 07:58:36 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 5/5] selftests: net: add fdb nexthop tests
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
-References: <1589949214-14711-1-git-send-email-roopa@cumulusnetworks.com>
- <1589949214-14711-6-git-send-email-roopa@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <16c3de2b-2792-603d-4b3b-aa016a5f7538@gmail.com>
-Date:   Wed, 20 May 2020 08:58:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        with ESMTP id S1726486AbgETPHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 11:07:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFDAC061A0E
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 08:07:22 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jbQJQ-0004UT-Dl; Wed, 20 May 2020 17:07:16 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jbQJL-0002d2-Sm; Wed, 20 May 2020 17:07:11 +0200
+Date:   Wed, 20 May 2020 17:07:11 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        kernel@pengutronix.de, David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christian Herber <christian.herber@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY Signal
+ Quality Index (SQI)
+Message-ID: <20200520150711.rj4b22g3zhzej2aw@pengutronix.de>
+References: <20200520062915.29493-1-o.rempel@pengutronix.de>
+ <20200520062915.29493-2-o.rempel@pengutronix.de>
+ <20200520144544.GB8771@lion.mk-sys.cz>
 MIME-Version: 1.0
-In-Reply-To: <1589949214-14711-6-git-send-email-roopa@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="vqf6y3tx55aruwga"
+Content-Disposition: inline
+In-Reply-To: <20200520144544.GB8771@lion.mk-sys.cz>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 17:01:42 up 187 days,  6:20, 194 users,  load average: 0.24, 0.24,
+ 0.26
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/19/20 10:33 PM, Roopa Prabhu wrote:
-> +ipv6_fdb_grp_fcnal()
-> +{
-> +	local rc
-> +
-> +	echo
-> +	echo "IPv6 fdb groups functional"
-> +	echo "--------------------------"
-> +
-> +	check_nexthop_fdb_support
-> +	if [ $? -eq $ksft_skip ]; then
-> +		return $ksft_skip
-> +	fi
-> +
-> +	# create group with multiple nexthops
-> +	run_cmd "$IP nexthop add id 61 via 2001:db8:91::2 fdb"
-> +	run_cmd "$IP nexthop add id 62 via 2001:db8:91::3 fdb"
-> +	run_cmd "$IP nexthop add id 102 group 61/62 fdb"
-> +	check_nexthop "id 102" "id 102 group 61/62 fdb"
-> +	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-> +
-> +	## get nexthop group
-> +	run_cmd "$IP nexthop get id 102"
-> +	check_nexthop "id 102" "id 102 group 61/62 fdb"
-> +	log_test $? 0 "Get Fdb nexthop group by id"
-> +
-> +	# fdb nexthop group can only contain fdb nexthops
-> +	run_cmd "$IP nexthop add id 63 via 2001:db8:91::4"
-> +	run_cmd "$IP nexthop add id 64 via 2001:db8:91::5"
-> +	run_cmd "$IP nexthop add id 103 group 63/64 fdb"
-> +	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-> +
-> +	# Non fdb nexthop group can not contain fdb nexthops
-> +	run_cmd "$IP nexthop add id 65 via 2001:db8:91::5 fdb"
-> +	run_cmd "$IP nexthop add id 66 via 2001:db8:91::6 fdb"
-> +	run_cmd "$IP nexthop add id 104 group 65/66"
-> +	log_test $? 2 "Non-Fdb Nexthop group with non nexthops"
 
-Typo "non nexthops" should be "fdb nexthops"
+--vqf6y3tx55aruwga
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-...
+On Wed, May 20, 2020 at 04:45:44PM +0200, Michal Kubecek wrote:
+> On Wed, May 20, 2020 at 08:29:14AM +0200, Oleksij Rempel wrote:
+> > Signal Quality Index is a mandatory value required by "OPEN Alliance
+> > SIG" for the 100Base-T1 PHYs [1]. This indicator can be used for cable
+> > integrity diagnostic and investigating other noise sources and
+> > implement by at least two vendors: NXP[2] and TI[3].
+> >=20
+> > [1] http://www.opensig.org/download/document/218/Advanced_PHY_features_=
+for_automotive_Ethernet_V1.0.pdf
+> > [2] https://www.nxp.com/docs/en/data-sheet/TJA1100.pdf
+> > [3] https://www.ti.com/product/DP83TC811R-Q1
+> >=20
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+>=20
+> This looks good to me, there is just one thing I'm not sure about:
+>=20
+> > diff --git a/include/linux/phy.h b/include/linux/phy.h
+> > index 59344db43fcb1..950ba479754bd 100644
+> > --- a/include/linux/phy.h
+> > +++ b/include/linux/phy.h
+> > @@ -706,6 +706,8 @@ struct phy_driver {
+> >  			    struct ethtool_tunable *tuna,
+> >  			    const void *data);
+> >  	int (*set_loopback)(struct phy_device *dev, bool enable);
+> > +	int (*get_sqi)(struct phy_device *dev);
+> > +	int (*get_sqi_max)(struct phy_device *dev);
+> >  };
+> >  #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+> >  				      struct phy_driver, mdiodrv)
+>=20
+> I'm not sure if it's a good idea to define two separate callbacks. It
+> means adding two pointers instead of one (for every instance of the
+> structure, not only those implementing them), doing two calls, running
+> the same checks twice, locking twice, checking the result twice.
+>=20
+> Also, passing a structure pointer would mean less code changed if we
+> decide to add more related state values later.
+>=20
+> What do you think?
+>=20
+> If you don't agree, I have no objections so
+>=20
+> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
-> +
-> +ipv4_fdb_grp_fcnal()
-> +{
-> +	local rc
-> +
-> +	echo
-> +	echo "IPv4 fdb groups functional"
-> +	echo "--------------------------"
-> +
-> +	check_nexthop_fdb_support
-> +	if [ $? -eq $ksft_skip ]; then
-> +		return $ksft_skip
-> +	fi
-> +
-> +	# create group with multiple nexthops
-> +	run_cmd "$IP nexthop add id 12 via 172.16.1.2 fdb"
-> +	run_cmd "$IP nexthop add id 13 via 172.16.1.3 fdb"
-> +	run_cmd "$IP nexthop add id 102 group 12/13 fdb"
-> +	check_nexthop "id 102" "id 102 group 12/13 fdb"
-> +	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-> +
-> +	# get nexthop group
-> +	run_cmd "$IP nexthop get id 102"
-> +	check_nexthop "id 102" "id 102 group 12/13 fdb"
-> +	log_test $? 0 "Get Fdb nexthop group by id"
-> +
-> +	# fdb nexthop group can only contain fdb nexthops
-> +	run_cmd "$IP nexthop add id 14 via 172.16.1.2"
-> +	run_cmd "$IP nexthop add id 15 via 172.16.1.3"
-> +	run_cmd "$IP nexthop add id 103 group 14/15 fdb"
-> +	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-> +
-> +	# Non fdb nexthop group can not contain fdb nexthops
-> +	run_cmd "$IP nexthop add id 16 via 172.16.1.2 fdb"
-> +	run_cmd "$IP nexthop add id 17 via 172.16.1.3 fdb"
-> +	run_cmd "$IP nexthop add id 104 group 14/15"
-> +	log_test $? 2 "Non-Fdb Nexthop group with non nexthops"
+I have no strong opinion on it. Should I rework it?
 
-same here
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
+--vqf6y3tx55aruwga
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl7FR5gACgkQ4omh9DUa
+UbOBnA//S7OEdydITBJi9jg46b/y0goQ+Shliwext7lG0yBj8kcRh7CY10RpRozV
+avE/EvMXN8D0q2rOwyE8Jlw4zYZPuzuci2lXF1GhfRD28DZZDh9CAqCItK5IaImV
+o5h14ztFDNFbWbEplYzfYUY+lUJVQVbkbp0P+C1sLiGM0Fvr4QlH9X8hK+paJzh5
+xnhcDMIDumLX7dvkWnMRGNr5GEJmjCn9tK3YoBU1vt2eCb0GIV5O3GfG5ej/hi8n
+ix/wR1Ax1+exMePyCm2iiEkBTDV+FlpphMkbj94KqlzPkZQg78+O/vd1jHZJ3Iao
+M8SMs6nwcpkB+oGygquO/bhnzTUUv0vYwsuopiVCc6zXxO1jUXWvjmvXW1O9tnF8
+15NPv6nGI5H7hYPLM9/nbMwb4VydtFU07ltndvXhU5WrZrDcgNjx+OcexUO726wb
+iLuh5PMzYYY/uyAzcI4ov7IkUTUufwKGYj3B1isKu6XYOvRAA1x91x1xUerhQM/V
+oelKB7Wct8dzS3up64CXsmhkWH0AA7ZKpoLRgbcAMeRwdR5UTqHHTqGPc6hCupt5
+mHSvrSSKrHcdEPmrr5mV6cbAvvF1opP3eMi0VUO0bPw7Ko5pp08Jky+yY3i4moVZ
+cYcnlB3Zbi4pW1tMqleezfXz9ja46IgT6W8p+b6Dkm5oqbujj20=
+=eIn7
+-----END PGP SIGNATURE-----
+
+--vqf6y3tx55aruwga--
