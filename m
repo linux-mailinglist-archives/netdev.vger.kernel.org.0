@@ -2,257 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D57311DA949
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 06:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD60A1DA953
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 06:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgETEdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 00:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S1726684AbgETEgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 00:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726685AbgETEdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 00:33:47 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A94DC061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:47 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id b190so960115pfg.6
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:47 -0700 (PDT)
+        with ESMTP id S1726475AbgETEgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 00:36:43 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28DDC061A0F
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:36:42 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id z26so949623pfk.12
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=CL53QmAMffJz24+NJGL8ymmwvvxOU2Skqv3Ocebapyw=;
-        b=FqcOnZw8Jd8iCwifeN21e1eEEBvwbor2yWhJb6bwLhM/hvrntrTqVEl28dBf465EE5
-         ZaGFGJ6BJbzQ9sMIuQtHwXbxn0zhNs++5Sdsflwa6CaJGoI2tdkvoTSWiYjiEZiSZ5oH
-         wkOggsm/mg4aWWXNzSw511rxJ4WVhknhB5zqI=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=z18eUcX9wumqAi1dZD97mqpztrpNBRW0eHw97u6ixxM=;
+        b=hnmvyk/M83EsgHOqYGveBP5/xO9sKSMWadm584PNwZy+/Oph7HoRx8Ln2sEpjLU5qw
+         xOWTiT2CEAUODRkg1aJNaUdrmEp3/fYLwuouPPQWxotBxYF6+pHp7Cvl3nkJxxLjT9JZ
+         abO018U4u4MauIzN8h07kT81+XaoZl/+wOQAtMHPMqQ38OmBmBVRZCnDzPPl4vZxll9+
+         urzIGK9Rx0rocxi/lsOK5HoPZbjGFO2mAyAhr8EvTdewc9sWCs6MgBNsfv2ZQT6/c4qk
+         EEdgKI4X3/EtLJO7fnn/a/+meJ7+T5jaU8pNhnU02fr94zN+/I4ID5W6KR0y1fSmcawM
+         sxiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=CL53QmAMffJz24+NJGL8ymmwvvxOU2Skqv3Ocebapyw=;
-        b=TKbpu25vFYXeki/l6AiiPVUAfvW8jWGmTCTf3hPymqyB94FrgoxobFvvnOmACgZ476
-         QreUaj4XClbgBXKp5Ck4wHf8p9Wt8LZHIGkwMJUjWunN/4xWMTSdEA6BZeOZZ0aEkLIJ
-         5PuLLtPecAxNs6+wX7FoLUrNJRKODOiEqqCe6hB8V82lCT1fo7PK0L2gtT4DRnOw97Rc
-         +496bSBUEP/J+1mBfqgiuh0GJrPJrWoFZ9B8uRGWZhc5vXl/FYpZnWfg9VbeQkn1bScE
-         SFaukObeTQpcWzO5+GO0iGodY5WztjXgOFdTHVBtHNXskOqxfVRL3M9S92l9UIhOTp0f
-         pYBg==
-X-Gm-Message-State: AOAM531YwQBErJ8LyUPPMtkcwHRPtKYBdmOCG+X1bf+PmTQN5GP7C6lK
-        XIywdU2GFH0CPK9tbkEG9GZfuw==
-X-Google-Smtp-Source: ABdhPJyF8tQX7CBQanqU+/T5DkgxnIz+KAbeGfAChBhWGA+mV8nQDbn/o9BgLcckW0HS9wDm48t02g==
-X-Received: by 2002:aa7:8ad6:: with SMTP id b22mr2331230pfd.251.1589949226615;
-        Tue, 19 May 2020 21:33:46 -0700 (PDT)
-Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id g17sm753250pgg.43.2020.05.19.21.33.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 May 2020 21:33:46 -0700 (PDT)
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-X-Google-Original-From: Roopa Prabhu
-To:     dsahern@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
-Subject: [PATCH net-next v2 5/5] selftests: net: add fdb nexthop tests
-Date:   Tue, 19 May 2020 21:33:34 -0700
-Message-Id: <1589949214-14711-6-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: git-send-email 2.1.4
-In-Reply-To: <1589949214-14711-1-git-send-email-roopa@cumulusnetworks.com>
-References: <1589949214-14711-1-git-send-email-roopa@cumulusnetworks.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=z18eUcX9wumqAi1dZD97mqpztrpNBRW0eHw97u6ixxM=;
+        b=Pf66VmZrm/RK0PxHeTVBuM5Mz/1VWQUw3ChPu0pgsqSV+1WlpqifLa8CuMhq1ZcF3b
+         aHZvp5DgZo6ZQVVCBX+1ZSB2nR2FrLScWPjWDRKStgHZka2CNyI4zFLHsBGV+wix/K2h
+         gisB45U0whA3Gu4U+21cBG7Yn+X0ZBRn4GenwUQMExCZP1RxZBgpCsAJYyQ3weC/n/XX
+         VSkynFjh1WE0eCbMsSulQdS5TC6+hm5vchjiNwfzCfED/cnmf0L2pi7gLZbWEeXxUc6u
+         w/URShI0IrGXmgE4pj6kl8zZxKQaPm7yaugBgANb2JCyqhSi+F0A5D5MxFGvjkZ3FUaW
+         Q/Vw==
+X-Gm-Message-State: AOAM533aBlBEqWSh9B6uwczvnZ3TkidAMKaJG895R0NP+W8H/uvRRB80
+        BgIMd4K2Czy29/jOyow44hC5yw==
+X-Google-Smtp-Source: ABdhPJwtRqanuNy5NN42n7ANp36PIBW5Zrc+UW5lghh91ZKUrjlYos3E7Sj4Rg2hzERL1tJEpETFaw==
+X-Received: by 2002:a62:7996:: with SMTP id u144mr2368896pfc.86.1589949402274;
+        Tue, 19 May 2020 21:36:42 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y10sm876007pfb.53.2020.05.19.21.36.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2020 21:36:41 -0700 (PDT)
+Date:   Tue, 19 May 2020 21:36:37 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, tglx@linutronix.de,
+        a.darwish@linutronix.de, peterz@infradead.org, mingo@redhat.com,
+        will@kernel.org, paulmck@kernel.org, bigeasy@linutronix.de,
+        rostedt@goodmis.org, linux-kernel@vger.kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of
+ a seqcount
+Message-ID: <20200519213637.4d874aad@hermes.lan>
+In-Reply-To: <886041df-d889-3d88-59fe-e190d15f9c98@gmail.com>
+References: <87v9kr5zt7.fsf@nanos.tec.linutronix.de>
+        <20200519161141.5fbab730@hermes.lan>
+        <87lfln5w61.fsf@nanos.tec.linutronix.de>
+        <20200519.195722.1091264300612213554.davem@davemloft.net>
+        <886041df-d889-3d88-59fe-e190d15f9c98@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
+On Tue, 19 May 2020 20:18:19 -0700
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-This commit adds ipv4 and ipv6 fdb api tests to fib_nexthops.sh.
+> On 5/19/20 7:57 PM, David Miller wrote:
+> > From: Thomas Gleixner <tglx@linutronix.de>
+> > Date: Wed, 20 May 2020 01:42:30 +0200
+> >   
+> >> Stephen Hemminger <stephen@networkplumber.org> writes:  
+> >>> On Wed, 20 May 2020 00:23:48 +0200
+> >>> Thomas Gleixner <tglx@linutronix.de> wrote:  
+> >>>> No. We did not. -ENOTESTCASE  
+> >>>
+> >>> Please try, it isn't that hard..
+> >>>
+> >>> # time for ((i=0;i<1000;i++)); do ip li add dev dummy$i type dummy; done
+> >>>
+> >>> real	0m17.002s
+> >>> user	0m1.064s
+> >>> sys	0m0.375s  
+> >>
+> >> And that solves the incorrectness of the current code in which way?  
+> > 
+> > You mentioned that there wasn't a test case, he gave you one to try.
+> >   
+> 
+> I do not think this would ever use device rename, nor netdev_get_name()
+> 
+> None of this stuff is fast path really.
+> 
+> # time for ((i=1;i<1000;i++)); do ip li add dev dummy$i type dummy; done
+> 
+> real	0m1.127s
+> user	0m0.270s
+> sys	0m1.039s
 
-Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 160 +++++++++++++++++++++++++++-
- 1 file changed, 158 insertions(+), 2 deletions(-)
+Your right it is a weak test, and most of the overhead is in the syscall
+and all netlink events that happen.
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 50d822f..62a040a 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -19,8 +19,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode ipv4_fdb_grp_fcnal"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode ipv6_fdb_grp_fcnal"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -146,6 +146,7 @@ setup()
- 	create_ns remote
- 
- 	IP="ip -netns me"
-+	BRIDGE="bridge -netns me"
- 	set -e
- 	$IP li add veth1 type veth peer name veth2
- 	$IP li set veth1 up
-@@ -280,6 +281,161 @@ stop_ip_monitor()
- 	return $rc
- }
- 
-+check_nexthop_fdb_support()
-+{
-+	$IP nexthop help 2>&1 | grep -q fdb
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: iproute2 too old, missing fdb nexthop support"
-+		return $ksft_skip
-+	fi
-+}
-+
-+ipv6_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 61 via 2001:db8:91::2 fdb"
-+	run_cmd "$IP nexthop add id 62 via 2001:db8:91::3 fdb"
-+	run_cmd "$IP nexthop add id 102 group 61/62 fdb"
-+	check_nexthop "id 102" "id 102 group 61/62 fdb"
-+	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-+
-+	## get nexthop group
-+	run_cmd "$IP nexthop get id 102"
-+	check_nexthop "id 102" "id 102 group 61/62 fdb"
-+	log_test $? 0 "Get Fdb nexthop group by id"
-+
-+	# fdb nexthop group can only contain fdb nexthops
-+	run_cmd "$IP nexthop add id 63 via 2001:db8:91::4"
-+	run_cmd "$IP nexthop add id 64 via 2001:db8:91::5"
-+	run_cmd "$IP nexthop add id 103 group 63/64 fdb"
-+	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-+
-+	# Non fdb nexthop group can not contain fdb nexthops
-+	run_cmd "$IP nexthop add id 65 via 2001:db8:91::5 fdb"
-+	run_cmd "$IP nexthop add id 66 via 2001:db8:91::6 fdb"
-+	run_cmd "$IP nexthop add id 104 group 65/66"
-+	log_test $? 2 "Non-Fdb Nexthop group with non nexthops"
-+
-+	# fdb nexthop cannot have blackhole
-+	run_cmd "$IP nexthop add id 67 blackhole fdb"
-+	log_test $? 2 "Fdb Nexthop with blackhole"
-+
-+	# fdb nexthop with oif
-+	run_cmd "$IP nexthop add id 68 via 2001:db8:91::7 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with oif"
-+
-+	# fdb nexthop with onlink
-+	run_cmd "$IP nexthop add id 68 via 2001:db8:91::7 onlink fdb"
-+	log_test $? 2 "Fdb Nexthop with onlink"
-+
-+	# fdb nexthop with encap
-+	run_cmd "$IP nexthop add id 69 encap mpls 101 via 2001:db8:91::8 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with encap"
-+
-+	run_cmd "$IP link add name vx10 type vxlan id 1010 local 2001:db8:91::9 remote 2001:db8:91::10 dstport 4789 nolearning noudpcsum tos inherit ttl 100"
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self"
-+	log_test $? 0 "Fdb mac add with nexthop group"
-+
-+	## fdb nexthops can only reference nexthop groups and not nexthops
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:14 dev vx10 nhid 61 self"
-+	log_test $? 255 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 66"
-+	log_test $? 2 "Route add with fdb nexthop"
-+
-+	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 103"
-+	log_test $? 2 "Route add with fdb nexthop group"
-+
-+	run_cmd "$IP nexthop del id 102"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
-+ipv4_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 fdb"
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 fdb"
-+	run_cmd "$IP nexthop add id 102 group 12/13 fdb"
-+	check_nexthop "id 102" "id 102 group 12/13 fdb"
-+	log_test $? 0 "Fdb Nexthop group with multiple nexthops"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 102"
-+	check_nexthop "id 102" "id 102 group 12/13 fdb"
-+	log_test $? 0 "Get Fdb nexthop group by id"
-+
-+	# fdb nexthop group can only contain fdb nexthops
-+	run_cmd "$IP nexthop add id 14 via 172.16.1.2"
-+	run_cmd "$IP nexthop add id 15 via 172.16.1.3"
-+	run_cmd "$IP nexthop add id 103 group 14/15 fdb"
-+	log_test $? 2 "Fdb Nexthop group with non-fdb nexthops"
-+
-+	# Non fdb nexthop group can not contain fdb nexthops
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 fdb"
-+	run_cmd "$IP nexthop add id 17 via 172.16.1.3 fdb"
-+	run_cmd "$IP nexthop add id 104 group 14/15"
-+	log_test $? 2 "Non-Fdb Nexthop group with non nexthops"
-+
-+	# fdb nexthop cannot have blackhole
-+	run_cmd "$IP nexthop add id 18 blackhole fdb"
-+	log_test $? 2 "Fdb Nexthop with blackhole"
-+
-+	# fdb nexthop with oif
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with oif"
-+
-+	# fdb nexthop with onlink
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.2 onlink fdb"
-+	log_test $? 2 "Fdb Nexthop with onlink"
-+
-+	# fdb nexthop with encap
-+	run_cmd "$IP nexthop add id 17 encap mpls 101 via 172.16.1.2 dev veth1 fdb"
-+	log_test $? 2 "Fdb Nexthop with encap"
-+
-+	run_cmd "$IP link add name vx10 type vxlan id 1010 local 10.0.0.1 remote 10.0.0.2 dstport 4789 nolearning noudpcsum tos inherit ttl 100"
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self"
-+	log_test $? 0 "Fdb mac add with nexthop group"
-+
-+	# fdb nexthops can only reference nexthop groups and not nexthops
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:14 dev vx10 nhid 12 self"
-+	log_test $? 255 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP ro add 172.16.0.0/22 nhid 15"
-+	log_test $? 2 "Route add with fdb nexthop"
-+
-+	run_cmd "$IP ro add 172.16.0.0/22 nhid 103"
-+	log_test $? 2 "Route add with fdb nexthop group"
-+
-+	run_cmd "$IP nexthop del id 102"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
- ################################################################################
- # basic operations (add, delete, replace) on nexthops and nexthop groups
- #
--- 
-2.1.4
+It does end up looking up the new name, so would exercise that.
+Better test is to use %d syntax or create 1000 dummy's then rename every one.
+
+This is more of a stress test
+# for ((i=0;i<1000;i++)); do echo link add dev dummy%d type dummy; done | time ip -batch -
+0.00user 0.29system 0:02.11elapsed 13%CPU (0avgtext+0avgdata 2544maxresident)k
+0inputs+0outputs (0major+148minor)pagefaults 0swaps
+
+# for ((i=999;i>=0;i--)); do echo link set dummy$i name dummy$((i+1)); done | time ip -batch -
+0.00user 0.26system 0:54.98elapsed 0%CPU (0avgtext+0avgdata 2508maxresident)k
+0inputs+0outputs (0major+145minor)pagefaults 0swaps
 
