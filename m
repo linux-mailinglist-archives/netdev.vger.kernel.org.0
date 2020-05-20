@@ -2,202 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A341DBB53
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9B61DBB40
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728331AbgETRXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 13:23:51 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53672 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727981AbgETRWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:22:05 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A480D200DF;
-        Wed, 20 May 2020 17:22:03 +0000 (UTC)
-Received: from us4-mdac16-69.at1.mdlocal (unknown [10.110.50.186])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A2E118009B;
-        Wed, 20 May 2020 17:22:03 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3404D40072;
-        Wed, 20 May 2020 17:22:03 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CB948280063;
-        Wed, 20 May 2020 17:22:02 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 20 May
- 2020 18:21:56 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v3 net-next] net: flow_offload: simplify hw stats check
- handling
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <jiri@resnulli.us>, <kuba@kernel.org>, <pablo@netfilter.org>
-Message-ID: <2cf9024d-1568-4594-5763-6c4e4e8fe47b@solarflare.com>
-Date:   Wed, 20 May 2020 18:21:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728293AbgETRXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728310AbgETRXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:23:01 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90789C061A0E
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 10:23:01 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id s3so4946765eji.6
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 10:23:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hdoJULNF4ZOJn60TD6kq6HAcbNwe48XKEyzovvw9zBM=;
+        b=NZdH7cfivutOeU4FSA3YHpO8Jv+24jr8nQan6NAgtMW8ZiRyjVMir7fkvhMc1XXsYR
+         6ufQDdFSFcx4iNqVhx0RMnJVyFiSGyd+rN4ww7nmzsL/uiOZwvQEZvQr0Z08TxeBq1I1
+         YJs9NV8bdYa8OEhl0mZ1WlwLQEHGF5y2+zQaE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hdoJULNF4ZOJn60TD6kq6HAcbNwe48XKEyzovvw9zBM=;
+        b=cqiKFhhmchKuZ2scsDJ22Zlav08LkKsuqznj6Ok6S5g7R7xl80n/c3ADNSVdNS4F2H
+         AoFkkue0uhya/TMXrGCrF7weWyIH/hmYix82jViR80nqo+Z1A3kHPnE2Z/oMlN2yLjeN
+         wWBpSXktH3NqvZJXubahSqHpqgwnxitwHkJyFSN82kZC7IYWrUTtc3jKdxtY7EY/wauJ
+         x2Dk/GHIo2GTcxNqbw8gWjV2c9GWV20RT6LdJ2rLybMSJ2HqzZa5HdmssMxdJK07hlEJ
+         7QD52D3J+eDOryuv8M+ZCMuKZUZjpQFh10qmwBZ65WBnqY3a1SJTkPniq+9YQ3lesV7K
+         qh5w==
+X-Gm-Message-State: AOAM530VrOB3m2DF3glIKZxzZGVO0xl+ykjClPibvWbJjJObxD4vzQVG
+        mXHiilsQGh9LXgVpnrAfGnIm+w==
+X-Google-Smtp-Source: ABdhPJyhxTaCSaNGLZWJp3O4t2hlLyWcJoLESAkuHR0YN6yqSYE1E6EuiY8a3ngY9CI7PP0tluCGfA==
+X-Received: by 2002:a17:906:580e:: with SMTP id m14mr76000ejq.447.1589995380253;
+        Wed, 20 May 2020 10:23:00 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id j26sm2425763ejc.118.2020.05.20.10.22.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 10:22:59 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: [PATCH bpf] flow_dissector: Drop BPF flow dissector prog ref on netns cleanup
+Date:   Wed, 20 May 2020 19:22:58 +0200
+Message-Id: <20200520172258.551075-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25430.003
-X-TM-AS-Result: No-5.781900-8.000000-10
-X-TMASE-MatchedRID: huLetEq/dPSwwAVMmrrBx6iUivh0j2PvBGvINcfHqhcxORZj0djJkQOr
-        nVAKyYzuC75+d7CNAsqekg5BszIusyxMd3BG3hng/ccgt/EtX/1dA4rYaKGKwlJqwYCQ1BisMH1
-        xx17eFtQMgdTDHmTMF7r7cyh+G7QMHVikQ9YmLLPwqDryy7bDIUj2TRK4Wlr10yA6AM98FEFLxd
-        BSajtA2Hxs7qFZ9FbOAUZWrMnznJp7dpr6RvFomfUwiX15l0tvTySC+TZdy0WRDQkhZa5u72kny
-        jyxlh7mqneduEAVa+rqHEp2n5BcUGKztShDQzFutKR5FXfbyszqobkz1A0A7SgCoCrh9Y4lk66/
-        gtVjZsVnHQJ2jUDp75GTpe1iiCJq71zr0FZRMbALbigRnpKlKSPzRlrdFGDwknQQQGIVv41ASa6
-        U3AEcWXpTFh9eJy4/zF9z8yz1+epqbamnjuWv4A==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.781900-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25430.003
-X-MDID: 1589995323-i9Z4x4UWyZan
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make FLOW_ACTION_HW_STATS_DONT_CARE be all bits, rather than none, so that
- drivers and __flow_action_hw_stats_check can use simple bitwise checks.
-Also ensure that netfilter explicitly sets its actions to DONT_CARE, rather
- than relying on implicit semantics of zero.
+When attaching a flow dissector program to a network namespace with
+bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
 
-Only the kernel's internal API semantics change; the TC uAPI is unaffected.
+If netns gets destroyed while a flow dissector is still attached, and there
+are no other references to the prog, we leak the reference and the program
+remains loaded.
 
-v3: set DONT_CARE in nft and ct offload.  Tested the latter with an
- experimental driver; conntrack entry actions had hw_stats=7, as expected.
+Leak can be reproduced by running flow dissector tests from selftests/bpf:
 
-v2: rebased on net-next, removed RFC tags.
+  # bpftool prog list
+  # ./test_flow_dissector.sh
+  ...
+  selftests: test_flow_dissector [PASS]
+  # bpftool prog list
+  4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
+          loaded_at 2020-05-20T18:50:53+0200  uid 0
+          xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
+          btf_id 4
+  #
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
+Fix it by detaching the flow dissector program when netns is going away.
+
+Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
-I don't have hardware that does TC_SETUP_FT offload.  Could someone from
- mlx test that nft offload comes through with hw_stats=DONT_CARE?
 
- .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  8 ++++----
- include/net/flow_offload.h                         | 11 +++++++----
- net/netfilter/nf_flow_table_offload.c              | 14 +++++++++++---
- net/sched/act_ct.c                                 |  5 +++++
- 4 files changed, 27 insertions(+), 11 deletions(-)
+Discovered while working on bpf_link support for netns-attached progs.
+Looks like bpf tree material so pushing it out separately.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index b286fe158820..51e1b3930c56 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -30,14 +30,14 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 		return -EOPNOTSUPP;
- 
- 	act = flow_action_first_entry_get(flow_action);
--	if (act->hw_stats == FLOW_ACTION_HW_STATS_ANY ||
--	    act->hw_stats == FLOW_ACTION_HW_STATS_IMMEDIATE) {
-+	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
-+		/* Nothing to do */
-+	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_IMMEDIATE) {
- 		/* Count action is inserted first */
- 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
- 		if (err)
- 			return err;
--	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED &&
--		   act->hw_stats != FLOW_ACTION_HW_STATS_DONT_CARE) {
-+	} else {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 4001ffb04f0d..95d633785ef9 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -168,10 +168,11 @@ enum flow_action_hw_stats_bit {
- 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
- 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
- 	FLOW_ACTION_HW_STATS_DISABLED_BIT,
-+
-+	FLOW_ACTION_HW_STATS_NUM_BITS
- };
- 
- enum flow_action_hw_stats {
--	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
- 	FLOW_ACTION_HW_STATS_IMMEDIATE =
- 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
- 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
-@@ -179,6 +180,7 @@ enum flow_action_hw_stats {
- 				   FLOW_ACTION_HW_STATS_DELAYED,
- 	FLOW_ACTION_HW_STATS_DISABLED =
- 		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
-+	FLOW_ACTION_HW_STATS_DONT_CARE = BIT(FLOW_ACTION_HW_STATS_NUM_BITS) - 1,
- };
- 
- typedef void (*action_destr)(void *priv);
-@@ -340,11 +342,12 @@ __flow_action_hw_stats_check(const struct flow_action *action,
- 		return false;
- 
- 	action_entry = flow_action_first_entry_get(action);
--	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
--		return true;
-+
-+	/* Zero is not a legal value for hw_stats, catch anyone passing it */
-+	WARN_ON_ONCE(!action_entry->hw_stats);
- 
- 	if (!check_allow_bit &&
--	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
-+	    ~action_entry->hw_stats & FLOW_ACTION_HW_STATS_ANY) {
- 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
- 		return false;
- 	} else if (check_allow_bit &&
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 2ff4087007a6..60f94a2d15cc 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -165,9 +165,17 @@ static void flow_offload_mangle(struct flow_action_entry *entry,
- static inline struct flow_action_entry *
- flow_action_entry_next(struct nf_flow_rule *flow_rule)
- {
--	int i = flow_rule->rule->action.num_entries++;
-+	struct flow_action *acts = &flow_rule->rule->action;
-+	struct flow_action_entry *act;
-+	int i = acts->num_entries++;
- 
--	return &flow_rule->rule->action.entries[i];
-+	act = acts->entries + i;
-+	/* Pre-fill action hw_stats with DONT_CARE.  Caller can override this
-+	 * if it wants stats for its action
-+	 */
-+	act->hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
-+
-+	return act;
+-jkbs
+
+ net/core/flow_dissector.c | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 3eff84824c8b..b6179cd20158 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -179,6 +179,27 @@ int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
+ 	return 0;
  }
  
- static int flow_offload_eth_src(struct net *net,
-@@ -582,7 +590,7 @@ nf_flow_offload_rule_alloc(struct net *net,
- 	const struct flow_offload_tuple *tuple;
- 	struct nf_flow_rule *flow_rule;
- 	struct dst_entry *other_dst;
--	int err = -ENOMEM;
-+	int err = -ENOMEM, i;
- 
- 	flow_rule = kzalloc(sizeof(*flow_rule), GFP_KERNEL);
- 	if (!flow_rule)
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 9adff83b523b..b3b68dacadd0 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -61,6 +61,11 @@ tcf_ct_flow_table_flow_action_get_next(struct flow_action *flow_action)
- {
- 	int i = flow_action->num_entries++;
- 
-+	/* Pre-fill action hw_stats with DONT_CARE.  Caller can override this
-+	 * if it wants stats for its action
-+	 */
-+	flow_action->entries[i].hw_stats = FLOW_ACTION_HW_STATS_DONT_CARE;
++static void __net_exit flow_dissector_pernet_pre_exit(struct net *net)
++{
++	struct bpf_prog *attached;
 +
- 	return &flow_action->entries[i];
++	/* We don't lock the update-side because there are no
++	 * references left to this netns when we get called. Hence
++	 * there can be no attach/detach in progress.
++	 */
++	rcu_read_lock();
++	attached = rcu_dereference(net->flow_dissector_prog);
++	if (attached) {
++		RCU_INIT_POINTER(net->flow_dissector_prog, NULL);
++		bpf_prog_put(attached);
++	}
++	rcu_read_unlock();
++}
++
++static struct pernet_operations flow_dissector_pernet_ops __net_initdata = {
++	.pre_exit = flow_dissector_pernet_pre_exit,
++};
++
+ /**
+  * __skb_flow_get_ports - extract the upper layer ports and return them
+  * @skb: sk_buff to extract the ports from
+@@ -1827,6 +1848,8 @@ EXPORT_SYMBOL(flow_keys_basic_dissector);
+ 
+ static int __init init_default_flow_dissectors(void)
+ {
++	int err;
++
+ 	skb_flow_dissector_init(&flow_keys_dissector,
+ 				flow_keys_dissector_keys,
+ 				ARRAY_SIZE(flow_keys_dissector_keys));
+@@ -1836,7 +1859,11 @@ static int __init init_default_flow_dissectors(void)
+ 	skb_flow_dissector_init(&flow_keys_basic_dissector,
+ 				flow_keys_basic_dissector_keys,
+ 				ARRAY_SIZE(flow_keys_basic_dissector_keys));
+-	return 0;
++
++	err = register_pernet_subsys(&flow_dissector_pernet_ops);
++
++	WARN_ON(err);
++	return err;
  }
  
+ core_initcall(init_default_flow_dissectors);
+-- 
+2.25.4
+
