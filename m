@@ -2,94 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B32C1DB8C5
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 17:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 659171DB8D2
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 17:57:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgETP4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 11:56:10 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:41956 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726596AbgETP4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 11:56:10 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04KFu5kl121964;
-        Wed, 20 May 2020 10:56:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589990165;
-        bh=Z1FghLDYCt9S+tlhl6CoZ8M0XLa4JQ7N0CO0ouJegsA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=IYVriDqHuGv8dSt1qh2dSXk38T/6c0V3Mwck06kesJERAoxAQozitXmGF0uFSZvF4
-         V3GxqQ328t33wRZMkDUYZdINBQWTFdwUW3bIXU8BU1gyWxm227aK3rJVBwz2UIvAq0
-         jrMCnIZg4RT/LfbknaoB7GZhIPTqtHwZeosfHCTY=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04KFu4FD125889
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 May 2020 10:56:05 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 20
- May 2020 10:56:04 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 20 May 2020 10:56:05 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04KFu4TV130035;
-        Wed, 20 May 2020 10:56:04 -0500
-Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
- delay for DP83869
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200520121835.31190-1-dmurphy@ti.com>
- <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
- <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
- <20200520153631.GH652285@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
-Date:   Wed, 20 May 2020 10:56:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726932AbgETP46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 11:56:58 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:52872 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726856AbgETP45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 11:56:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589990216;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sno0GmQ/eQv+Rs74eF1UQLVprtgb41HhzSqFhBF9Z8s=;
+        b=RScn9haiZyNpcqVRHR2LISRYxtfzc/yjpW5MALnYdN7PdzY5h5TJHqhxpdcClvWPcIYAdE
+        Qs8QDbTTKz+LAVy48/4kK8k/i+B4Yp0DhLEtuOlRK1eNrgOtcJaDG4PgKWC6IrJsq1C0kZ
+        0koJdXL07hlnXmJZAaMzqcLMuLmNbNk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-sIzVUj7MM16DmhemM8TuYQ-1; Wed, 20 May 2020 11:56:52 -0400
+X-MC-Unique: sIzVUj7MM16DmhemM8TuYQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CF91580183C;
+        Wed, 20 May 2020 15:56:50 +0000 (UTC)
+Received: from ceranb (unknown [10.40.192.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ECE755D9CA;
+        Wed, 20 May 2020 15:56:47 +0000 (UTC)
+Date:   Wed, 20 May 2020 17:56:47 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <jiri@resnulli.us>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH 2/3] switchdev: mrp: Remove the variable mrp_ring_state
+Message-ID: <20200520175647.32e6f5eb@ceranb>
+In-Reply-To: <20200520130923.3196432-3-horatiu.vultur@microchip.com>
+References: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
+        <20200520130923.3196432-3-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <20200520153631.GH652285@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On Wed, 20 May 2020 13:09:22 +0000
+Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
 
-On 5/20/20 10:36 AM, Andrew Lunn wrote:
->>> Hi Dan
->>>
->>> Having it required with PHY_INTERFACE_MODE_RGMII_ID or
->>> PHY_INTERFACE_MODE_RGMII_RXID is pretty unusual. Normally these
->>> properties are used to fine tune the delay, if the default of 2ns does
->>> not work.
->> Also if the MAC phy-mode is configured with RGMII-ID and no internal delay
->> values defined wouldn't that be counter intuitive?
-> Most PHYs don't allow the delay to be fine tuned. You just pass for
-> example PHY_INTERFACE_MODE_RGMII_ID to the PHY driver and it enables a
-> 2ns delay. That is what people expect, and is documented.
+> Remove the variable mrp_ring_state from switchdev_attr because is not
+> used anywhere.
+> The ring state is set using SWITCHDEV_OBJ_ID_RING_STATE_MRP.
+> 
+> Fixes: c284b5459008 ("switchdev: mrp: Extend switchdev API to offload MRP")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  include/net/switchdev.h | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> index ae7aeb0d1f9ca..db519957e134b 100644
+> --- a/include/net/switchdev.h
+> +++ b/include/net/switchdev.h
+> @@ -62,7 +62,6 @@ struct switchdev_attr {
+>  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
+>  		u8 mrp_port_state;			/* MRP_PORT_STATE */
+>  		u8 mrp_port_role;			/* MRP_PORT_ROLE */
+> -		u8 mrp_ring_state;			/* MRP_RING_STATE */
+>  #endif
+>  	} u;
+>  };
 
-> Being able to tune the delay is an optional extra, which some PHYs
-> support, but that is always above and beyond
-> PHY_INTERFACE_MODE_RGMII_ID.
+Acked-by: Ivan Vecera <ivecera@redhat.com>
 
-I am interested in knowing where that is documented.  I want to RTM I 
-grepped for a few different words but came up empty
-
-Since this is a tuneable phy we need to program the ID.  2ns is the 
-default value
-
-Maybe I can change it from Required to Configurable or Used.
-
-Dan
-
-
->       Andrew
