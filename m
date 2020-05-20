@@ -2,78 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA861DBBC7
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C831DBBD7
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 19:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbgETRnL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 13:43:11 -0400
-Received: from mga09.intel.com ([134.134.136.24]:44449 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726688AbgETRnL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 13:43:11 -0400
-IronPort-SDR: hjMODPIdTvndMAWglcv+qTKyoKUwG8Q9kdUagLGIQNYylXjg9RGN4gbM3HhcOqc4pbXXLDi+j9
- w1H46YkUl1kQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2020 10:43:10 -0700
-IronPort-SDR: ZV6cf8hus1y348MdpciDSmsxq3eL2jtoDwZbCSH7OmgGc/ByDXupznDnulgS425v7QIt+jZvrb
- 6ipVkFbs2WLQ==
-X-IronPort-AV: E=Sophos;i="5.73,414,1583222400"; 
-   d="scan'208";a="253735289"
-Received: from djmeffe-mobl1.amr.corp.intel.com (HELO localhost) ([10.255.230.216])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2020 10:43:10 -0700
-Content-Type: text/plain; charset="utf-8"
+        id S1726833AbgETRpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 13:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbgETRpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 13:45:44 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A9FC061A0E;
+        Wed, 20 May 2020 10:45:44 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id r3so2141275wrn.11;
+        Wed, 20 May 2020 10:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=D5JmNuIcmWj9PJckcf8PZ/y227AtBQpRXD26DETlfQQ=;
+        b=iV6TViiaeKUAaE1Vp3z17NyAtjiakBJxGDTJ8bc3Q9Ory99wDaqi93QLrL5Ncga3m7
+         uDBZGQHgLOz/tcewEnQd83/lpEe7dOsMLbGer9wbl+Wyg0dwnn3tALYnKYMmiwtFSGpv
+         zT3d163IIZz0dQbsCWzlO7lZ+gHBAcGEG/rNtjP5PWMzCD6hhiErrVFYOWKR2KwnhoeQ
+         AgxMtCPGcSlOK+EbIy13pfY8bcS+SVhq8mkacjoCqcwH8eckb/9bg2NdPsZ0VCd4hh+Y
+         4H7V09G7jPauzLnzjK+IWw4+fqKcboC2rOEUkwAlS+9e9jlM8fiyT2D5BlYlQ1xO6U8J
+         0BWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=D5JmNuIcmWj9PJckcf8PZ/y227AtBQpRXD26DETlfQQ=;
+        b=L5xvHvJ2Nt8DOI3bNfnpzCU8LPB2e5ZJmEHcS3jGqayB9EzNsI1QkJM1oBy3EzNrYh
+         Gbb7bBnXnw2TOYiSqW1YmCiR0PTQZOPhc7uUzlvGthyuJ6GDtGwb64sEuMkb3MruvBiS
+         2vk0TG5UyK/qsro+S7nTHoww6go6Nv94Qzt39UaAtE1w9kgcGv+wwewlTfPxnH6Adr7W
+         PTl5FYADfpXeAlw8QZSn1Rhnq4U5O5Habx3ydcj+pr1MfTo2pgapzmHENRSHZ/hu5ixd
+         G1mJ3f0tbqZcDsvSWIOKH+Re3M0v1twJV7mLEJSEEIaAfPyehCLx0UkZjvwxMHlFnY9E
+         OAQQ==
+X-Gm-Message-State: AOAM532iHwJGXcGXJ2p6rK4kA2H8DytuNV8EEEhTldelC+x+F15DW9CS
+        zx8A0REoOurJLRwJdVvnNswxqad8
+X-Google-Smtp-Source: ABdhPJy6YY7aNDIxqKO4ABtmYK5jM9e9Y3VrQ7CcJdC4/mpJ5nC5Ouh8zCBe5DQbFoWS0+LOcM7nNA==
+X-Received: by 2002:adf:e441:: with SMTP id t1mr4597279wrm.347.1589996743033;
+        Wed, 20 May 2020 10:45:43 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id q144sm3946631wme.0.2020.05.20.10.45.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 May 2020 10:45:41 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add RGMII internal
+ delay for DP83869
+To:     Dan Murphy <dmurphy@ti.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20200520121835.31190-1-dmurphy@ti.com>
+ <20200520121835.31190-4-dmurphy@ti.com> <20200520135624.GC652285@lunn.ch>
+ <770e42bb-a5d7-fb3e-3fc1-b6f97a9aeb83@ti.com>
+ <20200520153631.GH652285@lunn.ch>
+ <95ab99bf-2fb5-c092-ad14-1b0a47c782a4@ti.com>
+ <20200520164313.GI652285@lunn.ch>
+ <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <41101897-5b29-4a9d-0c14-9b8080089850@gmail.com>
+Date:   Wed, 20 May 2020 10:45:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200519190026.5334f3c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com> <20200519190026.5334f3c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver Updates 2020-05-19
-From:   Andre Guedes <andre.guedes@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Date:   Wed, 20 May 2020 10:43:09 -0700
-Message-ID: <158999658919.45243.7209081350174716035@djmeffe-mobl1.amr.corp.intel.com>
-User-Agent: alot/0.9
+In-Reply-To: <d5d46c21-0afa-0c51-9baf-4f99de94bbd5@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
 
-Quoting Jakub Kicinski (2020-05-19 19:00:26)
-> On Tue, 19 May 2020 17:04:05 -0700 Jeff Kirsher wrote:
-> > This series contains updates to igc only.
-> > 
-> > Sasha cleans up the igc driver code that is not used or needed.
-> > 
-> > Vitaly cleans up driver code that was used to support Virtualization on
-> > a device that is not supported by igc, so remove the dead code.
-> > 
-> > Andre renames a few macros to align with register and field names
-> > described in the data sheet.  Also adds the VLAN Priority Queue Fliter
-> > and EType Queue Filter registers to the list of registers dumped by
-> > igc_get_regs().  Added additional debug messages and updated return codes
-> > for unsupported features.  Refactored the VLAN priority filtering code to
-> > move the core logic into igc_main.c.  Cleaned up duplicate code and
-> > useless code.
+
+On 5/20/2020 10:20 AM, Dan Murphy wrote:
+> Andrew/Florian
 > 
-> No automated warnings :)
+> On 5/20/20 11:43 AM, Andrew Lunn wrote:
+>>> I am interested in knowing where that is documented.  I want to RTM I
+>>> grepped for a few different words but came up empty
+>> Hi Dan
+>>
+>> It probably is not well documented, but one example would be
+>>
+>> Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>
+>> says:
+>>
+>>        # RX and TX delays are added by the MAC when required
+>>        - rgmii
+>>
+>>        # RGMII with internal RX and TX delays provided by the PHY,
+>>        # the MAC should not add the RX or TX delays in this case
+>>        - rgmii-id
+>>
+>>        # RGMII with internal RX delay provided by the PHY, the MAC
+>>        # should not add an RX delay in this case
+>>        - rgmii-rxid
+>>
+>>        # RGMII with internal TX delay provided by the PHY, the MAC
+>>        # should not add an TX delay in this case
+>>
+>>        Andrew
 > 
-> It's a little strange how both TCI and ETYPE filters take the queue ID.
-> Looking at the code it's not immediately clear which one take
-> precedence. Can I install two rules for the same TCI and different ETYPE
-> or vice versa?
+> OKI I read that.  I also looked at a couple other drivers too.
+> 
+> I am wondering if rx-internal-delay and tx-internal-delay should become
+> a common property like tx/rx fifo-depth
+> > And properly document how to use it or at least the expectation on use.
 
-Although the driver currently accepts such rules, they don't work as expected
-(as you probably noticed already). Jeff has already a patch in his queue
-fixing this issue.
-
-And just clarifying, ETYPE filters precede VLAN priority filters.
-
-Regards,
-
-Andre
+Yes they should, and they should have an unit associated with the name.
+-- 
+Florian
