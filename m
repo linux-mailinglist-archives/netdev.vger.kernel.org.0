@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA8681DA947
-	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 06:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6938F1DA948
+	for <lists+netdev@lfdr.de>; Wed, 20 May 2020 06:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726662AbgETEdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 May 2020 00:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
+        id S1726737AbgETEds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 May 2020 00:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726571AbgETEdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 00:33:43 -0400
+        with ESMTP id S1726309AbgETEdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 00:33:45 -0400
 Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D504EC061A0E
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:43 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id j21so852810pgb.7
-        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF591C061A0E
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:45 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id r22so840979pga.12
+        for <netdev@vger.kernel.org>; Tue, 19 May 2020 21:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kK249+zYFnOrRN7LIA5KrsG/PShQF3xdchiUSg4SigE=;
-        b=WfK76uf09uD8FfkI6GVAGCqjBzTTamZph1pMKnKmhVwNIK1sPVHdFllXoeldaK5TgH
-         SWLGKQev4mATy4DZT03PYOHj3mzkH93IAf91S1KRa+iTx1Q9l/lYiyH+NOg6wWCqyatc
-         90z3rOEnS0Fnt7uhJQ+GmHvpvMWOnU9TNiltc=
+        bh=h+hhQmrJ6HCY9TQ31d4smzPdyfCPwbWlYkBnMGeZIvA=;
+        b=ZEOMc+Jy92vzs8CxRIJkpr9VldUeTnJuOb7naMwC8ktkFh5kSwjtsnBzy7Twm3hkIL
+         qgn7+IK5PdMFaXhwf5+8OMNPq2mh3C0ZKxgSTcPuZJIDnMcsQ4QAq0jPWLzhAvO2JEH9
+         C7pdDaKBbD4zguNN1Nm+K74nlyM7coVgcdAOI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=kK249+zYFnOrRN7LIA5KrsG/PShQF3xdchiUSg4SigE=;
-        b=AKPJcqd2e8GYhCSG2T0f9a5mwYtnirep5te2QfuKrm8HOicRPJGuKlUPmAvt74bTO2
-         LhZstnyJ6+zU+VO1P+AjaSU2jy+yrR4NBYI8xfHa1esrKBxP2bDKxG4uhbuphVk5YQJt
-         rnqt8XVRu+AFn7IpVePuoAaeY98+c0wzdHZSYrbhFXTQth3ZCsPAQzpuQg+zLNyuQ2e+
-         431OOnBwEZH2TdQKBNngVMsjS4ldYGrEHl62uZ9xBBfs7299fKhKvihQbALZbIqbv7Xb
-         qzaoUaqtS6LnDvgl8wGeuNA4FHp3FE8LtrbDC9Tg13NQPllZL5N296LBzAU4dGpLPgoP
-         x46w==
-X-Gm-Message-State: AOAM532tipB/BIdtErFIRj/3/AwWJAG1onzOIZ5zn/xuyNZrEJsMj/eb
-        7zVr3qSGxfo7uuCdfMjPiyjIAQ==
-X-Google-Smtp-Source: ABdhPJx3uGcZWCxrkHREM/yHSH+C/pxTDi5u0kTFHDBUJhVtTYpTclXNEtYnjDQ71ORaUhe+DTqRfw==
-X-Received: by 2002:a62:8888:: with SMTP id l130mr2437273pfd.140.1589949223204;
-        Tue, 19 May 2020 21:33:43 -0700 (PDT)
+        bh=h+hhQmrJ6HCY9TQ31d4smzPdyfCPwbWlYkBnMGeZIvA=;
+        b=k4F3Jridu0px1gNMfzqF85RpjreZCuXGQB2WJfjOS5teY8UM94agrD3Nb5S5YEkWMX
+         cqRkH3wyLIn/Juc5ZNrpqoVgYlEv2chZ0bruVVQ1g2zq+Xz7wE+SB5ZsIZ3hrbkgvAhT
+         xHV2szrsfgNlLmTT+e/FPKdbNRxW3HoZ6tlxMnFE0Z1B3gfBWmLVUpcLrZdsrMQ5qMZI
+         m+Tc4brMK07T+MqSfFFNf3WTAaEmMl6P0IVvrsxwKF9yUN0/iNJHKiZegw3exxnoC4JX
+         526pMHi8wPoueX1rRUMgjYRLNon9T+/amiazGSILZZw1LJSIqZP7WFd0i1dVlO1Hc0Y6
+         MHLQ==
+X-Gm-Message-State: AOAM5309WotgoJNK+FXtiVOP24+8CY1rJNZAHIEFQpOAksOrXjauWAi6
+        /2++f0HsnGN/9oethDLOVFCw8Q==
+X-Google-Smtp-Source: ABdhPJzFR3Y5RygPH1TDRAXhwVEe4OY2P2EKVj1ViwDpW6qMq40mEaOt5pofzeac5zQh51PjTYKXHg==
+X-Received: by 2002:aa7:9d0e:: with SMTP id k14mr2419209pfp.13.1589949225224;
+        Tue, 19 May 2020 21:33:45 -0700 (PDT)
 Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id g17sm753250pgg.43.2020.05.19.21.33.41
+        by smtp.googlemail.com with ESMTPSA id g17sm753250pgg.43.2020.05.19.21.33.43
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 May 2020 21:33:42 -0700 (PDT)
+        Tue, 19 May 2020 21:33:44 -0700 (PDT)
 From:   Roopa Prabhu <roopa@cumulusnetworks.com>
 X-Google-Original-From: Roopa Prabhu
 To:     dsahern@gmail.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
         jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
-Subject: [PATCH net-next v2 3/5] nexthop: add support for notifiers
-Date:   Tue, 19 May 2020 21:33:32 -0700
-Message-Id: <1589949214-14711-4-git-send-email-roopa@cumulusnetworks.com>
+Subject: [PATCH net-next v2 4/5] vxlan: support for nexthop notifiers
+Date:   Tue, 19 May 2020 21:33:33 -0700
+Message-Id: <1589949214-14711-5-git-send-email-roopa@cumulusnetworks.com>
 X-Mailer: git-send-email 2.1.4
 In-Reply-To: <1589949214-14711-1-git-send-email-roopa@cumulusnetworks.com>
 References: <1589949214-14711-1-git-send-email-roopa@cumulusnetworks.com>
@@ -61,109 +61,107 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-This patch adds nexthop add/del notifiers. To be used by
-vxlan driver in a later patch. Could possibly be used by
-switchdev drivers in the future.
+vxlan driver registers for nexthop add/del notifiers to
+cleanup fdb entries pointing to such nexthops.
 
 Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 ---
- include/net/netns/nexthop.h |  1 +
- include/net/nexthop.h       | 12 ++++++++++++
- net/ipv4/nexthop.c          | 26 ++++++++++++++++++++++++++
- 3 files changed, 39 insertions(+)
+ drivers/net/vxlan.c | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/netns/nexthop.h b/include/net/netns/nexthop.h
-index c712ee5..1937476 100644
---- a/include/net/netns/nexthop.h
-+++ b/include/net/netns/nexthop.h
-@@ -14,5 +14,6 @@ struct netns_nexthop {
- 
- 	unsigned int		seq;		/* protected by rtnl_mutex */
- 	u32			last_id_allocated;
-+	struct atomic_notifier_head notifier_chain;
- };
- #endif
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index d929c98..4c95168 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -10,6 +10,7 @@
- #define __LINUX_NEXTHOP_H
- 
- #include <linux/netdevice.h>
-+#include <linux/notifier.h>
- #include <linux/route.h>
- #include <linux/types.h>
- #include <net/ip_fib.h>
-@@ -102,6 +103,17 @@ struct nexthop {
- 	};
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 380d887..275b55e 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -81,6 +81,7 @@ struct vxlan_fdb {
+ 	u16		  flags;	/* see ndm_flags and below */
+ 	struct list_head  nh_list;
+ 	struct nexthop __rcu *nh;
++	struct vxlan_dev  *vdev;
  };
  
-+enum nexthop_event_type {
-+	NEXTHOP_EVENT_ADD,
-+	NEXTHOP_EVENT_DEL
+ #define NTF_VXLAN_ADDED_BY_USER 0x100
+@@ -813,8 +814,9 @@ static int vxlan_gro_complete(struct sock *sk, struct sk_buff *skb, int nhoff)
+ 	return eth_gro_complete(skb, nhoff + sizeof(struct vxlanhdr));
+ }
+ 
+-static struct vxlan_fdb *vxlan_fdb_alloc(const u8 *mac, __u16 state,
+-					 __be32 src_vni, __u16 ndm_flags)
++static struct vxlan_fdb *vxlan_fdb_alloc(struct vxlan_dev *vxlan, const u8 *mac,
++					 __u16 state, __be32 src_vni,
++					 __u16 ndm_flags)
+ {
+ 	struct vxlan_fdb *f;
+ 
+@@ -826,6 +828,7 @@ static struct vxlan_fdb *vxlan_fdb_alloc(const u8 *mac, __u16 state,
+ 	f->updated = f->used = jiffies;
+ 	f->vni = src_vni;
+ 	f->nh = NULL;
++	f->vdev = vxlan;
+ 	INIT_LIST_HEAD(&f->nh_list);
+ 	INIT_LIST_HEAD(&f->remotes);
+ 	memcpy(f->eth_addr, mac, ETH_ALEN);
+@@ -923,7 +926,7 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ 		return -ENOSPC;
+ 
+ 	netdev_dbg(vxlan->dev, "add %pM -> %pIS\n", mac, ip);
+-	f = vxlan_fdb_alloc(mac, state, src_vni, ndm_flags);
++	f = vxlan_fdb_alloc(vxlan, mac, state, src_vni, ndm_flags);
+ 	if (!f)
+ 		return -ENOMEM;
+ 
+@@ -988,6 +991,7 @@ static void vxlan_fdb_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
+ 	}
+ 
+ 	hlist_del_rcu(&f->hlist);
++	f->vdev = NULL;
+ 	call_rcu(&f->rcu, vxlan_fdb_free);
+ }
+ 
+@@ -4593,6 +4597,25 @@ static struct notifier_block vxlan_switchdev_notifier_block __read_mostly = {
+ 	.notifier_call = vxlan_switchdev_event,
+ };
+ 
++static int vxlan_nexthop_event(struct notifier_block *nb,
++			       unsigned long event, void *ptr)
++{
++	struct nexthop *nh = ptr;
++	struct vxlan_fdb *fdb, *tmp;
++
++	if (!nh || event != NEXTHOP_EVENT_DEL)
++		return NOTIFY_DONE;
++
++	list_for_each_entry_safe(fdb, tmp, &nh->fdb_list, nh_list)
++		vxlan_fdb_destroy(fdb->vdev, fdb, false, false);
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block vxlan_nexthop_notifier_block __read_mostly = {
++	.notifier_call = vxlan_nexthop_event,
 +};
 +
-+int call_nexthop_notifier(struct notifier_block *nb, struct net *net,
-+			  enum nexthop_event_type event_type,
-+			  struct nexthop *nh);
-+int register_nexthop_notifier(struct net *net, struct notifier_block *nb);
-+int unregister_nexthop_notifier(struct net *net, struct notifier_block *nb);
-+
- /* caller is holding rcu or rtnl; no reference taken to nexthop */
- struct nexthop *nexthop_find_by_id(struct net *net, u32 id);
- void nexthop_free_rcu(struct rcu_head *head);
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index bf91edc..39f4957 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -36,6 +36,17 @@ static const struct nla_policy rtm_nh_policy[NHA_MAX + 1] = {
- 	[NHA_FDB]		= { .type = NLA_FLAG },
- };
- 
-+static int call_nexthop_notifiers(struct net *net,
-+				  enum fib_event_type event_type,
-+				  struct nexthop *nh)
-+{
-+	int err;
-+
-+	err = atomic_notifier_call_chain(&net->nexthop.notifier_chain,
-+					 event_type, nh);
-+	return notifier_to_errno(err);
-+}
-+
- static unsigned int nh_dev_hashfn(unsigned int val)
+ static __net_init int vxlan_init_net(struct net *net)
  {
- 	unsigned int mask = NH_DEV_HASHSIZE - 1;
-@@ -826,6 +837,8 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
- 	bool do_flush = false;
- 	struct fib_info *fi;
+ 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+@@ -4604,7 +4627,7 @@ static __net_init int vxlan_init_net(struct net *net)
+ 	for (h = 0; h < PORT_HASH_SIZE; ++h)
+ 		INIT_HLIST_HEAD(&vn->sock_list[h]);
  
-+	call_nexthop_notifiers(net, NEXTHOP_EVENT_DEL, nh);
-+
- 	list_for_each_entry(fi, &nh->fi_list, nh_list) {
- 		fi->fib_flags |= RTNH_F_DEAD;
- 		do_flush = true;
-@@ -1865,6 +1878,19 @@ static struct notifier_block nh_netdev_notifier = {
- 	.notifier_call = nh_netdev_event,
- };
+-	return 0;
++	return register_nexthop_notifier(net, &vxlan_nexthop_notifier_block);
+ }
  
-+int register_nexthop_notifier(struct net *net, struct notifier_block *nb)
-+{
-+	return atomic_notifier_chain_register(&net->nexthop.notifier_chain, nb);
-+}
-+EXPORT_SYMBOL(register_nexthop_notifier);
-+
-+int unregister_nexthop_notifier(struct net *net, struct notifier_block *nb)
-+{
-+	return atomic_notifier_chain_unregister(&net->nexthop.notifier_chain,
-+						nb);
-+}
-+EXPORT_SYMBOL(unregister_nexthop_notifier);
-+
- static void __net_exit nexthop_net_exit(struct net *net)
- {
+ static void vxlan_destroy_tunnels(struct net *net, struct list_head *head)
+@@ -4637,6 +4660,8 @@ static void __net_exit vxlan_exit_batch_net(struct list_head *net_list)
+ 
  	rtnl_lock();
+ 	list_for_each_entry(net, net_list, exit_list)
++		unregister_nexthop_notifier(net, &vxlan_nexthop_notifier_block);
++	list_for_each_entry(net, net_list, exit_list)
+ 		vxlan_destroy_tunnels(net, &list);
+ 
+ 	unregister_netdevice_many(&list);
 -- 
 2.1.4
 
