@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B91021DD4D5
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 923FA1DD4D9
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730072AbgEURsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        id S1730089AbgEURsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729029AbgEURsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:48:03 -0400
+        with ESMTP id S1729029AbgEURsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:48:05 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF1CC061A0E;
-        Thu, 21 May 2020 10:48:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03B6C061A0E;
+        Thu, 21 May 2020 10:48:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=XdMJEjTtoaAs1w9xt+NgrWfZ6KjmtXggnReOY/jA7IY=; b=iQRMDtxQsnOLxaz23jBChf2PEg
-        uVeLaeC+lSiJBk0Fs+wmzsnxBR6KvzuSOd0NQ0+5jMWhitPYBbVSZUDU4VuObSr4xVDLuv1hUlbtr
-        /VzD0NW45J08oyJIXe6l4n3axca7pMmOLNMsBOnT74DXey3lX4Ds4/eAOhLe4lzwN0P1wY+Ai+X1X
-        xnNMcrA3HKLSM0uMXynA2PkqyRF5CgZVgreO6CrO+asLfBjK46ygILuleuPIdYsdvpw9tdIp0F/Xj
-        MsWUymY8KgKu7MmO3l0yXmJ0uKLEuuS4Ev8urtTK1p5MWemS4zQLDwDs9pkMmK43PP7iOD6huVqBo
-        dIn5vevg==;
+        bh=VFUc5VLPQ2zd1n4PsADX1SOcmkM8UdnR7Y7BDWQYGXA=; b=Z/GClBkD4hKho6eXO4JpZUIrx7
+        l+WRx8LKOdpBWG2idx4vrprPF94B4hSBKQAB9RhzhQXzUaaHvYOtwLQMSCuS5P/Vl0hTHZsS0J+ba
+        vqR9geB5ZfukcgOwGET1wzAnQS9dC3FY9ckWUdr4p7zgi1PNTDRUyrnWh3STTT/6WXBI/h/siXeFW
+        VLyHwloIugB9fP2WIj/7hBpeQ0HJj4ePenY3mjjfHOBQhSu61eLGtDKRhNkDI571fjhVEOHqAM5Xi
+        ko8iHtIeVaNiQeQTcGJEVzAHi1b8SUdz42nI8OukV34bnMtESI0MC4uw6z4Rl46tn7SIcJrb/VKxN
+        KCKoTvcA==;
 Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbpIP-0003AV-4R; Thu, 21 May 2020 17:47:53 +0000
+        id 1jbpIR-0003B6-I6; Thu, 21 May 2020 17:47:55 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 09/49] sctp: pass a kernel pointer to sctp_setsockopt_partial_delivery_point
-Date:   Thu, 21 May 2020 19:46:44 +0200
-Message-Id: <20200521174724.2635475-10-hch@lst.de>
+Subject: [PATCH 10/49] sctp: pass a kernel pointer to sctp_setsockopt_initmsg
+Date:   Thu, 21 May 2020 19:46:45 +0200
+Message-Id: <20200521174724.2635475-11-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
 References: <20200521174724.2635475-1-hch@lst.de>
@@ -54,50 +54,57 @@ directly handling the user pointer.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ net/sctp/socket.c | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 3763f124f9fea..6dd6b0cfcfe03 100644
+index 6dd6b0cfcfe03..0180b22087c0b 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -3484,24 +3484,19 @@ static int sctp_setsockopt_fragment_interleave(struct sock *sk,
-  * call as long as the user provided buffer is large enough to hold the
-  * message.
+@@ -2829,24 +2829,22 @@ static int sctp_setsockopt_delayed_ack(struct sock *sk,
+  * by the change).  With TCP-style sockets, this option is inherited by
+  * sockets derived from a listener socket.
   */
--static int sctp_setsockopt_partial_delivery_point(struct sock *sk,
--						  char __user *optval,
-+static int sctp_setsockopt_partial_delivery_point(struct sock *sk, u32 *val,
- 						  unsigned int optlen)
+-static int sctp_setsockopt_initmsg(struct sock *sk, char __user *optval, unsigned int optlen)
++static int sctp_setsockopt_initmsg(struct sock *sk, struct sctp_initmsg *sinit,
++				   unsigned int optlen)
  {
--	u32 val;
--
- 	if (optlen != sizeof(u32))
+-	struct sctp_initmsg sinit;
+ 	struct sctp_sock *sp = sctp_sk(sk);
+ 
+ 	if (optlen != sizeof(struct sctp_initmsg))
  		return -EINVAL;
--	if (get_user(val, (int __user *)optval))
+-	if (copy_from_user(&sinit, optval, optlen))
 -		return -EFAULT;
  
- 	/* Note: We double the receive buffer from what the user sets
- 	 * it to be, also initial rwnd is based on rcvbuf/2.
- 	 */
--	if (val > (sk->sk_rcvbuf >> 1))
-+	if (*val > (sk->sk_rcvbuf >> 1))
- 		return -EINVAL;
+-	if (sinit.sinit_num_ostreams)
+-		sp->initmsg.sinit_num_ostreams = sinit.sinit_num_ostreams;
+-	if (sinit.sinit_max_instreams)
+-		sp->initmsg.sinit_max_instreams = sinit.sinit_max_instreams;
+-	if (sinit.sinit_max_attempts)
+-		sp->initmsg.sinit_max_attempts = sinit.sinit_max_attempts;
+-	if (sinit.sinit_max_init_timeo)
+-		sp->initmsg.sinit_max_init_timeo = sinit.sinit_max_init_timeo;
++	if (sinit->sinit_num_ostreams)
++		sp->initmsg.sinit_num_ostreams = sinit->sinit_num_ostreams;
++	if (sinit->sinit_max_instreams)
++		sp->initmsg.sinit_max_instreams = sinit->sinit_max_instreams;
++	if (sinit->sinit_max_attempts)
++		sp->initmsg.sinit_max_attempts = sinit->sinit_max_attempts;
++	if (sinit->sinit_max_init_timeo)
++		sp->initmsg.sinit_max_init_timeo = sinit->sinit_max_init_timeo;
  
--	sctp_sk(sk)->pd_point = val;
-+	sctp_sk(sk)->pd_point = *val;
- 
- 	return 0; /* is this the right error code? */
+ 	return 0;
  }
-@@ -4692,7 +4687,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 		retval = sctp_setsockopt_delayed_ack(sk, kopt, optlen);
- 		break;
- 	case SCTP_PARTIAL_DELIVERY_POINT:
--		retval = sctp_setsockopt_partial_delivery_point(sk, optval, optlen);
-+		retval = sctp_setsockopt_partial_delivery_point(sk, kopt, optlen);
+@@ -4691,7 +4689,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
  		break;
  
  	case SCTP_INITMSG:
+-		retval = sctp_setsockopt_initmsg(sk, optval, optlen);
++		retval = sctp_setsockopt_initmsg(sk, kopt, optlen);
+ 		break;
+ 	case SCTP_DEFAULT_SEND_PARAM:
+ 		retval = sctp_setsockopt_default_send_param(sk, optval,
 -- 
 2.26.2
 
