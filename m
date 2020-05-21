@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 332901DCE2B
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 15:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75AEB1DCEAC
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 15:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729582AbgEUNdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 09:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        id S1729571AbgEUNyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 09:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729536AbgEUNdw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 09:33:52 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C825C061A0E;
-        Thu, 21 May 2020 06:33:52 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id z18so5466338qto.2;
-        Thu, 21 May 2020 06:33:52 -0700 (PDT)
+        with ESMTP id S1728060AbgEUNyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 09:54:47 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73B3C061A0E;
+        Thu, 21 May 2020 06:54:47 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id z18so5525526qto.2;
+        Thu, 21 May 2020 06:54:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=EQm3KwRvgaHxQ5d1Q4EsqwYQDDPz8ESa9iFyt4vvvfU=;
-        b=A1yY0pcUPS8ck0PV+oiK0L7Xz4/CMf99HFvZLNGUwtkmJl1HZgyPoRsWMMpkPViZh0
-         g5zjGf3xBdccjZCBDrDAtY8wQjaBZ20OxMUJOX2ygsAZmQ7FAOTD578Pi8cO/AGsz/0k
-         +6GEYqQqrDeTvrPiNG4dFgi17HrIhPWpILlQe2Haz/tBvylaHUHhtLMH1x1JgMBfFxbG
-         dVhzC9D5lQnZ9bUPGy2DvBKfUkckuBYamDN1KFet5x5I1KxpS/Xd/0nP+OBlUFjYmTJ3
-         d3tseyuZBcS/wV3owA0JIbRvtw028OV+O6ZJMOkqyJt0SMGeOHIN4l7beBYArRlnUqQR
-         Cj1Q==
+        bh=4AWH1AUEd7Au/qvsJAY3f3OpE4viRwDzW+yF47F593Y=;
+        b=MadH9FDDGvoxe4fUbjh7p4mwB3ng32aoog6jBUA4hFSZAKoaWEKqesMpS8Mdgd0nR2
+         mDTgZteXtTpdXw8EluT3/45VBYy3VnVHtEsyutIuba5pFOT1ONq06EfpFZxfbAM+uqBt
+         ivy6cbOcjc9wKcedTtgupAWJ4hGHRK6MDbC5Mf63igyieBqM3YqmiNMYpXIlyth7uy+c
+         dK6YjZCUy66fZodoZfuNm2c+b7Jy5HP8GX2o3qqoiVU9U/KOnqcAZfrpq9vj9G7eqhyl
+         9Xb6Y7o7onhxN0YVZPLVzb6piACyAq9ppSHsg5oJrX7hlGZSAgGYua7uGRRSN/cVwcZH
+         Oc1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=EQm3KwRvgaHxQ5d1Q4EsqwYQDDPz8ESa9iFyt4vvvfU=;
-        b=dsv0KKILWi1qP2fyzqRMUc2fyifuGsvTA5in5LUhKPDhnz6ko3ILxneAtEXyfQgm8j
-         3//eoOl7Ut974Wig/Iyotsop7GBmCGnK+L68wj2C9qFebfUkQVwLkyCjDHaqd727Vf0t
-         OZCRHW1IH+uSl3x/77aaX2AOf2KcZAhdxT9OLU827GEd41m4dTVEPra/MYrfYm0R1bEm
-         WWkDkGiLGuLpQQQJTXWD/XPPLd7OMgaW97NDyPhz95RJyGCvllaEMWV27YijHwlXXuWK
-         8F9z0gOjusZ0ymiSksdhgPQiaf5JvycnAdqxikGdqvyEQRxa9WTOROFRcDz7lgRltW/T
-         Q5+g==
-X-Gm-Message-State: AOAM531z8CQX+KVgcu2DS1axo/V1ovH/zd/mJyElUyi+srRstGc5h46g
-        cWIDJ+sMm4hO3/wPyTDCTFBm8GkCEDjsdA==
-X-Google-Smtp-Source: ABdhPJzWBT98PJLkbYawA91UQ6OHszxicgo3NkwFTGAv08qIHw76JSy/EnOeEfPbcxMUsuNECRy/Lw==
-X-Received: by 2002:aed:2bc4:: with SMTP id e62mr11045622qtd.263.1590068031488;
-        Thu, 21 May 2020 06:33:51 -0700 (PDT)
+        bh=4AWH1AUEd7Au/qvsJAY3f3OpE4viRwDzW+yF47F593Y=;
+        b=mXMOWKlrZvLCbcgKEzph9yyz/zTs5isoK66wATfJh4htpPeKHv9j922MHlgkRCSFeb
+         jsFsuGxaZOyUke0tX674r9G4tD3ccKyuUo/pw9mvzHbfbTD6fjHgeIPtLD95vmYwS/wx
+         SkJfTD58bRl5DdguxYlLT0uIixgFP20ugPlC+tjU7amlB4c3PXDiQuwl35lwovMjYuiy
+         LAmdqKcnvHhsWS3Et2O74KYp7kbfy3TDe44xsolC5oW4rF67BioH+iuD8Rgnbsn02tlO
+         llqE5r+rulEaOcRpgc0TWksYyPKJ21CRsb1qXBwshVRpmVukG9YmLrAKq4VakQFBmR5Y
+         YkUA==
+X-Gm-Message-State: AOAM533saCmpPiGdq7RPXkKb8Lgp9xNnmbAGiGgFtSSlbCNzvyEcL5g/
+        UoPZbSH1K43bxPlfb8g8DyI=
+X-Google-Smtp-Source: ABdhPJwr1XLsFhpL67QfydZyYFncpQXNqgVtdQK2lUSy7K4tdF1oTZiVeuf1ITYdnePhr53SYWBElg==
+X-Received: by 2002:ac8:4c8b:: with SMTP id j11mr10385232qtv.58.1590069286825;
+        Thu, 21 May 2020 06:54:46 -0700 (PDT)
 Received: from localhost.localdomain ([168.181.48.225])
-        by smtp.gmail.com with ESMTPSA id l184sm4861282qke.115.2020.05.21.06.33.50
+        by smtp.gmail.com with ESMTPSA id n85sm1682417qkn.31.2020.05.21.06.54.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 06:33:50 -0700 (PDT)
+        Thu, 21 May 2020 06:54:46 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 3AF26C0BEB; Thu, 21 May 2020 10:33:48 -0300 (-03)
-Date:   Thu, 21 May 2020 10:33:48 -0300
+        id 7AEDAC0BEB; Thu, 21 May 2020 10:54:43 -0300 (-03)
+Date:   Thu, 21 May 2020 10:54:43 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 To:     Christoph Hellwig <hch@lst.de>
-Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com, jmaloy@redhat.com,
-        ying.xue@windriver.com, drbd-dev@lists.linbit.com,
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-nvme@lists.infradead.org, target-devel@vger.kernel.org,
         linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
@@ -63,59 +68,87 @@ Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
         netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
         ceph-devel@vger.kernel.org, rds-devel@oss.oracle.com,
         linux-nfs@vger.kernel.org
-Subject: Re: [PATCH 31/33] sctp: add sctp_sock_set_nodelay
-Message-ID: <20200521133348.GX2491@localhost.localdomain>
+Subject: Re: [PATCH 32/33] net: add a new bind_add method
+Message-ID: <20200521135443.GY2491@localhost.localdomain>
 References: <20200520195509.2215098-1-hch@lst.de>
- <20200520195509.2215098-32-hch@lst.de>
- <20200520231001.GU2491@localhost.localdomain>
- <20200520.162355.2212209708127373208.davem@davemloft.net>
- <20200520233913.GV2491@localhost.localdomain>
- <20200521083442.GA7771@lst.de>
+ <20200520195509.2215098-33-hch@lst.de>
+ <20200520230025.GT2491@localhost.localdomain>
+ <20200521084224.GA7859@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200521083442.GA7771@lst.de>
+In-Reply-To: <20200521084224.GA7859@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 10:34:42AM +0200, Christoph Hellwig wrote:
-> On Wed, May 20, 2020 at 08:39:13PM -0300, Marcelo Ricardo Leitner wrote:
-> > On Wed, May 20, 2020 at 04:23:55PM -0700, David Miller wrote:
-> > > From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> > > Date: Wed, 20 May 2020 20:10:01 -0300
-> > > 
-> > > > The duplication with sctp_setsockopt_nodelay() is quite silly/bad.
-> > > > Also, why have the 'true' hardcoded? It's what dlm uses, yes, but the
-> > > > API could be a bit more complete than that.
-> > > 
-> > > The APIs are being designed based upon what in-tree users actually
-> > > make use of.  We can expand things later if necessary.
+On Thu, May 21, 2020 at 10:42:24AM +0200, Christoph Hellwig wrote:
+> On Wed, May 20, 2020 at 08:00:25PM -0300, Marcelo Ricardo Leitner wrote:
+> > > +	if (err)
+> > > +		return err;
+> > > +
+> > > +	lock_sock(sk);
+> > > +	err = sctp_do_bind(sk, (union sctp_addr *)addr, af->sockaddr_len);
+> > > +	if (!err)
+> > > +		err = sctp_send_asconf_add_ip(sk, addr, 1);
 > > 
-> > Sometimes expanding things later can be though, thus why the worry.
-> > But ok, I get it. Thanks.
-> > 
-> > The comment still applies, though. (re the duplication)
+> > Some problems here.
+> > - addr may contain a list of addresses
+> > - the addresses, then, are not being validated
+> > - sctp_do_bind may fail, on which it requires some undoing
+> >   (like sctp_bindx_add does)
+> > - code duplication with sctp_setsockopt_bindx.
 > 
-> Where do you see duplication?
-> 
-> sctp_setsockopt_nodelay does the following things:
-> 
->  - verifies optlen, returns -EINVAL if it doesn't match
->  - calls get_user, returns -EFAULT on error
->  - converts the value from get_user to a boolean and assigns it
->    to sctp_sk(sk)->nodelay
->  - returns 0.
-> 
-> sctp_sock_set_nodelay does:
-> 
->  - call lock_sock
->  - assign true to sctp_sk(sk)->nodelay
->  - call release_sock
->  - does not return an error code
+> sctp_do_bind and thus this function only support a single address, as
+> that is the only thing that the DLM code requires.  I could move the
 
-With the patch there are now two ways of enabling nodelay. It may be
-just a boolean set today, but if one wants to probe on it or if we
-want to extend it with anything, say a debug msg, we have to do it in
-two (very different) places.
+I see.
+
+> user copy out of sctp_setsockopt_bindx and reuse that, but it is a
+> rather rcane API.
+
+Yes. With David's patch, which is doing that, it can be as simple as:
+
+static int sctp_bind_add(struct sock *sk, struct sockaddr *addr,
+               int addrlen)
+{
+	int ret;
+	lock_sock(sk);
+	ret = sctp_setsockopt_bindx(sk, addr, addrlen, SCTP_BINDX_ADD_ADDR);
+	release_sock(sk);
+	return ret;
+}
+
+and then dlm would be using code that we can test through sctp-only tests as
+well.
+
+> 
+> > 
+> > This patch will conflict with David's one,
+> > [PATCH net-next] sctp: Pull the user copies out of the individual sockopt functions.
+> 
+> Do you have a link?  A quick google search just finds your mail that
+> I'm replying to.
+
+https://lore.kernel.org/netdev/fd94b5e41a7c4edc8f743c56a04ed2c9%40AcuMS.aculab.com/T/
+
+> 
+> > (I'll finish reviewing it in the sequence)
+> > 
+> > AFAICT, this patch could reuse/build on his work in there. The goal is
+> > pretty much the same and would avoid the issues above.
+> > 
+> > This patch could, then, point the new bind_add proto op to the updated
+> > sctp_setsockopt_bindx almost directly.
+> > 
+> > Question then is: dlm never removes an addr from the bind list. Do we
+> > want to add ops for both? Or one that handles both operations?
+> > Anyhow, having the add operation but not the del seems very weird to
+> > me.
+> 
+> We generally only add operations for things that we actually use.
+> bind_del is another logical op, but we can trivially add that when we
+> need it.
+
+Right, okay.
