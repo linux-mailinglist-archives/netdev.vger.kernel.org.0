@@ -2,133 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE4E1DD937
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C32C01DD97D
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730635AbgEUVOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 17:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        id S1730483AbgEUVbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 17:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726814AbgEUVOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 17:14:52 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8745CC061A0E;
-        Thu, 21 May 2020 14:14:52 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id t7so3471556plr.0;
-        Thu, 21 May 2020 14:14:52 -0700 (PDT)
+        with ESMTP id S1726814AbgEUVbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 17:31:38 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AC7C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:31:37 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id se13so10586800ejb.9
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:31:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=ojdRX3qZp+MZy5LmVQafkaesJV8j+MVGJ1zs3/CG9ps=;
-        b=RqIEZpIWW6wQMMsJlLMYX/UrPUwSfvJa/1f1lD74bLLdNgCbW6p9OnBzJiMCVLh66N
-         rGfmWNArObZ/CpcS2ZTnlFyH6POr51/Zt4N/bzP0itDHDhPnDZde+K0W/dYelgoiN0/t
-         q+28oaP/iE1eidBoli9M/UivgR1JnWdKX05tQjQ36BPaLAr1R+ULHll03othOUkkgszt
-         rKHAJd2Z3b2H4Bv+Vv0L/Wn8r/XajOWa8NS8lyv70AaYKG2GGYj/tu33LtK0QGOHO8/H
-         hv9rzjdun/ce16/1XOctscWWpDTUVE60NzyebF09gwcFWYCIvs3Tb4rBNEzni3cc1CMe
-         PdqQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pDSebOsxzL18KqcUiTLY9RMe0a7LGyf6LkoA3RrZLDo=;
+        b=HNKweX1kG+n+CB7szED+Zgl0ceyMkEKCJDsw9vz+WHbz/CGMiXcFa0Ca6Eo1r7dHS2
+         nv2bfcZFMtgh8Ei/eRqCdTbJgx9Wry8WsYhMpAWakNQf97rEq76GQMlgjacx9CEum+2n
+         qJjlqo+icXwx6ljS2/lgKubPC8JaLY2cwhfPx17vBQPUfEW86vCgrPgUbql88G1RxDiN
+         7iI8vMDCfw7rroNClOmaHwJq2vjBZqUQDZ71II7xX9HjQ5UbYFi2EPpAXrpm+VcATNBn
+         Di0OwfwIojzpMV/aPfGnB52JQocJtNTcuJcb7RLYwdxQ4EofWVR4cyiABSU4YbFwWkqw
+         rGhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=ojdRX3qZp+MZy5LmVQafkaesJV8j+MVGJ1zs3/CG9ps=;
-        b=NuP5o7ue7iLGTRlTmaKAZ8/SFcJEt5BaSw1FlAJhTLCQGPLsRlsWOot4aXZJC9QdAd
-         PSfJf0vr8OKlGC31ok5VkTpav0a0Ff4onlvMwoGskzM3QlUgN3IaqorTva1f17O1iMjX
-         pYkW6pz8CXu9CNFzextpBMTDpIHX8ZdTzvhahbAe+w1efWP4WN8zJLa/Ev8A24CaQp3a
-         43B3m7Qj76ipshwjPOKP2x4whaSoXxlXfsKExQtNq9I+k+Dncki/IGjSi2vXIKvR/07s
-         dxImvJIcDr92+Wsj0xy9lz8GDvF+H4zgOQa5xdQ83NdjFKhF07DTweXHL4toU6gL4jJx
-         lz0A==
-X-Gm-Message-State: AOAM530QIb1KFjk24hlm7WMt3H6Vqe54Px64LPjJ8W1vJRbL5CNnoQXi
-        /Gcg6Mqtf0pCH13GCFo2v6A=
-X-Google-Smtp-Source: ABdhPJwqvTC+zhXH2hem8mbMqcAo9Mx67T9nysflxxQZxlZcUo4QgeuA/gJxd7R0YO4SLKJZ9+jjMg==
-X-Received: by 2002:a17:90a:3228:: with SMTP id k37mr549777pjb.118.1590095691621;
-        Thu, 21 May 2020 14:14:51 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l4sm4538214pgo.92.2020.05.21.14.14.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pDSebOsxzL18KqcUiTLY9RMe0a7LGyf6LkoA3RrZLDo=;
+        b=uK7SjvR5l1DkVa+0JKh8IiifgZSuaRZkBRvXnYsDUSVZ1NLS94ierwEIYo0yef7hZC
+         7kqZHtVLTZdZe5YXGXTi/F3VY8I2Qu5eiMDJeNrXtVuAzmN1hxfHU4WFHrdjwMSIADZj
+         JLbkitfZg52xG3xXeIeZE2SKUmy7aNmjuQkctXVryNfToMpGvOkLxRujOIJH/JzSqBAd
+         AbknZVHEipni2AWwq8y6R6BkR1lbAGlVIjvrVHLxVNtxALAxFsxAr88vuxZ4cPBW3dSr
+         jEKQjJNJRYord8loXd+i3qmPRiyxTIR98LY3tx9l9V8V2fIAICuP9HjGkP+lLYOlYEQ6
+         K/zg==
+X-Gm-Message-State: AOAM5316VbQ9wrOcQ6i3Vjj/HAoJKcQKM7lmxHXR/oyRVXbMYcHvbeA+
+        Sh2Y/nqa541Q5fLUH8gfUaA=
+X-Google-Smtp-Source: ABdhPJxi3mfaAUn8E1628gONIMYNHmgeyXT/eeUeY66tVzF5DmpbP05ZwUe5WXzPzr092PCPgq4OOg==
+X-Received: by 2002:a17:906:4e87:: with SMTP id v7mr5007958eju.431.1590096695919;
+        Thu, 21 May 2020 14:31:35 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.147.193])
+        by smtp.gmail.com with ESMTPSA id u26sm5794318eje.35.2020.05.21.14.31.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 14:14:50 -0700 (PDT)
-Date:   Thu, 21 May 2020 14:14:43 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan@huawei.com>,
-        ast@kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        yangyingliang <yangyingliang@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        huawei.libin@huawei.com, guofan5@huawei.com,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Message-ID: <5ec6ef43d98e7_3bbf2ab912c625b4eb@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200509210214.408e847a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <939566f5-abe3-3526-d4ff-ec6bf8e8c138@huawei.com>
- <2fcd921d-8f42-9d33-951c-899d0bbdd92d@huawei.com>
- <20200508225829.0880cf8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200509210214.408e847a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH v2] netprio_cgroup: Fix unlimited memory leak of v2
- cgroups
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Thu, 21 May 2020 14:31:35 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, horatiu.vultur@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, claudiu.manoil@nxp.com,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com
+Subject: [PATCH net] net: mscc: ocelot: fix address ageing time (again)
+Date:   Fri, 22 May 2020 00:31:23 +0300
+Message-Id: <20200521213123.672163-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Fri, 8 May 2020 22:58:29 -0700 Jakub Kicinski wrote:
-> > On Sat, 9 May 2020 11:32:10 +0800 Zefan Li wrote:
-> > > If systemd is configured to use hybrid mode which enables the use of
-> > > both cgroup v1 and v2, systemd will create new cgroup on both the default
-> > > root (v2) and netprio_cgroup hierarchy (v1) for a new session and attach
-> > > task to the two cgroups. If the task does some network thing then the v2
-> > > cgroup can never be freed after the session exited.
-> > > 
-> > > One of our machines ran into OOM due to this memory leak.
-> > > 
-> > > In the scenario described above when sk_alloc() is called cgroup_sk_alloc()
-> > > thought it's in v2 mode, so it stores the cgroup pointer in sk->sk_cgrp_data
-> > > and increments the cgroup refcnt, but then sock_update_netprioidx() thought
-> > > it's in v1 mode, so it stores netprioidx value in sk->sk_cgrp_data, so the
-> > > cgroup refcnt will never be freed.
-> > > 
-> > > Currently we do the mode switch when someone writes to the ifpriomap cgroup
-> > > control file. The easiest fix is to also do the switch when a task is attached
-> > > to a new cgroup.
-> > > 
-> > > Fixes: bd1060a1d671("sock, cgroup: add sock->sk_cgroup")  
-> > 
-> >                      ^ space missing here
-> > 
-> > > Reported-by: Yang Yingliang <yangyingliang@huawei.com>
-> > > Tested-by: Yang Yingliang <yangyingliang@huawei.com>
-> > > Signed-off-by: Zefan Li <lizefan@huawei.com>
-> 
-> Fixed up the commit message and applied, thank you.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Hi Zefan, Tejun,
+ocelot_set_ageing_time has 2 callers:
+ - felix_set_ageing_time: from drivers/net/dsa/ocelot/felix.c
+ - ocelot_port_attr_ageing_set: from drivers/net/ethernet/mscc/ocelot.c
 
-This is causing a regression where previously cgroupv2 bpf sockops programs
-could be attached and would run even if netprio_cgroup was enabled as long
-as  the netprio cgroup had not been configured. After this the bpf sockops
-programs can still be attached but only programs attached to the root cgroup
-will be run. For example I hit this when I ran bpf selftests on a box that
-also happened to have netprio cgroup enabled, tests started failing after
-bumping kernel to rc5.
+The issue described in the fixed commit below actually happened for the
+felix_set_ageing_time code path only, since ocelot_port_attr_ageing_set
+was already dividing by 1000. So to make both paths symmetrical (and to
+fix addresses getting aged way too fast on Ocelot), stop dividing by
+1000 at caller side altogether.
 
-I'm a bit on the fence here if it needs to be reverted. For my case its just
-a test box and easy enough to work around. Also all the production cases I
-have already have to be aware of this to avoid the configured error. So it
-may be fine but worth noting at least. Added Alexei to see if he has any
-opinion and/or uses net_prio+cgroubv2. I only looked it over briefly but
-didn't see any simple rc6 worthy fixes that would fix the issue above and
-also keep the original behavior.
+Fixes: c0d7eccbc761 ("net: mscc: ocelot: ANA_AUTOAGE_AGE_PERIOD holds a value in seconds, not ms")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-And then while reviewing I also wonder do we have the same issue described
-here in netclasid_cgroup.c with the cgrp_attach()? It would be best to keep
-netcls and netprio in sync in this regard imo. At least netcls calls
-cgroup_sk_alloc_disable in the write_classid() hook so I suspect it makes
-sense to also add that to the attach hook?
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index e200af736b10..468c83a4c557 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1478,7 +1478,7 @@ static void ocelot_port_attr_ageing_set(struct ocelot *ocelot, int port,
+ 					unsigned long ageing_clock_t)
+ {
+ 	unsigned long ageing_jiffies = clock_t_to_jiffies(ageing_clock_t);
+-	u32 ageing_time = jiffies_to_msecs(ageing_jiffies) / 1000;
++	u32 ageing_time = jiffies_to_msecs(ageing_jiffies);
+ 
+ 	ocelot_set_ageing_time(ocelot, ageing_time);
+ }
+-- 
+2.25.1
 
-Thanks,
-John
