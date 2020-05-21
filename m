@@ -2,126 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFFA1DD18E
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 17:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E12491DD1D6
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 17:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730335AbgEUPYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 11:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        id S1730319AbgEUP1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 11:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730311AbgEUPYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 11:24:12 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17D0C061A0E;
-        Thu, 21 May 2020 08:24:12 -0700 (PDT)
+        with ESMTP id S1729960AbgEUP1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 11:27:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B65AC061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 08:27:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=kv7va3JnJ1SeELpjhZcyLBCa20krrM3Xn4ju295jtGk=; b=rUdy0Gqzh3C4nJ6TIdAzKeaoif
-        wcO+pkmQg4oh+RaTJSGjuKJXdWDDJUYMIicegaPFbD3QMndGAgCdBjZh1eLyE/wqaocovxx+mGLyi
-        RlEMRo4KWxKjsECuFNapixznaS98/x20tWLfwVzyQQGMpVDlktZOHWqxxteKQyx3Eant2Ou6sVWT1
-        FDeAz0UFxKBHg0u2Qw9BwNLcec2AzoQa4PjCr/deKqjkOm7+ph3GVN0NQ+PU7PAKvqInr5q8DWlrn
-        L5OJO06mNjWLrStuLSvcAmQJVAu1CwXpApFO5RGzG1T1lSsG6M6h2aBM2rEhOzv3ekUiixNL/AXHa
-        326OosUA==;
-Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbn3K-0004wA-Sz; Thu, 21 May 2020 15:24:11 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 23/23] maccess: return -ERANGE when copy_from_kernel_nofault_allowed fails
-Date:   Thu, 21 May 2020 17:23:01 +0200
-Message-Id: <20200521152301.2587579-24-hch@lst.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200521152301.2587579-1-hch@lst.de>
-References: <20200521152301.2587579-1-hch@lst.de>
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0/ZPDjDG747lZWcyAHPnfg2j2jmV3xoyCFDwRjqF4r0=; b=lHyQysWqPXILZY0/ShUbF5TXQ
+        474A60MrFjVz8EqLVya1I/2apD24SFovaAvyUvVGa2GlXqQLhS0u5CS+YQh2kvFtO4txUeHLfYttd
+        AUR+NoV1vbt8hJpcYGRhutgENQR65EBg7dPwb6EeSIiDPSQpvr80vg/EdQvzH6PJsvB6ScP049N1N
+        rzYHZtMkhmk0XjEjEcO0VjkDi25e+UL5LqCpSI+IpYtPJH2oEhjCk6DJ7TQny8HU2umF6nCwZx3XN
+        o6/3iEtEFyIwr+OVOFsM1fvWxpN/YtAj89gRnRPFDCrY83/xEq/qXbGzt0SB7b15Q1JFoLS258YmO
+        dvPeOIsyQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35120)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jbn65-0002mB-GY; Thu, 21 May 2020 16:27:01 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jbn60-0000JE-RI; Thu, 21 May 2020 16:26:56 +0100
+Date:   Thu, 21 May 2020 16:26:56 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Daniel =?iso-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] net: mvneta: only do WoL speed down if the PHY is valid
+Message-ID: <20200521152656.GU1551@shell.armlinux.org.uk>
+References: <3268996.Ej3Lftc7GC@tool>
+ <20200521151916.GC677363@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200521151916.GC677363@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow the callers to distinguish a real unmapped address vs a range
-that can't be probed.
+On Thu, May 21, 2020 at 05:19:16PM +0200, Andrew Lunn wrote:
+> >  drivers/net/ethernet/marvell/mvneta.c | 7 ++++---
+> >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> > index 41d2a0eac..f9170bc93 100644
+> > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > @@ -3567,8 +3567,9 @@ static void mvneta_start_dev(struct mvneta_port *pp)
+> >  
+> >  	phylink_start(pp->phylink);
+> >  
+> > -	/* We may have called phy_speed_down before */
+> > -	phy_speed_up(pp->dev->phydev);
+> > +	if(pp->dev->phydev)
+> > +		/* We may have called phy_speed_down before */
+> > +		phy_speed_up(pp->dev->phydev);
+> 
+> I don't think it is as simple as this. You should not really be mixing
+> phy_ and phylink_ calls within one driver. You might of noticed there
+> are no other phy_ calls in this driver. So ideally you want to add
+> phylink_ calls which do the right thing.
 
-Suggested-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- mm/maccess.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+And... what is mvneta doing getting the phydev?  I removed all that
+code when converting it to phylink, since the idea with phylink is
+that the PHY is the responsibility of phylink not the network driver.
 
-diff --git a/mm/maccess.c b/mm/maccess.c
-index 349b6cb14426c..d317f8b8095ca 100644
---- a/mm/maccess.c
-+++ b/mm/maccess.c
-@@ -25,7 +25,7 @@ bool __weak copy_from_kernel_nofault_allowed(const void *unsafe_src,
- long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
- {
- 	if (!copy_from_kernel_nofault_allowed(src, size))
--		return -EFAULT;
-+		return -ERANGE;
- 
- 	pagefault_disable();
- 	copy_from_kernel_nofault_loop(dst, src, size, u64, Efault);
-@@ -69,7 +69,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
- 	if (unlikely(count <= 0))
- 		return 0;
- 	if (!copy_from_kernel_nofault_allowed(unsafe_addr, count))
--		return -EFAULT;
-+		return -ERANGE;
- 
- 	pagefault_disable();
- 	do {
-@@ -94,7 +94,8 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
-  * @size: size of the data chunk
-  *
-  * Safely read from kernel address @src to the buffer at @dst.  If a kernel
-- * fault happens, handle that and return -EFAULT.
-+ * fault happens, handle that and return -EFAULT.  If @src is not a valid kernel
-+ * address, return -ERANGE.
-  *
-  * We ensure that the copy_from_user is executed in atomic context so that
-  * do_page_fault() doesn't attempt to take mmap_sem.  This makes
-@@ -107,7 +108,7 @@ long copy_from_kernel_nofault(void *dst, const void *src, size_t size)
- 	mm_segment_t old_fs = get_fs();
- 
- 	if (!copy_from_kernel_nofault_allowed(src, size))
--		return -EFAULT;
-+		return -ERANGE;
- 
- 	set_fs(KERNEL_DS);
- 	pagefault_disable();
-@@ -159,8 +160,9 @@ long copy_to_kernel_nofault(void *dst, const void *src, size_t size)
-  *
-  * On success, returns the length of the string INCLUDING the trailing NUL.
-  *
-- * If access fails, returns -EFAULT (some data may have been copied
-- * and the trailing NUL added).
-+ * If access fails, returns -EFAULT (some data may have been copied and the
-+ * trailing NUL added).  If @unsafe_addr is not a valid kernel address, return
-+ * -ERANGE.
-  *
-  * If @count is smaller than the length of the string, copies @count-1 bytes,
-  * sets the last byte of @dst buffer to NUL and returns @count.
-@@ -174,7 +176,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
- 	if (unlikely(count <= 0))
- 		return 0;
- 	if (!copy_from_kernel_nofault_allowed(unsafe_addr, count))
--		return -EFAULT;
-+		return -ERANGE;
- 
- 	set_fs(KERNEL_DS);
- 	pagefault_disable();
+I hope the patch adding pp->dev->phydev hasn't been merged as it's
+almost certainly wrong.
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
