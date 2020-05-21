@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D3B1DD4C3
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6F51DD53C
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728987AbgEURrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
+        id S1729967AbgEURu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728955AbgEURrq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:47:46 -0400
+        with ESMTP id S1729163AbgEURrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:47:48 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D17C061A0F;
-        Thu, 21 May 2020 10:47:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1370EC061A0E;
+        Thu, 21 May 2020 10:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=C9+H6Xn6ip36AyynWP3ffX974faJzKNlFKVMb3gYWuc=; b=pankMyV5AOEzWAug314ygmdW4w
-        vjB6wOjEqxBRPoMQxKuK4eMr05N7Bldoep7JDnjyczDk4gSJ+/JXTOcrA+05u1A94VQ94aykGEtcC
-        vDCmSXaPNeZSnbzrUu3MaAd0xACNtdtw/3tpgTpF696CAJqj4v1noK+r55vE6PyyztMJZJ++at4zr
-        U54IrBzSaTFYM1u33rxadhNFIcUUdQTXvKUPGCTh2djFN4pSDq8k/uCFG+cR7otKVSMD7eVZ9P0GR
-        buIGwVUfU76yN9FbB5+FklPksVjZ2ynjWLvQSdYtY5KgN47eAKgtfAxG2YRr+z1Sn87kdnzzf3rkk
-        BwE0YuxQ==;
+        bh=SJ+Ph6rC+YitHvOexDFQbdPJO37rQFZR+I4PuJi52Yo=; b=H0f9X8jq4vOBnfRh4Um8Yr83tI
+        BKBr3FtbdP1bG86iCyZTdXArHKEn6+ftfcSt1oZsgAFsuSfuIfqND8jOAC1JOzFcWqOgosbi0ixNo
+        5u8PJewel2hPgAH+cBwuASIHqbc4Vd6DpgJ5ZGqVhsGRm2ci1H23GAUUe9jVDsLT0qU2hdRtrQYFJ
+        JOFTsarYrOys7ND7a/pt45XcSzd5jWbLpxoabt8s6iLGmvbJozR1JUH2z2vXH2q5m6QmHYreaUCXe
+        2SQUWQ162t3XCR+kRnirIyIU2W/vPG4WF9giJhHF7gTFECgczEW931Zf4PhhOZCC4PxMV7ikrI4bd
+        IdnoVHdg==;
 Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbpI5-0002tK-PI; Thu, 21 May 2020 17:47:34 +0000
+        id 1jbpI8-0002wm-9F; Thu, 21 May 2020 17:47:36 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 02/49] sctp: pass a kernel pointer to sctp_setsockopt_bindx
-Date:   Thu, 21 May 2020 19:46:37 +0200
-Message-Id: <20200521174724.2635475-3-hch@lst.de>
+Subject: [PATCH 03/49] sctp: pass a kernel pointer to __sctp_setsockopt_connectx
+Date:   Thu, 21 May 2020 19:46:38 +0200
+Message-Id: <20200521174724.2635475-4-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
 References: <20200521174724.2635475-1-hch@lst.de>
@@ -54,112 +54,141 @@ directly handling the user pointer.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 38 ++++++++++++--------------------------
- 1 file changed, 12 insertions(+), 26 deletions(-)
+ net/sctp/socket.c | 50 ++++++++++++++++++-----------------------------
+ 1 file changed, 19 insertions(+), 31 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index ee6a618ee3e8e..eb08e44c0c57a 100644
+index eb08e44c0c57a..f7621ea99340e 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -972,42 +972,33 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
+@@ -1282,36 +1282,29 @@ static int __sctp_connect(struct sock *sk, struct sockaddr *kaddrs,
   * it.
   *
   * sk        The sk of the socket
 - * addrs     The pointer to the addresses in user land
 + * addrs     The pointer to the addresses
   * addrssize Size of the addrs buffer
-  * op        Operation to perform (add or remove, see the flags of
-  *           sctp_bindx)
   *
-  * Returns 0 if ok, <0 errno code on error.
+  * Returns >=0 if ok, <0 errno code on error.
   */
--static int sctp_setsockopt_bindx(struct sock *sk,
--				 struct sockaddr __user *addrs,
--				 int addrs_size, int op)
-+static int sctp_setsockopt_bindx(struct sock *sk, void *addr_buf,
-+				  int addrs_size, int op)
+-static int __sctp_setsockopt_connectx(struct sock *sk,
+-				      struct sockaddr __user *addrs,
+-				      int addrs_size,
+-				      sctp_assoc_t *assoc_id)
++static int __sctp_setsockopt_connectx(struct sock *sk, struct sockaddr *kaddrs,
++				      int addrs_size, sctp_assoc_t *assoc_id)
  {
 -	struct sockaddr *kaddrs;
-+	struct sockaddr *kaddrs = addr_buf;
- 	int err;
- 	int addrcnt = 0;
- 	int walk_size = 0;
- 	struct sockaddr *sa_addr;
--	void *addr_buf;
- 	struct sctp_af *af;
+ 	int err = 0, flags = 0;
  
- 	pr_debug("%s: sk:%p addrs:%p addrs_size:%d opt:%d\n",
--		 __func__, sk, addrs, addrs_size, op);
-+		 __func__, sk, addr_buf, addrs_size, op);
+ 	pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
+-		 __func__, sk, addrs, addrs_size);
++		 __func__, sk, kaddrs, addrs_size);
  
- 	if (unlikely(addrs_size <= 0))
+ 	/* make sure the 1st addr's sa_family is accessible later */
+ 	if (unlikely(addrs_size < sizeof(sa_family_t)))
  		return -EINVAL;
  
 -	kaddrs = memdup_user(addrs, addrs_size);
 -	if (IS_ERR(kaddrs))
 -		return PTR_ERR(kaddrs);
 -
- 	/* Walk through the addrs buffer and count the number of addresses. */
--	addr_buf = kaddrs;
- 	while (walk_size < addrs_size) {
--		if (walk_size + sizeof(sa_family_t) > addrs_size) {
--			kfree(kaddrs);
-+		if (walk_size + sizeof(sa_family_t) > addrs_size)
- 			return -EINVAL;
--		}
+ 	/* Allow security module to validate connectx addresses. */
+ 	err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_CONNECTX,
+ 					 (struct sockaddr *)kaddrs,
+ 					  addrs_size);
+ 	if (err)
+-		goto out_free;
++		return err;
  
- 		sa_addr = addr_buf;
- 		af = sctp_get_af_specific(sa_addr->sa_family);
-@@ -1015,10 +1006,8 @@ static int sctp_setsockopt_bindx(struct sock *sk,
- 		/* If the address family is not supported or if this address
- 		 * causes the address buffer to overflow return EINVAL.
- 		 */
--		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
--			kfree(kaddrs);
-+		if (!af || (walk_size + af->sockaddr_len) > addrs_size)
- 			return -EINVAL;
--		}
- 		addrcnt++;
- 		addr_buf += af->sockaddr_len;
- 		walk_size += af->sockaddr_len;
-@@ -1029,8 +1018,7 @@ static int sctp_setsockopt_bindx(struct sock *sk,
- 	case SCTP_BINDX_ADD_ADDR:
- 		/* Allow security module to validate bindx addresses. */
- 		err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD,
--						 (struct sockaddr *)kaddrs,
--						 addrs_size);
-+						 kaddrs, addrs_size);
- 		if (err)
- 			goto out;
- 		err = sctp_bindx_add(sk, kaddrs, addrcnt);
-@@ -1052,8 +1040,6 @@ static int sctp_setsockopt_bindx(struct sock *sk,
- 	}
+ 	/* in-kernel sockets don't generally have a file allocated to them
+ 	 * if all they do is call sock_create_kern().
+@@ -1319,12 +1312,7 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+ 	if (sk->sk_socket->file)
+ 		flags = sk->sk_socket->file->f_flags;
  
- out:
+-	err = __sctp_connect(sk, kaddrs, addrs_size, flags, assoc_id);
+-
+-out_free:
 -	kfree(kaddrs);
 -
- 	return err;
+-	return err;
++	return __sctp_connect(sk, kaddrs, addrs_size, flags, assoc_id);
  }
  
-@@ -4698,14 +4684,14 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 	switch (optname) {
- 	case SCTP_SOCKOPT_BINDX_ADD:
- 		/* 'optlen' is the size of the addresses buffer. */
--		retval = sctp_setsockopt_bindx(sk, (struct sockaddr __user *)optval,
--					       optlen, SCTP_BINDX_ADD_ADDR);
-+		retval = sctp_setsockopt_bindx(sk, kopt, optlen,
-+					       SCTP_BINDX_ADD_ADDR);
- 		break;
+ /*
+@@ -1332,10 +1320,10 @@ static int __sctp_setsockopt_connectx(struct sock *sk,
+  * to the option that doesn't provide association id.
+  */
+ static int sctp_setsockopt_connectx_old(struct sock *sk,
+-					struct sockaddr __user *addrs,
++					struct sockaddr *kaddrs,
+ 					int addrs_size)
+ {
+-	return __sctp_setsockopt_connectx(sk, addrs, addrs_size, NULL);
++	return __sctp_setsockopt_connectx(sk, kaddrs, addrs_size, NULL);
+ }
  
- 	case SCTP_SOCKOPT_BINDX_REM:
- 		/* 'optlen' is the size of the addresses buffer. */
--		retval = sctp_setsockopt_bindx(sk, (struct sockaddr __user *)optval,
--					       optlen, SCTP_BINDX_REM_ADDR);
-+		retval = sctp_setsockopt_bindx(sk, kopt, optlen,
-+					       SCTP_BINDX_REM_ADDR);
- 		break;
+ /*
+@@ -1345,13 +1333,13 @@ static int sctp_setsockopt_connectx_old(struct sock *sk,
+  * always positive.
+  */
+ static int sctp_setsockopt_connectx(struct sock *sk,
+-				    struct sockaddr __user *addrs,
++				    struct sockaddr *kaddrs,
+ 				    int addrs_size)
+ {
+ 	sctp_assoc_t assoc_id = 0;
+ 	int err = 0;
+ 
+-	err = __sctp_setsockopt_connectx(sk, addrs, addrs_size, &assoc_id);
++	err = __sctp_setsockopt_connectx(sk, kaddrs, addrs_size, &assoc_id);
+ 
+ 	if (err)
+ 		return err;
+@@ -1381,6 +1369,7 @@ static int sctp_getsockopt_connectx3(struct sock *sk, int len,
+ {
+ 	struct sctp_getaddrs_old param;
+ 	sctp_assoc_t assoc_id = 0;
++	struct sockaddr *kaddrs;
+ 	int err = 0;
+ 
+ #ifdef CONFIG_COMPAT
+@@ -1404,9 +1393,12 @@ static int sctp_getsockopt_connectx3(struct sock *sk, int len,
+ 			return -EFAULT;
+ 	}
+ 
+-	err = __sctp_setsockopt_connectx(sk, (struct sockaddr __user *)
+-					 param.addrs, param.addr_num,
+-					 &assoc_id);
++	kaddrs = memdup_user(param.addrs, param.addr_num);
++	if (IS_ERR(kaddrs))
++		return PTR_ERR(kaddrs);
++
++	err = __sctp_setsockopt_connectx(sk, kaddrs, param.addr_num, &assoc_id);
++	kfree(kaddrs);
+ 	if (err == 0 || err == -EINPROGRESS) {
+ 		if (copy_to_user(optval, &assoc_id, sizeof(assoc_id)))
+ 			return -EFAULT;
+@@ -4696,16 +4688,12 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
  
  	case SCTP_SOCKOPT_CONNECTX_OLD:
+ 		/* 'optlen' is the size of the addresses buffer. */
+-		retval = sctp_setsockopt_connectx_old(sk,
+-					    (struct sockaddr __user *)optval,
+-					    optlen);
++		retval = sctp_setsockopt_connectx_old(sk, kopt, optlen);
+ 		break;
+ 
+ 	case SCTP_SOCKOPT_CONNECTX:
+ 		/* 'optlen' is the size of the addresses buffer. */
+-		retval = sctp_setsockopt_connectx(sk,
+-					    (struct sockaddr __user *)optval,
+-					    optlen);
++		retval = sctp_setsockopt_connectx(sk, kopt, optlen);
+ 		break;
+ 
+ 	case SCTP_DISABLE_FRAGMENTS:
 -- 
 2.26.2
 
