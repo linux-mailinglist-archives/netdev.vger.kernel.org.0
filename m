@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A04A1DD5CC
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:14:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF3E1DD5DC
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729202AbgEUSOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        id S1729341AbgEUSU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728067AbgEUSOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:14:41 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DDCC061A0E;
-        Thu, 21 May 2020 11:14:40 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id q2so9410403ljm.10;
-        Thu, 21 May 2020 11:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9vLy+sx+oAPc7Ja7vaMG7FVwptnedVW1W80n6Fglj54=;
-        b=JbzOnF5MezQA32NFHdcvalEHBU6t6vFpbGEGNV+6pWn+CV/UNgU4Hrq5pWWRUvk9GE
-         nsbC4VrCUIf5MDbeJ8rlVmC9l4ElCb8MxVNl3lDLoKdFtq0svtlpJzA6R9nl3H0w5gZ5
-         31Rxs+ktfLPG+YVZAteE1B5dV436UEWEQ17hojebX7nzmvt+iQWVJcfekYNpToZovLEc
-         oiKluEAySzWfSlqBxB20L3wFQWzeRvLCCK9xfxPmUrVW+FiIXOAo+DG6s+uxdDvF2T3a
-         7xW7wTKD16Om5WWSqkV/lOlqvO+FhPbgGNBtoTqStlL2Td93CpncUhi06aSMY3TVK3Yx
-         GbAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9vLy+sx+oAPc7Ja7vaMG7FVwptnedVW1W80n6Fglj54=;
-        b=ae6bqrdXLW6Wl4gbMFmJgFdOIlK8LxecdCakuQCIQJZxqoXIk/5KVjCUcDx4F5mZ/+
-         jBf0+jCDVTmjVXLL6P9qoQDGdq7WyDYmH428G4symUYZkvBcMzAOoDGgmFHdaUDVuyxu
-         5LCM8IsCxWe43cVBCiRDwafcpAcisvSwuolbrtm/y9M6viO8btxYvgJRQyfEyCWUczXB
-         ENbngIwX0LjfvlmNlYkQZUDWtXddVSEG+XHlBj+utTJPD3kLAxFEDYN+3tR+d2KIJad2
-         jkzBaDx3ZsiR7BE1BE4a5SzaXGCUQxum1pkf5SKCNSFYbjmwxXEbyRV3quKjJ9iw+/PS
-         2VPQ==
-X-Gm-Message-State: AOAM530kJdowC7zfCa8vOnzsxzQ1pE1cwgv0SxBdsSMyy7nFPhMyV0zt
-        mKoVWhCVlGzD/eLYQYWMOpt2DryjzT9szIxN88dkJg==
-X-Google-Smtp-Source: ABdhPJw474zeMwSEONV3S9BYNqdgoywLW8609QV6HtK4Y7FMsNVrvX+9UD+b6YEZcX3E0+OahC4YrZ10ztRhwKiFo4I=
-X-Received: by 2002:a2e:9549:: with SMTP id t9mr5857291ljh.283.1590084879084;
- Thu, 21 May 2020 11:14:39 -0700 (PDT)
+        with ESMTP id S1728551AbgEUSU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:20:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E75C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:20:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=rGgZoAOWm2bMMgIpvqYE9sIiiA8ouE44sCrWqCqO7Ew=; b=MsyFOFsL4taIW9Hv2fKOR5qwR
+        gHpVMzgFU6QhlzHiwGU82Wla0jfxf1eAmO2zPgd1S5/M6BTUE249c+Si82VIA+lnQZSbj9xYNCWoJ
+        WIDmfpmHxzKvyydjW+EomKy0elT3oAUxCR52FVL7dSEJ1Ek+AVAoHmgW56ntiObZBPLHshi3cubNT
+        OM50lmKE1bQ0lA3/qcwRMGJ9WOEYyzGbL3Td+aNMk1Krp4ui+epF0oFc7raDYfYTLF0HMV9exG4vX
+        XuH1ynZUf5BBWUdrWW9uhsnKQlIl2WpNESUfa7GoTk4/r5MEv2Q6X1JZf4oqn/tdGxy8oJ6patC1N
+        rwbNusj+w==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60964)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jbpnk-00039q-BU; Thu, 21 May 2020 19:20:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jbpne-0000Rr-DU; Thu, 21 May 2020 19:20:10 +0100
+Date:   Thu, 21 May 2020 19:20:10 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net
+Cc:     Daniel =?iso-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>,
+        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] net: mvneta: only do WoL speed down if the PHY is valid
+Message-ID: <20200521182010.GV1551@shell.armlinux.org.uk>
+References: <3268996.Ej3Lftc7GC@tool>
+ <20200521151916.GC677363@lunn.ch>
+ <20200521152656.GU1551@shell.armlinux.org.uk>
+ <20200521155513.GE677363@lunn.ch>
 MIME-Version: 1.0
-References: <20200521083435.560256-1-jakub@cloudflare.com> <20200521152111.GB49942@google.com>
-In-Reply-To: <20200521152111.GB49942@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 21 May 2020 11:14:27 -0700
-Message-ID: <CAADnVQ+QfQPZSH=tJ132vFUOC7uL805Q0FUonPgbuzm8oTwuPA@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] flow_dissector: Drop BPF flow dissector prog ref
- on netns cleanup
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200521155513.GE677363@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 8:21 AM <sdf@google.com> wrote:
->
-> On 05/21, Jakub Sitnicki wrote:
-> > When attaching a flow dissector program to a network namespace with
-> > bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
->
-> > If netns gets destroyed while a flow dissector is still attached, and
-> > there
-> > are no other references to the prog, we leak the reference and the program
-> > remains loaded.
->
-> > Leak can be reproduced by running flow dissector tests from selftests/bpf:
->
-> >    # bpftool prog list
-> >    # ./test_flow_dissector.sh
-> >    ...
-> >    selftests: test_flow_dissector [PASS]
-> >    # bpftool prog list
-> >    4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
-> >            loaded_at 2020-05-20T18:50:53+0200  uid 0
-> >            xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
-> >            btf_id 4
-> >    #
->
-> > Fix it by detaching the flow dissector program when netns is going away.
->
-> > Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
-> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
+On Thu, May 21, 2020 at 05:55:13PM +0200, Andrew Lunn wrote:
+> > I hope the patch adding pp->dev->phydev hasn't been merged as it's
+> > almost certainly wrong.
+> 
+> Hi Russell
+> 
+> It was merged :-(
+> 
+> And it Oops when used with a switch.
 
-Applied. Thanks
+Hmm, now that I have net-next updated, I think the original commit is
+wrong but not as I thought.
+
+The way this has been added, it means that if we have a PHY on a SFP,
+we can end up changing the settings on the SFP PHY if there is one
+present.  Do we want to support WoL on SFPs?
+
+David, can you revert 5e3768a436bb70c9c3e27aaba6b73f8ef8f5dcf3 please?
+It's a layering violation, and as Andrew has found, it causes kernel
+oopses.
+
+What we need instead is support in phylink for doing this, which isn't
+going to be a couple of lines change to what was added to mvneta in
+the referenced commit.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
