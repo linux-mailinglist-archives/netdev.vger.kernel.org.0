@@ -2,156 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BFBF1DD46C
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C75AE1DD7DE
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728919AbgEURa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:30:56 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:23378 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgEURaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:30:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1590082255; x=1621618255;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Jy/N3rXBqaPkEkb9eg+3JzspSpEQo1U1nxztCbeYZ9U=;
-  b=ULbE8NFEXrtZAeYWavM34nGAjZQL2VJIlOZuhwnAAFtnvEDjSnjoX/Z4
-   nHaWe6KBzWLIgiJnm2cyuOWhxoi89ejNUTyVv2q2Tqd6kSQ3+ym22Fflb
-   lrqXvlACL5wRZrxMdmaVkeVBocGDaaZx8VzEmVTS4oHLNxIaDJDwPsHyW
-   R7gqFjC6UDRnrZVNK8xAIeftUv7Yjzt3IZ/IkyNP/0TbqWChls/63erVj
-   vO1nOlgzhlwc5ZEy82P+5sGClM6/k5XPTsC73EKE+iv1wnc13Dju8ttSD
-   sHZwPGSRaL4tDpWurU74bhOKPeP2+8U8SxLl6ef+Q7sNcQM8U4dpBZ4Fr
-   w==;
-IronPort-SDR: fQGe2TnqJy/y13jXVDIOYviAEYOuT8hwN8rTE5UdkE1usCD6xgCxudqs4v8nIN4lOtTkmdBAw4
- E/dekCYJdfpF9kvvd9cJ+qeMrvEMFOLnuZeftgL4icKRrnfJzkyJoVo0w0bUzxsmzG72GlcaEz
- yC2v7OCyBdWBz8gbdgFdl4qKuI8CphAp5+XFJjUAMQD8CxkiUK4UtkhqX441gf18h5RnWzC2UX
- Gg/ibsiqFBc2qNhyegRe0coMnFGZrLKobSzkWTk7Wj9U0DZMFdSK1jhcV3yzYDcYHqxuUYIlm7
- JIg=
-X-IronPort-AV: E=Sophos;i="5.73,418,1583218800"; 
-   d="scan'208";a="76664518"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 May 2020 10:30:55 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 21 May 2020 10:30:53 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Thu, 21 May 2020 10:30:53 -0700
-Date:   Thu, 21 May 2020 19:30:33 +0000
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-CC:     <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <roopa@cumulusnetworks.com>, <andrew@lunn.ch>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH 1/3] bridge: mrp: Add br_mrp_unique_ifindex function
-Message-ID: <20200521193033.3f553xieh2a7eapl@soft-dev3.localdomain>
-References: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
- <20200520130923.3196432-2-horatiu.vultur@microchip.com>
- <cecbdbf0-bb49-1e3c-c163-8e7412c6fcec@cumulusnetworks.com>
- <20200521181337.ory6lxyswatqhoej@soft-dev3.localdomain>
- <39ba5110-2c2a-6fd9-a3e3-000b52a366dc@cumulusnetworks.com>
+        id S1729964AbgEUUDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 16:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728635AbgEUUDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:03:19 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17B3C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 13:03:18 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id n18so7675271wmj.5
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 13:03:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=/B9nKp9yxMB4rwwtGaYX++NFL5U9MbC7wMyHn7ohCbA=;
+        b=fhG+vY3L5eIaLNwdcWaN7hs4c/RJgGTMSzpAcFpHpf+n7UgfR6eIMy/da2+SVlg/WX
+         qnkvDteSPNX4/c7uSBxgGh4O1Ec/prZDfgtKNughkqnKUQM+zWtkSzilzqZFwzEayWZ1
+         NGWyp0sul6sjV0tCPFjctgUgYvCrz3vICY8KVB8LMQm10G0TyVRakHOgIxIDBiIVDygt
+         zskp9Z2QbGHDjkKgqhX5b9s2I+vibkc7BMURzvO3psik2uom0capB2+oc/oCZ/4skKPd
+         NkPpucaEUOYHEAEeH/tnly3ybIsIWbct1e8CYHnZEMIcC9NgS51j8gQe/qCHVeVYGR0g
+         5VPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=/B9nKp9yxMB4rwwtGaYX++NFL5U9MbC7wMyHn7ohCbA=;
+        b=PhKnA7QwoEfA4tDc9a6DBbiGyEx/8OwU8QGiGVG+qDpfk5QfUz0aRsfktSJ/oZVtQP
+         PaFm0fVdanRz9nmhmUjAgzIIMeclV9MPkaJ5xkLlMQfmUPZIJiqPJpNoDsGaxnkWO/3R
+         4DTTWt1ls81jE9TUoGVOQVjL3+aJtUFHCXi7/XMvB/sdFUSABvIQvL6iSMKZ4UH7x/is
+         zeud1Z1xsX1TTuQHWhdo4CVeWDZm7Uy88Wq9DROJtlZE7YF5DI3DqkSyxviAVsZbbqbp
+         h8dkY9PHBo+cEOSAqzMb1cOx3hOLQmjnXzj8vn9jOImlTgTLb19r1HdshkkjsF3LqGqR
+         iiGQ==
+X-Gm-Message-State: AOAM5318JoF8eNypSzXacrOVeQPysa+rzkfCtdYHEuDE3FYHj5DFnYyM
+        7N5Xy0tiLv9GLdMB9i5cQfsYLf4m
+X-Google-Smtp-Source: ABdhPJzfNEenlYm7dV9ywuJxzgibJoZt2S9SDmJy2hFeRgeJZuZg3tvlVKgS28+5g04VzdWxVbuAzw==
+X-Received: by 2002:a05:600c:206:: with SMTP id 6mr10155961wmi.170.1590091397202;
+        Thu, 21 May 2020 13:03:17 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:846b:541e:76f2:f3d? (p200300ea8f285200846b541e76f20f3d.dip0.t-ipconnect.de. [2003:ea:8f28:5200:846b:541e:76f2:f3d])
+        by smtp.googlemail.com with ESMTPSA id y207sm8320028wmd.7.2020.05.21.13.03.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 May 2020 13:03:16 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] r8169: fix OCP access on RTL8117
+Message-ID: <0cf2b89e-b2f5-cc94-8257-5b99a177818f@gmail.com>
+Date:   Thu, 21 May 2020 22:03:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <39ba5110-2c2a-6fd9-a3e3-000b52a366dc@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 05/21/2020 19:58, Nikolay Aleksandrov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On 21/05/2020 21:49, Horatiu Vultur wrote:
-> > The 05/21/2020 11:16, Nikolay Aleksandrov wrote:
-> >> On 20/05/2020 16:09, Horatiu Vultur wrote:
-> >>> It is not allow to have the same net bridge port part of multiple MRP
-> >>> rings. Therefore add a check if the port is used already in a different
-> >>> MRP. In that case return failure.
-> >>>
-> >>> Fixes: 9a9f26e8f7ea ("bridge: mrp: Connect MRP API with the switchdev API")
-> >>> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> >>> ---
-> >>>  net/bridge/br_mrp.c | 31 +++++++++++++++++++++++++++++++
-> >>>  1 file changed, 31 insertions(+)
-> >>>
-> >>> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> >>> index d7bc09de4c139..a5a3fa59c078a 100644
-> >>> --- a/net/bridge/br_mrp.c
-> >>> +++ b/net/bridge/br_mrp.c
-> >>> @@ -37,6 +37,32 @@ static struct br_mrp *br_mrp_find_id(struct net_bridge *br, u32 ring_id)
-> >>>       return res;
-> >>>  }
-> >>>
-> >>> +static bool br_mrp_unique_ifindex(struct net_bridge *br, u32 ifindex)
-> >>> +{
-> >>> +     struct br_mrp *mrp;
-> >>> +     bool res = true;
-> >>> +
-> >>> +     rcu_read_lock();
-> >>
-> >> Why do you need the rcu_read_lock() here when lockdep_rtnl_is_held() is used?
-> >> You should be able to just do rtnl_dereference() below as this is used only
-> >> under rtnl.
-> >
-> > Hi Nik,
-> >
-> > Also initially I thought that is not needed, but when I enabled all the
-> > RCU debug configs to see if I use correctly the RCU, I got a warning
-> > regarding suspicious RCU usage.
-> > And that is the reason why I have put it.
-> >
-> 
-> Did you try using rtnl_dereference() instead of rcu_dereference() ?
+According to r8168 vendor driver DASHv3 chips like RTL8168fp/RTL8117
+need a special addressing for OCP access.
+Fix is compile-tested only due to missing test hardware.
 
-I have just tried it now and that seems to work fine.
-I will redo the patch and send a new patch series.
+Fixes: 1287723aa139 ("r8169: add support for RTL8117")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+- applies on net-next with a bit of fuzz
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-> 
-> >>
-> >>> +     list_for_each_entry_rcu(mrp, &br->mrp_list, list,
-> >>> +                             lockdep_rtnl_is_held()) {
-> >>> +             struct net_bridge_port *p;
-> >>> +
-> >>> +             p = rcu_dereference(mrp->p_port);
-> >>> +             if (p && p->dev->ifindex == ifindex) {
-> >>> +                     res = false;
-> >>> +                     break;
-> >>> +             }
-> >>> +
-> >>> +             p = rcu_dereference(mrp->s_port);
-> >>> +             if (p && p->dev->ifindex == ifindex) {
-> >>> +                     res = false;
-> >>> +                     break;
-> >>> +             }
-> >>> +     }
-> >>> +     rcu_read_unlock();
-> >>> +     return res;
-> >>> +}
-> >>> +
-> >>>  static struct br_mrp *br_mrp_find_port(struct net_bridge *br,
-> >>>                                      struct net_bridge_port *p)
-> >>>  {
-> >>> @@ -255,6 +281,11 @@ int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
-> >>>           !br_mrp_get_port(br, instance->s_ifindex))
-> >>>               return -EINVAL;
-> >>>
-> >>> +     /* It is not possible to have the same port part of multiple rings */
-> >>> +     if (!br_mrp_unique_ifindex(br, instance->p_ifindex) ||
-> >>> +         !br_mrp_unique_ifindex(br, instance->s_ifindex))
-> >>> +             return -EINVAL;
-> >>> +
-> >>>       mrp = kzalloc(sizeof(*mrp), GFP_KERNEL);
-> >>>       if (!mrp)
-> >>>               return -ENOMEM;
-> >>>
-> >>
-> >
-> 
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 78e15cc00..c51b48dc3 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1050,6 +1050,13 @@ static u16 rtl_ephy_read(struct rtl8169_private *tp, int reg_addr)
+ 		RTL_R32(tp, EPHYAR) & EPHYAR_DATA_MASK : ~0;
+ }
+ 
++static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
++{
++	/* based on RTL8168FP_OOBMAC_BASE in vendor driver */
++	if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
++		*cmd |= 0x7f0 << 18;
++}
++
+ DECLARE_RTL_COND(rtl_eriar_cond)
+ {
+ 	return RTL_R32(tp, ERIAR) & ERIAR_FLAG;
+@@ -1058,9 +1065,12 @@ DECLARE_RTL_COND(rtl_eriar_cond)
+ static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+ 			   u32 val, int type)
+ {
++	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
++
+ 	BUG_ON((addr & 3) || (mask == 0));
+ 	RTL_W32(tp, ERIDR, val);
+-	RTL_W32(tp, ERIAR, ERIAR_WRITE_CMD | type | mask | addr);
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
+ 
+ 	rtl_udelay_loop_wait_low(tp, &rtl_eriar_cond, 100, 100);
+ }
+@@ -1073,7 +1083,10 @@ static void rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+ 
+ static u32 _rtl_eri_read(struct rtl8169_private *tp, int addr, int type)
+ {
+-	RTL_W32(tp, ERIAR, ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr);
++	u32 cmd = ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr;
++
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
+ 
+ 	return rtl_udelay_loop_wait_high(tp, &rtl_eriar_cond, 100, 100) ?
+ 		RTL_R32(tp, ERIDR) : ~0;
 -- 
-/Horatiu
+2.26.2
+
