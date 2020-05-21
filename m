@@ -2,150 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0853D1DD5A3
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96961DD5A0
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729557AbgEUSG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S1729301AbgEUSG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729497AbgEUSG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:06:28 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5794C061A0F;
-        Thu, 21 May 2020 11:06:27 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id f13so6317723wmc.5;
-        Thu, 21 May 2020 11:06:27 -0700 (PDT)
+        with ESMTP id S1728885AbgEUSG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:06:26 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B26C061A0E;
+        Thu, 21 May 2020 11:06:26 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j21so3534280pgb.7;
+        Thu, 21 May 2020 11:06:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2oKUs5QZClEMAOsEaZjzQhSXF7x/4a/f2Jwzz6UyoJE=;
-        b=c7uwnRnETaPj+j3tsQN+VhjZMRlQvmblbe5WlZO3TTxgdkj/GYjRvkTaYDxgD19VOW
-         dtN/JQQFfl835TYX+JMpNqx5z384Ew7jIlcKbMMWv1O8+eXbmRuX7MoltgMvtO0Jc1hz
-         pVjiaMxUkSkmJwr80wPP93FiIZ8G2uW7f+gJ2jft/fd92Gc4zRqEABNQQ2W9trxIhjyS
-         TPtdJCHt8D/6+hV9fgBQejDKhk29o/uS06xk6mhvIAsm32DcX0oIsCqQpBwyAj30dcw/
-         dCxH0zl5s5NYCSEt8M5jXdbBdOLO6GC917jPY/cU4MymIh8wXV/bmYckTgIdBBP0u+YJ
-         OSkw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YcuxEZQUpOQDQ5Lr0xl9z9r81E55lsgED1E3qnSscDk=;
+        b=eW6v38ZRp+Glo1cdTZumTfkrEClDxGIGVQPUmVnS3h2bbdkhB2hZydHePX9NH5h1WJ
+         57JjQzpjr7Rvf30dSJISe8wjDElqD8mdf5NF/ma+HS8eVRio7mqNIoty+w+x26mZ2wgW
+         plEeZSv+UOcBad23gyytHzH5bYQLYi3uTMdSPubu6JyoxOXWfmNQQ+HtaXJxDuai6ObI
+         7zS0UO/REoAWWzt5XuERqrg0uPzqtUPLi4w4HvBkWzpe4/i39HYb15wITV+hCH7XFXab
+         HDWQ92eOQIkbgvNn345fJ8VetC1Mxabbt/pp4Ib6lQLqbtR3hJ32fVdh/ED7udF8mma6
+         yYMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2oKUs5QZClEMAOsEaZjzQhSXF7x/4a/f2Jwzz6UyoJE=;
-        b=JMaGCaaLwiyd6r5DFRSOLqwJTdAlFdm3AcwL6gfXRXtQ7HkIKL1rXeyl4XCvgDFB5N
-         hLc62h+9ngGzPRWASZUZCQp2LTq8rPYppvqdFIQxUS+7Okuj/JCvurOIAR21ZY+h+O4y
-         BoGN9uEqWDGM+/ERZjjr9HzxcpJNTwtWT38J8uHX+0U0nGqcF08liL56d1J/U2H5vkQV
-         otfJPOguUKW1N/3EURUcMKVQiVGdUYuCDbo5payVQgHSPy6Uxk0DXWARW5Ym8pCHgk+a
-         f9lurr7Y5WiBQJ3TxaMb0nyIGmard3n4hANyBmfcUykIbDoS2pEZI2GRUShlaFF1FoQ7
-         jWzA==
-X-Gm-Message-State: AOAM532saMqc7kTfXxNv62ptvCGfmLD+KytmCN/sBD1dgtbMKKkGB8LZ
-        F3AYZ3of1UjEnk2Wsnldl4Wo6c3eZLvQJxk2Ixw=
-X-Google-Smtp-Source: ABdhPJyXyvJuEWEVpqcB8w9P2gPQ6qGAnGbCZMax01jRj/a8Hqq4AhTNrBwc+18BeHatA31LptZyrkSVLJArrbVCquI=
-X-Received: by 2002:a1c:2d0c:: with SMTP id t12mr3915030wmt.165.1590084386639;
- Thu, 21 May 2020 11:06:26 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YcuxEZQUpOQDQ5Lr0xl9z9r81E55lsgED1E3qnSscDk=;
+        b=Z6acBqBJaje/4lu0rl2r0Ewas6v7on76ABMOpagdWCj5xOMYmvjkS4ATW/QDpHzPee
+         ragObhdrj1qrpiWLaZuBdo3IGd9sBu/Rdwg2pvcugdJPeKpkJvVEOm8I7RBqZZxbLfr3
+         J0lmUtLrO4WVhk5kBQPts0SGxfzrGv/lPFiD6URlw8r5gKysbdQHEVuP3YunhVaF+fMZ
+         6iiMLZZWIEvuFEsnuvXNKioPOFfbqq/Rxa1+Iz+6KyigVfwFwXBYFFjsvK8o91bzHiDJ
+         MAvOanXnThOF13FVgjo1UL96jf8DFK2ZVs0eMmyEFWg58kR/eryRQb+amyQZYXtoM9/P
+         qBew==
+X-Gm-Message-State: AOAM533eWfxwDzz4HWyx9u5gpsen5W8cyMHa27Pu+4tzjIss7gLL25sC
+        6h3UhszKsuIzDQ9HgVyMGfao65Qo
+X-Google-Smtp-Source: ABdhPJznGe2UNZ5jAmqKiPtGqZfklEpUjBlndvAcPOFCKX2xEIJyAGsymq18z1F10/gOSMmTbJvXjQ==
+X-Received: by 2002:a63:d918:: with SMTP id r24mr10175031pgg.119.1590084385623;
+        Thu, 21 May 2020 11:06:25 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x13sm4910062pjr.20.2020.05.21.11.06.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 May 2020 11:06:24 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 1/4] dt-bindings: net: Add tx and rx internal
+ delays
+To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, robh@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20200521174834.3234-1-dmurphy@ti.com>
+ <20200521174834.3234-2-dmurphy@ti.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a293624e-bbab-4f9e-3e59-470bff5a90f9@gmail.com>
+Date:   Thu, 21 May 2020 11:06:23 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200520094742.337678-1-bjorn.topel@gmail.com>
- <20200520094742.337678-2-bjorn.topel@gmail.com> <20200520151819.1d2254b7@carbon>
- <17701885-c91d-5bfc-b96d-29263a0d08ab@intel.com> <20200521062947.71d9cddd@carbon>
-In-Reply-To: <20200521062947.71d9cddd@carbon>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 21 May 2020 20:06:15 +0200
-Message-ID: <CAJ+HfNg73Wfq0ODX4kY396yyNQ-zAn1szssqqQNu4+DLbdSb2A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 01/15] xsk: fix xsk_umem_xdp_frame_sz()
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200521174834.3234-2-dmurphy@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 May 2020 at 06:30, Jesper Dangaard Brouer <brouer@redhat.com> wr=
-ote:
->
-> On Wed, 20 May 2020 16:34:05 +0200
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> wrote:
->
-> > On 2020-05-20 15:18, Jesper Dangaard Brouer wrote:
-> > > On Wed, 20 May 2020 11:47:28 +0200
-> > > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
-> > >
-> > >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> > >>
-> > >> Calculating the "data_hard_end" for an XDP buffer coming from AF_XDP
-> > >> zero-copy mode, the return value of xsk_umem_xdp_frame_sz() is added
-> > >> to "data_hard_start".
-> > >>
-> > >> Currently, the chunk size of the UMEM is returned by
-> > >> xsk_umem_xdp_frame_sz(). This is not correct, if the fixed UMEM
-> > >> headroom is non-zero. Fix this by returning the chunk_size without t=
-he
-> > >> UMEM headroom.
-> > >>
-> > >> Fixes: 2a637c5b1aaf ("xdp: For Intel AF_XDP drivers add XDP frame_sz=
-")
-> > >> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> > >> ---
-> > >>   include/net/xdp_sock.h | 2 +-
-> > >>   1 file changed, 1 insertion(+), 1 deletion(-)
-> > >>
-> > >> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> > >> index abd72de25fa4..6b1137ce1692 100644
-> > >> --- a/include/net/xdp_sock.h
-> > >> +++ b/include/net/xdp_sock.h
-> > >> @@ -239,7 +239,7 @@ static inline u64 xsk_umem_adjust_offset(struct =
-xdp_umem *umem, u64 address,
-> > >>
-> > >>   static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
-> > >>   {
-> > >> -  return umem->chunk_size_nohr + umem->headroom;
-> > >> +  return umem->chunk_size_nohr;
-> > >
-> > > Hmm, is this correct?
-> > >
-> > > As you write "xdp_data_hard_end" is calculated as an offset from
-> > > xdp->data_hard_start pointer based on the frame_sz.  Will your
-> > > xdp->data_hard_start + frame_sz point to packet end?
-> > >
-> >
-> > Yes, I believe this is correct.
-> >
-> > Say that a user uses a chunk size of 2k, and a umem headroom of, say,
-> > 64. This means that the kernel should (at least) leave 64B which the
-> > kernel shouldn't touch.
-> >
-> > umem->headroom | XDP_PACKET_HEADROOM | packet |          |
-> >                 ^                     ^        ^      ^   ^
-> >                 a                     b        c      d   e
-> >
-> > a: data_hard_start
-> > b: data
-> > c: data_end
-> > d: data_hard_end, (e - 320)
-> > e: hardlimit of chunk, a + umem->chunk_size_nohr
-> >
-> > Prior this fix the umem->headroom was *included* in frame_sz.
->
-> Thanks for the nice ascii art description. I can now see that you are
-> right.   We should add this kind of documentation, perhaps as a comment
-> in the code?
->
 
-Definitely! I'd say both in code, and af_xdp.rst! I'll make a patch.
-Thanks for the suggestion!
 
-Cheers,
-Bj=C3=B6rn
+On 5/21/2020 10:48 AM, Dan Murphy wrote:
+> tx-internal-delays and rx-internal-delays are a common setting for RGMII
+> capable devices.
+> 
+> These properties are used when the phy-mode or phy-controller is set to
+> rgmii-id, rgmii-rxid or rgmii-txid.  These modes indicate to the
+> controller that the PHY will add the internal delay for the connection.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  .../bindings/net/ethernet-controller.yaml          | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index ac471b60ed6a..3f25066c339c 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -143,6 +143,20 @@ properties:
+>        Specifies the PHY management type. If auto is set and fixed-link
+>        is not specified, it uses MDIO for management.
+>  
+> +  rx-internal-delay:
+
+Please name this 'rx-internal-delay-ps'
+
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +      RGMII Receive PHY Clock Delay defined in pico seconds.  This is used for
+> +      PHY's that have configurable RX internal delays.  This property is only
+> +      used when the phy-mode or phy-connection-type is rgmii-id or rgmii-rxid.
+> +
+> +  tx-internal-delay:
+
+Likewise
+
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +      RGMII Transmit PHY Clock Delay defined in pico seconds.  This is used for
+> +      PHY's that have configurable TX internal delays.  This property is only
+> +      used when the phy-mode or phy-connection-type is rgmii-id or rgmii-txid.
+> +
+>    fixed-link:
+>      allOf:
+>        - if:
+> 
+
+-- 
+Florian
