@@ -2,156 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B00C1DD020
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6613E1DD02C
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729842AbgEUOge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 10:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
+        id S1728212AbgEUOg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 10:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729838AbgEUOgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 10:36:33 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D4AC061A0E;
-        Thu, 21 May 2020 07:36:32 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id cx22so3174055pjb.1;
-        Thu, 21 May 2020 07:36:32 -0700 (PDT)
+        with ESMTP id S1726973AbgEUOg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 10:36:58 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E374C061A0E;
+        Thu, 21 May 2020 07:36:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id x12so5596697qts.9;
+        Thu, 21 May 2020 07:36:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=z33mlGjEz4I59W1+QKMq9lrKs++29fGwAD1ltXgXi64=;
-        b=kd/D0i5f36zS9vqDgHlqw0XRXPk3QlOFVcILhfDAfJBn4m0y/Nu6nF0pSLV4C65u6E
-         p5dsfEF/fEoF1hejvS3Pk9ai8yr/68/oUjPHi7kA7i/KnbM/+tH5lRaEjjMLmiMWOqWQ
-         /rEjhhNiROFNqlRacV/2Mi4TkyeBx66owfwlej8jZBoNDhbiPKOESO37OCB6Iyi5rqbn
-         YoVJ0kWKbmR8pf64Uc6CpG5/+opgdGXf2HgmYLP2bH1a8QdBs8QmVcCDJNDNcZd0QorZ
-         ObV6K/qouDWpJKMBdtNHpa0NvCJNUZuKYd1aYvkr8iGsZoY/zupbmNnBanGa/KWPKiSW
-         MBMg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rTic8LQJZFzI9/jLbTxrKbE0PiuGsUQcSqnWefT5qHo=;
+        b=O9lYBNkCwkq13oToI9CFUojkTnClG+S8afJo3cKGe+79myunVFwo5A3q1+PPRTL8eA
+         nCHFyEmSNs8SrEkDBLbmKUakCoZpOvJGJVC1veNRXiDwfMKvdOcv0DVbHYpAPvXmfaBq
+         YLV1RTtB0QxY/T/WzQ52lDoyVPKLxT+7JjnsVSJ0zWkw1UoJ3x4CtGVTmqYYswws6wWZ
+         OcP4+zUPa1MIakwYSUYPG6zD+eMQiy9wO4+ASkXJ+Y7Hv3mMGFTsaKQWcZ69kqF+uSF6
+         paw5BHFeptRw4o67vELDOjagCfczGPFYFpNslD3AaMpPA3KAtI9lt5VF4dgjWkiCrET2
+         nxeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=z33mlGjEz4I59W1+QKMq9lrKs++29fGwAD1ltXgXi64=;
-        b=EXu2udMlfQ0BieMHLuYBYmgkaEttux2FfbYerBpDZqtZxWTRkIqCwBFxX5vXxSyEDU
-         v6/UlMRPNzW2gzl8nPJSUuhKQvJpqQGRMbdEfsIJ+KIBMsmpPyY28og2d7unryTDxuJL
-         8Vmnit+tOoO//aVHHE1fqWlNVVOMUuvmouH8bL/HTe53Em+THKfx8ZYHj2OD+OPAATgf
-         HQaT+GtJyFfIvYuoJp2QbY+BW3qqU9u/XgJKFgVu8EmyjeZc12WzMToKzRd9F1zuPbgd
-         NbZX8UESNMQhAlwWR0OaCM5PWQzXcKk1ZwTIm79po6lLurDjNgNc0HIVpwIV57jpqmW4
-         4TKg==
-X-Gm-Message-State: AOAM530nTeJqydFr/amrC4U/dtjPWXmeFmpHRkKcDv3gOHYSM/jCbGcn
-        aFxrUUMVIq9JwsRetxn3kqk=
-X-Google-Smtp-Source: ABdhPJw/VOwVXHlkFSNbGJJUL4zHWBAM89h5E0m+UDRRP1Mc1ZXhmuwEd4+r4YoecUuhAm9RurTrkg==
-X-Received: by 2002:a17:90b:ecf:: with SMTP id gz15mr11729408pjb.122.1590071792371;
-        Thu, 21 May 2020 07:36:32 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id cv21sm4646401pjb.23.2020.05.21.07.36.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 May 2020 07:36:31 -0700 (PDT)
-Subject: [bpf-next PATCH v3 5/5] bpf: selftests,
- test probe_* helpers from SCHED_CLS
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     yhs@fb.com, ast@kernel.org, daniel@iogearbox.net
-Cc:     lmb@cloudflare.com, bpf@vger.kernel.org, john.fastabend@gmail.com,
-        jakub@cloudflare.com, netdev@vger.kernel.org
-Date:   Thu, 21 May 2020 07:36:18 -0700
-Message-ID: <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
-In-Reply-To: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
-References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rTic8LQJZFzI9/jLbTxrKbE0PiuGsUQcSqnWefT5qHo=;
+        b=OUo2t3w0C/XVZscsKlseFnQvJaT7iV9w8dCFnXl/EEtFBdAzpzP0Vz37XiVba9SGuN
+         ywjJNU5KTytLL1eusUfi6frS0axPLIT4giBYkWwmLlemYg6pPQSoOw4VE7BFTz0F8MF7
+         7+GZrhSSW5qtwLcAct66mIKa16p+BFaobpFUEc7jkK927gP2z6p9zHQ2Mq+0EscKSUqG
+         uljhOexlf4KYp7As9fuuIXZlMPYVod2+clKobg4vRBianfTm4UJx16TaD5oc1BZa8Ujl
+         hYQF5mJt04bbkE5JboVCIqTaOYAkUUG0XRfUZLrhmvJp2pVSQpwi277Xy+JqrBcFEv/z
+         VUDQ==
+X-Gm-Message-State: AOAM533STBTf4Twj2l57ExhmNUwn+btj7LE1ERM3hyrWW+U4vzt7golA
+        ACgiLeWMSW0AIOD+mal463foFfNw4cChlA==
+X-Google-Smtp-Source: ABdhPJy4tKWDx/q/XFw5AKacPo5UtNJ3Z9vyMt9AvSfq3tpNMmgurmJleXX7jSj63qxTIU2CaURrZQ==
+X-Received: by 2002:ac8:547:: with SMTP id c7mr10769135qth.168.1590071817080;
+        Thu, 21 May 2020 07:36:57 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:b7f5:289f:a703:e466:2a27])
+        by smtp.gmail.com with ESMTPSA id m7sm5012648qti.6.2020.05.21.07.36.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 07:36:56 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id B0E5BC0BEB; Thu, 21 May 2020 11:36:53 -0300 (-03)
+Date:   Thu, 21 May 2020 11:36:53 -0300
+From:   'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCH net-next] sctp: Pull the user copies out of the
+ individual sockopt functions.
+Message-ID: <20200521143653.GA74252@localhost.localdomain>
+References: <fd94b5e41a7c4edc8f743c56a04ed2c9@AcuMS.aculab.com>
+ <20200521001725.GW2491@localhost.localdomain>
+ <e777874fbd0e4ccb813e08145f3c3359@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e777874fbd0e4ccb813e08145f3c3359@AcuMS.aculab.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lets test using probe* in SCHED_CLS network programs as well just
-to be sure these keep working. Its cheap to add the extra test
-and provides a second context to test outside of sk_msg after
-we generalized probe* helpers to all networking types.
+On Thu, May 21, 2020 at 07:32:14AM +0000, David Laight wrote:
+> From: 'Marcelo Ricardo Leitner'
+> > Sent: 21 May 2020 01:17
+> > On Wed, May 20, 2020 at 03:08:13PM +0000, David Laight wrote:
+> > ...
+> > > Only SCTP_SOCKOPT_CONNECTX3 contains an indirect pointer.
+> > > It is also the only getsockopt() that wants to return a buffer
+> > > and an error code. It is also definitely abusing getsockopt().
+> > ...
+> > > @@ -1375,11 +1350,11 @@ struct compat_sctp_getaddrs_old {
+> > >  #endif
+> > >
+> > >  static int sctp_getsockopt_connectx3(struct sock *sk, int len,
+> > > -				     char __user *optval,
+> > > -				     int __user *optlen)
+> > > +				     struct sctp_getaddrs_old *param,
+> > > +				     int *optlen)
+> > >  {
+> > > -	struct sctp_getaddrs_old param;
+> > >  	sctp_assoc_t assoc_id = 0;
+> > > +	struct sockaddr *addrs;
+> > >  	int err = 0;
+> > >
+> > >  #ifdef CONFIG_COMPAT
+> ..
+> > >  	} else
+> > >  #endif
+> > >  	{
+> > > -		if (len < sizeof(param))
+> > > +		if (len < sizeof(*param))
+> > >  			return -EINVAL;
+> > > -		if (copy_from_user(&param, optval, sizeof(param)))
+> > > -			return -EFAULT;
+> > >  	}
+> > >
+> > > -	err = __sctp_setsockopt_connectx(sk, (struct sockaddr __user *)
+> > > -					 param.addrs, param.addr_num,
+> > > +	addrs = memdup_user(param->addrs, param->addr_num);
+> > 
+> > I'm staring at this for a while now but I don't get this memdup_user.
+> > AFAICT, params->addrs is not __user anymore here, because
+> > sctp_getsockopt() copied the whole thing already, no?
+> > Also weird because it is being called from kernel_sctp_getsockopt(),
+> > which now has no knowledge of __user buffers.
+> > Maybe I didn't get something from the patch description.
+> 
+> The connectx3 sockopt buffer contains a pointer to the user buffer
+> that contains the actual addresses.
+> So a second copy_from_user() is needed.
 
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- .../testing/selftests/bpf/prog_tests/skb_helpers.c |   30 ++++++++++++++++++
- .../testing/selftests/bpf/progs/test_skb_helpers.c |   33 ++++++++++++++++++++
- 2 files changed, 63 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_helpers.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_skb_helpers.c
+Oh, I see now. Thanks.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/skb_helpers.c b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
-new file mode 100644
-index 0000000..5a865c4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+
-+void test_skb_helpers(void)
-+{
-+	struct __sk_buff skb = {
-+		.wire_len = 100,
-+		.gso_segs = 8,
-+		.gso_size = 10,
-+	};
-+	struct bpf_prog_test_run_attr tattr = {
-+		.data_in = &pkt_v4,
-+		.data_size_in = sizeof(pkt_v4),
-+		.ctx_in = &skb,
-+		.ctx_size_in = sizeof(skb),
-+		.ctx_out = &skb,
-+		.ctx_size_out = sizeof(skb),
-+	};
-+	struct bpf_object *obj;
-+	int err;
-+
-+	err = bpf_prog_load("./test_skb_helpers.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
-+			    &tattr.prog_fd);
-+	if (CHECK_ATTR(err, "load", "err %d errno %d\n", err, errno))
-+		return;
-+
-+	err = bpf_prog_test_run_xattr(&tattr);
-+	CHECK_ATTR(err != 0, "len", "err %d errno %d\n", err, errno);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_skb_helpers.c b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
-new file mode 100644
-index 0000000..05a1260
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
-@@ -0,0 +1,33 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+int _version SEC("version") = 1;
-+
-+#define TEST_COMM_LEN 10
-+
-+struct bpf_map_def SEC("maps") cgroup_map = {
-+	.type			= BPF_MAP_TYPE_CGROUP_ARRAY,
-+	.key_size		= sizeof(u32),
-+	.value_size		= sizeof(u32),
-+	.max_entries	= 1,
-+};
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("classifier/test_skb_helpers")
-+int test_skb_helpers(struct __sk_buff *skb)
-+{
-+	struct task_struct *task;
-+	char *comm[TEST_COMM_LEN];
-+	__u32 tpid;
-+	int ctask;
-+
-+	ctask = bpf_current_task_under_cgroup(&cgroup_map, 0);
-+	task = (struct task_struct *)bpf_get_current_task();
-+
-+	bpf_probe_read_kernel(&tpid , sizeof(tpid), &task->tgid);
-+	bpf_probe_read_kernel_str(&comm, sizeof(comm), &task->comm);
-+	return 0;
-+}
-
+> 
+> This does mean that this option can only be actioned from userspace.
+> 
+> Kernel code can get the same functionality using one of the
+> other interfaces to connectx().
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
