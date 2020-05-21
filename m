@@ -2,153 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7821E1DCD08
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 14:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F701DCD16
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 14:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729353AbgEUMgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 08:36:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728133AbgEUMgW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 08:36:22 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3DD3E2070A;
-        Thu, 21 May 2020 12:36:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590064581;
-        bh=kvXZ5Ar3iD8sz53DrMiw67s4i3oP26P5U8RIKu85m7w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rWCdezUNKHzqfIMCzRYS+XVS5/oyB7Bb1P0TzT1i+QsqYY41xOuR0eRhrY0IrUWEK
-         CyWN/a2Ra2tYZUMoYN8HOWW0jHEAKnZwUpircKK1XnSq+kEE2Uu1Od28c3lt+yWjK2
-         wICBqFuF61FHmyefppz+GySgXfPqCr4oiEL0MNpU=
-Received: by pali.im (Postfix)
-        id 98A6734B; Thu, 21 May 2020 14:36:19 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mwifiex: Add support for NL80211_ATTR_MAX_AP_ASSOC_STA
-Date:   Thu, 21 May 2020 14:35:59 +0200
-Message-Id: <20200521123559.29028-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        id S1729351AbgEUMi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 08:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729204AbgEUMi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 08:38:58 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B5BC05BD43
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 05:38:58 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id e11so2292888pfn.3
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 05:38:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qrPX9G3+4aBI10o4oEHyWzWzharRDL5aHtWT6C1hV1M=;
+        b=eyKMrOdNlKxE4hK1V2DTniBs10Fv951OeqXz10XdX18R8Rfd3190Or/83oF/SH95bY
+         uvnoW91oDo+l1trvF6bBOB35j8/L8HZZmvjmG1NlbB7/RfHjC6Qww+CTnf65DOzg3gBM
+         HvL2UmtJKcRKuvQQcowlTcflRqqMNLvyknjmz06+5/TuFOyzPVS+J2J4s/NUfI7GyClY
+         2tuimsIj3m0Gka/Vcc7ZhL+KpuB/95rD27Z9FDuCuP0i01ZBVcDWacPM1vImhji8nu+B
+         21Ydvn693kQ1m8d0AN4yRG+H/hJ1YTf7jl1qRgSnMAdAn/XNUWoU3hjjPFQjz00HF60A
+         S11w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qrPX9G3+4aBI10o4oEHyWzWzharRDL5aHtWT6C1hV1M=;
+        b=Zaxgrggqylje+2ZCTnY7HfC9mUDvU1r069dkwA0WENxBicJL6scMKPs8et4jmNL+0k
+         BfWAnFKwyAOoBnT4idJw0qDsn+4cF14qYjA+vdYhvgXORPwhi4y5woU0RiYBGQoJ/x1b
+         sZyw3+pKeFd+iSXRLOJfxn7uGQEKVMumh4AJNyDnGrzghsQoJUgt7/GOSrXp5Rgac1d5
+         lFz4nOUkGO2wuAwbdBANuJ37NVR3uCk3SFsX0J0lW2eiafLdn+hqk/aEbr58wtPfOgXx
+         ue+a58nWJ3jD98/o8oSI72xfsIB1IMtakclclPsEuRi+6XeJIzLq0sQmSEHBTAFJVyIj
+         asXw==
+X-Gm-Message-State: AOAM530BSSVh0fY3BSoCGKUmMVNik9tYCGsgq286cwzHd4mCNPau56Ia
+        0ZQeAu8PjHfNm7uCNN2+P9fs6w==
+X-Google-Smtp-Source: ABdhPJy9gosZTjDkb+FQ3lX5TtFuOdxNa9fPv/j1JyHKILIqEs4RR3/DsnPRh7l5AqHBoL4DlK9LOQ==
+X-Received: by 2002:a62:8241:: with SMTP id w62mr9613358pfd.187.1590064737961;
+        Thu, 21 May 2020 05:38:57 -0700 (PDT)
+Received: from Smcdef-MBP.lan ([103.136.220.73])
+        by smtp.gmail.com with ESMTPSA id w14sm4152316pgi.12.2020.05.21.05.38.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 May 2020 05:38:57 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     adobriyan@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org
+Cc:     ebiederm@xmission.com, bernd.edlinger@hotmail.de,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH] files: Use rcu lock to get the file structures for better performance
+Date:   Thu, 21 May 2020 20:38:35 +0800
+Message-Id: <20200521123835.70069-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SD8997 firmware sends TLV_TYPE_MAX_CONN with struct hw_spec_max_conn to
-inform kernel about maximum number of p2p connections and stations in AP
-mode.
+There is another safe way to get the file structure without
+holding the files->file_lock. That is rcu lock, and this way
+has better performance. So use the rcu lock instead of the
+files->file_lock.
 
-During initialization of SD8997 wifi chip kernel prints warning:
-
-  mwifiex_sdio mmc0:0001:1: Unknown GET_HW_SPEC TLV type: 0x217
-
-This patch adds support for parsing TLV_TYPE_MAX_CONN (0x217) and sets
-appropriate cfg80211 member 'max_ap_assoc_sta' from retrieved structure.
-
-It allows userspace to retrieve NL80211_ATTR_MAX_AP_ASSOC_STA attribute.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 ---
- drivers/net/wireless/marvell/mwifiex/cfg80211.c |  5 +++++
- drivers/net/wireless/marvell/mwifiex/cmdevt.c   | 12 ++++++++++++
- drivers/net/wireless/marvell/mwifiex/fw.h       |  8 ++++++++
- drivers/net/wireless/marvell/mwifiex/main.h     |  1 +
- 4 files changed, 26 insertions(+)
+ fs/proc/fd.c         | 31 ++++++++++++++++++++++++-------
+ kernel/bpf/syscall.c | 17 +++++++++++------
+ kernel/kcmp.c        | 15 ++++++++++-----
+ 3 files changed, 45 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 12bfd653a..7998e91c9 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -4339,6 +4339,11 @@ int mwifiex_register_cfg80211(struct mwifiex_adapter *adapter)
- 		wiphy->iface_combinations = &mwifiex_iface_comb_ap_sta;
- 	wiphy->n_iface_combinations = 1;
+diff --git a/fs/proc/fd.c b/fs/proc/fd.c
+index 81882a13212d3..5d5b0f091d32a 100644
+--- a/fs/proc/fd.c
++++ b/fs/proc/fd.c
+@@ -34,19 +34,27 @@ static int seq_show(struct seq_file *m, void *v)
+ 	if (files) {
+ 		unsigned int fd = proc_fd(m->private);
  
-+	if (adapter->max_sta_conn > adapter->max_p2p_conn)
-+		wiphy->max_ap_assoc_sta = adapter->max_sta_conn;
-+	else
-+		wiphy->max_ap_assoc_sta = adapter->max_p2p_conn;
+-		spin_lock(&files->file_lock);
++		rcu_read_lock();
++again:
+ 		file = fcheck_files(files, fd);
+ 		if (file) {
+-			struct fdtable *fdt = files_fdtable(files);
++			struct fdtable *fdt;
 +
- 	/* Initialize cipher suits */
- 	wiphy->cipher_suites = mwifiex_cipher_suites;
- 	wiphy->n_cipher_suites = ARRAY_SIZE(mwifiex_cipher_suites);
-diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-index 589cc5eb1..d068b9075 100644
---- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-@@ -1495,6 +1495,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
- 	struct mwifiex_adapter *adapter = priv->adapter;
- 	struct mwifiex_ie_types_header *tlv;
- 	struct hw_spec_api_rev *api_rev;
-+	struct hw_spec_max_conn *max_conn;
- 	u16 resp_size, api_id;
- 	int i, left_len, parsed_len = 0;
++			if (!get_file_rcu(file)) {
++				/*
++				 * we loop to catch the new file (or NULL
++				 * pointer).
++				 */
++				goto again;
++			}
  
-@@ -1604,6 +1605,17 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
- 					break;
- 				}
- 				break;
-+			case TLV_TYPE_MAX_CONN:
-+				max_conn = (struct hw_spec_max_conn *)tlv;
-+				adapter->max_p2p_conn = max_conn->max_p2p_conn;
-+				adapter->max_sta_conn = max_conn->max_sta_conn;
-+				mwifiex_dbg(adapter, INFO,
-+					    "max p2p connections: %u\n",
-+					    adapter->max_p2p_conn);
-+				mwifiex_dbg(adapter, INFO,
-+					    "max sta connections: %u\n",
-+					    adapter->max_sta_conn);
-+				break;
- 			default:
- 				mwifiex_dbg(adapter, FATAL,
- 					    "Unknown GET_HW_SPEC TLV type: %#x\n",
-diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-index 6f86f5b96..8047e3078 100644
---- a/drivers/net/wireless/marvell/mwifiex/fw.h
-+++ b/drivers/net/wireless/marvell/mwifiex/fw.h
-@@ -220,6 +220,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
- #define TLV_TYPE_BSS_MODE           (PROPRIETARY_TLV_BASE_ID + 206)
- #define TLV_TYPE_RANDOM_MAC         (PROPRIETARY_TLV_BASE_ID + 236)
- #define TLV_TYPE_CHAN_ATTR_CFG      (PROPRIETARY_TLV_BASE_ID + 237)
-+#define TLV_TYPE_MAX_CONN           (PROPRIETARY_TLV_BASE_ID + 279)
++			fdt = files_fdtable(files);
+ 			f_flags = file->f_flags;
+ 			if (close_on_exec(fd, fdt))
+ 				f_flags |= O_CLOEXEC;
+-
+-			get_file(file);
+ 			ret = 0;
+ 		}
+-		spin_unlock(&files->file_lock);
++		rcu_read_unlock();
+ 		put_files_struct(files);
+ 	}
  
- #define MWIFIEX_TX_DATA_BUF_SIZE_2K        2048
+@@ -160,14 +168,23 @@ static int proc_fd_link(struct dentry *dentry, struct path *path)
+ 		unsigned int fd = proc_fd(d_inode(dentry));
+ 		struct file *fd_file;
  
-@@ -2388,4 +2389,11 @@ struct mwifiex_opt_sleep_confirm {
- 	__le16 action;
- 	__le16 resp_ctrl;
- } __packed;
-+
-+struct hw_spec_max_conn {
-+	struct mwifiex_ie_types_header header;
-+	u8 max_p2p_conn;
-+	u8 max_sta_conn;
-+} __packed;
-+
- #endif /* !_MWIFIEX_FW_H_ */
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index afaffc325..5923c5c14 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -1022,6 +1022,7 @@ struct mwifiex_adapter {
- 	bool ext_scan;
- 	u8 fw_api_ver;
- 	u8 key_api_major_ver, key_api_minor_ver;
-+	u8 max_p2p_conn, max_sta_conn;
- 	struct memory_type_mapping *mem_type_mapping_tbl;
- 	u8 num_mem_types;
- 	bool scan_chan_gap_enabled;
+-		spin_lock(&files->file_lock);
++		rcu_read_lock();
++again:
+ 		fd_file = fcheck_files(files, fd);
+ 		if (fd_file) {
++			if (!get_file_rcu(fd_file)) {
++				/*
++				 * we loop to catch the new file
++				 * (or NULL pointer).
++				 */
++				goto again;
++			}
+ 			*path = fd_file->f_path;
+ 			path_get(&fd_file->f_path);
++			fput(fd_file);
+ 			ret = 0;
+ 		}
+-		spin_unlock(&files->file_lock);
++		rcu_read_unlock();
+ 		put_files_struct(files);
+ 	}
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 8608d6e1b0e0e..441c91378a1fc 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3451,14 +3451,19 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+ 	if (!files)
+ 		return -ENOENT;
+ 
+-	err = 0;
+-	spin_lock(&files->file_lock);
++	rcu_read_lock();
++again:
+ 	file = fcheck_files(files, fd);
+-	if (!file)
++	if (file) {
++		if (!get_file_rcu(file)) {
++			/* we loop to catch the new file (or NULL pointer) */
++			goto again;
++		}
++		err = 0;
++	} else {
+ 		err = -EBADF;
+-	else
+-		get_file(file);
+-	spin_unlock(&files->file_lock);
++	}
++	rcu_read_unlock();
+ 	put_files_struct(files);
+ 
+ 	if (err)
+diff --git a/kernel/kcmp.c b/kernel/kcmp.c
+index b3ff9288c6cc9..3b4f2a54186f2 100644
+--- a/kernel/kcmp.c
++++ b/kernel/kcmp.c
+@@ -120,13 +120,18 @@ static int kcmp_epoll_target(struct task_struct *task1,
+ 	if (!files)
+ 		return -EBADF;
+ 
+-	spin_lock(&files->file_lock);
++	rcu_read_lock();
++again:
+ 	filp_epoll = fcheck_files(files, slot.efd);
+-	if (filp_epoll)
+-		get_file(filp_epoll);
+-	else
++	if (filp_epoll) {
++		if (!get_file_rcu(filp_epoll)) {
++			/* we loop to catch the new file (or NULL pointer) */
++			goto again;
++		}
++	} else {
+ 		filp_tgt = ERR_PTR(-EBADF);
+-	spin_unlock(&files->file_lock);
++	}
++	rcu_read_unlock();
+ 	put_files_struct(files);
+ 
+ 	if (filp_epoll) {
 -- 
-2.20.1
+2.11.0
 
