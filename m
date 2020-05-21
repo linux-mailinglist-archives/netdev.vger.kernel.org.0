@@ -2,175 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 807B11DD640
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4741DD354
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 18:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729471AbgEUSsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728551AbgEUSsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:48:05 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F5CC061A0E;
-        Thu, 21 May 2020 11:48:05 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id f189so8287761qkd.5;
-        Thu, 21 May 2020 11:48:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Tnxigj2aTkX+JvQj4lmR9Hn6BTo5R/SbOnlweNnR57o=;
-        b=ge55v3Qk7Ixtg+ZVlX3gLQQ38YO+9q1MH3aCc3ohqtewTPqhL/99X5KrA9uZohZuDM
-         a7cJpi+XQEXAqj68Ms/FZrlbBsIJJYZubErhO+3Nq/Ul2r/AXyHXozFAT5srNDiJzSM6
-         GHFU2m/NW2mZZnjQb05frmh0gaS1nwzvlWgYgyfzIwrXomJda52e+DANXhCxLiQ868iO
-         YxWpKOrzrLr+BZeWp6FrrI/0/J53/iBKj8bnoU0yzaTW/UPHZMyvdH1cjpgW6/ZSv6Nh
-         DovtTagv0FwDTExnF6Oc64yXYfk/riuTeK2JEJhInVGV5t5xlSL3omvX/rsNDlWxF4Fd
-         wYwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Tnxigj2aTkX+JvQj4lmR9Hn6BTo5R/SbOnlweNnR57o=;
-        b=qXHuc/g7w0+hb1IRBrwAAGhtjKpZST5ETCtKrUhN5ivxtg2jl7cQ71PcvfPeGK7Wu0
-         Uv+LS/ofUohPeyE6P6qDNBfVDMtpQ0cdFM0WkeVtqyrved/jJ8NvGySYFzgCcz3r+stm
-         XJa7uj/4lkVR91LT7oPiKLLylWOtsb17Jq8QfyqyFkGEfwS9hwe2xQ/dN2rptcHWafRN
-         5sJ96/o17b9re9n5znyErRxXT+gw3Klu92QOgxyfAHbns0YTibqZ9eknlUU1MZCqzk9j
-         6OZWuY28eSUvttyTpFAjLOEIzxCXOamFjRLFfn9pzNuLcsPg8+d8IZv3xwDXAsFpo14K
-         zbMg==
-X-Gm-Message-State: AOAM532Rzhd3UCJWPAlKiq1zfXmi51z+VqgHo63cuFYnFUGHeA/KsQRo
-        yoLll4OQSiMRHdOev1jKda1W3bfXVfhESE/Pmm4=
-X-Google-Smtp-Source: ABdhPJwvIhDVzTjshBj4EpqpRPabM/TaZRjyIT3XF6cqTDGqckaofu0E8RXvDxI+GJvo0ihTJBlHOjrrNbLhaCJpupQ=
-X-Received: by 2002:a05:620a:2049:: with SMTP id d9mr12250675qka.449.1590086884584;
- Thu, 21 May 2020 11:48:04 -0700 (PDT)
+        id S1728639AbgEUQtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 12:49:40 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:41132 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726938AbgEUQtj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 12:49:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590079779; x=1621615779;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T3JHfJfiSK4U+yHgb+bI6WL0oOg800aRny6cXvnK9L4=;
+  b=IkzRrxDSeXCXmfOv1Ntz9138MnlYN0HwNJe2xQCcyEOSdjvOwxKPFo/E
+   4OZCzqNLPgzWPw6k9teZ0zAcY25nEsCQEtu/uelMgv8q1RWbeVzGD7PoT
+   Y8a4VjEektgXcle0eAFtvzdkci8ajhmbSsIH/f8KRX2PyGfjxwZkti7BW
+   sxFn5HpYhQ946DNs+zE20VpT43XepzdwYSIRXJE9yBgwXxJAYnn4krCUS
+   jsGhO33ydTwLin3i2drdmFOZbfA0fZC5uUVm0YfAK2sSF0bcL9vNk2MyR
+   FUbHIJZhSizme4TJuHsCOjnkZavHd7ESOQrNeTHT23ngIsAoCwrRwmgqM
+   Q==;
+IronPort-SDR: wfYVcZK29baJHc4xxh36j9iwF5HYWGqq/vCDdBNO7JUvQUdp3MpJUQQwk5XbWLx3+w4XqJz2ZX
+ lcyW7CPfrHgbDY8oji1OCCqOYIrROT+CTC5ZWCm2quKD5U0STPj4jBu/GBjwSZ79fuP2cLm5bb
+ wjaFd3GCx4wYidQG1HcUUH7lTvvyiV/QydEhU9kktWdfpzL2a/fLL8wPVhDBgoxPL5fDsF/25r
+ kAXnk9dA14akgTso9kyFo7uv4d98zA76sLMdFmAUI18BlNQ5SaqWkDkZRSyGcK1luJh19rwU2Q
+ ZoU=
+X-IronPort-AV: E=Sophos;i="5.73,418,1583218800"; 
+   d="scan'208";a="76018801"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 May 2020 09:49:38 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 21 May 2020 09:49:38 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 21 May 2020 09:49:38 -0700
+Date:   Thu, 21 May 2020 18:49:18 +0000
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH 1/3] bridge: mrp: Add br_mrp_unique_ifindex function
+Message-ID: <20200521181337.ory6lxyswatqhoej@soft-dev3.localdomain>
+References: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
+ <20200520130923.3196432-2-horatiu.vultur@microchip.com>
+ <cecbdbf0-bb49-1e3c-c163-8e7412c6fcec@cumulusnetworks.com>
 MIME-Version: 1.0
-References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
- <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
-In-Reply-To: <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 21 May 2020 11:47:53 -0700
-Message-ID: <CAEf4BzYJRaY+tsa2TH5WoLAEo=ckd=D2XK5u4YFezkj4jfrZLQ@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v3 5/5] bpf: selftests, test probe_* helpers from SCHED_CLS
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <cecbdbf0-bb49-1e3c-c163-8e7412c6fcec@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 7:36 AM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Lets test using probe* in SCHED_CLS network programs as well just
-> to be sure these keep working. Its cheap to add the extra test
-> and provides a second context to test outside of sk_msg after
-> we generalized probe* helpers to all networking types.
->
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  .../testing/selftests/bpf/prog_tests/skb_helpers.c |   30 ++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_skb_helpers.c |   33 ++++++++++++++++++++
->  2 files changed, 63 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_helpers.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_skb_helpers.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/skb_helpers.c b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
-> new file mode 100644
-> index 0000000..5a865c4
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
-> @@ -0,0 +1,30 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <test_progs.h>
-> +#include <network_helpers.h>
-> +
-> +void test_skb_helpers(void)
-> +{
-> +       struct __sk_buff skb = {
-> +               .wire_len = 100,
-> +               .gso_segs = 8,
-> +               .gso_size = 10,
-> +       };
-> +       struct bpf_prog_test_run_attr tattr = {
-> +               .data_in = &pkt_v4,
-> +               .data_size_in = sizeof(pkt_v4),
-> +               .ctx_in = &skb,
-> +               .ctx_size_in = sizeof(skb),
-> +               .ctx_out = &skb,
-> +               .ctx_size_out = sizeof(skb),
-> +       };
-> +       struct bpf_object *obj;
-> +       int err;
-> +
-> +       err = bpf_prog_load("./test_skb_helpers.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
-> +                           &tattr.prog_fd);
+The 05/21/2020 11:16, Nikolay Aleksandrov wrote:
+> On 20/05/2020 16:09, Horatiu Vultur wrote:
+> > It is not allow to have the same net bridge port part of multiple MRP
+> > rings. Therefore add a check if the port is used already in a different
+> > MRP. In that case return failure.
+> >
+> > Fixes: 9a9f26e8f7ea ("bridge: mrp: Connect MRP API with the switchdev API")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  net/bridge/br_mrp.c | 31 +++++++++++++++++++++++++++++++
+> >  1 file changed, 31 insertions(+)
+> >
+> > diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+> > index d7bc09de4c139..a5a3fa59c078a 100644
+> > --- a/net/bridge/br_mrp.c
+> > +++ b/net/bridge/br_mrp.c
+> > @@ -37,6 +37,32 @@ static struct br_mrp *br_mrp_find_id(struct net_bridge *br, u32 ring_id)
+> >       return res;
+> >  }
+> >
+> > +static bool br_mrp_unique_ifindex(struct net_bridge *br, u32 ifindex)
+> > +{
+> > +     struct br_mrp *mrp;
+> > +     bool res = true;
+> > +
+> > +     rcu_read_lock();
+> 
+> Why do you need the rcu_read_lock() here when lockdep_rtnl_is_held() is used?
+> You should be able to just do rtnl_dereference() below as this is used only
+> under rtnl.
 
-hm... who's destroying bpf_object?
+Hi Nik,
 
+Also initially I thought that is not needed, but when I enabled all the
+RCU debug configs to see if I use correctly the RCU, I got a warning
+regarding suspicious RCU usage.
+And that is the reason why I have put it.
 
-> +       if (CHECK_ATTR(err, "load", "err %d errno %d\n", err, errno))
-> +               return;
-> +
-> +       err = bpf_prog_test_run_xattr(&tattr);
-> +       CHECK_ATTR(err != 0, "len", "err %d errno %d\n", err, errno);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_skb_helpers.c b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
-> new file mode 100644
-> index 0000000..05a1260
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
-> @@ -0,0 +1,33 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +int _version SEC("version") = 1;
+> 
+> > +     list_for_each_entry_rcu(mrp, &br->mrp_list, list,
+> > +                             lockdep_rtnl_is_held()) {
+> > +             struct net_bridge_port *p;
+> > +
+> > +             p = rcu_dereference(mrp->p_port);
+> > +             if (p && p->dev->ifindex == ifindex) {
+> > +                     res = false;
+> > +                     break;
+> > +             }
+> > +
+> > +             p = rcu_dereference(mrp->s_port);
+> > +             if (p && p->dev->ifindex == ifindex) {
+> > +                     res = false;
+> > +                     break;
+> > +             }
+> > +     }
+> > +     rcu_read_unlock();
+> > +     return res;
+> > +}
+> > +
+> >  static struct br_mrp *br_mrp_find_port(struct net_bridge *br,
+> >                                      struct net_bridge_port *p)
+> >  {
+> > @@ -255,6 +281,11 @@ int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
+> >           !br_mrp_get_port(br, instance->s_ifindex))
+> >               return -EINVAL;
+> >
+> > +     /* It is not possible to have the same port part of multiple rings */
+> > +     if (!br_mrp_unique_ifindex(br, instance->p_ifindex) ||
+> > +         !br_mrp_unique_ifindex(br, instance->s_ifindex))
+> > +             return -EINVAL;
+> > +
+> >       mrp = kzalloc(sizeof(*mrp), GFP_KERNEL);
+> >       if (!mrp)
+> >               return -ENOMEM;
+> >
+> 
 
-version is not needed
-
-> +
-> +#define TEST_COMM_LEN 10
-
-doesn't matter for this test, but it's 16 everywhere, let's stay consistent
-
-> +
-> +struct bpf_map_def SEC("maps") cgroup_map = {
-> +       .type                   = BPF_MAP_TYPE_CGROUP_ARRAY,
-> +       .key_size               = sizeof(u32),
-> +       .value_size             = sizeof(u32),
-> +       .max_entries    = 1,
-> +};
-> +
-
-Please use new BTF syntax for maps
-
-> +char _license[] SEC("license") = "GPL";
-> +
-> +SEC("classifier/test_skb_helpers")
-> +int test_skb_helpers(struct __sk_buff *skb)
-> +{
-> +       struct task_struct *task;
-> +       char *comm[TEST_COMM_LEN];
-
-this is array of pointer, not array of chars
-
-> +       __u32 tpid;
-> +       int ctask;
-> +
-> +       ctask = bpf_current_task_under_cgroup(&cgroup_map, 0);
-
-compiler might complain that ctask is written, but not read. Let's
-assign it to some global variable?
-
-> +       task = (struct task_struct *)bpf_get_current_task();
-> +
-> +       bpf_probe_read_kernel(&tpid , sizeof(tpid), &task->tgid);
-> +       bpf_probe_read_kernel_str(&comm, sizeof(comm), &task->comm);
-> +       return 0;
-> +}
->
+-- 
+/Horatiu
