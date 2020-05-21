@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 967531DD921
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD991DD923
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730591AbgEUVKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 17:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
+        id S1730598AbgEUVK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 17:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730588AbgEUVKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 17:10:55 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403AC061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:10:54 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id l5so7718946edn.7
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:10:54 -0700 (PDT)
+        with ESMTP id S1726814AbgEUVK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 17:10:57 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE64C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:10:55 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id d7so10554012eja.7
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 14:10:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7EJrLMpzY+C3z3PmCt7FDRoPiUWJj/HjfBBfF1vmR1U=;
-        b=rD4HQ7K201xuPOQn9RFBl4hVm+Z5SZAumze+80WRgwEM8QraSYdTZNoEmN8O4s3lUx
-         84aTXX16IwlOOdznEemOani896FegtlumwlxoEQE3PbKl3P8fT87VAR3b80399QYmZMh
-         UhhdHNyJm+BKnEuSa9Qn7hwS8fnlUz2cIcVe+sWBi7sZEidmCnNNwX1WFUN6LVVg3g6H
-         p2t/AsuHUhAL1zbCoGHdN675tTYNnSiawIS+Mp7iYCMyIVU49D95AGdBFC6EoPXemgKM
-         Lp+/XImcIaM1fjFFFyHorztZYj2Pya0rgUjfAqLpgL7OIk67Z0TIe1sf4+I/hN3iVPhF
-         0Ryg==
+        bh=XHvVDx0bn4cAErYabGuB0Tm/Q0t8MyOtAfbMRm6tWGc=;
+        b=P1aVlaj7P/tjZ2lwJwJvr+7f43sjMVXItZQMs/Vl+yXY4hC+UQ2OHUZRy65Wd6VRAt
+         aeVbcwtuO7yLm3HQZ7QvkeJ7foHdU3RHmtwacKZlDm7rZxsyWebljKB6oI1xlClMA8pd
+         929mmmX9TBhNX+PhucfdwyT6mljiG1sCeZE2fE1hnuHlNpftNDfAuJhcP0gYC5Mg4/mD
+         JyGzrJympvGEysd+jnyf+3MJ1MApDCx6h4JP6+J3Iad+uBrC2SPF7qAi1jbJsjGj/1tr
+         PWHjrjBtR4rr537uJL+GdAs0ra+sloWhSjHEsbHEsSOAzcQve4qGmuhRIppdVdCGrAgV
+         1BWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7EJrLMpzY+C3z3PmCt7FDRoPiUWJj/HjfBBfF1vmR1U=;
-        b=GHhEact4ZMsyraYgjzTQoSPfwcFPYeJ4pkrHNZR8cw5kSIaoLxSGud7w06ZOVE5yjv
-         Octe1K9rdTdqtbcIHWfpMzIsY61P7iN9Ao191yb08etOpjLkcDq2XVucCTgvCyF+4I2M
-         vxnxjh6MdvatnpJ+eeLysOlxkXHMU8QzH9xVOYhEIkG0i3lGzsStbT7i/ccjYp18z6is
-         ylbwLfnvFy5FzEgD1rjoKrGqygy4Woyon5ulrrN4cGL1BEnAQ9PEpeIslzUQANFGmryV
-         FPzlqzqpSq7C4QEBggDn/DmZ+LybMS4IG4xFkiFSG0YHIJK+i6IIBRVOAqevNPqlau5Y
-         kTBQ==
-X-Gm-Message-State: AOAM530g/Pp/icd4LJ9bJgSSfw6fWcTYJ+DG/XK2TVj7meIptjAA42Tp
-        th5/iSdjvhM0rSfYOVhl094=
-X-Google-Smtp-Source: ABdhPJyFJq1ZKCCu5no0kld4rDHa5vEzCC8Y/A4mQqDVAllguFNJ3knVYhbYWIryGEH+T3VzOs9j2g==
-X-Received: by 2002:a05:6402:783:: with SMTP id d3mr544488edy.295.1590095453449;
-        Thu, 21 May 2020 14:10:53 -0700 (PDT)
+        bh=XHvVDx0bn4cAErYabGuB0Tm/Q0t8MyOtAfbMRm6tWGc=;
+        b=jrqenADgtQrvwB0LFvjDFXTwbLWRxucZHnQukbs117TRC9uxI4MPPX3rwVmTbA2AOd
+         ftsydGKRAohyUX+Cojx98RmJmPDNTd0N47ZPNSyml2tbbtpDW+En6Aakrp7otbNiWiPC
+         43Z3V/p2V3X+4MOrL9/oNdaY4OlBN7/kHZAHeYwjDl/Vb+k5xWOOMjMUhRveaxKRENow
+         SD6ghZRc852SxB126TBcGNmh/mBUQw+TJNZzRj0uVosqi7jtReuDXjvhyOHtjz5U1BSJ
+         nFRdeAceEnRMD+9eQkRQQO1U7h+Q0h7f4TA22UPv0zazuPLZYkBcp5gWgaRclsFPIOl2
+         Hx2A==
+X-Gm-Message-State: AOAM531l1UtAxxMzgoQep7kS9Y8kaPkrWa5rZH8tkp+LHLm5SuBBGHo4
+        NxPwIMuC/8813PIk3+hIfHU=
+X-Google-Smtp-Source: ABdhPJzfu6PLzY56K18O5JU7AN3ZJlRdFpN7ahVYFSIWotzlVt8BFsSuTRWcWShkGmQJkZ/hqE0+ZQ==
+X-Received: by 2002:a17:906:4088:: with SMTP id u8mr5506778ejj.444.1590095454668;
+        Thu, 21 May 2020 14:10:54 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id h8sm5797637edk.72.2020.05.21.14.10.52
+        by smtp.gmail.com with ESMTPSA id h8sm5797637edk.72.2020.05.21.14.10.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 14:10:53 -0700 (PDT)
+        Thu, 21 May 2020 14:10:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
@@ -54,9 +54,9 @@ Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         ivecera@redhat.com, netdev@vger.kernel.org,
         horatiu.vultur@microchip.com, allan.nielsen@microchip.com,
         nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com
-Subject: [PATCH RFC net-next 02/13] net: 8021q: vlan_dev: add vid tag to addresses of uc and mc lists
-Date:   Fri, 22 May 2020 00:10:25 +0300
-Message-Id: <20200521211036.668624-3-olteanv@gmail.com>
+Subject: [PATCH RFC net-next 03/13] net: 8021q: vlan_dev: add vid tag for vlan device own address
+Date:   Fri, 22 May 2020 00:10:26 +0300
+Message-Id: <20200521211036.668624-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200521211036.668624-1-olteanv@gmail.com>
 References: <20200521211036.668624-1-olteanv@gmail.com>
@@ -69,115 +69,167 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 
-Update vlan mc and uc addresses with VID tag while propagating
-addresses to lower devices, do this only if address is not synced.
-It allows at end driver level to distinguish addresses belonging
-to vlan devices.
+The vlan device address is held separately from uc/mc lists and
+handled differently. The vlan dev address is bound with real device
+address only if it's inherited from init, in all other cases it's
+separate address entry in uc list. With vid set, the address becomes
+not inherited from real device after it's set manually as before, but
+is part of uc list any way, with appropriate vid tag set. If vid_len
+for real device is 0, the behaviour is the same as before this change,
+so shouldn't be any impact on systems w/o individual virtual device
+filtering (IVDF) enabled. This allows to control and sync vlan device
+address and disable concrete vlan packet ingress when vlan interface is
+down.
 
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/if_vlan.h |  1 +
- net/8021q/vlan.h        |  2 ++
- net/8021q/vlan_core.c   | 13 +++++++++++++
- net/8021q/vlan_dev.c    | 26 ++++++++++++++++++++++++++
- 4 files changed, 42 insertions(+)
+ net/8021q/vlan.c     |  3 ++
+ net/8021q/vlan_dev.c | 75 +++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 60 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
-index b05e855f1ddd..20407f73cfee 100644
---- a/include/linux/if_vlan.h
-+++ b/include/linux/if_vlan.h
-@@ -131,6 +131,7 @@ extern struct net_device *__vlan_find_dev_deep_rcu(struct net_device *real_dev,
- extern int vlan_for_each(struct net_device *dev,
- 			 int (*action)(struct net_device *dev, int vid,
- 				       void *arg), void *arg);
-+extern u16 vlan_dev_get_addr_vid(struct net_device *dev, const u8 *addr);
- extern struct net_device *vlan_dev_real_dev(const struct net_device *dev);
- extern u16 vlan_dev_vlan_id(const struct net_device *dev);
- extern __be16 vlan_dev_vlan_proto(const struct net_device *dev);
-diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-index bb7ec1a3915d..e7f43d7fcc9a 100644
---- a/net/8021q/vlan.h
-+++ b/net/8021q/vlan.h
-@@ -6,6 +6,8 @@
- #include <linux/u64_stats_sync.h>
- #include <linux/list.h>
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index d4bcfd8f95bf..4cc341c191a4 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -298,6 +298,9 @@ static void vlan_sync_address(struct net_device *dev,
+ 	if (vlan_dev_inherit_address(vlandev, dev))
+ 		goto out;
  
-+#define NET_8021Q_VID_TSIZE	2
++	if (dev->vid_len)
++		goto out;
 +
- /* if this changes, algorithm will have to be reworked because this
-  * depends on completely exhausting the VLAN identifier space.  Thus
-  * it gives constant time look-up, but in many cases it wastes memory.
-diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
-index 78ec2e1b14d1..b528f09be9a3 100644
---- a/net/8021q/vlan_core.c
-+++ b/net/8021q/vlan_core.c
-@@ -453,6 +453,19 @@ bool vlan_uses_dev(const struct net_device *dev)
- }
- EXPORT_SYMBOL(vlan_uses_dev);
- 
-+u16 vlan_dev_get_addr_vid(struct net_device *dev, const u8 *addr)
-+{
-+	u16 vid = 0;
-+
-+	if (dev->vid_len != NET_8021Q_VID_TSIZE)
-+		return vid;
-+
-+	vid = addr[dev->addr_len];
-+	vid |= (addr[dev->addr_len + 1] & 0xf) << 8;
-+	return vid;
-+}
-+EXPORT_SYMBOL(vlan_dev_get_addr_vid);
-+
- static struct sk_buff *vlan_gro_receive(struct list_head *head,
- 					struct sk_buff *skb)
- {
+ 	/* vlan address was different from the old address and is equal to
+ 	 * the new address */
+ 	if (!ether_addr_equal(vlandev->dev_addr, vlan->real_dev_addr) &&
 diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index f00bb57f0f60..c2c3e5ae535c 100644
+index c2c3e5ae535c..f3f570a12ffd 100644
 --- a/net/8021q/vlan_dev.c
 +++ b/net/8021q/vlan_dev.c
-@@ -244,6 +244,14 @@ void vlan_dev_get_realdev_name(const struct net_device *dev, char *result)
- 	strncpy(result, vlan_dev_priv(dev)->real_dev->name, 23);
+@@ -252,12 +252,61 @@ static void vlan_dev_set_addr_vid(struct net_device *vlan_dev, u8 *addr)
+ 	addr[vlan_dev->addr_len + 1] = (vid >> 8) & 0xf;
  }
  
-+static void vlan_dev_set_addr_vid(struct net_device *vlan_dev, u8 *addr)
++static int vlan_dev_add_addr(struct net_device *dev, u8 *addr)
 +{
-+	u16 vid = vlan_dev_vlan_id(vlan_dev);
++	struct net_device *real_dev = vlan_dev_real_dev(dev);
++	unsigned char naddr[ETH_ALEN + NET_8021Q_VID_TSIZE];
 +
-+	addr[vlan_dev->addr_len] = vid & 0xff;
-+	addr[vlan_dev->addr_len + 1] = (vid >> 8) & 0xf;
++	if (real_dev->vid_len) {
++		memcpy(naddr, addr, dev->addr_len);
++		vlan_dev_set_addr_vid(dev, naddr);
++		return dev_vid_uc_add(real_dev, naddr);
++	}
++
++	if (ether_addr_equal(addr, real_dev->dev_addr))
++		return 0;
++
++	return dev_uc_add(real_dev, addr);
++}
++
++static void vlan_dev_del_addr(struct net_device *dev, u8 *addr)
++{
++	struct net_device *real_dev = vlan_dev_real_dev(dev);
++	unsigned char naddr[ETH_ALEN + NET_8021Q_VID_TSIZE];
++
++	if (real_dev->vid_len) {
++		memcpy(naddr, addr, dev->addr_len);
++		vlan_dev_set_addr_vid(dev, naddr);
++		dev_vid_uc_del(real_dev, naddr);
++		return;
++	}
++
++	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr))
++		dev_uc_del(real_dev, addr);
++}
++
++static int vlan_dev_subs_addr(struct net_device *dev, u8 *addr)
++{
++	int err;
++
++	err = vlan_dev_add_addr(dev, addr);
++	if (err < 0)
++		return err;
++
++	vlan_dev_del_addr(dev, dev->dev_addr);
++	return err;
 +}
 +
  bool vlan_dev_inherit_address(struct net_device *dev,
  			      struct net_device *real_dev)
  {
-@@ -482,8 +490,26 @@ static void vlan_dev_change_rx_flags(struct net_device *dev, int change)
- 	}
- }
+ 	if (dev->addr_assign_type != NET_ADDR_STOLEN)
+ 		return false;
  
-+static void vlan_dev_align_addr_vid(struct net_device *vlan_dev)
-+{
-+	struct net_device *real_dev = vlan_dev_real_dev(vlan_dev);
-+	struct netdev_hw_addr *ha;
++	if (real_dev->vid_len)
++		if (vlan_dev_subs_addr(dev, real_dev->dev_addr))
++			return false;
 +
-+	if (!real_dev->vid_len)
-+		return;
-+
-+	netdev_for_each_mc_addr(ha, vlan_dev)
-+		if (!ha->sync_cnt)
-+			vlan_dev_set_addr_vid(vlan_dev, ha->addr);
-+
-+	netdev_for_each_uc_addr(ha, vlan_dev)
-+		if (!ha->sync_cnt)
-+			vlan_dev_set_addr_vid(vlan_dev, ha->addr);
-+}
-+
- static void vlan_dev_set_rx_mode(struct net_device *vlan_dev)
+ 	ether_addr_copy(dev->dev_addr, real_dev->dev_addr);
+ 	call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
+ 	return true;
+@@ -273,9 +322,10 @@ static int vlan_dev_open(struct net_device *dev)
+ 	    !(vlan->flags & VLAN_FLAG_LOOSE_BINDING))
+ 		return -ENETDOWN;
+ 
+-	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr) &&
+-	    !vlan_dev_inherit_address(dev, real_dev)) {
+-		err = dev_uc_add(real_dev, dev->dev_addr);
++	if (ether_addr_equal(dev->dev_addr, real_dev->dev_addr) ||
++	    (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr) &&
++	     !vlan_dev_inherit_address(dev, real_dev))) {
++		err = vlan_dev_add_addr(dev, dev->dev_addr);
+ 		if (err < 0)
+ 			goto out;
+ 	}
+@@ -308,8 +358,7 @@ static int vlan_dev_open(struct net_device *dev)
+ 	if (dev->flags & IFF_ALLMULTI)
+ 		dev_set_allmulti(real_dev, -1);
+ del_unicast:
+-	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr))
+-		dev_uc_del(real_dev, dev->dev_addr);
++	vlan_dev_del_addr(dev, dev->dev_addr);
+ out:
+ 	netif_carrier_off(dev);
+ 	return err;
+@@ -327,8 +376,7 @@ static int vlan_dev_stop(struct net_device *dev)
+ 	if (dev->flags & IFF_PROMISC)
+ 		dev_set_promiscuity(real_dev, -1);
+ 
+-	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr))
+-		dev_uc_del(real_dev, dev->dev_addr);
++	vlan_dev_del_addr(dev, dev->dev_addr);
+ 
+ 	if (!(vlan->flags & VLAN_FLAG_BRIDGE_BINDING))
+ 		netif_carrier_off(dev);
+@@ -337,9 +385,7 @@ static int vlan_dev_stop(struct net_device *dev)
+ 
+ static int vlan_dev_set_mac_address(struct net_device *dev, void *p)
  {
-+	vlan_dev_align_addr_vid(vlan_dev);
- 	dev_mc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
- 	dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
- }
+-	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+ 	struct sockaddr *addr = p;
+-	int err;
+ 
+ 	if (!is_valid_ether_addr(addr->sa_data))
+ 		return -EADDRNOTAVAIL;
+@@ -347,15 +393,8 @@ static int vlan_dev_set_mac_address(struct net_device *dev, void *p)
+ 	if (!(dev->flags & IFF_UP))
+ 		goto out;
+ 
+-	if (!ether_addr_equal(addr->sa_data, real_dev->dev_addr)) {
+-		err = dev_uc_add(real_dev, addr->sa_data);
+-		if (err < 0)
+-			return err;
+-	}
+-
+-	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr))
+-		dev_uc_del(real_dev, dev->dev_addr);
+-
++	if (vlan_dev_subs_addr(dev, addr->sa_data))
++		return true;
+ out:
+ 	ether_addr_copy(dev->dev_addr, addr->sa_data);
+ 	return 0;
 -- 
 2.25.1
 
