@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D9F1DD522
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1931DD524
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730499AbgEURth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        id S1730506AbgEURtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730488AbgEURte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:49:34 -0400
+        with ESMTP id S1730488AbgEURtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:49:40 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C74FC061A0E;
-        Thu, 21 May 2020 10:49:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEADC061A0E;
+        Thu, 21 May 2020 10:49:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=6e1szokp+5sGjFPI9p84mi3A9SxRIVAJpz4ADIBp7w8=; b=Nw49TnXd2ec332ZuZsUIWMrDcL
-        P8/x2szFNKUSiQLdiJYiqyMyGqam43vUVrlk/V5nVUR4A0YpuL1Fvh3SI05cJbyQ9x0hPTvv6KaWR
-        ROR6CmczjR+fiwyqExKVs+C4HGo1X5iLnJ+kEDoKj2ileErG1rsF+0ekQedlnvYzU9cK8guBhL0Tb
-        3tqb4vxjJLmfDwq6ALClKmaBWZzntkK4QIfSIyLa7dE6H21St3GbSUdFWow1+B2o2Vg8z0Gu2aHam
-        qFGCTiwJXn8ZBYWl0cUGl8h2L+U1JNgYp+d8Fxf+/g+gqnTalra3eJmk8TN+7OCFlvcsJf8QVMEly
-        lpdKZkxw==;
+        bh=u1TTf4SfRsqesfP4zvSoxDB03ZVzHC/neNfkO7s8Czo=; b=NhzZqwh5ylYqKwBzTxjQOWOOSz
+        KJVQkirWeuOl+nta/3DCimNSjzo/5OAQpF2GrZpUsrvy31l1CS8j2cqxZfAaT4O3odzA9TkbMjUQo
+        V5mhn18R7aHWuyIOSC0LViehFvro65Jl+tbF3pwzbZagINa90Cn4WJBTI3uupRVaMyFml4ll029Ow
+        ArHJWGeOpiWR4OaQs0SPL/vHXO9x+fnTT+zrDMyppOGpY2gma6697n4/luLSIe/SZaplmgii5qBF+
+        0n0INs8pOEJfJ2tCQvj6pIjWWrnBdynbHbTzx8Ir0Xp0C5dQvwO8Zfo9PVc0I7mNonVn9O0rB1q8i
+        bU97FMlA==;
 Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbpK0-0003Sr-Hj; Thu, 21 May 2020 17:49:32 +0000
+        id 1jbpK3-0003TJ-Nw; Thu, 21 May 2020 17:49:36 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 47/49] sctp: pass a kernel pointer to sctp_setsockopt_auth_supported
-Date:   Thu, 21 May 2020 19:47:22 +0200
-Message-Id: <20200521174724.2635475-48-hch@lst.de>
+Subject: [PATCH 48/49] sctp: pass a kernel pointer to sctp_setsockopt_ecn_supported
+Date:   Thu, 21 May 2020 19:47:23 +0200
+Message-Id: <20200521174724.2635475-49-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
 References: <20200521174724.2635475-1-hch@lst.de>
@@ -54,24 +54,23 @@ directly handling the user pointer.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ net/sctp/socket.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 0aa7265c9c9a0..755bb23ffa3c9 100644
+index 755bb23ffa3c9..f9f4776b0bbfd 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -4322,29 +4322,23 @@ static int sctp_setsockopt_asconf_supported(struct sock *sk,
+@@ -4356,27 +4356,21 @@ static int sctp_setsockopt_auth_supported(struct sock *sk,
  }
  
- static int sctp_setsockopt_auth_supported(struct sock *sk,
--					  char __user *optval,
-+					  struct sctp_assoc_value *params,
- 					  unsigned int optlen)
+ static int sctp_setsockopt_ecn_supported(struct sock *sk,
+-					 char __user *optval,
++					 struct sctp_assoc_value *params,
+ 					 unsigned int optlen)
  {
 -	struct sctp_assoc_value params;
  	struct sctp_association *asoc;
- 	struct sctp_endpoint *ep;
  	int retval = -EINVAL;
  
 -	if (optlen != sizeof(params))
@@ -90,30 +89,20 @@ index 0aa7265c9c9a0..755bb23ffa3c9 100644
  	    sctp_style(sk, UDP))
  		goto out;
  
- 	ep = sctp_sk(sk)->ep;
--	if (params.assoc_value) {
-+	if (params->assoc_value) {
- 		retval = sctp_auth_init(ep, GFP_KERNEL);
- 		if (retval)
- 			goto out;
-@@ -4354,7 +4348,7 @@ static int sctp_setsockopt_auth_supported(struct sock *sk,
- 		}
- 	}
- 
--	ep->auth_enable = !!params.assoc_value;
-+	ep->auth_enable = !!params->assoc_value;
+-	sctp_sk(sk)->ep->ecn_enable = !!params.assoc_value;
++	sctp_sk(sk)->ep->ecn_enable = !!params->assoc_value;
  	retval = 0;
  
  out:
-@@ -4634,7 +4628,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 		retval = sctp_setsockopt_asconf_supported(sk, kopt, optlen);
- 		break;
- 	case SCTP_AUTH_SUPPORTED:
--		retval = sctp_setsockopt_auth_supported(sk, optval, optlen);
-+		retval = sctp_setsockopt_auth_supported(sk, kopt, optlen);
+@@ -4631,7 +4625,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 		retval = sctp_setsockopt_auth_supported(sk, kopt, optlen);
  		break;
  	case SCTP_ECN_SUPPORTED:
- 		retval = sctp_setsockopt_ecn_supported(sk, optval, optlen);
+-		retval = sctp_setsockopt_ecn_supported(sk, optval, optlen);
++		retval = sctp_setsockopt_ecn_supported(sk, kopt, optlen);
+ 		break;
+ 	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
+ 		retval = sctp_setsockopt_pf_expose(sk, optval, optlen);
 -- 
 2.26.2
 
