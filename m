@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F33C1DD4C8
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:47:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246C21DD4D8
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbgEURru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
+        id S1729129AbgEURsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728961AbgEURrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:47:49 -0400
+        with ESMTP id S1729844AbgEURrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:47:52 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692DDC061A0E;
-        Thu, 21 May 2020 10:47:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A1BC061A0E;
+        Thu, 21 May 2020 10:47:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=xriRSFhBjUZn87I8/ZlHJc6Fud4nO2hvhxfK6I1AnAA=; b=HW33xHDIM4qJusn5NLe0yZyHsr
-        xeaLezxer9Q9Goi+IkqLXFNlZtWUufPWHjgibQEXjSFarhbIGi0zrdFzZGAlipTx6rY7hSe9qDwJf
-        ZrnHDsVNetSKaBXwOgc3hLVcpb0rv0p7Mb7Art2pz/FU/+vhH7Gnfdxz7TjbEC1gYje07WipFs6d0
-        xK8p3wmsIcKVKwXyjxDIoBUUCkYgSDTt5nO+p/4EjjbGsn9/nCJIGMKlDc9eEFajtDMytdnMDvWD2
-        7Vxm0lB/6GMOFnnh1RngEcPMAJpSVttLAT9yo6bhD6sg8OWkVYml0vz3OHQDvxkgY0qUw6vrd656R
-        hq9yHm4Q==;
+        bh=YXyPnqvk9m+Tq45lS2l1W+4eb0eHRkvX5n+PUsJrrPs=; b=D1WjVfCBjFk7PcZraBpDoEBib5
+        JZE8KCmz5+jTpx9Zyi42v2LJVMeVXBQoSuYz5RGNP0U0RJQZFEZhsZSdu72mA23V9uHJm6RhU3pFJ
+        uwHMlsnhitP+PV13a4TZX7e+/CvvwScwWz9UbRwjCRLurnXskFnW7mamH0Dpb47W7UH1Jnf/EYknL
+        LqJVbVFN40/3Rai4zl/cDCVZdvux1sriEL9D7k64SqAXLw/Vd+x91VeeyjuwAJZq12Zejf+lVBARx
+        bdCEqjGbal3424tq6E3ZrlqqVJbrYPRnrsDX09g0BTHDlkFf/13pg5xjNFHeSvgBAotYkWRW+vd5a
+        ZMbcOp2w==;
 Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbpIA-00030i-Ql; Thu, 21 May 2020 17:47:39 +0000
+        id 1jbpID-00034H-Eu; Thu, 21 May 2020 17:47:41 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 04/49] sctp: pass a kernel pointer to sctp_setsockopt_disable_fragments
-Date:   Thu, 21 May 2020 19:46:39 +0200
-Message-Id: <20200521174724.2635475-5-hch@lst.de>
+Subject: [PATCH 05/49] sctp: pass a kernel pointer to sctp_setsockopt_events
+Date:   Thu, 21 May 2020 19:46:40 +0200
+Message-Id: <20200521174724.2635475-6-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
 References: <20200521174724.2635475-1-hch@lst.de>
@@ -54,45 +54,45 @@ directly handling the user pointer.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ net/sctp/socket.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index f7621ea99340e..0ca8001acfd50 100644
+index 0ca8001acfd50..34bd2ce2ddf66 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -2180,20 +2180,12 @@ static int sctp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-  * exceeds the current PMTU size, the message will NOT be sent and
-  * instead a error will be indicated to the user.
-  */
--static int sctp_setsockopt_disable_fragments(struct sock *sk,
--					     char __user *optval,
-+static int sctp_setsockopt_disable_fragments(struct sock *sk, int *val,
- 					     unsigned int optlen)
- {
--	int val;
--
- 	if (optlen < sizeof(int))
- 		return -EINVAL;
--
--	if (get_user(val, (int __user *)optval))
--		return -EFAULT;
--
--	sctp_sk(sk)->disable_fragments = (val == 0) ? 0 : 1;
--
-+	sctp_sk(sk)->disable_fragments = (*val == 0) ? 0 : 1;
+@@ -2189,11 +2189,9 @@ static int sctp_setsockopt_disable_fragments(struct sock *sk, int *val,
  	return 0;
  }
  
-@@ -4697,7 +4689,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 		break;
+-static int sctp_setsockopt_events(struct sock *sk, char __user *optval,
++static int sctp_setsockopt_events(struct sock *sk, __u8 *sn_type,
+ 				  unsigned int optlen)
+ {
+-	struct sctp_event_subscribe subscribe;
+-	__u8 *sn_type = (__u8 *)&subscribe;
+ 	struct sctp_sock *sp = sctp_sk(sk);
+ 	struct sctp_association *asoc;
+ 	int i;
+@@ -2201,9 +2199,6 @@ static int sctp_setsockopt_events(struct sock *sk, char __user *optval,
+ 	if (optlen > sizeof(struct sctp_event_subscribe))
+ 		return -EINVAL;
  
- 	case SCTP_DISABLE_FRAGMENTS:
--		retval = sctp_setsockopt_disable_fragments(sk, optval, optlen);
-+		retval = sctp_setsockopt_disable_fragments(sk, kopt, optlen);
+-	if (copy_from_user(&subscribe, optval, optlen))
+-		return -EFAULT;
+-
+ 	for (i = 0; i < optlen; i++)
+ 		sctp_ulpevent_type_set(&sp->subscribe, SCTP_SN_TYPE_BASE + i,
+ 				       sn_type[i]);
+@@ -4693,7 +4688,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
  		break;
  
  	case SCTP_EVENTS:
+-		retval = sctp_setsockopt_events(sk, optval, optlen);
++		retval = sctp_setsockopt_events(sk, kopt, optlen);
+ 		break;
+ 
+ 	case SCTP_AUTOCLOSE:
 -- 
 2.26.2
 
