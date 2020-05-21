@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5741DD802
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7711DD805
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730042AbgEUUIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 16:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51714 "EHLO
+        id S1730137AbgEUUIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 16:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726814AbgEUUIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:08:20 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2868DC061A0E;
-        Thu, 21 May 2020 13:08:20 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id v63so3936128pfb.10;
-        Thu, 21 May 2020 13:08:20 -0700 (PDT)
+        with ESMTP id S1726814AbgEUUIk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:08:40 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFA5C061A0E;
+        Thu, 21 May 2020 13:08:40 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id a5so3762282pjh.2;
+        Thu, 21 May 2020 13:08:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=XlSWxuTl8RjEPaaS0nAI4JGOmMxJguYdjCUdlJurYag=;
-        b=PWo2KMZwDNbRJSev/kbOT/GF1wUZY6kZfMRdhCGAOLlqZsvgOgSVCp1Cd4jm2OkHbO
-         XNCHBZHyB2e2mDvQrClWw7C0SWyKoZPFOYu/vdtG3k7CyAfFRDsGv9KRSct6DWf7Jqm7
-         ZCDfDedXOetN+eFaGvNZD+/doq/F1dRikc8YwpiRDgOMi1v+IuLqe7/UYvlla3fjV9lK
-         ZLZvYVIIDH8iXOgvyaQIrzTiQZFC/PNg0I7Evo1K+uh54D8VIPZw3og9VJFO0izapgsW
-         Uatc1qIt0blStgwS988+Dp7Q4QRV4Xz+UEfnqp7s7f4TCaxvx4kkZJ7/Mv428Ylvii5W
-         +23w==
+        bh=h8798kykb/Brr0NlbljMYDJsYj/j/qJhu/3+WCso6Tc=;
+        b=epK5J1uYN8YNE1E8c45S1rfMeYoE9cSTW90L3IUND9tO9Cwc1fBXdpPKsLJaBkDrv7
+         y//y6K7X5ulv5pyFdWtvoetaBqXr8HOHUcuBMJwYOxU4+Hh0lgwbJPTP/s/c7WslMJ++
+         S2CMNFD8vO6oI/Qae/8/v/zjirc5Ah0J0ZFxz40logz/oaC2RLALGswil0zdzavXD3l4
+         a9jZwSX5s01F8X0ewk0bna/9CQF/nd7DU5EoGOwXrHyjva3L0otTBYtO8JUSU6dV4/qF
+         TkCzFO9fdK/9hgQoVVjbYq9S91MzvWUT9bkwtyvjZQgYUEsIEYNrnncErc0rUoQFLPt8
+         T3HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=XlSWxuTl8RjEPaaS0nAI4JGOmMxJguYdjCUdlJurYag=;
-        b=Q7mXI7xBKqhgIqX1R5gQwE2xaKuhBK2fIhtRaduUlw6CKNBy+lLtVKblYYnZbYrfUe
-         gYagnINXYvSHV2B0+zsDzKlCY49MqKpwZFNGl/ZGyqqAlRRAvg8pLkf8XRgI4gjqs/eh
-         0wGcEogyKFcn6lygotuA5WLMYw8rFeDJtGQLBaPjnWrYJxZh1IUY1KdLiNej8fcFW0ra
-         Uh2S42fmbxfvaGYqkX6mcF3UM1MgvYU3IvexR0ieG4IwBMBlKfI/0f/AObvHsk7kzCg6
-         4BnYp+a6KneBUyjEwKDzNNJ7yCOLQAUTils6weu1Uhj/Xnt57DlHTQAS+x+7VSn0znnT
-         kgzg==
-X-Gm-Message-State: AOAM531zbzsNsjX/BYm2SF4gLS2AsAQjVXeplgAhwRJ49xkjKWAxP2YT
-        oNJJuon+gHcG3miseM8mFWI=
-X-Google-Smtp-Source: ABdhPJwKnCFrNUy+vKYuUveKy8VR2bdYCGhEHCEL1yGDzUfcROQ4ecKTwOjvDzkNo4eLcCCkgXxRxQ==
-X-Received: by 2002:a63:cf17:: with SMTP id j23mr8541974pgg.373.1590091699768;
-        Thu, 21 May 2020 13:08:19 -0700 (PDT)
+        bh=h8798kykb/Brr0NlbljMYDJsYj/j/qJhu/3+WCso6Tc=;
+        b=YgiIFsE5GBFdLZHqhNBINMNWTVumaWUMDqW/D/yXFr9sdfcwnwiVleFEewXP+KPc6u
+         FTgX0cXYDcTjRUBAkbNua168eP6Ij0lDhrDrLKy/i5RLY6mAtliD4JAo4o6CMkqj2efc
+         ik9tQt3oG2Ygx4Q4xq0nwZ6JbUUx2nrBalXwtlcFWGwKUbTkO5HxQdAXa/cOL3bjscF4
+         WARIA7wMfLKGUZh1dTM+kdcT9ySLsordSJpd4i+le4e+UDst6gkq/UZQPVJ4Z5cQtOGT
+         z9BPtXqLQX68cHBltCMuRWcunK0mPtqsbBW+HqimJqpDINBWBvoQDA2dDbxOCgKQkbs1
+         SNog==
+X-Gm-Message-State: AOAM532flEAz4zwQVMo7P9awZ2zlW2rEjEg1Xg+tLC9UvYBzpAGpOEdr
+        +K9bsa9CPtKx9VVqH701w2Y=
+X-Google-Smtp-Source: ABdhPJz1V77OVN0A5a85/y8hSJtTxsg2bQYoWCIKXLOdNkY3bFJYHAhYGXtpvXMmkCPcmz7w6N2JBQ==
+X-Received: by 2002:a17:902:b68d:: with SMTP id c13mr846910pls.210.1590091720009;
+        Thu, 21 May 2020 13:08:40 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id d18sm5123513pfq.136.2020.05.21.13.08.11
+        by smtp.gmail.com with ESMTPSA id q3sm4364649pgp.69.2020.05.21.13.08.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 May 2020 13:08:18 -0700 (PDT)
-Subject: [bpf-next PATCH v2 3/4] bpf: selftests,
- verifier case for non null pointer map value branch
+        Thu, 21 May 2020 13:08:39 -0700 (PDT)
+Subject: [bpf-next PATCH v2 4/4] bpf: selftests,
+ add printk to test_sk_lookup_kern to encode null ptr check
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     yhs@fb.com, andrii.nakryiko@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Thu, 21 May 2020 13:08:06 -0700
-Message-ID: <159009168650.6313.7434084136067263554.stgit@john-Precision-5820-Tower>
+Date:   Thu, 21 May 2020 13:08:26 -0700
+Message-ID: <159009170603.6313.1715279795045285176.stgit@john-Precision-5820-Tower>
 In-Reply-To: <159009128301.6313.11384218513010252427.stgit@john-Precision-5820-Tower>
 References: <159009128301.6313.11384218513010252427.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -67,42 +67,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we have pointer type that is known to be non-null we only follow
-the non-null branch. This adds tests to cover the map_value pointer
-returned from a map lookup. To force an error if both branches are
-followed we do an ALU op on R10.
+Adding a printk to test_sk_lookup_kern created the reported failure
+where a pointer type is checked twice for NULL. Lets add it to the
+progs test test_sk_lookup_kern.c so we test the case from C all the
+way into the verifier.
+
+We already have printk's in selftests so seems OK to add another one.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../testing/selftests/bpf/verifier/value_or_null.c |   19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ .../selftests/bpf/progs/test_sk_lookup_kern.c      |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/verifier/value_or_null.c b/tools/testing/selftests/bpf/verifier/value_or_null.c
-index 860d4a7..3ecb70a 100644
---- a/tools/testing/selftests/bpf/verifier/value_or_null.c
-+++ b/tools/testing/selftests/bpf/verifier/value_or_null.c
-@@ -150,3 +150,22 @@
- 	.result_unpriv = REJECT,
- 	.flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
- },
-+{
-+	"map lookup and null branch prediction",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_1, 10),
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_1, -8),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_6, 0, 2),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 0, 1),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_10, 10),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_8b = { 4 },
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+},
+diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c b/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
+index d2b38fa..e83d0b4 100644
+--- a/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
++++ b/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
+@@ -73,6 +73,7 @@ int bpf_sk_lookup_test0(struct __sk_buff *skb)
+ 
+ 	tuple_len = ipv4 ? sizeof(tuple->ipv4) : sizeof(tuple->ipv6);
+ 	sk = bpf_sk_lookup_tcp(skb, tuple, tuple_len, BPF_F_CURRENT_NETNS, 0);
++	bpf_printk("sk=%d\n", sk ? 1 : 0);
+ 	if (sk)
+ 		bpf_sk_release(sk);
+ 	return sk ? TC_ACT_OK : TC_ACT_UNSPEC;
 
