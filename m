@@ -2,139 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F2CA1DD5FD
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2821DD605
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbgEUSaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728240AbgEUSaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:30:04 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D28C061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:30:03 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id m2so332054qtd.7
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=XLS24cejbtc6Htky1a093lmIhjzBrNYI8TJ1SeDPjXw=;
-        b=SNWiUqAAzgW/pxeTIJLY47L6u7nQZUvA68VJY1lqNmW+Qy4zqREM7jxmDPA9oeUVBy
-         QBIsLOISWJi0vuI/I68/N/0hVo2C0kX0iQ+0BZCVN0lm+Y0NLA7ojct/g6sSNlvhA80n
-         RoLwYB6/t7k21lP+IThvnkvMb9N3FkuKCesWf7WdOBWSMhQPsc2t/XICbH8YBpbAeGPb
-         A/TIRWv51Ve7JOLIDRcCiOvMD9PIYjcA2+avNKoDez6ZPMSI36CFoJvr6HigZzbc7C4+
-         IjL4IAEIRORCfT3rt/b8IYlBxsZZxWn8YyYszh7QRXDHSstip4VQfqI0nfHgJbUDROha
-         dfSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=XLS24cejbtc6Htky1a093lmIhjzBrNYI8TJ1SeDPjXw=;
-        b=YmINXHU46hK8PjUgwSREvcc5tM1TDMsI7TAfuVneeg3QuMTIImliX/rhDF74NPkgNg
-         E6UlYAbA4Ik7VHtS7fvmPiGz9srE1cr/w43IzlD8sLrkCWzUeyvrSLgij9oL6CTANfas
-         WoyN/jo8zCayjz8HkR4rqgE/tbNOO+LgKNK5JNSm0ZZ/9Zbi8GqcYvO6heU7hkQnH0nO
-         NHXLKmW7Qs0pZDT0UgwBd9VwEPb22TOIEe/+wY1scJWXszeY6RHmnvOdrjDK58UvY4IJ
-         XZtLCtCoLkwdjMmzdh15mLRLi97YmR1cuQzfUPAsW60yJYIT1Lvt8Hx6dqWJuz+7Yoh0
-         02xg==
-X-Gm-Message-State: AOAM532qHV5zTYnUkiIHiCOAQBCwd6b+v0o8DsRp2FTVjNAONqwbA8dp
-        KvzS7osTBDmLvA0AZn4CYOKjlvLOBC+SFw==
-X-Google-Smtp-Source: ABdhPJy5c/g1BgNN/fpRuUMtbgZTuNiY/q8rfPsY4AujeOo3OucijGeVGmRur8rpo+6aQUPk572roFjC1Mvfjg==
-X-Received: by 2002:a05:6214:b0c:: with SMTP id u12mr47490qvj.242.1590085802178;
- Thu, 21 May 2020 11:30:02 -0700 (PDT)
-Date:   Thu, 21 May 2020 11:29:58 -0700
-Message-Id: <20200521182958.163436-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
-Subject: [PATCH net] tipc: block BH before using dst_cache
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729504AbgEUScd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:32:33 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23036 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728670AbgEUScd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:32:33 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04LIUmHL011401;
+        Thu, 21 May 2020 11:32:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=wXvlziOBgFn61qBc+Zj4Y6739F5SfRCrFlbSudJXfOc=;
+ b=Mg69xmWrbPu7vCbZBssnFifajoscSIQjm9XVv+/8wNnqb7nIJ4UoiGTUo68r1Gf2X7Zq
+ zwiavgJs8q66jEitCncOsfvfd4gFKOtdwtRa09/54bZ3SOwDXFNiqrgUt3Gk1TSoPaB2
+ V5VxPCKwBaGh5r9FCUV7woAsLoo86lJDmlk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 315uev9ycm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 21 May 2020 11:32:18 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 21 May 2020 11:32:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AlFU4k8AE31/K7avLVP8yLdvt5QGo9Qf6IXpqePFnKFGkWQwRjX6Qilw1aPZec+rj+icu46mS9XLxoqxVKxF6nKxCOiVt5qsYTldgxHjqKbITcpoJ0TvI8T4UhK5WOvevrCHCaUX9luIeXF67xUok38HrsgQ2rxgltQ1NrNADy6i9NhjZm6pGvEKiJzOzp0AMi+PumBjkLzlEpHIIaLqYMdyFepXPGd2PMUhPrAZmg3ATA+idO3gVxIrkHWqcC1JvDMigKEfWsiH1QUm2iguEii4zJWLR911D7F7FJL9StdzF7xOsDBRR+PnPcvQt/ce+mv0OaFmwcuJa/nHlpX4qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wXvlziOBgFn61qBc+Zj4Y6739F5SfRCrFlbSudJXfOc=;
+ b=e3Mxi0dbYeXHWajoB/dW1KZ7CK5uMhTve2h4+Vs0/H+gtWk2uLjKsCcOKf+UltGRfqYygpAMbwidDSG5/oe1wJdlviE1rodocZLkyCNI0gXAUjyb5IWcXPYj92Ix+BjEtavy4c7DkhcuVtV5gOby5a9+3xArI4mHjnQ8gxZFCqatWD/13gumCokhfmgnAJ29GWAZTf6H0q80zdWReb0BjVHyjkBhL0OBfnsFKJ4JPguyYWQRQfN3cpLDoUU/BPr7B3GbEj9fRXPuC66pT1ONo9KSQaVhzDITe4iXU3W1Kd+tLczTC+GYJ1SxgwxoRaExeTx9/hGX6hNdJXgW35GEbg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wXvlziOBgFn61qBc+Zj4Y6739F5SfRCrFlbSudJXfOc=;
+ b=ie6kGusxMSP5l8RzSAPBrGz0jIEwrgX61mQM34GHq2FQtNjINgOeLM89OtYJkrYMA8ZZLu8Oz/EI1MIKW9jkvaE3LfxEg1R6JDan3Ip1Xneus/ZUVgZ4fau20nHzk3kMSABZMeDz0L6ewz9LCQhw/fi/TFqL27pLDZOByvptqHc=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2279.namprd15.prod.outlook.com (2603:10b6:a02:85::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Thu, 21 May
+ 2020 18:32:16 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3021.024; Thu, 21 May 2020
+ 18:32:16 +0000
+Subject: Re: [bpf-next PATCH v3 5/5] bpf: selftests, test probe_* helpers from
+ SCHED_CLS
+To:     John Fastabend <john.fastabend@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+CC:     <lmb@cloudflare.com>, <bpf@vger.kernel.org>,
+        <jakub@cloudflare.com>, <netdev@vger.kernel.org>
+References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
+ <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <68b320be-89e5-6b39-05c0-4edbda01f5d1@fb.com>
+Date:   Thu, 21 May 2020 11:32:14 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+In-Reply-To: <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY3PR04CA0012.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::17) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:741b) by BY3PR04CA0012.namprd04.prod.outlook.com (2603:10b6:a03:217::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Thu, 21 May 2020 18:32:15 +0000
+X-Originating-IP: [2620:10d:c090:400::5:741b]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9a7f3016-8868-405e-8fe8-08d7fdb549aa
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2279:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB227945791BB6DEB3F2BADC40D3B70@BYAPR15MB2279.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
+X-Forefront-PRVS: 041032FF37
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pJqowaaOV455IYVNwMnh5qEoI/xnNRGLXST9Mp6rlxWSDJL3e3LNrd8F+lV8+mQlxUmBZBdbsHiGZd28Ou2uewSgMtZDIFbrXG05uUGzsYi1Lpf9hHoUHrTmMttkf8sUI9ZtDdgW1g4v9eb5My3fuXKnGhRpS4f5NSs1MP6QxqgrlcfC1TJXLLVhjOrV9Uf2vIpxqEt6LodZBWUukxRXgJTqKoVGeK1eq0wTqHrb+FutA634KJ3ezdHQP3ym5+Kb1E3ih4ady7NkpZNk/Bjk1rRn/zB9RXEbpJ2ZmJVVdy04djSkeWP04/p1YzQObs5/xGsA7cV0GFMzCxmkI+IwkyunfgfE2cZ/c/LYt91FbHk14ji/YQqiWZ9e3npHrUjF
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(39860400002)(376002)(346002)(396003)(366004)(8676002)(66476007)(66556008)(66946007)(5660300002)(8936002)(186003)(16526019)(478600001)(2616005)(31686004)(6512007)(86362001)(31696002)(6486002)(52116002)(316002)(6506007)(53546011)(2906002)(4326008)(36756003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: eQuZoTl60ZZikUL5bkJ95w5eFxe5puxsm3A7JBS5KrOaqgulVq78tkC4w3GBB35/P+uNV1cbkBoPMCWTQ/jdDXkIuFXjfxWaIYq7yydvXU4HfacteJ4L6IXk0BwwDycAW6+eanHumdKQr0FHQzMJUuCdLZaCBX8bkj6j2/T1ZQ4v0Kg+MSpJdxAWeTa5ufqrZQjrmp/BbK3p8UkwF2PNvp+p5dg2J0ZyiadfOPIHcDuhlNOM3Rogiylla44V9QOizApSs2k8Dz24xhQh1Yl8AkDQR2JDD4ZYZcOmNK6Eq1prYUkL1smY8bh82DoMru0n5Ry22PWIGWCvHAwM5wrfcjcKZE5LSYBGgRWia8qU1B6Wq46PdWdET0RWyulKUZSAM2yERMaACpqcT24wanF3lOYSFBmXj/HuEMGcSDo0rHAAnpBeKo/Qa4w5AS2/e/ULOA6nAT5jNCbOa+zxx2G00iEpWhO76eCXmm+wP+4nJ3bWp4hLD6E/y2zVGHdlQQKc5NC634iSoKbUZm9q9k+YIQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a7f3016-8868-405e-8fe8-08d7fdb549aa
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2020 18:32:16.6015
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T9cOlFHEOMcUf4Y9NBF0/Su2+SjVzH3jtxjQCYgeji4iVBm24dZyoJcjFiFaztDT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2279
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-21_12:2020-05-21,2020-05-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 cotscore=-2147483648
+ priorityscore=1501 impostorscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ spamscore=0 clxscore=1015 lowpriorityscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005210134
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dst_cache_get() documents it must be used with BH disabled.
 
-sysbot reported :
 
-BUG: using smp_processor_id() in preemptible [00000000] code: /21697
-caller is dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
-CPU: 0 PID: 21697 Comm:  Not tainted 5.7.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
- tipc_udp_xmit.isra.0+0xb9/0xad0 net/tipc/udp_media.c:164
- tipc_udp_send_msg+0x3e6/0x490 net/tipc/udp_media.c:244
- tipc_bearer_xmit_skb+0x1de/0x3f0 net/tipc/bearer.c:526
- tipc_enable_bearer+0xb2f/0xd60 net/tipc/bearer.c:331
- __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
- tipc_nl_bearer_enable+0x1e/0x30 net/tipc/bearer.c:1003
- genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
- genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
- netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
- ___sys_sendmsg+0x100/0x170 net/socket.c:2416
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45ca29
+On 5/21/20 7:36 AM, John Fastabend wrote:
+> Lets test using probe* in SCHED_CLS network programs as well just
+> to be sure these keep working. Its cheap to add the extra test
+> and provides a second context to test outside of sk_msg after
+> we generalized probe* helpers to all networking types.
+> 
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
-Cc: Xin Long <lucien.xin@gmail.com>
-Cc: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/tipc/udp_media.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Ack with a minor nit below.
 
-diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
-index d6620ad535461a4d04ed5ba90569ce8b7df9f994..28a283f26a8dff24d613e6ed57e5e69d894dae66 100644
---- a/net/tipc/udp_media.c
-+++ b/net/tipc/udp_media.c
-@@ -161,9 +161,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
- 			 struct udp_bearer *ub, struct udp_media_addr *src,
- 			 struct udp_media_addr *dst, struct dst_cache *cache)
- {
--	struct dst_entry *ndst = dst_cache_get(cache);
-+	struct dst_entry *ndst;
- 	int ttl, err = 0;
- 
-+	local_bh_disable();
-+	ndst = dst_cache_get(cache);
- 	if (dst->proto == htons(ETH_P_IP)) {
- 		struct rtable *rt = (struct rtable *)ndst;
- 
-@@ -210,9 +212,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
- 					   src->port, dst->port, false);
- #endif
- 	}
-+	local_bh_enable();
- 	return err;
- 
- tx_error:
-+	local_bh_enable();
- 	kfree_skb(skb);
- 	return err;
- }
--- 
-2.27.0.rc0.183.gde8f92d652-goog
+Acked-by: Yonghong Song <yhs@fb.com>
 
+> ---
+>   .../testing/selftests/bpf/prog_tests/skb_helpers.c |   30 ++++++++++++++++++
+>   .../testing/selftests/bpf/progs/test_skb_helpers.c |   33 ++++++++++++++++++++
+>   2 files changed, 63 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_helpers.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_skb_helpers.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/skb_helpers.c b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
+> new file mode 100644
+> index 0000000..5a865c4
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/skb_helpers.c
+> @@ -0,0 +1,30 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <test_progs.h>
+> +#include <network_helpers.h>
+> +
+> +void test_skb_helpers(void)
+> +{
+> +	struct __sk_buff skb = {
+> +		.wire_len = 100,
+> +		.gso_segs = 8,
+> +		.gso_size = 10,
+> +	};
+> +	struct bpf_prog_test_run_attr tattr = {
+> +		.data_in = &pkt_v4,
+> +		.data_size_in = sizeof(pkt_v4),
+> +		.ctx_in = &skb,
+> +		.ctx_size_in = sizeof(skb),
+> +		.ctx_out = &skb,
+> +		.ctx_size_out = sizeof(skb),
+> +	};
+> +	struct bpf_object *obj;
+> +	int err;
+> +
+> +	err = bpf_prog_load("./test_skb_helpers.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
+> +			    &tattr.prog_fd);
+> +	if (CHECK_ATTR(err, "load", "err %d errno %d\n", err, errno))
+> +		return;
+> +
+> +	err = bpf_prog_test_run_xattr(&tattr);
+> +	CHECK_ATTR(err != 0, "len", "err %d errno %d\n", err, errno);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_skb_helpers.c b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
+> new file mode 100644
+> index 0000000..05a1260
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_endian.h>
+> +
+> +int _version SEC("version") = 1;
+> +
+> +#define TEST_COMM_LEN 10
+> +
+> +struct bpf_map_def SEC("maps") cgroup_map = {
+> +	.type			= BPF_MAP_TYPE_CGROUP_ARRAY,
+> +	.key_size		= sizeof(u32),
+> +	.value_size		= sizeof(u32),
+> +	.max_entries	= 1,
+> +};
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +SEC("classifier/test_skb_helpers")
+> +int test_skb_helpers(struct __sk_buff *skb)
+> +{
+> +	struct task_struct *task;
+> +	char *comm[TEST_COMM_LEN];
+> +	__u32 tpid;
+> +	int ctask;
+> +
+> +	ctask = bpf_current_task_under_cgroup(&cgroup_map, 0);
+
+ctask is not used. Could you test ctask against expected value?
+
+> +	task = (struct task_struct *)bpf_get_current_task();
+> +
+> +	bpf_probe_read_kernel(&tpid , sizeof(tpid), &task->tgid);
+> +	bpf_probe_read_kernel_str(&comm, sizeof(comm), &task->comm);
+> +	return 0;
+> +}
+> 
