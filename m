@@ -2,113 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A5E1DC7BD
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0151DC7DB
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:41:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbgEUHdX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 May 2020 03:33:23 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:47941 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728373AbgEUHdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 03:33:23 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-61-1H23FiuAM022CjKnvDidHA-1; Thu, 21 May 2020 08:32:15 +0100
-X-MC-Unique: 1H23FiuAM022CjKnvDidHA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 21 May 2020 08:32:14 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 21 May 2020 08:32:14 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: RE: [PATCH net-next] sctp: Pull the user copies out of the individual
- sockopt functions.
-Thread-Topic: [PATCH net-next] sctp: Pull the user copies out of the
- individual sockopt functions.
-Thread-Index: AdYut/UmmYS4izffR6iTi1nqaxYM2QARN02AABEfr1A=
-Date:   Thu, 21 May 2020 07:32:14 +0000
-Message-ID: <e777874fbd0e4ccb813e08145f3c3359@AcuMS.aculab.com>
-References: <fd94b5e41a7c4edc8f743c56a04ed2c9@AcuMS.aculab.com>
- <20200521001725.GW2491@localhost.localdomain>
-In-Reply-To: <20200521001725.GW2491@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728489AbgEUHlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 03:41:50 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:26895 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728245AbgEUHlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 03:41:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590046909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oHQ+imPSFVixB/pE0KSN2Fs8U6r2Mmjiu0+HMJzZ/Tw=;
+        b=Fh7+3SVmokvsut8uzec94d79MXeNAmKWOYVny8BBPaHFATK5towTFnVzWNQAQoYt1bgza4
+        /D8lq2kAuc5kNvl6fkG73Y+2wKJPqkzCxPA8+ioZzhToJOjyXW7phmSrBs7r5hfQPJxvdu
+        aVi3UlWmqgRNxTm9SPBtsxk8Os22Fi0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-15-iHSdMCy9N26WBxgfRQv9uw-1; Thu, 21 May 2020 03:41:45 -0400
+X-MC-Unique: iHSdMCy9N26WBxgfRQv9uw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 855D7835B41;
+        Thu, 21 May 2020 07:41:44 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 84E0379584;
+        Thu, 21 May 2020 07:41:43 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <159001690181.18663.663730118645460940.stgit@warthog.procyon.org.uk>
+References: <159001690181.18663.663730118645460940.stgit@warthog.procyon.org.uk>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net 0/3] rxrpc: Fix retransmission timeout and ACK discard
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <70946.1590046902.1@warthog.procyon.org.uk>
+Date:   Thu, 21 May 2020 08:41:42 +0100
+Message-ID: <70947.1590046902@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: 'Marcelo Ricardo Leitner'
-> Sent: 21 May 2020 01:17
-> On Wed, May 20, 2020 at 03:08:13PM +0000, David Laight wrote:
-> ...
-> > Only SCTP_SOCKOPT_CONNECTX3 contains an indirect pointer.
-> > It is also the only getsockopt() that wants to return a buffer
-> > and an error code. It is also definitely abusing getsockopt().
-> ...
-> > @@ -1375,11 +1350,11 @@ struct compat_sctp_getaddrs_old {
-> >  #endif
-> >
-> >  static int sctp_getsockopt_connectx3(struct sock *sk, int len,
-> > -				     char __user *optval,
-> > -				     int __user *optlen)
-> > +				     struct sctp_getaddrs_old *param,
-> > +				     int *optlen)
-> >  {
-> > -	struct sctp_getaddrs_old param;
-> >  	sctp_assoc_t assoc_id = 0;
-> > +	struct sockaddr *addrs;
-> >  	int err = 0;
-> >
-> >  #ifdef CONFIG_COMPAT
-..
-> >  	} else
-> >  #endif
-> >  	{
-> > -		if (len < sizeof(param))
-> > +		if (len < sizeof(*param))
-> >  			return -EINVAL;
-> > -		if (copy_from_user(&param, optval, sizeof(param)))
-> > -			return -EFAULT;
-> >  	}
-> >
-> > -	err = __sctp_setsockopt_connectx(sk, (struct sockaddr __user *)
-> > -					 param.addrs, param.addr_num,
-> > +	addrs = memdup_user(param->addrs, param->addr_num);
-> 
-> I'm staring at this for a while now but I don't get this memdup_user.
-> AFAICT, params->addrs is not __user anymore here, because
-> sctp_getsockopt() copied the whole thing already, no?
-> Also weird because it is being called from kernel_sctp_getsockopt(),
-> which now has no knowledge of __user buffers.
-> Maybe I didn't get something from the patch description.
+I've posted a new version of this with a fixed description for patch 1.
 
-The connectx3 sockopt buffer contains a pointer to the user buffer
-that contains the actual addresses.
-So a second copy_from_user() is needed.
-
-This does mean that this option can only be actioned from userspace.
-
-Kernel code can get the same functionality using one of the
-other interfaces to connectx().
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+David
 
