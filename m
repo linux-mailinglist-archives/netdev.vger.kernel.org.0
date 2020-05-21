@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F1B1DDA58
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 00:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DFC31DDA6D
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 00:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730602AbgEUWjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 18:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730041AbgEUWjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 18:39:23 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57719C061A0E;
-        Thu, 21 May 2020 15:39:22 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id l3so3873517qvo.7;
-        Thu, 21 May 2020 15:39:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fNYgEZ8Ck1KWFXKaH+w8+B6kwRdAiB9m4/sQS04laBE=;
-        b=pEEqAU8ubBVIEPXrglB0kRBYDRIou7xH2r2Xh498buMIiZcrAH/WsvaMS12hKSIFoI
-         3l9pTtvA0MOIwSBNKAfJsGkKPczvRJQDcvn5AGRu4fjCIArcmeOKbjGrqiNB+3Ahxcej
-         1pShh6ida4YZDbjm6V2vbbKESkt9PTuhWaRVlkMsBROpKhX9LCaYyZxRWRVAU+ugmenw
-         VoK91lCJ02ujk3JHIjqcqkemAQjkvyt2lKpVmg7r3x2Z3zxLWI6TGp+AR4Sn7m/+qPrM
-         SPk7AuFhvVPPReyQbWcsGGB9ay7W1WbhWT4OB8pba4qfuWJi7VELsvB0k9MC8byzRBWS
-         TvRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fNYgEZ8Ck1KWFXKaH+w8+B6kwRdAiB9m4/sQS04laBE=;
-        b=k4vULGWXVTnUav2VPI5+F5pYu7eHx9cUJuxCxjP+dcOTqYO6MrPe4otw1jvODA/Usx
-         CS84/0YdhMYImUlYDTT6NzLTGBOYLO9UhH+kE4k8cm/3BEilEsoZsDjBeXypc2ZzEcpq
-         V5JH6PVBczYnNAZIXExhDvChWHfApxbJCC4WqB/QGqQqgTvAZk7yhMipLEcThMgSbb0E
-         +tG3r1KppaRo9TSaqUr2KEo3mC8IisImsx8EQFTSB1tY7y095ACB1bzUmqcCruFbF2km
-         i/3+sdf9s0cleczdDN0LWulZvwnwdLVHSer3J9WCz1IEcJtTzl1NEbDuX+l3TwSlaPFc
-         79vQ==
-X-Gm-Message-State: AOAM533+RhI2D0tYZxpuMKw/1OFBjkJ7ww05Js39VX6MDXlfeVHb9h2O
-        YRm5VZ35D/ZFHbuZ4oYevjdHZcGhqNMfmr0ieSw=
-X-Google-Smtp-Source: ABdhPJxpKnDFesUo015MwUYJWJfyNHkFGr/MSVRcDqmV0uVhSicyPI93JHCNZPzTRQxAvv58chhQEyqFgAm6XFMTW0M=
-X-Received: by 2002:a0c:a892:: with SMTP id x18mr927337qva.247.1590100761503;
- Thu, 21 May 2020 15:39:21 -0700 (PDT)
+        id S1730680AbgEUWqX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 May 2020 18:46:23 -0400
+Received: from mga01.intel.com ([192.55.52.88]:36682 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730371AbgEUWqX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 18:46:23 -0400
+IronPort-SDR: E+DLNaujHMbB2glVcrP+il1LBTLwByF0Wr9OqE8TBoMpaVzZpvkYZZwPWWMypenW3q1RGVSRZP
+ 3JWwh1NVcUXQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 15:46:22 -0700
+IronPort-SDR: DI0EcICjVwKpoK5MkqDRIEfHw6cm/NqwXzr+tY6xSDKEEldYpc/LhJDF2Be5r5mR6rQRvCzj7S
+ 4Bwt3ibh37nA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,419,1583222400"; 
+   d="scan'208";a="283216488"
+Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
+  by orsmga002.jf.intel.com with ESMTP; 21 May 2020 15:46:22 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.61]) by
+ ORSMSX107.amr.corp.intel.com ([169.254.1.106]) with mapi id 14.03.0439.000;
+ Thu, 21 May 2020 15:46:22 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Guedes, Andre" <andre.guedes@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Brown, Aaron F" <aaron.f.brown@intel.com>
+Subject: RE: [net-next 03/15] igc: Add support for source address filters in
+ core
+Thread-Topic: [net-next 03/15] igc: Add support for source address filters
+ in core
+Thread-Index: AQHWL0FlgPpZUMqG1E6bKdsihznH3aizLyGA///1LsA=
+Date:   Thu, 21 May 2020 22:46:21 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D94044986CC07C@ORSMSX112.amr.corp.intel.com>
+References: <20200521072758.440264-1-jeffrey.t.kirsher@intel.com>
+        <20200521072758.440264-4-jeffrey.t.kirsher@intel.com>
+ <20200521092323.70b8c9b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200521092323.70b8c9b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20200521191752.3448223-1-kafai@fb.com>
-In-Reply-To: <20200521191752.3448223-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 21 May 2020 15:39:10 -0700
-Message-ID: <CAEf4BzYQmUCbQ-PB2UR5n=WEiCHU3T3zQcQCnjvqCew6rmjGLg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] bpf: Allow inner map with different max_entries
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 12:18 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> This series allows the outer map to be updated with inner map in different
-> size as long as it is safe (meaning the max_entries is not used in the
-> verification time during prog load).
->
-> Please see individual patch for details.
->
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, May 21, 2020 09:23
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; Guedes, Andre <andre.guedes@intel.com>;
+> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> Brown, Aaron F <aaron.f.brown@intel.com>
+> Subject: Re: [net-next 03/15] igc: Add support for source address filters in core
+> 
+> On Thu, 21 May 2020 00:27:46 -0700 Jeff Kirsher wrote:
+> >  /**
+> >   * igc_del_mac_filter() - Delete MAC address filter
+> >   * @adapter: Pointer to adapter where the filter should be deleted from
+> > + * #type: MAC address filter type (source or destination)
+> 
+> @ here^ otherwise:
+> 
+> drivers/net/ethernet/intel/igc/igc_main.c:2282: warning: Function parameter or
+> member 'type' not described in 'igc_del_mac_filter'
+> 
+[Kirsher, Jeffrey T] 
 
-Few thoughts:
+I will get that cleaned up.  
 
-1. You describe WHAT, but not necessarily WHY. Can you please
-elaborate in descriptions what motivates these changes?
-2. IMO, "capabilities" is word that way too strongly correlates with
-Linux capabilities framework, it's just confusing. It's also more of a
-property of a map type, than what map is capable of, but it's more
-philosophical distinction, of course :)
-3. I'm honestly not convinced that patch #1 qualifies as a clean up. I
-think one specific check for types of maps that are not compatible
-with map-in-map is just fine. Instead you are spreading this bit flags
-into a long list of maps, most of which ARE compatible. It's just hard
-to even see which ones are not compatible. I like current way better.
-4. Then for size check change, again, it's really much simpler and
-cleaner just to have a special case in check in bpf_map_meta_equal for
-cases where map size matters.
-5. I also wonder if for those inner maps for which size doesn't
-matter, maybe we should set max_elements to zero when setting
-inner_meta to show that size doesn't matter? This is minor, though.
-
-
-> Martin KaFai Lau (3):
->   bpf: Clean up inner map type check
->   bpf: Relax the max_entries check for inner map
->   bpf: selftests: Add test for different inner map size
->
->  include/linux/bpf.h                           | 18 +++++-
->  include/linux/bpf_types.h                     | 64 +++++++++++--------
->  kernel/bpf/btf.c                              |  2 +-
->  kernel/bpf/map_in_map.c                       | 12 ++--
->  kernel/bpf/syscall.c                          | 19 +++++-
->  kernel/bpf/verifier.c                         |  2 +-
->  .../selftests/bpf/prog_tests/btf_map_in_map.c | 12 ++++
->  .../selftests/bpf/progs/test_btf_map_in_map.c | 31 +++++++++
->  8 files changed, 119 insertions(+), 41 deletions(-)
->
-> --
-> 2.24.1
->
+> >   * @addr: MAC address
+> >   *
+> >   * Return: 0 in case of success, negative errno code otherwise.
+> >   */
+> > -int igc_del_mac_filter(struct igc_adapter *adapter, const u8 *addr)
+> > +int igc_del_mac_filter(struct igc_adapter *adapter,
+> > +		       enum igc_mac_filter_type type, const u8 *addr)
