@@ -2,142 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 150B31DD6C7
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:11:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974081DD6CB
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730167AbgEUTLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 15:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729856AbgEUTLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 15:11:12 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33819C061A0E;
-        Thu, 21 May 2020 12:11:11 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id n15so3573977pjt.4;
-        Thu, 21 May 2020 12:11:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=9QIhsGopa4M7tNFZalbxD5E1jKNa/x6AV8khESsAzfw=;
-        b=XraSPReeOvuRLrCMQyMan2StG4J/4ANzvJuv+ESjC1cUhtAIyTk3y8OWZcTEWeUWIX
-         TbAhlfUJGUW7Df2yOlYUyg70fh7luH8K1K4FvxcmxFCgdXNwU5s99Wz6iAea9Wq2ioVc
-         9GP2sBTpDPqBxWHWM3SS11JzN3Z1KV+5LoAwVMTrs4G5hVBCwL95a7wkiglzgd2cDtby
-         GkvSNYMvKIgPr/+zvXflFafqaOHFTyDghbtlvgHoQSOdHRPyRFNkOd2CNpA7ZAFwUWzN
-         DFNLSgDOvD4kXB2o+OWxMCApyrf2OEJ2uv7+rOMe6bO0GO9cxe5bPe9/3M+LyrZgAmJ3
-         CQqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=9QIhsGopa4M7tNFZalbxD5E1jKNa/x6AV8khESsAzfw=;
-        b=oNKLi4wgfMFvUnhFioTY3HivtD3uzsxGjX240QZvx9i+XFuMk8YQhWn2FUej7Vr7m3
-         zBSYLux/xVVBQ404RD2B48ATEiwXErpzlrYMux1BnW88+JifHvMe/3Aa/UOI3kh5JE7u
-         7pe3HvxU+RBmdFwxdO/9B7YXibwIk5FZYgxID5Wr/HiLpUs5G8T6WEGqA74A7Jxmuvw3
-         v2WeBo1UqMXkrJrdOxtgSCoTMm7R8c+niVHp4J9P1ctMSDz+3xcF11uAFNLKL1OduZUj
-         tH7eIbh63YzzcXtHYlvxzDF8Rd9SBgtNgRZy5+SWHLox2KdBSZuuCWARDyqyxgUDsvVy
-         Q1dg==
-X-Gm-Message-State: AOAM531VP0PTp0VHQ4N77ejohyrzONI3sYLkCg4O95y4OXC0Npblbvio
-        dZ2na/taKALQ61X7spfaY9I=
-X-Google-Smtp-Source: ABdhPJyVqouICpvgSpmk7ixtdFpzyv9O1iyyQgOOwbCV7QbNrhwwZ0gz4B+K+QvD37sqLktLMNnHQQ==
-X-Received: by 2002:a17:90a:9f02:: with SMTP id n2mr13658696pjp.173.1590088270772;
-        Thu, 21 May 2020 12:11:10 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id k3sm5187161pjc.38.2020.05.21.12.11.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 12:11:09 -0700 (PDT)
-Date:   Thu, 21 May 2020 12:11:03 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>
-Message-ID: <5ec6d2473d523_7d832ae77617e5c07a@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4BzYJRaY+tsa2TH5WoLAEo=ckd=D2XK5u4YFezkj4jfrZLQ@mail.gmail.com>
-References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
- <159007177838.10695.12211214514015683724.stgit@john-Precision-5820-Tower>
- <CAEf4BzYJRaY+tsa2TH5WoLAEo=ckd=D2XK5u4YFezkj4jfrZLQ@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v3 5/5] bpf: selftests, test probe_* helpers from
- SCHED_CLS
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1730247AbgEUTL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 15:11:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53142 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729600AbgEUTL6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 15:11:58 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D974720738;
+        Thu, 21 May 2020 19:11:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590088318;
+        bh=BOaCzvsugTAtR2o4ZnY/slrtQWaIKEKMV9EkbrmZAWc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y0bd9oGtneMZeTibUjjwOOlvSpbTQWi9dkXDEuWehN+p+7Qq7Q1ZxuZ+p+mQ4t4yp
+         PDyzvjxEaWdW/jd43wFXa1Zot1t4O9gzJzj9zo0K/DvsQKWWLT7M+umeIS0thjT6Lw
+         3U0S7dWOKshkhHXfkwdNDknqGI76pxD0uPnDa5sU=
+Date:   Thu, 21 May 2020 12:11:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mark Starovoytov <mstarovoitov@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: Re: [EXT] Re: [PATCH net-next 03/12] net: atlantic: changes for
+ multi-TC support
+Message-ID: <20200521121156.7f776ef8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CH2PR18MB323861420A81270EC7207300D3B70@CH2PR18MB3238.namprd18.prod.outlook.com>
+References: <20200520134734.2014-1-irusskikh@marvell.com>
+        <20200520134734.2014-4-irusskikh@marvell.com>
+        <20200520140154.6b6328de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CH2PR18MB323861420A81270EC7207300D3B70@CH2PR18MB3238.namprd18.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Thu, May 21, 2020 at 7:36 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > Lets test using probe* in SCHED_CLS network programs as well just
-> > to be sure these keep working. Its cheap to add the extra test
-> > and provides a second context to test outside of sk_msg after
-> > we generalized probe* helpers to all networking types.
-> >
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
+On Thu, 21 May 2020 09:18:44 +0000 Mark Starovoytov wrote:
+> Hi Jakub,
+> 
+> > > In the first generation of our hardware (A1), a whole traffic class is
+> > > consumed for PTP handling in FW (FW uses it to send the ptp data and
+> > > to send back timestamps).
+> > > Since this conflicts with QoS (user is unable to use the reserved
+> > > TC2), we suggest using module param to give the user a choice:
+> > > disabling PTP allows using all available TCs.  
+> > 
+> > Is there really no way to get the config automatically chosen when user sets
+> > up TCs or does SIOCSHWTSTAMP? It's fine to return -EOPNOTSUPP when too
+> > many things are enabled, but user having to set module parameters upfront
+> > is quite painful.  
+> 
+> Module param is not a must have for usage, default config allows the
+> user to use TCs and PTP features simultaneously with one major
+> limitation: TC2 is reserved for PTP, so if the user tries to
+> send/receive anything on TC2, if won't quite work unfortunately. If
+> the user wants to get "everything" from QoS/TC (e.g. use all the TCs)
+> - he can explicitly disable the PTP via module param.
+> 
+> Right now we really aren't sure we can dynamically rearrange
+> resources between QoS and PTP, since disabling/enabling PTP requires
+> a complete HW reconfiguration unfortunately. Even more unfortunate is
+> the fact that we can't change the TC, which is reserved for PTP,
+> because TC2 is hardcoded in firmware.
+> 
+> We would prefer to keep things as is for now, if possible. We'll
+> discuss this with HW/FW team(s) and submit a follow-up patch, if we
+> find a way to automatically choose the config.
 
-[...]
-
-> > +++ b/tools/testing/selftests/bpf/progs/test_skb_helpers.c
-> > @@ -0,0 +1,33 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +#include "vmlinux.h"
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_endian.h>
-> > +
-> > +int _version SEC("version") = 1;
-> 
-> version is not needed
-> 
-> > +
-> > +#define TEST_COMM_LEN 10
-> 
-> doesn't matter for this test, but it's 16 everywhere, let's stay consistent
-> 
-> > +
-> > +struct bpf_map_def SEC("maps") cgroup_map = {
-> > +       .type                   = BPF_MAP_TYPE_CGROUP_ARRAY,
-> > +       .key_size               = sizeof(u32),
-> > +       .value_size             = sizeof(u32),
-> > +       .max_entries    = 1,
-> > +};
-> > +
-> 
-> Please use new BTF syntax for maps
-> 
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +SEC("classifier/test_skb_helpers")
-> > +int test_skb_helpers(struct __sk_buff *skb)
-> > +{
-> > +       struct task_struct *task;
-> > +       char *comm[TEST_COMM_LEN];
-> 
-> this is array of pointer, not array of chars
-> 
-> > +       __u32 tpid;
-> > +       int ctask;
-> > +
-> > +       ctask = bpf_current_task_under_cgroup(&cgroup_map, 0);
-> 
-> compiler might complain that ctask is written, but not read. Let's
-> assign it to some global variable?
-
-I'll do a read here and check the value then it should be fine.
-
-Will fold in the above comments as well.
-
-> > +       task = (struct task_struct *)bpf_get_current_task();
-> > +
-> > +       bpf_probe_read_kernel(&tpid , sizeof(tpid), &task->tgid);
-> > +       bpf_probe_read_kernel_str(&comm, sizeof(comm), &task->comm);
-> > +       return 0;
-> > +}
-> >
+Module parameters are very strongly discouraged for networking drivers.
+They also constitute uAPI, and can't be changed, short-term solution
+like that is really far from ideal.
