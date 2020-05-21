@@ -2,108 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B591DCF6E
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C011DCFB1
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727909AbgEUOUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 10:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
+        id S1728198AbgEUO2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 10:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726965AbgEUOUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 10:20:52 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E168CC061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 07:20:51 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id z72so6547872wmc.2
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 07:20:51 -0700 (PDT)
+        with ESMTP id S1726973AbgEUO2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 10:28:17 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8735BC061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 07:28:17 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id n11so1890580qkn.8
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 07:28:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VBXYUzxxqkENu4TO46SmuDNL5rdQ2BFuNi667WDOjWY=;
-        b=R+ROoWiqPsVyHrFIK/SjqM6wzY91Zs5IGViltmk3Alczi/V2s1CkLhC2/sz4VpI0Eu
-         eQiH0aBr/hXgvntA57k+DPD+Nk4nKRP9XYSwxeLK2Gm4vDEfBb0WSEFBaviQ61xiSoDY
-         qjUEKAuNBVjvT/T4vt0fBk+kVr74kZKWMfbWnmUcL34VLxFVLLpJdgwPRQANe2ly7TFs
-         wTnD5b/hxzyUdi+XIXG6r8HybkKDX1Ihzz+ZNdbiWR1/eSz3Ki2cxMKTkKWIsHBwx5zW
-         TeV+lvS7imovX+3UlCwh9XRDnXbI5wH/n0tD/eCnYirFq+lZs18K5ZNF9y+fPwzizlhU
-         D2JQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aJY0Ep267ouSAsUGL+ry/Av1nT7Mp2t1Mda3g0C6rV8=;
+        b=FpDavvqmhyH4TVpicJ5DzY7zQZsoMuzIrMNXmgE8gmzuiJO21+n4dcBsTqUKWLgS9U
+         JPuhtdzwLRQp/Ev48KcLWMiFgNr5j/IpYv5qH7HqqAeyVcwimI7EL0L0p/fpzD9HObuG
+         nDbu6X2nt0Ud3Ue2hrhuy0coZEfZbsV8D++7u5huuMy7NrNfv1d4ioZWnSEvvS14SRh7
+         emHV+Wk8FllyGlC/poviNGagE9to53QAWhXuNKSbfqUmlJOE15J1+AlXo6se+ti5sOTG
+         8OFACe2YHqXk19jTeypQrb5GmoowUVZFULiC0iCI1SFerw8AF9YtNeeYb/q7cq2KmUr1
+         xkpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VBXYUzxxqkENu4TO46SmuDNL5rdQ2BFuNi667WDOjWY=;
-        b=B96RnTylvMgsMjLsgFSVZnO8Z7qLsfaDsTz4z4BZYjhDaslDon8z93Thm8xNtsan4L
-         nmnjZlalSidno/7I+BrxzjohjMNaNpxr2QNF8w+RYnpmt5dJPIw62tVrz4IGD1kfTjiX
-         zmk9CfRJQAikL6qQtAah9Vows2DxMbvxB/hwdJ73PIWx6WC9Z16cQ9qIQ2BfRc4O7aFR
-         jjkeoVuA7TW9R4rxnxJMvXB/wmhO6ixbXxIPg5955AD1rTpNmGLNCty0zmnk+jOAt2A3
-         e9hXzveyI1GE0Q5yvODGUidiu4imZDvIHk/kpHgxprl9abg8zAvxWqrI4b89VPVel/Jm
-         dmjQ==
-X-Gm-Message-State: AOAM530cj2omxt333qcj1xkc7wRsxhIaxm9wDrbicj0X3b4V2OMUqW8W
-        9NH0f15S+VvFZCP1NbJ7p7IxhgmeyGc=
-X-Google-Smtp-Source: ABdhPJzhCykgougGUgnxnq64W96/4SpMMquK9OnNtHceaX6B70Y1Jv8ipfp2XNdsTabA1AyIx8vrCQ==
-X-Received: by 2002:a7b:c40f:: with SMTP id k15mr9828875wmi.65.1590070850275;
-        Thu, 21 May 2020 07:20:50 -0700 (PDT)
-Received: from tool.localnet ([213.177.197.81])
-        by smtp.googlemail.com with ESMTPSA id p23sm6626985wma.17.2020.05.21.07.20.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 07:20:49 -0700 (PDT)
-From:   Daniel =?ISO-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, thomas.petazzoni@bootlin.com, andrew@lunn.ch
-Subject: [PATCH] net: mvneta: only do WoL speed down if the PHY is valid
-Date:   Thu, 21 May 2020 16:19:53 +0200
-Message-ID: <3268996.Ej3Lftc7GC@tool>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aJY0Ep267ouSAsUGL+ry/Av1nT7Mp2t1Mda3g0C6rV8=;
+        b=foJ9KWdgITpEYB4U+VSAlKVvAOocFfqoOUekk/gEmeRsuvoB/TauwLrMrzGl4KRD7a
+         pDTUeeFeqxD2HA9kQ8427tBX01OGkdP9trHFBSNMoFYNX3ZaiEUtFREsCHVYQCD5zaB3
+         ETuJnQaV3nepmkJ5HbphhzPnac2pw8QabVVa4Dg4pxvcyhcTAK0myRwgsuIy4PF4IXXK
+         4NNQ7eL+uLzBMJ2U66+esKs33kQRJvxeMbucTqcDXCNZ1GFOGaUTrAkKXnPrP/9tjQU1
+         AWrgb2Z3dTm12gLakI1wdjRYL9yEyNerKXN633IIwveGOy3+sKQJMVr2oplNykS7+PF/
+         Jk+A==
+X-Gm-Message-State: AOAM531HlkFdqoWc5g/XrmsLnRptJ2/KFDsqeZDJpVHXiK9v74lLB0N1
+        KllQUzeWphFd04mQ/LnzpVF6OFjWLvFU+aIFQpPiBg==
+X-Google-Smtp-Source: ABdhPJxrgUvL9r2CtDZP+Dx+xHoFfqIlq1qblS0fwHc9+D/mKy8J+gNQB+Y3hIT2EVRIyQ3hiWL5XITfNJ94tr3Hynk=
+X-Received: by 2002:a37:797:: with SMTP id 145mr7147025qkh.8.1590071296446;
+ Thu, 21 May 2020 07:28:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <0000000000007b211005a6187dc9@google.com> <20200521140803.GI30374@kadam>
+In-Reply-To: <20200521140803.GI30374@kadam>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 21 May 2020 16:28:05 +0200
+Message-ID: <CACT4Y+bzz-h5vNGH0rDMUiuGZVX01oXawXAPbjtnNHb1KVWSvg@mail.gmail.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in br_mrp_parse
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     syzbot <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>,
+        bridge@lists.linux-foundation.org,
+        David Miller <davem@davemloft.net>,
+        horatiu.vultur@microchip.com, kuba@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzkaller <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previous patch:
- "net: mvneta: speed down the PHY, if WoL used, to save energy"
+On Thu, May 21, 2020 at 4:08 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Wed, May 20, 2020 at 11:23:18AM -0700, syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following crash on:
+> >
+> > HEAD commit:    dda18a5c selftests/bpf: Convert bpf_iter_test_kern{3, 4}.c..
+> > git tree:       bpf-next
+>                   ^^^^^^^^
+>
+> I can figure out what this is from reading Next/Trees but it would be
+> more useful if it were easier to script.
 
-was causing a NULL pointer dereference when ethernet switches are
-connected to mvneta, because they aren't handled directly as PHYs.
+Hi Dan,
 
-=46ix it by restricting the mentioned patch for the PHY detected cases.
+Is there a canonical way to refer to a particular branch of a particular tree?
+From what I observed on mailing lists people seem to say "linux-next"
+or "upstream tree" and that seems to mean specific things that
+everybody understands.
 
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Daniel Gonz=C3=A1lez Cabanelas <dgcbueu@gmail.com>
-=2D--
- drivers/net/ethernet/marvell/mvneta.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+What do you want to script? Note syzbot is not promising a specific
+stable API wrt these plain text emails. These are flattened into text
+format for human consumption and sent over unreliable media.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/m=
-arvell/mvneta.c
-index 41d2a0eac..f9170bc93 100644
-=2D-- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3567,8 +3567,9 @@ static void mvneta_start_dev(struct mvneta_port *pp)
-=20
- 	phylink_start(pp->phylink);
-=20
-=2D	/* We may have called phy_speed_down before */
-=2D	phy_speed_up(pp->dev->phydev);
-+	if(pp->dev->phydev)
-+		/* We may have called phy_speed_down before */
-+		phy_speed_up(pp->dev->phydev);
-=20
- 	netif_tx_start_all_queues(pp->dev);
- }
-@@ -3577,7 +3578,7 @@ static void mvneta_stop_dev(struct mvneta_port *pp)
- {
- 	unsigned int cpu;
-=20
-=2D	if (device_may_wakeup(&pp->dev->dev))
-+	if (pp->dev->phydev && device_may_wakeup(&pp->dev->dev))
- 		phy_speed_down(pp->dev->phydev, false);
-=20
- 	phylink_stop(pp->phylink);
-=2D-=20
-2.26.2
-
-
-
-
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=10c4e63c100000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=668983fd3dd1087e
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=9c6f0f1f8e32223df9a4
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17eaba3c100000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=128598f6100000
+> >
+>
+> regards,
+> dan carpenter
+>
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20200521140803.GI30374%40kadam.
