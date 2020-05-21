@@ -2,162 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA2041DC8B3
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 10:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F99A1DC8B9
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 10:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728653AbgEUIek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 04:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728571AbgEUIek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 04:34:40 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF45CC061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:34:38 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id l21so7826250eji.4
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NBjbnCOh61b7cgKVaUsbqPDW94/cGzD2MQ0ZynD04OI=;
-        b=VtkWO+UlZXR6dHQYJP28BAe/uNVGTjTU4W4MhifCI5ih7nSlP0Cxfn/QVDu7CgjjJ5
-         oaY/rFGpUpZDRwZ5Jh6hXzagrfQr+Twd84fwdKMZjm390/Hf/J0dJ5WS+tRg6QST0Os2
-         eNazPat/1t4w31HVH0E87ceKkM7BB8PtPK3Jo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NBjbnCOh61b7cgKVaUsbqPDW94/cGzD2MQ0ZynD04OI=;
-        b=X2ScagpDVpHlf+x7Lw/DV3QWBwcXsCYct1m9oVTvdv+Yv26BQt9w3tL8Aq3YEYOFxI
-         tO8D7ZtgLYdKMWXjK0RlTpXAKrO9Sckuf08eP2gr8zhm3HRSIcCkunpaCb9SCKs30u6Y
-         XZNEfp2zFFaCeEjSFb3ojCjNxlONv+UY268DTiXn1O9fX25DHfPNhE5r/+vm/odbB45W
-         UE6Kgqa1OeqYoWso4Z16dx0mIjQpeWnZpNIaFr+Er2apsFeLHs+OISN7GGte/NVMzdmM
-         K23UpueC1YLJU07CdMznefgh4tWwsrJk/btxSgKVJNq8QBlD/s15vlVJHQ3zz9B8AuGj
-         NXag==
-X-Gm-Message-State: AOAM532PC6wzSaXpzZ1bCC/pUCT25u4qbGzo90DUqirv3Khu1Wy9aeEd
-        LdgO3Ahcq/jEfYHKBy3rKiebcw==
-X-Google-Smtp-Source: ABdhPJwqPcShx3HijRp3m1yW21LlqC0tmWcv7pLr0/2aUApSFyhEOXvWg/jt93rib49tzmYEZWy+xw==
-X-Received: by 2002:a17:906:82d9:: with SMTP id a25mr2442349ejy.43.1590050077182;
-        Thu, 21 May 2020 01:34:37 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id b14sm4231685edx.93.2020.05.21.01.34.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 01:34:36 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Subject: [PATCH bpf v2] flow_dissector: Drop BPF flow dissector prog ref on netns cleanup
-Date:   Thu, 21 May 2020 10:34:35 +0200
-Message-Id: <20200521083435.560256-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.25.4
+        id S1728697AbgEUIer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 04:34:47 -0400
+Received: from verein.lst.de ([213.95.11.211]:53663 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728571AbgEUIer (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 04:34:47 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 2946668BEB; Thu, 21 May 2020 10:34:43 +0200 (CEST)
+Date:   Thu, 21 May 2020 10:34:42 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, hch@lst.de, kuba@kernel.org,
+        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        vyasevich@gmail.com, nhorman@tuxdriver.com, jmaloy@redhat.com,
+        ying.xue@windriver.com, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-nvme@lists.infradead.org, target-devel@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        ceph-devel@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-nfs@vger.kernel.org
+Subject: Re: [PATCH 31/33] sctp: add sctp_sock_set_nodelay
+Message-ID: <20200521083442.GA7771@lst.de>
+References: <20200520195509.2215098-1-hch@lst.de> <20200520195509.2215098-32-hch@lst.de> <20200520231001.GU2491@localhost.localdomain> <20200520.162355.2212209708127373208.davem@davemloft.net> <20200520233913.GV2491@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200520233913.GV2491@localhost.localdomain>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When attaching a flow dissector program to a network namespace with
-bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
+On Wed, May 20, 2020 at 08:39:13PM -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, May 20, 2020 at 04:23:55PM -0700, David Miller wrote:
+> > From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > Date: Wed, 20 May 2020 20:10:01 -0300
+> > 
+> > > The duplication with sctp_setsockopt_nodelay() is quite silly/bad.
+> > > Also, why have the 'true' hardcoded? It's what dlm uses, yes, but the
+> > > API could be a bit more complete than that.
+> > 
+> > The APIs are being designed based upon what in-tree users actually
+> > make use of.  We can expand things later if necessary.
+> 
+> Sometimes expanding things later can be though, thus why the worry.
+> But ok, I get it. Thanks.
+> 
+> The comment still applies, though. (re the duplication)
 
-If netns gets destroyed while a flow dissector is still attached, and there
-are no other references to the prog, we leak the reference and the program
-remains loaded.
+Where do you see duplication?
 
-Leak can be reproduced by running flow dissector tests from selftests/bpf:
+sctp_setsockopt_nodelay does the following things:
 
-  # bpftool prog list
-  # ./test_flow_dissector.sh
-  ...
-  selftests: test_flow_dissector [PASS]
-  # bpftool prog list
-  4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
-          loaded_at 2020-05-20T18:50:53+0200  uid 0
-          xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
-          btf_id 4
-  #
+ - verifies optlen, returns -EINVAL if it doesn't match
+ - calls get_user, returns -EFAULT on error
+ - converts the value from get_user to a boolean and assigns it
+   to sctp_sk(sk)->nodelay
+ - returns 0.
 
-Fix it by detaching the flow dissector program when netns is going away.
+sctp_sock_set_nodelay does:
 
-Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
-
-Notes:
-    v2:
-    - Share code between pre_exit and prog_detach callbacks (Stanislav)
-
- net/core/flow_dissector.c | 30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
-
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 3eff84824c8b..3ad723b2e299 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -160,12 +160,10 @@ int skb_flow_dissector_bpf_prog_attach(const union bpf_attr *attr,
- 	return ret;
- }
- 
--int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
-+static int flow_dissector_bpf_prog_detach(struct net *net)
- {
- 	struct bpf_prog *attached;
--	struct net *net;
- 
--	net = current->nsproxy->net_ns;
- 	mutex_lock(&flow_dissector_mutex);
- 	attached = rcu_dereference_protected(net->flow_dissector_prog,
- 					     lockdep_is_held(&flow_dissector_mutex));
-@@ -179,6 +177,24 @@ int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
- 	return 0;
- }
- 
-+int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
-+{
-+	return flow_dissector_bpf_prog_detach(current->nsproxy->net_ns);
-+}
-+
-+static void __net_exit flow_dissector_pernet_pre_exit(struct net *net)
-+{
-+	/* We're not racing with attach/detach because there are no
-+	 * references to netns left when pre_exit gets called.
-+	 */
-+	if (rcu_access_pointer(net->flow_dissector_prog))
-+		flow_dissector_bpf_prog_detach(net);
-+}
-+
-+static struct pernet_operations flow_dissector_pernet_ops __net_initdata = {
-+	.pre_exit = flow_dissector_pernet_pre_exit,
-+};
-+
- /**
-  * __skb_flow_get_ports - extract the upper layer ports and return them
-  * @skb: sk_buff to extract the ports from
-@@ -1827,6 +1843,8 @@ EXPORT_SYMBOL(flow_keys_basic_dissector);
- 
- static int __init init_default_flow_dissectors(void)
- {
-+	int err;
-+
- 	skb_flow_dissector_init(&flow_keys_dissector,
- 				flow_keys_dissector_keys,
- 				ARRAY_SIZE(flow_keys_dissector_keys));
-@@ -1836,7 +1854,11 @@ static int __init init_default_flow_dissectors(void)
- 	skb_flow_dissector_init(&flow_keys_basic_dissector,
- 				flow_keys_basic_dissector_keys,
- 				ARRAY_SIZE(flow_keys_basic_dissector_keys));
--	return 0;
-+
-+	err = register_pernet_subsys(&flow_dissector_pernet_ops);
-+
-+	WARN_ON(err);
-+	return err;
- }
- 
- core_initcall(init_default_flow_dissectors);
--- 
-2.25.4
-
+ - call lock_sock
+ - assign true to sctp_sk(sk)->nodelay
+ - call release_sock
+ - does not return an error code
