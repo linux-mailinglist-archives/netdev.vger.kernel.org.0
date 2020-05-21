@@ -2,204 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0191DC73A
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 08:57:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A82BC1DC778
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728311AbgEUG5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 02:57:15 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:40651 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728293AbgEUG5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 02:57:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590044231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9+Mv5i8MSKtHCvpHZZreAZlo0OINtZUjUsAoIOF5LUM=;
-        b=ZdY/4i8oDAVnXbZwH0sNULtUMBtfsMjVjue7dKJ3StLVJJdVCdhC99T9H2UB+WNHlekSaZ
-        lcMv8tbQ4gluoSSS010JdOrsJ7FR/cErEqwESAjElNRkcAfvYJ/nRSr86QKuuETbyji+qJ
-        y/vV7Ik01ZpmyDNauFzN/eCzwgvW2Xk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-430-U3f6eiKgPBC8-icDPEO1Fw-1; Thu, 21 May 2020 02:57:07 -0400
-X-MC-Unique: U3f6eiKgPBC8-icDPEO1Fw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 75FE21800D42;
-        Thu, 21 May 2020 06:57:06 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7488482EF0;
-        Thu, 21 May 2020 06:57:05 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 3/3] rxrpc: Fix ack discard [ver #2]
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 21 May 2020 07:57:04 +0100
-Message-ID: <159004422463.66254.7878850483899373608.stgit@warthog.procyon.org.uk>
-In-Reply-To: <159004420353.66254.3034741691675793468.stgit@warthog.procyon.org.uk>
-References: <159004420353.66254.3034741691675793468.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.22
+        id S1728344AbgEUHSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 03:18:41 -0400
+Received: from mga07.intel.com ([134.134.136.100]:21638 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727003AbgEUHSk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 03:18:40 -0400
+IronPort-SDR: 4nsNLTQZfNs95rObxDwYMxPx2B2r+/NFBvk+eg1cVjNsbIPOVfnQ5xg3JSQkF4siPBk5XmW/P6
+ iiXa+pb22efQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 00:18:39 -0700
+IronPort-SDR: wD1J0RiBcaH5inP/q1/VmR+8icliGLku7DlqZNiEJLH2hXlfu4hIREGmE+Y7iB8/AI4DQcgwFU
+ fapasPQ19F5w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,417,1583222400"; 
+   d="scan'208";a="466805733"
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+  by fmsmga006.fm.intel.com with ESMTP; 21 May 2020 00:18:39 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 21 May 2020 00:18:38 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 21 May 2020 00:18:38 -0700
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 21 May 2020 00:18:38 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.176)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 21 May 2020 00:18:34 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JfjwDS5HwpzJXHikvuMKOFBdAsS0nTu7/aRc4M3xY8qGa8mZ7hhEXfzDXVov1Df7FnofGjqDaCM3iR0Zaex2xZHapzN/JhSI/ze3mYmBz9mKwfIfetMw59Efk3VSdp9TU95SunEVuKFJBzRwHfzstXtQS3vMhM2UjONo54saJOrwsbLJgjhX5O93h1rm12BUIa4U1HfWWg++F7aD6vho8l1jtLYn+35biE0JV8QPk3AtT9j6tqj/S5hSiSotXDSrXNKWePFSh72wUYK6EERTrbtQIUO1d/PiIq5nffe18lMWJej026zTbUGYAtELd2ef9O0h697Xmw4yoDj/qnNTdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CRRjvVUPTJ095tVm5JoehRYe1+3H/O8DMISh13sElAc=;
+ b=i2zrQiMEmPYos8db7ZZ5iT1Iv8rC+BDhB3XbutXjH1UrjIwAFbLW2E6dCZ1G/xQvm21wllfQI5oBD9kfWssLLwqAN4cjKK2BQT4E+9ErXNasEvmcalFGUtr0ktHSD0c6/XcMIRpQzLyXcxU7g56Ps3hHXzFhb+PH1ORLBB7mvEbD4/1+HA5ss1O5wT7c1cmnK4/feNrTXEz3vZGncMcqa+nuSU7VRG+lej9oHa8n7I1gIx6gt/FVsjBgBzZfFCrNugqXl2CWpASpzZHSe/qLDCAxHippgF24O8RXIpVVwmasW5sbxZznqcsMwGsQnpmIUmawEu2EqKcQidR/0tl4sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CRRjvVUPTJ095tVm5JoehRYe1+3H/O8DMISh13sElAc=;
+ b=QB+ObGK8xWyFoAkUW7s2r6HgF24y6xCSNItuyPIjl6f/A+7SYaIwK3k1Cw/0NZNljp+GReuJ+Zp74PQFTVwcjAcmeOV8y1pTkYI7KW84qauEMj9BZlV622YnC4GeHqwdBCYKo8TOJn5NesFkynG49dYhPpIvnwbwnwrglohkIO4=
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
+ DM6PR11MB4124.namprd11.prod.outlook.com (2603:10b6:5:4::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3000.25; Thu, 21 May 2020 07:18:28 +0000
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::40b:5b49:b17d:d875]) by DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::40b:5b49:b17d:d875%7]) with mapi id 15.20.3000.022; Thu, 21 May 2020
+ 07:18:28 +0000
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        "Avargil, Raanan" <raanan.avargil@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] e1000e: Disable TSO for buffer overrun workaround
+Thread-Topic: [PATCH] e1000e: Disable TSO for buffer overrun workaround
+Thread-Index: AQHWJHrrUX35Ry/Ivk2wFI4JysDy3KiyNsXw
+Date:   Thu, 21 May 2020 07:18:28 +0000
+Message-ID: <DM6PR11MB2890015E69238E4215E93CB9BCB70@DM6PR11MB2890.namprd11.prod.outlook.com>
+References: <20200507142108.13090-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20200507142108.13090-1-kai.heng.feng@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: canonical.com; dkim=none (message not signed)
+ header.d=none;canonical.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.134.136.209]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9d14964a-a43b-41ac-7903-08d7fd5728c6
+x-ms-traffictypediagnostic: DM6PR11MB4124:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB41248272D36CAF73C4862AAFBCB70@DM6PR11MB4124.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:186;
+x-forefront-prvs: 041032FF37
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: L7GmU/8oO1kAkeEY8PHePqyRfBIE+/P7/+oV5vFyQmN3NLlnCE60+m7iTZBsP+wt/Cj7SPFv7lsxrsu+3D3+OLqarJzNvGd40DaPINwP8ELckwpibBUFrBMS73WLYGgopk7fcF/PD1yjr+Ue7+G4lN9cPRVpF4vc1v6q2aB4m5LX8AtzAKnnqxwst2NbXssrMDrUnVoYOupb8bUdZL4MTwRww8w0iT9osH6eL0h4bf7aF5FODWAEBjuNHyHRjOHR1LY6yfDrO8uhEgTicK9KwvzCzOGYVp6Haj3CI9+GWzooGeP6+1Sx71iCrNMHc5XpSzL7J2wvO0I3iunmdtID6/iolU0TuzUdYJZ92kJbJHnrT+5kfDdp2O9UWISPLnfknw/nmnzs74fyg5bxGYohQABF96jLnfq1hGFy5vse8A6YaOv7T8Fe5M5ThvToQFSlx5GKU8dBaieHfwarz+zUlgMbhFRaoy+WR1ZklCUfbY9mUcxrB42aC4+73THNaSy95GtJEftvddk7vP9tUZJjwg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39860400002)(136003)(366004)(376002)(346002)(86362001)(55016002)(66446008)(66476007)(76116006)(4326008)(33656002)(64756008)(186003)(9686003)(66946007)(66556008)(26005)(110136005)(478600001)(53546011)(6506007)(54906003)(5660300002)(8676002)(7696005)(6636002)(2906002)(71200400001)(52536014)(8936002)(316002)(966005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: fqM2jgRu9DjWGq/3csQolFDU7kIzuiNFWtEXKljMwX8w8q1z/QsIKpna8nykmGbEHq5znMbX9jZnUxT+3Bpfn4tLTiTZWuVDhf5EevtoOlPipakG7aqH+aYyq3DfivPuAyorvS9j+lx0G9DCif/ecLi16AOOittGHLypA+rUoE95V6iCMkgi0PsBCJv+Xqji1mT3BRLRj0PmXQ9kX7x0lP01SDABEoEdDcgeanc6Z9lHS4G3bJTQKawiGijO2oXF6O6y1pgNuB121tgtKTejrvOdS9kVkLfB/YyMMslBd3zDvztMOWZSuPuLrXXclX+s2rQCgG+hxpsSe/fD8JGhrI1gTgdqpZHRZS1m32n223zLBIIK0DqYv+51Tv4Fc+8jSTPlxdlzuuOWhD1lEIcrpOB+I06m3nbZjn7ivQOl6C5IZHQgjWzv5DPNpw7UjnC5xNNKe2LGQMVtj/tUS5Jci9SkcEFheizcsppSjUhNmYrK5XQ6jz3tuEnWa5KHsIMK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d14964a-a43b-41ac-7903-08d7fd5728c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2020 07:18:28.3502
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m2yR+wnnXog+V4CMVvG5NhkwYWK9kdwBafaosSmPYb5Zs1o30lNcTHl220KwVvc/KZ6otieXBCc9L5t8eB53kw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4124
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Rx protocol has a "previousPacket" field in it that is not handled in
-the same way by all protocol implementations.  Sometimes it contains the
-serial number of the last DATA packet received, sometimes the sequence
-number of the last DATA packet received and sometimes the highest sequence
-number so far received.
-
-AF_RXRPC is using this to weed out ACKs that are out of date (it's possible
-for ACK packets to get reordered on the wire), but this does not work with
-OpenAFS which will just stick the sequence number of the last packet seen
-into previousPacket.
-
-The issue being seen is that big AFS FS.StoreData RPC (eg. of ~256MiB) are
-timing out when partly sent.  A trace was captured, with an additional
-tracepoint to show ACKs being discarded in rxrpc_input_ack().  Here's an
-excerpt showing the problem.
-
- 52873.203230: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 0002449c q=00024499 fl=09
-
-A DATA packet with sequence number 00024499 has been transmitted (the "q="
-field).
-
- ...
- 52873.243296: rxrpc_rx_ack: c=000004ae 00012a2b DLY r=00024499 f=00024497 p=00024496 n=0
- 52873.243376: rxrpc_rx_ack: c=000004ae 00012a2c IDL r=0002449b f=00024499 p=00024498 n=0
- 52873.243383: rxrpc_rx_ack: c=000004ae 00012a2d OOS r=0002449d f=00024499 p=0002449a n=2
-
-The Out-Of-Sequence ACK indicates that the server didn't see DATA sequence
-number 00024499, but did see seq 0002449a (previousPacket, shown as "p=",
-skipped the number, but firstPacket, "f=", which shows the bottom of the
-window is set at that point).
-
- 52873.252663: rxrpc_retransmit: c=000004ae q=24499 a=02 xp=14581537
- 52873.252664: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244bc q=00024499 fl=0b *RETRANS*
-
-The packet has been retransmitted.  Retransmission recurs until the peer
-says it got the packet.
-
- 52873.271013: rxrpc_rx_ack: c=000004ae 00012a31 OOS r=000244a1 f=00024499 p=0002449e n=6
-
-More OOS ACKs indicate that the other packets that are already in the
-transmission pipeline are being received.  The specific-ACK list is up to 6
-ACKs and NAKs.
-
- ...
- 52873.284792: rxrpc_rx_ack: c=000004ae 00012a49 OOS r=000244b9 f=00024499 p=000244b6 n=30
- 52873.284802: rxrpc_retransmit: c=000004ae q=24499 a=0a xp=63505500
- 52873.284804: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244c2 q=00024499 fl=0b *RETRANS*
- 52873.287468: rxrpc_rx_ack: c=000004ae 00012a4a OOS r=000244ba f=00024499 p=000244b7 n=31
- 52873.287478: rxrpc_rx_ack: c=000004ae 00012a4b OOS r=000244bb f=00024499 p=000244b8 n=32
-
-At this point, the server's receive window is full (n=32) with presumably 1
-NAK'd packet and 31 ACK'd packets.  We can't transmit any more packets.
-
- 52873.287488: rxrpc_retransmit: c=000004ae q=24499 a=0a xp=61327980
- 52873.287489: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244c3 q=00024499 fl=0b *RETRANS*
- 52873.293850: rxrpc_rx_ack: c=000004ae 00012a4c DLY r=000244bc f=000244a0 p=00024499 n=25
-
-And now we've received an ACK indicating that a DATA retransmission was
-received.  7 packets have been processed (the occupied part of the window
-moved, as indicated by f= and n=).
-
- 52873.293853: rxrpc_rx_discard_ack: c=000004ae r=00012a4c 000244a0<00024499 00024499<000244b8
-
-However, the DLY ACK gets discarded because its previousPacket has gone
-backwards (from p=000244b8, in the ACK at 52873.287478 to p=00024499 in the
-ACK at 52873.293850).
-
-We then end up in a continuous cycle of retransmit/discard.  kafs fails to
-update its window because it's discarding the ACKs and can't transmit an
-extra packet that would clear the issue because the window is full.
-OpenAFS doesn't change the previousPacket value in the ACKs because no new
-DATA packets are received with a different previousPacket number.
-
-Fix this by altering the discard check to only discard an ACK based on
-previousPacket if there was no advance in the firstPacket.  This allows us
-to transmit a new packet which will cause previousPacket to advance in the
-next ACK.
-
-The check, however, needs to allow for the possibility that previousPacket
-may actually have had the serial number placed in it instead - in which
-case it will go outside the window and we should ignore it.
-
-Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
-Reported-by: Dave Botsch <botsch@cnf.cornell.edu>
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- net/rxrpc/input.c |   30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
-
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 2f22f082a66c..3be4177baf70 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -802,6 +802,30 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
- 	}
- }
- 
-+/*
-+ * Return true if the ACK is valid - ie. it doesn't appear to have regressed
-+ * with respect to the ack state conveyed by preceding ACKs.
-+ */
-+static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
-+			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
-+{
-+	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
-+
-+	if (after(first_pkt, base))
-+		return true; /* The window advanced */
-+
-+	if (before(first_pkt, base))
-+		return false; /* firstPacket regressed */
-+
-+	if (after_eq(prev_pkt, call->ackr_prev_seq))
-+		return true; /* previousPacket hasn't regressed. */
-+
-+	/* Some rx implementations put a serial number in previousPacket. */
-+	if (after_eq(prev_pkt, base + call->tx_winsize))
-+		return false;
-+	return true;
-+}
-+
- /*
-  * Process an ACK packet.
-  *
-@@ -865,8 +889,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	}
- 
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
--	if (before(first_soft_ack, call->ackr_first_seq) ||
--	    before(prev_pkt, call->ackr_prev_seq)) {
-+	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, sp->hdr.serial,
- 					   first_soft_ack, call->ackr_first_seq,
- 					   prev_pkt, call->ackr_prev_seq);
-@@ -882,8 +905,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	spin_lock(&call->input_lock);
- 
- 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
--	if (before(first_soft_ack, call->ackr_first_seq) ||
--	    before(prev_pkt, call->ackr_prev_seq)) {
-+	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, sp->hdr.serial,
- 					   first_soft_ack, call->ackr_first_seq,
- 					   prev_pkt, call->ackr_prev_seq);
-
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Kai-Heng Feng
+> Sent: Thursday, May 7, 2020 7:21 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>; David S. Miller
+> <davem@davemloft.net>; Neftin, Sasha <sasha.neftin@intel.com>; Dima
+> Ruinskiy <dima.ruinskiy@intel.com>; Avargil, Raanan
+> <raanan.avargil@intel.com>; moderated list:INTEL ETHERNET DRIVERS <intel-
+> wired-lan@lists.osuosl.org>; open list:NETWORKING DRIVERS
+> <netdev@vger.kernel.org>; open list <linux-kernel@vger.kernel.org>
+> Subject: [PATCH] e1000e: Disable TSO for buffer overrun workaround
+>=20
+> Commit b10effb92e27 ("e1000e: fix buffer overrun while the I219 is
+> processing DMA transactions") imposes roughly 30% performance penalty.
+>=20
+> The commit log states that "Disabling TSO eliminates performance loss
+> for TCP traffic without a noticeable impact on CPU performance", so
+> let's disable TSO by default to regain the loss.
+>=20
+> Fixes: b10effb92e27 ("e1000e: fix buffer overrun while the I219 is proces=
+sing
+> DMA transactions")
+> BugLink: https://bugs.launchpad.net/bugs/1802691
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+>  drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 
