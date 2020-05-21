@@ -2,122 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A96961DD5A0
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 475B31DD5B2
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729301AbgEUSG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728885AbgEUSG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:06:26 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B26C061A0E;
-        Thu, 21 May 2020 11:06:26 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id j21so3534280pgb.7;
-        Thu, 21 May 2020 11:06:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YcuxEZQUpOQDQ5Lr0xl9z9r81E55lsgED1E3qnSscDk=;
-        b=eW6v38ZRp+Glo1cdTZumTfkrEClDxGIGVQPUmVnS3h2bbdkhB2hZydHePX9NH5h1WJ
-         57JjQzpjr7Rvf30dSJISe8wjDElqD8mdf5NF/ma+HS8eVRio7mqNIoty+w+x26mZ2wgW
-         plEeZSv+UOcBad23gyytHzH5bYQLYi3uTMdSPubu6JyoxOXWfmNQQ+HtaXJxDuai6ObI
-         7zS0UO/REoAWWzt5XuERqrg0uPzqtUPLi4w4HvBkWzpe4/i39HYb15wITV+hCH7XFXab
-         HDWQ92eOQIkbgvNn345fJ8VetC1Mxabbt/pp4Ib6lQLqbtR3hJ32fVdh/ED7udF8mma6
-         yYMw==
+        id S1729213AbgEUSIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:08:43 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59692 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727883AbgEUSIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:08:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590084521;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=CSwVUGMdm1SF/JKvVgrgcJwpikT7dcnsVODRPnenSIQ=;
+        b=AYgLu8a3LIGrhE/UKpmW9DRbHM8IIjjQq9JymmflmyJiz8ddiqBlkoLskv6Sb5AhrCiNaM
+        O0I5EQh8TL3cQ+y/bmWAdBD1Ev7gWcgBhn5uPabPEtoOHy/9vz5n+AiKWKQqGYvylvXfsJ
+        Mggcs+Br+9tvVq3uo2swVhoSNIdyQlA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-62-PaZ99jc2MfSigpubDmOycw-1; Thu, 21 May 2020 14:08:40 -0400
+X-MC-Unique: PaZ99jc2MfSigpubDmOycw-1
+Received: by mail-wm1-f72.google.com with SMTP id l26so2101931wmh.3
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:08:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YcuxEZQUpOQDQ5Lr0xl9z9r81E55lsgED1E3qnSscDk=;
-        b=Z6acBqBJaje/4lu0rl2r0Ewas6v7on76ABMOpagdWCj5xOMYmvjkS4ATW/QDpHzPee
-         ragObhdrj1qrpiWLaZuBdo3IGd9sBu/Rdwg2pvcugdJPeKpkJvVEOm8I7RBqZZxbLfr3
-         J0lmUtLrO4WVhk5kBQPts0SGxfzrGv/lPFiD6URlw8r5gKysbdQHEVuP3YunhVaF+fMZ
-         6iiMLZZWIEvuFEsnuvXNKioPOFfbqq/Rxa1+Iz+6KyigVfwFwXBYFFjsvK8o91bzHiDJ
-         MAvOanXnThOF13FVgjo1UL96jf8DFK2ZVs0eMmyEFWg58kR/eryRQb+amyQZYXtoM9/P
-         qBew==
-X-Gm-Message-State: AOAM533eWfxwDzz4HWyx9u5gpsen5W8cyMHa27Pu+4tzjIss7gLL25sC
-        6h3UhszKsuIzDQ9HgVyMGfao65Qo
-X-Google-Smtp-Source: ABdhPJznGe2UNZ5jAmqKiPtGqZfklEpUjBlndvAcPOFCKX2xEIJyAGsymq18z1F10/gOSMmTbJvXjQ==
-X-Received: by 2002:a63:d918:: with SMTP id r24mr10175031pgg.119.1590084385623;
-        Thu, 21 May 2020 11:06:25 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x13sm4910062pjr.20.2020.05.21.11.06.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2020 11:06:24 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 1/4] dt-bindings: net: Add tx and rx internal
- delays
-To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, robh@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20200521174834.3234-1-dmurphy@ti.com>
- <20200521174834.3234-2-dmurphy@ti.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a293624e-bbab-4f9e-3e59-470bff5a90f9@gmail.com>
-Date:   Thu, 21 May 2020 11:06:23 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=CSwVUGMdm1SF/JKvVgrgcJwpikT7dcnsVODRPnenSIQ=;
+        b=A08+2oMtezM5kqnCTpttqbfievYVt3eI2jSW9Hpv8pNB8sd/4heS3vnaz9MeMkIDB+
+         llQ46HsgAmZSCKTWNQYSaKV2vwXKmtMJHZ7DC/S6DVbZPAfO/Md6+FB4cZ6a4lkahvfm
+         YxgBEnWJfRa2DrfaMiZAjfliPsW5ZsbFr+shBr1eC0VUxQeMs0I+bEOl37p6RMkUxjWf
+         9TiCoKvljwEm+fWyEI5GbygPNcHom2p6L/ne/9GXwsCbP9erxlsS63/pP9/FxqAOB2cu
+         whxM3MJV4kCKAp6Az0t1Dv1hfIbnJ20BeVDUC7h9cEAqBkXmyzzl0Yanc2bnn9CYyGdw
+         LLow==
+X-Gm-Message-State: AOAM530cwdgL0Ey+AFO5tr49y85eGGuldLpWKt6mWyKQlZYQJiU9b6Wg
+        U4kffkCO3K8poyPtKDcovLEL+cRCUwrjNA1ZKunQxLQyfc2BzW6VaAqyGXjRWjAkpatp3PgcRs/
+        oekpwmipwuJjtimf4
+X-Received: by 2002:a5d:6087:: with SMTP id w7mr10437016wrt.158.1590084518726;
+        Thu, 21 May 2020 11:08:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxZ9o08gBH7tx0yYBsN8onaJW/OLPfFqqFDCwm2ORoSsfevxSpfrqifuC4Sj9PcOKKkhR/Jqg==
+X-Received: by 2002:a5d:6087:: with SMTP id w7mr10436991wrt.158.1590084518323;
+        Thu, 21 May 2020 11:08:38 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id j1sm7269700wrm.40.2020.05.21.11.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 11:08:37 -0700 (PDT)
+Date:   Thu, 21 May 2020 14:08:35 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jasowang@redhat.com, lkp@intel.com, mst@redhat.com,
+        yuehaibing@huawei.com
+Subject: [GIT PULL] vhost/vdpa: minor fixes
+Message-ID: <20200521140835-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200521174834.3234-2-dmurphy@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The following changes since commit 0b841030625cde5f784dd62aec72d6a766faae70:
 
+  vhost: vsock: kick send_pkt worker once device is started (2020-05-02 10:28:21 -0400)
 
-On 5/21/2020 10:48 AM, Dan Murphy wrote:
-> tx-internal-delays and rx-internal-delays are a common setting for RGMII
-> capable devices.
-> 
-> These properties are used when the phy-mode or phy-controller is set to
-> rgmii-id, rgmii-rxid or rgmii-txid.  These modes indicate to the
-> controller that the PHY will add the internal delay for the connection.
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  .../bindings/net/ethernet-controller.yaml          | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> index ac471b60ed6a..3f25066c339c 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> @@ -143,6 +143,20 @@ properties:
->        Specifies the PHY management type. If auto is set and fixed-link
->        is not specified, it uses MDIO for management.
->  
-> +  rx-internal-delay:
+are available in the Git repository at:
 
-Please name this 'rx-internal-delay-ps'
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    description: |
-> +      RGMII Receive PHY Clock Delay defined in pico seconds.  This is used for
-> +      PHY's that have configurable RX internal delays.  This property is only
-> +      used when the phy-mode or phy-connection-type is rgmii-id or rgmii-rxid.
-> +
-> +  tx-internal-delay:
+for you to fetch changes up to 1b0be99f1a426d9f17ced95c4118c6641a2ff13d:
 
-Likewise
+  vhost: missing __user tags (2020-05-15 11:36:31 -0400)
 
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    description: |
-> +      RGMII Transmit PHY Clock Delay defined in pico seconds.  This is used for
-> +      PHY's that have configurable TX internal delays.  This property is only
-> +      used when the phy-mode or phy-connection-type is rgmii-id or rgmii-txid.
-> +
->    fixed-link:
->      allOf:
->        - if:
-> 
+----------------------------------------------------------------
+virtio: build warning fixes
 
--- 
-Florian
+Fix a couple of build warnings.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Michael S. Tsirkin (1):
+      vhost: missing __user tags
+
+YueHaibing (1):
+      vdpasim: remove unused variable 'ret'
+
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 15 +++++++--------
+ drivers/vhost/vhost.c            |  4 ++--
+ 2 files changed, 9 insertions(+), 10 deletions(-)
+
