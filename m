@@ -2,105 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A45A1DD830
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:22:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE601DD847
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729403AbgEUUWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 16:22:35 -0400
-Received: from mga05.intel.com ([192.55.52.43]:28892 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726814AbgEUUWf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 16:22:35 -0400
-IronPort-SDR: XFmOqO7iYudDgs0mDBzMFzwtB83GhMnEFdIgjlEKHcetyiihwfUKsIU5DnpBOV4/b1MKgPICei
- znHX2hJ/FJ9Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 13:22:34 -0700
-IronPort-SDR: aw7kmRHYHRsAf4PzE1uGd9lt9RJ4Lq5uRp2M5id7JjDrGrN7I5WSNLi84VAcLEqZjOPKg1TBo4
- oP1WG0q1CQgA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,419,1583222400"; 
-   d="scan'208";a="440607564"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.213.183.94]) ([10.213.183.94])
-  by orsmga005.jf.intel.com with ESMTP; 21 May 2020 13:22:34 -0700
-Subject: Re: devlink interface for asynchronous event/messages from firmware?
+        id S1729033AbgEUUaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 16:30:00 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:56598 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728522AbgEUU37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:29:59 -0400
+Received: from [10.193.177.185] (chethan-pc.asicdesigners.com [10.193.177.185] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 04LKTqvC002625;
+        Thu, 21 May 2020 13:29:53 -0700
+Subject: Re: [PATCH net-next] net/tls: fix race condition causing kernel panic
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
- <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
-Date:   Thu, 21 May 2020 13:22:34 -0700
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        secdev@chelsio.com
+References: <20200519074327.32433-1-vinay.yadav@chelsio.com>
+ <20200519.121641.1552016505379076766.davem@davemloft.net>
+ <99faf485-2f28-0a45-7442-abaaee8744aa@chelsio.com>
+ <20200520125844.20312413@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <0a5d0864-2830-6bc8-05e8-232d10c0f333@chelsio.com>
+ <20200521115623.134eeb83@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Message-ID: <c7a03544-89ec-696c-fa71-4a46e99d1e66@chelsio.com>
+Date:   Fri, 22 May 2020 02:02:10 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20200521115623.134eeb83@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub
 
+On 5/22/2020 12:26 AM, Jakub Kicinski wrote:
+> On Thu, 21 May 2020 14:28:27 +0530 Vinay Kumar Yadav wrote:
+>> Considering the lock in fix ("pending" is local variable), when writer reads
+>> pending == 0 [pending = atomic_read(&ctx->encrypt_pending); --> from tls_sw_sendmsg()],
+>> that means encrypt complete() [from tls_encrypt_done()] is already called.
+> Please indulge me with full sentences. I can't parse this.
 
-On 5/20/2020 5:16 PM, Jakub Kicinski wrote:
-> On Wed, 20 May 2020 17:03:02 -0700 Jacob Keller wrote:
->> Hi Jiri, Jakub,
->>
->> I've been asked to investigate using devlink as a mechanism for
->> reporting asynchronous events/messages from firmware including
->> diagnostic messages, etc.
->>
->> Essentially, the ice firmware can report various status or diagnostic
->> messages which are useful for debugging internal behavior. We want to be
->> able to get these messages (and relevant data associated with them) in a
->> format beyond just "dump it to the dmesg buffer and recover it later".
->>
->> It seems like this would be an appropriate use of devlink. I thought
->> maybe this would work with devlink health:
->>
->> i.e. we create a devlink health reporter, and then when firmware sends a
->> message, we use devlink_health_report.
->>
->> But when I dug into this, it doesn't seem like a natural fit. The health
->> reporters expect to see an "error" state, and don't seem to really fit
->> the notion of "log a message from firmware" notion.
->>
->> One of the issues is that the health reporter only keeps one dump, when
->> what we really want is a way to have a monitoring application get the
->> dump and then store its contents.
->>
->> Thoughts on what might make sense for this? It feels like a stretch of
->> the health interface...
->>
->> I mean basically what I am thinking of having is using the devlink_fmsg
->> interface to just send a netlink message that then gets sent over the
->> devlink monitor socket and gets dumped immediately.
-> 
-> Why does user space need a raw firmware interface in the first place?
-> 
-> Examples?
-> 
+Here, I am explaining that your scenario is covered in this fix.
 
-So the ice firmware can optionally send diagnostic debug messages via
-its control queue. The current solutions we've used internally
-essentially hex-dump the binary contents to the kernel log, and then
-these get scraped and converted into a useful format for human consumption.
+# writer code. spin_lock_bh(&ctx->encrypt_compl_lock);
+pending = atomic_read(&ctx->encrypt_pending);
+spin_unlock_bh(&ctx->encrypt_compl_lock);
+if (pending)
+  			crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
 
-I'm not 100% of the format, but I know it's based on a decoding file
-that is specific to a given firmware image, and thus attempting to tie
-this into the driver is problematic.
+# Completion code.
 
-There is also a plan to provide a simpler interface for some of the
-diagnostic messages where a simple bijection between one code to one
-message for a handful of events, like if the link engine can detect a
-known reason why it wasn't able to get link. I suppose these could be
-translated and immediately printed by the driver without a special
-interface.
+spin_lock_bh(&ctx->encrypt_compl_lock);
+  	pending = atomic_dec_return(&ctx->encrypt_pending);
+  
+  	if (!pending && READ_ONCE(ctx->async_notify))
+  		complete(&ctx->async_wait.completion);
+spin_unlock_bh(&ctx->encrypt_compl_lock); # "pending" is local variable.
+  
+Your scenario:
 
--Jake
+     # 1. writer queues first record on CPU0
+     # 2. encrypt completes on CPU1
+
+  	    pending = atomic_dec_return(&ctx->decrypt_pending);
+	    # pending is 0
+  
+     # IRQ comes and CPU1 goes off to do something else with spin lock held
+     # writer proceeds to encrypt next record on CPU0
+     # writer is done, enters wait
+
+	    smp_store_mb(ctx->async_notify, true);
+
+     # Now CPU1 is back from the interrupt, does the check
+
+  	    if (!pending && READ_ONCE(ctx->async_notify))
+  		   complete(&ctx->async_wait.completion);
+
+     # and it completes the wait, even though the atomic decrypt_pending was
+     #   bumped back to 1
+
+Explanation:
+
+When writer reads pending == 0,
+that means completion is already called complete().
+its okay writer to  initialize completion. When writer reads pending == 1,
+that means writer is going to wait for completion.
+
+This way, writer is not going to proceed to encrypt next record on CPU0 without complete().
+
+>
+>> and if pending == 1 [pending = atomic_read(&ctx->encrypt_pending); --> from tls_sw_sendmsg()],
+>> that means writer is going to wait for atomic_dec_return(&ctx->decrypt_pending) and
+>> complete() [from tls_encrypt_done()]  to be called atomically.
+>>
+>> This way, writer is not going to proceed to encrypt next record on CPU0 without complete().
