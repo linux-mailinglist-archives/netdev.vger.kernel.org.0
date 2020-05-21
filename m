@@ -2,231 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D631DD6BF
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48921DD6B4
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730423AbgEUTJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 15:09:57 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:20175 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730094AbgEUTJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 15:09:56 -0400
+        id S1730336AbgEUTJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 15:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729593AbgEUTJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 15:09:10 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A39C061A0E;
+        Thu, 21 May 2020 12:09:10 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id d10so3654647pgn.4;
+        Thu, 21 May 2020 12:09:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1590088195; x=1621624195;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=p4KxdzwvrXe5XV5FTxNlOlaNjNP74Ax9I9QEYiGiajU=;
-  b=ekQax2zPvkPVLYxSg0FTuhpI+GIlv+L8TclbZmXp3rjVOy2MMRnpvwvL
-   Ti2WEfgyf7e0Dyabe83Q/bQN0Pp8ICyWpdFBQmAww7TNGLgNbVNgyqyRV
-   JCFOjPFSAbDoyozUgeQY9bCcidY21bfKz9gMqnOpghTBUi/hhG74QiiVf
-   0=;
-IronPort-SDR: 1Xi9WtoOAJ+WX+NBbwveSdL8QK56mFsuF68L3pjEptcAiqj6Z5YzBnrFpLRPo7B8b0GMOh+VW8
- 5tz4vb3gQ9Ew==
-X-IronPort-AV: E=Sophos;i="5.73,418,1583193600"; 
-   d="scan'208";a="36851177"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 21 May 2020 19:09:55 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com (Postfix) with ESMTPS id 0B72BA05F6;
-        Thu, 21 May 2020 19:09:54 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 21 May 2020 19:09:29 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 21 May 2020 19:09:28 +0000
-Received: from HFA15-G63729NC.amazon.com (10.1.212.27) by
- mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 21 May 2020 19:09:25 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>, Josh Triplett <josh@joshtriplett.org>
-Subject: [PATCH V1 net-next 15/15] net: ena: reduce driver load time
-Date:   Thu, 21 May 2020 22:08:34 +0300
-Message-ID: <1590088114-381-16-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1590088114-381-1-git-send-email-akiyano@amazon.com>
-References: <1590088114-381-1-git-send-email-akiyano@amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Td9oRZ/EdU9EA9Q/tvPbh8QoTRGQgOI3SUK00wRHOzY=;
+        b=P9banwXRqWG1JAT5ea/8Nc02r185ahUHVmv80yhvk8vAPvpV6UF5NdqKtU6L7GM0r/
+         xq8qAN1SrqTsf4xqHWIIRw6qXrt7s0/0T7XveCnowQpgxsDufUNmbsZN1tSF1XugY7+o
+         QvmDlex0uBIs/RSco8aNyaFbL8bVsQK//5vHKmelIFciRZFvPoCObgxkkRj3tDCaSDqz
+         ug02zofY4QymEzD/+JYURSDroPPJo208F2nZ459v+hGzl4sn5mYtDCOPvqcqcxTC8rgI
+         LQJn+Y/9dnS7eB9yfVqDVbDBqWdw4ZCAhSHDmpMIO/8PPFb76jJI8qeL/R74o73HaHoR
+         WARQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Td9oRZ/EdU9EA9Q/tvPbh8QoTRGQgOI3SUK00wRHOzY=;
+        b=aGkl83vUmx48yNgBJLCFu2CV4gYw6Ogbau7TXgUl+yxxpAv39ONz3OLt6+0J4M2dIZ
+         NdGGVUrI/4P1vMb+q5+A8mx3ojxd3TAClDQu6+4ETMKQIXj2faS9iDQA8hR/QIl0OqyI
+         NWxSgcFJYF56LUpZ2YWz6vgkwxKdVZragmuFtHG/5T2BkSG2J4NKTut6ZC7A126eo8cg
+         70t+rzu+WJb5Lz1Ua/csPGTSPcseni9TAKwuzRlTGFR0ilg/EzH1F3SFIiXQGLRHhZkv
+         CmHbaSVEjBaK2Y0Id2qcXTC8zpqupbzi3qoNB2T0MueaxD8pOD4iACRMFyDwqz8QbTrF
+         u3UQ==
+X-Gm-Message-State: AOAM533K8IRyFw3gPrwXd3eK3ELEWvbeA8+B69g5qFATXXxdxXjmp8TV
+        Q/l+BlqVjpOccFZvylPzi+o=
+X-Google-Smtp-Source: ABdhPJxH8FchI7ZV9C5zJ3Zhrx0QI3+15KxXbrgNDvCgzVMQr1KGrpAIix9U1Aje3SlJAuR4OQC4kA==
+X-Received: by 2002:a63:4b42:: with SMTP id k2mr9634101pgl.288.1590088150080;
+        Thu, 21 May 2020 12:09:10 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id i128sm5050221pfc.149.2020.05.21.12.09.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 12:09:09 -0700 (PDT)
+Date:   Thu, 21 May 2020 12:09:01 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>
+Message-ID: <5ec6d1cdbc900_7d832ae77617e5c0ce@john-XPS-13-9370.notmuch>
+In-Reply-To: <5ec6d090627d0_75322ab85d4a45bcf6@john-XPS-13-9370.notmuch>
+References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
+ <159007175735.10695.9639519610473734809.stgit@john-Precision-5820-Tower>
+ <CAEf4BzZpZ5_Mn66h9a+VE0UtrXUcYdNe-Fj0zEvfDbhUG7Z=sw@mail.gmail.com>
+ <5ec6d090627d0_75322ab85d4a45bcf6@john-XPS-13-9370.notmuch>
+Subject: Re: [bpf-next PATCH v3 4/5] bpf: selftests, add sk_msg helpers load
+ and attach test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+John Fastabend wrote:
+> Andrii Nakryiko wrote:
+> > On Thu, May 21, 2020 at 7:36 AM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > The test itself is not particularly useful but it encodes a common
+> > > pattern we have.
+> > >
+> > > Namely do a sk storage lookup then depending on data here decide if
+> > > we need to do more work or alternatively allow packet to PASS. Then
+> > > if we need to do more work consult task_struct for more information
+> > > about the running task. Finally based on this additional information
+> > > drop or pass the data. In this case the suspicious check is not so
+> > > realisitic but it encodes the general pattern and uses the helpers
+> > > so we test the workflow.
+> > >
+> > > This is a load test to ensure verifier correctly handles this case.
+> > >
+> > > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > > ---
 
-This commit reduces the driver load time by using usec resolution
-instead of msec when polling for hardware state change.
+[...]
 
-Also add back-off mechanism to handle cases where minimal sleep
-time is not enough.
+> > > +static void test_skmsg_helpers(enum bpf_map_type map_type)
+> > > +{
+> > > +       struct test_skmsg_load_helpers *skel;
+> > > +       int err, map, verdict;
+> > > +
+> > > +       skel = test_skmsg_load_helpers__open_and_load();
+> > > +       if (!skel) {
+> > > +               FAIL("skeleton open/load failed");
+> > > +               return;
+> > > +       }
+> > > +
+> > > +       verdict = bpf_program__fd(skel->progs.prog_msg_verdict);
+> > > +       map = bpf_map__fd(skel->maps.sock_map);
+> > > +
+> > > +       err = xbpf_prog_attach(verdict, map, BPF_SK_MSG_VERDICT, 0);
+> > > +       if (err)
+> > > +               return;
+> > > +       xbpf_prog_detach2(verdict, map, BPF_SK_MSG_VERDICT);
+> > 
+> > no cleanup in this test, at all
+> 
+> Guess we need __destroy(skel) here.
+> 
+> As an aside how come if the program closes and refcnt drops the entire
+> thing isn't destroyed. I didn't think there was any pinning happening
+> in the __open_and_load piece.
 
-Signed-off-by: Josh Triplett <josh@joshtriplett.org>
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_com.c    | 36 ++++++++++++++------
- drivers/net/ethernet/amazon/ena/ena_com.h    |  3 ++
- drivers/net/ethernet/amazon/ena/ena_netdev.c |  2 ++
- drivers/net/ethernet/amazon/ena/ena_netdev.h |  2 ++
- 4 files changed, 33 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 4b1dbedbe921..432f143559a1 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -62,7 +62,9 @@
- 
- #define ENA_REGS_ADMIN_INTR_MASK 1
- 
--#define ENA_POLL_MS	5
-+#define ENA_MIN_ADMIN_POLL_US 100
-+
-+#define ENA_MAX_ADMIN_POLL_US 5000
- 
- /*****************************************************************************/
- /*****************************************************************************/
-@@ -540,12 +542,20 @@ static int ena_com_comp_status_to_errno(u8 comp_status)
- 	return -EINVAL;
- }
- 
-+static void ena_delay_exponential_backoff_us(u32 exp, u32 delay_us)
-+{
-+	delay_us = max_t(u32, ENA_MIN_ADMIN_POLL_US, delay_us);
-+	delay_us = min_t(u32, delay_us * (1U << exp), ENA_MAX_ADMIN_POLL_US);
-+	usleep_range(delay_us, 2 * delay_us);
-+}
-+
- static int ena_com_wait_and_process_admin_cq_polling(struct ena_comp_ctx *comp_ctx,
- 						     struct ena_com_admin_queue *admin_queue)
- {
- 	unsigned long flags = 0;
- 	unsigned long timeout;
- 	int ret;
-+	u32 exp = 0;
- 
- 	timeout = jiffies + usecs_to_jiffies(admin_queue->completion_timeout);
- 
-@@ -569,7 +579,8 @@ static int ena_com_wait_and_process_admin_cq_polling(struct ena_comp_ctx *comp_c
- 			goto err;
- 		}
- 
--		msleep(ENA_POLL_MS);
-+		ena_delay_exponential_backoff_us(exp++,
-+						 admin_queue->ena_dev->ena_min_poll_delay_us);
- 	}
- 
- 	if (unlikely(comp_ctx->status == ENA_CMD_ABORTED)) {
-@@ -939,12 +950,13 @@ static void ena_com_io_queue_free(struct ena_com_dev *ena_dev,
- static int wait_for_reset_state(struct ena_com_dev *ena_dev, u32 timeout,
- 				u16 exp_state)
- {
--	u32 val, i;
-+	u32 val, exp = 0;
-+	unsigned long timeout_stamp;
- 
--	/* Convert timeout from resolution of 100ms to ENA_POLL_MS */
--	timeout = (timeout * 100) / ENA_POLL_MS;
-+	/* Convert timeout from resolution of 100ms to us resolution. */
-+	timeout_stamp = jiffies + usecs_to_jiffies(100 * 1000 * timeout);
- 
--	for (i = 0; i < timeout; i++) {
-+	while (1) {
- 		val = ena_com_reg_bar_read32(ena_dev, ENA_REGS_DEV_STS_OFF);
- 
- 		if (unlikely(val == ENA_MMIO_READ_TIMEOUT)) {
-@@ -956,10 +968,11 @@ static int wait_for_reset_state(struct ena_com_dev *ena_dev, u32 timeout,
- 			exp_state)
- 			return 0;
- 
--		msleep(ENA_POLL_MS);
--	}
-+		if (time_is_before_jiffies(timeout_stamp))
-+			return -ETIME;
- 
--	return -ETIME;
-+		ena_delay_exponential_backoff_us(exp++, ena_dev->ena_min_poll_delay_us);
-+	}
- }
- 
- static bool ena_com_check_supported_feature_id(struct ena_com_dev *ena_dev,
-@@ -1436,11 +1449,13 @@ void ena_com_wait_for_abort_completion(struct ena_com_dev *ena_dev)
- {
- 	struct ena_com_admin_queue *admin_queue = &ena_dev->admin_queue;
- 	unsigned long flags = 0;
-+	u32 exp = 0;
- 
- 	spin_lock_irqsave(&admin_queue->q_lock, flags);
- 	while (atomic_read(&admin_queue->outstanding_cmds) != 0) {
- 		spin_unlock_irqrestore(&admin_queue->q_lock, flags);
--		msleep(ENA_POLL_MS);
-+		ena_delay_exponential_backoff_us(exp++,
-+						 ena_dev->ena_min_poll_delay_us);
- 		spin_lock_irqsave(&admin_queue->q_lock, flags);
- 	}
- 	spin_unlock_irqrestore(&admin_queue->q_lock, flags);
-@@ -1788,6 +1803,7 @@ int ena_com_admin_init(struct ena_com_dev *ena_dev,
- 	if (ret)
- 		goto error;
- 
-+	admin_queue->ena_dev = ena_dev;
- 	admin_queue->running_state = true;
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 325c9a5f677b..bc187adf54e4 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -239,6 +239,7 @@ struct ena_com_stats_admin {
- 
- struct ena_com_admin_queue {
- 	void *q_dmadev;
-+	struct ena_com_dev *ena_dev;
- 	spinlock_t q_lock; /* spinlock for the admin queue */
- 
- 	struct ena_comp_ctx *comp_ctx;
-@@ -351,6 +352,8 @@ struct ena_com_dev {
- 	struct ena_intr_moder_entry *intr_moder_tbl;
- 
- 	struct ena_com_llq_info llq_info;
-+
-+	u32 ena_min_poll_delay_us;
- };
- 
- struct ena_com_dev_get_features_ctx {
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 313e65b17492..46865d5bd7e7 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -4166,6 +4166,8 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_free_region;
- 	}
- 
-+	ena_dev->ena_min_poll_delay_us = ENA_ADMIN_POLL_DELAY_US;
-+
- 	ena_dev->dmadev = &pdev->dev;
- 
- 	rc = ena_device_init(ena_dev, pdev, &get_feat_ctx, &wd_state);
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 9b3948c7e8a0..ba030d260940 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -129,6 +129,8 @@
- #define ENA_IO_IRQ_FIRST_IDX		1
- #define ENA_IO_IRQ_IDX(q)		(ENA_IO_IRQ_FIRST_IDX + (q))
- 
-+#define ENA_ADMIN_POLL_DELAY_US 100
-+
- /* ENA device should send keep alive msg every 1 sec.
-  * We wait for 6 sec just to be on the safe side.
-  */
--- 
-2.23.1
-
+I guess these are in progs_test so we can't leave these around for
+any following tests to trip over. OK. Same thing for patch 3 fwiw.
