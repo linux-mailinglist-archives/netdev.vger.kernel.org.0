@@ -2,87 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A257C1DD888
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A091DD8DE
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729620AbgEUUjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 16:39:03 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:46784 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728869AbgEUUjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:39:03 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04LKa8uL027327;
-        Thu, 21 May 2020 13:38:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=hyp6S4ci9BzJh/ODserLIITVZdvOguPYGI6KNoFSE7A=;
- b=StEyvGzVY2M978S7QJvDkyb7212ICDC2zxWO6gPjYLBrX7L5sv2Iw73wlMULurIKME3E
- GQYF044vxFZ2+NsTgpo1H9PyAHl+PkrPlq3EbVUM/SqcyYuvBJ0aoCC1SkWqe/8t6554
- 3yvI+l+KuI5Th8ncGU+/O7wyDXg6vktc6Ze0A6XbC5Ej57u3f9YIGxZMZQ/l4HbJGM2w
- ZFwtKU+6z1tTuu8D2/jk/o/ihdavxPXU+2lhlEsIgTGBvp0sUniLITuDCjvHMyZvmzCP
- 7QCayU8kp+zSTNLZK9QWvyG+4cl4eh7kQekVnWvvxHciASGAP5gH5tmXfDDgthSIRCyn ng== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 312fppf4n5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 21 May 2020 13:38:58 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 21 May
- 2020 13:38:56 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 May 2020 13:38:56 -0700
-Received: from [10.193.39.5] (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id 1A3453F703F;
-        Thu, 21 May 2020 13:38:54 -0700 (PDT)
-Subject: Re: [EXT] Re: [PATCH net-next 03/12] net: atlantic: changes for
- multi-TC support
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Mark Starovoytov <mstarovoitov@marvell.com>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        "Dmitry Bezrukov" <dbezrukov@marvell.com>
-References: <20200520134734.2014-1-irusskikh@marvell.com>
- <20200520134734.2014-4-irusskikh@marvell.com>
- <20200520140154.6b6328de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CH2PR18MB323861420A81270EC7207300D3B70@CH2PR18MB3238.namprd18.prod.outlook.com>
- <20200521121156.7f776ef8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <68452ea6-b012-c08c-0c19-9bfce56c6692@marvell.com>
-Date:   Thu, 21 May 2020 23:38:53 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101
- Thunderbird/77.0
+        id S1729826AbgEUUwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 16:52:17 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:43027 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728778AbgEUUwR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:52:17 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6D9035C00C4;
+        Thu, 21 May 2020 16:52:16 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 21 May 2020 16:52:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=FDjHLS
+        98QpqdtvIr6hFPDME1kvXU6ZRy0mCau8zXmxE=; b=MDiKGq2yJPjRCQsjEnAI5K
+        1F5iNankDc3Tc132RiuZIjc+GAKYQbBxctsta4t23CrZ8bvbTfocKji1CRIsp4dp
+        FRrIZkfXC/5/2ROXtXnsxeUdo5RnapTXLafOIQ9C3gw+P/59y217o1c8xT3XD+SM
+        MDuN0yAOR/jd7EQsa92N1LpnS0y/AKcY4oCv+eMXCbsQL3hpZ4sytVVSchhrIdex
+        58tVUzbmvfV/bXfMOjNXnDXcsF8cAepYChYiaYYk4glo/A0Ood838wi4py3oALig
+        ndGk8bVR0W3tRbHkaYOdlPY8yptImv/4MJQj5sSWtBPXQR0O3jwcr3oryov6XzFQ
+        ==
+X-ME-Sender: <xms:AOrGXqulq2LpGdMbGUX2MXV3br5Z_Cu8shbjKCIBF89DiKAHAeO91g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduuddgudeghecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfg
+    keevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepjeelrddujeeirddvge
+    druddtjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
+    pehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:AOrGXvdHh4UAInRAlCJm-3UjDdr0OgGmgkYl__9cWRD0_cEEZnStpA>
+    <xmx:AOrGXlzmVeYe8FAI4ClmwXmqFi9zv199KFV14blFWhq3gKYpcULcqg>
+    <xmx:AOrGXlMpPakkY_HZKeATku7qvHqiv7Ejx27XeYX5KxaGil0MW0ZZPA>
+    <xmx:AOrGXgns4m69dZaCGBVuMRRPLAt8cFNXwl5-OvVH6Bay7v0IEWptMQ>
+Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A8F4A306649A;
+        Thu, 21 May 2020 16:52:15 -0400 (EDT)
+Date:   Thu, 21 May 2020 23:52:13 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        petrm@mellanox.com, amitc@mellanox.com
+Subject: Re: devlink interface for asynchronous event/messages from firmware?
+Message-ID: <20200521205213.GA1093714@splinter>
+References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
+ <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200521121156.7f776ef8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-21_13:2020-05-21,2020-05-21 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
->> Right now we really aren't sure we can dynamically rearrange
->> resources between QoS and PTP, since disabling/enabling PTP requires
->> a complete HW reconfiguration unfortunately. Even more unfortunate is
->> the fact that we can't change the TC, which is reserved for PTP,
->> because TC2 is hardcoded in firmware.
->>
->> We would prefer to keep things as is for now, if possible. We'll
->> discuss this with HW/FW team(s) and submit a follow-up patch, if we
->> find a way to automatically choose the config.
+On Thu, May 21, 2020 at 01:22:34PM -0700, Jacob Keller wrote:
+> On 5/20/2020 5:16 PM, Jakub Kicinski wrote:
+> > On Wed, 20 May 2020 17:03:02 -0700 Jacob Keller wrote:
+> >> Hi Jiri, Jakub,
+> >>
+> >> I've been asked to investigate using devlink as a mechanism for
+> >> reporting asynchronous events/messages from firmware including
+> >> diagnostic messages, etc.
+> >>
+> >> Essentially, the ice firmware can report various status or diagnostic
+> >> messages which are useful for debugging internal behavior. We want to be
+> >> able to get these messages (and relevant data associated with them) in a
+> >> format beyond just "dump it to the dmesg buffer and recover it later".
+> >>
+> >> It seems like this would be an appropriate use of devlink. I thought
+> >> maybe this would work with devlink health:
+> >>
+> >> i.e. we create a devlink health reporter, and then when firmware sends a
+> >> message, we use devlink_health_report.
+> >>
+> >> But when I dug into this, it doesn't seem like a natural fit. The health
+> >> reporters expect to see an "error" state, and don't seem to really fit
+> >> the notion of "log a message from firmware" notion.
+> >>
+> >> One of the issues is that the health reporter only keeps one dump, when
+> >> what we really want is a way to have a monitoring application get the
+> >> dump and then store its contents.
+> >>
+> >> Thoughts on what might make sense for this? It feels like a stretch of
+> >> the health interface...
+> >>
+> >> I mean basically what I am thinking of having is using the devlink_fmsg
+> >> interface to just send a netlink message that then gets sent over the
+> >> devlink monitor socket and gets dumped immediately.
+> > 
+> > Why does user space need a raw firmware interface in the first place?
+> > 
+> > Examples?
+> > 
 > 
-> Module parameters are very strongly discouraged for networking drivers.
-> They also constitute uAPI, and can't be changed, short-term solution
-> like that is really far from ideal.
+> So the ice firmware can optionally send diagnostic debug messages via
+> its control queue. The current solutions we've used internally
+> essentially hex-dump the binary contents to the kernel log, and then
+> these get scraped and converted into a useful format for human consumption.
+> 
+> I'm not 100% of the format, but I know it's based on a decoding file
+> that is specific to a given firmware image, and thus attempting to tie
+> this into the driver is problematic.
 
-Thanks, Jakub.
+You explained how it works, but not why it's needed :)
 
-Mark, Dmitry, lets try eliminating this parameter. Even if that'll cause some
-limitations now - we can think how to dynamically handle these in future.
+> There is also a plan to provide a simpler interface for some of the
+> diagnostic messages where a simple bijection between one code to one
+> message for a handful of events, like if the link engine can detect a
+> known reason why it wasn't able to get link. I suppose these could be
+> translated and immediately printed by the driver without a special
+> interface.
 
-Regards,
-  Igor
+Petr worked on something similar last year:
+https://lore.kernel.org/netdev/cover.1552672441.git.petrm@mellanox.com/
+
+Amit is currently working on a new version based on ethtool (netlink).
