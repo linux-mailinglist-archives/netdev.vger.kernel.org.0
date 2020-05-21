@@ -2,129 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B58F1DCC50
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 13:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38ACA1DCC57
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 13:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729137AbgEULnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 07:43:40 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:22692 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729089AbgEULnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 07:43:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590061419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ttU7JtT4mKmdr4XaUlZUh0aIyxlnlTBW6EDoHbcH2pA=;
-        b=SyVYQSfyx/L04v0au7evRZSVkSB1w10BsS7xpQRZiUjmLZhUe6+XUjQXzcM94h0K5gebm2
-        llql2ItyRpw72qe0cLL7xF/IRV21fmGja+f3ydfhq+Vq5PkhPBepE0ErAV6nPezLqp+8rD
-        EbbwVvlzwB7DWL7Njt6Hxj+j5wSBCs4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-182-7lJ8VI4JOqiE4HJAsjrIEw-1; Thu, 21 May 2020 07:43:34 -0400
-X-MC-Unique: 7lJ8VI4JOqiE4HJAsjrIEw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04A14A0C03;
-        Thu, 21 May 2020 11:43:31 +0000 (UTC)
-Received: from krava (unknown [10.40.195.217])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 3FC8F5C1B0;
-        Thu, 21 May 2020 11:43:26 +0000 (UTC)
-Date:   Thu, 21 May 2020 13:43:25 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Paul Clarke <pc@us.ibm.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 0/7] Share events between metrics
-Message-ID: <20200521114325.GT157452@krava>
-References: <20200520182011.32236-1-irogers@google.com>
+        id S1729089AbgEULrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 07:47:00 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:60509 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729064AbgEULrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 07:47:00 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id D151C5C00DD;
+        Thu, 21 May 2020 07:46:58 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 21 May 2020 07:46:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=yBtlBBX4zLIbGMbXk
+        MglHqiOlOwCymjIyS17IU49kDE=; b=S/X0GJ39iLMOaah26Hbem+h9TbQxKo2Q0
+        EIGRnn5ymfUkzH8jmQbCrZdSZ0K1wq2FgM0pA2YeJwU1MQDL2R77yKLkI0Ub0sjD
+        ap1zZaVGDJlhKfXZNQ4YxePTVUCKjdbD+xapgJu4iU5nVm07aQuC7rPR6ML4U+a5
+        3eEo1Kzm7ZbI1wWq7Mh8VDmmuQVdihBhEfzSINRAjlyBosLQ/YtseLVeZHj30ZX0
+        Z8HUJDABzx/aMCwC40hcHxGkLhtjMGrzt/Y8rjfEHT1WCAlRRn4Bdm9HLvn5jWig
+        ltR8baPUjvfa8iOS5Tihyq4DochzcWWAiWbEmOnOpsC9EU7CYddYQ==
+X-ME-Sender: <xms:MmrGXhStpW8a5fvEfuFvSOzkQm7K7z0DXfV8Jh3SlzxF_WFzfbJkBQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduuddggeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeejledrudejiedrvdegrddutdejnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:MmrGXqzFcJGS5grl3pauwANBF6SykeZ4PzSTjJtD-VLqvjcDbt_dHw>
+    <xmx:MmrGXm0KjZg5biuiIpvT_rBYdRqDfmGlu7xznYQg62qqxMtEx0OO2Q>
+    <xmx:MmrGXpDKyhJRZnWDMnMJtMkwf0KkmQCP9RRIGVP-pbGfJRIvTB3dOQ>
+    <xmx:MmrGXuaXGjIFCTVtbPrxtgO9YnQyI7NZCtE-E0Z2pfyy_caXboDXVA>
+Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3D3E8306647A;
+        Thu, 21 May 2020 07:46:57 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/2] netdevsim: Two small fixes
+Date:   Thu, 21 May 2020 14:46:15 +0300
+Message-Id: <20200521114617.1074379-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200520182011.32236-1-irogers@google.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 11:20:04AM -0700, Ian Rogers wrote:
+From: Ido Schimmel <idosch@mellanox.com>
 
-SNIP
+Fix two bugs observed while analyzing regression failures.
 
-> There are 5 out of 12 metric groups where no events are shared, such
-> as Power, however, disabling grouping of events always reduces the
-> number of events.
-> 
-> The result for Memory_BW needs explanation:
-> 
-> Metric group: Memory_BW
->  - No merging (old default, now --metric-no-merge): 9
->  - Merging over metrics (new default)             : 5
->  - No event groups and merging (--metric-no-group): 11
-> 
-> Both with and without merging the groups fail to be set up and so the
-> event counts here are for broken metrics. The --metric-no-group number
-> is accurate as all the events are scheduled. Ideally a constraint
-> would be added for these metrics in the json code to avoid grouping.
-> 
-> v2. rebases on kernel/git/acme/linux.git branch tmp.perf/core, fixes a
-> missing comma with metric lists (reported-by Jiri Olsa
-> <jolsa@redhat.com>) and adds early returns to metricgroup__add_metric
-> (suggested-by Jiri Olsa).
+Patch #1 fixes a bug where sometimes the drop counter of a packet trap
+policer would not increase.
 
-Acked-by: Jiri Olsa <jolsa@redhat.com>
+Patch #2 adds a missing initialization of a variable in a related
+selftest.
 
-thanks,
-jirka
+Ido Schimmel (2):
+  netdevsim: Ensure policer drop counter always increases
+  selftests: netdevsim: Always initialize 'RET' variable
 
-> 
-> v1. was prepared on kernel/git/acme/linux.git branch tmp.perf/core
-> 
-> Compared to RFC v3: fix a bug where unnecessary commas were passed to
-> parse-events and were echoed. Fix a bug where the same event could be
-> matched more than once with --metric-no-group, causing there to be
-> events missing.
-> https://lore.kernel.org/lkml/20200508053629.210324-1-irogers@google.com/
-> 
-> Ian Rogers (7):
->   perf metricgroup: Always place duration_time last
->   perf metricgroup: Use early return in add_metric
->   perf metricgroup: Delay events string creation
->   perf metricgroup: Order event groups by size
->   perf metricgroup: Remove duped metric group events
->   perf metricgroup: Add options to not group or merge
->   perf metricgroup: Remove unnecessary ',' from events
-> 
->  tools/perf/Documentation/perf-stat.txt |  19 ++
->  tools/perf/builtin-stat.c              |  11 +-
->  tools/perf/util/metricgroup.c          | 239 ++++++++++++++++++-------
->  tools/perf/util/metricgroup.h          |   6 +-
->  tools/perf/util/stat.h                 |   2 +
->  5 files changed, 207 insertions(+), 70 deletions(-)
-> 
-> -- 
-> 2.26.2.761.g0e0b3e54be-goog
-> 
+ drivers/net/netdevsim/dev.c                                   | 3 +--
+ tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh | 4 ++++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+-- 
+2.26.2
 
