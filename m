@@ -2,188 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE9441DC60A
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 06:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34AB21DC640
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 06:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgEUEF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 00:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725945AbgEUEF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 00:05:56 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3168C061A0E;
-        Wed, 20 May 2020 21:05:55 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id e11so1696389pfn.3;
-        Wed, 20 May 2020 21:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C0L3nj0EzYCDg/wtKkPDNRen0kT++NzdM7/MeO9IYE8=;
-        b=UTPKJPYBbe+59FcdtfWuUbhgjy9eseTfDstaL1FtZq9i7r1MNu9jrKJwSpSj3LrbdO
-         OUZcWB1Eazo3eYXa31EGd4lxQjBzZJUaafMFDCiRj3RRjzq8+E7MX9T0RirUhrNctbdc
-         wL2jeIdknG0Jzc/qpdSLl0XuAIlxiPriZkeg/2qbftzFmHQuhgtrXahiv+K5g8JdVjrO
-         9DJjUgEJYxipKDufZtY1IglqFeKyD81Td3mBKtGacH2oWYfhY8o0lrP06Fw3X5cy64vt
-         JRiGzXTnBTiUr9vTuv8aI1rv2VYoSFZnv6IpV/D3sIDF9xMsYHeJFiEc8BXgNgOvMl5x
-         GBTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=C0L3nj0EzYCDg/wtKkPDNRen0kT++NzdM7/MeO9IYE8=;
-        b=l+XOdl/MCvzC220Unzy5b2uPgUQgTHKTrr6yF7a6Q1cQN+p23PAe5O9OSP9kNtPS4R
-         x79epR3aJ2I07eCvRY3t9piZeiszoB4sdpnSdXOKUrX2j/yACqM4iRgvD1KE5RtHKlT3
-         +8JNDCsQMZSm9lXHNhAApmib2vkAOKLjxlzb+26TQ5AmgYZB/pDVteItJqKQwKmsnCGf
-         iCwsNjIf3hbfx6aYCrEmJQcySjmjiSnVERXRXgMXFi9W2ZjrzUV+xBc53jB5+eCyP3fO
-         YNswVFD+jDSJmXEyjABwKyLsfsWAA9esR/pc8lJsJwOzIis5HjtL5k+0cs8SYpsa1MtY
-         2+sQ==
-X-Gm-Message-State: AOAM533js0HHfiKLp9xaBV2//xP+pRVCqKoHCIB+hccJGwUCNlWkTTzJ
-        F75mXZCXlMSGkH2E4x/6MXw=
-X-Google-Smtp-Source: ABdhPJwxeb19LqKLRLuy2iARDwwMd6jH/0Jca83S2ZT13LOtKrn2e0YlsYOxNbPL1xtw/FcIXC01pw==
-X-Received: by 2002:aa7:9f4c:: with SMTP id h12mr7799569pfr.68.1590033955101;
-        Wed, 20 May 2020 21:05:55 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e680])
-        by smtp.gmail.com with ESMTPSA id i10sm3289702pfa.166.2020.05.20.21.05.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2020 21:05:53 -0700 (PDT)
-Date:   Wed, 20 May 2020 21:05:51 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, lmb@cloudflare.com,
-        john.fastabend@gmail.com
-Subject: Re: getting bpf_tail_call to work with bpf function calls. Was: [RFC
- PATCH bpf-next 0/1] bpf, x64: optimize JIT prologue/epilogue generation
-Message-ID: <20200521040551.lnfaan6uszg2qjoh@ast-mbp.dhcp.thefacebook.com>
-References: <20200511143912.34086-1-maciej.fijalkowski@intel.com>
- <2e3c6be0-e482-d856-7cc1-b1d03a26428e@iogearbox.net>
- <20200512000153.hfdeh653v533qbe6@ast-mbp.dhcp.thefacebook.com>
- <20200513115855.GA3574@ranger.igk.intel.com>
- <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
- <20200518184458.GC6472@ranger.igk.intel.com>
+        id S1726865AbgEUEaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 00:30:07 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:47421 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726282AbgEUEaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 00:30:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590035404;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WXgoiIQBmQkuRGuRereQHuQkbFC/POS9aYRCiQc+tnw=;
+        b=baqv66aBEZI32AgDLlTA5Awb06sXQBJFs+QJTEep1A2l6JaYCla7dQL2X/7sUNmC3Ea7zG
+        huktSlj1pdKR7ag1yo1/V8DqLYKfPooyBQtBo6bsi2/Hq/GiuPs/SdUsSEfUSdSRo95vyu
+        14SENRI/YO/R2GrqEj34m3guJo106GU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-354-Oqx0dhwlMbCe71NM53_ElA-1; Thu, 21 May 2020 00:29:58 -0400
+X-MC-Unique: Oqx0dhwlMbCe71NM53_ElA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 530C8474;
+        Thu, 21 May 2020 04:29:56 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E14D06EA2B;
+        Thu, 21 May 2020 04:29:48 +0000 (UTC)
+Date:   Thu, 21 May 2020 06:29:47 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        jeffrey.t.kirsher@intel.com, maximmi@mellanox.com,
+        maciej.fijalkowski@intel.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v4 01/15] xsk: fix xsk_umem_xdp_frame_sz()
+Message-ID: <20200521062947.71d9cddd@carbon>
+In-Reply-To: <17701885-c91d-5bfc-b96d-29263a0d08ab@intel.com>
+References: <20200520094742.337678-1-bjorn.topel@gmail.com>
+        <20200520094742.337678-2-bjorn.topel@gmail.com>
+        <20200520151819.1d2254b7@carbon>
+        <17701885-c91d-5bfc-b96d-29263a0d08ab@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200518184458.GC6472@ranger.igk.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 18, 2020 at 08:44:58PM +0200, Maciej Fijalkowski wrote:
-> On Sat, May 16, 2020 at 09:32:27PM -0700, Alexei Starovoitov wrote:
-> > On Wed, May 13, 2020 at 01:58:55PM +0200, Maciej Fijalkowski wrote:
-> > > 
-> > > So to me, if we would like to get rid of maxing out stack space, then we
-> > > would have to do some dancing for preserving the tail call counter - keep
-> > > it in some unused register? Or epilogue would pop it from stack to some
-> > > register and target program's prologue would push it to stack from that
-> > > register (I am making this up probably). And rbp/rsp would need to be
-> > > created/destroyed during the program-to-program transition that happens
-> > > via tailcall. That would mean also more instructions.
-> > 
-> > How about the following:
-> > The prologue will look like:
-> > nop5
-> > xor eax,eax  // two new bytes if bpf_tail_call() is used in this function
-> > push rbp
-> > mov rbp, rsp
-> > sub rsp, rounded_stack_depth
-> > push rax // zero init tail_call counter
-> > variable number of push rbx,r13,r14,r15
-> > 
-> > Then bpf_tail_call will pop variable number rbx,..
-> > and final 'pop rax'
-> > Then 'add rsp, size_of_current_stack_frame'
-> > jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov rbp, rsp'
-> > 
-> > This way new function will set its own stack size and will init tail call
-> > counter with whatever value the parent had.
-> > 
-> > If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
-> > Instead it would need to have 'nop2' in there.
-> > That's the only downside I see.
-> > Any other ideas?
-> 
-> Not really - had a thought with Bjorn about using one callee-saved
-> register that is yet unused by x64 JIT (%r12) and i was also thinking
+On Wed, 20 May 2020 16:34:05 +0200
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> wrote:
 
-people keep trying to use r12 for all sorts of things, but I'd like
-to keep it reserved. I hope we can add R11 to bpf ISA one day.
+> On 2020-05-20 15:18, Jesper Dangaard Brouer wrote:
+> > On Wed, 20 May 2020 11:47:28 +0200
+> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+> >  =20
+> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >>
+> >> Calculating the "data_hard_end" for an XDP buffer coming from AF_XDP
+> >> zero-copy mode, the return value of xsk_umem_xdp_frame_sz() is added
+> >> to "data_hard_start".
+> >>
+> >> Currently, the chunk size of the UMEM is returned by
+> >> xsk_umem_xdp_frame_sz(). This is not correct, if the fixed UMEM
+> >> headroom is non-zero. Fix this by returning the chunk_size without the
+> >> UMEM headroom.
+> >>
+> >> Fixes: 2a637c5b1aaf ("xdp: For Intel AF_XDP drivers add XDP frame_sz")
+> >> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >> ---
+> >>   include/net/xdp_sock.h | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> >> index abd72de25fa4..6b1137ce1692 100644
+> >> --- a/include/net/xdp_sock.h
+> >> +++ b/include/net/xdp_sock.h
+> >> @@ -239,7 +239,7 @@ static inline u64 xsk_umem_adjust_offset(struct xd=
+p_umem *umem, u64 address,
+> >>  =20
+> >>   static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
+> >>   {
+> >> -	return umem->chunk_size_nohr + umem->headroom;
+> >> +	return umem->chunk_size_nohr; =20
+> >=20
+> > Hmm, is this correct?
+> >=20
+> > As you write "xdp_data_hard_end" is calculated as an offset from
+> > xdp->data_hard_start pointer based on the frame_sz.  Will your
+> > xdp->data_hard_start + frame_sz point to packet end?
+> > =20
+>=20
+> Yes, I believe this is correct.
+>=20
+> Say that a user uses a chunk size of 2k, and a umem headroom of, say,
+> 64. This means that the kernel should (at least) leave 64B which the
+> kernel shouldn't touch.
+>=20
+> umem->headroom | XDP_PACKET_HEADROOM | packet |          |
+>                 ^                     ^        ^      ^   ^
+>                 a                     b        c      d   e
+>=20
+> a: data_hard_start
+> b: data
+> c: data_end
+> d: data_hard_end, (e - 320)
+> e: hardlimit of chunk, a + umem->chunk_size_nohr
+>=20
+> Prior this fix the umem->headroom was *included* in frame_sz.
 
-> about some freaky usage of SSE register as a general purpose one. However,
-> your idea is pretty neat - I gave it already a shot and with a single
-> tweak I managed to got it working, e.g. selftests are fine as well as two
-> samples that utilize tail calls. Note also that I got rid of the stack
-> clamp being done in fixup_bpf_calls.
-> 
-> About a tweak:
-> - RETPOLINE_RAX_BPF_JIT used for indirect tail calls needed to become a
->   RETPOLINE_RCX_BPF_JIT, so that we preserve the content of %rax across
->   jumping between programs via tail calls. I looked up GCC commit that
->   Daniel quoted on a patch that implements RETPOLINE_RAX_BPF_JIT and it
->   said that for register that is holding the address of function that we
->   will be jumping onto, we are free to use most of GP registers. I picked
->   %rcx.
+Thanks for the nice ascii art description. I can now see that you are
+right.   We should add this kind of documentation, perhaps as a comment
+in the code?
 
-Good catch. Indeed. We have to use rcx for retpoline.
-rdi/rsi/rdx are used to pass args and bpf_tail_call() doesn't have
-4th argument.
-r8 could have been used, but it will take more bytes to encode.
-so imo rcx is the only choice.
 
-> I was also thinking about a minor optimization where we would replace the
-> add/sub %rsp, $off32 with a nop7 if stack depth is 0.
+> > #define xdp_data_hard_end(xdp)                          \
+> >          ((xdp)->data_hard_start + (xdp)->frame_sz -     \
+> >           SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> >=20
+> > Note the macro reserves the last 320 bytes (for skb_shared_info), but
+> > for AF_XDP zero-copy mode, it will never create an SKB that use this
+> > area.   Thus, in principle we can allow XDP-progs to extend/grow tail
+> > into this area, but I don't think there is any use-case for this, as
+> > it's much easier to access packet-data in userspace application.
+> > (Thus, it might not be worth the complexity to give AF_XDP
+> > bpf_xdp_adjust_tail access to this area, by e.g. "lying" via adding 320
+> > bytes to frame_sz).
+> >  =20
+>=20
+> I agree, and in the picture (well...) above that would be "d". IOW
+> data_hard_end is 320 "off" the real end.
 
-why leaf functions are special?
-I've been thinking about it as well, but trampoline fentry/fexit can
-be attached to bpf progs too and it would unnecessary complicate
-calling original.
-So I've discared nop7 idea.
+Yes, we agree.
 
-Instead I was thinking to add useless two byte prefix to
-either 'push rbp' or 'mov rbp, rsp'.
-Like 0x66, so from cpu uops point of view it will stay single uop
-to execute in the ooo pipeline, whereas nop2 is a separate uop.
-But it's not clear whether decoder performance will be better
-for separate nop2 or 0x66 will add unnecssary stress on it.
-Like pushing it into 'complex' opcode that can be done by only one exclusive
-decoder vs 'simple' opcode that multiple decoders process in parallel.
-Some microbenchmarking is needed. Though I'm not sure that the time spent
-in such micro performance analysis is worth it :)
-So imo nop2 is good enough.
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-> About a way forward - I reached out to Bjorn to co-operate on providing
-> the benchmark for measuring the impact of new tail call handling as well
-> as providing a proof in a form of selftests that bpf2bpf is working
-> together with tail calls.
-> 
-> About a benchmark, we think that having tests for best and worst cases
-> would tell us what is going on. So:
-> - have a main program that is not using any of callee registers that will
->   be tailcalling onto another program that is also not using any of R6-R9.
-
-I don't think such micro benchmark will be realistic. You can probably
-craft one in assembler, but when there is a function call and 'ctx' is
-passed into that function the llvm will use R6 at least.
-
-> - have the same flow but both programs will be using R6, R7, R8, R9; main
->   program needs to use them because we will be popping these registers
->   before the tail call and target program will be doing pushes.
-
-I would create a benchmark out of progs/tailcall[1-5].c and progs/bpf_flow.c
-I think it will be good enough to assess performance before/after.
-
-> Daniel, John, is there some Cilium benchmark that we could incorporate? I
-> don't think we be able to come up with a program that would mimic what you
-> have previously described, e.g. 6 static jumps where every program would
-> be utilizing every callee-saved register. Any help/pointers on how should
-> we approach it would be very appreciated.
-
-progs/bpf_flow.c is pretty much such example or I missing something?
-Every jump of tail_call is using r6 and r7 at least there.
-But bodies of the functions are not empty, so more registers being used
-the more work the function is doing and less noticeable the overhead
-of new tail_call will be.
