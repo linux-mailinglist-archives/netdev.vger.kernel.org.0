@@ -2,147 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C6C91DC9D8
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 11:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76AC1DCAB0
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 12:09:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728801AbgEUJSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 05:18:53 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:13952 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728693AbgEUJSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 05:18:52 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04L99coI009329;
-        Thu, 21 May 2020 02:18:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=MYR1yME214mdfwByHoWsn//8pqe/GxdPHLvrPOWNg3g=;
- b=rU3KaRqEsPch/B7hLRG7kQCo8CZaoGhanMdHc2o6NGmg9OlMzIrRy+7SY7MevgxHD76u
- gNEZSnvF1U3zEtdmQkJ1MTUHksuGi9zUKvXDQ8Y3yj+sTIMxuZyQG/5ndiOTw5S+MGkR
- QqvDhApheWLXKqSi4beggyRMWlPNHqkx1DLSixYbnXnGlivZdYGU1ZjGMl/tG8iUhlYG
- fgL6Mmyi36ksh/aTzCFgSFfxW8Tv96EPSwcH0LZe2GkfzKIrhxgZM21h7x5QHmcKggju
- L1S8Y168SU3s84ch4/kDUnL4aDWAeDiocKzdI2JdsoqcexqbMCAqPd0ZywoeGmwRTmKa 5g== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 312fppcn2p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 21 May 2020 02:18:48 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 21 May
- 2020 02:18:46 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 21 May 2020 02:18:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PTNS7Ebt6WgLcF0z3671nZMMNiw9YXDuCXhm1Y0KAyWdCqgmAq0bCnJ3Byt0XYh91lVwKvqBDlT9btyLCoLhFjsKHhDDBfCMFIc+r0qFTE/+68DYivwIvTdKSKWIej+Sit+c0L96VSkpP7CiuW2h/ka3HyoBWCYw1EHnjySqsJQjSxeVrsGNK438lLmQUXIYz7XvloQckqzKL9lvJAOD770/Jkzy3ZZETTAjqgiSp0KEKNW5dbZGJvBbE3vi335GxJ77z+T4e54gOooGOmbMRlCLrLxF/Rh2nFKSNMWoVWSoKgc/dmc8dPLZ2oPLPE1gmQhK3av9h7hrD8s5Z9zklw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MYR1yME214mdfwByHoWsn//8pqe/GxdPHLvrPOWNg3g=;
- b=VLvrBGWF39Y8ESpzVs5tledAKyqd44hzj7JUWuREh/TtJY84VvwoAOXNJsKMe1BbzFOP/IM4aT3j7Meo2yVK/yfQ7z8oyamIUkJHHLYZOB4v86NqoLk7vKa93CMGzH2mVr7KV5CeGNEyfQCCQtPvdcLzKfNLfRZ14QwiUs3GmJegYmxqjquU9wusy360y5JrT1UJCfVETtq1a6U1aRLbeKl/WeZ+sKc+2/M9JCrL7YLkl6zs5SII6BB1YZZ3WEO2RYtuhfSbiDAnntB6aWIpBSYfp600tqrQ5eFxbKGSX6noKQeFtehb2xoNagVUc9cDUxkfSfk6yFzMxGf1e8yRig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MYR1yME214mdfwByHoWsn//8pqe/GxdPHLvrPOWNg3g=;
- b=LKNxMpuIQAl6N4y2Hgfi33NcUHWUiVyQZCHpJr0XkUUb+1bA8DBQ65cI6JzzzspJoHp9zhgq6N00w9B26mdv9q7OzfUjIkXpMxcS/uiVszN3Or42hByt3INuoUouE36hNPPIS7923ubuzwKYGIDSR3G5LY1XCd0hl/AqUIUgZAs=
-Received: from CH2PR18MB3238.namprd18.prod.outlook.com (2603:10b6:610:28::12)
- by CH2PR18MB3253.namprd18.prod.outlook.com (2603:10b6:610:2f::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Thu, 21 May
- 2020 09:18:44 +0000
-Received: from CH2PR18MB3238.namprd18.prod.outlook.com
- ([fe80::8ac:a709:c804:631c]) by CH2PR18MB3238.namprd18.prod.outlook.com
- ([fe80::8ac:a709:c804:631c%6]) with mapi id 15.20.3021.024; Thu, 21 May 2020
- 09:18:44 +0000
-From:   Mark Starovoytov <mstarovoitov@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Dmitry Bezrukov <dbezrukov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: RE: [EXT] Re: [PATCH net-next 03/12] net: atlantic: changes for
- multi-TC support
-Thread-Topic: [EXT] Re: [PATCH net-next 03/12] net: atlantic: changes for
- multi-TC support
-Thread-Index: AQHWLq1BHxO6SUtdnUiE5iZCKZ9TEqixdm0AgADJ9hA=
-Date:   Thu, 21 May 2020 09:18:44 +0000
-Message-ID: <CH2PR18MB323861420A81270EC7207300D3B70@CH2PR18MB3238.namprd18.prod.outlook.com>
-References: <20200520134734.2014-1-irusskikh@marvell.com>
-        <20200520134734.2014-4-irusskikh@marvell.com>
- <20200520140154.6b6328de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200520140154.6b6328de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [95.161.223.64]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ce6ca5ca-9440-4088-628b-08d7fd67f5df
-x-ms-traffictypediagnostic: CH2PR18MB3253:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR18MB325314D9010F874CB00BE6E8D3B70@CH2PR18MB3253.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 041032FF37
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Udf57Ml5UWzlhoy09xxrgIh5lNAB4aydtJfmhoZwNNVRbfhhilx3Uw3IxJN8XLbbolAT2aH+CokUlGSROeWvefxA8qe261QgHewReQOWGbxJ71cacqIxAsqHdrl8wfR6+KDFkfIT+ZK6uDRVzhGMclhWr8xhTtrbtVFYnBTqk+T6ZgrCHFvk/mq9GgTjcNZc3rU4+c6LZ44E4/OD75pOkdfZSzH3dfd+4cLFRogTi00zXIKq5H5VRStJFPmIIrlfSE186rM83G4jAQJnDaP/a8rybAfKWS30s2tLbq6N9krCSp3dzrSJBCGJScVYFS0P2Gib56aoI/Z1MnTcyWiLiQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR18MB3238.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(39860400002)(366004)(396003)(136003)(346002)(478600001)(52536014)(6506007)(33656002)(7696005)(186003)(66946007)(26005)(66556008)(2906002)(54906003)(316002)(76116006)(66476007)(86362001)(8936002)(5660300002)(107886003)(8676002)(4326008)(55016002)(6916009)(64756008)(71200400001)(66446008)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: NJ5/HgXjkXaPRlCvWBxcEifdZ779qZ5hLHO+y5wwnPfcFbjjZbdTWz+zktjSXAcCsHFNqQlaZJmEoAAwh1XH77OWYkmGe52W3PxoyHB9nFIAvaG6I21wUPDH5YX/w9lvO7Ew72RREoQq9Kew++tWDVRqTJi9/v2jdPrch7vGBFh3ZNQV9Ci5r5YlGBB/Or+tsWtx0J//ElvXGQPmMEAUQlWvsdvpb1vNIX3VlT0e0ipxuvBzHSIOErRef+ZGB1/LfZIU34af/jFfHkq368fJRCXSPmKTIB4rlreWgxd2I+wvwFX7rkocObItTLI2AoWzGBizcJI4DNBT2kO0zK3n43CH7/JKXvAbz7HyQdhSi7/RED8eGD7/fI9Ji8SgS2T1kSGZe+K15OoXO56hIHTR0rsgXJ4Me6oRfGuIXZyu656nvFqRzOGhzTA9xHDqr4GmMrPZ+XFS8nMmkFrqkl/KzPUg0aqsBdM5E3XPPGapP20=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727063AbgEUKJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 06:09:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38191 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726821AbgEUKJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 06:09:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590055747;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=D9Fbaz+JJ8kEEZ0tlvUZ395m97V8aOJOFAoDkHvGhQA=;
+        b=fWkRj0MaX0xlSEi2fPutpRZ/xidPPE/Gi+9L8NSaO99BBcK95mw+55uYFbL0u+/KzwsKVi
+        078W74TvsvznP9f3aQDVkxVekTSFEVAwkMomWyoevpi5qMKww6/EVwNnBU3GmcGHRRsb5P
+        8yp96Iukuxt28MIsOIihIFMsAgXu03c=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-179-uB5WMKUjOYSGR037gn4XYw-1; Thu, 21 May 2020 06:09:05 -0400
+X-MC-Unique: uB5WMKUjOYSGR037gn4XYw-1
+Received: by mail-wm1-f71.google.com with SMTP id q6so1664173wme.1
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 03:09:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D9Fbaz+JJ8kEEZ0tlvUZ395m97V8aOJOFAoDkHvGhQA=;
+        b=ulO/VwoGfx9ZjCswC3MYodMVOu1KQXgLHfPdmLsNoo1Rp6zKfyJBY8LvwUrAapnIHK
+         zqGTqJzJxk90xtzXz3qr4RLR/PjM1HKldX4dwLXR1upJVbce7gfOwmh1GoTh86+A8qGI
+         vjkAxdYApDjDBri7c8wehjKWJCFXgw5UT8HFRDTF/C+Zu2Df8a1VYyxYr78bXDHUx30v
+         3kRTFHxvvI5nG0nnrkh5JJwCXQWhktDKti9k9Dek0WS7wiN8cYUa3eqhy9ZMBpAFVeDP
+         j78U3HXBQD5k5mNVD+C/+loIWO+YoM7fXGGM2RXOAPyVZ6UNjBRgNtJyz394XjkDWPBK
+         nc9A==
+X-Gm-Message-State: AOAM5307L8r54eBkAA/0f7l2b2nKHxkcmc0mYBy9FICtQeWDP++sklH3
+        rZH/QwGBkfJqeQxpbDzbnGbW/cwKMJI83TKn0SWDWOit5OYBky8VjICDOKH32qKQ7OMgkugViK1
+        v6v6Rl0jkHk85mXPx
+X-Received: by 2002:adf:d4c6:: with SMTP id w6mr8319579wrk.92.1590055744899;
+        Thu, 21 May 2020 03:09:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJycbzKmFRNRkyB/+G/ug6q84G+P7Jm+MG6E498KZP4gd5TeqIghwXi90/wVX8qLe9oSNT+zZA==
+X-Received: by 2002:adf:d4c6:: with SMTP id w6mr8319562wrk.92.1590055744672;
+        Thu, 21 May 2020 03:09:04 -0700 (PDT)
+Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id 62sm4718700wrm.1.2020.05.21.03.09.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 03:09:03 -0700 (PDT)
+Date:   Thu, 21 May 2020 12:09:02 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     kbuild test robot <lkp@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Benjamin LaHaise <benjamin.lahaise@netronome.com>,
+        Tom Herbert <tom@herbertland.com>,
+        Liel Shoshan <liels@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>
+Subject: Re: [PATCH net-next 1/2] flow_dissector: Parse multiple MPLS Label
+ Stack Entries
+Message-ID: <20200521100902.GA24550@pc-3.home>
+References: <1cf89ed887eff6121d344cd1c4e0e23d84c1ac33.1589993550.git.gnault@redhat.com>
+ <202005210931.kHcrKMdv%lkp@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce6ca5ca-9440-4088-628b-08d7fd67f5df
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2020 09:18:44.3261
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Lae9MWgASWWxv7hRu+dzFgquWFTMe7LXLTGI8+03SZNO+WdZhy8jpQ+bs4nCdocQ0aaGY0F4xHmNUvtRl1A4K4Gv6YrmDUd3t19MU5D/K64=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR18MB3253
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-21_05:2020-05-20,2020-05-21 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202005210931.kHcrKMdv%lkp@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On Thu, May 21, 2020 at 09:24:25AM +0800, kbuild test robot wrote:
+> All errors (new ones prefixed by >>, old ones prefixed by <<):
+> 
+> In file included from include/linux/build_bug.h:5,
+> from include/linux/bitfield.h:10,
+> from drivers/net/ethernet/netronome/nfp/flower/match.c:4:
+> drivers/net/ethernet/netronome/nfp/flower/match.c: In function 'nfp_flower_compile_mac':
+> >> drivers/net/ethernet/netronome/nfp/flower/match.c:100:57: error: 'struct flow_dissector_key_mpls' has no member named 'mpls_label'
+> 
+Sorry, I didn't realise this was used by NFP.
+I'll respin.
 
-> > In the first generation of our hardware (A1), a whole traffic class is
-> > consumed for PTP handling in FW (FW uses it to send the ptp data and
-> > to send back timestamps).
-> > Since this conflicts with QoS (user is unable to use the reserved
-> > TC2), we suggest using module param to give the user a choice:
-> > disabling PTP allows using all available TCs.
->=20
-> Is there really no way to get the config automatically chosen when user s=
-ets
-> up TCs or does SIOCSHWTSTAMP? It's fine to return -EOPNOTSUPP when too
-> many things are enabled, but user having to set module parameters upfront
-> is quite painful.
-
-Module param is not a must have for usage, default config allows the user t=
-o use TCs and PTP features simultaneously with one major limitation: TC2 is=
- reserved for PTP, so if the user tries to send/receive anything on TC2, if=
- won't quite work unfortunately.
-If the user wants to get "everything" from QoS/TC (e.g. use all the TCs) - =
-he can explicitly disable the PTP via module param.
-
-Right now we really aren't sure we can dynamically rearrange resources betw=
-een QoS and PTP, since disabling/enabling PTP requires a complete HW reconf=
-iguration unfortunately.
-Even more unfortunate is the fact that we can't change the TC, which is res=
-erved for PTP, because TC2 is hardcoded in firmware.
-=20
-We would prefer to keep things as is for now, if possible. We'll discuss th=
-is with HW/FW team(s) and submit a follow-up patch, if we find a way to aut=
-omatically choose the config.
-
-Best regards,
-Mark.
