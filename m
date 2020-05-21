@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4781DC858
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 10:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAC31DC85F
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 10:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728572AbgEUIQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 04:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
+        id S1728601AbgEUIS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 04:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727122AbgEUIQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 04:16:48 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3856AC061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:16:48 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id w64so5437077wmg.4
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:16:48 -0700 (PDT)
+        with ESMTP id S1728129AbgEUISZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 04:18:25 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9349EC061A0F
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:18:25 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id h4so4798916wmb.4
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 01:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=jBkf6P6nSXkyKzMFNo3bLUqW/4eqoq0c19s0e7M06zY=;
-        b=LdVexujeEgbDGsiI0uzhi86AsBADHpO7fcAZkjSHwVByEZ1BzgfoNWK1h/S25Nn5uV
-         q8MiB1Pkj2NFuHc53bE/hg3iJ8K1W5X16BokluyyxhBHZbx6aU5XuT4KkCgLzoANwp2z
-         0IkrwffwDe1Q0bNIT7SNygMo1YJX/3KNKpJak=
+        bh=bqOLOWJcEnmegQMbnR/7WAD5Ory2NkimcCLFj6PkXT4=;
+        b=MNKVdqYIQu1sZpEEWrjFHTTAgUy+R5a9ibTbTktvHRxg5WU3UwsT+DYDhAfDTZ1ZVN
+         WUkF2IPbZmlF4VcwHRt2g+0rwVYfAWsxUMpNDxOZKs9mfmROSBdrBuvxcGKRLC1byQ50
+         gtHo3VrT/HT9vEGVkBYTSpJJxyNB1z1PPj1jQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jBkf6P6nSXkyKzMFNo3bLUqW/4eqoq0c19s0e7M06zY=;
-        b=mmgofiGM7abJrn6KoaYBAuVQ/B0xzig+FFBnooefO88jdXABMpijsz+hKiILkR2dnw
-         jaYmMQdS/CjfKFuCxxWTfEUCxGIhFgYsNloPrP/Sbe6GeMt9c9w6RGF9xCl34WlSidhq
-         jCa5sconZRJK8GfwzQAirVNdkJEtmlza2kElkjX1hkysXSh4GmAx0c+eqIJxQy5jrdsy
-         CapNPaqDa2F7QwAZdg0scTf+A3uIbuhIydn1QsXx94lgNaj9gHgSX+jNVQsucjYvPIVA
-         Sh2ZKJXYngSqG/xLcpuaJbvLefmd1GIEnrnAwL5jalYjSVP0mhYX2Wo6pTqqzz+ljEB6
-         0q6g==
-X-Gm-Message-State: AOAM533dgCzSIdc30iGLgreKeH8BaanofCHOTQ/aQcd11G3kT5wssQek
-        VtkfYeRq75s2hc8ezDVVZkgcnQ==
-X-Google-Smtp-Source: ABdhPJy5zO/XnY8I5DXGdgeP4O6u+idOSeEQM2pULeJGWQoKIWpcgAPJbz/cElBzBm674NjeF6fIrg==
-X-Received: by 2002:a1c:7d43:: with SMTP id y64mr8224264wmc.46.1590049006940;
-        Thu, 21 May 2020 01:16:46 -0700 (PDT)
+        bh=bqOLOWJcEnmegQMbnR/7WAD5Ory2NkimcCLFj6PkXT4=;
+        b=rqkHA57ZLvmuJ9SOxhk8tOPwzKJ2SecfhXP5ruILqNjqv0HW5s0iYJ2y+1607QUy67
+         t6PC36244b9buVD0yndAvShWtC7Rjv8jZSKU4w58s94XHTYxkrCczQAEslnWsW8a8g+k
+         /mdseaNrAtbpuqTTM1GW+e3sEJ7vK7ENLXN0mQko1rA5ki0lZmMeCBcLplJbBB5tO+rV
+         aOXApTemCg63e1LPw19Nkj46itwFA89xBcFRQ37fL+KKM8cJjz2ug8CrRgvR9HBqbZEL
+         Bh3lGaypjI4TSFXNtdcuWYncBw9Dx+GsxuJjDv68lYEuaeeieQRBsMd4jPomW7DVLQdy
+         2+lg==
+X-Gm-Message-State: AOAM5308n/A20TIg1uz3MlPzzdYgEeQMxXeG8CiENOBuB8cr243tDT2s
+        4GzFwo9laZnLVeBqTXEB1abJSg==
+X-Google-Smtp-Source: ABdhPJwnoCs1FS19UI5zCtlLZR/jxDVg7B/c15iE+aCCyvnmoKKyxYyfj6nzMcAhOF8kUgyhShWwQg==
+X-Received: by 2002:a1c:2186:: with SMTP id h128mr7558309wmh.108.1590049104333;
+        Thu, 21 May 2020 01:18:24 -0700 (PDT)
 Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id n13sm5466384wrs.2.2020.05.21.01.16.45
+        by smtp.gmail.com with ESMTPSA id v2sm5840676wrn.21.2020.05.21.01.18.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2020 01:16:46 -0700 (PDT)
-Subject: Re: [PATCH 1/3] bridge: mrp: Add br_mrp_unique_ifindex function
+        Thu, 21 May 2020 01:18:23 -0700 (PDT)
+Subject: Re: [PATCH 3/3] bridge: mrp: Restore port state when deleting MRP
+ instance
 To:     Horatiu Vultur <horatiu.vultur@microchip.com>, jiri@resnulli.us,
         ivecera@redhat.com, davem@davemloft.net, kuba@kernel.org,
         roopa@cumulusnetworks.com, andrew@lunn.ch,
         UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
 References: <20200520130923.3196432-1-horatiu.vultur@microchip.com>
- <20200520130923.3196432-2-horatiu.vultur@microchip.com>
+ <20200520130923.3196432-4-horatiu.vultur@microchip.com>
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <cecbdbf0-bb49-1e3c-c163-8e7412c6fcec@cumulusnetworks.com>
-Date:   Thu, 21 May 2020 11:16:44 +0300
+Message-ID: <05ddf496-9f6d-ae23-1bdb-40f0fe0e3b3c@cumulusnetworks.com>
+Date:   Thu, 21 May 2020 11:18:20 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200520130923.3196432-2-horatiu.vultur@microchip.com>
+In-Reply-To: <20200520130923.3196432-4-horatiu.vultur@microchip.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,69 +70,59 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 20/05/2020 16:09, Horatiu Vultur wrote:
-> It is not allow to have the same net bridge port part of multiple MRP
-> rings. Therefore add a check if the port is used already in a different
-> MRP. In that case return failure.
+> When a MRP instance is deleted, then restore the port according to the
+> bridge state. If the bridge is up then the ports will be in forwarding
+> state otherwise will be in disabled state.
 > 
 > Fixes: 9a9f26e8f7ea ("bridge: mrp: Connect MRP API with the switchdev API")
 > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->  net/bridge/br_mrp.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
+>  net/bridge/br_mrp.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 > 
+
+Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+
 > diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> index d7bc09de4c139..a5a3fa59c078a 100644
+> index a5a3fa59c078a..bdd8920c15053 100644
 > --- a/net/bridge/br_mrp.c
 > +++ b/net/bridge/br_mrp.c
-> @@ -37,6 +37,32 @@ static struct br_mrp *br_mrp_find_id(struct net_bridge *br, u32 ring_id)
->  	return res;
->  }
->  
-> +static bool br_mrp_unique_ifindex(struct net_bridge *br, u32 ifindex)
-> +{
-> +	struct br_mrp *mrp;
-> +	bool res = true;
-> +
-> +	rcu_read_lock();
-
-Why do you need the rcu_read_lock() here when lockdep_rtnl_is_held() is used?
-You should be able to just do rtnl_dereference() below as this is used only
-under rtnl.
-
-> +	list_for_each_entry_rcu(mrp, &br->mrp_list, list,
-> +				lockdep_rtnl_is_held()) {
-> +		struct net_bridge_port *p;
-> +
-> +		p = rcu_dereference(mrp->p_port);
-> +		if (p && p->dev->ifindex == ifindex) {
-> +			res = false;
-> +			break;
-> +		}
-> +
-> +		p = rcu_dereference(mrp->s_port);
-> +		if (p && p->dev->ifindex == ifindex) {
-> +			res = false;
-> +			break;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +	return res;
-> +}
-> +
->  static struct br_mrp *br_mrp_find_port(struct net_bridge *br,
->  				       struct net_bridge_port *p)
+> @@ -229,6 +229,7 @@ static void br_mrp_test_work_expired(struct work_struct *work)
+>  static void br_mrp_del_impl(struct net_bridge *br, struct br_mrp *mrp)
 >  {
-> @@ -255,6 +281,11 @@ int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
->  	    !br_mrp_get_port(br, instance->s_ifindex))
->  		return -EINVAL;
+>  	struct net_bridge_port *p;
+> +	u8 state;
 >  
-> +	/* It is not possible to have the same port part of multiple rings */
-> +	if (!br_mrp_unique_ifindex(br, instance->p_ifindex) ||
-> +	    !br_mrp_unique_ifindex(br, instance->s_ifindex))
-> +		return -EINVAL;
-> +
->  	mrp = kzalloc(sizeof(*mrp), GFP_KERNEL);
->  	if (!mrp)
->  		return -ENOMEM;
+>  	/* Stop sending MRP_Test frames */
+>  	cancel_delayed_work_sync(&mrp->test_work);
+> @@ -240,20 +241,24 @@ static void br_mrp_del_impl(struct net_bridge *br, struct br_mrp *mrp)
+>  	p = rtnl_dereference(mrp->p_port);
+>  	if (p) {
+>  		spin_lock_bh(&br->lock);
+> -		p->state = BR_STATE_FORWARDING;
+> +		state = netif_running(br->dev) ?
+> +				BR_STATE_FORWARDING : BR_STATE_DISABLED;
+> +		p->state = state;
+>  		p->flags &= ~BR_MRP_AWARE;
+>  		spin_unlock_bh(&br->lock);
+> -		br_mrp_port_switchdev_set_state(p, BR_STATE_FORWARDING);
+> +		br_mrp_port_switchdev_set_state(p, state);
+>  		rcu_assign_pointer(mrp->p_port, NULL);
+>  	}
+>  
+>  	p = rtnl_dereference(mrp->s_port);
+>  	if (p) {
+>  		spin_lock_bh(&br->lock);
+> -		p->state = BR_STATE_FORWARDING;
+> +		state = netif_running(br->dev) ?
+> +				BR_STATE_FORWARDING : BR_STATE_DISABLED;
+> +		p->state = state;
+>  		p->flags &= ~BR_MRP_AWARE;
+>  		spin_unlock_bh(&br->lock);
+> -		br_mrp_port_switchdev_set_state(p, BR_STATE_FORWARDING);
+> +		br_mrp_port_switchdev_set_state(p, state);
+>  		rcu_assign_pointer(mrp->s_port, NULL);
+>  	}
+>  
 > 
 
