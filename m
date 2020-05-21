@@ -2,97 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4551DD4B0
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0491DD540
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728873AbgEURoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:44:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53704 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728542AbgEURoB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 13:44:01 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4AB41207F7;
-        Thu, 21 May 2020 17:44:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590083040;
-        bh=6nyP9nRABbr9I/+R+8UXncPfsESo3IVTz5PwLOZXbYk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oP+78MBQZdAXiAp3ysB221UvjLOUd6vfKMJKlmeazoSG+cAcWSAEhfHEW49jnoAUQ
-         PLkSMVv6px48fpaC1JdmBUdKUGLUEodyiZTCN3nNphL9nXBbkAV9kdLQhUh2pwV3gQ
-         DW/5wIfuOqYSvJiepgHONkcH3VqKchhB8vK8hebU=
-Date:   Thu, 21 May 2020 19:43:58 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next v4 01/12] Implementation of Virtual Bus
-Message-ID: <20200521174358.GA3679752@kroah.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-2-jeffrey.t.kirsher@intel.com>
- <c74808dc-0040-7cef-a0da-0da9caedddd9@mellanox.com>
+        id S1729107AbgEURuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728955AbgEURrr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:47:47 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0EEC061A0E;
+        Thu, 21 May 2020 10:47:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=kqJI+EWtfQBeipsmoEMHCkNSuLmdDpilpY83QLnguS8=; b=KemRXJ4w/7h3tazT2J4TGpsOmV
+        XpvdXZMxOD+ZZETKw0TIPS0fVlKHuTavsoyyNgO8AuNzyPIfJ9QDEIPk3nbgEanNM0YncS9cqFqXy
+        Y1WZfYZ10VWcz2/eo8oE+n24Y0PMtoJf/+lRCWMAzOB7q8256Jn0q3l8kT/G4GUM6G1tZv50YJdQf
+        MgCjTS2w7B0x62+alnyV+rht4F/aWJ9IxvBzvt5SiKe51c6cRPZfi+Mm6Tg9ybqTUecS00o/bY1KJ
+        fH9QmGhYQm0+aR3EztdU30Sx9DvwYZS43AFDx9hhGM542R/cYH0WuFY3E6VosrAlJllqPA/NK2ZYV
+        V5TW1rvA==;
+Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jbpI0-0002rk-4t; Thu, 21 May 2020 17:47:28 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org
+Subject: do a single memdup_user in sctp_setsockopt
+Date:   Thu, 21 May 2020 19:46:35 +0200
+Message-Id: <20200521174724.2635475-1-hch@lst.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c74808dc-0040-7cef-a0da-0da9caedddd9@mellanox.com>
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 02:57:55PM +0000, Parav Pandit wrote:
-> Hi Greg, Jason,
-> 
-> On 5/20/2020 12:32 PM, Jeff Kirsher wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> > 
-> 
-> > +static const
-> > +struct virtbus_dev_id *virtbus_match_id(const struct virtbus_dev_id *id,
-> > +					struct virtbus_device *vdev)
-> > +{
-> > +	while (id->name[0]) {
-> > +		if (!strcmp(vdev->match_name, id->name))
-> > +			return id;
-> 
-> Should we have VID, DID based approach instead of _any_ string chosen by
-> vendor drivers?
+Hi all,
 
-No, because:
-
-> This will required central place to define the VID, DID of the vdev in
-> vdev_ids.h to have unique ids.
-
-That's not a good way to run things :)
-
-Have the virtbus core create the "name", as it really doesn't matter
-what it is, just that it is unique, right?
-
-thanks,
-
-greg k-h
+based on the review of Davids patch to do something similar I dusted off
+the series I had started a few days ago to move the memdup_user or
+copy_from_user from the inidividual sockopts into sctp_setsockopt,
+which is done with one patch per option, so it might suit Marcelo's
+taste a bit better.  I did not start any work on getsockopt.
