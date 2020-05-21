@@ -2,138 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0B61DC799
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A5E1DC7BD
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728459AbgEUH2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 03:28:15 -0400
-Received: from mga11.intel.com ([192.55.52.93]:34945 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728265AbgEUH2M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 03:28:12 -0400
-IronPort-SDR: TODDjnfUr+ai3JQVGvqeeHuYSZcvT62g6WMAxrXyQGbWC0M9Gb2JH9Z6X2A2o4lcY+9ar+5Tf7
- t0XFYLJD3c3A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 00:28:11 -0700
-IronPort-SDR: ig+6r7OpeNQpkCmWjFNztGKt55XqSZxBrptfP8QoT5cxxfOA2aTtifAdLEKweUmESazqsfPq6f
- XIXPfTXtscMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,417,1583222400"; 
-   d="scan'208";a="343758758"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
-  by orsmga001.jf.intel.com with ESMTP; 21 May 2020 00:28:10 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 21 May 2020 00:28:03 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 21 May 2020 00:28:03 -0700
-Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 21 May 2020 00:28:03 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
- by edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Thu, 21 May 2020 00:28:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j5nN79oSvHuEqmD3sdQeTk7/1SJ7cgEA7TLUC2p4wJa68Nwe6kp4MYGDhRGFoqpfJeHXXwh8HEBwqiUo4pJ0FO5EFW3giNv0T+tIOxnY3xXodFh8uIT2amW8qhLj+b4cMP/0Kjgd6LKQC6XIQZIwflki3UMRkyzdb0E4HLR8oW31CoXCVR6Lqpq8Ldqk6N8+t4qZgRX0S7M9+pxdbgb1gOfvvVVGQnIAhs6WAbPQmOMwRzIf7tEebaahIN7xTPVjqcMP7IGAJvCJZ4rh+2WO6tQiwfrOtFg9yFcfkrVGbqUKwjwtNkMHUP76ouO+1O+ZwvjQ8VzsGvPiFgx83r0LjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6rKwDmkVV2jlKIha/hxNJeCu5trBEe+dFatsSGxw5+U=;
- b=HMU1mU9KsqZTEk63oXQGE/0dCkC2Ukj6/eJGRwkRAmjpFaI6N3h5CPCv1DRGFMDHXvcYJgA6vGd19ep1O/r8OKqbfHO5rF6gxAOBDhvRoMqnezMFqpnIZOarmTK35mssfWnH2V+seltSiLpwxLdOi/RAPLSz8nfTeYZJ+owt07QvJdnsXn32j/XnviIqjbWEHEpx9oSzalqGKgM9NYeQDsthqdznDZK+x70k1LpHNTBVwW8Mbqk3FS5/fNIW/p4LIHaEJoqVL7mRWOfir8WrBqbbNP+RbbJpuEAusuSjH6GWD8LXvIU2LA8ifS5rTi6vxbBgd+VUcLlnEPnKR2qUlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6rKwDmkVV2jlKIha/hxNJeCu5trBEe+dFatsSGxw5+U=;
- b=wdpwJKPNCz6Hpj/TTsMOllCZruiy+dBiomVZrwrkQhxptk+XnALCb2i2xuDo4FTUPHxUivVzebmvgoS2Wwlcj+T21GaK7lonQulPSbNVUzdJ2ieBpaHvr06VFE8vA4pjgBW1hPj7kM7katlZfC0aZ99ZxV7+ap4eUSIaJPjY4vE=
-Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
- DM6PR11MB3001.namprd11.prod.outlook.com (2603:10b6:5:6e::27) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3000.26; Thu, 21 May 2020 07:28:00 +0000
-Received: from DM6PR11MB2890.namprd11.prod.outlook.com
- ([fe80::40b:5b49:b17d:d875]) by DM6PR11MB2890.namprd11.prod.outlook.com
- ([fe80::40b:5b49:b17d:d875%7]) with mapi id 15.20.3000.022; Thu, 21 May 2020
- 07:28:00 +0000
-From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
-To:     Jason Yan <yanaijie@huawei.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
-Thread-Topic: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
-Thread-Index: AQHWJGAuISXMEjQLckCV8vKCyHNEfqiyOb5g
-Date:   Thu, 21 May 2020 07:27:59 +0000
-Message-ID: <DM6PR11MB2890A3BB1993EF97E4368F06BCB70@DM6PR11MB2890.namprd11.prod.outlook.com>
-References: <20200507110915.38349-1-yanaijie@huawei.com>
-In-Reply-To: <20200507110915.38349-1-yanaijie@huawei.com>
-Accept-Language: en-US
+        id S1728392AbgEUHdX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 May 2020 03:33:23 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:47941 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728373AbgEUHdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 03:33:23 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-61-1H23FiuAM022CjKnvDidHA-1; Thu, 21 May 2020 08:32:15 +0100
+X-MC-Unique: 1H23FiuAM022CjKnvDidHA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 21 May 2020 08:32:14 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 21 May 2020 08:32:14 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: RE: [PATCH net-next] sctp: Pull the user copies out of the individual
+ sockopt functions.
+Thread-Topic: [PATCH net-next] sctp: Pull the user copies out of the
+ individual sockopt functions.
+Thread-Index: AdYut/UmmYS4izffR6iTi1nqaxYM2QARN02AABEfr1A=
+Date:   Thu, 21 May 2020 07:32:14 +0000
+Message-ID: <e777874fbd0e4ccb813e08145f3c3359@AcuMS.aculab.com>
+References: <fd94b5e41a7c4edc8f743c56a04ed2c9@AcuMS.aculab.com>
+ <20200521001725.GW2491@localhost.localdomain>
+In-Reply-To: <20200521001725.GW2491@localhost.localdomain>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-version: 11.2.0.6
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [134.134.136.209]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3c18b27d-59bc-4f04-9e43-08d7fd587d7c
-x-ms-traffictypediagnostic: DM6PR11MB3001:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB3001BBB86BDB86413B1FBA6FBCB70@DM6PR11MB3001.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:660;
-x-forefront-prvs: 041032FF37
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: n51z531juMO7xV4AJlgT91PGdAp/QuI+orG29HrzZKvlhQSL0QfVqkfHSFyE8afIpOLgMfgJqWkd21DfPmrkwu1TH66z5yYphmui2sDHnQ6GStMaQtZhUYTvTECz3pGPaB+ze79lyg6FBaT3jKrAa20zFpbi5Yg12lvN9NtrrZ0iUlHC6DYAUkzembWykogVqnh+ZVAX2JblZL6xwmlXOdKNABMn2Pugj4fJsMj+VprBG42lWEdLiODs4WFjAI54EJP/0cmqxGzXSqqXUGxdbQn+L/Nd3SjEeMwtLX5Z7wDLbcXOAGAq7QstpCBj9seXAM6da7bMhXmU4Uz1M82vizvOCr43OTYgKG+nDzGm7Haq+UBmegp9uYxZVSETvmxqJ/frZA21o9tIAikGGwiB1gHzEJkH4tV8MBEuyc3xGCILgNk7mjilzWA/FKg/T+rm
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(396003)(136003)(346002)(366004)(39860400002)(53546011)(8936002)(66446008)(71200400001)(52536014)(8676002)(7696005)(6506007)(33656002)(478600001)(186003)(66476007)(64756008)(66556008)(55016002)(26005)(9686003)(76116006)(4744005)(316002)(5660300002)(66946007)(86362001)(110136005)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: Wk5XGyVVABLv01CFN/wpIyahwDz/XV9/P7EDdNMHRoFthD2DV89vx8QC4Za3fA3amJUnt0Ml9gcayGcICCiMBbh0t6yKD+mRzyhpB02KeZXyQwG6Vv5PviZz8IN72CFYCfwj0dS0JYWNbgOJVHd9YekQcBzbsr1Ak/nuu+fKj1L76c1tfno5uDCxFlRdYXleJIOdrxd9tX5c/LbfZqz+G8Fiqr/ph8JTGIoWGovPs676G+psawG6I5PVJvclmFX2iOjwVbM+Qo03bJMTVn4K+PI8dKDVMA7HmpVWue/8ib8tvmo+gA5tpkKndbYA0/b9PDBloqgS3UdcF8FtFTVCbhkixoUnt8m2Tu8HsgMboZ+eA5MVuSFbXP9lTTugxGBNvT2nzNKQkzzuyKEZXQ5eM8JQPk6P05tc6atZaHieZP+wqUcCBWajYnLUaBD5imQ+oMrCKZ5En6DvVcV1hTJnZWdQ6d9PLy+PRP6xScJJ5e4HnQaSHlQyIbhhm7OknD9b
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c18b27d-59bc-4f04-9e43-08d7fd587d7c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2020 07:27:59.9103
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rf4Cf14qfPOEbSKxP4JNhjRdFWC6RC5GhHNTwsAO2CA8/oAzyopuuAOplcSPP+Z5OGDxuEgrkh/PVGnHg3XtCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3001
-X-OriginatorOrg: intel.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Jason Yan
-> Sent: Thursday, May 7, 2020 4:09 AM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net=
-;
-> yanaijie@huawei.com; intel-wired-lan@lists.osuosl.org;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
->=20
-> This function always return 0 now, we can make it return void to
-> simplify the code. This fixes the following coccicheck warning:
->=20
-> drivers/net/ethernet/intel/igb/e1000_mac.c:728:5-12: Unneeded variable:
-> "ret_val". Return "0" on line 751
->=20
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-> ---
->  drivers/net/ethernet/intel/igb/e1000_mac.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
->
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+From: 'Marcelo Ricardo Leitner'
+> Sent: 21 May 2020 01:17
+> On Wed, May 20, 2020 at 03:08:13PM +0000, David Laight wrote:
+> ...
+> > Only SCTP_SOCKOPT_CONNECTX3 contains an indirect pointer.
+> > It is also the only getsockopt() that wants to return a buffer
+> > and an error code. It is also definitely abusing getsockopt().
+> ...
+> > @@ -1375,11 +1350,11 @@ struct compat_sctp_getaddrs_old {
+> >  #endif
+> >
+> >  static int sctp_getsockopt_connectx3(struct sock *sk, int len,
+> > -				     char __user *optval,
+> > -				     int __user *optlen)
+> > +				     struct sctp_getaddrs_old *param,
+> > +				     int *optlen)
+> >  {
+> > -	struct sctp_getaddrs_old param;
+> >  	sctp_assoc_t assoc_id = 0;
+> > +	struct sockaddr *addrs;
+> >  	int err = 0;
+> >
+> >  #ifdef CONFIG_COMPAT
+..
+> >  	} else
+> >  #endif
+> >  	{
+> > -		if (len < sizeof(param))
+> > +		if (len < sizeof(*param))
+> >  			return -EINVAL;
+> > -		if (copy_from_user(&param, optval, sizeof(param)))
+> > -			return -EFAULT;
+> >  	}
+> >
+> > -	err = __sctp_setsockopt_connectx(sk, (struct sockaddr __user *)
+> > -					 param.addrs, param.addr_num,
+> > +	addrs = memdup_user(param->addrs, param->addr_num);
+> 
+> I'm staring at this for a while now but I don't get this memdup_user.
+> AFAICT, params->addrs is not __user anymore here, because
+> sctp_getsockopt() copied the whole thing already, no?
+> Also weird because it is being called from kernel_sctp_getsockopt(),
+> which now has no knowledge of __user buffers.
+> Maybe I didn't get something from the patch description.
+
+The connectx3 sockopt buffer contains a pointer to the user buffer
+that contains the actual addresses.
+So a second copy_from_user() is needed.
+
+This does mean that this option can only be actioned from userspace.
+
+Kernel code can get the same functionality using one of the
+other interfaces to connectx().
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
