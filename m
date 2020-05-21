@@ -2,71 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 745A21DD9AF
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1AC1DD9B5
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730181AbgEUVvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 17:51:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40484 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728701AbgEUVvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 17:51:15 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1D5552072C;
-        Thu, 21 May 2020 21:51:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590097875;
-        bh=Tn/RzU+kLeLCtb5gZw3sJC47x0UfDCvIjzHXHSfoO/w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mU7WdpX0Hccl4shDvyQ2a+gCVCcVT+MrJoUhrdLVbcqBNJluXKDCG4k23VfafNBms
-         fjTd92fXqKS/uEdPIn16y/i4wDL2xlFegFrU+ye6lfGLcdKbXKK0ag4Ep/rBlv96vv
-         GHBu9x/oDPIqx/Sno3Y67vzc4Ep2TG5t/iPJu/xo=
-Date:   Thu, 21 May 2020 14:51:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Ido Schimmel <idosch@idosch.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        petrm@mellanox.com, amitc@mellanox.com
-Subject: Re: devlink interface for asynchronous event/messages from
- firmware?
-Message-ID: <20200521145113.21f772bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
-References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
-        <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
-        <20200521205213.GA1093714@splinter>
-        <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
+        id S1730058AbgEUVz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 17:55:29 -0400
+Received: from mail-eopbgr130045.outbound.protection.outlook.com ([40.107.13.45]:2214
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728701AbgEUVz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 17:55:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KOEyFIRgwRP3fQpwjjs2D8H7f8dHDu12/POUwkDc3tZcm6Ft91mCl39NYqcLvs8u+90EHPBsT9tCZwdmYKMPXHVMnixKVRbIKmfxin7/DHrRNxyvi13YICEPvJt6Ga98+GzXXPKuGkfuGIqcG39woM6G/P5NMLgIIBYJ1y/qube/PLUxlEPdgFYS3Y8Mum9q36EY82sz/6V0oLbH/wsFxf/ViX9JSAL14IsfXwn4Q3OiIxzc+fnwQkbf8LIrO4fQAQRXxVNHE/aACnm4gBq9ysjN2YzdfGz2uNyuru6xwKrfVruiQka1BlRTfOKtAf6xwbaF9Riq4YlsXBrDmSHEAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wTG4x7N7jsCtbqGuiY3xqbSZQFLZEgtb0Yys/Pkx6J0=;
+ b=LsfAlQXWtO6CR4RvrvNNYDN0/dmBQaRlA1n/Sc9QaCxBZxDIOMu/QF1QnWS8BPxNOySEQQgbyH20VQaatWTBSfPnvKra761SElz1eajHS+vRlPxFbRd4Ud4dbmQN28/cJolQ7h3QlpOaNlGxVKCpt1rnWblu68XxcuVuapubaFS2gc74m3EMcLwzCSyXfsJRbc6SxfF007T1BWTCLxaMfX7BfWzsn0ZlKNMf5L8TKdFp9wP81fkPgChlJShRNHZyWzoWKPA3JkB9cuy2e+49KOUCd7R1R/iz5gGTpQchTQ3qJVVMIxy5r3aauqPH7zfvwmWpgYSutPJY9yrXQn/7rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=inf.elte.hu; dmarc=pass action=none header.from=inf.elte.hu;
+ dkim=pass header.d=inf.elte.hu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=ikelte.onmicrosoft.com; s=selector2-ikelte-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wTG4x7N7jsCtbqGuiY3xqbSZQFLZEgtb0Yys/Pkx6J0=;
+ b=fwSfCPzmXEBbEsBKbe+5WaVN+QM6gwRZ7Woj8MdTU9prJhO0Vt4b1q3zAihK+0hTdsmNgvW5NexmQQeot/u6lVk+1IRHEDiIszrQQFpvpANZzjh9qiYyUgMCLG3NOVzwthDZjMf4nCDo3pqzDuUIXQFmcTMu82gYJkESqqCt2Lc=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=inf.elte.hu;
+Received: from DB8PR10MB2652.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:ab::20)
+ by DB8PR10MB3783.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:16e::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Thu, 21 May
+ 2020 21:55:24 +0000
+Received: from DB8PR10MB2652.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::285b:6f31:7d11:5c53]) by DB8PR10MB2652.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::285b:6f31:7d11:5c53%5]) with mapi id 15.20.3021.024; Thu, 21 May 2020
+ 21:55:24 +0000
+X-Gm-Message-State: AOAM533/W7Vze2u/ehUuCqYg0OF305EvhA6POHdC3b2wgbpH6c/JJqOJ
+        1ysb+lvaebjlYxRpWjShiMWgRLRLIp7LyTscy0s=
+X-Google-Smtp-Source: ABdhPJyfUmVQMxdwuJ7saGQCZuTsn6EmXBeUyrX26YbH3QQldJBT2bivMuxlLIBZKUYMSgQyTvn7EEpFG9R/o/XiWTg=
+X-Received: by 2002:adf:fdc5:: with SMTP id i5mr522600wrs.176.1590098123059;
+ Thu, 21 May 2020 14:55:23 -0700 (PDT)
+References: <20200521125247.30178-1-fejes@inf.elte.hu> <20200521211432.GC49942@google.com>
+In-Reply-To: <20200521211432.GC49942@google.com>
+From:   Ferenc Fejes <fejes@inf.elte.hu>
+Date:   Thu, 21 May 2020 23:55:12 +0200
+X-Gmail-Original-Message-ID: <CAAej5NZMBTsoSMh2RJF19WwZNDxq5cLE2dy3TC0Od+yh05VP=A@mail.gmail.com>
+Message-ID: <CAAej5NZMBTsoSMh2RJF19WwZNDxq5cLE2dy3TC0Od+yh05VP=A@mail.gmail.com>
+Subject: Re: [PATCH net-next] Extending bpf_setsockopt with SO_BINDTODEVICE sockopt
+To:     sdf@google.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-ClientProxiedBy: AM3PR05CA0156.eurprd05.prod.outlook.com
+ (2603:10a6:207:3::34) To DB8PR10MB2652.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:10:ab::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mail-wr1-f47.google.com (209.85.221.47) by AM3PR05CA0156.eurprd05.prod.outlook.com (2603:10a6:207:3::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Thu, 21 May 2020 21:55:24 +0000
+Received: by mail-wr1-f47.google.com with SMTP id l11so8209804wru.0;        Thu, 21 May 2020 14:55:24 -0700 (PDT)
+X-Gm-Message-State: AOAM533/W7Vze2u/ehUuCqYg0OF305EvhA6POHdC3b2wgbpH6c/JJqOJ
+        1ysb+lvaebjlYxRpWjShiMWgRLRLIp7LyTscy0s=
+X-Google-Smtp-Source: ABdhPJyfUmVQMxdwuJ7saGQCZuTsn6EmXBeUyrX26YbH3QQldJBT2bivMuxlLIBZKUYMSgQyTvn7EEpFG9R/o/XiWTg=
+X-Received: by 2002:adf:fdc5:: with SMTP id i5mr522600wrs.176.1590098123059;
+ Thu, 21 May 2020 14:55:23 -0700 (PDT)
+X-Gmail-Original-Message-ID: <CAAej5NZMBTsoSMh2RJF19WwZNDxq5cLE2dy3TC0Od+yh05VP=A@mail.gmail.com>
+X-Originating-IP: [209.85.221.47]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2ddf14e9-ed19-4bb8-0ebe-08d7fdd1aa30
+X-MS-TrafficTypeDiagnostic: DB8PR10MB3783:
+X-Microsoft-Antispam-PRVS: <DB8PR10MB3783BE6707E2281E983DF9C1E1B70@DB8PR10MB3783.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 041032FF37
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QUdXZmXr+ui6Kss6LA6auU3PNuWSms2tNVbdTrJEkHXyslcWYqUxvb5phJnRLBzvY+ib8X3M4nUpZciNoaTc7DsIHcolVgr1Pg2Z5cxFFUFofTnAdho9Gc/XzZcSnWvs9GlTsuOYzc8kkquXNvIBQXq4DQhwXQN5BmeIIhT3B1R+cl3Fy6FZLV4zHM9HbfcQhEnuqIQUWv+ijuZw9LhgAoFsul9bPiz5t3PsZ/C/l/sIiaU1i7VCelgxCMdO+B+7BzNGQGAhw8Ck8E6R9BXNFKwzKKKF7lQmV+KrZTwSmqur3KQhakosTm93fz4jc8GOYwVozf1gCHI4dpEShA8ZSf9npJqjuAzQsrNoM5umzkBZjs1nXy5kmhZejR9JVXcfeWNqZmfKt8AQGarQmN/BvQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR10MB2652.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(396003)(39850400004)(107886003)(34206002)(450100002)(52116002)(4326008)(66946007)(186003)(5660300002)(478600001)(966005)(9686003)(26005)(55446002)(6666004)(316002)(8936002)(786003)(42186006)(54906003)(8676002)(66476007)(2906002)(86362001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: hK4Lm+9NEB4dJ3klpJrMg4FU0UygRCTPw7i/cukEw+5lYs07tDLoH/pOMwYr94WNHU8i2IURoygXdAzftVn7b+VOchXDvBHQtU+gPGzK9NXv5zAgAxgjV9DKyPvQ9e1Cr9NGH8m9r3xlAfQoVWnI9zeT3WavW9evbMUOyKdeSosbWBUE7PapfIja2J5SfIRdTLKqOsWG4QN96+Y1Ja2PKiiC567V+ePXUCg/9bmwiuxyM8MNQ7OFqyfD47bLpad7hsmzHT8ThRFg/X3fcpbCBs7gdY66AKYz673Z5RvqFI3sToW9UZrAsMthYd4GAxq5zGJ183HgMCfZ/rkpTftcY0IzsbnvfkYOQ3d4RWTjiXj2ZzfrFDfjZdwOEGnoe9zED3SmRoh2KJiJV9vSSrlRFhfnRL2jiwKrOOKn44I0eI78uAOizDlU6Em85CDE/X0eQ6ewHSbiqKO0+WeeycVU/XEFBbQSKz7fhsmFIfS1uVA=
+X-OriginatorOrg: inf.elte.hu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ddf14e9-ed19-4bb8-0ebe-08d7fdd1aa30
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2020 21:55:24.2902
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 0133bb48-f790-4560-a64d-ac46a472fbbc
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SG0gkX0QoA5+cZn2s+cuHRjBn3rFqmU0EDX3M8m3/md+XcobCtptqw1zLSSYOGaBwh92iCsDQcjzI9ds+GxDcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3783
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 May 2020 13:59:32 -0700 Jacob Keller wrote:
-> >> So the ice firmware can optionally send diagnostic debug messages via
-> >> its control queue. The current solutions we've used internally
-> >> essentially hex-dump the binary contents to the kernel log, and then
-> >> these get scraped and converted into a useful format for human consumption.
-> >>
-> >> I'm not 100% of the format, but I know it's based on a decoding file
-> >> that is specific to a given firmware image, and thus attempting to tie
-> >> this into the driver is problematic.  
-> > 
-> > You explained how it works, but not why it's needed :)  
-> 
-> Well, the reason we want it is to be able to read the debug/diagnostics
-> data in order to debug issues that might be related to firmware or
-> software mis-use of firmware interfaces.
-> 
-> By having it be a separate interface rather than trying to scrape from
-> the kernel message buffer, it becomes something we can have as a
-> possibility for debugging in the field.
+> Any specific reason you're not reusing sock_setbindtodevice or at least
+> sock_setbindtodevice_locked here? I think, historically, we've
+> reimplemented some of the sockopts because they were 'easy' (i.e.
+> were just setting a flag in the socket), this one looks more involved.
 
-For pure debug/tracing perhaps trace_devlink_hwerr() is the right fit?
+Yes, there is a copy_from_user in the sock_setbindtodevice for copying
+the ioctl netdev name from the user which (I think) not necessary
+here. However sock_setbindtodevice_locked is the way to go but I was
+afraid to forward declare it in sock.h, change the linkage and export
+it in sock.c (I find that a little bit too intrusive).
 
-Right Ido?
+> I'd suggest, add an optional 'lock_sk' argument to sock_setbindtodevice,
+> call it with 'true' from real setsockopt, and call it with 'false'
+> here.
+
+Thanks for the advice. However I think I'll wait what happens with
+this patch: https://lore.kernel.org/netdev/20200520195509.2215098-8-hch@lst.de/T/#u
+Very strange coincidence that patch was submitted a few hours before
+mine (but I noticed just now) and refactor the sock_setbindtodevice in
+a way that will useful in my case (also define it in sock.h).
+
+> And, as Andrii pointed out, it would be nice to have a selftest
+> that exercises this new option.
+
+Thanks, I will implement them in the next iteration.
