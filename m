@@ -2,200 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D301DD690
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A411DD69E
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 21:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730031AbgEUTDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 15:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729548AbgEUTDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 15:03:52 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1951C061A0E;
-        Thu, 21 May 2020 12:03:52 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id d3so3249699pln.1;
-        Thu, 21 May 2020 12:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=YG/Rd93DgDyZiJme5K9Qkk13z1FQo+t3Cuv8eEz4qLg=;
-        b=Pq8e21/qB0ru0tBwkmJD0CtlecIvnV97VErj/kiCdcrq3kb4Zkx79jGEMOVAMCvlaH
-         mUUQkdVz0ZZ+qjETJ+JBVOlxt1qv4mi7lwh42YywcZDUtfhFTX3Xob49LRVSu43lJNjz
-         Nwn2NYGpYti+7Nhrec6Rse7rT0G2Ph23YEKUki2JI9kJzC78DKFKYmIED9gz0eTqXk/Y
-         DXnT8aXeBkd/PKSWi0JHPsEY5zEjV/N2/oJ4i+eThSVM9Pcw12kHhDPrJtosyFnbkrTX
-         /A8UJuU9rWDoERDenP9DmNS2y7CA0ylchw2G2W3p+KCZbN5WUUdr2hAstLRodqgePG+u
-         mNbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=YG/Rd93DgDyZiJme5K9Qkk13z1FQo+t3Cuv8eEz4qLg=;
-        b=L27wAc9lRKnZrkx8rC+wXvylZb85tBbENKU1pRQ/Tbyt2LPEcfXIMPBr6AQCNJnM1X
-         PvLZMHln2Vsyon5hcwjorD2yydm5CbcwLM+ja2Vsa5nlfvDKPiUIxfTbgahJDJfB0g2P
-         rYd5VAcLQvz8Tpoh0mHHkemKuF84F+QaT9qzn0Qsiz/beBQt2WSbCkKLDcY9jpJJmlWO
-         WJqdV1mzXpeOg8NL0TpYeui5xNqqZHDcRQrHX8sM8ejn+qt1oJQWowHhIBImIYov0R5u
-         /R7aWIe5B9Bvb/x6RnR5IEJokUNDLneLuVuYrMwYBiU66AeI9yKq5Z6Mxot8+lKXJyGR
-         sIAw==
-X-Gm-Message-State: AOAM530YnDxRl574FXVz+Jit12Sbm9Tcb3FoY+ORYnGlpQSBh/Cl3OyQ
-        /D8ymAokUc4lXHOx58cZMyc=
-X-Google-Smtp-Source: ABdhPJywlixTcd/UxFpQF2whwi4YKPT1oJHNUzVMfq5eLzyBsy12LYWlMEHFG/jELHG08mEP1iSx4Q==
-X-Received: by 2002:a17:902:9004:: with SMTP id a4mr10990473plp.126.1590087832140;
-        Thu, 21 May 2020 12:03:52 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id gg8sm5012470pjb.39.2020.05.21.12.03.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 12:03:51 -0700 (PDT)
-Date:   Thu, 21 May 2020 12:03:44 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>
-Message-ID: <5ec6d090627d0_75322ab85d4a45bcf6@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4BzZpZ5_Mn66h9a+VE0UtrXUcYdNe-Fj0zEvfDbhUG7Z=sw@mail.gmail.com>
-References: <159007153289.10695.12380087259405383510.stgit@john-Precision-5820-Tower>
- <159007175735.10695.9639519610473734809.stgit@john-Precision-5820-Tower>
- <CAEf4BzZpZ5_Mn66h9a+VE0UtrXUcYdNe-Fj0zEvfDbhUG7Z=sw@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v3 4/5] bpf: selftests, add sk_msg helpers load
- and attach test
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1730096AbgEUTHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 15:07:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51956 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729548AbgEUTHz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 15:07:55 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9A0B820738;
+        Thu, 21 May 2020 19:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590088074;
+        bh=WH+ly+8Pofo+saJ9jshEuqzR1rRZFjalJ3fz0UIGWxE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dG/t4AxB+175M33YLQXBpBQgb0VBxOp08RfM3dhJ2MDJW0GysPUO7Bnn6+0gFUHRE
+         cdGGKsI31s20vZuzsb4y1vX0Z+zyk4FvTGTaZmzcrrjQF7lLgl7oBZUgafPQg+5aAP
+         ChpFXhPmJWWdkfbSRLuQKlv245MtVHHgxCInZINQ=
+Date:   Thu, 21 May 2020 12:07:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Message-ID: <20200521120752.07fd83aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <VI1PR0402MB38710DAD1F17B80F83403396E0B60@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
+        <VI1PR0402MB3871F0358FE1369A2F00621DE0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515152500.158ca070@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB38719FE975320D9E0E47A6F9E0BA0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200518123540.3245b949@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387101A0B3D3382B08DBE07CE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200519114342.331ff0f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387192A5F1A47C6779D0958DE0B90@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200519143525.136d3c3c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB3871686102702FC257853855E0B60@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200520121252.6cee8674@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB38710DAD1F17B80F83403396E0B60@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Thu, May 21, 2020 at 7:36 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > The test itself is not particularly useful but it encodes a common
-> > pattern we have.
-> >
-> > Namely do a sk storage lookup then depending on data here decide if
-> > we need to do more work or alternatively allow packet to PASS. Then
-> > if we need to do more work consult task_struct for more information
-> > about the running task. Finally based on this additional information
-> > drop or pass the data. In this case the suspicious check is not so
-> > realisitic but it encodes the general pattern and uses the helpers
-> > so we test the workflow.
-> >
-> > This is a load test to ensure verifier correctly handles this case.
-> >
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
-> >  .../selftests/bpf/prog_tests/sockmap_basic.c       |   57 ++++++++++++++++++++
-> >  .../selftests/bpf/progs/test_skmsg_load_helpers.c  |   48 +++++++++++++++++
-> >  2 files changed, 105 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_skmsg_load_helpers.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> > index aa43e0b..cacb4ad 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-> > @@ -1,13 +1,46 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> >  // Copyright (c) 2020 Cloudflare
-> > +#include <error.h>
-> >
-> >  #include "test_progs.h"
-> > +#include "test_skmsg_load_helpers.skel.h"
-> >
-> >  #define TCP_REPAIR             19      /* TCP sock is under repair right now */
-> >
-> >  #define TCP_REPAIR_ON          1
-> >  #define TCP_REPAIR_OFF_NO_WP   -1      /* Turn off without window probes */
-> >
-> > +#define _FAIL(errnum, fmt...)                                                  \
-> > +       ({                                                                     \
-> > +               error_at_line(0, (errnum), __func__, __LINE__, fmt);           \
-> > +               CHECK_FAIL(true);                                              \
-> > +       })
-> > +#define FAIL(fmt...) _FAIL(0, fmt)
-> > +#define FAIL_ERRNO(fmt...) _FAIL(errno, fmt)
-> > +#define FAIL_LIBBPF(err, msg)                                                  \
-> > +       ({                                                                     \
-> > +               char __buf[MAX_STRERR_LEN];                                    \
-> > +               libbpf_strerror((err), __buf, sizeof(__buf));                  \
-> > +               FAIL("%s: %s", (msg), __buf);                                  \
-> > +       })
-> > +
-> > +#define xbpf_prog_attach(prog, target, type, flags)                            \
-> > +       ({                                                                     \
-> > +               int __ret =                                                    \
-> > +                       bpf_prog_attach((prog), (target), (type), (flags));    \
-> > +               if (__ret == -1)                                               \
-> > +                       FAIL_ERRNO("prog_attach(" #type ")");                  \
-> > +               __ret;                                                         \
-> > +       })
-> > +
-> > +#define xbpf_prog_detach2(prog, target, type)                                  \
-> > +       ({                                                                     \
-> > +               int __ret = bpf_prog_detach2((prog), (target), (type));        \
-> > +               if (__ret == -1)                                               \
-> > +                       FAIL_ERRNO("prog_detach2(" #type ")");                 \
-> > +               __ret;                                                         \
-> > +       })
+On Wed, 20 May 2020 20:24:43 +0000 Ioana Ciornei wrote:
+> > Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+> > classes
+> > 
+> > On Wed, 20 May 2020 15:10:42 +0000 Ioana Ciornei wrote:  
+> > > DPAA2 has frame queues per each Rx traffic class and the decision from
+> > > which queue to pull frames from is made by the HW based on the queue
+> > > priority within a channel (there is one channel per each CPU).  
+> > 
+> > IOW you're reading the descriptor for the device memory/iomem address and
+> > the HW will return the next descriptor based on configured priority?  
 > 
-> I'm not convinced we need these macro, can you please just use CHECKs?
-> I'd rather not learn each specific test's custom macros.
+> That's the general idea but the decision is not made on a frame by frame bases
+> but rather on a dequeue operation which can, at a maximum, return
+> 16 frame descriptors at a time.
 
-Will just remove the entire block above.
+I see!
 
+> > Presumably strict priority?  
 > 
-> > +
-> >  static int connected_socket_v4(void)
-> >  {
-> >         struct sockaddr_in addr = {
-> > @@ -70,10 +103,34 @@ static void test_sockmap_create_update_free(enum bpf_map_type map_type)
-> >         close(s);
-> >  }
-> >
-> > +static void test_skmsg_helpers(enum bpf_map_type map_type)
-> > +{
-> > +       struct test_skmsg_load_helpers *skel;
-> > +       int err, map, verdict;
-> > +
-> > +       skel = test_skmsg_load_helpers__open_and_load();
-> > +       if (!skel) {
-> > +               FAIL("skeleton open/load failed");
-> > +               return;
-> > +       }
-> > +
-> > +       verdict = bpf_program__fd(skel->progs.prog_msg_verdict);
-> > +       map = bpf_map__fd(skel->maps.sock_map);
-> > +
-> > +       err = xbpf_prog_attach(verdict, map, BPF_SK_MSG_VERDICT, 0);
-> > +       if (err)
-> > +               return;
-> > +       xbpf_prog_detach2(verdict, map, BPF_SK_MSG_VERDICT);
+> Only the two highest traffic classes are in strict priority, while the other 6 TCs
+> form two priority tiers - medium(4 TCs) and low (last two TCs).
 > 
-> no cleanup in this test, at all
+> > > If this should be modeled in software, then I assume there should be a
+> > > NAPI instance for each traffic class and the stack should know in
+> > > which order to call the poll() callbacks so that the priority is respected.  
+> > 
+> > Right, something like that. But IMHO not needed if HW can serve the right
+> > descriptor upon poll.  
+> 
+> After thinking this through I don't actually believe that multiple NAPI instances
+> would solve this in any circumstance at all:
+> 
+> - If you have hardware prioritization with full scheduling on dequeue then job on the
+> driver side is already done.
+> - If you only have hardware assist for prioritization (ie hardware gives you multiple
+> rings but doesn't tell you from which one to dequeue) then you can still use a single
+> NAPI instance just fine and pick the highest priority non-empty ring on-the-fly basically.
+> 
+> What I am having trouble understanding is how the fully software implementation
+> of this possible new Rx qdisc should work. Somehow the skb->priority should be taken
+> into account when the skb is passing though the stack (ie a higher priority skb should
+> surpass another previously received skb even if the latter one was received first, but
+> its priority queue is congested).
 
-Guess we need __destroy(skel) here.
+I'd think the SW implementation would come down to which ring to
+service first. If there are multiple rings on the host NAPI can try
+to read from highest priority ring first and then move on to next prio.
+Not sure if there would be a use case for multiple NAPIs for busy
+polling or not.
 
-As an aside how come if the program closes and refcnt drops the entire
-thing isn't destroyed. I didn't think there was any pinning happening
-in the __open_and_load piece.
+I was hoping we can solve this with the new ring config API (which is
+coming any day now, ehh) - in which I hope user space will be able to
+assign rings to NAPI instances, all we would have needed would be also
+controlling the querying order. But that doesn't really work for you,
+it seems, since the selection is offloaded to HW :S
 
-> 
-> > +}
-> > +
-> 
-> [...]
-> 
-> > +
-> > +int _version SEC("version") = 1;
-> 
-> version not needed
-> 
-> > +char _license[] SEC("license") = "GPL";
-> >
+> I don't have a very deep understanding of the stack but I am thinking that the
+> enqueue_to_backlog()/process_backlog() area could be a candidate place for sorting out
+> bottlenecks. In case we do that I don't see why a qdisc would be necessary at all and not
+> have everybody benefit from prioritization based on skb->priority.
 
-
+I think once the driver picks the frame up it should run with it to
+completion (+/-GRO). We have natural batching with NAPI processing.
+Every NAPI budget high priority rings get a chance to preempt lower
+ones.
