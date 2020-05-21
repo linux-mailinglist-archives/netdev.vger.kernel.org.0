@@ -2,94 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD7711DD805
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B081DD80E
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730137AbgEUUIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 16:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S1729773AbgEUUKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 16:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726814AbgEUUIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:08:40 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFA5C061A0E;
-        Thu, 21 May 2020 13:08:40 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a5so3762282pjh.2;
-        Thu, 21 May 2020 13:08:40 -0700 (PDT)
+        with ESMTP id S1726814AbgEUUKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 16:10:11 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3477CC05BD43
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 13:10:11 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id v4so6579179qte.3
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 13:10:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=h8798kykb/Brr0NlbljMYDJsYj/j/qJhu/3+WCso6Tc=;
-        b=epK5J1uYN8YNE1E8c45S1rfMeYoE9cSTW90L3IUND9tO9Cwc1fBXdpPKsLJaBkDrv7
-         y//y6K7X5ulv5pyFdWtvoetaBqXr8HOHUcuBMJwYOxU4+Hh0lgwbJPTP/s/c7WslMJ++
-         S2CMNFD8vO6oI/Qae/8/v/zjirc5Ah0J0ZFxz40logz/oaC2RLALGswil0zdzavXD3l4
-         a9jZwSX5s01F8X0ewk0bna/9CQF/nd7DU5EoGOwXrHyjva3L0otTBYtO8JUSU6dV4/qF
-         TkCzFO9fdK/9hgQoVVjbYq9S91MzvWUT9bkwtyvjZQgYUEsIEYNrnncErc0rUoQFLPt8
-         T3HA==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=oNL6vUVBE5i1Fy8LRbQUDDCfW8tsfMHNx5GWuJIt/tQ=;
+        b=AiGUnC/PBOl4xztPC9gqmUjkmX9dt8uaS/hxBzl2d+WY0v88QTDUx8wOhZyOCAsmyT
+         NQKOBFv0Y/Sl+pMGcbK3Dvg25jpRWMxv3VR9Qq2wUAlymnpCJ/jt4Nd9D9Ci7lCY6+/a
+         ZgXWzIJ7ME1dULFd1bd3Cc/FGKDVOvJ5s+hWN0HonCK5Nb4mNCTSV56R8JbfP27l2v5G
+         HSKP5n7FkJZODCG0dvc+iEhK6gEDJ2lSBVeuHY8ThEniASzf6JgET21RXNhnYf3t0oYB
+         wUGvmg15p8WRrvbHvCDzlfwbDatYXTuUFJxPTZ8ZtesAuI1LwysLBSVdn994DNOEoufX
+         WcQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=h8798kykb/Brr0NlbljMYDJsYj/j/qJhu/3+WCso6Tc=;
-        b=YgiIFsE5GBFdLZHqhNBINMNWTVumaWUMDqW/D/yXFr9sdfcwnwiVleFEewXP+KPc6u
-         FTgX0cXYDcTjRUBAkbNua168eP6Ij0lDhrDrLKy/i5RLY6mAtliD4JAo4o6CMkqj2efc
-         ik9tQt3oG2Ygx4Q4xq0nwZ6JbUUx2nrBalXwtlcFWGwKUbTkO5HxQdAXa/cOL3bjscF4
-         WARIA7wMfLKGUZh1dTM+kdcT9ySLsordSJpd4i+le4e+UDst6gkq/UZQPVJ4Z5cQtOGT
-         z9BPtXqLQX68cHBltCMuRWcunK0mPtqsbBW+HqimJqpDINBWBvoQDA2dDbxOCgKQkbs1
-         SNog==
-X-Gm-Message-State: AOAM532flEAz4zwQVMo7P9awZ2zlW2rEjEg1Xg+tLC9UvYBzpAGpOEdr
-        +K9bsa9CPtKx9VVqH701w2Y=
-X-Google-Smtp-Source: ABdhPJz1V77OVN0A5a85/y8hSJtTxsg2bQYoWCIKXLOdNkY3bFJYHAhYGXtpvXMmkCPcmz7w6N2JBQ==
-X-Received: by 2002:a17:902:b68d:: with SMTP id c13mr846910pls.210.1590091720009;
-        Thu, 21 May 2020 13:08:40 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id q3sm4364649pgp.69.2020.05.21.13.08.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 May 2020 13:08:39 -0700 (PDT)
-Subject: [bpf-next PATCH v2 4/4] bpf: selftests,
- add printk to test_sk_lookup_kern to encode null ptr check
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     yhs@fb.com, andrii.nakryiko@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com
-Date:   Thu, 21 May 2020 13:08:26 -0700
-Message-ID: <159009170603.6313.1715279795045285176.stgit@john-Precision-5820-Tower>
-In-Reply-To: <159009128301.6313.11384218513010252427.stgit@john-Precision-5820-Tower>
-References: <159009128301.6313.11384218513010252427.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oNL6vUVBE5i1Fy8LRbQUDDCfW8tsfMHNx5GWuJIt/tQ=;
+        b=pmHkVbEhxGd7iDDmNmadeZOAsrIDqNieSkCS0fOfmlSw5de+EehS9+i+uTiWue1HBk
+         GabVEBINIr6uYUMpSUyh0P7IUeqwVRbyH34DP9xirWBmv/skj1iIvfBPbE/TlM1I15Ix
+         BcGzpaJw3wXcUZUyykttAzp7h04zgXC2fPMXoOv8O8K01vi3rS92IRd+8x/TOi1rf8AZ
+         XrGrM3W/B7da9iPrlS1fvZrsMWfwsKIXoDEigcQO87A0I+tb9lkCAzFMcF3DyvVbXlnD
+         Z9rmFBD0jqyIfFfDPaiBF9qm3dThoAYjtXx8y9pC4J+r5ZP+pszrlpAHAON1IqzRtqI1
+         gn3g==
+X-Gm-Message-State: AOAM533qC8reyUNKNtgeHNcVHEgTsZXhqtQTWZ3OIfY0+SQ+u4YND6xa
+        gVCAUwsM3SU7qamyCR+XVQ7nstLKgY0=
+X-Google-Smtp-Source: ABdhPJxm0Z6qKWwJxy3srpt+zRDDny2jtc/AiIm9UnLxX41M70JLS1kjB9a/grF6briZFiZhDVDrKw==
+X-Received: by 2002:aed:23d2:: with SMTP id k18mr12628509qtc.224.1590091810367;
+        Thu, 21 May 2020 13:10:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id g1sm5974495qkm.123.2020.05.21.13.10.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 21 May 2020 13:10:09 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jbrW5-00045I-Hj; Thu, 21 May 2020 17:10:09 -0300
+Date:   Thu, 21 May 2020 17:10:09 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "galpress@amazon.com" <galpress@amazon.com>,
+        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
+        "sriharsha.basavapatna@broadcom.com" 
+        <sriharsha.basavapatna@broadcom.com>,
+        "benve@cisco.com" <benve@cisco.com>,
+        "bharat@chelsio.com" <bharat@chelsio.com>,
+        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        "mkalderon@marvell.com" <mkalderon@marvell.com>,
+        "aditr@vmware.com" <aditr@vmware.com>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next v4 01/12] Implementation of Virtual Bus
+Message-ID: <20200521201009.GD17583@ziepe.ca>
+References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
+ <20200520070227.3392100-2-jeffrey.t.kirsher@intel.com>
+ <c74808dc-0040-7cef-a0da-0da9caedddd9@mellanox.com>
+ <20200521174358.GA3679752@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200521174358.GA3679752@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding a printk to test_sk_lookup_kern created the reported failure
-where a pointer type is checked twice for NULL. Lets add it to the
-progs test test_sk_lookup_kern.c so we test the case from C all the
-way into the verifier.
+On Thu, May 21, 2020 at 07:43:58PM +0200, gregkh@linuxfoundation.org wrote:
+> On Thu, May 21, 2020 at 02:57:55PM +0000, Parav Pandit wrote:
+> > Hi Greg, Jason,
+> > 
+> > On 5/20/2020 12:32 PM, Jeff Kirsher wrote:
+> > > From: Dave Ertman <david.m.ertman@intel.com>
+> > > 
+> > 
+> > > +static const
+> > > +struct virtbus_dev_id *virtbus_match_id(const struct virtbus_dev_id *id,
+> > > +					struct virtbus_device *vdev)
+> > > +{
+> > > +	while (id->name[0]) {
+> > > +		if (!strcmp(vdev->match_name, id->name))
+> > > +			return id;
+> > 
+> > Should we have VID, DID based approach instead of _any_ string chosen by
+> > vendor drivers?
+> 
+> No, because:
+> 
+> > This will required central place to define the VID, DID of the vdev in
+> > vdev_ids.h to have unique ids.
+> 
+> That's not a good way to run things :)
+> 
+> Have the virtbus core create the "name", as it really doesn't matter
+> what it is, just that it is unique, right?
 
-We already have printk's in selftests so seems OK to add another one.
+It is being used like the compatible string in OF. Look at where
+"sof-ipc-test" appears in the SOF patches.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- .../selftests/bpf/progs/test_sk_lookup_kern.c      |    1 +
- 1 file changed, 1 insertion(+)
+So it has to be a compile time static, and it has to be broadly global
+in some fashion since it appears in a mod alias.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c b/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
-index d2b38fa..e83d0b4 100644
---- a/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
-@@ -73,6 +73,7 @@ int bpf_sk_lookup_test0(struct __sk_buff *skb)
- 
- 	tuple_len = ipv4 ? sizeof(tuple->ipv4) : sizeof(tuple->ipv6);
- 	sk = bpf_sk_lookup_tcp(skb, tuple, tuple_len, BPF_F_CURRENT_NETNS, 0);
-+	bpf_printk("sk=%d\n", sk ? 1 : 0);
- 	if (sk)
- 		bpf_sk_release(sk);
- 	return sk ? TC_ACT_OK : TC_ACT_UNSPEC;
+I don't think the name "sof-ipc-test" is particularly good by these
+metrics.
 
+Jason
