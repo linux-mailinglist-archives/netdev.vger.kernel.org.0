@@ -2,127 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9882D1DD2D2
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 18:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F731DD2EA
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 18:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728563AbgEUQJV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 May 2020 12:09:21 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:52855 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728517AbgEUQJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 12:09:19 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-10-w8zL2Av5PV6Q9IGz5_uUcw-1; Thu, 21 May 2020 17:09:16 +0100
-X-MC-Unique: w8zL2Av5PV6Q9IGz5_uUcw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 21 May 2020 17:09:15 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 21 May 2020 17:09:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH net-next] sctp: Pull the user copies out of the individual
- sockopt functions.
-Thread-Topic: [PATCH net-next] sctp: Pull the user copies out of the
- individual sockopt functions.
-Thread-Index: AdYut/UmmYS4izffR6iTi1nqaxYM2QAxWVeAAAKhTeA=
-Date:   Thu, 21 May 2020 16:09:15 +0000
-Message-ID: <a681d1dc056a412bba24b9b4cde37785@AcuMS.aculab.com>
-References: <fd94b5e41a7c4edc8f743c56a04ed2c9@AcuMS.aculab.com>
- <20200521153729.GB74252@localhost.localdomain>
-In-Reply-To: <20200521153729.GB74252@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1729873AbgEUQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 12:17:00 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:57777 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726808AbgEUQQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 12:16:59 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6CADC580809;
+        Thu, 21 May 2020 12:16:58 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 21 May 2020 12:16:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=kNc6lgzUfio/s/PMCLaEvgBESQW
+        hHtxfEasiSLQp52M=; b=BayGMfRr4tcBubrBSX5ud/nARBgGwoVGmRfY+2JFyNo
+        j345DqzLPFupy0ELJvZ7SDoN28p8g21TNr4E4zC6m1/firVE7IE3UCwshbUSlghm
+        xuO/08Mk1mds0gS3DsddbvQ9aSPwGCXy0L2n4PdMnExYWuMfBV8+gWsE4wssadAH
+        pLTIaBRSHwq7NojOYG9rXe+0VShli16pvrn2II0gxw6WKblvUb5BlymtlL3zS5Ai
+        TNNmhvKYvD1oAGdQLf28HnzSpyw1OsvULIfZGoXiHEgkGgFZdDui3VjE3TrgNvTa
+        TWfm2KaEHo96gOfJETfHRq/9umOyXyv3W6i5nYL7WkQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=kNc6lg
+        zUfio/s/PMCLaEvgBESQWhHtxfEasiSLQp52M=; b=dQDUlCOqDmxoaQL1giZ8UO
+        HbE2KIgb2i2GPLO7aAG7hSOfl9aVWNlFCO3NKDhzlLp/1ACBDSAIpvmXEoCE4quO
+        0Pg+otdaB9cawqmILYIZbqwZ1uG8jA3it2Io61O8VjHq2V1bwU4A+JxkfBY8KPMY
+        vHmgJ5rS+o29x4TPkA9c5+GRsPKJEi71zQO/hoI0FTUN+sne7oFmMPT4m0wQZ7YC
+        u3cPlz8chEOpkV6IDc4erqcWOVpM3dUpWmMsSS1cKN58b4GS1AS8x85JZSeHMFNr
+        ZZgUx485TXVWanuFVLuyCCM70lyYgwhBHRrw2qkSVjfMb97Im7s/Wm4c9oJM95ig
+        ==
+X-ME-Sender: <xms:eKnGXhrazoVLBpbWxVzHz6cew0eiI7KMxNYigdodfT_bRIIoHzPnwQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduuddgleefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrkeelrddutdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:eanGXjpV9LTqttp8lkgQj1t5Vnvx11LoqmLetOYBMi5R4BkKBIkUEw>
+    <xmx:eanGXuO9cmXcZFeDp41mvJPoS_ZO-wix437YKc1qWsi9PAR_ow02PA>
+    <xmx:eanGXs43nHRqJcD4QuxlJa6MUyVpmUEcVP0P4f3mAE6HaTbAoMd0jQ>
+    <xmx:eqnGXrJt1dt9wWec63Gdp-iFGm2TPTXWzqTngn9SHC3-Z_SqBSNR4w>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 903F33280068;
+        Thu, 21 May 2020 12:16:56 -0400 (EDT)
+Date:   Thu, 21 May 2020 18:16:23 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, adobriyan@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        ebiederm@xmission.com, bernd.edlinger@hotmail.de,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [External] Re: [PATCH] files: Use rcu lock to get the file
+ structures for better performance
+Message-ID: <20200521161623.GA3502608@kroah.com>
+References: <20200521123835.70069-1-songmuchun@bytedance.com>
+ <20200521152117.GC28818@bombadil.infradead.org>
+ <CAMZfGtVxPevhTy8LMpKUtkk1jX86doiPD0nOTRuKg25+8Vz=ag@mail.gmail.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZfGtVxPevhTy8LMpKUtkk1jX86doiPD0nOTRuKg25+8Vz=ag@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: 'Marcelo Ricardo Leitner'
-> Sent: 21 May 2020 16:37
-> On Wed, May 20, 2020 at 03:08:13PM +0000, David Laight wrote:
-...
-> > Only SCTP_SOCKOPT_CONNECTX3 contains an indirect pointer.
-> > It is also the only getsockopt() that wants to return a buffer
-> > and an error code. It is also definitely abusing getsockopt().
+On Fri, May 22, 2020 at 12:06:46AM +0800, Muchun Song wrote:
+> On Thu, May 21, 2020 at 11:21 PM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > On Thu, May 21, 2020 at 08:38:35PM +0800, Muchun Song wrote:
+> > > There is another safe way to get the file structure without
+> > > holding the files->file_lock. That is rcu lock, and this way
+> > > has better performance. So use the rcu lock instead of the
+> > > files->file_lock.
+> >
+> > What makes you think this is safe?  Are you actually seeing contention
+> > on this spinlock?
+> >
 > 
-> It should have been a linear buffer. The secondary __user access is
-> way worse than having the application to do another allocation. But
-> too late..
+> I have read the doc which is in the Documentation/filesystems/files.txt.
+> If my understanding is correct, I think it is safe to use rcu lock.
 
-I think that is SCTP_SOCKOPT_CONNECTX ?
+Did you test this and prove that it is safe and "faster"?  If so, you
+always have to show that in your changelog.  Please fix it up and
+resend.
 
-> Other than the comments here, this patch LGTM.
+thanks,
 
-Thanks.
-
-> Assuming a v2 is coming, to appease the buildbot :)
-
-I'd got an definition in sctp.h and an EXPORT() but took them out.
-I'll also increase the setsockopt limit.
-
-...
-> > +	if (optlen < sizeof (param_buf)) {
-> > +		if (copy_from_user(&param_buf, u_optval, optlen))
-> > +			return -EFAULT;
-> > +		optval = param_buf;
-> > +	} else {
-> > +		if (optlen > USHRT_MAX)
-> > +			optlen = USHRT_MAX;
-> 
-> There are functions that can work with and expect buffers larger than
-> that, such as sctp_setsockopt_auth_key:
-
-I'd assumed the maximums were silly.
-But a few more than 64k is enough, the lengths are in bytes.
-OTOH 128k is a nice round limit - and plenty AFAICT.
-
-...
-> > +	if (len < sizeof (param_buf)) {
-> > +		/* Zero first bytes to stop KASAN complaining. */
-> > +		param_buf[0] = 0;
-> > +		if (copy_from_user(&param_buf, u_optval, len))
-> > +			return -EFAULT;
-> > +		optval = param_buf;
-> > +	} else {
-> > +		if (len > USHRT_MAX)
-> > +			len = USHRT_MAX;
-> 
-> This limit is not present today for sctp_getsockopt_local_addrs()
-> calls (there may be others).  As is, it will limit it and may mean
-> that it can't dump all addresses.  We have discussed this and didn't
-> come to a conclusion on what is a safe limit to use here, at least not
-> on that time.
-
-It needs some limit. memdup_user() might limit at 32MB.
-I couldn't decide is some of the allocators limit it further.
-In any case an IPv6 address is what? under 128 bytes.
-64k is 512 address, things are going to explode elsewhere first.
-
-I didn't see 'get' requests that did 64k + a bit.
-
-It should be possible to loop using a larger kernel buffer if the
-data won't fit.
-Doable as a later patch to avoid complications.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+greg k-h
