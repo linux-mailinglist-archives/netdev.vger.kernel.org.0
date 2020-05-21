@@ -2,261 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395691DCEDF
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B3A1DCF05
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729656AbgEUOEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 10:04:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42968 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728630AbgEUOEb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 10:04:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=4c1KI5lLVJTMb6lJcGXvj8JYpY0SbtyNOYn13xpdyK8=; b=UAumwUH8lVQyRxrLhLMjfgnC2r
-        r71Gp9+lVeSh75ff89G0cZQNKvHDgpHMfHLtmI2kDasSmcr8yPl/5vdLrvF3EE+mv57LkEwhbmkPz
-        9J1hqB1sT05VB7gIwNv/lw2NH/BS7csGTVQliYiDaaN+cxK2HW3a/BVAYYYuIDOK6aaI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jblo8-002uOK-51; Thu, 21 May 2020 16:04:24 +0200
-Date:   Thu, 21 May 2020 16:04:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Roelof Berg <rberg@berg-solutions.de>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lan743x: Added fixed link support
-Message-ID: <20200521140424.GD657910@lunn.ch>
-References: <20200520171006.5263-1-rberg@berg-solutions.de>
+        id S1729816AbgEUOI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 10:08:27 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:49030 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729694AbgEUOIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 10:08:25 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04LE7jmJ033874;
+        Thu, 21 May 2020 14:08:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=VtH50d3j8PGL5fadgDPMpo+HStraNOmQY5K9l3SYH/Q=;
+ b=cQK/u6IjxwwVLLC8pb1aAgmXTz3H7PM+14OySJ+Q+U9tTUVXD93HaHbcmmu7QTATP1kF
+ AI15s21aN/QSHDEfTHep6UG5rA6yVmNE925zWrvYC9Rou652Czt7fz/unTGETkPCzuOi
+ 2utO3KjH+DGPhIBR4mqkwV98RmIyIiYFZyapOSM0OCGCgYzDbalsEfXNQzJd4PDphPYc
+ RbH/mFKhqog5utSj40D3ddZ81RSrYB6V8pFLZ9ucxDlKgDT+jjvAhY/zrr6hdwomVuMD
+ iLkDxlOUG1u9T+q2gyMhZP1kquuO2Mvke3AE6NR8dp9GSUwd/+SSP6zsmRlAseB5yRj3 Qg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 31501rf7bp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 21 May 2020 14:08:16 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04LDqVLg161832;
+        Thu, 21 May 2020 14:08:16 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 314gm982t9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 May 2020 14:08:15 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 04LE8DDm001199;
+        Thu, 21 May 2020 14:08:13 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 21 May 2020 07:08:13 -0700
+Date:   Thu, 21 May 2020 17:08:03 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     syzbot <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>
+Cc:     bridge@lists.linux-foundation.org, davem@davemloft.net,
+        horatiu.vultur@microchip.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: slab-out-of-bounds Read in br_mrp_parse
+Message-ID: <20200521140803.GI30374@kadam>
+References: <0000000000007b211005a6187dc9@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200520171006.5263-1-rberg@berg-solutions.de>
+In-Reply-To: <0000000000007b211005a6187dc9@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9627 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=803
+ adultscore=0 phishscore=0 mlxscore=0 spamscore=0 suspectscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005210104
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9627 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 spamscore=0
+ mlxlogscore=829 clxscore=1011 priorityscore=1501 cotscore=-2147483648
+ impostorscore=0 bulkscore=0 adultscore=0 malwarescore=0 phishscore=0
+ mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005210106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 07:10:06PM +0200, Roelof Berg wrote:
+On Wed, May 20, 2020 at 11:23:18AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    dda18a5c selftests/bpf: Convert bpf_iter_test_kern{3, 4}.c..
+> git tree:       bpf-next
+                  ^^^^^^^^
 
-Hi Roelof
+I can figure out what this is from reading Next/Trees but it would be
+more useful if it were easier to script.
 
-Here is how i would do this. I don't like this MII bus snooping. It is
-a microchip propriety's thing, which is not well understood. It adds
-no value over just doing what every other MAC driver does in the
-link_change callback, which lots of people understand.
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10c4e63c100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=668983fd3dd1087e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9c6f0f1f8e32223df9a4
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17eaba3c100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=128598f6100000
+> 
 
-I also removed all OF handing from within the callback. And i unified
-fixed-link and normal PHY.
-
-This is compile tested only, so is probably broken...
-
-     Andrew
+regards,
+dan carpenter
 
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index 3a0b289d9771..c533d06fbe3a 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -2,11 +2,11 @@
- /* Copyright (C) 2018 Microchip Technology Inc. */
- 
- #include <linux/netdevice.h>
--#include "lan743x_main.h"
--#include "lan743x_ethtool.h"
- #include <linux/net_tstamp.h>
- #include <linux/pci.h>
- #include <linux/phy.h>
-+#include "lan743x_main.h"
-+#include "lan743x_ethtool.h"
- 
- /* eeprom */
- #define LAN743X_EEPROM_MAGIC		    (0x74A5)
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index a43140f7b5eb..5aaa0ac96970 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -8,7 +8,10 @@
- #include <linux/crc32.h>
- #include <linux/microchipphy.h>
- #include <linux/net_tstamp.h>
-+#include <linux/of_mdio.h>
-+#include <linux/of_net.h>
- #include <linux/phy.h>
-+#include <linux/phy_fixed.h>
- #include <linux/rtnetlink.h>
- #include <linux/iopoll.h>
- #include <linux/crc16.h>
-@@ -798,9 +801,9 @@ static int lan743x_mac_init(struct lan743x_adapter *adapter)
- 
- 	netdev = adapter->netdev;
- 
--	/* setup auto duplex, and speed detection */
-+	/* disable auto duplex, and speed detection. Phylib does that */
- 	data = lan743x_csr_read(adapter, MAC_CR);
--	data |= MAC_CR_ADD_ | MAC_CR_ASD_;
-+	data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
- 	data |= MAC_CR_CNTR_RST_;
- 	lan743x_csr_write(adapter, MAC_CR, data);
- 
-@@ -946,6 +949,7 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- {
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
- 	struct phy_device *phydev = netdev->phydev;
-+	u32 data;
- 
- 	phy_print_status(phydev);
- 	if (phydev->state == PHY_RUNNING) {
-@@ -953,6 +957,39 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- 		int remote_advertisement = 0;
- 		int local_advertisement = 0;
- 
-+		data = lan743x_csr_read(adapter, MAC_CR);
-+
-+		/* set interface mode */
-+		if (phy_interface_mode_is_rgmii(adapter->phy_mode))
-+			/* RGMII */
-+			data &= ~MAC_CR_MII_EN_;
-+		else
-+			/* GMII */
-+			data |= MAC_CR_MII_EN_;
-+
-+		/* set fixed duplex mode */
-+		if (phydev->duplex)
-+			data |= MAC_CR_DPX_;
-+		else
-+			data &= ~MAC_CR_DPX_;
-+
-+		/* set fixed bus speed */
-+		switch (phydev->speed) {
-+		case SPEED_10:
-+			data &= ~MAC_CR_CFG_H_;
-+			data &= ~MAC_CR_CFG_L_;
-+			break;
-+		case SPEED_100:
-+			data &= ~MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+			break;
-+		case SPEED_1000:
-+			data |= MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+			break;
-+		}
-+		lan743x_csr_write(adapter, MAC_CR, data);
-+
- 		memset(&ksettings, 0, sizeof(ksettings));
- 		phy_ethtool_get_link_ksettings(netdev, &ksettings);
- 		local_advertisement =
-@@ -974,26 +1011,53 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
- 
- 	phy_stop(netdev->phydev);
- 	phy_disconnect(netdev->phydev);
-+	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
-+		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
- 	netdev->phydev = NULL;
- }
- 
- static int lan743x_phy_open(struct lan743x_adapter *adapter)
- {
- 	struct lan743x_phy *phy = &adapter->phy;
-+	struct device_node *phynode;
- 	struct phy_device *phydev;
- 	struct net_device *netdev;
- 	int ret = -EIO;
- 
- 	netdev = adapter->netdev;
--	phydev = phy_find_first(adapter->mdiobus);
--	if (!phydev)
--		goto return_error;
- 
--	ret = phy_connect_direct(netdev, phydev,
--				 lan743x_phy_link_status_change,
--				 PHY_INTERFACE_MODE_GMII);
--	if (ret)
--		goto return_error;
-+	phynode = of_node_get(adapter->pdev->dev.of_node);
-+	adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
-+
-+	if (phynode) {
-+		of_get_phy_mode(phynode, &adapter->phy_mode);
-+
-+		if (of_phy_is_fixed_link(phynode)) {
-+			ret = of_phy_register_fixed_link(phynode);
-+			if (ret) {
-+				netdev_err(netdev,
-+					   "cannot register fixed PHY\n");
-+				of_node_put(phynode);
-+				goto return_error;
-+			}
-+		}
-+		phydev = of_phy_connect(netdev, phynode,
-+					lan743x_phy_link_status_change, 0,
-+					adapter->phy_mode);
-+		of_node_put(phynode);
-+		if (!phydev)
-+			goto return_error;
-+	} else {
-+		phydev = phy_find_first(adapter->mdiobus);
-+		if (!phydev)
-+			goto return_error;
-+
-+		ret = phy_connect_direct(netdev, phydev,
-+					 lan743x_phy_link_status_change,
-+					 adapter->phy_mode);
-+		if (ret)
-+			goto return_error;
-+	}
- 
- 	/* MAC doesn't support 1000T Half */
- 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 3b02eeae5f45..f769903538e4 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -104,10 +104,14 @@
- 	((value << 0) & FCT_FLOW_CTL_ON_THRESHOLD_)
- 
- #define MAC_CR				(0x100)
-+#define MAC_CR_MII_EN_			BIT(19)
- #define MAC_CR_EEE_EN_			BIT(17)
- #define MAC_CR_ADD_			BIT(12)
- #define MAC_CR_ASD_			BIT(11)
- #define MAC_CR_CNTR_RST_		BIT(5)
-+#define MAC_CR_DPX_			BIT(3)
-+#define MAC_CR_CFG_H_			BIT(2)
-+#define MAC_CR_CFG_L_			BIT(1)
- #define MAC_CR_RST_			BIT(0)
- 
- #define MAC_RX				(0x104)
-@@ -698,6 +702,7 @@ struct lan743x_rx {
- struct lan743x_adapter {
- 	struct net_device       *netdev;
- 	struct mii_bus		*mdiobus;
-+	phy_interface_t		phy_mode;
- 	int                     msg_enable;
- #ifdef CONFIG_PM
- 	u32			wolopts;
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 9399f6a98748..b1df214a6973 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -2,12 +2,12 @@
- /* Copyright (C) 2018 Microchip Technology Inc. */
- 
- #include <linux/netdevice.h>
--#include "lan743x_main.h"
--
-+#include <linux/phy.h>
- #include <linux/ptp_clock_kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
- #include <linux/net_tstamp.h>
-+#include "lan743x_main.h"
- 
- #include "lan743x_ptp.h"
- 
