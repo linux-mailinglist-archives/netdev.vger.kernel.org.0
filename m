@@ -2,96 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 971D61DC5B7
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 05:39:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7C81DC5F5
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 05:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728137AbgEUDj1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 23:39:27 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63628 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727972AbgEUDj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 May 2020 23:39:27 -0400
-IronPort-SDR: IV+DyGh3Li6pUAI8i8f9+hSgG5Afk3XXiZpkQSVCiibTf8gASIDsqH6F8QfYmT8xfe4SGf97I+
- dcs1o2g2su1g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2020 20:39:26 -0700
-IronPort-SDR: MHhWqZBzxyCbSVWPIhvr903BELA5m92ECx+A7EyB7CtVdwLmnPk8oegefjdwsgAz0OiazBgEoW
- DeB1/NO1Gzyw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,416,1583222400"; 
-   d="scan'208";a="268488068"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by orsmga006.jf.intel.com with ESMTP; 20 May 2020 20:39:26 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.61]) by
- ORSMSX106.amr.corp.intel.com ([169.254.1.75]) with mapi id 14.03.0439.000;
- Wed, 20 May 2020 20:39:26 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: RE: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
- Updates 2020-05-19
-Thread-Topic: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
- Updates 2020-05-19
-Thread-Index: AQHWLjo4zxakhy/5jEi2QtFU4xpWyaiyR+kA//+d/PA=
-Date:   Thu, 21 May 2020 03:39:26 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D94044986C8744@ORSMSX112.amr.corp.intel.com>
-References: <20200520000419.1595788-1-jeffrey.t.kirsher@intel.com>
- <20200520.192828.1242706969153634308.davem@davemloft.net>
-In-Reply-To: <20200520.192828.1242706969153634308.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
+        id S1728176AbgEUD4Y convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 23:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727007AbgEUD4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 23:56:23 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3FFC061A0E
+        for <netdev@vger.kernel.org>; Wed, 20 May 2020 20:56:23 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EE84912768949;
+        Wed, 20 May 2020 20:56:20 -0700 (PDT)
+Date:   Wed, 20 May 2020 20:56:07 -0700 (PDT)
+Message-Id: <20200520.205607.2029699296653494061.davem@davemloft.net>
+To:     Jason@zx2c4.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/4] wireguard fixes for 5.7-rc7
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200520044930.8131-1-Jason@zx2c4.com>
+References: <20200520044930.8131-1-Jason@zx2c4.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 20 May 2020 20:56:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Wednesday, May 20, 2020 19:28
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com
-> Subject: Re: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver
-> Updates 2020-05-19
-> 
-> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Date: Tue, 19 May 2020 17:04:05 -0700
-> 
-> > This series contains updates to igc only.
-> >
-> > Sasha cleans up the igc driver code that is not used or needed.
-> >
-> > Vitaly cleans up driver code that was used to support Virtualization
-> > on a device that is not supported by igc, so remove the dead code.
-> >
-> > Andre renames a few macros to align with register and field names
-> > described in the data sheet.  Also adds the VLAN Priority Queue Fliter
-> > and EType Queue Filter registers to the list of registers dumped by
-> > igc_get_regs().  Added additional debug messages and updated return
-> > codes for unsupported features.  Refactored the VLAN priority
-> > filtering code to move the core logic into igc_main.c.  Cleaned up
-> > duplicate code and useless code.
-> >
-> > The following are changes since commit
-> 2de499258659823b3c7207c5bda089c822b67d69:
-> >   Merge branch 's390-next'
-> > and are available in the git repository at:
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue
-> > 1GbE
-> 
-> Pulled, thanks Jeff.
-[Kirsher, Jeffrey T] 
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Tue, 19 May 2020 22:49:26 -0600
 
-Thanks, have you been able to push you tree to kernel.org yet?
+> Hopefully these are the last fixes for 5.7:
+> 
+> 1) A trivial bump in the selftest harness to support gcc-10.
+>    build.wireguard.com is still on gcc-9 but I'll probably switch to
+>    gcc-10 in the coming weeks.
+> 
+> 2) A concurrency fix regarding userspace modifying the pre-shared key at
+>    the same time as packets are being processed, reported by Matt
+>    Dunwoodie.
+> 
+> 3) We were previously clearing skb->hash on egress, which broke
+>    fq_codel, cake, and other things that actually make use of the flow
+>    hash for queueing, reported by Dave Taht and Toke Høiland-Jørgensen.
+> 
+> 4) A fix for the increased memory usage caused by (3). This can be
+>    thought of as part of patch (3), but because of the separate
+>    reasoning and breadth of it I thought made it a bit cleaner to put in
+>    a standalone commit.
+
+Series applied.
+
+> Fixes (2), (3), and (4) are -stable material.
+
+Queued up for -stable, thanks.
