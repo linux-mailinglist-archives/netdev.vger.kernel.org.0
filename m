@@ -2,142 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B71E1DD9AC
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 745A21DD9AF
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 23:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730017AbgEUVtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 17:49:43 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36017 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729374AbgEUVtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 17:49:42 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from huyn@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 22 May 2020 00:49:39 +0300
-Received: from sw-mtx-011.mtx.labs.mlnx. (sw-mtx-011.mtx.labs.mlnx [10.9.150.38])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04LLnaRT032127;
-        Fri, 22 May 2020 00:49:37 +0300
-From:   Huy Nguyen <huyn@mellanox.com>
-To:     davem@davemloft.net
-Cc:     steffen.klassert@secunet.com, saeedm@mellanox.com,
-        borisp@mellanox.com, raeds@mellanox.com, netdev@vger.kernel.org,
-        huyn@nvidia.com, Huy Nguyen <huyn@mellanox.com>
-Subject: [PATCH] xfrm: Fix double ESP trailer insertion in IPsec crypto offload
-Date:   Thu, 21 May 2020 16:49:33 -0500
-Message-Id: <1590097773-14776-1-git-send-email-huyn@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1730181AbgEUVvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 17:51:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40484 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728701AbgEUVvP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 17:51:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D5552072C;
+        Thu, 21 May 2020 21:51:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590097875;
+        bh=Tn/RzU+kLeLCtb5gZw3sJC47x0UfDCvIjzHXHSfoO/w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mU7WdpX0Hccl4shDvyQ2a+gCVCcVT+MrJoUhrdLVbcqBNJluXKDCG4k23VfafNBms
+         fjTd92fXqKS/uEdPIn16y/i4wDL2xlFegFrU+ye6lfGLcdKbXKK0ag4Ep/rBlv96vv
+         GHBu9x/oDPIqx/Sno3Y67vzc4Ep2TG5t/iPJu/xo=
+Date:   Thu, 21 May 2020 14:51:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        petrm@mellanox.com, amitc@mellanox.com
+Subject: Re: devlink interface for asynchronous event/messages from
+ firmware?
+Message-ID: <20200521145113.21f772bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
+References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
+        <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
+        <20200521205213.GA1093714@splinter>
+        <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During IPsec performance testing, we see bad ICMP checksum. The issue is that
-the error packet that has duplicated ESP trailer. For example, this below ping reply skb is
-collected at mlx5e_xmit. This ping reply skb length is 154 because it has
-extra duplicate 20 bytes of ESP trailer. The correct length is 134.
-  skb len=154 headroom=2 headlen=154 tailroom=36
-  mac=(2,14) net=(16,20) trans=36
-  shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-  csum(0xd21a62ff ip_summed=0 complete_sw=0 valid=0 level=0)
-  hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=0 iif=0
-  dev name=enp4s0f0np0 feat=0x0x001ca1829fd14ba9
-  sk family=2 type=3 proto=1
-  skb headroom: 00000000: 00 00
-  skb linear:   00000000: b8 59 9f da d6 6a b8 59 9f da d5 52 08 00 45 00
-  skb linear:   00000010: 00 8c 76 0f 00 00 40 32 80 5f c0 a8 01 41 c0 a8
-  skb linear:   00000020: 01 40 8e 20 a1 20 00 39 03 28 c0 a8 01 41 c0 a8
-  skb linear:   00000030: 01 40 00 00 12 ec cf ba 03 24 97 cf a9 5e 00 00
-  skb linear:   00000040: 00 00 13 34 07 00 00 00 00 00 10 11 12 13 14 15
-  skb linear:   00000050: 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25
-  skb linear:   00000060: 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35
-  skb linear:   00000070: 36 37 01 02 02 01 00 00 00 00 00 00 00 00 00 00
-  skb linear:   00000080: 00 00 00 00 00 00 01 02 02 01 00 00 00 00 00 00
-  skb linear:   00000090: 00 00 00 00 00 00 00 00 00 00
-  skb tailroom: 00000000: 00 00 00 00 00 00 00 00 00 00 00 00 a8 50 69 d7
-  skb tailroom: 00000010: 96 9f ff ff a8 50 69 d7 96 9f ff ff c0 01 58 d0
-  skb tailroom: 00000020: 96 9f ff ff
+On Thu, 21 May 2020 13:59:32 -0700 Jacob Keller wrote:
+> >> So the ice firmware can optionally send diagnostic debug messages via
+> >> its control queue. The current solutions we've used internally
+> >> essentially hex-dump the binary contents to the kernel log, and then
+> >> these get scraped and converted into a useful format for human consumption.
+> >>
+> >> I'm not 100% of the format, but I know it's based on a decoding file
+> >> that is specific to a given firmware image, and thus attempting to tie
+> >> this into the driver is problematic.  
+> > 
+> > You explained how it works, but not why it's needed :)  
+> 
+> Well, the reason we want it is to be able to read the debug/diagnostics
+> data in order to debug issues that might be related to firmware or
+> software mis-use of firmware interfaces.
+> 
+> By having it be a separate interface rather than trying to scrape from
+> the kernel message buffer, it becomes something we can have as a
+> possibility for debugging in the field.
 
-We figure out that the packet goes through two sch_direct_xmit from qdsic.
-The first one is from ip_output and the later one is from NET_TX
-softirq. Below are the two stack traces on the same packet. The first one
-fails to send the packet because netif_xmit_frozen_or_stopped is true and
-the packet gets dev_requeue_skb. However at this stage, the packet
-already has the ESP trailer. Fix by marking the skb with XFRM_XMIT bit after
-the packet is handled by validate_xmit_xfrm to avoid duplicate ESP trailer insertion.
+For pure debug/tracing perhaps trace_devlink_hwerr() is the right fit?
 
-1st one via ip_output
-  dump_stack+0x66/0x90
-  esp_output_head+0x21a/0x520 [esp4]
-  esp_xmit+0x12e/0x270 [esp4_offload]
-  ? ktime_get+0x36/0xa0
-  validate_xmit_xfrm+0x247/0x2f0
-  ? validate_xmit_skb+0x1d/0x270
-  validate_xmit_skb_list+0x46/0x70
-  sch_direct_xmit+0x18a/0x320
-  __qdisc_run+0x144/0x530
-  __dev_queue_xmit+0x3bb/0x8a0
-  ip_finish_output2+0x3ee/0x5b0
-  ip_output+0x6d/0xe0
-
-2nd one via NET_TX softirq
-  dump_stack+0x66/0x90
-  esp_output_head.cold.29+0x22/0x27 [esp4]
-  esp_xmit+0x12e/0x270 [esp4_offload]
-  validate_xmit_xfrm+0x247/0x2f0
-  ? validate_xmit_skb+0x1d/0x270
-  validate_xmit_skb_list+0x46/0x70
-  sch_direct_xmit+0x18a/0x320
-  __qdisc_run+0x144/0x530
-  net_tx_action+0x15d/0x240
-  __do_softirq+0xdf/0x2e5
-  irq_exit+0xdb/0xe0
-  smp_apic_timer_interrupt+0x74/0x130
-  apic_timer_interrupt+0xf/0x20
-
-issue: 2143007
-Fixes: f6e27114a60a ("net: Add a xfrm validate function to validate_xmit_skb")
-Change-Id: I2bc1a189b8160cd90b66b44212b4d44bbdebcaea
-Signed-off-by: Huy Nguyen <huyn@mellanox.com>
-Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-Reviewed-by: Raed Salem <raeds@mellanox.com>
----
- include/net/xfrm.h     | 1 +
- net/xfrm/xfrm_device.c | 4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 8f71c11..0302470 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1013,6 +1013,7 @@ struct xfrm_offload {
- #define	XFRM_GRO		32
- #define	XFRM_ESP_NO_TRAILER	64
- #define	XFRM_DEV_RESUME		128
-+#define	XFRM_XMIT		256
- 
- 	__u32			status;
- #define CRYPTO_SUCCESS				1
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 6cc7f7f..c122e3e 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -110,7 +110,7 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
- 	struct xfrm_offload *xo = xfrm_offload(skb);
- 	struct sec_path *sp;
- 
--	if (!xo)
-+	if (!xo || (xo->flags & XFRM_XMIT))
- 		return skb;
- 
- 	if (!(features & NETIF_F_HW_ESP))
-@@ -131,6 +131,8 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
- 		return skb;
- 	}
- 
-+	xo->flags |= XFRM_XMIT;
-+
- 	if (skb_is_gso(skb)) {
- 		struct net_device *dev = skb->dev;
- 
--- 
-1.8.3.1
-
+Right Ido?
