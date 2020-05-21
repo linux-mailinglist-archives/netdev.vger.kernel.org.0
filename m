@@ -2,100 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 080BC1DC71A
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 08:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 353F41DC72F
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 08:57:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728193AbgEUGmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 02:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbgEUGmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 02:42:21 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B1EC061A0E;
-        Wed, 20 May 2020 23:42:21 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id h4so4585277wmb.4;
-        Wed, 20 May 2020 23:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NzFpZ3MItvgYsgF9a126mp7iJYDnJB2I+YxGM0NZkm4=;
-        b=trYT/Mf24jEPR5E77DCFjYNLpu83ULeRpVgWfE5yUkdmt9117v2XPYb/lytahKKm2C
-         O3p4OQiGreCX2sy+lIEhATqkTarYPLIp1lIxRJGzGTgUgnFqZ37QfhLqYDQdat84t/tw
-         glWzCFhdlFrMSL4Suc/pBoGfVFUSi3RdLAqg/CjRjaEl6aVVVRWt2FjQou6hbokKq0Gk
-         vi2SAgzCFHjTIbHj4p1n9ZOUGs9nVsuSdBR0YylCWk60F62kBd/8IUqXOhfMAheqepqS
-         9IkYGXkBcOAQviWpQMlI43J5SoGLPkqDwTnULIXBY1beNKuqZ9fH9BnpNPTcFt4Jjpur
-         YnNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NzFpZ3MItvgYsgF9a126mp7iJYDnJB2I+YxGM0NZkm4=;
-        b=CY+K3cGZ9lE2byy1tLh6PfGqbt3cXOfsjWACF2oarARaULoxuR2uOGM3xxQygopVlj
-         VGz1JC0e/57/Lt7+SNRzAD9AgfgVfCcnBjH8YujF6xjACei4XuXy7S8h99hPg3VxJhPy
-         K6/QijhQ6C8BVl8iRimbxFoPzkVFzUh18nMoXXLvDHNUgS1fdbxmklSBR4Gcp8QDJAZB
-         BATI41OF2P1/AIVtDfvTSWbYCf7YAYAYpmo8FGbnVLvAICPl+GTt78kHf+UcskGJbqF8
-         CXMukmGZDZ1cG9q48o2KnTILjLnsuzUQ6vcx++t+vzoavf5q2iDpgcN9aHG+87E4zYgA
-         dnPA==
-X-Gm-Message-State: AOAM5313D4Ia8waHxxV96Rz92SzTKvjpvh+nVIBpN1dJAqN2UyF3HdWq
-        5vPwnACvEVlc2xKWRNHwcrBS3/U0G5QPKQoHo1Q=
-X-Google-Smtp-Source: ABdhPJxtzTdgxU8/9t7bwpB933KpcT/860YozhbhGegVS6WtPm3ugF5ST7Y9a1cWMOecH/0xQbrOg7Wc/bbZmYz9YS0=
-X-Received: by 2002:a05:600c:2258:: with SMTP id a24mr7388430wmm.111.1590043339828;
- Wed, 20 May 2020 23:42:19 -0700 (PDT)
+        id S1727794AbgEUG4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 02:56:51 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:26276 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726990AbgEUG4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 02:56:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590044210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NEPsuI322n1SfGdGZ1bt40k2iNByP761ppUmMqLTrT4=;
+        b=R7/X4G5HPbTYF0t4n82ddLeeCn5TE5VhTYA8mBa5yVzmObHFH6Y0o6xPAbdvTtk6QVRrOT
+        oGJwhnA9BXFTLOvKpPI0Xy7NzSwYRdqhhjWlfcp5rN6Z6MZRuWco72zg4r8GdvBOffziGi
+        ZwP7uAKwN18b/6bFoetT0wD7Kv809ps=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-170-bpOhwA4xPfyJjo_ViOMyPg-1; Thu, 21 May 2020 02:56:46 -0400
+X-MC-Unique: bpOhwA4xPfyJjo_ViOMyPg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 235A580183C;
+        Thu, 21 May 2020 06:56:45 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 54C4E5D9CA;
+        Thu, 21 May 2020 06:56:44 +0000 (UTC)
+Subject: [PATCH net 0/3] rxrpc: Fix retransmission timeout and ACK discard
+ [ver #2]
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 21 May 2020 07:56:43 +0100
+Message-ID: <159004420353.66254.3034741691675793468.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.22
 MIME-Version: 1.0
-References: <20200421143149.45108-1-yuehaibing@huawei.com> <20200422125346.27756-1-yuehaibing@huawei.com>
- <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com> <20200519085353.GE13121@gauss3.secunet.de>
-In-Reply-To: <20200519085353.GE13121@gauss3.secunet.de>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 21 May 2020 14:49:07 +0800
-Message-ID: <CADvbK_eXW24SkuLUOKkcg4JPa8XLcWpp6RNCrQT+=okaWe+GDA@mail.gmail.com>
-Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Yuehaibing <yuehaibing@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 4:53 PM Steffen Klassert
-<steffen.klassert@secunet.com> wrote:
->
-> On Fri, May 15, 2020 at 04:39:57PM +0800, Yuehaibing wrote:
-> >
-> > Friendly ping...
-> >
-> > Any plan for this issue?
->
-> There was still no consensus between you and Xin on how
-> to fix this issue. Once this happens, I consider applying
-> a fix.
->
-Sorry, Yuehaibing, I can't really accept to do: (A->mark.m & A->mark.v)
-I'm thinking to change to:
 
- static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
-                                   struct xfrm_policy *pol)
- {
--       u32 mark = policy->mark.v & policy->mark.m;
--
--       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
--               return true;
--
--       if ((mark & pol->mark.m) == pol->mark.v &&
--           policy->priority == pol->priority)
-+       if (policy->mark.v == pol->mark.v &&
-+           (policy->mark.m == pol->mark.m ||
-+            policy->priority == pol->priority))
-                return true;
+Here are a couple of fixes and an extra tracepoint for AF_RXRPC:
 
-        return false;
+ (1) Calculate the RTO pretty much as TCP does, rather than making
+     something up, including an initial 4s timeout (which causes return
+     probes from the fileserver to fail if a packet goes missing), and add
+     backoff.
 
-which means we consider (the same value and mask) or
-(the same value and priority) as the same one. This will
-cover both problems.
+ (2) Fix the discarding of out-of-order received ACKs.  We mustn't let the
+     hard-ACK point regress, nor do we want to do unnecessary
+     retransmission because the soft-ACK list regresses.  This is not
+     trivial, however, due to some loose wording in various old protocol
+     specs, the ACK field that should be used for this sometimes has the
+     wrong information in it.
+
+ (3) Add a tracepoint to log a discarded ACK.
+
+[V2] Fixed a "Fixes" line in a commit message.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-fixes-20200520
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
+
+David
+---
+David Howells (1):
+      rxrpc: Fix ack discard
+
+
+ fs/afs/fs_probe.c            |  18 ++--
+ fs/afs/vl_probe.c            |  18 ++--
+ include/net/af_rxrpc.h       |   2 +-
+ include/trace/events/rxrpc.h |  52 +++++++++---
+ net/rxrpc/Makefile           |   1 +
+ net/rxrpc/ar-internal.h      |  25 ++++--
+ net/rxrpc/call_accept.c      |   2 +-
+ net/rxrpc/call_event.c       |  22 ++---
+ net/rxrpc/input.c            |  44 ++++++++--
+ net/rxrpc/misc.c             |   5 --
+ net/rxrpc/output.c           |   9 +-
+ net/rxrpc/peer_event.c       |  46 ----------
+ net/rxrpc/peer_object.c      |  12 +--
+ net/rxrpc/proc.c             |   8 +-
+ net/rxrpc/rtt.c              | 195 +++++++++++++++++++++++++++++++++++++++++++
+ net/rxrpc/sendmsg.c          |  26 ++----
+ net/rxrpc/sysctl.c           |   9 --
+ 17 files changed, 335 insertions(+), 159 deletions(-)
+ create mode 100644 net/rxrpc/rtt.c
+
+
