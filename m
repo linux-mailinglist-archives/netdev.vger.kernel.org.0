@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 154741DC666
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 06:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 080BC1DC71A
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 08:42:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727881AbgEUEx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 00:53:28 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:22798 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726506AbgEUEx1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 00:53:27 -0400
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 21 May 2020 12:51:57
- +0800 (GMT+08:00)
-X-Originating-IP: [222.205.77.158]
-Date:   Thu, 21 May 2020 12:51:57 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   dinghao.liu@zju.edu.cn
-To:     "Tony Lindgren" <tony@atomide.com>
-Cc:     kjlu@umn.edu, "Kalle Valo" <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Johannes Berg" <johannes.berg@intel.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Maital Hahn" <maitalm@ti.com>,
-        "Fuqian Huang" <huangfq.daxian@gmail.com>,
-        "Emmanuel Grumbach" <emmanuel.grumbach@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] wlcore: fix runtime pm imbalance in
- wl1271_op_suspend
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.10 build 20190906(84e8bf8f)
- Copyright (c) 2002-2020 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20200520184854.GY37466@atomide.com>
-References: <20200520125724.12832-1-dinghao.liu@zju.edu.cn>
- <20200520184854.GY37466@atomide.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S1728193AbgEUGmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 02:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726892AbgEUGmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 02:42:21 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B1EC061A0E;
+        Wed, 20 May 2020 23:42:21 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id h4so4585277wmb.4;
+        Wed, 20 May 2020 23:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NzFpZ3MItvgYsgF9a126mp7iJYDnJB2I+YxGM0NZkm4=;
+        b=trYT/Mf24jEPR5E77DCFjYNLpu83ULeRpVgWfE5yUkdmt9117v2XPYb/lytahKKm2C
+         O3p4OQiGreCX2sy+lIEhATqkTarYPLIp1lIxRJGzGTgUgnFqZ37QfhLqYDQdat84t/tw
+         glWzCFhdlFrMSL4Suc/pBoGfVFUSi3RdLAqg/CjRjaEl6aVVVRWt2FjQou6hbokKq0Gk
+         vi2SAgzCFHjTIbHj4p1n9ZOUGs9nVsuSdBR0YylCWk60F62kBd/8IUqXOhfMAheqepqS
+         9IkYGXkBcOAQviWpQMlI43J5SoGLPkqDwTnULIXBY1beNKuqZ9fH9BnpNPTcFt4Jjpur
+         YnNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NzFpZ3MItvgYsgF9a126mp7iJYDnJB2I+YxGM0NZkm4=;
+        b=CY+K3cGZ9lE2byy1tLh6PfGqbt3cXOfsjWACF2oarARaULoxuR2uOGM3xxQygopVlj
+         VGz1JC0e/57/Lt7+SNRzAD9AgfgVfCcnBjH8YujF6xjACei4XuXy7S8h99hPg3VxJhPy
+         K6/QijhQ6C8BVl8iRimbxFoPzkVFzUh18nMoXXLvDHNUgS1fdbxmklSBR4Gcp8QDJAZB
+         BATI41OF2P1/AIVtDfvTSWbYCf7YAYAYpmo8FGbnVLvAICPl+GTt78kHf+UcskGJbqF8
+         CXMukmGZDZ1cG9q48o2KnTILjLnsuzUQ6vcx++t+vzoavf5q2iDpgcN9aHG+87E4zYgA
+         dnPA==
+X-Gm-Message-State: AOAM5313D4Ia8waHxxV96Rz92SzTKvjpvh+nVIBpN1dJAqN2UyF3HdWq
+        5vPwnACvEVlc2xKWRNHwcrBS3/U0G5QPKQoHo1Q=
+X-Google-Smtp-Source: ABdhPJxtzTdgxU8/9t7bwpB933KpcT/860YozhbhGegVS6WtPm3ugF5ST7Y9a1cWMOecH/0xQbrOg7Wc/bbZmYz9YS0=
+X-Received: by 2002:a05:600c:2258:: with SMTP id a24mr7388430wmm.111.1590043339828;
+ Wed, 20 May 2020 23:42:19 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <62e69631.b9cff.1723592e191.Coremail.dinghao.liu@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgBHf3jtCMZeUM7mAQ--.37495W
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgUHBlZdtOOvVwAIsq
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJTRUUUbtIS07vEb7Iv0x
-        C_Xr1lV2xY67kC6x804xWlV2xY67CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DMIAI
-        bVAFxVCF77xC64kEw24lV2xY67C26IkvcIIF6IxKo4kEV4ylV2xY628lY4IE4IxF12IF4w
-        CS07vE84x0c7CEj48ve4kI8wCS07vE84ACjcxK6xIIjxv20xvE14v26w1j6s0DMIAIbVA2
-        z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWlV2xY628EF7xvwVC2z280aVAFwI0_Gc
-        CE3s1lV2xY628EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wCS07vEe2I262IYc4CY6c8I
-        j28IcVAaY2xG8wCS07vE5I8CrVACY4xI64kE6c02F40Ex7xfMIAIbVAv7VC0I7IYx2IY67
-        AKxVWUJVWUGwCS07vEYx0Ex4A2jsIE14v26r1j6r4UMIAIbVAm72CE4IkC6x0Yz7v_Jr0_
-        Gr1lV2xY64IIrI8v6xkF7I0E8cxan2IY04v7MIAIbVCjxxvEw4WlV2xY6xkIecxEwVAFwV
-        W8XwCS07vEc2IjII80xcxEwVAKI48JMIAIbVCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l
-        V2xY6xCjnVCjjxCrMIAIbVCFx2IqxVCFs4IE7xkEbVWUJVW8JwCS07vEx2IqxVAqx4xG67
-        AKxVWUJVWUGwCS07vEx2IqxVCjr7xvwVAFwI0_JrI_JrWlV2xY6I8E67AF67kF1VAFwI0_
-        Jw0_GFylV2xY6IIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lV2xY6IIF0xvE2Ix0cI8IcVCY1x
-        0267AKxVW8JVWxJwCS07vEIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lV2xY6IIF0xvE
-        x4A2jsIE14v26r1j6r4UMIAIbVCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73U
+References: <20200421143149.45108-1-yuehaibing@huawei.com> <20200422125346.27756-1-yuehaibing@huawei.com>
+ <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com> <20200519085353.GE13121@gauss3.secunet.de>
+In-Reply-To: <20200519085353.GE13121@gauss3.secunet.de>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 21 May 2020 14:49:07 +0800
+Message-ID: <CADvbK_eXW24SkuLUOKkcg4JPa8XLcWpp6RNCrQT+=okaWe+GDA@mail.gmail.com>
+Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Yuehaibing <yuehaibing@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhlcmUgaXMgYSBjaGVjayBhZ2FpbnN0IHJldCBhZnRlciBvdXRfc2xlZXAgdGFnLiBJZiB3bDEy
-NzFfY29uZmlndXJlX3N1c3BlbmRfYXAoKQpyZXR1cm5zIGFuIGVycm9yIGNvZGUsIHJldCB3aWxs
-IGJlIGNhdWdodCBieSB0aGlzIGNoZWNrIGFuZCBhIHdhcm5pbmcgd2lsbCBiZSBpc3N1ZWQuCgoK
-JnF1b3Q7VG9ueSBMaW5kZ3JlbiZxdW90OyAmbHQ7dG9ueUBhdG9taWRlLmNvbSZndDvlhpnpgZPv
-vJoKPiAqIERpbmdoYW8gTGl1IDxkaW5naGFvLmxpdUB6anUuZWR1LmNuPiBbMjAwNTIwIDEyOjU4
-XToNCj4gPiBXaGVuIHdsY29yZV9od19pbnRlcnJ1cHRfbm90aWZ5KCkgcmV0dXJucyBhbiBlcnJv
-ciBjb2RlLA0KPiA+IGEgcGFpcmluZyBydW50aW1lIFBNIHVzYWdlIGNvdW50ZXIgZGVjcmVtZW50
-IGlzIG5lZWRlZCB0bw0KPiA+IGtlZXAgdGhlIGNvdW50ZXIgYmFsYW5jZWQuDQo+IA0KPiBXZSBz
-aG91bGQgcHJvYmFibHkga2VlcCB0aGUgd2FybmluZyB0aG91Z2gsIG5vdGhpbmcgd2lsbA0KPiBn
-ZXQgc2hvd24gZm9yIHdsMTI3MV9jb25maWd1cmVfc3VzcGVuZF9hcCgpIGVycm9ycy4NCj4gDQo+
-IE90aGVyd2lzZSBsb29rcyBnb29kIHRvIG1lLg0KPiANCj4gUmVnYXJkcywNCj4gDQo+IFRvbnkN
-Cg==
+On Tue, May 19, 2020 at 4:53 PM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
+>
+> On Fri, May 15, 2020 at 04:39:57PM +0800, Yuehaibing wrote:
+> >
+> > Friendly ping...
+> >
+> > Any plan for this issue?
+>
+> There was still no consensus between you and Xin on how
+> to fix this issue. Once this happens, I consider applying
+> a fix.
+>
+Sorry, Yuehaibing, I can't really accept to do: (A->mark.m & A->mark.v)
+I'm thinking to change to:
+
+ static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+                                   struct xfrm_policy *pol)
+ {
+-       u32 mark = policy->mark.v & policy->mark.m;
+-
+-       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+-               return true;
+-
+-       if ((mark & pol->mark.m) == pol->mark.v &&
+-           policy->priority == pol->priority)
++       if (policy->mark.v == pol->mark.v &&
++           (policy->mark.m == pol->mark.m ||
++            policy->priority == pol->priority))
+                return true;
+
+        return false;
+
+which means we consider (the same value and mask) or
+(the same value and priority) as the same one. This will
+cover both problems.
