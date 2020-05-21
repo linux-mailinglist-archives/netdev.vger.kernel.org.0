@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 833221DD4F4
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D56CD1DD535
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 19:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730296AbgEURsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 13:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
+        id S1730011AbgEURuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 13:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730236AbgEURsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:48:37 -0400
+        with ESMTP id S1730258AbgEURsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 13:48:41 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB1AC061A0E;
-        Thu, 21 May 2020 10:48:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B12EC061A0E;
+        Thu, 21 May 2020 10:48:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=Bv65sC4uAgBaRnpAKqnPt6Y54+pI7qtIct0VTY/fthc=; b=ieUXnWwwjI+3F0dbwr5+oAc8qH
-        Cw8+vr4g8XCP8YNUCrkSGlhyXvBY68D3aVC1y++9cVNHeW/wYCx39YIXNRK28ln8E+dgegMx/P1Pl
-        Y4fTSHACfL2cxWETi3/u/Fma+2Cv0WomGN3RR1arsbfS8GUPOgFWuQ0JsV1KBpRWPutnC5Dmc/Rbg
-        j0tPxNaJK02KFRVfwk2idBGZWr3HS1xP5vj5sO3CWwE7zrtrESFdOLqyEYqrptbKjbBRkvGdEpghE
-        e5q+Wnox8iOtiath/82E++ZB/DTcHvQhdKDfRu3Sc6P6W0dbZzSYq4qoogn0zlHNJRiToDC/zpkEP
-        NxSgENHA==;
+        bh=uV/6VvsFrT7rKBrCOkAvlvdEtjI8hO5JNu4RqbiP830=; b=ppTFQsKZ3rWwcP0V3c4MTkWFcE
+        TkUqfpDfcz18zodm3yXMkFZ9uISSOvhpmi8wHdg6ZE/wPAtLLriRrEe4GjtR+jI8UdiX0ZQd29PhB
+        fHiWFZjkYpWpBpims5cma4xv2Tvji76lkbmH460VzroB9Llfx1Xol0CrwGRaAjoLFUuUwWCouwkBk
+        qnL2bbUrE+AFgQWkAMgwoF9BBRLQecWOl7Jw11CWNRY5JXPO9Sbt70TlTlbefwUsi6z14XoLpg9Dp
+        lms5i/rOgwCTsrqtzF64VVODoSpfZha8MpCPs+2tqvG/zr2P3gkCEWwPfXIn/ySBs4T6vlEHvdG5/
+        KIhWRQPw==;
 Received: from [2001:4bb8:18c:5da7:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jbpJ5-0003Ip-Nf; Thu, 21 May 2020 17:48:36 +0000
+        id 1jbpJ8-0003JD-73; Thu, 21 May 2020 17:48:38 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 25/49] sctp: pass a kernel pointer to sctp_setsockopt_hmac_ident
-Date:   Thu, 21 May 2020 19:47:00 +0200
-Message-Id: <20200521174724.2635475-26-hch@lst.de>
+Subject: [PATCH 26/49] sctp: pass a kernel pointer to sctp_setsockopt_auth_key
+Date:   Thu, 21 May 2020 19:47:01 +0200
+Message-Id: <20200521174724.2635475-27-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
 References: <20200521174724.2635475-1-hch@lst.de>
@@ -50,66 +50,71 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Use the kernel pointer that sctp_setsockopt has available instead of
-directly handling the user pointer.
+directly handling the user pointer.  Adapt sctp_setsockopt to use a
+kzfree for this case.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 21 +++++----------------
- 1 file changed, 5 insertions(+), 16 deletions(-)
+ net/sctp/socket.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index aa06affcd66e0..88edf5413fd22 100644
+index 88edf5413fd22..d3442dcd49aa8 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -3562,13 +3562,11 @@ static int sctp_setsockopt_auth_chunk(struct sock *sk,
-  * endpoint requires the peer to use.
+@@ -3591,11 +3591,10 @@ static int sctp_setsockopt_hmac_ident(struct sock *sk,
+  * association shared key.
   */
- static int sctp_setsockopt_hmac_ident(struct sock *sk,
--				      char __user *optval,
-+				      struct sctp_hmacalgo *hmacs,
- 				      unsigned int optlen)
+ static int sctp_setsockopt_auth_key(struct sock *sk,
+-				    char __user *optval,
++				    struct sctp_authkey *authkey,
+ 				    unsigned int optlen)
  {
  	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
--	struct sctp_hmacalgo *hmacs;
- 	u32 idents;
--	int err;
+-	struct sctp_authkey *authkey;
+ 	struct sctp_association *asoc;
+ 	int ret = -EINVAL;
  
- 	if (!ep->auth_enable)
- 		return -EACCES;
-@@ -3578,21 +3576,12 @@ static int sctp_setsockopt_hmac_ident(struct sock *sk,
- 	optlen = min_t(unsigned int, optlen, sizeof(struct sctp_hmacalgo) +
- 					     SCTP_AUTH_NUM_HMACS * sizeof(u16));
+@@ -3606,10 +3605,6 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
+ 	 */
+ 	optlen = min_t(unsigned int, optlen, USHRT_MAX + sizeof(*authkey));
  
--	hmacs = memdup_user(optval, optlen);
--	if (IS_ERR(hmacs))
--		return PTR_ERR(hmacs);
+-	authkey = memdup_user(optval, optlen);
+-	if (IS_ERR(authkey))
+-		return PTR_ERR(authkey);
 -
- 	idents = hmacs->shmac_num_idents;
- 	if (idents == 0 || idents > SCTP_AUTH_NUM_HMACS ||
--	    (idents * sizeof(u16)) > (optlen - sizeof(struct sctp_hmacalgo))) {
--		err = -EINVAL;
--		goto out;
--	}
-+	    (idents * sizeof(u16)) > (optlen - sizeof(struct sctp_hmacalgo)))
-+		return -EINVAL;
+ 	if (authkey->sca_keylength > optlen - sizeof(*authkey))
+ 		goto out;
  
--	err = sctp_auth_ep_set_hmacs(ep, hmacs);
--out:
--	kfree(hmacs);
--	return err;
-+	return sctp_auth_ep_set_hmacs(ep, hmacs);
+@@ -3646,7 +3641,6 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
+ 	}
+ 
+ out:
+-	kzfree(authkey);
+ 	return ret;
  }
  
- /*
-@@ -4696,7 +4685,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 		retval = sctp_setsockopt_auth_chunk(sk, kopt, optlen);
- 		break;
- 	case SCTP_HMAC_IDENT:
--		retval = sctp_setsockopt_hmac_ident(sk, optval, optlen);
-+		retval = sctp_setsockopt_hmac_ident(sk, kopt, optlen);
+@@ -4688,7 +4682,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 		retval = sctp_setsockopt_hmac_ident(sk, kopt, optlen);
  		break;
  	case SCTP_AUTH_KEY:
- 		retval = sctp_setsockopt_auth_key(sk, optval, optlen);
+-		retval = sctp_setsockopt_auth_key(sk, optval, optlen);
++		retval = sctp_setsockopt_auth_key(sk, kopt, optlen);
+ 		break;
+ 	case SCTP_AUTH_ACTIVE_KEY:
+ 		retval = sctp_setsockopt_active_key(sk, optval, optlen);
+@@ -4771,7 +4765,10 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 	}
+ 
+ 	release_sock(sk);
+-	kfree(kopt);
++	if (optname == SCTP_AUTH_KEY)
++		kzfree(kopt);
++	else
++		kfree(kopt);
+ 
+ out_nounlock:
+ 	return retval;
 -- 
 2.26.2
 
