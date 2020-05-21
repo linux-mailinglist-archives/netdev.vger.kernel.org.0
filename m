@@ -2,169 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 555271DC79A
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:28:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB0B61DC799
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 09:28:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgEUH2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728459AbgEUH2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 21 May 2020 03:28:15 -0400
-Received: from mga17.intel.com ([192.55.52.151]:36626 "EHLO mga17.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:34945 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728398AbgEUH2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 03:28:05 -0400
-IronPort-SDR: 8RgSIl74fvoT4hK/PyKuUkp9Cw0WuGYBJYf2gVOqKzKV9QSVTA9QuKtkvoazR9JI0v6K1a5ts5
- VGkUphs0zkyw==
+        id S1728265AbgEUH2M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 03:28:12 -0400
+IronPort-SDR: TODDjnfUr+ai3JQVGvqeeHuYSZcvT62g6WMAxrXyQGbWC0M9Gb2JH9Z6X2A2o4lcY+9ar+5Tf7
+ t0XFYLJD3c3A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 00:28:03 -0700
-IronPort-SDR: SGDP9dvYlvz2v42O1AntwfxXgFDgeszrrillD6w4O2eeXNM8DZ08GaEbwu0ANulflkTOUal4L8
- dOTieWCY4QWg==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 00:28:11 -0700
+IronPort-SDR: ig+6r7OpeNQpkCmWjFNztGKt55XqSZxBrptfP8QoT5cxxfOA2aTtifAdLEKweUmESazqsfPq6f
+ XIXPfTXtscMQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,417,1583222400"; 
-   d="scan'208";a="343758723"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga001.jf.intel.com with ESMTP; 21 May 2020 00:28:00 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] igc: Change byte order in struct igc_nfc_filter
-Date:   Thu, 21 May 2020 00:27:58 -0700
-Message-Id: <20200521072758.440264-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200521072758.440264-1-jeffrey.t.kirsher@intel.com>
-References: <20200521072758.440264-1-jeffrey.t.kirsher@intel.com>
+   d="scan'208";a="343758758"
+Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
+  by orsmga001.jf.intel.com with ESMTP; 21 May 2020 00:28:10 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 21 May 2020 00:28:03 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 21 May 2020 00:28:03 -0700
+Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 21 May 2020 00:28:03 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
+ by edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Thu, 21 May 2020 00:28:03 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j5nN79oSvHuEqmD3sdQeTk7/1SJ7cgEA7TLUC2p4wJa68Nwe6kp4MYGDhRGFoqpfJeHXXwh8HEBwqiUo4pJ0FO5EFW3giNv0T+tIOxnY3xXodFh8uIT2amW8qhLj+b4cMP/0Kjgd6LKQC6XIQZIwflki3UMRkyzdb0E4HLR8oW31CoXCVR6Lqpq8Ldqk6N8+t4qZgRX0S7M9+pxdbgb1gOfvvVVGQnIAhs6WAbPQmOMwRzIf7tEebaahIN7xTPVjqcMP7IGAJvCJZ4rh+2WO6tQiwfrOtFg9yFcfkrVGbqUKwjwtNkMHUP76ouO+1O+ZwvjQ8VzsGvPiFgx83r0LjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6rKwDmkVV2jlKIha/hxNJeCu5trBEe+dFatsSGxw5+U=;
+ b=HMU1mU9KsqZTEk63oXQGE/0dCkC2Ukj6/eJGRwkRAmjpFaI6N3h5CPCv1DRGFMDHXvcYJgA6vGd19ep1O/r8OKqbfHO5rF6gxAOBDhvRoMqnezMFqpnIZOarmTK35mssfWnH2V+seltSiLpwxLdOi/RAPLSz8nfTeYZJ+owt07QvJdnsXn32j/XnviIqjbWEHEpx9oSzalqGKgM9NYeQDsthqdznDZK+x70k1LpHNTBVwW8Mbqk3FS5/fNIW/p4LIHaEJoqVL7mRWOfir8WrBqbbNP+RbbJpuEAusuSjH6GWD8LXvIU2LA8ifS5rTi6vxbBgd+VUcLlnEPnKR2qUlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6rKwDmkVV2jlKIha/hxNJeCu5trBEe+dFatsSGxw5+U=;
+ b=wdpwJKPNCz6Hpj/TTsMOllCZruiy+dBiomVZrwrkQhxptk+XnALCb2i2xuDo4FTUPHxUivVzebmvgoS2Wwlcj+T21GaK7lonQulPSbNVUzdJ2ieBpaHvr06VFE8vA4pjgBW1hPj7kM7katlZfC0aZ99ZxV7+ap4eUSIaJPjY4vE=
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
+ DM6PR11MB3001.namprd11.prod.outlook.com (2603:10b6:5:6e::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3000.26; Thu, 21 May 2020 07:28:00 +0000
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::40b:5b49:b17d:d875]) by DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::40b:5b49:b17d:d875%7]) with mapi id 15.20.3000.022; Thu, 21 May 2020
+ 07:28:00 +0000
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Jason Yan <yanaijie@huawei.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
+Thread-Topic: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
+Thread-Index: AQHWJGAuISXMEjQLckCV8vKCyHNEfqiyOb5g
+Date:   Thu, 21 May 2020 07:27:59 +0000
+Message-ID: <DM6PR11MB2890A3BB1993EF97E4368F06BCB70@DM6PR11MB2890.namprd11.prod.outlook.com>
+References: <20200507110915.38349-1-yanaijie@huawei.com>
+In-Reply-To: <20200507110915.38349-1-yanaijie@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.134.136.209]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3c18b27d-59bc-4f04-9e43-08d7fd587d7c
+x-ms-traffictypediagnostic: DM6PR11MB3001:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB3001BBB86BDB86413B1FBA6FBCB70@DM6PR11MB3001.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:660;
+x-forefront-prvs: 041032FF37
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: n51z531juMO7xV4AJlgT91PGdAp/QuI+orG29HrzZKvlhQSL0QfVqkfHSFyE8afIpOLgMfgJqWkd21DfPmrkwu1TH66z5yYphmui2sDHnQ6GStMaQtZhUYTvTECz3pGPaB+ze79lyg6FBaT3jKrAa20zFpbi5Yg12lvN9NtrrZ0iUlHC6DYAUkzembWykogVqnh+ZVAX2JblZL6xwmlXOdKNABMn2Pugj4fJsMj+VprBG42lWEdLiODs4WFjAI54EJP/0cmqxGzXSqqXUGxdbQn+L/Nd3SjEeMwtLX5Z7wDLbcXOAGAq7QstpCBj9seXAM6da7bMhXmU4Uz1M82vizvOCr43OTYgKG+nDzGm7Haq+UBmegp9uYxZVSETvmxqJ/frZA21o9tIAikGGwiB1gHzEJkH4tV8MBEuyc3xGCILgNk7mjilzWA/FKg/T+rm
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(396003)(136003)(346002)(366004)(39860400002)(53546011)(8936002)(66446008)(71200400001)(52536014)(8676002)(7696005)(6506007)(33656002)(478600001)(186003)(66476007)(64756008)(66556008)(55016002)(26005)(9686003)(76116006)(4744005)(316002)(5660300002)(66946007)(86362001)(110136005)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: Wk5XGyVVABLv01CFN/wpIyahwDz/XV9/P7EDdNMHRoFthD2DV89vx8QC4Za3fA3amJUnt0Ml9gcayGcICCiMBbh0t6yKD+mRzyhpB02KeZXyQwG6Vv5PviZz8IN72CFYCfwj0dS0JYWNbgOJVHd9YekQcBzbsr1Ak/nuu+fKj1L76c1tfno5uDCxFlRdYXleJIOdrxd9tX5c/LbfZqz+G8Fiqr/ph8JTGIoWGovPs676G+psawG6I5PVJvclmFX2iOjwVbM+Qo03bJMTVn4K+PI8dKDVMA7HmpVWue/8ib8tvmo+gA5tpkKndbYA0/b9PDBloqgS3UdcF8FtFTVCbhkixoUnt8m2Tu8HsgMboZ+eA5MVuSFbXP9lTTugxGBNvT2nzNKQkzzuyKEZXQ5eM8JQPk6P05tc6atZaHieZP+wqUcCBWajYnLUaBD5imQ+oMrCKZ5En6DvVcV1hTJnZWdQ6d9PLy+PRP6xScJJ5e4HnQaSHlQyIbhhm7OknD9b
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c18b27d-59bc-4f04-9e43-08d7fd587d7c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2020 07:27:59.9103
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rf4Cf14qfPOEbSKxP4JNhjRdFWC6RC5GhHNTwsAO2CA8/oAzyopuuAOplcSPP+Z5OGDxuEgrkh/PVGnHg3XtCg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3001
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
-
-Every time we access the 'etype' and 'vlan_tci' fields from struct
-igc_nfc_filter to enable or disable filters in hardware we have to
-convert them from big endian to host order so it makes more sense to
-simply have these fields in host order.
-
-The byte order conversion should take place in igc_ethtool_get_nfc_
-rule() and igc_ethtool_add_nfc_rule(), which are called by .get_rxnfc
-and .set_rxnfc ethtool ops, since ethtool subsystem is the one who deals
-with them in big endian order.
-
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Jason Yan
+> Sent: Thursday, May 7, 2020 4:09 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net=
+;
+> yanaijie@huawei.com; intel-wired-lan@lists.osuosl.org;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: [PATCH net-next] igb: make igb_set_fc_watermarks() return void
+>=20
+> This function always return 0 now, we can make it return void to
+> simplify the code. This fixes the following coccicheck warning:
+>=20
+> drivers/net/ethernet/intel/igb/e1000_mac.c:728:5-12: Unneeded variable:
+> "ret_val". Return "0" on line 751
+>=20
+> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> ---
+>  drivers/net/ethernet/intel/igb/e1000_mac.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/igc/igc.h         | 10 ++------
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 25 +++++++++-----------
- 2 files changed, 13 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 7124ba254b89..fcc6261d7f67 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -452,16 +452,10 @@ enum igc_filter_match_flags {
- 	IGC_FILTER_FLAG_DST_MAC_ADDR =	0x8,
- };
- 
--/* RX network flow classification data structure */
- struct igc_nfc_filter {
--	/* Byte layout in order, all values with MSB first:
--	 * match_flags - 1 byte
--	 * etype - 2 bytes
--	 * vlan_tci - 2 bytes
--	 */
- 	u8 match_flags;
--	__be16 etype;
--	__be16 vlan_tci;
-+	u16 etype;
-+	u16 vlan_tci;
- 	u8 src_addr[ETH_ALEN];
- 	u8 dst_addr[ETH_ALEN];
- };
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 408f4a9a199f..66e0760a8f9e 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -954,13 +954,13 @@ static int igc_ethtool_get_nfc_rule(struct igc_adapter *adapter,
- 	fsp->ring_cookie = rule->action;
- 
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
--		fsp->h_u.ether_spec.h_proto = rule->filter.etype;
-+		fsp->h_u.ether_spec.h_proto = htons(rule->filter.etype);
- 		fsp->m_u.ether_spec.h_proto = ETHER_TYPE_FULL_MASK;
- 	}
- 
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_VLAN_TCI) {
- 		fsp->flow_type |= FLOW_EXT;
--		fsp->h_ext.vlan_tci = rule->filter.vlan_tci;
-+		fsp->h_ext.vlan_tci = htons(rule->filter.vlan_tci);
- 		fsp->m_ext.vlan_tci = htons(VLAN_PRIO_MASK);
- 	}
- 
-@@ -1183,9 +1183,8 @@ int igc_enable_nfc_rule(struct igc_adapter *adapter,
- 	int err = -EINVAL;
- 
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
--		u16 etype = ntohs(rule->filter.etype);
--
--		err = igc_add_etype_filter(adapter, etype, rule->action);
-+		err = igc_add_etype_filter(adapter, rule->filter.etype,
-+					   rule->action);
- 		if (err)
- 			return err;
- 	}
-@@ -1205,8 +1204,9 @@ int igc_enable_nfc_rule(struct igc_adapter *adapter,
- 	}
- 
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_VLAN_TCI) {
--		int prio = (ntohs(rule->filter.vlan_tci) & VLAN_PRIO_MASK) >>
-+		int prio = (rule->filter.vlan_tci & VLAN_PRIO_MASK) >>
- 			   VLAN_PRIO_SHIFT;
-+
- 		err = igc_add_vlan_prio_filter(adapter, prio, rule->action);
- 		if (err)
- 			return err;
-@@ -1218,14 +1218,11 @@ int igc_enable_nfc_rule(struct igc_adapter *adapter,
- int igc_disable_nfc_rule(struct igc_adapter *adapter,
- 			 const struct igc_nfc_rule *rule)
- {
--	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
--		u16 etype = ntohs(rule->filter.etype);
--
--		igc_del_etype_filter(adapter, etype);
--	}
-+	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE)
-+		igc_del_etype_filter(adapter, rule->filter.etype);
- 
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_VLAN_TCI) {
--		int prio = (ntohs(rule->filter.vlan_tci) & VLAN_PRIO_MASK) >>
-+		int prio = (rule->filter.vlan_tci & VLAN_PRIO_MASK) >>
- 			   VLAN_PRIO_SHIFT;
- 		igc_del_vlan_prio_filter(adapter, prio);
- 	}
-@@ -1325,7 +1322,7 @@ static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
- 		return -ENOMEM;
- 
- 	if (fsp->m_u.ether_spec.h_proto == ETHER_TYPE_FULL_MASK) {
--		rule->filter.etype = fsp->h_u.ether_spec.h_proto;
-+		rule->filter.etype = ntohs(fsp->h_u.ether_spec.h_proto);
- 		rule->filter.match_flags = IGC_FILTER_FLAG_ETHER_TYPE;
- 	}
- 
-@@ -1357,7 +1354,7 @@ static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
- 			err = -EOPNOTSUPP;
- 			goto err_out;
- 		}
--		rule->filter.vlan_tci = fsp->h_ext.vlan_tci;
-+		rule->filter.vlan_tci = ntohs(fsp->h_ext.vlan_tci);
- 		rule->filter.match_flags |= IGC_FILTER_FLAG_VLAN_TCI;
- 	}
- 
--- 
-2.26.2
 
