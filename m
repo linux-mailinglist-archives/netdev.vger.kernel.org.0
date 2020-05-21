@@ -2,81 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C891DD584
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E53C1DD58A
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729328AbgEUSBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
+        id S1729055AbgEUSEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728888AbgEUSBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:01:31 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CEB1C061A0E
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:01:31 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id ee19so3465823qvb.11
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:01:31 -0700 (PDT)
+        with ESMTP id S1728067AbgEUSEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:04:05 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0743FC061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:04:05 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id m18so9411629ljo.5
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9vZVxJ+cF490WZutM85auBlDXMsXHuCjgVpLB9EXIuM=;
-        b=MIHPSPA+XWlTZ9Na6EAORhJoIbaMOHqwIUA+uKdRwkvQiMJ/EtWI4BqYesFh7y9Fjk
-         ARV5Tnj9X0QLnN2KCArC68N0zER9qOUZpG8YCjGCfgLFQCy11N3xCwkCPg9Aj9/HrNuW
-         pJo1aDpZXwfnVc0/uwEHgCZYql7RLTHbAR3JJbwjPPeVz+rjcVDAzoPnahT79fBVH//+
-         nqiYcRL3lXT1PxDZFK+WCCUOIkVRtKMfMtOR+qXKrAKTPlWZaSp12iydCb5fhoO27kU1
-         ei/aFSIK6JinJ+lK3oIhprZuGsuv/DskqkbrJ2bm69YQ+VxNKMTo/PdbMrElxhDYwwE5
-         /+qw==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6Gg4b4CDCsETMIm4Edj1Xv31p6ZdZ0NWSz903G/X2Po=;
+        b=C+6xQYv405ppXq81KjYUQtltgLKHhtWFV7DfKyUQgnD/o5JsMIaX3ld48tDI1ZlD7K
+         U7kuhQvl7mdKFxmVsF/c3fYz37gu4oWx14U5jtAODWIsK4FqzsUCdodSWDq8PJADqJQN
+         fxp/doyT7dYvEricBmr9oFTSOXixPbh/BPwNs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9vZVxJ+cF490WZutM85auBlDXMsXHuCjgVpLB9EXIuM=;
-        b=qkn1x7qM4bfwWXsMXFUd8wfTs5tIwQxKgS76Hri3CAFSjNyvdBaBd6zwLGm2elsHCm
-         ADpffgYWsGrf1374xDYXQWkCL+A0LLwqxYOLVFPGsaMi3bbDp4SguSPKlelQUQcIoUiz
-         /pOgxOEzaP13EkBYAMpSxe+MMeX0AuJ5ugJJPNpPQ380t3L1EP7FQLkXVqJdT+6UsWBi
-         JR2QfABP9KM/xoghZpnnz8ZExKZeIGM3jOx2EH0ZY5SQjJTn2mUp4WmSJW2M4z82YmWS
-         XLvqKgWcLYybidOLBA2ynfBOp6YSEAURYZdIbGodKegGi3UCHAkF9xN+ki/RrW0BGvPI
-         vwsA==
-X-Gm-Message-State: AOAM531JozXk9HL2IElMqp6z464XKPZfhNIrjkuzQEnOlqU0YhpXKuw7
-        8YTXpVbxxC3nvsS/YStjSTw=
-X-Google-Smtp-Source: ABdhPJyakYEbt65wpbrtYj3AuxQBVGpzVlYkgOLqCu/i3qnJGUZakYZt2+gyTq0wuP4xFIzu3nOT2g==
-X-Received: by 2002:a0c:9ad5:: with SMTP id k21mr11310897qvf.2.1590084090299;
-        Thu, 21 May 2020 11:01:30 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5123:b8d3:32f1:177b? ([2601:282:803:7700:5123:b8d3:32f1:177b])
-        by smtp.googlemail.com with ESMTPSA id x14sm4267283qkb.67.2020.05.21.11.01.28
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6Gg4b4CDCsETMIm4Edj1Xv31p6ZdZ0NWSz903G/X2Po=;
+        b=Czb4/DpYMGKi/fY0YI0etVDm/jszn1iDPrz6f3vGyHq8YnMJ+4VeoOQMxLaGUPfTAY
+         TcpFRDH/q/8LQ3dbaBz+LleFXKr5OkBar8bqv39CoRURJ+Q3+H3v8W5haxGWeJEa/GoY
+         xvTs7q9uvNdYtahOW5NjwRPLa5M4dUMV82Y3TEX21nO0HIYnu6aCyk8vYV/eT7fTscrK
+         WTTVhzh7YQoS6YWyGOjLCdHN63demBq5XSb+StId6yX630mbtbG7Zj2WcV9ukPbquZfq
+         JCz0XM+OOEoyDZ46rMrNp7oJctXd8qznDMLoW9G6L3tO7+cOIX7hkP9c+BZLBfpnp5CV
+         wljg==
+X-Gm-Message-State: AOAM533zkIRZcL/jyfNzlurThSEHYFoTUnpnE3L63bRDXAwZi5pxfnHG
+        OSQcnYf9O0HW08JgDsK6YOlNC1fbS6M=
+X-Google-Smtp-Source: ABdhPJy6aeG+/qc6crTjB5NbKTLj89oP9ucLyQF3HRaiUbBjaVGHMcaIifE23kTz6Pmar4l49QINaw==
+X-Received: by 2002:a2e:980d:: with SMTP id a13mr5820387ljj.277.1590084242308;
+        Thu, 21 May 2020 11:04:02 -0700 (PDT)
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com. [209.85.208.177])
+        by smtp.gmail.com with ESMTPSA id y24sm2128925ljh.18.2020.05.21.11.04.01
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2020 11:01:29 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/2] Implement filter terse dump mode
- support
-To:     Vlad Buslov <vladbu@mellanox.com>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, dcaratti@redhat.com
-References: <20200514114026.27047-1-vladbu@mellanox.com>
- <20200514132306.29961-1-vladbu@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <acabad7b-2965-e7f6-b1d8-55f6b6f3f033@gmail.com>
-Date:   Thu, 21 May 2020 12:01:28 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        Thu, 21 May 2020 11:04:01 -0700 (PDT)
+Received: by mail-lj1-f177.google.com with SMTP id g1so9391981ljk.7
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:04:01 -0700 (PDT)
+X-Received: by 2002:a2e:9891:: with SMTP id b17mr3748342ljj.312.1590084240602;
+ Thu, 21 May 2020 11:04:00 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200514132306.29961-1-vladbu@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200521152301.2587579-1-hch@lst.de>
+In-Reply-To: <20200521152301.2587579-1-hch@lst.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 21 May 2020 11:03:43 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiQa3GNytJDdN=RKzSKfGQdPBvso+2Lmi+BpOP=BA_n6A@mail.gmail.com>
+Message-ID: <CAHk-=wiQa3GNytJDdN=RKzSKfGQdPBvso+2Lmi+BpOP=BA_n6A@mail.gmail.com>
+Subject: Re: clean up and streamline probe_kernel_* and friends v4
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/14/20 7:23 AM, Vlad Buslov wrote:
-> Implement support for terse dump mode which provides only essential
-> classifier/action info (handle, stats, cookie, etc.). Use new
-> TCA_DUMP_FLAGS_TERSE flag to prevent copying of unnecessary data from
-> kernel.
-> 
+On Thu, May 21, 2020 at 8:23 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> this series start cleaning up the safe kernel and user memory probing
+> helpers in mm/maccess.c, and then allows architectures to implement
+> the kernel probing without overriding the address space limit and
+> temporarily allowing access to user memory.  It then switches x86
+> over to this new mechanism by reusing the unsafe_* uaccess logic.
 
-FYI: I am waiting for the discussion on this feature to settle before
-applying.
+I could not see anything to object to in this version. So Ack from me,
+but obviously I'm hoping others will try to read it through as well.
+
+              Linus
