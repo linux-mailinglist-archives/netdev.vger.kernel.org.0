@@ -2,97 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475B31DD5B2
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A04A1DD5CC
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 20:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbgEUSIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 14:08:43 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59692 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727883AbgEUSIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:08:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590084521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=CSwVUGMdm1SF/JKvVgrgcJwpikT7dcnsVODRPnenSIQ=;
-        b=AYgLu8a3LIGrhE/UKpmW9DRbHM8IIjjQq9JymmflmyJiz8ddiqBlkoLskv6Sb5AhrCiNaM
-        O0I5EQh8TL3cQ+y/bmWAdBD1Ev7gWcgBhn5uPabPEtoOHy/9vz5n+AiKWKQqGYvylvXfsJ
-        Mggcs+Br+9tvVq3uo2swVhoSNIdyQlA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-62-PaZ99jc2MfSigpubDmOycw-1; Thu, 21 May 2020 14:08:40 -0400
-X-MC-Unique: PaZ99jc2MfSigpubDmOycw-1
-Received: by mail-wm1-f72.google.com with SMTP id l26so2101931wmh.3
-        for <netdev@vger.kernel.org>; Thu, 21 May 2020 11:08:39 -0700 (PDT)
+        id S1729202AbgEUSOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 14:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728067AbgEUSOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 14:14:41 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DDCC061A0E;
+        Thu, 21 May 2020 11:14:40 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id q2so9410403ljm.10;
+        Thu, 21 May 2020 11:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9vLy+sx+oAPc7Ja7vaMG7FVwptnedVW1W80n6Fglj54=;
+        b=JbzOnF5MezQA32NFHdcvalEHBU6t6vFpbGEGNV+6pWn+CV/UNgU4Hrq5pWWRUvk9GE
+         nsbC4VrCUIf5MDbeJ8rlVmC9l4ElCb8MxVNl3lDLoKdFtq0svtlpJzA6R9nl3H0w5gZ5
+         31Rxs+ktfLPG+YVZAteE1B5dV436UEWEQ17hojebX7nzmvt+iQWVJcfekYNpToZovLEc
+         oiKluEAySzWfSlqBxB20L3wFQWzeRvLCCK9xfxPmUrVW+FiIXOAo+DG6s+uxdDvF2T3a
+         7xW7wTKD16Om5WWSqkV/lOlqvO+FhPbgGNBtoTqStlL2Td93CpncUhi06aSMY3TVK3Yx
+         GbAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=CSwVUGMdm1SF/JKvVgrgcJwpikT7dcnsVODRPnenSIQ=;
-        b=A08+2oMtezM5kqnCTpttqbfievYVt3eI2jSW9Hpv8pNB8sd/4heS3vnaz9MeMkIDB+
-         llQ46HsgAmZSCKTWNQYSaKV2vwXKmtMJHZ7DC/S6DVbZPAfO/Md6+FB4cZ6a4lkahvfm
-         YxgBEnWJfRa2DrfaMiZAjfliPsW5ZsbFr+shBr1eC0VUxQeMs0I+bEOl37p6RMkUxjWf
-         9TiCoKvljwEm+fWyEI5GbygPNcHom2p6L/ne/9GXwsCbP9erxlsS63/pP9/FxqAOB2cu
-         whxM3MJV4kCKAp6Az0t1Dv1hfIbnJ20BeVDUC7h9cEAqBkXmyzzl0Yanc2bnn9CYyGdw
-         LLow==
-X-Gm-Message-State: AOAM530cwdgL0Ey+AFO5tr49y85eGGuldLpWKt6mWyKQlZYQJiU9b6Wg
-        U4kffkCO3K8poyPtKDcovLEL+cRCUwrjNA1ZKunQxLQyfc2BzW6VaAqyGXjRWjAkpatp3PgcRs/
-        oekpwmipwuJjtimf4
-X-Received: by 2002:a5d:6087:: with SMTP id w7mr10437016wrt.158.1590084518726;
-        Thu, 21 May 2020 11:08:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZ9o08gBH7tx0yYBsN8onaJW/OLPfFqqFDCwm2ORoSsfevxSpfrqifuC4Sj9PcOKKkhR/Jqg==
-X-Received: by 2002:a5d:6087:: with SMTP id w7mr10436991wrt.158.1590084518323;
-        Thu, 21 May 2020 11:08:38 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id j1sm7269700wrm.40.2020.05.21.11.08.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 11:08:37 -0700 (PDT)
-Date:   Thu, 21 May 2020 14:08:35 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, lkp@intel.com, mst@redhat.com,
-        yuehaibing@huawei.com
-Subject: [GIT PULL] vhost/vdpa: minor fixes
-Message-ID: <20200521140835-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9vLy+sx+oAPc7Ja7vaMG7FVwptnedVW1W80n6Fglj54=;
+        b=ae6bqrdXLW6Wl4gbMFmJgFdOIlK8LxecdCakuQCIQJZxqoXIk/5KVjCUcDx4F5mZ/+
+         jBf0+jCDVTmjVXLL6P9qoQDGdq7WyDYmH428G4symUYZkvBcMzAOoDGgmFHdaUDVuyxu
+         5LCM8IsCxWe43cVBCiRDwafcpAcisvSwuolbrtm/y9M6viO8btxYvgJRQyfEyCWUczXB
+         ENbngIwX0LjfvlmNlYkQZUDWtXddVSEG+XHlBj+utTJPD3kLAxFEDYN+3tR+d2KIJad2
+         jkzBaDx3ZsiR7BE1BE4a5SzaXGCUQxum1pkf5SKCNSFYbjmwxXEbyRV3quKjJ9iw+/PS
+         2VPQ==
+X-Gm-Message-State: AOAM530kJdowC7zfCa8vOnzsxzQ1pE1cwgv0SxBdsSMyy7nFPhMyV0zt
+        mKoVWhCVlGzD/eLYQYWMOpt2DryjzT9szIxN88dkJg==
+X-Google-Smtp-Source: ABdhPJw474zeMwSEONV3S9BYNqdgoywLW8609QV6HtK4Y7FMsNVrvX+9UD+b6YEZcX3E0+OahC4YrZ10ztRhwKiFo4I=
+X-Received: by 2002:a2e:9549:: with SMTP id t9mr5857291ljh.283.1590084879084;
+ Thu, 21 May 2020 11:14:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+References: <20200521083435.560256-1-jakub@cloudflare.com> <20200521152111.GB49942@google.com>
+In-Reply-To: <20200521152111.GB49942@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 21 May 2020 11:14:27 -0700
+Message-ID: <CAADnVQ+QfQPZSH=tJ132vFUOC7uL805Q0FUonPgbuzm8oTwuPA@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] flow_dissector: Drop BPF flow dissector prog ref
+ on netns cleanup
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 0b841030625cde5f784dd62aec72d6a766faae70:
+On Thu, May 21, 2020 at 8:21 AM <sdf@google.com> wrote:
+>
+> On 05/21, Jakub Sitnicki wrote:
+> > When attaching a flow dissector program to a network namespace with
+> > bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
+>
+> > If netns gets destroyed while a flow dissector is still attached, and
+> > there
+> > are no other references to the prog, we leak the reference and the program
+> > remains loaded.
+>
+> > Leak can be reproduced by running flow dissector tests from selftests/bpf:
+>
+> >    # bpftool prog list
+> >    # ./test_flow_dissector.sh
+> >    ...
+> >    selftests: test_flow_dissector [PASS]
+> >    # bpftool prog list
+> >    4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
+> >            loaded_at 2020-05-20T18:50:53+0200  uid 0
+> >            xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
+> >            btf_id 4
+> >    #
+>
+> > Fix it by detaching the flow dissector program when netns is going away.
+>
+> > Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
-  vhost: vsock: kick send_pkt worker once device is started (2020-05-02 10:28:21 -0400)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 1b0be99f1a426d9f17ced95c4118c6641a2ff13d:
-
-  vhost: missing __user tags (2020-05-15 11:36:31 -0400)
-
-----------------------------------------------------------------
-virtio: build warning fixes
-
-Fix a couple of build warnings.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Michael S. Tsirkin (1):
-      vhost: missing __user tags
-
-YueHaibing (1):
-      vdpasim: remove unused variable 'ret'
-
- drivers/vdpa/vdpa_sim/vdpa_sim.c | 15 +++++++--------
- drivers/vhost/vhost.c            |  4 ++--
- 2 files changed, 9 insertions(+), 10 deletions(-)
-
+Applied. Thanks
