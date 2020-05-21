@@ -2,122 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B02CD1DD095
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 16:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB4F1DD0AE
+	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 17:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729878AbgEUO57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 10:57:59 -0400
-Received: from mail-am6eur05on2088.outbound.protection.outlook.com ([40.107.22.88]:53728
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728136AbgEUO57 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 10:57:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QsyG9DhmsJoG7nm7xgBTFrBZBNjXFPm7TyeDN0qEJavLAIaxGBC8Y6oLGCTSMI9mQo4ORhdv30161CcaqfhxraBD5e2nngvZXSPYKVREkcVe9/3zJsv/qNcYJf6aRzGvaQo3wipdTsDUKuWwtO+QOikCcDodPPYCgRzH4zKa7scPLwFqR6kLIJLdQfszeRrcfw7fILPn4i8q627oNVR4B/DcBbtCsf9ciZPw8pzw17oYnOHfb1CHmDqzGDAIJhyJtrk2M9/VzF4pxSVE4M73Wb9vPPJGOyh9Cyn0S6lPOBT1kINzaFGh1TFzTjqa774ZDF9SQ9mD5hqjJQ13dOV1dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+ZLHoH2yXyNf1o+4l+utYxa9VCpTEcws+5VKgY0s+l0=;
- b=bCPdMpz1iOiBGYtdx3b0uGkMcRMERH1okKvHpW4RkdhNPTvcUT3PSiIakUU7OP2TrqXpYkHI+S29n586UdnBOjuyKQnifLxmK/Qs++ZGvfLuiC6lcgeQpbojtG8jupSK3Q+sqxKE9N9KBZtUWxH9ci0i7Mq4niiV6a+MP5bpPBquQ9bEu70JMVYfdLufxHgBoCXtxmc4oXaQsPDjM+YKpa92wrVOYK1GNi0UOwZP0Tc+lI3iY9CqnwnSTZQxzYo5ZyiQwLwWcTBTf1o7GhHxYvD5cLf/kgZC8+gxIUj/Nv7/YPphp5+3wuASXqm9m4BamlSWoMgvP1ImU3Tt4yD/oQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+ZLHoH2yXyNf1o+4l+utYxa9VCpTEcws+5VKgY0s+l0=;
- b=HGq5KI6BOHfngyNn3+7EmV8jJocFTWzdFXm38U4fTU0l962NVkkkLPa023TgnOW5ETlmOmTaDje/nGIQd5zrX3jhPOjQuLO3B/IwVPMmwzGHZmGtQ8l9M7522EabPau4Vxm4Muj2S1GJPFEkC4rxYKYZfgIntE2BA88zALQXVqE=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
- by AM0PR05MB4724.eurprd05.prod.outlook.com (2603:10a6:208:b7::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Thu, 21 May
- 2020 14:57:55 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::5dd6:fa09:c5d1:b387]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::5dd6:fa09:c5d1:b387%7]) with mapi id 15.20.3000.034; Thu, 21 May 2020
- 14:57:55 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next v4 01/12] Implementation of Virtual Bus
-Thread-Topic: [net-next v4 01/12] Implementation of Virtual Bus
-Thread-Index: AQHWLnSkewrcXqJNikqx3whzYE8Vhqiyo3yA
-Date:   Thu, 21 May 2020 14:57:55 +0000
-Message-ID: <c74808dc-0040-7cef-a0da-0da9caedddd9@mellanox.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-2-jeffrey.t.kirsher@intel.com>
-In-Reply-To: <20200520070227.3392100-2-jeffrey.t.kirsher@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [106.51.29.144]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 088e1aad-bf2a-4e66-8880-08d7fd97581b
-x-ms-traffictypediagnostic: AM0PR05MB4724:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4724E8E09F0F147B36AB1BAAD1B70@AM0PR05MB4724.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 041032FF37
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 11y7IGHaa6+4wKpSxfdJxxqtX56HfMJT5W6m/1tlBVOYN6VEYJflMHNF6ePcTLmJ9AXL+qv8h3EvrENuqhY25jtfofOlO0F3/YGJZoD8r3UlDKRWC5gsNBvhRwOXM69BzfzeaYelLMXGCIxkWRlbqLBC7I84kmgBQgUF5OjkzwxQMQekJWJtgmOcIJspEL98V8adONKSSJyEeXvq2O/FCWJv0kZwo959mVWfIdwWFqf+hzqvvQqBmWYILHSJM5x2zNqFEB9jq6mw6kyiA5g5LUBJFxJm2kLFTJk+5kpbelNYGKJoVJAx2TRVYEiPM1tCFCqNdA3r/dUutGWQRnkcEhjwX/wAwKz2vtu9I+ZUqUAT/Fb7F1qYq0FsogjFYpK9
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(39860400002)(396003)(136003)(366004)(66476007)(91956017)(64756008)(66446008)(76116006)(8936002)(66556008)(2616005)(36756003)(31686004)(4744005)(186003)(5660300002)(8676002)(316002)(54906003)(110136005)(478600001)(66946007)(7416002)(71200400001)(26005)(6512007)(31696002)(53546011)(55236004)(6506007)(4326008)(86362001)(2906002)(6486002)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: KFjjEcyq6NiqRWIu3h7OMCt+lsXHKWxEWl8EHtY+fg01q5+T4Rigbxj7Gzsu3TL7AxvUQDLhRFLenDVkdW9gq+FHpdd9OYN7bqRlACx47wE60PhmmuLHA0e/iwi4UbaeB9iJ+LZQgFLoCNlXeyX1KXbdlVvFtCBGr7qAsyQtxGRkJuZW268xSsxCsSknWIROO1ANwZXerE0fib7BvtLOyLOsSq5b3deHzzUojodPkcYunDdoyQxHuAHc+fwk1mLChIXUFB34LIXI0DoZ8lN1mH69UmyzqeGmdUfD/6gv0MrpNDIQFQlJ4BKujet/u9adFpBbw9IEzBv7CoynEazJFxoYwCbAXaMFQYqb+wHSVe5zQkRw1zCRZZ0dgJW2qaQf2K2e3LfUE/O8whLKZmG8ykM+WPDEcSb788KQbKOpHUL14FGFAeZQwtadfZcsZM7xP0OSpkJhOwpr0sDPVb5aza9oapBvgKn86IPhMQTQ2+ruuZIwMwH2jayV/kS07KIH
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <591912C0439BCB4AAD00BE347FFC66F7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729915AbgEUPBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 11:01:45 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:49650 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728162AbgEUPBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 11:01:44 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04LEfPAi102177;
+        Thu, 21 May 2020 15:01:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=zAw1u07pbRDu+xvWXDwgv7P7rAeqqEG3qCROxNYz4Qw=;
+ b=WcR2EviD0S8hW4M2rvwjYzJmQw4FXWXPBUrrFqEw1sUnEyiMbxupFvOgeiaqsO35y4jQ
+ CPzN4RPWZ6CN7vjd6wBYwrtQUBjUMj9m0EAj6CSAN7hZzaajn1ZSnKnNebi9STjS87+w
+ JKL62APs7QzHF9pg28671gwh0ONBuSPHok4+1ywoLlXr3HhK4IfhyKSbOVhikEcTfkxF
+ 9stgAB1nQtebaQ/IRHWLcG1ceA7kwj4KhpyGXBYsO9ItnyKUCR3Cg7SuHMkRyzT2Y+Ua
+ jnI2GFQJ+lm1iENMft9tc6tPnnqNuUZR+w0R92TuT1D5sfFSWNj5/xpNnLmioaAkH55q Bw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 3127krh0yp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 21 May 2020 15:01:33 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04LEXEmm064466;
+        Thu, 21 May 2020 14:59:32 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 312t3bdb1a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 May 2020 14:59:32 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04LExUkO015814;
+        Thu, 21 May 2020 14:59:30 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 21 May 2020 07:59:29 -0700
+Date:   Thu, 21 May 2020 17:59:21 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>,
+        bridge@lists.linux-foundation.org,
+        David Miller <davem@davemloft.net>,
+        horatiu.vultur@microchip.com, kuba@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzkaller <syzkaller@googlegroups.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in br_mrp_parse
+Message-ID: <20200521145921.GJ30374@kadam>
+References: <0000000000007b211005a6187dc9@google.com>
+ <20200521140803.GI30374@kadam>
+ <CACT4Y+bzz-h5vNGH0rDMUiuGZVX01oXawXAPbjtnNHb1KVWSvg@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 088e1aad-bf2a-4e66-8880-08d7fd97581b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2020 14:57:55.4194
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: N8V7qKK7Aw8s6HAAXPaDPnNGt94qYhFCoA6KYoMxQjavbBoVs50s7VnNgrx19nVVna3LJpB+bI0BEZy9HaWhfg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4724
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+bzz-h5vNGH0rDMUiuGZVX01oXawXAPbjtnNHb1KVWSvg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9627 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 mlxlogscore=944
+ phishscore=0 mlxscore=0 malwarescore=0 suspectscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005210110
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9627 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0 spamscore=0
+ bulkscore=0 clxscore=1015 priorityscore=1501 mlxscore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=982 malwarescore=0 cotscore=-2147483648
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005210110
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgR3JlZywgSmFzb24sDQoNCk9uIDUvMjAvMjAyMCAxMjozMiBQTSwgSmVmZiBLaXJzaGVyIHdy
-b3RlOg0KPiBGcm9tOiBEYXZlIEVydG1hbiA8ZGF2aWQubS5lcnRtYW5AaW50ZWwuY29tPg0KPiAN
-Cg0KPiArc3RhdGljIGNvbnN0DQo+ICtzdHJ1Y3QgdmlydGJ1c19kZXZfaWQgKnZpcnRidXNfbWF0
-Y2hfaWQoY29uc3Qgc3RydWN0IHZpcnRidXNfZGV2X2lkICppZCwNCj4gKwkJCQkJc3RydWN0IHZp
-cnRidXNfZGV2aWNlICp2ZGV2KQ0KPiArew0KPiArCXdoaWxlIChpZC0+bmFtZVswXSkgew0KPiAr
-CQlpZiAoIXN0cmNtcCh2ZGV2LT5tYXRjaF9uYW1lLCBpZC0+bmFtZSkpDQo+ICsJCQlyZXR1cm4g
-aWQ7DQoNClNob3VsZCB3ZSBoYXZlIFZJRCwgRElEIGJhc2VkIGFwcHJvYWNoIGluc3RlYWQgb2Yg
-X2FueV8gc3RyaW5nIGNob3NlbiBieQ0KdmVuZG9yIGRyaXZlcnM/DQoNClRoaXMgd2lsbCByZXF1
-aXJlZCBjZW50cmFsIHBsYWNlIHRvIGRlZmluZSB0aGUgVklELCBESUQgb2YgdGhlIHZkZXYgaW4N
-CnZkZXZfaWRzLmggdG8gaGF2ZSB1bmlxdWUgaWRzLg0K
+On Thu, May 21, 2020 at 04:28:05PM +0200, 'Dmitry Vyukov' via syzkaller-bugs wrote:
+> On Thu, May 21, 2020 at 4:08 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> >
+> > On Wed, May 20, 2020 at 11:23:18AM -0700, syzbot wrote:
+> > > Hello,
+> > >
+> > > syzbot found the following crash on:
+> > >
+> > > HEAD commit:    dda18a5c selftests/bpf: Convert bpf_iter_test_kern{3, 4}.c..
+> > > git tree:       bpf-next
+> >                   ^^^^^^^^
+> >
+> > I can figure out what this is from reading Next/Trees but it would be
+> > more useful if it were easier to script.
+> 
+> Hi Dan,
+> 
+> Is there a canonical way to refer to a particular branch of a particular tree?
+> >From what I observed on mailing lists people seem to say "linux-next"
+> or "upstream tree" and that seems to mean specific things that
+> everybody understands.
+
+git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git#master
+
+I kind of hate that format because you have to replace the # with a
+space, but it's what everyone uses.
+
+regards,
+dan carpenter
+
