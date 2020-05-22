@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250B11DDEB1
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 06:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9ED11DDEB3
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 06:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbgEVEXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 00:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
+        id S1726915AbgEVEYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 00:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbgEVEXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 00:23:54 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AADC061A0E;
-        Thu, 21 May 2020 21:23:54 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id z64so101792pfb.1;
-        Thu, 21 May 2020 21:23:54 -0700 (PDT)
+        with ESMTP id S1725921AbgEVEYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 00:24:18 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC7BC061A0E;
+        Thu, 21 May 2020 21:24:17 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id e11so3660547pfn.3;
+        Thu, 21 May 2020 21:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=VFVkn5SIewi4W+JsI73heYNt2jx78NTkR31h8FiEoto=;
-        b=HvrQslqsbzT2BI7n+5FmF8haiLpDnBHvcocd5U76z2052+4l+sgns3zNPDPmW7QbBh
-         /Eon2KOT575zS9VVV8VgkhaO5t+UnvYZ2S4Ks4r+J3zs5pZw5g6cb9K9RUj/yxta6wSn
-         sE/Wn6lWY0J5jegkqu+NG826+KiFeQLSEK7ojGb+53YYMIFhfiTBeke8GBl/eayv5vRS
-         OlUmkW7eBUt17ZDXcVyk81yWqo4FZ/LQNss/0RTcWuaICyTbPaQwYItdpxFcAvgkkkho
-         NpIg6E0nV0gY7LfNcfUnlp/Tc/mEIgQ2BB3ALml49auk99X2Gq7XKxJTw2gv4pjbzDdP
-         4oMA==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=u1qp5PchNEddK4QSFzztTTIBWt9k+XfZUqh5kbp3XfQ=;
+        b=LOyfr5Lyr7PNM53h7bbIayHaa8BpM7uo47sSfYUPBEdnKhDyUYEhJHSgqH/WWlxkcz
+         JFxQDI4qraQADDh5bg8KybnThnINa4KZtPw0qX78cKna5hibyMQsLmQaY3CprEQ4SO+C
+         aPT/QaIbIHY4erY+b8rtGDaboNRRLIIkzv48X2aaklg8MCvSr1LFGC+UCP7XLp4apGMM
+         9cJ5uiQ6G9py67BP0WSvVYN1oKAyM+Ovrf07Z9uoJlnCUOvJnppukOmC1uRo8Fdp2knW
+         Ni47MWix3KFxSysNIjmbQsq5ihERwFGzUxBNT+F1GwEGG2BBAwoK7xRSj1ahsGqnkle0
+         /SJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=VFVkn5SIewi4W+JsI73heYNt2jx78NTkR31h8FiEoto=;
-        b=aLR5MDi/3l2wZCySGIBik+ZbXKkSPvs9GJJT/ttI6SzaYyDdlfOt7z3whJ+TWx/Ukp
-         zKp7Zfb5Eieni5Ao7gN4aa76tHht4OrUzGA6M8gJ/xMC8TA1SHN65wu+5pLqztgVRqpG
-         FtRxGhB0dsLKHJHAT76F14Aje5BpuxBsQdcJ8efEQVZDgVlzyOKpo+f+vZZ3OUp2HZVW
-         To+pT+O6soyzF60nBW0v4wGS9VvtTQGNrVmy+BZi8ZXBJq4HQfEkFblbXehcUnVnOXmP
-         P6Ws7xTyXXy/C+MV5r6VcLT9gQPIEg2Gm1w+GWrQn+HmsQNXtc1lr86ax2xtkXkMd50i
-         Mx9g==
-X-Gm-Message-State: AOAM5314oevt0OYYQKA9YOM0qDhJKe6DKNO/v3gZbBF4tw9wvdufUf5+
-        TD0aEawLWP9886HRLarLO8o=
-X-Google-Smtp-Source: ABdhPJwtseKCyiM7l7G7kYvcZRzieHe/oIuA7SOVPJur7ytHW6SmKW0LGn1r3VUAAQ9hez9LsXzGsQ==
-X-Received: by 2002:a17:90a:6c96:: with SMTP id y22mr2305845pjj.74.1590121433551;
-        Thu, 21 May 2020 21:23:53 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=u1qp5PchNEddK4QSFzztTTIBWt9k+XfZUqh5kbp3XfQ=;
+        b=m79OgvqcJ93KR1iaJRLID226YsD2ccHmqTlCz+gjEjaioz0P88akF+Bi7K5FgWuToq
+         Mg9QxYyo4OMu1Vt0zYyj4YJ/QJo5YrcjS8BhDMgTkQlQB5LeQjUOsbmCYa8XnYCdLBeR
+         /DMyz2jYs3joQ3p8qwr50Znh/kAZocQef/2dwJmW0wLhjy8DNkszv3jNbMcmuGr+k3aX
+         JdhFM+lNGSHnws1EPJLzbEahdnnQnRUWQ0T/OXQop/fsCi4KeFwwxPIYvdRAeod1JdG1
+         02AYc9in6nZCbRbqhKlpjWuCbK3e6z+FdGPLUeSZoo65jnBsTiqZBsdaPUZ1bEWY7Rk0
+         XObA==
+X-Gm-Message-State: AOAM5317V9AWe68NBNG58w5gWY+GviSUNn3OUV54pVwPrxZ+cdFikIGS
+        RQ20ouMUo0Pg+YPr2pq79ns=
+X-Google-Smtp-Source: ABdhPJyt/AqxciaxKJLkktD1rvdmul/OXNAg1nHzTgFdXZOVNLZ9qfVWXkr9FZl02H7xISh+e7dPjQ==
+X-Received: by 2002:a17:90a:21e5:: with SMTP id q92mr2015115pjc.63.1590121456783;
+        Thu, 21 May 2020 21:24:16 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m14sm4949978pgk.56.2020.05.21.21.23.43
+        by smtp.gmail.com with ESMTPSA id y75sm5710772pfb.212.2020.05.21.21.24.07
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 May 2020 21:23:52 -0700 (PDT)
-Subject: [bpf-next PATCH v4 0/5] bpf: Add sk_msg and networking helpers
+        Thu, 21 May 2020 21:24:16 -0700 (PDT)
+Subject: [bpf-next PATCH v4 1/5] bpf: sk_msg add some generic helpers that
+ may be useful from sk_msg
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     yhs@fb.com, andrii.nakryiko@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com, jakub@cloudflare.com, lmb@cloudflare.com
-Date:   Thu, 21 May 2020 21:23:36 -0700
-Message-ID: <159012108670.14791.18091717338621259928.stgit@john-Precision-5820-Tower>
+Date:   Thu, 21 May 2020 21:24:00 -0700
+Message-ID: <159012144058.14791.5250915494357940883.stgit@john-Precision-5820-Tower>
+In-Reply-To: <159012108670.14791.18091717338621259928.stgit@john-Precision-5820-Tower>
+References: <159012108670.14791.18091717338621259928.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -64,85 +67,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds helpers for sk_msg program type and based on feedback
-from v1 adds *_task_* helpers and probe_* helpers to all networking
-programs with perfmon_capable() capabilities.
-
-The list of helpers breaks down as follows,
-
-Networking with perfmon_capable() guard (patch2):
-
- BPF_FUNC_get_current_task
- BPF_FUNC_current_task_under_cgroup
- BPF_FUNC_probe_read_user
- BPF_FUNC_probe_read_kernel
- BPF_FUNC_probe_read_user_str
- BPF_FUNC_probe_read_kernel_str
-
-Added to sk_msg program types (patch1,3):
+Add these generic helpers that may be useful to use from sk_msg programs.
+The helpers do not depend on ctx so we can simply add them here,
 
  BPF_FUNC_perf_event_output
  BPF_FUNC_get_current_uid_gid
  BPF_FUNC_get_current_pid_tgid
+ BPF_FUNC_get_current_comm
  BPF_FUNC_get_current_cgroup_id
  BPF_FUNC_get_current_ancestor_cgroup_id
  BPF_FUNC_get_cgroup_classid
 
- BPF_FUNC_sk_storage_get
- BPF_FUNC_sk_storage_delete
-
-For testing we create two tests. One specifically for the sk_msg
-program types which encodes a common pattern we use to test verifier
-logic now and as the verifier evolves.
-
-Next we have skb classifier test. This uses the test run infra to
-run a test which uses the get_current_task, current_task_under_cgroup,
-probe_read_kernel, and probe_reak_kernel_str.
-
-Note we dropped the old probe_read variants probe_read() and
-probe_read_str() in v2.
-
-v3->v4:
- patch4, remove macros and put code inline, add test cleanup, remove
- version in bpf program.
- patch5, use ctask returned from task_under_cgroup so that we avoid
- any potential compiler warnings, add test cleanup, use BTF style
- maps.
- 
-v2->v3:
- Pulled header update of tools sk_msg_md{} structure into patch3 for
- easier review. ACKs from Yonghong pushed into v3
-
-v1->v2:
- Pulled generic helpers *current_task* and probe_* into the
- base func helper so they can be used more widely in networking scope.
- BPF capabilities patch is now in bpf-next so use perfmon_capable() check
- instead of CAP_SYS_ADMIN.
-
- Drop old probe helpers, probe_read() and probe_read_str()
-
- Added tests.
-
- Thanks to Daniel, Yonghong, and Andrii for review and feedback.
-
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ 0 files changed
 
-John Fastabend (5):
-      bpf: sk_msg add some generic helpers that may be useful from sk_msg
-      bpf: extend bpf_base_func_proto helpers with probe_* and *current_task*
-      bpf: sk_msg add get socket storage helpers
-      bpf: selftests, add sk_msg helpers load and attach test
-      bpf: selftests, test probe_* helpers from SCHED_CLS
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 822d662..a56046a 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6443,6 +6443,22 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_msg_push_data_proto;
+ 	case BPF_FUNC_msg_pop_data:
+ 		return &bpf_msg_pop_data_proto;
++	case BPF_FUNC_perf_event_output:
++		return &bpf_event_output_data_proto;
++	case BPF_FUNC_get_current_uid_gid:
++		return &bpf_get_current_uid_gid_proto;
++	case BPF_FUNC_get_current_pid_tgid:
++		return &bpf_get_current_pid_tgid_proto;
++#ifdef CONFIG_CGROUPS
++	case BPF_FUNC_get_current_cgroup_id:
++		return &bpf_get_current_cgroup_id_proto;
++	case BPF_FUNC_get_current_ancestor_cgroup_id:
++		return &bpf_get_current_ancestor_cgroup_id_proto;
++#endif
++#ifdef CONFIG_CGROUP_NET_CLASSID
++	case BPF_FUNC_get_cgroup_classid:
++		return &bpf_get_cgroup_classid_curr_proto;
++#endif
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
 
-
- .../testing/selftests/bpf/prog_tests/skb_helpers.c |   30 +++++++++++++
- .../selftests/bpf/prog_tests/sockmap_basic.c       |   35 +++++++++++++++
- .../testing/selftests/bpf/progs/test_skb_helpers.c |   33 ++++++++++++++
- .../selftests/bpf/progs/test_skmsg_load_helpers.c  |   47 ++++++++++++++++++++
- 4 files changed, 145 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_helpers.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_skb_helpers.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_skmsg_load_helpers.c
-
---
-Signature
