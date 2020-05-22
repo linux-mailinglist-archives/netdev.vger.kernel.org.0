@@ -2,152 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C831DDF00
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 06:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E75D1DDF16
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbgEVEuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 00:50:10 -0400
-Received: from mail.zju.edu.cn ([61.164.42.155]:20408 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726286AbgEVEuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 00:50:09 -0400
-Received: from localhost.localdomain (unknown [222.205.77.158])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDHz4vEWcdejwXvAA--.20232S4;
-        Fri, 22 May 2020 12:49:11 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Guy Mishol <guym@ti.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maital Hahn <maitalm@ti.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Tony Lindgren <tony@atomide.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] wlcore: fix runtime pm imbalance in wlcore_irq_locked
-Date:   Fri, 22 May 2020 12:49:04 +0800
-Message-Id: <20200522044906.29564-1-dinghao.liu@zju.edu.cn>
+        id S1728153AbgEVFBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 01:01:49 -0400
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:50102 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726666AbgEVFBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:01:48 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 49SvV35CsHz9vcJn
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 05:01:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id DM95lpFw109s for <netdev@vger.kernel.org>;
+        Fri, 22 May 2020 00:01:47 -0500 (CDT)
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 49SvV33dyqz9vcJj
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 00:01:47 -0500 (CDT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 49SvV33dyqz9vcJj
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 49SvV33dyqz9vcJj
+Received: by mail-il1-f198.google.com with SMTP id w65so7626676ilk.14
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 22:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=PKNUiHK9Hb2/cZzi/FocwTzEpdCaBMxhZnTs6WEbQRc=;
+        b=gWX3bduAFtQnUWf4ap1h8sk1OX5aCUOFhenEC65fDEcuw0mzrWt7+M/2t9/aT6ngJx
+         FPG41a5BJlAn4XgSJhybY1ScsSJlTC0GDZle/ROvDwB4jLLlaIpbrS0WfOuK49m/5RUf
+         dL/SFr5MUX4bccLA4bq0cI/6bCIXHTU6ex/XQVljmGEA1fe1uHs5NXGgRZ4TSRTOYWru
+         /jWxkuujky6gBYrdUGVqAnS41Rfl/XB7aUQtyGjb24wyvsP8oDqkupEaI4IlkGrR1s/z
+         2pyACcHa65CN2/L2UzLNFDS0b/EFgy6C2DSUXk0GBahpk05QffxLGjb7mMkhsd3vuoJG
+         QwCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PKNUiHK9Hb2/cZzi/FocwTzEpdCaBMxhZnTs6WEbQRc=;
+        b=afkhA4WMcXt97YA9TfIoWZjR7e/R4mFNP0kcCXCvLuanKIAvnyLF56b8kWQDY33SpU
+         Z+PnxzImq6TqjKi4+njKapgNwN3yc6sbuo6CMusCwI/GaXcQnpxLulVv7Njm/km8NJ5J
+         BG73RFWJOI6DmaMJFAjo3WrdoV6Jn8z5n7Q1qd3tME1JejULxIfK+5BreReFEbehxNnY
+         6WDXd0DUjHb+1mdzuO6AzArrnZdkGbYtFgC+a4tyRJMPueyy7GnYqIXJDMTSzGxV32V4
+         EvUn3ue00aYF5J8V9DnngkS9Dwesj9w0qvjo937IHOQpObOgQOYxX/k44T6Y8pyrfw2l
+         h2sA==
+X-Gm-Message-State: AOAM530rXJ7gXA9bxPnKCitMO50NG3UCGQcZ6TkBkLfWa1h8oqK0GEsx
+        uEKB37vLk6eu+a5KPqAe/zWUlhtssEvfHbHJPo83mBTm98q0qeTZaPEBjuCNVzkG+90mm8Y1UFh
+        I/XdrAS32IVrja3fFAoZ6
+X-Received: by 2002:a02:54ca:: with SMTP id t193mr7007998jaa.26.1590123706718;
+        Thu, 21 May 2020 22:01:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzJwmNLYhrE/pUNUnqwv/haakA9gU7GWmulh8h6dkVQOIh2qLlZbtTntT/fT/VGWj/bte33nA==
+X-Received: by 2002:a02:54ca:: with SMTP id t193mr7007970jaa.26.1590123706362;
+        Thu, 21 May 2020 22:01:46 -0700 (PDT)
+Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
+        by smtp.gmail.com with ESMTPSA id l16sm3998886ils.64.2020.05.21.22.01.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 22:01:45 -0700 (PDT)
+From:   wu000273@umn.edu
+To:     dhowells@redhat.com
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
+Subject: [PATCH] rxrpc: fix a memory leak bug.
+Date:   Fri, 22 May 2020 00:01:29 -0500
+Message-Id: <20200522050129.30148-1-wu000273@umn.edu>
 X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDHz4vEWcdejwXvAA--.20232S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxZFW7tr1fur17Kry5CrWkCrg_yoW5Xr1rpa
-        yIvan2yr4kGF1UWFWUAa1kXa4Sg3WxKFZI9F48G34Syrs0y3s8Zr10qasxtFWrK3ykAFW3
-        uF43tFyI9Fyjy37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9l1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y
-        6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
-        wVAFwVW8XwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
-        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
-        rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r
-        4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU8_MaUUUUU
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAg0IBlZdtOQJOAAAsr
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When wlcore_fw_status() returns an error code, a pairing
-runtime PM usage counter decrement is needed to keep the
-counter balanced. It's the same for all error paths after
-wlcore_fw_status().
+From: Qiushi Wu <wu000273@umn.edu>
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+In function rxkad_verify_response(), pointer "ticket" is not released,
+when function rxkad_decrypt_ticket() returns an error, causing a
+memory leak bug.
+
+Fixes: 8c2f826dc3631 ("rxrpc: Don't put crypto buffers on the stack")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
 ---
- drivers/net/wireless/ti/wlcore/main.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ net/rxrpc/rxkad.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wlcore/main.c b/drivers/net/wireless/ti/wlcore/main.c
-index f140f7d7f553..fd3608223f64 100644
---- a/drivers/net/wireless/ti/wlcore/main.c
-+++ b/drivers/net/wireless/ti/wlcore/main.c
-@@ -548,7 +548,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index 098f1f9ec53b..52a24d4ef5d8 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -1148,7 +1148,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 	ret = rxkad_decrypt_ticket(conn, skb, ticket, ticket_len, &session_key,
+ 				   &expiry, _abort_code);
+ 	if (ret < 0)
+-		goto temporary_error_free_resp;
++		goto temporary_error_free_ticket;
  
- 		ret = wlcore_fw_status(wl, wl->fw_status);
- 		if (ret < 0)
--			goto out;
-+			goto err_ret;
+ 	/* use the session key from inside the ticket to decrypt the
+ 	 * response */
+@@ -1230,7 +1230,6 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
  
- 		wlcore_hw_tx_immediate_compl(wl);
- 
-@@ -565,7 +565,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 			ret = -EIO;
- 
- 			/* restarting the chip. ignore any other interrupt. */
--			goto out;
-+			goto err_ret;
- 		}
- 
- 		if (unlikely(intr & WL1271_ACX_SW_INTR_WATCHDOG)) {
-@@ -575,7 +575,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 			ret = -EIO;
- 
- 			/* restarting the chip. ignore any other interrupt. */
--			goto out;
-+			goto err_ret;
- 		}
- 
- 		if (likely(intr & WL1271_ACX_INTR_DATA)) {
-@@ -583,7 +583,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 
- 			ret = wlcore_rx(wl, wl->fw_status);
- 			if (ret < 0)
--				goto out;
-+				goto err_ret;
- 
- 			/* Check if any tx blocks were freed */
- 			spin_lock_irqsave(&wl->wl_lock, flags);
-@@ -596,7 +596,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 				 */
- 				ret = wlcore_tx_work_locked(wl);
- 				if (ret < 0)
--					goto out;
-+					goto err_ret;
- 			} else {
- 				spin_unlock_irqrestore(&wl->wl_lock, flags);
- 			}
-@@ -604,7 +604,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 			/* check for tx results */
- 			ret = wlcore_hw_tx_delayed_compl(wl);
- 			if (ret < 0)
--				goto out;
-+				goto err_ret;
- 
- 			/* Make sure the deferred queues don't get too long */
- 			defer_count = skb_queue_len(&wl->deferred_tx_queue) +
-@@ -617,14 +617,14 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 			wl1271_debug(DEBUG_IRQ, "WL1271_ACX_INTR_EVENT_A");
- 			ret = wl1271_event_handle(wl, 0);
- 			if (ret < 0)
--				goto out;
-+				goto err_ret;
- 		}
- 
- 		if (intr & WL1271_ACX_INTR_EVENT_B) {
- 			wl1271_debug(DEBUG_IRQ, "WL1271_ACX_INTR_EVENT_B");
- 			ret = wl1271_event_handle(wl, 1);
- 			if (ret < 0)
--				goto out;
-+				goto err_ret;
- 		}
- 
- 		if (intr & WL1271_ACX_INTR_INIT_COMPLETE)
-@@ -635,6 +635,7 @@ static int wlcore_irq_locked(struct wl1271 *wl)
- 			wl1271_debug(DEBUG_IRQ, "WL1271_ACX_INTR_HW_AVAILABLE");
- 	}
- 
-+err_ret:
- 	pm_runtime_mark_last_busy(wl->dev);
- 	pm_runtime_put_autosuspend(wl->dev);
- 
+ temporary_error_free_ticket:
+ 	kfree(ticket);
+-temporary_error_free_resp:
+ 	kfree(response);
+ temporary_error:
+ 	/* Ignore the response packet if we got a temporary error such as
 -- 
 2.17.1
 
