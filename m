@@ -2,112 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA541DF027
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531361DF029
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730965AbgEVTrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 15:47:24 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41067 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730689AbgEVTrY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:47:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590176842;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YdS6AOeSWK0jUYamTi9EOv+S8oDpX9oHz8NpRLwzlnY=;
-        b=R760oobLu3k/+/nyswzlZNI3In4W8//cIe1tFSTbFhFLDidJXsDP4I/Wifj0lIKRVoeCDT
-        AVKxjRbGjGSaNlMXyWAQABbG3MU2ndB19mXdyfUmYhPVPT6LgtZoQNjyhAXPU/Mo+7lWwn
-        DtxhUXYDRJeyvMHUBa0arXA/nshjmuY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-19-ZIOObcwIP0SER6T9XB6ipQ-1; Fri, 22 May 2020 15:47:18 -0400
-X-MC-Unique: ZIOObcwIP0SER6T9XB6ipQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F9C6107ACCA;
-        Fri, 22 May 2020 19:47:17 +0000 (UTC)
-Received: from [10.10.117.121] (ovpn-117-121.rdu2.redhat.com [10.10.117.121])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CA3160E1C;
-        Fri, 22 May 2020 19:47:16 +0000 (UTC)
-Subject: Re: [PATCH net] tipc: block BH before using dst_cache
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        tipc-discussion@lists.sourceforge.net
-References: <20200521182958.163436-1-edumazet@google.com>
- <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
- <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
- <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
- <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
- <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
- <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
-From:   Jon Maloy <jmaloy@redhat.com>
-Message-ID: <bebc5293-d5be-39b5-8ee4-871dd3aa7240@redhat.com>
-Date:   Fri, 22 May 2020 15:47:16 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        id S1730968AbgEVTrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:47:43 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:9942 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730689AbgEVTrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:47:42 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04MJj7uC009901;
+        Fri, 22 May 2020 12:47:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=rjKJRfVveqWTnbzzhyD0ZDq/Y6LX3wP/ZN5keXyzl2Y=;
+ b=GLdm380yyLjNJ1kJdveGuOi2J8gwzatBrn5YOWc2q+IAO3fYQMEtb6JIXfc40oxYlMTf
+ JHwRy17ECXHdX4BGVcH5kFEKM5YOTZadCvwUn8nZtx004RytrzT6Z4ZqvY2XIDxu/umH
+ yCugr+zaZ4pGOvUyOb03TD14rL+rKXQCrpIyaqiiM6A/hL7BVN3hLcarNw3RMshBeSbX
+ bFO66bgmWhhDrW/3vvjVvQ9hakf7M7XBNOtTUSJm1rGmmEj8hmtIjBqFsZ3JUCW8MKVW
+ ZTG3H59MrZvkmtfatYCtlJ1oSu54bOMLS/cyqM9VAxOEMr6XNUPqwcealTuCgGc4ARps gA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 312dhr4jm3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 22 May 2020 12:47:40 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 May
+ 2020 12:47:39 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Fri, 22 May 2020 12:47:39 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A1aEg8a7ULzEgdqRbbT5iH5taKsKyU4syTxIZYx1/pj2i0H/hfLqyuBRygileRzL7+4G9G2xNR7FFBDqID2YelI8pjGLKK/15riw8z37yjqKzM0HtLDg3/ZBGD5PO1ZyS3pte9GBZ76CxSjXvl7qRK/2UVKx2rHCo+/IJIEE7w4TFxcp6Bio7IAdn/uBWgqUSXPaceU9bkRMZp2Byx02fZarlFQgpqCXPigmC0UMJ7JOJzZkYUB6d8a8uVx6dFFLqoPBOKOIkaDmr1f1wKTOsaiNopyU8rq1SWTmbl/sC4qoLTd7ga8CCMIrfnHVsnqNmahYkEF0S0Q4LBqX3m9PUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rjKJRfVveqWTnbzzhyD0ZDq/Y6LX3wP/ZN5keXyzl2Y=;
+ b=ULhnu/ISQ1dUnHw5Nxi07KSjDDH+s9Ob6fAsUMzF/HWhaxL3NxIEIxKc+2mm+NeRvF+VHEYKNwM3nj1XXFCaRtHa9f1YYJjLUKXg5bIP+bBaSeWaZLd3YO6oA3CItGWMBGenblpADYHaFHG28stIKkwYntlHnl7yZ+RKAhKt0zdWMF8Ncz5UwdUT3hV/74VgumQFStQraW2cUHdE9hdiCpP/+YqtBNOTvxWR8zkhFst/bAuO4iUGGPhXcGg9ye/lje53HYH82BM0tSlXAPZENaGlwVkaKaMx2fFeTEosyiZjqu7rpFFJSKECAuiYIsjFDJkIRIqlAzylgGIbyn+ovw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rjKJRfVveqWTnbzzhyD0ZDq/Y6LX3wP/ZN5keXyzl2Y=;
+ b=fTABeWmeX256kXLFT1PgJJdgOarAuCUOe8eUF9eTA7d1f0jkcfqXlw2ZibA5OvbilZiAdXobLhSUaYwVhIb4/DfZLsRNuj0vwd2wHIHQfgVH3Nwryiv48vzpKl0qvaBCEIzywb549NzBNd+yHa4zayj8KAd47TETFew7/5ym9HU=
+Received: from CH2PR18MB3238.namprd18.prod.outlook.com (2603:10b6:610:28::12)
+ by CH2PR18MB3269.namprd18.prod.outlook.com (2603:10b6:610:27::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Fri, 22 May
+ 2020 19:47:38 +0000
+Received: from CH2PR18MB3238.namprd18.prod.outlook.com
+ ([fe80::8ac:a709:c804:631c]) by CH2PR18MB3238.namprd18.prod.outlook.com
+ ([fe80::8ac:a709:c804:631c%6]) with mapi id 15.20.3021.024; Fri, 22 May 2020
+ 19:47:38 +0000
+From:   Mark Starovoytov <mstarovoitov@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: RE: [EXT] Re: [PATCH v2 net-next 01/12] net: atlantic: changes for
+ multi-TC support
+Thread-Topic: [EXT] Re: [PATCH v2 net-next 01/12] net: atlantic: changes for
+ multi-TC support
+Thread-Index: AQHWMBHJUGOgDEsRvEqcguvmio8sVai0ZRGAgAAc/AA=
+Date:   Fri, 22 May 2020 19:47:37 +0000
+Message-ID: <CH2PR18MB3238B6DC3153AF4A38038454D3B40@CH2PR18MB3238.namprd18.prod.outlook.com>
+References: <20200522081948.167-1-irusskikh@marvell.com>
+        <20200522081948.167-2-irusskikh@marvell.com>
+ <20200522105831.4ab00ca5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200522105831.4ab00ca5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [95.161.223.64]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: adea4647-5da9-4ac4-57d4-08d7fe88fb66
+x-ms-traffictypediagnostic: CH2PR18MB3269:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR18MB3269945B079DBD5017FC6170D3B40@CH2PR18MB3269.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04111BAC64
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: N+/ZErqPnr9h/jXJjavCufj1skNm79FRHBvyFQUEwpaYNR0m7GQsW4krjV1qTVx1KxX+T+JcSMATerFWOdZ4zlwIw6PXvA5TlVkO+TNVu4+78psjHYNiMftlskFnEJLSJff4ZVbmMl40kFaN2usRVGSGyDrhTt/C6pigR4BPH0EroB1rfjT19VRlUdj57P3VGJeQnOW5tgSJYyr/ABJBj5QLFOebu5TWf53wGpFMN5bWqFG6xDiMK4hitez465+gXrGfnjieO7NV/Rke3kQ88P/s4GfYYkRSdO7o1R42ZmmV8aCZq3HQhmyGPZmB8vy7I90kVPBoSlw8ujQcZcHlkA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR18MB3238.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(376002)(396003)(346002)(39860400002)(86362001)(71200400001)(5660300002)(66446008)(8936002)(4744005)(64756008)(66476007)(8676002)(66556008)(6916009)(2906002)(7696005)(33656002)(316002)(9686003)(4326008)(76116006)(66946007)(6506007)(186003)(55016002)(107886003)(52536014)(26005)(54906003)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 9fm9dpKY62V8DrjSORDkpcT7pBKXuicSuo/lUdPjr38BEvpnlmUGUHTijWUCLxp4ogMHPMwNbYW4tb4JYD6ioH8TDV/0ASZcJNWGrRQEARMf5nA2DUOf+lTRhRlsjtXMevTO0A+9lYXNoKPDBbsJHDNxeuXbQy4XjYLwW/H9+pfHBWwpJMLoBzsjLWjF+ofaq9cnoazVB5HRFnTbcnYgiV5nMBFz16O7lhFx4otSqpgnidHCbSAcnswGZMKIZAfJJR19FirL4QfKW9HO6rw7mFGEbvdMpVCmq1d4LK6ie9vavT1BXQ/X8pG5+fbLqHQrOyPBKXlRcSyyUplpcOGyedog27a2/PIG8LDhiYSkgpS1hoYgzraelFwWnajcIyRd0cDSQS5Vz9dtfbEerzIp/+XJdpu9hmXOYk+fHmQJ4E4qEMDIAFIGdOe6gbVAp1COOXKMwZfe2hON2tBdfhvY8CoSrNDsRkH8UGHzNqOzR7U=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: adea4647-5da9-4ac4-57d4-08d7fe88fb66
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2020 19:47:38.1101
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Sz+nmwBTpe56AZ/UH4MZzUDZ99J2QgOjgZqya/Sw9NjYD58uq1m6X25GdK1zpDk09qXd89XPG7wIW8zQgAAtanhVmghOkAEv/2VXzgF956U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR18MB3269
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-22_08:2020-05-22,2020-05-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub,
 
+Thank you for the review.
 
-On 5/22/20 11:57 AM, Eric Dumazet wrote:
->
-> On 5/22/20 8:01 AM, Jon Maloy wrote:
->>
->> On 5/22/20 2:18 AM, Xin Long wrote:
->>> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
->>>> Resend to the list in non HTML form
->>>>
->>>>
->>>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
->>>>>
->>>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
->>>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
->>>>>>> dst_cache_get() documents it must be used with BH disabled.
->>>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
->>>>>> preempt_disable().
->>>>> rcu_read_lock() does not disable BH, never.
->>>>>
->>>>> And rcu_read_lock() does not necessarily disable preemption.
->>> Then I need to think again if it's really worth using dst_cache here.
->>>
->>> Also add tipc-discussion and Jon to CC list.
->> The suggested solution will affect all bearers, not only UDP, so it is not a good.
->> Is there anything preventing us from disabling preemtion inside the scope of the rcu lock?
->>
->> ///jon
->>
-> BH is disabled any way few nano seconds later, disabling it a bit earlier wont make any difference.
-The point is that if we only disable inside tipc_udp_xmit() (the 
-function pointer call) the change will only affect the UDP bearer, where 
-dst_cache is used.
-The corresponding calls for the Ethernet and Infiniband bearers don't 
-use dst_cache, and don't need this disabling. So it does makes a 
-difference.
-///jon
+> > This patch contains the following changes:
+> > * access cfg via aq_nic_get_cfg() in aq_nic_start() and
+> > aq_nic_map_skb();
+...
+> > * use AQ_HW_*_TC instead of hardcoded magic numbers;
+> > * actually use the 'ret' value in aq_mdo_add_secy();
+>=20
+> Whenever you do an enumeration like this - it's a strong indication that =
+those
+> should all be separate patches. Please keep that in mind going forward.
 
->
-> Also, if you intend to make dst_cache BH reentrant, you will have to make that for net-next, not net tree.
->
-> Please carefully read include/net/dst_cache.h
->
-> It is very clear about BH requirements.
->
->
+Understood, but I've also seen a recommendation that a single patchset shou=
+ldn't have more than 15 patches (if my memory doesn't fail me). And unfortu=
+nately it would have been impossible to meet the 15 patches limit, if all t=
+hese small changes were in separate patches. What's the best/recommended ap=
+proach in this case?
 
+> >  static int aq_mdo_upd_secy(struct macsec_context *ctx)
+>=20
+> This should have been a separate fix for sure.
+
+My bad, note taken.
+
+Best regards,
+Mark.
