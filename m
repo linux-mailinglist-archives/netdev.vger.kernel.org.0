@@ -2,89 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C0A1DECC1
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 18:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86FAE1DECC3
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 18:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730325AbgEVQEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 12:04:07 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:36060 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730114AbgEVQEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 12:04:06 -0400
+        id S1730464AbgEVQEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 12:04:54 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60802 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730114AbgEVQEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 12:04:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590163445;
+        s=mimecast20190719; t=1590163493;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eUcg8KA+WvEJiGU6xhPTM4CgZRLA2ZtL27FV+gxfFGw=;
-        b=J3xYEAXRnd/h0Yra5Q2uXhJ+sXC1zzT6tVX0EpLRT/qr62FGSkbSjQqHm/ml1MSpZMVBp5
-        EVnm2d+zrY+lGXivs9tKXLEOkSJsbitpxeF7iB3a1+xPBToKAzHTyFVKS0jfPJQnWCYoTK
-        MyjxQO+6AEuO5PSbLUMAeiyVoYJU+L4=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-422-6DJS2UjuP-aKiYCuXW5snQ-1; Fri, 22 May 2020 12:04:03 -0400
-X-MC-Unique: 6DJS2UjuP-aKiYCuXW5snQ-1
-Received: by mail-ej1-f70.google.com with SMTP id h6so4853856ejb.17
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 09:04:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=eUcg8KA+WvEJiGU6xhPTM4CgZRLA2ZtL27FV+gxfFGw=;
-        b=kkOOf+tKeM+ri4W0lid8h/j15Sfu76kHFbvmX5pwvr91uSaQCkTlDP692jqZ+cI+h6
-         oJogSeKsSjSEDfD/VaPsby8WpkAi9UV2Hn2F1W8ueR5LeEj0KHdQfecyOIB+b6fnBTyA
-         WiWhnk17/qz8ctBnV/MXTRZOszSwXHZU17rVn8cELAR5wHj8nq6MYneyviaLsMtSH97u
-         Akrd8G+9yWPLtwUjYmzg0aW9ZtJGeLyKrWUgufxKOzlVbSryOyZUDcZiDQ91GmN6nljU
-         1fFUOi+6cJeZWmeSe4eeU9uu7kPW1BJQsiUUttgxSAMgrDYgTuYJkHRZZ72NKd3Y2zEw
-         nAXA==
-X-Gm-Message-State: AOAM530k1zqaqJ/IqkeMRUhhFsHwzG6H/Xb2dQFgeH75o3apZtRZ00S4
-        2zomtOOVQL6maljQ2CZWA80l206jweU9WfH5sFgYSeFsVOXcd7xcKsZFg9DBzf8ecyhtoEnM6tI
-        +MgxVIm6D60l4S6hA
-X-Received: by 2002:a05:6402:31ad:: with SMTP id dj13mr3617571edb.232.1590163442118;
-        Fri, 22 May 2020 09:04:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyTvWqPx3XIsEW+J/hUWiVpACc3SRYpuvgCO2559B6mtbeMf5A0KIOhy7e8wh/SHoV9kzBMEQ==
-X-Received: by 2002:a05:6402:31ad:: with SMTP id dj13mr3617551edb.232.1590163441966;
-        Fri, 22 May 2020 09:04:01 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g13sm6794100ejh.119.2020.05.22.09.04.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 09:04:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E359518150E; Fri, 22 May 2020 18:04:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH RFC bpf-next 3/4] xdp: Add xdp_txq_info to xdp_buff
-In-Reply-To: <20200522010526.14649-4-dsahern@kernel.org>
-References: <20200522010526.14649-1-dsahern@kernel.org> <20200522010526.14649-4-dsahern@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 22 May 2020 18:04:00 +0200
-Message-ID: <87ftbsj6rz.fsf@toke.dk>
+        bh=yy4GmOiwgEqnHILmNJXpm2vUJeLRsh0E1bTnr1IYuC8=;
+        b=FlM/o6dD483jbfXDNO8t8l5hWU/01XeLDdEjrBZj0SQUpxmY2Db1K+nVaadhbsX9goIwUW
+        aA1Ru6ykqwKYHxqsdexA0BzTojgIrKiXZ5r2BBcqYchyPdNOpMEpLG4V06IovRfG4VpPxy
+        1JMf17LDcmwLzVAeyH/nt8e1OyMBw+E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-jGGh03f0PGedeAUW2ikiPw-1; Fri, 22 May 2020 12:04:47 -0400
+X-MC-Unique: jGGh03f0PGedeAUW2ikiPw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1875D100CCC9;
+        Fri, 22 May 2020 16:04:45 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 73A2F4EEC2;
+        Fri, 22 May 2020 16:04:33 +0000 (UTC)
+Date:   Fri, 22 May 2020 18:04:31 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        toke@redhat.com, daniel@iogearbox.net, john.fastabend@gmail.com,
+        ast@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        andriin@fb.com, dsahern@gmail.com,
+        Lorenzo Bianconi <lorenzo@kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH RFC bpf-next 1/4] bpf: Handle 8-byte values in DEVMAP
+ and DEVMAP_HASH
+Message-ID: <20200522180431.6fa89cc7@carbon>
+In-Reply-To: <20200522140805.045b8823@carbon>
+References: <20200522010526.14649-1-dsahern@kernel.org>
+        <20200522010526.14649-2-dsahern@kernel.org>
+        <20200522140805.045b8823@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> writes:
+On Fri, 22 May 2020 14:08:05 +0200
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
-> Add xdp_txq_info as the Tx counterpart to xdp_rxq_info. At the
-> moment only the device is added. Other fields (queue_index)
-> can be added as use cases arise.
->
-> From a UAPI perspective, add egress_ifindex to xdp context.
->
-> Update the verifier to only allow accesses to egress_ifindex by
-> XDP programs with BPF_XDP_DEVMAP expected attach type.
->
-> Signed-off-by: David Ahern <dsahern@kernel.org>
+> On Thu, 21 May 2020 19:05:23 -0600
+> David Ahern <dsahern@kernel.org> wrote:
+> 
+> > Add support to DEVMAP and DEVMAP_HASH to support 8-byte values as a
+> > <device index, program id> pair. To do this, a new struct is needed in
+> > bpf_dtab_netdev to hold the values to return on lookup.  
+> 
+> I would like to see us leverage BTF instead of checking on the size
+> attr->value_size. E.g do the sanity check based on BTF.
+> Given I don't know the exact details on how this should be done, I will
+> look into it... I already promised Lorenzo, as we have already
+> discussed this on IRC.
+> 
+> So, you can Lorenzo can go ahead with this approach, and test the
+> use-case. And I'll try to figure out if-and-how we can leverage BTF
+> here.  Input from BTF experts will be much appreciated.
 
-Nit: seems a bit odd to order the patches like this, I'd have expected
-this patch to go before #2.
+Published my current notes here:
+ https://github.com/xdp-project/xdp-project/blob/BTF01-notes.public/areas/core/BTF_01_notes.org
 
--Toke
+And created PR that people can GitHub "subscribe" to, if you are interested:
+ https://github.com/xdp-project/xdp-project/pull/36
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
