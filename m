@@ -2,57 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6772E1DF0ED
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:13:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B228B1DF0F8
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:19:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731033AbgEVVNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 17:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731021AbgEVVNO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:13:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3836DC061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:13:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2CCE4126390D8;
-        Fri, 22 May 2020 14:13:13 -0700 (PDT)
-Date:   Fri, 22 May 2020 14:13:12 -0700 (PDT)
-Message-Id: <20200522.141312.2295044886470007073.davem@davemloft.net>
-To:     akiyano@amazon.com
-Cc:     netdev@vger.kernel.org, dwmw@amazon.com, zorik@amazon.com,
-        matua@amazon.com, saeedb@amazon.com, msw@amazon.com,
-        aliguori@amazon.com, nafea@amazon.com, gtzalik@amazon.com,
-        netanel@amazon.com, alisaidi@amazon.com, benh@amazon.com,
-        ndagan@amazon.com, shayagr@amazon.com, sameehj@amazon.com
-Subject: Re: [PATCH V2 net-next 00/14] ENA features and cosmetic changes
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1590138545-501-1-git-send-email-akiyano@amazon.com>
-References: <1590138545-501-1-git-send-email-akiyano@amazon.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 22 May 2020 14:13:13 -0700 (PDT)
+        id S1731054AbgEVVTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 17:19:24 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37146 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730976AbgEVVTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:19:24 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jcF4T-0004pr-Ny; Fri, 22 May 2020 23:19:13 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-05-22
+Date:   Fri, 22 May 2020 23:19:13 +0200
+Message-Id: <20200522211913.25281-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25820/Fri May 22 14:21:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: <akiyano@amazon.com>
-Date: Fri, 22 May 2020 12:08:51 +0300
+Hi David,
 
-> From: Arthur Kiyanovski <akiyano@amazon.com>
-> 
-> Diff from V1 of this patchset:
-> Removed error prints patch
-> 
-> This patchset includes:
-> 1. new rx offset feature
-> 2. reduction of the driver load time
-> 3. multiple cosmetic changes to the code
+The following pull-request contains BPF updates for your *net* tree.
 
-Series applied, thanks.
+We've added 3 non-merge commits during the last 3 day(s) which contain
+a total of 5 files changed, 69 insertions(+), 11 deletions(-).
+
+The main changes are:
+
+1) Fix to reject mmap()'ing read-only array maps as writable since BPF verifier
+   relies on such map content to be frozen, from Andrii Nakryiko.
+
+2) Fix breaking audit from secid_to_secctx() LSM hook by avoiding to use
+   call_int_hook() since this hook is not stackable, from KP Singh.
+
+3) Fix BPF flow dissector program ref leak on netns cleanup, from Jakub Sitnicki.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, James Morris, Jann Horn, Stanislav Fomichev
+
+----------------------------------------------------------------
+
+The following changes since commit 20a785aa52c82246055a089e55df9dac47d67da1:
+
+  sctp: Don't add the shutdown timer if its already been added (2020-05-19 15:46:52 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 5cf65922bb15279402e1e19b5ee8c51d618fa51f:
+
+  flow_dissector: Drop BPF flow dissector prog ref on netns cleanup (2020-05-21 17:52:45 -0700)
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      bpf: Prevent mmap()'ing read-only maps as writable
+
+Jakub Sitnicki (1):
+      flow_dissector: Drop BPF flow dissector prog ref on netns cleanup
+
+KP Singh (1):
+      security: Fix hook iteration for secid_to_secctx
+
+ kernel/bpf/syscall.c                          | 17 ++++++++++++++---
+ net/core/flow_dissector.c                     | 26 +++++++++++++++++++++-----
+ security/security.c                           | 16 ++++++++++++++--
+ tools/testing/selftests/bpf/prog_tests/mmap.c | 13 ++++++++++++-
+ tools/testing/selftests/bpf/progs/test_mmap.c |  8 ++++++++
+ 5 files changed, 69 insertions(+), 11 deletions(-)
