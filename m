@@ -2,160 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC711DE91C
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251011DE97C
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:47:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730065AbgEVOg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 10:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        id S1730515AbgEVOrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 10:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729879AbgEVOg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 10:36:28 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D72C061A0E;
-        Fri, 22 May 2020 07:36:28 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id m64so8438332qtd.4;
-        Fri, 22 May 2020 07:36:28 -0700 (PDT)
+        with ESMTP id S1729903AbgEVOrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 10:47:11 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D17C061A0E;
+        Fri, 22 May 2020 07:47:11 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id l73so2297354pjb.1;
+        Fri, 22 May 2020 07:47:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y7e3HusqoAMf8lrG+OWAU7meO/T/O/pS1B2DGDxN+tM=;
-        b=tGRwbxQcyInDydtbs4YCi4xcrfAyqdO8VNBMCjG0a914AyfY28umFhgCHaMcjpALjG
-         LIxMiS+Yo/iLfLLBXWbHHxYRTX+xbKlsOTNe+2J1hIq7DYjMUOFi4c9TattD0igcVXr+
-         Y44aif1ErDtpQgAS52445nS/2whHRuLRsGprPYCleQYl9lic5l/Mlxe4JGzSf9clEdqU
-         3HwzFYiXw77k16U76BgO/s5z6w+Nez7v368xLdvQEn3hJmjhBIr+kDaOgpBO6qGX64pi
-         wMr6JWXEX9OtcUTktQOKWf0VE0/jWWMzZ7qm7niH5Duc47G5Ouek2g+dbqvWmIc4kVzR
-         N6zg==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=pyI8RXJv0A9qOfUOs7+t5xXq9tBCjrOPiOAhgZoNJGU=;
+        b=Ujuhda9sRCNvYqh00NglKq18LhbkIq8aE4BUcXG3v7wbWcu1ySHA8zIVb+5qyZ5cXW
+         UPnhYOx5gxzweUHjEMfamVI16WBTsGW/NWZNFpC9CEQgX161wxmC4s/WE5Nr6RTQeIaH
+         4b0YabqbO/sH76bBoye3TRdm6o763j0xliAkqVo4UvT1jBaZSTQ2HyKPHfXhhuaOEGov
+         OnPnEuh+Lz3gZcTkTSnw3jkWnBbRhfB3bq6nDxWHwRcrdf+dhjoA/2tWBwEyXr13fZGJ
+         fX40OFWM3EC8WYw3wOseIxV8YbmhcqwcoQNHcF/foWZpegvLrHtAdMB1s4r0DZIG6ixg
+         HPJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y7e3HusqoAMf8lrG+OWAU7meO/T/O/pS1B2DGDxN+tM=;
-        b=FTpfwHzIkfuxSi59r5chA+b75W26IVuYt3kYP667HvIlvF81kRrW7w9qJzg0qHtPrA
-         xVLhvEFG9iuAzS62q6XQKYUoTup6IoWjOJgRmA23jUEPc0rOAhrh4eMfNHepV+nSM5N3
-         ow1owz7LMQbl0ZCpnLamxYpLbj3IG/shnKzGLnocPC0N+RRl8Bafl2ZvP2mlssHKhJyZ
-         gA5oyuthdHTvCnsk9EXNF85W1SxxL9pooUC9EWx5cKYf09929/lBFb8ucKQSMEMOz+9h
-         qfO3rajBFVQA9jiB9dA5Py0r7B90w0470FCBZp0z0dmHVL7p/Us/rSt7WZ6VLPhhWHtC
-         hCXg==
-X-Gm-Message-State: AOAM532sfBcczoBpXC5N+tAwdUpAGVd0IdozfeW3frNBPu2LhMmCO+Um
-        DlP6n8d71DcvcX4SyU/tqutFIyMTD6LcRA==
-X-Google-Smtp-Source: ABdhPJyTTb/E3Fm2eZEeT+PsW9pox2hFsCVYYM1Ady3D2qXwwKwzTSSb3YPP3kXsOCUp97BGVzh8rw==
-X-Received: by 2002:aed:2ac5:: with SMTP id t63mr16496991qtd.245.1590158187578;
-        Fri, 22 May 2020 07:36:27 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:b7f5:289f:a703:e466:2a27])
-        by smtp.gmail.com with ESMTPSA id q54sm8227922qtj.38.2020.05.22.07.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 07:36:26 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 0AF7AC163B; Fri, 22 May 2020 11:36:24 -0300 (-03)
-Date:   Fri, 22 May 2020 11:36:23 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Christoph Hellwig' <hch@lst.de>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pyI8RXJv0A9qOfUOs7+t5xXq9tBCjrOPiOAhgZoNJGU=;
+        b=O/hCP1V0NNJMQZUG+t9Bh5lxdUqVMSr3Qi+spR+8ouILsF45hzs17drHoHlshSpY4U
+         3mUc0WKdF2fu8kwlhsRdftUaJFrahz05moRmmNqv0O1u602gkT0lzGC3KUrsEwA0bay/
+         1wv0eEKLXcctPNITtDP9vcIH7iCzR1nWBaSzKfjdGZNAQYc0CEJamx6qcL4Gg5//PpBm
+         3QV7gGO7UtBHIRKl8UJJfDJ5n42mzywPS8t3rf9ZJx7o9QidtqCkb+c39l2+qA7xQoAD
+         QS4g/N4YwzI95zZBNYTKUUvBF+HWh/BPRHe1N7ebM51DkRl553jNi0vwEyNttL7qFDy5
+         bDow==
+X-Gm-Message-State: AOAM5302slwv5SbSva3ryBEGqn2pmj+qe/qzpqMMwdYBn7itrccZydCA
+        mymHwrCSXGrvwzS3lx2/a0k=
+X-Google-Smtp-Source: ABdhPJwEjkbC0ZRvqsKRNasE1thUYFAv46HEbfQoZ9/iqC+b34JBVlEVMv+91eqFvfq8/THk/tyv3A==
+X-Received: by 2002:a17:902:bd42:: with SMTP id b2mr14491950plx.219.1590158830652;
+        Fri, 22 May 2020 07:47:10 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id v127sm7113218pfb.91.2020.05.22.07.47.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 22 May 2020 07:47:08 -0700 (PDT)
+Date:   Fri, 22 May 2020 07:47:07 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: do a single memdup_user in sctp_setsockopt
-Message-ID: <20200522143623.GA386664@localhost.localdomain>
-References: <20200521174724.2635475-1-hch@lst.de>
- <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Subject: Re: [PATCH 16/17] dt-bindings: watchdog: renesas,wdt: Document
+ r8a7742 support
+Message-ID: <20200522144707.GA173101@roeck-us.net>
+References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
+In-Reply-To: <1589555337-5498-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 08:02:09AM +0000, David Laight wrote:
-> From: Christoph Hellwig
-> > Sent: 21 May 2020 18:47
-> > based on the review of Davids patch to do something similar I dusted off
-> > the series I had started a few days ago to move the memdup_user or
-> > copy_from_user from the inidividual sockopts into sctp_setsockopt,
-> > which is done with one patch per option, so it might suit Marcelo's
-> > taste a bit better.  I did not start any work on getsockopt.
+On Fri, May 15, 2020 at 04:08:56PM +0100, Lad Prabhakar wrote:
+> RZ/G1H (R8A7742) watchdog implementation is compatible with R-Car Gen2,
+> therefore add relevant documentation.
 > 
-> I'm not sure that 49 patches is actually any easier to review.
-> Most of the patches are just repetitions of the same change.
-> If they were in different files it might be different.
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-It's subjective, yes, but we hardly have patches over 5k lines.
-In the case here, as changing the functions also requires changing
-their call later on the file, it helps to be able to check that is was
-properly updated. Ditto for chained functions.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-For example, I can spot things like this easier (from
-[PATCH 26/49] sctp: pass a kernel pointer to sctp_setsockopt_auth_key)
-
-@@ -3646,7 +3641,6 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
-        }
-
- out:
--       kzfree(authkey);
-        return ret;
- }
-...
-@@ -4771,7 +4765,10 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
-        }
-
-        release_sock(sk);
--       kfree(kopt);
-+       if (optname == SCTP_AUTH_KEY)
-+               kzfree(kopt);
-+       else
-+               kfree(kopt);
-
- out_nounlock:
-        return retval;
-
-these are 1k lines apart.
-
-Yet, your implementation around this is better:
-
-@@ -3733,7 +3624,7 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
-        }
-
- out:
--       kzfree(authkey);
-+       memset(authkey, 0, optlen);
-        return ret;
- }
-
-so that sctp_setsockopt() doesn't have to handle it specially.
-
-What if you two work on a joint patchset for this? The proposals are
-quite close. The differences around the setsockopt handling are
-minimal already. It is basically variable naming, indentation and one
-or another small change like:
-
-From Christoph's to David's:
-@@ -2249,11 +2248,11 @@ static int sctp_setsockopt_autoclose(struct sock *sk, u32 *autoclose,
-                return -EOPNOTSUPP;
-        if (optlen != sizeof(int))
-                return -EINVAL;
--
--       if (*autoclose > net->sctp.max_autoclose)
-+
-+       sp->autoclose = *optval;
-+
-+       if (sp->autoclose > net->sctp.max_autoclose)
-                sp->autoclose = net->sctp.max_autoclose;
--       else
--               sp->autoclose = *autoclose;
-
-        return 0;
- }
-
+> ---
+>  Documentation/devicetree/bindings/watchdog/renesas,wdt.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> If you try to do getsockopt() the same way it will be much
-> more complicated - you have to know whether the called function
-> did the copy_to_user() and then suppress it.
-
-If it is not possible, then the setsockopt one already splited half of
-the lines of the patch. :-)
+> diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.txt b/Documentation/devicetree/bindings/watchdog/renesas,wdt.txt
+> index 79b3c62..e42fd30 100644
+> --- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.txt
+> +++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.txt
+> @@ -5,6 +5,7 @@ Required properties:
+>  		fallback compatible string when compatible with the generic
+>  		version.
+>  	       Examples with soctypes are:
+> +		 - "renesas,r8a7742-wdt" (RZ/G1H)
+>  		 - "renesas,r8a7743-wdt" (RZ/G1M)
+>  		 - "renesas,r8a7744-wdt" (RZ/G1N)
+>  		 - "renesas,r8a7745-wdt" (RZ/G1E)
