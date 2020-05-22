@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8631DEF87
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 299C51DEF8D
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730867AbgEVSxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
+        id S1730871AbgEVS5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730840AbgEVSxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:53:37 -0400
+        with ESMTP id S1730840AbgEVS5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:57:07 -0400
 Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B1EC061A0E;
-        Fri, 22 May 2020 11:53:37 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id n11so6264661qkn.8;
-        Fri, 22 May 2020 11:53:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C44DC061A0E;
+        Fri, 22 May 2020 11:57:06 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id f189so11747150qkd.5;
+        Fri, 22 May 2020 11:57:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HcqR82MYzwNZxeA4COU/Pg+NYpk4dCNhb8s6EAGCmGM=;
-        b=njFTqkKPnIb/PxSDZDDhGzJozUPXKsZFFUwihZp/PPmCq7UmCc+qfk3e7lqRs/lvaH
-         qD89AigBea7hvjvzL++zRtX7t5xC2ah6ZLfTNyGC0eAelt474cNh8YlTkYfjv3D6Ve3K
-         8rU/WiV/u3YwfbQrBKGpv6vlq2BDHhLDt8u4SEBNYKiwJTaaI259+dNp016CSVHcZcaV
-         A0EzJVVnlw3Fa++pc0E1OcICd9Xim6jqK95fULJR7jNPMZ8es+nTti37kPNNmBWVTkls
-         WwNqoaO7X1OBUCwzxr9lg5fkN2siILSna/2K4qtnJ8H2Plt1sBOluVLik39eLmS9psjQ
-         pGrg==
+        bh=APQV4v/L30Z4Y81FbxVFdyi/lVO/94ETl2WC2K645Ik=;
+        b=Fka7AlUebwQyt+u7Ee5whzlkNaii7KktmEFF0YJGWJ2Ar+8XWb0xtHTkFdpmvZr87y
+         piqFUDgLvUKkI49CXHTV+5Qal1Dx0xabalZ3BUkSsDV6ZE4sXFrGKaMtveYsF5zWk3Au
+         NY/Z/8eeQ2MdkqpwjXYVd1U6Y3us/teDCiBI1r95Uv/e0P8d2lsjH+RmkDbx8em/GgPN
+         Bzi+qfjocDrArAcMFTpmFIrZbXZZ8pA9/yF+VMVxrbvp/7JBLqyaZ1CJv9m9mgricQsn
+         8NINj81VplvdMqLlzSnx1p6eJiX6Cdkz0S8caa7hTUfi6C8ccJWZprz5lXei8DP4C86c
+         fuqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HcqR82MYzwNZxeA4COU/Pg+NYpk4dCNhb8s6EAGCmGM=;
-        b=BB5e4H4cP/gD20G+yzlANWD6WYQp5Q/gIK1vTFcUkyWJ7W4qAi8oVU49a8HF5Oyw0h
-         j+mjdR1vafA07MolcM2mNQ3kHJpNCsFo/Uqd0f/GQMNjRGWxo5+0P0YelWTkEaMvgxF0
-         7gq6ZycyCXoAGH4P61ZlBUgIaAEsLPQ0nlVNMTOgZEwbrQFXzDsRjceQ7NpVABwZyabH
-         2Hil15Dluw/7H65xROUWQtQsbw1soC+sxzLMC1tqsbCP+BujG8Cx95VEVyfh3l1hPK6q
-         gKZsGGh7F4E73Nh/e2RSfA/hnngfHRnLEyTRcHBiNa8irwV/X393hkR6TlFs/1NJmxwt
-         /0Hw==
-X-Gm-Message-State: AOAM5314x94/qn227t3PPl7aapLzcZKj9+MbRJtl2iZGFo8tNBG+m7cw
-        cMkuVkstd+36sYvLHYNKIm0qI/gk0m740tAFu4w=
-X-Google-Smtp-Source: ABdhPJwDXx5XsCMdrnaTnBz49AfXhZhuoCYmZymMcZxd5AH4NMWnzwv0AxrWWae+ct/AoY1/KtioNfc8zRV4EbteBk4=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr4075372qkb.39.1590173616910;
- Fri, 22 May 2020 11:53:36 -0700 (PDT)
+        bh=APQV4v/L30Z4Y81FbxVFdyi/lVO/94ETl2WC2K645Ik=;
+        b=GAJzy+Lc+Q7rZujueiwliurmuLx9BoIquDc1kYW6Y5PHzuFvuarEPg+8NWMyUXBZXO
+         9aB0sr9XeJ1so5VOCTBI0D/wAKhjosn+B8w02Wu4+lbjmWSIkq0DLNOEaJrViu6M7emB
+         O2vSgz0/ZLTB5lG50D3eBH3mlOntyrRX8qZs4FPrtPW+11abekXeg4laPF0g6ANSoTFP
+         aT0BhdPReygJXNWOC7JRmbpIZtlArxxhE9c2OFP50k/7YvuTD3UXzSxu+zdDod2LA0H7
+         i87vXzsu0LPEUIXpqokeEIJDgEC151V/Cbz4HRUybLTf88Mj1edrUS41xN9hDQ+abP2K
+         tyzQ==
+X-Gm-Message-State: AOAM532hWJGWZo9BPJzqS+deWn5mosR7T6P7awetOUvtr67VpgbDcFpq
+        qLzoV8lBNBfxfEnIr9FqBIj/6WiPP2ycKkFWVjy/In9cfxE=
+X-Google-Smtp-Source: ABdhPJyAhszvbrHcLJZd9N2jC8LSH8+XiM1AT3F5aVefXlmJtY3dYM+7rBb1CasF+OLGHbGmqnt8184TYimgnTh/hL8=
+X-Received: by 2002:a37:6508:: with SMTP id z8mr4087360qkb.39.1590173824833;
+ Fri, 22 May 2020 11:57:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-4-andriin@fb.com>
- <20200522011335.f4bfabh32puptotu@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200522011335.f4bfabh32puptotu@ast-mbp.dhcp.thefacebook.com>
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-5-andriin@fb.com>
+ <20200522011552.ak4dkxhqwg6j2koy@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200522011552.ak4dkxhqwg6j2koy@ast-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 May 2020 11:53:26 -0700
-Message-ID: <CAEf4BzYqzJmRfCxtY6qqRZ0vfR7kDsMLvGgT1iENZ82WAh0TVg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/7] bpf: track reference type in verifier
+Date:   Fri, 22 May 2020 11:56:54 -0700
+Message-ID: <CAEf4BzbWj28btDvzDJCJMpRJ55hiydV9c+F_pEFvuA4bMeb+Bg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 4/7] libbpf: add BPF ring buffer support
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
@@ -65,58 +65,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 6:13 PM Alexei Starovoitov
+On Thu, May 21, 2020 at 6:15 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> On Sun, May 17, 2020 at 12:57:23PM -0700, Andrii Nakryiko wrote:
-> >
-> > +static enum bpf_ref_type get_release_ref_type(enum bpf_func_id func_id)
-> > +{
-> > +     switch (func_id) {
-> > +     case BPF_FUNC_sk_release:
-> > +             return BPF_REF_SOCKET;
-> > +     case BPF_FUNC_ringbuf_submit:
-> > +     case BPF_FUNC_ringbuf_discard:
-> > +             return BPF_REF_RINGBUF;
-> > +     default:
-> > +             return BPF_REF_INVALID;
-> > +     }
-> > +}
+> On Sun, May 17, 2020 at 12:57:24PM -0700, Andrii Nakryiko wrote:
 > > +
-> >  static bool may_be_acquire_function(enum bpf_func_id func_id)
-> >  {
-> >       return func_id == BPF_FUNC_sk_lookup_tcp ||
-> > @@ -464,6 +477,28 @@ static bool is_acquire_function(enum bpf_func_id func_id,
-> >       return false;
-> >  }
-> >
-> > +static enum bpf_ref_type get_acquire_ref_type(enum bpf_func_id func_id,
-> > +                                           const struct bpf_map *map)
+> > +static inline int roundup_len(__u32 len)
 > > +{
-> > +     enum bpf_map_type map_type = map ? map->map_type : BPF_MAP_TYPE_UNSPEC;
-> > +
-> > +     switch (func_id) {
-> > +     case BPF_FUNC_sk_lookup_tcp:
-> > +     case BPF_FUNC_sk_lookup_udp:
-> > +     case BPF_FUNC_skc_lookup_tcp:
-> > +             return BPF_REF_SOCKET;
-> > +     case BPF_FUNC_map_lookup_elem:
-> > +             if (map_type == BPF_MAP_TYPE_SOCKMAP ||
-> > +                 map_type == BPF_MAP_TYPE_SOCKHASH)
-> > +                     return BPF_REF_SOCKET;
-> > +             return BPF_REF_INVALID;
-> > +     case BPF_FUNC_ringbuf_reserve:
-> > +             return BPF_REF_RINGBUF;
-> > +     default:
-> > +             return BPF_REF_INVALID;
-> > +     }
-> > +}
+> > +     /* clear out top 2 bits */
+> > +     len <<= 2;
+> > +     len >>= 2;
 >
-> Two switch() stmts to convert helpers to REF is kinda hacky.
-> I think get_release_ref_type() could have got the ref's type as btf_id from its
-> arguments which would have made it truly generic and 'enum bpf_ref_type' would
-> be unnecessary, but sk_lookup_* helpers return u64 and don't have btf_id of
-> return value. I think we better fix that. Then btf_id would be that ref type.
+> what this is for?
+> Overflow prevention?
+> but kernel checked the size already?
 
-True, sure. I'll drop this patch in next version, because everything
-works without it. Then we can generalize this eventually.
+No, as comment above says, just clearing upper two bits (busy bit and
+discard bit). Busy bit should be 0, but discard bit could be set for
+discarded record. I could have written this equivalently as:
+
+len = (len & ~(1 << BPF_RINGBUF_DISCARD_BIT));
+
+But I think compiler won't optimize it to two bit shifts, assuming bit
+#31 might be set.
+
+>
+> > +     /* add length prefix */
+> > +     len += BPF_RINGBUF_HDR_SZ;
+> > +     /* round up to 8 byte alignment */
+> > +     return (len + 7) / 8 * 8;
+> > +}
+> > +
