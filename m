@@ -2,164 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A001DEF6A
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F3E1DEF6D
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:45:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730936AbgEVSmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:42:37 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:12611 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730810AbgEVSmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:42:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1590172955; x=1621708955;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=63TQ2i0uwLk1Ry4qYh8gSAiS0M/T6s8O421GLAZBHRY=;
-  b=CSgEJUT2t5xS47noHHoVUSyafXlAIHDnJeEsWCBrNvRME5BM6PjenKNf
-   51+t5xafdwQy7u72/JYMtufVvh1x0AQQOkUaa0p2/ba70EM/B2g5UgIee
-   YFn4A/24AjqUBYXppaQJkJXbCAIdqOxvIXnt3FS6OGajVPssvXMlK0p9U
-   nUH5rArKkIyWEcdR1GbAvOJyJb0OQLPiPzpk21iY/UKm8GGt0FgMlLIbS
-   UjN3eNgQWl8BcNLvSok9q0Kt6szKs3UUNMDqI3Ayjc5ubhnnFp/7e5loh
-   u/7pBuJ32SSu4BMGQol690aynu6Y+8PCYayqas7O0wK+7lxnUdbmqshBX
-   A==;
-IronPort-SDR: AMacVx288s+1Tth9gq2S1IdCNyYT6dJqKNY/qLDwlQyVDde/8nG/t3za8ue//RLv9RZe7gpuyv
- e1wSYDu08zjtvTP0FwM7ZGXmVsePBMGtoF2LCfBOwBNLDJLCqYVXob7hTFfq7t8Ntr/jIEggOO
- XIR8A7+rnv8YOodf2ajSO9m/df/54yL8dE7Whnw9QUhX4+HspqV0TRPdFY/rM3QktzCC0OKrJ9
- lbFkuTBuR2mWUBZ/OakS1LnqTMBz2QeXFcVCuFVHfHpct4Djcc31PSrQgA3+TI/jcdPi/bKeNL
- Cpo=
-X-IronPort-AV: E=Sophos;i="5.73,422,1583218800"; 
-   d="scan'208";a="77605637"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2020 11:42:34 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 22 May 2020 11:42:35 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Fri, 22 May 2020 11:42:34 -0700
-Date:   Fri, 22 May 2020 20:42:34 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <davem@davemloft.net>,
-        <jiri@resnulli.us>, <idosch@idosch.org>, <kuba@kernel.org>,
-        <ivecera@redhat.com>, <netdev@vger.kernel.org>,
-        <horatiu.vultur@microchip.com>, <nikolay@cumulusnetworks.com>,
-        <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
-Message-ID: <20200522184104.nxjz35cxgj5iwxne@ws.localdomain>
-References: <20200521211036.668624-1-olteanv@gmail.com>
+        id S1730879AbgEVSpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:45:31 -0400
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:60876 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730810AbgEVSp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:45:28 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 49TFmQ6rVmz9vZ2Z
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 18:45:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id d9JJvsOzGyX9 for <netdev@vger.kernel.org>;
+        Fri, 22 May 2020 13:45:26 -0500 (CDT)
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 49TFmQ58WWz9vZ2T
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 13:45:26 -0500 (CDT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 49TFmQ58WWz9vZ2T
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 49TFmQ58WWz9vZ2T
+Received: by mail-io1-f70.google.com with SMTP id l2so6490609iok.5
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 11:45:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jcvktWzuf/YXJY7B0r0fkd4cBPlRZYMazd1bG7Knz0c=;
+        b=gQ7VoiSWNDAurX2rgbSypPcmLB7w9Jvn08mBdJMJuHb25/wtGmnfpprU+6c5L3QG3/
+         bzsM9SuomxldGrYsmbNh14S+TTNHtS15CQQucWHvoC50LV9ND9hkZahbIy5y9kTK4oTM
+         wsnPs27cKSJV9geYLWjU3NUMGP3vRiAbaCA7ukKMzFJUUS+iCdBe0F8vudzvwOfh6Vuj
+         Bci9Gp8t5f1zdZDGWPBEl9CY3EMVnwzN3R8SE0cPrUeDObg5yX5UUGbNbrpDt1pvVQf2
+         I7MFa5IVLeLpg5DqLYm2Edbm/awA8ohROq2iHKNlZAyQa6VD/u9bAKg5TEtg2Ar8KX5U
+         pvcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jcvktWzuf/YXJY7B0r0fkd4cBPlRZYMazd1bG7Knz0c=;
+        b=RpFv6w03KlGmoyv5hGs4q8VcfnCvCPJ0bMi+Qb8nrK9Jn2o1PNWH/Isw2ZA1bM0yOh
+         7kHmx86RdxW+3uqsIkfvda8/DPZSV9c5vkT8isv7qd9hP1OpzorPxVskdmkt8sMkUpjz
+         24CCmXLatbq63ic/kfEfe97pzCc0iKHbpfTbCWb7GszOMDMyH3p4mkNjzbrp67aKEob8
+         kyZ8vOQ//aEAwrU0wStOO0VRH8XnsAW4f51kqDBEp8M7xFWRl97AyA5vFaZFZiWqhAOO
+         I8dIh/LgVkEQxj0s0FkwVo45Sm7T/UQZV35blsHTc2bW2Tyd9cIeNf7x5oeRBGQ3tDEb
+         YBZQ==
+X-Gm-Message-State: AOAM533jr+pZt3lvggLY+B9loUWLevqjJTqoDJ+hMI5xmA4IsX1Kehic
+        P3t1R3jeRIw4GBmi5jqm7guTuEdftg2QWcxL1JSYp3QmHGnjaXSRDiNLa3i4kJkaYM0M37BKYGR
+        huZLITzrKr3JY/W4s3shZ
+X-Received: by 2002:a02:942a:: with SMTP id a39mr9335836jai.50.1590173126220;
+        Fri, 22 May 2020 11:45:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzq7xTVOmomZtExLcWH5Wmv5DCntGP0+yx8VBEomiAdvM5u/Is+jMFWSfoirA2k795Um2KKfA==
+X-Received: by 2002:a02:942a:: with SMTP id a39mr9335815jai.50.1590173125861;
+        Fri, 22 May 2020 11:45:25 -0700 (PDT)
+Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
+        by smtp.gmail.com with ESMTPSA id 13sm4012617ioo.23.2020.05.22.11.45.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 May 2020 11:45:25 -0700 (PDT)
+From:   wu000273@umn.edu
+To:     dhowells@redhat.com
+Cc:     Markus.Elfring@web.de, davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
+Subject: [PATCH v3] rxrpc: fix a memory leak in rxkad_verify_response().
+Date:   Fri, 22 May 2020 13:45:18 -0500
+Message-Id: <20200522184518.26323-1-wu000273@umn.edu>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200521211036.668624-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+From: Qiushi Wu <wu000273@umn.edu>
 
-I'm very happy to see that you started working on this. Let me know if
-you need help to update the Ocelot/Felix driver to support this.
+A ticket was not released after a call of the function
+“rxkad_decrypt_ticket” failed. Thus replace the jump target
+“temporary_error_free_resp” by “temporary_error_free_ticket”.
 
-/Allan
+Fixes: 8c2f826dc3631 ("rxrpc: Don't put crypto buffers on the stack")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+---
+ net/rxrpc/rxkad.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On 22.05.2020 00:10, Vladimir Oltean wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
->This is a WIP series whose stated goal is to allow DSA and switchdev
->drivers to flood less traffic to the CPU while keeping the same level of
->functionality.
->
->The strategy is to whitelist towards the CPU only the {DMAC, VLAN} pairs
->that the operating system has expressed its interest in, either due to
->those being the MAC addresses of one of the switch ports, or addresses
->added to our device's RX filter via calls to dev_uc_add/dev_mc_add.
->Then, the traffic which is not explicitly whitelisted is not sent by the
->hardware to the CPU, under the assumption that the CPU didn't ask for it
->and would have dropped it anyway.
->
->The ground for these patches were the discussions surrounding RX
->filtering with switchdev in general, as well as with DSA in particular:
->
->"[PATCH net-next 0/4] DSA: promisc on master, generic flow dissector code":
->https://www.spinics.net/lists/netdev/msg651922.html
->"[PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module":
->https://www.spinics.net/lists/netdev/msg634859.html
->"[PATCH v3 0/2] net: core: Notify on changes to dev->promiscuity":
->https://lkml.org/lkml/2019/8/29/255
->LPC2019 - SwitchDev offload optimizations:
->https://www.youtube.com/watch?v=B1HhxEcU7Jg
->
->Unicast filtering comes to me as most important, and this includes
->termination of MAC addresses corresponding to the network interfaces in
->the system (DSA switch ports, VLAN sub-interfaces, bridge interface).
->The first 4 patches use Ivan Khoronzhuk's IVDF framework for extending
->network interface addresses with a Virtual ID (typically VLAN ID). This
->matches DSA switches perfectly because their FDB already contains keys
->of the {DMAC, VID} form.
->
->Multicast filtering was taken and reworked from Florian Fainelli's
->previous attempts, according to my own understanding of multicast
->forwarding requirements of an IGMP snooping switch. This is the part
->that needs the most extra work, not only in the DSA core but also in
->drivers. For this reason, I've left out of this patchset anything that
->has to do with driver-level configuration (since the audience is a bit
->larger than usual), as I'm trying to focus more on policy for now, and
->the series is already pretty huge.
->
->Florian Fainelli (3):
->  net: bridge: multicast: propagate br_mc_disabled_update() return
->  net: dsa: add ability to program unicast and multicast filters for CPU
->    port
->  net: dsa: wire up multicast IGMP snooping attribute notification
->
->Ivan Khoronzhuk (4):
->  net: core: dev_addr_lists: add VID to device address
->  net: 8021q: vlan_dev: add vid tag to addresses of uc and mc lists
->  net: 8021q: vlan_dev: add vid tag for vlan device own address
->  ethernet: eth: add default vid len for all ethernet kind devices
->
->Vladimir Oltean (6):
->  net: core: dev_addr_lists: export some raw __hw_addr helpers
->  net: dsa: don't use switchdev_notifier_fdb_info in
->    dsa_switchdev_event_work
->  net: dsa: mroute: don't panic the kernel if called without the prepare
->    phase
->  net: bridge: add port flags for host flooding
->  net: dsa: deal with new flooding port attributes from bridge
->  net: dsa: treat switchdev notifications for multicast router connected
->    to port
->
-> include/linux/if_bridge.h |   3 +
-> include/linux/if_vlan.h   |   2 +
-> include/linux/netdevice.h |  11 ++
-> include/net/dsa.h         |  17 +++
-> net/8021q/Kconfig         |  12 ++
-> net/8021q/vlan.c          |   3 +
-> net/8021q/vlan.h          |   2 +
-> net/8021q/vlan_core.c     |  25 ++++
-> net/8021q/vlan_dev.c      | 102 +++++++++++---
-> net/bridge/br_if.c        |  40 ++++++
-> net/bridge/br_multicast.c |  21 ++-
-> net/bridge/br_switchdev.c |   4 +-
-> net/core/dev_addr_lists.c | 144 +++++++++++++++----
-> net/dsa/Kconfig           |   1 +
-> net/dsa/dsa2.c            |   6 +
-> net/dsa/dsa_priv.h        |  27 +++-
-> net/dsa/port.c            | 155 ++++++++++++++++----
-> net/dsa/slave.c           | 288 +++++++++++++++++++++++++++++++-------
-> net/dsa/switch.c          |  36 +++++
-> net/ethernet/eth.c        |  12 +-
-> 20 files changed, 780 insertions(+), 131 deletions(-)
->
->--
->2.25.1
->
-/Allan
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index 098f1f9ec53b..52a24d4ef5d8 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -1148,7 +1148,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 	ret = rxkad_decrypt_ticket(conn, skb, ticket, ticket_len, &session_key,
+ 				   &expiry, _abort_code);
+ 	if (ret < 0)
+-		goto temporary_error_free_resp;
++		goto temporary_error_free_ticket;
+ 
+ 	/* use the session key from inside the ticket to decrypt the
+ 	 * response */
+@@ -1230,7 +1230,6 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 
+ temporary_error_free_ticket:
+ 	kfree(ticket);
+-temporary_error_free_resp:
+ 	kfree(response);
+ temporary_error:
+ 	/* Ignore the response packet if we got a temporary error such as
+-- 
+2.17.1
+
