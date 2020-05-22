@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D421DF00B
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E2EB1DF01F
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:41:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730931AbgEVTd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 15:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
+        id S1730925AbgEVTlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730866AbgEVTd3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:33:29 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E445BC061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:33:28 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id i22so10248719oik.10
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:33:28 -0700 (PDT)
+        with ESMTP id S1730689AbgEVTlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:41:16 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00231C061A0E
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:41:15 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id d7so9106255ote.6
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:41:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AZuECOtx3J77EAMXdn8Amlz7Lrsr5QoUpWlX5W2gc3M=;
-        b=VwSsGWruYsu/KpDG3eAj7H57QaF6Yk6s2H+RJahEvFKnPhMRyP68cDoWU7Ksv8uSm6
-         j9f5sgv7zJ8gHKyIZnDGJpK44Uqajewud/WyzabNnEXW7NADVhJP4ADsQcUwFVfawWGr
-         F1jubI83yaetOPZpDTa4zWB3DfwVz9Exori2nXWURx6UGa+4CkvuRmpgHae7pLjsmyu7
-         BWzrm5ISolwjcPco6+2VXoIjWHRIrukhGFXDKhm74d8xxmc8NhCWBnoyPYs8RdQwmuKp
-         USzrRphEJ3LJg1LExJ5mOSFdOufDyuUEG2qOyXhi2JjF3j9x+sx7iWcAjdyXiMTVDUTX
-         hcdQ==
+        bh=R9ObJ8QwqXruga0MOShtora2MWAN1lSnLSZ4b8PI1Yo=;
+        b=K4tbr2ou/f64TqneAxiA4BSLlIxaEpO75GvESj9OkVeMhX82QurhjkfoTfZjjLMzkP
+         Ky81xMQrWO99hSZVJjaElzKZP6F9vRRUp8IFzhxl/xO9MMs/eeKOZRKYS6JI0NDFyyql
+         Ky/l2xaBm46WOM2qopHRYteA8zsCqrVC2sJVs2Dm6OHh5YYyeeHuSplEx3jYJVbiDYSc
+         MC6xlfXmxaMm8CbEm5189HWdraJZWoOVJt/PguP79jrugg+xP7f2ZqugGvwY9BaCRb3T
+         8W2rkuGCJx+p+bmZZEx+hobOir/+f2yQLGIhGKYqE3RIshK3z2b5O/6goMnnRjm4ED5z
+         KxyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AZuECOtx3J77EAMXdn8Amlz7Lrsr5QoUpWlX5W2gc3M=;
-        b=NcV0YG8uMXdyRxAZEuVGrcB2L3+HqNXnT7JZwtCQVCyz5t5vsLBG5qBlsnoVFKjABI
-         UYTOs3KizMBzvDEslNqQiS6rLD/ZQLB6XXcqRoZj8v6ONE9h0yFq8+jd6sx7yLgFsIS7
-         s6nY7+Qnku5izmxOl9lMG9/w1GrLAXykzoX5Ndwvukvt864Try09xSqvTj+JCqyNbvqq
-         wmFD9s31kPfRxEYcCGoEVorfYB7UWsT18yLMLk+xSM037G+kgchWdsm1R5DYFw1qCIcL
-         UQDfodh2/z+9T3w8nYbnfUu8Jo89C7KjXaM9CFDKwxoCxH1c8lt3kcQ8AiiQZ0809zaI
-         6KkA==
-X-Gm-Message-State: AOAM5304q+6VNclllymgYs62tzi5Oc6NwKBsqO1R5rk5gsla4ioQdmVN
-        DsUBnDJ/QjfHZRUBd+bl2wD8Uz2N7CKyG/Rp2+o=
-X-Google-Smtp-Source: ABdhPJwpVJfwEYanTVxZyKwOp6+d8m1474NVuhCDFC/K/5HCNw2W07ILuWLTvJulj/udWCqAs7Q9BahGcDajNZKnXAQ=
-X-Received: by 2002:aca:c341:: with SMTP id t62mr3861464oif.5.1590176008210;
- Fri, 22 May 2020 12:33:28 -0700 (PDT)
+        bh=R9ObJ8QwqXruga0MOShtora2MWAN1lSnLSZ4b8PI1Yo=;
+        b=NfCzfpXnNKkP3HoH++UFIXwaVdm614D//jyVdC69L0yNLG70f936wg+ZgcOWfkHzNk
+         mKWWCVcWnH73Y903/PoSe9S8WkoXZKuId/uPCptVg9xiOEGHKuSZ0uWBmaCWP7WTLYE1
+         Zn3S2V6bX5yf2S6UNJebrLINuagIIDzzxCQXbZaZTtoqEut0Z3eZolH1dj5l9ms6QIbl
+         jYa36MYwNBlPrJ/54Q8Rpfu3VSde2flAVE6GrAljT79VBV0tS3EqAMRpbZQ8Jn63G6wh
+         XylA71vVS2meI9lQyU6WlrGJCkjNlEiRUfzvkA/PcKZq8u2UIDth9p63zlrxV86JJVFH
+         G2vw==
+X-Gm-Message-State: AOAM531XQK0pPjdFXy2oiuwEnzP0mQlx5VmQrYLGw+WNaW2+6zu+jHgj
+        BuatfwLMOUf93lun9si2YrAgjMQwlriSeDHwU3cP+Egf
+X-Google-Smtp-Source: ABdhPJy5Kan1mEuSgaqltLgTsnCE0XU+Rfacrryiez6e5ARMSvHFCFpdvKqo4/m3rHWHmIn5/CTVwFCu3cUz8nSsm2Q=
+X-Received: by 2002:a9d:64d3:: with SMTP id n19mr11768276otl.189.1590176475252;
+ Fri, 22 May 2020 12:41:15 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200515114014.3135-1-vladbu@mellanox.com> <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
- <vbfo8qkb8ip.fsf@mellanox.com> <CAM_iQpXqLdAJOcwyQ=DZs5zi=zEtr97_LT9uhPtTTPke=8Vvdw@mail.gmail.com>
- <vbfv9krvzkv.fsf@mellanox.com>
-In-Reply-To: <vbfv9krvzkv.fsf@mellanox.com>
+ <vbf1rndz76r.fsf@mellanox.com>
+In-Reply-To: <vbf1rndz76r.fsf@mellanox.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 22 May 2020 12:33:17 -0700
-Message-ID: <CAM_iQpVJ-MT0t1qtvWBp2=twPq6GWsn5-sAW6=QVf4Gc97Mmeg@mail.gmail.com>
+Date:   Fri, 22 May 2020 12:41:04 -0700
+Message-ID: <CAM_iQpVB64www8pArKpUhKKSkNapZU1p0n7Tgg3E8SR0PCgKfQ@mail.gmail.com>
 Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
 To:     Vlad Buslov <vladbu@mellanox.com>
 Cc:     Edward Cree <ecree@solarflare.com>,
@@ -67,118 +66,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 12:24 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+On Thu, May 21, 2020 at 7:36 AM Vlad Buslov <vladbu@mellanox.com> wrote:
 >
+> Hi Edward, Cong,
 >
-> On Tue 19 May 2020 at 21:58, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > On Tue, May 19, 2020 at 2:04 AM Vlad Buslov <vladbu@mellanox.com> wrote:
-> >> I considered that approach initially but decided against it for
-> >> following reasons:
-> >>
-> >> - Generic data is covered by current terse dump implementation.
-> >>   Everything else will be act or cls specific which would result long
-> >>   list of flag values like: TCA_DUMP_FLOWER_KEY_ETH_DST,
-> >>   TCA_DUMP_FLOWER_KEY_ETH_DST, TCA_DUMP_FLOWER_KEY_VLAN_ID, ...,
-> >>   TCA_DUMP_TUNNEL_KEY_ENC_KEY_ID, TCA_DUMP_TUNNEL_KEY_ENC_TOS. All of
-> >>   these would require a lot of dedicated logic in act and cls dump
-> >>   callbacks. Also, it would be quite a challenge to test all possible
-> >>   combinations.
+> On Mon 18 May 2020 at 18:37, Edward Cree <ecree@solarflare.com> wrote:
+> > On 15/05/2020 12:40, Vlad Buslov wrote:
+> >> In order to
+> >> significantly improve filter dump rate this patch sets implement new
+> >> mode of TC filter dump operation named "terse dump" mode. In this mode
+> >> only parameters necessary to identify the filter (handle, action cookie,
+> >> etc.) and data that can change during filter lifecycle (filter flags,
+> >> action stats, etc.) are preserved in dump output while everything else
+> >> is omitted.
+> > I realise I'm a bit late, but isn't this the kind of policy that shouldn't
+> >  be hard-coded in the kernel?  I.e. if next year it turns out that some
+> >  user needs one parameter that's been omitted here, but not the whole dump,
+> >  are they going to want to add another mode to the uapi?
+> > Should this not instead have been done as a set of flags to specify which
+> >  pieces of information the caller wanted in the dump, rather than a mode
+> >  flag selecting a pre-defined set?
 > >
-> > Well, if you consider netlink dump as a database query, what Edward
-> > proposed is merely "select COLUMN1 COLUMN2 from cls_db" rather
-> > than "select * from cls_db".
-> >
-> > No one said it is easy to implement, it is just more elegant than you
-> > select a hardcoded set of columns for the user.
+> > -ed
 >
-> As I explained to Edward, having denser netlink packets with more
-> filters per packet is only part of optimization. Another part is not
-> executing some code at all. Consider fl_dump_key() which is 200 lines
-> function with bunch of conditionals like that:
+> I've been thinking some more about this. While the idea of making
+> fine-grained dump where user controls exact contents field-by-field is
+> unfeasible due to performance considerations, we can try to come up with
+> something more coarse-grained but not fully hardcoded (like current terse
+> dump implementation). Something like having a set of flags that allows
+> to skip output of groups of attributes.
 >
-> static int fl_dump_key(struct sk_buff *skb, struct net *net,
->                        struct fl_flow_key *key, struct fl_flow_key *mask)
-> {
->         if (mask->meta.ingress_ifindex) {
->                 struct net_device *dev;
+> For example, CLS_SKIP_KEY flag would skip the whole expensive classifier
+> key dump without having to go through all 200 lines of conditionals in
+> fl_dump_key() while ACT_SKIP_OPTIONS would skip outputting TCA_OPTIONS
+> compound attribute (and expensive call to tc_action_ops->dump()). This
+> approach would also leave the door open for further more fine-grained
+> flags, if the need arises. For example, new flags
+> CLS_SKIP_KEY_{L2,L3,L4} can be introduced to more precisely control
+> which parts of cls key should be skipped.
 >
->                 dev = __dev_get_by_index(net, key->meta.ingress_ifindex);
->                 if (dev && nla_put_string(skb, TCA_FLOWER_INDEV, dev->name))
->                         goto nla_put_failure;
->         }
+> The main drawback of such approach is that it is impossible to come up
+> with universal set of flags that would be applicable for all
+> classifiers. Key (in some form) is applicable to most classifiers, but
+> it still doesn't make sense for matchall or bpf. Some classifiers have
+> 'flags', some don't. Hardware-offloaded classifiers have in_hw_count.
+> Considering this, initial set of flags will be somewhat flower-centric.
 >
->         if (fl_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
->                             mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
->                             sizeof(key->eth.dst)) ||
->             fl_dump_key_val(skb, key->eth.src, TCA_FLOWER_KEY_ETH_SRC,
->                             mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
->                             sizeof(key->eth.src)) ||
->             fl_dump_key_val(skb, &key->basic.n_proto, TCA_FLOWER_KEY_ETH_TYPE,
->                             &mask->basic.n_proto, TCA_FLOWER_UNSPEC,
->                             sizeof(key->basic.n_proto)))
->                 goto nla_put_failure;
->
->         if (fl_dump_key_mpls(skb, &key->mpls, &mask->mpls))
->                 goto nla_put_failure;
->
->         if (fl_dump_key_vlan(skb, TCA_FLOWER_KEY_VLAN_ID,
->                              TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan, &mask->vlan))
->                 goto nla_put_failure;
->     ...
->
->
-> Now imagine all of these are extended with additional if (flags &
-> TCA_DUMP_XXX). All gains from not outputting some other minor stuff into
-> netlink packet will be negated by it.
+> What do you think?
 
-Interesting, are you saying a bit test is as expensive as appending
-an actual netlink attribution to the dumping? I am surprised.
+This looks like a reverse filtering to me, so essentially the same.
+Please give me some time to think about this, it is definitely not
+easy.
 
-
->
->
-> >
-> > Think about it, what if another user wants a less terse dump but still
-> > not a full dump? Would you implement ops->terse_dump2()? Or
-> > what if people still think your terse dump is not as terse as she wants?
-> > ops->mini_dump()? How many ops's we would end having?
->
-> User can discard whatever he doesn't need in user land code. The goal of
-> this change is performance optimization, not designing a generic
-> kernel-space data filtering mechanism.
-
-You optimize the performance by reducing the dump size, which is
-already effectively a data filtering. This doesn't have to be your goal,
-you are implementing it anyway.
-
-
->
-> >
-> >
-> >>
-> >> - It is hard to come up with proper validation for such implementation.
-> >>   In case of terse dump I just return an error if classifier doesn't
-> >>   implement the callback (and since current implementation only outputs
-> >>   generic action info, it doesn't even require support from
-> >>   action-specific dump callbacks). But, for example, how do we validate
-> >>   a case where user sets some flower and tunnel_key act dump flags from
-> >>   previous paragraph, but Qdisc contains some other classifier? Or
-> >>   flower classifier points to other types of actions? Or when flower
-> >>   classifier has and tunnel_key actions but also mirred? Should the
-> >
-> > Each action should be able to dump selectively too. If you think it
-> > as a database, it is just a different table with different schemas.
->
-> How is designing custom SQL-like query language (according to your
-> example at the beginning of the mail) for filter dump is going to
-> improve performance? If there is a way to do it in fast a generic manner
-> with BPF, then I'm very interested to hear the details. But adding
-> hundred more hardcoded conditionals is just not a solution considering
-> main motivations for this change is performance.
-
-I still wonder how a bit test is as expensive as you claim, it does
-not look like you actually measure it. This of course depends on the
-size of the dump, but if you look at other netlink dump in kernel,
-not just tc filters, we already dump a lot of attributes per record.
+The only thing I worry is that once you add terse dump, we cannot
+simply remove it any more. (Otherwise I wouldn't even want to push
+you on this.)
 
 Thanks.
