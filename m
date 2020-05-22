@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250241DDBCD
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 02:11:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B951DDBDA
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 02:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730600AbgEVALN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 20:11:13 -0400
-Received: from mga06.intel.com ([134.134.136.31]:41703 "EHLO mga06.intel.com"
+        id S1730803AbgEVALh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 20:11:37 -0400
+Received: from mga06.intel.com ([134.134.136.31]:41697 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730172AbgEVALM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 20:11:12 -0400
-IronPort-SDR: VbUda8bVf6vm7qA7i0ZOmz5Nj/PLWkVWvyS+KR6evdzk0F1lvredTc4xmE7DzdjYrwIwM0ktpZ
- mKJ3qlYqKnyQ==
+        id S1730558AbgEVALN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 20:11:13 -0400
+IronPort-SDR: +2sWSuqSc90ixuCvzJDAe/lIosfBzYP0hCYiYzJH0H5XuLfMfZ2/H0zSWyfchoUUe8sIYoqei+
+ A0LNewEOtxpg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 17:11:10 -0700
-IronPort-SDR: z4hPdPw7e4hKkI6MWBLByc+8/wL527B7AGOxZFQSMYSM9+ssCfENMHxC9q6vZRibV/S2oLiFFl
- 8H2G9jH21V1Q==
+IronPort-SDR: SdltT0zNiZcYimcNiVVPZYAL6qmohh1ivj3NfxWm3caScp8BOt8TFizo4Gal+TmFqmyLNJDmIn
+ HG93bxRsrzfQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,419,1583222400"; 
-   d="scan'208";a="254133935"
+   d="scan'208";a="254133938"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga007.fm.intel.com with ESMTP; 21 May 2020 17:11:09 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 21 May 2020 17:11:10 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
+Cc:     Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Maxim Zhukov <mussitantesmortem@gmail.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 04/15] igc: Enable NFC rules based source MAC address
-Date:   Thu, 21 May 2020 17:10:57 -0700
-Message-Id: <20200522001108.1675149-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 05/15] e1000: Do not perform reset in reset_task if we are already down
+Date:   Thu, 21 May 2020 17:10:58 -0700
+Message-Id: <20200522001108.1675149-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200522001108.1675149-1-jeffrey.t.kirsher@intel.com>
 References: <20200522001108.1675149-1-jeffrey.t.kirsher@intel.com>
@@ -43,98 +43,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-This patch adds support for Network Flow Classification (NFC) rules
-based on source MAC address. Note that the controller doesn't support
-rules with both source and destination addresses set, so this special
-case is checked in igc_add_ethtool_nfc_entry().
+We are seeing a deadlock in e1000 down when NAPI is being disabled. Looking
+over the kernel function trace of the system it appears that the interface
+is being closed and then a reset is hitting which deadlocks the interface
+as the NAPI interface is already disabled.
 
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+To prevent this from happening I am disabling the reset task when
+__E1000_DOWN is already set. In addition code has been added so that we set
+the __E1000_DOWN while holding the __E1000_RESET flag in e1000_close in
+order to guarantee that the reset task will not run after we have started
+the close call.
+
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Tested-by: Maxim Zhukov <mussitantesmortem@gmail.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 32 ++++++++++++++------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 6c27046a852d..42ecb493c1a2 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -1188,16 +1188,8 @@ static int igc_set_rss_hash_opt(struct igc_adapter *adapter,
- 
- int igc_add_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
- {
--	struct igc_hw *hw = &adapter->hw;
- 	int err = -EINVAL;
- 
--	if (hw->mac.type == igc_i225 &&
--	    !(input->filter.match_flags & ~IGC_FILTER_FLAG_SRC_MAC_ADDR)) {
--		netdev_err(adapter->netdev,
--			   "i225 doesn't support flow classification rules specifying only source addresses\n");
--		return -EOPNOTSUPP;
--	}
--
- 	if (input->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
- 		u16 etype = ntohs(input->filter.etype);
- 
-@@ -1206,6 +1198,14 @@ int igc_add_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
- 			return err;
- 	}
- 
-+	if (input->filter.match_flags & IGC_FILTER_FLAG_SRC_MAC_ADDR) {
-+		err = igc_add_mac_filter(adapter, IGC_MAC_FILTER_TYPE_SRC,
-+					 input->filter.src_addr,
-+					 input->action);
-+		if (err)
-+			return err;
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 05bc6e216bca..d9fa4600f745 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -542,8 +542,13 @@ void e1000_reinit_locked(struct e1000_adapter *adapter)
+ 	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
+ 		msleep(1);
+-	e1000_down(adapter);
+-	e1000_up(adapter);
++
++	/* only run the task if not already down */
++	if (!test_bit(__E1000_DOWN, &adapter->flags)) {
++		e1000_down(adapter);
++		e1000_up(adapter);
 +	}
 +
- 	if (input->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR) {
- 		err = igc_add_mac_filter(adapter, IGC_MAC_FILTER_TYPE_DST,
- 					 input->filter.dst_addr,
-@@ -1239,6 +1239,10 @@ int igc_erase_filter(struct igc_adapter *adapter, struct igc_nfc_filter *input)
- 		igc_del_vlan_prio_filter(adapter, prio);
- 	}
+ 	clear_bit(__E1000_RESETTING, &adapter->flags);
+ }
  
-+	if (input->filter.match_flags & IGC_FILTER_FLAG_SRC_MAC_ADDR)
-+		igc_del_mac_filter(adapter, IGC_MAC_FILTER_TYPE_SRC,
-+				   input->filter.src_addr);
+@@ -1433,10 +1438,15 @@ int e1000_close(struct net_device *netdev)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	int count = E1000_CHECK_RESET_COUNT;
+ 
+-	while (test_bit(__E1000_RESETTING, &adapter->flags) && count--)
++	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags) && count--)
+ 		usleep_range(10000, 20000);
+ 
+-	WARN_ON(test_bit(__E1000_RESETTING, &adapter->flags));
++	WARN_ON(count < 0);
 +
- 	if (input->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR)
- 		igc_del_mac_filter(adapter, IGC_MAC_FILTER_TYPE_DST,
- 				   input->filter.dst_addr);
-@@ -1334,20 +1338,28 @@ static int igc_add_ethtool_nfc_entry(struct igc_adapter *adapter,
- 		input->filter.match_flags = IGC_FILTER_FLAG_ETHER_TYPE;
- 	}
- 
--	/* Only support matching addresses by the full mask */
-+	/* Both source and destination address filters only support the full
-+	 * mask.
-+	 */
- 	if (is_broadcast_ether_addr(fsp->m_u.ether_spec.h_source)) {
- 		input->filter.match_flags |= IGC_FILTER_FLAG_SRC_MAC_ADDR;
- 		ether_addr_copy(input->filter.src_addr,
- 				fsp->h_u.ether_spec.h_source);
- 	}
- 
--	/* Only support matching addresses by the full mask */
- 	if (is_broadcast_ether_addr(fsp->m_u.ether_spec.h_dest)) {
- 		input->filter.match_flags |= IGC_FILTER_FLAG_DST_MAC_ADDR;
- 		ether_addr_copy(input->filter.dst_addr,
- 				fsp->h_u.ether_spec.h_dest);
- 	}
- 
-+	if (input->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR &&
-+	    input->filter.match_flags & IGC_FILTER_FLAG_SRC_MAC_ADDR) {
-+		netdev_dbg(netdev, "Filters with both dst and src are not supported\n");
-+		err = -EOPNOTSUPP;
-+		goto err_out;
-+	}
++	/* signal that we're down so that the reset task will no longer run */
++	set_bit(__E1000_DOWN, &adapter->flags);
++	clear_bit(__E1000_RESETTING, &adapter->flags);
 +
- 	if ((fsp->flow_type & FLOW_EXT) && fsp->m_ext.vlan_tci) {
- 		if (fsp->m_ext.vlan_tci != htons(VLAN_PRIO_MASK)) {
- 			netdev_dbg(netdev, "VLAN mask not supported\n");
+ 	e1000_down(adapter);
+ 	e1000_power_down_phy(adapter);
+ 	e1000_free_irq(adapter);
 -- 
 2.26.2
 
