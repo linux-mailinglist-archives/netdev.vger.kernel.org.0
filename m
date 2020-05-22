@@ -2,82 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8231DDC97
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 03:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 005841DDCC2
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 03:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgEVBXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 21:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgEVBXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 21:23:32 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950B1C061A0E;
-        Thu, 21 May 2020 18:23:32 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id f15so3757746plr.3;
-        Thu, 21 May 2020 18:23:32 -0700 (PDT)
+        id S1726973AbgEVBoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 21:44:00 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:28080 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgEVBn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 21:43:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ogbg3vrGDJe0611dyqo8aJKJy+hyyzLlyQmUDoBczI4=;
-        b=IgQ8Lvm6uoFkqaWjj/5uTQhkFd4Ay4eM61kvsD4Q9WaCiu12WVamQAWCEMN/PZCBu4
-         BwvGPE44+OMWLl1ZgdDNkgWIEl66FtBgKwWzIQMsKHzXn0u2crLRtuy1yE4hxDG/SyOg
-         k13PTXbmfd5YVHSNy43btFG4wMpT6g1Usx3/JcOmkFQ4QqJo9ZrfB6xpP5HJWH81vOB4
-         XeyKMNF1vFf+GbPGhSr0hyEfykAIpu78msJ0lU10JzBusdZmMK6J8RNMxUfmQtTU3y7I
-         YfzM262kIxnrPIFX+1BRydeRT02DWUkGXphEo4ePQhiJ9mkYZnN3HWam7FaM+d0UpzOw
-         mjrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ogbg3vrGDJe0611dyqo8aJKJy+hyyzLlyQmUDoBczI4=;
-        b=VsjowW3HOaCV1AZ/JuTsqsrwLokLThKQhyGA3OjR0Ni36tq4zsSk3WrILjCrC9l+KB
-         ygt5AulrCJ0ZNMpEiVf5RfANiL8hg9FKILlhWeJIqzfEfVO961BRGMZjobGtYDOqp7H9
-         VTdjsvlTBNYWvYiw8AWfNKjSDRZV02tUq6w54rPGoyN7lcOSrSJuAoCpxvBBhmbX/bfM
-         5YTCdj441UxpyQJxisiFpY/bXy1MuVpci0qpZ8I5JT5V3S4HwEoDHkgQFtNt63LpnnJF
-         SfHbMyM6Q/P+C1xs3ieI7//t05a/t6UYDP/8PObjp5nyNr/wacr79S2Pd60uZ5+xChDP
-         1Jxg==
-X-Gm-Message-State: AOAM532mOzfoVwDbOSo2qu9H2Bvjpkg3REHbdzltdhDjb9ptdNJWcM3E
-        p3NykYdWbSnVm2P41mmDQdsUJ9Cl
-X-Google-Smtp-Source: ABdhPJwaMxKrphz9D07FJ6rBzcGCtfeZ7zTzYCZB6fw3bLlEu/NZXP05iuVhDGKc67+Hat2YrUFsuw==
-X-Received: by 2002:a17:90a:246d:: with SMTP id h100mr1407400pje.21.1590110611577;
-        Thu, 21 May 2020 18:23:31 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e680])
-        by smtp.gmail.com with ESMTPSA id 65sm5515340pfy.219.2020.05.21.18.23.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 18:23:30 -0700 (PDT)
-Date:   Thu, 21 May 2020 18:23:28 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com, "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>
-Subject: Re: [PATCH v2 bpf-next 7/7] docs/bpf: add BPF ring buffer design
- notes
-Message-ID: <20200522012328.7vs44qhutdiukrog@ast-mbp.dhcp.thefacebook.com>
-References: <20200517195727.279322-1-andriin@fb.com>
- <20200517195727.279322-8-andriin@fb.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1590111840; x=1621647840;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version;
+  bh=n/q9AlKaX0CH8H7SaLZwpolAQTXmIBZYGWFCXorwbbQ=;
+  b=CwtmrhpQPU7Cvs03uzOHy/+EZjA8PmkyQo/M7u8XakiFxZxOmRDiDVpN
+   KqO//tjbD8rZZh4t9Zc7MSt6/RckzaMab7YvSEFpu+sahGaYZokVHk1Oz
+   wh77U3kSmYFkKje2xBB8rliaRMTOCx1x/jOFHk+KT7tNk0dzS0kJtWuhR
+   4=;
+IronPort-SDR: 10RDmI1c2uqp4SDgqcSm7g8lCY0lagez6ZlQ+gRsxTPsmKfrlLAe2ZGpTRamKe9T1KvVjxsLMt
+ 9gULPZ8gXQeQ==
+X-IronPort-AV: E=Sophos;i="5.73,419,1583193600"; 
+   d="scan'208";a="31753098"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 22 May 2020 01:43:47 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id 119F7A2193;
+        Fri, 22 May 2020 01:43:39 +0000 (UTC)
+Received: from EX13D10UWB004.ant.amazon.com (10.43.161.121) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 22 May 2020 01:43:39 +0000
+Received: from EX13D01UWB002.ant.amazon.com (10.43.161.136) by
+ EX13D10UWB004.ant.amazon.com (10.43.161.121) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 22 May 2020 01:43:39 +0000
+Received: from EX13D01UWB002.ant.amazon.com ([10.43.161.136]) by
+ EX13d01UWB002.ant.amazon.com ([10.43.161.136]) with mapi id 15.00.1497.006;
+ Fri, 22 May 2020 01:43:39 +0000
+From:   "Singh, Balbir" <sblbir@amazon.com>
+To:     "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Agarwal, Anchal" <anchalag@amazon.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "bp@alien8.de" <bp@alien8.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
+ hibernation
+Thread-Topic: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
+ hibernation
+Thread-Index: AQHWLjUeTCtt92OWtESWVO30imQxZaizODaAgAAgMwA=
+Date:   Fri, 22 May 2020 01:43:38 +0000
+Message-ID: <eea5ebc9adcd46b368c8d856e865a411b946f364.camel@amazon.com>
+References: <ad580b4d5b76c18fe2fe409704f25622e01af361.1589926004.git.anchalag@amazon.com>
+         <20200521234823.GA2131@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+In-Reply-To: <20200521234823.GA2131@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.161.175]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <415874684795E24488089E35061B3040@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200517195727.279322-8-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 17, 2020 at 12:57:27PM -0700, Andrii Nakryiko wrote:
-> Add commit description from patch #1 as a stand-alone documentation under
-> Documentation/bpf, as it might be more convenient format, in long term
-> perspective.
-> 
-> Suggested-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  Documentation/bpf/ringbuf.txt | 191 ++++++++++++++++++++++++++++++++++
-
-Thanks for the doc. Looks great, but could you make it .rst from the start?
-otherwise soon after somebody will be converting it adding churn.
+PiBAQCAtMTA1Nyw3ICsxMDYzLDcgQEAgc3RhdGljIGludCB4ZW5fdHJhbnNsYXRlX3ZkZXYoaW50
+IHZkZXZpY2UsIGludCAqbWlub3IsIHVuc2lnbmVkIGludCAqb2Zmc2V0KQ0KPiAgCQljYXNlIFhF
+Tl9TQ1NJX0RJU0s1X01BSk9SOg0KPiAgCQljYXNlIFhFTl9TQ1NJX0RJU0s2X01BSk9SOg0KPiAg
+CQljYXNlIFhFTl9TQ1NJX0RJU0s3X01BSk9SOg0KPiAtCQkJKm9mZnNldCA9ICgqbWlub3IgLyBQ
+QVJUU19QRVJfRElTSykgKyANCj4gKwkJCSpvZmZzZXQgPSAoKm1pbm9yIC8gUEFSVFNfUEVSX0RJ
+U0spICsNCj4gIAkJCQkoKG1ham9yIC0gWEVOX1NDU0lfRElTSzFfTUFKT1IgKyAxKSAqIDE2KSAr
+DQo+ICAJCQkJRU1VTEFURURfU0RfRElTS19OQU1FX09GRlNFVDsNCj4gIAkJCSptaW5vciA9ICpt
+aW5vciArDQo+IEBAIC0xMDcyLDcgKzEwNzgsNyBAQCBzdGF0aWMgaW50IHhlbl90cmFuc2xhdGVf
+dmRldihpbnQgdmRldmljZSwgaW50ICptaW5vciwgdW5zaWduZWQgaW50ICpvZmZzZXQpDQo+ICAJ
+CWNhc2UgWEVOX1NDU0lfRElTSzEzX01BSk9SOg0KPiAgCQljYXNlIFhFTl9TQ1NJX0RJU0sxNF9N
+QUpPUjoNCj4gIAkJY2FzZSBYRU5fU0NTSV9ESVNLMTVfTUFKT1I6DQo+IC0JCQkqb2Zmc2V0ID0g
+KCptaW5vciAvIFBBUlRTX1BFUl9ESVNLKSArIA0KPiArCQkJKm9mZnNldCA9ICgqbWlub3IgLyBQ
+QVJUU19QRVJfRElTSykgKw0KPiAgCQkJCSgobWFqb3IgLSBYRU5fU0NTSV9ESVNLOF9NQUpPUiAr
+IDgpICogMTYpICsNCj4gIAkJCQlFTVVMQVRFRF9TRF9ESVNLX05BTUVfT0ZGU0VUOw0KPiAgCQkJ
+Km1pbm9yID0gKm1pbm9yICsNCg0KVGhlc2Ugc2VlbSBsaWtlIHdoaXRlc3BhY2UgZml4ZXM/IElm
+IHNvLCB0aGV5IHNob3VsZCBiZSBpbiBhIHNlcGFyYXRlIHBhdGNoDQoNCkJhbGJpcg0KDQo=
