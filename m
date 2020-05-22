@@ -2,120 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C091DF166
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 280A41DF169
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731069AbgEVVov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 17:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36942 "EHLO
+        id S1731149AbgEVVp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 17:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731036AbgEVVov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:44:51 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4062C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:44:49 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id j8so1012607ybj.12
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:44:49 -0700 (PDT)
+        with ESMTP id S1731072AbgEVVp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:45:58 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424BEC061A0E
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:45:58 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n11so5604386pgl.9
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:45:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LkoycmjrUjG2eO8rPIf12+CxPcEEHL8Q13A65ENbvJs=;
-        b=D9d6Rut8DjateF5fc2935suHYZRVbGkh9dYYwgSLIfIJpAKK/OwAM+66KuzOhqgAbm
-         ve69I8YqGiNXxoFDM5cbT6ptsRJdxOTg9Pfe10AiPs5L3rjiwbXL3siGTOAjzIAMkfn0
-         2tbvlnI+zJivmyNUUy/1tLXeETDsqpZ5lz0OPY3DJIWN8STlQ0ncK13SMldWye9G8m3+
-         a9NSkPlNVFGxAD3OZtCvS/giO0lgv+YuMJRS1eskqPN8iH75Oj+qDZQCs+wMBuxuV19I
-         pewR0x6lRf4nyKT4vPtaNQrf+ZNzra3dI6R6CsJVRCFnvZdNLKgdGt94+IdFeah3PiIM
-         tp+Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=o8IX8NAUnDOEVX6Nk7rJBXYRBqlNgn0ggDradDyA97E=;
+        b=qGsmjGwliRvn4RwyclU/hGYzhG8Q2i7HW1y/nWN0E6ozrlE8NepCk2BEPsjEjF7vD3
+         xnVg/UdjMejxjD6HR3dPPWFQXc6qMGRlxYT2hSGNfhV4C852/amHqP+lELQvTXdz4UCI
+         MJ4tfsWkHTB5Qbd2Oqk6aZ7AikFvHk79KIm+aE9CZGwEhmKGGt60902AHIHsnkjufXHs
+         H2w9AK5xFAGaEGQKTDr368JZDEkTxR42/uT6K2GKW4oLml8UQD2hXso0mkyU0Uqhuafg
+         YqH4YUqLU8niDDjbHW2aslCTccESgU2EHSbgVgk8mD6qGUXK5BuYtuv0QwcIebddX3x0
+         hCYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LkoycmjrUjG2eO8rPIf12+CxPcEEHL8Q13A65ENbvJs=;
-        b=T87xwjOXHEtZKjl/teSBvp5r9sxoKag00cI55kPMPYL6oT9EwcHxPWIeWE55YVwrFv
-         u5SInbqOnVxQ7BjWp/u9a9B7fOF8zSGKJNTjHPQ7PNwbSKwcPGjzPD50ZyvvmSiVNs0d
-         8o3aNVehCH26I2No3RKDCQaJH+vhAon/h+MGQgtGauPImNSn3LXKzUhSdbA6BP+P91JR
-         tZNviwZWYlb16L4cXASiTt5YWYla1gl2xWkq2PINYOVUnPZp0XEd6zGZ02SN/mwGjjFS
-         1XuKHVUPzqsGhKlDyvfSVYK7tlpGTUnH/Etne1lze8KT+H0CQjDhPOFai2KALf/No4WC
-         +Wdw==
-X-Gm-Message-State: AOAM5328AY/W/p21CAYPCqnaHdRT8EMFrh+c5DWsFJWHY1Czt3hPiT4Y
-        Gha45O3TStoVlRAvdy8PcJzcemdbwy7OX3oJN0UFiA==
-X-Google-Smtp-Source: ABdhPJw2VbkTj7xeMVWys92l/99Hyh+Ciov8Ua02SQWZ8T0401HW0D5XTdz0qh+mMxLW9nZ+DiKcafIe8Ufo6vaLwBc=
-X-Received: by 2002:a25:1484:: with SMTP id 126mr25642394ybu.380.1590183888932;
- Fri, 22 May 2020 14:44:48 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=o8IX8NAUnDOEVX6Nk7rJBXYRBqlNgn0ggDradDyA97E=;
+        b=AZVDhdYAB7SmSUsTGM9tSOMa0iw8Rf5KVky2ZuDuSGMXdNuTWgWvhdKt2bAvI/6bqr
+         bNWHkDzIFnoPs7F9L2gi3ZkmGNdLJL8gRuOrF3hoRZZA5RsU1z+8b3dnA7CSKQU3lV2I
+         yP2N6L8dEVpqGd7CzWbEWCGV1VbPEcXILK3SwiBRtLme/n+chxA4Pa7oiXOtaJ1TXmzn
+         INJiMpFFTqfRj5kJGOy2HsHp1BX24JzIYR5z0k0QUJQg7e3DcgvbccVQk7ycJQdD0Nfz
+         rM0UOTLGgD7uHgsiNAmBNdgvPLMexJPOrAw01yLlob63LCEC2cgEK6Oo+GcTlXUzZnKR
+         qh+w==
+X-Gm-Message-State: AOAM530vqkXLsseIrE7nWmOYkEFO+FYMrHewVsA/7RuB/HlImhdzXxGo
+        BYFL2G6pa2y+g4Qat6TZE5Tpuq5i
+X-Google-Smtp-Source: ABdhPJyLZMl2h2n/6v4pPqkXcgmiZbtrKdIgYck3++u6OCq7+xNLOjZcL3DhVNXVrkVZsIQKSxqDsg==
+X-Received: by 2002:a65:49c9:: with SMTP id t9mr3253894pgs.148.1590183957509;
+        Fri, 22 May 2020 14:45:57 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id x7sm7581876pfo.160.2020.05.22.14.45.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 May 2020 14:45:56 -0700 (PDT)
+Subject: Re: [PATCH] tipc: Disable preemption when calling send_msg method.
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Cc:     netdev@vger.kernel.org
+References: <20200520114529.3433-1-penguin-kernel@I-love.SAKURA.ne.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <5a668c12-4038-1f68-3e17-edcdc66e9e96@gmail.com>
+Date:   Fri, 22 May 2020 14:45:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200521182958.163436-1-edumazet@google.com> <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
- <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
- <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
- <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
- <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com> <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
- <bebc5293-d5be-39b5-8ee4-871dd3aa7240@redhat.com> <2084be57-be94-6630-5623-2bd7bd7b7da2@gmail.com>
- <400644e2-7dac-103c-a07a-88287b1905d5@redhat.com>
-In-Reply-To: <400644e2-7dac-103c-a07a-88287b1905d5@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 22 May 2020 14:44:37 -0700
-Message-ID: <CANn89iL+gT7PSwuWhhWf8o7f1SgbqJ5+mdJ_bfBxOMbzjo_oMA@mail.gmail.com>
-Subject: Re: [PATCH net] tipc: block BH before using dst_cache
-To:     Jon Maloy <jmaloy@redhat.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        tipc-discussion@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200520114529.3433-1-penguin-kernel@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 2:37 PM Jon Maloy <jmaloy@redhat.com> wrote:
->
->
->
-> On 5/22/20 4:10 PM, Eric Dumazet wrote:
-> >
-> > On 5/22/20 12:47 PM, Jon Maloy wrote:
-> >>
-> >> On 5/22/20 11:57 AM, Eric Dumazet wrote:
-> >>> On 5/22/20 8:01 AM, Jon Maloy wrote:
-> >>>> On 5/22/20 2:18 AM, Xin Long wrote:
-> >>>>> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
-> >>>>>> Resend to the list in non HTML form
-> >>>>>>
-> >>>>>>
-> >>>>>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
-> >>>>>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
-> >>>>>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
-> >>>>>>>>> dst_cache_get() documents it must be used with BH disabled.
-> >>>>>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
-> >>>>>>>> preempt_disable().
-> >>>>>>> rcu_read_lock() does not disable BH, never.
-> >>>>>>>
-> >>>>>>> And rcu_read_lock() does not necessarily disable preemption.
-> >>>>> Then I need to think again if it's really worth using dst_cache here.
-> >>>>>
-> >>>>> Also add tipc-discussion and Jon to CC list.
-> >>>> The suggested solution will affect all bearers, not only UDP, so it is not a good.
-> >>>> Is there anything preventing us from disabling preemtion inside the scope of the rcu lock?
-> >>>>
-> >>>> ///jon
-> >>>>
-> >>> BH is disabled any way few nano seconds later, disabling it a bit earlier wont make any difference.
-> >> The point is that if we only disable inside tipc_udp_xmit() (the function pointer call) the change will only affect the UDP bearer, where dst_cache is used.
-> >> The corresponding calls for the Ethernet and Infiniband bearers don't use dst_cache, and don't need this disabling. So it does makes a difference.
-> >>
-> > I honestly do not understand your concern, this makes no sense to me.
-> >
-> > I have disabled BH _right_ before the dst_cache_get(cache) call, so has no effect if the dst_cache is not used, this should be obvious.
-> Forget my comment. I thought we were discussing to Tetsuo Handa's
-> original patch, and missed that you had posted your own.
-> I have no problems with this one.
->
 
-Ah, this now makes sense, I was not aware of Tetsuo patch.
 
-You are absolutely right, Tetsuo Handa's patch is wrong.
+On 5/20/20 4:45 AM, Tetsuo Handa wrote:
+> syzbot is reporting that tipc_udp_send_msg() is calling dst_cache_get()
+> without preemption disabled [1]. Since b->media->send_msg() is called
+> with RCU lock already held, we can also disable preemption at that point.
+> 
+> [1] https://syzkaller.appspot.com/bug?id=dc6352b92862eb79373fe03fdf9af5928753e057
+> 
+> Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> ---
+>  net/tipc/bearer.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+> index 34ca7b789eba..e5cf91665881 100644
+> --- a/net/tipc/bearer.c
+> +++ b/net/tipc/bearer.c
+> @@ -516,6 +516,7 @@ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
+>  	struct tipc_msg *hdr = buf_msg(skb);
+>  	struct tipc_bearer *b;
+>  
+> +	preempt_disable();
+>  	rcu_read_lock();
+>  	b = bearer_get(net, bearer_id);
+>  	if (likely(b && (test_bit(0, &b->up) || msg_is_reset(hdr)))) {
+> @@ -528,6 +529,7 @@ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
+>  		kfree_skb(skb);
+>  	}
+>  	rcu_read_unlock();
+> +	preempt_enable();
+>  }
+>  
+>  /* tipc_bearer_xmit() -send buffer to destination over bearer
+> @@ -543,6 +545,7 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
+>  	if (skb_queue_empty(xmitq))
+>  		return;
+>  
+> +	preempt_disable();
+>  	rcu_read_lock();
+>  	b = bearer_get(net, bearer_id);
+>  	if (unlikely(!b))
+> @@ -560,6 +563,7 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
+>  		}
+>  	}
+>  	rcu_read_unlock();
+> +	preempt_enable();
+>  }
+>  
+>  /* tipc_bearer_bc_xmit() - broadcast buffers to all destinations
+> @@ -574,6 +578,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
+>  	struct sk_buff *skb, *tmp;
+>  	struct tipc_msg *hdr;
+>  
+> +	preempt_disable();
+>  	rcu_read_lock();
+>  	b = bearer_get(net, bearer_id);
+>  	if (unlikely(!b || !test_bit(0, &b->up)))
+> @@ -591,6 +596,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
+>  			b->media->send_msg(net, skb, b, dst);
+>  	}
+>  	rcu_read_unlock();
+> +	preempt_enable();
+>  }
+>  
+>  /**
+> 
 
-Thanks
+
+This is wrong, see my patch instead.
+
+https://patchwork.ozlabs.org/project/netdev/patch/20200521182958.163436-1-edumazet@google.com/ 
+
+Thanks.
+
