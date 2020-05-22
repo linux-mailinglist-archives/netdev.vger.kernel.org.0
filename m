@@ -2,141 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A52C1DE047
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 08:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0321E1DE134
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 09:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728426AbgEVG40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 02:56:26 -0400
-Received: from mga14.intel.com ([192.55.52.115]:18662 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728469AbgEVG4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 02:56:23 -0400
-IronPort-SDR: R9tZqUpVwShwd92/caPNZ2hRIBIZhCicPzBHZxDHYqTbUNB9sWyhmaBgt4hkunfaAc8NflViYA
- WkyQYy4ahLyg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2020 23:56:12 -0700
-IronPort-SDR: 1AaNtcbnROH2GYFc3mz07xVEP33IpAtP54RVAU35cpU94mHDlY2IZklIprgOxQcYr89S+Li/hY
- c3Un+9/2PN/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,420,1583222400"; 
-   d="scan'208";a="290017785"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga004.fm.intel.com with ESMTP; 21 May 2020 23:56:12 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 17/17] ice: Rename build_ctob to ice_build_ctob
-Date:   Thu, 21 May 2020 23:56:07 -0700
-Message-Id: <20200522065607.1680050-18-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200522065607.1680050-1-jeffrey.t.kirsher@intel.com>
-References: <20200522065607.1680050-1-jeffrey.t.kirsher@intel.com>
+        id S1728747AbgEVHop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 03:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727839AbgEVHop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 03:44:45 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31807C061A0E
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 00:44:45 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id c20so9833738ilk.6
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 00:44:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LCkLyZXcgLXsj7dmJQa9iDLscNMkrkvWsu5Kx85OjLg=;
+        b=ge+b+0kLRvCWW+i7FZpDx3vEx/9YzZzTihd0/kwhJML/57n7AN8tpGRlBKOd+v/Vkq
+         MlxvKA+QiiJgfLN2IMjGjgls4JTBYwCh5dcsZV0voXh1SJfMbIUYGEVZDExaAXMjR3pa
+         CKh1er6geLM8qsCE1e0SxIxJeURG2LJHvzNxit1NXDK1sPbtEhbTGDwYa9nhr9S8RWX2
+         JkvxTxEfzcF8tSYMk40YQL/8EzhgTte5EbE1gvYUFSKrSOWSIszGfPqf7X37cvEcPmiv
+         HtMLTvK3kwmmT4cJ1y/3uuYXGkJ0n7Yt19IT8mO/KAmbN5lRd5Gbl+V1Hb+NVkOed3T5
+         CrEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LCkLyZXcgLXsj7dmJQa9iDLscNMkrkvWsu5Kx85OjLg=;
+        b=Wt3hoBwBbQvk5/wRVZ8r+zdUA5NcTAyKopYHXK10gC23b9wClfG4mJIG5SyZwB+nDC
+         Nt8SiwOZrNn5ANOiPvToBf9972oLyur85CoTGM7bsRbeY+9KmBnqVRpE1PLdzu+jqw2D
+         eNfC9INiWo1EmpNIhl4KkvZzYme+VbiJss2B+bVV5j66RvBT2XwGrE+cGcGDVvmzSjfC
+         Z66dhkE0SVX5W1rYFSu4HXIWGvcBYwkc/3ih20rbNzcHkADhATXYZdsMyTuD6pAE2gPU
+         RTAx72duK23V+L5o8pK0ytIySwnq3aoWkK45ERSRU5+iJ6h7C2kOzQCvOTgd9ut3PsyU
+         kqGA==
+X-Gm-Message-State: AOAM530QD38uHYOGt3SxnR8hcPpUaTDDyZMglU83xqc3+ieNBnGGqzsV
+        kWq+5AZNzcuvaHp3nB7qNFnJksRHhHGMcR/wH9Pw6Q==
+X-Google-Smtp-Source: ABdhPJyMFYW+VQGw9RND8F1TlWx6v0Sfg+2mzq6aucXwYl+4J0CTaHFg5jMebQ8YJqZw5nl76kjU2nOYVhi3sG6Wx5A=
+X-Received: by 2002:a92:d946:: with SMTP id l6mr12913271ilq.6.1590133484494;
+ Fri, 22 May 2020 00:44:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200520112523.30995-1-brgl@bgdev.pl> <20200520112523.30995-7-brgl@bgdev.pl>
+ <CAK8P3a3jhrQ3p1JsqMNMOOnfo9t=rAPWaOAwAdDuFMh7wUtZQw@mail.gmail.com>
+ <CAMRc=MeuQk9rFDFGWK0ijsiM-r296cVz9Rth8hWhW5Aeeti_cA@mail.gmail.com> <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a1nhPj6kRhwyXzDK3BGbh66XG6Fmp44QuM1NhFPPBTtPQ@mail.gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Fri, 22 May 2020 09:44:33 +0200
+Message-ID: <CAMRc=MfVkbDSfEV71SD57dpYthdx5epD0FOvjRx8qQGT+SgsTQ@mail.gmail.com>
+Subject: Re: [PATCH v4 06/11] net: ethernet: mtk-eth-mac: new driver
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        DTML <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
+=C5=9Br., 20 maj 2020 o 23:23 Arnd Bergmann <arnd@arndb.de> napisa=C5=82(a)=
+:
+>
+> On Wed, May 20, 2020 at 7:35 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote=
+:
+> > =C5=9Br., 20 maj 2020 o 16:37 Arnd Bergmann <arnd@arndb.de> napisa=C5=
+=82(a):
+>
+> > > I just noticed how the naming of NET_MEDIATEK_MAC and NET_MEDIATEK_SO=
+C
+> > > for two different drivers doing the same thing is really confusing.
+> > >
+> > > Maybe someone can come up with a better name, such as one
+> > > based on the soc it first showed up in.
+> > >
+> >
+> > This has been discussed under one of the previous submissions.
+> > MediaTek wants to use this IP on future designs as well and it's
+> > already used on multiple SoCs so they want the name to be generic. I
+> > also argued that this is a driver strongly tied to a specific
+> > platform(s) so if someone wants to compile it - they probably know
+> > what they're doing.
+> >
+> > That being said: I verified with MediaTek and the name of the IP I can
+> > use is "star" so they proposed "mtk-star-eth". I would personally
+> > maybe go with "mtk-star-mac". How about those two?
+>
+> Both seem fine to me. If this was previously discussed, I don't want
+> do further bike-shedding and I'd trust you to pick a sensible name
+> based on the earlier discussions.
+>
+> > >  +               /* One of the counters reached 0x8000000 - update st=
+ats and
+> > > > +                * reset all counters.
+> > > > +                */
+> > > > +               if (unlikely(status & MTK_MAC_REG_INT_STS_MIB_CNT_T=
+H)) {
+> > > > +                       mtk_mac_intr_disable_stats(priv);
+> > > > +                       schedule_work(&priv->stats_work);
+> > > > +               }
+> > > > + befor
+> > > > +               mtk_mac_intr_ack_all(priv);
+> > >
+> > > The ack here needs to be dropped, otherwise you can get further
+> > > interrupts before the bottom half has had a chance to run.
+> > >
+> >
+> > My thinking was this: if I mask the relevant interrupt (TX/RX
+> > complete) and ack it right away, the status bit will be asserted on
+> > the next packet received/sent but the process won't get interrupted
+> > and when I unmask it, it will fire right away and I won't have to
+> > recheck the status register. I noticed that if I ack it at the end of
+> > napi poll callback, I end up missing certain TX complete interrupts
+> > and end up seeing a lot of retransmissions even if I reread the status
+> > register. I'm not yet sure where this race happens.
+>
+> Right, I see. If you just ack at the end of the poll function, you need
+> to check the rings again to ensure you did not miss an interrupt
+> between checking observing both rings to be empty and the irq-ack.
+>
+> I suspect it's still cheaper to check the two rings with an uncached
+> read from memory than to to do the read-modify-write on the mmio,
+> but you'd have to measure that to be sure.
+>
 
-To make the function easier to identify as being part of the ice driver,
-prepend ice to the function name.
+Unfortunately the PHY on the board I have is 100Mbps which is the
+limiting factor in benchmarking this driver. :(
 
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 11 ++++++-----
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c |  4 ++--
- drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      |  4 ++--
- 4 files changed, 11 insertions(+), 10 deletions(-)
+If you're fine with this - I'd like to fix the minor issues you
+pointed out and stick with the current approach for now. We can always
+fix the implementation in the future once a board with a Gigabit PHY
+is out. Most ethernet drivers don't use such fine-grained interrupt
+control anyway. I expect the performance differences to be miniscule
+really.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 05d1077f80c3..0d90e32efab9 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1680,7 +1680,8 @@ ice_tx_map(struct ice_ring *tx_ring, struct ice_tx_buf *first,
- 		 */
- 		while (unlikely(size > ICE_MAX_DATA_PER_TXD)) {
- 			tx_desc->cmd_type_offset_bsz =
--				build_ctob(td_cmd, td_offset, max_data, td_tag);
-+				ice_build_ctob(td_cmd, td_offset, max_data,
-+					       td_tag);
- 
- 			tx_desc++;
- 			i++;
-@@ -1700,8 +1701,8 @@ ice_tx_map(struct ice_ring *tx_ring, struct ice_tx_buf *first,
- 		if (likely(!data_len))
- 			break;
- 
--		tx_desc->cmd_type_offset_bsz = build_ctob(td_cmd, td_offset,
--							  size, td_tag);
-+		tx_desc->cmd_type_offset_bsz = ice_build_ctob(td_cmd, td_offset,
-+							      size, td_tag);
- 
- 		tx_desc++;
- 		i++;
-@@ -1732,8 +1733,8 @@ ice_tx_map(struct ice_ring *tx_ring, struct ice_tx_buf *first,
- 
- 	/* write last descriptor with RS and EOP bits */
- 	td_cmd |= (u64)ICE_TXD_LAST_DESC_CMD;
--	tx_desc->cmd_type_offset_bsz = build_ctob(td_cmd, td_offset, size,
--						  td_tag);
-+	tx_desc->cmd_type_offset_bsz =
-+			ice_build_ctob(td_cmd, td_offset, size, td_tag);
- 
- 	/* Force memory writes to complete before letting h/w know there
- 	 * are new descriptors to fetch.
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 9d6512f96b8c..1ba97172d8d0 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -232,8 +232,8 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_ring *xdp_ring)
- 
- 	tx_desc = ICE_TX_DESC(xdp_ring, i);
- 	tx_desc->buf_addr = cpu_to_le64(dma);
--	tx_desc->cmd_type_offset_bsz = build_ctob(ICE_TXD_LAST_DESC_CMD, 0,
--						  size, 0);
-+	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TXD_LAST_DESC_CMD, 0,
-+						      size, 0);
- 
- 	/* Make certain all of the status bits have been updated
- 	 * before next_to_watch is written.
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-index af0fca5b91ff..58ff58f0f972 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-@@ -22,7 +22,7 @@ ice_test_staterr(union ice_32b_rx_flex_desc *rx_desc, const u16 stat_err_bits)
- }
- 
- static inline __le64
--build_ctob(u64 td_cmd, u64 td_offset, unsigned int size, u64 td_tag)
-+ice_build_ctob(u64 td_cmd, u64 td_offset, unsigned int size, u64 td_tag)
- {
- 	return cpu_to_le64(ICE_TX_DESC_DTYPE_DATA |
- 			   (td_cmd    << ICE_TXD_QW1_CMD_S) |
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 23e5515d4527..20ac54e3156d 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -988,8 +988,8 @@ static bool ice_xmit_zc(struct ice_ring *xdp_ring, int budget)
- 
- 		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use);
- 		tx_desc->buf_addr = cpu_to_le64(dma);
--		tx_desc->cmd_type_offset_bsz = build_ctob(ICE_TXD_LAST_DESC_CMD,
--							  0, desc.len, 0);
-+		tx_desc->cmd_type_offset_bsz =
-+			ice_build_ctob(ICE_TXD_LAST_DESC_CMD, 0, desc.len, 0);
- 
- 		xdp_ring->next_to_use++;
- 		if (xdp_ring->next_to_use == xdp_ring->count)
--- 
-2.26.2
-
+Bart
