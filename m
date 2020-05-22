@@ -2,147 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 626631DEF63
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A001DEF6A
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730882AbgEVSkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730829AbgEVSkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:40:37 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F633C05BD43
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 11:40:37 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id w3so6183843qkb.6
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 11:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jdVwYaklIjGoiltaEcYPwDBaF17z8bbprjyYiuZhteU=;
-        b=U/4b3mSXSUjf7DG7hZr+zQ9t4uNZ5ui1gYKzVDLkTHifjtv/53cc9yCejqmKhg4VTI
-         CJRY28SKAm5iBLKtT72VOnzpV1dSFNIn0nx4xP5bKd42/LGbcUP4mGI87nSIS8wvu2Hs
-         uZ9osWzR2XJrjEcarIx6Pwuve9rbF/okG0oEW/wXouOV1HromYl23hx4yVI6MFTunAsb
-         HgU+3opISvM7MyE6C3tBFAQi+NAbcU1mQlI2/LjA6oSgBqtAyqOQfiBWKR+RuCLy7VnY
-         OfRwGKA/tuwBePXB316nHqR0Dbgq1rVKu5dLfALXG6rGyPRocxjiyWzkmv599wf+tkm0
-         irXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jdVwYaklIjGoiltaEcYPwDBaF17z8bbprjyYiuZhteU=;
-        b=exGLYVaxSoSyT5GKJDYf36hK5pKXlLpcWoBd1xe7mjYo7ZzJ/LChOGyXScm357MTAa
-         /iyfgQpvoRDpHbm/auQiymVjGajryF8fU7zNyetnN9SEko58D2GBrLhsdPRDcD0qMAE1
-         4DAJe71uknf8j84ElOUycXZ0bnz8b5B0A9pFo6m4SYR5WT7H9WO0iHbWyC6/Q9X42p/X
-         J3o06vSTfZur6k2ABoHSv64VdsWvtW8HZpqLNRgK82aQ9MebCMJGiL7910gx65EtfNZ9
-         +GIKVSq43rvvR4W6U9+m/bCpAenjcFmCOmzaBWFFmCqEJbVK2n20UvbuQ7eueHBFUBuL
-         6wKg==
-X-Gm-Message-State: AOAM530v61JP7mzrZfq/e0co0rm0q/fz4OjImJfRcG6RbYLxvvsht4gP
-        rFFeNPU6oGu4KQm7tjM1L5zOKA==
-X-Google-Smtp-Source: ABdhPJx1XCsol/Ewjzi2BwXZV6K88STn3RGg6C79ewHy2E7lX1Urekn7lHUX5dmVhhtz0Gn1ELE5FA==
-X-Received: by 2002:a37:9606:: with SMTP id y6mr16488601qkd.269.1590172836266;
-        Fri, 22 May 2020 11:40:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id 70sm4563581qkk.10.2020.05.22.11.40.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 22 May 2020 11:40:35 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jcCax-0001Jx-Ae; Fri, 22 May 2020 15:40:35 -0300
-Date:   Fri, 22 May 2020 15:40:35 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200522184035.GL17583@ziepe.ca>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200522145542.GI17583@ziepe.ca>
- <6e129db7-2a76-bc67-0e56-2abb4d9761a3@linux.intel.com>
- <20200522171055.GK17583@ziepe.ca>
- <01efd24a-edb6-3d0c-d7fa-a602ecd381d1@linux.intel.com>
+        id S1730936AbgEVSmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:42:37 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:12611 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730810AbgEVSmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:42:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590172955; x=1621708955;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=63TQ2i0uwLk1Ry4qYh8gSAiS0M/T6s8O421GLAZBHRY=;
+  b=CSgEJUT2t5xS47noHHoVUSyafXlAIHDnJeEsWCBrNvRME5BM6PjenKNf
+   51+t5xafdwQy7u72/JYMtufVvh1x0AQQOkUaa0p2/ba70EM/B2g5UgIee
+   YFn4A/24AjqUBYXppaQJkJXbCAIdqOxvIXnt3FS6OGajVPssvXMlK0p9U
+   nUH5rArKkIyWEcdR1GbAvOJyJb0OQLPiPzpk21iY/UKm8GGt0FgMlLIbS
+   UjN3eNgQWl8BcNLvSok9q0Kt6szKs3UUNMDqI3Ayjc5ubhnnFp/7e5loh
+   u/7pBuJ32SSu4BMGQol690aynu6Y+8PCYayqas7O0wK+7lxnUdbmqshBX
+   A==;
+IronPort-SDR: AMacVx288s+1Tth9gq2S1IdCNyYT6dJqKNY/qLDwlQyVDde/8nG/t3za8ue//RLv9RZe7gpuyv
+ e1wSYDu08zjtvTP0FwM7ZGXmVsePBMGtoF2LCfBOwBNLDJLCqYVXob7hTFfq7t8Ntr/jIEggOO
+ XIR8A7+rnv8YOodf2ajSO9m/df/54yL8dE7Whnw9QUhX4+HspqV0TRPdFY/rM3QktzCC0OKrJ9
+ lbFkuTBuR2mWUBZ/OakS1LnqTMBz2QeXFcVCuFVHfHpct4Djcc31PSrQgA3+TI/jcdPi/bKeNL
+ Cpo=
+X-IronPort-AV: E=Sophos;i="5.73,422,1583218800"; 
+   d="scan'208";a="77605637"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2020 11:42:34 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 22 May 2020 11:42:35 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 22 May 2020 11:42:34 -0700
+Date:   Fri, 22 May 2020 20:42:34 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <vivien.didelot@gmail.com>, <davem@davemloft.net>,
+        <jiri@resnulli.us>, <idosch@idosch.org>, <kuba@kernel.org>,
+        <ivecera@redhat.com>, <netdev@vger.kernel.org>,
+        <horatiu.vultur@microchip.com>, <nikolay@cumulusnetworks.com>,
+        <roopa@cumulusnetworks.com>
+Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
+Message-ID: <20200522184104.nxjz35cxgj5iwxne@ws.localdomain>
+References: <20200521211036.668624-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-In-Reply-To: <01efd24a-edb6-3d0c-d7fa-a602ecd381d1@linux.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200521211036.668624-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 01:35:54PM -0500, Pierre-Louis Bossart wrote:
-> 
-> 
-> On 5/22/20 12:10 PM, Jason Gunthorpe wrote:
-> > On Fri, May 22, 2020 at 10:33:20AM -0500, Pierre-Louis Bossart wrote:
-> > 
-> > > > Maybe not great, but at least it is consistent with all the lifetime
-> > > > models and the operation of the driver core.
-> > > 
-> > > I agree your comments are valid ones, I just don't have a solution to be
-> > > fully compliant with these models and report failures of the driver probe
-> > > for a child device due to configuration issues (bad audio topology, etc).
-> > 
-> > 
-> > > My understanding is that errors on probe are explicitly not handled in the
-> > > driver core, see e.g. comments such as:
-> > 
-> > Yes, but that doesn't really apply here...
-> > > /*
-> > >   * Ignore errors returned by ->probe so that the next driver can try
-> > >   * its luck.
-> > >   */
-> > > https://elixir.bootlin.com/linux/latest/source/drivers/base/dd.c#L636
-> > > 
-> > > If somehow we could request the error to be reported then probably we
-> > > wouldn't need this complete/wait_for_completion mechanism as a custom
-> > > notification.
-> > 
-> > That is the same issue as the completion, a driver should not be
-> > making assumptions about ordering like this. For instance what if the
-> > current driver is in the initrd and the 2nd driver is in a module in
-> > the filesystem? It will not probe until the system boots more
-> > completely.
-> > 
-> > This is all stuff that is supposed to work properly.
-> > 
-> > > Not at the moment, no. there are no failures reported in dmesg, and
-> > > the user does not see any card created. This is a silent error.
-> > 
-> > Creating a partial non-function card until all the parts are loaded
-> > seems like the right way to surface an error like this.
-> > 
-> > Or don't break the driver up in this manner if all the parts are really
-> > required just for it to function - quite strange place to get into.
-> 
-> This is not about having all the parts available - that's handled already
-> with deferred probe - but an error happening during card registration. In
-> that case the ALSA/ASoC core throws an error and we cannot report it back to
-> the parent.
+Hi Vladimir,
 
-The whole point of the virtual bus stuff was to split up a
-multi-functional PCI device into parts. If all the parts are required
-to be working to make the device work, why are you using virtual bus
-here?
+I'm very happy to see that you started working on this. Let me know if
+you need help to update the Ocelot/Felix driver to support this.
 
-> > What happens if the user unplugs this sub driver once things start
-> > running?
-> 
-> refcounting in the ALSA core prevents that from happening usually.
+/Allan
 
-So user triggered unplug of driver that attaches here just hangs
-forever? That isn't OK either.
-
-Jason
+On 22.05.2020 00:10, Vladimir Oltean wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+>This is a WIP series whose stated goal is to allow DSA and switchdev
+>drivers to flood less traffic to the CPU while keeping the same level of
+>functionality.
+>
+>The strategy is to whitelist towards the CPU only the {DMAC, VLAN} pairs
+>that the operating system has expressed its interest in, either due to
+>those being the MAC addresses of one of the switch ports, or addresses
+>added to our device's RX filter via calls to dev_uc_add/dev_mc_add.
+>Then, the traffic which is not explicitly whitelisted is not sent by the
+>hardware to the CPU, under the assumption that the CPU didn't ask for it
+>and would have dropped it anyway.
+>
+>The ground for these patches were the discussions surrounding RX
+>filtering with switchdev in general, as well as with DSA in particular:
+>
+>"[PATCH net-next 0/4] DSA: promisc on master, generic flow dissector code":
+>https://www.spinics.net/lists/netdev/msg651922.html
+>"[PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module":
+>https://www.spinics.net/lists/netdev/msg634859.html
+>"[PATCH v3 0/2] net: core: Notify on changes to dev->promiscuity":
+>https://lkml.org/lkml/2019/8/29/255
+>LPC2019 - SwitchDev offload optimizations:
+>https://www.youtube.com/watch?v=B1HhxEcU7Jg
+>
+>Unicast filtering comes to me as most important, and this includes
+>termination of MAC addresses corresponding to the network interfaces in
+>the system (DSA switch ports, VLAN sub-interfaces, bridge interface).
+>The first 4 patches use Ivan Khoronzhuk's IVDF framework for extending
+>network interface addresses with a Virtual ID (typically VLAN ID). This
+>matches DSA switches perfectly because their FDB already contains keys
+>of the {DMAC, VID} form.
+>
+>Multicast filtering was taken and reworked from Florian Fainelli's
+>previous attempts, according to my own understanding of multicast
+>forwarding requirements of an IGMP snooping switch. This is the part
+>that needs the most extra work, not only in the DSA core but also in
+>drivers. For this reason, I've left out of this patchset anything that
+>has to do with driver-level configuration (since the audience is a bit
+>larger than usual), as I'm trying to focus more on policy for now, and
+>the series is already pretty huge.
+>
+>Florian Fainelli (3):
+>  net: bridge: multicast: propagate br_mc_disabled_update() return
+>  net: dsa: add ability to program unicast and multicast filters for CPU
+>    port
+>  net: dsa: wire up multicast IGMP snooping attribute notification
+>
+>Ivan Khoronzhuk (4):
+>  net: core: dev_addr_lists: add VID to device address
+>  net: 8021q: vlan_dev: add vid tag to addresses of uc and mc lists
+>  net: 8021q: vlan_dev: add vid tag for vlan device own address
+>  ethernet: eth: add default vid len for all ethernet kind devices
+>
+>Vladimir Oltean (6):
+>  net: core: dev_addr_lists: export some raw __hw_addr helpers
+>  net: dsa: don't use switchdev_notifier_fdb_info in
+>    dsa_switchdev_event_work
+>  net: dsa: mroute: don't panic the kernel if called without the prepare
+>    phase
+>  net: bridge: add port flags for host flooding
+>  net: dsa: deal with new flooding port attributes from bridge
+>  net: dsa: treat switchdev notifications for multicast router connected
+>    to port
+>
+> include/linux/if_bridge.h |   3 +
+> include/linux/if_vlan.h   |   2 +
+> include/linux/netdevice.h |  11 ++
+> include/net/dsa.h         |  17 +++
+> net/8021q/Kconfig         |  12 ++
+> net/8021q/vlan.c          |   3 +
+> net/8021q/vlan.h          |   2 +
+> net/8021q/vlan_core.c     |  25 ++++
+> net/8021q/vlan_dev.c      | 102 +++++++++++---
+> net/bridge/br_if.c        |  40 ++++++
+> net/bridge/br_multicast.c |  21 ++-
+> net/bridge/br_switchdev.c |   4 +-
+> net/core/dev_addr_lists.c | 144 +++++++++++++++----
+> net/dsa/Kconfig           |   1 +
+> net/dsa/dsa2.c            |   6 +
+> net/dsa/dsa_priv.h        |  27 +++-
+> net/dsa/port.c            | 155 ++++++++++++++++----
+> net/dsa/slave.c           | 288 +++++++++++++++++++++++++++++++-------
+> net/dsa/switch.c          |  36 +++++
+> net/ethernet/eth.c        |  12 +-
+> 20 files changed, 780 insertions(+), 131 deletions(-)
+>
+>--
+>2.25.1
+>
+/Allan
