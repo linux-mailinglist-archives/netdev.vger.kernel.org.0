@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4897C1DE2AF
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 11:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35EDF1DE2AB
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 11:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729687AbgEVJMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 05:12:19 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:37898 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729429AbgEVJMS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 05:12:18 -0400
+        id S1729624AbgEVJML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 05:12:11 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:37658 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729322AbgEVJMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 05:12:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1590138738; x=1621674738;
+  t=1590138728; x=1621674728;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=BzYgylYU3tapZQQfjpZbfRvk6xkKM2YwiCthmhGd2Cc=;
-  b=ndYGaZ2ecNy/MkZWkF0jnBlirXCUknbyp/tSG0SKj8rIYJFpW+5cxer6
-   ZZDRNTTSSe6XjCS1HFXKXjoZ2gb5/uq7BXOEc1w1eoHCuLCPsC56holl5
-   hq0aky3O3BFcQQnVkWc98SoKu34brLus0+cS/elrVNChiOu96bv9Okhs3
+  bh=WaFd1RhWASM4HbYYX/JElnmDgOfd0WESgkvpPJFft3U=;
+  b=EO9Uvio4zqTESRNiznilIz8z0pMcPlZyvoWvhgKCoZ96z9Wn/wm4AlLu
+   BV09PDuaUZtdvTfNa8iX54I38q2cnH+Mt36NYeNSOYR1Ab4rh63vah8un
+   VS5Qxk18NMAbHobO3x6IzpjDcAFHxzEFQtf+I2/rDkOwB23tnDhDVu6SR
    I=;
-IronPort-SDR: qeSK8OAvjAsT0zt5LatJSFt42fducVNDzY662Dl5FZUSXkdEiXUp7ehLZzSRz3uAIBorCBXDZ2
- Co4H6MdNZ9XQ==
+IronPort-SDR: w6ZNMoPoFHAOL3lYrnYwbdtyy2jqQwehDLzJycnzxRwzeRY5c+Z50sQOj7WJ5xHY+8I4TrE2p8
+ CpFRt2+wqHzA==
 X-IronPort-AV: E=Sophos;i="5.73,421,1583193600"; 
-   d="scan'208";a="31793543"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-f273de60.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 22 May 2020 09:12:03 +0000
+   d="scan'208";a="31733616"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 22 May 2020 09:12:07 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-f273de60.us-east-1.amazon.com (Postfix) with ESMTPS id 3F1E4A2853;
-        Fri, 22 May 2020 09:12:02 +0000 (UTC)
-Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 22 May 2020 09:11:46 +0000
+        by email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com (Postfix) with ESMTPS id 80E15C0B31;
+        Fri, 22 May 2020 09:12:07 +0000 (UTC)
+Received: from EX13D02UWB001.ant.amazon.com (10.43.161.240) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 22 May 2020 09:11:51 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 22 May 2020 09:11:45 +0000
+ EX13D02UWB001.ant.amazon.com (10.43.161.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 22 May 2020 09:11:51 +0000
 Received: from HFA15-G63729NC.amazon.com (10.1.213.6) by mail-relay.amazon.com
  (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 May 2020 09:11:41 +0000
+ Transport; Fri, 22 May 2020 09:11:46 +0000
 From:   <akiyano@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
@@ -47,9 +47,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
         <sameehj@amazon.com>
-Subject: [PATCH V2 net-next 07/14] net: ena: cosmetic: set queue sizes to u32 for consistency
-Date:   Fri, 22 May 2020 12:08:58 +0300
-Message-ID: <1590138545-501-8-git-send-email-akiyano@amazon.com>
+Subject: [PATCH V2 net-next 08/14] net: ena: cosmetic: fix spelling and grammar mistakes in comments
+Date:   Fri, 22 May 2020 12:08:59 +0300
+Message-ID: <1590138545-501-9-git-send-email-akiyano@amazon.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590138545-501-1-git-send-email-akiyano@amazon.com>
 References: <1590138545-501-1-git-send-email-akiyano@amazon.com>
@@ -62,35 +62,173 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-Make all types of variables that convey the number and sizeof queues to
-be u32, for consistency with the API between the driver and device via
-ena_admin_defs.h:ena_admin_get_feat_resp.max_queue_ext fields. Current
-code sometimes uses int and there are multiple assignments between these
-variables with different types.
+fix spelling and grammar mistakes in comments in ena_com.h,
+ena_com.c and ena_netdev.c
 
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c    |  2 +-
+ drivers/net/ethernet/amazon/ena/ena_com.h    | 30 ++++++++++----------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c |  2 +-
+ 3 files changed, 17 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index e2025eb86984..d47821655d61 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -772,7 +772,7 @@ static int ena_com_wait_and_process_admin_cq_interrupts(struct ena_comp_ctx *com
+ 			if (admin_queue->auto_polling)
+ 				admin_queue->polling = true;
+ 		} else {
+-			pr_err("The ena device doesn't send a completion for the admin cmd %d status %d\n",
++			pr_err("The ena device didn't send a completion for the admin cmd %d status %d\n",
+ 			       comp_ctx->cmd_opcode, comp_ctx->status);
+ 		}
+ 		/* Check if shifted to polling mode.
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
+index 13a1b7812c46..bd65ae205f8d 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.h
++++ b/drivers/net/ethernet/amazon/ena/ena_com.h
+@@ -393,7 +393,7 @@ struct ena_aenq_handlers {
+  */
+ int ena_com_mmio_reg_read_request_init(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_set_mmio_read_mode - Enable/disable the mmio reg read mechanism
++/* ena_com_set_mmio_read_mode - Enable/disable the indirect mmio reg read mechanism
+  * @ena_dev: ENA communication layer struct
+  * @readless_supported: readless mode (enable/disable)
+  */
+@@ -515,7 +515,7 @@ void ena_com_set_admin_auto_polling_mode(struct ena_com_dev *ena_dev,
+ /* ena_com_admin_q_comp_intr_handler - admin queue interrupt handler
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method go over the admin completion queue and wake up all the pending
++ * This method goes over the admin completion queue and wakes up all the pending
+  * threads that wait on the commands wait event.
+  *
+  * @note: Should be called after MSI-X interrupt.
+@@ -525,7 +525,7 @@ void ena_com_admin_q_comp_intr_handler(struct ena_com_dev *ena_dev);
+ /* ena_com_aenq_intr_handler - AENQ interrupt handler
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method go over the async event notification queue and call the proper
++ * This method goes over the async event notification queue and calls the proper
+  * aenq handler.
+  */
+ void ena_com_aenq_intr_handler(struct ena_com_dev *dev, void *data);
+@@ -542,14 +542,14 @@ void ena_com_abort_admin_commands(struct ena_com_dev *ena_dev);
+ /* ena_com_wait_for_abort_completion - Wait for admin commands abort.
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method wait until all the outstanding admin commands will be completed.
++ * This method waits until all the outstanding admin commands are completed.
+  */
+ void ena_com_wait_for_abort_completion(struct ena_com_dev *ena_dev);
+ 
+ /* ena_com_validate_version - Validate the device parameters
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method validate the device parameters are the same as the saved
++ * This method verifies the device parameters are the same as the saved
+  * parameters in ena_dev.
+  * This method is useful after device reset, to validate the device mac address
+  * and the device offloads are the same as before the reset.
+@@ -689,7 +689,7 @@ int ena_com_set_hash_function(struct ena_com_dev *ena_dev);
+  *
+  * Retrieve the hash function from the device.
+  *
+- * @note: If the caller called ena_com_fill_hash_function but didn't flash
++ * @note: If the caller called ena_com_fill_hash_function but didn't flush
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -703,7 +703,7 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
+  *
+  * Retrieve the hash key.
+  *
+- * @note: If the caller called ena_com_fill_hash_key but didn't flash
++ * @note: If the caller called ena_com_fill_hash_key but didn't flush
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -743,7 +743,7 @@ int ena_com_set_hash_ctrl(struct ena_com_dev *ena_dev);
+  *
+  * Retrieve the hash control from the device.
+  *
+- * @note, If the caller called ena_com_fill_hash_ctrl but didn't flash
++ * @note: If the caller called ena_com_fill_hash_ctrl but didn't flush
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -795,7 +795,7 @@ int ena_com_indirect_table_set(struct ena_com_dev *ena_dev);
+  *
+  * Retrieve the RSS indirection table from the device.
+  *
+- * @note: If the caller called ena_com_indirect_table_fill_entry but didn't flash
++ * @note: If the caller called ena_com_indirect_table_fill_entry but didn't flush
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -821,14 +821,14 @@ int ena_com_allocate_debug_area(struct ena_com_dev *ena_dev,
+ /* ena_com_delete_debug_area - Free the debug area resources.
+  * @ena_dev: ENA communication layer struct
+  *
+- * Free the allocate debug area.
++ * Free the allocated debug area.
+  */
+ void ena_com_delete_debug_area(struct ena_com_dev *ena_dev);
+ 
+ /* ena_com_delete_host_info - Free the host info resources.
+  * @ena_dev: ENA communication layer struct
+  *
+- * Free the allocate host info.
++ * Free the allocated host info.
+  */
+ void ena_com_delete_host_info(struct ena_com_dev *ena_dev);
+ 
+@@ -869,9 +869,9 @@ int ena_com_destroy_io_cq(struct ena_com_dev *ena_dev,
+  * @cmd_completion: command completion return value.
+  * @cmd_comp_size: command completion size.
+ 
+- * Submit an admin command and then wait until the device will return a
++ * Submit an admin command and then wait until the device returns a
+  * completion.
+- * The completion will be copyed into cmd_comp.
++ * The completion will be copied into cmd_comp.
+  *
+  * @return - 0 on success, negative value on failure.
+  */
+@@ -934,7 +934,7 @@ unsigned int ena_com_get_nonadaptive_moderation_interval_rx(struct ena_com_dev *
+ /* ena_com_config_dev_mode - Configure the placement policy of the device.
+  * @ena_dev: ENA communication layer struct
+  * @llq_features: LLQ feature descriptor, retrieve via
+- *                ena_com_get_dev_attr_feat.
++ *		   ena_com_get_dev_attr_feat.
+  * @ena_llq_config: The default driver LLQ parameters configurations
+  */
+ int ena_com_config_dev_mode(struct ena_com_dev *ena_dev,
+@@ -960,7 +960,7 @@ static inline void ena_com_disable_adaptive_moderation(struct ena_com_dev *ena_d
+  * @intr_reg: interrupt register to update.
+  * @rx_delay_interval: Rx interval in usecs
+  * @tx_delay_interval: Tx interval in usecs
+- * @unmask: unask enable/disable
++ * @unmask: unmask enable/disable
+  *
+  * Prepare interrupt update register with the supplied parameters.
+  */
 diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index c3cbe48b353e..0999fe3310fb 100644
+index 0999fe3310fb..0349e0305608 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3832,11 +3832,11 @@ static void ena_timer_service(struct timer_list *t)
- 	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
- }
+@@ -4190,7 +4190,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	calc_queue_ctx.get_feat_ctx = &get_feat_ctx;
+ 	calc_queue_ctx.pdev = pdev;
  
--static int ena_calc_max_io_queue_num(struct pci_dev *pdev,
-+static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
- 				     struct ena_com_dev *ena_dev,
- 				     struct ena_com_dev_get_features_ctx *get_feat_ctx)
- {
--	int io_tx_sq_num, io_tx_cq_num, io_rx_num, max_num_io_queues;
-+	u32 io_tx_sq_num, io_tx_cq_num, io_rx_num, max_num_io_queues;
- 
- 	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
- 		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
+-	/* Initial Tx and RX interrupt delay. Assumes 1 usec granularity.
++	/* Initial TX and RX interrupt delay. Assumes 1 usec granularity.
+ 	 * Updated during device initialization with the real granularity
+ 	 */
+ 	ena_dev->intr_moder_tx_interval = ENA_INTR_INITIAL_TX_INTERVAL_USECS;
 -- 
 2.23.1
 
