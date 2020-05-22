@@ -2,139 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79FD51DF171
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5096A1DF177
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731130AbgEVVtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 17:49:33 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44893 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731029AbgEVVtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:49:33 -0400
-Received: by mail-pg1-f193.google.com with SMTP id p30so5601415pgl.11;
-        Fri, 22 May 2020 14:49:32 -0700 (PDT)
+        id S1731029AbgEVVun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 17:50:43 -0400
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:55876 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731051AbgEVVun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:50:43 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 49TKtB2Tz1z9vBsL
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 21:50:42 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wEAq5La5EqQn for <netdev@vger.kernel.org>;
+        Fri, 22 May 2020 16:50:42 -0500 (CDT)
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 49TKtB0qNVz9vBs5
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 16:50:42 -0500 (CDT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 49TKtB0qNVz9vBs5
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 49TKtB0qNVz9vBs5
+Received: by mail-io1-f70.google.com with SMTP id n20so8215753iog.3
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnQxecg34bqUdZINiYr2xryJqppsStQKMeRWBxxN/GY=;
+        b=YpholpuHjF0WHc0kgsVphNDznXfkkcsqz5mrytjkO9sNgbLyvjptT8FgeVF2IehPwu
+         PD6SdQGReD1MMFB0xgkm9X3LZOOuon7e+fZGp3l0x9EqjJfJoomsab6NwLQKPQAt6U4A
+         mMy9FJshFD+T1bxogDXRZl2W/CF1Aor1oZJVfZ8ZQnTgbW6zmlfbwGZI1Pc29YqQ4Jke
+         KbBqZPk+vxD7zu2CSa4l2bl0ZvRS9rX+y5IrRvO+cExg+567TCmBrcsHL7AiPoJQXKM+
+         GR67XwmPKXGtqeDvOj5srFN6keVcJa2k9tfs2EFMF+B7qYxPen4INS6e43b3PRJXxrlh
+         2sbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=witZhMJ16Agl4OwIfL5pB8EM3wxhLaftmrS7Z3KmwGo=;
-        b=aPn+uE5LHAcTPt68wbrFmA8vQhr/NQc96OjF4bX0IABr4tpP9PX3ll7N9IvPxGjoWp
-         Ys4bt/wA6mquWUdE/alebaQmJR2Xeyuq7pemGwR32MTjUt/94eXeJlcozITZ3Wh44yx8
-         1SofT/Jp/8+C9mWm1Xawtx3ndew6lCSnnjMLRsk379nRMHWltATmVyyX+W7Dap2TYsEK
-         a+AfnhQcrDV0idjEWn6gebFwwFDzWck3sOLf5RdOSiHDTTOzs+M9wFk6eLxWwsFp5iXm
-         qTuv8IPvDsTqChz8YN0GwBixNOeTermTEYnZmbnciLUs7i/MJpJz3DcwCpPaMDvptIY8
-         UjaA==
-X-Gm-Message-State: AOAM5327knA0ctdImbysQwQxBTrKrLvCPuEWEBKKMczzn6U1/BHfDXEB
-        61dWLEQzbYbe2tXnuKZtRSg=
-X-Google-Smtp-Source: ABdhPJyBq9LZCZJmpi4fQfFbSbNhR4Ql67aNRQjxVYgQP0yBZhIDm5eUIjVEbj0mW3rKV0Gj+0RIIQ==
-X-Received: by 2002:a65:52c3:: with SMTP id z3mr15634431pgp.146.1590184172241;
-        Fri, 22 May 2020 14:49:32 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id y7sm7633645pjn.13.2020.05.22.14.49.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnQxecg34bqUdZINiYr2xryJqppsStQKMeRWBxxN/GY=;
+        b=lTJDpo+RUPqSBudqGsRQgBoE5NEXRR7c5lfSzu5zekI53rL4zg1aqKNB4j1q0xu+y1
+         hYhugkGktasAvnTnDFkx+NjMYSukgXwncRbIf49RdzHV5OoaD7t9xcPLYciE+t+CO9Ub
+         KIVcKuCxF30iQNxie8ZNimD15PQ2UCfW6h1n2Bc0162dTC2u14DSCRihmMRJOsWC1V7T
+         eXsTopkRNUcd3/apNd1DWihDkuaogx/MN8jsuQlrEq8P1JHZtPmJGyaVx9ktR3pqEyP3
+         sv151p3DLB4rudR48pfh8IWgZMLyv8T57nc/5FWgfaCgH1KsJgcua6lBoVEMEIduXKF5
+         OqEQ==
+X-Gm-Message-State: AOAM531Ksd/vyiKqdkv6Cv9qI5i4iRuPEJr1FEiu9a7hHyiLgqIYlMlk
+        LLiqQCjTHT+C9COO5ovXOqkP4/cWLnLH1pNDVOlFJLcoTDBzUAZniQlvh4CVBSELFTykFKV1XJg
+        r247pbcWWT1W2bwddBdrM
+X-Received: by 2002:a92:1b17:: with SMTP id b23mr15119055ilb.199.1590184241628;
+        Fri, 22 May 2020 14:50:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3IHta8Esaor63AmNN/5skTrVjceOXa80q0zwAtFpkTtxrBOXmSqZQlwJ8t2pbwIbGhFMwIA==
+X-Received: by 2002:a92:1b17:: with SMTP id b23mr15119040ilb.199.1590184241297;
+        Fri, 22 May 2020 14:50:41 -0700 (PDT)
+Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
+        by smtp.gmail.com with ESMTPSA id z3sm4218651ior.45.2020.05.22.14.50.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 14:49:30 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id D524C40321; Fri, 22 May 2020 21:49:29 +0000 (UTC)
-Date:   Fri, 22 May 2020 21:49:29 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     johannes@sipsolutions.net, derosier@gmail.com,
-        greearb@candelatech.com, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        ath10k@lists.infradead.org, jiri@resnulli.us,
-        briannorris@chromium.org
-Subject: Re: [RFC 1/2] devlink: add simple fw crash helpers
-Message-ID: <20200522214929.GB11244@42.do-not-panic.com>
-References: <20200519010530.GS11244@42.do-not-panic.com>
- <20200519211531.3702593-1-kuba@kernel.org>
- <20200522052046.GY11244@42.do-not-panic.com>
- <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Fri, 22 May 2020 14:50:40 -0700 (PDT)
+From:   wu000273@umn.edu
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, hkallweit1@gmail.com, jonathan.lemon@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kjlu@umn.edu,
+        wu000273@umn.edu
+Subject: [PATCH] net: sun: fix missing release regions in cas_init_one().
+Date:   Fri, 22 May 2020 16:50:27 -0500
+Message-Id: <20200522215027.4217-1-wu000273@umn.edu>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 10:17:38AM -0700, Jakub Kicinski wrote:
-> On Fri, 22 May 2020 05:20:46 +0000 Luis Chamberlain wrote:
-> > > diff --git a/net/core/Makefile b/net/core/Makefile
-> > > index 3e2c378e5f31..6f1513781c17 100644
-> > > --- a/net/core/Makefile
-> > > +++ b/net/core/Makefile
-> > > @@ -31,7 +31,7 @@ obj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o
-> > >  obj-$(CONFIG_BPF_STREAM_PARSER) += sock_map.o
-> > >  obj-$(CONFIG_DST_CACHE) += dst_cache.o
-> > >  obj-$(CONFIG_HWBM) += hwbm.o
-> > > -obj-$(CONFIG_NET_DEVLINK) += devlink.o
-> > > +obj-$(CONFIG_NET_DEVLINK) += devlink.o devlink_simple_fw_reporter.o  
-> > 
-> > This was looking super sexy up to here. This is networking specific.
-> > We want something generic for *anything* that requests firmware.
-> 
-> You can't be serious. It's network specific because of how the Kconfig
-> is named?
+From: Qiushi Wu <wu000273@umn.edu>
 
-Kconfig? What has that to do with anything? The issue I have is that the
-solution I am looking for is for it to be agnostic to the subsystem. I
-have found similar firmware crashes on gpu, media, scsci.
+In cas_init_one(), "pdev" is requested by "pci_request_regions", but it
+was not released after a call of the function “pci_write_config_byte” 
+failed. Thus replace the jump target “err_write_cacheline” by 
+"err_out_free_res".
 
-> Working for a company operating large data centers I would strongly
-> prefer if we didn't have ten different ways of reporting firmware
-> problems in the fleet.
+Fixes: 1f26dac32057 ("[NET]: Add Sun Cassini driver.")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+---
+ drivers/net/ethernet/sun/cassini.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Indeed.
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index e6d1aa882fa5..f1c8615ab6f0 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -4963,7 +4963,7 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 					  cas_cacheline_size)) {
+ 			dev_err(&pdev->dev, "Could not set PCI cache "
+ 			       "line size\n");
+-			goto err_write_cacheline;
++			goto err_out_free_res;
+ 		}
+ 	}
+ #endif
+@@ -5136,7 +5136,6 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ err_out_free_res:
+ 	pci_release_regions(pdev);
+ 
+-err_write_cacheline:
+ 	/* Try to restore it in case the error occurred after we
+ 	 * set it.
+ 	 */
+-- 
+2.17.1
 
-> > I'm afraid this won't work for something generic. I don't think its
-> > throw-away work though, the idea to provide a generic interface to
-> > dump firmware through netlink might be nice for networking, or other
-> > things.
-> > 
-> > But I have a feeling we'll want something still more generic than this.
-> 
-> Please be specific. Saying generic a lot is not helpful. The code (as
-> you can see in this patch) is in no way network specific. Or are you
-> saying there are machines out there running without netlink sockets?
-
-No, I am saying I want something to work with any struct device.
-
-> > So networking may want to be aware that a firmware crash happened as
-> > part of this network device health thing, but firmware crashing is a
-> > generic thing.
-> > 
-> > I have now extended my patch set to include uvents and I am more set on
-> > that we need the taint now more than ever.
-> 
-> Please expect my nack if you're trying to add this to networking
-> drivers.
-
-The uevent mechanism is not for networking.
-
-The taint however is, and I'd like to undertand how it is you do not see
-that an undesirable requirement for a reboot is a clear case for a taint.
-
-> The irony is you have a problem with a networking device and all the
-> devices your initial set touched are networking. Two of the drivers 
-> you touched either have or will soon have devlink health reporters
-> implemented.
-
-That is all great, and I don't think its a bad idea to add
-infrastructure / extend it to get more information about a firmware
-crash dump. However, suggesting that devlink is the only solution we
-need in the kernel without considering other subsystems is what I am
-suggesting doesn't suit my needs. Networking was just the first
-subsystem I am taclking now but I have patches where similar situations
-happen across the kernel.
-
-  Luis
