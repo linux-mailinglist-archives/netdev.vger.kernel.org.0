@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CE61DEF84
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8631DEF87
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730907AbgEVSwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
+        id S1730867AbgEVSxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730840AbgEVSwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:52:10 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29BBC061A0E;
-        Fri, 22 May 2020 11:52:09 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id m44so9095088qtm.8;
-        Fri, 22 May 2020 11:52:09 -0700 (PDT)
+        with ESMTP id S1730840AbgEVSxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:53:37 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B1EC061A0E;
+        Fri, 22 May 2020 11:53:37 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id n11so6264661qkn.8;
+        Fri, 22 May 2020 11:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=H9l2RHL3RwUhwdnEL4ID6y236+WizlVKxMIbMNtDmMw=;
-        b=VswOmfZV6AneDGuqQcSjekUoQDsY9ZZSQ43axdd+o748et5SEDSYylsvh3FCAgN8bw
-         ujGl5aAm2vavmODib3z4nHUaeECpfVtkAiN0cDB3NctOODOuUrshOf/0v2fyzyrFcbeJ
-         1bCX/b6SPgOp7ePPXptnF7kk9fbGgxvQ3gTVZGZ59RBk1JfjG/Ek9A5NrjGoXBsOEGmW
-         34WmGuGU4tNmQ0Kg+Rt7JEgS7726wA2X129qeu6BfusaMuJdSFJVmoHVAElGeTCc5ARs
-         52iJFn1/q0mLM/eKrjGslofKwer2OHVZmigQDXnPybrl2E+9EEcjwrvAICAMmsYC4+n4
-         bXbA==
+        bh=HcqR82MYzwNZxeA4COU/Pg+NYpk4dCNhb8s6EAGCmGM=;
+        b=njFTqkKPnIb/PxSDZDDhGzJozUPXKsZFFUwihZp/PPmCq7UmCc+qfk3e7lqRs/lvaH
+         qD89AigBea7hvjvzL++zRtX7t5xC2ah6ZLfTNyGC0eAelt474cNh8YlTkYfjv3D6Ve3K
+         8rU/WiV/u3YwfbQrBKGpv6vlq2BDHhLDt8u4SEBNYKiwJTaaI259+dNp016CSVHcZcaV
+         A0EzJVVnlw3Fa++pc0E1OcICd9Xim6jqK95fULJR7jNPMZ8es+nTti37kPNNmBWVTkls
+         WwNqoaO7X1OBUCwzxr9lg5fkN2siILSna/2K4qtnJ8H2Plt1sBOluVLik39eLmS9psjQ
+         pGrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=H9l2RHL3RwUhwdnEL4ID6y236+WizlVKxMIbMNtDmMw=;
-        b=qC8K1eYjfbhLkETdsZkfQPwrrqjhjHd1H6RYjhyfDFiUqV5UdWMEAQSsBUd5alIueA
-         SqLlK2vRD19662k7Ttb9II+nhUHQdRjDFg6ccrzHvdjm2yOzENxer3URdYFMTP8JirUP
-         Xy3sFcYN5YB/BnJiuonavqolVuEwqSi2izwVZ6BJTuyhtpy6m9ZxXLqbnkauhJjNqX9F
-         9113aR/7w6n/1m5Ndd7l8zFA2J1lwga+gwFLXUiwpfCVgcYI5ZCUFVJVxKeWc6ubIZo8
-         V4Maq7Hr655UWtuQJBCn///n6/eyGmXOPxnZAl1w+T/sXj1+KYuInYST9V5aOBIcCA5a
-         ihjQ==
-X-Gm-Message-State: AOAM531KuWtAN5yK1gk1qAL+LtV2YNPe0hWUbvaRX4D+NXg/QRTZAieX
-        /BHVpXmQ+XPBXX4h9nSNgB2Q1DrhySJhfUJJn8s=
-X-Google-Smtp-Source: ABdhPJyssgWQuL2ICwIVLPz3ucTk7Z/DJXYlQGLSzKZOzbPktsyhRkQiKil0Kh1r4bYn0KsEKVgYB+IfRT0z/tgOSew=
-X-Received: by 2002:ac8:7206:: with SMTP id a6mr219037qtp.59.1590173529158;
- Fri, 22 May 2020 11:52:09 -0700 (PDT)
+        bh=HcqR82MYzwNZxeA4COU/Pg+NYpk4dCNhb8s6EAGCmGM=;
+        b=BB5e4H4cP/gD20G+yzlANWD6WYQp5Q/gIK1vTFcUkyWJ7W4qAi8oVU49a8HF5Oyw0h
+         j+mjdR1vafA07MolcM2mNQ3kHJpNCsFo/Uqd0f/GQMNjRGWxo5+0P0YelWTkEaMvgxF0
+         7gq6ZycyCXoAGH4P61ZlBUgIaAEsLPQ0nlVNMTOgZEwbrQFXzDsRjceQ7NpVABwZyabH
+         2Hil15Dluw/7H65xROUWQtQsbw1soC+sxzLMC1tqsbCP+BujG8Cx95VEVyfh3l1hPK6q
+         gKZsGGh7F4E73Nh/e2RSfA/hnngfHRnLEyTRcHBiNa8irwV/X393hkR6TlFs/1NJmxwt
+         /0Hw==
+X-Gm-Message-State: AOAM5314x94/qn227t3PPl7aapLzcZKj9+MbRJtl2iZGFo8tNBG+m7cw
+        cMkuVkstd+36sYvLHYNKIm0qI/gk0m740tAFu4w=
+X-Google-Smtp-Source: ABdhPJwDXx5XsCMdrnaTnBz49AfXhZhuoCYmZymMcZxd5AH4NMWnzwv0AxrWWae+ct/AoY1/KtioNfc8zRV4EbteBk4=
+X-Received: by 2002:a37:6508:: with SMTP id z8mr4075372qkb.39.1590173616910;
+ Fri, 22 May 2020 11:53:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-3-andriin@fb.com>
- <20200522003433.GG2869@paulmck-ThinkPad-P72>
-In-Reply-To: <20200522003433.GG2869@paulmck-ThinkPad-P72>
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-4-andriin@fb.com>
+ <20200522011335.f4bfabh32puptotu@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200522011335.f4bfabh32puptotu@ast-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 May 2020 11:51:58 -0700
-Message-ID: <CAEf4BzaVeFfa2=-M4FCgH5HX17TSkcGsBTDZcjrZxo=He2QESg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/7] tools/memory-model: add BPF ringbuf MPSC
- litmus tests
-To:     "Paul E . McKenney" <paulmck@kernel.org>
+Date:   Fri, 22 May 2020 11:53:26 -0700
+Message-ID: <CAEf4BzYqzJmRfCxtY6qqRZ0vfR7kDsMLvGgT1iENZ82WAh0TVg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/7] bpf: track reference type in verifier
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
         Jonathan Lemon <jonathan.lemon@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -65,45 +65,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 5:34 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+On Thu, May 21, 2020 at 6:13 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Sun, May 17, 2020 at 12:57:22PM -0700, Andrii Nakryiko wrote:
-> > Add 4 litmus tests for BPF ringbuf implementation, divided into two different
-> > use cases.
+> On Sun, May 17, 2020 at 12:57:23PM -0700, Andrii Nakryiko wrote:
 > >
-> > First, two unbounded case, one with 1 producer and another with
-> > 2 producers, single consumer. All reservations are supposed to succeed.
+> > +static enum bpf_ref_type get_release_ref_type(enum bpf_func_id func_id)
+> > +{
+> > +     switch (func_id) {
+> > +     case BPF_FUNC_sk_release:
+> > +             return BPF_REF_SOCKET;
+> > +     case BPF_FUNC_ringbuf_submit:
+> > +     case BPF_FUNC_ringbuf_discard:
+> > +             return BPF_REF_RINGBUF;
+> > +     default:
+> > +             return BPF_REF_INVALID;
+> > +     }
+> > +}
+> > +
+> >  static bool may_be_acquire_function(enum bpf_func_id func_id)
+> >  {
+> >       return func_id == BPF_FUNC_sk_lookup_tcp ||
+> > @@ -464,6 +477,28 @@ static bool is_acquire_function(enum bpf_func_id func_id,
+> >       return false;
+> >  }
 > >
-> > Second, bounded case with only 1 record allowed in ring buffer at any given
-> > time. Here failures to reserve space are expected. Again, 1- and 2- producer
-> > cases, single consumer, are validated.
-> >
-> > Just for the fun of it, I also wrote a 3-producer cases, it took *16 hours* to
-> > validate, but came back successful as well. I'm not including it in this
-> > patch, because it's not practical to run it. See output for all included
-> > 4 cases and one 3-producer one with bounded use case.
-> >
-> > Each litmust test implements producer/consumer protocol for BPF ring buffer
-> > implementation found in kernel/bpf/ringbuf.c. Due to limitations, all records
-> > are assumed equal-sized and producer/consumer counters are incremented by 1.
-> > This doesn't change the correctness of the algorithm, though.
+> > +static enum bpf_ref_type get_acquire_ref_type(enum bpf_func_id func_id,
+> > +                                           const struct bpf_map *map)
+> > +{
+> > +     enum bpf_map_type map_type = map ? map->map_type : BPF_MAP_TYPE_UNSPEC;
+> > +
+> > +     switch (func_id) {
+> > +     case BPF_FUNC_sk_lookup_tcp:
+> > +     case BPF_FUNC_sk_lookup_udp:
+> > +     case BPF_FUNC_skc_lookup_tcp:
+> > +             return BPF_REF_SOCKET;
+> > +     case BPF_FUNC_map_lookup_elem:
+> > +             if (map_type == BPF_MAP_TYPE_SOCKMAP ||
+> > +                 map_type == BPF_MAP_TYPE_SOCKHASH)
+> > +                     return BPF_REF_SOCKET;
+> > +             return BPF_REF_INVALID;
+> > +     case BPF_FUNC_ringbuf_reserve:
+> > +             return BPF_REF_RINGBUF;
+> > +     default:
+> > +             return BPF_REF_INVALID;
+> > +     }
+> > +}
 >
-> Very cool!!!
->
-> However, these should go into Documentation/litmus-tests/bpf-rb or similar.
-> Please take a look at Documentation/litmus-tests/ in -rcu, -tip, and
-> -next, including the README file.
->
-> The tools/memory-model/litmus-tests directory is for basic examples,
-> not for the more complex real-world ones like these guys.  ;-)
+> Two switch() stmts to convert helpers to REF is kinda hacky.
+> I think get_release_ref_type() could have got the ref's type as btf_id from its
+> arguments which would have made it truly generic and 'enum bpf_ref_type' would
+> be unnecessary, but sk_lookup_* helpers return u64 and don't have btf_id of
+> return value. I think we better fix that. Then btf_id would be that ref type.
 
-Oh, ok, I didn't realize there are more litmus tests under
-Documentation/litmus-tests... Might have saved me some time (more
-examples to learn from!) when I was writing mine :) Will check those
-and move everything.
-
->
->                                                                 Thanx, Paul
->
-
-[...]
+True, sure. I'll drop this patch in next version, because everything
+works without it. Then we can generalize this eventually.
