@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF1F1DEE28
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 19:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB071DEE32
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 19:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730794AbgEVRYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 13:24:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43874 "EHLO mail.kernel.org"
+        id S1730635AbgEVR17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 13:27:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730554AbgEVRYY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 13:24:24 -0400
+        id S1730554AbgEVR17 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 13:27:59 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99B1E206C3;
-        Fri, 22 May 2020 17:24:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DDE46206C3;
+        Fri, 22 May 2020 17:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590168264;
-        bh=a7vJfJIAv9McskG7MZDFR7GaC4IPsDA22S6x57C80aw=;
+        s=default; t=1590168479;
+        bh=Ubl2ANeWaoKJylT1axYk0iaj/E62mtHqk13NUfe3RHI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PDQBVXzM3edo57feQ1Q6kuVojMeW8eF2BksdqpCP5yf9MqcGq8jC67OeHo8z4z/ea
-         1yG61ffQTc0AJlyKEz0Ns1YfcnEhqmuKinv8/8p+ENkrJJeQOiRoJeDVXI1+kc92Rv
-         +ucAsUy4pl/FogwkvUFeSGi+pNBUYN3G0cilZU14=
-Date:   Fri, 22 May 2020 10:24:20 -0700
+        b=DdydeRkXtbJqEa1jZzELny9uhTToVfTokYicwQaDxl7w6oXB0na+IF9A8RzM5+pDg
+         QrC9SqykQ9p+EvtzuTRUbe5N+ymfW9NN0Gs9/i5FegCxRsHpgk/EIUh27Id31c3CNk
+         iScBN9QazgNCLUrwWfPlOkSNnvyEkvnAQ0WVz47E=
+Date:   Fri, 22 May 2020 10:27:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     wu000273@umn.edu
-Cc:     tariqt@mellanox.com, davem@davemloft.net,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kjlu@umn.edu
-Subject: Re: [PATCH] net/mlx4_core: fix a memory leak bug.
-Message-ID: <20200522102420.41c9637a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200522052348.1241-1-wu000273@umn.edu>
-References: <20200522052348.1241-1-wu000273@umn.edu>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next v2 00/15][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2020-05-21
+Message-ID: <20200522102756.1b9d3feb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200522001108.1675149-1-jeffrey.t.kirsher@intel.com>
+References: <20200522001108.1675149-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,19 +41,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 May 2020 00:23:48 -0500 wu000273@umn.edu wrote:
-> From: Qiushi Wu <wu000273@umn.edu>
+On Thu, 21 May 2020 17:10:53 -0700 Jeff Kirsher wrote:
+> This series contains updates to igc and e1000.
 > 
-> In function mlx4_opreq_action(), pointer "mailbox" is not released,
-> when mlx4_cmd_box() return and error, causing a memory leak bug.
-> Fix this issue by going to "out" label, mlx4_free_cmd_mailbox() can
-> free this pointer.
+> Andre cleans up code that was left over from the igb driver that handled
+> MAC address filters based on the source address, which is not currently
+> supported.  Simplifies the MAC address filtering code and prepare the
+> igc driver for future source address support.  Updated the MAC address
+> filter internal APIs to support filters based on source address.  Added
+> support for Network Flow Classification (NFC) rules based on source MAC
+> address.  Cleaned up the 'cookie' field which is not used anywhere in
+> the code and cleaned up a wrapper function that was not needed.
+> Simplified the filtering code for readability and aligned the ethtool
+> functions, so that function names were consistent.
 > 
-> Fixes: fe6f700d6cbb7 ("Respond to operation request by firmware")
-> Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+> Alex provides a fix for e1000 to resolve a deadlock issue when NAPI is
+> being disabled.
+> 
+> Sasha does additional cleanup of the igc driver of dead code that is not
+> used or needed.
 
-Fixes tag: Fixes: fe6f700d6cbb7 ("Respond to operation request by firmware")
-Has these problem(s):
-	- Subject does not match target commit subject
-	  Just use
-		git log -1 --format='Fixes: %h ("%s")'
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
