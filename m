@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8CD1DE8B4
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:22:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 292AA1DE8F8
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730121AbgEVOWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 10:22:08 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:55729 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729399AbgEVOWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 10:22:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590157327;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=71BWtppdcXwebCN5Ch0Z8YRSm7XfIWVqPau3AvAbOvc=;
-        b=cXt0E/05IjlPWftcet2odO6nCpJggPWzQOKDqPdqLuBpX47T7/CzHb0MuceBY+d13yE9Bz
-        NIzKrb7H7qcr+E52T9x3XIN4Y17BwpgbG1jWoQmJzKAoVconZ6VZqKf4I7TH9MV/MdWrC5
-        3JXQnXj8njuXLutrV6+qF8pB4vTTVM4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-jf96Mwg5OgOS-432do0GAg-1; Fri, 22 May 2020 10:22:05 -0400
-X-MC-Unique: jf96Mwg5OgOS-432do0GAg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 668B71005512;
-        Fri, 22 May 2020 14:22:04 +0000 (UTC)
-Received: from ovpn-112-173.ams2.redhat.com (ovpn-112-173.ams2.redhat.com [10.36.112.173])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F1CD3473A6;
-        Fri, 22 May 2020 14:22:02 +0000 (UTC)
-Message-ID: <c0f4e88f0a1b5449b341f2f7747a4aa7994089e7.camel@redhat.com>
-Subject: Re: [PATCH net-next] mptcp: adjust tcp rcvspace after moving skbs
- from ssk to sk queue
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Cc:     matthieu.baerts@tessares.net, mathew.j.martineau@linux.intel.com
-Date:   Fri, 22 May 2020 16:22:01 +0200
-In-Reply-To: <20200522124350.47615-1-fw@strlen.de>
-References: <20200522124350.47615-1-fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1729952AbgEVO37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 10:29:59 -0400
+Received: from mga17.intel.com ([192.55.52.151]:52038 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729868AbgEVO36 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 10:29:58 -0400
+IronPort-SDR: tQR/Jg+4YeYHZvbL9h91ahu/rC5HS4KA04mJJaf/13Lq19pj6CFusqGtND86IfMmmdYzYDQ3sS
+ bywb/hZ1JuCg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 07:29:58 -0700
+IronPort-SDR: R6J4OK2fyWsjRrODANZms18sJEkjWmj1ghgSRi6+nbZYzVuDDohyRGXS3tc9q0RP3uZhX/ZbvQ
+ LYJcJu7Z58Bg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,422,1583222400"; 
+   d="scan'208";a="255608130"
+Received: from kaparr-mobl1.amr.corp.intel.com (HELO [10.252.133.17]) ([10.252.133.17])
+  by fmsmga008.fm.intel.com with ESMTP; 22 May 2020 07:29:57 -0700
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
+References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
+ <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
+ <20200520125437.GH31189@ziepe.ca>
+ <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
+ <20200521233437.GF17583@ziepe.ca>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+Date:   Fri, 22 May 2020 09:29:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <20200521233437.GF17583@ziepe.ca>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Fri, 2020-05-22 at 14:43 +0200, Florian Westphal wrote:
-> TCP does tcp rcvbuf tuning when copying packets to userspace, e.g. in
-> tcp_read_sock().  In case of mptcp, that function is only rarely used
-> (when discarding retransmitted duplicate data).
+>>>> +	ret = virtbus_register_device(vdev);
+>>>> +	if (ret < 0)
+>>>> +		return ret;
+>>>> +
+>>>> +	/* make sure the probe is complete before updating client list
+>>>> */
+>>>> +	timeout = msecs_to_jiffies(SOF_CLIENT_PROBE_TIMEOUT_MS);
+>>>> +	time = wait_for_completion_timeout(&cdev->probe_complete,
+>>>> timeout);
+>>>
+>>> This seems bonkers - the whole point of something like virtual bus is
+>>> to avoid madness like this.
+>>
+>> Thanks for your review, Jason. The idea of the times wait here is to
+>> make the registration of the virtbus devices synchronous so that the
+>> SOF core device has knowledge of all the clients that have been able to
+>> probe successfully. This part is domain-specific and it works very well
+>> in the audio driver case.
 > 
-> Instead, skbs are moved from the tcp rx queue to the mptcp socket rx
-> queue.
-> Adjust subflow rcvbuf when we do so, its the last spot where we can
-> adjust the ssk rcvbuf -- later we only have the mptcp-level socket.
+> This need to be hot plug safe. What if the module for this driver is
+> not available until later in boot? What if the user unplugs the
+> driver? What if the kernel runs probing single threaded?
 > 
-> This greatly improves performance on mptcp bulk transfers.
-> 
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  net/mptcp/protocol.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index ba9d3d5c625f..dbb86cbb9e77 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -248,6 +248,9 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
->  
->  	*bytes = moved;
->  
-> +	if (moved)
-> +		tcp_rcv_space_adjust(ssk);
-> +
->  	return done;
->  }
+> It is really unlikely you can both have the requirement that things be
+> synchronous and also be doing all the other lifetime details properly..
 
-It looks like this way ssk rcvbuf will grow up to tcp_rmem[2] even if
-there is no user-space reader - assuming the link is fast enough.
+Can you suggest an alternate solution then?
 
-Don't we need to somehow cap that? e.g. moving mptcp rcvbuf update in
-mptcp_revmsg()?
+The complete/wait_for_completion is a simple mechanism to tell that the 
+action requested by the parent is done. Absent that, we can end-up in a 
+situation where the probe may fail, or the requested module does not 
+exist, and the parent knows nothing about the failure - so the system is 
+in a zombie state and users are frustrated. It's not great either, is it?
 
-Thanks,
-
-Paolo
-
+This is not an hypothetical case, we've had this recurring problem when 
+a PCI device creates an audio card represented as a platform device. 
+When the card registration fails, typically due to configuration issues, 
+the PCI probe still completes. That's really confusing and the source of 
+lots of support questions. If we use these virtual bus extensions to 
+stpo abusing platform devices, it'd be really nice to make those 
+unreported probe failures go away.
 
