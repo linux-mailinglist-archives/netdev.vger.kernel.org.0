@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEDB91DEAAB
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88C2B1DEA9F
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730912AbgEVOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 10:55:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52922 "EHLO mail.kernel.org"
+        id S1731157AbgEVOzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 10:55:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730902AbgEVOvJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 10:51:09 -0400
+        id S1730046AbgEVOvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 10:51:20 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBC7D22256;
-        Fri, 22 May 2020 14:51:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DE4D72240A;
+        Fri, 22 May 2020 14:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590159068;
-        bh=tirxYBNn+X1HyFht4y1bGde11FRf1xyzvDbSwH9iKUQ=;
+        s=default; t=1590159079;
+        bh=EttFuyWUsVA2+0so7dutokKTLb7us68VFKlExgm5ag4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5c9g1y4nImR6bO01doEDi3nkQrBg2z7tencWk6Kto45hMaHLlx9AjbJUwNgSVtGx
-         HDFGlA1IcTgPUN7w6jYre5WhXACDZSx5F55JYj7EoST9zumR7eLsAcwuh+v/ONVcfc
-         CCaNo49bQ+WNeiQuhk9e7+Bz9q/kJ6XiVSySxV+M=
+        b=a9UwBPSMflr2b4itKqsI9BSq9fTI9jPkJUrPbCyx6Vpup0IwDn+gM4CB9vb9yQmIr
+         dzcLAEd1uPk5OUgulFnQZPRO60KOSMDTc7+Mu+qN/55ybfz81nTdI+ICMFBW2mblY6
+         MrYkkiBM6//zEYs787mCdNROWrPw7GMWVosqWHIo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 21/32] net: freescale: select CONFIG_FIXED_PHY where needed
-Date:   Fri, 22 May 2020 10:50:33 -0400
-Message-Id: <20200522145044.434677-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 32/32] drivers: net: hamradio: Fix suspicious RCU usage warning in bpqether.c
+Date:   Fri, 22 May 2020 10:50:44 -0400
+Message-Id: <20200522145044.434677-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200522145044.434677-1-sashal@kernel.org>
 References: <20200522145044.434677-1-sashal@kernel.org>
@@ -44,64 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-[ Upstream commit 99352c79af3e5f2e4724abf37fa5a2a3299b1c81 ]
+[ Upstream commit 95f59bf88bb75281cc626e283ecefdd5d5641427 ]
 
-I ran into a randconfig build failure with CONFIG_FIXED_PHY=m
-and CONFIG_GIANFAR=y:
+This patch fixes the following warning:
+=============================
+WARNING: suspicious RCU usage
+5.7.0-rc5-next-20200514-syzkaller #0 Not tainted
+-----------------------------
+drivers/net/hamradio/bpqether.c:149 RCU-list traversed in non-reader section!!
 
-x86_64-linux-ld: drivers/net/ethernet/freescale/gianfar.o:(.rodata+0x418): undefined reference to `fixed_phy_change_carrier'
+Since rtnl lock is held, pass this cond in list_for_each_entry_rcu().
 
-It seems the same thing can happen with dpaa and ucc_geth, so change
-all three to do an explicit 'select FIXED_PHY'.
-
-The fixed-phy driver actually has an alternative stub function that
-theoretically allows building network drivers when fixed-phy is
-disabled, but I don't see how that would help here, as the drivers
-presumably would not work then.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/Kconfig      | 2 ++
- drivers/net/ethernet/freescale/dpaa/Kconfig | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/net/hamradio/bpqether.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 6a7e8993119f..941c7e667afc 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -77,6 +77,7 @@ config UCC_GETH
- 	depends on QUICC_ENGINE
- 	select FSL_PQ_MDIO
- 	select PHYLIB
-+	select FIXED_PHY
- 	---help---
- 	  This driver supports the Gigabit Ethernet mode of the QUICC Engine,
- 	  which is available on some Freescale SOCs.
-@@ -90,6 +91,7 @@ config GIANFAR
- 	depends on HAS_DMA
- 	select FSL_PQ_MDIO
- 	select PHYLIB
-+	select FIXED_PHY
- 	select CRC32
- 	---help---
- 	  This driver supports the Gigabit TSEC on the MPC83xx, MPC85xx,
-diff --git a/drivers/net/ethernet/freescale/dpaa/Kconfig b/drivers/net/ethernet/freescale/dpaa/Kconfig
-index 3b325733a4f8..0a54c7e0e4ae 100644
---- a/drivers/net/ethernet/freescale/dpaa/Kconfig
-+++ b/drivers/net/ethernet/freescale/dpaa/Kconfig
-@@ -3,6 +3,7 @@ menuconfig FSL_DPAA_ETH
- 	tristate "DPAA Ethernet"
- 	depends on FSL_DPAA && FSL_FMAN
- 	select PHYLIB
-+	select FIXED_PHY
- 	select FSL_FMAN_MAC
- 	---help---
- 	  Data Path Acceleration Architecture Ethernet driver,
+diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
+index fbea6f232819..e2ad3c2e8df5 100644
+--- a/drivers/net/hamradio/bpqether.c
++++ b/drivers/net/hamradio/bpqether.c
+@@ -127,7 +127,8 @@ static inline struct net_device *bpq_get_ax25_dev(struct net_device *dev)
+ {
+ 	struct bpqdev *bpq;
+ 
+-	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list) {
++	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list,
++				lockdep_rtnl_is_held()) {
+ 		if (bpq->ethdev == dev)
+ 			return bpq->axdev;
+ 	}
 -- 
 2.25.1
 
