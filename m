@@ -2,139 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7ED1DEF24
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D20231DEF25
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730873AbgEVS1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:27:36 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:45600 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbgEVS1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:27:36 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04MIRSlo010672;
-        Fri, 22 May 2020 13:27:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590172048;
-        bh=Boi7UZaC0oSRkkkkdn9ayp2vIPyCQV8M/U0d7Ze06ug=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=X8Mj+ZUl7Jrge0j5RTe2sUpAvCifVeR1Ji7qpmym2iEG7Uz6bXoJmISvbhlhTES0A
-         mh3x7GBdwyaKe/qW4XXd4tmuWWAeFWoZXNjWO9qyrMhbJZ2KHRiv+EFD99UKXGfd/C
-         gFA0lDxUVROQ6pSXg8WWggcbJwaz4YU8YUd3fyR8=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04MIRS1A119831
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 May 2020 13:27:28 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 22
- May 2020 13:27:28 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 22 May 2020 13:27:28 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04MIRSeF006844;
-        Fri, 22 May 2020 13:27:28 -0500
-Subject: Re: [PATCH net-next v2 2/4] net: phy: Add a helper to return the
- index for of the internal delay
-To:     Florian Fainelli <f.fainelli@gmail.com>, <andrew@lunn.ch>,
-        <hkallweit1@gmail.com>, <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-References: <20200522122534.3353-1-dmurphy@ti.com>
- <20200522122534.3353-3-dmurphy@ti.com>
- <da85ecb0-1da1-2ccd-0830-a3ec18ee486c@gmail.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <d6c9439e-c83c-9369-a4e1-8af5d9673661@ti.com>
-Date:   Fri, 22 May 2020 13:27:27 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730885AbgEVS2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:28:15 -0400
+Received: from mga17.intel.com ([192.55.52.151]:5234 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726373AbgEVS2O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 14:28:14 -0400
+IronPort-SDR: NafhwkL0cCOaCqfEgYXGI/11Zeuzh4QQ/Rct9KY9JOqYZ/s58Pa1Rs4QOMScuYQSWH9CS8YEuz
+ wslB+nmAWPsQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 11:28:14 -0700
+IronPort-SDR: iiC+6OAvZj5sbxzKl/sTk22Tak/OHgOjv+XOJZQO8xoZD4ihQ5tvRGiu6NCbQupfvfdwgty3Y7
+ Xc1ttQpf73FA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,422,1583222400"; 
+   d="scan'208";a="300750389"
+Received: from anambiarhost.jf.intel.com ([10.166.225.93])
+  by fmsmga002.fm.intel.com with ESMTP; 22 May 2020 11:28:13 -0700
+Subject: [bpf-next PATCH v2] bpf: Add rx_queue_mapping to bpf_sock
+From:   Amritha Nambiar <amritha.nambiar@intel.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
+        ast@kernel.org
+Cc:     kafai@fb.com, sridhar.samudrala@intel.com,
+        amritha.nambiar@intel.com
+Date:   Fri, 22 May 2020 11:28:28 -0700
+Message-ID: <159017210823.76267.780907394437543496.stgit@anambiarhost.jf.intel.com>
+User-Agent: StGit/unknown-version
 MIME-Version: 1.0
-In-Reply-To: <da85ecb0-1da1-2ccd-0830-a3ec18ee486c@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian
+Add "rx_queue_mapping" to bpf_sock. This gives read access for the
+existing field (sk_rx_queue_mapping) of struct sock from bpf_sock.
+Semantics for the bpf_sock rx_queue_mapping access are similar to
+sk_rx_queue_get(), i.e the value NO_QUEUE_MAPPING is not allowed
+and -1 is returned in that case.
 
-On 5/22/20 11:11 AM, Florian Fainelli wrote:
->
-> On 5/22/2020 5:25 AM, Dan Murphy wrote:
->> Add a helper function that will return the index in the array for the
->> passed in internal delay value.  The helper requires the array, size and
->> delay value.
->>
->> The helper will then return the index for the exact match or return the
->> index for the index to the closest smaller value.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>   drivers/net/phy/phy_device.c | 45 ++++++++++++++++++++++++++++++++++++
->>   include/linux/phy.h          |  2 ++
->>   2 files changed, 47 insertions(+)
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 7481135d27ab..40f53b379d2b 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -2661,6 +2661,51 @@ void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause)
->>   }
->>   EXPORT_SYMBOL(phy_get_pause);
->>   
->> +/**
->> + * phy_get_delay_index - returns the index of the internal delay
->> + * @phydev: phy_device struct
->> + * @delay_values: array of delays the PHY supports
->> + * @size: the size of the delay array
->> + * @delay: the delay to be looked up
->> + *
->> + * Returns the index within the array of internal delay passed in.
-> Can we consider using s32 for storage that way the various
-> of_read_property_read_u32() are a natural fit (int works too, but I
-> would prefer being explicit).
+v2: fixed build error for CONFIG_XPS wrapping, reported by
+    kbuild test robot <lkp@intel.com>
 
-Ack
+Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+---
+ include/uapi/linux/bpf.h |    1 +
+ net/core/filter.c        |   18 ++++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
->
->> + */
->> +int phy_get_delay_index(struct phy_device *phydev, int *delay_values, int size,
->> +			int delay)
->> +{
->> +	int i;
->> +
->> +	if (size <= 0)
->> +		return -EINVAL;
->> +
->> +	if (delay <= delay_values[0])
->> +		return 0;
->> +
->> +	if (delay > delay_values[size - 1])
->> +		return size - 1;
-> Does not that assume that the delays are sorted by ascending order, if
-> so, can you make it clear in the kernel doc?
-
-Yes I guess it does.  I can add this to the k doc
-
-
->
->> +
->> +	for (i = 0; i < size; i++) {
->> +		if (delay == delay_values[i])
->> +			return i;
->> +
->> +		/* Find an approximate index by looking up the table */
->> +		if (delay > delay_values[i - 1] &&
-> && i > 0 so you do not accidentally under-run the array?
-
-Yes and no it maybe better to start the for loop with i being 
-initialized to 1 since the zeroth element is already validated above.
-
-Dan
-
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 97e1fd19ff58..d2acd5aeae8d 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3530,6 +3530,7 @@ struct bpf_sock {
+ 	__u32 dst_ip4;
+ 	__u32 dst_ip6[4];
+ 	__u32 state;
++	__u32 rx_queue_mapping;
+ };
+ 
+ struct bpf_tcp_sock {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index bd2853d23b50..c4ba92204b73 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6829,6 +6829,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case offsetof(struct bpf_sock, protocol):
+ 	case offsetof(struct bpf_sock, dst_port):
+ 	case offsetof(struct bpf_sock, src_port):
++	case offsetof(struct bpf_sock, rx_queue_mapping):
+ 	case bpf_ctx_range(struct bpf_sock, src_ip4):
+ 	case bpf_ctx_range_till(struct bpf_sock, src_ip6[0], src_ip6[3]):
+ 	case bpf_ctx_range(struct bpf_sock, dst_ip4):
+@@ -7872,6 +7873,23 @@ u32 bpf_sock_convert_ctx_access(enum bpf_access_type type,
+ 						    skc_state),
+ 				       target_size));
+ 		break;
++	case offsetof(struct bpf_sock, rx_queue_mapping):
++#ifdef CONFIG_XPS
++		*insn++ = BPF_LDX_MEM(
++			BPF_FIELD_SIZEOF(struct sock, sk_rx_queue_mapping),
++			si->dst_reg, si->src_reg,
++			bpf_target_off(struct sock, sk_rx_queue_mapping,
++				       sizeof_field(struct sock,
++						    sk_rx_queue_mapping),
++				       target_size));
++		*insn++ = BPF_JMP_IMM(BPF_JNE, si->dst_reg, NO_QUEUE_MAPPING,
++				      1);
++		*insn++ = BPF_MOV64_IMM(si->dst_reg, -1);
++#else
++		*insn++ = BPF_MOV64_IMM(si->dst_reg, 0);
++		*target_size = 2;
++#endif
++		break;
+ 	}
+ 
+ 	return insn - insn_buf;
 
