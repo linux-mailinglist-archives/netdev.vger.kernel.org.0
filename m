@@ -2,121 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7451DDF21
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCBDD1DDF2C
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbgEVFNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 01:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728056AbgEVFNO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:13:14 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6534AC061A0E;
-        Thu, 21 May 2020 22:13:14 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id t4so3489080vsq.0;
-        Thu, 21 May 2020 22:13:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5yruC8ieiL7TwqkjRWBVMs7ndKJLZVQiNT3lPw/qOQU=;
-        b=c7FN9I59JUxb822cpZyKQ+6QJIVWr664KHk0nWlcyZuW78SmKtEQN4zjlm51LdGU5g
-         sPunvgH6DLTo6nxtmbrGaUgTML2n+aCw4nUAlfpYvGdCYB7ywLdfLhcrExyn+u9r1mXN
-         z8vr3MLiiL76ZoBiFT4BBjkgquS482zfHeHqMY2IILiPQ1bkaX87zV7D9mMdv+sOcruL
-         iQPCFTchyw9KNXeVLw3StTdhJ9JxBxlBcvhDi/FzuQj+4MY6VE2rRA7nLl9y0WrEY+O2
-         vbcvKIrsZsgQEzUrlcaHhrPr2+k6mOTFQ/+QJ/gt326m8qBXUGXY/4JDjlP9Fi1ih8F8
-         gOew==
+        id S1728041AbgEVFRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 01:17:25 -0400
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:54543 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgEVFRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:17:25 -0400
+Received: by mail-pj1-f67.google.com with SMTP id s69so4414196pjb.4;
+        Thu, 21 May 2020 22:17:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5yruC8ieiL7TwqkjRWBVMs7ndKJLZVQiNT3lPw/qOQU=;
-        b=Re7U5ytEUbfRuhMbuQT9TlYse3mARKHQv1tNstGk/Tfne/EPZZcIUvHYyn/x872l6E
-         MI//01Iuf9z966kI400H7soFeQmz2C3LIcQS/ds2bk+l3VwAljJXMS07uYGDSN1XaSxU
-         3c+fiNTf95Kl7lCd+s+bT7SNxDpf/3T6Ea8XsDKWaARBqJlY1+jXy819vxpMYnejeGhY
-         Se8G6o+z23yO+1ccEvb42ndHkd+v0T5clmRDmMIlq9UEXGIeyIaId8LJ/ZmShW70TVpv
-         c1QIO9NHdNVOrvRN/mCPRPmFFo5pBphwkDWNxhqHSCgeTJWPnJJVBPIY/pES+03yzH7b
-         gHIw==
-X-Gm-Message-State: AOAM532dzmcB2oiAqWWUYaIRjKO+hckMkN6Rqzs3VoIFqt7oRWk7ImYe
-        HhILCezRbdR/sEsZltsCtLel7LJ9haiZyiiq64w=
-X-Google-Smtp-Source: ABdhPJx4y6XBRLuJWpzhO9R+CVeML+3mw72czhbPk8Iy3pZZs2RyIznn03Q1GFw5Ow9OKiHxuoaccU4/GzNA2iatku8=
-X-Received: by 2002:a67:684a:: with SMTP id d71mr9346812vsc.176.1590124392684;
- Thu, 21 May 2020 22:13:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BtJ06i567hX+2QZknlU/wf223kz0tV6LDTyNLOjOgno=;
+        b=aphFSbT26TQ+3HvtnKt4GibHNn7RSpiwELcWw8g3AHZg6ilYrAb+k6hP2GFXt36CQP
+         JpApPau2S7i91HJ5VzUzNW5t+8/V4Cas3KSPyjLVIKbn78Ztlm2EQTex5pTUamGix6DE
+         8ZsFTjYieV6kkwXbBqA6QSAoecDeyoDCee4TyH5TQj3G4n453CDcGVzQhbr+ryuVv9ye
+         9kLEGClLLGZ0vJ1oxjpnnvaGjX4JZCwDua8qVAPJ/gH7f5u0ElPCCZvkQzzWb7ZQg1rD
+         L7n6eaq/v3rlfXwiVqZzOBHhXFk9/B77Y1C2LxnMzpk8p93winY+NrcsztU80Rg9F3to
+         OrhA==
+X-Gm-Message-State: AOAM532eWDSV/9X0VWyCwc5auImHzWklAphAExi7ei488cDd4HMfUF2H
+        WOyQzSbIkHv4B0k6JkuNBho=
+X-Google-Smtp-Source: ABdhPJwsfT4Q1gia3l0sVwVM0j5AVWdem5kRmPrpe6OlE0OFzeroG40YNZA8rUHSoEbyWo1ary6RLQ==
+X-Received: by 2002:a17:90a:e38c:: with SMTP id b12mr2508684pjz.227.1590124643875;
+        Thu, 21 May 2020 22:17:23 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id v22sm6393671pfu.172.2020.05.21.22.17.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2020 22:17:22 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 744C84088B; Fri, 22 May 2020 05:17:21 +0000 (UTC)
+Date:   Fri, 22 May 2020 05:17:21 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Jessica Yu <jeyu@kernel.org>
+Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/15] taint: add module firmware crash taint support
+Message-ID: <20200522051721.GX11244@42.do-not-panic.com>
+References: <20200515212846.1347-1-mcgrof@kernel.org>
+ <20200515212846.1347-2-mcgrof@kernel.org>
+ <20200519164231.GA27392@linux-8ccs>
 MIME-Version: 1.0
-References: <20200515212846.1347-1-mcgrof@kernel.org> <20200515212846.1347-13-mcgrof@kernel.org>
- <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
- <7306323c35e6f44d7c569e689b48f380f80da5e5.camel@sipsolutions.net>
- <CA+ASDXOg9oKeMJP1Mf42oCMMM3sVe0jniaWowbXVuaYZ=ZpDjQ@mail.gmail.com>
- <20200519140212.GT11244@42.do-not-panic.com> <CA+ASDXMUHOcvJ_7UWgyANMxSz15Ji7TcLDXVCtSPa+fOr=+FGA@mail.gmail.com>
- <CANUX_P1pnV46gOo0aL6QV0b+49ubB7C5nuUOuOfoT7aOM+ye9w@mail.gmail.com> <CA+ASDXPAVJwyThAXRQT0_ao4s1nDYOEQifxMc+JsEMa=cTEGJA@mail.gmail.com>
-In-Reply-To: <CA+ASDXPAVJwyThAXRQT0_ao4s1nDYOEQifxMc+JsEMa=cTEGJA@mail.gmail.com>
-From:   Emmanuel Grumbach <egrumbach@gmail.com>
-Date:   Fri, 22 May 2020 08:12:59 +0300
-Message-ID: <CANUX_P2thzh9oB4KkrAoyT6H-E6MDFUNQ_p0e9QZtScgMuKm7Q@mail.gmail.com>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        aquini@redhat.com, peterz@infradead.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        mchehab+samsung@kernel.org, will@kernel.org, bhe@redhat.com,
-        ath10k@lists.infradead.org, Takashi Iwai <tiwai@suse.de>,
-        mingo@redhat.com, dyoung@redhat.com, pmladek@suse.com,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, gpiccoli@canonical.com,
-        Steven Rostedt <rostedt@goodmis.org>, cai@lca.pw,
-        tglx@linutronix.de,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        schlad@suse.de, Linux Kernel <linux-kernel@vger.kernel.org>,
-        jeyu@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200519164231.GA27392@linux-8ccs>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> On Tue, May 19, 2020 at 10:37 PM Emmanuel Grumbach <egrumbach@gmail.com> wrote:
-> > So I believe we already have this uevent, it is the devcoredump. All
-> > we need is to add the unique id.
->
-> I think there are a few reasons that devcoredump doesn't satisfy what
-> either Luis or I want.
->
-> 1) it can be disabled entirely [1], for good reasons (e.g., think of
-> non-${CHIP_VENDOR} folks, who can't (and don't want to) do anything
-> with the opaque dumps provided by closed-source firmware)
+On Tue, May 19, 2020 at 06:42:31PM +0200, Jessica Yu wrote:
+> +++ Luis Chamberlain [15/05/20 21:28 +0000]:
+> > Device driver firmware can crash, and sometimes, this can leave your
+> > system in a state which makes the device or subsystem completely
+> > useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
+> > of scraping some magical words from the kernel log, which is driver
+> > specific, is much easier. So instead provide a helper which lets drivers
+> > annotate this.
+> > 
+> > Once this happens, scrapers can easily look for modules taint flags
+> > for a firmware crash. This will taint both the kernel and respective
+> > calling module.
+> > 
+> > The new helper module_firmware_crashed() uses LOCKDEP_STILL_OK as this
+> > fact should in no way shape or form affect lockdep. This taint is device
+> > driver specific.
+> > 
+> > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> > ---
+> > Documentation/admin-guide/tainted-kernels.rst |  6 ++++++
+> > include/linux/kernel.h                        |  3 ++-
+> > include/linux/module.h                        | 13 +++++++++++++
+> > include/trace/events/module.h                 |  3 ++-
+> > kernel/module.c                               |  5 +++--
+> > kernel/panic.c                                |  1 +
+> > tools/debugging/kernel-chktaint               |  7 +++++++
+> > 7 files changed, 34 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
+> > index 71e9184a9079..92530f1d60ae 100644
+> > --- a/Documentation/admin-guide/tainted-kernels.rst
+> > +++ b/Documentation/admin-guide/tainted-kernels.rst
+> > @@ -100,6 +100,7 @@ Bit  Log  Number  Reason that got the kernel tainted
+> >  15  _/K   32768  kernel has been live patched
+> >  16  _/X   65536  auxiliary taint, defined for and used by distros
+> >  17  _/T  131072  kernel was built with the struct randomization plugin
+> > + 18  _/Q  262144  driver firmware crash annotation
+> > ===  ===  ======  ========================================================
+> > 
+> > Note: The character ``_`` is representing a blank in this table to make reading
+> > @@ -162,3 +163,8 @@ More detailed explanation for tainting
+> >      produce extremely unusual kernel structure layouts (even performance
+> >      pathological ones), which is important to know when debugging. Set at
+> >      build time.
+> > +
+> > + 18) ``Q`` used by device drivers to annotate that the device driver's firmware
+> > +     has crashed and the device's operation has been severely affected. The
+> > +     device may be left in a crippled state, requiring full driver removal /
+> > +     addition, system reboot, or it is unclear how long recovery will take.
+> > diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+> > index 04a5885cec1b..19e1541c82c7 100644
+> > --- a/include/linux/kernel.h
+> > +++ b/include/linux/kernel.h
+> > @@ -601,7 +601,8 @@ extern enum system_states {
+> > #define TAINT_LIVEPATCH			15
+> > #define TAINT_AUX			16
+> > #define TAINT_RANDSTRUCT		17
+> > -#define TAINT_FLAGS_COUNT		18
+> > +#define TAINT_FIRMWARE_CRASH		18
+> > +#define TAINT_FLAGS_COUNT		19
+> > 
+> > struct taint_flag {
+> > 	char c_true;	/* character printed when tainted */
+> > diff --git a/include/linux/module.h b/include/linux/module.h
+> > index 2c2e988bcf10..221200078180 100644
+> > --- a/include/linux/module.h
+> > +++ b/include/linux/module.h
+> > @@ -697,6 +697,14 @@ static inline bool is_livepatch_module(struct module *mod)
+> > bool is_module_sig_enforced(void);
+> > void set_module_sig_enforced(void);
+> > 
+> > +void add_taint_module(struct module *mod, unsigned flag,
+> > +		      enum lockdep_ok lockdep_ok);
+> > +
+> > +static inline void module_firmware_crashed(void)
+> > +{
+> > +	add_taint_module(THIS_MODULE, TAINT_FIRMWARE_CRASH, LOCKDEP_STILL_OK);
+> > +}
+> 
+> Just a nit: I think module_firmware_crashed() is a confusing name - it
+> doesn't really tell me what it's doing, and it's not really related to
+> the rest of the module_* symbols, which mostly have to do with module
+> loader/module specifics. Especially since a driver can be built-in, too.
+> How about taint_firmware_crashed() or something similar?
 
-Ok, if all you're interested into is the information that this event
-happen (as opposed to report a bug and providing the data), then I
-agree. True, not everybody want or can enable devcoredump. I am just a
-bit concerned that we may end up with two interface that notify the
-same event basically. The ideal maybe would be to be able to
-optionally reduce the content of the devoredump to nothing more that
-is already in the dmesg output. But then, it is not what it is meant
-to be: namely, a core dump..
+Sure.
 
-> 2) not all drivers necessarily have a useful dump to provide when
-> there's a crash; look at the rest of Luis's series to see the kinds of
-> drivers-with-firmware that are crashing, some of which aren't dumping
-> anything
+> Also, I think we might crash in add_taint_module() if a driver is
+> built into the kernel, because THIS_MODULE will be null and there is
+> no null pointer check in add_taint_module(). We could unify the
+> CONFIG_MODULES and !CONFIG_MODULES stubs and either add an `if (mod)`
+> check in add_taint_module() or add an #ifdef MODULE check in the stub
+> itself to call add_taint() or add_taint_module() as appropriate. Hope
+> that makes sense.
 
-Fair enouh.
+I had to do something a bit different but I think you'll agree with it.
+Will include it in my next iteration.
 
-> 3) for those that do support devcoredump, it may be used for purposes
-> that are not "crashes" -- e.g., some provide debugfs or other knobs to
-> initiate dumps, for diagnostic or debugging purposes
-
-Not sure I really think we need to care about those cases, but you
-already have 2 good arguments :)
-
->
-> Brian
->
-> [1] devcd_disabled
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/base/devcoredump.c?h=v5.6#n22
+  Luis
