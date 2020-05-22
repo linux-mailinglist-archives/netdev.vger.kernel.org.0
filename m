@@ -2,110 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A0381DEC79
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C62161DEC7B
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730630AbgEVPwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 11:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730181AbgEVPwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:52:41 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35B2C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:52:40 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a5so5106818pjh.2
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:52:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iYzhD6uZPlMEc3WIgQqT7GWOopGSEfVEV6GBHXrL0VM=;
-        b=Lc1NJ7jEL5HiVHDMcmw5CUoxzZmKCMm8s2LcMIaA20qERQn4Z5AKrWmaSyRtggfzIn
-         hidv1OCRCmBJrNTSVW19XmhpETpzvsIAnlO1+sXb5q0dohm7scXdp9RTG5JZqOn8OW2b
-         OTTRHhzhB5IqJn6dsS5U44voGcGscRH2oin7a74+jC2IC0PWQ+XinA/JQV8vQMj13OA6
-         XBhddF43jjuZKbLh1dqPgAZUz6vBoKJozyOj3pT6IGELe7dEqID284TOei1p+OMtKFDQ
-         Q8iHRLWqiwiINjvMBX77rKdMPAgE9SG1LS1wJ57IO7in069+bm5Tbqg7DppEQ6A3Dks1
-         aXOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iYzhD6uZPlMEc3WIgQqT7GWOopGSEfVEV6GBHXrL0VM=;
-        b=sE1GiOI6lp9d43PcY2qj1FVUum+guT1/3lfEDAABqlvroCpfJT/Pi3c52jtNZf6TCW
-         1ozX06NwW0eKF3cEkQ/YjSPeeMFT+YTqcjLjY5lmr96vETWAxcQD5K7KNQk1kjw1LxKW
-         X17qZeFKLCTXPX3j5F9JUfmeANeRhEkG2Ng7fW9aF0D4lz43loQoXUfg7i5PLIl0OxKg
-         qTSs8isNYdwjGr9RWbh8q1Ga+JI1XlSLpcNlJU6SavPxDxZ1bnkseAyzfeDZ+8G5Kiid
-         TQduehvvybOxsxLf+6G+BZyfqrzuoz3nne8duOflMzDIz+NeRhyk3AF6Scut89Xav6bj
-         JDHA==
-X-Gm-Message-State: AOAM531RcJzoSrq9BUuWmZTrO3Zud1zRaoe8riK6O0e5Jj5rIHrIM1WC
-        LN8mvS9NGsvUgDZygz8tFzg=
-X-Google-Smtp-Source: ABdhPJymAG3RVIRCNQJQ9ArnTOGTbeoOgZDuU3KwY3O9zWY2TT7j0Pl0dAr58t85b8VLD2k6Vl3I/Q==
-X-Received: by 2002:a17:90b:1942:: with SMTP id nk2mr5511411pjb.54.1590162759701;
-        Fri, 22 May 2020 08:52:39 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id j2sm7446177pfb.73.2020.05.22.08.52.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 May 2020 08:52:38 -0700 (PDT)
-Subject: Re: [PATCH net] tipc: block BH before using dst_cache
-To:     Xin Long <lucien.xin@gmail.com>, Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        tipc-discussion@lists.sourceforge.net, jmaloy@redhat.com
-References: <20200521182958.163436-1-edumazet@google.com>
- <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
- <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
- <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
- <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <806eda1a-de5a-22f3-b5bf-3189878b8b55@gmail.com>
-Date:   Fri, 22 May 2020 08:52:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1730666AbgEVPws convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 22 May 2020 11:52:48 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:36451 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730647AbgEVPws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:52:48 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-18-22NYjMq_P5mJeq-ok_ESEQ-1; Fri, 22 May 2020 16:52:43 +0100
+X-MC-Unique: 22NYjMq_P5mJeq-ok_ESEQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 22 May 2020 16:52:43 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 22 May 2020 16:52:43 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+CC:     'Christoph Hellwig' <hch@lst.de>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: do a single memdup_user in sctp_setsockopt
+Thread-Topic: do a single memdup_user in sctp_setsockopt
+Thread-Index: AQHWL5hibpEyDKsV4UyRPKuzFFnyuaizvkKggABehICAACJGcA==
+Date:   Fri, 22 May 2020 15:52:43 +0000
+Message-ID: <a599a1a6bed0412492bafdbeecf6bb4c@AcuMS.aculab.com>
+References: <20200521174724.2635475-1-hch@lst.de>
+ <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
+ <20200522143623.GA386664@localhost.localdomain>
+In-Reply-To: <20200522143623.GA386664@localhost.localdomain>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/21/20 11:18 PM, Xin Long wrote:
-> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
->>
->> Resend to the list in non HTML form
->>
->>
->> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
->>>
->>>
->>>
->>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
->>>>
->>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
->>>>>
->>>>> dst_cache_get() documents it must be used with BH disabled.
->>>> Interesting, I thought under rcu_read_lock() is enough, which calls
->>>> preempt_disable().
->>>
->>>
->>> rcu_read_lock() does not disable BH, never.
->>>
->>> And rcu_read_lock() does not necessarily disable preemption.
-> Then I need to think again if it's really worth using dst_cache here.
+From: Marcelo Ricardo Leitner
+> Sent: 22 May 2020 15:36
 > 
-> Also add tipc-discussion and Jon to CC list.
+> On Fri, May 22, 2020 at 08:02:09AM +0000, David Laight wrote:
+> > From: Christoph Hellwig
+> > > Sent: 21 May 2020 18:47
+> > > based on the review of Davids patch to do something similar I dusted off
+> > > the series I had started a few days ago to move the memdup_user or
+> > > copy_from_user from the inidividual sockopts into sctp_setsockopt,
+> > > which is done with one patch per option, so it might suit Marcelo's
+> > > taste a bit better.  I did not start any work on getsockopt.
+> >
+> > I'm not sure that 49 patches is actually any easier to review.
+> > Most of the patches are just repetitions of the same change.
+> > If they were in different files it might be different.
 > 
-> Thanks.
+> It's subjective, yes, but we hardly have patches over 5k lines.
+> In the case here, as changing the functions also requires changing
+> their call later on the file, it helps to be able to check that is was
+> properly updated. Ditto for chained functions.
 
-What improvements you got with your patch ?
+Between them sparse and the compiler rather force you to find everything.
+The main danger was failing to change sizeof(param) to sizeof(*param)
+and I double-checked all the relevant lines/
 
-Disabling BH a bit earlier wont make any difference.
+...
+> What if you two work on a joint patchset for this? The proposals are
+> quite close. The differences around the setsockopt handling are
+> minimal already. It is basically variable naming, indentation and one
+> or another small change like:
+
+If the changes match then the subfunctions are probably fine.
+
+Because I've got at least 64 bytes I can convert in-situ and assume
+(in getsockopt()) that I can action the request (if it only only a read)
+and check the length later.
+With only a memdup_user() you can't make those changes.
+
+
+> From Christoph's to David's:
+> @@ -2249,11 +2248,11 @@ static int sctp_setsockopt_autoclose(struct sock *sk, u32 *autoclose,
+>                 return -EOPNOTSUPP;
+>         if (optlen != sizeof(int))
+>                 return -EINVAL;
+> -
+> -       if (*autoclose > net->sctp.max_autoclose)
+> +
+> +       sp->autoclose = *optval;
+> +
+> +       if (sp->autoclose > net->sctp.max_autoclose)
+>                 sp->autoclose = net->sctp.max_autoclose;
+> -       else
+> -               sp->autoclose = *autoclose;
+
+I was trying not to make extra changes.
+(Apart from error path ones.)
+Clearly that should be:
+	sp->autoclose = min(*optval, net->sctp.max_autoclose);
+But that requires additional thought.
+
+> > If you try to do getsockopt() the same way it will be much
+> > more complicated - you have to know whether the called function
+> > did the copy_to_user() and then suppress it.
+> 
+> If it is not possible, then the setsockopt one already splited half of
+> the lines of the patch. :-)
+
+Apart from the getsockopt() that is really a setsockopt() (CONNECTX3).
+That might tie you in real knots.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
