@@ -2,132 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62161DEC7B
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF361DEC92
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730666AbgEVPws convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 22 May 2020 11:52:48 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:36451 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730647AbgEVPws (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:52:48 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-18-22NYjMq_P5mJeq-ok_ESEQ-1; Fri, 22 May 2020 16:52:43 +0100
-X-MC-Unique: 22NYjMq_P5mJeq-ok_ESEQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 22 May 2020 16:52:43 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 22 May 2020 16:52:43 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     'Christoph Hellwig' <hch@lst.de>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: do a single memdup_user in sctp_setsockopt
-Thread-Topic: do a single memdup_user in sctp_setsockopt
-Thread-Index: AQHWL5hibpEyDKsV4UyRPKuzFFnyuaizvkKggABehICAACJGcA==
-Date:   Fri, 22 May 2020 15:52:43 +0000
-Message-ID: <a599a1a6bed0412492bafdbeecf6bb4c@AcuMS.aculab.com>
-References: <20200521174724.2635475-1-hch@lst.de>
- <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
- <20200522143623.GA386664@localhost.localdomain>
-In-Reply-To: <20200522143623.GA386664@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1730447AbgEVP4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 11:56:18 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:55025 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730195AbgEVP4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:56:17 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 36BA940008;
+        Fri, 22 May 2020 15:56:15 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net: phy: mscc: fix initialization of the MACsec protocol mode
+Date:   Fri, 22 May 2020 17:55:45 +0200
+Message-Id: <20200522155545.881263-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcelo Ricardo Leitner
-> Sent: 22 May 2020 15:36
-> 
-> On Fri, May 22, 2020 at 08:02:09AM +0000, David Laight wrote:
-> > From: Christoph Hellwig
-> > > Sent: 21 May 2020 18:47
-> > > based on the review of Davids patch to do something similar I dusted off
-> > > the series I had started a few days ago to move the memdup_user or
-> > > copy_from_user from the inidividual sockopts into sctp_setsockopt,
-> > > which is done with one patch per option, so it might suit Marcelo's
-> > > taste a bit better.  I did not start any work on getsockopt.
-> >
-> > I'm not sure that 49 patches is actually any easier to review.
-> > Most of the patches are just repetitions of the same change.
-> > If they were in different files it might be different.
-> 
-> It's subjective, yes, but we hardly have patches over 5k lines.
-> In the case here, as changing the functions also requires changing
-> their call later on the file, it helps to be able to check that is was
-> properly updated. Ditto for chained functions.
+At the very end of the MACsec block initialization in the MSCC PHY
+driver, the MACsec "protocol mode" is set. This setting should be set
+based on the PHY id within the package, as the bank used to access the
+register used depends on this. This was not done correctly, and only the
+first bank was used leading to the two upper PHYs being unstable when
+using the VSC8584. This patch fixes it.
 
-Between them sparse and the compiler rather force you to find everything.
-The main danger was failing to change sizeof(param) to sizeof(*param)
-and I double-checked all the relevant lines/
+Fixes: 1bbe0ecc2a1a ("net: phy: mscc: macsec initialization")
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+---
 
-...
-> What if you two work on a joint patchset for this? The proposals are
-> quite close. The differences around the setsockopt handling are
-> minimal already. It is basically variable naming, indentation and one
-> or another small change like:
+Since v1:
+  - Resent to net.
 
-If the changes match then the subfunctions are probably fine.
+ drivers/net/phy/mscc/mscc.h        |  2 ++
+ drivers/net/phy/mscc/mscc_mac.h    |  6 +++---
+ drivers/net/phy/mscc/mscc_macsec.c | 16 ++++++++++------
+ drivers/net/phy/mscc/mscc_macsec.h |  3 ++-
+ drivers/net/phy/mscc/mscc_main.c   |  4 ++++
+ 5 files changed, 21 insertions(+), 10 deletions(-)
 
-Because I've got at least 64 bytes I can convert in-situ and assume
-(in getsockopt()) that I can action the request (if it only only a read)
-and check the length later.
-With only a memdup_user() you can't make those changes.
-
-
-> From Christoph's to David's:
-> @@ -2249,11 +2248,11 @@ static int sctp_setsockopt_autoclose(struct sock *sk, u32 *autoclose,
->                 return -EOPNOTSUPP;
->         if (optlen != sizeof(int))
->                 return -EINVAL;
-> -
-> -       if (*autoclose > net->sctp.max_autoclose)
-> +
-> +       sp->autoclose = *optval;
-> +
-> +       if (sp->autoclose > net->sctp.max_autoclose)
->                 sp->autoclose = net->sctp.max_autoclose;
-> -       else
-> -               sp->autoclose = *autoclose;
-
-I was trying not to make extra changes.
-(Apart from error path ones.)
-Clearly that should be:
-	sp->autoclose = min(*optval, net->sctp.max_autoclose);
-But that requires additional thought.
-
-> > If you try to do getsockopt() the same way it will be much
-> > more complicated - you have to know whether the called function
-> > did the copy_to_user() and then suppress it.
-> 
-> If it is not possible, then the setsockopt one already splited half of
-> the lines of the patch. :-)
-
-Apart from the getsockopt() that is really a setsockopt() (CONNECTX3).
-That might tie you in real knots.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+index 030bf8b600df..414e3b31bb1f 100644
+--- a/drivers/net/phy/mscc/mscc.h
++++ b/drivers/net/phy/mscc/mscc.h
+@@ -354,6 +354,8 @@ struct vsc8531_private {
+ 	u64 *stats;
+ 	int nstats;
+ 	bool pkg_init;
++	/* PHY address within the package. */
++	u8 addr;
+ 	/* For multiple port PHYs; the MDIO address of the base PHY in the
+ 	 * package.
+ 	 */
+diff --git a/drivers/net/phy/mscc/mscc_mac.h b/drivers/net/phy/mscc/mscc_mac.h
+index fcb5ba5e5d03..59b6837c60b3 100644
+--- a/drivers/net/phy/mscc/mscc_mac.h
++++ b/drivers/net/phy/mscc/mscc_mac.h
+@@ -152,8 +152,8 @@
+ #define MSCC_MAC_PAUSE_CFG_STATE_PAUSE_STATE			BIT(0)
+ #define MSCC_MAC_PAUSE_CFG_STATE_MAC_TX_PAUSE_GEN		BIT(4)
+ 
+-#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL			0x2
+-#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
+-#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
++#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL			0x2
++#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
++#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
+ 
+ #endif /* _MSCC_PHY_LINE_MAC_H_ */
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index e99e2cd72a0c..b4d3dc4068e2 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -316,6 +316,8 @@ static void vsc8584_macsec_mac_init(struct phy_device *phydev,
+ /* Must be called with mdio_lock taken */
+ static int __vsc8584_macsec_init(struct phy_device *phydev)
+ {
++	struct vsc8531_private *priv = phydev->priv;
++	enum macsec_bank proc_bank;
+ 	u32 val;
+ 
+ 	vsc8584_macsec_block_init(phydev, MACSEC_INGR);
+@@ -351,12 +353,14 @@ static int __vsc8584_macsec_init(struct phy_device *phydev)
+ 	val |= MSCC_FCBUF_ENA_CFG_TX_ENA | MSCC_FCBUF_ENA_CFG_RX_ENA;
+ 	vsc8584_macsec_phy_write(phydev, FC_BUFFER, MSCC_FCBUF_ENA_CFG, val);
+ 
+-	val = vsc8584_macsec_phy_read(phydev, IP_1588,
+-				      MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL);
+-	val &= ~MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M;
+-	val |= MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(4);
+-	vsc8584_macsec_phy_write(phydev, IP_1588,
+-				 MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL, val);
++	proc_bank = (priv->addr < 2) ? PROC_0 : PROC_2;
++
++	val = vsc8584_macsec_phy_read(phydev, proc_bank,
++				      MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL);
++	val &= ~MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M;
++	val |= MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(4);
++	vsc8584_macsec_phy_write(phydev, proc_bank,
++				 MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL, val);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
+index d0783944d106..d751f2946b79 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.h
++++ b/drivers/net/phy/mscc/mscc_macsec.h
+@@ -64,7 +64,8 @@ enum macsec_bank {
+ 	FC_BUFFER   = 0x04,
+ 	HOST_MAC    = 0x05,
+ 	LINE_MAC    = 0x06,
+-	IP_1588     = 0x0e,
++	PROC_0      = 0x0e,
++	PROC_2      = 0x0f,
+ 	MACSEC_INGR = 0x38,
+ 	MACSEC_EGR  = 0x3c,
+ };
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index acddef79f4e8..c8aa6d905d8e 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1347,6 +1347,8 @@ static int vsc8584_config_init(struct phy_device *phydev)
+ 	else
+ 		vsc8531->base_addr = phydev->mdio.addr - addr;
+ 
++	vsc8531->addr = addr;
++
+ 	/* Some parts of the init sequence are identical for every PHY in the
+ 	 * package. Some parts are modifying the GPIO register bank which is a
+ 	 * set of registers that are affecting all PHYs, a few resetting the
+@@ -1771,6 +1773,8 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 	else
+ 		vsc8531->base_addr = phydev->mdio.addr - addr;
+ 
++	vsc8531->addr = addr;
++
+ 	/* Some parts of the init sequence are identical for every PHY in the
+ 	 * package. Some parts are modifying the GPIO register bank which is a
+ 	 * set of registers that are affecting all PHYs, a few resetting the
+-- 
+2.26.2
 
