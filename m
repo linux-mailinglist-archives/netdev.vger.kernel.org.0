@@ -2,104 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F381DEFB1
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D4D1DEFB7
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730956AbgEVTHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 15:07:25 -0400
-Received: from mta-p7.oit.umn.edu ([134.84.196.207]:55602 "EHLO
-        mta-p7.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730936AbgEVTHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:07:24 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p7.oit.umn.edu (Postfix) with ESMTP id 49TGFl4J5Xz9vLH0
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 19:07:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p7.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id eHF7U6VBoHkW for <netdev@vger.kernel.org>;
-        Fri, 22 May 2020 14:07:23 -0500 (CDT)
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 49TGFl2dxVz9vLGt
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:07:23 -0500 (CDT)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p7.oit.umn.edu 49TGFl2dxVz9vLGt
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p7.oit.umn.edu 49TGFl2dxVz9vLGt
-Received: by mail-io1-f72.google.com with SMTP id c15so7902837iom.15
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:07:23 -0700 (PDT)
+        id S1730979AbgEVTH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730867AbgEVTH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:07:59 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CF6C05BD43;
+        Fri, 22 May 2020 12:07:58 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id s1so11765253qkf.9;
+        Fri, 22 May 2020 12:07:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=GqvlCL3YCiisEEkN1nE+zCOiLTKK/vy+pKY1F1obogc=;
-        b=Ub12prvPt5LliMcyXiag9XYSLrX8M4XDcymjJKBntdT4cjbA48Iob+DQdcEyhyL4YM
-         GN2meZemz5wENrjSAdEjGRpuT6LBIwG55KeA3mKcF7GPr1XVytpcqswbegK+bPVZPTe6
-         Ca4Xdp9uNRZYjEAurkBDwhumC2rNpc4nwwIwUYTX5bX70pTHUu1TUSPExhRwsUDNr01p
-         xM7EQdLMT0Q6rRxMBvhpDWFogSoohx7RDaan2A7iwEXv8eneZDeaIiQHfOxWyM21Ei/F
-         QBaY1JprIoXC0SYSSwGu4T8GpPyxAMmUjY8oKxEyVlzGRDRl0xZUPYNc6ueZ+B3/wOUZ
-         CqIg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cP5NZcCM4E0ML+MjDR5Tnt9wAZKTWYo4VSKRdeIz7EE=;
+        b=KczSMAuZR3ZxghK8BWr4poKujf+qNDoAMUsj3EewtvYcpwOGxykoI3F4k58KZ+sudp
+         s1LX/2LwygR+q2T3lACD2jJRlEAg47nq38naDwdHftAMQ2a2BzWn3XVZ+9+YJtqg0qB0
+         lv/C41V+HBB40lnwoPuK/knkd6KzhD7VRtPZUB4NVdRm/WmnbiaQtY+KtF0Oazx3207L
+         iVAbZcOJs9LWuzPlDaO9wY9HIIJ4hb1mEEB2nU3k5UD8qc8haQCmC13UwTHSStx9JsGY
+         eXC5I2Z0BiBmcjCNKrKV5ZecCUZCrraFNXL0CGkx09JXYeg0cG0+CBs8HExjK4hT6bug
+         a4aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GqvlCL3YCiisEEkN1nE+zCOiLTKK/vy+pKY1F1obogc=;
-        b=gntvxXoT2yTAVOROUCbppkt1/fz17eFjFZPMN7DFVrJYNtztlxMIFLHXvuWlxRdfJ3
-         HVQov/ENuF9IKRVLNBwy21IXsaAZiYGcAUm3VzD1RFqkBN/msNTTqD4QCvBrp0EBvGsX
-         VKQ0MveCC31c1cUKMLKF2WfLwnx/3jb6Y6//+VnTgFXtnxInq2Xv4vkZF1nAWY51umyv
-         hIWmEjBeNJpQRGv6WSlL+Zm1HaBj+VIrWW0rCYyQ7fEqMHo68Sz9ho5ZhSM1A11jZR0I
-         LUn7tQCl9ic+f4MbadWNmwa2n3G1vSpNhLB212tfhINO1bMRv0FtjbUKKxEMoA8L+ATS
-         R4EQ==
-X-Gm-Message-State: AOAM531svWjzg/R8lXTFj9ntlx9JGdniDsODK1Aj3R7YbQsW7srRbeYc
-        NjjEKHaRa8joU0acd+x8o9mWnqOfgPPwuXBQSVM/rqCBz0W+R2+jYcUuXJ0j1l+pfo4ddWO4PAW
-        0VOvDZybtgZLIRxMf6uWK
-X-Received: by 2002:a02:cc45:: with SMTP id i5mr9861773jaq.28.1590174442902;
-        Fri, 22 May 2020 12:07:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwIFFNlgaU/eThYhW9DqhVOj6LZHR21fL4hjoeIBf5EJwZulCvNJ6ZQz7PbPCf047iwbuPoJw==
-X-Received: by 2002:a02:cc45:: with SMTP id i5mr9861736jaq.28.1590174442518;
-        Fri, 22 May 2020 12:07:22 -0700 (PDT)
-Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
-        by smtp.gmail.com with ESMTPSA id a17sm4939092ilr.68.2020.05.22.12.07.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 12:07:21 -0700 (PDT)
-From:   wu000273@umn.edu
-To:     kuba@kernel.org
-Cc:     tariqt@mellanox.com, davem@davemloft.net,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
-Subject: [PATCH v2] net/mlx4_core: fix a memory leak bug.
-Date:   Fri, 22 May 2020 14:07:15 -0500
-Message-Id: <20200522190715.29022-1-wu000273@umn.edu>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cP5NZcCM4E0ML+MjDR5Tnt9wAZKTWYo4VSKRdeIz7EE=;
+        b=COBvMovd6Sp+aIqVdfz1lmrYVhl2FmCTIVyV2nUwwPG8g5qhkD5M2GU97+YWVJbgzH
+         YgCJDnDh5jNIY2sxHVkttmCEWDKjWLU9uYmtPBKClIIY3mpJOGbHPuus0G5ZFuR4BwmO
+         6/yjvwQAgsNUw3hKJpFP11onHldRrRP1dpMB93QBFkiTAbWu4gPietfaQW6v+zL6Fyuh
+         iNmRSIk9QbZHQsNbBTilSCpZWCBA3pSbz0Rcjx40/WH7Q2JaGrKmCiVmFbyW/3IkoTNh
+         gMmZgBYhibzSCnP6pp/MzRj/0U/d1+GJbyY9w9uIlIPvdsnuI4UEWqgkjP71gIU/hM9T
+         g+yA==
+X-Gm-Message-State: AOAM530PnQGCZMTLj7+eYKbjUIlLztorQtCwMcPBlN5AT5ZTuFny2Zh2
+        cKsoo9yrl8Q8G7yRJYqi+CEKE5rLgAyS2hS2xnLkB8mn
+X-Google-Smtp-Source: ABdhPJw4rQ1oYVQPO2v0pSrSZw3oxGarJJ1LkCm6NTyyi7QSDy4VX0WvnPkxtbG4o8dkHvOAImI7Iaf6bX4X9W2dmN8=
+X-Received: by 2002:a05:620a:2049:: with SMTP id d9mr17756600qka.449.1590174477089;
+ Fri, 22 May 2020 12:07:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-7-andriin@fb.com>
+ <20200522012147.shnwybm5my7dgy4v@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200522012147.shnwybm5my7dgy4v@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 22 May 2020 12:07:46 -0700
+Message-ID: <CAEf4Bza34RXPn_1m-nnEceRCQLFykEv9YQXpZZnyk0sE3X-Jwg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 6/7] bpf: add BPF ringbuf and perf buffer benchmarks
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+On Thu, May 21, 2020 at 6:21 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sun, May 17, 2020 at 12:57:26PM -0700, Andrii Nakryiko wrote:
+> > +
+> > +static inline int roundup_len(__u32 len)
+> > +{
+> > +     /* clear out top 2 bits */
+> > +     len <<= 2;
+> > +     len >>= 2;
+> > +     /* add length prefix */
+> > +     len += RINGBUF_META_LEN;
+> > +     /* round up to 8 byte alignment */
+> > +     return (len + 7) / 8 * 8;
+> > +}
+>
+> the same round_up again?
+>
+> > +
+> > +static void ringbuf_custom_process_ring(struct ringbuf_custom *r)
+> > +{
+> > +     unsigned long cons_pos, prod_pos;
+> > +     int *len_ptr, len;
+> > +     bool got_new_data;
+> > +
+> > +     cons_pos = smp_load_acquire(r->consumer_pos);
+> > +     while (true) {
+> > +             got_new_data = false;
+> > +             prod_pos = smp_load_acquire(r->producer_pos);
+> > +             while (cons_pos < prod_pos) {
+> > +                     len_ptr = r->data + (cons_pos & r->mask);
+> > +                     len = smp_load_acquire(len_ptr);
+> > +
+> > +                     /* sample not committed yet, bail out for now */
+> > +                     if (len & RINGBUF_BUSY_BIT)
+> > +                             return;
+> > +
+> > +                     got_new_data = true;
+> > +                     cons_pos += roundup_len(len);
+> > +
+> > +                     atomic_inc(&buf_hits.value);
+> > +             }
+> > +             if (got_new_data)
+> > +                     smp_store_release(r->consumer_pos, cons_pos);
+> > +             else
+> > +                     break;
+> > +     };
+> > +}
+>
+> copy paste from libbpf? why?
 
-In function mlx4_opreq_action(), pointer "mailbox" is not released,
-when mlx4_cmd_box() return and error, causing a memory leak bug.
-Fix this issue by going to "out" label, mlx4_free_cmd_mailbox() can
-free this pointer.
+Yep, it's deliberate, see description of rb-custom benchmark in commit message.
 
-Fixes: fe6f700d6cbb ("net/mlx4_core: Respond to operation request by firmware")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
----
- drivers/net/ethernet/mellanox/mlx4/fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Basically, I was worried that generic libbpf callback calling might
+introduce a noticeable slowdown and wanted to test the case where
+ultimate peformance was necessary and someone would just implement
+custom reading loop with inlined processing logic. And it turned out
+to be noticeable, see benchmark results for rb-libbpf and rb-custom
+benchmarks. So I satisfied my curiosity :), but if you think that's
+not necessary, I can drop rb-custom (and, similarly, pb-custom for
+perfbuf). It still seems useful to me, though (and is sort of an
+example of minimal correct implementation of ringbuf/perfbuf reading).
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/fw.c b/drivers/net/ethernet/mellanox/mlx4/fw.c
-index 6e501af0e532..f6ff9620a137 100644
---- a/drivers/net/ethernet/mellanox/mlx4/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/fw.c
-@@ -2734,7 +2734,7 @@ void mlx4_opreq_action(struct work_struct *work)
- 		if (err) {
- 			mlx4_err(dev, "Failed to retrieve required operation: %d\n",
- 				 err);
--			return;
-+			goto out;
- 		}
- 		MLX4_GET(modifier, outbox, GET_OP_REQ_MODIFIER_OFFSET);
- 		MLX4_GET(token, outbox, GET_OP_REQ_TOKEN_OFFSET);
--- 
-2.17.1
-
+Btw, apart from speed up from avoiding indirect calls (due to
+callback), this algorithm also does "batched"
+smp_store_release(r->consumer_pos) only once after each inner
+`while(cons_pos < prod_pos)` loop, so there is theoretically less
+cache line bouncing, which might give a bit more speed as well. Libbpf
+pessimistically does smp_store_release() after each record in
+assumption that customer-provided callback might take a while, so it's
+better to give producers a bit more space back as early as possible.
