@@ -2,167 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1481DF021
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA541DF027
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730931AbgEVToW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 15:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730689AbgEVToV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:44:21 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961F9C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:44:21 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id er16so5308155qvb.0
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:44:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KsaMtnJXEcs28XaPd87Bzy6KmDzAYKU9egI48v8GEO0=;
-        b=V8JNgkbfW32JKqKZTqiukqLqRze5kwf34jyxMf8fwma8wxzE8jx+m511ZHLQIxJrhL
-         6zEdIpLgnXxhkPG8Egg3R8aPGfteME7dKhdD8afhCZvosIkqLLi7cRKX2EN1OXxj7Ea7
-         ewIalA+eTitpYEAPVSuKD+TYDadNnbN7Y77nFOyuJi75o9hMAPlfGolUS5QTO+uaWD9w
-         bn07JSwciOJx10doWy+zzUnMydkacvOnyuvEbYWayng+VgF5F8uYq9XXEZRL3pPgnm07
-         wdwH4TeBZGHsN3voXTkWWwwJK+bQug9zCee14a5NlenOzmsu458Kbr/5WjfyCxpmIoJq
-         yMyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KsaMtnJXEcs28XaPd87Bzy6KmDzAYKU9egI48v8GEO0=;
-        b=CjF2fpcV+itpLVmHRsBvZ037BVRXofWeTsIiBmOAMmQ5Z1YmxnQOAUmN9bd2a1mtJ7
-         T+otGCRvO/e4fheRHAqa+rOtkQFH2KIJ8gduxLfTCmat/kh3rX9pZizA5ftA9BSrlb6V
-         FsN/njPH4KFU8BkOTZR8lDnz97J8unNMfwQDcHpa4YYsssgBX3GV+pX6lRqsW5kKPYoy
-         WomuDWJyFRXAoqv7Wqx98GVlxFmNqoiWOJgu2kQZwu/NxYvqAjua1qQeleOHGvzmRbSq
-         glfLQi0CsOKm3lkX8JLHRmz0Sf/mWnmdQu/5sTP3tPu1kaT651CM6DdNr8iLlxp7PLpo
-         Hdyg==
-X-Gm-Message-State: AOAM532ZWyCbmeDn+AHZ75okL/m1ke80jZUVMxXXRA8l6Alha3lsh+t6
-        rG7wcr9XUiy4G3OzoV2QnoTGPA==
-X-Google-Smtp-Source: ABdhPJx/+csjW0xI1CcTJAhJBpJ3cg4zcde+gHfTeVDpSLtpEo8gKR3IPBKMJ5NSwsjjEkVa5NMlIA==
-X-Received: by 2002:a0c:a692:: with SMTP id t18mr5307746qva.56.1590176660559;
-        Fri, 22 May 2020 12:44:20 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id a24sm8408782qto.10.2020.05.22.12.44.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 22 May 2020 12:44:20 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jcDac-00050x-Iz; Fri, 22 May 2020 16:44:18 -0300
-Date:   Fri, 22 May 2020 16:44:18 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200522194418.GM17583@ziepe.ca>
-References: <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200522145542.GI17583@ziepe.ca>
- <6e129db7-2a76-bc67-0e56-2abb4d9761a3@linux.intel.com>
- <20200522171055.GK17583@ziepe.ca>
- <01efd24a-edb6-3d0c-d7fa-a602ecd381d1@linux.intel.com>
- <20200522184035.GL17583@ziepe.ca>
- <b680a7f2-5dc1-00d6-dcff-b7c71d09b535@linux.intel.com>
+        id S1730965AbgEVTrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:47:24 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41067 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730689AbgEVTrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:47:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590176842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YdS6AOeSWK0jUYamTi9EOv+S8oDpX9oHz8NpRLwzlnY=;
+        b=R760oobLu3k/+/nyswzlZNI3In4W8//cIe1tFSTbFhFLDidJXsDP4I/Wifj0lIKRVoeCDT
+        AVKxjRbGjGSaNlMXyWAQABbG3MU2ndB19mXdyfUmYhPVPT6LgtZoQNjyhAXPU/Mo+7lWwn
+        DtxhUXYDRJeyvMHUBa0arXA/nshjmuY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-19-ZIOObcwIP0SER6T9XB6ipQ-1; Fri, 22 May 2020 15:47:18 -0400
+X-MC-Unique: ZIOObcwIP0SER6T9XB6ipQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F9C6107ACCA;
+        Fri, 22 May 2020 19:47:17 +0000 (UTC)
+Received: from [10.10.117.121] (ovpn-117-121.rdu2.redhat.com [10.10.117.121])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CA3160E1C;
+        Fri, 22 May 2020 19:47:16 +0000 (UTC)
+Subject: Re: [PATCH net] tipc: block BH before using dst_cache
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        tipc-discussion@lists.sourceforge.net
+References: <20200521182958.163436-1-edumazet@google.com>
+ <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
+ <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
+ <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
+ <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
+ <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
+ <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <bebc5293-d5be-39b5-8ee4-871dd3aa7240@redhat.com>
+Date:   Fri, 22 May 2020 15:47:16 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b680a7f2-5dc1-00d6-dcff-b7c71d09b535@linux.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 01:48:00PM -0500, Pierre-Louis Bossart wrote:
-> 
-> 
-> On 5/22/20 1:40 PM, Jason Gunthorpe wrote:
-> > On Fri, May 22, 2020 at 01:35:54PM -0500, Pierre-Louis Bossart wrote:
-> > > 
-> > > 
-> > > On 5/22/20 12:10 PM, Jason Gunthorpe wrote:
-> > > > On Fri, May 22, 2020 at 10:33:20AM -0500, Pierre-Louis Bossart wrote:
-> > > > 
-> > > > > > Maybe not great, but at least it is consistent with all the lifetime
-> > > > > > models and the operation of the driver core.
-> > > > > 
-> > > > > I agree your comments are valid ones, I just don't have a solution to be
-> > > > > fully compliant with these models and report failures of the driver probe
-> > > > > for a child device due to configuration issues (bad audio topology, etc).
-> > > > 
-> > > > 
-> > > > > My understanding is that errors on probe are explicitly not handled in the
-> > > > > driver core, see e.g. comments such as:
-> > > > 
-> > > > Yes, but that doesn't really apply here...
-> > > > > /*
-> > > > >    * Ignore errors returned by ->probe so that the next driver can try
-> > > > >    * its luck.
-> > > > >    */
-> > > > > https://elixir.bootlin.com/linux/latest/source/drivers/base/dd.c#L636
-> > > > > 
-> > > > > If somehow we could request the error to be reported then probably we
-> > > > > wouldn't need this complete/wait_for_completion mechanism as a custom
-> > > > > notification.
-> > > > 
-> > > > That is the same issue as the completion, a driver should not be
-> > > > making assumptions about ordering like this. For instance what if the
-> > > > current driver is in the initrd and the 2nd driver is in a module in
-> > > > the filesystem? It will not probe until the system boots more
-> > > > completely.
-> > > > 
-> > > > This is all stuff that is supposed to work properly.
-> > > > 
-> > > > > Not at the moment, no. there are no failures reported in dmesg, and
-> > > > > the user does not see any card created. This is a silent error.
-> > > > 
-> > > > Creating a partial non-function card until all the parts are loaded
-> > > > seems like the right way to surface an error like this.
-> > > > 
-> > > > Or don't break the driver up in this manner if all the parts are really
-> > > > required just for it to function - quite strange place to get into.
-> > > 
-> > > This is not about having all the parts available - that's handled already
-> > > with deferred probe - but an error happening during card registration. In
-> > > that case the ALSA/ASoC core throws an error and we cannot report it back to
-> > > the parent.
-> > 
-> > The whole point of the virtual bus stuff was to split up a
-> > multi-functional PCI device into parts. If all the parts are required
-> > to be working to make the device work, why are you using virtual bus
-> > here?
-> 
-> It's the other way around: how does the core know that one part isn't
-> functional.
 
-> There is nothing in what we said that requires that all parts are fully
-> functional. All we stated is that when *one* part isn't fully functional we
-> know about it.
 
-Maybe if you can present some diagram or something, because I really
-can't understand why asoc is trying to do with virtual bus here.
+On 5/22/20 11:57 AM, Eric Dumazet wrote:
+>
+> On 5/22/20 8:01 AM, Jon Maloy wrote:
+>>
+>> On 5/22/20 2:18 AM, Xin Long wrote:
+>>> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>> Resend to the list in non HTML form
+>>>>
+>>>>
+>>>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>
+>>>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
+>>>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>>> dst_cache_get() documents it must be used with BH disabled.
+>>>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
+>>>>>> preempt_disable().
+>>>>> rcu_read_lock() does not disable BH, never.
+>>>>>
+>>>>> And rcu_read_lock() does not necessarily disable preemption.
+>>> Then I need to think again if it's really worth using dst_cache here.
+>>>
+>>> Also add tipc-discussion and Jon to CC list.
+>> The suggested solution will affect all bearers, not only UDP, so it is not a good.
+>> Is there anything preventing us from disabling preemtion inside the scope of the rcu lock?
+>>
+>> ///jon
+>>
+> BH is disabled any way few nano seconds later, disabling it a bit earlier wont make any difference.
+The point is that if we only disable inside tipc_udp_xmit() (the 
+function pointer call) the change will only affect the UDP bearer, where 
+dst_cache is used.
+The corresponding calls for the Ethernet and Infiniband bearers don't 
+use dst_cache, and don't need this disabling. So it does makes a 
+difference.
+///jon
 
-> > > > What happens if the user unplugs this sub driver once things start
-> > > > running?
-> > > 
-> > > refcounting in the ALSA core prevents that from happening usually.
-> > 
-> > So user triggered unplug of driver that attaches here just hangs
-> > forever? That isn't OK either.
-> 
-> No, you'd get a 'module in use' error if I am not mistaken.
+>
+> Also, if you intend to make dst_cache BH reentrant, you will have to make that for net-next, not net tree.
+>
+> Please carefully read include/net/dst_cache.h
+>
+> It is very clear about BH requirements.
+>
+>
 
-You can disconnect drivers without unloading modules. It is a common
-misconception. You should never, ever, rely on module ref counting for
-anything more than keeping function pointers in memory.
-
-Jason
