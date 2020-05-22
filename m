@@ -2,91 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C74BE1DEB59
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81AE51DEB5C
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730688AbgEVPAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 11:00:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730261AbgEVPAt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 11:00:49 -0400
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1730201AbgEVPBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 11:01:33 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39613 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730050AbgEVPBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:01:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590159689;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+91jG41Ttz/xk83LQb64gFYXYyDxR68BNaCEybObIeM=;
+        b=ELiuyt1WH5Vxo29nLwswGmB0GM0Rj9Y2pevmcJiSjV2M+ev9aKm+e0z7yo4+G4Tsx+4+1m
+        na62oPlHQX0UJunzaqQh0CqfOViJsxi1dV0AO3gXk93hF/TWqH5LuZSnIoAK8dmoMEXuxG
+        +3hxUEyTLG9hD8EYvPpGArUu96FPhl0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-331-5h2XEasPNpyfM_GNdtOBOg-1; Fri, 22 May 2020 11:01:28 -0400
+X-MC-Unique: 5h2XEasPNpyfM_GNdtOBOg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 68B0D2054F;
-        Fri, 22 May 2020 15:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590159648;
-        bh=lgj9gREzZACWIMWDadE30OkMatrU+Z1FCFBhhJ5hTcU=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=lHtIED2X/j0HFUkgtIPVIU84CBQIHUHerSgUA91Kh+NCA0BralnQ3g2M9r4yoi5G/
-         xgXAD5maXyotPYvv0vFH2Z1vb4ml3I0gs8Qh4fX39mFL7LsdHePjgoYqGvSCaeNXQk
-         uCqU3FxMK69J4HfFHtxvshovdG7JdDvO9F7BJjOs=
-Subject: Re: [PATCH] selftests:mptcp: fix empty optstring
-To:     Li Zhijian <lizhijian@cn.fujitsu.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Li Zhijian <zhijianx.li@intel.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
-        shuah <shuah@kernel.org>
-References: <20200402065216.23301-1-zhijianx.li@intel.com>
- <4bdd5672-eb24-2e49-e286-702510be0882@cn.fujitsu.com>
-From:   shuah <shuah@kernel.org>
-Message-ID: <3bd2171a-24e8-6e5a-5d16-10db2bcb27fe@kernel.org>
-Date:   Fri, 22 May 2020 09:00:47 -0600
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61CF3107ACF5;
+        Fri, 22 May 2020 15:01:26 +0000 (UTC)
+Received: from [10.10.117.121] (ovpn-117-121.rdu2.redhat.com [10.10.117.121])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D3095EE0C;
+        Fri, 22 May 2020 15:01:25 +0000 (UTC)
+Subject: Re: [PATCH net] tipc: block BH before using dst_cache
+To:     Xin Long <lucien.xin@gmail.com>, Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        tipc-discussion@lists.sourceforge.net
+References: <20200521182958.163436-1-edumazet@google.com>
+ <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
+ <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
+ <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
+ <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
+Date:   Fri, 22 May 2020 11:01:24 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <4bdd5672-eb24-2e49-e286-702510be0882@cn.fujitsu.com>
+In-Reply-To: <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/10/20 10:47 PM, Li Zhijian wrote:
-> ping
-> 
-> 
-> On 4/2/20 2:52 PM, Li Zhijian wrote:
->> From: Li Zhijian <lizhijian@cn.fujitsu.com>
+
+
+On 5/22/20 2:18 AM, Xin Long wrote:
+> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
+>> Resend to the list in non HTML form
 >>
->> Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
->> ---
->>   tools/testing/selftests/net/mptcp/pm_netlink.sh | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
 >>
->> diff --git a/tools/testing/selftests/net/mptcp/pm_netlink.sh 
->> b/tools/testing/selftests/net/mptcp/pm_netlink.sh
->> index 9172746b6cf0..8c7998c64d9e 100755
->> --- a/tools/testing/selftests/net/mptcp/pm_netlink.sh
->> +++ b/tools/testing/selftests/net/mptcp/pm_netlink.sh
->> @@ -8,8 +8,7 @@ usage() {
->>       echo "Usage: $0 [ -h ]"
->>   }
->> -
->> -while getopts "$optstring" option;do
->> +while getopts "h" option;do
->>       case "$option" in
->>       "h")
->>           usage $0
-> 
-> 
-> 
-> 
+>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>
+>>>
+>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
+>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
+>>>>> dst_cache_get() documents it must be used with BH disabled.
+>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
+>>>> preempt_disable().
+>>>
+>>> rcu_read_lock() does not disable BH, never.
+>>>
+>>> And rcu_read_lock() does not necessarily disable preemption.
+> Then I need to think again if it's really worth using dst_cache here.
+>
+> Also add tipc-discussion and Jon to CC list.
+The suggested solution will affect all bearers, not only UDP, so it is 
+not a good.
+Is there anything preventing us from disabling preemtion inside the 
+scope of the rcu lock?
 
-Li Zhijian,
+///jon
 
-You are missing netdev and net maintainer.
-Adding netdev and Dave M.
+>
+> Thanks.
+>
+>>>
+>>>> have you checked other places where dst_cache_get() are used?
+>>>
+>>>
+>>> Yes, other paths are fine.
+>>>
+>>>>
+>>>>> sysbot reported :
+>>>>>
+>>>>> BUG: using smp_processor_id() in preemptible [00000000] code: /21697
+>>>>> caller is dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
+>>>>> CPU: 0 PID: 21697 Comm:  Not tainted 5.7.0-rc6-syzkaller #0
+>>>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>>>> Call Trace:
+>>>>>   __dump_stack lib/dump_stack.c:77 [inline]
+>>>>>   dump_stack+0x188/0x20d lib/dump_stack.c:118
+>>>>>   check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+>>>>>   debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
+>>>>>   dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
+>>>>>   tipc_udp_xmit.isra.0+0xb9/0xad0 net/tipc/udp_media.c:164
+>>>>>   tipc_udp_send_msg+0x3e6/0x490 net/tipc/udp_media.c:244
+>>>>>   tipc_bearer_xmit_skb+0x1de/0x3f0 net/tipc/bearer.c:526
+>>>>>   tipc_enable_bearer+0xb2f/0xd60 net/tipc/bearer.c:331
+>>>>>   __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
+>>>>>   tipc_nl_bearer_enable+0x1e/0x30 net/tipc/bearer.c:1003
+>>>>>   genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+>>>>>   genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+>>>>>   genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
+>>>>>   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+>>>>>   genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
+>>>>>   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+>>>>>   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+>>>>>   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+>>>>>   sock_sendmsg_nosec net/socket.c:652 [inline]
+>>>>>   sock_sendmsg+0xcf/0x120 net/socket.c:672
+>>>>>   ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
+>>>>>   ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+>>>>>   __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
+>>>>>   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>>>>>   entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>>>>> RIP: 0033:0x45ca29
+>>>>>
+>>>>> Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
+>>>>> Cc: Xin Long <lucien.xin@gmail.com>
+>>>>> Cc: Jon Maloy <jon.maloy@ericsson.com>
+>>>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>>>>> Reported-by: syzbot <syzkaller@googlegroups.com>
+>>>>> ---
+>>>>>   net/tipc/udp_media.c | 6 +++++-
+>>>>>   1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+>>>>> index d6620ad535461a4d04ed5ba90569ce8b7df9f994..28a283f26a8dff24d613e6ed57e5e69d894dae66 100644
+>>>>> --- a/net/tipc/udp_media.c
+>>>>> +++ b/net/tipc/udp_media.c
+>>>>> @@ -161,9 +161,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
+>>>>>                           struct udp_bearer *ub, struct udp_media_addr *src,
+>>>>>                           struct udp_media_addr *dst, struct dst_cache *cache)
+>>>>>   {
+>>>>> -       struct dst_entry *ndst = dst_cache_get(cache);
+>>>>> +       struct dst_entry *ndst;
+>>>>>          int ttl, err = 0;
+>>>>>
+>>>>> +       local_bh_disable();
+>>>>> +       ndst = dst_cache_get(cache);
+>>>>>          if (dst->proto == htons(ETH_P_IP)) {
+>>>>>                  struct rtable *rt = (struct rtable *)ndst;
+>>>>>
+>>>>> @@ -210,9 +212,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
+>>>>>                                             src->port, dst->port, false);
+>>>>>   #endif
+>>>>>          }
+>>>>> +       local_bh_enable();
+>>>>>          return err;
+>>>>>
+>>>>>   tx_error:
+>>>>> +       local_bh_enable();
+>>>>>          kfree_skb(skb);
+>>>>>          return err;
+>>>>>   }
+>>>>> --
+>>>>> 2.27.0.rc0.183.gde8f92d652-goog
+>>>>>
 
-net tests go through net tree and need review/Ack from Dave M.
-
-Dave! Please review and let me know if you want me to take this through
-kselftest tree.
-
-thanks,
--- Shuah
