@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055531DF2C0
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:11:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6C21DF2CA
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731254AbgEVXLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 19:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50318 "EHLO
+        id S1731248AbgEVXNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 19:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731161AbgEVXLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:11:35 -0400
+        with ESMTP id S1731175AbgEVXNi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:13:38 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13446C061A0E;
-        Fri, 22 May 2020 16:11:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42709C061A0E;
+        Fri, 22 May 2020 16:13:38 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 75369120ED480;
-        Fri, 22 May 2020 16:11:34 -0700 (PDT)
-Date:   Fri, 22 May 2020 16:11:33 -0700 (PDT)
-Message-Id: <20200522.161133.75296957266065703.davem@davemloft.net>
-To:     hch@lst.de
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, kuba@kernel.org,
-        David.Laight@ACULAB.COM, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: do a single memdup_user in sctp_setsockopt
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A31CA12750EC8;
+        Fri, 22 May 2020 16:13:37 -0700 (PDT)
+Date:   Fri, 22 May 2020 16:13:36 -0700 (PDT)
+Message-Id: <20200522.161336.526663904778578885.davem@davemloft.net>
+To:     dmurphy@ti.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/2] DP83869 Enhancements
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200521174724.2635475-1-hch@lst.de>
-References: <20200521174724.2635475-1-hch@lst.de>
+In-Reply-To: <20200521174738.3151-1-dmurphy@ti.com>
+References: <20200521174738.3151-1-dmurphy@ti.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 22 May 2020 16:11:34 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 22 May 2020 16:13:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
-Date: Thu, 21 May 2020 19:46:35 +0200
+From: Dan Murphy <dmurphy@ti.com>
+Date: Thu, 21 May 2020 12:47:36 -0500
 
-> based on the review of Davids patch to do something similar I dusted off
-> the series I had started a few days ago to move the memdup_user or
-> copy_from_user from the inidividual sockopts into sctp_setsockopt,
-> which is done with one patch per option, so it might suit Marcelo's
-> taste a bit better.  I did not start any work on getsockopt.
+> These are improvements to the DP83869 Ethernet PHY driver.  OP-mode and port
+> mirroring may be strapped on the device but the software only retrives these
+> settings from the device tree.  Reading the straps and initializing the
+> associated stored variables so when setting the PHY up and down the PHY's
+> configuration values will be retained.
 
-I think you and David still need to discuss how to move forward here,
-there doesn't seem to be consensus yet.
-
-Thanks.
+Series applied, thank you.
