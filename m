@@ -2,118 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 697B31DEF8F
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1290F1DEF9E
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730879AbgEVS6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S1730922AbgEVTCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730840AbgEVS6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:58:35 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810A1C061A0E;
-        Fri, 22 May 2020 11:58:35 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id i5so11686855qkl.12;
-        Fri, 22 May 2020 11:58:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gpy0uHkIeQmpCnBOmw7IB3fvyPs5tQERo4inod6pNFc=;
-        b=IhOgSoXLkCIJvCLmV/m6sF6m++0UII5dTW5RGAY4JS9hxMutg6J+qxjmtbtV3TZ5nd
-         9WdeeguflL9LBQncNSPhvvGVwmJXpPU2nwueYiZEUGd1idmB/OLeH5J+4wacHGdolqxU
-         NYpLnnzehH9hsIlD8YgQ6uX8qjIIUyJbHllB/F78JXMAyWQlLm+XE8ZbbqYGQ9p+rfgd
-         ECnDF4qT0CQUlg8dvdPPcXNQgSggRJh/rhEL6NvvzJVbOCns5iwC8thpt69egVsqQ48Z
-         4uKDqUYVHgaJRorwwedh7nOMwHJTXtot7rxJ4n9Q7e3PPFdlmS7EtEJ4ChuuTiaImX/u
-         wVOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gpy0uHkIeQmpCnBOmw7IB3fvyPs5tQERo4inod6pNFc=;
-        b=XArbfxeM6qGwLTtHxh88lqehhYfUcvaYBEj+wPk4xAzTRjN5Qhkjsk1lNXGeNbL7pH
-         YsoIlrdzD1TIArfk3DKrotqjnVdejTNaYcqpqF+iecR8k5Ed5MJ0hOEQzpqZru4w+NXA
-         KnQsp/rMQgKNa668UemjPPpi+BFzLlGRNOvzrxdfhqChaiJmW6rB/YcJZciWSD7FDxLG
-         yhUzvFXBTu8QVCO5DRwdSmt9dv7QILDgnorMMwul4tK0knJw6JCOLS348p/p/lCoCe68
-         fwHUddnKGEIFK9p0Lop2TUtR/AeqoglKRNQOXgfGw36XHEuVCPEWMbVBS2mRSwJEZfgd
-         tb7Q==
-X-Gm-Message-State: AOAM530EcsuRQsxLPRYxfFCt6am9ZzyJREmocGoUFEB3nUXCODHKPj8i
-        P/vWQJrHEOwUoyzIywYf7fBtKgRil7F9ie2ZSjc=
-X-Google-Smtp-Source: ABdhPJxU/DEHIQc0KmmkRUdeR6DSacVYg35VEadwnuMPRsD2vrzsFWPOj+lIDMwAvCWdtDdarKve10T19QyWO2rsUa0=
-X-Received: by 2002:ae9:efc1:: with SMTP id d184mr17475880qkg.437.1590173914774;
- Fri, 22 May 2020 11:58:34 -0700 (PDT)
+        with ESMTP id S1730840AbgEVTCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:02:19 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804F1C061A0E;
+        Fri, 22 May 2020 12:02:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=3WYApwMQHv/jK2wjKkDG3PzXHTttraCjB18s9qs0m9Q=; b=oIYuKmUbm7Iz4mLUIgxRg3v4+Y
+        9+sgh7Vf4L1vzyqBwRTlR1wbayzhVg6R9cnCs/3GzWiZJQd/P1+JDdE9OVKyU0B+pKi4tPTXJoIrH
+        zb/MdevVMWFu9zsAKEr0VWCkVdxJQDRbhJcfWYdVRdVXOmo8L6176IF0hDGq4Y3KEWH3CDYUhLGSV
+        UGGHjWqVcmnxY6aLEzqGR03IlwjP8H58HZoZP9MzS9pcfHlXFRMyUxFS+wcTohEemt78oCR8V+YFp
+        rdM9EmTxzpefGAlduTvKUqvZILzsKaNMKCMOJfCa7fZ/JxW15/9q+pDafuLHgHpILYHn7omdFChq/
+        fQzqkwLA==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jcCvy-0005AK-8C; Fri, 22 May 2020 19:02:18 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        Yotam Gigi <yotam.gi@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH -net-next] net: psample: depends on INET
+Message-ID: <3c51bea5-b7f5-f64d-eaf2-b4dcba82ce16@infradead.org>
+Date:   Fri, 22 May 2020 12:02:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-6-andriin@fb.com>
- <20200522012034.sufpu7e62itcn2vg@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200522012034.sufpu7e62itcn2vg@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 May 2020 11:58:24 -0700
-Message-ID: <CAEf4BzZy+iVMfVCHP-PT5hdeWwmjgqp5dpPvhzbz1bsateJN_Q@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 5/7] selftests/bpf: add BPF ringbuf selftests
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 6:20 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sun, May 17, 2020 at 12:57:25PM -0700, Andrii Nakryiko wrote:
-> > diff --git a/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
-> > new file mode 100644
-> > index 000000000000..7eb85dd9cd66
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
-> > @@ -0,0 +1,77 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +// Copyright (c) 2019 Facebook
->
-> oops ;)
->
+From: Randy Dunlap <rdunlap@infradead.org>
 
-heh, still living in good old 2019... :) fixing...
+Fix psample build error when CONFIG_INET is not set/enabled.
+PSAMPLE should depend on INET instead of NET since
+ip_tunnel_info_opts() is only present for CONFIG_INET.
 
-> > +
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +struct sample {
-> > +     int pid;
-> > +     int seq;
-> > +     long value;
-> > +     char comm[16];
-> > +};
-> > +
-> > +struct ringbuf_map {
-> > +     __uint(type, BPF_MAP_TYPE_RINGBUF);
-> > +     __uint(max_entries, 1 << 12);
-> > +} ringbuf1 SEC(".maps"),
-> > +  ringbuf2 SEC(".maps");
-> > +
-> > +struct {
-> > +     __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-> > +     __uint(max_entries, 4);
-> > +     __type(key, int);
-> > +     __array(values, struct ringbuf_map);
-> > +} ringbuf_arr SEC(".maps") = {
-> > +     .values = {
-> > +             [0] = &ringbuf1,
-> > +             [2] = &ringbuf2,
-> > +     },
-> > +};
->
-> the tests look great. Very easy to understand the usage model.
+../net/psample/psample.c: In function ‘__psample_ip_tun_to_nlattr’:
+../net/psample/psample.c:216:25: error: implicit declaration of function ‘ip_tunnel_info_opts’; did you mean ‘ip_tunnel_info_opts_set’? [-Werror=implicit-function-declaration]
 
-great, thanks!
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Yotam Gigi <yotam.gi@gmail.com>
+---
+This might be too stringent...
+
+ net/psample/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-next-20200522.orig/net/psample/Kconfig
++++ linux-next-20200522/net/psample/Kconfig
+@@ -4,7 +4,7 @@
+ #
+ 
+ menuconfig PSAMPLE
+-	depends on NET
++	depends on INET
+ 	tristate "Packet-sampling netlink channel"
+ 	default n
+ 	help
+
