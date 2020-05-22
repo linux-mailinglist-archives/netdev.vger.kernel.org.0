@@ -2,123 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC191DF05F
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 22:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B18F31DF061
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 22:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730986AbgEVUKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 16:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730893AbgEVUKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 16:10:06 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59919C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 13:10:06 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id n18so5664511pfa.2
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 13:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=peqwpvf86V3kIG8hI3JQaBVwjt4FuDHv5ohcoNwCSQI=;
-        b=oYGxNM2whfOIyNPku+HyGK12RZl9fNz7pwCle50hmAh5wiTnU67IvBSPzziI+s98Nz
-         7CDEfRJ8qbO8Lfkz5k4mR/tqp08MPH/rfcbKYWJaD+a2RjDpiZYrBofw6+P06Q4eevEz
-         N8A2RWMNkrb6brqx6WlXoajHqEuJmncutmVMdWCQoBj/dw5Bw8mRoA5uudNxIIsnLv3/
-         gKv10ZSrE6FVJALIm7F77UCljyOkYYSvTpjwsncIoeUPP2D0kidFXTR2ShsdlVtvfs8A
-         fP3dFVBnUWkOynfpx96i0aGfEPYrURNM7/bx73edG028pulHEOjysK/JzqlK8GA/qphn
-         zIrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=peqwpvf86V3kIG8hI3JQaBVwjt4FuDHv5ohcoNwCSQI=;
-        b=sQ/HQ7L2JqVIDh8Gac16MsmVHWboib/gHbPWDS451wbfwQHBmOVfYS3mcFD9+ZddL0
-         VY0P0nfaMhI/6DH7F0ve9In6P+h6D+Vr9770ajS8ra83Ge4lNVOj1efX42t5CtVHKnDc
-         dlSNot7bb5FKynOeWpcaSx58zntNLhqgoWKjhsAUc5YQf043p0AxJzVtL2gKEK3Vx7Bd
-         lCK46KgeqDTuyNTo8VF+OUsncmjD/kH4mq5lLQDMayrdV55t9cENnwNORJq3xv4jF/fn
-         06My8kUu3gCyU24HwdA8Ldx7wPwqfCcAAEzIAGjieVudQOCoL+NmV5g1xEuNr8ZzaLwn
-         BPxw==
-X-Gm-Message-State: AOAM533UJbvPg2vVvHCOAU/FhJtFBhHTwV9OMq5Z+KA4L1RXXNHVJv7l
-        yewQcLuxchBab/vJRNRMEvQ=
-X-Google-Smtp-Source: ABdhPJxJYI4JfvjyoZ62w1zio3Af1VKWsSymONsBYJWkthI3PPEMa3ky5MAFoK025rMPD/cRWNfWzg==
-X-Received: by 2002:a63:5a07:: with SMTP id o7mr15390121pgb.450.1590178205942;
-        Fri, 22 May 2020 13:10:05 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id gt10sm7402255pjb.30.2020.05.22.13.10.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 May 2020 13:10:05 -0700 (PDT)
-Subject: Re: [PATCH net] tipc: block BH before using dst_cache
-To:     Jon Maloy <jmaloy@redhat.com>, Xin Long <lucien.xin@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        tipc-discussion@lists.sourceforge.net
-References: <20200521182958.163436-1-edumazet@google.com>
- <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
- <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
- <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
- <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
- <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
- <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
- <bebc5293-d5be-39b5-8ee4-871dd3aa7240@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2084be57-be94-6630-5623-2bd7bd7b7da2@gmail.com>
-Date:   Fri, 22 May 2020 13:10:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <bebc5293-d5be-39b5-8ee4-871dd3aa7240@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1730992AbgEVULA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 16:11:00 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:6174 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730893AbgEVUK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 16:10:59 -0400
+Received: from cyclone.blr.asicdesigners.com (cyclone.blr.asicdesigners.com [10.193.186.206])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 04MKAmqA022450;
+        Fri, 22 May 2020 13:10:49 -0700
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     kuba@kernel.org, secdev@chelsio.com,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Subject: [PATCH net-next,v2] net/tls: fix race condition causing kernel panic
+Date:   Sat, 23 May 2020 01:40:31 +0530
+Message-Id: <20200522201031.32516-1-vinay.yadav@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+tls_sw_recvmsg() and tls_decrypt_done() can be run concurrently.
+// tls_sw_recvmsg()
+	if (atomic_read(&ctx->decrypt_pending))
+		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+	else
+		reinit_completion(&ctx->async_wait.completion);
 
+//tls_decrypt_done()
+  	pending = atomic_dec_return(&ctx->decrypt_pending);
 
-On 5/22/20 12:47 PM, Jon Maloy wrote:
-> 
-> 
-> On 5/22/20 11:57 AM, Eric Dumazet wrote:
->>
->> On 5/22/20 8:01 AM, Jon Maloy wrote:
->>>
->>> On 5/22/20 2:18 AM, Xin Long wrote:
->>>> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
->>>>> Resend to the list in non HTML form
->>>>>
->>>>>
->>>>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
->>>>>>
->>>>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
->>>>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
->>>>>>>> dst_cache_get() documents it must be used with BH disabled.
->>>>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
->>>>>>> preempt_disable().
->>>>>> rcu_read_lock() does not disable BH, never.
->>>>>>
->>>>>> And rcu_read_lock() does not necessarily disable preemption.
->>>> Then I need to think again if it's really worth using dst_cache here.
->>>>
->>>> Also add tipc-discussion and Jon to CC list.
->>> The suggested solution will affect all bearers, not only UDP, so it is not a good.
->>> Is there anything preventing us from disabling preemtion inside the scope of the rcu lock?
->>>
->>> ///jon
->>>
->> BH is disabled any way few nano seconds later, disabling it a bit earlier wont make any difference.
-> The point is that if we only disable inside tipc_udp_xmit() (the function pointer call) the change will only affect the UDP bearer, where dst_cache is used.
-> The corresponding calls for the Ethernet and Infiniband bearers don't use dst_cache, and don't need this disabling. So it does makes a difference.
->
+  	if (!pending && READ_ONCE(ctx->async_notify))
+  		complete(&ctx->async_wait.completion);
 
-I honestly do not understand your concern, this makes no sense to me.
+Consider the scenario tls_decrypt_done() is about to run complete()
 
-I have disabled BH _right_ before the dst_cache_get(cache) call, so has no effect if the dst_cache is not used, this should be obvious.
+	if (!pending && READ_ONCE(ctx->async_notify))
 
-If some other paths do not use dst)cache, how can my patch have any effect on them ?
+and tls_sw_recvmsg() reads decrypt_pending == 0, does reinit_completion(),
+then tls_decrypt_done() runs complete(). This sequence of execution
+results in wrong completion. Consequently, for next decrypt request,
+it will not wait for completion, eventually on connection close, crypto
+resources freed, there is no way to handle pending decrypt response.
 
-What alternative are you suggesting ?
+This race condition can be avoided by having atomic_read() mutually
+exclusive with atomic_dec_return(),complete().Intoduced spin lock to
+ensure the mutual exclution.
+
+Addressed similar problem in tx direction.
+
+v1->v2:
+- More readable commit message.
+- Corrected the lock to fix new race scenario.
+- Removed barrier which is not needed now.
+
+Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+---
+ include/net/tls.h |  4 ++++
+ net/tls/tls_sw.c  | 33 +++++++++++++++++++++++++++------
+ 2 files changed, 31 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/tls.h b/include/net/tls.h
+index bf9eb4823933..18cd4f418464 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -135,6 +135,8 @@ struct tls_sw_context_tx {
+ 	struct tls_rec *open_rec;
+ 	struct list_head tx_list;
+ 	atomic_t encrypt_pending;
++	/* protect crypto_wait with encrypt_pending */
++	spinlock_t encrypt_compl_lock;
+ 	int async_notify;
+ 	u8 async_capable:1;
+ 
+@@ -155,6 +157,8 @@ struct tls_sw_context_rx {
+ 	u8 async_capable:1;
+ 	u8 decrypted:1;
+ 	atomic_t decrypt_pending;
++	/* protect crypto_wait with decrypt_pending*/
++	spinlock_t decrypt_compl_lock;
+ 	bool async_notify;
+ };
+ 
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index c98e602a1a2d..f29ea717590c 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -206,10 +206,12 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 
+ 	kfree(aead_req);
+ 
++	spin_lock_bh(&ctx->decrypt_compl_lock);
+ 	pending = atomic_dec_return(&ctx->decrypt_pending);
+ 
+-	if (!pending && READ_ONCE(ctx->async_notify))
++	if (!pending && ctx->async_notify)
+ 		complete(&ctx->async_wait.completion);
++	spin_unlock_bh(&ctx->decrypt_compl_lock);
+ }
+ 
+ static int tls_do_decryption(struct sock *sk,
+@@ -467,10 +469,12 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
+ 			ready = true;
+ 	}
+ 
++	spin_lock_bh(&ctx->encrypt_compl_lock);
+ 	pending = atomic_dec_return(&ctx->encrypt_pending);
+ 
+-	if (!pending && READ_ONCE(ctx->async_notify))
++	if (!pending && ctx->async_notify)
+ 		complete(&ctx->async_wait.completion);
++	spin_unlock_bh(&ctx->encrypt_compl_lock);
+ 
+ 	if (!ready)
+ 		return;
+@@ -924,6 +928,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 	int num_zc = 0;
+ 	int orig_size;
+ 	int ret = 0;
++	int pending;
+ 
+ 	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
+ 		return -EOPNOTSUPP;
+@@ -1090,13 +1095,19 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 		goto send_end;
+ 	} else if (num_zc) {
+ 		/* Wait for pending encryptions to get completed */
+-		smp_store_mb(ctx->async_notify, true);
++		spin_lock_bh(&ctx->encrypt_compl_lock);
++		ctx->async_notify = true;
+ 
+-		if (atomic_read(&ctx->encrypt_pending))
++		pending = atomic_read(&ctx->encrypt_pending);
++		spin_unlock_bh(&ctx->encrypt_compl_lock);
++		if (pending)
+ 			crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+ 		else
+ 			reinit_completion(&ctx->async_wait.completion);
+ 
++		/* There can be no concurrent accesses, since we have no
++		 * pending encrypt operations
++		 */
+ 		WRITE_ONCE(ctx->async_notify, false);
+ 
+ 		if (ctx->async_wait.err) {
+@@ -1727,6 +1738,7 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
+ 	bool is_peek = flags & MSG_PEEK;
+ 	int num_async = 0;
++	int pending;
+ 
+ 	flags |= nonblock;
+ 
+@@ -1889,8 +1901,11 @@ int tls_sw_recvmsg(struct sock *sk,
+ recv_end:
+ 	if (num_async) {
+ 		/* Wait for all previously submitted records to be decrypted */
+-		smp_store_mb(ctx->async_notify, true);
+-		if (atomic_read(&ctx->decrypt_pending)) {
++		spin_lock_bh(&ctx->decrypt_compl_lock);
++		ctx->async_notify = true;
++		pending = atomic_read(&ctx->decrypt_pending);
++		spin_unlock_bh(&ctx->decrypt_compl_lock);
++		if (pending) {
+ 			err = crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+ 			if (err) {
+ 				/* one of async decrypt failed */
+@@ -1902,6 +1917,10 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		} else {
+ 			reinit_completion(&ctx->async_wait.completion);
+ 		}
++
++		/* There can be no concurrent accesses, since we have no
++		 * pending decrypt operations
++		 */
+ 		WRITE_ONCE(ctx->async_notify, false);
+ 
+ 		/* Drain records from the rx_list & copy if required */
+@@ -2287,6 +2306,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
+ 
+ 	if (tx) {
+ 		crypto_init_wait(&sw_ctx_tx->async_wait);
++		spin_lock_init(&sw_ctx_tx->encrypt_compl_lock);
+ 		crypto_info = &ctx->crypto_send.info;
+ 		cctx = &ctx->tx;
+ 		aead = &sw_ctx_tx->aead_send;
+@@ -2295,6 +2315,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
+ 		sw_ctx_tx->tx_work.sk = sk;
+ 	} else {
+ 		crypto_init_wait(&sw_ctx_rx->async_wait);
++		spin_lock_init(&sw_ctx_rx->decrypt_compl_lock);
+ 		crypto_info = &ctx->crypto_recv.info;
+ 		cctx = &ctx->rx;
+ 		skb_queue_head_init(&sw_ctx_rx->rx_list);
+-- 
+2.18.1
+
