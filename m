@@ -2,86 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9903D1DDC7D
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 03:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A581DDC88
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 03:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgEVBP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 21:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
+        id S1726968AbgEVBUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 21:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgEVBPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 21:15:55 -0400
+        with ESMTP id S1726737AbgEVBUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 21:20:38 -0400
 Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE10C061A0E;
-        Thu, 21 May 2020 18:15:55 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id b12so3733259plz.13;
-        Thu, 21 May 2020 18:15:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9B1C061A0E;
+        Thu, 21 May 2020 18:20:37 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x11so2756611plv.9;
+        Thu, 21 May 2020 18:20:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=UBJGFTXSGo+UPp7XYn9ZrTErT7E+VTF6ZtZtvuINGag=;
-        b=kimnnaIX9OjDVFuqUyxOzv92ZMZrrpfRGwrnZ71/9lSUbvHFc0tUnDaIE4Xcnck6Gw
-         a5dLTYKXNoEGtVndQwEfCAC/gpmHFfuUKz1SwQw0dWGca+U9+m9o4SnD0yBOxUsKp+k3
-         gesva2dE1ERBr8v+iSkthDEbOuyys5IljmzK1/f9UHJD+Ym7SDVrr/JqjzgSJX76fhzP
-         l1wPXrNlBmfrunzW0D/2gTMmTis/B6DQ+406LC5QJ4K1rmTEaXD81xOZ3rZrj6JJqFXm
-         ZcbFnn/XG+AKDl/+vIP+BWhulijClFp1OcyCJqC6Ncu2WSYEYLj6hPTUnEBSXRkb0iO4
-         w2WQ==
+        bh=ZNF3l3Rf/hyTRthjPLDXuO3hRE38OnT2OCuLH8saVWU=;
+        b=Ft7Gz1UYohvNdKPw6xvUWoyngsqlRLlUbcy+e1TrUs9xaDDKwQrLe7wqU03T/R6s5U
+         DWJIGyppQTq6eSPHOU2DmpEV5d1Inezhk0CYGHqrXv+pTysjD+Y5/PIqpsYsY2wS4Sxx
+         ekVxXmByMBz+fUqoWtlUzj7avi/0K8RqX2RJmE+bSyNYIhAhuxwdJ+kAqukNUmrlE5vN
+         rx91Fd9m5bXvKIAiby/0AHg32PJ7ERrIyM8lZVy/i8JVVlX48UFKTk1Jpl6oevyQ3fed
+         vNvtbONYwGyjeEJcwsuNcP1daMZQ3kfNVuZQnE7onzsIhnWFaN3qGUsYUax1ZOKaQ0PB
+         eEjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=UBJGFTXSGo+UPp7XYn9ZrTErT7E+VTF6ZtZtvuINGag=;
-        b=hm28EkCY8B/wJJ8Tt2PSf+CK/8sotNiLZZ/ZhhF/0zcvn9wuZTEZgwN5muTM6jWUXE
-         Umg4oa1kQOoXqAWoefp8VhV+4QUfM0IB6B2MJmibmG29l5B/2X5Bd+ouyPz1GXftJPAI
-         gIMWV2zXAEHpu4p1LY/MAtD8VQFKOpNu+Ivme2AC4JGQBHAeoNEGZJaasUm460R1iy4J
-         1s9sAbA874BgPTRmfcdQfZjKw/zzazENyjONo1vGMi+/mpQv80dIvBydCyL60+AL0VR5
-         b19KfC5YqRVlpHR1c6zMpSf6w0lEhK1i7OpzjJHho1TRHNPFyAs10xbddqV7k/192I6O
-         BhLw==
-X-Gm-Message-State: AOAM530x4zuKOtEW67BMce+N4yFvGRVjX9W1+31S7B7wmFDEGycWANMM
-        MdfMSgP+i0ONUt4xeWAqnmI=
-X-Google-Smtp-Source: ABdhPJytgXo/c/FEVNde564dMSmkq6Xx7r4V0FNxEUQzKStCiv3Ww464gd10U+TKjvzym3kRwUo2VQ==
-X-Received: by 2002:a17:90a:21cf:: with SMTP id q73mr1504496pjc.230.1590110155328;
-        Thu, 21 May 2020 18:15:55 -0700 (PDT)
+        bh=ZNF3l3Rf/hyTRthjPLDXuO3hRE38OnT2OCuLH8saVWU=;
+        b=caeN66uRiJoQkQ8FNxuwqC0wDoPe52nUE7ODrnOaLhZw0KbAP21vT4XBaF0IqOWPF3
+         PmFLlLnZymMB4xS6+K53VlmMXeroPlM2SK4Q4B0l5FiBQDU1mKrEbqGwVQ8FEaXL11uu
+         jZXjJ6xEuT+IJ28GfTk62X2Z5jMPsUiENDqb6pFluwgq4tbQ4qWZFUQ7U1dZWmMwU9fA
+         ubc/pDrpbzUmUt5WO9REQhAJmIjRRkk5KAKEpJlw4Pw3B2JOMx9P4lbz3dbi1tDCkboj
+         hKw4ra22ET7FPZmYIW0npvYstfBwaZIqhE/bfyBFc64JmPrGEccfFwx03zG53HuyWpMw
+         lw/Q==
+X-Gm-Message-State: AOAM530HC4yrfWFI/j0Do+8NC628Oec5G7xl8z0nl0yeoKCcz46YonHc
+        ZuwiANQEF1zdqv83HJm2wz0=
+X-Google-Smtp-Source: ABdhPJyWVA0/DZPA7pKuDYpn8ZiILHLDdH8s0mHO0XHMSJGrJmg6I+epzClXhjsImqcSMJ8WIDBnRg==
+X-Received: by 2002:a17:902:9a03:: with SMTP id v3mr3130075plp.6.1590110437222;
+        Thu, 21 May 2020 18:20:37 -0700 (PDT)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e680])
-        by smtp.gmail.com with ESMTPSA id y75sm5448112pfb.212.2020.05.21.18.15.53
+        by smtp.gmail.com with ESMTPSA id m188sm5562888pfd.67.2020.05.21.18.20.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 18:15:54 -0700 (PDT)
-Date:   Thu, 21 May 2020 18:15:52 -0700
+        Thu, 21 May 2020 18:20:36 -0700 (PDT)
+Date:   Thu, 21 May 2020 18:20:34 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Andrii Nakryiko <andriin@fb.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
         daniel@iogearbox.net, andrii.nakryiko@gmail.com,
         kernel-team@fb.com, "Paul E . McKenney" <paulmck@kernel.org>,
         Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH v2 bpf-next 4/7] libbpf: add BPF ring buffer support
-Message-ID: <20200522011552.ak4dkxhqwg6j2koy@ast-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH v2 bpf-next 5/7] selftests/bpf: add BPF ringbuf selftests
+Message-ID: <20200522012034.sufpu7e62itcn2vg@ast-mbp.dhcp.thefacebook.com>
 References: <20200517195727.279322-1-andriin@fb.com>
- <20200517195727.279322-5-andriin@fb.com>
+ <20200517195727.279322-6-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200517195727.279322-5-andriin@fb.com>
+In-Reply-To: <20200517195727.279322-6-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 17, 2020 at 12:57:24PM -0700, Andrii Nakryiko wrote:
-> +
-> +static inline int roundup_len(__u32 len)
-> +{
-> +	/* clear out top 2 bits */
-> +	len <<= 2;
-> +	len >>= 2;
+On Sun, May 17, 2020 at 12:57:25PM -0700, Andrii Nakryiko wrote:
+> diff --git a/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
+> new file mode 100644
+> index 000000000000..7eb85dd9cd66
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
+> @@ -0,0 +1,77 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (c) 2019 Facebook
 
-what this is for?
-Overflow prevention?
-but kernel checked the size already?
+oops ;)
 
-> +	/* add length prefix */
-> +	len += BPF_RINGBUF_HDR_SZ;
-> +	/* round up to 8 byte alignment */
-> +	return (len + 7) / 8 * 8;
-> +}
 > +
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +struct sample {
+> +	int pid;
+> +	int seq;
+> +	long value;
+> +	char comm[16];
+> +};
+> +
+> +struct ringbuf_map {
+> +	__uint(type, BPF_MAP_TYPE_RINGBUF);
+> +	__uint(max_entries, 1 << 12);
+> +} ringbuf1 SEC(".maps"),
+> +  ringbuf2 SEC(".maps");
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+> +	__uint(max_entries, 4);
+> +	__type(key, int);
+> +	__array(values, struct ringbuf_map);
+> +} ringbuf_arr SEC(".maps") = {
+> +	.values = {
+> +		[0] = &ringbuf1,
+> +		[2] = &ringbuf2,
+> +	},
+> +};
+
+the tests look great. Very easy to understand the usage model.
