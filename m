@@ -2,140 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 868501DEBEC
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 046121DEC05
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:36:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730124AbgEVPdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 11:33:22 -0400
-Received: from mga03.intel.com ([134.134.136.65]:6035 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728433AbgEVPdW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 11:33:22 -0400
-IronPort-SDR: PDmt37e5R7/wTEE/hMgMom2ZNBwCng7fcV9o09pMblkFqRGrb0n10R8A7RbcsFLj1IvNpWSyBj
- g7EvidIgtP/Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 08:33:21 -0700
-IronPort-SDR: kM8NV5pACghNRRx13BmJ5goZKNpAp/JZ3mya5KK5D8FmIrKrjvBEdLEHLwHeCHaIeZgPOVCX3b
- Jk3+T6XW0+Xg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,422,1583222400"; 
-   d="scan'208";a="255621290"
-Received: from kaparr-mobl1.amr.corp.intel.com (HELO [10.252.133.17]) ([10.252.133.17])
-  by fmsmga008.fm.intel.com with ESMTP; 22 May 2020 08:33:20 -0700
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Fred Oh <fred.oh@linux.intel.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200522145542.GI17583@ziepe.ca>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <6e129db7-2a76-bc67-0e56-2abb4d9761a3@linux.intel.com>
-Date:   Fri, 22 May 2020 10:33:20 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730600AbgEVPgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 11:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727807AbgEVPgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:36:08 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15248C08C5C0
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:36:07 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id z5so4917182qvw.4
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:36:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=61+HQokeJZQ8qkHJ2OEdKbbtcdPY4X5ntDI2ko215XA=;
+        b=FsB9N5UHSBWaHC/PI7gccIUfEYQI9QY2OJ2DpQw6NYmUIu/yS181SpbIsrMxh4tBq2
+         251MX3ARNKmg1PIdHLrIfedovaTFRuT7fr6qAJ0OzP4eZ9kHh5QC9Uqu8z6t+H3RAa5L
+         F060Wo09d4reWusv3yHvuVJT+swTL3Pz0DXKljhhGyA3kFwjN4C8iZYyafihOn7/z3Qg
+         0IuxiDtjd4U1Id+/0zAMVIS4TwL0Ptw3vYEV4ApNhTbJ9HL4cLaRC/CpSTAqYS2lFN8k
+         vztqA+6NvLDs6svcdY+jVjLfyDAKQ9YtsTkPHdPtxR9XEgWCjKhKy8Zuuz0XJ0fQto/0
+         lmIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=61+HQokeJZQ8qkHJ2OEdKbbtcdPY4X5ntDI2ko215XA=;
+        b=F1khfKmmYwpioePNfypNfA1bCkn44TJkpDaQMrNuN5u8Nz4wSRr5t0MEeedxv8Q+Af
+         xk8N+O5ke410MYBkYync2s/XYf/9ABMV1a9qtbs8tA1SPa07814yjiUjVrtQDd71RFcD
+         cafQdYdIaEkGd2z3Gg3gfszEsal1uAkAEEHRftdBjwhbYzBvX4R6V7eIN4WTZiN7b1Dx
+         NYLOXui8LmTNPHG20XM2ppHjt8yd1v7xwfbxL6uxtHJk8lYRH0Tctct6JRGnJ1VBVsDR
+         HQox2yn0jkYDT+0WlowfM/Lb78LkzFCy+1QU1UVJhdEO3bWZrlPj7nQ4RnBgGtyo2Asa
+         Xvmw==
+X-Gm-Message-State: AOAM530rM1e46AHL+6/N0tfmuv+9GdsN1NX9HEUFrfsnqOfJOzZtuKpF
+        O2Om156rGZ1GoGIv5LHJ5IzCj/p0DWk4nV3MEP/iaw==
+X-Google-Smtp-Source: ABdhPJxlFh9zM8Njqgrp9/xR4Z1brfdmQPtm73E6Mi4XIQKqvXjo8/lYWwCLTLOHbqsxApeDG9Che+ylwvNrK03MWBo=
+X-Received: by 2002:a0c:be88:: with SMTP id n8mr4247699qvi.134.1590161766309;
+ Fri, 22 May 2020 08:36:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200522145542.GI17583@ziepe.ca>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200522120700.838-1-brgl@bgdev.pl> <20200522120700.838-7-brgl@bgdev.pl>
+ <5627e304-3463-9229-fa86-d7d31cad7a61@gmail.com>
+In-Reply-To: <5627e304-3463-9229-fa86-d7d31cad7a61@gmail.com>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Fri, 22 May 2020 17:35:55 +0200
+Message-ID: <CAMpxmJVg3VPt7Xu0U9Qnt4wYRmT75iryMDu1qaYdoGib1bhdiQ@mail.gmail.com>
+Subject: Re: [PATCH v5 06/11] net: ethernet: mtk-star-emac: new driver
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+pt., 22 maj 2020 o 17:06 Matthias Brugger <matthias.bgg@gmail.com> napisa=
+=C5=82(a):
+>
+>
+>
+> On 22/05/2020 14:06, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >
+> > This adds the driver for the MediaTek STAR Ethernet MAC currently used
+> > on the MT8* SoC family. For now we only support full-duplex.
+>
+> MT85** SoC family, AFAIU it's not used on MT81** devices. Correct?
+>
 
+It's used on MT81**, MT83** and MT85**. What's wrong with the
+description anyway?
 
-On 5/22/20 9:55 AM, Jason Gunthorpe wrote:
-> On Fri, May 22, 2020 at 09:29:57AM -0500, Pierre-Louis Bossart wrote:
->>
->>>>>> +	ret = virtbus_register_device(vdev);
->>>>>> +	if (ret < 0)
->>>>>> +		return ret;
->>>>>> +
->>>>>> +	/* make sure the probe is complete before updating client list
->>>>>> */
->>>>>> +	timeout = msecs_to_jiffies(SOF_CLIENT_PROBE_TIMEOUT_MS);
->>>>>> +	time = wait_for_completion_timeout(&cdev->probe_complete,
->>>>>> timeout);
->>>>>
->>>>> This seems bonkers - the whole point of something like virtual bus is
->>>>> to avoid madness like this.
->>>>
->>>> Thanks for your review, Jason. The idea of the times wait here is to
->>>> make the registration of the virtbus devices synchronous so that the
->>>> SOF core device has knowledge of all the clients that have been able to
->>>> probe successfully. This part is domain-specific and it works very well
->>>> in the audio driver case.
->>>
->>> This need to be hot plug safe. What if the module for this driver is
->>> not available until later in boot? What if the user unplugs the
->>> driver? What if the kernel runs probing single threaded?
->>>
->>> It is really unlikely you can both have the requirement that things be
->>> synchronous and also be doing all the other lifetime details properly..
->>
->> Can you suggest an alternate solution then?
-> 
-> I don't even know what problem you are trying to solve.
-> 
->> The complete/wait_for_completion is a simple mechanism to tell that the
->> action requested by the parent is done. Absent that, we can end-up in a
->> situation where the probe may fail, or the requested module does not exist,
->> and the parent knows nothing about the failure - so the system is in a
->> zombie state and users are frustrated. It's not great either, is it?
-> 
-> Maybe not great, but at least it is consistent with all the lifetime
-> models and the operation of the driver core.
-
-I agree your comments are valid ones, I just don't have a solution to be 
-fully compliant with these models and report failures of the driver 
-probe for a child device due to configuration issues (bad audio 
-topology, etc).
-
-My understanding is that errors on probe are explicitly not handled in 
-the driver core, see e.g. comments such as:
-
-/*
-  * Ignore errors returned by ->probe so that the next driver can try
-  * its luck.
-  */
-https://elixir.bootlin.com/linux/latest/source/drivers/base/dd.c#L636
-
-If somehow we could request the error to be reported then probably we 
-wouldn't need this complete/wait_for_completion mechanism as a custom 
-notification.
-
->> This is not an hypothetical case, we've had this recurring problem when a
->> PCI device creates an audio card represented as a platform device. When the
->> card registration fails, typically due to configuration issues, the PCI
->> probe still completes. That's really confusing and the source of lots of
->> support questions. If we use these virtual bus extensions to stpo abusing
->> platform devices, it'd be really nice to make those unreported probe
->> failures go away.
-> 
-> I think you need to address this in some other way that is hot plug
-> safe.
-> 
-> Surely you can make this failure visible to users in some other way?
-
-Not at the moment, no. there are no failures reported in dmesg, and the 
-user does not see any card created. This is a silent error.
-
-This is probably domain-specific btw, the use of complete() is only part 
-of the SOF core where we extended the virtual bus to support SOF 
-clients. This is not a requirement in general for virtual bus users. We 
-are not forcing anyone to rely on this complete/wait_for_completion, and 
-if someone has a better idea to help us report probe failures we are all 
-ears.
+Bart
