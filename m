@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC9C1DDFE0
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 08:31:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E81D1DE006
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 08:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728506AbgEVGbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 02:31:18 -0400
-Received: from mout.web.de ([212.227.15.14]:36125 "EHLO mout.web.de"
+        id S1728234AbgEVGgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 02:36:40 -0400
+Received: from mout.web.de ([212.227.15.4]:57183 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728439AbgEVGbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 02:31:17 -0400
+        id S1728125AbgEVGgj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 02:36:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1590129053;
-        bh=splb0+8WO7eITGBItBY2nf0FXUphvqRnGPW6mcoqZRI=;
-        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=joZp6nPykM7tQDqcNWz73N+zg3aiT9XPFRIVm8lPB560kluFFjhUWDXDBw/tQFydT
-         lTvBGIBCC/e3stR+pklMedCTzj3A+4HyHqzoKXmiPNR3BjTAUyQRSM26Oo4ysIDCic
-         dxtp/6OJ+yx9iQYpKnywMHHhUEthSHYCO/0eapTA=
+        s=dbaedf251592; t=1590129373;
+        bh=TTFsG8SgLaQVd1eKAWGA0N4CAmOJ8fhqNtjh5AXvU9E=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
+        b=g9xfwbQSgloCLRYJvCYqenpiQ+6ukDtIRnJBpJpusXJsnOD6YzU54PY16HCwfgs+x
+         4cUdlstHc/TjiwO74p0p51JZDPH7rAbY3Hyb8BwQ1Cuci+qOjMe4z4TDVF/mydbMLU
+         BsW9J5zeCDldpWVs2SxUn+t+EURFI+eldyD6HCsU=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.165.155]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M8zRF-1jlcWW00oH-00CUGJ; Fri, 22
- May 2020 08:30:53 +0200
+Received: from [192.168.1.2] ([78.48.165.155]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MS1xS-1jUm0s3eeo-00TBXi; Fri, 22
+ May 2020 08:36:12 +0200
+Subject: Re: [PATCH] rxrpc: Fix a memory leak in rxkad_verify_response()
+From:   Markus Elfring <Markus.Elfring@web.de>
 To:     Qiushi Wu <wu000273@umn.edu>, linux-afs@lists.infradead.org,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Kangjie Lu <kjlu@umn.edu>
-Subject: Re: [PATCH] rxrpc: Fix a memory leak in rxkad_verify_response()
-From:   Markus Elfring <Markus.Elfring@web.de>
+References: <262bd413-9be4-3abe-9565-ac37a2e2e719@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
  +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -72,55 +73,53 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <262bd413-9be4-3abe-9565-ac37a2e2e719@web.de>
-Date:   Fri, 22 May 2020 08:30:41 +0200
+Message-ID: <a19d0395-c3d4-af1f-55bf-bc130e1ebadb@web.de>
+Date:   Fri, 22 May 2020 08:36:11 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <262bd413-9be4-3abe-9565-ac37a2e2e719@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:GfxxN4lHt6KTDFfauaVELUU1qqXCKh3Ql1yCNUCMrUVTc2lItE/
- oT4lrOk8IMiiZYozPTefGPkkQ9Ray4VbJWqDXQFydYT1DE3q3ApUBmYVw2JCFENchQX4D+9
- exb6mtVMiMYFNsPcVR6vOZopL9tL+n83nXbzPAQ9xiXsHBhcd9A3h5pVkOBOozOlZSo+SLa
- AnVd+MaKMqZyMpBB5bKNQ==
+X-Provags-ID: V03:K1:uDRaIi+45NtDoxvNVJ0gnIqt/HWV8xQa6W6/R7923HhKFr4vqnC
+ WWYOE0VnJ159ID/eW8EGJymHm4gh6pMJFVcSYHClS5wQJNwm2t71jwF896QteGC7mJ05lhT
+ WKoZRuvZm0OCvEgA2fQybB9fT40yZ6+cIkd43pFUdigWAIbz1q1H4E1j1m9KT5YFFBb6iIg
+ mGkZwWCva3UNos1H4q/ng==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bGHI3wngxjc=:lzCGparOYED79VHEzmIwrn
- bgOJc+Ma3LAgokHQGzC75JuwHyTLx96GkKXgy2cVi48QX0Mf9+hEZrsKvI/EkNgh4MubZxL2h
- vmd+eN4a87YLABiXQ3yQAMIw38O4nPjFF4KOtfj0AjfuUXwzeEp6oNfisssx4ppwZkiYuPXRv
- PBMpo+R/G4nCvd0X5oqxkU+VjOHUEzPy0DywocvI9KSIYPVwdwKfUl52w0ldcwHdMkr0ZuZg4
- H3B4w8dh9o2YTpOiZqRqLpNpZ4AHNoJerAVDEmFm30gPmbjcq72efwkg2tEX2+ewGXjk6kMVO
- u+4ZlT7guNZ8u5FlnvpXXpkYHviGP6vyLg+RF8bq08beOia2oiWl4UiPNyrPGXy3bgs0NO8nC
- e0HXkBzi9Atp0CiOfvbMPHbFInxyuE3/E61jj+EiJcAAzJY+H+bTwssLlnHr8QNFwtceXe7pt
- LfJp3fKKY86QGimsl1Xk61xkdcOeyjbtF3jV/eNHL6CBdNQ1vvC1ccn2KWbAa1aqB/Mp8k4aq
- UJJLVAry+EzoWaN6ajmRNoTh0qmVByTXIo1j6nzmwzMXJsKe48qeWQLReSqn79DaMOANBQexf
- ADVyAPWNPOD5NZZ1W9iEadK2+k3WEbnfIIv0RNfv+1RVa9Mjgtko2jcUrnSzZU4ImZCXmZ5d+
- JeDlxW9WNAQwyfkF+epqkLnb0eJRUuXvXzPpzB6PyxKh/Md4HBEtyjFASOeFNDZKQBvqehhvz
- /9Q38yb2Jj9QrzErt8biHpQWYnbTnc1kpoaxMaO1XHDX8MdmymPap8bgBoQ+bVktrV0s0NMjr
- pFtTmX5f69GezlH4Fe+OJRTeL/nRntzoVt5A9PTrDgcYoee3qlP9nO5zkW94XRgokoYdoi6i6
- iRBNymc2o/9JooT94pXSeR0C0xI9NYwPIaeD0bK5b+4HRcr73hVP96mMnWGuYbeOJww00hZsy
- 28VAF4fdf+icf/VnKUtfVWm93WzrOqG1MnLlaRNza0cXeFgoxzuA5G6Nt/KW9XQRUnBh5VctI
- vx0aybJLcwfnP+Evp1sAL5uIKqoYEJ2jNF6DRisnng40VQw2EIgPLk1F74MlraVBN4IO5HWVv
- g5K8vi+7ApTY1fR/ty3V+RCVrqhdmP9ML1Qu8D7W70NuLAwD/LHtPsa0FH3eypLFqGsov5vti
- WGsj8Kz9EBBjXIrQz7E6fMWb9C8DFSIrNXSQA2A4cEnphLZJuKw6gcM/LXRFkJJaJncAZ6WIO
- Elob7Om8U43ogf9Ng
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2dai1olasGA=:qUNYJ7qx87fAFTHD6CkFRx
+ W7UjFjQZJivS/OoFXh5swu0qKwHyKUtTQaVDLt/5MH3NarrikXjV1qvAzLf7ZC1Mkzug5luFw
+ uoYY6i7HMKXxAjlmD37H7+jK9on0O4Ve5siN0T8hgI9m9MVk03YpwJyBGi6YqQYFoB1av4hNt
+ QY/UVnPCU6tB0yg/n43ssKeHHb0jmnh/xOWBvnxKtxIuKs0tzqVXNExwnBqovfOUmuZ1lH4OX
+ nSqMigTmH9NBGsCiEQSRRYdHp8f5mzb/AkYkbAPo2iBLNbO94/NzNpmU85iTv3hAA5nRxfeFM
+ Deio5+YqHI9x9JUNIFRwG8rK6gSXI9qMGU6RaTdduznN/7+T+7PnhWWwwVQm1HLnTbcozfEPr
+ lxLhFE7TnjVgO+/Oq5y+amYG7STz4GKhplvyjmXJT5EOOk7uxuSUVdx15uRyj9hh4HuX+q2bA
+ nHKeXyCbKlTuzwLKFiKht9fGf5ZZEITPScyL69cAO94ylsgu8avdzb8yXLgwCdAHBcArCVDJk
+ bV9FqWwQkrzMfRWOJpvVybOX7VGXm4nx56/UMllAiRJzl1jKaD6qMa9/PDNgvwULZ5w9UGzMy
+ Ax2fE4yeaAFRhzfCkhVcrfbh8CzeW/iDVCU/N7MzsWmNFW7VgZEIyDcE0n/P6oBUiGRIDhikL
+ vW/8YkLRXOXowIQB6B/Tk5gfxpiRPGaYPyjxDmeu3x+JKYeFZFQWpjFo3Wv12UXSOXdaGztbE
+ fy/JaqZQu7gxXpoqskn1t5QaXpn2FVjwEHXkAK53JeNdxmgE2Sv4LQOT4TesMDkxnzqZnUGJN
+ mYlufKKI+pmGcvQic3pc28myL2nBPF9GDEA5ezqx0RrlwSHxlXpd0WE6wAL62bGdNHBScSfzh
+ 8b9fBMrmVzcD/HqB/xuSYX67E69UYwFFJQvUV4foQZ2nxSS/O7bmVuc5Vv2F40EOcyrCMZ7h8
+ eZ2+eyZLCyxdWSi2pPbq1R9PYsTBw/79vu5RPn3HBGEUCiSUWCWjw0jVbIRJHftHi4Q08Xj6x
+ dO2N+91c+hur1SD8n2IF0ZCpKIzX+WAME9tgm0zgfQuO6cK7S11W/JtzeWfciAOp0a4CKDPoy
+ ipnMP51tCSsaxtMtmBoM+x0BBC1Y0xgFBQxdpEr1Nn9l1iMnIm6iK38TAwCVV0rEDQFL2EVXF
+ 23GeGdBhdan8QNtgDU1Sw4SWSvewbsBYISse//l5bMtSW91NUSJ7+ZTJsXRvutQ3rkKnvBBqd
+ 38Q4BlbbaHZoZJL9q
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In function rxkad_verify_response(), pointer "ticket" is not released,
-> when function rxkad_decrypt_ticket() returns an error, causing a
-> memory leak bug.
+> How do you think about a wording variant like the following?
+>
+>    A ticket was not released after a call of the function =E2=80=9Cplatf=
+orm_get_irq=E2=80=9D failed.
 
-I suggest to improve also this change description.
-How do you think about a wording variant like the following?
+I should have specified an other function name here.
 
-   A ticket was not released after a call of the function =E2=80=9Cplatfor=
-m_get_irq=E2=80=9D failed.
-   Thus replace the jump target =E2=80=9Ctemporary_error_free_resp=E2=80=
-=9D
-   by =E2=80=9Ctemporary_error_free_ticket=E2=80=9D.
+   A ticket was not released after a call of the function =E2=80=9Crxkad_d=
+ecrypt_ticket=E2=80=9D failed.
 
 
 Regards,
