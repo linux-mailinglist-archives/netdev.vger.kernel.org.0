@@ -2,129 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437C11DDF76
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CC61DDF8A
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbgEVFmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 01:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
+        id S1728036AbgEVFzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 01:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726449AbgEVFmQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:42:16 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F5CC061A0E;
-        Thu, 21 May 2020 22:42:15 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h17so8904211wrc.8;
-        Thu, 21 May 2020 22:42:15 -0700 (PDT)
+        with ESMTP id S1728039AbgEVFzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:55:23 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496A9C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 22:55:23 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id r128so4055686ybc.6
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 22:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=06chsOrgQpjkS/G2JV9vsqi2MbhiGEqCYsM+9Un41es=;
-        b=jPnRvWt0Avnr0RC4x9kzCcbvBpUAY6gYq4Xa3jTEkdnW2bv7mRka283TqCNillZXnK
-         B+a7TR9U+qeRm+6iVFuCXhqtQzfeWAnJ9QFcLZcCzCW2TRAI2kDxVDTYn1YDsTpvM/UL
-         5InKSX3ZmNdHUH4CTMJ3i2FDV7uJqi0ggZNyPb+N18STDoTqSh20ExoagsmUtZw2W5hs
-         VESKnoeEcQt19wMOz6zYjtFtPMnmPlPKk0Mr6SFzka9QuRuZUAjAeS89gqK6/1su+K09
-         CX8+UCFhJ4dfQ9lYV7HZNLB5+VhTyB/mUDk26xo71geMDgjZplGocmJ0vpWdNsiTYmcm
-         GSKg==
+        bh=GdPtBZeZrdObbWqGEAlxB3HXs3EQW8gfEPKLjC1zUvI=;
+        b=AwBxdyM/KigdelreQh3xgXtU1e9eNMAq1CvkDBdfrDp5uvNv//ZPCs7JiAwgMlwfJM
+         EkjaYdwIny27WoArc7nmYd2PKtNGafmft728b9zY89MZhHz6NP2tLsYK2eIE3BgkyPE+
+         dEhRYx82oHHTDq8vpOI5wfxIbzzp5SiJk7Dh5xvPy5tWV/RfL60Din+49fo0sJ2U1fvY
+         vz6rraaQFGVDzEC9cUlbUEWL5z5uAc91/ew60ndncE/Mdgi4kJfAA5fRSkTSp2eWNObu
+         +z4hBsjva7tjFxtEUeGFDDySq/2Xo2oD48RXwEJ7LamiU505tBke1Czhg51+uxpa1DU0
+         P45Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=06chsOrgQpjkS/G2JV9vsqi2MbhiGEqCYsM+9Un41es=;
-        b=aNtOQbkrJyZS/QnoNp9FIXGxcMIrIfCBg+r4B68/tvmrzaE8z95wBUdrV6TWObahiW
-         /RoYE2mKKlG91wsgjIt7Ko6z1Qfytc5Aij/phYg9d6liZ/AqSzILU+2KtVAtZgHp2ig4
-         wwKKTuvOOnCuwtQOyBKzBJI2xyi5uVVdbd7cJGGm/3p7QKvD57bZDFdumaQDBtxJDSC/
-         9C6xJvdlsvi/8jIeXA6w+4C7cikmmBK1Yf6a1kE8bqNknHqfT9+jP6fKtNQRIIg0MCMG
-         MAQv8NoXADxnvnZS5OyUreE0uMRNTnAHr3lD2t/7Uk8bTscKmdFdalAjvhGnYybyNwCH
-         YtxA==
-X-Gm-Message-State: AOAM531J0qoAxfYhkbJaGgpHOyaHlJthyBcBIasFKCJ5Gx0qsOA9Y/rY
-        T3KMt3nvLTAZ+WFQG0YuIzRxtHTXMNgG1woXxr0=
-X-Google-Smtp-Source: ABdhPJynqthIPJWIRUluyP+U5q4i7nZgEP4LkojJ69yqmT0dksFo1fdRblwHxH1sjpJ6sczNubh0UyGl7ocbFBtBAzM=
-X-Received: by 2002:a5d:654a:: with SMTP id z10mr1737856wrv.234.1590126134702;
- Thu, 21 May 2020 22:42:14 -0700 (PDT)
+        bh=GdPtBZeZrdObbWqGEAlxB3HXs3EQW8gfEPKLjC1zUvI=;
+        b=tPvzc/R7pw6QyBzodxxJsFWpscXjjiyaPoerMo8zDJZzZ5kfU75cG28MYikTBqElsC
+         nro26CXOL4HzrCqCNgRDIp1GuxPhaCFK+Ox4y1cRQh4F0se6Wxv7b5HZURgD0SfhH22/
+         CA9yPJmKEcebF8SHoloRylJHP3g8thF94tZwPPyEbeDo9vCB8rhb0LkGfpQlHZVhAhrq
+         fgIzilkCjev9rX6WOdnbHqkgN05g6fKRSWG8u46b6e4gHQqgrWkDYj0c+wDIegc/NjoQ
+         yl/MYnZ6KT2H9ersNumy+HgeFNpiWLHP23za0oZxJq6RwjwNOLx3Zw7++qgPjtUcPMCh
+         V03Q==
+X-Gm-Message-State: AOAM531WG0ingsKqeQTPHSCAzaiy879UVd3dkJYPTk51QgUhzVtmZIo1
+        rfRnfLOAlM+1BQgs01wFOCroVP285jMDw4h6C8OULQ==
+X-Google-Smtp-Source: ABdhPJx5mNPVHk0LqZF9JuGh/UfUBOV+Ey39KF3gp0Em4qzB2vOlDSwDIl/VZuvhI+rYabAaTfF9r/817c8zHvrQEOo=
+X-Received: by 2002:a25:2504:: with SMTP id l4mr675625ybl.408.1590126922311;
+ Thu, 21 May 2020 22:55:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200421143149.45108-1-yuehaibing@huawei.com> <20200422125346.27756-1-yuehaibing@huawei.com>
- <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com> <20200519085353.GE13121@gauss3.secunet.de>
- <CADvbK_eXW24SkuLUOKkcg4JPa8XLcWpp6RNCrQT+=okaWe+GDA@mail.gmail.com> <550a82f1-9cb3-2392-25c6-b2a84a00ca33@huawei.com>
-In-Reply-To: <550a82f1-9cb3-2392-25c6-b2a84a00ca33@huawei.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 22 May 2020 13:49:05 +0800
-Message-ID: <CADvbK_cpXOxbWzHzonrzzrrb+Vh3q8NhXnapz0yc9h4H4gN02A@mail.gmail.com>
-Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
-To:     Yuehaibing <yuehaibing@huawei.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20200521182958.163436-1-edumazet@google.com> <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
+ <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
+In-Reply-To: <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 21 May 2020 22:55:11 -0700
+Message-ID: <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
+Subject: Re: [PATCH net] tipc: block BH before using dst_cache
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 9:45 AM Yuehaibing <yuehaibing@huawei.com> wrote:
->
-> On 2020/5/21 14:49, Xin Long wrote:
-> > On Tue, May 19, 2020 at 4:53 PM Steffen Klassert
-> > <steffen.klassert@secunet.com> wrote:
-> >>
-> >> On Fri, May 15, 2020 at 04:39:57PM +0800, Yuehaibing wrote:
-> >>>
-> >>> Friendly ping...
-> >>>
-> >>> Any plan for this issue?
-> >>
-> >> There was still no consensus between you and Xin on how
-> >> to fix this issue. Once this happens, I consider applying
-> >> a fix.
-> >>
-> > Sorry, Yuehaibing, I can't really accept to do: (A->mark.m & A->mark.v)
-> > I'm thinking to change to:
-> >
-> >  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
-> >                                    struct xfrm_policy *pol)
-> >  {
-> > -       u32 mark = policy->mark.v & policy->mark.m;
-> > -
-> > -       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
-> > -               return true;
-> > -
-> > -       if ((mark & pol->mark.m) == pol->mark.v &&
-> > -           policy->priority == pol->priority)
-> > +       if (policy->mark.v == pol->mark.v &&
-> > +           (policy->mark.m == pol->mark.m ||
-> > +            policy->priority == pol->priority))
-> >                 return true;
-> >
-> >         return false;
-> >
-> > which means we consider (the same value and mask) or
-> > (the same value and priority) as the same one. This will
-> > cover both problems.
->
->   policy A (mark.v = 0x1011, mark.m = 0x1011, priority = 1)
->   policy B (mark.v = 0x1001, mark.m = 0x1001, priority = 1)
-I'd think these are 2 different policies.
+Resend to the list in non HTML form
 
->
->   when fl->flowi_mark == 0x12341011, in xfrm_policy_match() do check like this:
->
->         (fl->flowi_mark & pol->mark.m) != pol->mark.v
->
->         0x12341011 & 0x1011 == 0x00001011
->         0x12341011 & 0x1001 == 0x00001001
->
->  This also match different policy depends on the order of policy inserting.
-Yes, this may happen when a user adds 2  policies like that.
-But I think this's a problem that the user doesn't configure it well,
-'priority' should be set.
-and this can not be avoided, also such as:
 
-   policy A (mark.v = 0xff00, mark.m = 0x1000, priority = 1)
-   policy B (mark.v = 0x00ff, mark.m = 0x0011, priority = 1)
-
-   try with 0x12341011
-
-So just be it, let users decide.
+On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+>
+>
+> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
+>>
+>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
+>> >
+>> > dst_cache_get() documents it must be used with BH disabled.
+>> Interesting, I thought under rcu_read_lock() is enough, which calls
+>> preempt_disable().
+>
+>
+> rcu_read_lock() does not disable BH, never.
+>
+> And rcu_read_lock() does not necessarily disable preemption.
+>
+>
+>>
+>> have you checked other places where dst_cache_get() are used?
+>
+>
+>
+> Yes, other paths are fine.
+>
+>>
+>>
+>> >
+>> > sysbot reported :
+>> >
+>> > BUG: using smp_processor_id() in preemptible [00000000] code: /21697
+>> > caller is dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
+>> > CPU: 0 PID: 21697 Comm:  Not tainted 5.7.0-rc6-syzkaller #0
+>> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>> > Call Trace:
+>> >  __dump_stack lib/dump_stack.c:77 [inline]
+>> >  dump_stack+0x188/0x20d lib/dump_stack.c:118
+>> >  check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+>> >  debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
+>> >  dst_cache_get+0x3a/0xb0 net/core/dst_cache.c:68
+>> >  tipc_udp_xmit.isra.0+0xb9/0xad0 net/tipc/udp_media.c:164
+>> >  tipc_udp_send_msg+0x3e6/0x490 net/tipc/udp_media.c:244
+>> >  tipc_bearer_xmit_skb+0x1de/0x3f0 net/tipc/bearer.c:526
+>> >  tipc_enable_bearer+0xb2f/0xd60 net/tipc/bearer.c:331
+>> >  __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
+>> >  tipc_nl_bearer_enable+0x1e/0x30 net/tipc/bearer.c:1003
+>> >  genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+>> >  genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+>> >  genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
+>> >  netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+>> >  genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
+>> >  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+>> >  netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+>> >  netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+>> >  sock_sendmsg_nosec net/socket.c:652 [inline]
+>> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
+>> >  ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
+>> >  ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+>> >  __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
+>> >  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>> >  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>> > RIP: 0033:0x45ca29
+>> >
+>> > Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
+>> > Cc: Xin Long <lucien.xin@gmail.com>
+>> > Cc: Jon Maloy <jon.maloy@ericsson.com>
+>> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> > Reported-by: syzbot <syzkaller@googlegroups.com>
+>> > ---
+>> >  net/tipc/udp_media.c | 6 +++++-
+>> >  1 file changed, 5 insertions(+), 1 deletion(-)
+>> >
+>> > diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+>> > index d6620ad535461a4d04ed5ba90569ce8b7df9f994..28a283f26a8dff24d613e6ed57e5e69d894dae66 100644
+>> > --- a/net/tipc/udp_media.c
+>> > +++ b/net/tipc/udp_media.c
+>> > @@ -161,9 +161,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
+>> >                          struct udp_bearer *ub, struct udp_media_addr *src,
+>> >                          struct udp_media_addr *dst, struct dst_cache *cache)
+>> >  {
+>> > -       struct dst_entry *ndst = dst_cache_get(cache);
+>> > +       struct dst_entry *ndst;
+>> >         int ttl, err = 0;
+>> >
+>> > +       local_bh_disable();
+>> > +       ndst = dst_cache_get(cache);
+>> >         if (dst->proto == htons(ETH_P_IP)) {
+>> >                 struct rtable *rt = (struct rtable *)ndst;
+>> >
+>> > @@ -210,9 +212,11 @@ static int tipc_udp_xmit(struct net *net, struct sk_buff *skb,
+>> >                                            src->port, dst->port, false);
+>> >  #endif
+>> >         }
+>> > +       local_bh_enable();
+>> >         return err;
+>> >
+>> >  tx_error:
+>> > +       local_bh_enable();
+>> >         kfree_skb(skb);
+>> >         return err;
+>> >  }
+>> > --
+>> > 2.27.0.rc0.183.gde8f92d652-goog
+>> >
