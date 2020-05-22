@@ -2,134 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E07B1DEF76
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8E151DEF78
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730875AbgEVSsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:48:12 -0400
-Received: from mga14.intel.com ([192.55.52.115]:40047 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730849AbgEVSsL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 14:48:11 -0400
-IronPort-SDR: DHbp2RTfSdfM+h5+Vd+AtZFjvOFi6JKCMHRvTEH7FeAGkKik4VBnmEiM0Sn+PyFuYJkZVvDKrA
- a+wt6ASkT6Ow==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 11:48:02 -0700
-IronPort-SDR: UUjZvN2RlgR/Mz1w/ElTUaoK+WoqGDdJq5+P4j6K0u0YgACiJwARDQJ7gRp53Lk26yMGlufkIL
- iJfT0V883FhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,422,1583222400"; 
-   d="scan'208";a="254428142"
-Received: from jfarmer-mobl1.amr.corp.intel.com (HELO [10.254.66.73]) ([10.254.66.73])
-  by orsmga007.jf.intel.com with ESMTP; 22 May 2020 11:48:01 -0700
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Fred Oh <fred.oh@linux.intel.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200522145542.GI17583@ziepe.ca>
- <6e129db7-2a76-bc67-0e56-2abb4d9761a3@linux.intel.com>
- <20200522171055.GK17583@ziepe.ca>
- <01efd24a-edb6-3d0c-d7fa-a602ecd381d1@linux.intel.com>
- <20200522184035.GL17583@ziepe.ca>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <b680a7f2-5dc1-00d6-dcff-b7c71d09b535@linux.intel.com>
-Date:   Fri, 22 May 2020 13:48:00 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730918AbgEVSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730849AbgEVSsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:48:22 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D619CC061A0E;
+        Fri, 22 May 2020 11:48:20 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id c24so9095224qtw.7;
+        Fri, 22 May 2020 11:48:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m1mNHc6/hAjoWFrBNVm6ycm0CW8JEi3JHpb/McV2Ky0=;
+        b=PQ9D+GRhJMZpGhXuKeEHOvUHaxsAjiEMYF25wAdRbXUFAJEr5DrKiOxyJKNQXJBXti
+         X9y9o4Xfy9SCO1Bx9icsmDPdhJJkWU7nYQpf4JScxSkpMCEwHdZK+7qwtK6czkGB0cXE
+         +KU5dVG63t+sLYuathfgv2lKV9zaA19kRFEdkaNTNr2kFIFT/Ovjxyrf9piyhFRXpqY1
+         wGIa48FrbDSZ55iKKhgk6mV2fWhcwhgpnIl5IQOncODjSNCfqeNHqAQlkrqtAJnGeAKi
+         M4BypWF77pkcvJhB+0f7kE2wq6I4lHZh3lmCT+73MZF2370NxyLNhxJYE3ggmGiycE3Z
+         6NwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m1mNHc6/hAjoWFrBNVm6ycm0CW8JEi3JHpb/McV2Ky0=;
+        b=MeaGmJkBPzmq0KWzLEDPZqVH8ELetxzjdfkpRRDbogrVr5VuF6Bjx83ou7gRbnIN0X
+         +hJC26nALbo2T8yLG0rAv51hwTEyFS7uGKyog/tm+mD7LbokLpWp356giBrYMdIOA/wH
+         U+zwjtV+e1HY9naumjy5cPJnbv9PWfhWGOXsu3ddocCXSoXNej8TGg1vn/mYgyIwo+n2
+         +pnjr56gPxUG9CIrT4nef+tx3Qq/Rb+zOQlH+J+yB0zROad4w4Dnu9qUjtFYuSSSZog+
+         r4roN4CS4/TzOHwtSTxYUax7Yrb8cQ4xYzCWyv310dgwlCOGgIE6y+7Wx/Vni/ZurLkw
+         qDwQ==
+X-Gm-Message-State: AOAM530I5NuMY1HTLCzzDBb3k41ob/VMYhffOJgx/yqQL5ueda5dsAxl
+        Ae4DZsy836B2qASe8S60LvtLP4LOpwGZDXwEmHo=
+X-Google-Smtp-Source: ABdhPJyliiTzhVW1YkVMdO0/ciBIKHrpq3kK/xHilE5Wb003Wf/7zuF94t6z1fOaTGp1lk0e3T0lE6vlMydmGzsFBZQ=
+X-Received: by 2002:ac8:424b:: with SMTP id r11mr17237033qtm.171.1590173300022;
+ Fri, 22 May 2020 11:48:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200522184035.GL17583@ziepe.ca>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-2-andriin@fb.com>
+ <20200522010722.2lgagrt6cmw6dzmm@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200522010722.2lgagrt6cmw6dzmm@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 22 May 2020 11:48:09 -0700
+Message-ID: <CAEf4BzZLYtgZg8caSpMkFf4-NJXQHbiTXhwnY7wnq7qDbgA9Gw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/7] bpf: implement BPF ring buffer and
+ verifier support for it
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 21, 2020 at 6:07 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sun, May 17, 2020 at 12:57:21PM -0700, Andrii Nakryiko wrote:
+> > -     if (off < 0 || size < 0 || (size == 0 && !zero_size_allowed) ||
+> > -         off + size > map->value_size) {
+> > -             verbose(env, "invalid access to map value, value_size=%d off=%d size=%d\n",
+> > -                     map->value_size, off, size);
+> > -             return -EACCES;
+> > -     }
+> > -     return 0;
+> > +     if (off >= 0 && size_ok && off + size <= mem_size)
+> > +             return 0;
+> > +
+> > +     verbose(env, "invalid access to memory, mem_size=%u off=%d size=%d\n",
+> > +             mem_size, off, size);
+> > +     return -EACCES;
+>
+> iirc invalid access to map value is one of most common verifier errors that
+> people see when they're use unbounded access. Generalizing it to memory is
+> technically correct, but it makes the message harder to decipher.
+> What is 'mem_size' ? Without context it is difficult to guess that
+> it's actually size of map value element.
+> Could you make this error message more human friendly depending on
+> type of pointer?
 
+yep, sure, better verifier errors are extremely important, I think
 
-On 5/22/20 1:40 PM, Jason Gunthorpe wrote:
-> On Fri, May 22, 2020 at 01:35:54PM -0500, Pierre-Louis Bossart wrote:
->>
->>
->> On 5/22/20 12:10 PM, Jason Gunthorpe wrote:
->>> On Fri, May 22, 2020 at 10:33:20AM -0500, Pierre-Louis Bossart wrote:
->>>
->>>>> Maybe not great, but at least it is consistent with all the lifetime
->>>>> models and the operation of the driver core.
->>>>
->>>> I agree your comments are valid ones, I just don't have a solution to be
->>>> fully compliant with these models and report failures of the driver probe
->>>> for a child device due to configuration issues (bad audio topology, etc).
->>>
->>>
->>>> My understanding is that errors on probe are explicitly not handled in the
->>>> driver core, see e.g. comments such as:
->>>
->>> Yes, but that doesn't really apply here...
->>>> /*
->>>>    * Ignore errors returned by ->probe so that the next driver can try
->>>>    * its luck.
->>>>    */
->>>> https://elixir.bootlin.com/linux/latest/source/drivers/base/dd.c#L636
->>>>
->>>> If somehow we could request the error to be reported then probably we
->>>> wouldn't need this complete/wait_for_completion mechanism as a custom
->>>> notification.
->>>
->>> That is the same issue as the completion, a driver should not be
->>> making assumptions about ordering like this. For instance what if the
->>> current driver is in the initrd and the 2nd driver is in a module in
->>> the filesystem? It will not probe until the system boots more
->>> completely.
->>>
->>> This is all stuff that is supposed to work properly.
->>>
->>>> Not at the moment, no. there are no failures reported in dmesg, and
->>>> the user does not see any card created. This is a silent error.
->>>
->>> Creating a partial non-function card until all the parts are loaded
->>> seems like the right way to surface an error like this.
->>>
->>> Or don't break the driver up in this manner if all the parts are really
->>> required just for it to function - quite strange place to get into.
->>
->> This is not about having all the parts available - that's handled already
->> with deferred probe - but an error happening during card registration. In
->> that case the ALSA/ASoC core throws an error and we cannot report it back to
->> the parent.
-> 
-> The whole point of the virtual bus stuff was to split up a
-> multi-functional PCI device into parts. If all the parts are required
-> to be working to make the device work, why are you using virtual bus
-> here?
+>
+> >       if (err) {
+> > -             verbose(env, "R%d min value is outside of the array range\n",
+> > +             verbose(env, "R%d min value is outside of the memory region\n",
+> >                       regno);
+> >               return err;
+> >       }
+> > @@ -2518,18 +2527,38 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
+> >        * If reg->umax_value + off could overflow, treat that as unbounded too.
+> >        */
+> >       if (reg->umax_value >= BPF_MAX_VAR_OFF) {
+> > -             verbose(env, "R%d unbounded memory access, make sure to bounds check any array access into a map\n",
+> > +             verbose(env, "R%d unbounded memory access, make sure to bounds check any memory region access\n",
+> >                       regno);
+> >               return -EACCES;
+> >       }
+> > -     err = __check_map_access(env, regno, reg->umax_value + off, size,
+> > +     err = __check_mem_access(env, reg->umax_value + off, size, mem_size,
+> >                                zero_size_allowed);
+> > -     if (err)
+> > -             verbose(env, "R%d max value is outside of the array range\n",
+> > +     if (err) {
+> > +             verbose(env, "R%d max value is outside of the memory region\n",
+> >                       regno);
+>
+> I'm not that worried about above three generalizations of errors,
+> but if you can make it friendly by describing type of memory region
+> I think it will be a plus.
 
-It's the other way around: how does the core know that one part isn't 
-functional.
-
-There is nothing in what we said that requires that all parts are fully 
-functional. All we stated is that when *one* part isn't fully functional 
-we know about it.
-
->>> What happens if the user unplugs this sub driver once things start
->>> running?
->>
->> refcounting in the ALSA core prevents that from happening usually.
-> 
-> So user triggered unplug of driver that attaches here just hangs
-> forever? That isn't OK either.
-
-No, you'd get a 'module in use' error if I am not mistaken.
+I agree, will update
