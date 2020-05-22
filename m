@@ -2,63 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B931DF314
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9031DF317
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:42:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387409AbgEVXhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 19:37:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54776 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731169AbgEVXhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:37:47 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jcHET-0008KF-Su; Sat, 23 May 2020 01:37:41 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jcHET-0004aZ-Gb; Sat, 23 May 2020 01:37:41 +0200
-Subject: Re: [PATCH bpf 0/2] selftests/bpf: add missing CONFIG values to test
- config
-To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
-        andriin@fb.com
-Cc:     kafai@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        shuah@kernel.org, sean@mess.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <1590147389-26482-1-git-send-email-alan.maguire@oracle.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2f1368e0-c74e-2fd3-430c-4692243e3d63@iogearbox.net>
-Date:   Sat, 23 May 2020 01:37:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2387404AbgEVXmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 19:42:39 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:20217 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731169AbgEVXmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:42:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590190958;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mbvdctjClQbp0Jrz489CT4trpZjcuEg4KIRu2UYcXZ4=;
+        b=DT5vkd0Liz8W+5WtZEb3PPall7w+Kx8vIvDIMD4vF1hdCiuPSFjtrowG2+CXj5yBZaLnrb
+        dxDwCRYkkaclerlCXGmp04UMEUvYYNrUwGnAR5sYk4xV6cKOjF26BnPCnGN6rwhdiAjpDA
+        EVgHlD3rZYpAHieLlTB6VDxSAbEogWM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-180-j7pi3hFmOI2JIEubdNxo2g-1; Fri, 22 May 2020 19:42:35 -0400
+X-MC-Unique: j7pi3hFmOI2JIEubdNxo2g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55DD680183C;
+        Fri, 22 May 2020 23:42:34 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2BCA060BE2;
+        Fri, 22 May 2020 23:42:32 +0000 (UTC)
+Subject: [PATCH net 0/2] rxrpc: Fix a warning and a leak [ver #2]
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Qiushi Wu <wu000273@umn.edu>,
+        Markus Elfring <Markus.Elfring@web.de>, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Sat, 23 May 2020 00:42:32 +0100
+Message-ID: <159019095229.999797.5088700147400532632.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.22
 MIME-Version: 1.0
-In-Reply-To: <1590147389-26482-1-git-send-email-alan.maguire@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25820/Fri May 22 14:21:08 2020)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/22/20 1:36 PM, Alan Maguire wrote:
-> Selftests "config" file is intended to represent the config required
-> to run the tests; a few values are missing for the BPF selftests
-> and these can result in test failures due to missing helpers etc.
-> Add the missing values as they will help document the config needed
-> for a clean BPF selftests run.
-> 
-> Alan Maguire (2):
->    selftests/bpf: CONFIG_IPV6_SEG6_BPF required for test_seg6_loop.o
->    selftests/bpf: CONFIG_LIRC required for test_lirc_mode2.sh
-> 
->   tools/testing/selftests/bpf/config | 2 ++
->   1 file changed, 2 insertions(+)
-> 
 
-Applied to bpf-next, thanks!
+Here are a couple of fixes for AF_RXRPC:
+
+ (1) Fix an uninitialised variable warning.
+
+ (2) Fix a leak of the ticket on error in rxkad.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-fixes-20200523-v2
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
+
+David
+---
+Qiushi Wu (1):
+      rxrpc: Fix a memory leak in rxkad_verify_response()
+
+
+ fs/afs/fs_probe.c | 2 +-
+ net/rxrpc/rxkad.c | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+
