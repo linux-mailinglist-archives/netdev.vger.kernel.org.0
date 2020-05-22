@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7558B1DF2EB
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F33E91DF2EA
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 01:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387397AbgEVXYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387404AbgEVXYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 22 May 2020 19:24:09 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:34225 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731292AbgEVXX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:23:27 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49578 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731223AbgEVXXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 19:23:33 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590189805;
+        s=mimecast20190719; t=1590189812;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yA8MG2xnNJx0Kt8hJUHty9G03UJJdwFcpyOZHcxGCS0=;
-        b=cI7OiwFhLYhJyT5BRBi8RxgAqOe6cTG36IeRQhJAS8X2qFS3nZzeZhd3VrtKcfdT/eVos1
-        FGPOHdFK8iX6wsx6XbfmaWj2uhn+RJV7V+gKBFmyednaKj3wp4r9lFSeeUgBqel2fvnbDf
-        dnpnetDm91gJkh4n3XREJvR0CynBpMg=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xd7Kn/lno3L3olRbHEyTUX5d4LEKh+MuYsgRNc5tlak=;
+        b=e5nskxbZM6BdVxx/iBsy6qoEe2RXl/lsAxCWPDqP2znsuAoJ7o5zgAeX04R3PfwrNp2iHx
+        3QuYTa6BToBlQrYygcnd95psdtBjIathft65zbxuFIQJ0LK95Oj9MWgSL2ybJgKBVNPqlX
+        QHSE4F7kudYBiLBsGv80y5++RJYES5U=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-169-M4UY1Se6MOmGy9cPC_marg-1; Fri, 22 May 2020 19:23:24 -0400
-X-MC-Unique: M4UY1Se6MOmGy9cPC_marg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-429-pc7PmLKPNhCGOfV4Fu8Bmg-1; Fri, 22 May 2020 19:23:30 -0400
+X-MC-Unique: pc7PmLKPNhCGOfV4Fu8Bmg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0681D107ACCA;
-        Fri, 22 May 2020 23:23:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C585A8005AA;
+        Fri, 22 May 2020 23:23:29 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3809160BE2;
-        Fri, 22 May 2020 23:23:22 +0000 (UTC)
-Subject: [PATCH net 0/2] rxrpc: Fix a warning and a leak
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 104C75C1D0;
+        Fri, 22 May 2020 23:23:28 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 1/2] rxrpc: Fix a warning
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Sat, 23 May 2020 00:23:21 +0100
-Message-ID: <159018980141.996784.14747585629466633699.stgit@warthog.procyon.org.uk>
+Date:   Sat, 23 May 2020 00:23:28 +0100
+Message-ID: <159018980824.996784.6587719373730272639.stgit@warthog.procyon.org.uk>
+In-Reply-To: <159018980141.996784.14747585629466633699.stgit@warthog.procyon.org.uk>
+References: <159018980141.996784.14747585629466633699.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.22
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix a warning due to an uninitialised variable.
 
-Here are a couple of fixes for AF_RXRPC:
+le included from ../fs/afs/fs_probe.c:11:
+../fs/afs/fs_probe.c: In function 'afs_fileserver_probe_result':
+../fs/afs/internal.h:1453:2: warning: 'rtt_us' may be used uninitialized in this function [-Wmaybe-uninitialized]
+ 1453 |  printk("[%-6.6s] "FMT"\n", current->comm ,##__VA_ARGS__)
+      |  ^~~~~~
+../fs/afs/fs_probe.c:35:15: note: 'rtt_us' was declared here
 
- (1) Fix an uninitialised variable warning.
-
- (2) Fix a leak of the ticket on error in rxkad.
-
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-fixes-20200523
-
-and can also be found on the following branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
-
-and follows on from rxrpc-fixes-20200521.
-
-David
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-Qiushi Wu (1):
-      A ticket was not released after a call of the function
 
+ fs/afs/fs_probe.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- fs/afs/fs_probe.c            |  18 ++--
- fs/afs/vl_probe.c            |  18 ++--
- include/net/af_rxrpc.h       |   2 +-
- include/trace/events/rxrpc.h |  52 +++++++++---
- net/rxrpc/Makefile           |   1 +
- net/rxrpc/ar-internal.h      |  25 ++++--
- net/rxrpc/call_accept.c      |   2 +-
- net/rxrpc/call_event.c       |  22 ++---
- net/rxrpc/input.c            |  44 ++++++++--
- net/rxrpc/misc.c             |   5 --
- net/rxrpc/output.c           |   9 +-
- net/rxrpc/peer_event.c       |  46 ----------
- net/rxrpc/peer_object.c      |  12 +--
- net/rxrpc/proc.c             |   8 +-
- net/rxrpc/rtt.c              | 195 +++++++++++++++++++++++++++++++++++++++++++
- net/rxrpc/rxkad.c            |   3 +-
- net/rxrpc/sendmsg.c          |  26 ++----
- net/rxrpc/sysctl.c           |   9 --
- 18 files changed, 336 insertions(+), 161 deletions(-)
- create mode 100644 net/rxrpc/rtt.c
+diff --git a/fs/afs/fs_probe.c b/fs/afs/fs_probe.c
+index 237352d3cb53..37d1bba57b00 100644
+--- a/fs/afs/fs_probe.c
++++ b/fs/afs/fs_probe.c
+@@ -32,7 +32,7 @@ void afs_fileserver_probe_result(struct afs_call *call)
+ 	struct afs_server *server = call->server;
+ 	unsigned int server_index = call->server_index;
+ 	unsigned int index = call->addr_ix;
+-	unsigned int rtt_us;
++	unsigned int rtt_us = 0;
+ 	bool have_result = false;
+ 	int ret = call->error;
+ 
 
 
