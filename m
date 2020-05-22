@@ -2,132 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B33D1DDC58
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 02:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF0B1DDC5F
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 03:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbgEVAx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 20:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgEVAx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 20:53:27 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814E8C061A0E;
-        Thu, 21 May 2020 17:53:27 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id x22so5565952lfd.4;
-        Thu, 21 May 2020 17:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CQbuKHK4Fpjn4KjGNbdOe7m3KtF6KBLy2S3JAIVDZ7w=;
-        b=dFW5HF+EXcUG1IA/kdnBkznwnNNCeEfFSsT4rGTAXO4x2amNEqP0A1O13WH6Oyoxlw
-         FeI0S+wLKGoBf2YPGEEKCY+zDJiq5uchG0tCjxTm6VHawcUYqSxu2Ieu1vBYo9fKGqVp
-         gCTaQsMGJ/v0seBWVQ7ZSRFRQhtBxo0v7jx7LqDokuTK5LuW7EdePA/lRfwpbnavDCah
-         fOI+pPWYUoGro+VLKUdk97uSqFDjeLISUFdEpqNMa0RRwS6kaGp4Tubz/kXR+wtfpOpY
-         8ExRB/hE+1lONiaXDvakBsfNUx3ndsLpSNZxelHH4Lnwu2DExIp7ypWE9sNuACgmJ/62
-         U4Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CQbuKHK4Fpjn4KjGNbdOe7m3KtF6KBLy2S3JAIVDZ7w=;
-        b=tz0LBzuRvBvBe/pSplu13FpvYo0eSmQKRcJqDhwIafFzqQE60MTXrOMVMUP3Q1aeUf
-         4TA0JaiIDhv1vF/ZzVZPSdWgKQ2B+BboevKwcy2DZim2fabo2ZVUrhGKDllj7mZZbOdF
-         KT7v+r0IklezfNqf33OfZFfpb5UwvX1LHhbTgcDzPM3cTjwul5HnkgvjrL7ZLj5KUxZb
-         nSxcaTDmWGAb1k1I1XPsMWXuPNTCbQYnzWnnuN3XIDukNu7TtcUwL4iFFIYE2EY7Fjmu
-         nlGFC7Onwuh69/noPl+OOEh18z3wEW617JbzUOZb/xmuB934JJxaEL9/AhK5zV4/97lZ
-         5BaA==
-X-Gm-Message-State: AOAM533pCksZofhE30Iz8bLKViwqFDMzVGfaxOLebSjWXBnqneHV9fQb
-        00XaXWe5rU6o3tfdsrOjvUSjnqFjGL6CdV/v9FVL0Q==
-X-Google-Smtp-Source: ABdhPJysWdLo12/9qdSGEHKozzyKc1/jYR6Zv/ERBaKu8fFpwKjZWqt+ASyGw9F92rGP2zG8V0VNF9FG9u1mtboeJiI=
-X-Received: by 2002:a19:48e:: with SMTP id 136mr1505646lfe.134.1590108805977;
- Thu, 21 May 2020 17:53:25 -0700 (PDT)
+        id S1726790AbgEVBB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 21:01:57 -0400
+Received: from mail-eopbgr60048.outbound.protection.outlook.com ([40.107.6.48]:39502
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726335AbgEVBB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 21:01:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RqHAezBLauQ4tTVgnErZk79fdYia2pAOXYNc7+2ROP6E0SihlF9OqSS0Nw6ymijCfuCzQNAIvHHlXc8Wft7lhZSlddj8HU5o/0o1Nb0KnOBZiYRn62Nbnn9rzoyIakC9V4OToAoaSf+3Yhui/G+oStTHfV5YxuntvXigRBpD/bi3hYwtQdiO9oc6PVm7NWJlxfBVgoq3acM7/ctISMHqhermn60VEfv+qOTCItzCYCqf0nKZkYqbVB3TyqA30anuDq/rghmPaJ7/ZI0/ASNDoVmqg57XtBcs/qkWwEahypMqTJtIYVQWb2alyTRoTt4DHFwBvRkMjo+RXvYd5riGQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=keWdxfH4NgNJxnCA2AsbVr6tvjSe2LfefyZs1SvB7Hc=;
+ b=SYvE6Y/QU/vF6UlGhRNmXR93tMIlBnUS/jF/AUC7fDWVYG0cB8209aVFtqeEBYHjTFfu3BlGUhrcoRXoF6XaDyLucO9bE1fHEPhWq6VzrhRMTAbGa6xA0C4aGGd1XvRHRzthJXN90XwFvtvCAg4vwnRgzQW2q0GYY5tDlR6kLFEcmfIMLc8WX6Gt6G1PHwd+lxSaP7G+o4nQhCbw26zbrUQZmXjBNuM9Kx4hbXArHPM8TEb05+cW1s8G42NMIx3DbVPHwUEp7DmDhC4vihS8BSHyLEhaCRGXldYufSqbU3ftpVCqAE7H85QYy+pawdmD5IbjJmEtj8xoo/YPGUT9mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=keWdxfH4NgNJxnCA2AsbVr6tvjSe2LfefyZs1SvB7Hc=;
+ b=IAtZ7gbDQhGzNP0qub2U4kh2RiQBaknW8MmFkz78reJoEoivb8IVOQXjk1YxitRQbWSfAKwMKZC1heoWjiIc4x3MTVJgXbpACJ/K3S6/Kui99S3KVnvHgA+6R3mdZpXA7tSWMz3i05UwmEiXF0Y0FerW9/j0caz2DLxlJw0zFdg=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR0402MB3591.eurprd04.prod.outlook.com
+ (2603:10a6:209:8::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25; Fri, 22 May
+ 2020 01:01:53 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3000.034; Fri, 22 May 2020
+ 01:01:53 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martin.fuzzey@flowbird.group" <martin.fuzzey@flowbird.group>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH net 3/4] ARM: dts: imx6: update fec gpr property
+ to match new format
+Thread-Topic: [EXT] Re: [PATCH net 3/4] ARM: dts: imx6: update fec gpr
+ property to match new format
+Thread-Index: AQHWLoHSZsTKfn2KY0W5vmilgDZ/AqixNB4AgACoEqCAAKg5AIAAxaRg
+Date:   Fri, 22 May 2020 01:01:53 +0000
+Message-ID: <AM6PR0402MB360728F404F966B9EF404697FFB40@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <1589963516-26703-1-git-send-email-fugang.duan@nxp.com>
+ <1589963516-26703-4-git-send-email-fugang.duan@nxp.com>
+ <20200520170322.GJ652285@lunn.ch>
+ <AM6PR0402MB3607541D33B1C61476022D0AFFB70@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+ <20200521130700.GC657910@lunn.ch>
+In-Reply-To: <20200521130700.GC657910@lunn.ch>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f1f629a4-d044-4e4c-993e-08d7fdebb774
+x-ms-traffictypediagnostic: AM6PR0402MB3591:
+x-microsoft-antispam-prvs: <AM6PR0402MB3591379FFBA1DA1A55D7EF06FFB40@AM6PR0402MB3591.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 04111BAC64
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: r0zef+O1s8L2lgpoABcFhVrJNNOLkT+7mpTA7bgHzQjWLPEt/xjc6u5qzgVyXo7lA0jvmg9lk8HMacaQXePfER5Si59FZOocAYFzyDm3fqEjZ5U9EeVVwuN5t4UhLVbZ8NIU4mY1LxxfFHHRBiG6xo76AIp2dESgp4cXWVbPSrxwrw1h4gXQLBN0j+wHMQtRs3ptF7SCM9HXTEpR339e0NCIa6TKz/zS+SwsGPMYbdzIeFXahQLCKtNm0RtHvZRWweAc6cgyBQ8dHfSy8QWK/mcngFgYa7oGj5/VILu3Lxdv2Mt5+q6DGTlOiLCzVMKehOxGgOLZLIJSy3V0TPySwUR00GjlEz8KJ+ZZaS1G46qY++hi2ouLPR0gSYw2HnjRVdzd8oSUjLiGclezZKcpKmgKy5SO3/mpv00jmPpM055+RO1JruaV6bRYXT1Niqdx
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(376002)(346002)(39860400002)(396003)(54906003)(5660300002)(8676002)(86362001)(66946007)(71200400001)(55016002)(7696005)(2906002)(316002)(76116006)(4326008)(186003)(6506007)(9686003)(478600001)(64756008)(52536014)(66446008)(26005)(6916009)(33656002)(8936002)(66476007)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 0PxHIw6swkvXPbPnxAFxnp9uPcv8csp8QJbNTLJWI0tH/v6oUHqphlTl5VYrHfGEiVfiOcPoJzVSHgPmi/IgTYnAksFvnfYSm1BjJx/ccJnpYIpviMCio1Q3p8+Xyayi+9Cqik9UGCaMHAtCQZ3vJN5e3hXN/gUvett/qo7y9NQABf2SpQniViZ3KGttVHaW6OdgxOxRIHHj8uSkyJ9tG2dmLvmuBCvFTmieUmOYhftL0xcRmV8/GPSHSDZxrQ33rMiifBMFrzjSpEogcA3eHhe+nvz3dpmXn8tGfBVSWLR9kzkG9RLMcnNaC9pzYT7jegXxMcdkdTCEwoFBfhgweqviKlTx/tl1IKkWfX4bOiEbn5BCYKSKmu1z7SmtkmYkyIQymO7aMlAFfh7KkwSx4QtvViGy0dDYev9Esretb/vuw7IdRA9fwKK1vpiS1at2oorAeAnlYixOfL1RwaKoJepOP/5+PJMg+Pey6vUSExs=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20200520172258.551075-1-jakub@cloudflare.com> <CAEf4BzbpMp9D0TsC5dhRJ-AeKqsXJ5EyEcCx2-kkZg+ZBnHYqg@mail.gmail.com>
-In-Reply-To: <CAEf4BzbpMp9D0TsC5dhRJ-AeKqsXJ5EyEcCx2-kkZg+ZBnHYqg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 21 May 2020 17:53:14 -0700
-Message-ID: <CAADnVQKztsp-fF5Mbi7DUGrM-5SfH24xntaF0Qaewxr9ax7ZRw@mail.gmail.com>
-Subject: Re: [PATCH bpf] flow_dissector: Drop BPF flow dissector prog ref on
- netns cleanup
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1f629a4-d044-4e4c-993e-08d7fdebb774
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2020 01:01:53.1999
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jJ9Od9gPeU/ElImGlE2REp8g8+RF8mWE5oa/gSdyI+qhfvCPvy5BsRVjhKQxu5TcBaQIScVNYVZuVdo3wBVf6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3591
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 12:09 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, May 20, 2020 at 10:24 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+From: Andrew Lunn <andrew@lunn.ch> Sent: Thursday, May 21, 2020 9:07 PM
+> > Andrew, patch#1 in the series will parse the property to get register o=
+ffset
+> and bit.
+> > Patch#2 describes the property format as below:
+> >        <&gpr req_gpr req_bit>.
+> >         gpr is the phandle to general purpose register node.
+> >         req_gpr is the gpr register offset for ENET stop request.
+> >         req_bit is the gpr bit offset for ENET stop request.
 > >
-> > When attaching a flow dissector program to a network namespace with
-> > bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
+> > All i.MX support wake-on-lan, imx6q/dl/qp is the first platforms in ups=
+tream
+> to support it.
+> > As you know, most of i.MX chips has two ethernet instances, they have
+> different gpr bit.
 > >
-> > If netns gets destroyed while a flow dissector is still attached, and there
-> > are no other references to the prog, we leak the reference and the program
-> > remains loaded.
+> > gpr is used to enter/exit stop mode for soc. So it can be defined in dt=
+si file.
+> > "fsl,magic-packet;" property is define the board wakeup capability.
 > >
-> > Leak can be reproduced by running flow dissector tests from selftests/bpf:
-> >
-> >   # bpftool prog list
-> >   # ./test_flow_dissector.sh
-> >   ...
-> >   selftests: test_flow_dissector [PASS]
-> >   # bpftool prog list
-> >   4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
-> >           loaded_at 2020-05-20T18:50:53+0200  uid 0
-> >           xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
-> >           btf_id 4
-> >   #
-> >
-> > Fix it by detaching the flow dissector program when netns is going away.
-> >
-> > Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
-> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > ---
-> >
-> > Discovered while working on bpf_link support for netns-attached progs.
-> > Looks like bpf tree material so pushing it out separately.
-> >
-> > -jkbs
-> >
->
-> [...]
->
-> >  /**
-> >   * __skb_flow_get_ports - extract the upper layer ports and return them
-> >   * @skb: sk_buff to extract the ports from
-> > @@ -1827,6 +1848,8 @@ EXPORT_SYMBOL(flow_keys_basic_dissector);
-> >
-> >  static int __init init_default_flow_dissectors(void)
-> >  {
-> > +       int err;
-> > +
-> >         skb_flow_dissector_init(&flow_keys_dissector,
-> >                                 flow_keys_dissector_keys,
-> >                                 ARRAY_SIZE(flow_keys_dissector_keys));
-> > @@ -1836,7 +1859,11 @@ static int __init init_default_flow_dissectors(void)
-> >         skb_flow_dissector_init(&flow_keys_basic_dissector,
-> >                                 flow_keys_basic_dissector_keys,
-> >                                 ARRAY_SIZE(flow_keys_basic_dissector_keys));
-> > -       return 0;
-> > +
-> > +       err = register_pernet_subsys(&flow_dissector_pernet_ops);
-> > +
-> > +       WARN_ON(err);
->
-> syzbot simulates memory allocation failures, which can bubble up here,
-> so this WARN_ON will probably trigger. I wonder if this could be
-> rewritten so that init fails, when registration fails? What are the
-> consequences?
+> > I am not sure whether above information is clear for you why to add the
+> patch set.
+>=20
+> I understand the patch. What is missing is an actual user, where you have=
+ two
+> interfaces, doing WOL, with different values for gpr. We don't add new ke=
+rnel
+> APIs without a user.
+>=20
+>     Andrew
 
-good catch. that warn is pointless.
-I removed it and force pushed the bpf tree.
+Andrew, many customers require the wol feature, NXP NPI release always supp=
+ort
+the wol feature to match customers requirement.
+
+And some customers' board only design one ethernet instance based on imx6sx=
+/imx7d/
+Imx8 serial, but which instance we never know, maybe enet1, maybe enet2. So=
+ we should
+supply different values for gpr.
+
+So, it is very necessary to support wol feature for multiple instances.
+
+Andy
