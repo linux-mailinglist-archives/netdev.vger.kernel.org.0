@@ -2,82 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 240931DE475
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 12:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDA5E1DE488
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 12:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbgEVKbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 06:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728362AbgEVKbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 06:31:03 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CD7C061A0E;
-        Fri, 22 May 2020 03:31:03 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id x10so4230940plr.4;
-        Fri, 22 May 2020 03:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=H8pDFipnynsk4X9dPZFc4G5VJ+Iod2lTWU7AAQ+F64A=;
-        b=u7TP4XLco+GLRI32lIVLxsUEAEU8GblSNsqpkn0pxa+0NT6VHYCmPVw0ruogBA/hiI
-         W6HWu7FF6igZAwDfCGztzJ++AgTDOhSoCxeVX3ZIK5gx6h+/t917y97o6dgz1ptVGOEm
-         kU4n8AVKU+s2Q2Vs6RtrYVxhNCckWNQp6rjOQm5djgAZQzL66g3H3MKVvys3D1aQ9kf8
-         Oo+QjeL55J4pudwwLbM6f6FC7tXp0IxU9PIorUQ0/9Go3NuYZf5G/2bdZ8rWMupiHBrM
-         DsfDo/hRLvES5ysDT3gVbljvbdNkNOGFmGJ7zaFwU3hMv59jZ1XAtUxlldVXs89T9UzG
-         4qsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H8pDFipnynsk4X9dPZFc4G5VJ+Iod2lTWU7AAQ+F64A=;
-        b=tDaxNfppmDRVeCDhI1BuIH68Zk4mbA//OHkPqigMEAKScKBWRL21wiFUSWcKH4pGVa
-         2LKc0zUcaU1gOeOSHWhID/4r1xQ0MSyWgRm5RwkR7X4f/TTtimNZJzYOEBBBGSlDCwwP
-         ORmJExQHaltyDptR8E4HDb/pBB94sqivTHAmYymfLZBxxl8h3vmbwH6Pi3AY0eG+gJG6
-         nG/Y9rRlHth9xtwCF7PWMr5HWlk8Wo87JUowVIbk0gCgvTdx/nd5o39ZhtH9ucyghw9k
-         MD6jXBOCBqN07gyCfyLasPGgDzf9YIO5RvorPnqrxKFlkpVBtZDy0+3cikHWZIzmkxJx
-         xnFA==
-X-Gm-Message-State: AOAM532c60xeAGZAeQIAPeDLP81+L8q3IL0Cdns5XuF9bhgRIn/3zJfS
-        YdGX55zKaARGekJmWey+va8=
-X-Google-Smtp-Source: ABdhPJwujMCjom57osVJ9fq0ac205yggKIMAusPBKFt0tivdubT9md8eBXPdMbtGkI2xZyApsb8Lmg==
-X-Received: by 2002:a17:902:b706:: with SMTP id d6mr14769254pls.16.1590143462980;
-        Fri, 22 May 2020 03:31:02 -0700 (PDT)
-Received: from localhost.localdomain ([157.51.227.23])
-        by smtp.gmail.com with ESMTPSA id x14sm6488232pfi.60.2020.05.22.03.30.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 03:31:02 -0700 (PDT)
-From:   Hari <harichandrakanthan@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Hari <harichandrakanthan@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH] Fix typo in the comment
-Date:   Fri, 22 May 2020 16:00:24 +0530
-Message-Id: <20200522103024.9697-1-harichandrakanthan@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729056AbgEVKe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 06:34:26 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:14546 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728362AbgEVKe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 06:34:26 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1590143665; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=re0ym4TtgaTt3T7R6eYWSsdnKHzfzFMDeaeUuE8IlSA=; b=dXQ/NUoYDdEwFxKoFpNXVnEOt0R1+TocpFVyoRJdh67GIGu/MQwz/0kEbJYWIE6Hcg8E79Tv
+ zC7Tu81XncvJmWI59IKgk3q98lxusXEn1AZmE6rX8L6/cJ/M9z7qEhwK9gGClU6cGbvZdm1z
+ K3s6YJLbtzkr4R1KSU4/9wSue0k=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ec7aab1.7faa326c2e30-smtp-out-n02;
+ Fri, 22 May 2020 10:34:25 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 56121C43387; Fri, 22 May 2020 10:34:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8D6CDC433C8;
+        Fri, 22 May 2020 10:34:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8D6CDC433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Navid Emamdoost <emamd001@umn.edu>,
+        Stephen McCamant <smccaman@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "\<netdev\@vger.kernel.org\>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ath9k: release allocated buffer if timed out
+References: <20190906185931.19288-1-navid.emamdoost@gmail.com>
+        <CA+ASDXMnp-GTkrT7B5O+dtopJUmGBay=Tn=-nf1LW1MtaVOr+w@mail.gmail.com>
+        <878shwtiw3.fsf@kamboji.qca.qualcomm.com>
+        <CA+ASDXOgechejxzN4-xPcuTW-Ra7z9Z6EeiQ4wMrEowZc-p+uA@mail.gmail.com>
+        <CA+ASDXM6w-t85hZWcbTqTBA8aye0oka3Nw5YYZH2LqixO-PJzg@mail.gmail.com>
+Date:   Fri, 22 May 2020 13:34:18 +0300
+In-Reply-To: <CA+ASDXM6w-t85hZWcbTqTBA8aye0oka3Nw5YYZH2LqixO-PJzg@mail.gmail.com>
+        (Brian Norris's message of "Wed, 20 May 2020 13:59:20 -0700")
+Message-ID: <87sgfs9s2d.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Continuous Double "the" in a comment. Changed it to single "the"
+Brian Norris <briannorris@chromium.org> writes:
 
-Signed-off-by: Hari <harichandrakanthan@gmail.com>
----
- drivers/net/ethernet/intel/e1000/e1000_hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Wed, May 13, 2020 at 12:02 PM Brian Norris <briannorris@chromium.org> wrote:
+>>
+>> On Wed, May 13, 2020 at 12:05 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>> > Actually it's already reverted in -next, nobody just realised that it's
+>> > a regression from commit 728c1e2a05e4:
+>> >
+>> > ced21a4c726b ath9k: Fix use-after-free Read in htc_connect_service
+>>
+>> Nice.
+>>
+>> > v5.8-rc1 should be the first release having the fix.
+>>
+>> So I guess we have to wait until 5.8-rc1 (when this lands in mainline)
+>> to send this manually to stable@vger.kernel.org?
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-index 48428d6a00be..623e516a9630 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-@@ -3960,7 +3960,7 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
-  * @hw: Struct containing variables accessed by shared code
-  *
-  * Reads the first 64 16 bit words of the EEPROM and sums the values read.
-- * If the the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
-+ * If the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
-  * valid.
-  */
- s32 e1000_validate_eeprom_checksum(struct e1000_hw *hw)
+Yeah, following Option 2:
+
+https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+
+> For the record, there are more reports of this, if I'm reading them right:
+>
+> https://bugzilla.kernel.org/show_bug.cgi?id=207797
+
+Thanks for the followup, this case is a good example why small cleanup
+patches are not always that simple and easy as some people claim :)
+
 -- 
-2.17.1
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
