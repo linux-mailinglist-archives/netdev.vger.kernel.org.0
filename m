@@ -2,159 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0596B1DE500
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 13:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA751DE502
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 13:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728871AbgEVLDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 07:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728371AbgEVLDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 07:03:08 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEE3C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 04:03:07 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id e16so9730956wra.7
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 04:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OfisrLKwQ43NffhIjqAfiYXmPvM3pl/mUC1efR9ITaY=;
-        b=rg7Ko2bAg9ui8EHTH2m/W0IVyj1rSTr8D2cc/+atK5VOBxnTuaBNkioxsHk/MXShAD
-         SRMfVJsMRxBUcsandvolRCljqem55C6zbb9k144SrGhBeeXNZpNY1nwSxEzwhtA/gDDc
-         X4CcE78SPRz3pvyDG5Aecw5dLztWG+5qbot5zSYANfPA0LasvboQzBmNV6BynJMfmigV
-         8T7IbON/Gy9rcGubl1r7RJvgUTbqEqvGMMhA96N3y/e8r0/p6+SuhfcaxQQnmV5UVbUI
-         +hmC8iRUWJMVooVA2c1WpM2RjV1Wc8NIMeapvjSJLb5YOngIRntd46SXrb6J20ZHKDs1
-         gpwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OfisrLKwQ43NffhIjqAfiYXmPvM3pl/mUC1efR9ITaY=;
-        b=t8jp+fCv4uyIIwRuUnH52IjCCCuj0728lQvuwUxxhXGm9PX59FFKby+4Z+MzZC29gC
-         s40fEo6MmeDS+oGFKcDeTsfpTFE6n6/7aPzSshbi4moWrt/2acs0DCZcyfYvWcpindh0
-         cevf2sLuDdjTzbFRcpAVcUet6noIKnvSeV77yRFpYKb4JPx+5tZMhpJDo2OJneLlfzlQ
-         T+d1auvMoi2rTq0aoo7IfxrbNcQRFrfxUPHD0K+u/r43UvW7LhohQqfIou8V8bv6HUDf
-         7pXzz4k7SVrUQy+yc0BExClL0IATrMgeTUUh8pWHyR4i6iMh12wUtdEJn9uIgBK9Dc7g
-         rZDA==
-X-Gm-Message-State: AOAM530LeX19MUWIOKDsqWHLF5jd7PkgEbIXDsXJrZQRP00z5MkgPwN5
-        8F6LVDXb5rHPQVjMOaDZYazovg==
-X-Google-Smtp-Source: ABdhPJxjBKBY/7+dSstkm3KP25qJ1UctPN/oozCHmeDpo1gZPlzY9RWT+jRmgj0F2riH8E8iEIJ65g==
-X-Received: by 2002:adf:ffc2:: with SMTP id x2mr2869953wrs.273.1590145386398;
-        Fri, 22 May 2020 04:03:06 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id v24sm9742804wmh.45.2020.05.22.04.03.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 04:03:05 -0700 (PDT)
-Date:   Fri, 22 May 2020 13:03:05 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        petrm@mellanox.com, amitc@mellanox.com
-Subject: Re: devlink interface for asynchronous event/messages from firmware?
-Message-ID: <20200522110305.GD2478@nanopsycho>
-References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
- <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
- <20200521205213.GA1093714@splinter>
- <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
+        id S1729391AbgEVLD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 07:03:28 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:44048 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728371AbgEVLD1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 07:03:27 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxH995scdeQtI3AA--.86S2;
+        Fri, 22 May 2020 19:03:23 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     "'David S. Miller'" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Subject: [PATCH] net: Fix return value about devm_platform_ioremap_resource()
+Date:   Fri, 22 May 2020 19:03:21 +0800
+Message-Id: <1590145401-27763-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9DxH995scdeQtI3AA--.86S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cr4rtF1Utry5CF1Uuw1fXrb_yoW8Kw4Upa
+        1vyFWxur1jgF45t34kta1kZFy5A3W2q3y7Kr95Z3Z3u34DJr4DCryrCFyjyrn5trW0kFyY
+        qr4ayrWUZFZ0q3JanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Cr0_Gr1UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4k
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXTm3UUUU
+        U==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 21, 2020 at 10:59:32PM CEST, jacob.e.keller@intel.com wrote:
->
->
->On 5/21/2020 1:52 PM, Ido Schimmel wrote:
->> On Thu, May 21, 2020 at 01:22:34PM -0700, Jacob Keller wrote:
->>> On 5/20/2020 5:16 PM, Jakub Kicinski wrote:
->>>> On Wed, 20 May 2020 17:03:02 -0700 Jacob Keller wrote:
->>>>> Hi Jiri, Jakub,
->>>>>
->>>>> I've been asked to investigate using devlink as a mechanism for
->>>>> reporting asynchronous events/messages from firmware including
->>>>> diagnostic messages, etc.
->>>>>
->>>>> Essentially, the ice firmware can report various status or diagnostic
->>>>> messages which are useful for debugging internal behavior. We want to be
->>>>> able to get these messages (and relevant data associated with them) in a
->>>>> format beyond just "dump it to the dmesg buffer and recover it later".
->>>>>
->>>>> It seems like this would be an appropriate use of devlink. I thought
->>>>> maybe this would work with devlink health:
->>>>>
->>>>> i.e. we create a devlink health reporter, and then when firmware sends a
->>>>> message, we use devlink_health_report.
->>>>>
->>>>> But when I dug into this, it doesn't seem like a natural fit. The health
->>>>> reporters expect to see an "error" state, and don't seem to really fit
->>>>> the notion of "log a message from firmware" notion.
->>>>>
->>>>> One of the issues is that the health reporter only keeps one dump, when
->>>>> what we really want is a way to have a monitoring application get the
->>>>> dump and then store its contents.
->>>>>
->>>>> Thoughts on what might make sense for this? It feels like a stretch of
->>>>> the health interface...
->>>>>
->>>>> I mean basically what I am thinking of having is using the devlink_fmsg
->>>>> interface to just send a netlink message that then gets sent over the
->>>>> devlink monitor socket and gets dumped immediately.
->>>>
->>>> Why does user space need a raw firmware interface in the first place?
->>>>
->>>> Examples?
->>>>
->>>
->>> So the ice firmware can optionally send diagnostic debug messages via
->>> its control queue. The current solutions we've used internally
->>> essentially hex-dump the binary contents to the kernel log, and then
->>> these get scraped and converted into a useful format for human consumption.
->>>
->>> I'm not 100% of the format, but I know it's based on a decoding file
->>> that is specific to a given firmware image, and thus attempting to tie
->>> this into the driver is problematic.
->> 
->> You explained how it works, but not why it's needed :)
->
->Well, the reason we want it is to be able to read the debug/diagnostics
->data in order to debug issues that might be related to firmware or
->software mis-use of firmware interfaces.
+When call function devm_platform_ioremap_resource(), we should use IS_ERR()
+to check the return value and return PTR_ERR() if failed.
 
-I think that the health reporter would be able to serve this purpose.
-There is an event in firmware-> the event is propagated to the user.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ drivers/net/can/ifi_canfd/ifi_canfd.c     | 5 ++++-
+ drivers/net/can/sun4i_can.c               | 2 +-
+ drivers/net/dsa/b53/b53_srab.c            | 2 +-
+ drivers/net/ethernet/marvell/pxa168_eth.c | 2 +-
+ 4 files changed, 7 insertions(+), 4 deletions(-)
 
-The limitation we have in devlink health right now is that we only store
-the last event. So perhaps we need to extend to optionally hold a
-list/ring-buffer of events?
+diff --git a/drivers/net/can/ifi_canfd/ifi_canfd.c b/drivers/net/can/ifi_canfd/ifi_canfd.c
+index 04d59be..74503ca 100644
+--- a/drivers/net/can/ifi_canfd/ifi_canfd.c
++++ b/drivers/net/can/ifi_canfd/ifi_canfd.c
+@@ -947,8 +947,11 @@ static int ifi_canfd_plat_probe(struct platform_device *pdev)
+ 	u32 id, rev;
+ 
+ 	addr = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(addr))
++		return PTR_ERR(addr);
++
+ 	irq = platform_get_irq(pdev, 0);
+-	if (IS_ERR(addr) || irq < 0)
++	if (irq < 0)
+ 		return -EINVAL;
+ 
+ 	id = readl(addr + IFI_CANFD_IP_ID);
+diff --git a/drivers/net/can/sun4i_can.c b/drivers/net/can/sun4i_can.c
+index e3ba8ab..e2c6cf4 100644
+--- a/drivers/net/can/sun4i_can.c
++++ b/drivers/net/can/sun4i_can.c
+@@ -792,7 +792,7 @@ static int sun4ican_probe(struct platform_device *pdev)
+ 
+ 	addr = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(addr)) {
+-		err = -EBUSY;
++		err = PTR_ERR(addr);
+ 		goto exit;
+ 	}
+ 
+diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
+index 1207c30..aaa12d7 100644
+--- a/drivers/net/dsa/b53/b53_srab.c
++++ b/drivers/net/dsa/b53/b53_srab.c
+@@ -609,7 +609,7 @@ static int b53_srab_probe(struct platform_device *pdev)
+ 
+ 	priv->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->regs))
+-		return -ENOMEM;
++		return PTR_ERR(priv->regs);
+ 
+ 	dev = b53_switch_alloc(&pdev->dev, &b53_srab_ops, priv);
+ 	if (!dev)
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index 7a0d785..17243bb 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1418,7 +1418,7 @@ static int pxa168_eth_probe(struct platform_device *pdev)
+ 
+ 	pep->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pep->base)) {
+-		err = -ENOMEM;
++		err = PTR_ERR(pep->base);
+ 		goto err_netdev;
+ 	}
+ 
+-- 
+2.1.0
 
-
->
->By having it be a separate interface rather than trying to scrape from
->the kernel message buffer, it becomes something we can have as a
->possibility for debugging in the field.
->
->> 
->>> There is also a plan to provide a simpler interface for some of the
->>> diagnostic messages where a simple bijection between one code to one
->>> message for a handful of events, like if the link engine can detect a
->>> known reason why it wasn't able to get link. I suppose these could be
->>> translated and immediately printed by the driver without a special
->>> interface.
->> 
->> Petr worked on something similar last year:
->> https://lore.kernel.org/netdev/cover.1552672441.git.petrm@mellanox.com/
->> 
->> Amit is currently working on a new version based on ethtool (netlink).
->> 
->
->I'll take a look, thanks!
->
->-Jake
