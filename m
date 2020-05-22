@@ -2,208 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53ED41DE89C
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8CD1DE8B4
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 16:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729980AbgEVOSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 10:18:31 -0400
-Received: from foss.arm.com ([217.140.110.172]:36348 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729399AbgEVOSb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 10:18:31 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD068D6E;
-        Fri, 22 May 2020 07:18:30 -0700 (PDT)
-Received: from [192.168.1.84] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 05A2A3F68F;
-        Fri, 22 May 2020 07:18:27 -0700 (PDT)
-Subject: Re: [RFC PATCH v12 07/11] psci: Add hypercall service for kvm ptp.
-To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
-        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
-        pbonzini@redhat.com, sean.j.christopherson@intel.com,
-        maz@kernel.org, richardcochran@gmail.com, Mark.Rutland@arm.com,
-        will@kernel.org, suzuki.poulose@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        Wei.Chen@arm.com, nd@arm.com
-References: <20200522083724.38182-1-jianyong.wu@arm.com>
- <20200522083724.38182-8-jianyong.wu@arm.com>
-From:   Steven Price <steven.price@arm.com>
-Message-ID: <87fce07b-d0f5-47b0-05ce-dd664ce53eec@arm.com>
-Date:   Fri, 22 May 2020 15:18:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730121AbgEVOWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 10:22:08 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:55729 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729399AbgEVOWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 10:22:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590157327;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=71BWtppdcXwebCN5Ch0Z8YRSm7XfIWVqPau3AvAbOvc=;
+        b=cXt0E/05IjlPWftcet2odO6nCpJggPWzQOKDqPdqLuBpX47T7/CzHb0MuceBY+d13yE9Bz
+        NIzKrb7H7qcr+E52T9x3XIN4Y17BwpgbG1jWoQmJzKAoVconZ6VZqKf4I7TH9MV/MdWrC5
+        3JXQnXj8njuXLutrV6+qF8pB4vTTVM4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-jf96Mwg5OgOS-432do0GAg-1; Fri, 22 May 2020 10:22:05 -0400
+X-MC-Unique: jf96Mwg5OgOS-432do0GAg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 668B71005512;
+        Fri, 22 May 2020 14:22:04 +0000 (UTC)
+Received: from ovpn-112-173.ams2.redhat.com (ovpn-112-173.ams2.redhat.com [10.36.112.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F1CD3473A6;
+        Fri, 22 May 2020 14:22:02 +0000 (UTC)
+Message-ID: <c0f4e88f0a1b5449b341f2f7747a4aa7994089e7.camel@redhat.com>
+Subject: Re: [PATCH net-next] mptcp: adjust tcp rcvspace after moving skbs
+ from ssk to sk queue
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     matthieu.baerts@tessares.net, mathew.j.martineau@linux.intel.com
+Date:   Fri, 22 May 2020 16:22:01 +0200
+In-Reply-To: <20200522124350.47615-1-fw@strlen.de>
+References: <20200522124350.47615-1-fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-In-Reply-To: <20200522083724.38182-8-jianyong.wu@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/05/2020 09:37, Jianyong Wu wrote:
-> ptp_kvm modules will get this service through smccc call.
-> The service offers real time and counter cycle of host for guest.
-> Also let caller determine which cycle of virtual counter or physical counter
-> to return.
+Hi,
+
+On Fri, 2020-05-22 at 14:43 +0200, Florian Westphal wrote:
+> TCP does tcp rcvbuf tuning when copying packets to userspace, e.g. in
+> tcp_read_sock().  In case of mptcp, that function is only rarely used
+> (when discarding retransmitted duplicate data).
 > 
-> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> Instead, skbs are moved from the tcp rx queue to the mptcp socket rx
+> queue.
+> Adjust subflow rcvbuf when we do so, its the last spot where we can
+> adjust the ssk rcvbuf -- later we only have the mptcp-level socket.
+> 
+> This greatly improves performance on mptcp bulk transfers.
+> 
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 > ---
->   include/linux/arm-smccc.h | 14 ++++++++++++
->   virt/kvm/Kconfig          |  4 ++++
->   virt/kvm/arm/hypercalls.c | 47 +++++++++++++++++++++++++++++++++++++++
->   3 files changed, 65 insertions(+)
+>  net/mptcp/protocol.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-> index bdc0124a064a..badadc390809 100644
-> --- a/include/linux/arm-smccc.h
-> +++ b/include/linux/arm-smccc.h
-> @@ -94,6 +94,8 @@
->   
->   /* KVM "vendor specific" services */
->   #define ARM_SMCCC_KVM_FUNC_FEATURES		0
-> +#define ARM_SMCCC_KVM_FUNC_KVM_PTP		1
-> +#define ARM_SMCCC_KVM_FUNC_KVM_PTP_PHY		2
->   #define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
->   #define ARM_SMCCC_KVM_NUM_FUNCS			128
->   
-> @@ -103,6 +105,18 @@
->   			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
->   			   ARM_SMCCC_KVM_FUNC_FEATURES)
->   
-> +#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-> +			   ARM_SMCCC_SMC_32,				\
-> +			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-> +			   ARM_SMCCC_KVM_FUNC_KVM_PTP)
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index ba9d3d5c625f..dbb86cbb9e77 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -248,6 +248,9 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
+>  
+>  	*bytes = moved;
+>  
+> +	if (moved)
+> +		tcp_rcv_space_adjust(ssk);
 > +
-> +#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID			\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-> +			   ARM_SMCCC_SMC_32,				\
-> +			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-> +			   ARM_SMCCC_KVM_FUNC_KVM_PTP_PHY)
-> +
->   #ifndef __ASSEMBLY__
->   
->   #include <linux/linkage.h>
-> diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-> index aad9284c043a..bf820811e815 100644
-> --- a/virt/kvm/Kconfig
-> +++ b/virt/kvm/Kconfig
-> @@ -60,3 +60,7 @@ config HAVE_KVM_VCPU_RUN_PID_CHANGE
->   
->   config HAVE_KVM_NO_POLL
->          bool
-> +
-> +config ARM64_KVM_PTP_HOST
-> +       def_bool y
-> +       depends on ARM64 && KVM
-> diff --git a/virt/kvm/arm/hypercalls.c b/virt/kvm/arm/hypercalls.c
-> index db6dce3d0e23..c964122f8dae 100644
-> --- a/virt/kvm/arm/hypercalls.c
-> +++ b/virt/kvm/arm/hypercalls.c
-> @@ -3,6 +3,7 @@
->   
->   #include <linux/arm-smccc.h>
->   #include <linux/kvm_host.h>
-> +#include <linux/clocksource_ids.h>
->   
->   #include <asm/kvm_emulate.h>
->   
-> @@ -11,6 +12,10 @@
->   
->   int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->   {
-> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
-> +	struct system_time_snapshot systime_snapshot;
-> +	u64 cycles;
-> +#endif
->   	u32 func_id = smccc_get_function(vcpu);
->   	u32 val[4] = {SMCCC_RET_NOT_SUPPORTED};
->   	u32 feature;
-> @@ -70,7 +75,49 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->   		break;
->   	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
->   		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
-> +
-> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
-> +		val[0] |= BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP);
-> +#endif
->   		break;
-> +
-> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
-> +	/*
-> +	 * This serves virtual kvm_ptp.
-> +	 * Four values will be passed back.
-> +	 * reg0 stores high 32-bit host ktime;
-> +	 * reg1 stores low 32-bit host ktime;
-> +	 * reg2 stores high 32-bit difference of host cycles and cntvoff;
-> +	 * reg3 stores low 32-bit difference of host cycles and cntvoff.
-> +	 */
-> +	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
-> +		/*
-> +		 * system time and counter value must captured in the same
-> +		 * time to keep consistency and precision.
-> +		 */
-> +		ktime_get_snapshot(&systime_snapshot);
-> +		if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
-> +			break;
-> +		val[0] = upper_32_bits(systime_snapshot.real);
-> +		val[1] = lower_32_bits(systime_snapshot.real);
-> +		/*
-> +		 * which of virtual counter or physical counter being
-> +		 * asked for is decided by the first argument.
-> +		 */
-> +		feature = smccc_get_arg1(vcpu);
-> +		switch (feature) {
-> +		case ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID:
-> +			cycles = systime_snapshot.cycles;
-> +			break;
-> +		default:
+>  	return done;
+>  }
 
-There's something a bit odd here.
+It looks like this way ssk rcvbuf will grow up to tcp_rmem[2] even if
+there is no user-space reader - assuming the link is fast enough.
 
-ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID and
-ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID look like they should be names 
-of separate (top-level) functions, but actually the _PHY_ one is a 
-parameter for the first. If the intention is to have a parameter then it 
-would be better to pick a better name for the _PHY_ define and not 
-define it using ARM_SMCCC_CALL_VAL.
+Don't we need to somehow cap that? e.g. moving mptcp rcvbuf update in
+mptcp_revmsg()?
 
-Second the use of "default:" means that there's no possibility to later 
-extend this interface for more clocks if needed in the future.
+Thanks,
 
-Alternatively you could indeed implement as two top-level functions and 
-change this to a...
+Paolo
 
-	switch (func_id)
-
-... along with multiple case labels as the functions would obviously be 
-mostly the same.
-
-Also a minor style issue - you might want to consider splitting this 
-into it's own function.
-
-Finally I do think it would be useful to add some documentation of the 
-new SMC calls. It would be easier to review the interface based on that 
-documentation rather than trying to reverse-engineer the interface from 
-the code.
-
-Steve
-
-> +			cycles = systime_snapshot.cycles -
-> +				 vcpu_vtimer(vcpu)->cntvoff;
-> +		}
-> +		val[2] = upper_32_bits(cycles);
-> +		val[3] = lower_32_bits(cycles);
-> +		break;
-> +#endif
-> +
->   	default:
->   		return kvm_psci_call(vcpu);
->   	}
-> 
 
