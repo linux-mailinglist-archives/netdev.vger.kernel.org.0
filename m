@@ -2,119 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF211DF06E
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 22:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2595B1DF0BC
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 22:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731003AbgEVURb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 16:17:31 -0400
-Received: from www.zeus03.de ([194.117.254.33]:44582 "EHLO mail.zeus03.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730981AbgEVURb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 16:17:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=Kya5RXx7oQs/zCB1bwTMAzThdfrb
-        CPSEAKSAoDM4i74=; b=Ec8eVWo4lKhBy7z/mkF3YeGr4KLIbg2JWm4ggnbVq53H
-        BSIXQc7krWS0eJnN9yj2CIQmp1LMqs8bWFjSoPlmgCMRJHDAo1DB8pwePXDjFKpQ
-        fqcFX0e99NFqQkjO+jzqW8juYPjBt+mGLEySHdWJdV5fVcAK19ZaVZgMpcGF2ds=
-Received: (qmail 1450736 invoked from network); 22 May 2020 22:17:28 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 22 May 2020 22:17:28 +0200
-X-UD-Smtp-Session: l3s3148p1@kXB2UUKm9tkgAwDPXwlcAL8MbszJrcSX
-Date:   Fri, 22 May 2020 22:17:27 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>, linux-ide@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH 03/17] ARM: dts: r8a7742: Add I2C and IIC support
-Message-ID: <20200522201727.GA21376@ninjato>
-References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200515171031.GB19423@ninjato>
- <CA+V-a8t6rPs4s8uMCpBQEAUvwsVn7Cte-vX3z2atWRhy_RFLQw@mail.gmail.com>
- <20200518092601.GA3268@ninjato>
- <CAMuHMdVWe1EEAtP64VW+0zXNingM1LiENv_Rfz5qTQ+C0dtGSw@mail.gmail.com>
- <CA+V-a8tVx6D8Vh=rYD2=Z-14GAW0puo009FtjYM++sw8PAtJug@mail.gmail.com>
+        id S1731021AbgEVUrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 16:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730946AbgEVUrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 16:47:23 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73C2C061A0E;
+        Fri, 22 May 2020 13:47:22 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jcEYU-000zou-Ao; Fri, 22 May 2020 22:46:10 +0200
+Message-ID: <2e5199edb433c217c7974ef7408ff8c7253145b6.camel@sipsolutions.net>
+Subject: Re: [RFC 1/2] devlink: add simple fw crash helpers
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Cc:     derosier@gmail.com, greearb@candelatech.com, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath10k@lists.infradead.org, jiri@resnulli.us,
+        briannorris@chromium.org
+Date:   Fri, 22 May 2020 22:46:07 +0200
+In-Reply-To: <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200519010530.GS11244@42.do-not-panic.com>
+         <20200519211531.3702593-1-kuba@kernel.org>
+         <20200522052046.GY11244@42.do-not-panic.com>
+         <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.2 (3.36.2-1.fc32) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
-Content-Disposition: inline
-In-Reply-To: <CA+V-a8tVx6D8Vh=rYD2=Z-14GAW0puo009FtjYM++sw8PAtJug@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2020-05-22 at 10:17 -0700, Jakub Kicinski wrote:
 
---Qxx1br4bt0+wmkIi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > > --- a/net/core/Makefile
+> > > +++ b/net/core/Makefile
+> > > @@ -31,7 +31,7 @@ obj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o
+> > >  obj-$(CONFIG_BPF_STREAM_PARSER) += sock_map.o
+> > >  obj-$(CONFIG_DST_CACHE) += dst_cache.o
+> > >  obj-$(CONFIG_HWBM) += hwbm.o
+> > > -obj-$(CONFIG_NET_DEVLINK) += devlink.o
+> > > +obj-$(CONFIG_NET_DEVLINK) += devlink.o devlink_simple_fw_reporter.o  
+> > 
+> > This was looking super sexy up to here. This is networking specific.
+> > We want something generic for *anything* that requests firmware.
+> 
+> You can't be serious. It's network specific because of how the Kconfig
+> is named?
 
+Wait, yeah, what?
 
-> > According to the Hardware User's Manual Rev. 1.00, the registers do exi=
-st
-> > on all RZ/G1, except for RZ/G1E (see below).
-> >
-> >    "(automatic transmission can be used as a hardware function, but thi=
-s is
-> >     not meaningful for actual use cases)."
-> >
-> > (whatever that comment may mean?)
+> Working for a company operating large data centers I would strongly
+> prefer if we didn't have ten different ways of reporting firmware
+> problems in the fleet.
 
-Strange comment, in deed. Given the paragraph before, I would guess Gen1
-maybe had a "fitting" PMIC where SoC/PMIC handled DVFS kind of magically
-with this automatic transfer feature? And Gen2 has not.
+Agree. I don't actually operate anything, but still ...
 
-> > On R-Car E3 and RZ/G2E, which have a single IIC instance, we
-> > handled that by:
-> >
-> >         The r8a77990 (R-Car E3) and r8a774c0 (RZ/G2E)
-> >         controllers are not considered compatible with
-> >         "renesas,rcar-gen3-iic" or "renesas,rmobile-iic"
-> >         due to the absence of automatic transmission registers.
+Thinking about this - maybe there's a way to still combine devcoredump
+and devlink somehow?
 
-=46rom a "describe the HW" point of view, this still makes sense to me.
-Although, it is unlikely we will add support for the automatic
-transmission feature (maybe famous last words).
+Or (optionally) make devlink trigger devcoredump while userspace
+migrates?
 
-> > On R-Car E2 and RZ/G1E, we forgot, and used both SoC-specific and
-> > family-specific compatible values.
+> > So networking may want to be aware that a firmware crash happened as
+> > part of this network device health thing, but firmware crashing is a
+> > generic thing.
+> > 
+> > I have now extended my patch set to include uvents and I am more set on
+> > that we need the taint now more than ever.
 
-Okay, but we can fix DTs when they have bugs, or?
+FWIW, I still completely disagree on that taint. You (Luis) obviously
+have been running into a bug in that driver, I doubt the firmware
+actually managed to wedge the hardware.
 
+But even if it did, that's still not really a kernel taint. The kernel
+itself isn't in any way affected by this.
 
---Qxx1br4bt0+wmkIi
-Content-Type: application/pgp-signature; name="signature.asc"
+Yes, the system is in a weird state now. But that's *not* equivalent to
+"kernel tainted".
 
------BEGIN PGP SIGNATURE-----
+> The irony is you have a problem with a networking device and all the
+> devices your initial set touched are networking. Two of the drivers 
+> you touched either have or will soon have devlink health reporters
+> implemented.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7IM1MACgkQFA3kzBSg
-KbavTxAAorpBPKca5mdOGo3gbsj/1JqXSYqq0SnjdWLU6QdlVYuIsv1XCCDaWHzy
-eiJeY2VIMeqdoOHtcqc8W4QF4/Zo6O72JIalnQUzjG6JMs3AWDkbdRQQ8ULF6MMv
-iHd/h+E+GmtklAPGTMlMrC5KAMwRXbp6ot1F9T7J0nv8ET+2Rw741cydM7a7F+Hh
-AaMHRVsJMOD4nGsAd5A6/oF0Vc2LqER4Jki+dkQSw2AJCTvyRpQ5MSpq290HZJHv
-Ln5nGpxzHLznFpbMqLeqRr5mk1QmVH3k76gB6sLYoo0UFfkCn/6aMRXn0OGqgqV/
-DS450PHShO1TdfTgekd5++BCGMFfTB0Ud0uhKSJ3TvLNSeojilWaC0zxaMY84K15
-rcr9tKV35NJxualpbGP8ziWsDOQa36tJXa7x10I5Aetnrle23Sot6k9PbxUh6Bso
-V/VtWKuUyNqe6wsMVXNvVj3WAE5NKCiKf1D8hzzyVYYoNPsp5dra6pzEhMVx+fQk
-+KcYFHNwGnYLYZv/bU3pf8084R4QO1JqqSsHFaba21O6taURty+bBwE7fLeVwlcb
-z1//GXsaHLZGqq++IjfqjrM8KgTZmmSQy8noLOBkD97xbqVnbYCobp5CWsokD6W8
-VNjooWfgi0uj1I3A1AZPa+7ydJiAwB6OvQsAymOS6tm9kukzhd8=
-=QVjR
------END PGP SIGNATURE-----
+Like I said above, do you think it'd be feasible to make a devcoredump
+out of devlink health reports? And can the report be in a way that we
+control the file format, or are there limits? I guess I should read the
+code to find out, but I figure you probably just know. But feel free to
+tell me to read it :)
 
---Qxx1br4bt0+wmkIi--
+The reason I'm asking is that it's starting to sound like we really
+ought to be implementing devlink, but we've got a bunch of
+infrastructure that uses the devcoredump, and it'll take time
+(significantly so) to change all that...
+
+johannes
+
