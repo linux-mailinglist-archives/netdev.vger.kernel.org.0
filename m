@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1448E1DE71F
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 14:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDAD01DE7C3
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 15:12:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729399AbgEVMoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 08:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728801AbgEVMoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 08:44:11 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B4C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 05:44:11 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jc721-0000pI-1I; Fri, 22 May 2020 14:44:09 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     pabeni@redhat.com, matthieu.baerts@tessares.net,
-        mathew.j.martineau@linux.intel.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next] mptcp: adjust tcp rcvspace after moving skbs from ssk to sk queue
-Date:   Fri, 22 May 2020 14:43:50 +0200
-Message-Id: <20200522124350.47615-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
+        id S1729789AbgEVNMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 09:12:17 -0400
+Received: from foss.arm.com ([217.140.110.172]:35444 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729365AbgEVNMR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 09:12:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86F36D6E;
+        Fri, 22 May 2020 06:12:16 -0700 (PDT)
+Received: from bogus (unknown [10.37.12.95])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C23A03F68F;
+        Fri, 22 May 2020 06:12:12 -0700 (PDT)
+Date:   Fri, 22 May 2020 14:12:06 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com, steven.price@arm.com, justin.he@arm.com,
+        Wei.Chen@arm.com, kvm@vger.kernel.org, Steve.Capper@arm.com,
+        linux-kernel@vger.kernel.org, Kaly.Xin@arm.com, nd@arm.com,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v12 03/11] psci: export smccc conduit get helper.
+Message-ID: <20200522131206.GA15171@bogus>
+References: <20200522083724.38182-1-jianyong.wu@arm.com>
+ <20200522083724.38182-4-jianyong.wu@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200522083724.38182-4-jianyong.wu@arm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP does tcp rcvbuf tuning when copying packets to userspace, e.g. in
-tcp_read_sock().  In case of mptcp, that function is only rarely used
-(when discarding retransmitted duplicate data).
+On Fri, May 22, 2020 at 04:37:16PM +0800, Jianyong Wu wrote:
+> Export arm_smccc_1_1_get_conduit then modules can use smccc helper which
+> adopts it.
+>
+> Acked-by: Mark Rutland <mark.rutland@arm.com>
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  drivers/firmware/psci/psci.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/firmware/psci/psci.c b/drivers/firmware/psci/psci.c
+> index 2937d44b5df4..fd3c88f21b6a 100644
+> --- a/drivers/firmware/psci/psci.c
+> +++ b/drivers/firmware/psci/psci.c
+> @@ -64,6 +64,7 @@ enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void)
+>
+>  	return psci_ops.conduit;
+>  }
+> +EXPORT_SYMBOL(arm_smccc_1_1_get_conduit);
+>
 
-Instead, skbs are moved from the tcp rx queue to the mptcp socket rx
-queue.
-Adjust subflow rcvbuf when we do so, its the last spot where we can
-adjust the ssk rcvbuf -- later we only have the mptcp-level socket.
+I have moved this into drivers/firmware/smccc/smccc.c [1]
+Please update this accordingly.
 
-This greatly improves performance on mptcp bulk transfers.
+Also this series is floating on the list for a while now, it is time to
+drop "RFC" unless anyone has strong objection to the idea here.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/protocol.c | 4 ++++
- 1 file changed, 4 insertions(+)
+--
+Regards,
+Sudeep
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index ba9d3d5c625f..dbb86cbb9e77 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -248,6 +248,9 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
- 
- 	*bytes = moved;
- 
-+	if (moved)
-+		tcp_rcv_space_adjust(ssk);
-+
- 	return done;
- }
- 
-@@ -1263,6 +1266,7 @@ static int mptcp_init_sock(struct sock *sk)
- 		return ret;
- 
- 	sk_sockets_allocated_inc(sk);
-+	sk->sk_rcvbuf = sock_net(sk)->ipv4.sysctl_tcp_rmem[1];
- 	sk->sk_sndbuf = sock_net(sk)->ipv4.sysctl_tcp_wmem[2];
- 
- 	return 0;
--- 
-2.26.2
-
+[1] https://git.kernel.org/arm64/c/f2ae97062a48
