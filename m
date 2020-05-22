@@ -2,146 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 280A41DF169
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:46:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79FD51DF171
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731149AbgEVVp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 17:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731072AbgEVVp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:45:58 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424BEC061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:45:58 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id n11so5604386pgl.9
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o8IX8NAUnDOEVX6Nk7rJBXYRBqlNgn0ggDradDyA97E=;
-        b=qGsmjGwliRvn4RwyclU/hGYzhG8Q2i7HW1y/nWN0E6ozrlE8NepCk2BEPsjEjF7vD3
-         xnVg/UdjMejxjD6HR3dPPWFQXc6qMGRlxYT2hSGNfhV4C852/amHqP+lELQvTXdz4UCI
-         MJ4tfsWkHTB5Qbd2Oqk6aZ7AikFvHk79KIm+aE9CZGwEhmKGGt60902AHIHsnkjufXHs
-         H2w9AK5xFAGaEGQKTDr368JZDEkTxR42/uT6K2GKW4oLml8UQD2hXso0mkyU0Uqhuafg
-         YqH4YUqLU8niDDjbHW2aslCTccESgU2EHSbgVgk8mD6qGUXK5BuYtuv0QwcIebddX3x0
-         hCYQ==
+        id S1731130AbgEVVtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 17:49:33 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44893 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731029AbgEVVtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:49:33 -0400
+Received: by mail-pg1-f193.google.com with SMTP id p30so5601415pgl.11;
+        Fri, 22 May 2020 14:49:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o8IX8NAUnDOEVX6Nk7rJBXYRBqlNgn0ggDradDyA97E=;
-        b=AZVDhdYAB7SmSUsTGM9tSOMa0iw8Rf5KVky2ZuDuSGMXdNuTWgWvhdKt2bAvI/6bqr
-         bNWHkDzIFnoPs7F9L2gi3ZkmGNdLJL8gRuOrF3hoRZZA5RsU1z+8b3dnA7CSKQU3lV2I
-         yP2N6L8dEVpqGd7CzWbEWCGV1VbPEcXILK3SwiBRtLme/n+chxA4Pa7oiXOtaJ1TXmzn
-         INJiMpFFTqfRj5kJGOy2HsHp1BX24JzIYR5z0k0QUJQg7e3DcgvbccVQk7ycJQdD0Nfz
-         rM0UOTLGgD7uHgsiNAmBNdgvPLMexJPOrAw01yLlob63LCEC2cgEK6Oo+GcTlXUzZnKR
-         qh+w==
-X-Gm-Message-State: AOAM530vqkXLsseIrE7nWmOYkEFO+FYMrHewVsA/7RuB/HlImhdzXxGo
-        BYFL2G6pa2y+g4Qat6TZE5Tpuq5i
-X-Google-Smtp-Source: ABdhPJyLZMl2h2n/6v4pPqkXcgmiZbtrKdIgYck3++u6OCq7+xNLOjZcL3DhVNXVrkVZsIQKSxqDsg==
-X-Received: by 2002:a65:49c9:: with SMTP id t9mr3253894pgs.148.1590183957509;
-        Fri, 22 May 2020 14:45:57 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x7sm7581876pfo.160.2020.05.22.14.45.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 May 2020 14:45:56 -0700 (PDT)
-Subject: Re: [PATCH] tipc: Disable preemption when calling send_msg method.
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>
-Cc:     netdev@vger.kernel.org
-References: <20200520114529.3433-1-penguin-kernel@I-love.SAKURA.ne.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <5a668c12-4038-1f68-3e17-edcdc66e9e96@gmail.com>
-Date:   Fri, 22 May 2020 14:45:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=witZhMJ16Agl4OwIfL5pB8EM3wxhLaftmrS7Z3KmwGo=;
+        b=aPn+uE5LHAcTPt68wbrFmA8vQhr/NQc96OjF4bX0IABr4tpP9PX3ll7N9IvPxGjoWp
+         Ys4bt/wA6mquWUdE/alebaQmJR2Xeyuq7pemGwR32MTjUt/94eXeJlcozITZ3Wh44yx8
+         1SofT/Jp/8+C9mWm1Xawtx3ndew6lCSnnjMLRsk379nRMHWltATmVyyX+W7Dap2TYsEK
+         a+AfnhQcrDV0idjEWn6gebFwwFDzWck3sOLf5RdOSiHDTTOzs+M9wFk6eLxWwsFp5iXm
+         qTuv8IPvDsTqChz8YN0GwBixNOeTermTEYnZmbnciLUs7i/MJpJz3DcwCpPaMDvptIY8
+         UjaA==
+X-Gm-Message-State: AOAM5327knA0ctdImbysQwQxBTrKrLvCPuEWEBKKMczzn6U1/BHfDXEB
+        61dWLEQzbYbe2tXnuKZtRSg=
+X-Google-Smtp-Source: ABdhPJyBq9LZCZJmpi4fQfFbSbNhR4Ql67aNRQjxVYgQP0yBZhIDm5eUIjVEbj0mW3rKV0Gj+0RIIQ==
+X-Received: by 2002:a65:52c3:: with SMTP id z3mr15634431pgp.146.1590184172241;
+        Fri, 22 May 2020 14:49:32 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id y7sm7633645pjn.13.2020.05.22.14.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 May 2020 14:49:30 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id D524C40321; Fri, 22 May 2020 21:49:29 +0000 (UTC)
+Date:   Fri, 22 May 2020 21:49:29 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     johannes@sipsolutions.net, derosier@gmail.com,
+        greearb@candelatech.com, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath10k@lists.infradead.org, jiri@resnulli.us,
+        briannorris@chromium.org
+Subject: Re: [RFC 1/2] devlink: add simple fw crash helpers
+Message-ID: <20200522214929.GB11244@42.do-not-panic.com>
+References: <20200519010530.GS11244@42.do-not-panic.com>
+ <20200519211531.3702593-1-kuba@kernel.org>
+ <20200522052046.GY11244@42.do-not-panic.com>
+ <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20200520114529.3433-1-penguin-kernel@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/20/20 4:45 AM, Tetsuo Handa wrote:
-> syzbot is reporting that tipc_udp_send_msg() is calling dst_cache_get()
-> without preemption disabled [1]. Since b->media->send_msg() is called
-> with RCU lock already held, we can also disable preemption at that point.
+On Fri, May 22, 2020 at 10:17:38AM -0700, Jakub Kicinski wrote:
+> On Fri, 22 May 2020 05:20:46 +0000 Luis Chamberlain wrote:
+> > > diff --git a/net/core/Makefile b/net/core/Makefile
+> > > index 3e2c378e5f31..6f1513781c17 100644
+> > > --- a/net/core/Makefile
+> > > +++ b/net/core/Makefile
+> > > @@ -31,7 +31,7 @@ obj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o
+> > >  obj-$(CONFIG_BPF_STREAM_PARSER) += sock_map.o
+> > >  obj-$(CONFIG_DST_CACHE) += dst_cache.o
+> > >  obj-$(CONFIG_HWBM) += hwbm.o
+> > > -obj-$(CONFIG_NET_DEVLINK) += devlink.o
+> > > +obj-$(CONFIG_NET_DEVLINK) += devlink.o devlink_simple_fw_reporter.o  
+> > 
+> > This was looking super sexy up to here. This is networking specific.
+> > We want something generic for *anything* that requests firmware.
 > 
-> [1] https://syzkaller.appspot.com/bug?id=dc6352b92862eb79373fe03fdf9af5928753e057
+> You can't be serious. It's network specific because of how the Kconfig
+> is named?
+
+Kconfig? What has that to do with anything? The issue I have is that the
+solution I am looking for is for it to be agnostic to the subsystem. I
+have found similar firmware crashes on gpu, media, scsci.
+
+> Working for a company operating large data centers I would strongly
+> prefer if we didn't have ten different ways of reporting firmware
+> problems in the fleet.
+
+Indeed.
+
+> > I'm afraid this won't work for something generic. I don't think its
+> > throw-away work though, the idea to provide a generic interface to
+> > dump firmware through netlink might be nice for networking, or other
+> > things.
+> > 
+> > But I have a feeling we'll want something still more generic than this.
 > 
-> Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> ---
->  net/tipc/bearer.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+> Please be specific. Saying generic a lot is not helpful. The code (as
+> you can see in this patch) is in no way network specific. Or are you
+> saying there are machines out there running without netlink sockets?
+
+No, I am saying I want something to work with any struct device.
+
+> > So networking may want to be aware that a firmware crash happened as
+> > part of this network device health thing, but firmware crashing is a
+> > generic thing.
+> > 
+> > I have now extended my patch set to include uvents and I am more set on
+> > that we need the taint now more than ever.
 > 
-> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-> index 34ca7b789eba..e5cf91665881 100644
-> --- a/net/tipc/bearer.c
-> +++ b/net/tipc/bearer.c
-> @@ -516,6 +516,7 @@ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
->  	struct tipc_msg *hdr = buf_msg(skb);
->  	struct tipc_bearer *b;
->  
-> +	preempt_disable();
->  	rcu_read_lock();
->  	b = bearer_get(net, bearer_id);
->  	if (likely(b && (test_bit(0, &b->up) || msg_is_reset(hdr)))) {
-> @@ -528,6 +529,7 @@ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
->  		kfree_skb(skb);
->  	}
->  	rcu_read_unlock();
-> +	preempt_enable();
->  }
->  
->  /* tipc_bearer_xmit() -send buffer to destination over bearer
-> @@ -543,6 +545,7 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
->  	if (skb_queue_empty(xmitq))
->  		return;
->  
-> +	preempt_disable();
->  	rcu_read_lock();
->  	b = bearer_get(net, bearer_id);
->  	if (unlikely(!b))
-> @@ -560,6 +563,7 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
->  		}
->  	}
->  	rcu_read_unlock();
-> +	preempt_enable();
->  }
->  
->  /* tipc_bearer_bc_xmit() - broadcast buffers to all destinations
-> @@ -574,6 +578,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
->  	struct sk_buff *skb, *tmp;
->  	struct tipc_msg *hdr;
->  
-> +	preempt_disable();
->  	rcu_read_lock();
->  	b = bearer_get(net, bearer_id);
->  	if (unlikely(!b || !test_bit(0, &b->up)))
-> @@ -591,6 +596,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
->  			b->media->send_msg(net, skb, b, dst);
->  	}
->  	rcu_read_unlock();
-> +	preempt_enable();
->  }
->  
->  /**
-> 
+> Please expect my nack if you're trying to add this to networking
+> drivers.
 
+The uevent mechanism is not for networking.
 
-This is wrong, see my patch instead.
+The taint however is, and I'd like to undertand how it is you do not see
+that an undesirable requirement for a reboot is a clear case for a taint.
 
-https://patchwork.ozlabs.org/project/netdev/patch/20200521182958.163436-1-edumazet@google.com/ 
+> The irony is you have a problem with a networking device and all the
+> devices your initial set touched are networking. Two of the drivers 
+> you touched either have or will soon have devlink health reporters
+> implemented.
 
-Thanks.
+That is all great, and I don't think its a bad idea to add
+infrastructure / extend it to get more information about a firmware
+crash dump. However, suggesting that devlink is the only solution we
+need in the kernel without considering other subsystems is what I am
+suggesting doesn't suit my needs. Networking was just the first
+subsystem I am taclking now but I have patches where similar situations
+happen across the kernel.
 
+  Luis
