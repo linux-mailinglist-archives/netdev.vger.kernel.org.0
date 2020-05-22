@@ -2,106 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49A9A1DDF46
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:24:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EECA51DDF4D
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 07:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728192AbgEVFX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 01:23:58 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:32996 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbgEVFX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:23:58 -0400
-Received: by mail-pj1-f68.google.com with SMTP id z15so1894920pjb.0;
-        Thu, 21 May 2020 22:23:57 -0700 (PDT)
+        id S1726487AbgEVF0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 01:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726421AbgEVF0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 01:26:23 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89634C061A0E
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 22:26:23 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id n15so4480613pjt.4
+        for <netdev@vger.kernel.org>; Thu, 21 May 2020 22:26:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=v/pdDd52Cc1xqER29G+NUJd3ToovMfngacO3KT8uxxg=;
+        b=E+eooJJC1G+DLhLEmpn+Z4RsnK6YgUK+78+x9E7BnUkJFPtPz7tt4dY+BCo6aNaXxd
+         qK5hMzBs/Wgj0WUGxpvFJ/znK3yZvSsn6mjEFdYhyrMbgSt0LV9MKBPUB1BZyWZ/3GvO
+         M0Z+MfJwV7fsgjRFarO1JqVM6us3Ve58ghGAA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tIS20nIVD3N2tOP8HqpGQTGvTajJC3k9skSycjshVvo=;
-        b=OelwsbVASVPz58GDVNV3N1pIB8GrBLnDJHUL4Si4vNutNwlrFbz+RI8ICE+COFq2pv
-         pfRSNrgtB5HdKh7G8zInrPyTAsCwy4olC9ZqqAAiXOscUwSB5jXU1VxkZhy7xn5He/eW
-         Py3ArJHCpGfKE4qnWZ0Rx78hZNSTxaPWLHUGdXPYuqgO+Ndy2y3m18dtAQ89UtKUOCU/
-         hqmsSRQL7wiYjT73W8TSB1ndHiviZ1Yy/ojsu2WSCv9XKaZN1c4AhmUe3jAFm1By0v34
-         HAJ+XOKPhQGdcLEcml5M1zofNNwLDtNxGj9NxpGreAj3+O1pkqH6YVajz+8SODR5EsoH
-         Z/fQ==
-X-Gm-Message-State: AOAM5305Od7L5F6Zk75Rmut+VrFm1ZS6uBD5wmMF4dc8UgQV6+67DHXp
-        D7zYFo8fCvA1ork8VrAlVXA=
-X-Google-Smtp-Source: ABdhPJwrA8Ug/bhBlMQocPIWph3Tg+gvIO2vU/EDcU5VOBbAHGT6IBZ5MccngBHWe4I5el1EFY91Dw==
-X-Received: by 2002:a17:90a:150:: with SMTP id z16mr2536283pje.37.1590125037470;
-        Thu, 21 May 2020 22:23:57 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id l3sm5931550pjb.39.2020.05.21.22.23.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2020 22:23:56 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 531AD4088B; Fri, 22 May 2020 05:23:55 +0000 (UTC)
-Date:   Fri, 22 May 2020 05:23:55 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Emmanuel Grumbach <egrumbach@gmail.com>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        aquini@redhat.com, peterz@infradead.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        mchehab+samsung@kernel.org, will@kernel.org, bhe@redhat.com,
-        ath10k@lists.infradead.org, Takashi Iwai <tiwai@suse.de>,
-        mingo@redhat.com, dyoung@redhat.com, pmladek@suse.com,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, gpiccoli@canonical.com,
-        Steven Rostedt <rostedt@goodmis.org>, cai@lca.pw,
-        tglx@linutronix.de,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        schlad@suse.de, Linux Kernel <linux-kernel@vger.kernel.org>,
-        jeyu@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-Message-ID: <20200522052355.GZ11244@42.do-not-panic.com>
-References: <20200515212846.1347-1-mcgrof@kernel.org>
- <20200515212846.1347-13-mcgrof@kernel.org>
- <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
- <7306323c35e6f44d7c569e689b48f380f80da5e5.camel@sipsolutions.net>
- <CA+ASDXOg9oKeMJP1Mf42oCMMM3sVe0jniaWowbXVuaYZ=ZpDjQ@mail.gmail.com>
- <20200519140212.GT11244@42.do-not-panic.com>
- <CA+ASDXMUHOcvJ_7UWgyANMxSz15Ji7TcLDXVCtSPa+fOr=+FGA@mail.gmail.com>
- <CANUX_P1pnV46gOo0aL6QV0b+49ubB7C5nuUOuOfoT7aOM+ye9w@mail.gmail.com>
- <CA+ASDXPAVJwyThAXRQT0_ao4s1nDYOEQifxMc+JsEMa=cTEGJA@mail.gmail.com>
- <CANUX_P2thzh9oB4KkrAoyT6H-E6MDFUNQ_p0e9QZtScgMuKm7Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANUX_P2thzh9oB4KkrAoyT6H-E6MDFUNQ_p0e9QZtScgMuKm7Q@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=v/pdDd52Cc1xqER29G+NUJd3ToovMfngacO3KT8uxxg=;
+        b=TWELCRFktAfa+vP/I+Tqda6ctrheV3RpEDEjMnYih0He63PCKo6hns/KK1UcKDdDB3
+         XJpl9I0sIte+HEs8mZmhaks898h37sHGdrJJ4c2fv+0aWaDUoPvnryeK7xZpnHMj26Nv
+         vY7Ow659xEgG8TwZ6vj0owQfStuo5HFHdr+TGYECgO2N/RXB+tVtUJBX9PfXlOz2ZH5U
+         aD4lngNtjdh/VhsiQyF+cXR+XTZqa4PM0AjN42arqujXhJ+vvMxRyxrROhyLg0NgAFvR
+         GYKvegqpm2xVlXTkZeNYYB3atPRnN4foZcb5DxFI6sK9T6TiqTpBPQzQqjgNwlLPIrW8
+         hlSw==
+X-Gm-Message-State: AOAM530oM3KKcG7/cx8O1bBpanN+FU91witYv6yyNFscaVJzh5e/CU2U
+        EqAqhBhqiVneI1dQvv3Fa/qQPw==
+X-Google-Smtp-Source: ABdhPJwU8AZIMKu95zGotuYDKKoniqcURINB6tAbiE9TmRw3UD4rRCuVexCzpvjXr3TFc96X5F7rbA==
+X-Received: by 2002:a17:90b:110d:: with SMTP id gi13mr2333909pjb.131.1590125182797;
+        Thu, 21 May 2020 22:26:22 -0700 (PDT)
+Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
+        by smtp.googlemail.com with ESMTPSA id a16sm5670310pff.41.2020.05.21.22.26.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 May 2020 22:26:21 -0700 (PDT)
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+X-Google-Original-From: Roopa Prabhu
+To:     dsahern@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        jiri@mellanox.com, idosch@mellanox.com, petrm@mellanox.com
+Subject: [PATCH net-next v4 0/5] Support for fdb ECMP nexthop groups
+Date:   Thu, 21 May 2020 22:26:12 -0700
+Message-Id: <1590125177-39176-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: git-send-email 2.1.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 08:12:59AM +0300, Emmanuel Grumbach wrote:
-> >
-> > On Tue, May 19, 2020 at 10:37 PM Emmanuel Grumbach <egrumbach@gmail.com> wrote:
-> > > So I believe we already have this uevent, it is the devcoredump. All
-> > > we need is to add the unique id.
-> >
-> > I think there are a few reasons that devcoredump doesn't satisfy what
-> > either Luis or I want.
-> >
-> > 1) it can be disabled entirely [1], for good reasons (e.g., think of
-> > non-${CHIP_VENDOR} folks, who can't (and don't want to) do anything
-> > with the opaque dumps provided by closed-source firmware)
-> 
-> Ok, if all you're interested into is the information that this event
-> happen (as opposed to report a bug and providing the data), then I
-> agree. 
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-I've now hit again a firmware crash with ath10k with the latest firwmare
-and kernel and the *only* thing that helped recovery was a full reboot,
-so that is a crystal clear case that this needs to taint the kernel, and
-yes we do want to inform users too, so I've just added uevent support
-for a few panic / taint events in the kernel now and rolled into my
-series. I'll run some final tests and then post this as a follow up.
+This series introduces ecmp nexthops and nexthop groups
+for mac fdb entries. In subsequent patches this is used
+by the vxlan driver fdb entries. The use case is
+E-VPN multihoming [1,2,3] which requires bridged vxlan traffic
+to be load balanced to remote switches (vteps) belonging to
+the same multi-homed ethernet segment (This is analogous to
+a multi-homed LAG but over vxlan).
 
-devlink didn't cut it, its networking specific.
+Changes include new nexthop flag NHA_FDB for nexthops
+referenced by fdb entries. These nexthops only have ip.
+The patches make sure that routes dont reference such nexthops.
 
-  Luis
+example:
+$ip nexthop add id 12 via 172.16.1.2 fdb
+$ip nexthop add id 13 via 172.16.1.3 fdb
+$ip nexthop add id 102 group 12/13 fdb
+
+$bridge fdb add 02:02:00:00:00:13 dev vxlan1000 nhid 101 self
+
+[1] E-VPN https://tools.ietf.org/html/rfc7432
+[2] E-VPN VxLAN: https://tools.ietf.org/html/rfc8365
+[3] LPC talk with mention of nexthop groups for L2 ecmp
+http://vger.kernel.org/lpc_net2018_talks/scaling_bridge_fdb_database_slidesV3.pdf
+
+v4 -
+    - fix error path free_skb in vxlan_xmit_nh
+    - fix atomic notifier initialization issue
+      (Reported-by: kernel test robot <rong.a.chen@intel.com>)
+      The reported error was easy to locate and fix, but i was not
+      able to re-test with the robot reproducer script due to some
+      other issues with running the script on my test system.
+
+v3 - fix wording in selftest print as pointed out by davidA
+
+v2 -
+	- dropped nikolays fixes for nexthop multipath null pointer deref
+	  (he will send those separately)
+	- added negative tests for route add with fdb nexthop + a few more
+	- Fixes for a few  fdb replace conditions found during more testing
+	- Moved to rcu_dereference_rtnl in vxlan_fdb_info and consolidate rcu
+	  dereferences
+	- Fixes to build failures Reported-by: kbuild test robot <lkp@intel.com>
+	- DavidA, I am going to send a separate patch for the neighbor code validation
+	  for NDA_NH_ID if thats ok.
+
+
+Roopa Prabhu (5):
+  nexthop: support for fdb ecmp nexthops
+  vxlan: ecmp support for mac fdb entries
+  nexthop: add support for notifiers
+  vxlan: support for nexthop notifiers
+  selftests: net: add fdb nexthop tests
+
+ drivers/net/vxlan.c                         | 340 ++++++++++++++++++++++------
+ include/net/ip6_fib.h                       |   1 +
+ include/net/netns/nexthop.h                 |   1 +
+ include/net/nexthop.h                       |  44 ++++
+ include/net/vxlan.h                         |  25 ++
+ include/uapi/linux/neighbour.h              |   1 +
+ include/uapi/linux/nexthop.h                |   3 +
+ net/core/neighbour.c                        |   2 +
+ net/ipv4/nexthop.c                          | 159 +++++++++++--
+ net/ipv6/route.c                            |   5 +
+ tools/testing/selftests/net/fib_nexthops.sh | 160 ++++++++++++-
+ 11 files changed, 651 insertions(+), 90 deletions(-)
+
+-- 
+2.1.4
+
