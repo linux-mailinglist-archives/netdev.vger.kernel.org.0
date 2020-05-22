@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE0C61DE1B2
+	by mail.lfdr.de (Postfix) with ESMTP id 817371DE1B1
 	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 10:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729204AbgEVIU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 04:20:26 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:57352 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729106AbgEVIUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 04:20:14 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04M8ExOL032502;
-        Fri, 22 May 2020 01:20:13 -0700
+        id S1729194AbgEVIUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 04:20:24 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:26376 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728839AbgEVIUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 04:20:19 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04M8FoDp019591;
+        Fri, 22 May 2020 01:20:16 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=TMwDsgNP3pcmt+BjyYh045zRQMvc51X4CxnU8Z95P+0=;
- b=MEdTZ/tCYRol9o+c5bN2IPCL4TFaHZ5oEqYuJWSycmxkyqcKZolqvXbgzD/PP5gqwo9I
- 9ettc/7t3v2WFMtHCbKUUkeq3Ip5e1j2n9NwIAfBoDNmnYAKx7X5Fr8RImx0WgDL0kDJ
- g+DyIAFzAvZcVROO6fzmR5vJ+kDM+5S1wJ0m4/PTdwiiF2ifCJ8NCqKrV5/2lxUAOGTQ
- sJGM3dW3Zuwy70aMHN/sY0XYk+rug3MySs7EwRizEJUJna3jLr+5J2JK5inQqM3TT7UJ
- rRHWbP/jU/q9oGEtr+ZJgt16dbshtp9Ho1PEmWLH2ELAzznyvucZiak7qvk3TgjV2kAJ Ew== 
+ content-type; s=pfpt0818; bh=hGBZqXGkmtMlDVHFmefUNC8JQOGmQ+Yr+jdIs16Nsko=;
+ b=ZQsiAz64VdmaDAakYnF4Us9jXvpfDVZbIC6yFxOsOeqptIVCNBnp6M4X5Dp65gfssBDW
+ a0dfGLfEGXmfnk4JSLh4/GyfCyzjk4kdRMRCTJfLwwj/9uglJJOhZbaiMGTHUrmFg3+I
+ 0k6l1LzimaswKSspK278iQ5Rn70qB7IjdZwg4C+dLGkN43NQdmb5NFsL9tFIgtjOLt9R
+ ipAGYZ3fe6VpDL6gIiuve4zaQPz+vG8wh0xKP6cBqjRk5cxWDNsqcDjdLmzXZhuu+xdS
+ Xa6RaLWX115vh225arxXqyXGwqhgDxP7fC4fHvIbt+kGcfLwlx1XMB1SS3HkA504gs9x Gg== 
 Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 312dhr29fh-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 312fppheww-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 22 May 2020 01:20:13 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+        Fri, 22 May 2020 01:20:16 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
  (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 May
- 2020 01:20:11 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 May 2020 01:20:12 -0700
+ 2020 01:20:14 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 May 2020 01:20:14 -0700
 Received: from NN-LT0019.marvell.com (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id 794843F7044;
-        Fri, 22 May 2020 01:20:10 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 92A823F704B;
+        Fri, 22 May 2020 01:20:12 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH v2 net-next 08/12] net: atlantic: automatically downgrade the number of queues if necessary
-Date:   Fri, 22 May 2020 11:19:44 +0300
-Message-ID: <20200522081948.167-9-irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 09/12] net: atlantic: always use random TC-queue mapping for TX on A2.
+Date:   Fri, 22 May 2020 11:19:45 +0300
+Message-ID: <20200522081948.167-10-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200522081948.167-1-irusskikh@marvell.com>
 References: <20200522081948.167-1-irusskikh@marvell.com>
@@ -58,223 +58,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Starovoytov <mstarovoitov@marvell.com>
 
-This patch adds support for automatic queue number downgrade.
-
-On A2: this is a must have, because only TC0/TC1 support more than 4Q.
-Other TCs support 4Qs maximum.
-Thus, on A2 we must downgrade the number of queues per TC to 4, if more
-than 2 TCs are requested.
-
-On A1: this allows using 8TCs even on systems with cpu count >= 8, when
-we have 8 queues by default.
-We will just automatically switch to 8TCx4Q mode in this case.
+This patch changes the TC-queue mapping mechanism used on A2.
+Configure the A2 HW in such a way that we can keep queue index mapping
+exactly as it was on A1.
 
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../ethernet/aquantia/atlantic/aq_ethtool.c   | 15 +---
- .../net/ethernet/aquantia/atlantic/aq_main.c  |  5 +-
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 78 +++++++++++++------
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |  1 +
- 4 files changed, 63 insertions(+), 36 deletions(-)
+ .../aquantia/atlantic/hw_atl2/hw_atl2.c       | 31 ++++++++++-----
+ .../aquantia/atlantic/hw_atl2/hw_atl2_llh.c   |  9 +++++
+ .../aquantia/atlantic/hw_atl2/hw_atl2_llh.h   |  4 ++
+ .../atlantic/hw_atl2/hw_atl2_llh_internal.h   | 39 ++++++++++++++++++-
+ 4 files changed, 72 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-index 90a52a4b2d48..743d3b13b39d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-@@ -793,8 +793,6 @@ static int aq_set_ringparam(struct net_device *ndev,
- 		dev_close(ndev);
- 	}
- 
--	aq_nic_free_vectors(aq_nic);
--
- 	cfg->rxds = max(ring->rx_pending, hw_caps->rxds_min);
- 	cfg->rxds = min(cfg->rxds, hw_caps->rxds_max);
- 	cfg->rxds = ALIGN(cfg->rxds, AQ_HW_RXD_MULTIPLE);
-@@ -803,15 +801,10 @@ static int aq_set_ringparam(struct net_device *ndev,
- 	cfg->txds = min(cfg->txds, hw_caps->txds_max);
- 	cfg->txds = ALIGN(cfg->txds, AQ_HW_TXD_MULTIPLE);
- 
--	for (aq_nic->aq_vecs = 0; aq_nic->aq_vecs < cfg->vecs;
--	     aq_nic->aq_vecs++) {
--		aq_nic->aq_vec[aq_nic->aq_vecs] =
--		    aq_vec_alloc(aq_nic, aq_nic->aq_vecs, cfg);
--		if (unlikely(!aq_nic->aq_vec[aq_nic->aq_vecs])) {
--			err = -ENOMEM;
--			goto err_exit;
--		}
--	}
-+	err = aq_nic_realloc_vectors(aq_nic);
-+	if (err)
-+		goto err_exit;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+index b42ff81adfeb..a5bffadde6df 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+@@ -95,7 +95,10 @@ static int hw_atl2_hw_queue_to_tc_map_set(struct aq_hw_s *self)
+ 	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
+ 	unsigned int tcs, q_per_tc;
+ 	unsigned int tc, q;
+-	u32 value = 0;
++	u32 rx_map = 0;
++	u32 tx_map = 0;
 +
- 	if (ndev_running)
- 		err = dev_open(ndev, NULL);
++	hw_atl2_tpb_tx_tc_q_rand_map_en_set(self, 1U);
  
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index d8817047f4ef..57a116ccad55 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -337,9 +337,12 @@ static int aq_validate_mqprio_opt(struct aq_nic_s *self,
- 				  const unsigned int num_tc)
- {
- 	const bool has_min_rate = !!(mqprio->flags & TC_MQPRIO_F_MIN_RATE);
-+	struct aq_nic_cfg_s *aq_nic_cfg = aq_nic_get_cfg(self);
-+	const unsigned int tcs_max = min_t(u8, aq_nic_cfg->aq_hw_caps->tcs_max,
-+					   AQ_CFG_TCS_MAX);
- 	int i;
+ 	switch (cfg->tc_mode) {
+ 	case AQ_TC_MODE_8TCS:
+@@ -113,14 +116,24 @@ static int hw_atl2_hw_queue_to_tc_map_set(struct aq_hw_s *self)
+ 	for (tc = 0; tc != tcs; tc++) {
+ 		unsigned int tc_q_offset = tc * q_per_tc;
  
--	if (num_tc > aq_hw_num_tcs(self->aq_hw)) {
-+	if (num_tc > tcs_max) {
- 		netdev_err(self->ndev, "Too many TCs requested\n");
- 		return -EOPNOTSUPP;
+-		for (q = tc_q_offset; q != tc_q_offset + q_per_tc; q++)
+-			value |= tc << HW_ATL2_RX_Q_TC_MAP_SHIFT(q);
++		for (q = tc_q_offset; q != tc_q_offset + q_per_tc; q++) {
++			rx_map |= tc << HW_ATL2_RX_Q_TC_MAP_SHIFT(q);
++			if (HW_ATL2_RX_Q_TC_MAP_ADR(q) !=
++			    HW_ATL2_RX_Q_TC_MAP_ADR(q + 1)) {
++				aq_hw_write_reg(self,
++						HW_ATL2_RX_Q_TC_MAP_ADR(q),
++						rx_map);
++				rx_map = 0;
++			}
+ 
+-		if (HW_ATL2_RX_Q_TC_MAP_ADR(q) !=
+-		    HW_ATL2_RX_Q_TC_MAP_ADR(q - 1)) {
+-			aq_hw_write_reg(self, HW_ATL2_RX_Q_TC_MAP_ADR(q - 1),
+-					value);
+-			value = 0;
++			tx_map |= tc << HW_ATL2_TX_Q_TC_MAP_SHIFT(q);
++			if (HW_ATL2_TX_Q_TC_MAP_ADR(q) !=
++			    HW_ATL2_TX_Q_TC_MAP_ADR(q + 1)) {
++				aq_hw_write_reg(self,
++						HW_ATL2_TX_Q_TC_MAP_ADR(q),
++						tx_map);
++				tx_map = 0;
++			}
+ 		}
  	}
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 2e0e7d34fda0..0973214db20f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -65,6 +65,33 @@ static void aq_nic_rss_init(struct aq_nic_s *self, unsigned int num_rss_queues)
- 		rss_params->indirection_table[i] = i & (num_rss_queues - 1);
- }
  
-+/* Recalculate the number of vectors */
-+static void aq_nic_cfg_update_num_vecs(struct aq_nic_s *self)
+@@ -181,7 +194,7 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
+ 		hw_atl_rpf_rpb_user_priority_tc_map_set(self, prio,
+ 							cfg->prio_tc_map[prio]);
+ 
+-	/* ATL2 Apply legacy ring to TC mapping */
++	/* ATL2 Apply ring to TC mapping */
+ 	hw_atl2_hw_queue_to_tc_map_set(self);
+ 
+ 	return aq_hw_err_from_flags(self);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
+index f096d0a6bda9..6817fa57cc83 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
+@@ -68,6 +68,15 @@ void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter)
+ 
+ /* TX */
+ 
++void hw_atl2_tpb_tx_tc_q_rand_map_en_set(struct aq_hw_s *aq_hw,
++					 const u32 tc_q_rand_map_en)
 +{
-+	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
-+
-+	cfg->vecs = min(cfg->aq_hw_caps->vecs, AQ_CFG_VECS_DEF);
-+	cfg->vecs = min(cfg->vecs, num_online_cpus());
-+	if (self->irqvecs > AQ_HW_SERVICE_IRQS)
-+		cfg->vecs = min(cfg->vecs, self->irqvecs - AQ_HW_SERVICE_IRQS);
-+	/* cfg->vecs should be power of 2 for RSS */
-+	cfg->vecs = rounddown_pow_of_two(cfg->vecs);
-+
-+	if (ATL_HW_IS_CHIP_FEATURE(self->aq_hw, ANTIGUA)) {
-+		if (cfg->tcs > 2)
-+			cfg->vecs = min(cfg->vecs, 4U);
-+	}
-+
-+	if (cfg->vecs <= 4)
-+		cfg->tc_mode = AQ_TC_MODE_8TCS;
-+	else
-+		cfg->tc_mode = AQ_TC_MODE_4TCS;
-+
-+	/*rss rings */
-+	cfg->num_rss_queues = min(cfg->vecs, AQ_CFG_NUM_RSS_QUEUES_DEF);
-+	aq_nic_rss_init(self, cfg->num_rss_queues);
++	aq_hw_write_reg_bit(aq_hw, HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_ADR,
++			    HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_MSK,
++			    HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_SHIFT,
++			    tc_q_rand_map_en);
 +}
 +
- /* Checks hw_caps and 'corrects' aq_nic_cfg in runtime */
- void aq_nic_cfg_start(struct aq_nic_s *self)
+ void hw_atl2_tpb_tx_buf_clk_gate_en_set(struct aq_hw_s *aq_hw, u32 clk_gate_en)
  {
-@@ -81,7 +108,6 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
+ 	aq_hw_write_reg_bit(aq_hw, HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_ADR,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
+index 5c1ae755ffae..d4b087d1dec1 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
+@@ -38,6 +38,10 @@ void hw_atl2_new_rpf_rss_redir_set(struct aq_hw_s *aq_hw, u32 tc, u32 index,
+ /* Set VLAN filter tag */
+ void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter);
  
- 	cfg->rxpageorder = AQ_CFG_RX_PAGEORDER;
- 	cfg->is_rss = AQ_CFG_IS_RSS_DEF;
--	cfg->num_rss_queues = AQ_CFG_NUM_RSS_QUEUES_DEF;
- 	cfg->aq_rss.base_cpu_number = AQ_CFG_RSS_BASE_CPU_NUM_DEF;
- 	cfg->fc.req = AQ_CFG_FC_MODE;
- 	cfg->wol = AQ_CFG_WOL_MODES;
-@@ -97,24 +123,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
- 	cfg->rxds = min(cfg->aq_hw_caps->rxds_max, AQ_CFG_RXDS_DEF);
- 	cfg->txds = min(cfg->aq_hw_caps->txds_max, AQ_CFG_TXDS_DEF);
- 
--	/*rss rings */
--	cfg->vecs = min(cfg->aq_hw_caps->vecs, AQ_CFG_VECS_DEF);
--	cfg->vecs = min(cfg->vecs, num_online_cpus());
--	if (self->irqvecs > AQ_HW_SERVICE_IRQS)
--		cfg->vecs = min(cfg->vecs, self->irqvecs - AQ_HW_SERVICE_IRQS);
--	/* cfg->vecs should be power of 2 for RSS */
--	if (cfg->vecs >= 8U)
--		cfg->vecs = 8U;
--	else if (cfg->vecs >= 4U)
--		cfg->vecs = 4U;
--	else if (cfg->vecs >= 2U)
--		cfg->vecs = 2U;
--	else
--		cfg->vecs = 1U;
--
--	cfg->num_rss_queues = min(cfg->vecs, AQ_CFG_NUM_RSS_QUEUES_DEF);
--
--	aq_nic_rss_init(self, cfg->num_rss_queues);
-+	aq_nic_cfg_update_num_vecs(self);
- 
- 	cfg->irq_type = aq_pci_func_get_irq_type(self);
- 
-@@ -125,11 +134,6 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
- 		cfg->vecs = 1U;
- 	}
- 
--	if (cfg->vecs <= 4)
--		cfg->tc_mode = AQ_TC_MODE_8TCS;
--	else
--		cfg->tc_mode = AQ_TC_MODE_4TCS;
--
- 	/* Check if we have enough vectors allocated for
- 	 * link status IRQ. If no - we'll know link state from
- 	 * slower service task.
-@@ -1219,6 +1223,22 @@ void aq_nic_free_vectors(struct aq_nic_s *self)
- err_exit:;
- }
- 
-+int aq_nic_realloc_vectors(struct aq_nic_s *self)
-+{
-+	struct aq_nic_cfg_s *cfg = aq_nic_get_cfg(self);
++/* set tx random TC-queue mapping enable bit */
++void hw_atl2_tpb_tx_tc_q_rand_map_en_set(struct aq_hw_s *aq_hw,
++					 const u32 tc_q_rand_map_en);
 +
-+	aq_nic_free_vectors(self);
-+
-+	for (self->aq_vecs = 0; self->aq_vecs < cfg->vecs; self->aq_vecs++) {
-+		self->aq_vec[self->aq_vecs] = aq_vec_alloc(self, self->aq_vecs,
-+							   cfg);
-+		if (unlikely(!self->aq_vec[self->aq_vecs]))
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
- void aq_nic_shutdown(struct aq_nic_s *self)
- {
- 	int err = 0;
-@@ -1288,6 +1308,7 @@ void aq_nic_release_filter(struct aq_nic_s *self, enum aq_rx_filter_type type,
- int aq_nic_setup_tc_mqprio(struct aq_nic_s *self, u32 tcs, u8 *prio_tc_map)
- {
- 	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
-+	const unsigned int prev_vecs = cfg->vecs;
- 	bool ndev_running;
- 	int err = 0;
- 	int i;
-@@ -1319,9 +1340,18 @@ int aq_nic_setup_tc_mqprio(struct aq_nic_s *self, u32 tcs, u8 *prio_tc_map)
+ /* set tx buffer clock gate enable */
+ void hw_atl2_tpb_tx_buf_clk_gate_en_set(struct aq_hw_s *aq_hw, u32 clk_gate_en);
  
- 	netdev_set_num_tc(self->ndev, cfg->tcs);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
+index b0ac8cd581d7..bf0198ca4e85 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
+@@ -132,6 +132,24 @@
+ /* Default value of bitfield rx_q{Q}_tc_map[2:0] */
+ #define HW_ATL2_RX_Q_TC_MAP_DEFAULT 0x0
  
-+	/* Changing the number of TCs might change the number of vectors */
-+	aq_nic_cfg_update_num_vecs(self);
-+	if (prev_vecs != cfg->vecs) {
-+		err = aq_nic_realloc_vectors(self);
-+		if (err)
-+			goto err_exit;
-+	}
++/* tx tx_tc_q_rand_map_en bitfield definitions
++ * preprocessor definitions for the bitfield "tx_tc_q_rand_map_en".
++ * port="pif_tpb_tx_tc_q_rand_map_en_i"
++ */
 +
- 	if (ndev_running)
- 		err = dev_open(self->ndev, NULL);
++/* register address for bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_ADR 0x00007900
++/* bitmask for bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_MSK 0x00000200
++/* inverted bitmask for bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_MSKN 0xFFFFFDFF
++/* lower bit position of bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_SHIFT 9
++/* width of bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_WIDTH 1
++/* default value of bitfield tx_tc_q_rand_map_en */
++#define HW_ATL2_TPB_TX_TC_Q_RAND_MAP_EN_DEFAULT 0x0
++
+ /* tx tx_buffer_clk_gate_en bitfield definitions
+  * preprocessor definitions for the bitfield "tx_buffer_clk_gate_en".
+  * port="pif_tpb_tx_buffer_clk_gate_en_i"
+@@ -150,8 +168,25 @@
+ /* default value of bitfield tx_buffer_clk_gate_en */
+ #define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_DEFAULT 0x0
  
-+err_exit:
- 	return err;
- }
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-index 351c4e68f40d..7a1d799b1e0d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -177,6 +177,7 @@ void aq_nic_deinit(struct aq_nic_s *self, bool link_down);
- void aq_nic_set_power(struct aq_nic_s *self);
- void aq_nic_free_hot_resources(struct aq_nic_s *self);
- void aq_nic_free_vectors(struct aq_nic_s *self);
-+int aq_nic_realloc_vectors(struct aq_nic_s *self);
- int aq_nic_set_mtu(struct aq_nic_s *self, int new_mtu);
- int aq_nic_set_mac(struct aq_nic_s *self, struct net_device *ndev);
- int aq_nic_set_packet_filter(struct aq_nic_s *self, unsigned int flags);
+-/* tx data_tc{t}_credit_max[b:0] bitfield definitions
+- * preprocessor definitions for the bitfield "data_tc{t}_credit_max[b:0]".
++/* tx tx_q_tc_map{q} bitfield definitions
++ * preprocessor definitions for the bitfield "tx_q_tc_map{q}".
++ * parameter: queue {q} | bit-level stride | range [0, 31]
++ * port="pif_tpb_tx_q_tc_map0_i[2:0]"
++ */
++
++/* register address for bitfield tx_q_tc_map{q} */
++#define HW_ATL2_TX_Q_TC_MAP_ADR(queue) \
++	(((queue) < 32) ? 0x0000799C + ((queue) / 4) * 4 : 0)
++/* lower bit position of bitfield tx_q_tc_map{q} */
++#define HW_ATL2_TX_Q_TC_MAP_SHIFT(queue) \
++	(((queue) < 32) ? ((queue) * 8) % 32 : 0)
++/* width of bitfield tx_q_tc_map{q} */
++#define HW_ATL2_TX_Q_TC_MAP_WIDTH 3
++/* default value of bitfield tx_q_tc_map{q} */
++#define HW_ATL2_TX_Q_TC_MAP_DEFAULT 0x0
++
++/* tx data_tc{t}_credit_max[f:0] bitfield definitions
++ * preprocessor definitions for the bitfield "data_tc{t}_credit_max[f:0]".
+  * parameter: tc {t} | stride size 0x4 | range [0, 7]
+  * port="pif_tps_data_tc0_credit_max_i[11:0]"
+  */
 -- 
 2.25.1
 
