@@ -2,117 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5096A1DF177
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A24B1DF179
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 23:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731029AbgEVVun (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 17:50:43 -0400
-Received: from mta-p6.oit.umn.edu ([134.84.196.206]:55876 "EHLO
-        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731051AbgEVVun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:50:43 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 49TKtB2Tz1z9vBsL
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 21:50:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p6.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wEAq5La5EqQn for <netdev@vger.kernel.org>;
-        Fri, 22 May 2020 16:50:42 -0500 (CDT)
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 49TKtB0qNVz9vBs5
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 16:50:42 -0500 (CDT)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 49TKtB0qNVz9vBs5
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 49TKtB0qNVz9vBs5
-Received: by mail-io1-f70.google.com with SMTP id n20so8215753iog.3
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 14:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QnQxecg34bqUdZINiYr2xryJqppsStQKMeRWBxxN/GY=;
-        b=YpholpuHjF0WHc0kgsVphNDznXfkkcsqz5mrytjkO9sNgbLyvjptT8FgeVF2IehPwu
-         PD6SdQGReD1MMFB0xgkm9X3LZOOuon7e+fZGp3l0x9EqjJfJoomsab6NwLQKPQAt6U4A
-         mMy9FJshFD+T1bxogDXRZl2W/CF1Aor1oZJVfZ8ZQnTgbW6zmlfbwGZI1Pc29YqQ4Jke
-         KbBqZPk+vxD7zu2CSa4l2bl0ZvRS9rX+y5IrRvO+cExg+567TCmBrcsHL7AiPoJQXKM+
-         GR67XwmPKXGtqeDvOj5srFN6keVcJa2k9tfs2EFMF+B7qYxPen4INS6e43b3PRJXxrlh
-         2sbQ==
+        id S1731184AbgEVVvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 17:51:49 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36248 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731098AbgEVVvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 17:51:49 -0400
+Received: by mail-pf1-f193.google.com with SMTP id e11so4846370pfn.3;
+        Fri, 22 May 2020 14:51:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QnQxecg34bqUdZINiYr2xryJqppsStQKMeRWBxxN/GY=;
-        b=lTJDpo+RUPqSBudqGsRQgBoE5NEXRR7c5lfSzu5zekI53rL4zg1aqKNB4j1q0xu+y1
-         hYhugkGktasAvnTnDFkx+NjMYSukgXwncRbIf49RdzHV5OoaD7t9xcPLYciE+t+CO9Ub
-         KIVcKuCxF30iQNxie8ZNimD15PQ2UCfW6h1n2Bc0162dTC2u14DSCRihmMRJOsWC1V7T
-         eXsTopkRNUcd3/apNd1DWihDkuaogx/MN8jsuQlrEq8P1JHZtPmJGyaVx9ktR3pqEyP3
-         sv151p3DLB4rudR48pfh8IWgZMLyv8T57nc/5FWgfaCgH1KsJgcua6lBoVEMEIduXKF5
-         OqEQ==
-X-Gm-Message-State: AOAM531Ksd/vyiKqdkv6Cv9qI5i4iRuPEJr1FEiu9a7hHyiLgqIYlMlk
-        LLiqQCjTHT+C9COO5ovXOqkP4/cWLnLH1pNDVOlFJLcoTDBzUAZniQlvh4CVBSELFTykFKV1XJg
-        r247pbcWWT1W2bwddBdrM
-X-Received: by 2002:a92:1b17:: with SMTP id b23mr15119055ilb.199.1590184241628;
-        Fri, 22 May 2020 14:50:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz3IHta8Esaor63AmNN/5skTrVjceOXa80q0zwAtFpkTtxrBOXmSqZQlwJ8t2pbwIbGhFMwIA==
-X-Received: by 2002:a92:1b17:: with SMTP id b23mr15119040ilb.199.1590184241297;
-        Fri, 22 May 2020 14:50:41 -0700 (PDT)
-Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
-        by smtp.gmail.com with ESMTPSA id z3sm4218651ior.45.2020.05.22.14.50.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Z9B4bZk+E5XNnSc8/L/uVYEy0FFzcjh8GSMiMFaQ5cU=;
+        b=EC1Xbc9L/RMNKGdiQumAl346JCUKdf/G8NM7A0UWdBgT51zmwa5qg4ZjzgbP04ijZ4
+         g6R2MF0jTGQ6mb1JjVWJhlazLapT+wzMFuViprghR3+h42RcvxK9+0tkrOwOsZGE3K26
+         NmYwLRpmIVskWYpRq3LxOy8Ca5dfrLHKcYl0xM/+REhkX+CGf6MtZdxls7DG0HdV3AIW
+         Ltqcax26CLL6F1Su/mfouhoz1nSCnOrLTbtUXxzOcpF7C9PhDa4OZZxoImcpBIwgMcWb
+         cZxKWC2XglyXK+XGo4jtGACJDVL/lQ2uuYGgZqT5eSx9FHWKOFZ9G1B1hMDPcDVeHo3M
+         At5g==
+X-Gm-Message-State: AOAM5321n3R+TZT2sM8IJnUyG82tp0FUiKk0cdd7NL0ZZrnhS47/ffAv
+        h54wDh31Okb/bKS9iCL4nlo=
+X-Google-Smtp-Source: ABdhPJzcUJoVZSYg2I5qX4WrfgIvy28/Y0K9mfCZGDbP1o1kz3N2Ybs2nMxPYUjAV7xiLzsbiPVsyA==
+X-Received: by 2002:a05:6a00:843:: with SMTP id q3mr5601514pfk.107.1590184307967;
+        Fri, 22 May 2020 14:51:47 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id a142sm7175101pfa.6.2020.05.22.14.51.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2020 14:50:40 -0700 (PDT)
-From:   wu000273@umn.edu
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, hkallweit1@gmail.com, jonathan.lemon@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kjlu@umn.edu,
-        wu000273@umn.edu
-Subject: [PATCH] net: sun: fix missing release regions in cas_init_one().
-Date:   Fri, 22 May 2020 16:50:27 -0500
-Message-Id: <20200522215027.4217-1-wu000273@umn.edu>
-X-Mailer: git-send-email 2.17.1
+        Fri, 22 May 2020 14:51:46 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id CEDDD40321; Fri, 22 May 2020 21:51:45 +0000 (UTC)
+Date:   Fri, 22 May 2020 21:51:45 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, derosier@gmail.com,
+        greearb@candelatech.com, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath10k@lists.infradead.org, jiri@resnulli.us,
+        briannorris@chromium.org
+Subject: Re: [RFC 1/2] devlink: add simple fw crash helpers
+Message-ID: <20200522215145.GC11244@42.do-not-panic.com>
+References: <20200519010530.GS11244@42.do-not-panic.com>
+ <20200519211531.3702593-1-kuba@kernel.org>
+ <20200522052046.GY11244@42.do-not-panic.com>
+ <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <2e5199edb433c217c7974ef7408ff8c7253145b6.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e5199edb433c217c7974ef7408ff8c7253145b6.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+On Fri, May 22, 2020 at 10:46:07PM +0200, Johannes Berg wrote:
+> FWIW, I still completely disagree on that taint. You (Luis) obviously
+> have been running into a bug in that driver, I doubt the firmware
+> actually managed to wedge the hardware.
 
-In cas_init_one(), "pdev" is requested by "pci_request_regions", but it
-was not released after a call of the function “pci_write_config_byte” 
-failed. Thus replace the jump target “err_write_cacheline” by 
-"err_out_free_res".
+This hasn't happened just once, its happed many times sporadically now,
+once a week or two weeks I'd say. And the system isn't being moved
+around.
 
-Fixes: 1f26dac32057 ("[NET]: Add Sun Cassini driver.")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
----
- drivers/net/ethernet/sun/cassini.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> But even if it did, that's still not really a kernel taint. The kernel
+> itself isn't in any way affected by this.
 
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index e6d1aa882fa5..f1c8615ab6f0 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -4963,7 +4963,7 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 					  cas_cacheline_size)) {
- 			dev_err(&pdev->dev, "Could not set PCI cache "
- 			       "line size\n");
--			goto err_write_cacheline;
-+			goto err_out_free_res;
- 		}
- 	}
- #endif
-@@ -5136,7 +5136,6 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_out_free_res:
- 	pci_release_regions(pdev);
- 
--err_write_cacheline:
- 	/* Try to restore it in case the error occurred after we
- 	 * set it.
- 	 */
--- 
-2.17.1
+Of course it is, a full reboot is required.
 
+> Yes, the system is in a weird state now. But that's *not* equivalent to
+> "kernel tainted".
+
+Requiring a full reboot is a dire situation to be in, and loosing
+connectivity to the point this is not recoverable likewise.
+
+You guys are making out a taint to be the end of the world. We have a
+taint even for a kernel warning, and as others have mentioned mac80211
+already produces these.
+
+What exactly is the opposition to a taint to clarify that a device
+firmware has crashed and your system requires a full reboot?
+
+  Luis
