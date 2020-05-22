@@ -2,115 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2DCB1DDDCE
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 05:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C671DDDD9
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 05:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727897AbgEVDVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 23:21:16 -0400
-Received: from mo-csw1516.securemx.jp ([210.130.202.155]:57734 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbgEVDVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 May 2020 23:21:16 -0400
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 04M3L1OB004202; Fri, 22 May 2020 12:21:01 +0900
-X-Iguazu-Qid: 34trJzXMWLTWgibhZ2
-X-Iguazu-QSIG: v=2; s=0; t=1590117661; q=34trJzXMWLTWgibhZ2; m=wrPARnLkF2hEskCsXYqcABH37zzS5Viw1KXT40c9bv0=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1510) id 04M3KxZS038811;
-        Fri, 22 May 2020 12:20:59 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id 04M3KwbJ004263;
-        Fri, 22 May 2020 12:20:58 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 04M3KwHO019853;
-        Fri, 22 May 2020 12:20:58 +0900
-From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-To:     "Brown\, Aaron F" <aaron.f.brown@intel.com>
-Cc:     "Kirsher\, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "daniel.sangorrin\@toshiba.co.jp" <daniel.sangorrin@toshiba.co.jp>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "intel-wired-lan\@lists.osuosl.org" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] e1000e: Relax condition to trigger reset for ME workaround
-References: <20200515043127.3882162-1-punit1.agrawal@toshiba.co.jp>
-        <DM6PR11MB2890F48ACD9A4ECF9181A819BCB70@DM6PR11MB2890.namprd11.prod.outlook.com>
-Date:   Fri, 22 May 2020 12:20:57 +0900
-In-Reply-To: <DM6PR11MB2890F48ACD9A4ECF9181A819BCB70@DM6PR11MB2890.namprd11.prod.outlook.com>
-        (Aaron F. Brown's message of "Thu, 21 May 2020 07:56:12 +0000")
-X-TSB-HOP: ON
-Message-ID: <87367sac4m.fsf@kokedama.swc.toshiba.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1727963AbgEVD0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 May 2020 23:26:49 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5273 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727024AbgEVD0s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 May 2020 23:26:48 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 5264D3B8B9B8A21A4CC9;
+        Fri, 22 May 2020 11:26:47 +0800 (CST)
+Received: from [10.166.213.22] (10.166.213.22) by smtp.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 22 May
+ 2020 11:26:41 +0800
+Subject: Re: [PATCH v2] netprio_cgroup: Fix unlimited memory leak of v2
+ cgroups
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Tejun Heo <tj@kernel.org>, <ast@kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        yangyingliang <yangyingliang@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        <huawei.libin@huawei.com>, <guofan5@huawei.com>,
+        <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <939566f5-abe3-3526-d4ff-ec6bf8e8c138@huawei.com>
+ <2fcd921d-8f42-9d33-951c-899d0bbdd92d@huawei.com>
+ <20200508225829.0880cf8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200509210214.408e847a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5ec6ef43d98e7_3bbf2ab912c625b4eb@john-XPS-13-9370.notmuch>
+From:   Zefan Li <lizefan@huawei.com>
+Message-ID: <37ad9c6e-b8e9-d23a-f168-fca2292ef5c5@huawei.com>
+Date:   Fri, 22 May 2020 11:26:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <5ec6ef43d98e7_3bbf2ab912c625b4eb@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.213.22]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Aaron,
+On 2020/5/22 5:14, John Fastabend wrote:
+> Jakub Kicinski wrote:
+>> On Fri, 8 May 2020 22:58:29 -0700 Jakub Kicinski wrote:
+>>> On Sat, 9 May 2020 11:32:10 +0800 Zefan Li wrote:
+>>>> If systemd is configured to use hybrid mode which enables the use of
+>>>> both cgroup v1 and v2, systemd will create new cgroup on both the default
+>>>> root (v2) and netprio_cgroup hierarchy (v1) for a new session and attach
+>>>> task to the two cgroups. If the task does some network thing then the v2
+>>>> cgroup can never be freed after the session exited.
+>>>>
+>>>> One of our machines ran into OOM due to this memory leak.
+>>>>
+>>>> In the scenario described above when sk_alloc() is called cgroup_sk_alloc()
+>>>> thought it's in v2 mode, so it stores the cgroup pointer in sk->sk_cgrp_data
+>>>> and increments the cgroup refcnt, but then sock_update_netprioidx() thought
+>>>> it's in v1 mode, so it stores netprioidx value in sk->sk_cgrp_data, so the
+>>>> cgroup refcnt will never be freed.
+>>>>
+>>>> Currently we do the mode switch when someone writes to the ifpriomap cgroup
+>>>> control file. The easiest fix is to also do the switch when a task is attached
+>>>> to a new cgroup.
+>>>>
+>>>> Fixes: bd1060a1d671("sock, cgroup: add sock->sk_cgroup")  
+>>>
+>>>                      ^ space missing here
+>>>
+>>>> Reported-by: Yang Yingliang <yangyingliang@huawei.com>
+>>>> Tested-by: Yang Yingliang <yangyingliang@huawei.com>
+>>>> Signed-off-by: Zefan Li <lizefan@huawei.com>
+>>
+>> Fixed up the commit message and applied, thank you.
+> 
+> Hi Zefan, Tejun,
+> 
+> This is causing a regression where previously cgroupv2 bpf sockops programs
+> could be attached and would run even if netprio_cgroup was enabled as long
+> as  the netprio cgroup had not been configured. After this the bpf sockops
+> programs can still be attached but only programs attached to the root cgroup
+> will be run. For example I hit this when I ran bpf selftests on a box that
+> also happened to have netprio cgroup enabled, tests started failing after
+> bumping kernel to rc5.
+> 
+> I'm a bit on the fence here if it needs to be reverted. For my case its just
+> a test box and easy enough to work around. Also all the production cases I
+> have already have to be aware of this to avoid the configured error. So it
+> may be fine but worth noting at least. Added Alexei to see if he has any
+> opinion and/or uses net_prio+cgroubv2. I only looked it over briefly but
+> didn't see any simple rc6 worthy fixes that would fix the issue above and
+> also keep the original behavior.
+> 
 
-"Brown, Aaron F" <aaron.f.brown@intel.com> writes:
+Me neither. If we really want to keep the original behavior we probably need
+to do something similar to what netclassid cgroup does, which is to iterate
+all the tasks in the cgroup to update netprioidx when netprio cgroup is
+configured, and we also need to not update netprioidx when a task is attached
+to a new cgroup.
 
->> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
->> Behalf Of Punit Agrawal
->> Sent: Thursday, May 14, 2020 9:31 PM
->> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
->> Cc: daniel.sangorrin@toshiba.co.jp; Punit Agrawal
->> <punit1.agrawal@toshiba.co.jp>; Alexander Duyck
->> <alexander.h.duyck@linux.intel.com>; David S. Miller <davem@davemloft.net>;
->> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
->> kernel@vger.kernel.org
->> Subject: [PATCH] e1000e: Relax condition to trigger reset for ME workaround
->> 
->> It's an error if the value of the RX/TX tail descriptor does not match
->> what was written. The error condition is true regardless the duration
->> of the interference from ME. But the driver only performs the reset if
->> E1000_ICH_FWSM_PCIM2PCI_COUNT (2000) iterations of 50us delay have
->> transpired. The extra condition can lead to inconsistency between the
->> state of hardware as expected by the driver.
->> 
->> Fix this by dropping the check for number of delay iterations.
->> 
->> While at it, also make __ew32_prepare() static as it's not used
->> anywhere else.
->> 
->> Signed-off-by: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
->> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
->> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: intel-wired-lan@lists.osuosl.org
->> Cc: netdev@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> ---
->> Hi Jeff,
->> 
->> If there are no further comments please consider merging the patch.
->> 
->> Also, should it be marked for backport to stable?
->> 
->> Thanks,
->> Punit
->> 
->> RFC[0] -> v1:
->> * Dropped return value for __ew32_prepare() as it's not used
->> * Made __ew32_prepare() static
->> * Added tags
->> 
->> [0] https://lkml.org/lkml/2020/5/12/20
->> 
->>  drivers/net/ethernet/intel/e1000e/e1000.h  |  1 -
->>  drivers/net/ethernet/intel/e1000e/netdev.c | 12 +++++-------
->>  2 files changed, 5 insertions(+), 8 deletions(-)
->> 
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> And then while reviewing I also wonder do we have the same issue described
+> here in netclasid_cgroup.c with the cgrp_attach()? It would be best to keep
+> netcls and netprio in sync in this regard imo. At least netcls calls
+> cgroup_sk_alloc_disable in the write_classid() hook so I suspect it makes
+> sense to also add that to the attach hook?
+> 
 
-Thanks for taking the patch for a spin.
+Fortunately we don't have this issue in netclassid cgroup. :)
 
-Jeff, let me know if you're okay to apply the tag or want me to send a
-new version.
-
-Thanks,
-Punit
-
+Because task_cls_classid() remains 0 as long as netclassid cgroup is not
+configured.
