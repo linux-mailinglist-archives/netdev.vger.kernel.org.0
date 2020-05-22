@@ -2,77 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C269E1DE24E
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 10:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8141DE271
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 10:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730031AbgEVIiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 04:38:52 -0400
-Received: from foss.arm.com ([217.140.110.172]:59546 "EHLO foss.arm.com"
+        id S1729131AbgEVIyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 04:54:39 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:33332 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730007AbgEVIiu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 04:38:50 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 261651063;
-        Fri, 22 May 2020 01:38:50 -0700 (PDT)
-Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2C1D33F52E;
-        Fri, 22 May 2020 01:38:43 -0700 (PDT)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com, steven.price@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        Wei.Chen@arm.com, jianyong.wu@arm.com, nd@arm.com
-Subject: [RFC PATCH v12 11/11] arm64: Add kvm capability check extension for ptp_kvm
-Date:   Fri, 22 May 2020 16:37:24 +0800
-Message-Id: <20200522083724.38182-12-jianyong.wu@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200522083724.38182-1-jianyong.wu@arm.com>
-References: <20200522083724.38182-1-jianyong.wu@arm.com>
+        id S1729072AbgEVIyi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 04:54:38 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 851DF2004C5;
+        Fri, 22 May 2020 10:54:35 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 78CB12004C1;
+        Fri, 22 May 2020 10:54:35 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 4B7252048C;
+        Fri, 22 May 2020 10:54:35 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>, vladimir.oltean@nxp.com
+Subject: [PATCH net] felix: Fix initialization of ioremap resources
+Date:   Fri, 22 May 2020 11:54:34 +0300
+Message-Id: <1590137674-31727-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let userspace check if there is kvm ptp service in host.
-Before VMs migrate to another host, VMM may check if this
-cap is available to determine the next behavior.
+The caller of devm_ioremap_resource(), either accidentally
+or by wrong assumption, is writing back derived resource data
+to global static resource initialization tables that should
+have been constant.  Meaning that after it computes the final
+physical start address it saves the address for no reason
+in the static tables.  This doesn't affect the first driver
+probing after reboot, but it breaks consecutive driver reloads
+(i.e. driver unbind & bind) because the initialization tables
+no longer have the correct initial values.  So the next probe()
+will map the device registers to wrong physical addresses,
+causing ARM SError async exceptions.
+This patch fixes all of the above.
 
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Suggested-by: Marc Zyngier <maz@kernel.org>
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 ---
- include/uapi/linux/kvm.h | 1 +
- virt/kvm/arm/arm.c       | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/dsa/ocelot/felix.c         | 23 +++++++++++------------
+ drivers/net/dsa/ocelot/felix.h         |  6 +++---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 22 ++++++++++------------
+ 3 files changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 428c7dde6b4b..668049ad78e1 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1017,6 +1017,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_S390_VCPU_RESETS 179
- #define KVM_CAP_S390_PROTECTED 180
- #define KVM_CAP_PPC_SECURE_GUEST 181
-+#define KVM_CAP_ARM_KVM_PTP 182
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index e2c6bf0..e8aae64 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -388,6 +388,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	struct ocelot *ocelot = &felix->ocelot;
+ 	phy_interface_t *port_phy_modes;
+ 	resource_size_t switch_base;
++	struct resource res;
+ 	int port, i, err;
  
- #ifdef KVM_CAP_IRQ_ROUTING
+ 	ocelot->num_phys_ports = num_phys_ports;
+@@ -422,17 +423,16 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
  
-diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
-index 48d0ec44ad77..4726a88949f5 100644
---- a/virt/kvm/arm/arm.c
-+++ b/virt/kvm/arm/arm.c
-@@ -195,6 +195,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_ARM_IRQ_LINE_LAYOUT_2:
- 	case KVM_CAP_ARM_NISV_TO_USER:
- 	case KVM_CAP_ARM_INJECT_EXT_DABT:
-+	case KVM_CAP_ARM_KVM_PTP:
- 		r = 1;
- 		break;
- 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
+ 	for (i = 0; i < TARGET_MAX; i++) {
+ 		struct regmap *target;
+-		struct resource *res;
+ 
+ 		if (!felix->info->target_io_res[i].name)
+ 			continue;
+ 
+-		res = &felix->info->target_io_res[i];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->target_io_res[i], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		target = ocelot_regmap_init(ocelot, res);
++		target = ocelot_regmap_init(ocelot, &res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map device memory space\n");
+@@ -453,7 +453,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	for (port = 0; port < num_phys_ports; port++) {
+ 		struct ocelot_port *ocelot_port;
+ 		void __iomem *port_regs;
+-		struct resource *res;
+ 
+ 		ocelot_port = devm_kzalloc(ocelot->dev,
+ 					   sizeof(struct ocelot_port),
+@@ -465,12 +464,12 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 			return -ENOMEM;
+ 		}
+ 
+-		res = &felix->info->port_io_res[port];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->port_io_res[port], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		port_regs = devm_ioremap_resource(ocelot->dev, res);
++		port_regs = devm_ioremap_resource(ocelot->dev, &res);
+ 		if (IS_ERR(port_regs)) {
+ 			dev_err(ocelot->dev,
+ 				"failed to map registers for port %d\n", port);
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 9af1065..730a8a9 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -8,9 +8,9 @@
+ 
+ /* Platform-specific information */
+ struct felix_info {
+-	struct resource			*target_io_res;
+-	struct resource			*port_io_res;
+-	struct resource			*imdio_res;
++	const struct resource		*target_io_res;
++	const struct resource		*port_io_res;
++	const struct resource		*imdio_res;
+ 	const struct reg_field		*regfields;
+ 	const u32 *const		*map;
+ 	const struct ocelot_ops		*ops;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 8bf395f..5211f05 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -333,10 +333,8 @@ static const u32 *vsc9959_regmap[] = {
+ 	[GCB]	= vsc9959_gcb_regmap,
+ };
+ 
+-/* Addresses are relative to the PCI device's base address and
+- * will be fixed up at ioremap time.
+- */
+-static struct resource vsc9959_target_io_res[] = {
++/* Addresses are relative to the PCI device's base address */
++static const struct resource vsc9959_target_io_res[] = {
+ 	[ANA] = {
+ 		.start	= 0x0280000,
+ 		.end	= 0x028ffff,
+@@ -379,7 +377,7 @@ static struct resource vsc9959_target_io_res[] = {
+ 	},
+ };
+ 
+-static struct resource vsc9959_port_io_res[] = {
++static const struct resource vsc9959_port_io_res[] = {
+ 	{
+ 		.start	= 0x0100000,
+ 		.end	= 0x010ffff,
+@@ -415,7 +413,7 @@ static struct resource vsc9959_port_io_res[] = {
+ /* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
+  * SGMII/QSGMII MAC PCS can be found.
+  */
+-static struct resource vsc9959_imdio_res = {
++static const struct resource vsc9959_imdio_res = {
+ 	.start		= 0x8030,
+ 	.end		= 0x8040,
+ 	.name		= "imdio",
+@@ -1111,7 +1109,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	struct device *dev = ocelot->dev;
+ 	resource_size_t imdio_base;
+ 	void __iomem *imdio_regs;
+-	struct resource *res;
++	struct resource res;
+ 	struct enetc_hw *hw;
+ 	struct mii_bus *bus;
+ 	int port;
+@@ -1128,12 +1126,12 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	imdio_base = pci_resource_start(felix->pdev,
+ 					felix->info->imdio_pci_bar);
+ 
+-	res = felix->info->imdio_res;
+-	res->flags = IORESOURCE_MEM;
+-	res->start += imdio_base;
+-	res->end += imdio_base;
++	memcpy(&res, felix->info->imdio_res, sizeof(res));
++	res.flags = IORESOURCE_MEM;
++	res.start += imdio_base;
++	res.end += imdio_base;
+ 
+-	imdio_regs = devm_ioremap_resource(dev, res);
++	imdio_regs = devm_ioremap_resource(dev, &res);
+ 	if (IS_ERR(imdio_regs)) {
+ 		dev_err(dev, "failed to map internal MDIO registers\n");
+ 		return PTR_ERR(imdio_regs);
 -- 
-2.17.1
+2.7.4
 
