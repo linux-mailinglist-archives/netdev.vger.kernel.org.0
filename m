@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 299C51DEF8D
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 697B31DEF8F
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 20:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730871AbgEVS5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 14:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
+        id S1730879AbgEVS6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 14:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730840AbgEVS5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:57:07 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C44DC061A0E;
-        Fri, 22 May 2020 11:57:06 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id f189so11747150qkd.5;
-        Fri, 22 May 2020 11:57:06 -0700 (PDT)
+        with ESMTP id S1730840AbgEVS6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 14:58:35 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810A1C061A0E;
+        Fri, 22 May 2020 11:58:35 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id i5so11686855qkl.12;
+        Fri, 22 May 2020 11:58:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=APQV4v/L30Z4Y81FbxVFdyi/lVO/94ETl2WC2K645Ik=;
-        b=Fka7AlUebwQyt+u7Ee5whzlkNaii7KktmEFF0YJGWJ2Ar+8XWb0xtHTkFdpmvZr87y
-         piqFUDgLvUKkI49CXHTV+5Qal1Dx0xabalZ3BUkSsDV6ZE4sXFrGKaMtveYsF5zWk3Au
-         NY/Z/8eeQ2MdkqpwjXYVd1U6Y3us/teDCiBI1r95Uv/e0P8d2lsjH+RmkDbx8em/GgPN
-         Bzi+qfjocDrArAcMFTpmFIrZbXZZ8pA9/yF+VMVxrbvp/7JBLqyaZ1CJv9m9mgricQsn
-         8NINj81VplvdMqLlzSnx1p6eJiX6Cdkz0S8caa7hTUfi6C8ccJWZprz5lXei8DP4C86c
-         fuqg==
+        bh=Gpy0uHkIeQmpCnBOmw7IB3fvyPs5tQERo4inod6pNFc=;
+        b=IhOgSoXLkCIJvCLmV/m6sF6m++0UII5dTW5RGAY4JS9hxMutg6J+qxjmtbtV3TZ5nd
+         9WdeeguflL9LBQncNSPhvvGVwmJXpPU2nwueYiZEUGd1idmB/OLeH5J+4wacHGdolqxU
+         NYpLnnzehH9hsIlD8YgQ6uX8qjIIUyJbHllB/F78JXMAyWQlLm+XE8ZbbqYGQ9p+rfgd
+         ECnDF4qT0CQUlg8dvdPPcXNQgSggRJh/rhEL6NvvzJVbOCns5iwC8thpt69egVsqQ48Z
+         4uKDqUYVHgaJRorwwedh7nOMwHJTXtot7rxJ4n9Q7e3PPFdlmS7EtEJ4ChuuTiaImX/u
+         wVOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=APQV4v/L30Z4Y81FbxVFdyi/lVO/94ETl2WC2K645Ik=;
-        b=GAJzy+Lc+Q7rZujueiwliurmuLx9BoIquDc1kYW6Y5PHzuFvuarEPg+8NWMyUXBZXO
-         9aB0sr9XeJ1so5VOCTBI0D/wAKhjosn+B8w02Wu4+lbjmWSIkq0DLNOEaJrViu6M7emB
-         O2vSgz0/ZLTB5lG50D3eBH3mlOntyrRX8qZs4FPrtPW+11abekXeg4laPF0g6ANSoTFP
-         aT0BhdPReygJXNWOC7JRmbpIZtlArxxhE9c2OFP50k/7YvuTD3UXzSxu+zdDod2LA0H7
-         i87vXzsu0LPEUIXpqokeEIJDgEC151V/Cbz4HRUybLTf88Mj1edrUS41xN9hDQ+abP2K
-         tyzQ==
-X-Gm-Message-State: AOAM532hWJGWZo9BPJzqS+deWn5mosR7T6P7awetOUvtr67VpgbDcFpq
-        qLzoV8lBNBfxfEnIr9FqBIj/6WiPP2ycKkFWVjy/In9cfxE=
-X-Google-Smtp-Source: ABdhPJyAhszvbrHcLJZd9N2jC8LSH8+XiM1AT3F5aVefXlmJtY3dYM+7rBb1CasF+OLGHbGmqnt8184TYimgnTh/hL8=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr4087360qkb.39.1590173824833;
- Fri, 22 May 2020 11:57:04 -0700 (PDT)
+        bh=Gpy0uHkIeQmpCnBOmw7IB3fvyPs5tQERo4inod6pNFc=;
+        b=XArbfxeM6qGwLTtHxh88lqehhYfUcvaYBEj+wPk4xAzTRjN5Qhkjsk1lNXGeNbL7pH
+         YsoIlrdzD1TIArfk3DKrotqjnVdejTNaYcqpqF+iecR8k5Ed5MJ0hOEQzpqZru4w+NXA
+         KnQsp/rMQgKNa668UemjPPpi+BFzLlGRNOvzrxdfhqChaiJmW6rB/YcJZciWSD7FDxLG
+         yhUzvFXBTu8QVCO5DRwdSmt9dv7QILDgnorMMwul4tK0knJw6JCOLS348p/p/lCoCe68
+         fwHUddnKGEIFK9p0Lop2TUtR/AeqoglKRNQOXgfGw36XHEuVCPEWMbVBS2mRSwJEZfgd
+         tb7Q==
+X-Gm-Message-State: AOAM530EcsuRQsxLPRYxfFCt6am9ZzyJREmocGoUFEB3nUXCODHKPj8i
+        P/vWQJrHEOwUoyzIywYf7fBtKgRil7F9ie2ZSjc=
+X-Google-Smtp-Source: ABdhPJxU/DEHIQc0KmmkRUdeR6DSacVYg35VEadwnuMPRsD2vrzsFWPOj+lIDMwAvCWdtDdarKve10T19QyWO2rsUa0=
+X-Received: by 2002:ae9:efc1:: with SMTP id d184mr17475880qkg.437.1590173914774;
+ Fri, 22 May 2020 11:58:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-5-andriin@fb.com>
- <20200522011552.ak4dkxhqwg6j2koy@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200522011552.ak4dkxhqwg6j2koy@ast-mbp.dhcp.thefacebook.com>
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-6-andriin@fb.com>
+ <20200522012034.sufpu7e62itcn2vg@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200522012034.sufpu7e62itcn2vg@ast-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 May 2020 11:56:54 -0700
-Message-ID: <CAEf4BzbWj28btDvzDJCJMpRJ55hiydV9c+F_pEFvuA4bMeb+Bg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 4/7] libbpf: add BPF ring buffer support
+Date:   Fri, 22 May 2020 11:58:24 -0700
+Message-ID: <CAEf4BzZy+iVMfVCHP-PT5hdeWwmjgqp5dpPvhzbz1bsateJN_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 5/7] selftests/bpf: add BPF ringbuf selftests
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
@@ -65,34 +65,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 6:15 PM Alexei Starovoitov
+On Thu, May 21, 2020 at 6:20 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> On Sun, May 17, 2020 at 12:57:24PM -0700, Andrii Nakryiko wrote:
-> > +
-> > +static inline int roundup_len(__u32 len)
-> > +{
-> > +     /* clear out top 2 bits */
-> > +     len <<= 2;
-> > +     len >>= 2;
+> On Sun, May 17, 2020 at 12:57:25PM -0700, Andrii Nakryiko wrote:
+> > diff --git a/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
+> > new file mode 100644
+> > index 000000000000..7eb85dd9cd66
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c
+> > @@ -0,0 +1,77 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +// Copyright (c) 2019 Facebook
 >
-> what this is for?
-> Overflow prevention?
-> but kernel checked the size already?
-
-No, as comment above says, just clearing upper two bits (busy bit and
-discard bit). Busy bit should be 0, but discard bit could be set for
-discarded record. I could have written this equivalently as:
-
-len = (len & ~(1 << BPF_RINGBUF_DISCARD_BIT));
-
-But I think compiler won't optimize it to two bit shifts, assuming bit
-#31 might be set.
-
+> oops ;)
 >
-> > +     /* add length prefix */
-> > +     len += BPF_RINGBUF_HDR_SZ;
-> > +     /* round up to 8 byte alignment */
-> > +     return (len + 7) / 8 * 8;
-> > +}
+
+heh, still living in good old 2019... :) fixing...
+
 > > +
+> > +#include <linux/bpf.h>
+> > +#include <bpf/bpf_helpers.h>
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +struct sample {
+> > +     int pid;
+> > +     int seq;
+> > +     long value;
+> > +     char comm[16];
+> > +};
+> > +
+> > +struct ringbuf_map {
+> > +     __uint(type, BPF_MAP_TYPE_RINGBUF);
+> > +     __uint(max_entries, 1 << 12);
+> > +} ringbuf1 SEC(".maps"),
+> > +  ringbuf2 SEC(".maps");
+> > +
+> > +struct {
+> > +     __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+> > +     __uint(max_entries, 4);
+> > +     __type(key, int);
+> > +     __array(values, struct ringbuf_map);
+> > +} ringbuf_arr SEC(".maps") = {
+> > +     .values = {
+> > +             [0] = &ringbuf1,
+> > +             [2] = &ringbuf2,
+> > +     },
+> > +};
+>
+> the tests look great. Very easy to understand the usage model.
+
+great, thanks!
