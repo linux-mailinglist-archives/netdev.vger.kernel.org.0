@@ -2,124 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E2EB1DF01F
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1481DF021
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 21:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730925AbgEVTlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 15:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        id S1730931AbgEVToW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 15:44:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730689AbgEVTlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:41:16 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00231C061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:41:15 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id d7so9106255ote.6
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:41:15 -0700 (PDT)
+        with ESMTP id S1730689AbgEVToV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 15:44:21 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961F9C061A0E
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:44:21 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id er16so5308155qvb.0
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 12:44:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R9ObJ8QwqXruga0MOShtora2MWAN1lSnLSZ4b8PI1Yo=;
-        b=K4tbr2ou/f64TqneAxiA4BSLlIxaEpO75GvESj9OkVeMhX82QurhjkfoTfZjjLMzkP
-         Ky81xMQrWO99hSZVJjaElzKZP6F9vRRUp8IFzhxl/xO9MMs/eeKOZRKYS6JI0NDFyyql
-         Ky/l2xaBm46WOM2qopHRYteA8zsCqrVC2sJVs2Dm6OHh5YYyeeHuSplEx3jYJVbiDYSc
-         MC6xlfXmxaMm8CbEm5189HWdraJZWoOVJt/PguP79jrugg+xP7f2ZqugGvwY9BaCRb3T
-         8W2rkuGCJx+p+bmZZEx+hobOir/+f2yQLGIhGKYqE3RIshK3z2b5O/6goMnnRjm4ED5z
-         KxyA==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=KsaMtnJXEcs28XaPd87Bzy6KmDzAYKU9egI48v8GEO0=;
+        b=V8JNgkbfW32JKqKZTqiukqLqRze5kwf34jyxMf8fwma8wxzE8jx+m511ZHLQIxJrhL
+         6zEdIpLgnXxhkPG8Egg3R8aPGfteME7dKhdD8afhCZvosIkqLLi7cRKX2EN1OXxj7Ea7
+         ewIalA+eTitpYEAPVSuKD+TYDadNnbN7Y77nFOyuJi75o9hMAPlfGolUS5QTO+uaWD9w
+         bn07JSwciOJx10doWy+zzUnMydkacvOnyuvEbYWayng+VgF5F8uYq9XXEZRL3pPgnm07
+         wdwH4TeBZGHsN3voXTkWWwwJK+bQug9zCee14a5NlenOzmsu458Kbr/5WjfyCxpmIoJq
+         yMyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R9ObJ8QwqXruga0MOShtora2MWAN1lSnLSZ4b8PI1Yo=;
-        b=NfCzfpXnNKkP3HoH++UFIXwaVdm614D//jyVdC69L0yNLG70f936wg+ZgcOWfkHzNk
-         mKWWCVcWnH73Y903/PoSe9S8WkoXZKuId/uPCptVg9xiOEGHKuSZ0uWBmaCWP7WTLYE1
-         Zn3S2V6bX5yf2S6UNJebrLINuagIIDzzxCQXbZaZTtoqEut0Z3eZolH1dj5l9ms6QIbl
-         jYa36MYwNBlPrJ/54Q8Rpfu3VSde2flAVE6GrAljT79VBV0tS3EqAMRpbZQ8Jn63G6wh
-         XylA71vVS2meI9lQyU6WlrGJCkjNlEiRUfzvkA/PcKZq8u2UIDth9p63zlrxV86JJVFH
-         G2vw==
-X-Gm-Message-State: AOAM531XQK0pPjdFXy2oiuwEnzP0mQlx5VmQrYLGw+WNaW2+6zu+jHgj
-        BuatfwLMOUf93lun9si2YrAgjMQwlriSeDHwU3cP+Egf
-X-Google-Smtp-Source: ABdhPJy5Kan1mEuSgaqltLgTsnCE0XU+Rfacrryiez6e5ARMSvHFCFpdvKqo4/m3rHWHmIn5/CTVwFCu3cUz8nSsm2Q=
-X-Received: by 2002:a9d:64d3:: with SMTP id n19mr11768276otl.189.1590176475252;
- Fri, 22 May 2020 12:41:15 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=KsaMtnJXEcs28XaPd87Bzy6KmDzAYKU9egI48v8GEO0=;
+        b=CjF2fpcV+itpLVmHRsBvZ037BVRXofWeTsIiBmOAMmQ5Z1YmxnQOAUmN9bd2a1mtJ7
+         T+otGCRvO/e4fheRHAqa+rOtkQFH2KIJ8gduxLfTCmat/kh3rX9pZizA5ftA9BSrlb6V
+         FsN/njPH4KFU8BkOTZR8lDnz97J8unNMfwQDcHpa4YYsssgBX3GV+pX6lRqsW5kKPYoy
+         WomuDWJyFRXAoqv7Wqx98GVlxFmNqoiWOJgu2kQZwu/NxYvqAjua1qQeleOHGvzmRbSq
+         glfLQi0CsOKm3lkX8JLHRmz0Sf/mWnmdQu/5sTP3tPu1kaT651CM6DdNr8iLlxp7PLpo
+         Hdyg==
+X-Gm-Message-State: AOAM532ZWyCbmeDn+AHZ75okL/m1ke80jZUVMxXXRA8l6Alha3lsh+t6
+        rG7wcr9XUiy4G3OzoV2QnoTGPA==
+X-Google-Smtp-Source: ABdhPJx/+csjW0xI1CcTJAhJBpJ3cg4zcde+gHfTeVDpSLtpEo8gKR3IPBKMJ5NSwsjjEkVa5NMlIA==
+X-Received: by 2002:a0c:a692:: with SMTP id t18mr5307746qva.56.1590176660559;
+        Fri, 22 May 2020 12:44:20 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id a24sm8408782qto.10.2020.05.22.12.44.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 22 May 2020 12:44:20 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jcDac-00050x-Iz; Fri, 22 May 2020 16:44:18 -0300
+Date:   Fri, 22 May 2020 16:44:18 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Fred Oh <fred.oh@linux.intel.com>
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+Message-ID: <20200522194418.GM17583@ziepe.ca>
+References: <20200520125437.GH31189@ziepe.ca>
+ <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
+ <20200521233437.GF17583@ziepe.ca>
+ <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+ <20200522145542.GI17583@ziepe.ca>
+ <6e129db7-2a76-bc67-0e56-2abb4d9761a3@linux.intel.com>
+ <20200522171055.GK17583@ziepe.ca>
+ <01efd24a-edb6-3d0c-d7fa-a602ecd381d1@linux.intel.com>
+ <20200522184035.GL17583@ziepe.ca>
+ <b680a7f2-5dc1-00d6-dcff-b7c71d09b535@linux.intel.com>
 MIME-Version: 1.0
-References: <20200515114014.3135-1-vladbu@mellanox.com> <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
- <vbf1rndz76r.fsf@mellanox.com>
-In-Reply-To: <vbf1rndz76r.fsf@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 22 May 2020 12:41:04 -0700
-Message-ID: <CAM_iQpVB64www8pArKpUhKKSkNapZU1p0n7Tgg3E8SR0PCgKfQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b680a7f2-5dc1-00d6-dcff-b7c71d09b535@linux.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 21, 2020 at 7:36 AM Vlad Buslov <vladbu@mellanox.com> wrote:
->
-> Hi Edward, Cong,
->
-> On Mon 18 May 2020 at 18:37, Edward Cree <ecree@solarflare.com> wrote:
-> > On 15/05/2020 12:40, Vlad Buslov wrote:
-> >> In order to
-> >> significantly improve filter dump rate this patch sets implement new
-> >> mode of TC filter dump operation named "terse dump" mode. In this mode
-> >> only parameters necessary to identify the filter (handle, action cookie,
-> >> etc.) and data that can change during filter lifecycle (filter flags,
-> >> action stats, etc.) are preserved in dump output while everything else
-> >> is omitted.
-> > I realise I'm a bit late, but isn't this the kind of policy that shouldn't
-> >  be hard-coded in the kernel?  I.e. if next year it turns out that some
-> >  user needs one parameter that's been omitted here, but not the whole dump,
-> >  are they going to want to add another mode to the uapi?
-> > Should this not instead have been done as a set of flags to specify which
-> >  pieces of information the caller wanted in the dump, rather than a mode
-> >  flag selecting a pre-defined set?
-> >
-> > -ed
->
-> I've been thinking some more about this. While the idea of making
-> fine-grained dump where user controls exact contents field-by-field is
-> unfeasible due to performance considerations, we can try to come up with
-> something more coarse-grained but not fully hardcoded (like current terse
-> dump implementation). Something like having a set of flags that allows
-> to skip output of groups of attributes.
->
-> For example, CLS_SKIP_KEY flag would skip the whole expensive classifier
-> key dump without having to go through all 200 lines of conditionals in
-> fl_dump_key() while ACT_SKIP_OPTIONS would skip outputting TCA_OPTIONS
-> compound attribute (and expensive call to tc_action_ops->dump()). This
-> approach would also leave the door open for further more fine-grained
-> flags, if the need arises. For example, new flags
-> CLS_SKIP_KEY_{L2,L3,L4} can be introduced to more precisely control
-> which parts of cls key should be skipped.
->
-> The main drawback of such approach is that it is impossible to come up
-> with universal set of flags that would be applicable for all
-> classifiers. Key (in some form) is applicable to most classifiers, but
-> it still doesn't make sense for matchall or bpf. Some classifiers have
-> 'flags', some don't. Hardware-offloaded classifiers have in_hw_count.
-> Considering this, initial set of flags will be somewhat flower-centric.
->
-> What do you think?
+On Fri, May 22, 2020 at 01:48:00PM -0500, Pierre-Louis Bossart wrote:
+> 
+> 
+> On 5/22/20 1:40 PM, Jason Gunthorpe wrote:
+> > On Fri, May 22, 2020 at 01:35:54PM -0500, Pierre-Louis Bossart wrote:
+> > > 
+> > > 
+> > > On 5/22/20 12:10 PM, Jason Gunthorpe wrote:
+> > > > On Fri, May 22, 2020 at 10:33:20AM -0500, Pierre-Louis Bossart wrote:
+> > > > 
+> > > > > > Maybe not great, but at least it is consistent with all the lifetime
+> > > > > > models and the operation of the driver core.
+> > > > > 
+> > > > > I agree your comments are valid ones, I just don't have a solution to be
+> > > > > fully compliant with these models and report failures of the driver probe
+> > > > > for a child device due to configuration issues (bad audio topology, etc).
+> > > > 
+> > > > 
+> > > > > My understanding is that errors on probe are explicitly not handled in the
+> > > > > driver core, see e.g. comments such as:
+> > > > 
+> > > > Yes, but that doesn't really apply here...
+> > > > > /*
+> > > > >    * Ignore errors returned by ->probe so that the next driver can try
+> > > > >    * its luck.
+> > > > >    */
+> > > > > https://elixir.bootlin.com/linux/latest/source/drivers/base/dd.c#L636
+> > > > > 
+> > > > > If somehow we could request the error to be reported then probably we
+> > > > > wouldn't need this complete/wait_for_completion mechanism as a custom
+> > > > > notification.
+> > > > 
+> > > > That is the same issue as the completion, a driver should not be
+> > > > making assumptions about ordering like this. For instance what if the
+> > > > current driver is in the initrd and the 2nd driver is in a module in
+> > > > the filesystem? It will not probe until the system boots more
+> > > > completely.
+> > > > 
+> > > > This is all stuff that is supposed to work properly.
+> > > > 
+> > > > > Not at the moment, no. there are no failures reported in dmesg, and
+> > > > > the user does not see any card created. This is a silent error.
+> > > > 
+> > > > Creating a partial non-function card until all the parts are loaded
+> > > > seems like the right way to surface an error like this.
+> > > > 
+> > > > Or don't break the driver up in this manner if all the parts are really
+> > > > required just for it to function - quite strange place to get into.
+> > > 
+> > > This is not about having all the parts available - that's handled already
+> > > with deferred probe - but an error happening during card registration. In
+> > > that case the ALSA/ASoC core throws an error and we cannot report it back to
+> > > the parent.
+> > 
+> > The whole point of the virtual bus stuff was to split up a
+> > multi-functional PCI device into parts. If all the parts are required
+> > to be working to make the device work, why are you using virtual bus
+> > here?
+> 
+> It's the other way around: how does the core know that one part isn't
+> functional.
 
-This looks like a reverse filtering to me, so essentially the same.
-Please give me some time to think about this, it is definitely not
-easy.
+> There is nothing in what we said that requires that all parts are fully
+> functional. All we stated is that when *one* part isn't fully functional we
+> know about it.
 
-The only thing I worry is that once you add terse dump, we cannot
-simply remove it any more. (Otherwise I wouldn't even want to push
-you on this.)
+Maybe if you can present some diagram or something, because I really
+can't understand why asoc is trying to do with virtual bus here.
 
-Thanks.
+> > > > What happens if the user unplugs this sub driver once things start
+> > > > running?
+> > > 
+> > > refcounting in the ALSA core prevents that from happening usually.
+> > 
+> > So user triggered unplug of driver that attaches here just hangs
+> > forever? That isn't OK either.
+> 
+> No, you'd get a 'module in use' error if I am not mistaken.
+
+You can disconnect drivers without unloading modules. It is a common
+misconception. You should never, ever, rely on module ref counting for
+anything more than keeping function pointers in memory.
+
+Jason
