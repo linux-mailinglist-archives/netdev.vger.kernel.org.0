@@ -2,173 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AEF11DE1B5
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 10:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868601DE1B9
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 10:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729295AbgEVIUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 04:20:33 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:43608 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729183AbgEVIUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 04:20:24 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04M8F584032636;
-        Fri, 22 May 2020 01:20:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=wMAwqdaPWVYlBmjB5j5JXwgnpFewiXhOOVZKaMCwmHE=;
- b=h6HDrgSUwzXNa+0QVfGo/wU7X+9P+KHJskJynp0GbacvsKaYqSdoVYuwQeQeGpxgx0T1
- MbdJE1nstDai290FGQN9BbMRT+WEOKGveMOB/kDvwsdfgWh/VYy/sN2WWAHF6HCbVqyb
- gwflB2xieBRBjH9ooII3r534sNXhf24ZF7mj6I1L7cHNhjmLL5GG/XkZC6Y/TgMhIfVi
- nuplOpuX0yh4QzpelMFvhGKuIS/XocO9ZnhRw4Yhn3Q3pumrM9NxQGrYcHuZYQ3gBbDF
- 7jbvZyvDhEzi8iHlikNOxvXuZ+rE6e8n88QrnQmoC6Sv3tmp9r1I/r5KK3KqcpQoBxp/ Eg== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 312dhr29g7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 22 May 2020 01:20:22 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 May
- 2020 01:20:21 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 May
- 2020 01:20:20 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 May 2020 01:20:20 -0700
-Received: from NN-LT0019.marvell.com (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id BAB583F704A;
-        Fri, 22 May 2020 01:20:18 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH v2 net-next 12/12] net: atlantic: proper rss_ctrl1 (54c0) initialization
-Date:   Fri, 22 May 2020 11:19:48 +0300
-Message-ID: <20200522081948.167-13-irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200522081948.167-1-irusskikh@marvell.com>
-References: <20200522081948.167-1-irusskikh@marvell.com>
+        id S1728976AbgEVIWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 04:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728208AbgEVIWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 04:22:07 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0901FC05BD43
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 01:22:07 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id x20so11963045ejb.11
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 01:22:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J4qdoEycBTAs3pNrgkm7pmsLiPziUhW20aeo7uy5vMA=;
+        b=yv++BEwAWrnYbdU5JWEUDy5WVhGMgAL8IQpMh/vXOcWJFOIY9Mgv38rvyL0rzLpwAW
+         5sMPaPkR/iMyGAfS11rwmPNv3dovfaCBcuNWcTANhhtcKQ0tVjfEr1SRdQ8AV68A+dyw
+         sso9j6l33DUj19rs7+61byosUMGP7TpLQ2l94=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J4qdoEycBTAs3pNrgkm7pmsLiPziUhW20aeo7uy5vMA=;
+        b=j4FBeL1+WvLauVeXpRUqQPeKuvmtIzTQECODYvKxHtqeJApigYrmW/5xnXSX2Fkgil
+         mFql6hLfUhpG6ofqNMsbvUxtYWqYppFLJpVaioJRmv46uhcnpFtm2MALh+xJlXuMy3Gt
+         NRSNqepeA6PZIxyWCFNSBzphcXnqJPD1tLlKFKW65VJn/eeIoyxIbZYlyeY+6PjsprAL
+         Z/rjyZa6FBRwg7FNKdAcLIDCZvnzJYFaWDXEotqykhy2LzuI1QB2fBZaV/g0Q2FTcZtC
+         2nqbsqw5fPUbqQDIUt+l8AJgd6kY7yxn6LesaQuHTEyE0azctjD2Ht6xEJAp4nfZfGl/
+         y3ng==
+X-Gm-Message-State: AOAM530WrQIM1LvIHkCscsRqEigSvoolcvrPvV8lGbWe75tTbOD8HhyG
+        sGj/vkM2YFbBAKtt/xdF0DADCmu7aH0=
+X-Google-Smtp-Source: ABdhPJzX5zN1xYcQiqpHUET2Zd5PP154NF4kULTwE2I9DY67lpXkaQMTTL6JrMukkzg+4aeLC9CxrA==
+X-Received: by 2002:a17:907:392:: with SMTP id ss18mr7452112ejb.156.1590135725621;
+        Fri, 22 May 2020 01:22:05 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id 93sm6859222edy.49.2020.05.22.01.22.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 May 2020 01:22:05 -0700 (PDT)
+Date:   Fri, 22 May 2020 10:22:02 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf] flow_dissector: Drop BPF flow dissector prog ref on
+ netns cleanup
+Message-ID: <20200522102202.4cb9232b@toad>
+In-Reply-To: <CAADnVQKztsp-fF5Mbi7DUGrM-5SfH24xntaF0Qaewxr9ax7ZRw@mail.gmail.com>
+References: <20200520172258.551075-1-jakub@cloudflare.com>
+        <CAEf4BzbpMp9D0TsC5dhRJ-AeKqsXJ5EyEcCx2-kkZg+ZBnHYqg@mail.gmail.com>
+        <CAADnVQKztsp-fF5Mbi7DUGrM-5SfH24xntaF0Qaewxr9ax7ZRw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-22_04:2020-05-21,2020-05-22 signatures=0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Starovoytov <mstarovoitov@marvell.com>
+On Thu, 21 May 2020 17:53:14 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-This patch fixes an inconsistency between code and spec, which
-was found while working on the QoS implementation.
+> On Thu, May 21, 2020 at 12:09 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, May 20, 2020 at 10:24 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:  
+> > >
+> > > When attaching a flow dissector program to a network namespace with
+> > > bpf(BPF_PROG_ATTACH, ...) we grab a reference to bpf_prog.
+> > >
+> > > If netns gets destroyed while a flow dissector is still attached, and there
+> > > are no other references to the prog, we leak the reference and the program
+> > > remains loaded.
+> > >
+> > > Leak can be reproduced by running flow dissector tests from selftests/bpf:
+> > >
+> > >   # bpftool prog list
+> > >   # ./test_flow_dissector.sh
+> > >   ...
+> > >   selftests: test_flow_dissector [PASS]
+> > >   # bpftool prog list
+> > >   4: flow_dissector  name _dissect  tag e314084d332a5338  gpl
+> > >           loaded_at 2020-05-20T18:50:53+0200  uid 0
+> > >           xlated 552B  jited 355B  memlock 4096B  map_ids 3,4
+> > >           btf_id 4
+> > >   #
+> > >
+> > > Fix it by detaching the flow dissector program when netns is going away.
+> > >
+> > > Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+> > > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> > > ---
+> > >
+> > > Discovered while working on bpf_link support for netns-attached progs.
+> > > Looks like bpf tree material so pushing it out separately.
+> > >
+> > > -jkbs
+> > >  
+> >
+> > [...]
+> >  
+> > >  /**
+> > >   * __skb_flow_get_ports - extract the upper layer ports and return them
+> > >   * @skb: sk_buff to extract the ports from
+> > > @@ -1827,6 +1848,8 @@ EXPORT_SYMBOL(flow_keys_basic_dissector);
+> > >
+> > >  static int __init init_default_flow_dissectors(void)
+> > >  {
+> > > +       int err;
+> > > +
+> > >         skb_flow_dissector_init(&flow_keys_dissector,
+> > >                                 flow_keys_dissector_keys,
+> > >                                 ARRAY_SIZE(flow_keys_dissector_keys));
+> > > @@ -1836,7 +1859,11 @@ static int __init init_default_flow_dissectors(void)
+> > >         skb_flow_dissector_init(&flow_keys_basic_dissector,
+> > >                                 flow_keys_basic_dissector_keys,
+> > >                                 ARRAY_SIZE(flow_keys_basic_dissector_keys));
+> > > -       return 0;
+> > > +
+> > > +       err = register_pernet_subsys(&flow_dissector_pernet_ops);
+> > > +
+> > > +       WARN_ON(err);  
+> >
+> > syzbot simulates memory allocation failures, which can bubble up here,
+> > so this WARN_ON will probably trigger. I wonder if this could be
+> > rewritten so that init fails, when registration fails? What are the
+> > consequences?  
+> 
+> good catch. that warn is pointless.
+> I removed it and force pushed the bpf tree.
 
-When 8TCs are used, 2 is the maximum supported number of index bits.
-In a 4TC mode, we do support 3, but we shouldn't really use the bytes,
-which are intended for the 8TC mode.
-
-Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c         | 16 ++++++++++++++--
- .../aquantia/atlantic/hw_atl/hw_atl_b0.h         |  2 ++
- .../atlantic/hw_atl/hw_atl_b0_internal.h         |  4 ++++
- .../ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c |  4 +---
- .../aquantia/atlantic/hw_atl2/hw_atl2_internal.h |  3 ---
- 5 files changed, 21 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 320f3669305d..14d79f70cad7 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -447,6 +447,19 @@ static int hw_atl_b0_hw_init_tx_path(struct aq_hw_s *self)
- 	return aq_hw_err_from_flags(self);
- }
- 
-+void hw_atl_b0_hw_init_rx_rss_ctrl1(struct aq_hw_s *self)
-+{
-+	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
-+	u32 rss_ctrl1 = HW_ATL_RSS_DISABLED;
-+
-+	if (cfg->is_rss)
-+		rss_ctrl1 = (cfg->tc_mode == AQ_TC_MODE_8TCS) ?
-+			    HW_ATL_RSS_ENABLED_8TCS_2INDEX_BITS :
-+			    HW_ATL_RSS_ENABLED_4TCS_3INDEX_BITS;
-+
-+	hw_atl_reg_rx_flr_rss_control1set(self, rss_ctrl1);
-+}
-+
- static int hw_atl_b0_hw_init_rx_path(struct aq_hw_s *self)
- {
- 	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
-@@ -459,8 +472,7 @@ static int hw_atl_b0_hw_init_rx_path(struct aq_hw_s *self)
- 	hw_atl_rpb_rx_flow_ctl_mode_set(self, 1U);
- 
- 	/* RSS Ring selection */
--	hw_atl_reg_rx_flr_rss_control1set(self, cfg->is_rss ?
--					0xB3333333U : 0x00000000U);
-+	hw_atl_b0_hw_init_rx_rss_ctrl1(self);
- 
- 	/* Multicast filters */
- 	for (i = HW_ATL_B0_MAC_MAX; i--;) {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-index b855459272ca..30f468f2084d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-@@ -58,6 +58,8 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- int hw_atl_b0_hw_ring_tx_stop(struct aq_hw_s *self, struct aq_ring_s *ring);
- int hw_atl_b0_hw_ring_rx_stop(struct aq_hw_s *self, struct aq_ring_s *ring);
- 
-+void hw_atl_b0_hw_init_rx_rss_ctrl1(struct aq_hw_s *self);
-+
- int hw_atl_b0_hw_mac_addr_set(struct aq_hw_s *self, u8 *mac_addr);
- 
- int hw_atl_b0_hw_start(struct aq_hw_s *self);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
-index 4fba4e0928c7..cf460d61a45e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
-@@ -151,6 +151,10 @@
- #define HW_ATL_B0_MAX_RXD 8184U
- #define HW_ATL_B0_MAX_TXD 8184U
- 
-+#define HW_ATL_RSS_DISABLED 0x00000000U
-+#define HW_ATL_RSS_ENABLED_8TCS_2INDEX_BITS 0xA2222222U
-+#define HW_ATL_RSS_ENABLED_4TCS_3INDEX_BITS 0x80003333U
-+
- /* HW layer capabilities */
- 
- #endif /* HW_ATL_B0_INTERNAL_H */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-index f941773b3e20..8df9d4ef36f0 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-@@ -475,9 +475,7 @@ static int hw_atl2_hw_init_rx_path(struct aq_hw_s *self)
- 	hw_atl2_rpf_rss_hash_type_set(self, HW_ATL2_RPF_RSS_HASH_TYPE_ALL);
- 
- 	/* RSS Ring selection */
--	hw_atl_reg_rx_flr_rss_control1set(self, cfg->is_rss ?
--						HW_ATL_RSS_ENABLED_3INDEX_BITS :
--						HW_ATL_RSS_DISABLED);
-+	hw_atl_b0_hw_init_rx_rss_ctrl1(self);
- 
- 	/* Multicast filters */
- 	for (i = HW_ATL2_MAC_MAX; i--;) {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
-index 9ac1979a4867..5a89bb8722f9 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
-@@ -117,9 +117,6 @@ enum HW_ATL2_RPF_RSS_HASH_TYPE {
- 					HW_ATL2_RPF_RSS_HASH_TYPE_IPV6_EX_UDP,
- };
- 
--#define HW_ATL_RSS_DISABLED 0x00000000U
--#define HW_ATL_RSS_ENABLED_3INDEX_BITS 0xB3333333U
--
- #define HW_ATL_MCAST_FLT_ANY_TO_HOST 0x00010FFFU
- 
- struct hw_atl2_priv {
--- 
-2.25.1
-
+Thanks for patching it up. I'll keep it in mind next time.
