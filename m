@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 613A31DEE85
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 19:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC6631DEE88
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 19:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730835AbgEVRpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 13:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730695AbgEVRpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 13:45:54 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F97CC061A0E
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 10:45:54 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id o24so10030201oic.0
-        for <netdev@vger.kernel.org>; Fri, 22 May 2020 10:45:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XJAmrshjLSaIujxExK2+2zZTDqCFADfyUcSr6Vgd2Qk=;
-        b=GeknEPEXYqlGTDXcIAjNGiuvDIvzu+usCvGLPcQSg1++McONZxCRJ1bi4TfmYUFN3k
-         jbLgz959bDVqyp6DDpC1nljg72/f3CedkZUyd1tyOjzLC9G+9mzVuP5wlBY8r7VhwxzL
-         yTR3AVMLx/dOKPnN1lcrCHvvvddvmx8EUy5KrF16DyzZ9o1ykXvZ7cUPeCTNoMsXfeLJ
-         Fmj/BvcH9qstMwh1V+CTzi/PYPqNVQT1uviPNKYzx/YSAc4njkA6g0Rbe8ls26MWCiga
-         O0BbrhXX4Kjtm+uwb4lI4sG3NFS9X/zUEolhALow9XHZZM7T4E30Vf7gglOPhvldsZRp
-         Wp4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XJAmrshjLSaIujxExK2+2zZTDqCFADfyUcSr6Vgd2Qk=;
-        b=PbgBe0OAtbnWhIjWq9iqb5qZ5qXEIsV4fRfnHgXz1hAEX04f+S5pssEQvqHkNF+ulC
-         j24vTs+e9LqMnHDPvLf/yzmv5GDeWRJJi4/v4gLPaaf6U58Fc8vN3ldxDALnGWPSYBfB
-         VB/BpU3gf12UCv9HcLtaFKfbFGkb5heZzv6PAKVdFJEm9qdBqo6xr4TjzyjaiISzGL4a
-         jUq02lN6cGu0KLZunUe1tQkC9Lc6CpJWWHN/iKHaxJKj06Ag83mIMosXUYd6O+r0UN5W
-         N7P94ltY75P0sFE90G7Ht7sQwZJrBT7On8l55x/Z1pgaJxQJlHNXi9M6aTWk37v4zvSr
-         ECHw==
-X-Gm-Message-State: AOAM532KzQPIdn2cwf67dPrc4Yu6p+g/b0LrG6FKwaMpY/CqqL8dh3uI
-        2Qya+6zwQRfH0pcDt9lXNAg=
-X-Google-Smtp-Source: ABdhPJyhsB1t5VXux40ggK2KsbEQouTwWmwurvNDE+D7qygeNlLEZPKH0iXhC/j4KR0S97/G0Q3TZQ==
-X-Received: by 2002:aca:1a0c:: with SMTP id a12mr3397064oia.96.1590169553669;
-        Fri, 22 May 2020 10:45:53 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5123:b8d3:32f1:177b? ([2601:282:803:7700:5123:b8d3:32f1:177b])
-        by smtp.googlemail.com with ESMTPSA id j6sm1076285ots.61.2020.05.22.10.45.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 May 2020 10:45:53 -0700 (PDT)
-Subject: Re: [PATCH RFC bpf-next 3/4] xdp: Add xdp_txq_info to xdp_buff
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
-References: <20200522010526.14649-1-dsahern@kernel.org>
- <20200522010526.14649-4-dsahern@kernel.org> <87ftbsj6rz.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <187c8124-8886-5112-a5a9-02985eec3a39@gmail.com>
-Date:   Fri, 22 May 2020 11:45:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1730845AbgEVRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 13:46:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54522 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730680AbgEVRqg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 13:46:36 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5F5102072C;
+        Fri, 22 May 2020 17:46:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590169595;
+        bh=BOOvjNckRgHC0Oq+czm3LBoQcH5VGWQPePeE/O6antA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qStQg8jfE2jdgS08Ngx5I3uGiTDxxc+umUZLdKWmBH5o77JN57UE3Na77NA9tfvqb
+         PNs/FxqBQsrFwXPIZyjINv/PBu5WHQ97viDk9twniUrJ3vQNKaso/deElrN66SUcv9
+         VfdCP2WfgCTiIxMbGMb+x01Bqo9oQAZZ5CBgqW2Y=
+Date:   Fri, 22 May 2020 10:46:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        petrm@mellanox.com, amitc@mellanox.com
+Subject: Re: devlink interface for asynchronous event/messages from
+ firmware?
+Message-ID: <20200522104633.41788851@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200522110028.GC2478@nanopsycho>
+References: <fea3e7bc-db75-ce15-1330-d80483267ee2@intel.com>
+        <20200520171655.08412ba5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <b0435043-269b-9694-b43e-f6740d1862c9@intel.com>
+        <20200521205213.GA1093714@splinter>
+        <239b02dc-7a02-dcc3-a67c-85947f92f374@intel.com>
+        <20200521145113.21f772bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200522110028.GC2478@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <87ftbsj6rz.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/22/20 10:04 AM, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@kernel.org> writes:
+On Fri, 22 May 2020 13:00:28 +0200 Jiri Pirko wrote:
+> Thu, May 21, 2020 at 11:51:13PM CEST, kuba@kernel.org wrote:
+> >On Thu, 21 May 2020 13:59:32 -0700 Jacob Keller wrote:  
+> >> >> So the ice firmware can optionally send diagnostic debug messages via
+> >> >> its control queue. The current solutions we've used internally
+> >> >> essentially hex-dump the binary contents to the kernel log, and then
+> >> >> these get scraped and converted into a useful format for human consumption.
+> >> >>
+> >> >> I'm not 100% of the format, but I know it's based on a decoding file
+> >> >> that is specific to a given firmware image, and thus attempting to tie
+> >> >> this into the driver is problematic.    
+> >> > 
+> >> > You explained how it works, but not why it's needed :)    
+> >> 
+> >> Well, the reason we want it is to be able to read the debug/diagnostics
+> >> data in order to debug issues that might be related to firmware or
+> >> software mis-use of firmware interfaces.
+> >> 
+> >> By having it be a separate interface rather than trying to scrape from
+> >> the kernel message buffer, it becomes something we can have as a
+> >> possibility for debugging in the field.  
+> >
+> >For pure debug/tracing perhaps trace_devlink_hwerr() is the right fit?  
 > 
->> Add xdp_txq_info as the Tx counterpart to xdp_rxq_info. At the
->> moment only the device is added. Other fields (queue_index)
->> can be added as use cases arise.
->>
->> From a UAPI perspective, add egress_ifindex to xdp context.
->>
->> Update the verifier to only allow accesses to egress_ifindex by
->> XDP programs with BPF_XDP_DEVMAP expected attach type.
->>
->> Signed-off-by: David Ahern <dsahern@kernel.org>
-> 
-> Nit: seems a bit odd to order the patches like this, I'd have expected
-> this patch to go before #2.
-> 
+> Well, trace_devlink_hwerr() is for simple errors that are mapped 1:1
+> with some string.
 
-This patch depends on patch 2, so it needs to follow it.
+Ah, damn, I missed it takes char :/
 
+> From what I got, Jacob needs to pass some data structures to the
+> user. Something more similar to health reporter dumps and their fmsg.
+
+For health reporters AFAIU right now every health reporter event
+indicates something bad has happened, so it should be logged and
+potentially reported to the vendor.
+
+My understanding is that Jake needs more of a tracing infra, for
+debug messages. Is that true? Do you need an on/off switch for 
+those as well?
