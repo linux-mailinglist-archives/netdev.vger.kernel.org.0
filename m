@@ -2,156 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF361DEC92
-	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 534C21DEC99
+	for <lists+netdev@lfdr.de>; Fri, 22 May 2020 17:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730447AbgEVP4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 11:56:18 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:55025 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730195AbgEVP4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:56:17 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 36BA940008;
-        Fri, 22 May 2020 15:56:15 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net: phy: mscc: fix initialization of the MACsec protocol mode
-Date:   Fri, 22 May 2020 17:55:45 +0200
-Message-Id: <20200522155545.881263-1-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.26.2
+        id S1730542AbgEVP6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 11:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730197AbgEVP57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 11:57:59 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B92C061A0E
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:57:59 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id e11so4420639pfn.3
+        for <netdev@vger.kernel.org>; Fri, 22 May 2020 08:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SZFWHJ0Ak7OTSGza9XGTv0JJSA8sEZkbcXPiym7mWSA=;
+        b=h9dYhglb7vlR84a2po9G6eFhv/kIw/eTHv5fiy8m7nlYXn9Gny87JthCs/yqvBV0E7
+         mdzSWoYZPKBU/PRK1vRTPiKSeihs9i4UY7LAeuaBsbFpsFg7xti+Y9hhRaR490frlcz1
+         4X4lOePxB/saM/QA6/xWd+f4LlTnNHc/B1SLUzkRAXnTikhHB6F8XzoYODRi7LBjIWQH
+         iBMEgXmSfqY7xhyDbUHsdogXF0IFD6fK+LCn9xVKPy3JynefiyqWa0tPXE0J8dPBlEmt
+         T5ePmaVjqvlPNQbjldreLQgCGTxDWKp0W2p/6zzQ6c/dMMwvFQ2+SzighWe21JfC4xdP
+         xlxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SZFWHJ0Ak7OTSGza9XGTv0JJSA8sEZkbcXPiym7mWSA=;
+        b=FUccU/1ynePSU8oicdkqxHd8C12kpzS+ub66eVJYdHuvh3XvRHcOIXyvi1EDOlcMD1
+         7FcoQ1ef8IksMFgXkFdJa0cyivzQrajSOmGUSqtm3ik7NrNmJtJ/r13ljbGvfWUMgokb
+         fI5TmXXK29+IpBOMJw3AUz8wru4fbD2Nged4jYXz16kjcz1Q+iTYatJdCrOfelbUcsOh
+         Z9ffiiFEOQqNvzFFdjv4S+X9rGE9I3ZhKgBxqAaP5fmSWeArEQfOeaLxoGgEJXFMD6fD
+         r8qHPrUMkWNpcwh64juZFUxOhXzcUM/S4K69mzORTXob8CTtbdddqnV3sOrxJ26D/Mlt
+         BO8A==
+X-Gm-Message-State: AOAM5337kaHWYZIxhwTk03AyLKaxWqb9nspw7GniZbM88xjovQxM74nd
+        4+f3YuFtEQ4YUP4AjMd4jCQ=
+X-Google-Smtp-Source: ABdhPJzlL0VUJyIbRDICBHOJQGEYYeOhykvYmdnGYGh02GzVWdP1Q40mzCm2Q5QP1Q6urwOsWkfWKA==
+X-Received: by 2002:a63:e60b:: with SMTP id g11mr15060356pgh.120.1590163079170;
+        Fri, 22 May 2020 08:57:59 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id u69sm7493178pjb.40.2020.05.22.08.57.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 May 2020 08:57:58 -0700 (PDT)
+Subject: Re: [PATCH net] tipc: block BH before using dst_cache
+To:     Jon Maloy <jmaloy@redhat.com>, Xin Long <lucien.xin@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        tipc-discussion@lists.sourceforge.net
+References: <20200521182958.163436-1-edumazet@google.com>
+ <CADvbK_cdSYZvTj6jFCXHEU0VhD8K7aQ3ky_fvUJ49N-5+ykJkg@mail.gmail.com>
+ <CANn89i+x=xbXoKekC6bF_ZMBRMY_mkmuVbNSW3LcRncsiZGd_g@mail.gmail.com>
+ <CANn89iJVSb3BWO=VGRX0KkvrxZ7=ZYaK6HwsexK8y+4NJqXopA@mail.gmail.com>
+ <CADvbK_eJx=PyH8MDCWQJMRW-p+nv9QtuQGG2TtYX=9n9oY7rJg@mail.gmail.com>
+ <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <217375c0-d49d-63b1-0628-9aaf7e4e42d0@gmail.com>
+Date:   Fri, 22 May 2020 08:57:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <76d02a44-91dd-ded6-c3dc-f86685ae1436@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the very end of the MACsec block initialization in the MSCC PHY
-driver, the MACsec "protocol mode" is set. This setting should be set
-based on the PHY id within the package, as the bank used to access the
-register used depends on this. This was not done correctly, and only the
-first bank was used leading to the two upper PHYs being unstable when
-using the VSC8584. This patch fixes it.
 
-Fixes: 1bbe0ecc2a1a ("net: phy: mscc: macsec initialization")
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
 
-Since v1:
-  - Resent to net.
+On 5/22/20 8:01 AM, Jon Maloy wrote:
+> 
+> 
+> On 5/22/20 2:18 AM, Xin Long wrote:
+>> On Fri, May 22, 2020 at 1:55 PM Eric Dumazet <edumazet@google.com> wrote:
+>>> Resend to the list in non HTML form
+>>>
+>>>
+>>> On Thu, May 21, 2020 at 10:53 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>
+>>>>
+>>>> On Thu, May 21, 2020 at 10:50 PM Xin Long <lucien.xin@gmail.com> wrote:
+>>>>> On Fri, May 22, 2020 at 2:30 AM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>> dst_cache_get() documents it must be used with BH disabled.
+>>>>> Interesting, I thought under rcu_read_lock() is enough, which calls
+>>>>> preempt_disable().
+>>>>
+>>>> rcu_read_lock() does not disable BH, never.
+>>>>
+>>>> And rcu_read_lock() does not necessarily disable preemption.
+>> Then I need to think again if it's really worth using dst_cache here.
+>>
+>> Also add tipc-discussion and Jon to CC list.
+> The suggested solution will affect all bearers, not only UDP, so it is not a good.
+> Is there anything preventing us from disabling preemtion inside the scope of the rcu lock?
+> 
+> ///jon
+>
 
- drivers/net/phy/mscc/mscc.h        |  2 ++
- drivers/net/phy/mscc/mscc_mac.h    |  6 +++---
- drivers/net/phy/mscc/mscc_macsec.c | 16 ++++++++++------
- drivers/net/phy/mscc/mscc_macsec.h |  3 ++-
- drivers/net/phy/mscc/mscc_main.c   |  4 ++++
- 5 files changed, 21 insertions(+), 10 deletions(-)
+BH is disabled any way few nano seconds later, disabling it a bit earlier wont make any difference.
 
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index 030bf8b600df..414e3b31bb1f 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -354,6 +354,8 @@ struct vsc8531_private {
- 	u64 *stats;
- 	int nstats;
- 	bool pkg_init;
-+	/* PHY address within the package. */
-+	u8 addr;
- 	/* For multiple port PHYs; the MDIO address of the base PHY in the
- 	 * package.
- 	 */
-diff --git a/drivers/net/phy/mscc/mscc_mac.h b/drivers/net/phy/mscc/mscc_mac.h
-index fcb5ba5e5d03..59b6837c60b3 100644
---- a/drivers/net/phy/mscc/mscc_mac.h
-+++ b/drivers/net/phy/mscc/mscc_mac.h
-@@ -152,8 +152,8 @@
- #define MSCC_MAC_PAUSE_CFG_STATE_PAUSE_STATE			BIT(0)
- #define MSCC_MAC_PAUSE_CFG_STATE_MAC_TX_PAUSE_GEN		BIT(4)
- 
--#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL			0x2
--#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
--#define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
-+#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL			0x2
-+#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
-+#define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
- 
- #endif /* _MSCC_PHY_LINE_MAC_H_ */
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-index e99e2cd72a0c..b4d3dc4068e2 100644
---- a/drivers/net/phy/mscc/mscc_macsec.c
-+++ b/drivers/net/phy/mscc/mscc_macsec.c
-@@ -316,6 +316,8 @@ static void vsc8584_macsec_mac_init(struct phy_device *phydev,
- /* Must be called with mdio_lock taken */
- static int __vsc8584_macsec_init(struct phy_device *phydev)
- {
-+	struct vsc8531_private *priv = phydev->priv;
-+	enum macsec_bank proc_bank;
- 	u32 val;
- 
- 	vsc8584_macsec_block_init(phydev, MACSEC_INGR);
-@@ -351,12 +353,14 @@ static int __vsc8584_macsec_init(struct phy_device *phydev)
- 	val |= MSCC_FCBUF_ENA_CFG_TX_ENA | MSCC_FCBUF_ENA_CFG_RX_ENA;
- 	vsc8584_macsec_phy_write(phydev, FC_BUFFER, MSCC_FCBUF_ENA_CFG, val);
- 
--	val = vsc8584_macsec_phy_read(phydev, IP_1588,
--				      MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL);
--	val &= ~MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M;
--	val |= MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(4);
--	vsc8584_macsec_phy_write(phydev, IP_1588,
--				 MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL, val);
-+	proc_bank = (priv->addr < 2) ? PROC_0 : PROC_2;
-+
-+	val = vsc8584_macsec_phy_read(phydev, proc_bank,
-+				      MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL);
-+	val &= ~MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M;
-+	val |= MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(4);
-+	vsc8584_macsec_phy_write(phydev, proc_bank,
-+				 MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL, val);
- 
- 	return 0;
- }
-diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
-index d0783944d106..d751f2946b79 100644
---- a/drivers/net/phy/mscc/mscc_macsec.h
-+++ b/drivers/net/phy/mscc/mscc_macsec.h
-@@ -64,7 +64,8 @@ enum macsec_bank {
- 	FC_BUFFER   = 0x04,
- 	HOST_MAC    = 0x05,
- 	LINE_MAC    = 0x06,
--	IP_1588     = 0x0e,
-+	PROC_0      = 0x0e,
-+	PROC_2      = 0x0f,
- 	MACSEC_INGR = 0x38,
- 	MACSEC_EGR  = 0x3c,
- };
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index acddef79f4e8..c8aa6d905d8e 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1347,6 +1347,8 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	else
- 		vsc8531->base_addr = phydev->mdio.addr - addr;
- 
-+	vsc8531->addr = addr;
-+
- 	/* Some parts of the init sequence are identical for every PHY in the
- 	 * package. Some parts are modifying the GPIO register bank which is a
- 	 * set of registers that are affecting all PHYs, a few resetting the
-@@ -1771,6 +1773,8 @@ static int vsc8514_config_init(struct phy_device *phydev)
- 	else
- 		vsc8531->base_addr = phydev->mdio.addr - addr;
- 
-+	vsc8531->addr = addr;
-+
- 	/* Some parts of the init sequence are identical for every PHY in the
- 	 * package. Some parts are modifying the GPIO register bank which is a
- 	 * set of registers that are affecting all PHYs, a few resetting the
--- 
-2.26.2
+Also, if you intend to make dst_cache BH reentrant, you will have to make that for net-next, not net tree.
+
+Please carefully read include/net/dst_cache.h
+
+It is very clear about BH requirements.
+
 
