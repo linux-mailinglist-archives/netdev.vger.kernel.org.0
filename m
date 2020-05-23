@@ -2,170 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 143CB1DF712
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 14:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABCD1DF725
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 14:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387826AbgEWMEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 08:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387741AbgEWMEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 08:04:37 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0DDC061A0E;
-        Sat, 23 May 2020 05:04:36 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id l67so2385788ybl.4;
-        Sat, 23 May 2020 05:04:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DhGzYuZdmCs4q+4fA867qJiX3xyRHjIKtnyYfMLs02I=;
-        b=ichpuJ0gIuSQ2VCmkBvKBIr/6XI99zmSJr9dAZG4GCI8TclCluamytMNS1M3w6wlJN
-         uoCQNqrD9uMHmlZ0MYZJ8ZA1KW4+ljvi6LB6xjNMK4o6QoH8ZabLGUzAHeLTrzCIClUY
-         Iw2f5OTCJdY4tMaSSXNDCOKOqx/Hq8zvTNNjmEUS61uniS5ZSb/bHiFZ1h74b9d1p6ts
-         +GAnIGQNVyjGooMjx69E4svYmMo+9G3IiSCnBqt64Guxbvg5SnsgCiqSP6kouOmQ6SuT
-         sAUvZaH7PeXdfYkCDA9LBtKPdSNC1Cd+jf4Uj0h5cf8HT4ZRwfIwGma1byxZ9ktmAqnq
-         msjg==
+        id S2387800AbgEWMRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 08:17:01 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:50872 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731258AbgEWMRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 08:17:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590236217;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hiGpHpOcJNlP2iDycLr0P82RHs7yrovgRPqPp3JAfYk=;
+        b=hA+93AIxZKYwoGN3yAy2QuFUsPo4mS9xTRshCAERkbh9CrsISSpQi9leNiX5+exY6w+o+O
+        Uo0bR682TrNXY9TRT3h59RLSs8Sybmoerpn1ZNZWgYOwmLRBnRggTYP3HTAVF1kjRM7kxG
+        6EYq5ZPuvWYjdbG1Kq6vzq8xm2jEObs=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-475-YzgE540lO32X6QHk5pI-1g-1; Sat, 23 May 2020 08:16:51 -0400
+X-MC-Unique: YzgE540lO32X6QHk5pI-1g-1
+Received: by mail-oi1-f200.google.com with SMTP id w196so6704409oia.12
+        for <netdev@vger.kernel.org>; Sat, 23 May 2020 05:16:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DhGzYuZdmCs4q+4fA867qJiX3xyRHjIKtnyYfMLs02I=;
-        b=h4JqYkaGYVJ1saMxK9avGOhd1XZRYscxquKpFppeC+04dmaFBIZ5gM1ggt+evIFgmY
-         od/aHzTbSDEMRUGKMMq+R0PYA6wuITDzUppSSJGpzDEcUxN/lS/NoPWZZWT12wMdRNuY
-         /aw78+oYL4UwMlc6glL8VaAVw84Ko8GJKacDJVEidtiQGHnSGZknpWZt2o9TqrOrM25m
-         W7iQkz0zFV1MVIWow5/cYb6A9T3pSSVung5fy4FFtkXvxAKgZXrz+ADDyAk6yl7XeJVN
-         TRmT4PKH3mIKN9DZ0Zg2y8dkWoNouLxFQ6XPYnChvEqUmc3Iku52d68gn51lqgRo6RhU
-         SOjQ==
-X-Gm-Message-State: AOAM533Xi0iUnLfFQzij25910ZfwsGAF5E7l6s5z6xM2Bq4TKosEtEZ+
-        dF739i8mc+ySxiKMLVb6g3jA3iUMsi0buUZNMjg=
-X-Google-Smtp-Source: ABdhPJzpQfFvhmqh+ffL0lGGfCUKTAYxpl53Gwm9m7DeCkDOiysK4rwSC54fee+1LsCqH6/NLesyFQ9pe+KO4fg5PNc=
-X-Received: by 2002:a5b:811:: with SMTP id x17mr29774810ybp.27.1590235476111;
- Sat, 23 May 2020 05:04:36 -0700 (PDT)
+        bh=hiGpHpOcJNlP2iDycLr0P82RHs7yrovgRPqPp3JAfYk=;
+        b=rhEF/mBZX3hZLeuf29V7jAp33j5tKUpMCuLuIXQ7txwVGb+yJCt640FDxEuXDGMiDH
+         HTn6hWB8k4zFqLDuxX6v+2QIetLkzsriIhCmwVktLMQSSr6PmHd0koKhr31Z9LEk5gNm
+         CYIrCsKFYYhjssbvNCYdVWAiGzav8b/PBe8V7/I0H/Scd6VH42HDrNqiYy1fwqf0GnkR
+         Q1yhufDl2/8Tihp2JVxM92e/DFexG3SE0WYcKNXgJKImzzeNfnSWo3tc+nTviUrjx+3/
+         6Z2rFD1vkymz9Iw2PgZb6dmc0BavGthsv0X/GX1keohYm3FWepbQ15+d472fgR/CpKXR
+         D6nQ==
+X-Gm-Message-State: AOAM5322Xmgs8lyxYXoqXke3P0CyhurYV6l6pnU09e5rBVgNCc2HcThL
+        /wZRU7MszwxhmQXiQjnoDoTmnRrgBXpEv6oo8QODOyeArqcCgPAK/7vTUG0zRNYcCRZ+IQWiy7x
+        FXX0FBtF0lCDG8yOIAyar0ZTFnzyvfw8L
+X-Received: by 2002:a05:6830:138b:: with SMTP id d11mr14017490otq.367.1590236208898;
+        Sat, 23 May 2020 05:16:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxQzrjcYzqEwVFIl1/iAw0IRSVGEFmg/OOr8rtHb5WvMGSIL9SrxEf0cMOhzDK1fYko0iSm+KTDjyhRAGirM10=
+X-Received: by 2002:a05:6830:138b:: with SMTP id d11mr14017473otq.367.1590236208591;
+ Sat, 23 May 2020 05:16:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
- <20200513160116.GA2491@localhost.localdomain> <CABUN9aCuoA+CXLujUxXyiKWQPkwq9_eOXNqOR=MK7dPY++Fxng@mail.gmail.com>
- <20200513213230.GE2491@localhost.localdomain> <CABUN9aBoxXjdPk9piKAZV-2dYOCEnuXr-4H5ZVVvqeMMFRsf7A@mail.gmail.com>
- <20200519204229.GQ2491@localhost.localdomain>
-In-Reply-To: <20200519204229.GQ2491@localhost.localdomain>
-From:   Jonas Falkevik <jonas.falkevik@gmail.com>
-Date:   Sat, 23 May 2020 14:04:24 +0200
-Message-ID: <CABUN9aD85O3mF8j72QfrC8vbXPzj5Q=L801t2M6XsbDHn+9D1A@mail.gmail.com>
-Subject: Re: [PATCH] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED} event
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>
+References: <00000000000054221d05a64b7ed8@google.com>
+In-Reply-To: <00000000000054221d05a64b7ed8@google.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Sat, 23 May 2020 14:16:37 +0200
+Message-ID: <CAFqZXNvf+oJs9u4H97u7=jTL2Wo_Hkf4nZdZJLD7tNC_J0KDRg@mail.gmail.com>
+Subject: Re: general protection fault in selinux_socket_recvmsg
+To:     syzbot <syzbot+c6bfc3db991edc918432@syzkaller.appspotmail.com>
+Cc:     andriin@fb.com, anton@enomsg.org, ast@kernel.org,
+        bpf@vger.kernel.org, ccross@android.com, daniel@iogearbox.net,
+        Eric Paris <eparis@parisplace.org>, john.fastabend@gmail.com,
+        kafai@fb.com, Kees Cook <keescook@chromium.org>,
+        kpsingh@chromium.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        Paul Moore <paul@paul-moore.com>,
+        SElinux list <selinux@vger.kernel.org>, songliubraving@fb.com,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        syzkaller-bugs@googlegroups.com, tony.luck@intel.com, yhs@fb.com,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        mptcp@lists.01.org, Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 10:42 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
+On Sat, May 23, 2020 at 9:14 AM syzbot
+<syzbot+c6bfc3db991edc918432@syzkaller.appspotmail.com> wrote:
+> Hello,
 >
-> On Fri, May 15, 2020 at 10:30:29AM +0200, Jonas Falkevik wrote:
-> > On Wed, May 13, 2020 at 11:32 PM Marcelo Ricardo Leitner
-> > <marcelo.leitner@gmail.com> wrote:
-> > >
-> > > On Wed, May 13, 2020 at 10:11:05PM +0200, Jonas Falkevik wrote:
-> > > > On Wed, May 13, 2020 at 6:01 PM Marcelo Ricardo Leitner
-> > > > <marcelo.leitner@gmail.com> wrote:
-> > > > >
-> > > > > On Wed, May 13, 2020 at 04:52:16PM +0200, Jonas Falkevik wrote:
-> > > > > > Do not generate SCTP_ADDR_{MADE_PRIM,ADDED} events for SCTP_FUTURE_ASSOC assocs.
-> > > > >
-> > > > > How did you get them?
-> > > > >
-> > > >
-> > > > I think one case is when receiving INIT chunk in sctp_sf_do_5_1B_init().
-> > > > Here a closed association is created, sctp_make_temp_assoc().
-> > > > Which is later used when calling sctp_process_init().
-> > > > In sctp_process_init() one of the first things are to call
-> > > > sctp_assoc_add_peer()
-> > > > on the closed / temp assoc.
-> > > >
-> > > > sctp_assoc_add_peer() are generating the SCTP_ADDR_ADDED event on the socket
-> > > > for the potentially new association.
-> > >
-> > > I see, thanks. The SCTP_FUTURE_ASSOC means something different. It is
-> > > for setting/getting socket options that will be used for new asocs. In
-> > > this case, it is just a coincidence that asoc_id is not set (but
-> > > initialized to 0) and SCTP_FUTURE_ASSOC is also 0.
-> >
-> > yes, you are right, I overlooked that.
-> >
-> > > Moreso, if I didn't
-> > > miss anything, it would block valid events, such as those from
-> > >  sctp_sf_do_5_1D_ce
-> > >    sctp_process_init
-> > > because sctp_process_init will only call sctp_assoc_set_id() by its
-> > > end.
-> >
-> > Do we want these events at this stage?
-> > Since the association is a newly established one, have the peer address changed?
-> > Should we enqueue these messages with sm commands instead?
-> > And drop them if we don't have state SCTP_STATE_ESTABLISHED?
-> >
-> > >
-> > > I can't see a good reason for generating any event on temp assocs. So
-> > > I'm thinking the checks on this patch should be on whether the asoc is
-> > > a temporary one instead. WDYT?
-> > >
-> >
-> > Agree, we shouldn't rely on coincidence.
-> > Either check temp instead or the above mentioned state?
-> >
-> > > Then, considering the socket is locked, both code points should be
-> > > allocating the IDR earlier. It's expensive, yes (point being, it could
-> > > be avoided in case of other failures), but it should be generating
-> > > events with the right assoc id. Are you interested in pursuing this
-> > > fix as well?
-> >
-> > Sure.
-> >
-> > If we check temp status instead, we would need to allocate IDR earlier,
-> > as you mention. So that we send the notification with correct assoc id.
-> >
-> > But shouldn't the SCTP_COMM_UP, for a newly established association, be the
-> > first notification event sent?
-> > The SCTP_COMM_UP notification is enqueued later in sctp_sf_do_5_1D_ce().
+> syzbot found the following crash on:
 >
-> The RFC doesn't mention any specific ordering for them, but it would
-> make sense. Reading the FreeBSD code now (which I consider a reference
-> implementation), it doesn't raise these notifications from
-> INIT_ACK/COOKIE_ECHO at all. The only trigger for SCTP_ADDR_ADDED
-> event is ASCONF ADD command itself. So these are extra in Linux, and
-> I'm afraid we got to stick with them.
+> HEAD commit:    051143e1 Merge tag 'apparmor-pr-2020-05-21' of git://git.k..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1313f016100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=b3368ce0cc5f5ace
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c6bfc3db991edc918432
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13eeacba100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=167163e6100000
 >
-> Considering the error handling it already has, looks like the
-> reordering is feasible and welcomed. I'm thinking the temp check and
-> reordering is the best way forward here.
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+c6bfc3db991edc918432@syzkaller.appspotmail.com
 >
-> Thoughts? Neil? Xin? The assoc_id change might be considered an UAPI
-> breakage.
+> general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
+> CPU: 0 PID: 7370 Comm: syz-executor283 Not tainted 5.7.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:selinux_socket_recvmsg+0x1e/0x40 security/selinux/hooks.c:4841
 
-Some order is mentioned in RFC 6458 Chapter 6.1.1.
+OK, this is obviously not a SELinux bug - the hook just gets sock ==
+NULL from the net stack, which is just plain wrong...
 
-      SCTP_COMM_UP:  A new association is now ready, and data may be
-         exchanged with this peer.  When an association has been
-         established successfully, this notification should be the
-         first one.
+> Code: e8 77 f9 1e fe 48 89 ef 5d eb b1 90 53 48 89 fb e8 67 f9 1e fe 48 8d 7b 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0f 48 8b 7b 18 be 02 00 00 00 5b e9 7d fc ff ff e8
+> RSP: 0018:ffffc900019d7a58 EFLAGS: 00010206
+> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000040000000
+> RDX: 0000000000000003 RSI: ffffffff83543bb9 RDI: 0000000000000018
+> RBP: dffffc0000000000 R08: ffff88809f45a180 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
+> R13: ffffc900019d7d78 R14: 0000000000001000 R15: 0000000040000000
+> FS:  00007f5ffb311700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f5ffb2efe78 CR3: 00000000a33c1000 CR4: 00000000001406f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  security_socket_recvmsg+0x78/0xc0 security/security.c:2070
+>  sock_recvmsg+0x47/0x110 net/socket.c:902
+>  mptcp_recvmsg+0xb3b/0xd90 net/mptcp/protocol.c:891
 
-I can make a patch with a check on temp and make COMM_UP event first.
-Currently the COMM_UP event is enqueued via commands
-while the SCTP_ADDR_ADDED event is enqueued directly.
+...but this function looks suspicious. If the "unlikely(ssock)" check
+at [1] fails, then we continue in the rest of the function with ssock
+== NULL. However, when the "unlikely(__mptcp_tcp_fallback(msk))" check
+at [2] succeeds, we jump to the "fallback" label, where it is assumed
+that ssock != NULL. That seems like an obvious bug to me and I bet
+that's what causes the crash.
 
-sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
-vs.
-asoc->stream.si->enqueue_event(&asoc->ulpq, event);
+If I understand the code correctly, the fix should be just to change
+this at [2]:
+- if (unlikely(__mptcp_tcp_fallback(msk)))
++ if (unlikely(ssock = __mptcp_tcp_fallback(msk)))
 
-Do you want me to change to use commands instead of enqueing?
-Or should we enqueue the COMM_UP event directly?
+@MPTCP folks, can you have a look?
 
--Jonas
+[1] https://elixir.bootlin.com/linux/v5.7-rc6/source/net/mptcp/protocol.c#L886
+[2] https://elixir.bootlin.com/linux/v5.7-rc6/source/net/mptcp/protocol.c#L957
+
+>  inet_recvmsg+0x121/0x5d0 net/ipv4/af_inet.c:838
+>  sock_recvmsg_nosec net/socket.c:886 [inline]
+>  sock_recvmsg net/socket.c:904 [inline]
+>  sock_recvmsg+0xca/0x110 net/socket.c:900
+>  __sys_recvfrom+0x1c5/0x2f0 net/socket.c:2057
+>  __do_sys_recvfrom net/socket.c:2075 [inline]
+>  __se_sys_recvfrom net/socket.c:2071 [inline]
+>  __x64_sys_recvfrom+0xdd/0x1b0 net/socket.c:2071
+>  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> RIP: 0033:0x448ef9
+> Code: e8 cc 14 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 0c fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007f5ffb310da8 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+> RAX: ffffffffffffffda RBX: 00000000006dec28 RCX: 0000000000448ef9
+> RDX: 0000000000001000 RSI: 00000000200004c0 RDI: 0000000000000003
+> RBP: 00000000006dec20 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000040000000 R11: 0000000000000246 R12: 00000000006dec2c
+> R13: 00007ffc3a001ccf R14: 00007f5ffb3119c0 R15: 00000000006dec2c
+> Modules linked in:
+> ---[ end trace 60e1f3eb5a5b83ce ]---
+> RIP: 0010:selinux_socket_recvmsg+0x1e/0x40 security/selinux/hooks.c:4841
+> Code: e8 77 f9 1e fe 48 89 ef 5d eb b1 90 53 48 89 fb e8 67 f9 1e fe 48 8d 7b 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0f 48 8b 7b 18 be 02 00 00 00 5b e9 7d fc ff ff e8
+> RSP: 0018:ffffc900019d7a58 EFLAGS: 00010206
+> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000040000000
+> RDX: 0000000000000003 RSI: ffffffff83543bb9 RDI: 0000000000000018
+> RBP: dffffc0000000000 R08: ffff88809f45a180 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
+> R13: ffffc900019d7d78 R14: 0000000000001000 R15: 0000000040000000
+> FS:  00007f5ffb311700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f5ffb2efe78 CR3: 00000000a33c1000 CR4: 00000000001406f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>
+>
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+>
+
+-- 
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
+
