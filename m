@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A9C1DF9C0
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 19:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E2F1DFA34
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 20:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388252AbgEWRri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 13:47:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:56974 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387515AbgEWRrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 13:47:37 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04NHfZGI061426;
-        Sat, 23 May 2020 17:47:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=+K7hQZPEXSyknr5qcG7D4mkj48QK4TpEeGTcX08C/ss=;
- b=AqD505EQz3V9MBm8s4Q2RU8YHY/vna50cBXOf1fEDcZjDRi489GMpKosyh+oAe2+AT3v
- uqhenmCnBOrdBxYRl150TOZlSUTS4mHQB30bC87q46BQeWUsmq1crivMnOwKG1zMZE1H
- khANm2GiBbYH5e30S8lXuNfAeybzMvO4rHf6g564r53qtutLCEWvlQ70iHDtcVgERyOp
- dJ/asBivQhW4D7xdQHQT2rxrkhY/gzxEWo/dUuE7QomGAPDPtyK9pirklT16LFbdXIDd
- 2v2Nl7wqoAoIIO3tKTOiuDQ24IVY8R+ovkCvreLEOhAWZnTTRs54bW+QpOWLWLBlwNNd Zg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 316vfn16td-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 23 May 2020 17:47:05 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04NHhKp2080621;
-        Sat, 23 May 2020 17:47:05 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 316un1djh2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 23 May 2020 17:47:05 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04NHkx1e010453;
-        Sat, 23 May 2020 17:47:00 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 23 May 2020 10:46:59 -0700
-Date:   Sat, 23 May 2020 20:46:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] ipv4:  potential underflow in compat_ip_setsockopt()
-Message-ID: <20200523174648.GA105146@mwanda>
+        id S2387665AbgEWSVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 14:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726865AbgEWSVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 14:21:18 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF49C061A0E;
+        Sat, 23 May 2020 11:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=nSUTrS+Js2HSvmnL14DjqtpgJSSsEW5R57ypchErLwg=; b=gA/uZNdkmC2JRZFCEyrK9jpf9
+        5T7RYZPGGJCvZlrYXeWaE2rkNFs7Rxm5GK6RVkLbzaLW8mydeE1CEZbuADlUuMpM7dJ8ewap+itmr
+        1XF2Q5oHZoQREGSDw6MLo8gKZQjkWaUbhFZtCnJK9jMmCQgBuMahSM6pSGWu8cujz+aRvb+08nYyP
+        vvzq5fRnSbd38h6eaVFqrzs3trfVBnAnx0IGdTn2taGv6Hifd7yHYzAVIGN+XhsHufCy+1b4kHsdp
+        Wg5YI5RZbEAzyqTEB5THomCJL3gM1d0/CNziOwZXgeS644GH+uzvywhP5zLzBP7L9FKRLwlol8Rul
+        1q/3T5HNA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36018)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jcYlY-0000Sm-T0; Sat, 23 May 2020 19:21:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jcYlS-0002Sz-SK; Sat, 23 May 2020 19:20:54 +0100
+Date:   Sat, 23 May 2020 19:20:54 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 01/11] net: phy: Don't report success if devices weren't
+ found
+Message-ID: <20200523182054.GW1551@shell.armlinux.org.uk>
+References: <20200522213059.1535892-1-jeremy.linton@arm.com>
+ <20200522213059.1535892-2-jeremy.linton@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9630 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 mlxscore=0
- malwarescore=0 phishscore=0 spamscore=0 suspectscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005230147
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9630 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 clxscore=1011
- priorityscore=1501 mlxscore=0 malwarescore=0 spamscore=0 impostorscore=0
- mlxlogscore=999 lowpriorityscore=0 bulkscore=0 adultscore=0 suspectscore=0
- cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2005230147
+In-Reply-To: <20200522213059.1535892-2-jeremy.linton@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value of "n" is capped at 0x1ffffff but it checked for negative
-values.  I don't think this causes a problem but I'm not certain and
-it's harmless to prevent it.
+On Fri, May 22, 2020 at 04:30:49PM -0500, Jeremy Linton wrote:
+> C45 devices are to return 0 for registers they haven't
+> implemented. This means in theory we can terminate the
+> device search loop without finding any MMDs. In that
+> case we want to immediately return indicating that
+> nothing was found rather than continuing to probe
+> and falling into the success state at the bottom.
 
-Fixes: 2e04172875c9 ("ipv4: do compat setsockopt for MCAST_MSFILTER directly")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
+This is a little confusing when you read this comment:
 
- net/ipv4/ip_sockglue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+                        /*  If mostly Fs, there is no device there,
+                         *  then let's continue to probe more, as some
+                         *  10G PHYs have zero Devices In package,
+                         *  e.g. Cortina CS4315/CS4340 PHY.
+                         */
 
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index a2469bc57cfe..f43d5f12aa86 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -1347,8 +1347,8 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
- 	{
- 		const int size0 = offsetof(struct compat_group_filter, gf_slist);
- 		struct compat_group_filter *gf32;
-+		unsigned int n;
- 		void *p;
--		int n;
- 
- 		if (optlen < size0)
- 			return -EINVAL;
+Since it appears to be talking about the case of a PHY where *devs will
+be zero.  However, tracking down the original submission, it seems this
+is not the case at all, and the comment is grossly misleading.
+
+It seems these PHYs only report a valid data in the Devices In Package
+registers for devad=0 - it has nothing to do with a zero Devices In
+Package.
+
+Can I suggest that this comment is fixed while we're changing the code
+to explicitly reject this "zero Devices In package" so that it's not
+confusing?
+
+Thanks.
+
+> 
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> ---
+>  drivers/net/phy/phy_device.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index ac2784192472..245899b58a7d 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -742,6 +742,12 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+>  		}
+>  	}
+>  
+> +	/* no reported devices */
+> +	if (*devs == 0) {
+> +		*phy_id = 0xffffffff;
+> +		return 0;
+> +	}
+> +
+>  	/* Now probe Device Identifiers for each device present. */
+>  	for (i = 1; i < num_ids; i++) {
+>  		if (!(c45_ids->devices_in_package & (1 << i)))
+> -- 
+> 2.26.2
+> 
+> 
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
