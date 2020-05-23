@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2381DF390
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 02:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5E91DF391
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 02:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387471AbgEWAlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 20:41:15 -0400
+        id S2387475AbgEWAlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 20:41:20 -0400
 Received: from mail-eopbgr70075.outbound.protection.outlook.com ([40.107.7.75]:1415
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387413AbgEWAlO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 20:41:14 -0400
+        id S2387463AbgEWAlT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 20:41:19 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jJqiEDZ9E5kNCUZc2ksugZoxgmy429WlGeWHMklLge+IiNuz3Gqyr+Q7Bwv4BwTKYQ4r/iV+6b68nN0Um70bIjYzXEfwVIrE9Qi8xZIP+HI8InDLwAyR1lxWWC2afaHnmem5g8G+2AKKrBzTQ0xryXd9OQzmTSK72iSwVBhFZKWI+TCP8+YU6De2yzZmSXmIMdc4SqrGpqGeBj0rTNJDhspMHqBm2o6j/RKA/K1x6wjhytUAzoQKWJnybj9ScU6XMjP4a5eLWlSU6SfTHnOKSftjTPWIZn7GL2D80Dw1rnooFwGavBGE/j/yV/BoH9spov9TTS6irsq+C7ZXe/7qQg==
+ b=b0yAVADK1Wp+aGXQ1UxU2r7fodNJP6mTQE0/gYjZgN/IiOtpGQ59oUJIt9Igdfwb0rcbti2ZFgYP8C36EB64zQmPVC8b5KDny0IuY1yHCrn0SjZAlsquYMbytnJY/fOwy3i6Jxtcdtuy7MJU9IGbg2kGZZvMkGkDKXykHbkhQps7HJbBstjEg/eFnhHgQRNYyaKSTwTYCvGP/NIRCtHVN4TD038Q+jJUOQnJzSIG8reQwIPZK7HtUcpYN0mEiJBOBtm/ezutY8YjWCEQLDFZZJZAPISPKygc15S1yjrtJVqIAV5TyzQ3m5HgLFS1OJvlCfmwxEstSXd71h/pKR6Lyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IwIUsbM+UtO69Xoyyw9GBTNFlJ7Q3t9gOyYHXh9fwAk=;
- b=f0Jh8JcBPgRzsypZy36DyB4rkwqEPHu2taFEGLUGOCFuOfobxTzlhrVey92pQVxBfh/CvbjBfSEiPamPgHzcfxetJKbnsEbmHsvsJXD6cmyGJVYdDvR+sPfR+I3O/NCBkCua1bx7hFKx0gXKRLLLFp1M6hQ6H4KPSy+/BhvUMLMjXPNoTKQi5t/vrKOuNyYTUGkSkoa4TTR8/yOOPYVNN1xXl7qvMOqgX5HoVpDMvvODMy/S5Jailyl2oz5s2TkwDg11b27c04V8KUZFvH3RbLWKQlFCDJ5+RHVYTXfbeZtHUn9qtT+F8SIcZK9TLideQJ+uR4WXbHmyaj/fJQHqbg==
+ bh=BdvkKk9xpFGKACiRHmE+HesCTkYg9qyFiVwssAvVy3U=;
+ b=WbO2pZSlI6ez5WvHmKi1/IWiGtsFCKxH56eCgVFxJWJFcxbA9KY7V0m0uaaPhNGRwPBxneFjQ6mdkzLLdAUxEKhsymImMDblpmeIZFXUZpMsV2vhMKCE/evjjuvb/Qb5eNXjmAsm5yjEX46B58DMr3ZIVW9Q4qXMamo3nhHEQM2rLZdkgMEWOQIHKwiSdtOfy/hlV3K7dOz5k///TtVgMkXiWEsxEyUUbl9OL23fE3jEfH2SKkMQ4vev2bAVfmLqXHW9I5STCOy+JHyrqEgt1lkAxJfC2Lo3Wbl/x3Aq1eFeck2tK+T9XaeoH/UAG+LiLLUgLJ9Q9fxRLzpjK2Jpag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IwIUsbM+UtO69Xoyyw9GBTNFlJ7Q3t9gOyYHXh9fwAk=;
- b=MB0H05pCC6KS3RdZXHdr67dKfZAi3GNHkLbCpyCyrdlRxVJ+gc3tvGM8HOEqSN8YVMGTDrd2lsJBuWp3I2KlOoq699PK05Y8voSsunvK+UTJEoyRqJruahya5/aJ+I7h6U4uv1tObAvy2Hm0wrtKQQXnGssBC7MHoivft4ucjao=
+ bh=BdvkKk9xpFGKACiRHmE+HesCTkYg9qyFiVwssAvVy3U=;
+ b=O1HCBgIpoEJDqEiFqVPF+jYqugl/qLDQ6Lj1JwCzCyrxaYEO2Tzfv0n/C+3jaMzgpB5pNN5MmXocmnLpv0cyjPlFWa0kQyRsGcLqp3Dze+pdMOYMzBCcTbLiNUXHLQg683TzgsB/gaSPI24L8E40R27IWaXcVuobpompe+m/olM=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5391.eurprd05.prod.outlook.com (2603:10a6:803:95::25) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24; Sat, 23 May
- 2020 00:41:08 +0000
+ 2020 00:41:11 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.026; Sat, 23 May 2020
- 00:41:08 +0000
+ 00:41:11 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 01/13] net/mlx5: Add command entry handling completion
-Date:   Fri, 22 May 2020 17:40:37 -0700
-Message-Id: <20200523004049.34832-2-saeedm@mellanox.com>
+Subject: [net 02/13] net/mlx5: Fix a race when moving command interface to events mode
+Date:   Fri, 22 May 2020 17:40:38 -0700
+Message-Id: <20200523004049.34832-3-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200523004049.34832-1-saeedm@mellanox.com>
 References: <20200523004049.34832-1-saeedm@mellanox.com>
@@ -56,128 +56,198 @@ X-ClientProxiedBy: BYAPR08CA0042.namprd08.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR08CA0042.namprd08.prod.outlook.com (2603:10b6:a03:117::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Sat, 23 May 2020 00:41:06 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR08CA0042.namprd08.prod.outlook.com (2603:10b6:a03:117::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Sat, 23 May 2020 00:41:09 +0000
 X-Mailer: git-send-email 2.25.4
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 035ff3dd-245f-48ce-e6dc-08d7feb1fbd6
+X-MS-Office365-Filtering-Correlation-Id: a9f1c7c0-da9d-4490-a3f5-08d7feb1fd62
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5391:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5391E646085504B1916CBD8ABEB50@VI1PR05MB5391.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:359;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB53911E8A3F5B86DD4B71E407BEB50@VI1PR05MB5391.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-Forefront-PRVS: 0412A98A59
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NYrSuVr5QvEg3BmOr6dbxQoHuq9YdbfUU+hRUuT0gEGOy06xjTsssGUxj2IAbOOfOr62jSFNQCni6GmNPmOOkCTpuYTjKNDZ3VSjIjo/gvrSXKNH7rRNS10or/xhud4HCcTN1nHgkjC7mVNm+uOm50J5F8d+fCeG4znc2ZK9k9fAFzna29jzhCxLnkH65AZzLR9bQwtXv3ewwj6wjPxhM1WGK4csFV6mbpRALthDp3tlEdNn8yKZtIOAB2+hEH386uL8/HKDgoACkgzidku7+wNskIArnpvUJ2HKjpUNbelQBOg8ncrjAOOy0TL6kahWT89+D2OTmAly3QGCunB4BM0kXG555CuzRSDBiKcstwYPw7S/P2Pu7i+tREhjNbLx
+X-Microsoft-Antispam-Message-Info: SiQXPtHeVbHrC5QqiaD+c7prA85Gsu9hSLCeQ88guavJPLylh1/ZpC3acMV/mjc8im5TqkuR6PiHKO4viggvF1sRUbfkb8jVhS098TUipslKYNDzM10m54aJ1ZUGoIOtVXCAceKdMhOVPQnuv9NzJRVdU0Kivr+RRgePx4orDQXd2DzL/HhZs4O61pGAZmi+8iLD6v7kPNgSFeAY+/1mB5LYDX2Nxj/wQ3X+i4dEJ0/4WEEBEibaaqkqpCdrIC3CVme4jyKI3nYISbeHHN5Otpxcz535KZ5VxOJtHGX9SrpQJFyGOC2+HRi7FI875i7VN5wBUJu39pbAnQAg1x3/k8sKoC32wFvSEnkGgQv90XNVR/js8Jg6QuKQF/8uzoSd
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(366004)(396003)(39860400002)(136003)(1076003)(8676002)(2616005)(956004)(4326008)(52116002)(186003)(26005)(16526019)(478600001)(6666004)(86362001)(6506007)(6512007)(107886003)(36756003)(316002)(5660300002)(8936002)(6486002)(66946007)(54906003)(66476007)(2906002)(66556008)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: N+zOTE9N7I7S4rbybcFCYPyH2eISI/lSr7qvEJiCJ7XSvAqRLC/PQoEz7WdzmNrpTr+Qdo0RcOhcqP1sMprs15JygtnPe9FasGlaCp7troB4uY3IWeWgCFp3mXseBseNN2PA9ydmQoN/2ospFmLnFlQziDfsN6HDY0F+LlpKVJOrBaYJfHE+5xvBOkPrKCeFsLBF+iqbGMpQ04qddS8p1UflXJHYWiFPTQNzdAZStHrEN1LVI2XaDvEKwMVg60hDpn0AoEV3Yme5oEui54VOGzoOo/z/uEpBOVAxXaXmUhg4t9b2ycFzusAoiO1sENTz2bG0USM6Ep1n5OicVcgVg4uaHYupLOAZPImgtH1fj0vzZ08JahMdZOaCK0NdM+sDJdlrbMEU6vP8CLwhIEDaPxVBHFupBVnFeEsxbTkubukV0PNPQ523TK7pJWiZcVWmlUpuxXy4Gdnqivy0yc0lUCDXrFp2TbNhlyt/eTEn1hc=
+X-MS-Exchange-AntiSpam-MessageData: RVScYtgnj50jvUTqllUScRY/ICQ/9fBM+FWQq3FnZ3ThrrgXlUCLl0J5IV/FRP1Kv8DkNTuFHPbfDvxBqN6YwOTvj9DTJLQ/7AmbU4+A8jAI8bH+Q7KiBGKvFbVm1c4C1fl7tgEkPHxGSDjClEv3eHnuIZ4JlvQN8HH6DUMyRp4QisbfpgmV+q/NkOGaWA0SoqDLFIbcdZkjPGgsdS3kCHQ9wG1Js49mCrC1z3okMDdA53y05YWMH06k5VoKn2bu1CJMtFuMlheA2ij5FtCEUxfH75znH/0DXzVcaB+8tN0ax81KOHcKrVoY3jNYeHVWUQcpughNTO4iu8l62LfZBSQEWk0p6zSZqy8d2UDsZfCcb/qFT1rXQy9nM/yFjRIgRxWEdzZWT6+/scNVERZ89A6Z5XJE6khMsbtxhrK33L4DsrGGiUrYxhW5KoCSAPIIl0NTyArnVi+PlJcMmdhVvDLVOrGuWkQxjHYgafcqC3k=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 035ff3dd-245f-48ce-e6dc-08d7feb1fbd6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2020 00:41:08.5964
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9f1c7c0-da9d-4490-a3f5-08d7feb1fd62
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2020 00:41:11.1890
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PvvRvjHCEo2/hoLwDcEZ9Vt1D2lkkS8Nhf0bIYcCvNGKiUEoERxrHRF+yZZ1dQrKLaH5cjGhuuJu55x6B/0PZg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: jiS6zxX/SjPYK1grzdk19lse35a23OurTOpHq9qmtiGn8k/S9M32490PkYaJtEPs4HQTkatBeNe6zIyHglemGw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5391
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@mellanox.com>
+From: Eran Ben Elisha <eranbe@mellanox.com>
 
-When FW response to commands is very slow and all command entries in
-use are waiting for completion we can have a race where commands can get
-timeout before they get out of the queue and handled. Timeout
-completion on uninitialized command will cause releasing command's
-buffers before accessing it for initialization and then we will get NULL
-pointer exception while trying access it. It may also cause releasing
-buffers of another command since we may have timeout completion before
-even allocating entry index for this command.
-Add entry handling completion to avoid this race.
+After driver creates (via FW command) an EQ for commands, the driver will
+be informed on new commands completion by EQE. However, due to a race in
+driver's internal command mode metadata update, some new commands will
+still be miss-handled by driver as if we are in polling mode. Such commands
+can get two non forced completion, leading to already freed command entry
+access.
+
+CREATE_EQ command, that maps EQ to the command queue must be posted to the
+command queue while it is empty and no other command should be posted.
+
+Add SW mechanism that once the CREATE_EQ command is about to be executed,
+all other commands will return error without being sent to the FW. Allow
+sending other commands only after successfully changing the driver's
+internal command mode metadata.
+We can safely return error to all other commands while creating the command
+EQ, as all other commands might be sent from the user/application during
+driver load. Application can rerun them later after driver's load was
+finished.
 
 Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 14 ++++++++++++++
- include/linux/mlx5/driver.h                   |  1 +
- 2 files changed, 15 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 35 ++++++++++++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  3 ++
+ include/linux/mlx5/driver.h                   |  6 ++++
+ 3 files changed, 40 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index cede5bdfd598..d695b75bc0af 100644
+index d695b75bc0af..2f3cafdc3b1f 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -861,6 +861,7 @@ static void cmd_work_handler(struct work_struct *work)
- 	int alloc_ret;
- 	int cmd_mode;
+@@ -848,6 +848,14 @@ static void free_msg(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *msg);
+ static void mlx5_free_cmd_msg(struct mlx5_core_dev *dev,
+ 			      struct mlx5_cmd_msg *msg);
  
-+	complete(&ent->handling);
- 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
- 	down(sem);
- 	if (!ent->page_queue) {
-@@ -978,6 +979,11 @@ static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
++static bool opcode_allowed(struct mlx5_cmd *cmd, u16 opcode)
++{
++	if (cmd->allowed_opcode == CMD_ALLOWED_OPCODE_ALL)
++		return true;
++
++	return cmd->allowed_opcode == opcode;
++}
++
+ static void cmd_work_handler(struct work_struct *work)
+ {
+ 	struct mlx5_cmd_work_ent *ent = container_of(work, struct mlx5_cmd_work_ent, work);
+@@ -914,7 +922,8 @@ static void cmd_work_handler(struct work_struct *work)
+ 
+ 	/* Skip sending command to fw if internal error */
+ 	if (pci_channel_offline(dev->pdev) ||
+-	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
++	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR ||
++	    !opcode_allowed(&dev->cmd, ent->op)) {
+ 		u8 status = 0;
+ 		u32 drv_synd;
+ 
+@@ -1405,6 +1414,22 @@ static void create_debugfs_files(struct mlx5_core_dev *dev)
+ 	mlx5_cmdif_debugfs_init(dev);
+ }
+ 
++void mlx5_cmd_allowed_opcode(struct mlx5_core_dev *dev, u16 opcode)
++{
++	struct mlx5_cmd *cmd = &dev->cmd;
++	int i;
++
++	for (i = 0; i < cmd->max_reg_cmds; i++)
++		down(&cmd->sem);
++	down(&cmd->pages_sem);
++
++	cmd->allowed_opcode = opcode;
++
++	up(&cmd->pages_sem);
++	for (i = 0; i < cmd->max_reg_cmds; i++)
++		up(&cmd->sem);
++}
++
+ static void mlx5_cmd_change_mod(struct mlx5_core_dev *dev, int mode)
+ {
  	struct mlx5_cmd *cmd = &dev->cmd;
+@@ -1681,12 +1706,13 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
  	int err;
+ 	u8 status = 0;
+ 	u32 drv_synd;
++	u16 opcode;
+ 	u8 token;
  
-+	if (!wait_for_completion_timeout(&ent->handling, timeout) &&
-+	    cancel_work_sync(&ent->work)) {
-+		ent->ret = -ECANCELED;
-+		goto out_err;
-+	}
- 	if (cmd->mode == CMD_MODE_POLLING || ent->polling) {
- 		wait_for_completion(&ent->done);
- 	} else if (!wait_for_completion_timeout(&ent->done, timeout)) {
-@@ -985,12 +991,17 @@ static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
- 		mlx5_cmd_comp_handler(dev, 1UL << ent->idx, true);
- 	}
++	opcode = MLX5_GET(mbox_in, in, opcode);
+ 	if (pci_channel_offline(dev->pdev) ||
+-	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
+-		u16 opcode = MLX5_GET(mbox_in, in, opcode);
+-
++	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR ||
++	    !opcode_allowed(&dev->cmd, opcode)) {
+ 		err = mlx5_internal_err_ret_value(dev, opcode, &drv_synd, &status);
+ 		MLX5_SET(mbox_out, out, status, status);
+ 		MLX5_SET(mbox_out, out, syndrome, drv_synd);
+@@ -1988,6 +2014,7 @@ int mlx5_cmd_init(struct mlx5_core_dev *dev)
+ 	mlx5_core_dbg(dev, "descriptor at dma 0x%llx\n", (unsigned long long)(cmd->dma));
  
-+out_err:
- 	err = ent->ret;
+ 	cmd->mode = CMD_MODE_POLLING;
++	cmd->allowed_opcode = CMD_ALLOWED_OPCODE_ALL;
  
- 	if (err == -ETIMEDOUT) {
- 		mlx5_core_warn(dev, "%s(0x%x) timeout. Will cause a leak of a command resource\n",
- 			       mlx5_command_str(msg_to_opcode(ent->in)),
- 			       msg_to_opcode(ent->in));
-+	} else if (err == -ECANCELED) {
-+		mlx5_core_warn(dev, "%s(0x%x) canceled on out of queue timeout.\n",
-+			       mlx5_command_str(msg_to_opcode(ent->in)),
-+			       msg_to_opcode(ent->in));
- 	}
- 	mlx5_core_dbg(dev, "err %d, delivery status %s(%d)\n",
- 		      err, deliv_status_to_str(ent->status), ent->status);
-@@ -1026,6 +1037,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
- 	ent->token = token;
- 	ent->polling = force_polling;
+ 	create_msg_cache(dev);
  
-+	init_completion(&ent->handling);
- 	if (!callback)
- 		init_completion(&ent->done);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index cccea3a8eddd..ce6c621af043 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -611,11 +611,13 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 		.nent = MLX5_NUM_CMD_EQE,
+ 		.mask[0] = 1ull << MLX5_EVENT_TYPE_CMD,
+ 	};
++	mlx5_cmd_allowed_opcode(dev, MLX5_CMD_OP_CREATE_EQ);
+ 	err = setup_async_eq(dev, &table->cmd_eq, &param, "cmd");
+ 	if (err)
+ 		goto err1;
  
-@@ -1045,6 +1057,8 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
- 	err = wait_func(dev, ent);
- 	if (err == -ETIMEDOUT)
- 		goto out;
-+	if (err == -ECANCELED)
-+		goto out_free;
+ 	mlx5_cmd_use_events(dev);
++	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
  
- 	ds = ent->ts2 - ent->ts1;
- 	op = MLX5_GET(mbox_in, in->first.data, opcode);
+ 	param = (struct mlx5_eq_param) {
+ 		.irq_index = 0,
+@@ -645,6 +647,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 	mlx5_cmd_use_polling(dev);
+ 	cleanup_async_eq(dev, &table->cmd_eq, "cmd");
+ err1:
++	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
+ 	mlx5_eq_notifier_unregister(dev, &table->cq_err_nb);
+ 	return err;
+ }
 diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 6f8f79ef829b..9b1f29f26c27 100644
+index 9b1f29f26c27..c03778c75dfa 100644
 --- a/include/linux/mlx5/driver.h
 +++ b/include/linux/mlx5/driver.h
-@@ -743,6 +743,7 @@ struct mlx5_cmd_work_ent {
- 	struct delayed_work	cb_timeout_work;
- 	void		       *context;
- 	int			idx;
-+	struct completion	handling;
- 	struct completion	done;
- 	struct mlx5_cmd        *cmd;
- 	struct work_struct	work;
+@@ -284,6 +284,7 @@ struct mlx5_cmd {
+ 	struct semaphore sem;
+ 	struct semaphore pages_sem;
+ 	int	mode;
++	u16     allowed_opcode;
+ 	struct mlx5_cmd_work_ent *ent_arr[MLX5_MAX_COMMANDS];
+ 	struct dma_pool *pool;
+ 	struct mlx5_cmd_debug dbg;
+@@ -875,10 +876,15 @@ mlx5_frag_buf_get_idx_last_contig_stride(struct mlx5_frag_buf_ctrl *fbc, u32 ix)
+ 	return min_t(u32, last_frag_stride_idx - fbc->strides_offset, fbc->sz_m1);
+ }
+ 
++enum {
++	CMD_ALLOWED_OPCODE_ALL,
++};
++
+ int mlx5_cmd_init(struct mlx5_core_dev *dev);
+ void mlx5_cmd_cleanup(struct mlx5_core_dev *dev);
+ void mlx5_cmd_use_events(struct mlx5_core_dev *dev);
+ void mlx5_cmd_use_polling(struct mlx5_core_dev *dev);
++void mlx5_cmd_allowed_opcode(struct mlx5_core_dev *dev, u16 opcode);
+ 
+ struct mlx5_async_ctx {
+ 	struct mlx5_core_dev *dev;
 -- 
 2.25.4
 
