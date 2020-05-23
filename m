@@ -2,82 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F741DF762
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 15:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5E31DF765
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 15:14:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731362AbgEWNNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 09:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
+        id S2387795AbgEWNO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 09:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731347AbgEWNNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 09:13:41 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE98FC061A0E;
-        Sat, 23 May 2020 06:13:41 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id v2so1406372pfv.7;
-        Sat, 23 May 2020 06:13:41 -0700 (PDT)
+        with ESMTP id S1731291AbgEWNO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 09:14:27 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D9CC061A0E;
+        Sat, 23 May 2020 06:14:27 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id u1so11254596wmn.3;
+        Sat, 23 May 2020 06:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=H8pDFipnynsk4X9dPZFc4G5VJ+Iod2lTWU7AAQ+F64A=;
-        b=d6zPa6bfCge/OEzuOBCipFM61kSveZ6IXS80k0pe1JMnCxANiMUBC02P4pEPgCpX/l
-         9fJASJNGlA0D9XCySR6of+WKuRVF6ib+xx/w5yzyWAU3/XsLymxnnFVjO+EoAxyOpeyY
-         YVV+GhbUUVACDNKJSD0H+M9Oe/F71/se6K2owzEQ9U3kM4ICyKbWmP6NL8o2c6aBzZNI
-         SyNP/pLd9Nf7YuK5F4RtYN/P40h1Pgo0vZXW2XcHaa592A5ZGl5isA0R01TT8+xhA2CE
-         T3fXp47j1hrWJXWvocf0kfuuvOHHmq70H9hSFrcL7y8Day2a4JWhJmcUOW1U6Wb4y3ae
-         4rCQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8LGo7kypX/UuiVS5X2JtFQ0JunA+QZt3vaFNvgvumNU=;
+        b=gLm0wTbvAO45hZ2XesfzpTYLf2INXCegMtldROnBej+YMsA5hq5Qva0/c5u9XRoNfD
+         2KP/Pu3p+OAXOdee9bB9unMBWRVIheR8b9dYAg5ncfqwXiJrkWGOEhPuapE4gmRIDeNn
+         RNMV6rh9yvyTu7CCrYZzFJ/iVXM2VBsHVAiqPoHJNUQzdq11GxG7hyvjbCxHQz85s7xd
+         NVX4QsVYkYcrX7MBIlJRZeDwX6MFL4FnJJxhmA2zaaQZHxdVCcvqwG7aTTh6fajXvJVB
+         uUt1ErAwinoImb+4eA2YEKk4Nj7PfNayxWo1G9TSFyLJmH/QJgdTNjP7QpuVXk8aly+p
+         rA8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H8pDFipnynsk4X9dPZFc4G5VJ+Iod2lTWU7AAQ+F64A=;
-        b=s/BnEYb3gruZKAXswYZNpUVD4ebKtrwvsDldAd/Mws0aA/aGhFIuA2yJrfdS+BKgjr
-         Pcaaf+TiZBiH9amHahGLtk3gUK1sq6LDTEeay/yhUgf/fahBAAZ7Jqm2tPL7uQEtI+yu
-         4FzlgucrSy5a9f0PqXkOFgS+8XSM6m2OzVSXVlyHrKfgpBXcJKa/VQoBPE05pYJNBJ6F
-         rfkKadmaiO8ogDIMJR61Pzw3BVytFICybBX5oO9tUUUJXdFg60MA0hYt3Qf+h2+yIJ3r
-         3NBVM5Kf9oHpcoLeBbCGaZyIhOU69Ta3tGrutLFrXE1LG50Em+XRil62UBs6YYn4OlaV
-         +fvQ==
-X-Gm-Message-State: AOAM531ePq4uGU+NGh6otdPXOC+gBbgf7Y79UaT4Vbp5rJ58uK+AjML9
-        QUemQT/AGBanKlJiLP+MxYeR8KXAAeqAXg==
-X-Google-Smtp-Source: ABdhPJzn4ahbjc4uF3F0G80Mlr9dXdVeoYkcPPDAUFoQXK30/ymi69aOdssi+fEGEZNakIN+xRFn3A==
-X-Received: by 2002:a63:774d:: with SMTP id s74mr9438pgc.315.1590239621095;
-        Sat, 23 May 2020 06:13:41 -0700 (PDT)
-Received: from localhost.localdomain ([157.51.175.150])
-        by smtp.gmail.com with ESMTPSA id 9sm8741528pju.1.2020.05.23.06.13.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 May 2020 06:13:40 -0700 (PDT)
-From:   Hari <harichandrakanthan@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Hari <harichandrakanthan@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH] e1000: Fix typo in the comment
-Date:   Sat, 23 May 2020 18:43:26 +0530
-Message-Id: <20200523131326.23409-1-harichandrakanthan@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8LGo7kypX/UuiVS5X2JtFQ0JunA+QZt3vaFNvgvumNU=;
+        b=J2dhQ8C800Fnfmlm+BClvMFbGvIRjJdYeZFA0oKcxJmIll53MD/qjxYblYBGZcZnOH
+         WN3Nq8jJ+KKG7gvYiVp0yDZi9iVTEkyPs4t/rhz6kdW2CQ9A3LeWzNDjwDhwwpSE/bSr
+         q7OAmm/gGumBK/ChG+ICi+643VmbQuaOvQ9bE2Qksz2YkeBL62NUt/KCSHbj+oFmeIro
+         rYc7/qFRBiLHv3jVUU++sALUmKXnL7H9wfzkBzzFvQI4Jk+i2V+/lhMslyJP3Pap1mry
+         SwKfWrwaQ5ONY3/2kqE95BYNTNm9j8oiU/gt8mEx1I6EhemJI0SCXEdh8qtWG+Z991Qe
+         6QMg==
+X-Gm-Message-State: AOAM531Bna4tC1yhpOKFoGWCVnHF99uX6NcPV2df8AwxdEnxkzIgahIK
+        DR2rNqZUby4wzBct3os22Q0=
+X-Google-Smtp-Source: ABdhPJxn+IxcTwwADZNrv5cvugkYcBEcPWXDlnjrtAyFx9W55umV1V9VFywTsf2mzefrH5OFGaF3Ug==
+X-Received: by 2002:a05:600c:2043:: with SMTP id p3mr16862280wmg.187.1590239665539;
+        Sat, 23 May 2020 06:14:25 -0700 (PDT)
+Received: from linux-gy6r.site ([213.195.113.243])
+        by smtp.gmail.com with ESMTPSA id y207sm13594800wmd.7.2020.05.23.06.14.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 May 2020 06:14:24 -0700 (PDT)
+Subject: Re: [PATCH v5 00/11] mediatek: add support for MediaTek Ethernet MAC
+To:     David Miller <davem@davemloft.net>
+Cc:     brgl@bgdev.pl, robh+dt@kernel.org, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com, kuba@kernel.org,
+        arnd@arndb.de, fparent@baylibre.com, hkallweit1@gmail.com,
+        edwin.peer@broadcom.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        stephane.leprovost@mediatek.com, pedro.tsai@mediatek.com,
+        andrew.perepech@mediatek.com, bgolaszewski@baylibre.com
+References: <20200522120700.838-1-brgl@bgdev.pl>
+ <20200522.142031.1631406151370247419.davem@davemloft.net>
+ <1f941213-7ca2-c138-3530-85c34ebf0d53@gmail.com>
+ <20200522.143656.1986528672037093503.davem@davemloft.net>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+X-Pep-Version: 2.0
+Message-ID: <4a95de78-05fe-eec6-e09b-1b907287a8af@gmail.com>
+Date:   Sat, 23 May 2020 15:14:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200522.143656.1986528672037093503.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Continuous Double "the" in a comment. Changed it to single "the"
 
-Signed-off-by: Hari <harichandrakanthan@gmail.com>
----
- drivers/net/ethernet/intel/e1000/e1000_hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-index 48428d6a00be..623e516a9630 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-@@ -3960,7 +3960,7 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
-  * @hw: Struct containing variables accessed by shared code
-  *
-  * Reads the first 64 16 bit words of the EEPROM and sums the values read.
-- * If the the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
-+ * If the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
-  * valid.
-  */
- s32 e1000_validate_eeprom_checksum(struct e1000_hw *hw)
--- 
-2.17.1
+On 5/22/20 11:36 PM, David Miller wrote:
+> From: Matthias Brugger <matthias.bgg@gmail.com>
+> Date: Fri, 22 May 2020 23:31:50 +0200
+>=20
+>>
+>>
+>> On 22/05/2020 23:20, David Miller wrote:
+>>> From: Bartosz Golaszewski <brgl@bgdev.pl>
+>>> Date: Fri, 22 May 2020 14:06:49 +0200
+>>>
+>>>> This series adds support for the STAR Ethernet Controller present on=
+ MediaTeK
+>>>> SoCs from the MT8* family.
+>>>
+>>> Series applied to net-next, thank you.
+>>>
+>>
+>> If you say "series applied" do you mean you also applied the device tr=
+ee parts?
+>> These should go through my branch, because there could be conflicts if=
+ there are
+>> other device tree patches from other series, not related with network,=
+ touching
+>> the same files.
+>=20
+> It's starting to get rediculous and tedious to manage the DT changes
+> when they are tied to new networking drivers and such.
+>=20
+> And in any event, it is the patch series submitter's responsibility to
+> sort these issues out, separate the patches based upon target tree, and=
+
+> clearly indicate this in the introductory posting and Subject lines.
+>=20
+
+My experience in with other subsystems is that the DTS changes which
+enables de device are part of the series.
+They are normally prefixed with "arm64: dts:" or "ARM: dts:" for 32 bit
+SoCs. That also normally the way I detect patches which should through
+my tree.
+
+Anyway I'll try to remember submitters in the future to send DTS patches
+for network devices as separate series. That makes my life a bit more
+complicated as I afterwards have to find the related DTS series to the
+driver you accepted, but I'll try.
+
+Regards,
+Matthias
 
