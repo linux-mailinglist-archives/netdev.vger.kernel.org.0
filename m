@@ -2,112 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0168F1DF3DA
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 03:33:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 025E91DF435
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 04:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387520AbgEWBdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 21:33:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40342 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387418AbgEWBdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 21:33:51 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jcJ2q-0001WP-IF; Sat, 23 May 2020 03:33:48 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jcJ2q-0005Mb-9u; Sat, 23 May 2020 03:33:48 +0200
-Subject: Re: [PATCH iproute2 v3 0/2] bpf: memory access fixes
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
-        asmadeus@codewreck.org
-References: <20200423175857.20180-1-jhs@emojatatu.com>
- <125e68f2-2868-34c1-7c13-f3fcdf844835@mojatatu.com>
- <1d1e025b-346b-d5f7-6c44-da5a64f31a2c@mojatatu.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e192690f-ad1a-14c1-8052-e1a3fc0a1b8f@iogearbox.net>
-Date:   Sat, 23 May 2020 03:33:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2387516AbgEWCvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 22:51:12 -0400
+Received: from mga17.intel.com ([192.55.52.151]:37983 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387481AbgEWCvM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 May 2020 22:51:12 -0400
+IronPort-SDR: tufebH0mLDy29NDvb17n43/sWmhyuezDdX1tnJRkToFLSVvMabpgYMKoTgZX4OnBe/EMCKHk/2
+ ekm/It6HvZKQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 19:51:11 -0700
+IronPort-SDR: cB6cqq+rcSm86Hl9KPfWEM5L2y8AKZUg4xJSZll4KZlC7IUzLi0ND5AULJEkVP8QZZv7E7BEvb
+ /YH1p6O6Wzxg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,424,1583222400"; 
+   d="scan'208";a="290291056"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga004.fm.intel.com with ESMTP; 22 May 2020 19:51:10 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/17][pull request] 1GbE Intel Wired LAN Driver Updates 2020-05-22
+Date:   Fri, 22 May 2020 19:50:52 -0700
+Message-Id: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1d1e025b-346b-d5f7-6c44-da5a64f31a2c@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25820/Fri May 22 14:21:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/20 3:00 PM, Jamal Hadi Salim wrote:
-> ping?
-> 
-> Note: these are trivial bug fixes.
+This series contains updates to e1000e, igc and igb.
 
-Looking at c0325b06382c ("bpf: replace snprintf with asprintf when dealing with long buffers"),
-I wonder whether it's best to just revert and redo cleanly from scratch.. How much testing has
-been performed on the original patch? We know it is causing regressions, and looking Jamal's
-2nd patch we do have patterns all over the place wrt error path that go like:
+Many of the patches in this series are fixes, but many of the igc fixes
+are based on the recent filter rule handling Andre has been working,
+which will not backport to earlier/stable kernels.  The remaining fixes
+for e1000e and igb have CC'd stable where applicable.
 
-   +	char *file = NULL;
-   +	char buff[4096];
-  	FILE *fp;
-   +	int ret;
+Andre continue with his refactoring of the filter rule code to help with
+reducing the complexity, in multiple patches.  Fix the inconsistent size
+of a struct field.  Fixed an issue where filter rules stay active in the
+hardware, even after it was deleted, so make sure to disable the filter
+rule before deleting.  Fixed an issue with NFC rules which were dropping
+valid multicast MAC address.  Fixed how the NFC rules are restored after
+the NIC is reset or brought up, so that they are restored in the same order
+they were initially setup in.  Fix a potential memory leak when the
+driver is unloaded and the NFC rules are not flushed from memory
+properly.  Fixed how NFC rule validation handles when a request to
+overwrite an existing rule.  Changed the locking around the NFC rule API
+calls from spin_locks to mutex locks to avoid unnecessary busy waiting
+on lock contention.
 
-   -	snprintf(file, sizeof(file), "/proc/%d/fdinfo/%d", getpid(), fd);
-   +	ret = asprintf(&file, "/proc/%d/fdinfo/%d", getpid(), fd);
-   +	if (ret < 0) {
-   +		fprintf(stderr, "asprintf failed: %s\n", strerror(errno));
-   +		free(file);
-   +		return ret;
-   +	}
+Sasha clean up more unused code in the igc driver.
 
-The man page on asprintf(char **strp, ...) says: "When successful, these functions return
-the number of bytes printed, just like sprintf(3). If memory allocation wasn't possible,
-or some other error occurs, these functions will return -1, and the contents of strp are
-undefined." What is the rationale that are we passing it to free() /everywhere/ in error
-path when the API spec does say it's undefined? It may happen to work but file's value
-could just as well be, say, 42 ...
+Kai-Heng Feng from Canonical provides three fixes, first has igb report
+the speed and duplex as unknown when in runtime suspend.  Fixed e1000e
+to pass up the error when disabling ULP mode.  Fixed e1000e performance
+by disabling TSO by default for certain MACs.
 
-Thanks,
-Daniel
+Vitaly disables S0ix entry and exit flows for ME systems.
 
-> cheers,
-> jamal
-> 
-> On 2020-04-28 12:15 p.m., Jamal Hadi Salim wrote:
->> Stephen,
->> What happened to this?
->>
->> cheers,
->> jamal
->>
->> On 2020-04-23 1:58 p.m., Jamal Hadi Salim wrote:
->>> From: Jamal Hadi Salim <jhs@mojatatu.com>
->>>
->>> Changes from V2:
->>>   1) Dont initialize tmp on stack (Stephen)
->>>   2) Dont look at the return code of snprintf (Dominique)
->>>   3) Set errno to EINVAL instead of returning -EINVAL for consistency (Dominique)
->>>
->>> Changes from V1:
->>>   1) use snprintf instead of sprintf and fix corresponding error message.
->>>   Caught-by: Dominique Martinet <asmadeus@codewreck.org>
->>>   2) Fix memory leak and extraneous free() in error path
->>>
->>> Jamal Hadi Salim (2):
->>>    bpf: Fix segfault when custom pinning is used
->>>    bpf: Fix mem leak and extraneous free() in error path
->>>
->>>   lib/bpf.c | 17 +++++++----------
->>>   1 file changed, 7 insertions(+), 10 deletions(-)
->>>
->>
-> 
+The following are changes since commit 593532668f635d19d207510e0fbb5c2250f56b6f:
+  Revert "net: mvneta: speed down the PHY, if WoL used, to save energy"
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+
+Andre Guedes (12):
+  igc: Refactor igc_ethtool_add_nfc_rule()
+  igc: Fix 'sw_idx' type in struct igc_nfc_rule
+  igc: Fix locking issue when retrieving NFC rules
+  igc: Fix NFC rule overwrite cases
+  igc: Fix NFC rules with multicast addresses
+  igc: Fix NFC rules restoration
+  igc: Refactor igc_ethtool_update_nfc_rule()
+  igc: Fix NFC rules leak when driver is unloaded
+  igc: Fix NFC rule validation
+  igc: Change return type from igc_disable_nfc_rule()
+  igc: Change adapter->nfc_rule_lock to mutex
+  igc: Remove igc_nfc_rule_exit()
+
+Kai-Heng Feng (3):
+  igb: Report speed and duplex as unknown when device is runtime
+    suspended
+  e1000e: Warn if disabling ULP failed
+  e1000e: Disable TSO for buffer overrun workaround
+
+Sasha Neftin (1):
+  igc: Remove unused descriptor's flags
+
+Vitaly Lifshits (1):
+  e1000e: disable s0ix entry and exit flows for ME systems
+
+ drivers/net/ethernet/intel/e1000e/ich8lan.c  |   6 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c   |  49 +++-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |   3 +-
+ drivers/net/ethernet/intel/igc/igc.h         |  26 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |   4 -
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 294 ++++++++-----------
+ drivers/net/ethernet/intel/igc/igc_main.c    | 246 ++++++++++++----
+ 7 files changed, 362 insertions(+), 266 deletions(-)
+
+-- 
+2.26.2
 
