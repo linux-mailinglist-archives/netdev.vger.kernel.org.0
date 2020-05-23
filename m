@@ -2,144 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E830C1DF6C9
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 13:06:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7351DF6D1
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 13:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387759AbgEWLGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 07:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
+        id S2387753AbgEWLUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 07:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727805AbgEWLGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 07:06:38 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F376AC061A0E
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:06:37 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id n141so849177qke.2
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:06:37 -0700 (PDT)
+        with ESMTP id S1725908AbgEWLUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 07:20:43 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBCAC061A0E
+        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:20:42 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id l17so12798866wrr.4
+        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=920i5BdoLOb/IIp9PeKovVvoU7Hz3B0geMlXilsw7Gw=;
-        b=qseDn46oCaYssYxI1gjkR2ljXE9/+dw9xWYolRdXzfTFWOc0quGw5xn0yWlMmeuGKy
-         5W/RhrlLUBEwwmVAjNljO3RFKZE3LuhGChWalK0+4DMslbWOFHkn8Xeki4Ab+73JY/N1
-         wOtgO1KbrY8QhceVM7m58lSza4ZggHGz82Nfk/7HW4lM7VEGOm29dQR+QzqQsuh+0lfk
-         a9duPIFFNr2M9dDOA7b2Y909EunbR/zIRJy2R6con3vETiWRBHrlmr1gcpzh7JRLU/Gb
-         c5mIFL72GRobrJQLkQzm7xEMPIpPXhMeKyMg3xvPoLPZOpf1m2SvyE43ZQKYuc+Hix43
-         6fjQ==
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=+QiHpqyLRxlFO99vLph44CkZ6eUq4NmNyUJXl1NAoYU=;
+        b=R0sXHMKfzmO0i0rvUxkVhQvDk6fK0XiHxO6Mx191A2FKGN81FsUefSqmCnZGCfnq0y
+         QorgHctBPCP6N5LolmBSTwLx0pMhjaBA9W87iu67+wRbk8mHZnw1ncMeDJngZQwWav4u
+         EVh1P0aanBei7GZObTGegDiI2NMgyQCeQCGuEPdiykpdk8p0Hw068L1NHJXq+iWMIaGP
+         xTwU4I+RtvPMyOTw82trLGyQtvhc0XL3KUizMu6lTwl/dBt+Sd5FvVUdkr9rMwKgk8yr
+         al8pS/zOAG/YzctgvYl5bJqzf8e1X2xEnSqLwvS7rVdj6nBMC0L0bn9JoUL9wuJ3zPrA
+         KkKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=920i5BdoLOb/IIp9PeKovVvoU7Hz3B0geMlXilsw7Gw=;
-        b=mj0O2pbt5ITKLd2ZTGafhl8RP01wLfjMKtCEa7RGz4ba+goI8/jE3is71LAf2Ni09p
-         me+W0uW95XUnCrHKRG3jVgIR6HVhxBs9nxSScROvSITvAUTq/L7FBAqaR9tqVdzuX6Bu
-         FtkwLlSmifCcYeHVr7GNcVT9XzK1huZQCTWbLENqVyDhYRzephvR8zfzVI+DVzyGpuw7
-         XEay8zal6BDJWcgDV0jrgJ6zNmMov04vIRWbcJb6AhMDl6bcByE3GovQPDQgEpdz9cXx
-         H3YfM6ppb926MxlsYvA9W5A41fnJQUqxW/UDGBP25U1aFla1EVAaYQQb7z1CMYrM3KzW
-         43jg==
-X-Gm-Message-State: AOAM5326p+VIz3RUMGicCUrtsFcfjaaJnOy0/wxmOUWGSFU2AvpEZdhr
-        rk23tNNkb7OzA2WBNKKzCVqc4q6TDrrcww==
-X-Google-Smtp-Source: ABdhPJyOYO5Aylkms8zqH7HSwXp2jIAFtTloJ0G95k7NYp7XZBsiR4ZDrrmcwQCJJ4kkKTyF/GJM+Q==
-X-Received: by 2002:a37:e102:: with SMTP id c2mr12376439qkm.296.1590231997062;
-        Sat, 23 May 2020 04:06:37 -0700 (PDT)
-Received: from [10.0.0.248] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id p25sm933371qtj.18.2020.05.23.04.06.35
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=+QiHpqyLRxlFO99vLph44CkZ6eUq4NmNyUJXl1NAoYU=;
+        b=L88CG6Gwey/vCfYYsFDE9324Gj5PfAlhvd0LtgMr+ctgwAPk7hkB5qO4OMCwygAp8Z
+         bNyfYCxxKtF1YoNLB3e6Edmsc57NFR7Adf6nPU2a7jvryX0Vc36NUg367Yv943LAtiLe
+         RrrTdmf/kSFUGZ0Rlps0hWqFMbJd25domX3hokF693MCpn42biG1hCAD9IHlVj6fYzkB
+         lxNtXMu9qYzV5o1cU3GvG6FmXqM+1zNfNHKb7qo5ppsvaiP+Kmpi+ytOB1zoFdxw67/i
+         FOQ/GZhf5oSHwEJXBO+qejhKoaKK0Gxo0kL1LBim33nJm6U2iOza+Ew3hdXFcG95sfd/
+         SFHA==
+X-Gm-Message-State: AOAM5303HSD4L1sT+Ajs4M7m7g54iYhyg57Kwh3joqq7wXZ8qF8s9Iyx
+        jFjWwxs6SXIhUn2iwGVysCf+wQEX
+X-Google-Smtp-Source: ABdhPJydr6TSemQEWM64XvPCuNC+TK9UGZ/1CD9rKNJM5+lWjBDN0XHqTQMzkV6Ue+DDLkGpaB7umw==
+X-Received: by 2002:a5d:654a:: with SMTP id z10mr6794329wrv.234.1590232840766;
+        Sat, 23 May 2020 04:20:40 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:69db:99aa:4dc0:a302? (p200300ea8f28520069db99aa4dc0a302.dip0.t-ipconnect.de. [2003:ea:8f28:5200:69db:99aa:4dc0:a302])
+        by smtp.googlemail.com with ESMTPSA id x186sm3832610wmg.8.2020.05.23.04.20.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 May 2020 04:06:36 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump
- mode
-To:     Vlad Buslov <vlad@buslov.dev>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
-        Edward Cree <ecree@solarflare.com>, xiyou.wangcong@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, jiri@resnulli.us,
-        dcaratti@redhat.com, marcelo.leitner@gmail.com
-References: <20200515114014.3135-1-vladbu@mellanox.com>
- <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
- <vbf1rndz76r.fsf@mellanox.com>
- <20200521100214.700348e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87imgo9c8m.fsf@buslov.dev>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <ab8a9010-0dfe-1799-7c81-67b04a4784b1@mojatatu.com>
-Date:   Sat, 23 May 2020 07:06:34 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Sat, 23 May 2020 04:20:40 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/3] r8169: remove mask argument from few ERI/OCP
+ functions
+Message-ID: <ba72d0ee-713b-0721-ed50-5dbfe502ffba@gmail.com>
+Date:   Sat, 23 May 2020 13:20:33 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <87imgo9c8m.fsf@buslov.dev>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-22 12:16 p.m., Vlad Buslov wrote:
-> On Thu 21 May 2020 at 20:02, Jakub Kicinski <kuba@kernel.org> wrote:
->> On Thu, 21 May 2020 17:36:12 +0300 Vlad Buslov wrote:
->>> Hi Edward, Cong,
->>>
+Few ERI/OCP functions have a mask argument that isn't needed.
+Remove it to simplify the functions.
 
->> Do you really need to dump classifiers? If you care about stats
->> the actions could be sufficient if the offload code was fixed
->> appropriately... Sorry I had to say that.
-> 
-> Technically I need neither classifier nor action. All I need is cookie
-> and stats of single terminating action attached to filter (redirect,
-> drop, etc.). This can be achieved by making terse dump output that data
-> for last extension on filter. However, when I discussed my initial terse
-> dump idea with Jamal he asked me not to ossify such behavior to allow
-> for implementation of offloaded shared actions in future.
-> 
+Heiner Kallweit (3):
+  r8169: remove mask argument from rtl_w0w1_eri
+  r8169: remove mask argument from r8168dp_ocp_read
+  r8169: remove mask argument from r8168ep_ocp_read
 
+ drivers/net/ethernet/realtek/r8169_main.c | 86 ++++++++++-------------
+ 1 file changed, 39 insertions(+), 47 deletions(-)
 
-Trying to recollect our discussion (please forgive me if i am
-rehashing). old skule hardware model typically is ACL style with one
-action - therefore concept of tying a counter with with
-a classifier is common.
-
-Other hardware i am familiar with tends to have a table of counters.
-More an array with indices.
-In the shared case using the same counter index from multiple
-tables implies it is shared. Note "old skule" does not have
-a concept of sharing.
-
-So i was more worried about assuming the "old skule" model
-at the expense of other hardware models.
-We should be able to dump different tables from hardware.
-Mostly these could be tables of actions. And counter tables
-look like a gact action.
-
- From s/w:
-If what is needed is to just dump explicit stats a gact
-action with a cookie and an index would suffice.
-i.e tc match foobar \
-action continue cookie blah index 15 \
-action ...
-action mirred redirect ...
-
-of course this now adds extra cycles in the s/w datapath but
-advantage is it means you can cheaply either get
-individual counters (get action gact index 15) or dump all gact actions
-and filter in user space for your cookie. Or introduce a dump
-cookie filter in the kernel (similar to the "time since" action
-dump filter).
-
-cheers,
-jamal
-
-> Speaking about shared action offload, I remember looking at some RFC
-> patches by Edward implementing such functionality and allowing action
-> stats update directly from act, as opposed to current design that relies
-> on classifier to update action stats from hardware. Is that what you
-> mean by appropriately fixing offload code? With such implementation,
-> just dumping relevant action types would also work. My only concern is
-> that the only way to dump actions is per-namespace as opposed to
-> per-Qdisc of filters, which would clash with any other cls/act users on
-> same machine/hypervisor.
-> 
-> 
-> [...]
-> 
+-- 
+2.26.2
 
