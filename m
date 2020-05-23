@@ -2,133 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE851DF6D4
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 13:23:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 143CB1DF712
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 14:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387790AbgEWLXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 07:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        id S2387826AbgEWMEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 08:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387783AbgEWLXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 07:23:43 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBEEC061A0E
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:23:42 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id c3so8533851wru.12
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 04:23:42 -0700 (PDT)
+        with ESMTP id S2387741AbgEWMEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 08:04:37 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0DDC061A0E;
+        Sat, 23 May 2020 05:04:36 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id l67so2385788ybl.4;
+        Sat, 23 May 2020 05:04:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7sHfwcN2DcKFB66ineZRdffLT1xwlBWIMeE9cARjn+Q=;
-        b=IX+Z5r5nyveViwYaPG2VXXEFT97ikbOBMp0i+VGC+PPrdpw9+FlZnPlMtQmMgHmrXW
-         4eeuMkd49+Pnbk2GXv9AjGdXnQhnTyslFYVRxO3ngeO1QRWPd2QgFjTQV0z4Xg24bFyI
-         U4BjBLEJM+0yizfeQvXZHB7qeF5ySPnPoLQwxZhBUIYWfneLHokG1xThiTfO3za5z6x/
-         zxxgH8qU+4wk63azIwfBwn2k8QBgkMXHuG42TXlJlHs5vzAWHvB0M9feE72gYnNZ1CFf
-         xx9V2c84np0yO6NilmB07uwUBxINPjHwFZRYwKftsy+awDderc4rxdqhQNBBhMxnoynR
-         hs4A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DhGzYuZdmCs4q+4fA867qJiX3xyRHjIKtnyYfMLs02I=;
+        b=ichpuJ0gIuSQ2VCmkBvKBIr/6XI99zmSJr9dAZG4GCI8TclCluamytMNS1M3w6wlJN
+         uoCQNqrD9uMHmlZ0MYZJ8ZA1KW4+ljvi6LB6xjNMK4o6QoH8ZabLGUzAHeLTrzCIClUY
+         Iw2f5OTCJdY4tMaSSXNDCOKOqx/Hq8zvTNNjmEUS61uniS5ZSb/bHiFZ1h74b9d1p6ts
+         +GAnIGQNVyjGooMjx69E4svYmMo+9G3IiSCnBqt64Guxbvg5SnsgCiqSP6kouOmQ6SuT
+         sAUvZaH7PeXdfYkCDA9LBtKPdSNC1Cd+jf4Uj0h5cf8HT4ZRwfIwGma1byxZ9ktmAqnq
+         msjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7sHfwcN2DcKFB66ineZRdffLT1xwlBWIMeE9cARjn+Q=;
-        b=oobClAj2ZgwPPZLmaVCrvga8jrLHm2MKX4J9TeEN7MdRXQmE14Jx4uoz8exTqOQgx7
-         xPBbeKYHdmfzC+av1pXk5nIUtVaWr2WQVeQDLTb503pySuQoLA7XEQVNJiJaHHjuoQLp
-         3W2rB8fQbYvumN9pif2mSidAjMFQwUIlJsijxzKLtEcXw+5ShMp2ZvKhCNpjXw3g3qOY
-         jsaPwpoyPGRHhkcvsYokSvcgta98jOzkCqIu7km9YF8fgM7EY5QkB6JBJyuF15Teq6cD
-         pJoS1yulCN/WrwCJlZWG4SMkD+AjRZW9S4edFr1JHxgjD9A/H7fO3CjJq1Ultl7MuYyJ
-         qIvw==
-X-Gm-Message-State: AOAM531cLJa2BrZGvjuOCGN+4zbARKS2VQLfSduL9VyOs2QyMBw9Kda7
-        3uSscCnci5UXSoPFXeDkxfPyPgXL
-X-Google-Smtp-Source: ABdhPJyCaXtFGEeJrY3J0qSD3XhPcTwe8UqPJwKN8unUJE4jCZvGpPSvJuq+ZC1Di27JHNOsoRp0BQ==
-X-Received: by 2002:adf:9795:: with SMTP id s21mr949698wrb.166.1590233021261;
-        Sat, 23 May 2020 04:23:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:5200:69db:99aa:4dc0:a302? (p200300ea8f28520069db99aa4dc0a302.dip0.t-ipconnect.de. [2003:ea:8f28:5200:69db:99aa:4dc0:a302])
-        by smtp.googlemail.com with ESMTPSA id n6sm11761155wrt.58.2020.05.23.04.23.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 May 2020 04:23:40 -0700 (PDT)
-Subject: [PATCH net-next 3/3] r8169: remove mask argument from
- r8168ep_ocp_read
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ba72d0ee-713b-0721-ed50-5dbfe502ffba@gmail.com>
-Message-ID: <c366e9aa-30b9-93ab-45dc-a7848cad77b2@gmail.com>
-Date:   Sat, 23 May 2020 13:23:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DhGzYuZdmCs4q+4fA867qJiX3xyRHjIKtnyYfMLs02I=;
+        b=h4JqYkaGYVJ1saMxK9avGOhd1XZRYscxquKpFppeC+04dmaFBIZ5gM1ggt+evIFgmY
+         od/aHzTbSDEMRUGKMMq+R0PYA6wuITDzUppSSJGpzDEcUxN/lS/NoPWZZWT12wMdRNuY
+         /aw78+oYL4UwMlc6glL8VaAVw84Ko8GJKacDJVEidtiQGHnSGZknpWZt2o9TqrOrM25m
+         W7iQkz0zFV1MVIWow5/cYb6A9T3pSSVung5fy4FFtkXvxAKgZXrz+ADDyAk6yl7XeJVN
+         TRmT4PKH3mIKN9DZ0Zg2y8dkWoNouLxFQ6XPYnChvEqUmc3Iku52d68gn51lqgRo6RhU
+         SOjQ==
+X-Gm-Message-State: AOAM533Xi0iUnLfFQzij25910ZfwsGAF5E7l6s5z6xM2Bq4TKosEtEZ+
+        dF739i8mc+ySxiKMLVb6g3jA3iUMsi0buUZNMjg=
+X-Google-Smtp-Source: ABdhPJzpQfFvhmqh+ffL0lGGfCUKTAYxpl53Gwm9m7DeCkDOiysK4rwSC54fee+1LsCqH6/NLesyFQ9pe+KO4fg5PNc=
+X-Received: by 2002:a5b:811:: with SMTP id x17mr29774810ybp.27.1590235476111;
+ Sat, 23 May 2020 05:04:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ba72d0ee-713b-0721-ed50-5dbfe502ffba@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
+ <20200513160116.GA2491@localhost.localdomain> <CABUN9aCuoA+CXLujUxXyiKWQPkwq9_eOXNqOR=MK7dPY++Fxng@mail.gmail.com>
+ <20200513213230.GE2491@localhost.localdomain> <CABUN9aBoxXjdPk9piKAZV-2dYOCEnuXr-4H5ZVVvqeMMFRsf7A@mail.gmail.com>
+ <20200519204229.GQ2491@localhost.localdomain>
+In-Reply-To: <20200519204229.GQ2491@localhost.localdomain>
+From:   Jonas Falkevik <jonas.falkevik@gmail.com>
+Date:   Sat, 23 May 2020 14:04:24 +0200
+Message-ID: <CABUN9aD85O3mF8j72QfrC8vbXPzj5Q=L801t2M6XsbDHn+9D1A@mail.gmail.com>
+Subject: Re: [PATCH] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED} event
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xin Long <lucien.xin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the mask argument as it's not used by r8168ep_ocp_read().
+On Tue, May 19, 2020 at 10:42 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Fri, May 15, 2020 at 10:30:29AM +0200, Jonas Falkevik wrote:
+> > On Wed, May 13, 2020 at 11:32 PM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Wed, May 13, 2020 at 10:11:05PM +0200, Jonas Falkevik wrote:
+> > > > On Wed, May 13, 2020 at 6:01 PM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, May 13, 2020 at 04:52:16PM +0200, Jonas Falkevik wrote:
+> > > > > > Do not generate SCTP_ADDR_{MADE_PRIM,ADDED} events for SCTP_FUTURE_ASSOC assocs.
+> > > > >
+> > > > > How did you get them?
+> > > > >
+> > > >
+> > > > I think one case is when receiving INIT chunk in sctp_sf_do_5_1B_init().
+> > > > Here a closed association is created, sctp_make_temp_assoc().
+> > > > Which is later used when calling sctp_process_init().
+> > > > In sctp_process_init() one of the first things are to call
+> > > > sctp_assoc_add_peer()
+> > > > on the closed / temp assoc.
+> > > >
+> > > > sctp_assoc_add_peer() are generating the SCTP_ADDR_ADDED event on the socket
+> > > > for the potentially new association.
+> > >
+> > > I see, thanks. The SCTP_FUTURE_ASSOC means something different. It is
+> > > for setting/getting socket options that will be used for new asocs. In
+> > > this case, it is just a coincidence that asoc_id is not set (but
+> > > initialized to 0) and SCTP_FUTURE_ASSOC is also 0.
+> >
+> > yes, you are right, I overlooked that.
+> >
+> > > Moreso, if I didn't
+> > > miss anything, it would block valid events, such as those from
+> > >  sctp_sf_do_5_1D_ce
+> > >    sctp_process_init
+> > > because sctp_process_init will only call sctp_assoc_set_id() by its
+> > > end.
+> >
+> > Do we want these events at this stage?
+> > Since the association is a newly established one, have the peer address changed?
+> > Should we enqueue these messages with sm commands instead?
+> > And drop them if we don't have state SCTP_STATE_ESTABLISHED?
+> >
+> > >
+> > > I can't see a good reason for generating any event on temp assocs. So
+> > > I'm thinking the checks on this patch should be on whether the asoc is
+> > > a temporary one instead. WDYT?
+> > >
+> >
+> > Agree, we shouldn't rely on coincidence.
+> > Either check temp instead or the above mentioned state?
+> >
+> > > Then, considering the socket is locked, both code points should be
+> > > allocating the IDR earlier. It's expensive, yes (point being, it could
+> > > be avoided in case of other failures), but it should be generating
+> > > events with the right assoc id. Are you interested in pursuing this
+> > > fix as well?
+> >
+> > Sure.
+> >
+> > If we check temp status instead, we would need to allocate IDR earlier,
+> > as you mention. So that we send the notification with correct assoc id.
+> >
+> > But shouldn't the SCTP_COMM_UP, for a newly established association, be the
+> > first notification event sent?
+> > The SCTP_COMM_UP notification is enqueued later in sctp_sf_do_5_1D_ce().
+>
+> The RFC doesn't mention any specific ordering for them, but it would
+> make sense. Reading the FreeBSD code now (which I consider a reference
+> implementation), it doesn't raise these notifications from
+> INIT_ACK/COOKIE_ECHO at all. The only trigger for SCTP_ADDR_ADDED
+> event is ASCONF ADD command itself. So these are extra in Linux, and
+> I'm afraid we got to stick with them.
+>
+> Considering the error handling it already has, looks like the
+> reordering is feasible and welcomed. I'm thinking the temp check and
+> reordering is the best way forward here.
+>
+> Thoughts? Neil? Xin? The assoc_id change might be considered an UAPI
+> breakage.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+Some order is mentioned in RFC 6458 Chapter 6.1.1.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 6674ea529..79090aefa 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1098,7 +1098,7 @@ static u32 r8168dp_ocp_read(struct rtl8169_private *tp, u16 reg)
- 		RTL_R32(tp, OCPDR) : ~0;
- }
- 
--static u32 r8168ep_ocp_read(struct rtl8169_private *tp, u8 mask, u16 reg)
-+static u32 r8168ep_ocp_read(struct rtl8169_private *tp, u16 reg)
- {
- 	return _rtl_eri_read(tp, reg, ERIAR_OOB);
- }
-@@ -1145,7 +1145,7 @@ DECLARE_RTL_COND(rtl_dp_ocp_read_cond)
- 
- DECLARE_RTL_COND(rtl_ep_ocp_read_cond)
- {
--	return r8168ep_ocp_read(tp, 0x0f, 0x124) & 0x00000001;
-+	return r8168ep_ocp_read(tp, 0x124) & 0x00000001;
- }
- 
- DECLARE_RTL_COND(rtl_ocp_tx_cond)
-@@ -1170,8 +1170,7 @@ static void rtl8168dp_driver_start(struct rtl8169_private *tp)
- static void rtl8168ep_driver_start(struct rtl8169_private *tp)
- {
- 	r8168ep_ocp_write(tp, 0x01, 0x180, OOB_CMD_DRIVER_START);
--	r8168ep_ocp_write(tp, 0x01, 0x30,
--			  r8168ep_ocp_read(tp, 0x01, 0x30) | 0x01);
-+	r8168ep_ocp_write(tp, 0x01, 0x30, r8168ep_ocp_read(tp, 0x30) | 0x01);
- 	rtl_loop_wait_high(tp, &rtl_ep_ocp_read_cond, 10000, 10);
- }
- 
-@@ -1202,8 +1201,7 @@ static void rtl8168ep_driver_stop(struct rtl8169_private *tp)
- {
- 	rtl8168ep_stop_cmac(tp);
- 	r8168ep_ocp_write(tp, 0x01, 0x180, OOB_CMD_DRIVER_STOP);
--	r8168ep_ocp_write(tp, 0x01, 0x30,
--			  r8168ep_ocp_read(tp, 0x01, 0x30) | 0x01);
-+	r8168ep_ocp_write(tp, 0x01, 0x30, r8168ep_ocp_read(tp, 0x30) | 0x01);
- 	rtl_loop_wait_low(tp, &rtl_ep_ocp_read_cond, 10000, 10);
- }
- 
-@@ -1233,7 +1231,7 @@ static bool r8168dp_check_dash(struct rtl8169_private *tp)
- 
- static bool r8168ep_check_dash(struct rtl8169_private *tp)
- {
--	return !!(r8168ep_ocp_read(tp, 0x0f, 0x128) & 0x00000001);
-+	return r8168ep_ocp_read(tp, 0x128) & 0x00000001;
- }
- 
- static bool r8168_check_dash(struct rtl8169_private *tp)
--- 
-2.26.2
+      SCTP_COMM_UP:  A new association is now ready, and data may be
+         exchanged with this peer.  When an association has been
+         established successfully, this notification should be the
+         first one.
 
+I can make a patch with a check on temp and make COMM_UP event first.
+Currently the COMM_UP event is enqueued via commands
+while the SCTP_ADDR_ADDED event is enqueued directly.
 
+sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
+vs.
+asoc->stream.si->enqueue_event(&asoc->ulpq, event);
+
+Do you want me to change to use commands instead of enqueing?
+Or should we enqueue the COMM_UP event directly?
+
+-Jonas
