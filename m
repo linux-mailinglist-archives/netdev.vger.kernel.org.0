@@ -2,194 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CC91DF381
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 02:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB601DF37F
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 02:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387418AbgEWA2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 20:28:30 -0400
-Received: from mail-eopbgr40083.outbound.protection.outlook.com ([40.107.4.83]:5251
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387452AbgEWA23 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 May 2020 20:28:29 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XGlpgkIbxqdaONo1XHZgw8oLaWDEmKIiyqV3n2sIQMxmntnKE0EIyT5llUxWdcV3k77bhEacMsy+4+zHa2f7SU9P2xwdmZlFeCzn/BU1OEBgKGp3JFuiHuWQ/5OdYPMIz8f/9BqIMsQEa5WJOcvDKEnKnbWRxUpbxma4H40Sk6vYqhcDsfGwQRh7a5ZNm0c6ynhTBA3FS8f8dgR8MoybCTo7bjKbH5Fu8dJ2Wf1JKsa/WS6XQP4rExA8xlFI1m9UMthrwXdp86PAis6Q+o3rRAjFofb4RmRgnGXujjNUrlTCYRRfO6xqaUSzII6Pz3t7S9f5wiakt8mcQ/OTS46UlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nhXUx2Sf3vXy1+1p/XmZ5wPUc9+ma6gMrPlbduXVHrw=;
- b=VLIMmdj0adE0j3bQFI/IxfTup2QMcUSmw/4ilT/kQYTGv0ZLCMvsfvjTESZAxKMD/U92kyrVwcnxL7W1c4ktcCIMVKe/ZPyCvTe6TDigQerdQp5ulAhLK6hBcTNWDrF1KQZLDVPHHD/sVODXR+vwEdBbrVy15P2HdkJVlgnkzr+XZLieGJWlOnYjR7SYzVgjlbBl9nJNApM2Ffgb6+w5jCL/fYS9Xm57iy7uv4I0NRYTokVi+jKArIb0aMHrMZeBlhkrLut6UUWjds/8oM6sCab2GyZdg9v5XM5fP6EY6PG88kCTSvnZGp4+TQVso3RW7da11M08uEqIbjPfRGmVuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nhXUx2Sf3vXy1+1p/XmZ5wPUc9+ma6gMrPlbduXVHrw=;
- b=pK+rDtGlMpZgZk2fD/G9yTI293NE8l+zf+l/8YSU7QnOduNDWpORyWE76mkHqBxqGUZKPjSU5JayMOdrYFlqGMF7oiRIlIILT11o2UWlJ8DoEi+y7yfC1I6ri1NLrELOo3TNM5cTOV+VP/9gWZKbmxeLqkL8/T9oc/74hwvqXDY=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB5517.eurprd05.prod.outlook.com (2603:10a6:803:8e::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Sat, 23 May
- 2020 00:25:47 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.026; Sat, 23 May 2020
- 00:25:47 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Huy Nguyen <huyn@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     Boris Pismenny <borisp@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
-        Raed Salem <raeds@mellanox.com>,
-        "huyn@nvidia.com" <huyn@nvidia.com>
-Subject: Re: [PATCH] xfrm: Fix double ESP trailer insertion in IPsec crypto
- offload
-Thread-Topic: [PATCH] xfrm: Fix double ESP trailer insertion in IPsec crypto
- offload
-Thread-Index: AQHWL7nA79MDvF8lqU6+ZDFw+CO/X6i00fEA
-Date:   Sat, 23 May 2020 00:25:47 +0000
-Message-ID: <6d0d27dceb774236d79d16e44a3b9406ac8a767b.camel@mellanox.com>
-References: <1590097773-14776-1-git-send-email-huyn@mellanox.com>
-In-Reply-To: <1590097773-14776-1-git-send-email-huyn@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a7c816fd-de82-4cf8-d92f-08d7feafd704
-x-ms-traffictypediagnostic: VI1PR05MB5517:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5517A61EBB2765F5E9C2587CBEB50@VI1PR05MB5517.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0412A98A59
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: x8TOdW0E23PsQurwGAYBp/I7RKNZAhaFJUG7EVD6eecYErk+fXgKybIxHYPQi1I0+Cb6jE8wjHSI+cDF9TEjWVs+kvVoDqOan/f2JG2tzsTd9HFF8Rv+VIbPVuTCGhphb9qmNfaLvt0J186He8LQ8pT8PFgbsqbofsNZR72LjRBOUtyPisVQidLlCWPL3OUgFq1fr8mwc09WzerMUCvAhLAhr0S6TGAa//kJ8JN8nn/MtBgfI8yQckpqc15Qt2dq4FRk+zuRqEgejCxIKEzXeUIvLay/htecyaQQCVHBTi90NTsi41v4itVbVUveUZ+bgPR+zkWp19TZkzVtZ7fHF4YvNEuvghXD5eTfYS49kIP/QoRShUKwfRv7IIYVJ2ZV
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(6506007)(6512007)(2906002)(8936002)(316002)(91956017)(6486002)(8676002)(478600001)(76116006)(86362001)(5660300002)(66946007)(64756008)(4326008)(54906003)(2616005)(26005)(36756003)(71200400001)(186003)(66476007)(110136005)(66446008)(66556008)(505234006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: dW9SR23MD485iHTSV39OBL4eVKcy9MWmEhkAtabBhrGGyOXujvOwYTcArFHs+5LPT/kP0lHROEy+ZFKgqBr4j7TjwKPNKj+70el2KEbjpLSGaFEI9gsFtgaKLGzdvTKFr4Fc8BCu+Y1Dfm5yy3gMYc6DBGqysB/OvuEBRMm06xMpKeDK+BSRxnSmW/g1x/MDza+GqNBPOiIljp1gc13aKX2LS+ttO5aWPhOldfOnSUfzyjkWxvhwgjKARYytmA/JXOYOdMz/WKC4OR5yRZpEJNbtiz97EpsSyBIPoyj9jFBatYvAT6x9CkFvylev0gHLvmGLzdtFH5HxN1cc0CntDz0IEd32zL3Nd6yrvuhWZuz9G1vaR6s3Lts/C7xoink5CsbRyCE3ilyLgKkTAIIxw6MSR00dtfXK0bILk2+ONrJ2Islb9r5hTchniDuQ+yL1mhhqbLGhbfDPEYL3OK4kmiBhoII1lS2/P3hzEs2A5PY=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <451536198B3E924FACEBDE1BCDA90E42@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2387465AbgEWA0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 20:26:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33160 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387456AbgEWA0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 May 2020 20:26:13 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jcHzN-0004mX-CR; Sat, 23 May 2020 02:26:09 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2020-05-23
+Date:   Sat, 23 May 2020 02:26:08 +0200
+Message-Id: <20200523002608.31415-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7c816fd-de82-4cf8-d92f-08d7feafd704
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2020 00:25:47.4886
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QQR8Y2+bohgFEkVVNeby9WC5GvLt5egwpgFHZNy13JUz8uWR+vp7ucXvF8EWLOZa3GhoWK20wf19kwyVB/RDbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5517
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25820/Fri May 22 14:21:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA1LTIxIGF0IDE2OjQ5IC0wNTAwLCBIdXkgTmd1eWVuIHdyb3RlOg0KPiBE
-dXJpbmcgSVBzZWMgcGVyZm9ybWFuY2UgdGVzdGluZywgd2Ugc2VlIGJhZCBJQ01QIGNoZWNrc3Vt
-LiBUaGUgaXNzdWUNCj4gaXMgdGhhdA0KPiB0aGUgZXJyb3IgcGFja2V0IHRoYXQgaGFzIGR1cGxp
-Y2F0ZWQgRVNQIHRyYWlsZXIuIEZvciBleGFtcGxlLCB0aGlzDQo+IGJlbG93IHBpbmcgcmVwbHkg
-c2tiIGlzDQo+IGNvbGxlY3RlZCBhdCBtbHg1ZV94bWl0LiBUaGlzIHBpbmcgcmVwbHkgc2tiIGxl
-bmd0aCBpcyAxNTQgYmVjYXVzZSBpdA0KPiBoYXMNCj4gZXh0cmEgZHVwbGljYXRlIDIwIGJ5dGVz
-IG9mIEVTUCB0cmFpbGVyLiBUaGUgY29ycmVjdCBsZW5ndGggaXMgMTM0Lg0KPiAgIHNrYiBsZW49
-MTU0IGhlYWRyb29tPTIgaGVhZGxlbj0xNTQgdGFpbHJvb209MzYNCj4gICBtYWM9KDIsMTQpIG5l
-dD0oMTYsMjApIHRyYW5zPTM2DQo+ICAgc2hpbmZvKHR4ZmxhZ3M9MCBucl9mcmFncz0wIGdzbyhz
-aXplPTAgdHlwZT0wIHNlZ3M9MCkpDQo+ICAgY3N1bSgweGQyMWE2MmZmIGlwX3N1bW1lZD0wIGNv
-bXBsZXRlX3N3PTAgdmFsaWQ9MCBsZXZlbD0wKQ0KPiAgIGhhc2goMHgwIHN3PTAgbDQ9MCkgcHJv
-dG89MHgwODAwIHBrdHR5cGU9MCBpaWY9MA0KPiAgIGRldiBuYW1lPWVucDRzMGYwbnAwIGZlYXQ9
-MHgweDAwMWNhMTgyOWZkMTRiYTkNCj4gICBzayBmYW1pbHk9MiB0eXBlPTMgcHJvdG89MQ0KPiAg
-IHNrYiBoZWFkcm9vbTogMDAwMDAwMDA6IDAwIDAwDQo+ICAgc2tiIGxpbmVhcjogICAwMDAwMDAw
-MDogYjggNTkgOWYgZGEgZDYgNmEgYjggNTkgOWYgZGEgZDUgNTIgMDggMDANCj4gNDUgMDANCj4g
-ICBza2IgbGluZWFyOiAgIDAwMDAwMDEwOiAwMCA4YyA3NiAwZiAwMCAwMCA0MCAzMiA4MCA1ZiBj
-MCBhOCAwMSA0MQ0KPiBjMCBhOA0KPiAgIHNrYiBsaW5lYXI6ICAgMDAwMDAwMjA6IDAxIDQwIDhl
-IDIwIGExIDIwIDAwIDM5IDAzIDI4IGMwIGE4IDAxIDQxDQo+IGMwIGE4DQo+ICAgc2tiIGxpbmVh
-cjogICAwMDAwMDAzMDogMDEgNDAgMDAgMDAgMTIgZWMgY2YgYmEgMDMgMjQgOTcgY2YgYTkgNWUN
-Cj4gMDAgMDANCj4gICBza2IgbGluZWFyOiAgIDAwMDAwMDQwOiAwMCAwMCAxMyAzNCAwNyAwMCAw
-MCAwMCAwMCAwMCAxMCAxMSAxMiAxMw0KPiAxNCAxNQ0KPiAgIHNrYiBsaW5lYXI6ICAgMDAwMDAw
-NTA6IDE2IDE3IDE4IDE5IDFhIDFiIDFjIDFkIDFlIDFmIDIwIDIxIDIyIDIzDQo+IDI0IDI1DQo+
-ICAgc2tiIGxpbmVhcjogICAwMDAwMDA2MDogMjYgMjcgMjggMjkgMmEgMmIgMmMgMmQgMmUgMmYg
-MzAgMzEgMzIgMzMNCj4gMzQgMzUNCj4gICBza2IgbGluZWFyOiAgIDAwMDAwMDcwOiAzNiAzNyAw
-MSAwMiAwMiAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KPiAwMCAwMA0KPiAgIHNrYiBsaW5l
-YXI6ICAgMDAwMDAwODA6IDAwIDAwIDAwIDAwIDAwIDAwIDAxIDAyIDAyIDAxIDAwIDAwIDAwIDAw
-DQo+IDAwIDAwDQo+ICAgc2tiIGxpbmVhcjogICAwMDAwMDA5MDogMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgMDANCj4gICBza2IgdGFpbHJvb206IDAwMDAwMDAwOiAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAwMCAwMCAwMCAwMCAwMCBhOCA1MA0KPiA2OSBkNw0KPiAgIHNrYiB0YWlscm9vbTogMDAw
-MDAwMTA6IDk2IDlmIGZmIGZmIGE4IDUwIDY5IGQ3IDk2IDlmIGZmIGZmIGMwIDAxDQo+IDU4IGQw
-DQo+ICAgc2tiIHRhaWxyb29tOiAwMDAwMDAyMDogOTYgOWYgZmYgZmYNCj4gDQoNCllvdSBkb24n
-dCBuZWVkIHRvIGF0dGFjaCB0aGUgd2hvbGUgZGVidWcgZHVtcHMgeW91IGhhdmUgcHVsbGVkIHRv
-IGZpbmQNCm91dCB3aGF0IHRoZSByb290IGNhdXNlIGlzLCB3ZSBkbyBiZWxpZXZlIHlvdSA7LSku
-DQoNClRoZSBhYm92ZSBkdW1wIGlzIGp1c3QgYSByYW5kb20gYW5kIGNsdXR0ZXJlZCBpbmZvcm1h
-dGlvbiB0aGF0IGRvZXNuJ3QNCnJlYWxseSBoZWxwIHRoZSBjYXVzZSBvZiB0aGlzIHBhdGNoJ3Mg
-Y29tbWl0IG1lc3NhZ2UsIGl0IGlzIHBlcmZlY3RseQ0KZmluZSB0byBqdXN0IHNheToNCg0KRHVw
-bGljYXRlZCBFU1AgdHJhaWxlciBjYW4gb2NjdXIgZHVlIHRvIGRvdWJsZSB2YWxpZGF0aW9uIG9m
-IHhmcm0geG1pdA0KaGFuZGxlciBpbiBjYXNlIG9mIHBhY2tldCB4bWl0IHJlLXF1ZXVlIGFmdGVy
-IDFzdCB2YWxpZGF0aW9uIGR1ZSB0byB0aGUNCnJlYXNvbiB5b3UgbGlzdGVkIGJlbG93Lg0KDQo+
-IFdlIGZpZ3VyZSBvdXQgdGhhdCB0aGUgcGFja2V0IGdvZXMgdGhyb3VnaCB0d28gc2NoX2RpcmVj
-dF94bWl0IGZyb20NCj4gcWRzaWMuDQo+IFRoZSBmaXJzdCBvbmUgaXMgZnJvbSBpcF9vdXRwdXQg
-YW5kIHRoZSBsYXRlciBvbmUgaXMgZnJvbSBORVRfVFgNCj4gc29mdGlycS4gQmVsb3cgYXJlIHRo
-ZSB0d28gc3RhY2sgdHJhY2VzIG9uIHRoZSBzYW1lIHBhY2tldC4gVGhlIGZpcnN0DQo+IG9uZQ0K
-PiBmYWlscyB0byBzZW5kIHRoZSBwYWNrZXQgYmVjYXVzZSBuZXRpZl94bWl0X2Zyb3plbl9vcl9z
-dG9wcGVkIGlzIHRydWUNCj4gYW5kDQo+IHRoZSBwYWNrZXQgZ2V0cyBkZXZfcmVxdWV1ZV9za2Iu
-IEhvd2V2ZXIgYXQgdGhpcyBzdGFnZSwgdGhlIHBhY2tldA0KPiBhbHJlYWR5IGhhcyB0aGUgRVNQ
-IHRyYWlsZXIuIEZpeCBieSBtYXJraW5nIHRoZSBza2Igd2l0aCBYRlJNX1hNSVQNCj4gYml0IGFm
-dGVyDQo+IHRoZSBwYWNrZXQgaXMgaGFuZGxlZCBieSB2YWxpZGF0ZV94bWl0X3hmcm0gdG8gYXZv
-aWQgZHVwbGljYXRlIEVTUA0KPiB0cmFpbGVyIGluc2VydGlvbi4NCj4gDQo+IDFzdCBvbmUgdmlh
-IGlwX291dHB1dA0KPiAgIGR1bXBfc3RhY2srMHg2Ni8weDkwDQo+ICAgZXNwX291dHB1dF9oZWFk
-KzB4MjFhLzB4NTIwIFtlc3A0XQ0KPiAgIGVzcF94bWl0KzB4MTJlLzB4MjcwIFtlc3A0X29mZmxv
-YWRdDQo+ICAgPyBrdGltZV9nZXQrMHgzNi8weGEwDQo+ICAgdmFsaWRhdGVfeG1pdF94ZnJtKzB4
-MjQ3LzB4MmYwDQo+ICAgPyB2YWxpZGF0ZV94bWl0X3NrYisweDFkLzB4MjcwDQo+ICAgdmFsaWRh
-dGVfeG1pdF9za2JfbGlzdCsweDQ2LzB4NzANCj4gICBzY2hfZGlyZWN0X3htaXQrMHgxOGEvMHgz
-MjANCj4gICBfX3FkaXNjX3J1bisweDE0NC8weDUzMA0KPiAgIF9fZGV2X3F1ZXVlX3htaXQrMHgz
-YmIvMHg4YTANCj4gICBpcF9maW5pc2hfb3V0cHV0MisweDNlZS8weDViMA0KPiAgIGlwX291dHB1
-dCsweDZkLzB4ZTANCj4gDQo+IDJuZCBvbmUgdmlhIE5FVF9UWCBzb2Z0aXJxDQo+ICAgZHVtcF9z
-dGFjaysweDY2LzB4OTANCj4gICBlc3Bfb3V0cHV0X2hlYWQuY29sZC4yOSsweDIyLzB4MjcgW2Vz
-cDRdDQo+ICAgZXNwX3htaXQrMHgxMmUvMHgyNzAgW2VzcDRfb2ZmbG9hZF0NCj4gICB2YWxpZGF0
-ZV94bWl0X3hmcm0rMHgyNDcvMHgyZjANCj4gICA/IHZhbGlkYXRlX3htaXRfc2tiKzB4MWQvMHgy
-NzANCj4gICB2YWxpZGF0ZV94bWl0X3NrYl9saXN0KzB4NDYvMHg3MA0KPiAgIHNjaF9kaXJlY3Rf
-eG1pdCsweDE4YS8weDMyMA0KPiAgIF9fcWRpc2NfcnVuKzB4MTQ0LzB4NTMwDQo+ICAgbmV0X3R4
-X2FjdGlvbisweDE1ZC8weDI0MA0KPiAgIF9fZG9fc29mdGlycSsweGRmLzB4MmU1DQo+ICAgaXJx
-X2V4aXQrMHhkYi8weGUwDQo+ICAgc21wX2FwaWNfdGltZXJfaW50ZXJydXB0KzB4NzQvMHgxMzAN
-Cj4gICBhcGljX3RpbWVyX2ludGVycnVwdCsweGYvMHgyMA0KPiANCg0KU2FtZSwgdGhpcyBjb21l
-cyBmcm9tIHlvdXIgb3duIGRlYnVnIGNvZGUuLiBkb2Vzbid0IGhlbHAgdGhlIGNhdXNlIG9mDQp0
-aGUgY29tbWl0IG1lc3NhZ2UuIHlvdSBjYW4ganVzdCBkZXNjcmliZSB0aGUgZmxvd3MgdGhhdCBt
-aWdodA0KcmV0cmlnZ2VyIGRvdWJsZSB2YWxpZGF0aW9uIG9uIHRoZSBza2IuDQoNClNvIHBsZWFz
-ZSBpbXByb3ZlIGNvbW1pdCBtZXNzYWdlIGFuZCBhdm9pZCBjbHV0dGVyLg0KDQo+IGlzc3VlOiAy
-MTQzMDA3DQo+IEZpeGVzOiBmNmUyNzExNGE2MGEgKCJuZXQ6IEFkZCBhIHhmcm0gdmFsaWRhdGUg
-ZnVuY3Rpb24gdG8NCj4gdmFsaWRhdGVfeG1pdF9za2IiKQ0KPiBDaGFuZ2UtSWQ6IEkyYmMxYTE4
-OWI4MTYwY2Q5MGI2NmI0NDIxMmI0ZDQ0YmJkZWJjYWVhDQoNClBsZWFzZSByZW1vdmUgImlzc3Vl
-OiIgYW5kICJDaGFuZ2UtSWQ6IiBjbHV0dGVyLg0KDQo+IFNpZ25lZC1vZmYtYnk6IEh1eSBOZ3V5
-ZW4gPGh1eW5AbWVsbGFub3guY29tPg0KPiBSZXZpZXdlZC1ieTogQm9yaXMgUGlzbWVubnkgPGJv
-cmlzcEBtZWxsYW5veC5jb20+DQo+IFJldmlld2VkLWJ5OiBSYWVkIFNhbGVtIDxyYWVkc0BtZWxs
-YW5veC5jb20+DQo+IC0tLQ0KPiAgaW5jbHVkZS9uZXQveGZybS5oICAgICB8IDEgKw0KPiAgbmV0
-L3hmcm0veGZybV9kZXZpY2UuYyB8IDQgKysrLQ0KPiAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2Vy
-dGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC94
-ZnJtLmggYi9pbmNsdWRlL25ldC94ZnJtLmgNCj4gaW5kZXggOGY3MWMxMS4uMDMwMjQ3MCAxMDA2
-NDQNCj4gLS0tIGEvaW5jbHVkZS9uZXQveGZybS5oDQo+ICsrKyBiL2luY2x1ZGUvbmV0L3hmcm0u
-aA0KPiBAQCAtMTAxMyw2ICsxMDEzLDcgQEAgc3RydWN0IHhmcm1fb2ZmbG9hZCB7DQo+ICAjZGVm
-aW5lCVhGUk1fR1JPCQkzMg0KPiAgI2RlZmluZQlYRlJNX0VTUF9OT19UUkFJTEVSCTY0DQo+ICAj
-ZGVmaW5lCVhGUk1fREVWX1JFU1VNRQkJMTI4DQo+ICsjZGVmaW5lCVhGUk1fWE1JVAkJMjU2DQo+
-ICANCj4gIAlfX3UzMgkJCXN0YXR1czsNCj4gICNkZWZpbmUgQ1JZUFRPX1NVQ0NFU1MJCQkJMQ0K
-PiBkaWZmIC0tZ2l0IGEvbmV0L3hmcm0veGZybV9kZXZpY2UuYyBiL25ldC94ZnJtL3hmcm1fZGV2
-aWNlLmMNCj4gaW5kZXggNmNjN2Y3Zi4uYzEyMmUzZSAxMDA2NDQNCj4gLS0tIGEvbmV0L3hmcm0v
-eGZybV9kZXZpY2UuYw0KPiArKysgYi9uZXQveGZybS94ZnJtX2RldmljZS5jDQo+IEBAIC0xMTAs
-NyArMTEwLDcgQEAgc3RydWN0IHNrX2J1ZmYgKnZhbGlkYXRlX3htaXRfeGZybShzdHJ1Y3Qgc2tf
-YnVmZg0KPiAqc2tiLCBuZXRkZXZfZmVhdHVyZXNfdCBmZWF0dXINCj4gIAlzdHJ1Y3QgeGZybV9v
-ZmZsb2FkICp4byA9IHhmcm1fb2ZmbG9hZChza2IpOw0KPiAgCXN0cnVjdCBzZWNfcGF0aCAqc3A7
-DQo+ICANCj4gLQlpZiAoIXhvKQ0KPiArCWlmICgheG8gfHwgKHhvLT5mbGFncyAmIFhGUk1fWE1J
-VCkpDQo+ICAJCXJldHVybiBza2I7DQo+ICANCj4gIAlpZiAoIShmZWF0dXJlcyAmIE5FVElGX0Zf
-SFdfRVNQKSkNCj4gQEAgLTEzMSw2ICsxMzEsOCBAQCBzdHJ1Y3Qgc2tfYnVmZiAqdmFsaWRhdGVf
-eG1pdF94ZnJtKHN0cnVjdCBza19idWZmDQo+ICpza2IsIG5ldGRldl9mZWF0dXJlc190IGZlYXR1
-cg0KPiAgCQlyZXR1cm4gc2tiOw0KPiAgCX0NCj4gIA0KPiArCXhvLT5mbGFncyB8PSBYRlJNX1hN
-SVQ7DQo+ICsNCg0KWEZSTV9YTUlUIHNvdW5kcyBsaWtlIGEgcG9vciBuYW1lLCBhcyB5b3UgZXhw
-bGFpbmVkIHRoZSBwYWNrZXQgaXMgbm90DQphY3R1YWxseSB0cmFuc21pdHRlZCwgYnV0IHJlLXNj
-aGVkdWxlZCBmb3IgbGF0ZXIgZXZlbiBhZnRlciBpdCB3YXMNCmFscmVhZHkgdmFsaWRhdGVkL2hh
-bmRsZWQgYnkgeGZybSwgaSB3b3VsZCBwaWNrIGEgZGlmZmVyZW50IG5hbWUNCg0KcGVyaGFwcyBY
-RlJNX1hNSVRfVkFMSUQuDQoNCj4gIAlpZiAoc2tiX2lzX2dzbyhza2IpKSB7DQo+ICAJCXN0cnVj
-dCBuZXRfZGV2aWNlICpkZXYgPSBza2ItPmRldjsNCj4gIA0K
+Hi David,
+
+The following pull-request contains BPF updates for your *net-next* tree.
+
+We've added 50 non-merge commits during the last 8 day(s) which contain
+a total of 109 files changed, 2776 insertions(+), 2887 deletions(-).
+
+The main changes are:
+
+1) Add a new AF_XDP buffer allocation API to the core in order to help
+   lowering the bar for drivers adopting AF_XDP support. i40e, ice, ixgbe
+   as well as mlx5 have been moved over to the new API and also gained a
+   small improvement in performance, from Björn Töpel and Magnus Karlsson.
+
+2) Add getpeername()/getsockname() attach types for BPF sock_addr programs
+   in order to allow for e.g. reverse translation of load-balancer backend
+   to service address/port tuple from a connected peer, from Daniel Borkmann.
+
+3) Improve the BPF verifier is_branch_taken() logic to evaluate pointers
+   being non-NULL, e.g. if after an initial test another non-NULL test on
+   that pointer follows in a given path, then it can be pruned right away,
+   from John Fastabend.
+
+4) Larger rework of BPF sockmap selftests to make output easier to understand
+   and to reduce overall runtime as well as adding new BPF kTLS selftests
+   that run in combination with sockmap, also from John Fastabend.
+
+5) Batch of misc updates to BPF selftests including fixing up test_align
+   to match verifier output again and moving it under test_progs, allowing
+   bpf_iter selftest to compile on machines with older vmlinux.h, and
+   updating config options for lirc and v6 segment routing helpers, from
+   Stanislav Fomichev, Andrii Nakryiko and Alan Maguire.
+
+6) Conversion of BPF tracing samples outdated internal BPF loader to use
+   libbpf API instead, from Daniel T. Lee.
+
+7) Follow-up to BPF kernel test infrastructure in order to fix a flake in
+   the XDP selftests, from Jesper Dangaard Brouer.
+
+8) Minor improvements to libbpf's internal hashmap implementation, from
+   Ian Rogers.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrey Ignatov, Andrii Nakryiko, Jakub Sitnicki, 
+Jesper Dangaard Brouer, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit da07f52d3caf6c24c6dbffb5500f379d819e04bd:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-05-15 13:48:59 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to a5dfaa2ab94057dd75c7911143482a0a85593c14:
+
+  selftests/bpf: CONFIG_LIRC required for test_lirc_mode2.sh (2020-05-23 01:12:31 +0200)
+
+----------------------------------------------------------------
+Alan Maguire (3):
+      selftests/bpf: Add general instructions for test execution
+      selftests/bpf: CONFIG_IPV6_SEG6_BPF required for test_seg6_loop.o
+      selftests/bpf: CONFIG_LIRC required for test_lirc_mode2.sh
+
+Alexei Starovoitov (4):
+      Merge branch 'getpeername'
+      tools/bpf: sync bpf.h
+      Merge branch 'af_xdp-common-alloc'
+      Merge branch 'improve-branch_taken'
+
+Andrii Nakryiko (2):
+      selftest/bpf: Make bpf_iter selftest compilable against old vmlinux.h
+      selftests/bpf: Convert bpf_iter_test_kern{3, 4}.c to define own bpf_iter_meta
+
+Björn Töpel (14):
+      xsk: Fix xsk_umem_xdp_frame_sz()
+      xsk: Move xskmap.c to net/xdp/
+      xsk: Move defines only used by AF_XDP internals to xsk.h
+      xsk: Introduce AF_XDP buffer allocation API
+      i40e: Refactor rx_bi accesses
+      i40e: Separate kernel allocated rx_bi rings from AF_XDP rings
+      i40e, xsk: Migrate to new MEM_TYPE_XSK_BUFF_POOL
+      ice, xsk: Migrate to new MEM_TYPE_XSK_BUFF_POOL
+      ixgbe, xsk: Migrate to new MEM_TYPE_XSK_BUFF_POOL
+      mlx5, xsk: Migrate to new MEM_TYPE_XSK_BUFF_POOL
+      xsk: Remove MEM_TYPE_ZERO_COPY and corresponding code
+      xdp: Simplify xdp_return_{frame, frame_rx_napi, buff}
+      xsk: Explicitly inline functions and move definitions
+      MAINTAINERS, xsk: Update AF_XDP section after moves/adds
+
+Daniel Borkmann (5):
+      bpf: Fix check_return_code to only allow [0,1] in trace_iter progs
+      bpf: Add get{peer, sock}name attach types for sock_addr
+      bpf, libbpf: Enable get{peer, sock}name attach types
+      bpf, bpftool: Enable get{peer, sock}name attach types
+      bpf, testing: Add get{peer, sock}name selftests to test_progs
+
+Daniel T. Lee (5):
+      samples, bpf: Refactor pointer error check with libbpf
+      samples, bpf: Refactor kprobe tracing user progs with libbpf
+      samples, bpf: Refactor tail call user progs with libbpf
+      samples, bpf: Add tracex7 test file to .gitignore
+      samples, bpf: Refactor kprobe, tail call kern progs map definition
+
+Ian Rogers (2):
+      libbpf, hashmap: Remove unused #include
+      libbpf, hashmap: Fix signedness warnings
+
+Jesper Dangaard Brouer (1):
+      bpf: Fix too large copy from user in bpf_test_init
+
+John Fastabend (14):
+      bpf: Selftests, move sockmap bpf prog header into progs
+      bpf: Selftests, remove prints from sockmap tests
+      bpf: Selftests, sockmap test prog run without setting cgroup
+      bpf: Selftests, print error in test_sockmap error cases
+      bpf: Selftests, improve test_sockmap total bytes counter
+      bpf: Selftests, break down test_sockmap into subtests
+      bpf: Selftests, provide verbose option for selftests execution
+      bpf: Selftests, add whitelist option to test_sockmap
+      bpf: Selftests, add blacklist to test_sockmap
+      bpf: Selftests, add ktls tests to test_sockmap
+      bpf: Verifier track null pointer branch_taken with JNE and JEQ
+      bpf: Selftests, verifier case for non null pointer check branch taken
+      bpf: Selftests, verifier case for non null pointer map value branch
+      bpf: Selftests, add printk to test_sk_lookup_kern to encode null ptr check
+
+Magnus Karlsson (1):
+      xsk: Move driver interface to xdp_sock_drv.h
+
+Stanislav Fomichev (2):
+      selftests/bpf: Fix test_align verifier log patterns
+      selftests/bpf: Move test_align under test_progs
+
+ Documentation/bpf/bpf_devel_QA.rst                 |  15 +
+ MAINTAINERS                                        |   6 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  28 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        | 134 ++-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h        |  17 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx_common.h |  40 +-
+ drivers/net/ethernet/intel/i40e/i40e_type.h        |   5 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         | 379 ++-------
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |   3 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |  16 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h          |   8 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           | 378 +--------
+ drivers/net/ethernet/intel/ice/ice_xsk.h           |  13 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           |   9 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  15 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       | 309 ++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |  13 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |  33 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    | 113 +--
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    |  25 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.h    |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.c  |  51 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  25 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  34 +-
+ drivers/net/hyperv/netvsc_bpf.c                    |   1 -
+ include/linux/bpf-cgroup.h                         |   1 +
+ include/net/xdp.h                                  |   9 +-
+ include/net/xdp_sock.h                             | 287 +------
+ include/net/xdp_sock_drv.h                         | 232 ++++++
+ include/net/xsk_buff_pool.h                        | 140 ++++
+ include/trace/events/xdp.h                         |   2 +-
+ include/uapi/linux/bpf.h                           |   4 +
+ kernel/bpf/Makefile                                |   3 -
+ kernel/bpf/syscall.c                               |  12 +
+ kernel/bpf/verifier.c                              |  45 +-
+ net/bpf/test_run.c                                 |   8 +-
+ net/core/filter.c                                  |   4 +
+ net/core/xdp.c                                     |  51 +-
+ net/ethtool/channels.c                             |   2 +-
+ net/ethtool/ioctl.c                                |   2 +-
+ net/ipv4/af_inet.c                                 |   8 +-
+ net/ipv6/af_inet6.c                                |   9 +-
+ net/xdp/Makefile                                   |   3 +-
+ net/xdp/xdp_umem.c                                 |  55 +-
+ net/xdp/xdp_umem.h                                 |   2 +-
+ net/xdp/xsk.c                                      | 204 ++---
+ net/xdp/xsk.h                                      |  30 +
+ net/xdp/xsk_buff_pool.c                            | 336 ++++++++
+ net/xdp/xsk_diag.c                                 |   2 +-
+ net/xdp/xsk_queue.c                                |  63 +-
+ net/xdp/xsk_queue.h                                | 117 +--
+ {kernel/bpf => net/xdp}/xskmap.c                   |   2 +
+ samples/bpf/.gitignore                             |   1 +
+ samples/bpf/Makefile                               |  16 +-
+ samples/bpf/sampleip_kern.c                        |  12 +-
+ samples/bpf/sampleip_user.c                        |   7 +-
+ samples/bpf/sockex3_kern.c                         |  36 +-
+ samples/bpf/sockex3_user.c                         |  64 +-
+ samples/bpf/trace_common.h                         |  13 +
+ samples/bpf/trace_event_kern.c                     |  24 +-
+ samples/bpf/trace_event_user.c                     |   9 +-
+ samples/bpf/tracex1_user.c                         |  37 +-
+ samples/bpf/tracex2_kern.c                         |  27 +-
+ samples/bpf/tracex2_user.c                         |  51 +-
+ samples/bpf/tracex3_kern.c                         |  24 +-
+ samples/bpf/tracex3_user.c                         |  61 +-
+ samples/bpf/tracex4_kern.c                         |  12 +-
+ samples/bpf/tracex4_user.c                         |  51 +-
+ samples/bpf/tracex5_kern.c                         |  14 +-
+ samples/bpf/tracex5_user.c                         |  66 +-
+ samples/bpf/tracex6_kern.c                         |  38 +-
+ samples/bpf/tracex6_user.c                         |  49 +-
+ samples/bpf/tracex7_user.c                         |  39 +-
+ samples/bpf/xdp_redirect_cpu_user.c                |   5 +-
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |  10 +-
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |   3 +-
+ tools/bpf/bpftool/bash-completion/bpftool          |  15 +-
+ tools/bpf/bpftool/cgroup.c                         |   7 +-
+ tools/bpf/bpftool/main.h                           |   4 +
+ tools/bpf/bpftool/prog.c                           |   6 +-
+ tools/include/uapi/linux/bpf.h                     |  10 +-
+ tools/lib/bpf/hashmap.c                            |   5 +-
+ tools/lib/bpf/hashmap.h                            |   1 -
+ tools/lib/bpf/libbpf.c                             |   8 +
+ tools/testing/selftests/bpf/README.rst             |   2 +
+ tools/testing/selftests/bpf/config                 |   2 +
+ tools/testing/selftests/bpf/network_helpers.c      |  11 +-
+ tools/testing/selftests/bpf/network_helpers.h      |   1 +
+ .../bpf/{test_align.c => prog_tests/align.c}       | 109 +--
+ .../selftests/bpf/prog_tests/connect_force_port.c  | 107 ++-
+ .../testing/selftests/bpf/progs/bpf_iter_bpf_map.c |  16 +
+ .../selftests/bpf/progs/bpf_iter_ipv6_route.c      |  16 +
+ .../testing/selftests/bpf/progs/bpf_iter_netlink.c |  16 +
+ tools/testing/selftests/bpf/progs/bpf_iter_task.c  |  16 +
+ .../selftests/bpf/progs/bpf_iter_task_file.c       |  18 +
+ .../selftests/bpf/progs/bpf_iter_test_kern3.c      |  15 +
+ .../selftests/bpf/progs/bpf_iter_test_kern4.c      |  15 +
+ .../bpf/progs/bpf_iter_test_kern_common.h          |  16 +
+ .../selftests/bpf/progs/connect_force_port4.c      |  59 +-
+ .../selftests/bpf/progs/connect_force_port6.c      |  70 +-
+ .../selftests/bpf/progs/test_sk_lookup_kern.c      |   1 +
+ .../selftests/bpf/{ => progs}/test_sockmap_kern.h  | 158 +---
+ tools/testing/selftests/bpf/test_sockmap.c         | 913 +++++++++++----------
+ .../testing/selftests/bpf/verifier/ref_tracking.c  |  33 +
+ .../testing/selftests/bpf/verifier/value_or_null.c |  19 +
+ 109 files changed, 2776 insertions(+), 2887 deletions(-)
+ create mode 100644 include/net/xdp_sock_drv.h
+ create mode 100644 include/net/xsk_buff_pool.h
+ create mode 100644 net/xdp/xsk_buff_pool.c
+ rename {kernel/bpf => net/xdp}/xskmap.c (99%)
+ create mode 100644 samples/bpf/trace_common.h
+ rename tools/testing/selftests/bpf/{test_align.c => prog_tests/align.c} (91%)
+ rename tools/testing/selftests/bpf/{ => progs}/test_sockmap_kern.h (61%)
