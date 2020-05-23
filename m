@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 025E91DF435
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 04:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E301DF445
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 04:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387516AbgEWCvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 22:51:12 -0400
+        id S2387537AbgEWCvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 22:51:13 -0400
 Received: from mga17.intel.com ([192.55.52.151]:37983 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387481AbgEWCvM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2387492AbgEWCvM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 May 2020 22:51:12 -0400
-IronPort-SDR: tufebH0mLDy29NDvb17n43/sWmhyuezDdX1tnJRkToFLSVvMabpgYMKoTgZX4OnBe/EMCKHk/2
- ekm/It6HvZKQ==
+IronPort-SDR: bkGK0wRGhI/H4tGoZ0aSKcJxoQEimzPjdK/1M3Oh35E+0/XQcPu0MKlUQNn9mOlaZs0tt3tlu6
+ c+MIfs/nPZPQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 19:51:11 -0700
-IronPort-SDR: cB6cqq+rcSm86Hl9KPfWEM5L2y8AKZUg4xJSZll4KZlC7IUzLi0ND5AULJEkVP8QZZv7E7BEvb
- /YH1p6O6Wzxg==
+IronPort-SDR: WyZwXactIguKsMvY/9j/7Aalw0XnpSedQaeY5IzTXZVROJy2nRAu6gbOysMA3Y/7sn4IxbFhRM
+ 9WCP9q1yTPng==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,424,1583222400"; 
-   d="scan'208";a="290291056"
+   d="scan'208";a="290291060"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by fmsmga004.fm.intel.com with ESMTP; 22 May 2020 19:51:10 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 00/17][pull request] 1GbE Intel Wired LAN Driver Updates 2020-05-22
-Date:   Fri, 22 May 2020 19:50:52 -0700
-Message-Id: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
+Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 01/17] igc: Refactor igc_ethtool_add_nfc_rule()
+Date:   Fri, 22 May 2020 19:50:53 -0700
+Message-Id: <20200523025109.3313635-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
+References: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -39,76 +43,231 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to e1000e, igc and igb.
+From: Andre Guedes <andre.guedes@intel.com>
 
-Many of the patches in this series are fixes, but many of the igc fixes
-are based on the recent filter rule handling Andre has been working,
-which will not backport to earlier/stable kernels.  The remaining fixes
-for e1000e and igb have CC'd stable where applicable.
+Current implementation of igc_ethtool_add_nfc_rule() is quite long and a
+bit convoluted so this patch does a code refactoring to improve the
+code.
 
-Andre continue with his refactoring of the filter rule code to help with
-reducing the complexity, in multiple patches.  Fix the inconsistent size
-of a struct field.  Fixed an issue where filter rules stay active in the
-hardware, even after it was deleted, so make sure to disable the filter
-rule before deleting.  Fixed an issue with NFC rules which were dropping
-valid multicast MAC address.  Fixed how the NFC rules are restored after
-the NIC is reset or brought up, so that they are restored in the same order
-they were initially setup in.  Fix a potential memory leak when the
-driver is unloaded and the NFC rules are not flushed from memory
-properly.  Fixed how NFC rule validation handles when a request to
-overwrite an existing rule.  Changed the locking around the NFC rule API
-calls from spin_locks to mutex locks to avoid unnecessary busy waiting
-on lock contention.
+Code related to NFC rule object initialization is refactored out to the
+local helper function igc_ethtool_init_nfc_rule(). Likewise, code
+related to NFC rule validation is refactored out to another local
+helper, igc_ethtool_is_nfc_rule_valid().
 
-Sasha clean up more unused code in the igc driver.
+RX_CLS_FLOW_DISC check is removed since it is redundant. The macro is
+defined as the max value fsp->ring_cookie can have, so checking if
+fsp->ring_cookie >= adapter->num_rx_queues is already sufficient.
 
-Kai-Heng Feng from Canonical provides three fixes, first has igb report
-the speed and duplex as unknown when in runtime suspend.  Fixed e1000e
-to pass up the error when disabling ULP mode.  Fixed e1000e performance
-by disabling TSO by default for certain MACs.
+Finally, some log messages are improved or added, and obvious comments
+are removed.
 
-Vitaly disables S0ix entry and exit flows for ME systems.
+Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 150 ++++++++++++-------
+ 1 file changed, 92 insertions(+), 58 deletions(-)
 
-The following are changes since commit 593532668f635d19d207510e0fbb5c2250f56b6f:
-  Revert "net: mvneta: speed down the PHY, if WoL used, to save energy"
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
-
-Andre Guedes (12):
-  igc: Refactor igc_ethtool_add_nfc_rule()
-  igc: Fix 'sw_idx' type in struct igc_nfc_rule
-  igc: Fix locking issue when retrieving NFC rules
-  igc: Fix NFC rule overwrite cases
-  igc: Fix NFC rules with multicast addresses
-  igc: Fix NFC rules restoration
-  igc: Refactor igc_ethtool_update_nfc_rule()
-  igc: Fix NFC rules leak when driver is unloaded
-  igc: Fix NFC rule validation
-  igc: Change return type from igc_disable_nfc_rule()
-  igc: Change adapter->nfc_rule_lock to mutex
-  igc: Remove igc_nfc_rule_exit()
-
-Kai-Heng Feng (3):
-  igb: Report speed and duplex as unknown when device is runtime
-    suspended
-  e1000e: Warn if disabling ULP failed
-  e1000e: Disable TSO for buffer overrun workaround
-
-Sasha Neftin (1):
-  igc: Remove unused descriptor's flags
-
-Vitaly Lifshits (1):
-  e1000e: disable s0ix entry and exit flows for ME systems
-
- drivers/net/ethernet/intel/e1000e/ich8lan.c  |   6 +-
- drivers/net/ethernet/intel/e1000e/netdev.c   |  49 +++-
- drivers/net/ethernet/intel/igb/igb_ethtool.c |   3 +-
- drivers/net/ethernet/intel/igc/igc.h         |  26 +-
- drivers/net/ethernet/intel/igc/igc_defines.h |   4 -
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 294 ++++++++-----------
- drivers/net/ethernet/intel/igc/igc_main.c    | 246 ++++++++++++----
- 7 files changed, 362 insertions(+), 266 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index 66e0760a8f9e..1145c88a8e44 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -1271,9 +1271,6 @@ static int igc_ethtool_update_nfc_rule(struct igc_adapter *adapter,
+ 	if (!input)
+ 		return err;
+ 
+-	/* initialize node */
+-	INIT_HLIST_NODE(&input->nfc_node);
+-
+ 	/* add filter to the list */
+ 	if (parent)
+ 		hlist_add_behind(&input->nfc_node, &parent->nfc_node);
+@@ -1286,41 +1283,19 @@ static int igc_ethtool_update_nfc_rule(struct igc_adapter *adapter,
+ 	return 0;
+ }
+ 
+-static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
+-				    struct ethtool_rxnfc *cmd)
++static void igc_ethtool_init_nfc_rule(struct igc_nfc_rule *rule,
++				      const struct ethtool_rx_flow_spec *fsp)
+ {
+-	struct net_device *netdev = adapter->netdev;
+-	struct ethtool_rx_flow_spec *fsp =
+-		(struct ethtool_rx_flow_spec *)&cmd->fs;
+-	struct igc_nfc_rule *rule, *tmp;
+-	int err = 0;
+-
+-	if (!(netdev->hw_features & NETIF_F_NTUPLE))
+-		return -EOPNOTSUPP;
++	INIT_HLIST_NODE(&rule->nfc_node);
+ 
+-	/* Don't allow programming if the action is a queue greater than
+-	 * the number of online Rx queues.
+-	 */
+-	if (fsp->ring_cookie == RX_CLS_FLOW_DISC ||
+-	    fsp->ring_cookie >= adapter->num_rx_queues) {
+-		netdev_err(netdev,
+-			   "ethtool -N: The specified action is invalid\n");
+-		return -EINVAL;
+-	}
++	rule->action = fsp->ring_cookie;
++	rule->sw_idx = fsp->location;
+ 
+-	/* Don't allow indexes to exist outside of available space */
+-	if (fsp->location >= IGC_MAX_RXNFC_RULES) {
+-		netdev_err(netdev, "Location out of range\n");
+-		return -EINVAL;
++	if ((fsp->flow_type & FLOW_EXT) && fsp->m_ext.vlan_tci) {
++		rule->filter.vlan_tci = ntohs(fsp->h_ext.vlan_tci);
++		rule->filter.match_flags |= IGC_FILTER_FLAG_VLAN_TCI;
+ 	}
+ 
+-	if ((fsp->flow_type & ~FLOW_EXT) != ETHER_FLOW)
+-		return -EINVAL;
+-
+-	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
+-	if (!rule)
+-		return -ENOMEM;
+-
+ 	if (fsp->m_u.ether_spec.h_proto == ETHER_TYPE_FULL_MASK) {
+ 		rule->filter.etype = ntohs(fsp->h_u.ether_spec.h_proto);
+ 		rule->filter.match_flags = IGC_FILTER_FLAG_ETHER_TYPE;
+@@ -1340,51 +1315,110 @@ static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
+ 		ether_addr_copy(rule->filter.dst_addr,
+ 				fsp->h_u.ether_spec.h_dest);
+ 	}
++}
+ 
+-	if (rule->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR &&
+-	    rule->filter.match_flags & IGC_FILTER_FLAG_SRC_MAC_ADDR) {
+-		netdev_dbg(netdev, "Filters with both dst and src are not supported\n");
+-		err = -EOPNOTSUPP;
+-		goto err_out;
+-	}
++/**
++ * igc_ethtool_check_nfc_rule() - Check if NFC rule is valid
++ * @adapter: Pointer to adapter
++ * @rule: Rule under evaluation
++ *
++ * Rules with both destination and source MAC addresses are considered invalid
++ * since the driver doesn't support them.
++ *
++ * Also, if there is already another rule with the same filter, @rule is
++ * considered invalid.
++ *
++ * Context: Expects adapter->nfc_rule_lock to be held by caller.
++ *
++ * Return: 0 in case of success, negative errno code otherwise.
++ */
++static int igc_ethtool_check_nfc_rule(struct igc_adapter *adapter,
++				      struct igc_nfc_rule *rule)
++{
++	struct net_device *dev = adapter->netdev;
++	u8 flags = rule->filter.match_flags;
++	struct igc_nfc_rule *tmp;
+ 
+-	if ((fsp->flow_type & FLOW_EXT) && fsp->m_ext.vlan_tci) {
+-		if (fsp->m_ext.vlan_tci != htons(VLAN_PRIO_MASK)) {
+-			netdev_dbg(netdev, "VLAN mask not supported\n");
+-			err = -EOPNOTSUPP;
+-			goto err_out;
+-		}
+-		rule->filter.vlan_tci = ntohs(fsp->h_ext.vlan_tci);
+-		rule->filter.match_flags |= IGC_FILTER_FLAG_VLAN_TCI;
++	if (!flags) {
++		netdev_dbg(dev, "Rule with no match\n");
++		return -EINVAL;
+ 	}
+ 
+-	rule->action = fsp->ring_cookie;
+-	rule->sw_idx = fsp->location;
+-
+-	spin_lock(&adapter->nfc_rule_lock);
++	if (flags & IGC_FILTER_FLAG_DST_MAC_ADDR &&
++	    flags & IGC_FILTER_FLAG_SRC_MAC_ADDR) {
++		netdev_dbg(dev, "Filters with both dst and src are not supported\n");
++		return -EOPNOTSUPP;
++	}
+ 
+ 	hlist_for_each_entry(tmp, &adapter->nfc_rule_list, nfc_node) {
+ 		if (!memcmp(&rule->filter, &tmp->filter,
+ 			    sizeof(rule->filter))) {
+-			err = -EEXIST;
+-			netdev_err(netdev,
+-				   "ethtool: this filter is already set\n");
+-			goto err_out_w_lock;
++			netdev_dbg(dev, "Rule already exists\n");
++			return -EEXIST;
+ 		}
+ 	}
+ 
++	return 0;
++}
++
++static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
++				    struct ethtool_rxnfc *cmd)
++{
++	struct net_device *netdev = adapter->netdev;
++	struct ethtool_rx_flow_spec *fsp =
++		(struct ethtool_rx_flow_spec *)&cmd->fs;
++	struct igc_nfc_rule *rule;
++	int err;
++
++	if (!(netdev->hw_features & NETIF_F_NTUPLE)) {
++		netdev_dbg(netdev, "N-tuple filters disabled\n");
++		return -EOPNOTSUPP;
++	}
++
++	if ((fsp->flow_type & ~FLOW_EXT) != ETHER_FLOW) {
++		netdev_dbg(netdev, "Only ethernet flow type is supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	if ((fsp->flow_type & FLOW_EXT) &&
++	    fsp->m_ext.vlan_tci != htons(VLAN_PRIO_MASK)) {
++		netdev_dbg(netdev, "VLAN mask not supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (fsp->ring_cookie >= adapter->num_rx_queues) {
++		netdev_dbg(netdev, "Invalid action\n");
++		return -EINVAL;
++	}
++
++	if (fsp->location >= IGC_MAX_RXNFC_RULES) {
++		netdev_dbg(netdev, "Invalid location\n");
++		return -EINVAL;
++	}
++
++	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
++	if (!rule)
++		return -ENOMEM;
++
++	igc_ethtool_init_nfc_rule(rule, fsp);
++
++	spin_lock(&adapter->nfc_rule_lock);
++
++	err = igc_ethtool_check_nfc_rule(adapter, rule);
++	if (err)
++		goto err;
++
+ 	err = igc_enable_nfc_rule(adapter, rule);
+ 	if (err)
+-		goto err_out_w_lock;
++		goto err;
+ 
+ 	igc_ethtool_update_nfc_rule(adapter, rule, rule->sw_idx);
+ 
+ 	spin_unlock(&adapter->nfc_rule_lock);
+ 	return 0;
+ 
+-err_out_w_lock:
++err:
+ 	spin_unlock(&adapter->nfc_rule_lock);
+-err_out:
+ 	kfree(rule);
+ 	return err;
+ }
 -- 
 2.26.2
 
