@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1BCA1DF438
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 04:51:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0661DF439
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 04:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387583AbgEWCvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 May 2020 22:51:18 -0400
-Received: from mga17.intel.com ([192.55.52.151]:37983 "EHLO mga17.intel.com"
+        id S2387590AbgEWCvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 May 2020 22:51:19 -0400
+Received: from mga17.intel.com ([192.55.52.151]:37985 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387569AbgEWCvR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2387573AbgEWCvR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 May 2020 22:51:17 -0400
-IronPort-SDR: hA1qx2eTolasJEHxWqBGHLGVAYTxPXXguUdU8KXPkd1ModU6OhALgyYNgPOEAXtlQb+9wjLWFv
- 6pzVTie5fSrQ==
+IronPort-SDR: gKs5DJf7KI2N6R2lFsWG2XnFsQ4iwtPcHAeEyOehzJcBCUjoqKHKRjD9QzG+jDggAvuBfT0P3F
+ IZILYz16BCeA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 19:51:13 -0700
-IronPort-SDR: l1mmRAbXixWeOAyrMElthLFvf6thQt67x0SAgAEjWr7N0lQVU3ZxtcUHSAWqNglP+ByY1lIAdR
- sunY0mWrUjvQ==
+IronPort-SDR: /TETNjL1bcwDQmHgfbC6JSzVnLu+oVOkeljlJ8YLq3HWnAo9vxoWgZNsMrjYG32TNBwcYAXOpe
+ XYCBD6WP6q5g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,424,1583222400"; 
-   d="scan'208";a="290291111"
+   d="scan'208";a="290291118"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by fmsmga004.fm.intel.com with ESMTP; 22 May 2020 19:51:12 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -30,9 +30,9 @@ Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 10/17] igc: Change return type from igc_disable_nfc_rule()
-Date:   Fri, 22 May 2020 19:51:02 -0700
-Message-Id: <20200523025109.3313635-11-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 11/17] igc: Change adapter->nfc_rule_lock to mutex
+Date:   Fri, 22 May 2020 19:51:03 -0700
+Message-Id: <20200523025109.3313635-12-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
 References: <20200523025109.3313635-1-jeffrey.t.kirsher@intel.com>
@@ -45,113 +45,187 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andre Guedes <andre.guedes@intel.com>
 
-None of igc_disable_nfc_rule() callers actually check its returning
-value. A closer look at why this function would fail shows that the
-only situation is when we try to delete an Ethertype or MAC filter that
-doesn't exist.
+This patch changes adapter->nfc_rule_lock type from spin_lock to mutex
+so we avoid unnecessary busy waiting on lock contention.
 
-That situation is very unlikely so we can change igc_del_etype_filter()
-and igc_del_mac_filter() logic to "if the filter doesn't exist, we are
-done", and keep the logic in igc_disable_nfc_rule() callers simple.
+A closer look at the execution context of NFC rule API users shows that
+all of them run in process context. The API users are: ethtool ops,
+igc_configure(), called when interface is brought up by user or reset
+workequeue thread, igc_down(), called when interface is brought down,
+and igc_remove(), called when driver is unloaded.
 
 Signed-off-by: Andre Guedes <andre.guedes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 26 ++++++++---------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/intel/igc/igc.h         |  2 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 24 ++++++++++----------
+ drivers/net/ethernet/intel/igc/igc_main.c    | 14 ++++++------
+ 3 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 0a6f880e3538..9338209cedf2 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2259,18 +2259,16 @@ static int igc_add_mac_filter(struct igc_adapter *adapter,
-  * @adapter: Pointer to adapter where the filter should be deleted from
-  * @type: MAC address filter type (source or destination)
-  * @addr: MAC address
-- *
-- * Return: 0 in case of success, negative errno code otherwise.
-  */
--static int igc_del_mac_filter(struct igc_adapter *adapter,
--			      enum igc_mac_filter_type type, const u8 *addr)
-+static void igc_del_mac_filter(struct igc_adapter *adapter,
-+			       enum igc_mac_filter_type type, const u8 *addr)
- {
- 	struct net_device *dev = adapter->netdev;
- 	int index;
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index a484b328268b..14f9edaaaf83 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -190,7 +190,7 @@ struct igc_adapter {
+ 	/* Any access to elements in nfc_rule_list is protected by the
+ 	 * nfc_rule_lock.
+ 	 */
+-	spinlock_t nfc_rule_lock;
++	struct mutex nfc_rule_lock;
+ 	struct list_head nfc_rule_list;
+ 	unsigned int nfc_rule_count;
  
- 	index = igc_find_mac_filter(adapter, type, addr);
- 	if (index < 0)
--		return -ENOENT;
-+		return;
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index d14c46dce053..946e775e34ae 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -939,7 +939,7 @@ static int igc_ethtool_get_nfc_rule(struct igc_adapter *adapter,
  
- 	if (index == 0) {
- 		/* If this is the default filter, we don't actually delete it.
-@@ -2288,8 +2286,6 @@ static int igc_del_mac_filter(struct igc_adapter *adapter,
+ 	cmd->data = IGC_MAX_RXNFC_RULES;
  
- 		igc_clear_mac_filter_hw(adapter, index);
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	rule = igc_get_nfc_rule(adapter, fsp->location);
+ 	if (!rule)
+@@ -971,11 +971,11 @@ static int igc_ethtool_get_nfc_rule(struct igc_adapter *adapter,
+ 		eth_broadcast_addr(fsp->m_u.ether_spec.h_source);
  	}
--
--	return 0;
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ 	return 0;
+ 
+ out:
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ 	return -EINVAL;
  }
  
- /**
-@@ -2420,23 +2416,20 @@ static int igc_find_etype_filter(struct igc_adapter *adapter, u16 etype)
-  * igc_del_etype_filter() - Delete ethertype filter
-  * @adapter: Pointer to adapter where the filter should be deleted from
-  * @etype: Ethertype value
-- *
-- * Return: 0 in case of success, negative errno code otherwise.
-  */
--static int igc_del_etype_filter(struct igc_adapter *adapter, u16 etype)
-+static void igc_del_etype_filter(struct igc_adapter *adapter, u16 etype)
- {
- 	struct igc_hw *hw = &adapter->hw;
- 	int index;
+@@ -988,18 +988,18 @@ static int igc_ethtool_get_nfc_rules(struct igc_adapter *adapter,
  
- 	index = igc_find_etype_filter(adapter, etype);
- 	if (index < 0)
--		return -ENOENT;
-+		return;
+ 	cmd->data = IGC_MAX_RXNFC_RULES;
  
- 	wr32(IGC_ETQF(index), 0);
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
  
- 	netdev_dbg(adapter->netdev, "Delete ethertype filter: etype %04x\n",
- 		   etype);
--	return 0;
+ 	list_for_each_entry(rule, &adapter->nfc_rule_list, list) {
+ 		if (cnt == cmd->rule_cnt) {
+-			spin_unlock(&adapter->nfc_rule_lock);
++			mutex_unlock(&adapter->nfc_rule_lock);
+ 			return -EMSGSIZE;
+ 		}
+ 		rule_locs[cnt] = rule->location;
+ 		cnt++;
+ 	}
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ 
+ 	cmd->rule_cnt = cnt;
+ 
+@@ -1303,7 +1303,7 @@ static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
+ 
+ 	igc_ethtool_init_nfc_rule(rule, fsp);
+ 
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	err = igc_ethtool_check_nfc_rule(adapter, rule);
+ 	if (err)
+@@ -1317,11 +1317,11 @@ static int igc_ethtool_add_nfc_rule(struct igc_adapter *adapter,
+ 	if (err)
+ 		goto err;
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ 	return 0;
+ 
+ err:
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ 	kfree(rule);
+ 	return err;
  }
+@@ -1333,17 +1333,17 @@ static int igc_ethtool_del_nfc_rule(struct igc_adapter *adapter,
+ 		(struct ethtool_rx_flow_spec *)&cmd->fs;
+ 	struct igc_nfc_rule *rule;
  
- static int igc_enable_nfc_rule(struct igc_adapter *adapter,
-@@ -2477,8 +2470,8 @@ static int igc_enable_nfc_rule(struct igc_adapter *adapter,
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	rule = igc_get_nfc_rule(adapter, fsp->location);
+ 	if (!rule) {
+-		spin_unlock(&adapter->nfc_rule_lock);
++		mutex_unlock(&adapter->nfc_rule_lock);
+ 		return -EINVAL;
+ 	}
+ 
+ 	igc_del_nfc_rule(adapter, rule);
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
  	return 0;
  }
  
--static int igc_disable_nfc_rule(struct igc_adapter *adapter,
--				const struct igc_nfc_rule *rule)
-+static void igc_disable_nfc_rule(struct igc_adapter *adapter,
-+				 const struct igc_nfc_rule *rule)
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 9338209cedf2..165263ae8add 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2539,12 +2539,12 @@ static void igc_flush_nfc_rules(struct igc_adapter *adapter)
  {
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE)
- 		igc_del_etype_filter(adapter, rule->filter.etype);
-@@ -2497,8 +2490,6 @@ static int igc_disable_nfc_rule(struct igc_adapter *adapter,
- 	if (rule->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR)
- 		igc_del_mac_filter(adapter, IGC_MAC_FILTER_TYPE_DST,
- 				   rule->filter.dst_addr);
--
--	return 0;
+ 	struct igc_nfc_rule *rule, *tmp;
+ 
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	list_for_each_entry_safe(rule, tmp, &adapter->nfc_rule_list, list)
+ 		igc_del_nfc_rule(adapter, rule);
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
  }
  
  /**
-@@ -2623,7 +2614,8 @@ static int igc_uc_unsync(struct net_device *netdev, const unsigned char *addr)
+@@ -2583,24 +2583,24 @@ static void igc_restore_nfc_rules(struct igc_adapter *adapter)
  {
- 	struct igc_adapter *adapter = netdev_priv(netdev);
+ 	struct igc_nfc_rule *rule;
  
--	return igc_del_mac_filter(adapter, IGC_MAC_FILTER_TYPE_DST, addr);
-+	igc_del_mac_filter(adapter, IGC_MAC_FILTER_TYPE_DST, addr);
-+	return 0;
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	list_for_each_entry_reverse(rule, &adapter->nfc_rule_list, list)
+ 		igc_enable_nfc_rule(adapter, rule);
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
  }
  
- /**
+ static void igc_nfc_rule_exit(struct igc_adapter *adapter)
+ {
+ 	struct igc_nfc_rule *rule;
+ 
+-	spin_lock(&adapter->nfc_rule_lock);
++	mutex_lock(&adapter->nfc_rule_lock);
+ 
+ 	list_for_each_entry(rule, &adapter->nfc_rule_list, list)
+ 		igc_disable_nfc_rule(adapter, rule);
+ 
+-	spin_unlock(&adapter->nfc_rule_lock);
++	mutex_unlock(&adapter->nfc_rule_lock);
+ }
+ 
+ static int igc_uc_sync(struct net_device *netdev, const unsigned char *addr)
+@@ -3573,7 +3573,7 @@ static int igc_sw_init(struct igc_adapter *adapter)
+ 				VLAN_HLEN;
+ 	adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
+ 
+-	spin_lock_init(&adapter->nfc_rule_lock);
++	mutex_init(&adapter->nfc_rule_lock);
+ 	INIT_LIST_HEAD(&adapter->nfc_rule_list);
+ 	adapter->nfc_rule_count = 0;
+ 
 -- 
 2.26.2
 
