@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 280B91DF8BD
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 19:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942CE1DF9A2
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 19:33:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388071AbgEWRQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 13:16:24 -0400
-Received: from foss.arm.com ([217.140.110.172]:53302 "EHLO foss.arm.com"
+        id S2387998AbgEWRdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 13:33:06 -0400
+Received: from foss.arm.com ([217.140.110.172]:53910 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387571AbgEWRQY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 May 2020 13:16:24 -0400
+        id S1727123AbgEWRdF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 May 2020 13:33:05 -0400
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96FBB1FB;
-        Sat, 23 May 2020 10:16:23 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F25441FB;
+        Sat, 23 May 2020 10:33:04 -0700 (PDT)
 Received: from [192.168.122.166] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 317E93F305;
-        Sat, 23 May 2020 10:16:23 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8BD1E3F305;
+        Sat, 23 May 2020 10:33:04 -0700 (PDT)
 Subject: Re: [RFC 03/11] net: phy: refactor c45 phy identification sequence
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
@@ -27,8 +27,8 @@ References: <20200522213059.1535892-1-jeremy.linton@arm.com>
  <20200522213059.1535892-4-jeremy.linton@arm.com>
  <20200523152800.GM610998@lunn.ch>
 From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <1c111763-a46c-35c2-149c-b1af8b60d7e7@arm.com>
-Date:   Sat, 23 May 2020 12:16:18 -0500
+Message-ID: <54e6a5d3-3d98-7cd4-3622-ab5019725979@arm.com>
+Date:   Sat, 23 May 2020 12:32:59 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
@@ -42,8 +42,6 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
-
-Thanks for taking a look at this!
 
 On 5/23/20 10:28 AM, Andrew Lunn wrote:
 > On Fri, May 22, 2020 at 04:30:51PM -0500, Jeremy Linton wrote:
@@ -69,9 +67,6 @@ On 5/23/20 10:28 AM, Andrew Lunn wrote:
 > Hi Jeremy
 > 
 > How about read_phy_id() so you can avoid the _ prefix.
-
-Yes, that sounds good.
-
 > 
 >>   static bool valid_phy_id(int val)
 >>   {
@@ -99,10 +94,10 @@ Yes, that sounds good.
 >>   			return -EIO;
 > 
 > Renaming reg_addr to ret does not belong in this patch.
+> 
 
-Sure, that makes sense. The rename was a last min change when I was 
-shuffling the args around.
+Looks like I changed the loop index in this patch while shuffling things 
+around yesterday too. The "for (i = 1/0.." change belongs in 5/11 as well.
 
-Thanks,
 
 
