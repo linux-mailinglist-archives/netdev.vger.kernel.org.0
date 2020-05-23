@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C201DF551
+	by mail.lfdr.de (Postfix) with ESMTP id AAEBA1DF552
 	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 08:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387732AbgEWGtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 02:49:13 -0400
+        id S2387737AbgEWGtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 02:49:16 -0400
 Received: from mga01.intel.com ([192.55.52.88]:52994 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387726AbgEWGtM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 May 2020 02:49:12 -0400
-IronPort-SDR: PEofo5abPLZo5KwxjCEcZoiRgIrEkqdSSWJaPArFlaT8/TxsxG3fQiXNkWWyjitpb6kZ6fVSlo
- 9PQCpwKTtqZg==
+        id S2387710AbgEWGtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 May 2020 02:49:13 -0400
+IronPort-SDR: uogyiUsynPkk++/0Jfha9D7qS4mROmN2gRZVglBzGqOmZvwDTOsJzS/SUPnEmHRHw7cNZYp4k5
+ sdYfn7MlnhJA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2020 23:48:51 -0700
-IronPort-SDR: BxRvET4QIWioni69HY5ocTyovg2Xj7hgXpz1wzZCc3LEv2u74OlzzO4XR0AjMd9/ZDsnCFC8Hx
- 4vUTKRo682Jg==
+IronPort-SDR: iXEiIy0VTmEsAdLppOT5seunr0ynJ1gWTM80o6EVyq7SrppVSLywyRADXAkKJKwphe21nOVA+Z
+ zsuNP6r8BO+g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,424,1583222400"; 
-   d="scan'208";a="374966914"
+   d="scan'208";a="374966917"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by fmsmga001.fm.intel.com with ESMTP; 22 May 2020 23:48:51 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 14/16] ice: Fix bad register reads
-Date:   Fri, 22 May 2020 23:48:45 -0700
-Message-Id: <20200523064847.3972158-15-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 15/16] ice: fix usage of incorrect variable
+Date:   Fri, 22 May 2020 23:48:46 -0700
+Message-Id: <20200523064847.3972158-16-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200523064847.3972158-1-jeffrey.t.kirsher@intel.com>
 References: <20200523064847.3972158-1-jeffrey.t.kirsher@intel.com>
@@ -44,52 +43,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-The "ethtool -d" handler reads registers in the ice_regs_dump_list array
-and returns read values back to the userspace.
+The driver was using rq_last_status where it should have been
+using sq_last_status. Fix the string to be using the correct
+error reporting variable.
 
-The register offsets PFINT0_ITR* are not valid as per the specification
-and reading these causes a "unable to handle kernel paging request" bug
-in the driver. Remove these registers from ice_regs_dump_list.
-
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c    | 3 ---
- drivers/net/ethernet/intel/ice/ice_hw_autogen.h | 3 ---
- 2 files changed, 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c    | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 72105d70cead..477ad33e0403 100644
+index 477ad33e0403..f39d4eb7fd8b 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -142,9 +142,6 @@ static const u32 ice_regs_dump_list[] = {
- 	QINT_RQCTL(0),
- 	PFINT_OICR_ENA,
- 	QRX_ITR(0),
--	PF0INT_ITR_0(0),
--	PF0INT_ITR_1(0),
--	PF0INT_ITR_2(0),
- };
+@@ -3251,7 +3251,7 @@ static int ice_vsi_set_dflt_rss_lut(struct ice_vsi *vsi, int req_rss_size)
+ 	if (status) {
+ 		dev_err(dev, "Cannot set RSS lut, err %s aq_err %s\n",
+ 			ice_stat_str(status),
+-			ice_aq_str(hw->adminq.rq_last_status));
++			ice_aq_str(hw->adminq.sq_last_status));
+ 		err = -EIO;
+ 	}
  
- struct ice_priv_flag {
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index 1f9b427a35fa..2f1c776747a4 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -6,9 +6,6 @@
- #ifndef _ICE_HW_AUTOGEN_H_
- #define _ICE_HW_AUTOGEN_H_
- 
--#define PF0INT_ITR_0(_i)			(0x03000004 + ((_i) * 4096))
--#define PF0INT_ITR_1(_i)			(0x03000008 + ((_i) * 4096))
--#define PF0INT_ITR_2(_i)			(0x0300000C + ((_i) * 4096))
- #define QTX_COMM_DBELL(_DBQM)			(0x002C0000 + ((_DBQM) * 4))
- #define QTX_COMM_HEAD(_DBQM)			(0x000E0000 + ((_DBQM) * 4))
- #define QTX_COMM_HEAD_HEAD_S			0
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5adf6c92872d..6e6df4d690cc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5232,7 +5232,7 @@ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size)
+ 		if (status) {
+ 			dev_err(dev, "Cannot set RSS key, err %s aq_err %s\n",
+ 				ice_stat_str(status),
+-				ice_aq_str(hw->adminq.rq_last_status));
++				ice_aq_str(hw->adminq.sq_last_status));
+ 			return -EIO;
+ 		}
+ 	}
+@@ -5243,7 +5243,7 @@ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size)
+ 		if (status) {
+ 			dev_err(dev, "Cannot set RSS lut, err %s aq_err %s\n",
+ 				ice_stat_str(status),
+-				ice_aq_str(hw->adminq.rq_last_status));
++				ice_aq_str(hw->adminq.sq_last_status));
+ 			return -EIO;
+ 		}
+ 	}
+@@ -5276,7 +5276,7 @@ int ice_get_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size)
+ 		if (status) {
+ 			dev_err(dev, "Cannot get RSS key, err %s aq_err %s\n",
+ 				ice_stat_str(status),
+-				ice_aq_str(hw->adminq.rq_last_status));
++				ice_aq_str(hw->adminq.sq_last_status));
+ 			return -EIO;
+ 		}
+ 	}
+@@ -5287,7 +5287,7 @@ int ice_get_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size)
+ 		if (status) {
+ 			dev_err(dev, "Cannot get RSS lut, err %s aq_err %s\n",
+ 				ice_stat_str(status),
+-				ice_aq_str(hw->adminq.rq_last_status));
++				ice_aq_str(hw->adminq.sq_last_status));
+ 			return -EIO;
+ 		}
+ 	}
 -- 
 2.26.2
 
