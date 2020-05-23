@@ -2,96 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A871DF803
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 17:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C501DF811
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 17:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731324AbgEWP2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 11:28:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46352 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728296AbgEWP2I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 May 2020 11:28:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=2ukf+KQSooDXzKATJsVcZaVVmp8u3iGwjF+E46B8zB4=; b=bEiQ7LpPNpTm7pTo6XIi1QDUvo
-        fQMeCQcMBGPCxMUuu+vQ5ZnwPD/XWfrLN5CQz6BY5MUOVJUc3j1mJ7iHiyia+YgolS6ZXfGnbbrkO
-        DjFEEQx58I83y7qOexke1vyLnYLxVz63j/fZdcYh/OjOjKWgSGy0GpQB/4pDnSVwSE7Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jcW48-0034VW-Sg; Sat, 23 May 2020 17:28:00 +0200
-Date:   Sat, 23 May 2020 17:28:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 03/11] net: phy: refactor c45 phy identification sequence
-Message-ID: <20200523152800.GM610998@lunn.ch>
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-4-jeremy.linton@arm.com>
+        id S1727033AbgEWPkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 11:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726861AbgEWPke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 11:40:34 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B75C061A0E
+        for <netdev@vger.kernel.org>; Sat, 23 May 2020 08:40:34 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id l11so13242383wru.0
+        for <netdev@vger.kernel.org>; Sat, 23 May 2020 08:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=oH8+MIJabNCGDrSLi/pBoIYe0aeOrCFf09t1tx2Q72g=;
+        b=QKtMEO+s9K6nr4JDJC5jX7tkWEEkZMGSLuiFj/J/WBT9dV/N2vyWYvtjswlZ8O9DQx
+         IuD3WDfGXhe7+ZeQZcreY3IVeUJpBUn3dtEUHytkBG/x5jgGGrnjF9kejBTrRPIcsdtD
+         JA11lSwFwWAKmbnLXdY8OCX/vU4EvoRNDpleBPX51bS0ET1lswHvWGoMjiS2HiJMbUrf
+         F/8aCIFK+JgsBup/QNCHLFts+g81PHLPgw3ZCDT9OpXHk6yl2nfAYXUV5w2oBcwRKrLW
+         VTgE1tIgilW8q472YSMmo3utN3hRadRxoVivd6AiWHRPLd7QiKv2ToSqGuTcYu7am1fs
+         ozJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=oH8+MIJabNCGDrSLi/pBoIYe0aeOrCFf09t1tx2Q72g=;
+        b=pznQAVjJqMWc0lzGLwf1lcNr8riak8iHGM/5w+b3QFVs4VZO4NYDDTT+6AQetFXfhf
+         SYa32yoeHYL2kQzxVXVXymQupXU/eT5MFS3le+e3szGu63A+6sIOnm3IST/64qYa7asu
+         1YCJTPwA6WULxIkXNSS7C3NzeGDmBO9UL9UrQG0TjOpXlOqHGmAdwJijB24aqqgSCZSG
+         /nXjQuPw2xsB/IaimojSuxVD/xn7UYrKevx49YMMLw+0ViPtJtLCoYEzQRqzD0crjtif
+         EoPK5aZ6oMSUTwerEDEFGgiZ4wKWpkpEW/0nsSFMqw9w7wWC8eREORNDPTWHupM4ZR7P
+         Fkww==
+X-Gm-Message-State: AOAM5323DBeQPZHUA0fuk0jdTy+g9VBchGRBf40fOtmryEZgK9PRP4ZQ
+        BmqPR+5cZinKEK2d3ttuwk5BpDnd
+X-Google-Smtp-Source: ABdhPJxURu67cjQISSX+f7/w8AC2qpaTnjD8/XxwlYseiRT2BQwsWf0d8ZvujDqWtLg3d7OTAlYVcQ==
+X-Received: by 2002:adf:ed49:: with SMTP id u9mr6641431wro.414.1590248432820;
+        Sat, 23 May 2020 08:40:32 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:69db:99aa:4dc0:a302? (p200300ea8f28520069db99aa4dc0a302.dip0.t-ipconnect.de. [2003:ea:8f28:5200:69db:99aa:4dc0:a302])
+        by smtp.googlemail.com with ESMTPSA id c140sm13236541wmd.18.2020.05.23.08.40.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 May 2020 08:40:32 -0700 (PDT)
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] ethtool: propagate get_coalesce return value
+Message-ID: <1f4f887a-4339-1ece-b2aa-c9712e54bce3@gmail.com>
+Date:   Sat, 23 May 2020 17:40:25 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200522213059.1535892-4-jeremy.linton@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 04:30:51PM -0500, Jeremy Linton wrote:
-> Lets factor out the phy id logic, and make it generic
-> so that it can be used for c22 and c45.
-> 
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> ---
->  drivers/net/phy/phy_device.c | 65 +++++++++++++++++++-----------------
->  1 file changed, 35 insertions(+), 30 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 7746c07b97fe..f0761fa5e40b 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -695,6 +695,29 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
->  	return 0;
->  }
->  
-> +static int _get_phy_id(struct mii_bus *bus, int addr, int dev_addr,
-> +		       u32 *phy_id, bool c45)
+get_coalesce returns 0 or ERRNO, but the return value isn't checked.
+The returned coalesce data may be invalid if an ERRNO is set,
+therefore better check and propagate the return value.
 
-Hi Jeremy
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ net/ethtool/ioctl.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-How about read_phy_id() so you can avoid the _ prefix.
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index eeb1137a3..923e220ff 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -1510,11 +1510,14 @@ static noinline_for_stack int ethtool_get_coalesce(struct net_device *dev,
+ 						   void __user *useraddr)
+ {
+ 	struct ethtool_coalesce coalesce = { .cmd = ETHTOOL_GCOALESCE };
++	int ret;
+ 
+ 	if (!dev->ethtool_ops->get_coalesce)
+ 		return -EOPNOTSUPP;
+ 
+-	dev->ethtool_ops->get_coalesce(dev, &coalesce);
++	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce);
++	if (ret)
++		return ret;
+ 
+ 	if (copy_to_user(useraddr, &coalesce, sizeof(coalesce)))
+ 		return -EFAULT;
+-- 
+2.26.2
 
->  static bool valid_phy_id(int val)
->  {
->  	return (val > 0 && ((val & 0x1fffffff) != 0x1fffffff));
-> @@ -715,17 +738,17 @@ static bool valid_phy_id(int val)
->   */
->  static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
->  			   struct phy_c45_device_ids *c45_ids) {
-> -	int phy_reg;
-> -	int i, reg_addr;
-> +	int ret;
-> +	int i;
->  	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
->  	u32 *devs = &c45_ids->devices_in_package;
->  
->  	/* Find first non-zero Devices In package. Device zero is reserved
->  	 * for 802.3 c45 complied PHYs, so don't probe it at first.
->  	 */
-> -	for (i = 1; i < num_ids && *devs == 0; i++) {
-> -		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, i, devs);
-> -		if (phy_reg < 0)
-> +	for (i = 0; i < num_ids && *devs == 0; i++) {
-> +		ret = get_phy_c45_devs_in_pkg(bus, addr, i, devs);
-> +		if (ret < 0)
->  			return -EIO;
-
-Renaming reg_addr to ret does not belong in this patch.
-
-	 Andrew
