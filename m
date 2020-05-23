@@ -2,102 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 942CE1DF9A2
-	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 19:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35A9C1DF9C0
+	for <lists+netdev@lfdr.de>; Sat, 23 May 2020 19:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387998AbgEWRdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 13:33:06 -0400
-Received: from foss.arm.com ([217.140.110.172]:53910 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727123AbgEWRdF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 May 2020 13:33:05 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F25441FB;
-        Sat, 23 May 2020 10:33:04 -0700 (PDT)
-Received: from [192.168.122.166] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8BD1E3F305;
-        Sat, 23 May 2020 10:33:04 -0700 (PDT)
-Subject: Re: [RFC 03/11] net: phy: refactor c45 phy identification sequence
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-4-jeremy.linton@arm.com>
- <20200523152800.GM610998@lunn.ch>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <54e6a5d3-3d98-7cd4-3622-ab5019725979@arm.com>
-Date:   Sat, 23 May 2020 12:32:59 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S2388252AbgEWRri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 13:47:38 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:56974 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387515AbgEWRrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 13:47:37 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04NHfZGI061426;
+        Sat, 23 May 2020 17:47:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=+K7hQZPEXSyknr5qcG7D4mkj48QK4TpEeGTcX08C/ss=;
+ b=AqD505EQz3V9MBm8s4Q2RU8YHY/vna50cBXOf1fEDcZjDRi489GMpKosyh+oAe2+AT3v
+ uqhenmCnBOrdBxYRl150TOZlSUTS4mHQB30bC87q46BQeWUsmq1crivMnOwKG1zMZE1H
+ khANm2GiBbYH5e30S8lXuNfAeybzMvO4rHf6g564r53qtutLCEWvlQ70iHDtcVgERyOp
+ dJ/asBivQhW4D7xdQHQT2rxrkhY/gzxEWo/dUuE7QomGAPDPtyK9pirklT16LFbdXIDd
+ 2v2Nl7wqoAoIIO3tKTOiuDQ24IVY8R+ovkCvreLEOhAWZnTTRs54bW+QpOWLWLBlwNNd Zg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 316vfn16td-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 23 May 2020 17:47:05 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04NHhKp2080621;
+        Sat, 23 May 2020 17:47:05 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 316un1djh2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 23 May 2020 17:47:05 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04NHkx1e010453;
+        Sat, 23 May 2020 17:47:00 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 23 May 2020 10:46:59 -0700
+Date:   Sat, 23 May 2020 20:46:48 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] ipv4:  potential underflow in compat_ip_setsockopt()
+Message-ID: <20200523174648.GA105146@mwanda>
 MIME-Version: 1.0
-In-Reply-To: <20200523152800.GM610998@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9630 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 mlxscore=0
+ malwarescore=0 phishscore=0 spamscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005230147
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9630 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 clxscore=1011
+ priorityscore=1501 mlxscore=0 malwarescore=0 spamscore=0 impostorscore=0
+ mlxlogscore=999 lowpriorityscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005230147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The value of "n" is capped at 0x1ffffff but it checked for negative
+values.  I don't think this causes a problem but I'm not certain and
+it's harmless to prevent it.
 
-On 5/23/20 10:28 AM, Andrew Lunn wrote:
-> On Fri, May 22, 2020 at 04:30:51PM -0500, Jeremy Linton wrote:
->> Lets factor out the phy id logic, and make it generic
->> so that it can be used for c22 and c45.
->>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->> ---
->>   drivers/net/phy/phy_device.c | 65 +++++++++++++++++++-----------------
->>   1 file changed, 35 insertions(+), 30 deletions(-)
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 7746c07b97fe..f0761fa5e40b 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -695,6 +695,29 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
->>   	return 0;
->>   }
->>   
->> +static int _get_phy_id(struct mii_bus *bus, int addr, int dev_addr,
->> +		       u32 *phy_id, bool c45)
-> 
-> Hi Jeremy
-> 
-> How about read_phy_id() so you can avoid the _ prefix.
-> 
->>   static bool valid_phy_id(int val)
->>   {
->>   	return (val > 0 && ((val & 0x1fffffff) != 0x1fffffff));
->> @@ -715,17 +738,17 @@ static bool valid_phy_id(int val)
->>    */
->>   static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
->>   			   struct phy_c45_device_ids *c45_ids) {
->> -	int phy_reg;
->> -	int i, reg_addr;
->> +	int ret;
->> +	int i;
->>   	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
->>   	u32 *devs = &c45_ids->devices_in_package;
->>   
->>   	/* Find first non-zero Devices In package. Device zero is reserved
->>   	 * for 802.3 c45 complied PHYs, so don't probe it at first.
->>   	 */
->> -	for (i = 1; i < num_ids && *devs == 0; i++) {
->> -		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, i, devs);
->> -		if (phy_reg < 0)
->> +	for (i = 0; i < num_ids && *devs == 0; i++) {
->> +		ret = get_phy_c45_devs_in_pkg(bus, addr, i, devs);
->> +		if (ret < 0)
->>   			return -EIO;
-> 
-> Renaming reg_addr to ret does not belong in this patch.
-> 
+Fixes: 2e04172875c9 ("ipv4: do compat setsockopt for MCAST_MSFILTER directly")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
 
-Looks like I changed the loop index in this patch while shuffling things 
-around yesterday too. The "for (i = 1/0.." change belongs in 5/11 as well.
+ net/ipv4/ip_sockglue.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index a2469bc57cfe..f43d5f12aa86 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -1347,8 +1347,8 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
+ 	{
+ 		const int size0 = offsetof(struct compat_group_filter, gf_slist);
+ 		struct compat_group_filter *gf32;
++		unsigned int n;
+ 		void *p;
+-		int n;
+ 
+ 		if (optlen < size0)
+ 			return -EINVAL;
+-- 
+2.26.2
 
