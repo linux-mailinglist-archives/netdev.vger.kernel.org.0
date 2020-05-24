@@ -2,216 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9AD1E01C6
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 21:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CF71E01E1
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 21:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388075AbgEXTJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 15:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388059AbgEXTJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 15:09:18 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20352C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 12:09:18 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id f4so7752443pgi.10
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 12:09:18 -0700 (PDT)
+        id S2388039AbgEXTOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 15:14:01 -0400
+Received: from mail-eopbgr1410130.outbound.protection.outlook.com ([40.107.141.130]:23236
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387747AbgEXTOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 May 2020 15:14:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TiGPX4o4Ot9L4+ztPdyT0YX4S1ijyhqRNyww6+6XPUP/HtWpeD9svCQ7A+AaZIND0a8LZMF48J0Q0eAfSrxTuLm51L6cUUcESLv2NbifMlNCW3Tw+VSfsEcFk/HQHZXyJ55b9DyEyf8B0LFfV9QxOlxlB9hUF7HPI/rJIk2WTnjLBe6husMsPQWdZoxullr2K+EpSSL0Jla8gzUWDgBJQa288r0UcuwGnIO4osBjoXi4jr88XJVHX2aQU/x4cdMWHibWhr7Xafd9n1E5T5Nrx4tclTRYDL9ImfH4zx/QsPYG+DTTblFJAttoPtbfZEYIhvRNhBJQtEBnw79ZmWzuhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vKT7rVGZzs9OaaKWlApYA6g0s3Haky99AnSLC7Tt6/s=;
+ b=hiCf2XOvBzVmU1w+73+UCZusCBiDC3Sfh4bkQV/4qYQbcMBc+MNH4lt9ERYw154C3TSBBxF3Wb6AVzX2Z2DzP05zLf3V4skQiEkAs3WNwTgu/6NCJALq7EO/tjgBjnupVf6aejX9Abf8Oq48584/knQUMbgWhO9gC8qW567RniVewSP0xrW0ia1DrtnyfpIegWgQEvOxtkh8iPFtsjdmmc0L2+FhXey2jpzMIj4pEzhPzvvmcwfoXUkS/i/o/ezLbWvPHlRwH7nqAzuBq0yigXh0qhUl7ulm5zDquMtg80vlndQrKSeIS6LQAkJUTX9Na2zCsfJKCN7YDo8MKMJG6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o+GSMkonRmWEPDkdMmxa5YXNk11jnHvsc3+4Ohue4+E=;
-        b=VQuT4BAT3274X5Et/iAaS1UneizOhPLg6eFp0/Sfwdb/klUnqeZS09wRKo+O+s0NJY
-         lAPKiFCVLlM6N9IPDD+536a4+E4A4IBnWn1oWybl+TXTQPXDxC5KbXCF3d+HfwtpIIas
-         jSFvrw17eV0IlR7t2zJqlh3fi1b9tIsKMj4TZqOGcdkHTShI8LQeEZLhXuWfq3HEqsx0
-         gX44zl3CWOb2rwXG+uRyfzJicPyViuGWHX29f3E9H4bEOF5PaRKwBjnrCH6KTla/nnx1
-         6BwxOBvv3Uq5jdU1MUyKGQPVjbuuEfiaFLK7g35zL20kqDdxGE2LOyaqtjBGbK/OTJ9K
-         DmqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o+GSMkonRmWEPDkdMmxa5YXNk11jnHvsc3+4Ohue4+E=;
-        b=NXRdwITXnyq3RoH8pPHI6ReaHsnZfYnLcMPWR0ltSoUTG45qAJP3E6h6rjPRDyok89
-         Uln/HW3CAuXNlEnDAHTsh4hx0znEuoFiaJFMcRXV5wbLB3ZbdPbVRVsyzlcaOvj14Dua
-         +Sj/YpcmfFES8ju5/hAYHXGCZxns1c1AsJMcSGeO532KD/rKNypyEcSUg+Me1nps+ci2
-         NDJ/6gpK6b7bj9p051M6wyGfX2Fyo1rvXY6EOlhVnOZ9v8NZQU5DGR3LY7zer2Pqbri4
-         iBQGItqU0G3vpXSh4k3XkL7BxmTetuPcppfp5/NxjKrWugOQO2ze/6si4JImmhpyo54i
-         N/Fg==
-X-Gm-Message-State: AOAM530H5TLJ2jZaZK0UpnKUPFgyFGEKz8S6Uf/jTIg7X/3GOCCmP8ku
-        Vth5et6dMGB1KfrseH+wO5r2IcH2vUnatg==
-X-Google-Smtp-Source: ABdhPJyqEdn4kOOcWrH+5unN1NZm5gvuO3X0j2VBaCokScU8oAIFrmT6KWVODS0nmOrJaoWoh/5Fpw==
-X-Received: by 2002:a62:7cd1:: with SMTP id x200mr14109755pfc.232.1590347357543;
-        Sun, 24 May 2020 12:09:17 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 128sm11051325pfd.114.2020.05.24.12.09.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 May 2020 12:09:17 -0700 (PDT)
-Date:   Sun, 24 May 2020 12:09:08 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     "Ian K. Coolidge" <icoolidge@google.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] iproute2: ip addr: Accept 'optimistic' flag
-Message-ID: <20200524120908.28f30059@hermes.lan>
-In-Reply-To: <20200524015144.44017-1-icoolidge@google.com>
-References: <20200524015144.44017-1-icoolidge@google.com>
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vKT7rVGZzs9OaaKWlApYA6g0s3Haky99AnSLC7Tt6/s=;
+ b=esH5DOZ2psRCJJIiBzE0gjbNpjvG0OuIzn6jOqTqfF5lpg1c9pfkaBuucfsyZSxIUknrf1nEU3LCeNhr3ccx3q9ZAKKPE3c7JeJyeBUhShZr5ADesEHHEaE/a2JbIlrLC9BBgbwDuQ6sdSwVfrK3ujjlBgsYEJRyRn0bTXgVnqc=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=renesas.com;
+Received: from TYAPR01MB4735.jpnprd01.prod.outlook.com (2603:1096:404:12b::18)
+ by TYAPR01MB4894.jpnprd01.prod.outlook.com (2603:1096:404:12a::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.25; Sun, 24 May
+ 2020 19:13:56 +0000
+Received: from TYAPR01MB4735.jpnprd01.prod.outlook.com
+ ([fe80::618d:b9fb:9576:8a52]) by TYAPR01MB4735.jpnprd01.prod.outlook.com
+ ([fe80::618d:b9fb:9576:8a52%5]) with mapi id 15.20.3021.029; Sun, 24 May 2020
+ 19:13:56 +0000
+Date:   Sun, 24 May 2020 15:13:43 -0400
+From:   Vincent Cheng <vincent.cheng.xh@renesas.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        John Stultz <john.stultz@linaro.org>
+Subject: Re: [PATCH net-next V2] Let the ADJ_OFFSET interface respect the
+ ADJ_NANO flag for PHC devices.
+Message-ID: <20200524191342.GA9031@renesas.com>
+References: <20200524182710.576-1-richardcochran@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200524182710.576-1-richardcochran@gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-ClientProxiedBy: BYAPR11CA0081.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::22) To TYAPR01MB4735.jpnprd01.prod.outlook.com
+ (2603:1096:404:12b::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from renesas.com (173.195.53.163) by BYAPR11CA0081.namprd11.prod.outlook.com (2603:10b6:a03:f4::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Sun, 24 May 2020 19:13:54 +0000
+X-Originating-IP: [173.195.53.163]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 065ef4cc-b7e7-4ab2-5c2c-08d800169abc
+X-MS-TrafficTypeDiagnostic: TYAPR01MB4894:
+X-Microsoft-Antispam-PRVS: <TYAPR01MB489469824FE204DEAE01094DD2B20@TYAPR01MB4894.jpnprd01.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-Forefront-PRVS: 0413C9F1ED
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /IrNNIIGHjcBlX0obDA9MrhYPSnBjlldaLsmDYcS+oWnq1gLPSMSNwb8gDTdpge2ZVpBx/YVs7x70tTmgV18C3BEzYyOKITgyJ5l961JgLDiXK53ciAG+FehJi1VYaVCNW4T8IDy+mNu3zSjU4aRVvXgBWd97G1MUe74dsVH1UtmkTpKjdUhCrbTewUoKi3gEcazsR50fXTQyK9FahtPgmmUmucy8RTgZX1wzUvhnw8Oi8J0PeytUfqeqyaYnYHj017cX4+mKpYd4cRqyYkaq8ePMfuAWnXChuNEVvpumbJkkoMT1satEEiEU3Xt6P1t
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB4735.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(346002)(396003)(39850400004)(376002)(2906002)(66556008)(66476007)(66946007)(478600001)(55016002)(4326008)(86362001)(956004)(2616005)(33656002)(6916009)(1076003)(8886007)(7696005)(54906003)(26005)(316002)(186003)(16526019)(5660300002)(52116002)(8676002)(36756003)(8936002)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: ilJYsXKTs+Yifge8Mfu20yl/UQjBmYY/j78/ONjKl18ziE9KmpkcmfKXI6DdeNJvmtPqB9zwLEp337/V3S6MpSuwWBFps7M1cDB4gNwmF6dTFKgXp/KvwOuWszj93V/HblimFoaPpOkwPemKvRe0GBjz4AOUuxfXnnocIB228alhblr90+Si3LiR5Shq9LJYLh1jxx4797pN5Wsgt+cHsixFoyMtMX8nBYCANq8dxVBW/RiURJYOGLfHFny8Aq0oRYx9NXpiVl5WFa/GM6pNcH6QQHLcRJCqKQygT/jt/Xa3urD9/1ghiGgISMvFY8aMH4Lw+0/Su+9fwo+4Vl15vOq0CGA0wQjHvlvMLuZQoaS06J0cJ8USSFcSLyZ6e4AaE1peb1QUTKeUHlc/Q77+1sfFTDDcmk2AzUsxkkyXy7ldfXJYXvLqaJDttyN5piDGTRshfihzSgGyhDW5La4SV01aByiiNAxM/K6HOdyXgC6dOG9nwc9FVNHkE9WI2lnj
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 065ef4cc-b7e7-4ab2-5c2c-08d800169abc
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2020 19:13:56.0999
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r7roxyQWkgPuhEboHDhEX30qxPOyjuU6wKzGwmbvDjDrRfcaam/4xB62b8fDaVTaATCNiWOqfa95jSgBzTKChplawGhqd2t9uMYd0pwnxKI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4894
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 May 2020 18:51:44 -0700
-"Ian K. Coolidge" <icoolidge@google.com> wrote:
+On Sun, May 24, 2020 at 02:27:10PM EDT, Richard Cochran wrote:
+>In commit 184ecc9eb260d5a3bcdddc5bebd18f285ac004e9 ("ptp: Add adjphase
+>function to support phase offset control.") the PTP Hardware Clock
+>interface expanded to support the ADJ_OFFSET offset mode.  However,
+>the implementation did not respect the traditional yet pedantic
+>distinction between units of microseconds and nanoseconds signaled by
+>the ADJ_NANO flag.  This patch fixes the issue by adding logic to
+>handle that flag.
+>
+>Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+>---
+> drivers/ptp/ptp_clock.c | 10 ++++++++--
+> 1 file changed, 8 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+>index fc984a8828fb..03a246e60fd9 100644
+>--- a/drivers/ptp/ptp_clock.c
+>+++ b/drivers/ptp/ptp_clock.c
+>@@ -147,8 +147,14 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+> 			err = ops->adjfreq(ops, ppb);
+> 		ptp->dialed_frequency = tx->freq;
+> 	} else if (tx->modes & ADJ_OFFSET) {
+>-		if (ops->adjphase)
+>-			err = ops->adjphase(ops, tx->offset);
+>+		if (ops->adjphase) {
+>+			s32 offset = tx->offset;
+>+
+>+			if (!(tx->modes & ADJ_NANO))
+>+				offset *= NSEC_PER_USEC;
+>+
+>+			err = ops->adjphase(ops, offset);
+>+		}
+> 	} else if (tx->modes == 0) {
+> 		tx->freq = ptp->dialed_frequency;
+> 		err = 0;
+>-- 
 
-> This allows addresses added to use IPv6 optimistic DAD.
-> ---
->  ip/ipaddress.c           | 7 ++++++-
->  man/man8/ip-address.8.in | 7 ++++++-
->  2 files changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-> index 80d27ce2..48cf5e41 100644
-> --- a/ip/ipaddress.c
-> +++ b/ip/ipaddress.c
-> @@ -72,7 +72,7 @@ static void usage(void)
->  		"           [-]tentative | [-]deprecated | [-]dadfailed | temporary |\n"
->  		"           CONFFLAG-LIST ]\n"
->  		"CONFFLAG-LIST := [ CONFFLAG-LIST ] CONFFLAG\n"
-> -		"CONFFLAG  := [ home | nodad | mngtmpaddr | noprefixroute | autojoin ]\n"
-> +		"CONFFLAG  := [ home | nodad | optimistic | mngtmpaddr | noprefixroute | autojoin ]\n"
->  		"LIFETIME := [ valid_lft LFT ] [ preferred_lft LFT ]\n"
->  		"LFT := forever | SECONDS\n"
->  		"TYPE := { vlan | veth | vcan | vxcan | dummy | ifb | macvlan | macvtap |\n"
-> @@ -2335,6 +2335,11 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
->  				ifa_flags |= IFA_F_HOMEADDRESS;
->  			else
->  				fprintf(stderr, "Warning: home option can be set only for IPv6 addresses\n");
-> +		} else if (strcmp(*argv, "optimistic") == 0) {
-> +			if (req.ifa.ifa_family == AF_INET6)
-> +				ifa_flags |= IFA_F_OPTIMISTIC;
-> +			else
-> +				fprintf(stderr, "Warning: optimistic option can be set only for IPv6 addresses\n");
->  		} else if (strcmp(*argv, "nodad") == 0) {
->  			if (req.ifa.ifa_family == AF_INET6)
->  				ifa_flags |= IFA_F_NODAD;
-> diff --git a/man/man8/ip-address.8.in b/man/man8/ip-address.8.in
-> index 2a553190..fe773c91 100644
-> --- a/man/man8/ip-address.8.in
-> +++ b/man/man8/ip-address.8.in
-> @@ -92,7 +92,7 @@ ip-address \- protocol address management
->  
->  .ti -8
->  .IR CONFFLAG " := "
-> -.RB "[ " home " | " mngtmpaddr " | " nodad " | " noprefixroute " | " autojoin " ]"
-> +.RB "[ " home " | " mngtmpaddr " | " nodad " | " optimstic " | " noprefixroute " | " autojoin " ]"
->  
->  .ti -8
->  .IR LIFETIME " := [ "
-> @@ -258,6 +258,11 @@ stateless auto-configuration was active.
->  (IPv6 only) do not perform Duplicate Address Detection (RFC 4862) when
->  adding this address.
->  
-> +.TP
-> +.B optimistic
-> +(IPv6 only) When performing Duplicate Address Detection, use the RFC 4429
-> +optimistic variant.
-> +
->  .TP
->  .B noprefixroute
->  Do not automatically create a route for the network prefix of the added
+Hi Richard,
 
-Since there already is a table for print() code, could that be used for parse()?
-Something like the following UNTESTED
+Oops.  Thank-you for the fix.
 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 80d27ce27d0c..debb83157d60 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -1236,7 +1236,7 @@ static unsigned int get_ifa_flags(struct ifaddrmsg *ifa,
- /* Mapping from argument to address flag mask */
- static const struct {
- 	const char *name;
--	unsigned long value;
-+	unsigned int value;
- } ifa_flag_names[] = {
- 	{ "secondary",		IFA_F_SECONDARY },
- 	{ "temporary",		IFA_F_SECONDARY },
-@@ -1253,13 +1253,46 @@ static const struct {
- 	{ "stable-privacy",	IFA_F_STABLE_PRIVACY },
- };
- 
-+#define IPV6ONLY_FLAGS	\
-+		(IFA_F_NODAD | IFA_F_OPTIMISTIC | IFA_F_DADFAILED | \
-+		 IFA_F_HOMEADDRESS | IFA_F_TENTATIVE | \
-+		 IFA_F_MANAGETEMPADDR | IFA_F_STABLE_PRIVACY)
-+
-+#define READONLY_FLAGS \
-+	( IFA_F_SECONDARY | IFA_F_DADFAILED | IFA_F_DEPRECATED )
-+
-+static int parse_ifa_flags(int family, const char *arg, unsigned int *flags)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ifa_flag_names); i++) {
-+		const char *name = ifa_flag_names[i].name;
-+		unsigned int mask = ifa_flag_names[i].value;
-+
-+		if (strcasecmp(arg, name))
-+			continue;
-+
-+		if (mask & READONLY_FLAGS)
-+			fprintf(stderr,
-+				"Warning: %s flag can not be set.\n", name);
-+		else if ((mask & IPV6ONLY_FLAGS) && family != AF_INET6)
-+			fprintf(stderr,
-+				"Warning: %s flag can be set only for IPV6 addresses\n",
-+				name);
-+		else
-+			*flags |= mask;
-+		return 0;
-+	}
-+	return -1;
-+}
-+
- static void print_ifa_flags(FILE *fp, const struct ifaddrmsg *ifa,
- 			    unsigned int flags)
- {
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(ifa_flag_names); i++) {
--		unsigned long mask = ifa_flag_names[i].value;
-+		unsigned int mask = ifa_flag_names[i].value;
- 
- 		if (mask == IFA_F_PERMANENT) {
- 			if (!(flags & mask))
-@@ -2330,26 +2363,7 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 			preferred_lftp = *argv;
- 			if (set_lifetime(&preferred_lft, *argv))
- 				invarg("preferred_lft value", *argv);
--		} else if (strcmp(*argv, "home") == 0) {
--			if (req.ifa.ifa_family == AF_INET6)
--				ifa_flags |= IFA_F_HOMEADDRESS;
--			else
--				fprintf(stderr, "Warning: home option can be set only for IPv6 addresses\n");
--		} else if (strcmp(*argv, "nodad") == 0) {
--			if (req.ifa.ifa_family == AF_INET6)
--				ifa_flags |= IFA_F_NODAD;
--			else
--				fprintf(stderr, "Warning: nodad option can be set only for IPv6 addresses\n");
--		} else if (strcmp(*argv, "mngtmpaddr") == 0) {
--			if (req.ifa.ifa_family == AF_INET6)
--				ifa_flags |= IFA_F_MANAGETEMPADDR;
--			else
--				fprintf(stderr, "Warning: mngtmpaddr option can be set only for IPv6 addresses\n");
--		} else if (strcmp(*argv, "noprefixroute") == 0) {
--			ifa_flags |= IFA_F_NOPREFIXROUTE;
--		} else if (strcmp(*argv, "autojoin") == 0) {
--			ifa_flags |= IFA_F_MCAUTOJOIN;
--		} else {
-+		} else if (parse_ifa_flags(req.ifa.ifa_family, *argv, &ifa_flags) != 0) {
- 			if (strcmp(*argv, "local") == 0)
- 				NEXT_ARG();
- 			if (matches(*argv, "help") == 0)
+Thanks,
+Vincent
+
+Reviewed-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
