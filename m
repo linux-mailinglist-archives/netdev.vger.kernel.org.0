@@ -2,148 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8EE1E009B
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 18:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51FF71E00B7
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 18:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387682AbgEXQfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 12:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S1729415AbgEXQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 12:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728316AbgEXQfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 12:35:08 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C43C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:35:07 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id yc10so18188562ejb.12
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:35:07 -0700 (PDT)
+        with ESMTP id S1728375AbgEXQu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 12:50:28 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28724C061A0E;
+        Sun, 24 May 2020 09:50:28 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id s69so7562934pjb.4;
+        Sun, 24 May 2020 09:50:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ozBbKWjBkt05QLra2qsRECxpCHo+rFaakDDdTAOzwmY=;
-        b=eK4hYc9hyNu4lmHLVnL0n1f+n1CbvMfmdEkiz5Nc7a3YyBR1RWhsSnEa4UyhX3ue9v
-         TjSzsdoaWNZsrgeAfuo9Put8IHAKCBFRKtNIhhz5k3ViLJcfLPo0aX89yi/ZcHPD6+y7
-         eoPeviGw9T8qPMDDul3xpnffFTbj8LNf6LZD6QoEIyJ6JO3LRT1H3TIQWV/vbRWzV5OJ
-         ukNv8hcRYEQYNsEFwwIt7LgGl70ZtD2ULd+rQR9U+s0Kdfch3uVw81YTTy+/PtJV1qDo
-         8MVXIXadhSgY+dj0pxXTZSsWSuQ1zbAn/fBdUweRoY6nKKXKl4JTj9AgkbKtOygE2gx7
-         QugQ==
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=EZhgv/AuBcoqzCV6S9b1yh+jTf1ezpa6goCaGZvaxh0=;
+        b=YwPQmpI9d8DzAFga40StUxy/ieSmC/yAOoOZaWh3tUBjedFtKlGZ0N5FChLi47JwcV
+         sj7623eQlJyhWXj6DO+jpChmHfvbIKi/FzbGLmvxyp80WQ8YL++cMtMZinBcUCAJm8sg
+         Re6Cuy48SychCN6uHfwFrUposYD4eeOT8hWsCwgA9w/ZsKgLy7fiNbjljv1S473JDTV9
+         7Tw1PXmJuRK8wR8xeQvK5xqLNY2PpgbfG52n1wMQRDvl70BZ07G34cC5v6uwqdpFfwr8
+         Nvwci/gtF6HRhY61hw20hWfIn7M10NcNVnaFhkqj5w+76CHDeKyMdZzDh8TJoZdssOzj
+         K41g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ozBbKWjBkt05QLra2qsRECxpCHo+rFaakDDdTAOzwmY=;
-        b=J4b0bG4lvOu19315+p9jAUe+TM1/q3A6M3YsyTSEmUlHOMppuMRzLSjpP81eMytGEv
-         6/412KbdV2n1Qp9A7Jjuw2iM5bc1SmLlohN+X0sHwk5mjfDwceNoNJLdD8KGDy5lohfF
-         a5kGVSc9fozIOcXCGmwg/QRbc3RPNQD8hcSVdxzeqKisJzKpDkKjdMFzJa6EKf4mT42a
-         Gg3vLD9UOHToXbaSdcT7oLzK9iBkhrmT20caXKvkz/LPfPHj+JMSy37oaUeXaWRXhpTN
-         x9BtgIC7MxQH58Pt1kf7I61pI6GDIFsY3NFfFKx+ncoM40P3y/vW3RMhAhx+ksDGK+P0
-         VrNw==
-X-Gm-Message-State: AOAM531BVJiPFd/7h8yAMHpWXHvQQ+o53Z3UXZSPSzZubzjntUtPteDb
-        5SAs6+eccetAdLiU8SOmUff5uPzluS/PLZ64Xrk=
-X-Google-Smtp-Source: ABdhPJxwLVagfyCHQx587mGrCskm5p31UwhlhAEWIqmhGdLXWHtPupdWwYDMUX5RrMemJmN3P/ZVqDN7IHIcI0E0SGM=
-X-Received: by 2002:a17:906:a0c2:: with SMTP id bh2mr15618239ejb.406.1590338105827;
- Sun, 24 May 2020 09:35:05 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=EZhgv/AuBcoqzCV6S9b1yh+jTf1ezpa6goCaGZvaxh0=;
+        b=b7J50AconMyM6k3eKnLjpYIOUKecaurXuBGEgFxO3IXTnhGwzH3u+mFMu8TkhKwxk+
+         nWT1JFUZKVbmLzNEJgsJJoy6AmPOcbf7A52xbm1SoO9IYOtCvzCP2h7N+uGDTOOj7a6/
+         Np/o8idOeoKT2Ocm8H73GK8E4SCvuFROnpTae/yT4sh0nMBZQw3cEbpfYHBVT8Gsi8Rt
+         X/MtvfCl90HAiQiR/K5bl/OdlRwkEaEkPsD1Eg3sd6QgyU/cvG2b5UNlciwHrEPYnbus
+         kBgXPdvQV4MRgdxiQZgrYlIlVnSGzo8SArwr1ETJvdaDPKvYfn/h3qiwMYLzpovogW5b
+         hcVQ==
+X-Gm-Message-State: AOAM531OmWrtSuwWCI8aSUdFW8oQ/lb9yfL/ttpvCZYocTzqYvhluQtA
+        DZkEm1aXPCne9Ay81XHiRkVBQJYo
+X-Google-Smtp-Source: ABdhPJzGlW0kFK/dUzrcccBqIw5yp2omfFdjwlA6L4NV03RwAPFlUYklu4Yyw1RN1AVrI/xy8EpKtw==
+X-Received: by 2002:a17:902:b185:: with SMTP id s5mr10934858plr.304.1590339027635;
+        Sun, 24 May 2020 09:50:27 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id x6sm11701876pfn.90.2020.05.24.09.50.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 24 May 2020 09:50:26 -0700 (PDT)
+Subject: [bpf-next PATCH v5 0/5] bpf: Add sk_msg and networking helpers
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     yhs@fb.com, andrii.nakryiko@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Sun, 24 May 2020 09:50:12 -0700
+Message-ID: <159033879471.12355.1236562159278890735.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <20200521211036.668624-1-olteanv@gmail.com> <f51e89a0-b481-e0e1-0e87-f803f116f684@gmail.com>
-In-Reply-To: <f51e89a0-b481-e0e1-0e87-f803f116f684@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 24 May 2020 19:34:54 +0300
-Message-ID: <CA+h21hqHnH3BwyQp-SDk-=aV+7Ms+08b+Rzw1=OpXEhha+Nh0Q@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+This series adds helpers for sk_msg program type and based on feedback
+from v1 adds *_task_* helpers and probe_* helpers to all networking
+programs with perfmon_capable() capabilities.
 
-On Sun, 24 May 2020 at 19:13, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> Hi Vladimir,
->
-> On 5/21/2020 2:10 PM, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > This is a WIP series whose stated goal is to allow DSA and switchdev
-> > drivers to flood less traffic to the CPU while keeping the same level of
-> > functionality.
-> >
-> > The strategy is to whitelist towards the CPU only the {DMAC, VLAN} pairs
-> > that the operating system has expressed its interest in, either due to
-> > those being the MAC addresses of one of the switch ports, or addresses
-> > added to our device's RX filter via calls to dev_uc_add/dev_mc_add.
-> > Then, the traffic which is not explicitly whitelisted is not sent by the
-> > hardware to the CPU, under the assumption that the CPU didn't ask for it
-> > and would have dropped it anyway.
-> >
-> > The ground for these patches were the discussions surrounding RX
-> > filtering with switchdev in general, as well as with DSA in particular:
-> >
-> > "[PATCH net-next 0/4] DSA: promisc on master, generic flow dissector code":
-> > https://www.spinics.net/lists/netdev/msg651922.html
-> > "[PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module":
-> > https://www.spinics.net/lists/netdev/msg634859.html
-> > "[PATCH v3 0/2] net: core: Notify on changes to dev->promiscuity":
-> > https://lkml.org/lkml/2019/8/29/255
-> > LPC2019 - SwitchDev offload optimizations:
-> > https://www.youtube.com/watch?v=B1HhxEcU7Jg
-> >
-> > Unicast filtering comes to me as most important, and this includes
-> > termination of MAC addresses corresponding to the network interfaces in
-> > the system (DSA switch ports, VLAN sub-interfaces, bridge interface).
-> > The first 4 patches use Ivan Khoronzhuk's IVDF framework for extending
-> > network interface addresses with a Virtual ID (typically VLAN ID). This
-> > matches DSA switches perfectly because their FDB already contains keys
-> > of the {DMAC, VID} form.
-> >
-> > Multicast filtering was taken and reworked from Florian Fainelli's
-> > previous attempts, according to my own understanding of multicast
-> > forwarding requirements of an IGMP snooping switch. This is the part
-> > that needs the most extra work, not only in the DSA core but also in
-> > drivers. For this reason, I've left out of this patchset anything that
-> > has to do with driver-level configuration (since the audience is a bit
-> > larger than usual), as I'm trying to focus more on policy for now, and
-> > the series is already pretty huge.
->
->
-> First off, thank you very much for collecting the various patches and
-> bringing them up to date, so far I only had a cursory look at your
-> patches and they do look good to me in principle. I plan on testing this
-> next week with the b53/bcm_sf2 switches and give you some more detailed
-> feedback.
->
-> Which of UC or MC filtering do you value the most for your use cases?
-> For me it would be MC filtering because the environment is usually
-> Set-top-box and streaming devices.
-> --
-> Florian
+The list of helpers breaks down as follows,
 
-Actually one of my main motivations has to do with the fact that with
-sja1105, I can only deliver up to 32 unique VLANs to the CPU. But I do
-want to be able to use the other ~2000 VLANs in an
-autonomous-forwarding manner. So I need to do very strict bookkeeping
-of {DMAC, VLAN} addresses that the operating system needs to see,
-because the CPU port will not be a member of the
-autonomously-forwarded VLANs.
-So it's not that I value unicast filtering more than multicast
-filtering - I need to do both before I can achieve this goal, but at
-the moment I have some trouble setting up IGMP snooping to work
-properly on a device that doesn't look beyond L2 headers. With
-Ocelot/Felix that is easier, but it has some challenges of its own.
+Networking with perfmon_capable() guard (patch2):
 
-Thanks,
--Vladimir
+ BPF_FUNC_get_current_task
+ BPF_FUNC_probe_read_user
+ BPF_FUNC_probe_read_kernel
+ BPF_FUNC_probe_read_user_str
+ BPF_FUNC_probe_read_kernel_str
+
+Added to sk_msg program types (patch1,3):
+
+ BPF_FUNC_perf_event_output
+ BPF_FUNC_get_current_uid_gid
+ BPF_FUNC_get_current_pid_tgid
+ BPF_FUNC_get_current_cgroup_id
+ BPF_FUNC_get_current_ancestor_cgroup_id
+ BPF_FUNC_get_cgroup_classid
+
+ BPF_FUNC_sk_storage_get
+ BPF_FUNC_sk_storage_delete
+
+For testing we create two tests. One specifically for the sk_msg
+program types which encodes a common pattern we use to test verifier
+logic now and as the verifier evolves.
+
+Next we have skb classifier test. This uses the test run infra to
+run a test which uses the get_current_task, current_task_under_cgroup,
+probe_read_kernel, and probe_reak_kernel_str.
+
+Note we dropped the old probe_read variants probe_read() and
+probe_read_str() in v2.
+
+v4->v5:
+ Remove BPF_FUNC_current_task_under_cgroup because it requires a
+ valid current and at least at the moment seems less usable in all
+ contexts. It also probably doesn't need to be guarded by perfoman_cap.
+ We can add it on a per type basis when its needed or decide later
+ after some more experience that its universally useful.
+
+v3->v4:
+ patch4, remove macros and put code inline, add test cleanup, remove
+ version in bpf program.
+ patch5, use ctask returned from task_under_cgroup so that we avoid
+ any potential compiler warnings, add test cleanup, use BTF style
+ maps.
+
+v2->v3:
+ Pulled header update of tools sk_msg_md{} structure into patch3 for
+ easier review. ACKs from Yonghong pushed into v3
+
+v1->v2:
+ Pulled generic helpers *current_task* and probe_* into the
+ base func helper so they can be used more widely in networking scope.
+ BPF capabilities patch is now in bpf-next so use perfmon_capable() check
+ instead of CAP_SYS_ADMIN.
+
+ Drop old probe helpers, probe_read() and probe_read_str()
+
+ Added tests.
+
+ Thanks to Daniel, Yonghong, and Andrii for review and feedback.
+
+---
+
+John Fastabend (5):
+      bpf, sk_msg: add some generic helpers that may be useful from sk_msg
+      bpf: extend bpf_base_func_proto helpers with probe_* and *current_task*
+      bpf, sk_msg: add get socket storage helpers
+      bpf, selftests: add sk_msg helpers load and attach test
+      bpf, selftests: test probe_* helpers from SCHED_CLS
+
+
+ include/uapi/linux/bpf.h                           |    2 +
+ kernel/bpf/helpers.c                               |   24 ++++++++++
+ kernel/trace/bpf_trace.c                           |   10 ++--
+ net/core/filter.c                                  |   31 +++++++++++++
+ tools/include/uapi/linux/bpf.h                     |    2 +
+ .../testing/selftests/bpf/prog_tests/skb_helpers.c |   30 +++++++++++++
+ .../selftests/bpf/prog_tests/sockmap_basic.c       |   35 +++++++++++++++
+ .../testing/selftests/bpf/progs/test_skb_helpers.c |   28 ++++++++++++
+ .../selftests/bpf/progs/test_skmsg_load_helpers.c  |   47 ++++++++++++++++++++
+ 9 files changed, 204 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_skb_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_skmsg_load_helpers.c
+
+--
+Signature
