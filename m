@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7E01DFEF2
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 14:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 747C31DFF1C
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 15:28:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728807AbgEXMgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 08:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
+        id S1728875AbgEXN2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 09:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbgEXMgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 08:36:44 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD45C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 05:36:43 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id h10so16183065iob.10
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 05:36:43 -0700 (PDT)
+        with ESMTP id S1725873AbgEXN2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 09:28:03 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19070C061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 06:28:03 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id x11so5464130plv.9
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 06:28:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=e1VHJxKoXYaS6aGUYqj2LiAO7erpHlAjFqD5QRIADoY=;
-        b=kWfgLcjl1wDha7dLXnrtS96vlQz4+36zAgJd3j7yjl7+PdErL0POSdnkOY0+nr2b6V
-         whH175h2/vsVIaQql9jAouXKN2xJ2PprzACzSsosKVgGibnyCOoHKRB+MlJO5N0qGH40
-         Mpy8qS0TXz3jHC/Q4lCwIkmiMLBsZkMOOrB9F/KfjNDbZ3UWeA+dukk+vm/NWYJGTt+J
-         O/pRQbSqOEpf/N8oSSlM4yy0GejxP6A1F799JhZzl7OjPDwqWZmpmZdRKWDwIQoedMbt
-         pveexUs9y4L9drEnhIn7HAfxDPHCOsLaJbLSwNaIrC+eA7FBvC0uB8ul8bZoPin3pY4A
-         1ASA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sG07EjkLbbGHug7gLwBR3OOl8TplxJhMZpXnMWtzsi8=;
+        b=DXTWO2TrVdDNW0jDN5GX0XfoT+vM4jXZaOkqToLI+2ejcX0DN54U7rfGEJwJ2Lu1v2
+         Ggdgrp/xFOsbwRLTw6RJ0GB1vUs77mXTGnyFBd916fvTqu2mt9U+VE0xDdXCkoH/P8tC
+         fPWeXfb9qV2bj2NdHWye99iPpSejJ1JGOrhR2KJFeMQHcMAQqm8Fr21of6WYnH1d/8GM
+         4SJdRYegtQhYx41xb+is8X0e+QCKwzbxlLilhm1q1AtA4TckenSYWJ2NhmjRvQE1rJwU
+         ispzU32e+DAQsktckY90vmCJOF2WsWItKHzPaYpN577L0w7aydg4P5rH1NoRTUrvmT0U
+         5JHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=e1VHJxKoXYaS6aGUYqj2LiAO7erpHlAjFqD5QRIADoY=;
-        b=A9HFL5zmv2eHAVLFWU9jEgGTWHnD55Vzn55JSHEUvDYoflcYrPc9NuPgtkfoNmFKFF
-         X2hq01mOCpIsK1vXR0VQMuNBTwpAZbk+9+vn/H9XQShkgZPm5zMB7u/SnHhRF9uz+T8k
-         q2Y17OhRxE9iG+H2EKYR2hGl/j4aKxTOktobBWrGIec4o6DJ0zWr5wACGQbBZMNtpyBd
-         pSOMRtH2HaRBV7DWJ5HAe0l9dlqffCD416ZdX2gbw7uUmbqrogUOrdiE4TFGh+98MC/4
-         hlwKavVpMCsG84wbAf3VxUGb7c/GSbIyP2EosLEwtjyODs/5K5ybcThsZw4D+smC5p+c
-         SC7A==
-X-Gm-Message-State: AOAM533LW6vyvJR5yRLc1vWo+SHlCmyGLta6h89cP/UbzW5PUMJSRN7N
-        akEwecgNhJms53jkD90PH5H3yA==
-X-Google-Smtp-Source: ABdhPJztCq/lLe9mA1v1eUYRxftDoz2e+5AsjomHm0FEkZzkEn3bFjXG1YYqgHQLT0RBWJpZ0VDJVA==
-X-Received: by 2002:a6b:8b12:: with SMTP id n18mr8055705iod.160.1590323803355;
-        Sun, 24 May 2020 05:36:43 -0700 (PDT)
-Received: from sevai ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id v18sm7780850iln.1.2020.05.24.05.36.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 24 May 2020 05:36:42 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        kernel@mojatatu.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us
-Subject: Re: [PATCH iproute2-next 1/1] tc: report time an action was first used
-References: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
-        <6619cab4-02bb-51e7-0c2c-acb0cb13d022@gmail.com>
-Date:   Sun, 24 May 2020 08:36:28 -0400
-In-Reply-To: <6619cab4-02bb-51e7-0c2c-acb0cb13d022@gmail.com> (David Ahern's
-        message of "Tue, 19 May 2020 12:11:28 -0600")
-Message-ID: <851rn9ik6r.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sG07EjkLbbGHug7gLwBR3OOl8TplxJhMZpXnMWtzsi8=;
+        b=FckvXgZoOoOeKu1b8MTzi30dF7u6ui6ZoSE4QQyGJZuipJ7P1qWDi0YIrHUmyX4eX3
+         K4/bKCW+vGZ8BSFX/nC+Xp4JXZE/wlGP9LyAF9FFUsbWROrjp2besC/M4ho4NZheTrlR
+         UOBX5FqMU+R9PobT/jtYy4rS2h8v+0X2MOSgPq8mywVrN80xfncB6i+Bkik6Nke/8pfc
+         6rcpNFFlpgS9xW1lmfpqjr0lE7sti7EYoxx/TSum4Q91itT7xS5i6fNiF8CPxPknd7VQ
+         IEXWuk52tmeYZv++gZGmJ58OsCvTeT5sGlw/HP2Myds82k0hC4SkJQE7Gf889NbT0aT2
+         fN+A==
+X-Gm-Message-State: AOAM531fQ4k7jw98JI1X0h3FTVGl+Cs/clQmwgEizzj8pkM/0Uaxfkts
+        nI6A5ChAHTVO+lZho02JsRp4GQG7IsQ=
+X-Google-Smtp-Source: ABdhPJy0M4+1Sz0XVDahJLkwlYB38js6TZ9ECkJCmDxEyoKmoYoEzhJjRX8s1XaYjYqmLslr482uGQ==
+X-Received: by 2002:a17:902:b68d:: with SMTP id c13mr13309818pls.210.1590326882349;
+        Sun, 24 May 2020 06:28:02 -0700 (PDT)
+Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id p1sm2981460pjz.36.2020.05.24.06.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 May 2020 06:28:01 -0700 (PDT)
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: [PATCH net-next] Let the ADJ_OFFSET interface respect the STA_NANO flag for PHC devices.
+Date:   Sun, 24 May 2020 06:28:00 -0700
+Message-Id: <20200524132800.20010-1-richardcochran@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+In commit 184ecc9eb260d5a3bcdddc5bebd18f285ac004e9 ("ptp: Add adjphase
+function to support phase offset control.")  the PTP Hardware Clock
+interface expanded to support the ADJ_OFFSET offset mode.  However,
+the implementation did not respect the traditional yet pedantic
+distinction between units of microseconds and nanoseconds signaled by
+the STA_NANO flag.  This patch fixes the issue by adding logic to
+handle that flag.
 
-> On 5/17/20 7:28 AM, Roman Mashak wrote:
->> Have print_tm() dump firstuse value along with install, lastuse
->> and expires.
->> 
->> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
->> ---
->>  tc/tc_util.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->> 
->
-> I can merge master once Stephen commits the bug fix. Then resubmit this
-> patch.
+Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+---
+ drivers/ptp/ptp_clock.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Hi David,
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index fc984a8828fb..7ae6e8e85f99 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -147,8 +147,13 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+ 			err = ops->adjfreq(ops, ppb);
+ 		ptp->dialed_frequency = tx->freq;
+ 	} else if (tx->modes & ADJ_OFFSET) {
+-		if (ops->adjphase)
+-			err = ops->adjphase(ops, tx->offset);
++		if (ops->adjphase) {
++			s32 offset = tx->offset;
++			if (!(tx->status & STA_NANO)) {
++				offset *= NSEC_PER_USEC;
++			}
++			err = ops->adjphase(ops, offset);
++		}
+ 	} else if (tx->modes == 0) {
+ 		tx->freq = ptp->dialed_frequency;
+ 		err = 0;
+-- 
+2.20.1
 
-Stephen has commited the fix, please merge the master branch and I will
-resubmit the patch.
