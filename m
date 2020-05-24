@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC7E1E00FD
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 19:22:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157651E014F
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 19:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387838AbgEXRWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 13:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S2387838AbgEXR5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 13:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387707AbgEXRWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 13:22:17 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4ACC061A0E;
-        Sun, 24 May 2020 10:22:17 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id w3so10146455qkb.6;
-        Sun, 24 May 2020 10:22:17 -0700 (PDT)
+        with ESMTP id S2387656AbgEXR5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 13:57:37 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812CFC061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 10:57:37 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 124so1515422pgi.9
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 10:57:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HOB7DJtAt7OqMWSSFuPavE57wAs0HI6Y2mvqKtQhO2o=;
-        b=L8nUBEW8rI6wvT5v+4R9yh7ArGoy4wCtp0hVoHJ0jBZ5zRYtHvOcQHGHdlyih4ETUl
-         NRP19hbkKRIpOvDXvLd9T6tSbfLtf+gytEBnHNFOYYeY3O8pu3XirRv4LdzrPxOr+e1S
-         x+jYmF7cTduPzo5BvgvHDOcoSHWy/D7cPuEA0jJzH1kci9X9tsopPlH1yoacSUk0qC8G
-         nSQmjzoH8C2qKBwSuq3TP7mtS733vT1F04SnIco1DORyQnvjH2JSM5KihPku+FcnfW33
-         XSDc/VVsIRjkoogkCkDKQQqezBTv+leKBfO4IbzWFBpSjvgxHTvPOmRXiSvkDWMZ7m9Z
-         rA+w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8DjxVOIa5bw7yl/epsJiYQNESVWu77B9rCn6odPAW+I=;
+        b=iF2RCsKVFEeO7ROSv2K61FgJ/1pTAyMU65BmwdCirU0LNVqFqsfy3LmY9tdGYoGbbD
+         I795RIfnVRjGBcE5i8pGJ05l6Yd6jDFnJ06x0Xz9cR03LJpJUz5ZaJrbb/EEUDMpoJD2
+         o8q3+e5sKCzldRFiKJ+symfL/Tkg9gOddG5QK7keTkyneHZNMjTN15KzuCnfjpWq+tpd
+         FayuhVD8/4cJY+fZLlH9kW//mXKgp9C/Dgm/DLjg6JgvPcdiAWZuUEW+WNm3mFnpTXRy
+         u02V7dIt4PUsM5CrqEJNnRhpEGO7qghFJUGfvY7IcIvJr4MZYgj6vLTCADVn5tWcYfNp
+         fIXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HOB7DJtAt7OqMWSSFuPavE57wAs0HI6Y2mvqKtQhO2o=;
-        b=JRRdbho3SW6XB6qPqSbIz5+UCEYY8EmoOd6DWZVPoaDu/d2mIyazXfft3S7SwNjzUI
-         tytOCgomEcilZpMAUax5okYDnbwe3nrU9ptRVyx5NgufSl6c+RaH3DHI0PtDULVulhlX
-         n4Y+QpuVVn37h4qs6nJUPjoHoF5s7HLkcmvAK6j001BGTJcxRnYWIyLitDy5kWPfcDfO
-         x8U2OUfKXCG8HNCUeOi/uX4j2DiiwIh8pt8sOxjQVk64RSXVNXP/DLPPe1daceA0MYKa
-         4ECb/vViI1yYFqoEkrVIDewiEdKrK6ytpd/XC58skkD8/uv5Or1VPG5mE9kWPyNvCGn9
-         ypYQ==
-X-Gm-Message-State: AOAM530CV6zA+gYWtketEUMNp8ucWkg1c+aUS9nvvUvNEqKJmTggoRTT
-        mtZlOSTC0ysHz/fUwnmxl5c=
-X-Google-Smtp-Source: ABdhPJyCqsYV8xitKRx7CmfAA0xR3jd+1bNWsLQLi3NTcFMKvjZ8ntVkXYqbv6MwGaTlb2Wu8WSM6Q==
-X-Received: by 2002:a37:9f0c:: with SMTP id i12mr24245409qke.264.1590340936835;
-        Sun, 24 May 2020 10:22:16 -0700 (PDT)
-Received: from ?IPv6:2601:284:8202:10b0:dde6:2665:8a05:87c9? ([2601:284:8202:10b0:dde6:2665:8a05:87c9])
-        by smtp.googlemail.com with ESMTPSA id b17sm6016596qkl.95.2020.05.24.10.22.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 May 2020 10:22:16 -0700 (PDT)
-Subject: Re: [RFC bpf-next 1/2] bpf: cpumap: add the possibility to attach a
- eBPF program to cpumap
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     ast@kernel.org, davem@davemloft.net, brouer@redhat.com,
-        daniel@iogearbox.net, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org
-References: <cover.1590162098.git.lorenzo@kernel.org>
- <6685dc56730e109758bd3affb1680114c3064da1.1590162098.git.lorenzo@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <21c30a1c-cebc-b2f2-be94-9db430610578@gmail.com>
-Date:   Sun, 24 May 2020 11:22:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8DjxVOIa5bw7yl/epsJiYQNESVWu77B9rCn6odPAW+I=;
+        b=rAutUZvXSFpVBKzsxPVWMJCqTgiBQRRlvGlsGlOVGyiYDJegRR9PXMDNbqyl+E1MrW
+         FpU1ojw0S4trEK5dC77L/pwh7v9k9R4ibU0Zs9wDtJRbEOdQYrA0qGRaoupwDoOM4Iff
+         ln2o8zWgdsxWtaaGjkgNigzk20HHChe9cJJf1oEneAjKP+hpxU+iLQ6CxgaGP0pjf7cA
+         3c0MAUDtHgpnNtVHLj6WYRJZi9VZGLFMbSzrl++p+PqWNeOOFjaQVez22yUJab8ttvX0
+         Kv5QOZemEF7cuwbBNfZoyaiWwnFQgAf/Q0+siNEnsOG70+vFTQ5eUrkZTM9WSdghIxvB
+         m4Lw==
+X-Gm-Message-State: AOAM533AU4prlZ+bNubg875qv2nLjwSufb1hUSfHqK5WtROywh49R2Oh
+        03WRebE/8CLDEa3PBF7RBY065/D3VeE=
+X-Google-Smtp-Source: ABdhPJyTQPGbcK/JHkxFkiiXEZpf0NgLWtTrfTQaYqKxQeNN/uYjdy5QkkA3qhvqsJdIFQy4Xc0vRw==
+X-Received: by 2002:a63:3609:: with SMTP id d9mr22893006pga.354.1590343056753;
+        Sun, 24 May 2020 10:57:36 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id l1sm11803765pjr.17.2020.05.24.10.57.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 May 2020 10:57:36 -0700 (PDT)
+Date:   Sun, 24 May 2020 10:57:33 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: Re: [PATCH net-next] Let the ADJ_OFFSET interface respect the
+ STA_NANO flag for PHC devices.
+Message-ID: <20200524175733.GE22416@localhost>
+References: <20200524132800.20010-1-richardcochran@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <6685dc56730e109758bd3affb1680114c3064da1.1590162098.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200524132800.20010-1-richardcochran@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/22/20 10:11 AM, Lorenzo Bianconi wrote:
-> @@ -307,8 +354,23 @@ static int cpu_map_kthread_run(void *data)
->  	return 0;
->  }
->  
-> -static struct bpf_cpu_map_entry *__cpu_map_entry_alloc(u32 qsize, u32 cpu,
-> -						       int map_id)
-> +static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu,
-> +				      u32 prog_id)
-> +{
-> +	struct bpf_prog *prog;
-> +
-> +	/* TODO attach type */
-> +	prog = bpf_prog_by_id(prog_id);
-> +	if (IS_ERR(prog) || prog->type != BPF_PROG_TYPE_XDP)
-> +		return -EINVAL;
+On Sun, May 24, 2020 at 06:28:00AM -0700, Richard Cochran wrote:
+> @@ -147,8 +147,13 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+>  			err = ops->adjfreq(ops, ppb);
+>  		ptp->dialed_frequency = tx->freq;
+>  	} else if (tx->modes & ADJ_OFFSET) {
+> -		if (ops->adjphase)
+> -			err = ops->adjphase(ops, tx->offset);
+> +		if (ops->adjphase) {
+> +			s32 offset = tx->offset;
+> +			if (!(tx->status & STA_NANO)) {
+> +				offset *= NSEC_PER_USEC;
 
-Add check that expected_attach_type is NOT set since it uses existing
-xdp programs which should not have it set.
+Oh man.  This should check for ADJ_NANO instead.  V2 follows soon...
 
+Thanks,
+Richard
