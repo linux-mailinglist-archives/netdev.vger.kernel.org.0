@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00BD51E037A
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 23:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E89D1E038A
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 23:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388520AbgEXVvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 17:51:44 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:40973 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388509AbgEXVvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 17:51:40 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2D6985C009F;
-        Sun, 24 May 2020 17:51:39 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 24 May 2020 17:51:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=vo1gg7njLk/CgHuRbTkrGztdQill3Zp8Y5h79K1I2OI=; b=tslq9gMK
-        10pxN4ZsG9RvobVmrUUrwbEkRRaMGoAdVZWqM9aiLOjKJ6Vnqj6tAFK8yZCyM942
-        GjYoTFInh35WzRBHrVaxij5dkvMn91ywAFkexLSwQbG2V8bfc3FTMCRr0HXu/KhI
-        cGHo4X7Mq8Pl0XHsM2HgsVhvzxw2w7Idrs/ypTB1npiuA7xs+2P4DLq/iwK27Iw5
-        KMVhoKE9n4WE91hRHNVxOcu6uEz4b+qTyP7O5EpC6GLrGaD36A3dFo9MU10nAWqI
-        975Topu/K5feD7xz7wRit3c5JnjyECuo+1nwEmT5if+rCMZQj8H11MPxpqxtTb4T
-        tOg8FCfyqABM5g==
-X-ME-Sender: <xms:a-zKXoggZncUvOov2RJ3uTLTs2rPWXABur11KkfwUU_s7sIKzV0bEQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduledgtdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
-    necuvehluhhsthgvrhfuihiivgepuddtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:a-zKXhAmDM1BEdvCnDUEYA7n9YXBF3OHkqPzr7PdHSp5UcQpSjgaSA>
-    <xmx:a-zKXgHtfiYh62YR9DEyBUDQd17L21YM5ZUWN0vcL-xSmYkeaIjI-Q>
-    <xmx:a-zKXpQ7yQxzqBw3GIkwkv0nMpVDhfjYrU2Wy4V00GHENQdAO3KeyQ>
-    <xmx:a-zKXmqlrEX9qGUfDPnDruBq7Es1zSXJsn6jP-vxQ__sR45X7QL8hw>
-Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DA150306651E;
-        Sun, 24 May 2020 17:51:37 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 11/11] mlxsw: spectrum: Fix spelling mistake in trap's name
-Date:   Mon, 25 May 2020 00:51:07 +0300
-Message-Id: <20200524215107.1315526-12-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200524215107.1315526-1-idosch@idosch.org>
-References: <20200524215107.1315526-1-idosch@idosch.org>
+        id S2388582AbgEXV6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 17:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388038AbgEXV6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 17:58:20 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0946C061A0E;
+        Sun, 24 May 2020 14:58:20 -0700 (PDT)
+Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
+        by Galois.linutronix.de with esmtp (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1jcycw-0007Zv-U8; Sun, 24 May 2020 23:57:51 +0200
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Galbraith <umgwanakikbuti@gmail.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, netdev@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH v2 5/7] connector/cn_proc: Protect send_msg() with a local lock
+Date:   Sun, 24 May 2020 23:57:37 +0200
+Message-Id: <20200524215739.551568-6-bigeasy@linutronix.de>
+X-Mailer: git-send-email 2.27.0.rc0
+In-Reply-To: <20200524215739.551568-1-bigeasy@linutronix.de>
+References: <20200524215739.551568-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
 
-Fix incorrect spelling of "advertisement".
+send_msg() disables preemption to avoid out-of-order messages. As the
+code inside the preempt disabled section acquires regular spinlocks,
+which are converted to 'sleeping' spinlocks on a PREEMPT_RT kernel and
+eventually calls into a memory allocator, this conflicts with the RT
+semantics.
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Convert it to a local_lock which allows RT kernels to substitute them with
+a real per CPU lock. On non RT kernels this maps to preempt_disable() as
+before. No functional change.
+
+[bigeasy: Patch description]
+
+Cc: Evgeniy Polyakov <zbr@ioremap.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Mike Galbraith <umgwanakikbuti@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 4 ++--
- drivers/net/ethernet/mellanox/mlxsw/trap.h     | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/connector/cn_proc.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index d275887bba28..943a24975799 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4080,11 +4080,11 @@ static const struct mlxsw_listener mlxsw_sp_listener[] = {
- 	MLXSW_SP_RXL_MARK(IPV6_BGP, TRAP_TO_CPU, BGP, false),
- 	MLXSW_SP_RXL_MARK(L3_IPV6_ROUTER_SOLICITATION, TRAP_TO_CPU, IPV6_ND,
- 			  false),
--	MLXSW_SP_RXL_MARK(L3_IPV6_ROUTER_ADVERTISMENT, TRAP_TO_CPU, IPV6_ND,
-+	MLXSW_SP_RXL_MARK(L3_IPV6_ROUTER_ADVERTISEMENT, TRAP_TO_CPU, IPV6_ND,
- 			  false),
- 	MLXSW_SP_RXL_MARK(L3_IPV6_NEIGHBOR_SOLICITATION, TRAP_TO_CPU,
- 			  NEIGH_DISCOVERY, false),
--	MLXSW_SP_RXL_MARK(L3_IPV6_NEIGHBOR_ADVERTISMENT, TRAP_TO_CPU,
-+	MLXSW_SP_RXL_MARK(L3_IPV6_NEIGHBOR_ADVERTISEMENT, TRAP_TO_CPU,
- 			  NEIGH_DISCOVERY, false),
- 	MLXSW_SP_RXL_MARK(L3_IPV6_REDIRECTION, TRAP_TO_CPU, IPV6_ND, false),
- 	MLXSW_SP_RXL_MARK(IPV6_MC_LINK_LOCAL_DEST, TRAP_TO_CPU, ROUTER_EXP,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-index fac05433c488..1b89472a0908 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-@@ -55,9 +55,9 @@ enum {
- 	MLXSW_TRAP_ID_IPV4_BGP = 0x88,
- 	MLXSW_TRAP_ID_IPV6_BGP = 0x89,
- 	MLXSW_TRAP_ID_L3_IPV6_ROUTER_SOLICITATION = 0x8A,
--	MLXSW_TRAP_ID_L3_IPV6_ROUTER_ADVERTISMENT = 0x8B,
-+	MLXSW_TRAP_ID_L3_IPV6_ROUTER_ADVERTISEMENT = 0x8B,
- 	MLXSW_TRAP_ID_L3_IPV6_NEIGHBOR_SOLICITATION = 0x8C,
--	MLXSW_TRAP_ID_L3_IPV6_NEIGHBOR_ADVERTISMENT = 0x8D,
-+	MLXSW_TRAP_ID_L3_IPV6_NEIGHBOR_ADVERTISEMENT = 0x8D,
- 	MLXSW_TRAP_ID_L3_IPV6_REDIRECTION = 0x8E,
- 	MLXSW_TRAP_ID_IPV4_DHCP = 0x8F,
- 	MLXSW_TRAP_ID_HOST_MISS_IPV4 = 0x90,
--- 
-2.26.2
+diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
+index d58ce664da843..d424d1f469136 100644
+--- a/drivers/connector/cn_proc.c
++++ b/drivers/connector/cn_proc.c
+@@ -18,6 +18,7 @@
+ #include <linux/pid_namespace.h>
+=20
+ #include <linux/cn_proc.h>
++#include <linux/locallock.h>
+=20
+ /*
+  * Size of a cn_msg followed by a proc_event structure.  Since the
+@@ -38,25 +39,32 @@ static inline struct cn_msg *buffer_to_cn_msg(__u8 *buf=
+fer)
+ static atomic_t proc_event_num_listeners =3D ATOMIC_INIT(0);
+ static struct cb_id cn_proc_event_id =3D { CN_IDX_PROC, CN_VAL_PROC };
+=20
+-/* proc_event_counts is used as the sequence number of the netlink message=
+ */
+-static DEFINE_PER_CPU(__u32, proc_event_counts) =3D { 0 };
++/* local_evt.counts is used as the sequence number of the netlink message =
+*/
++struct local_evt {
++	__u32 counts;
++	struct local_lock lock;
++};
++static DEFINE_PER_CPU(struct local_evt, local_evt) =3D {
++	.counts =3D 0,
++	.lock =3D INIT_LOCAL_LOCK(lock),
++};
+=20
+ static inline void send_msg(struct cn_msg *msg)
+ {
+-	preempt_disable();
++	local_lock(&local_evt.lock);
+=20
+-	msg->seq =3D __this_cpu_inc_return(proc_event_counts) - 1;
++	msg->seq =3D __this_cpu_inc_return(local_evt.counts) - 1;
+ 	((struct proc_event *)msg->data)->cpu =3D smp_processor_id();
+=20
+ 	/*
+-	 * Preemption remains disabled during send to ensure the messages are
+-	 * ordered according to their sequence numbers.
++	 * local_lock() disables preemption during send to ensure the messages
++	 * are ordered according to their sequence numbers.
+ 	 *
+ 	 * If cn_netlink_send() fails, the data is not sent.
+ 	 */
+ 	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
+=20
+-	preempt_enable();
++	local_unlock(&local_evt.lock);
+ }
+=20
+ void proc_fork_connector(struct task_struct *task)
+--=20
+2.27.0.rc0
 
