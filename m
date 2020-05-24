@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E12AF1E0375
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 23:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFBC1E0376
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 23:51:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388480AbgEXVvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 17:51:33 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:54063 "EHLO
+        id S2388497AbgEXVvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 17:51:35 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52755 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388371AbgEXVvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 17:51:31 -0400
+        by vger.kernel.org with ESMTP id S2387970AbgEXVvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 17:51:33 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id CA15E5C00A5;
-        Sun, 24 May 2020 17:51:30 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 334645C009F;
+        Sun, 24 May 2020 17:51:32 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 24 May 2020 17:51:30 -0400
+  by compute4.internal (MEProxy); Sun, 24 May 2020 17:51:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=/befF+4nRtNh0MIPha1L6l9pNmXKE0e7h3vGpmZgdP4=; b=kIie7S/E
-        Ag9EY7GjIWRNbpmu9CETw4OKTpjoeOSAT2fmEzb7AnvEMshyHfXDSwJO/aZ1gjqk
-        G5ADJsQ094Vxrf9an70xH3cO2Jm2xI8R+oGIccsdGpjDOQShmwshCpO55EwxtoNJ
-        D74O6zDuHecJtONSKQ7KA5I73qWzWPT9qcStNXfBONdYRo3qcxJlid35/TA9uLdE
-        N9zrIyk6GLvdhVMqVJ1FUjoInv9HM06v+flnuD2kAYUp7Td0Vngt7CsPNGgb1SVq
-        dOjDQGaktWJgvgv4UYUME0BDpWjzfZ1QOzwBti5TpPcrRl6d5Le4ASayCId0zyTW
-        GqPiLB+xF1QqlQ==
-X-ME-Sender: <xms:YuzKXmhbCs6TWqpr3b_QKgmNV4EqKNsV6d9JvfjitCsqIQ2lPt0UGg>
+        fm2; bh=Ysjzs6bYQkuBTgbY1Q+EMRX94Kr2Tt7Gg6XIxoFtK9Q=; b=aLNGqXJ8
+        Ak7ld8BI48BP1aA7IC+/HGSqfS49L+Ii3RkpwTkvUxBdTXBFCJVkyod7sys5xZBl
+        sw5tzpQPiYHgbmUu/iDMiAEG67pj7WlCKJYPKaLZR/eFoJmYXFDPEwhfoP9gRzyf
+        AXBSpOqDdxd3pFbXYuuudF0yOxh4bxx+ifs2OYpwcv1EzeTWnhjR36/LdO2kO1Ng
+        U6C8kE3BrczOdxTyUoRZ9+pGz81UULxryIvxHKiXB104dVaT/TOxu9YsAOR2RdHh
+        JgzC7DOp25Cj2iWbSwGYoNeQ9KUHpziCgHiHeSTEVQxwJY1RoBtnvONuRrN/vHUa
+        ingXOcoWOFkLnQ==
+X-ME-Sender: <xms:ZOzKXtD8opH8bj3npUy3bSIuqmN5d5bujZv9QCcYuiJype0kpun_BA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduledgtdefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -36,20 +36,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudduledgtdefucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
     necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:YuzKXnB3XsQfN2CBlHp0UtI90DvSjpHud2BRFTAoskeAegvc2JBWQw>
-    <xmx:YuzKXuHSJ66PYfKabVKsjBCswXSFn9jZlkdAY68kwd1muYa7L9fH0A>
-    <xmx:YuzKXvRburjQQaGqY9zM08caRvTzS71GS6KroyEeXhpwmd3icA0qMw>
-    <xmx:YuzKXspxvYCNac73zJZn7NpthiBU9eRLl3-P2LWxXLvdXRbjUIqNqQ>
+X-ME-Proxy: <xmx:ZOzKXrigPimVTWehY-HFViHZK-V9zfa_xTZX2WX2wCr3eLVyNYhR4Q>
+    <xmx:ZOzKXokWEIU2P8cyJgdeXHz3XyEtb098mOg7sa7GDhxdsxGdNmISoA>
+    <xmx:ZOzKXnwaSPU2zCVyL9M0JFO7b9PoJ958scjBd_4oIyA8SWdau5PmNQ>
+    <xmx:ZOzKXlJ5AVoS7ReOOdfBe7pet8DOizgDo4JPwKl5Gt21OrsTy_iqFQ>
 Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8233E306651E;
-        Sun, 24 May 2020 17:51:29 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id E13CC306651E;
+        Sun, 24 May 2020 17:51:30 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 05/11] mlxsw: spectrum_buffers: Assign non-zero quotas to TC 0 of the CPU port
-Date:   Mon, 25 May 2020 00:51:01 +0300
-Message-Id: <20200524215107.1315526-6-idosch@idosch.org>
+Subject: [PATCH net-next 06/11] mlxsw: spectrum: Align TC and trap priority
+Date:   Mon, 25 May 2020 00:51:02 +0300
+Message-Id: <20200524215107.1315526-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200524215107.1315526-1-idosch@idosch.org>
 References: <20200524215107.1315526-1-idosch@idosch.org>
@@ -62,42 +62,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-As explained in commit 9ffcc3725f09 ("mlxsw: spectrum: Allow packets to
-be trapped from any PG"), incoming packets can be admitted to the shared
-buffer and forwarded / trapped, if:
+The traffic class (TC) attribute of packet traps determines through which
+TC a packet trap will be scheduled through the CPU port.
 
-(Ingress{Port}.Usage < Thres && Ingress{Port,PG}.Usage < Thres &&
- Egress{Port}.Usage < Thres && Egress{Port,TC}.Usage < Thres)
-||
-(Ingress{Port}.Usage < Min || Ingress{Port,PG} < Min ||
- Egress{Port}.Usage < Min || Egress{Port,TC}.Usage < Min)
+The priority attribute determines which trap will be triggered in case
+several packet traps match a packet.
 
-Trapped packets are scheduled to transmission through the CPU port.
-Currently, the minimum and maximum quotas of traffic class (TC) 0 of the
-CPU port are 0, which means it is not usable.
+We try to configure these attributes to the same value for all packet
+traps as there is little reason not to.
 
-Assign non-zero quotas to TC 0 of the CPU port, so that it could be
-utilized by subsequent patches.
+Some packet traps did not use the same value, so rectify that now.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c      | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-index 968f0902e4fe..21bfb2f6a6f0 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-@@ -614,7 +614,7 @@ static const struct mlxsw_sp_sb_cm mlxsw_sp2_sb_cms_egress[] = {
- #define MLXSW_SP_CPU_PORT_SB_CM MLXSW_SP_SB_CM(0, 0, MLXSW_SP_SB_POOL_EGR_CPU)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index c2d6890803da..978f6d98e8c4 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4253,7 +4253,7 @@ static int mlxsw_sp_trap_groups_set(struct mlxsw_core *mlxsw_core)
+ 			break;
+ 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_LBERROR:
+ 			priority = 0;
+-			tc = 1;
++			tc = 0;
+ 			break;
+ 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_EVENT:
+ 			priority = MLXSW_REG_HTGT_DEFAULT_PRIORITY;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 3a13b17cd1b8..1d414d0e5431 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -207,25 +207,25 @@ static const struct mlxsw_sp_trap_group_item mlxsw_sp_trap_group_items_arr[] = {
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS, 1),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_L2_DISCARDS,
+ 		.priority = 0,
+-		.tc = 1,
++		.tc = 0,
+ 	},
+ 	{
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(L3_DROPS, 1),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_L3_DISCARDS,
+ 		.priority = 0,
+-		.tc = 1,
++		.tc = 0,
+ 	},
+ 	{
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(TUNNEL_DROPS, 1),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_TUNNEL_DISCARDS,
+ 		.priority = 0,
+-		.tc = 1,
++		.tc = 0,
+ 	},
+ 	{
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_DROPS, 1),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_ACL_DISCARDS,
+ 		.priority = 0,
+-		.tc = 1,
++		.tc = 0,
+ 	},
+ };
  
- static const struct mlxsw_sp_sb_cm mlxsw_sp_cpu_port_sb_cms[] = {
--	MLXSW_SP_CPU_PORT_SB_CM,
-+	MLXSW_SP_SB_CM(1000, 8, MLXSW_SP_SB_POOL_EGR_CPU),
- 	MLXSW_SP_SB_CM(1000, 8, MLXSW_SP_SB_POOL_EGR_CPU),
- 	MLXSW_SP_SB_CM(1000, 8, MLXSW_SP_SB_POOL_EGR_CPU),
- 	MLXSW_SP_SB_CM(1000, 8, MLXSW_SP_SB_POOL_EGR_CPU),
 -- 
 2.26.2
 
