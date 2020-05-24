@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91A401E0075
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 18:14:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCF31E0088
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 18:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728456AbgEXQN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 12:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
+        id S1728888AbgEXQYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 12:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727899AbgEXQN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 12:13:59 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE27C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:13:58 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id d24so13134746eds.11
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:13:58 -0700 (PDT)
+        with ESMTP id S1726851AbgEXQYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 12:24:40 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A45C061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:24:39 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id yc10so18172739ejb.12
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 09:24:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=niFBneZbZNU/iHxEYy/KsCFZNtnbGs02UBsvtwWtxAQ=;
-        b=p0kjE6EIMmwZ7DtR7Kh98V0fPxp3cwdxutwWHshOgf/Y99CCLTJtceXrI8gYuR7xJl
-         Y3wtR5Lo47ASlbM9jXtT8LOitRjkY8GcTfECxqriUJP8uelQjohkYw3Rdtg3dPa8dmzS
-         pKGbyQnVxiZCDSd34FaIkVoj2TrI8q+EgB+5d1jysIDvNQ5ca3jeNxqyJeftUCfuLJxo
-         zL76s9heSBS1khdqDicoCaa/GBEYCqdJTqHcadLXUfrKpM/Fc3SOg8Zs+yASZ3lbWFUp
-         FuqHVu4vWmAMrfaMUYp0AQUfdkEs1sPmpqgIRFNIAhVT2PQFCcO6BJJf/UNqFrfIvMsl
-         jrBQ==
+        bh=N8M1x8W1sIb01X4BFBmWSw7jJoYI7q97oxtiDxLWH8s=;
+        b=jIHRW9x7jfe3Zd3PpWORcjKsq0Ldzn7mNntkNYHS7sQ9yb6BzoGg+GprgTgB5cXPuG
+         l3qyzBD4kpfljcg8biSa3tlvaxPCn2P7aEsJu9xMrwYyEOKnPhmIq8UpY3dNwR41c2DG
+         jL0CAntUcCxr7qh0+6MoXfO4JC4DA17ldFIlaSkLPGs6r8ZRYEOY1J9Ju5hchPY1McpC
+         chFQBqPCluR0ZBieId2TEgJnHd0dQsTQNIhnn2SFGhW3Vqkvto2RXPRHcsYaDY0Kx7al
+         jZV5JVAK5pOu2/Wc+wv6sp8MaSC2TUB19118ltNmxTCbiCWiTwwpfxhnW03gpTZOnu27
+         Yi8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=niFBneZbZNU/iHxEYy/KsCFZNtnbGs02UBsvtwWtxAQ=;
-        b=I3B+mCj64k24hCWDXQl5FCzNQOyU0qcO9ntLhsM/daxpdX8qowNAvTgHdHyBzZ3M53
-         /vHMjdoVbpypTiCIWzegw48+dYVpUsrV5eDMOkhM1bWncuPn36h9YwR4mVKbTgUKtQLR
-         xy5134sp2Kzemevc9fDmjrpVRkZC5cflKNgTOl+fhX644j47jyOdsJBpHpmIGUqjTg5q
-         aD/cw438NIPDvmO0oakZVBg6zVXeKwPcYOYPsDNN1dpNapBE5KsWq252/nYH3zceZyyp
-         QhvybPy5UF1zQ4l+H7FAzINBzLf2G082KCbscJZwyNpwiBUUe3GpADQdiSr5cmETeT8O
-         ezLg==
-X-Gm-Message-State: AOAM531PvUototNVg06ID4IxzZjcEYfdokNpL2aKZ8jQnntksURZK9cg
-        db8vMU1vpKwL2Pnr4+zHb06OEhOtPEgQ9dMOC+U3iA==
-X-Google-Smtp-Source: ABdhPJx/wc+ZSmvRzBN0fcJrqFfxhcIkTb7lQ2P+keiGYY3HnWZAs2LZdw63tsOsQu/Skkgwhtl/dltxx61hF2P4hDM=
-X-Received: by 2002:a50:bf03:: with SMTP id f3mr11998332edk.368.1590336837585;
- Sun, 24 May 2020 09:13:57 -0700 (PDT)
+        bh=N8M1x8W1sIb01X4BFBmWSw7jJoYI7q97oxtiDxLWH8s=;
+        b=uI1zfZ8wtpVB3pgIDtz+yaxakhab+ptWUoFG6bx0gGLHBMWEw0oRlPBhwOqlmDMcnM
+         D9FQuuKUsdfmBNCHEq/09ooE2m9VGrjrYzezUCfgZetOEqnTFRLzpWenEkERNGoE/0Ys
+         s1ube00DKo9EW1wdgbnOhmEB+qmBqSVB5wbrGWRnzn//vUxYYYHJ/CnRjWUEfQRXBH2I
+         G5xBw+ibIauB1Wwbgt+2J93DyznGGYOqVqh2AA1Ie+XmhoC4oxteP1gLf/EaBzQNiqNQ
+         IN1M/wIXr7zE/DmJP53C6bOxu3aqRqtfnGQhBbT/5xvg/E2Vqi9Rpt8mUNqcasEpo47V
+         U3IQ==
+X-Gm-Message-State: AOAM533Bm2E7sfH9U+iSyU9AB12lQWf7+KJ9v3+DuJIQ1IFNp2kprZus
+        HavvUcJh/citdLaCwDGRTSmntXhje6Y8IOccJ6w=
+X-Google-Smtp-Source: ABdhPJyJTxZ8f5//m6mSqx6Dm7tbFxNQfwMVRmkTiceGRFYXH36iMgykfNkq8QJ9cetlDuGS3838p7DYwUNENJBat+s=
+X-Received: by 2002:a17:906:a0c2:: with SMTP id bh2mr15592362ejb.406.1590337478405;
+ Sun, 24 May 2020 09:24:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200521211036.668624-1-olteanv@gmail.com> <20200521211036.668624-11-olteanv@gmail.com>
- <20200524142609.GB1281067@splinter>
-In-Reply-To: <20200524142609.GB1281067@splinter>
+References: <20200521211036.668624-1-olteanv@gmail.com> <20200524140657.GA1281067@splinter>
+In-Reply-To: <20200524140657.GA1281067@splinter>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 24 May 2020 19:13:46 +0300
-Message-ID: <CA+h21hpktNFcpwxTXVFikyWfgHkFZDofZ8=qVqraxcUp_EwJqg@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 10/13] net: bridge: add port flags for host flooding
+Date:   Sun, 24 May 2020 19:24:27 +0300
+Message-ID: <CA+h21hoJwjBt=Uu_tYw3vv2Sze28iRdAAoR3S+LFrKbL6-iuJQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
 To:     Ido Schimmel <idosch@idosch.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -70,158 +69,203 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ido,
-
-On Sun, 24 May 2020 at 17:26, Ido Schimmel <idosch@idosch.org> wrote:
+On Sun, 24 May 2020 at 17:07, Ido Schimmel <idosch@idosch.org> wrote:
 >
-> On Fri, May 22, 2020 at 12:10:33AM +0300, Vladimir Oltean wrote:
+> On Fri, May 22, 2020 at 12:10:23AM +0300, Vladimir Oltean wrote:
 > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > >
-> > In cases where the bridge is offloaded by a switchdev, there are
-> > situations where we can optimize RX filtering towards the host. To be
-> > precise, the host only needs to do termination, which it can do by
-> > responding at the MAC addresses of the slave ports and of the bridge
-> > interface itself. But most notably, it doesn't need to do forwarding,
-> > so there is no need to see packets with unknown destination address.
+> > This is a WIP series whose stated goal is to allow DSA and switchdev
+> > drivers to flood less traffic to the CPU while keeping the same level of
+> > functionality.
 > >
-> > But there are, however, cases when a switchdev does need to flood to the
-> > CPU. Such an example is when the switchdev is bridged with a foreign
-> > interface, and since there is no offloaded datapath, packets need to
-> > pass through the CPU. Currently this is the only identified case, but it
-> > can be extended at any time.
+> > The strategy is to whitelist towards the CPU only the {DMAC, VLAN} pairs
+> > that the operating system has expressed its interest in, either due to
+> > those being the MAC addresses of one of the switch ports, or addresses
+> > added to our device's RX filter via calls to dev_uc_add/dev_mc_add.
+> > Then, the traffic which is not explicitly whitelisted is not sent by the
+> > hardware to the CPU, under the assumption that the CPU didn't ask for it
+> > and would have dropped it anyway.
 > >
-> > So far, switchdev implementers made driver-level assumptions, such as:
-> > this chip is never integrated in SoCs where it can be bridged with a
-> > foreign interface, so I'll just disable host flooding and save some CPU
-> > cycles. Or: I can never know what else can be bridged with this
-> > switchdev port, so I must leave host flooding enabled in any case.
+> > The ground for these patches were the discussions surrounding RX
+> > filtering with switchdev in general, as well as with DSA in particular:
 > >
-> > Let the bridge drive the host flooding decision, and pass it to
-> > switchdev via the same mechanism as the external flooding flags.
+> > "[PATCH net-next 0/4] DSA: promisc on master, generic flow dissector code":
+> > https://www.spinics.net/lists/netdev/msg651922.html
+> > "[PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module":
+> > https://www.spinics.net/lists/netdev/msg634859.html
+> > "[PATCH v3 0/2] net: core: Notify on changes to dev->promiscuity":
+> > https://lkml.org/lkml/2019/8/29/255
+> > LPC2019 - SwitchDev offload optimizations:
+> > https://www.youtube.com/watch?v=B1HhxEcU7Jg
 > >
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  include/linux/if_bridge.h |  3 +++
-> >  net/bridge/br_if.c        | 40 +++++++++++++++++++++++++++++++++++++++
-> >  net/bridge/br_switchdev.c |  4 +++-
-> >  3 files changed, 46 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> > index b3a8d3054af0..6891a432862d 100644
-> > --- a/include/linux/if_bridge.h
-> > +++ b/include/linux/if_bridge.h
-> > @@ -49,6 +49,9 @@ struct br_ip_list {
-> >  #define BR_ISOLATED          BIT(16)
-> >  #define BR_MRP_AWARE         BIT(17)
-> >  #define BR_MRP_LOST_CONT     BIT(18)
-> > +#define BR_HOST_FLOOD                BIT(19)
-> > +#define BR_HOST_MCAST_FLOOD  BIT(20)
-> > +#define BR_HOST_BCAST_FLOOD  BIT(21)
-> >
-> >  #define BR_DEFAULT_AGEING_TIME       (300 * HZ)
-> >
-> > diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-> > index a0e9a7937412..aae59d1e619b 100644
-> > --- a/net/bridge/br_if.c
-> > +++ b/net/bridge/br_if.c
-> > @@ -166,6 +166,45 @@ void br_manage_promisc(struct net_bridge *br)
-> >       }
-> >  }
-> >
-> > +static int br_manage_host_flood(struct net_bridge *br)
-> > +{
-> > +     const unsigned long mask = BR_HOST_FLOOD | BR_HOST_MCAST_FLOOD |
-> > +                                BR_HOST_BCAST_FLOOD;
-> > +     struct net_bridge_port *p, *q;
-> > +
-> > +     list_for_each_entry(p, &br->port_list, list) {
-> > +             unsigned long flags = p->flags;
-> > +             bool sw_bridging = false;
-> > +             int err;
-> > +
-> > +             list_for_each_entry(q, &br->port_list, list) {
-> > +                     if (p == q)
-> > +                             continue;
-> > +
-> > +                     if (!netdev_port_same_parent_id(p->dev, q->dev)) {
-> > +                             sw_bridging = true;
+> > Unicast filtering comes to me as most important, and this includes
+> > termination of MAC addresses corresponding to the network interfaces in
+> > the system (DSA switch ports, VLAN sub-interfaces, bridge interface).
+> > The first 4 patches use Ivan Khoronzhuk's IVDF framework for extending
+> > network interface addresses with a Virtual ID (typically VLAN ID). This
+> > matches DSA switches perfectly because their FDB already contains keys
+> > of the {DMAC, VID} form.
 >
-> It's not that simple. There are cases where not all bridge slaves have
-> the same parent ID and still there is no reason to flood traffic to the
-> CPU. VXLAN, for example.
+> Hi,
 >
-> You could argue that the VXLAN device needs to have the same parent ID
-> as the physical netdevs member in the bridge, but it will break your
-> data path. For example, lets assume your hardware decided to flood a
-> packet in L2. The packet will egress all the local ports, but will also
-> perform VXLAN encapsulation. The packet continues with the IP of the
-> remote VTEP(s) to the underlay router and then encounters a neighbour
-> miss exception, which sends it to the CPU for resolution.
+> I read through the series and I'm not sure how unicast filtering works.
+> Instead of writing a very long mail I just created a script with
+> comments. I think it's clearer that way. Note that this is not a made up
+> configuration. It is used in setups involving VRRP / VXLAN, for example.
 >
-> Since this exception was encountered in the router the driver would mark
-> the packet with 'offload_fwd_mark', as it already performed L2
-> forwarding. If the VXLAN device has the same parent ID as the physical
-> netdevs, then the Linux bridge will never let it egress, nothing will
-> trigger neighbour resolution and the packet will be discarded.
+> ```
+> #!/bin/bash
+>
+> ip netns add ns1
+>
+> ip -n ns1 link add name br0 type bridge vlan_filtering 1
+> ip -n ns1 link add name dummy10 up type dummy
+>
+> ip -n ns1 link set dev dummy10 master br0
+> ip -n ns1 link set dev br0 up
+>
+> ip -n ns1 link add link br0 name vlan10 up type vlan id 10
+> bridge -n ns1 vlan add vid 10 dev br0 self
+>
+> echo "Before adding macvlan:"
+> echo "======================"
+>
+> echo -n "Promiscuous mode: "
+> ip -n ns1 -j -p -d link show dev br0 | jq .[][\"promiscuity\"]
+>
+> echo -e "\nvlan10's MAC is in br0's FDB:"
+> bridge -n ns1 fdb show br0 vlan 10
+>
+> echo
+> echo "After adding macvlan:"
+> echo "====================="
+>
+> ip -n ns1 link add link vlan10 name vlan10-v up address 00:00:5e:00:01:01 \
+>         type macvlan mode private
+>
+> echo -n "Promiscuous mode: "
+> ip -n ns1 -j -p -d link show dev br0 | jq .[][\"promiscuity\"]
+>
+> echo -e "\nvlan10-v's MAC is not in br0's FDB:"
+> bridge -n ns1 fdb show br0 | grep master | grep 00:00:5e:00:01:01
+> ```
+>
+> This is the output on my laptop (kernel 5.6.8):
+>
+> ```
+> Before adding macvlan:
+> ======================
+> Promiscuous mode: 0
+>
+> vlan10's MAC is in br0's FDB:
+> 42:bd:b1:cc:67:15 dev br0 vlan 10 master br0 permanent
+>
+> After adding macvlan:
+> =====================
+> Promiscuous mode: 1
+>
+> vlan10-v's MAC is not in br0's FDB:
+> ```
+>
+> Basically, if the MAC of the VLAN device is not inherited from the
+> bridge or you stack macvlans on top, then the bridge will go into
+> promiscuous mode and it will locally receive all frames passing through
+> it. It's not ideal, but it's a very old and simple behavior. It does not
+> require you to track the VLAN associated with the MAC addresses, for
+> example.
 >
 
-I wasn't going to argue that.
-Ok, so with a bridged VXLAN only certain multicast DMACs corresponding
-to multicast IPs should be flooded to the CPU.
-Actually Allan's example was a bit simpler, he said that host flooding
-can be made a per-VLAN flag. I'm glad that you raised this. So maybe
-we should try to define some mechanism by which virtual interfaces can
-specify to the bridge that they don't need to see all traffic? Do you
-have any ideas?
+This is a good point. I wasn't aware that the bridge 'gives up' with
+macvlan upper devices, but if I understand correctly, we do have the
+necessary tools to improve that.
+But actually, I'm wondering if this simple behavior from the bridge is
+correct. As you, Jiri and Ivan pointed out in last summer's email
+thread about the Linux bridge and promiscuous mode, putting the
+interface in IFF_PROMISC is only going to guarantee acceptance through
+the net device's RX filter, but not that the packets will go to the
+CPU. So from that perspective, the current series would break things,
+so we should definitely fix that and keep the {MAC, VLAN} pairs in the
+bridge's local FDB.
 
-> > +                             break;
-> > +                     }
-> > +             }
-> > +
-> > +             if (sw_bridging)
-> > +                     flags |= mask;
-> > +             else
-> > +                     flags &= ~mask;
-> > +
-> > +             if (flags == p->flags)
-> > +                     continue;
-> > +
-> > +             err = br_switchdev_set_port_flag(p, flags, mask);
-> > +             if (err)
-> > +                     return err;
-> > +
-> > +             p->flags = flags;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  int nbp_backup_change(struct net_bridge_port *p,
-> >                     struct net_device *backup_dev)
-> >  {
-> > @@ -231,6 +270,7 @@ static void nbp_update_port_count(struct net_bridge *br)
-> >               br->auto_cnt = cnt;
-> >               br_manage_promisc(br);
-> >       }
-> > +     br_manage_host_flood(br);
-> >  }
+> When you are offloading the Linux data path to hardware this behavior is
+> not ideal as your hardware can handle much higher packet rates than the
+> CPU.
+>
+> In mlxsw we handle this by tracking the upper devices of the bridge. I
+> was hoping that with Ivan's patches we could add support for unicast
+> filtering in the bridge driver and program the MAC addresses to its FDB
+> with 'local' flag. Then the FDB entries would be notified via switchdev
+> to device drivers.
+>
+
+Yes, it should be possible to do that. I'll try and see how far I get.
+
 > >
-> >  static void nbp_delete_promisc(struct net_bridge_port *p)
-> > diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> > index 015209bf44aa..360806ac7463 100644
-> > --- a/net/bridge/br_switchdev.c
-> > +++ b/net/bridge/br_switchdev.c
-> > @@ -56,7 +56,9 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+> > Multicast filtering was taken and reworked from Florian Fainelli's
+> > previous attempts, according to my own understanding of multicast
+> > forwarding requirements of an IGMP snooping switch. This is the part
+> > that needs the most extra work, not only in the DSA core but also in
+> > drivers. For this reason, I've left out of this patchset anything that
+> > has to do with driver-level configuration (since the audience is a bit
+> > larger than usual), as I'm trying to focus more on policy for now, and
+> > the series is already pretty huge.
+>
+> From what I remember, this is the logic in the Linux bridge:
+>
+> * Broadcast is always locally received
+> * Multicast is locally received if:
+>         * Snooping disabled
+>         * Snooping enabled:
+>                 * Bridge netdev is mrouter port
+>                 or
+>                 * Matches MDB entry with 'host_joined' indication
+>
 > >
-> >  /* Flags that can be offloaded to hardware */
-> >  #define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
-> > -                               BR_MCAST_FLOOD | BR_BCAST_FLOOD)
-> > +                               BR_MCAST_FLOOD | BR_BCAST_FLOOD | \
-> > +                               BR_HOST_FLOOD | BR_HOST_MCAST_FLOOD | \
-> > +                               BR_HOST_BCAST_FLOOD)
+> > Florian Fainelli (3):
+> >   net: bridge: multicast: propagate br_mc_disabled_update() return
+> >   net: dsa: add ability to program unicast and multicast filters for CPU
+> >     port
+> >   net: dsa: wire up multicast IGMP snooping attribute notification
 > >
-> >  int br_switchdev_set_port_flag(struct net_bridge_port *p,
-> >                              unsigned long flags,
+> > Ivan Khoronzhuk (4):
+> >   net: core: dev_addr_lists: add VID to device address
+> >   net: 8021q: vlan_dev: add vid tag to addresses of uc and mc lists
+> >   net: 8021q: vlan_dev: add vid tag for vlan device own address
+> >   ethernet: eth: add default vid len for all ethernet kind devices
+> >
+> > Vladimir Oltean (6):
+> >   net: core: dev_addr_lists: export some raw __hw_addr helpers
+> >   net: dsa: don't use switchdev_notifier_fdb_info in
+> >     dsa_switchdev_event_work
+> >   net: dsa: mroute: don't panic the kernel if called without the prepare
+> >     phase
+> >   net: bridge: add port flags for host flooding
+> >   net: dsa: deal with new flooding port attributes from bridge
+> >   net: dsa: treat switchdev notifications for multicast router connected
+> >     to port
+> >
+> >  include/linux/if_bridge.h |   3 +
+> >  include/linux/if_vlan.h   |   2 +
+> >  include/linux/netdevice.h |  11 ++
+> >  include/net/dsa.h         |  17 +++
+> >  net/8021q/Kconfig         |  12 ++
+> >  net/8021q/vlan.c          |   3 +
+> >  net/8021q/vlan.h          |   2 +
+> >  net/8021q/vlan_core.c     |  25 ++++
+> >  net/8021q/vlan_dev.c      | 102 +++++++++++---
+> >  net/bridge/br_if.c        |  40 ++++++
+> >  net/bridge/br_multicast.c |  21 ++-
+> >  net/bridge/br_switchdev.c |   4 +-
+> >  net/core/dev_addr_lists.c | 144 +++++++++++++++----
+> >  net/dsa/Kconfig           |   1 +
+> >  net/dsa/dsa2.c            |   6 +
+> >  net/dsa/dsa_priv.h        |  27 +++-
+> >  net/dsa/port.c            | 155 ++++++++++++++++----
+> >  net/dsa/slave.c           | 288 +++++++++++++++++++++++++++++++-------
+> >  net/dsa/switch.c          |  36 +++++
+> >  net/ethernet/eth.c        |  12 +-
+> >  20 files changed, 780 insertions(+), 131 deletions(-)
+> >
 > > --
 > > 2.25.1
 > >
