@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D2D1DFC50
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 03:51:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 301A51DFC60
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 04:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388227AbgEXBvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 May 2020 21:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S2388298AbgEXCLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 May 2020 22:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387589AbgEXBvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 21:51:51 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32789C061A0E
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 18:51:50 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id m2so7844488qtd.7
-        for <netdev@vger.kernel.org>; Sat, 23 May 2020 18:51:50 -0700 (PDT)
+        with ESMTP id S2388225AbgEXCLL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 May 2020 22:11:11 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40444C061A0E;
+        Sat, 23 May 2020 19:11:11 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x10so6006247plr.4;
+        Sat, 23 May 2020 19:11:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ib20qnKqlHueZ/Aw31ocWOwrL7mHImR2PdAvhPHYZbE=;
-        b=P9iIai6pAa/BPzDQHgmLuth0xp5RDGGhgCOwsa+cJGPtSiDKovLbTE7GUDbuRX0aSw
-         XCYlncD7nflJYAnbxa523S16qMolmlFpeiy68+5xFKEv3runjvhWN033ULBpJD1RF7eo
-         OBvHl+Az6RXYPM0KKyFMfwJSTbCaOXk/KsIk0EhFHxnpTboKFjSNEcSKS208OuN/Rlq2
-         6zFK0U7eQ96wJJ9Hwvd8T5+dfnbyv98Iwm4RnQga9wwfulrTN9W9qXrDEZ21nCA+qttN
-         jeit/Xy8WRGpwN2+kgBSp2HcZ0v6J6mZX1p2MZY/IX4lPhPlqPqCru5mMkSgrnNmONw1
-         cojQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1NYHauUBWTQgbc43oFTAJCreNKv+baIo/68K96Zs4rc=;
+        b=J786UewExllUKHofcVvgLTI358KCYatvgJpAOm0F2OufvL+pVNAtJGo1pj6JUBbbpC
+         3NF7ePvGe1k+NcGAVJWA2jqXhGQgat6fKQL9C+cfS+HDIRW3Ap1PV2RjfeIRroac1Ezk
+         KhFr6z8QBUa1W8cUNJnD/40ivm8kFHrTlkiHK7cocLe4YIU63lxvhlKVJLa1uVkKSRXG
+         K5T/3uWMrNaxJoDU2eQqFcsAoD5BLt9X90hzco/4eRKjYTM1gkTYB1q7X53w991RSW2v
+         1MVV+EKruZWQnr+ZrRghABtNQQDfIE7Sfy1pYYOvIS3EeWc8l92vFliiDW9EjpixaL1h
+         Qflg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ib20qnKqlHueZ/Aw31ocWOwrL7mHImR2PdAvhPHYZbE=;
-        b=gRmHFFzxllTEmcMYN6NPmjp1lpN1Hy2AmZiaSFy97LQ/SOQNSG83ReHTe0l6RgJ0mI
-         /F2Hl/JoQFwmXkcKCpHwOW/VM4zzM0DdvIt/ZFFbZ+er9Ci/ymNrcHNhAZCNlpH4CmB8
-         TxasuRt1rLt/rCAnHhrVke32wtGvpi4Ev+U9SThu4fwuHhmB1zJ4ubeev5aiIKWbne+S
-         XRn1T04PmXvZmR6Q18llOsvS7z2bwsnIuz9nSTFF+R404/8cooMvBQ0f2RPSMNxLMEqL
-         IJIj/ZooxqBryS6SQLdX1gcQK+PoTyJuejm3YE2KzAvIf1q92n/V2cXCR7y1+1U7RVpG
-         07cg==
-X-Gm-Message-State: AOAM533vbchkUh+B2bJqtfSnNHr2K4Y5oubcwuwQEG2UJA9WMHM1taOS
-        MinZuxbCW9HfzezxvXAh1ZZfAakwiHR2dU/w6BcdtkQcryPpM6wZ5PylvyuOcwqGpGBy4Wf+c8U
-        6n23GHeD7Z7L8lyJwnP2UL8v3I71zazDOq7dssszxm+MYUOQsGDKPfM5CDCzjec/x7zqzUA==
-X-Google-Smtp-Source: ABdhPJxXh5A0DrdSB3vPCq3mWt+JOFxd9pUrGCyuCpY6RYycTYw7GH/udOVoyLX1iHlgh4CiicImhvay/CB2y7k=
-X-Received: by 2002:a0c:b44c:: with SMTP id e12mr10032901qvf.30.1590285109218;
- Sat, 23 May 2020 18:51:49 -0700 (PDT)
-Date:   Sat, 23 May 2020 18:51:44 -0700
-Message-Id: <20200524015144.44017-1-icoolidge@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
-Subject: [PATCH] iproute2: ip addr: Accept 'optimistic' flag
-From:   "Ian K. Coolidge" <icoolidge@google.com>
-To:     netdev@vger.kernel.org
-Cc:     "Ian K. Coolidge" <icoolidge@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1NYHauUBWTQgbc43oFTAJCreNKv+baIo/68K96Zs4rc=;
+        b=Qb9sNV064AArRV05HIGQ6y9u5uXrTjVSEBDbki/iMQ+pi6j7p0mSaz7zYpV8sJK7F1
+         SnAKETVrr1kiqND/xtpj4rTmJ9vDJM+gDlH52p7fXgi4gG8VYHHviqdgh/Q4pxlqmAE+
+         2Ggp+8zUpP/PC7mDAtUyCoKozvF6tWfXW9FGgI9Ladfgltn3de2A83j8bmyweAdp4IFd
+         5IJA7kOiPgVGF/fMG9bwkVtorZ6tqIR6U+ZV0GYyMR10vbPUM0ylo0BttwhPdmmdw2Vs
+         BxwwMcRtOUFn79f+TZkIWI9NrvKLHRHNyWiPEiQcaMQ5OPE4RrqRbsoBPLixUJVgMUsV
+         DrtQ==
+X-Gm-Message-State: AOAM533jwINdWIdx6a8eKtZ9wcS5OrU277jRE5R+DietqyoGPCTLCQ8w
+        YqCuEBXqLwmNMfVyen4AWDM=
+X-Google-Smtp-Source: ABdhPJzjaswgBjGeZOebznwn3ru9lufOX3WhHax+o+4Bd9NRfLzG3TqcRXoKe1CoWCEUQMaErKCTqQ==
+X-Received: by 2002:a17:90a:10c1:: with SMTP id b1mr7863131pje.232.1590286270773;
+        Sat, 23 May 2020 19:11:10 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id p1sm1961780pjz.36.2020.05.23.19.11.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 May 2020 19:11:10 -0700 (PDT)
+Date:   Sat, 23 May 2020 19:11:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        steven.price@arm.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com,
+        justin.he@arm.com, Wei.Chen@arm.com, nd@arm.com
+Subject: Re: [RFC PATCH v12 10/11] arm64: add mechanism to let user choose
+ which counter to return
+Message-ID: <20200524021106.GC335@localhost>
+References: <20200522083724.38182-1-jianyong.wu@arm.com>
+ <20200522083724.38182-11-jianyong.wu@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200522083724.38182-11-jianyong.wu@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows addresses added to use IPv6 optimistic DAD.
----
- ip/ipaddress.c           | 7 ++++++-
- man/man8/ip-address.8.in | 7 ++++++-
- 2 files changed, 12 insertions(+), 2 deletions(-)
+On Fri, May 22, 2020 at 04:37:23PM +0800, Jianyong Wu wrote:
+> In general, vm inside will use virtual counter compered with host use
+> phyical counter. But in some special scenarios, like nested
+> virtualization, phyical counter maybe used by vm. A interface added in
+> ptp_kvm driver to offer a mechanism to let user choose which counter
+> should be return from host.
 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 80d27ce2..48cf5e41 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -72,7 +72,7 @@ static void usage(void)
- 		"           [-]tentative | [-]deprecated | [-]dadfailed | temporary |\n"
- 		"           CONFFLAG-LIST ]\n"
- 		"CONFFLAG-LIST := [ CONFFLAG-LIST ] CONFFLAG\n"
--		"CONFFLAG  := [ home | nodad | mngtmpaddr | noprefixroute | autojoin ]\n"
-+		"CONFFLAG  := [ home | nodad | optimistic | mngtmpaddr | noprefixroute | autojoin ]\n"
- 		"LIFETIME := [ valid_lft LFT ] [ preferred_lft LFT ]\n"
- 		"LFT := forever | SECONDS\n"
- 		"TYPE := { vlan | veth | vcan | vxcan | dummy | ifb | macvlan | macvtap |\n"
-@@ -2335,6 +2335,11 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 				ifa_flags |= IFA_F_HOMEADDRESS;
- 			else
- 				fprintf(stderr, "Warning: home option can be set only for IPv6 addresses\n");
-+		} else if (strcmp(*argv, "optimistic") == 0) {
-+			if (req.ifa.ifa_family == AF_INET6)
-+				ifa_flags |= IFA_F_OPTIMISTIC;
-+			else
-+				fprintf(stderr, "Warning: optimistic option can be set only for IPv6 addresses\n");
- 		} else if (strcmp(*argv, "nodad") == 0) {
- 			if (req.ifa.ifa_family == AF_INET6)
- 				ifa_flags |= IFA_F_NODAD;
-diff --git a/man/man8/ip-address.8.in b/man/man8/ip-address.8.in
-index 2a553190..fe773c91 100644
---- a/man/man8/ip-address.8.in
-+++ b/man/man8/ip-address.8.in
-@@ -92,7 +92,7 @@ ip-address \- protocol address management
- 
- .ti -8
- .IR CONFFLAG " := "
--.RB "[ " home " | " mngtmpaddr " | " nodad " | " noprefixroute " | " autojoin " ]"
-+.RB "[ " home " | " mngtmpaddr " | " nodad " | " optimstic " | " noprefixroute " | " autojoin " ]"
- 
- .ti -8
- .IR LIFETIME " := [ "
-@@ -258,6 +258,11 @@ stateless auto-configuration was active.
- (IPv6 only) do not perform Duplicate Address Detection (RFC 4862) when
- adding this address.
- 
-+.TP
-+.B optimistic
-+(IPv6 only) When performing Duplicate Address Detection, use the RFC 4429
-+optimistic variant.
-+
- .TP
- .B noprefixroute
- Do not automatically create a route for the network prefix of the added
--- 
-2.27.0.rc0.183.gde8f92d652-goog
+Sounds like you have two time sources, one for normal guest, and one
+for nested.  Why not simply offer the correct one to user space
+automatically?  If that cannot be done, then just offer two PHC
+devices with descriptive names.
 
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index fef72f29f3c8..8b0a7b328bcd 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -123,6 +123,9 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  	struct timespec64 ts;
+>  	int enable, err = 0;
+>  
+> +#ifdef CONFIG_ARM64
+> +	static long flag;
+
+static?  This is not going to fly.
+
+> +		 * In most cases, we just need virtual counter from host and
+> +		 * there is limited scenario using this to get physical counter
+> +		 * in guest.
+> +		 * Be careful to use this as there is no way to set it back
+> +		 * unless you reinstall the module.
+
+How on earth is the user supposed to know this?
+
+From your description, this "flag" really should be a module
+parameter.
+
+Thanks,
+Richard
