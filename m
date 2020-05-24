@@ -2,91 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545151DFD73
-	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 08:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 881711DFE1C
+	for <lists+netdev@lfdr.de>; Sun, 24 May 2020 12:04:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728217AbgEXGfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 02:35:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32818 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726796AbgEXGfX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 May 2020 02:35:23 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0CE332070A;
-        Sun, 24 May 2020 06:35:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590302122;
-        bh=54TMJgyWckMIDQqATxCvcueAykL3W0OIRCLEOdihgYI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZMRji7+RCT3DuFbVUBrE/kDbTKGx5eqqpkvR7fQZ495PAmkjnMmpCNxMuMsWzvAVH
-         bSnKKmfFUywzudIoJoe+9fIRQ9ctHSYAvZMexuH7oYpbjnUhO/9tn870Jmb+7Wj2fW
-         sS+8loDk6LxMn+YU5AQRUhaTB7AnWp0X3HtZ1Qtg=
-Date:   Sun, 24 May 2020 08:35:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200524063519.GB1369260@kroah.com>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200523062351.GD3156699@kroah.com>
- <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+        id S2387453AbgEXKEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 06:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728774AbgEXKEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 06:04:06 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C64DC061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 03:04:06 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 190so15182398qki.1
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 03:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tlapnet.cz; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/4uOlFNcEo9hHnnj68o/7kmzl4EqZZsXbxLZ4h+0H7k=;
+        b=DvA5rBSHmLnO94fkMmbFmKdyWYB/0v8sJd/pAUol/S6brM3AtxJEYe7iRF4//JvLwv
+         4X+9Hx/L6m+wwyf/Hhfoz8fIimBRWQujfqfgAX19nOjN76Qt2Jfx/dXjafVmTSqZ3QFq
+         SEcjWYSGo5m3zErfkQ1noHSm58cmGAq3H8hidg3bZHv4Uwzd1m9Qpcpf8H8HUb4Df0E0
+         qnUi6ibrkhXk/L1KXj4A6mLU+nQ2L3upt8cR/btfpuyteVVsAW+wUO/ZixoBCkKQqitN
+         chgnCgkaj7QTcWMJG05yBVsfSG/4EU6H7vEHS1QFLLMr81vh2MCuObEiJUg59SOk0Y6/
+         p72Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/4uOlFNcEo9hHnnj68o/7kmzl4EqZZsXbxLZ4h+0H7k=;
+        b=YNOBrH6NZy+w9+iJoUxkg5OjO9s7mhV+dM6LUHG8+WyBdQaUmnysHS4mPEMJjN2dna
+         tqNpCjf/b6/ozKUmF0Et0L8moITn+pHeQ+J7lPqNivDK/LTtJpwmMe26zVnmOAs/OpSL
+         vR7k/9VX35hpisYWDC718pAW59ztttJAylVGTLxajCM0HAqWEVRCm6WN/HtZBYb5tjN8
+         cmotPLhhg58xwBK+No8vi6OWxvCa4g5Y5rFJeakhS0C2/9LN9OjQlqBTSZ6We1EidGpZ
+         IchoIEgOdHT+WQqY9o9AnbLKAyFh0hJh5QoepOiJzX2n3YQdv1+/cIAqXKWu53fGaUSF
+         Qugw==
+X-Gm-Message-State: AOAM532dzredpr3dl0LRx7IZRrGI0lKSrpolkV0s4QZqRW2j29zv5uIH
+        nMmMfGu0a4DZzpHY93jWBOc7jtz8sE1Cx3SM1HpcUO7RKHwxcg==
+X-Google-Smtp-Source: ABdhPJzCx7UsUJqpbV5jk3kF06+e+1bk3dZx88aiao84qZVF70hXy7B4jjQQFRkRO80e5Wqc3R4ev8tmvqmyiyLdmq4=
+X-Received: by 2002:ae9:f811:: with SMTP id x17mr13576849qkh.71.1590314645379;
+ Sun, 24 May 2020 03:04:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+ <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+ <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+ <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
+ <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
+ <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+ <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
+ <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
+ <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com>
+ <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
+ <CAM_iQpWPmu71XYvoshZ3aAr0JmXTg+Y9s0Gvpq77XWbokv1AgQ@mail.gmail.com>
+ <CANxWus9vSe=WtggXveB+YW_29fD8_qb-7A1pCgMUHz7SFfKhTA@mail.gmail.com>
+ <CANxWus8=CZ8Y1GvqKFJHhdxun9gB8v1SP0XNZ7SMk4oDvkmEww@mail.gmail.com>
+ <CAM_iQpXjsrraZpU3xhTvQ=owwzSTjAVdx-Aszz-yLitFzE5GsA@mail.gmail.com>
+ <CAM_iQpV_ebQjZuwhxhHSatcjNXzGBgz0JDC+H-nO-dXRkPKKUQ@mail.gmail.com>
+ <CANxWus-9gjCvMw7ctG7idERsZd7WtObRs4iuTUp_=AaJtHbSgg@mail.gmail.com>
+ <CAM_iQpW-p0+0o8Vks6AOHVt3ndqh+fj+UXGP8wtfi9-Pz-TToQ@mail.gmail.com>
+ <CANxWus9RgiVP1X4zK5mVG4ELQmL2ckk4AYMvTdKse6j5WtHNHg@mail.gmail.com>
+ <CAM_iQpXR+MQHaR-ou6rR_NAz-4XhAWiLuSEYvvpVXyWqHBnc-w@mail.gmail.com>
+ <CANxWus8AqCM4Dk87TTXB3xxtQPqPYjs-KmzVv8hjZwaAqg2AYQ@mail.gmail.com>
+ <CAM_iQpWbjgT0rEkzd53aJ_z-WwErs3NWHeQZic+Vqn3TvFpA0A@mail.gmail.com>
+ <CANxWus8GQ-YGKa24iQQJbWrDnkQB9BptM80P22n5OLCmDN+Myw@mail.gmail.com> <CAM_iQpV71mVNn30bgOzGyjxKeD+2HS+MwJBdrq8Vg-g2HzM1aA@mail.gmail.com>
+In-Reply-To: <CAM_iQpV71mVNn30bgOzGyjxKeD+2HS+MwJBdrq8Vg-g2HzM1aA@mail.gmail.com>
+From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Date:   Sun, 24 May 2020 12:03:54 +0200
+Message-ID: <CANxWus9v0Xn+RgyELT_fEOXiTUaf=z_GGCC695+Dy2LpXBcERg@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 23, 2020 at 02:41:51PM -0500, Pierre-Louis Bossart wrote:
-> 
-> 
-> On 5/23/20 1:23 AM, Greg KH wrote:
-> > On Fri, May 22, 2020 at 09:29:57AM -0500, Pierre-Louis Bossart wrote:
-> > > This is not an hypothetical case, we've had this recurring problem when a
-> > > PCI device creates an audio card represented as a platform device. When the
-> > > card registration fails, typically due to configuration issues, the PCI
-> > > probe still completes.
-> > 
-> > Then fix that problem there.  The audio card should not be being created
-> > as a platform device, as that is not what it is.  And even if it was,
-> > the probe should not complete, it should clean up after itself and error
-> > out.
-> 
-> Did you mean 'the PCI probe should not complete and error out'?
+On Tue, May 19, 2020 at 7:57 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Tue, May 19, 2020 at 1:04 AM V=C3=A1clav Zindulka
+> <vaclav.zindulka@tlapnet.cz> wrote:
+> > >
+> > > Let me think how to fix this properly, I have some ideas and will pro=
+vide
+> > > you some patch(es) to test soon.
+> >
+> > Sure, I'll wait. I have plenty of time now with the main problem fixed =
+:-)
+>
+> Can you help to test the patches below?
+> https://github.com/congwang/linux/commits/qdisc_reset2
+>
+> I removed the last patch you previously tested and added two
+> more patches on top. These two patches should get rid of most
+> of the unnecessary resets. I tested them with veth pair with 8 TX
+> queues, but I don't have any real physical NIC to test.
+>
+> Thanks.
 
-Yes.
+I've tested it and I have to admit that your Kung-fu is even better
+than mine :-D My large ruleset with over 13k qdiscs defined got from
+22s to 520ms. I've tested downtime of interface during deletion of
+root qdisc and it corresponds to the time I measured so it is great.
 
-> If yes, that's yet another problem... During the PCI probe, we start a
-> workqueue and return success to avoid blocking everything.
+/usr/bin/time -p tc qdisc del dev enp1s0f0np0 root
+real 0.52
+user 0.00
+sys 0.52
 
-That's crazy.
+I've even added my patch for only active queues but it didn't make any
+difference from your awesome patch :-)
 
-> And only 'later' do we actually create the card. So that's two levels
-> of probe that cannot report a failure. I didn't come up with this
-> design, IIRC this is due to audio-DRM dependencies and it's been used
-> for 10+ years.
-
-Then if the probe function fails, it needs to unwind everything itself
-and unregister the device with the PCI subsystem so that things work
-properly.  If it does not do that today, that's a bug.
-
-What kind of crazy dependencies cause this type of "requirement"?
-
-thanks,
-
-greg k-h
+Thank you very much. You helped me really a lot.
