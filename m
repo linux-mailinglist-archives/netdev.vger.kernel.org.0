@@ -2,130 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B5C1E08C1
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F131E08C3
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388182AbgEYIZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 04:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388093AbgEYIZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:25:27 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEF9C061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 01:25:26 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id u22so7219889plq.12
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 01:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=13+JqBV7jtPNEvoSDi+XNPQNljVYlYe9Z8vbyEZUo6g=;
-        b=FpH8WyVxihV6Uku8Ltay5mXNNuo2WdoZcpuTBQsLD0RbBp16Mj/O0JiWUv1XGk19Sb
-         XpMBTXS+XxEo8k4/n6ll7crxKYzCX0Y1OHJUbbpDhfu+amlFbDYz2CuoNNqCcGMyBAYL
-         NHFWTNKTIZMf7/uhbWXdLZyC8yp7Q4GQWarCU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=13+JqBV7jtPNEvoSDi+XNPQNljVYlYe9Z8vbyEZUo6g=;
-        b=ioFs9dtGb5K/6rP5p5mYR0sBLHfe7ERGHnbba/lsNPu19LUDNbwrj+uwbOavK1EcmE
-         2vxWgh9+CYS+tzX2oF4sA2PH6Da6PZ7GaijIldNNEU8rsX9NtbxKaEzvB0WYRcNFbA0h
-         mzCnDmZfpyEPPf0zlS4pALOorkTKvRY3MDQP0vbC4gq7TN2IwxcIftD1ju5iTOckbjdb
-         LJtbeshnUdUqtcTIy+F17g9t4qQnSWAx78j0767/WXKrrNcs7Jb5DxaSqAsi/8LneMDL
-         j/rjT1KueH37fraJ85yYCI6B59FdLJkll5fVo7v5zNTK3Dt7cezc4D7EpDGMQkZy9dUe
-         n8CA==
-X-Gm-Message-State: AOAM531OYs/OSQkYGB5wkGEQoU0pVn+Qxyxdl69QEqAYf/WD1LDpinnZ
-        4WHoJn2e8rkEIXLCE2cogOou5Q==
-X-Google-Smtp-Source: ABdhPJyXy4mevldmnnFO8nUwP424Pw1giVP8nexyPhbbsr8Xf279gkVeiyi6XX97Yv18VCgIyBRJ7A==
-X-Received: by 2002:a17:902:9895:: with SMTP id s21mr7224407plp.335.1590395126454;
-        Mon, 25 May 2020 01:25:26 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id b20sm12718290pfb.193.2020.05.25.01.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 01:25:25 -0700 (PDT)
-Date:   Mon, 25 May 2020 17:25:21 +0900
-From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net-next] net: Avoid spurious rx_dropped increases with
- tap and rx_handler
-Message-ID: <20200525082521.GA414144@f3>
-References: <20200525050137.412072-1-bpoirier@cumulusnetworks.com>
- <CANn89iLdfOzRuhC--MALZuTDSoU6ncX7Xu_0iJnjZs1-9_gwmQ@mail.gmail.com>
+        id S1730039AbgEYI02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 04:26:28 -0400
+Received: from mail-am6eur05on2088.outbound.protection.outlook.com ([40.107.22.88]:14149
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727894AbgEYI01 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 04:26:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l8ju8sUN0fGFUlKqXQgYQo1QowOYwbh8ej10HKLPRuW9l++4eGLdjFhgVQ5u57ZnGko5AxhmCUO4MehVh9R5qbde4I/VZCqJ0F8dAFbZedJ4XtOMA7EtHxY7vIu1/qfolvgzUJ2qO7rF6xqqkihirgielJzrXeX9U43+5mTySihz5EWZR7es0LOW6IJZazJmYIaen57i20WdetDlgdlzP1DHcQQlBOu9v/ssSy8R6aMxlj9A4NvH/G9iuVzfsV4DC0CQBsp64/v50GxIih8aWwPfEh1ZJ3muzQEP1JKZ8fxLMoDL21JMPxxH3BAejg5U42CA39Uwh77DIuz2NsLhrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6FUZli1Im29IpQrvoyQngVOykx998Zw9jvv4pPguzDo=;
+ b=Wle0ABrZfJFJ7nGBWXB2QM8xIhUIVVADaqejM1MbI/bMi3qqJKslHwNyPcUjOXFEDLdoZ4t11qtKNiwKfigE+9HElIhxOUXutX43tIrG0Nh70sN0mjimmaOz/YEEAqHSdIlqqq2V16WLxQ+rAVeRkF8Vc1GCbcMstU1M3yeWjb9qx62OZrSiLl6rkMwJj/e1pyN5YRmzQJ3Hl1MZaYx+j0elFoNEOIlAlFeUXRq3uXpTIO1IBf+uDqghTYTSMrV/m4m8yFqdg08y3+3vy5vqFAdnZPM0rx8B/K272HyZn2Q0BxtRo5/a+E/KoUyOxWBt8IUPpQBWDgDs6MOJPn0RgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6FUZli1Im29IpQrvoyQngVOykx998Zw9jvv4pPguzDo=;
+ b=ecpunrNWxzJexPSlcAeD+ysBO219XM8m98sJPP7+e2Gq+ZtfT+Qh2qWNmp9nWIoiJ5DvGFuDf9NZL1oLWE2GIDuLrygJX9XIXQ+/Gq54mFArLhpUWEsz7M/9fMckcYSOam1th8pFheIHmaJFudv1BBIxD65cWdenza8wWEiCrmY=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR0402MB3831.eurprd04.prod.outlook.com
+ (2603:10a6:209:19::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26; Mon, 25 May
+ 2020 08:26:22 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3021.029; Mon, 25 May 2020
+ 08:26:22 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Andy Duan <fugang.duan@nxp.com>
+Subject: Recall: [PATCH net 1/1] net: stmmac: enable timestamp snapshot for
+ required PTP packets in dwmac v5.10a
+Thread-Topic: [PATCH net 1/1] net: stmmac: enable timestamp snapshot for
+ required PTP packets in dwmac v5.10a
+Thread-Index: AQHWMm4rrOvsVv/CYU6TBk+S+aJLnA==
+X-CallingTelephoneNumber: IPM.Note
+X-VoiceMessageDuration: 35
+X-FaxNumberOfPages: 0
+Date:   Mon, 25 May 2020 08:26:21 +0000
+Message-ID: <AM6PR0402MB36079B19687D24D0B0283947FFB30@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: fdc30e5e-6d74-4366-635f-08d800854e7a
+x-ms-traffictypediagnostic: AM6PR0402MB3831:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR0402MB3831144CB52D7ABB8A82415FFFB30@AM6PR0402MB3831.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 0414DF926F
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: i9BqVR0AkgW9Td9ZzWYn1ukK8UZcTPT18xUykwWH+T6u6FOondn2gJTx+t5zhznx5v5v4SJ2N1mTHa3d5oY1n8O2jf6ZOK0cXuc2x0oqI5TwO/aCvi2WXDbTK5IaYBs4mlpokFj9jlf0/zUEKoplfabBeDDMz2yHTfN0bxxqU+NNRgHHnUBoXNOThYW/0dGfMcL0TGdubhQqNgLlHoq9eHBq5CHlmqNB1Qc+iHSdllHEhUJfofPkFNjoxGKIWqAN7Dsj7sk9dn/MwwecIdPfVxkgy8u7FHR8QTlDQ5hpKKpT78GwN/GxBvVHbSWAANerprbuxg1x5orc1cmGI6Y9gA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(396003)(366004)(346002)(39860400002)(8936002)(54906003)(110136005)(558084003)(71200400001)(33656002)(8676002)(316002)(52536014)(86362001)(478600001)(2906002)(4326008)(9686003)(66446008)(64756008)(66556008)(66476007)(66946007)(55016002)(76116006)(7696005)(7416002)(5660300002)(26005)(6506007)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 2u7AAkEI615UdpfNhjvUywdDxfNl1VdILkq0s+YdzpfDNbTz+GeaegO3sn37QH5P5oTRTHWSGlmjJwkBr4jkxB1ESsm2K48rtFzDLbPqD3Davv3zZy87c1HHA/6ttZymfWcJ9M2R9LOYpUYIYMr6866W2jGGI/DjBYWb8DxsCvUc1hIuZZV0npjPlkRcCPOmAo7r+NBlMstj3b3eyPrQaY2XUMxKnhdKDRfiCKJliuXfz9xqrYfOiySzj14X478XO3WFRiA+jodP1+Al9yPis16Fg2pKWXKvtELkuamWMdueDCgfWsWE9vPiopl1eWW2Qa1WaLP+3EXp0wiF8eS51MYTP3Vey6Pf4tSdS99pyDn0nv+z0x4ufm4ol+H6edkwH7V9CXcJ6xh/972nvSpfNGh28wnubhEbpN9UvYohh/Sh6aZzwz/yOw6Ah/W2EeRVtCVBQ7CHrTUFT3M1dVW9763HnG5v3QMBTuFiDmn1WoVNb64JgZItC0lWN9EumIbd
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLdfOzRuhC--MALZuTDSoU6ncX7Xu_0iJnjZs1-9_gwmQ@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdc30e5e-6d74-4366-635f-08d800854e7a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2020 08:26:21.9439
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: etwsrsukJz2fcNDMtlw/IrLG8nLK5EgPiBOOaTbuESAMJwoBqlYZ9n5dqJm15SRZG6rC+QZt+NQKDL2jC41IJQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3831
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-24 22:41 -0700, Eric Dumazet wrote:
-> On Sun, May 24, 2020 at 10:02 PM Benjamin Poirier
-> <bpoirier@cumulusnetworks.com> wrote:
-> >
-> > Consider an skb which doesn't match a ptype_base/ptype_specific handler. If
-> > this skb is delivered to a ptype_all handler, it does not count as a drop.
-> > However, if the skb is also processed by an rx_handler which returns
-> > RX_HANDLER_PASS, the frame is now counted as a drop because pt_prev was
-> > reset. An example of this situation is an LLDP frame received on a bridge
-> > port while lldpd is listening on a packet socket with ETH_P_ALL (ex. by
-> > specifying `lldpd -c`).
-> >
-> > Fix by adding an extra condition variable to record if the skb was
-> > delivered to a packet tap before running an rx_handler.
-> >
-> > The situation is similar for RX_HANDLER_EXACT frames so their accounting is
-> > also changed. OTOH, the behavior is unchanged for RX_HANDLER_ANOTHER frames
-> > - they are accounted according to what happens with the new skb->dev.
-> >
-> > Fixes: caf586e5f23c ("net: add a core netdev->rx_dropped counter")
-> 
-> I disagree.
-> 
-> > Message-Id: <20200522011420.263574-1-bpoirier@cumulusnetworks.com>
-[...]
-> > +               if (!rx_tapped) {
-> >  drop:
-> > -               if (!deliver_exact)
-> > -                       atomic_long_inc(&skb->dev->rx_dropped);
-> > -               else
-> > -                       atomic_long_inc(&skb->dev->rx_nohandler);
-> > +                       if (!deliver_exact)
-> > +                               atomic_long_inc(&skb->dev->rx_dropped);
-> > +                       else
-> > +                               atomic_long_inc(&skb->dev->rx_nohandler);
-> > +               }
-> 
-> This does not make sense to me.
-> 
-> Here we call kfree_skb() meaning this packet is _dropped_.
-> I understand it does not please some people, because they do not
-> always understand the meaning of this counter, but it is a mere fact.
-
-IMO, the core of the issue is calling deliver_skb() before running the
-rx_handler function. The rx_handler may not even attempt to deliver the
-skb anywhere (RX_HANDLER_PASS). Because of that deliver_skb() call, the
-packet_type handler (packet_rcv()) makes a spurious skb_clone(). Once a
-useless copy has been made, it has to be freed somewhere. That's why
-with my patch there may be kfree_skb() without an increase of the
-dropped counter.
-
-> 
-> Fact that a packet capture made a clone of this packet should not
-> matter, tcpdump should not hide that a packet is _dropped_.
-
-What this patch intends to fix is that the behavior is inconsistent
-depending on whether the interface has an rx_handler or not:
-	eth0 nomaster -> tapped frames don't count as dropped
-	eth0 master br0 -> tapped frames count as dropped
-That has been the case since the counter was introduced.
-
-This patch makes tapped frames uniformly not count as drops. If we
-should move in the other direction (always count frames that were only
-delivered to ptype_all handlers as dropped), I'll work on a different
-patch.
+Andy Duan would like to recall the message, "[PATCH net 1/1] net: stmmac: e=
+nable timestamp snapshot for required PTP packets in dwmac v5.10a".=
