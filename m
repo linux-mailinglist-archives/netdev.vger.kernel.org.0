@@ -2,160 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 700601E0506
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 05:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14AC41E0511
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 05:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388689AbgEYDFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 23:05:09 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4893 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388178AbgEYDFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 May 2020 23:05:09 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AA5478C8C87755055AB5;
-        Mon, 25 May 2020 11:05:03 +0800 (CST)
-Received: from [127.0.0.1] (10.166.215.154) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Mon, 25 May 2020
- 11:04:59 +0800
-Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
-To:     Xin Long <lucien.xin@gmail.com>
-References: <20200421143149.45108-1-yuehaibing@huawei.com>
- <20200422125346.27756-1-yuehaibing@huawei.com>
- <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com>
- <20200519085353.GE13121@gauss3.secunet.de>
- <CADvbK_eXW24SkuLUOKkcg4JPa8XLcWpp6RNCrQT+=okaWe+GDA@mail.gmail.com>
- <550a82f1-9cb3-2392-25c6-b2a84a00ca33@huawei.com>
- <CADvbK_cpXOxbWzHzonrzzrrb+Vh3q8NhXnapz0yc9h4H4gN02A@mail.gmail.com>
- <1c4c5d40-1e35-f9bb-3f17-01bb4675f3aa@huawei.com>
- <CADvbK_e8ixjGGHRK9A4HcXDGKYcNykneUHzHiE8sQ4ojDz+e-g@mail.gmail.com>
-CC:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <f82b038f-776e-a87a-d46b-173d238531ba@huawei.com>
-Date:   Mon, 25 May 2020 11:04:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S2388767AbgEYDOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 23:14:19 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:33290 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388510AbgEYDOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 23:14:18 -0400
+Received: by mail-io1-f72.google.com with SMTP id w4so11782390iol.0
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 20:14:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=YSWc34iX3GK8ObMO8XHR5U5QhpSHn1IWPTDBonz04dU=;
+        b=ttOEOmi4U+DDcjphJkawceanw7W1bWQ3pejuZM/zwEtrHJIM9VsqaIXP+zjJvnx4EM
+         TOYr78T+tnJHwmo68DmF/v+HFvyBYiFnB/zLIu4R1kcnfGM4Qc1YuL2J5/d0rbjuUV3i
+         EXUVz22DcOos4km8/Svgf63yNVJd3hk+/N4xtCRRcGPWJKPkk/tafcgx4US2CEiP2+xe
+         zyxzcWZ2FoAptWB4MPWCmRgVX/RIaxM8y/VXbntvOxHgCeq98W27ck0pGsEn+OMC25p6
+         55BPemaFt3Y33IpxoToCvsE3x0ekzNczrLrnwehHxkJANan7nabAcw4w+eph3+bdmwHH
+         ZWGw==
+X-Gm-Message-State: AOAM530g6K7IsZcFD8E9Thj1CAhLaND9V3fGchmJG8mhHmO5nqnnJXfM
+        C5b7Q2jLV/c7cTeTDnu32A1TLXcrqzX+McUdRb+sjX06BJmj
+X-Google-Smtp-Source: ABdhPJxsbx6n8x/nMHeqIEt5cap9oSTo8nQK+yklLFkw76SjM625O48upChlWPPuWEq7icEG+0rG9XmUmKJ8XgF+hcCtLsVY/cXz
 MIME-Version: 1.0
-In-Reply-To: <CADvbK_e8ixjGGHRK9A4HcXDGKYcNykneUHzHiE8sQ4ojDz+e-g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.166.215.154]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a5d:914d:: with SMTP id y13mr1544846ioq.48.1590376455857;
+ Sun, 24 May 2020 20:14:15 -0700 (PDT)
+Date:   Sun, 24 May 2020 20:14:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b5f39305a6705fd3@google.com>
+Subject: general protection fault in sock_recvmsg
+From:   syzbot <syzbot+d7cface3f90b13edf5b0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.01.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/5/23 17:02, Xin Long wrote:
-> On Fri, May 22, 2020 at 8:39 PM Yuehaibing <yuehaibing@huawei.com> wrote:
->>
->> On 2020/5/22 13:49, Xin Long wrote:
->>> On Fri, May 22, 2020 at 9:45 AM Yuehaibing <yuehaibing@huawei.com> wrote:
->>>>
->>>> On 2020/5/21 14:49, Xin Long wrote:
->>>>> On Tue, May 19, 2020 at 4:53 PM Steffen Klassert
->>>>> <steffen.klassert@secunet.com> wrote:
->>>>>>
->>>>>> On Fri, May 15, 2020 at 04:39:57PM +0800, Yuehaibing wrote:
->>>>>>>
->>>>>>> Friendly ping...
->>>>>>>
->>>>>>> Any plan for this issue?
->>>>>>
->>>>>> There was still no consensus between you and Xin on how
->>>>>> to fix this issue. Once this happens, I consider applying
->>>>>> a fix.
->>>>>>
->>>>> Sorry, Yuehaibing, I can't really accept to do: (A->mark.m & A->mark.v)
->>>>> I'm thinking to change to:
->>>>>
->>>>>  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
->>>>>                                    struct xfrm_policy *pol)
->>>>>  {
->>>>> -       u32 mark = policy->mark.v & policy->mark.m;
->>>>> -
->>>>> -       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
->>>>> -               return true;
->>>>> -
->>>>> -       if ((mark & pol->mark.m) == pol->mark.v &&
->>>>> -           policy->priority == pol->priority)
->>>>> +       if (policy->mark.v == pol->mark.v &&
->>>>> +           (policy->mark.m == pol->mark.m ||
->>>>> +            policy->priority == pol->priority))
->>>>>                 return true;
->>>>>
->>>>>         return false;
->>>>>
->>>>> which means we consider (the same value and mask) or
->>>>> (the same value and priority) as the same one. This will
->>>>> cover both problems.
->>>>
->>>>   policy A (mark.v = 0x1011, mark.m = 0x1011, priority = 1)
->>>>   policy B (mark.v = 0x1001, mark.m = 0x1001, priority = 1)
->>> I'd think these are 2 different policies.
->>>
->>>>
->>>>   when fl->flowi_mark == 0x12341011, in xfrm_policy_match() do check like this:
->>>>
->>>>         (fl->flowi_mark & pol->mark.m) != pol->mark.v
->>>>
->>>>         0x12341011 & 0x1011 == 0x00001011
->>>>         0x12341011 & 0x1001 == 0x00001001
->>>>
->>>>  This also match different policy depends on the order of policy inserting.
->>> Yes, this may happen when a user adds 2  policies like that.
->>> But I think this's a problem that the user doesn't configure it well,
->>> 'priority' should be set.
->>> and this can not be avoided, also such as:
->>>
->>>    policy A (mark.v = 0xff00, mark.m = 0x1000, priority = 1)
->>>    policy B (mark.v = 0x00ff, mark.m = 0x0011, priority = 1)
->>>
->>>    try with 0x12341011
->>>
->>> So just be it, let users decide.
->>
->> Ok, this make sense.
-> Thanks Yuehaibing, it's good we're on the same page now.
-> 
-> Just realized the patch I created above won't work for the case:
-> 
->   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
->   policy B (mark.v = 0x1,  mark.m = 0, priority = 2)
->   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
-> 
-> when policy C is being added, the warning still occurs.
+Hello,
 
-Do you means this:
+syzbot found the following crash on:
 
-   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
-   policy B (mark.v = 0x10, mark.m = 1, priority = 2)
-   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
+HEAD commit:    caffb99b Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15a74441100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c33c7f7c5471fd39
+dashboard link: https://syzkaller.appspot.com/bug?extid=d7cface3f90b13edf5b0
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=141034ba100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=119cd016100000
 
-> 
-> So I will just check value and priority:
-> -       u32 mark = policy->mark.v & policy->mark.m;
-> -
-> -       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
-> -               return true;
-> -
-> -       if ((mark & pol->mark.m) == pol->mark.v &&
-> +       if (policy->mark.v == pol->mark.v &&
->             policy->priority == pol->priority)
->                 return true;
-> 
-> This allows two policies like this exist:
-> 
->   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
->   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
-> 
-> But I don't think it's a problem.
+The bug was bisected to:
 
-Agreed.
->
-> .
-> 
+commit 263e1201a2c324b60b15ecda5de9ebf1e7293e31
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Thu Apr 30 13:01:51 2020 +0000
 
+    mptcp: consolidate synack processing.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=119d8626100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=139d8626100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=159d8626100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d7cface3f90b13edf5b0@syzkaller.appspotmail.com
+Fixes: 263e1201a2c3 ("mptcp: consolidate synack processing.")
+
+general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 1 PID: 7226 Comm: syz-executor523 Not tainted 5.7.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:sock_recvmsg_nosec net/socket.c:886 [inline]
+RIP: 0010:sock_recvmsg+0x92/0x110 net/socket.c:904
+Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 44 89 6c 24 04 e8 53 18 1d fb 4d 8d 6f 20 4c 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 4c 89 ef e8 20 12 5b fb bd a0 00 00 00 49 03 6d
+RSP: 0018:ffffc90001077b98 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: ffffc90001077dc0 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffff86565e59 R09: ffffed10115afeaa
+R10: ffffed10115afeaa R11: 0000000000000000 R12: 1ffff9200020efbc
+R13: 0000000000000020 R14: ffffc90001077de0 R15: 0000000000000000
+FS:  00007fc6a3abe700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004d0050 CR3: 00000000969f0000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ mptcp_recvmsg+0x18d5/0x19b0 net/mptcp/protocol.c:891
+ inet_recvmsg+0xf6/0x1d0 net/ipv4/af_inet.c:838
+ sock_recvmsg_nosec net/socket.c:886 [inline]
+ sock_recvmsg net/socket.c:904 [inline]
+ __sys_recvfrom+0x2f3/0x470 net/socket.c:2057
+ __do_sys_recvfrom net/socket.c:2075 [inline]
+ __se_sys_recvfrom net/socket.c:2071 [inline]
+ __x64_sys_recvfrom+0xda/0xf0 net/socket.c:2071
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x448ef9
+Code: e8 cc 14 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 0c fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fc6a3abdda8 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+RAX: ffffffffffffffda RBX: 00000000006dec28 RCX: 0000000000448ef9
+RDX: 0000000000001000 RSI: 00000000200004c0 RDI: 0000000000000003
+RBP: 00000000006dec20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000040000000 R11: 0000000000000246 R12: 00000000006dec2c
+R13: 00007ffe4730174f R14: 00007fc6a3abe9c0 R15: 00000000006dec2c
+Modules linked in:
+---[ end trace 097bdf143c3a60db ]---
+RIP: 0010:sock_recvmsg_nosec net/socket.c:886 [inline]
+RIP: 0010:sock_recvmsg+0x92/0x110 net/socket.c:904
+Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 44 89 6c 24 04 e8 53 18 1d fb 4d 8d 6f 20 4c 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 4c 89 ef e8 20 12 5b fb bd a0 00 00 00 49 03 6d
+RSP: 0018:ffffc90001077b98 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: ffffc90001077dc0 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffff86565e59 R09: ffffed10115afeaa
+R10: ffffed10115afeaa R11: 0000000000000000 R12: 1ffff9200020efbc
+R13: 0000000000000020 R14: ffffc90001077de0 R15: 0000000000000000
+FS:  00007fc6a3abe700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004d0050 CR3: 00000000969f0000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
