@@ -2,130 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EA51E121A
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 17:53:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7001E123D
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 18:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391067AbgEYPxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 11:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388791AbgEYPxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 11:53:19 -0400
-X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 May 2020 08:53:18 PDT
-Received: from out2.virusfree.cz (out2.virusfree.cz [IPv6:2001:67c:1591::e2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59B0C061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 08:53:18 -0700 (PDT)
-Received: (qmail 22205 invoked from network); 25 May 2020 17:46:36 +0200
-Received: from out2.virusfree.cz by out2.virusfree.cz
- (VF-Scanner: Clear:RC:0(2001:67c:1591::6):SC:0(-2.7/5.0):CC:0:;
- processed in 0.4 s); 25 May 2020 15:46:36 +0000
-X-VF-Scanner-Mail-From: pv@excello.cz
-X-VF-Scanner-Rcpt-To: netdev@vger.kernel.org
-X-VF-Scanner-ID: 20200525154635.976122.22169.out2.virusfree.cz.0
-X-Spam-Status: No, hits=-2.7, required=5.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=excello.cz; h=
-        date:message-id:from:to:subject:reply-to; q=dns/txt; s=default;
-         t=1590421595; bh=D2NB0B1nNWW9+PqZLh+XgusboSNLV3L95Jp2Llp9dRA=; b=
-        B7qibPGfO9jM/xkfx8B1yt/GNsrzFTsqG2g8rWzuDXixzKOkCIpuQnRbelxpblX5
-        s4bh8j+yUu8emqdPZ0pxavZme/c0MsfpkXGeZwQqC8JyhAtmzWfyS/Arg233SqqL
-        T/ynfEo8QlbNSqwzaCqHPoUm+h2sdO82E30Cl9h4ODQ=
-Received: from posta.excello.cz (2001:67c:1591::6)
-  by out2.virusfree.cz with ESMTPS (TLSv1.3, TLS_AES_256_GCM_SHA384); 25 May 2020 17:46:35 +0200
-Received: from atlantis (unknown [IPv6:2001:67c:1590::2c8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by posta.excello.cz (Postfix) with ESMTPSA id 38B8C9D7484;
-        Mon, 25 May 2020 17:46:35 +0200 (CEST)
-Date:   Mon, 25 May 2020 17:46:33 +0200
-From:   Petr =?utf-8?B?VmFuxJtr?= <pv@excello.cz>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Petr =?utf-8?B?VmFuxJtr?= <pv@excello.cz>
-Subject: [PATCH net-next] xfrm: no-anti-replay protection flag
-Message-ID: <20200525154633.GB22403@atlantis>
+        id S2391067AbgEYQAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 12:00:33 -0400
+Received: from mail-db8eur05on2072.outbound.protection.outlook.com ([40.107.20.72]:27889
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2391039AbgEYQAd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 12:00:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nf0c50jJ64JtKUZ85BvubDTcqQYeRySMICxigk9MqgfyQ1qIvY6fAyKSK2GyLJowfZZ0amFUKFihn3u3WDstX6P4L+sM9hp8dkhyPfQrFwKHUlFfY7RmQEo7aVbDUY+7gpH1KdoeXPYsiapN3xOxiCofjNbL0X/XSz1UtRQ2fbg5+jVeMElo9uAPePh6Zy/VbeWRFTt2SFlh2oEpp39K6vcZGUk3K8HeKQvuMQU72O4EytfnPXZei0hzthcrMXmlawAryXaDASASh1+YN/Ag6+BhYRz9XBccuwBMVSug+Dg0UfuBmTCJSDah7CeRVP2L2CSNKhuWHCFNo7FpHqxgJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EwpWzuWDO2JqAqxNvR3b7fQrPelHxaVQmTTfQMkojVQ=;
+ b=JP6xmOokv0oWO3LDzOpml3caWujN9r1AsaqoP1Y2sYU1TCUTbACVmfux1DU8UpFXn81hUe35avvzwKqt+XFt4thUMnucPXzzTb1QEhUNY4obAMVOfidnr/72jR9U7Qg3oX6+/glYAUFOdEba3aeBznHoCkH/DcqV1sm4cIEjIF1l/iWAWUgOKPT2VXEBbVuVaK7DPOULcJGhW/HCuiXk6UCNrAI6Q/6uz/mW0htfrpKLv6opvsWz6MbzQzTk4c96cdkYZClJUIYsULJiZPymuwpJddq9dYZzEjfksNjnD3FTzF6GbYs5k+MCGH9ChT0sCKa49L+4sYogG34uMR7TGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EwpWzuWDO2JqAqxNvR3b7fQrPelHxaVQmTTfQMkojVQ=;
+ b=BrOsot1bMbgbxH+oTG/gmfGrV8sU6+lmG0SQ5sm5asCwGC9qdD2877/Y+COHx8CzD6vPXsG1EALB3uknisfb88k1FCnBFIK7qVIMaYnio57wKTenaCTLfRPCKAYS2tqPVJxi2xmLiP3mbS+CrO5FCrvppVx8pc0JdX1DHxBPcF0=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR0402MB3334.eurprd04.prod.outlook.com
+ (2603:10a6:209:c::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Mon, 25 May
+ 2020 16:00:30 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3021.029; Mon, 25 May 2020
+ 16:00:30 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [EXT] Re: [PATCH] stmmac: platform: add "snps,dwmac-5.10a" IP
+ compatible string
+Thread-Topic: [EXT] Re: [PATCH] stmmac: platform: add "snps,dwmac-5.10a" IP
+ compatible string
+Thread-Index: AQHWMm5I28u/w5jSek2LIR4rTdAvVqi417cAgAAZW7A=
+Date:   Mon, 25 May 2020 16:00:29 +0000
+Message-ID: <AM6PR0402MB3607312E97B14B09C398B586FFB30@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <1590394945-5571-1-git-send-email-fugang.duan@nxp.com>
+ <20200525141048.GF752669@lunn.ch>
+In-Reply-To: <20200525141048.GF752669@lunn.ch>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3e80690e-5ee4-47e3-512c-08d800c4bf94
+x-ms-traffictypediagnostic: AM6PR0402MB3334:
+x-microsoft-antispam-prvs: <AM6PR0402MB3334C20C5CCF4CFC8523E6D8FFB30@AM6PR0402MB3334.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 0414DF926F
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wz9m80zqy9kkryVwCpZ+PXuZmXnIpCQ1uEyHy7ZlgnDoCL72QVuVQVG+SpVv8yAQNF3rx5iXJ13rzd2IbylOGkt04L0v6LQgKEwFy/G0ZKCAqrWnqFOlYuaYJih1vG6yidMd1i6+ZH7qv4oS2vdRsM4+wmSD/soLsZVV7xCmM3N4lcuI7B+nla9sEaI1F3MGepMzsbtYkHBgvNIjVOp8/h00pM+Sdmy8Qx5N/m0sM+oQjgQuaT+o8ZAh3dcTb42TZk3vc0Sod6x0fwbkU+6BLnk2e0einRoCjCDog6XK7zIFOwwgqCBIRHE50V8JAk2HdF1ZhCWpSUZkJDWomNHjl3dKtqgXDZtaisL9bZP2w3SVEREc8oqDY0zY6OQXcfer
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(346002)(136003)(376002)(86362001)(2906002)(33656002)(5660300002)(66946007)(7416002)(55016002)(66476007)(6916009)(9686003)(4326008)(76116006)(66556008)(66446008)(478600001)(64756008)(52536014)(4744005)(8676002)(6506007)(71200400001)(316002)(7696005)(8936002)(54906003)(186003)(26005)(142933001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: se1QmsgsGxxX1y5j2ZHdmb3E5UoSNcdwHq/b/jQupy/LJxbPowJJcispexzcZAOzh46N+Rm8LdRhw7CNx9C3F4ff68XmglGsffi/DXDNLUA5wllH7qUN7RAz5iaJjvdnChmDQa1Dk/n7go49GfJDPOTBLxfNl6ejeohKxaBdUmg+9EJ+wU+xiNxIV1416awZrOD2FDR+CtLMOtGrjBgbg3UYxur4tBmPi7SfVWZ4JdQJ0OGegduqWfzEFL3DemMcP4IKesNtoOruNhyAlXdhz/zT9D77oF03FJDi+mxxXH4lBIgCbDAUNTgWy9CFFQGAwI3CiipJvp9P5LxNxp/9XXCyyA9BPI5epcZBy8W2ZJRsuDg6hmuJgE/BS55Q1sO2eXlBwCaOliC2TFw/hOmiRHe5/imcaaazeqkRZMInDsiNwKS11JBIJGvt1t7IK65vCCGTgXlw+AB3RH7Fgk9WExKy02eeWrci/pkMfGJVH1a4GjphMG4k3Kr8nH3CopTq
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e80690e-5ee4-47e3-512c-08d800c4bf94
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2020 16:00:29.9674
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MaUKH/033bPtS/kvylfVl7quoHN53lxZV2LywUzar3ML0QaoYFWJlFe8tSG8IntYU9j6tGi6JKgJO17oN4+rnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3334
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RFC 4303 in section 3.3.3 suggests to disable anti-replay for manually
-distributed ICVs.
+From: Andrew Lunn <andrew@lunn.ch> Sent: Monday, May 25, 2020 10:11 PM
+> On Mon, May 25, 2020 at 04:22:25PM +0800, Fugang Duan wrote:
+> > Add "snps,dwmac-5.10a" compatible string for 5.10a version that can
+> > avoid to define some plat data in glue layer.
+>=20
+> Documentation/devicetree/bindings/net/snps,dwmac.yaml ?
+>=20
+>       Andrew
 
-This patch introduces new extra_flag XFRM_SA_XFLAG_NO_ANTI_REPLAY which
-disables anti-replay for outbound packets if set. The flag is used only
-in legacy and bmp code, because esn should not be negotiated if
-anti-replay is disabled (see note in 3.3.3 section).
+Here, we don't want to use generic driver "dwmac-generic.c" for 5.10a versi=
+on
+since it requires platform specific code to be functional, like the we impl=
+ement
+glue layer driver "dwmac-imx.c" to support 5.10a on i.MX platform.
 
-Signed-off-by: Petr Vaněk <pv@excello.cz>
----
- include/uapi/linux/xfrm.h |  1 +
- net/xfrm/xfrm_replay.c    | 12 ++++++++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 5f3b9fec7b5f..4842b1ed49e9 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -387,6 +387,7 @@ struct xfrm_usersa_info {
- };
- 
- #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP	1
-+#define XFRM_SA_XFLAG_NO_ANTI_REPLAY	2
- 
- struct xfrm_usersa_id {
- 	xfrm_address_t			daddr;
-diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 98943f8d01aa..1602843aa2ec 100644
---- a/net/xfrm/xfrm_replay.c
-+++ b/net/xfrm/xfrm_replay.c
-@@ -89,7 +89,8 @@ static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
- 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
- 		XFRM_SKB_CB(skb)->seq.output.low = ++x->replay.oseq;
- 		XFRM_SKB_CB(skb)->seq.output.hi = 0;
--		if (unlikely(x->replay.oseq == 0)) {
-+		if (unlikely(x->replay.oseq == 0) &&
-+		    !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY)) {
- 			x->replay.oseq--;
- 			xfrm_audit_state_replay_overflow(x, skb);
- 			err = -EOVERFLOW;
-@@ -168,7 +169,8 @@ static int xfrm_replay_overflow_bmp(struct xfrm_state *x, struct sk_buff *skb)
- 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
- 		XFRM_SKB_CB(skb)->seq.output.low = ++replay_esn->oseq;
- 		XFRM_SKB_CB(skb)->seq.output.hi = 0;
--		if (unlikely(replay_esn->oseq == 0)) {
-+		if (unlikely(replay_esn->oseq == 0) &&
-+		    !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY)) {
- 			replay_esn->oseq--;
- 			xfrm_audit_state_replay_overflow(x, skb);
- 			err = -EOVERFLOW;
-@@ -572,7 +574,8 @@ static int xfrm_replay_overflow_offload(struct xfrm_state *x, struct sk_buff *sk
- 
- 		XFRM_SKB_CB(skb)->seq.output.hi = 0;
- 		xo->seq.hi = 0;
--		if (unlikely(oseq < x->replay.oseq)) {
-+		if (unlikely(oseq < x->replay.oseq) &&
-+		    !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY)) {
- 			xfrm_audit_state_replay_overflow(x, skb);
- 			err = -EOVERFLOW;
- 
-@@ -611,7 +614,8 @@ static int xfrm_replay_overflow_offload_bmp(struct xfrm_state *x, struct sk_buff
- 
- 		XFRM_SKB_CB(skb)->seq.output.hi = 0;
- 		xo->seq.hi = 0;
--		if (unlikely(oseq < replay_esn->oseq)) {
-+		if (unlikely(oseq < replay_esn->oseq) &&
-+		    !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY)) {
- 			xfrm_audit_state_replay_overflow(x, skb);
- 			err = -EOVERFLOW;
- 
--- 
-2.26.2
-
+So I think it doesn't require to add the compatible string into dwmac.yaml.=
+=20
