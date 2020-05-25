@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9EC51E12B8
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 18:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428841E12BA
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 18:32:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731501AbgEYQcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 12:32:12 -0400
-Received: from mail-am6eur05on2054.outbound.protection.outlook.com ([40.107.22.54]:14305
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S1731508AbgEYQcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 12:32:16 -0400
+Received: from mail-eopbgr150084.outbound.protection.outlook.com ([40.107.15.84]:14054
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729338AbgEYQcL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 12:32:11 -0400
+        id S1729338AbgEYQcP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 12:32:15 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ver2fit75HB18A5Ze9y0RPx/Zv9n/5OTT3dGFDXH5hPRmSg612oifBo7fVvUryoepOcM4XM3to8K9VXCs6ggj5MupAXzMQZ+8H4dWPjCe1RsMNqw3JAc3cNWdYcAASXYKjSrBYSr2glxeya6v5s1U9WP5E8SUFe5Z40kHpNL6pkzj2IM2idNp4Ny9dRChY6yUL+KOamgjFwo6mTdsKx0YaUQ/gtG6CXiNKk1TBFoH7ZKRteA99E0Z1GwFL7ZRacyJdum6PpZBNv3fgb9T0vpLxDDZ3hsW6uDtadCLrvHNpIoWpbl8g+oLGObydyRNbVpCWOBmrp/+gyR7T4IGDpLtw==
+ b=RQZgCVKgusC69Ub5iQxzEewQTCbqyybdDS3jw4Hmn0MJ+81K9e9kK51d69N+eG4uv5ABwqPeamSVyulEgCqJ2Or+6qp/gLgWc81bvqpTF4JZzCmkBncSR7zbbFP1752jRhK7OvkkhJvdbEYlyzrNjeWWPCOryjqqmlOBQ5xVSA98aMHDa7hS+NNneeOQdeDSepFvruVuk1x+TrhQln5E1esAQyJOXavrMPJDy5TuxRXMomg8pX3RQgi1pVp8MCcIUxAZyyR88pmp3uFuEZZLhY8hjEJnsOWbLW/Szv8oUN1A0TBWqhh9ed151SccDuJA8M1xw4SF6urXOOo3j5+Qjw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Oc6lpQOFhjm0n/xUFkiNawNM1CeqxeR5SfymSlBzCGM=;
- b=LeEcdGnIsOaGE5dvw/4d5GD3CfPBU91QbdJDjOcwr+idNtbAYLQ18AS8jMpmY+/Ga6ynd9rX2SR0KmVAhF/ieIcOPSWONwCrjHuiirOVCvnQBYQQ3UYnjwzPmQhPz14Ud4bBuOOWPRUZsrJ4ljJlT3Fvl3TS+mU8o1g4n95b5qAV+bpqCwTTu9bnrdTXDZOzIEpTtFU0XFXM40ve+xDWP7Knpv2qb14RXoupmucQAmVQxJHcJYdxNjdj87zhseeLQa4E1Bf3lWSA3dy6RbDZCLDPqQdorUsypT18u/4QvbpC7z3jcrjwTiG2k4q8vYFmvlkZgaa5Qj0ZjGiC+6qK4Q==
+ bh=sKApi7OFIZjahR+oMnE92eVZbfDWX8XnChEMx5RAYQU=;
+ b=TnC4ZdC2IPUXX6Y0qX60FLlm/HvkBETy/GB76u1erV+S9IICO5a4LQAYKgt7Ck5qnCcqNEn3YoeeMxFWMVX1XVoH/VsZaBYoxtpEm2CCRqdq1G+eC/Bn/Y5gqO/6mFOZ+3RFfqgcEUAMbv/JpqectaBV40FUSy4AkcnsRQ6M6XbW8x8pLz2g1whHKYnJHSZS4JUC0aRXtv3+/PXw/lhpa39/YqO2/gIR3mz3ZTplFLR4ftJ3CWYcmbHk74Ei8onrXcZ/5NUb+afQAUddj0s2sqeUdNToAtYSArfd7J/Sc+wZw7ZdYIkQKcyi7H/EbSBU3qtpm5wEVDI4y1+MzQE+7g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Oc6lpQOFhjm0n/xUFkiNawNM1CeqxeR5SfymSlBzCGM=;
- b=eHcxwuyWB8Qq97LONKp4GWUi9gJnY2rwbeWt7gm4PwXDukr+9lcuOc9x+yTgIyu/i0G118n6D9jTvLKHBb0NKY6vAlwsa0pjvenfQlHq6lo4jfOy0A7GPg3FbC0Eh5AoU+3w8JrPkSNvgIGAiygX0zLM1KsAxEk1HhQoBx5sMmU=
+ bh=sKApi7OFIZjahR+oMnE92eVZbfDWX8XnChEMx5RAYQU=;
+ b=PbhFEO3LVEuoNiYAJaadQQgL26lPt6V0QNa5uR8CfzlxWrUU2Imx4xIAgm60EoLzL59vavT3b+W5iO1Y1ZYGEIXawHTEwuwKbTM1zWP258Rffhl9TJrwBkruEHrb4kuWFGAtSi3aOJ6az9+2omocjesfmozZ2XheVZoHsi/CNrA=
 Authentication-Results: lunn.ch; dkim=none (message not signed)
  header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
 Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
  (2603:10a6:209:12::18) by AM6PR0402MB3846.eurprd04.prod.outlook.com
  (2603:10a6:209:18::24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Mon, 25 May
- 2020 16:32:08 +0000
+ 2020 16:32:12 +0000
 Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
  ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
  ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3021.029; Mon, 25 May 2020
- 16:32:08 +0000
+ 16:32:12 +0000
 From:   fugang.duan@nxp.com
 To:     andrew@lunn.ch, martin.fuzzey@flowbird.group, davem@davemloft.net,
         s.hauer@pengutronix.de
 Cc:     netdev@vger.kernel.org, robh+dt@kernel.org, shawnguo@kernel.org,
         devicetree@vger.kernel.org, kuba@kernel.org, fugang.duan@nxp.com
-Subject: [PATCH net v3 2/4] dt-bindings: fec: update the gpr property
-Date:   Tue, 26 May 2020 00:27:11 +0800
-Message-Id: <1590424033-16906-3-git-send-email-fugang.duan@nxp.com>
+Subject: [PATCH net v3 3/4] ARM: dts: imx: add ethernet stop mode property
+Date:   Tue, 26 May 2020 00:27:12 +0800
+Message-Id: <1590424033-16906-4-git-send-email-fugang.duan@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590424033-16906-1-git-send-email-fugang.duan@nxp.com>
 References: <1590424033-16906-1-git-send-email-fugang.duan@nxp.com>
@@ -54,30 +54,30 @@ X-ClientProxiedBy: SG2PR01CA0102.apcprd01.prod.exchangelabs.com
  (2603:10a6:209:12::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from b38611.ap.freescale.net (119.31.174.66) by SG2PR01CA0102.apcprd01.prod.exchangelabs.com (2603:1096:3:15::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3021.23 via Frontend Transport; Mon, 25 May 2020 16:32:05 +0000
+Received: from b38611.ap.freescale.net (119.31.174.66) by SG2PR01CA0102.apcprd01.prod.exchangelabs.com (2603:1096:3:15::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3021.23 via Frontend Transport; Mon, 25 May 2020 16:32:09 +0000
 X-Mailer: git-send-email 2.7.4
 X-Originating-IP: [119.31.174.66]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d18dce29-305f-4714-686a-08d800c92b2b
+X-MS-Office365-Filtering-Correlation-Id: 8b6ff3dd-5598-4caa-391f-08d800c92d2b
 X-MS-TrafficTypeDiagnostic: AM6PR0402MB3846:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR0402MB3846879CEF7C367CA5999068FFB30@AM6PR0402MB3846.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <AM6PR0402MB38461FEB8B78733DD0156936FFB30@AM6PR0402MB3846.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
 X-Forefront-PRVS: 0414DF926F
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vaA6CG8pz727TvoE4R3Uwljy43OTelNVaOAF90mE7ax/ICY0iNNor+Ro8ZIx6TXm9mjIfkxBaoISJcAVp21Halab3BTi1aN0Tsox2QD2vUngqpgdwwPdr0GN95J+2T6xm1zw1KokXcNazjbIdObzr1ird/23qFwwUWNvJaMYaraTHCBOsMIBr7aBhFjh8EJMlzSNRbZ5s5KFFw4ZrJpOIH1qMNcKmQhhTxcMb2NdRaroNhZs56trnHXNUvbkQ/mdIV54AI8gcAAAUfwatx4L2Mjak+9/LKjaPg7mWO7X2UQH3dAt2EOu9lXYyJdPVJdLoYxXiT/ckQEwaXc+JlsLqw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(39860400002)(366004)(136003)(376002)(6512007)(9686003)(4326008)(36756003)(16526019)(86362001)(6666004)(316002)(6506007)(2906002)(52116002)(5660300002)(26005)(186003)(66556008)(8936002)(66946007)(66476007)(956004)(2616005)(478600001)(6486002)(15650500001)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: nJc+VfzWDFzJ+n9Zjdwq2HZ56bI7MCuZeNlsSpRU3riYVIWLCAWT6MLw0IaIFZ448JpwLDkNQRpurVarm0kcW1khLjQaK5UH+cbZjMQ7HPwuWdXP8e4rBmBsa9cIuk48rzWvKy/hkBXu+l0prUospmEgVVa5BaCL4kPhCNCZVCjwgUzmegsXJwMquncaZkLGdw6ipXQSrGlIPjkS7AlQJqzayYlj9KahNFkIigrjOyMHBDNLWx074lnGs90qqpWnjb8qZ4q9W5chH2R8qOwFjDNxtsPYUyNjkrOGmlof0PRN/pZ8mSFsLSObt4mt8pB9nEpSmCe7fu4t7hfKORpdAzxAhKvSPs0pVZ673c1WbPY/x3UeP9gTwHtD0YXagsIYIPLjIFLzR1QXBVp7uJu5TQKQw87N79Xabte3XizkU4tGrplejsqTTD41LQ4pjAOA1vELnR5eYSyigFF4oa6Y6ByC7IOkjaPU0HoGtvba0LBYWBT8MYZROpTeq2ssJ7eK
+X-Microsoft-Antispam-Message-Info: Hk8f9/RuwE88IJkSbn2CE4eK92m05O9/igL9tXCZ/mlBPr3JzUbibNY/TsuotlVs95vjq0nyrq/xHz3PZWu8l7hvdHWYmokVU5d5V5Fi3aEUUTS5FmEiTxa5YMO++Kv5RCsW2NixYAFDkGj1jyvMURWp/g/jZV3PYloaBvI0Wz9pOAvfz4cyJrySfqfK0XJISTS2Rk+cnf9s/kgiMR2Td999iClNZkeD4lCUHWeloPiLVGUxk/sxEVMW9rczdaVKAtfvd3kOBDoUDX+6y3gvR7yRHMeBI9/xELUTy64HZ67pzE0ibWz4C87uZNfHYtSdL09DnEfYEywv3j0B+6HP9A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(39860400002)(366004)(136003)(376002)(6512007)(9686003)(4326008)(36756003)(16526019)(86362001)(6666004)(316002)(6506007)(2906002)(52116002)(5660300002)(26005)(186003)(66556008)(8936002)(66946007)(66476007)(956004)(2616005)(478600001)(6486002)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: ie5hqXFe5iUOb4zsJkALfxzyy3tQoVYOFdxm7sml6YeRWUFZmDGBBP6kXMHTOAjLwcctoEymv4t/POV81L8vGhMg6t9EHF1DKXxRQL/BXsru0kT9ve/zuKKc4t6Mr0qiIYlgeX1WbeQfB7xZHxlRaN4ei+r4qMDfKAybDIByedvVrAPq5exxdfhk5udLc9PmpDD7dbqS5LTxkGVCS3vRHcPYdG2XRNMExiD0VmGQXEskaaUVpuJ33WsXsNQ9rAbPZsGBUwpX9rcnHq//OmYuXSqn+iK8Qsz7f0A/ipTrvzrEZADKgqyIbIopm9wDW9C93AGLgFrEmQLYJUAo3X9j+pDBgdf7X4Oq2CIEPd+lUP8abVRTIg+WzErG343gYtX84m2IZGiX8cXDq+mo2GHvVPXKvPXDKqoE7eG35s2SVQ5WLpzCiQadyu/kukaFWun5wZMa829C5yNa1WQAjcMjATctUscaWhYhjp7hg7cUd8I=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d18dce29-305f-4714-686a-08d800c92b2b
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2020 16:32:08.7535
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b6ff3dd-5598-4caa-391f-08d800c92d2b
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2020 16:32:12.0978
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tfALw5hJ19tCdkdxHIy4FJ/fwmGO/UqugFsMRP2D8k2gSyiiVt35r6CY1PIBvXrrx5c/p3VgJUzZCVwtXUCUjg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1I8zt5kZVwhih+M3HhmbfUaPdAOz02QddCeXJUaPNgO3tCHExbvUZ6K2t/KzkqgAscqzEv3ITSPC9CbVQ26ktg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3846
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -86,36 +86,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Fugang Duan <fugang.duan@nxp.com>
 
-- rename the 'gpr' property string to 'fsl,stop-mode'.
-- Update the property to define gpr register offset and
-bit in DT, since different instance have different gpr bit.
+- Update the imx6qdl gpr property to define gpr register
+  offset and bit in DT.
+- Add imx6sx/imx6ul/imx7d ethernet stop mode property.
 
-v2:
- * rename 'gpr' property string to 'fsl,stop-mode'.
-
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 ---
- Documentation/devicetree/bindings/net/fsl-fec.txt | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx6qdl.dtsi | 2 +-
+ arch/arm/boot/dts/imx6sx.dtsi  | 2 ++
+ arch/arm/boot/dts/imx6ul.dtsi  | 2 ++
+ arch/arm/boot/dts/imx7d.dtsi   | 1 +
+ arch/arm/boot/dts/imx7s.dtsi   | 1 +
+ 5 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fec.txt b/Documentation/devicetree/bindings/net/fsl-fec.txt
-index 26c492a..9b54378 100644
---- a/Documentation/devicetree/bindings/net/fsl-fec.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fec.txt
-@@ -22,8 +22,11 @@ Optional properties:
- - fsl,err006687-workaround-present: If present indicates that the system has
-   the hardware workaround for ERR006687 applied and does not need a software
-   workaround.
--- gpr: phandle of SoC general purpose register mode. Required for wake on LAN
--  on some SoCs
-+- fsl,stop-mode: register bits of stop mode control, the format is
-+		 <&gpr req_gpr req_bit>.
-+		 gpr is the phandle to general purpose register node.
-+		 req_gpr is the gpr register offset for ENET stop request.
-+		 req_bit is the gpr bit offset for ENET stop request.
-  -interrupt-names:  names of the interrupts listed in interrupts property in
-   the same order. The defaults if not specified are
-   __Number of interrupts__   __Default__
+diff --git a/arch/arm/boot/dts/imx6qdl.dtsi b/arch/arm/boot/dts/imx6qdl.dtsi
+index 98da446..48f5016 100644
+--- a/arch/arm/boot/dts/imx6qdl.dtsi
++++ b/arch/arm/boot/dts/imx6qdl.dtsi
+@@ -1045,7 +1045,7 @@
+ 					 <&clks IMX6QDL_CLK_ENET>,
+ 					 <&clks IMX6QDL_CLK_ENET_REF>;
+ 				clock-names = "ipg", "ahb", "ptp";
+-				gpr = <&gpr>;
++				fsl,stop-mode = <&gpr 0x34 27>;
+ 				status = "disabled";
+ 			};
+ 
+diff --git a/arch/arm/boot/dts/imx6sx.dtsi b/arch/arm/boot/dts/imx6sx.dtsi
+index d6f8317..09f21aa 100644
+--- a/arch/arm/boot/dts/imx6sx.dtsi
++++ b/arch/arm/boot/dts/imx6sx.dtsi
+@@ -930,6 +930,7 @@
+ 					      "enet_clk_ref", "enet_out";
+ 				fsl,num-tx-queues = <3>;
+ 				fsl,num-rx-queues = <3>;
++				fsl,stop-mode = <&gpr 0x10 3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -1039,6 +1040,7 @@
+ 					 <&clks IMX6SX_CLK_ENET_PTP>;
+ 				clock-names = "ipg", "ahb", "ptp",
+ 					      "enet_clk_ref", "enet_out";
++				fsl,stop-mode = <&gpr 0x10 4>;
+ 				status = "disabled";
+ 			};
+ 
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 2ccf67c..345ae9b 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -520,6 +520,7 @@
+ 					      "enet_clk_ref", "enet_out";
+ 				fsl,num-tx-queues = <1>;
+ 				fsl,num-rx-queues = <1>;
++				fsl,stop-mode = <&gpr 0x10 4>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -856,6 +857,7 @@
+ 					      "enet_clk_ref", "enet_out";
+ 				fsl,num-tx-queues = <1>;
+ 				fsl,num-rx-queues = <1>;
++				fsl,stop-mode = <&gpr 0x10 3>;
+ 				status = "disabled";
+ 			};
+ 
+diff --git a/arch/arm/boot/dts/imx7d.dtsi b/arch/arm/boot/dts/imx7d.dtsi
+index 4c22828..cff875b 100644
+--- a/arch/arm/boot/dts/imx7d.dtsi
++++ b/arch/arm/boot/dts/imx7d.dtsi
+@@ -153,6 +153,7 @@
+ 			"enet_clk_ref", "enet_out";
+ 		fsl,num-tx-queues = <3>;
+ 		fsl,num-rx-queues = <3>;
++		fsl,stop-mode = <&gpr 0x10 4>;
+ 		status = "disabled";
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
+index 76e3ffb..5bf0b39 100644
+--- a/arch/arm/boot/dts/imx7s.dtsi
++++ b/arch/arm/boot/dts/imx7s.dtsi
+@@ -1190,6 +1190,7 @@
+ 					"enet_clk_ref", "enet_out";
+ 				fsl,num-tx-queues = <3>;
+ 				fsl,num-rx-queues = <3>;
++				fsl,stop-mode = <&gpr 0x10 3>;
+ 				status = "disabled";
+ 			};
+ 		};
 -- 
 2.7.4
 
