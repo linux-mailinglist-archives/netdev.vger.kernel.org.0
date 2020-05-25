@@ -2,133 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51C501E149F
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 21:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD601E14AA
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 21:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389991AbgEYTHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 15:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        id S2389991AbgEYTMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 15:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389437AbgEYTHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 15:07:45 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D2AC061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 12:07:45 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id n11so12832875qkn.8
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 12:07:45 -0700 (PDT)
+        with ESMTP id S2388838AbgEYTMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 15:12:45 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AEDC061A0E;
+        Mon, 25 May 2020 12:12:43 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c185so4213886qke.7;
+        Mon, 25 May 2020 12:12:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TwosTNtiS7RZsI1TZNvPZOmslzUFSqUMOJz3SseXn2o=;
-        b=Fj1GcZv4JvAgl0DuTs+qMDn47zXweXlCZLiDT3Omze40Wh64mIzEikhzpgLn57fxQ3
-         I95dvNyZSwkqIY1c237to0eG8GJotgQVukbhEPmb0zAuABE5jxfFwqtyNRUt0jg0/2Um
-         rtSM+KIRBw9Q4X7ZYzu/FEu9LZPWGdca8eaBFxGAM/4JmbB8lGoQ9xQvfn53WLjYENFs
-         rcrm6JcCz0IOiY+BD/8rrowAQgiYxX0GMVtP6JT2nbZJtZ2tt0oZ7VvL0SupLnsA/74h
-         7fQgWWpYpfuY+ZijzrBO4t+wQeT3IkJGZagH1JF/nmaI9H0VIdo+2fAmFOUgPKJrM4UH
-         XoGg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NXSkDxtV+lKvCmdJqRAaVqtPNqFcq/NZVIC0rHJLbkw=;
+        b=SFq0F8aaUZQ/iT7qRHjxDkG+VaWxeMEGQVaE98QSO2UveShwC/WGOLLruJYXNvC8Xv
+         2FTVGwpBzyPs7TH79nktYAxrv1vfL9SIfyQ++Tdl5Gyoa5HTVvUeP9StTaCRpOTUQIYD
+         RzVkZ55SmDaiI6kSwnRgIqbyphXJV/AYfAy9oMPJBkHPNyROYmufHyg38GhKFcgiTl23
+         fBc3kFR71TtqLyrdo6/0DjjjDO+tBWQmFtjpRBkLhLSUfO7n7bCuAZG7R00vdMSbh/JG
+         uEvgh4oGi4NAJX8GPziZKLGcsWojGwCH7YqU5EQsEztytiR9St7rZecCaKzPMCO8hE//
+         hAcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TwosTNtiS7RZsI1TZNvPZOmslzUFSqUMOJz3SseXn2o=;
-        b=kSW0hpVw73a9/Ngw92FffG0F+lzuPdgpab+PCL08UfFP3A581ziL9x31zPu3v07DnM
-         b45AY1inrLCYmgYyvyMpLdqJZ4B+BZ+jbzCAvxks9zG8c2zjSuo6fUonrqmxZDRamIiI
-         1GdgnJNSsDuHME/5U9pKurpm1U3hRybv3QhSQ1UGBarX8M5jMKJPRUM9YayI/68HrbBL
-         pT6DtSh83t7azEh3F/6Gnl79AtPVflHXRH24lV1gPbRdDw/ScPs0DCfuvXT5E6Ph+XQn
-         SUdsK7F4y6tcGdOOArMA+F4BIQgeRPJTKL93CMQfdn6qggEpFkXficOCKAYrbK+PEZgE
-         7+Zw==
-X-Gm-Message-State: AOAM530xqf4AHgDJtQFbwev6b6PK7cch51ldMXE+vm/1oxjxYUZcEzlq
-        6KK1luoxrD6g9ShX8++6WuNYoWdH
-X-Google-Smtp-Source: ABdhPJzYEIZl3P30PKJAzQwplM7oxBhRYMiRdKpToksp3KRjvH8A39BJdkyM6KD1/HkI6qMYiXg8Og==
-X-Received: by 2002:a37:a09:: with SMTP id 9mr14455606qkk.84.1590433664126;
-        Mon, 25 May 2020 12:07:44 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:8798:f98:652b:63f1])
-        by smtp.gmail.com with ESMTPSA id n206sm15054361qke.20.2020.05.25.12.07.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 12:07:43 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: check untrusted gso_size at kernel entry
-Date:   Mon, 25 May 2020 15:07:40 -0400
-Message-Id: <20200525190740.82224-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NXSkDxtV+lKvCmdJqRAaVqtPNqFcq/NZVIC0rHJLbkw=;
+        b=sHIbkq0vA8v2wFEN4p5PxWKqLxMOk/E/+1nPy2n5rll/zxqy/w6gVVGPCbjBk74Vuc
+         IRKvWJ54Of/qea3fZKlHCVNNYBn8vCNymWXPwLyJmI6afEhAMS/ET5ws3qPwL+hTj/5f
+         36rWZVaBe9Sw8pP/x2d7Jx/V99EUaCAF1vWN6LMVfuiUeSs8rWT29DVnz6Prr95R74ra
+         iDUtsMleH9LhdjkM9q1kjbddiTaLUtCMdiOQfRHAn+S1pMjBh2F78XI/6nPNiNYtUOuk
+         GvIpv4qQKztwY3GRsmwj1eRahf9xuodW2Zg4OxPldTJpuRC4lnj/qjlRqn3sXWw/ckv/
+         C1tw==
+X-Gm-Message-State: AOAM5315u6OwStzDeeHZC+c01HIvrtteMso+AtDowgChDwtOzdj44DrE
+        Pw3Uxre66e82OB9ZLt7LtSjpA+tNR3dXqZJIzSg=
+X-Google-Smtp-Source: ABdhPJymS3OokrQQQrHxw17NvmafwQ71YS5xv4a02PaRNEJQbBayUO2d3u+mshTSuoHk/vp/rHvnp56dbjX+m2NEXN0=
+X-Received: by 2002:a37:a89:: with SMTP id 131mr10622430qkk.92.1590433962844;
+ Mon, 25 May 2020 12:12:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-8-andriin@fb.com>
+ <CAMXgnP424S5s-mrwFB_nuZNSuqLyi1K8r519WKVkyMBPtv1PMQ@mail.gmail.com>
+In-Reply-To: <CAMXgnP424S5s-mrwFB_nuZNSuqLyi1K8r519WKVkyMBPtv1PMQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 25 May 2020 12:12:31 -0700
+Message-ID: <CAEf4BzY3mt8puNgOwi5ZWnVbXksnsXK_beG+HhhZutyBG-BO7A@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 7/7] docs/bpf: add BPF ring buffer design notes
+To:     Alban Crequy <alban.crequy@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Alban Crequy <alban@kinvolk.io>, mauricio@kinvolk.io,
+        kai@kinvolk.io
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Mon, May 25, 2020 at 3:00 AM Alban Crequy <alban.crequy@gmail.com> wrote:
+>
+> Hi,
+>
+> Thanks. Both motivators look very interesting to me:
+>
+> On Sun, 17 May 2020 at 21:58, Andrii Nakryiko <andriin@fb.com> wrote:
+> [...]
+> > +Motivation
+> > +----------
+> > +There are two distinctive motivators for this work, which are not satisfied by
+> > +existing perf buffer, which prompted creation of a new ring buffer
+> > +implementation.
+> > +  - more efficient memory utilization by sharing ring buffer across CPUs;
+>
+> I have a use case with traceloop
+> (https://github.com/kinvolk/traceloop) where I use one
+> BPF_MAP_TYPE_PERF_EVENT_ARRAY per container, so when the number of
+> containers times the number of CPU is high, it can use a lot of
+> memory.
+>
+> > +  - preserving ordering of events that happen sequentially in time, even
+> > +  across multiple CPUs (e.g., fork/exec/exit events for a task).
+>
+> I had the problem to keep track of TCP connections and when
+> tcp-connect and tcp-close events can be on different CPUs, it makes it
+> difficult to get the correct order.
 
-Syzkaller again found a path to a kernel crash through bad gso input:
-a packet with gso size exceeding len.
+Yep, in one of BPF applications I've written, handling out-of-order
+events was major complication to the design of data structures, as
+well as user-space implementation logic.
 
-These packets are dropped in tcp_gso_segment and udp[46]_ufo_fragment.
-But they may affect gso size calculations earlier in the path.
+>
+> [...]
+> > +There are a bunch of similarities between perf buffer
+> > +(BPF_MAP_TYPE_PERF_EVENT_ARRAY) and new BPF ring buffer semantics:
+> > +  - variable-length records;
+> > +  - if there is no more space left in ring buffer, reservation fails, no
+> > +    blocking;
+> [...]
+>
+> BPF_MAP_TYPE_PERF_EVENT_ARRAY can be set as both 'overwriteable' and
+> 'backward': if there is no more space left in ring buffer, it would
+> then overwrite the old events. For that, the buffer needs to be
+> prepared with mmap(...PROT_READ) instead of mmap(...PROT_READ |
+> PROT_WRITE), and set the write_backward flag. See details in commit
+> 9ecda41acb97 ("perf/core: Add ::write_backward attribute to perf
+> event"):
+>
+> struct perf_event_attr attr = {0,};
+> attr.write_backward = 1; /* backward */
+> fd = perf_event_open_map(&attr, ...);
+> base = mmap(fd, 0, size, PROT_READ /* overwriteable */, MAP_SHARED);
+>
+> I use overwriteable and backward ring buffers in traceloop: buffers
+> are continuously overwritten and are usually not read, except when a
+> user explicitly asks for it (e.g. to inspect the last few events of an
+> application after a crash). If BPF_MAP_TYPE_RINGBUF implements the
+> same features, then I would be able to switch and use less memory.
+>
+> Do you think it will be possible to implement that in BPF_MAP_TYPE_RINGBUF?
+>
 
-Now that we have thlen as of commit 9274124f023b ("net: stricter
-validation of untrusted gso packets"), check gso_size at entry too.
+I think it could be implemented similarly. Consumer_pos would be
+ignored, producer_pos would point to the beginning of record and
+decremented on new reservation. All the implementation and semantics
+would stay. Extending ringbuf itself to enable this is also trivial,
+it could be just extra map_flag passed when map is created,
+consumer_pos page would become mmap()'able as R/O, of course.
 
-Fixes: bfd5f4a3d605 ("packet: Add GSO/csum offload support.")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- include/linux/virtio_net.h | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+But I fail to see how consumer can be 100% certain it's not reading
+garbage data, especially on 32-bit architectures, where wrapping over
+32-bit producer position is actually quite easy. Just checking
+producer position before/after read isn't completely correct. Ignoring
+that problem, the only sane way (IMO) to do this would mean copying
+each record into a "stable" memory, before actually doing anything
+with it, which is a pretty bad performance hit as well.
 
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index 6f6ade63b04c..88997022a4b5 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -31,6 +31,7 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- {
- 	unsigned int gso_type = 0;
- 	unsigned int thlen = 0;
-+	unsigned int p_off = 0;
- 	unsigned int ip_proto;
- 
- 	if (hdr->gso_type != VIRTIO_NET_HDR_GSO_NONE) {
-@@ -68,7 +69,8 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 		if (!skb_partial_csum_set(skb, start, off))
- 			return -EINVAL;
- 
--		if (skb_transport_offset(skb) + thlen > skb_headlen(skb))
-+		p_off = skb_transport_offset(skb) + thlen;
-+		if (p_off > skb_headlen(skb))
- 			return -EINVAL;
- 	} else {
- 		/* gso packets without NEEDS_CSUM do not set transport_offset.
-@@ -92,17 +94,25 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 				return -EINVAL;
- 			}
- 
--			if (keys.control.thoff + thlen > skb_headlen(skb) ||
-+			p_off = keys.control.thoff + thlen;
-+			if (p_off > skb_headlen(skb) ||
- 			    keys.basic.ip_proto != ip_proto)
- 				return -EINVAL;
- 
- 			skb_set_transport_header(skb, keys.control.thoff);
-+		} else if (gso_type) {
-+			p_off = thlen;
-+			if (p_off > skb_headlen(skb))
-+				return -EINVAL;
- 		}
- 	}
- 
- 	if (hdr->gso_type != VIRTIO_NET_HDR_GSO_NONE) {
- 		u16 gso_size = __virtio16_to_cpu(little_endian, hdr->gso_size);
- 
-+		if (skb->len - p_off <= gso_size)
-+			return -EINVAL;
-+
- 		skb_shinfo(skb)->gso_size = gso_size;
- 		skb_shinfo(skb)->gso_type = gso_type;
- 
--- 
-2.27.0.rc0.183.gde8f92d652-goog
+So all in all, such mode could be added, but certainly in a separate
+patch set and after some good discussion :).
 
+> Cheers,
+> Alban
