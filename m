@@ -2,127 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 187231E0BEA
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 657291E0C1C
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:49:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389824AbgEYKhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 06:37:37 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:15607 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389819AbgEYKhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:37:36 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590403056; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=Xa+V2K2B+f2/pjJ0gvv7y9F+pJuL30zRLv90omb/sWY=; b=Lg+ICOqNOej0XIWMRskryECb1V4IxPNlLybnr/1DrwEmXGVNXI85RZ4fkvx95g9NuG4DCJdb
- QbonvseLKGMHWStBq2ugPeWcJhBHuN307bx+kFQ5k/BKOrfDIfnaf0ApjiZGDLM0mrm57iKA
- M071bss1OYoAqoRjOLJhPloEaxA=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5ecb9fdd67bb73a129912e3a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 25 May 2020 10:37:17
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1BC66C433C6; Mon, 25 May 2020 10:37:17 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7DCD1C433C9;
-        Mon, 25 May 2020 10:37:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7DCD1C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Yuehaibing <yuehaibing@huawei.com>
-Cc:     <nbd@nbd.name>, <lorenzo.bianconi83@gmail.com>,
-        <ryder.lee@mediatek.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <matthias.bgg@gmail.com>, <shayne.chen@mediatek.com>,
-        <chih-min.chen@mediatek.com>, <yf.luo@mediatek.com>,
-        <yiwei.chung@mediatek.com>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] mt76: mt7915: Fix build error
-References: <20200522034533.61716-1-yuehaibing@huawei.com>
-        <87a720b7p7.fsf@codeaurora.org>
-        <cf5a8e36-2fc6-3f3a-823f-a2fac6c11d30@huawei.com>
-Date:   Mon, 25 May 2020 13:37:10 +0300
-In-Reply-To: <cf5a8e36-2fc6-3f3a-823f-a2fac6c11d30@huawei.com>
-        (yuehaibing@huawei.com's message of "Fri, 22 May 2020 19:34:28 +0800")
-Message-ID: <87k1109u7d.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2389897AbgEYKs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 06:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389484AbgEYKs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:48:57 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DBCC061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:48:56 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jdAf8-0007hT-7s; Mon, 25 May 2020 12:48:54 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jdAf3-0005hQ-V1; Mon, 25 May 2020 12:48:49 +0200
+Date:   Mon, 25 May 2020 12:48:49 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     fugang.duan@nxp.com
+Cc:     andrew@lunn.ch, martin.fuzzey@flowbird.group, davem@davemloft.net,
+        netdev@vger.kernel.org, robh+dt@kernel.org, shawnguo@kernel.org,
+        devicetree@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net v2 1/4] net: ethernet: fec: move GPR register offset
+ and bit into DT
+Message-ID: <20200525104849.GQ11869@pengutronix.de>
+References: <1590390569-4394-1-git-send-email-fugang.duan@nxp.com>
+ <1590390569-4394-2-git-send-email-fugang.duan@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1590390569-4394-2-git-send-email-fugang.duan@nxp.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:34:52 up 95 days, 18:05, 115 users,  load average: 0.11, 0.12,
+ 0.14
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yuehaibing <yuehaibing@huawei.com> writes:
+On Mon, May 25, 2020 at 03:09:26PM +0800, fugang.duan@nxp.com wrote:
+> From: Fugang Duan <fugang.duan@nxp.com>
+> 
+> The commit da722186f654 (net: fec: set GPR bit on suspend by DT
+> configuration) set the GPR reigster offset and bit in driver for
+> wake on lan feature.
+> 
+> But it introduces two issues here:
+> - one SOC has two instances, they have different bit
+> - different SOCs may have different offset and bit
+> 
+> So to support wake-on-lan feature on other i.MX platforms, it should
+> configure the GPR reigster offset and bit from DT.
+> 
+> So the patch is to improve the commit da722186f654 (net: fec: set GPR
+> bit on suspend by DT configuration) to support multiple ethernet
+> instances on i.MX series.
+> 
+> v2:
+>  * switch back to store the quirks bitmask in driver_data
+> 
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 103 ++++++++++--------------------
+>  1 file changed, 34 insertions(+), 69 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 2e20914..4f55d30 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -86,56 +86,6 @@ static void fec_enet_itr_coal_init(struct net_device *ndev);
+>  #define FEC_ENET_OPD_V	0xFFF0
+>  #define FEC_MDIO_PM_TIMEOUT  100 /* ms */
+>  
+> -struct fec_devinfo {
+> -	u32 quirks;
+> -	u8 stop_gpr_reg;
+> -	u8 stop_gpr_bit;
+> -};
 
-> On 2020/5/22 18:11, Kalle Valo wrote:
->> YueHaibing <yuehaibing@huawei.com> writes:
->>=20
->>> In file included from ./include/linux/firmware.h:6:0,
->>>                  from drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:4:
->>> In function =E2=80=98__mt7915_mcu_msg_send=E2=80=99,
->>>     inlined from =E2=80=98mt7915_mcu_send_message=E2=80=99 at drivers/n=
-et/wireless/mediatek/mt76/mt7915/mcu.c:370:6:
->>> ./include/linux/compiler.h:396:38: error: call to =E2=80=98__compiletim=
-e_assert_545=E2=80=99 declared with attribute error: BUILD_BUG_ON failed: c=
-md =3D=3D MCU_EXT_CMD_EFUSE_ACCESS && mcu_txd->set_query !=3D MCU_Q_QUERY
->>>   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER_=
-_)
->>>                                       ^
->>> ./include/linux/compiler.h:377:4: note: in definition of macro =E2=80=
-=98__compiletime_assert=E2=80=99
->>>     prefix ## suffix();    \
->>>     ^~~~~~
->>> ./include/linux/compiler.h:396:2: note: in expansion of macro =E2=80=98=
-_compiletime_assert=E2=80=99
->>>   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER_=
-_)
->>>   ^~~~~~~~~~~~~~~~~~~
->>> ./include/linux/build_bug.h:39:37: note: in expansion of macro =E2=80=
-=98compiletime_assert=E2=80=99
->>>  #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->>>                                      ^~~~~~~~~~~~~~~~~~
->>> ./include/linux/build_bug.h:50:2: note: in expansion of macro =E2=80=98=
-BUILD_BUG_ON_MSG=E2=80=99
->>>   BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->>>   ^~~~~~~~~~~~~~~~
->>> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:280:2: note: in expansi=
-on of macro =E2=80=98BUILD_BUG_ON=E2=80=99
->>>   BUILD_BUG_ON(cmd =3D=3D MCU_EXT_CMD_EFUSE_ACCESS &&
->>>   ^~~~~~~~~~~~
->>>
->>> BUILD_BUG_ON is meaningless here, chang it to WARN_ON.
->>>
->>> Fixes: e57b7901469f ("mt76: add mac80211 driver for MT7915 PCIe-based c=
-hipsets")
->>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->>=20
->> I'm curious why I don't see this build error? I was about to send a pull
->> request to Dave, should I hold off the pull request due to this problem?
->
-> The config is attached
->
-> gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)
+Honestly I like the approach of having a struct fec_devinfo for
+abstracting differences between different hardware variants. It gives
+you more freedom to describe the differences. Converting this back to a
+single bitfield is a step backward, even when currently struct
+fec_devinfo only contains a single value.
 
-Thanks, I was able to reproduce the error with gcc-10 using your config
-but didn't have time to investigate what was different in my config and
-why I didn't see it.
+Sascha
 
---=20
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
