@@ -2,120 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D371E04D9
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 04:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 700601E0506
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 05:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388730AbgEYCs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 22:48:59 -0400
-Received: from foss.arm.com ([217.140.110.172]:35128 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388510AbgEYCs7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 May 2020 22:48:59 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79D1731B;
-        Sun, 24 May 2020 19:48:56 -0700 (PDT)
-Received: from [192.168.122.166] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 12D3F3F305;
-        Sun, 24 May 2020 19:48:56 -0700 (PDT)
-Subject: Re: [RFC 02/11] net: phy: Simplify MMD device list termination
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-3-jeremy.linton@arm.com>
- <20200523183610.GY1551@shell.armlinux.org.uk>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <e25080cd-420a-da87-e13c-fa7e2ffb93a6@arm.com>
-Date:   Sun, 24 May 2020 21:48:55 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S2388689AbgEYDFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 23:05:09 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4893 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388178AbgEYDFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 May 2020 23:05:09 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id AA5478C8C87755055AB5;
+        Mon, 25 May 2020 11:05:03 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.154) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Mon, 25 May 2020
+ 11:04:59 +0800
+Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
+To:     Xin Long <lucien.xin@gmail.com>
+References: <20200421143149.45108-1-yuehaibing@huawei.com>
+ <20200422125346.27756-1-yuehaibing@huawei.com>
+ <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com>
+ <20200519085353.GE13121@gauss3.secunet.de>
+ <CADvbK_eXW24SkuLUOKkcg4JPa8XLcWpp6RNCrQT+=okaWe+GDA@mail.gmail.com>
+ <550a82f1-9cb3-2392-25c6-b2a84a00ca33@huawei.com>
+ <CADvbK_cpXOxbWzHzonrzzrrb+Vh3q8NhXnapz0yc9h4H4gN02A@mail.gmail.com>
+ <1c4c5d40-1e35-f9bb-3f17-01bb4675f3aa@huawei.com>
+ <CADvbK_e8ixjGGHRK9A4HcXDGKYcNykneUHzHiE8sQ4ojDz+e-g@mail.gmail.com>
+CC:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <f82b038f-776e-a87a-d46b-173d238531ba@huawei.com>
+Date:   Mon, 25 May 2020 11:04:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200523183610.GY1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <CADvbK_e8ixjGGHRK9A4HcXDGKYcNykneUHzHiE8sQ4ojDz+e-g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 5/23/20 1:36 PM, Russell King - ARM Linux admin wrote:
-> On Fri, May 22, 2020 at 04:30:50PM -0500, Jeremy Linton wrote:
->> Since we are already checking for *devs == 0 after
->> the loop terminates, we can add a mostly F's check
->> as well. With that change we can simplify the return/break
->> sequence inside the loop.
+On 2020/5/23 17:02, Xin Long wrote:
+> On Fri, May 22, 2020 at 8:39 PM Yuehaibing <yuehaibing@huawei.com> wrote:
 >>
->> Add a valid_phy_id() macro for this, since we will be using it
->> in a couple other places.
+>> On 2020/5/22 13:49, Xin Long wrote:
+>>> On Fri, May 22, 2020 at 9:45 AM Yuehaibing <yuehaibing@huawei.com> wrote:
+>>>>
+>>>> On 2020/5/21 14:49, Xin Long wrote:
+>>>>> On Tue, May 19, 2020 at 4:53 PM Steffen Klassert
+>>>>> <steffen.klassert@secunet.com> wrote:
+>>>>>>
+>>>>>> On Fri, May 15, 2020 at 04:39:57PM +0800, Yuehaibing wrote:
+>>>>>>>
+>>>>>>> Friendly ping...
+>>>>>>>
+>>>>>>> Any plan for this issue?
+>>>>>>
+>>>>>> There was still no consensus between you and Xin on how
+>>>>>> to fix this issue. Once this happens, I consider applying
+>>>>>> a fix.
+>>>>>>
+>>>>> Sorry, Yuehaibing, I can't really accept to do: (A->mark.m & A->mark.v)
+>>>>> I'm thinking to change to:
+>>>>>
+>>>>>  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+>>>>>                                    struct xfrm_policy *pol)
+>>>>>  {
+>>>>> -       u32 mark = policy->mark.v & policy->mark.m;
+>>>>> -
+>>>>> -       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+>>>>> -               return true;
+>>>>> -
+>>>>> -       if ((mark & pol->mark.m) == pol->mark.v &&
+>>>>> -           policy->priority == pol->priority)
+>>>>> +       if (policy->mark.v == pol->mark.v &&
+>>>>> +           (policy->mark.m == pol->mark.m ||
+>>>>> +            policy->priority == pol->priority))
+>>>>>                 return true;
+>>>>>
+>>>>>         return false;
+>>>>>
+>>>>> which means we consider (the same value and mask) or
+>>>>> (the same value and priority) as the same one. This will
+>>>>> cover both problems.
+>>>>
+>>>>   policy A (mark.v = 0x1011, mark.m = 0x1011, priority = 1)
+>>>>   policy B (mark.v = 0x1001, mark.m = 0x1001, priority = 1)
+>>> I'd think these are 2 different policies.
+>>>
+>>>>
+>>>>   when fl->flowi_mark == 0x12341011, in xfrm_policy_match() do check like this:
+>>>>
+>>>>         (fl->flowi_mark & pol->mark.m) != pol->mark.v
+>>>>
+>>>>         0x12341011 & 0x1011 == 0x00001011
+>>>>         0x12341011 & 0x1001 == 0x00001001
+>>>>
+>>>>  This also match different policy depends on the order of policy inserting.
+>>> Yes, this may happen when a user adds 2  policies like that.
+>>> But I think this's a problem that the user doesn't configure it well,
+>>> 'priority' should be set.
+>>> and this can not be avoided, also such as:
+>>>
+>>>    policy A (mark.v = 0xff00, mark.m = 0x1000, priority = 1)
+>>>    policy B (mark.v = 0x00ff, mark.m = 0x0011, priority = 1)
+>>>
+>>>    try with 0x12341011
+>>>
+>>> So just be it, let users decide.
+>>
+>> Ok, this make sense.
+> Thanks Yuehaibing, it's good we're on the same page now.
 > 
-> I'm not sure you have the name of this correct, and your usage layer
-> in your patch series is correct.
+> Just realized the patch I created above won't work for the case:
+> 
+>   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
+>   policy B (mark.v = 0x1,  mark.m = 0, priority = 2)
+>   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
+> 
+> when policy C is being added, the warning still occurs.
 
-Or the name is poor..
+Do you means this:
+
+   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
+   policy B (mark.v = 0x10, mark.m = 1, priority = 2)
+   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
 
 > 
->>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->> ---
->>   drivers/net/phy/phy_device.c | 15 +++++++--------
->>   1 file changed, 7 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 245899b58a7d..7746c07b97fe 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -695,6 +695,11 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
->>   	return 0;
->>   }
->>   
->> +static bool valid_phy_id(int val)
->> +{
->> +	return (val > 0 && ((val & 0x1fffffff) != 0x1fffffff));
->> +}
->> +
->>   /**
->>    * get_phy_c45_ids - reads the specified addr for its 802.3-c45 IDs.
->>    * @bus: the target MII bus
->> @@ -732,18 +737,12 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
->>   			phy_reg = get_phy_c45_devs_in_pkg(bus, addr, 0, devs);
->>   			if (phy_reg < 0)
->>   				return -EIO;
->> -			/* no device there, let's get out of here */
->> -			if ((*devs & 0x1fffffff) == 0x1fffffff) {
->> -				*phy_id = 0xffffffff;
->> -				return 0;
->> -			} else {
->> -				break;
->> -			}
->> +			break;
->>   		}
->>   	}
->>   
->>   	/* no reported devices */
->> -	if (*devs == 0) {
->> +	if (!valid_phy_id(*devs)) {
+> So I will just check value and priority:
+> -       u32 mark = policy->mark.v & policy->mark.m;
+> -
+> -       if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+> -               return true;
+> -
+> -       if ((mark & pol->mark.m) == pol->mark.v &&
+> +       if (policy->mark.v == pol->mark.v &&
+>             policy->priority == pol->priority)
+>                 return true;
 > 
-> You are using this to validate the "devices in package" value, not the
-> PHY ID value.  So, IMHO this should be called "valid_devs_in_package()"
-> or similar.
-
-Hmmm, its more "valid_phy_reg()" since it ends up being used to validate 
-both the devs in package as well as phy id.
-
-
-
+> This allows two policies like this exist:
 > 
->>   		*phy_id = 0xffffffff;
->>   		return 0;
->>   	}
->> -- 
->> 2.26.2
->>
->>
+>   policy A (mark.v = 0x10, mark.m = 0, priority = 1)
+>   policy C (mark.v = 0x10, mark.m = 0, priority = 2)
+> 
+> But I don't think it's a problem.
+
+Agreed.
+>
+> .
 > 
 
