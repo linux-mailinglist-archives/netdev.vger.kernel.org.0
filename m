@@ -2,239 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E14841E151F
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 22:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D37E11E1520
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 22:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389297AbgEYULW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 16:11:22 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:41869 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388994AbgEYULV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 16:11:21 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 70047582DB6;
-        Mon, 25 May 2020 16:11:20 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 25 May 2020 16:11:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=8vxgio
-        lVQP0TbmUhiFQPZVdluR7njmbreSv9jpOjx1w=; b=QnbjJszvUwGedk1WIea+1h
-        gsYtm8Iuyjg9EtNUnKsXAuqeDyjlCx7WOC5BiSTrEOXhjcNj8NFUu9ICFAYnW2eD
-        R85+mQJv7a3m9XyKU6nMpTsehWHGzwgGhy263G5aTTikawwCtbQbkjsLqC/YA0wm
-        RABcluPPjiOVVaPWjZBRP2sWtb2YnFPNVkHf9wOhZ4oPvj83lUPHRw/9gnxBMsL5
-        dbLkx2nI7gwkDPk81hE9AKKl6dlSiyP3YFDnIEQyg9zUNqtj+hWOVedMo7gKAHuX
-        aqXbOpNo6jZSozJhWVCiufooLpaU2FliKiYNDxZ6WSf18/HzXxQ/Ahf/bWNGhRLQ
-        ==
-X-ME-Sender: <xms:ZibMXn_dpEIapYWpypTu6y0PbrdF0AJScq5RkEXzkxtcMZRUQEx-gg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvtddgudeghecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeejledrudejiedrvdegrddutdejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ZybMXjuFPBoZRwoL8UDalsjO1DPqdMVT3lD_7UWKYTAkPI21J76ZqA>
-    <xmx:ZybMXlAUPH_Of-A8x1MRL9MMzLFdHf-5lk15JJjIF-z25q214P6tzA>
-    <xmx:ZybMXjfyd4XKJrxjJI7B0u7l9Q_VWlaDYd6_HiB5Q-Fx6J0seKkIKQ>
-    <xmx:aCbMXtiwWDICKHwasTQQWDznZdtFbRAX8SGRA-YxpqtF4FhCVIqMQQ>
-Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A1F62306657E;
-        Mon, 25 May 2020 16:11:18 -0400 (EDT)
-Date:   Mon, 25 May 2020 23:11:11 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH RFC net-next 10/13] net: bridge: add port flags for host
- flooding
-Message-ID: <20200525201111.GB1449199@splinter>
-References: <20200521211036.668624-1-olteanv@gmail.com>
- <20200521211036.668624-11-olteanv@gmail.com>
- <20200524142609.GB1281067@splinter>
- <CA+h21hpktNFcpwxTXVFikyWfgHkFZDofZ8=qVqraxcUp_EwJqg@mail.gmail.com>
+        id S2389587AbgEYUMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 16:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388994AbgEYUMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 16:12:09 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE6DC061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 13:12:08 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id s8so18131329wrt.9
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 13:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6DyYOArtqvkWNyCxsRj84Ktm1BjPYiqYh6NfzPwu5cg=;
+        b=LyT1Ux26xpSFi/N1U9hQkeBpOmfVhsYks54b7dVcRH1oyQF9oXyV1AyWLmO5PjbSsv
+         QuHhhwqA/YlsEV5xHlh0byXE2KiXvYuZX9gZbrCjGe4oRbu/oAw5dPsj+gZz3qvMpOsh
+         EXq2E1yzhFpDRQ4H3PEK2VE8/qUwV5Nat5N/obhy3kMHJV1OxJAw9FMZrl7RxqvJNiKw
+         GaneQ7aVu1opvv6NmlzVnkr54pv7BzQHTbSqkmqGQ9uFqwc40/OuNl9BM1evZscRzCFj
+         FLcQtqiVwN7aW0EBGBzE3QI1TumP0moSS+9qNlScTOmYBR+46FfkvtPmiIh2ynAS8ySi
+         Xc/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6DyYOArtqvkWNyCxsRj84Ktm1BjPYiqYh6NfzPwu5cg=;
+        b=s1rmk+raKLvFCLEVwuQTi4TDShHl+wCRDknoJIelFqqUNa0bl5c7+4Y3+hEiGrfHWY
+         MXsRUpgn68VB0vb+/Cr919Hk7fU4wiLQIK3UOwS3tSeXS1bXYS1ECa7kvUyx8l7SCksf
+         QFcKUFGmJDHy9Rzf08FT2qB/9Elf97wC9mFhDD1f/EhcqQG1E/apFXPNpFyxo8hqHwlS
+         ObuaJSdXzNg6vKZ46+XlkuuEzDXLrlzsqXzS5QE7+AaOwt2uO2IPkeatPRNzRTV4UaA4
+         PrqqHlTnE0muBFjxluzeyHL2OUezFqvzGOtCDH0P7l727KkaUkDz9L5rWiokgWa0T6YL
+         mskw==
+X-Gm-Message-State: AOAM531xoggzISmCxHIH1k1mhdM1F0ou13Y4p3wpSewzRtZqTc2rT5yg
+        tFXAc5JAMdValteZUzM7js2/ELT/
+X-Google-Smtp-Source: ABdhPJyQkk5A7UhChLJdwOfkcd9RvkETRdqBQosSlmVGQ9LxtmsP5DSWa8OGBigde2k3YPuxq1kjYA==
+X-Received: by 2002:adf:fb08:: with SMTP id c8mr16879749wrr.421.1590437526712;
+        Mon, 25 May 2020 13:12:06 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z7sm18059452wrt.6.2020.05.25.13.12.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 May 2020 13:12:06 -0700 (PDT)
+Subject: Re: [PATCH] dpaa_eth: fix usage as DSA master, try 3
+To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
+        madalin.bucur@oss.nxp.com, netdev@vger.kernel.org
+References: <20200524212251.3311546-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <39f2c015-3f1f-74cf-258e-ca6156a779c4@gmail.com>
+Date:   Mon, 25 May 2020 13:12:02 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpktNFcpwxTXVFikyWfgHkFZDofZ8=qVqraxcUp_EwJqg@mail.gmail.com>
+In-Reply-To: <20200524212251.3311546-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 24, 2020 at 07:13:46PM +0300, Vladimir Oltean wrote:
-> Hi Ido,
-> 
-> On Sun, 24 May 2020 at 17:26, Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Fri, May 22, 2020 at 12:10:33AM +0300, Vladimir Oltean wrote:
-> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > >
-> > > In cases where the bridge is offloaded by a switchdev, there are
-> > > situations where we can optimize RX filtering towards the host. To be
-> > > precise, the host only needs to do termination, which it can do by
-> > > responding at the MAC addresses of the slave ports and of the bridge
-> > > interface itself. But most notably, it doesn't need to do forwarding,
-> > > so there is no need to see packets with unknown destination address.
-> > >
-> > > But there are, however, cases when a switchdev does need to flood to the
-> > > CPU. Such an example is when the switchdev is bridged with a foreign
-> > > interface, and since there is no offloaded datapath, packets need to
-> > > pass through the CPU. Currently this is the only identified case, but it
-> > > can be extended at any time.
-> > >
-> > > So far, switchdev implementers made driver-level assumptions, such as:
-> > > this chip is never integrated in SoCs where it can be bridged with a
-> > > foreign interface, so I'll just disable host flooding and save some CPU
-> > > cycles. Or: I can never know what else can be bridged with this
-> > > switchdev port, so I must leave host flooding enabled in any case.
-> > >
-> > > Let the bridge drive the host flooding decision, and pass it to
-> > > switchdev via the same mechanism as the external flooding flags.
-> > >
-> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > ---
-> > >  include/linux/if_bridge.h |  3 +++
-> > >  net/bridge/br_if.c        | 40 +++++++++++++++++++++++++++++++++++++++
-> > >  net/bridge/br_switchdev.c |  4 +++-
-> > >  3 files changed, 46 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> > > index b3a8d3054af0..6891a432862d 100644
-> > > --- a/include/linux/if_bridge.h
-> > > +++ b/include/linux/if_bridge.h
-> > > @@ -49,6 +49,9 @@ struct br_ip_list {
-> > >  #define BR_ISOLATED          BIT(16)
-> > >  #define BR_MRP_AWARE         BIT(17)
-> > >  #define BR_MRP_LOST_CONT     BIT(18)
-> > > +#define BR_HOST_FLOOD                BIT(19)
-> > > +#define BR_HOST_MCAST_FLOOD  BIT(20)
-> > > +#define BR_HOST_BCAST_FLOOD  BIT(21)
-> > >
-> > >  #define BR_DEFAULT_AGEING_TIME       (300 * HZ)
-> > >
-> > > diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-> > > index a0e9a7937412..aae59d1e619b 100644
-> > > --- a/net/bridge/br_if.c
-> > > +++ b/net/bridge/br_if.c
-> > > @@ -166,6 +166,45 @@ void br_manage_promisc(struct net_bridge *br)
-> > >       }
-> > >  }
-> > >
-> > > +static int br_manage_host_flood(struct net_bridge *br)
-> > > +{
-> > > +     const unsigned long mask = BR_HOST_FLOOD | BR_HOST_MCAST_FLOOD |
-> > > +                                BR_HOST_BCAST_FLOOD;
-> > > +     struct net_bridge_port *p, *q;
-> > > +
-> > > +     list_for_each_entry(p, &br->port_list, list) {
-> > > +             unsigned long flags = p->flags;
-> > > +             bool sw_bridging = false;
-> > > +             int err;
-> > > +
-> > > +             list_for_each_entry(q, &br->port_list, list) {
-> > > +                     if (p == q)
-> > > +                             continue;
-> > > +
-> > > +                     if (!netdev_port_same_parent_id(p->dev, q->dev)) {
-> > > +                             sw_bridging = true;
-> >
-> > It's not that simple. There are cases where not all bridge slaves have
-> > the same parent ID and still there is no reason to flood traffic to the
-> > CPU. VXLAN, for example.
-> >
-> > You could argue that the VXLAN device needs to have the same parent ID
-> > as the physical netdevs member in the bridge, but it will break your
-> > data path. For example, lets assume your hardware decided to flood a
-> > packet in L2. The packet will egress all the local ports, but will also
-> > perform VXLAN encapsulation. The packet continues with the IP of the
-> > remote VTEP(s) to the underlay router and then encounters a neighbour
-> > miss exception, which sends it to the CPU for resolution.
-> >
-> > Since this exception was encountered in the router the driver would mark
-> > the packet with 'offload_fwd_mark', as it already performed L2
-> > forwarding. If the VXLAN device has the same parent ID as the physical
-> > netdevs, then the Linux bridge will never let it egress, nothing will
-> > trigger neighbour resolution and the packet will be discarded.
-> >
-> 
-> I wasn't going to argue that.
-> Ok, so with a bridged VXLAN only certain multicast DMACs corresponding
-> to multicast IPs should be flooded to the CPU.
-> Actually Allan's example was a bit simpler, he said that host flooding
-> can be made a per-VLAN flag. I'm glad that you raised this. So maybe
-> we should try to define some mechanism by which virtual interfaces can
-> specify to the bridge that they don't need to see all traffic? Do you
-> have any ideas?
 
-Maybe, when a port joins a bridge, query member ports if they can
-forward traffic to it in hardware and based on the answer determine the
-flooding towards the CPU?
 
+On 5/24/2020 2:22 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> > > +                             break;
-> > > +                     }
-> > > +             }
-> > > +
-> > > +             if (sw_bridging)
-> > > +                     flags |= mask;
-> > > +             else
-> > > +                     flags &= ~mask;
-> > > +
-> > > +             if (flags == p->flags)
-> > > +                     continue;
-> > > +
-> > > +             err = br_switchdev_set_port_flag(p, flags, mask);
-> > > +             if (err)
-> > > +                     return err;
-> > > +
-> > > +             p->flags = flags;
-> > > +     }
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > >  int nbp_backup_change(struct net_bridge_port *p,
-> > >                     struct net_device *backup_dev)
-> > >  {
-> > > @@ -231,6 +270,7 @@ static void nbp_update_port_count(struct net_bridge *br)
-> > >               br->auto_cnt = cnt;
-> > >               br_manage_promisc(br);
-> > >       }
-> > > +     br_manage_host_flood(br);
-> > >  }
-> > >
-> > >  static void nbp_delete_promisc(struct net_bridge_port *p)
-> > > diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> > > index 015209bf44aa..360806ac7463 100644
-> > > --- a/net/bridge/br_switchdev.c
-> > > +++ b/net/bridge/br_switchdev.c
-> > > @@ -56,7 +56,9 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
-> > >
-> > >  /* Flags that can be offloaded to hardware */
-> > >  #define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
-> > > -                               BR_MCAST_FLOOD | BR_BCAST_FLOOD)
-> > > +                               BR_MCAST_FLOOD | BR_BCAST_FLOOD | \
-> > > +                               BR_HOST_FLOOD | BR_HOST_MCAST_FLOOD | \
-> > > +                               BR_HOST_BCAST_FLOOD)
-> > >
-> > >  int br_switchdev_set_port_flag(struct net_bridge_port *p,
-> > >                              unsigned long flags,
-> > > --
-> > > 2.25.1
-> > >
+> The dpaa-eth driver probes on compatible string for the MAC node, and
+> the fman/mac.c driver allocates a dpaa-ethernet platform device that
+> triggers the probing of the dpaa-eth net device driver.
 > 
-> Thanks,
-> -Vladimir
+> All of this is fine, but the problem is that the struct device of the
+> dpaa_eth net_device is 2 parents away from the MAC which can be
+> referenced via of_node. So of_find_net_device_by_node can't find it, and
+> DSA switches won't be able to probe on top of FMan ports.
+> 
+> It would be a bit silly to modify a core function
+> (of_find_net_device_by_node) to look for dev->parent->parent->of_node
+> just for one driver. We're just 1 step away from implementing full
+> recursion.
+> 
+> Actually there have already been at least 2 previous attempts to make
+> this work:
+> - Commit a1a50c8e4c24 ("fsl/man: Inherit parent device and of_node")
+> - One or more of the patches in "[v3,0/6] adapt DPAA drivers for DSA":
+>   https://patchwork.ozlabs.org/project/netdev/cover/1508178970-28945-1-git-send-email-madalin.bucur@nxp.com/
+>   (I couldn't really figure out which one was supposed to solve the
+>   problem and how).
+> 
+> Point being, it looks like this is still pretty much a problem today.
+> On T1040, the /sys/class/net/eth0 symlink currently points to
+> 
+> ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/dpaa-ethernet.0/net/eth0
+> 
+> which pretty much illustrates the problem. The closest of_node we've got
+> is the "fsl,fman-memac" at /soc@ffe000000/fman@400000/ethernet@e6000,
+> which is what we'd like to be able to reference from DSA as host port.
+> 
+> For of_find_net_device_by_node to find the eth0 port, we would need the
+> parent of the eth0 net_device to not be the "dpaa-ethernet" platform
+> device, but to point 1 level higher, aka the "fsl,fman-memac" node
+> directly. The new sysfs path would look like this:
+> 
+> ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/net/eth0
+> 
+> And this is exactly what SET_NETDEV_DEV does. It sets the parent of the
+> net_device. The new parent has an of_node associated with it, and
+> of_dev_node_match already checks for the of_node of the device or of its
+> parent.
+> 
+> Fixes: a1a50c8e4c24 ("fsl/man: Inherit parent device and of_node")
+> Fixes: c6e26ea8c893 ("dpaa_eth: change device used")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+FWIW:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+--
+Florian
