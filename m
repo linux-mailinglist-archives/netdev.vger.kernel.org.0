@@ -2,134 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD601E08AD
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14DED1E089A
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730368AbgEYIXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 04:23:07 -0400
-Received: from mail-eopbgr10079.outbound.protection.outlook.com ([40.107.1.79]:46723
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725849AbgEYIXH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 04:23:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gub2bRJTiLGZVdeybT1xheSoQFX7CFdX8kw78PCpCqvscl14CaFphsFDblxXn++OkW2I9V1NXAcrlkaGLumxaD0hVtf8ooIDBVr9FOhL+HdIZ2lVXEnYk0mFk27xjMxslGarTVgRW5YVGLGNivCh3RJFtHEG2cEFAjGLbbeFyPongtrr6i8VrljKiKThlokhaDUxq5fPyx+H0q0nDpYbbqDm/Fm1PkCM6UoWsX7coDb8TV85lhBtNJoLFKBNHpVAVzJuFjPzPr1/osLqsfsrVFobT9/qaKAazxg17kmyxgY8QWqJe2PxE1Q8n+cCTvyUO7ekkujsAfQA8a/zNORNjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aMjqADPXcr7gZ911ODQ9t2r94LjENwwbABkPzilulFs=;
- b=g3X4vOq3j41zbSMe3GPmGG8edV3XMCe/oxnINaHQB86idPDfKPVSURsSRo2W6nv43V5uKBrw6nK5b2Et3nxH26algOLN1feNNaoyW92uBMutsTev5zJq/sT0hT3sK/zRZWeYYpI4c3jrc9B1JQWdDGqY0k92Ic73cPSUfloRo+tFgeW96GjrPS/AANi1PhhvG+3sj5bFZmPxvfVGsyO4SzmUw/lfsMzJ3C8XzxLK4njyZpRP4TW+AZhEaA6ZwCkeFJNY+HvF/B+U9+6tZ6XeBbwG82g/2bV6DxHDDq6MbFrFR8dh9OCp5pJgTUyRzJ67R5UJYEEnvF3ngYwDqAS9dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aMjqADPXcr7gZ911ODQ9t2r94LjENwwbABkPzilulFs=;
- b=lXVPzHScFlCmgGi7cpm/rJksWCgsFeaGqn7B1bam6lgGhPIOQ/KjSxg5k+/ZCttoXPIMP636yeuF01Iq4JwPB1Uv+5lbQs1nANp7/FAhjBT9WN0CquJ5Yx6Tr823Q0iRMqCnxq6d9TaBp9Su4Bx6h3sKz+28YpaHkoDEg6Kn1n8=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM6PR0402MB3717.eurprd04.prod.outlook.com
- (2603:10a6:209:25::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24; Mon, 25 May
- 2020 08:23:00 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3021.029; Mon, 25 May 2020
- 08:23:00 +0000
-From:   Fugang Duan <fugang.duan@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, mcoquelin.stm32@gmail.com,
-        p.zabel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, fugang.duan@nxp.com
-Subject: [PATCH net 1/1] net: stmmac: enable timestamp snapshot for required PTP packets in dwmac v5.10a
-Date:   Mon, 25 May 2020 16:18:14 +0800
-Message-Id: <1590394694-5505-1-git-send-email-fugang.duan@nxp.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR06CA0222.apcprd06.prod.outlook.com
- (2603:1096:4:68::30) To AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18)
+        id S1731353AbgEYIS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 04:18:26 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:47235 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725849AbgEYISY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:18:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590394703; x=1621930703;
+  h=subject:from:to:cc:references:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=6Y1kKLNvw5tHAyMcE8lhbasGho0U1mzPQDK1AoxNCKM=;
+  b=mduQi4wjhtmky9onc17blmJeEDp2V/jlJJwbP9NPSWDEetsCtTT1G3NT
+   WTVdsHOMjLiuUJrQVOlnDcl6q+pRQXAZr1SDMVy6kdnF/JxUz4FqM9qYd
+   qEMlk5Ak8mM/BcSIVbl2aqnATEB4DTUmHv0LMDxTxfq/Ur7/DFIhIHa9g
+   zq+3/0u17S6eOPKg5snT/odxQmaDko0gtJAVn1fesa0WUIKd0H6R4bz9S
+   biUwuMTxHG5J9I5d+DyElT5Jk3sKgGsne2VyPh+j82BJFn6FsbJ3p29MM
+   yQ+x0wCZMGoC8fG6rnDYct+0dY7QK1NzUhhHhD24/i86o5jW0jP/bErVP
+   Q==;
+IronPort-SDR: QCE16gf6KIchmmRAPv5H+Yck0P/9pBdRqngXm6N5t+pR/zMqFjatY9X2LyUdUM8avC4nnNnReC
+ J3xZ4DE7o6c47z45PfCz796HoKAHI7VtDBivaOUBKiaWKQEy8mgMj18/WUm+vgTZEkDOY9vcX3
+ 731ASHcxE0A3er6HmVuSAdHSUdcWbmhxJTiELkep/wDIMKkvh8ZD2pQkzKSagAiveCkzVJqNB3
+ 3HVKCHkZB0oo/lKT7m/x0n+hCBru1RT3k5jqlNU3q+NoDzTVTYXqDAoOq+D0H9LJJQYf7NLm0Z
+ OAw=
+X-IronPort-AV: E=Sophos;i="5.73,432,1583218800"; 
+   d="scan'208";a="13411380"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2020 01:18:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 25 May 2020 01:18:24 -0700
+Received: from [10.205.29.90] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Mon, 25 May 2020 01:18:12 -0700
+Subject: Re: [PATCH v4 1/5] net: macb: fix wakeup test in runtime
+ suspend/resume routines
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, <f.fainelli@gmail.com>,
+        "Russell King - ARM Linux admin" <linux@armlinux.org.uk>
+CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        <antoine.tenart@bootlin.com>, <linux-kernel@vger.kernel.org>,
+        <harini.katakam@xilinx.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <cover.1588763703.git.nicolas.ferre@microchip.com>
+ <dc30ff1d17cb5a75ddd10966eab001f67ac744ef.1588763703.git.nicolas.ferre@microchip.com>
+ <20200506131843.22cf1dab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <347c9a4f-8a01-a931-c9d5-536339337f8a@microchip.com>
+Organization: microchip
+Message-ID: <e43e7ed6-c78a-7995-3f46-0bdbf32f361c@microchip.com>
+Date:   Mon, 25 May 2020 10:18:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from b38611.ap.freescale.net (119.31.174.66) by SG2PR06CA0222.apcprd06.prod.outlook.com (2603:1096:4:68::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3021.26 via Frontend Transport; Mon, 25 May 2020 08:22:57 +0000
-X-Mailer: git-send-email 2.7.4
-X-Originating-IP: [119.31.174.66]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: acd30223-2c72-4985-4f5b-08d80084d637
-X-MS-TrafficTypeDiagnostic: AM6PR0402MB3717:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR0402MB37178487311C1EEA739EC3CBFFB30@AM6PR0402MB3717.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-Forefront-PRVS: 0414DF926F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1O0gNFqrjVOtvHxMKEqo+ocXtffqiOXe5cemxPEW4lGv5K5wIiMcHYYrwrwXVLlF69X8qImlFKqu05w0cHTlzxGmN9WV7X4qyS2oLfMXkpqraduj/D0JcNjVJzEfwPnbofysQxqW/oC0ls5XSAHzEnmfkDSUiwmqjF8EO0UzlhJHOVbkHN+pJPtPLdmGRN6LlpWvA3JJJHJc0SbIXhLTY458yfZ5APwlo9r6nZ2dYL4enZNeJrIGmLEVnRRsOZ5x6AXzg3P22C/fHFmtqWohk6nGf5jRa1QIvwXXY1uedhn/8B8ydJK5kbELWFsZqBrI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(396003)(346002)(366004)(39860400002)(136003)(2616005)(44832011)(956004)(66946007)(66556008)(66476007)(36756003)(4326008)(316002)(8936002)(52116002)(478600001)(8676002)(186003)(16526019)(2906002)(86362001)(6506007)(7416002)(6512007)(26005)(6486002)(5660300002)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Fcy6VjNhsQmcNvtat6vkGEDOnNrVOlFMJqd6qv4vKbxDSKdQrC8BLilhYj8GntNgYQvPnPplfBRNCRD6/7jfeJXaiF4GXGeson7eQL+Pdk8Tg9UfFK9Qh1fvS3A6lpZEpA9wCf8OVXyt5lbrIHgMMGm7rCWxbvEdkDVAchSczZ+0qQIAvqjCwMn/A57fG9muX++urxkzpmLnGaf3oXscXeoi74tB2giNMsiwnnmTghAFSFvqacymXF2AEYelwN8KKqlzvomyV0suxAclqzmYz+lK4Ri0aDpbdWc5+7T1mI+jvEeOdarqfCdFr88iL8Hv5NqfVXhog8UgGApTNGRMIu+6E6tTaEi93ft/73jU6hagZ/LkXELvxe172HtpWRtTWlWOqO4a0f8pSsYMVXP87ji34MZpdq4uLtsQ4OHf9Cf0j9jVZz5zRrXuoztd21nqq2qR0gqjiMFMwriLPYOP/EykDhV9gTpDktM7fphFkEPfIn3U7bAIFoBp4GBpw87V
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: acd30223-2c72-4985-4f5b-08d80084d637
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2020 08:23:00.5845
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oTIsOyFDtdJKLqbQWUvXf6lwJ0v8YB8kLBbLR6JzV6uEmyFcERZf/JWXGuCIOWIqc//OVqbruL6j951dCv6ZCw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3717
+In-Reply-To: <347c9a4f-8a01-a931-c9d5-536339337f8a@microchip.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For rx filter 'HWTSTAMP_FILTER_PTP_V2_EVENT', it should be
-PTP v2/802.AS1, any layer, any kind of event packet, but HW only
-take timestamp snapshot for below PTP message: sync, Pdelay_req,
-Pdelay_resp.
+On 07/05/2020 at 12:03, Nicolas Ferre wrote:
+> On 06/05/2020 at 22:18, Jakub Kicinski wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> On Wed, 6 May 2020 13:37:37 +0200 nicolas.ferre@microchip.com wrote:
+>>> From: Nicolas Ferre <nicolas.ferre@microchip.com>
+>>>
+>>> Use the proper struct device pointer to check if the wakeup flag
+>>> and wakeup source are positioned.
+>>> Use the one passed by function call which is equivalent to
+>>> &bp->dev->dev.parent.
+>>>
+>>> It's preventing the trigger of a spurious interrupt in case the
+>>> Wake-on-Lan feature is used.
+>>>
+>>> Fixes: bc1109d04c39 ("net: macb: Add pm runtime support")
+>>
+>>           Fixes tag: Fixes: bc1109d04c39 ("net: macb: Add pm runtime support")
+>>           Has these problem(s):
+>>                   - Target SHA1 does not exist
+> 
+> Indeed, it's:
+> Fixes: d54f89af6cc4 ("net: macb: Add pm runtime support")
+> 
+> David: do I have to respin or you can modify it?
 
-Then it causes below issue when test E2E case:
-ptp4l[2479.534]: port 1: received DELAY_REQ without timestamp
-ptp4l[2481.423]: port 1: received DELAY_REQ without timestamp
-ptp4l[2481.758]: port 1: received DELAY_REQ without timestamp
-ptp4l[2483.524]: port 1: received DELAY_REQ without timestamp
-ptp4l[2484.233]: port 1: received DELAY_REQ without timestamp
-ptp4l[2485.750]: port 1: received DELAY_REQ without timestamp
-ptp4l[2486.888]: port 1: received DELAY_REQ without timestamp
-ptp4l[2487.265]: port 1: received DELAY_REQ without timestamp
-ptp4l[2487.316]: port 1: received DELAY_REQ without timestamp
+David, all, I'm about to resend this series (alternative to "ping"), 
+however:
 
-Timestamp snapshot dependency on register bits in received path:
-SNAPTYPSEL TSMSTRENA TSEVNTENA 	PTP_Messages
-01         x         0          SYNC, Follow_Up, Delay_Req,
-                                Delay_Resp, Pdelay_Req, Pdelay_Resp,
-                                Pdelay_Resp_Follow_Up
-01         0         1          SYNC, Pdelay_Req, Pdelay_Resp
+1/ Now that it's late in the cycle, I'd like that you tell me if I 
+rebase on net-next because it isn't not sensible to queue such (non 
+urgeent) changes at rc7
 
-For dwmac v5.10a, enabling all events by setting register
-DWC_EQOS_TIME_STAMPING[SNAPTYPSEL] to 2’b01, clearing bit [TSEVNTENA]
-to 0’b0, which can support all required events.
+2/ I didn't get answers from Russell and can't tell if there's a better 
+way of handling underlying phylink error of phylink_ethtool_set_wol() in 
+patch 3/5
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Best regards,
+   Nicolas
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b6f92c7..73677c3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -630,7 +630,8 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- 			config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
- 			ptp_v2 = PTP_TCR_TSVER2ENA;
- 			snap_type_sel = PTP_TCR_SNAPTYPSEL_1;
--			ts_event_en = PTP_TCR_TSEVNTENA;
-+			if (priv->synopsys_id != DWMAC_CORE_5_10)
-+				ts_event_en = PTP_TCR_TSEVNTENA;
- 			ptp_over_ipv4_udp = PTP_TCR_TSIPV4ENA;
- 			ptp_over_ipv6_udp = PTP_TCR_TSIPV6ENA;
- 			ptp_over_ethernet = PTP_TCR_TSIPENA;
+>>> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+>>> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+>>> Cc: Harini Katakam <harini.katakam@xilinx.com>
+>>> ---
+>>>    drivers/net/ethernet/cadence/macb_main.c | 4 ++--
+>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+>>> index 36290a8e2a84..d11fae37d46b 100644
+>>> --- a/drivers/net/ethernet/cadence/macb_main.c
+>>> +++ b/drivers/net/ethernet/cadence/macb_main.c
+>>> @@ -4616,7 +4616,7 @@ static int __maybe_unused macb_runtime_suspend(struct device *dev)
+>>>         struct net_device *netdev = dev_get_drvdata(dev);
+>>>         struct macb *bp = netdev_priv(netdev);
+>>>
+>>> -     if (!(device_may_wakeup(&bp->dev->dev))) {
+>>> +     if (!(device_may_wakeup(dev))) {
+>>>                 clk_disable_unprepare(bp->tx_clk);
+>>>                 clk_disable_unprepare(bp->hclk);
+>>>                 clk_disable_unprepare(bp->pclk);
+>>> @@ -4632,7 +4632,7 @@ static int __maybe_unused macb_runtime_resume(struct device *dev)
+>>>         struct net_device *netdev = dev_get_drvdata(dev);
+>>>         struct macb *bp = netdev_priv(netdev);
+>>>
+>>> -     if (!(device_may_wakeup(&bp->dev->dev))) {
+>>> +     if (!(device_may_wakeup(dev))) {
+>>>                 clk_prepare_enable(bp->pclk);
+>>>                 clk_prepare_enable(bp->hclk);
+>>>                 clk_prepare_enable(bp->tx_clk);
+>>
+> 
+> 
+
+
 -- 
-2.7.4
-
+Nicolas Ferre
