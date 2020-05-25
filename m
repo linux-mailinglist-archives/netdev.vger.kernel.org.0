@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85111E084A
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 09:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 143651E0B31
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726575AbgEYH4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 03:56:23 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:44907 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgEYH4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 03:56:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1590393381; x=1621929381;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gka3xhQHdVujI+DvQjAJqTOsOu9U8CaV+bHB/w8dE/o=;
-  b=YyIwB8za8r2vJdfhDQU+5CVvtDoAlCxV2w513h3UyP0FCQ4sDaFKI4EU
-   HyEJL7a+otopljhrXC3rp9D20UNtt48Ls26mB+hBvjk2mNlE6U2EgM16W
-   h+p5OgAvFGYTwJ+uuGuOUBPfP3yD9jXn2iY3LKmasUzlOYFBYINMOyHCE
-   2vtk2VGlU+2gRQqnQwuNNTJxKFcPYzSBrv9DNhsDJexeJGb4YkgQ/ntlT
-   /KjNxduk89yYEGpQZpuWW3+uRYA5k3uxiD7rbaCVpsRRTsXDjIOvaGIzW
-   0eTaQtUhyvIBut6jS9RG4njEx0VOgs6z2Y1NAByrCxODO3oGjHbaFU51X
-   Q==;
-IronPort-SDR: Ku69RMxDc/Tw6URFoi4cr3b7iyBayER/a+CE1TVr4cboF+zCp4QXr0yIO0Pp2n7W9zFu10SaTX
- VgWUNjMsFn5BPEnc7TiTexBUrXT76fvPrFq3lL7fds7XUsH3t+jaNq2vCtUa56eqflh7LogrE+
- n7Kb9WRgi6JvSP1EyZA3OI5d1DogIajNEVhIchGkaJJXYdxtQn9SF7zT0O4hmE7vYwHfjSjnTN
- Z/djyDiR90H/vR7J3EGgBpG3mgTx4aLk+TPb7NqXHyknlvpvJU40ColsgtH7HLxEJemQbS/Bdu
- oNg=
-X-IronPort-AV: E=Sophos;i="5.73,432,1583218800"; 
-   d="scan'208";a="13408235"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2020 00:56:20 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 25 May 2020 00:56:22 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Mon, 25 May 2020 00:56:13 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <UNGLinuxDriver@microchip.com>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>
-Subject: [PATCH] bridge: mrp: Fix out-of-bounds read in br_mrp_parse
-Date:   Mon, 25 May 2020 09:55:41 +0000
-Message-ID: <20200525095541.46673-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.26.2
+        id S2389694AbgEYKAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 06:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389401AbgEYKAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:00:11 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC13C061A0E;
+        Mon, 25 May 2020 03:00:10 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id 4so16881895ilg.1;
+        Mon, 25 May 2020 03:00:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/HlZX9BfLNkxmxu/peNZlTEsIIbqtBbCJJ4S/yDGP3c=;
+        b=qqBUiZiAO78fGq0DecwTUiZYY1Q/guXRaL4B2UwAtNeKi/QiWcsXPwEl7n2CxHtKJN
+         lG03iVcgDUNDyzd6Z9xhwxIMr8pdP8jdgYEXPJvXw6CAGjBNJdgTpFttrDZUhltMLhar
+         Ozmkh0EdFTryOb4G+j6kmoiONg+bRF7rZCVbiDQpZNpsNgpfF9XpPYhgOb8tzEKA+1db
+         PpbMmqe57u+MTZE33tEbIDBWSVjudosBb2alHJtozMYzqn0wFzvGW0lUbydTPyMenD+b
+         MbF4hxUkHTeTy2xSfNNB0nzOLFr3ZvHlNPDuViQT8W79A7zwYJQjeIBUWqxYqL4HY/kC
+         SMjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/HlZX9BfLNkxmxu/peNZlTEsIIbqtBbCJJ4S/yDGP3c=;
+        b=hJ+zMiYgJtEvGB7boWgzrfhAqQyS8DK7OvH9EI9cF7J9WqyUWd1+HOr7Eqb5HR17fv
+         iSkoiIFkVoEPZu/Ytpu4avUuPjCykQ8eHY3uVzKnZiPGjU6Le0Tz/dEtROFvpeCIUaYn
+         J6mWnlz3g6oBtcKaVwnzD3pqGsar/ieuAvBMneyKzCkOi5fsAEXniFcNfYzpIxe4pIzD
+         2ytqrWAbjiNycQ4ivZaAXrV4if2CLOomqR9GX0e+MAmQw7kuYcWFur8LiATzYaEn0CID
+         ht1mY2kDHwyuTfhAuqa9szPqDYqpLmtKkSgJbJK42GfB7ZAVLf43BerKcUrIaoRSmteU
+         Xr9Q==
+X-Gm-Message-State: AOAM532ILCBk3S+kywf0Hrz8dI1JKTMF77pxktbu6wnLTd6FGsQqbZNr
+        +2G3E0dwm4OpuPtll5KA8LBoUF+gS5tAPvnPGf0=
+X-Google-Smtp-Source: ABdhPJyGYePvmuxuziYBNq5bY4eey/YTZ8/TMNjTJa07qL6vIS6+9Ts/v6YEt5nah+k+B5nJK7L/gY6pbC5s9sngqjk=
+X-Received: by 2002:a92:8b0a:: with SMTP id i10mr23058915ild.245.1590400810150;
+ Mon, 25 May 2020 03:00:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-8-andriin@fb.com>
+In-Reply-To: <20200517195727.279322-8-andriin@fb.com>
+From:   Alban Crequy <alban.crequy@gmail.com>
+Date:   Mon, 25 May 2020 11:59:58 +0200
+Message-ID: <CAMXgnP424S5s-mrwFB_nuZNSuqLyi1K8r519WKVkyMBPtv1PMQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 7/7] docs/bpf: add BPF ring buffer design notes
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Alban Crequy <alban@kinvolk.io>, mauricio@kinvolk.io,
+        kai@kinvolk.io
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The issue was reported by syzbot. When the function br_mrp_parse was
-called with a valid net_bridge_port, the net_bridge was an invalid
-pointer. Therefore the check br->stp_enabled could pass/fail
-depending where it was pointing in memory.
-The fix consists of setting the net_bridge pointer if the port is a
-valid pointer.
+Hi,
 
-Reported-by: syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com
-Fixes: 6536993371fa ("bridge: mrp: Integrate MRP into the bridge")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- net/bridge/br_mrp_netlink.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Thanks. Both motivators look very interesting to me:
 
-diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
-index 397e7f710772a..4a08a99519b04 100644
---- a/net/bridge/br_mrp_netlink.c
-+++ b/net/bridge/br_mrp_netlink.c
-@@ -27,6 +27,12 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
- 	struct nlattr *tb[IFLA_BRIDGE_MRP_MAX + 1];
- 	int err;
- 
-+	/* When this function is called for a port then the br pointer is
-+	 * invalid, therefor set the br to point correctly
-+	 */
-+	if (p)
-+		br = p->br;
-+
- 	if (br->stp_enabled != BR_NO_STP) {
- 		NL_SET_ERR_MSG_MOD(extack, "MRP can't be enabled if STP is already enabled");
- 		return -EINVAL;
--- 
-2.26.2
+On Sun, 17 May 2020 at 21:58, Andrii Nakryiko <andriin@fb.com> wrote:
+[...]
+> +Motivation
+> +----------
+> +There are two distinctive motivators for this work, which are not satisfied by
+> +existing perf buffer, which prompted creation of a new ring buffer
+> +implementation.
+> +  - more efficient memory utilization by sharing ring buffer across CPUs;
 
+I have a use case with traceloop
+(https://github.com/kinvolk/traceloop) where I use one
+BPF_MAP_TYPE_PERF_EVENT_ARRAY per container, so when the number of
+containers times the number of CPU is high, it can use a lot of
+memory.
+
+> +  - preserving ordering of events that happen sequentially in time, even
+> +  across multiple CPUs (e.g., fork/exec/exit events for a task).
+
+I had the problem to keep track of TCP connections and when
+tcp-connect and tcp-close events can be on different CPUs, it makes it
+difficult to get the correct order.
+
+[...]
+> +There are a bunch of similarities between perf buffer
+> +(BPF_MAP_TYPE_PERF_EVENT_ARRAY) and new BPF ring buffer semantics:
+> +  - variable-length records;
+> +  - if there is no more space left in ring buffer, reservation fails, no
+> +    blocking;
+[...]
+
+BPF_MAP_TYPE_PERF_EVENT_ARRAY can be set as both 'overwriteable' and
+'backward': if there is no more space left in ring buffer, it would
+then overwrite the old events. For that, the buffer needs to be
+prepared with mmap(...PROT_READ) instead of mmap(...PROT_READ |
+PROT_WRITE), and set the write_backward flag. See details in commit
+9ecda41acb97 ("perf/core: Add ::write_backward attribute to perf
+event"):
+
+struct perf_event_attr attr = {0,};
+attr.write_backward = 1; /* backward */
+fd = perf_event_open_map(&attr, ...);
+base = mmap(fd, 0, size, PROT_READ /* overwriteable */, MAP_SHARED);
+
+I use overwriteable and backward ring buffers in traceloop: buffers
+are continuously overwritten and are usually not read, except when a
+user explicitly asks for it (e.g. to inspect the last few events of an
+application after a crash). If BPF_MAP_TYPE_RINGBUF implements the
+same features, then I would be able to switch and use less memory.
+
+Do you think it will be possible to implement that in BPF_MAP_TYPE_RINGBUF?
+
+Cheers,
+Alban
