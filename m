@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C09601E10C8
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 16:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 630551E10ED
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 16:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404093AbgEYOmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 10:42:16 -0400
-Received: from mga14.intel.com ([192.55.52.115]:36119 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404068AbgEYOmO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 10:42:14 -0400
-IronPort-SDR: dgT/YHtvCvbhb6DJqKB22y/obrccDhXNjQPsXrXMV358D2tGQHGePY2nLyc56+2t3XmBpUEn+/
- tKYeklgkbR2w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2020 07:42:13 -0700
-IronPort-SDR: m+ECazrk/RFy6x8os4mhKDVlQlSovraROTC+d9UpXtCAfP0yzrdDvoREiIZhb8VeFNlNvlYjXG
- teZy/peLXXrw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,433,1583222400"; 
-   d="scan'208";a="266165414"
-Received: from bpawlows-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.40.57])
-  by orsmga003.jf.intel.com with ESMTP; 25 May 2020 07:42:10 -0700
-Subject: Re: [PATCH] MAINTAINERS: adjust entry in XDP SOCKETS to actual file
- name
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        maciej.fijalkowski@intel.com, Alexei Starovoitov <ast@kernel.org>,
-        bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Joe Perches <joe@perches.com>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200525141553.7035-1-lukas.bulwahn@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <9d930e0e-5c77-11b8-6a8b-982fac711f6d@intel.com>
-Date:   Mon, 25 May 2020 16:42:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S2391020AbgEYOqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 10:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390935AbgEYOqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 10:46:37 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C89C061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 07:46:36 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id h9so3699787qtj.7
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 07:46:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KgbOuvAOz9kyJXcW6HH6JT79cNyDLpEvQjZoxM71hGk=;
+        b=H0gYlk+X04azJifnD2RCD+iFNekSe3t7G+RftOaRqGGwv9ekX79V2gvwKZ370pQvmr
+         8/aGAmOZzgLypbiYLrBRxgASfvaRj6z4ONXLzEHXOkwkxLwwlqIkAv/STW0LzQMKGhkh
+         YoJRMbxNBNTweJ6oAVVnhsM/oJad/jrIKNK/6WLa5mIoTN6G/orQAzICVoM6dfGDS5U4
+         knqa8+rLwrka/jTwurm6AtXDyKOS/PdgMi/iouWp8ECNuJ0ZPtWfPbmu5azW9QgO8dav
+         L4To4OIzjNNblEe4vn88cOlSIc1GZHDv1FENV3lyS3AkIoAtGWFn4pWvLyyk4CP8Wzmk
+         hiBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KgbOuvAOz9kyJXcW6HH6JT79cNyDLpEvQjZoxM71hGk=;
+        b=tIPmvnJQ46GDw2tk+iZBZL/+B+e0jDPa3+wXXAIepGmOTDraDDnGME42qycCW+TNc6
+         q99rEWChY2/AkvLpV68iO6a2tUvt/Qq+JG+VebRRvHB7aD1enhGtgEQuMPeceNCIF8Lm
+         85/UpxlgfVPhRKg7cli86Rf1EKVPRCx5SZUOxnhcanH2sRR3EfHhYJF2y1c7KqLkeDnX
+         0QhQ2LG9lnlt03xQykjzl2albYQSsUjaK/hYz9mdg+fXlqaQdIPVRZb6YJxPQqeadURP
+         kz4OPePXqNOz10B5p7DpmIRDzoO9SSbncmw1THrAklkJzelVvtdGR5GVC+938GF0TRQr
+         mTWw==
+X-Gm-Message-State: AOAM53344iUYPBVLJXQn11DhI0itcx3vWksC3zFnhQav76MUEZ10dI2Z
+        mEfbu73M3oQnueAJG7FvjhI=
+X-Google-Smtp-Source: ABdhPJwGC6Y7Tw/pddT/Wbtw6gKN+v9KWrY2x0o/v3NQYIZH3Swbl53sJE7CKUyntKFupiVrATsANQ==
+X-Received: by 2002:ac8:4d8e:: with SMTP id a14mr8801740qtw.343.1590417995547;
+        Mon, 25 May 2020 07:46:35 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:8992:a39b:b6ab:3df8:5b60])
+        by smtp.gmail.com with ESMTPSA id l186sm13910947qkf.89.2020.05.25.07.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 May 2020 07:46:34 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 971BBC1632; Mon, 25 May 2020 11:46:32 -0300 (-03)
+Date:   Mon, 25 May 2020 11:46:32 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, Vlad Buslov <vladbu@mellanox.com>
+Subject: Re: [net-next 05/10] net/mlx5e: Introduce kconfig var for TC support
+Message-ID: <20200525144632.GD74252@localhost.localdomain>
+References: <20200522235148.28987-1-saeedm@mellanox.com>
+ <20200522235148.28987-6-saeedm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200525141553.7035-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200522235148.28987-6-saeedm@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-25 16:15, Lukas Bulwahn wrote:
-> Commit 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API") added a
-> new header file include/net/xsk_buff_pool.h, but commit 28bee21dc04b
-> ("MAINTAINERS, xsk: Update AF_XDP section after moves/adds") added a file
-> entry referring to include/net/xsk_buffer_pool.h.
-> 
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains:
-> 
->    warning: no file matches  F:  include/net/xsk_buffer_pool.h
-> 
-> Adjust the entry in XDP SOCKETS to the actual file name.
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> Björn, please pick this minor non-urgent patch.
-> 
-> applies to next-20200525 on top of the commits mentioned above
->
+On Fri, May 22, 2020 at 04:51:43PM -0700, Saeed Mahameed wrote:
+...
+> +config MLX5_CLS_ACT
+> +	bool "MLX5 TC classifier action support"
+> +	depends on MLX5_ESWITCH && NET_CLS_ACT
+> +	default y
+> +	help
+> +	  mlx5 ConnectX offloads support for TC classifier action (NET_CLS_ACT),
+> +	  works in both native NIC mdoe and Switchdev SRIOV mode.
 
-Thanks Lukas!
+Typo here btw, "mdoe".
 
-Daniel/Alexei, this should go to the bpf-next tree.
-
-
-Thanks!
-Björn
-
-
->   MAINTAINERS | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 7a442b48f24b..895c5202fe9b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18667,7 +18667,7 @@ L:	netdev@vger.kernel.org
->   L:	bpf@vger.kernel.org
->   S:	Maintained
->   F:	include/net/xdp_sock*
-> -F:	include/net/xsk_buffer_pool.h
-> +F:	include/net/xsk_buff_pool.h
->   F:	include/uapi/linux/if_xdp.h
->   F:	net/xdp/
->   F:	samples/bpf/xdpsock*
-> 
+> +	  Actions get attached to a Hardware offloaded classifiers and are
+> +	  invoked after a successful classification. Actions are used to
+> +	  overwrite the classification result, instantly drop or redirect and/or
+> +	  reformat packets in wire speeds without involving the host cpu.
+> +
+> +	  If set to N, TC offloads in both NIC and switchdev modes will be disabled.
+> +	  If unsure, set to Y
+> +
+>  config MLX5_TC_CT
+>  	bool "MLX5 TC connection tracking offload support"
+> -	depends on MLX5_CORE_EN && NET_SWITCHDEV && NF_FLOW_TABLE && NET_ACT_CT && NET_TC_SKB_EXT
+> +	depends on MLX5_CLS_ACT && NF_FLOW_TABLE && NET_ACT_CT && NET_TC_SKB_EXT
+>  	default y
+>  	help
+>  	  Say Y here if you want to support offloading connection tracking rules
