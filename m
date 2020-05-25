@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CFA01E156B
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 22:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 473021E1571
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 22:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390905AbgEYU5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 16:57:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390750AbgEYU5t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 16:57:49 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B8262065F;
-        Mon, 25 May 2020 20:57:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590440268;
-        bh=lR7NOEwZSW7Lg+I18yIGiKJF3iGfsiCFNOxqNlZ1mDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=swt24vm+6Bdjwmpc/k3E1NGlCiAfDgyqBkQ3G8Ce/iyqkrFCZLuItGHYd7e+lhuit
-         2p/8FdJfvjSP6yy44RRgmPkzZ0fXJ6Hm3oE4qCNX4na//sgiBAFsr9XmKyyD1l5QJB
-         5v9UiseaC98juTrEUehmaFTAJxgDK718S2RLobhk=
-Date:   Mon, 25 May 2020 13:57:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>, derosier@gmail.com,
-        greearb@candelatech.com, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        ath10k@lists.infradead.org, jiri@resnulli.us,
-        briannorris@chromium.org
-Subject: Re: [RFC 1/2] devlink: add simple fw crash helpers
-Message-ID: <20200525135746.45e764de@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <2e5199edb433c217c7974ef7408ff8c7253145b6.camel@sipsolutions.net>
-References: <20200519010530.GS11244@42.do-not-panic.com>
-        <20200519211531.3702593-1-kuba@kernel.org>
-        <20200522052046.GY11244@42.do-not-panic.com>
-        <20200522101738.1495f4cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <2e5199edb433c217c7974ef7408ff8c7253145b6.camel@sipsolutions.net>
+        id S2390577AbgEYU7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 16:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388542AbgEYU7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 16:59:51 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D543EC061A0E;
+        Mon, 25 May 2020 13:59:50 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id r3so8569974qve.1;
+        Mon, 25 May 2020 13:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XBx7V4HGJFmz/xdv3njXdrSDIV7GwCN6dhLd9svsoZM=;
+        b=SFsgL4zmCANb3SR6xlz1x2qGtI9LhPJg1iB+/4BrTl5uQrZP0BDFKS+eCX3a2UvlMj
+         amUYU+4JMZzWxTOh5dKRvb68L+T1+f/qUDHO9UPMZhp0IBUOXW8RBq/EJ1GwnNm6B30B
+         v5XbhTXwOpbOuRY1ss6Cuo6kz3pZ43PPeCXI6r5dP1QbzsWQIIPrzhB9b6e/T5txy3+W
+         SYUVNK/m0GamDLl2V7/2tdLKtnNjsSPbhDwe/cRshSQkqhAZiPDT/zWflYKrBaE/dxBE
+         bad2U8QrINAKXMd+dWZFTguNMo3dyEw24hPgtJhN0Llf0ghNNN0OCZ9/W9KhHE5gnSnH
+         /udQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XBx7V4HGJFmz/xdv3njXdrSDIV7GwCN6dhLd9svsoZM=;
+        b=U6Qrqk7agyJVs/K/3wGLWZhTKaSLOVtlLxhPvN3fhweseg8811HhOW551K9F4djXcc
+         bBJy91v5XEo3D/fF028sPWNAph5xwvaF2yZ9Q4oLhtmdeWkgBQs6l/HU8qmGggARUPy9
+         ZHJmqbntMl1aEZTht720o+8qp7wZOdRHXNUKA4lZJ/hQqWZeWdiZsnX1rf06Lg8GBBO8
+         YoOJnXF0kqpGUkGK+2X7ZPkcVzSMqXC0InPaytTeBDD/FBPiX5YR4o3uZidgc+8ikYAV
+         ZlZHIXP9+S5shLRZO2iBwl5TvjtqhRa/VNHNcKoTgFNNHkFL/PFHkb7FRGzOQCA6JodZ
+         WrTg==
+X-Gm-Message-State: AOAM531FsVaEaPm28SIDKAgOYZ5jk++SzSJelzVnsRqeKJBR8v5/JcRX
+        4RVFI6ZPyjb4dzhTFR2Obe4=
+X-Google-Smtp-Source: ABdhPJz7SO8AaZ6BTdR5bf9aWrBAUgeCCyEcQZNMSgZyz0wLZwQzM5BrpkhXU8iq7yrdtfHr4MQGSA==
+X-Received: by 2002:a05:6214:8e1:: with SMTP id dr1mr16120649qvb.193.1590440390086;
+        Mon, 25 May 2020 13:59:50 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:8992:a39b:b6ab:3df8:5b60])
+        by smtp.gmail.com with ESMTPSA id t74sm14893563qka.21.2020.05.25.13.59.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 May 2020 13:59:49 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 1205AC1B76; Mon, 25 May 2020 17:59:47 -0300 (-03)
+Date:   Mon, 25 May 2020 17:59:47 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Christoph Hellwig' <hch@lst.de>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: do a single memdup_user in sctp_setsockopt
+Message-ID: <20200525205947.GC2491@localhost.localdomain>
+References: <20200521174724.2635475-1-hch@lst.de>
+ <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
+ <20200522143623.GA386664@localhost.localdomain>
+ <20200523071929.GA10466@lst.de>
+ <38061a608f294766846e23170bdf0177@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <38061a608f294766846e23170bdf0177@AcuMS.aculab.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 May 2020 22:46:07 +0200 Johannes Berg wrote:
-> > The irony is you have a problem with a networking device and all the
-> > devices your initial set touched are networking. Two of the drivers 
-> > you touched either have or will soon have devlink health reporters
-> > implemented.  
-> 
-> Like I said above, do you think it'd be feasible to make a devcoredump
-> out of devlink health reports? And can the report be in a way that we
-> control the file format, or are there limits? I guess I should read the
-> code to find out, but I figure you probably just know. But feel free to
-> tell me to read it :)
-> 
-> The reason I'm asking is that it's starting to sound like we really
-> ought to be implementing devlink, but we've got a bunch of
-> infrastructure that uses the devcoredump, and it'll take time
-> (significantly so) to change all that...
+On Mon, May 25, 2020 at 07:37:49PM +0000, David Laight wrote:
+> I'm going to post a V3 of my big patch - I spotted an error.
+> I'll include a different (smaller) patch in 0/1 that generates
+> exactly the same object code but is easier to review.
 
-In devlink world pure FW core dumps are exposed by devlink regions.
-An API allowing reading device memory, registers, etc., but also 
-creating dumps of memory regions when things go wrong. It should be
-a fairly straightforward migration.
+Please make sure to split at least setsockopt and getsockopt changes
+into different patches. That will help quite a lot already.
+And to adopt the memset at the end of sctp_setsockopt_auth_key(), to
+avoid special handling later on.
 
-Devlink health is more targeted, the dump is supposed to contain only
-relevant information, selected and formatted by the driver. When device
-misbehaves driver reads the relevant registers and FW state and creates
-a formatted state dump. I believe each element of the dump must fit
-into a netlink message (but there may be multiple elements, see
-devlink_fmsg_prepare_skb()).
-
-We should be able to convert dl-regions dumps and dl-health dumps into
-devcoredumps, but since health reporters are supposed to be more
-targeted there's usually multiple of them per device.
-
-Conversely devcoredumps can be trivially exposed as dl-region dumps,
-but I believe dl-health would require driver changes to format the
-information appropriately.
+Thanks,
+Marcelo
