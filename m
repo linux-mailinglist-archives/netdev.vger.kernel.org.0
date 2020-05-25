@@ -2,101 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B2F1E11A9
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 17:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF6A1E11B5
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 17:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404150AbgEYPZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 11:25:59 -0400
-Received: from mail-am6eur05on2065.outbound.protection.outlook.com ([40.107.22.65]:30016
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404122AbgEYPZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 11:25:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KJVkspIs5l8ogSmhele7YfYJ+fgc8T7dqn+i7mk73UDARhXvybPE/A/AR2tbGW+dTFDZ0doDqTLBhpuvP5z8oM9nN7StzxU3rtWzW7g/kKBPfUQEXg/GEk/vXNo11UHdBH34vXR0RhYNW2qPSENvbgRA0IdRq8Iy7gC3fg3WeMbECkUtwluWQIjSPm5UY8grJwWIuNdBU09B9b8dw5ekd3ykpAu52gqvMKgQg4jhOJoOFHd/TObNf6NYnp7thFnqc5K8bMTQZz+WSx7cXaUJyG2gIT9KbGbRgVm692W0Ah1TCd2itWHfXXWKdbnKdSKZSg9RFGsgXKmfrK/nCDNaQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bpJ3DiZBKpTdjMHi4XaETzN5BNYtL4khqVnDzZS/j/g=;
- b=PwLZfz7r/IcBhl+7nqWrcn6cQwYp2YYYgRW9f1lLT1Gt/W2RT/JbDgwdXRV0fKkrKb4gjIL55WempZButTC8CZZSbL/04fv93FBD+VJP9mxu41ltpfnm1UpezzJNVLl+wkf2IZFV4SN4xniVemSlioz2YhQomyBh0oML0ZCpFQ/c0mcu+zWGS0FedemR8bNeWqDufJrkOmOyty8mwDXnCr89EanK+ZT3fEgUrf2h4Zzw9/9j1VkL++VNqkeUjwdjpb3shRtK6vmWYis/2cWsR9J8ERl1bLqzjrO5oWnQ+Hw2gdrMyQrC6JHFWAJmJDg44qzFLev5JPQ21PPtXGhhNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bpJ3DiZBKpTdjMHi4XaETzN5BNYtL4khqVnDzZS/j/g=;
- b=CcB632Vic05AaXzNAsODjoHmtsWY7kIbUlbNfWiYMkhXbOR0e5+Vuu0s6z9GMbBd9OtSAlbhESttPSYE+Av3SkDhUFue6eaHRV2A30kbi2iTnAhCHEm19aGJyy/ClZG5VgV7pSX8a0Y9g6w1XKOYYGGpoKr2K4u3n4xDFKfAkcs=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com (2603:10a6:208:125::25)
- by AM0PR05MB5188.eurprd05.prod.outlook.com (2603:10a6:208:f7::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Mon, 25 May
- 2020 15:25:52 +0000
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::9c3f:57ee:7cd2:a4f4]) by AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::9c3f:57ee:7cd2:a4f4%5]) with mapi id 15.20.3021.029; Mon, 25 May 2020
- 15:25:52 +0000
-Subject: Re: [PATCH mlx5-next 01/14] net/mlx5: Export resource dump interface
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-References: <20200513095034.208385-1-leon@kernel.org>
- <20200513095034.208385-2-leon@kernel.org> <20200525142439.GA20904@ziepe.ca>
-From:   Maor Gottlieb <maorg@mellanox.com>
-Message-ID: <418ffabb-c8d4-5999-e450-c527220d9784@mellanox.com>
-Date:   Mon, 25 May 2020 18:25:31 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-In-Reply-To: <20200525142439.GA20904@ziepe.ca>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM4PR0902CA0023.eurprd09.prod.outlook.com
- (2603:10a6:200:9b::33) To AM0PR05MB5873.eurprd05.prod.outlook.com
- (2603:10a6:208:125::25)
+        id S2404122AbgEYP2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 11:28:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51378 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403999AbgEYP2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 11:28:24 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B44D92071A;
+        Mon, 25 May 2020 15:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590420503;
+        bh=3X4sQ7kcpAcBdWmFPLh2z6FUnu+whu05DPLM1j+9VQY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0bBuzBY5wC1xcpMo04SVEVYyNO8F3N5GWqP7oDFDTbPCo3EUisqzVks3B99I4/hdY
+         /iEgGaONpIC9cmuYkN8WpvOyZ6fzMILw87y7sn4R0VuCPQebUSBI+bsP0/+gZVHcVq
+         /FsxUauOXD8YIvXLhbH0AjW3jJDp8Sul7gdt/vF0=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1jdF1Z-00FC3W-Mv; Mon, 25 May 2020 16:28:21 +0100
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.100.102.6] (93.173.18.107) by AM4PR0902CA0023.eurprd09.prod.outlook.com (2603:10a6:200:9b::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24 via Frontend Transport; Mon, 25 May 2020 15:25:43 +0000
-X-Originating-IP: [93.173.18.107]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 09b2c635-158b-4108-618b-08d800bfe8f2
-X-MS-TrafficTypeDiagnostic: AM0PR05MB5188:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB51889D802913C84A968B717AD3B30@AM0PR05MB5188.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-Forefront-PRVS: 0414DF926F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fd11nF5mkfqhFuSkAoa1nImK101tIuH2jozapNRROo24CHlod4X6CdM62pWPX+BmXy8yTi9TVDCe4FMQRehfQhqKZuM2idhISd7Veyg84tKCDzXvz+0e4al9t0yfEdz2UTDvJXQ4pqyP1WAvOWZz3n3mPTrgiqGOysQ+72zluJZfyN62tE34BRU5ebXpIQ9Gh1JlZhD6gZXdo/AT7Hq5KZNAyK5R9ymn0nZUQX/gRPkn+S408Y5sBf13g11nI7U3Wbsi/udUzK/R5Ke39xmpXLro9kHpxrJ6OcuLL63tGgobIFMpi6SLCxoKzRpKJ7sH5GkPNJpcqQIzaoKv1LavqHFnNqCekjkEiUPbo1FPZJKsuQES0Amav8Xl5KIfz9LV
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5873.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(39860400002)(396003)(346002)(366004)(5660300002)(8676002)(2616005)(66556008)(4744005)(66476007)(66946007)(956004)(4326008)(110136005)(8936002)(6666004)(36756003)(478600001)(31686004)(53546011)(2906002)(6486002)(16526019)(54906003)(86362001)(186003)(316002)(52116002)(26005)(16576012)(107886003)(31696002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Gx5Jy088KNSdh02za+KyT8fAdJsTFD50LdCOFMKukQ14Xa5TtTAoN6mlMkn/p4Q3P4grxSly5fnEhTIfPTX3GLXj0G5tLJlmBNGWx+/Nl84NnN9671mHJPxiRMZNgskUHGFSM/pAW+tf2eIv9VfKcPymzfuhTnLpnRXIZIG1VXTgxVmANuNhBW7SOGw7rfjltq0BlR6gpY0fdUhCJVrC48OmYHD5r2A6/DHNjUWAMwCk2PQ4I/gzqip1MXjAclqNDMU4ioSWpg0M9QIHOHoB/xZLN5L/HJQRt4mX7gITSUC9LltG/g+Yd8SnZA4hEC4Dm4WQM67Pz/6QrLzJTbu45bo04IoaNQ/vptjtnVJ6NuYJPlaXwo53xi4l9kNg+nYz4uP/2H0TBgEVWye8OuV6Vfh10Zyn/9oaunohBXvzhQysnDIpmkhqh6tS378HUAlDHegP8V957N1f8CGzFXPuyyRBVmTQwi+zsjoUhEwqkvLOhv9lDD0Hm6g6pWaJSIEJ
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09b2c635-158b-4108-618b-08d800bfe8f2
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2020 15:25:52.1356
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M8LtCBHAQgx1Pi3EzW8Ppab6JCiZSgJpgZHF+FheGa8seSi/XJxw+XDfOpvJJlU0MU145bNKVdzZ4hyqtwiTKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5188
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 25 May 2020 16:28:21 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, nd <nd@arm.com>
+Subject: Re: [RFC PATCH v12 10/11] arm64: add mechanism to let user choose
+ which counter to return
+In-Reply-To: <HE1PR0802MB2555E64BD5C076E5AF08E644F4B30@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+References: <20200522083724.38182-1-jianyong.wu@arm.com>
+ <20200522083724.38182-11-jianyong.wu@arm.com>
+ <20200524021106.GC335@localhost>
+ <306951e4945b9e486dc98818ba24466d@kernel.org>
+ <HE1PR0802MB2555E64BD5C076E5AF08E644F4B30@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <b5b4266f6bdac6c4921ab1a577b8e343@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: Jianyong.Wu@arm.com, richardcochran@gmail.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com, Justin.He@arm.com, Wei.Chen@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-05-25 15:18, Jianyong Wu wrote:
+> Hi Marc,
+> 
+>> -----Original Message-----
+>> From: Marc Zyngier <maz@kernel.org>
+>> Sent: Monday, May 25, 2020 5:17 PM
+>> To: Richard Cochran <richardcochran@gmail.com>; Jianyong Wu
+>> <Jianyong.Wu@arm.com>
+>> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
+>> tglx@linutronix.de; pbonzini@redhat.com; 
+>> sean.j.christopherson@intel.com;
+>> Mark Rutland <Mark.Rutland@arm.com>; will@kernel.org; Suzuki Poulose
+>> <Suzuki.Poulose@arm.com>; Steven Price <Steven.Price@arm.com>; linux-
+>> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+>> kvmarm@lists.cs.columbia.edu; kvm@vger.kernel.org; Steve Capper
+>> <Steve.Capper@arm.com>; Kaly Xin <Kaly.Xin@arm.com>; Justin He
+>> <Justin.He@arm.com>; Wei Chen <Wei.Chen@arm.com>; nd <nd@arm.com>
+>> Subject: Re: [RFC PATCH v12 10/11] arm64: add mechanism to let user
+>> choose which counter to return
+>> 
+>> On 2020-05-24 03:11, Richard Cochran wrote:
+>> > On Fri, May 22, 2020 at 04:37:23PM +0800, Jianyong Wu wrote:
+>> >> In general, vm inside will use virtual counter compered with host use
+>> >> phyical counter. But in some special scenarios, like nested
+>> >> virtualization, phyical counter maybe used by vm. A interface added
+>> >> in ptp_kvm driver to offer a mechanism to let user choose which
+>> >> counter should be return from host.
+>> >
+>> > Sounds like you have two time sources, one for normal guest, and one
+>> > for nested.  Why not simply offer the correct one to user space
+>> > automatically?  If that cannot be done, then just offer two PHC
+>> > devices with descriptive names.
+>> 
+>> There is no such thing as a distinction between nested or non-nested.
+>> Both counters are available to the guest at all times, and said guest 
+>> can
+>> choose whichever it wants to use. So the hypervisor (KVM) has to 
+>> support
+>> both counters as a reference.
+>> 
+> It's great that we can decide which counter to return in guest kernel.
+> So we can abandon these code, including patch 9/11 and 10/11, that
+> expose the interface to userspace to do the decision.
+> 
+>> For a Linux guest, we always know which reference we're using (the 
+>> virtual
+>> counter). So it is pointless to expose the choice to userspace at all.
+>> 
+> So, we should throw these code of deciding counter type in linux
+> driver away and just keep the hypercall service of providing both
+> virtual counter and physical counter in linux to server non-linux
+> guest.
+> Am I right?
 
-On 5/25/2020 5:24 PM, Jason Gunthorpe wrote:
-> On Wed, May 13, 2020 at 12:50:21PM +0300, Leon Romanovsky wrote:
->> From: Maor Gottlieb <maorg@mellanox.com>
->>
->> Export some of the resource dump API, so it could be
->> used by the mlx5_ib driver as well.
-> This description doesn't really match the patch, is this other stuff
-> dead code?
->
-> Jason
+Exactly. We control Linux, and so far nothing is using the physical
+counter directly. It is only using the virtual counter.
+On the other side, this is *only* Linux. Other operating systems
+will need to pick the reference clock that matches their own.
+If one day we change Linux to use the physical counter, we'll
+have to do the same thing.
 
-It is used in later patch, I can clarify it better in the commit message.
+         M.
+-- 
+Jazz is not dead. It just smells funny...
