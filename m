@@ -2,70 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933D81E0B92
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87AD81E0BC6
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389699AbgEYKTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 06:19:05 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:45590 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389373AbgEYKTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:19:05 -0400
-Received: by mail-il1-f199.google.com with SMTP id g19so14797256ila.12
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:19:04 -0700 (PDT)
+        id S2389765AbgEYK0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 06:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389356AbgEYK0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:26:49 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8507C061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:26:48 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id u12so11402637wmd.3
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:26:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nMuvRSUb4ALiiBXH2s5u47j7uY/+82nlefji0PdsqHk=;
+        b=TdT/jOYp5cN158dXnRfMmu0WeMjAVZzB0VoCOeLtiiOKgMwNFvOyrj3bPucpXG9i98
+         DcQSmeXYpvdIUQ76QpOXEwjDIwVeBS2G5+anjM5hPsmCuDZia2pPpFQGsSLLTL/YzInG
+         Umt6R9YimmRT5xGGQR6fRUGYY91nr/bSkGomQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=whoLZ/cMcXb882oZ1pDdASgEN3wOLkDsAb0kfev0mIU=;
-        b=dVq50jVPJ9SESUzBUtQ6nw9di/YH8xewI3tr/h9t7URGoMadlgd3zF45TkKZpLTeUr
-         NabvINshmtn8mC6S3xlSBr5utCj5UfAxCyRWJg01PObWpgDvT/KQIl4ERRvoAMnnlfcB
-         CDnnhdB22ciJq6DQG+R0KTzndPoq/N8wYyZVdKiWQOKJy4O933hGcCe0TQ9iWo7MA00O
-         hT1xcLgs3TqrHkMKudLzgJafz97M3XDwvH8ApAcsql8eKyAVqg93AodLExsk2tVz2kTl
-         KseWCisbCi0GY0ZctJR7mGhfD2lGv7tgOgL+nLDxiQ6CBZH/d3guBagCL/VIP+t6Xf7q
-         8oOA==
-X-Gm-Message-State: AOAM5339hiXdA34o0eaADCFIFphiXnHiTnFw+OjJB9+1iwDuoCQzPHnY
-        4qhywIZ/LhXDgPqf4VI4WpKrJILVeNne8ds0Kcnqk4o1VgL2
-X-Google-Smtp-Source: ABdhPJx+tnjOlgCi02g4SUjSWTWYNC0Cv4sVgDVr14y8LKntAXEIw1aJC8Vk3mNbVow1S6zjJQ4Lbgs7vJILAN2bfDVXV1/HhbNz
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nMuvRSUb4ALiiBXH2s5u47j7uY/+82nlefji0PdsqHk=;
+        b=EybcvuzqU8TeCVuNvlnTA/U1XC2jPTvUgEn6pwPulJFIOJa0VAFUPms6lLRbQoltE8
+         7Wyr0o9vUpt/1+UCs2kE+XMgmiehMfHkx02P8XQ4IDB6alPDA9yaRGSx0X32PPDRkei3
+         ErOrEGZAJAtZa28fokd4A5X2dwT3kwx+EkZqxaRRvxgVA9gxk0V5Dzc/svy5nPgKghd9
+         9D5rXGw8JQbz0STVTrsoy+5RVEnfPD06BB93LusCbAP6jSHgSbYnXez5E5pMDdYa/jqz
+         x9DznrqTaUFzwfC2EKM8Ff2ypUCgkyNZfkgLxyS2i0dZFx3V9ZaU/YOgedU+Tjzh4BIF
+         z5wg==
+X-Gm-Message-State: AOAM5332umkdZ+XRRDhuIvAhS/+4gyQv+fjGB94Z4E2UsNxt9d1WXj70
+        muOFGMICBhafu+XZuOGMpY/CJw==
+X-Google-Smtp-Source: ABdhPJxXgGSlKW88yPOhBKqcx/KenoNx/MiflMYVJdNcY2yiQq7fFumKEeTy32ISIjvc3rahbZnVuw==
+X-Received: by 2002:a7b:c253:: with SMTP id b19mr25701091wmj.110.1590402407376;
+        Mon, 25 May 2020 03:26:47 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id 40sm17155504wrc.15.2020.05.25.03.26.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 May 2020 03:26:46 -0700 (PDT)
+Subject: Re: MRP netlink interface
+To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
+        andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20200525112827.t4nf4lamz6g4g2c5@soft-dev3.localdomain>
+ <20200525100322.sjlfxhz2ztrfjia7@lion.mk-sys.cz>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <88bc4a98-c0c8-32df-142e-d4738fe0065a@cumulusnetworks.com>
+Date:   Mon, 25 May 2020 13:26:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:965:: with SMTP id q5mr23266428ilt.272.1590401944546;
- Mon, 25 May 2020 03:19:04 -0700 (PDT)
-Date:   Mon, 25 May 2020 03:19:04 -0700
-In-Reply-To: <0000000000000a9cca057cd141bd@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f472ee05a6764e46@google.com>
-Subject: Re: inconsistent lock state in icmp_send
-From:   syzbot <syzbot+251ec6887ada6eac4921@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jmaloy@redhat.com,
-        jon.maloy@ericsson.com, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200525100322.sjlfxhz2ztrfjia7@lion.mk-sys.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On 25/05/2020 13:03, Michal Kubecek wrote:
+> On Mon, May 25, 2020 at 11:28:27AM +0000, Horatiu Vultur wrote:
+> [...]
+>> My first approach was to extend the 'struct br_mrp_instance' with a field that
+>> contains the priority of the node. But this breaks the backwards compatibility,
+>> and then every time when I need to change something, I will break the backwards
+>> compatibility. Is this a way to go forward?
+> 
+> No, I would rather say it's an example showing why passing data
+> structures as binary data via netlink is a bad idea. I definitely
+> wouldn't advice this approach for any new interface. One of the
+> strengths of netlink is the ability to use structured and extensible
+> messages.
+> 
+>> Another approach is to restructure MRP netlink interface. What I was thinking to
+>> keep the current attributes (IFLA_BRIDGE_MRP_INSTANCE,
+>> IFLA_BRIDGE_MRP_PORT_STATE,...) but they will be nested attributes and each of
+>> this attribute to contain the fields of the structures they represents.
+>> For example:
+>> [IFLA_AF_SPEC] = {
+>>     [IFLA_BRIDGE_FLAGS]
+>>     [IFLA_BRIDGE_MRP]
+>>         [IFLA_BRIDGE_MRP_INSTANCE]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_RING_ID]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]
+>>         [IFLA_BRIDGE_MRP_RING_ROLE]
+>>             [IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]
+>>             [IFLA_BRIDGE_MRP_RING_ROLE_ROLE]
+>>         ...
+>> }
+>> And then I can parse each field separately and then fill up the structure
+>> (br_mrp_instance, br_mrp_port_role, ...) which will be used forward.
+>> Then when this needs to be extended with the priority it would have the
+>> following format:
+>> [IFLA_AF_SPEC] = {
+>>     [IFLA_BRIDGE_FLAGS]
+>>     [IFLA_BRIDGE_MRP]
+>>         [IFLA_BRIDGE_MRP_INSTANCE]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_RING_ID]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]
+>>             [IFLA_BRIDGE_MRP_INSTANCE_PRIO]
+>>         [IFLA_BRIDGE_MRP_RING_ROLE]
+>>             [IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]
+>>             [IFLA_BRIDGE_MRP_RING_ROLE_ROLE]
+>>         ...
+>> }
+>> And also the br_mrp_instance will have a field called prio.
+>> So now, if the userspace is not updated to have support for setting the prio
+>> then the kernel will use a default value. Then if the userspace contains a field
+>> that the kernel doesn't know about, then it would just ignore it.
+>> So in this way every time when the netlink interface will be extended it would
+>> be backwards compatible.
+> 
+> Silently ignoring unrecognized attributes in userspace requests is what
+> most kernel netlink based interfaces have been doing traditionally but
+> it's not really a good idea. Essentially it ties your hands so that you
+> can only add new attributes which can be silently ignored without doing
+> any harm, otherwise you risk that kernel will do something different
+> than userspace asked and userspace does not even have a way to find out
+> if the feature is supported or not. (IIRC there are even some places
+> where ignoring an attribute changes the nature of the request but it is
+> still ignored by older kernels.)
+> 
+> That's why there have been an effort, mostly by Johannes Berg, to
+> introduce and promote strict checking for new netlink interfaces and new
+> attributes in existing netlink attributes. If you don't have strict
+> checking for unknown attributes enabled yet, there isn't much that can
+> be done for already released kernels but I would suggest to enable it as
+> soon as possible.
+> 
+> Michal
+> 
 
-commit 1378817486d6860f6a927f573491afe65287abf1
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Thu May 21 18:29:58 2020 +0000
++1, we don't have strict checking for the bridge main af spec attributes, but
+you could add that for new nested interfaces that need to be parsed like the
+above
 
-    tipc: block BH before using dst_cache
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10cbef06100000
-start commit:   f5d58277 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c8970c89a0efbb23
-dashboard link: https://syzkaller.appspot.com/bug?extid=251ec6887ada6eac4921
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10ab6ba3400000
 
-If the result looks correct, please mark the bug fixed by replying with:
 
-#syz fix: tipc: block BH before using dst_cache
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+
