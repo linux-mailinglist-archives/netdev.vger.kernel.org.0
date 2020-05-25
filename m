@@ -2,104 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8100A1E1819
+	by mail.lfdr.de (Postfix) with ESMTP id 156E51E1818
 	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389041AbgEYXGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 19:06:38 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:43151 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388099AbgEYXGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:06:35 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9888D5C018E;
-        Mon, 25 May 2020 19:06:34 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 25 May 2020 19:06:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=G9tMUOBShJJSdPLRc0gRLE4F+138T6CUAsUinW/NG18=; b=obiEuCeV
-        PK4rolgZ4FfmZBQynIkr0VET05Ah5lUZ+IQPqKkYR5iCxD6w4GOc2+6T1FA8ZHH1
-        iQVwh6d9RVXKZFwfbQUN5VHzyviHOrAPu11AKlh+Sb/5KNjqBUKUv+0uwCo/6QKo
-        L5ZpAHskpYTWPHjkdgXX6uMkZMDxuDwmlX4T+1aq8HLDr9hUV+AELgUPgpW2KWLO
-        BM4gRnzgrU95fD23Cqz4yX46UZLW8A30+kQ1dX6gkHjwBpXPp1B+OctUAWoQkghQ
-        bXLNKRgkgO6EiA3ZkbgZqA+7L0125SgViBiex4YLZxms/rIwpUzYtIXICIHlk4vO
-        j4iN7xx6FIJ6sA==
-X-ME-Sender: <xms:ek_MXjzBtWMOKyyd0ycobM1p7arzDcy5YsHnnxQTlU2c8-sBkLicVg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvuddgudejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
-    necuvehluhhsthgvrhfuihiivgepudefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:ek_MXrRKRTMFAu0JkIFGOyHysrWDAguu3-_MnVIpeMXVD85EdqKDDw>
-    <xmx:ek_MXtXe7gLO3JYdU6pHxdK19BPqQREK4Z-meB5yifdRmRPbhiB9vw>
-    <xmx:ek_MXtiqJ0N8qFnX4jdSEL0Sk0KXljcdjO81Kgs2h6aO6J1XB27aiQ>
-    <xmx:ek_MXi45yD-p-YRgy-uaRbTEjy0mJGiIU4g2dTME2qBUzXmI8wXKAA>
-Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6714B328005E;
-        Mon, 25 May 2020 19:06:33 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 14/14] mlxsw: spectrum_router: Allow programming link-local prefix routes
-Date:   Tue, 26 May 2020 02:05:56 +0300
-Message-Id: <20200525230556.1455927-15-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200525230556.1455927-1-idosch@idosch.org>
-References: <20200525230556.1455927-1-idosch@idosch.org>
+        id S2389022AbgEYXGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 19:06:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48806 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388886AbgEYXG3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 19:06:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=xU2BR0jRNvqfWcp6juRFsn6EmW9e+POp1k0nZuFOpOY=; b=lZ8YRvyZJomIn72luInBLWrHRt
+        t6ip7f5SVtNVXVPLsfdM/ji9lAQGgGiNal7cbaDtXuR90CjQ68K/YRCc/cVaxbxLs8ucCsosRe0O8
+        vkk6SayWmP1X82ujoMg0f17gFtCw4fA/x4Uj3Yst7o/ggSRnRlvD3NP7XUVMWrjNMoK8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jdMAk-003EaY-Ez; Tue, 26 May 2020 01:06:18 +0200
+Date:   Tue, 26 May 2020 01:06:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, madalin.bucur@oss.nxp.com,
+        calvin.johnson@oss.nxp.com, linux-kernel@vger.kernel.org
+Subject: Re: [RFC 04/11] net: phy: Handle c22 regs presence better
+Message-ID: <20200525230618.GE768009@lunn.ch>
+References: <20200522213059.1535892-1-jeremy.linton@arm.com>
+ <20200522213059.1535892-5-jeremy.linton@arm.com>
+ <20200523183731.GZ1551@shell.armlinux.org.uk>
+ <f85e4d86-ff58-0ed2-785b-c51626916140@arm.com>
+ <20200525100612.GM1551@shell.armlinux.org.uk>
+ <63ca13e3-11ea-3ddf-e1c7-90597d4a5f8c@arm.com>
+ <20200525220614.GC768009@lunn.ch>
+ <8868af66-fc1a-8ec2-ab75-123bffe2d504@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8868af66-fc1a-8ec2-ab75-123bffe2d504@arm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+> I know for sure we find phys that previously weren't found.
 
-The device has a trap for IPv6 packets that need be routed and have a
-unicast link-local destination IP (i.e., fe80::/10). This allows mlxsw
-to ignore link-local routes, as the packets will be trapped to the CPU
-in any case.
+That is in itself somewhat dangerous. Those using primitive
+configuration systems are probably going to use phy_find_first(),
+rather than an address on the bus.  I always recommend against that,
+because if another PHY suddenly pops up on the bus, bad things can
+happen.
 
-However, since link-local routes are not programmed, it is possible for
-routed packets to hit the default route which might also be programmed
-to trap packets. This means that packets with a link-local destination
-IP might be trapped for the wrong reason.
-
-To overcome this, allow programming link-local prefix routes (usually
-one fe80::/64 per-table), so that the packets will be forwarded until
-reaching the link-local trap.
-
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 71aee4914619..c939b3596566 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5003,9 +5003,11 @@ static bool mlxsw_sp_fib6_rt_should_ignore(const struct fib6_info *rt)
- {
- 	/* Packets with link-local destination IP arriving to the router
- 	 * are trapped to the CPU, so no need to program specific routes
--	 * for them.
-+	 * for them. Only allow prefix routes (usually one fe80::/64) so
-+	 * that packets are trapped for the right reason.
- 	 */
--	if (ipv6_addr_type(&rt->fib6_dst.addr) & IPV6_ADDR_LINKLOCAL)
-+	if ((ipv6_addr_type(&rt->fib6_dst.addr) & IPV6_ADDR_LINKLOCAL) &&
-+	    (rt->fib6_flags & (RTF_LOCAL | RTF_ANYCAST)))
- 		return true;
- 
- 	/* Multicast routes aren't supported, so ignore them. Neighbour
--- 
-2.26.2
-
+   Andrew
