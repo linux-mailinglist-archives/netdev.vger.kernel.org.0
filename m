@@ -2,69 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54771E181F
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:07:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC551E1823
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389133AbgEYXHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 19:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        id S2388479AbgEYXJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 19:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387745AbgEYXHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:07:42 -0400
+        with ESMTP id S1729945AbgEYXJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:09:54 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCF5C061A0E;
-        Mon, 25 May 2020 16:07:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4820CC061A0E;
+        Mon, 25 May 2020 16:09:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ndlkmIWKGBpzvwVCQ43l+ydPG0dLjEM/7QOyONbHlcE=; b=IydryHpBIDlDyHSfMR8ysoxgW
-        04zG/zmbbTpWEHHgOe88FqU9p09rfnbLIXwSBVkxCOncPnbzSSpwfRfGu0Guo5iQ4vdFmhnEwc3+6
-        26tza2EKb5lxAhFpivsHZoFoI6JleVyrrXPn94KAp/N7V0OijhOKIWFOkJ7U5fyC9cFBh/M47U5t6
-        qH5ueRroVKAA/KIywurxk9idsve4zNOqLiPR+kgUWcygRVo/Yz3NFQeuhPBLTKyRqXKpzJn0l7/TY
-        os48WpAkjfJlbvW2uTFkKwzMNNroHd2aCOmQGt2uSvsfDSFFYsnYMepmVwE8HotSIdFKqI+rbSLb2
-        bwCFPVaGA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:34526)
+         bh=6fb+jwIV+5xOJZE2gPa7YONBDSpBbGWac/9vd5Yh+aU=; b=zHpb7anpL5zxe0UlF6SWp1Jwk
+        FO2S7cTSpWbbVzb4FznbNTRikuQ2shlc6kz/YZnIoo/1SErn5/Kxc6y+rdLU7J0k3o+w2a/AAKhZc
+        pp8IpfWxfQRqwoIdtdXYZ2Z6508FyH4TEMcuvqdnBUvPldMC1MqC/ooqxbz3309gQkikSSdKlTnuq
+        zsQ2DlDkL9qGif+A97eC6Klut0XlIXPF8ndUzRT5xBZdY9+BhhoNrocEXtmw28oXOX54wpxFBgX07
+        +60V+zMPSiortjNcqs8DbjUm7dhKMaWByB6/yHdQ3YFSzauviCn+oF7C6sPmSB7dXbeFvKKxr8fl+
+        ANSYeZACQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45034)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1jdMBy-0006Cu-Lp; Tue, 26 May 2020 00:07:34 +0100
+        id 1jdME8-0006DC-3M; Tue, 26 May 2020 00:09:48 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jdMBw-0004lF-QN; Tue, 26 May 2020 00:07:32 +0100
-Date:   Tue, 26 May 2020 00:07:32 +0100
+        id 1jdME6-0004mF-4z; Tue, 26 May 2020 00:09:46 +0100
+Date:   Tue, 26 May 2020 00:09:46 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
         madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
         linux-kernel@vger.kernel.org
 Subject: Re: [RFC 04/11] net: phy: Handle c22 regs presence better
-Message-ID: <20200525230732.GQ1551@shell.armlinux.org.uk>
+Message-ID: <20200525230946.GR1551@shell.armlinux.org.uk>
 References: <20200522213059.1535892-1-jeremy.linton@arm.com>
  <20200522213059.1535892-5-jeremy.linton@arm.com>
  <20200523183731.GZ1551@shell.armlinux.org.uk>
  <f85e4d86-ff58-0ed2-785b-c51626916140@arm.com>
  <20200525100612.GM1551@shell.armlinux.org.uk>
  <63ca13e3-11ea-3ddf-e1c7-90597d4a5f8c@arm.com>
- <20200525220614.GC768009@lunn.ch>
- <8868af66-fc1a-8ec2-ab75-123bffe2d504@arm.com>
+ <20200525220127.GO1551@shell.armlinux.org.uk>
+ <a9490c28-ebe1-ed6d-e65e-2e1d0a06386b@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8868af66-fc1a-8ec2-ab75-123bffe2d504@arm.com>
+In-Reply-To: <a9490c28-ebe1-ed6d-e65e-2e1d0a06386b@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 05:17:27PM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 5/25/20 5:06 PM, Andrew Lunn wrote:
+On Mon, May 25, 2020 at 05:22:07PM -0500, Jeremy Linton wrote:
+> On 5/25/20 5:01 PM, Russell King - ARM Linux admin wrote:
+> > On Mon, May 25, 2020 at 04:51:16PM -0500, Jeremy Linton wrote:
+> > > Hi,
+> > > 
+> > > On 5/25/20 5:06 AM, Russell King - ARM Linux admin wrote:
+> > > > On Sun, May 24, 2020 at 10:34:13PM -0500, Jeremy Linton wrote:
+> > > > > Hi,
+> > > > > 
+> > > > > On 5/23/20 1:37 PM, Russell King - ARM Linux admin wrote:
+> > > > > > On Fri, May 22, 2020 at 04:30:52PM -0500, Jeremy Linton wrote:
+> > > > > > > Until this point, we have been sanitizing the c22
+> > > > > > > regs presence bit out of all the MMD device lists.
+> > > > > > > This is incorrect as it causes the 0xFFFFFFFF checks
+> > > > > > > to incorrectly fail. Further, it turns out that we
+> > > > > > > want to utilize this flag to make a determination that
+> > > > > > > there is actually a phy at this location and we should
+> > > > > > > be accessing it using c22.
+> > > > > > > 
+> > > > > > > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> > > > > > > ---
+> > > > > > >     drivers/net/phy/phy_device.c | 16 +++++++++++++---
+> > > > > > >     1 file changed, 13 insertions(+), 3 deletions(-)
+> > > > > > > 
+> > > > > > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > > > > > > index f0761fa5e40b..2d677490ecab 100644
+> > > > > > > --- a/drivers/net/phy/phy_device.c
+> > > > > > > +++ b/drivers/net/phy/phy_device.c
+> > > > > > > @@ -689,9 +689,6 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
+> > > > > > >     		return -EIO;
+> > > > > > >     	*devices_in_package |= phy_reg;
+> > > > > > > -	/* Bit 0 doesn't represent a device, it indicates c22 regs presence */
+> > > > > > > -	*devices_in_package &= ~BIT(0);
+> > > > > > > -
+> > > > > > >     	return 0;
+> > > > > > >     }
+> > > > > > > @@ -742,6 +739,8 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > > > > > >     	int i;
+> > > > > > >     	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
+> > > > > > >     	u32 *devs = &c45_ids->devices_in_package;
+> > > > > > > +	bool c22_present = false;
+> > > > > > > +	bool valid_id = false;
+> > > > > > >     	/* Find first non-zero Devices In package. Device zero is reserved
+> > > > > > >     	 * for 802.3 c45 complied PHYs, so don't probe it at first.
+> > > > > > > @@ -770,6 +769,10 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > > > > > >     		return 0;
+> > > > > > >     	}
+> > > > > > > +	/* Bit 0 doesn't represent a device, it indicates c22 regs presence */
+> > > > > > > +	c22_present = *devs & BIT(0);
+> > > > > > > +	*devs &= ~BIT(0);
+> > > > > > > +
+> > > > > > >     	/* Now probe Device Identifiers for each device present. */
+> > > > > > >     	for (i = 1; i < num_ids; i++) {
+> > > > > > >     		if (!(c45_ids->devices_in_package & (1 << i)))
+> > > > > > > @@ -778,6 +781,13 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > > > > > >     		ret = _get_phy_id(bus, addr, i, &c45_ids->device_ids[i], true);
+> > > > > > >     		if (ret < 0)
+> > > > > > >     			return ret;
+> > > > > > > +		if (valid_phy_id(c45_ids->device_ids[i]))
+> > > > > > > +			valid_id = true;
+> > > > > > 
+> > > > > > Here you are using your "devices in package" validator to validate the
+> > > > > > PHY ID value.  One of the things it does is mask this value with
+> > > > > > 0x1fffffff.  That means you lose some of the vendor OUI.  To me, this
+> > > > > > looks completely wrong.
+> > > > > 
+> > > > > I think in this case I was just using it like the comment in
+> > > > > get_phy_device() "if the phy_id is mostly F's, there is no device here".
+> > > > > 
+> > > > > My understanding is that the code is trying to avoid the 0xFFFFFFFF returns
+> > > > > that seem to indicate "bus ok, phy didn't respond".
+> > > > > 
+> > > > > I just checked the OUI registration, and while there are a couple OUI's
+> > > > > registered that have a number of FFF's in them, none of those cases seems to
+> > > > > overlap sufficiently to cause this to throw them out. Plus a phy would also
+> > > > > have to have model+revision set to 'F's. So while might be possible, if
+> > > > > unlikely, at the moment I think the OUI registration keeps this from being a
+> > > > > problem. Particularly, if i'm reading the mapping correctly, the OUI mapping
+> > > > > guarantees that the field cannot be all '1's due to the OUI having X & M
+> > > > > bits cleared. It sort of looks like the mapping is trying to lose those
+> > > > > bits, by tossing bit 1 & 2, but the X & M are in the wrong octet (AFAIK, I
+> > > > > just read it three times cause it didn't make any sense).
+> > > > 
+> > > > I should also note that we have at least one supported PHY where one
+> > > > of the MMDs returns 0xfffe for even numbered registers and 0x0000 for
+> > > > odd numbered registers in one of the vendor MMDs for addresses 0
+> > > > through 0xefff - which has a bit set in the devices-in-package.
+> > > > 
+> > > > It also returns 0x0082 for almost every register in MMD 2, but MMD 2's
+> > > > devices-in-package bit is clear in most of the valid MMDs, so we
+> > > > shouldn't touch it.
+> > > > 
+> > > > These reveal the problem of randomly probing MMDs - they can return
+> > > > unexpected values and not be as well behaved as we would like them to
+> > > > be.  Using register 8 to detect presence may be beneficial, but that
+> > > > may also introduce problems as we haven't used that before (and we
+> > > > don't know whether any PHY that wrong.)  I know at least the 88x3310
+> > > > gets it right for all except the vendor MMDs, where the low addresses
+> > > > appear non-confromant to the 802.3 specs.  Both vendor MMDs are
+> > > > definitely implemented, just not with anything conforming to 802.3.
+> > > 
 > > > Yes, we know even for the NXP reference hardware, one of the phy's doesn't
 > > > probe out correctly because it doesn't respond to the ieee defined
 > > > registers. I think at this point, there really isn't anything we can do
@@ -77,68 +174,27 @@ On Mon, May 25, 2020 at 05:17:27PM -0500, Jeremy Linton wrote:
 > > > have IEEE conformant phy's you should be ok". So, for your example phy, I
 > > > guess the immediate answer is "use DT" or "find a conformant phy", or even
 > > > "abstract it in the firmware and use a mailbox interface".
-> > Hi Jeremy
 > > 
-> > You need to be careful here, when you say "use DT". With a c45 PHY
-> > of_mdiobus_register_phy() calls get_phy_device() to see if the device
-> > exists on the bus. So your changes to get_phy_device() etc, needs to
-> > continue to find devices it used to find, even if they are not fully
-> > complient to 802.3.
-> > 
+> > You haven't understood.  The PHY does conform for most of the MMDs,
+> > but there are a number that do not conform.
 > 
-> Yes, that is my "don't break anything". But, in a number of cases I can't
-> tell if something is an intentional "bug", or what exactly the intended side
-> effect actually was. The c22 bit0 sanitation is in this bucket, because its
-> basically disabling the MMD0 probe..
+> Probably...
+> 
+> Except that i'm not sure how that is a problem at the moment, its still
+> going to trigger as a found phy, and walk the same mmd list as before
+> requesting drivers. Those drivers haven't changed their behavior so where is
+> the problem? If there is a problem its in 7/11 where things are getting
+> kicked due to seemingly invalid Ids.
+> 
+> The 1/11 devices=0 case actually appears to be a bug i'm fixing because you
+> won't get an ID or a MMD list from that (before or after).
 
-I'm really not sure it causes any problem what so ever.  Have you read
-the commit adding cortina.c to see what it says - there is an
-interesting comment about what it requires in firmware.  That is, it
-calls for an explicit "ethernet-phy-id" compatible in DT naming the
-PHY ID, but that can't be used for Clause 45 PHYs (it will be ignored.)
-So, it will be treated by the kernel as a Clause 22 PHY.
+I think I've just flattened that argument in my immediately preceding
+reply on the Cortina situation; I think you've grossly misread that
+through not fully researching the history and then finding the
+existing users.
 
-It is presently in use:
-
-arch/powerpc/boot/dts/fsl/t4240rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-arch/powerpc/boot/dts/fsl/t4240rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-arch/powerpc/boot/dts/fsl/t4240rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-arch/powerpc/boot/dts/fsl/t4240rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-arch/powerpc/boot/dts/fsl/t2080rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-arch/powerpc/boot/dts/fsl/t2080rdb.dts: compatible = "ethernet-phy-id13e5.1002";
-
-Now, given this, none of the Clause 45 PHY detection code will be
-touched while probing for these PHYs, so really that work-around to
-read form MMD 0 in the Clause 45 probing function really doesn't seem
-to apply to these PHYs.
-
-Next, when you read cortina.c, it becomes obvious that the PHY's MMD 0
-doesn't even follow IEEE 802.3 - the ID registers are at register 0/1
-not 2/3.  So even if we did try to read the ID from MMD 0, we wouldn't
-be reading the ID from the right registers.
-
-Hence, I don't think anything has been broken at all by the commit
-you refer to.
-
-> I know for sure we find phys that previously weren't found. OTOH, i'm not
-> sure how many that were previously "found" are now getting kicked out by
-> because they are doing something "bad" that looked like a bug.
-
-I don't think you've found any problem what so ever.
-
-For these PHYs to be automatically probed, they need to have a DT
-string identifying them as clause 45 compliant.  From the DTS files
-I've provided above, that isn't the case, this code path won't be
-reached, so nothing has been broken.  In any case, for the
-reasons I mention above wrt non-standard register layout, it seems
-it couldn't have worked via this probing code.
-
-I would dig some more into the history of the change to
-get_phy_c45_ids() and how it relates to the addition of the Cortina
-driver, but unfortunately my machine is being painfully slow with
-git log searching the history that it's way too time consuming for
-me to do anything further now, but the conclusion I'm coming to is
-that there has been no regression how you think there has been.
+There is no bug that you are fixing from what I can see.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
