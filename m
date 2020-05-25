@@ -2,145 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58FCD1E0AAB
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 11:33:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4D01E0AF2
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 11:45:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389561AbgEYJd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 05:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
+        id S2389607AbgEYJpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 05:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389365AbgEYJdY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 05:33:24 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8F1C05BD43
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 02:33:24 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id c3so12206448wru.12
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 02:33:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=e8LU087JhCQmZTPzcRDUvpkp9wx3VT7SLtgrgSxNirE=;
-        b=Avf++p7GjzWXbsom5IIKMsjrIT2NWfxRUCcz0t9E2X+owIr7NhKcDhNjZwLY2Xsai4
-         i2zGx5T94A7jZNeFpHF7QY/2CWDO/3ZBoU6IX3soy51XaYqMBSSnqucZE+KFXygzKDsA
-         feluyyuU7afsDf1A7N0VkWxm9CxktoAwWswDw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e8LU087JhCQmZTPzcRDUvpkp9wx3VT7SLtgrgSxNirE=;
-        b=KBwtJBXuCPovbVSHayhr6IJwjElDv175kYGLsIA+NVwOKtglGp3PWLioFeuqUPf0Dj
-         p62wrelXzQh7l9WhhmRxnUxC4wwAgmsZIZjQHIruBV5E19D9Sg0AhauNGNIxhciMG7oV
-         0JYrCT0jz88psYk4CWo2ODKm19AdDKIQfE3xY20U/Q+wwFOGvKI4i8VWLEpX/SlZsYRG
-         GEGzGYNK+TXr4f07hrqnpdv3NFH8C4dA9sRlcoHt/sg/FRZB9HaeVVeqbsK0vpxTNR+g
-         hRnAYhCsN83TRZVWS07IXmNpDMYdfLz4TaI5osU9Tp1EsWH11YZ1DahNdBzB9zKD0Q0D
-         9OfQ==
-X-Gm-Message-State: AOAM533iPQ4SfCJifTObsguOIDsJ+sj/TNnoy4mvRw+QtjjLDZu0Tzz+
-        mG/TparCVLYZKHrATXZlTec1NA==
-X-Google-Smtp-Source: ABdhPJyhXfTUVDMmF9+pUbBzM3VN1sv2lr3v3pq3bi5JJOeNg/uXQIF0NWiFionp9ryN3K84i24i/g==
-X-Received: by 2002:a5d:56c7:: with SMTP id m7mr14169824wrw.256.1590399201557;
-        Mon, 25 May 2020 02:33:21 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id p3sm12447448wru.95.2020.05.25.02.33.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 May 2020 02:33:20 -0700 (PDT)
-Subject: Re: MRP netlink interface
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, UNGLinuxDriver@microchip.com,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        with ESMTP id S2389333AbgEYJpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 05:45:52 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DB5C061A0E;
+        Mon, 25 May 2020 02:45:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=3bACHP/iXQB5QepDjM2EEIvav5CoPo/q4qnp/hrIGzA=; b=Y9HnJnaI/t+3UiP3Fjrk+7Aam
+        wUXPN9RAY8XMQC64F7dkhR1KWMVsoTts1DdUL+JaE12D/JOgMZgLS8XyNVVbKW7oHK4H67EyzsiK5
+        iDTk2BtJbLNCieC024X7146iSUhFh7m942L422Dk6c9ip+0zcwTe15K4+j+qOMCz8CjKOkawgrqCb
+        AOr0Ey2R9b/gdI4TqpFLIS4dOxbIaHpJK3YOwiATeUsC6PZwx2y8SIwpn5AwzXi+B0sSrlFlyrPUt
+        5PW4IkIfraWeJDlcRu/n7qzHhGPeQuvlNMR/M7v3KdqQV/sFVr7gpxWiCpsW1iO1vC2jbu1pG+43c
+        JGGbrGj6A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36734)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jd9fy-0004sg-GE; Mon, 25 May 2020 10:45:42 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jd9fs-0004GD-Fs; Mon, 25 May 2020 10:45:36 +0100
+Date:   Mon, 25 May 2020 10:45:36 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
         linux-kernel@vger.kernel.org
-References: <20200525112827.t4nf4lamz6g4g2c5@soft-dev3.localdomain>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <2176b58f-35f3-36c1-8ba7-d18649eb29f7@cumulusnetworks.com>
-Date:   Mon, 25 May 2020 12:33:19 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+Subject: Re: [RFC 01/11] net: phy: Don't report success if devices weren't
+ found
+Message-ID: <20200525094536.GK1551@shell.armlinux.org.uk>
+References: <20200522213059.1535892-1-jeremy.linton@arm.com>
+ <20200522213059.1535892-2-jeremy.linton@arm.com>
+ <20200523182054.GW1551@shell.armlinux.org.uk>
+ <e6e08ca4-5a6d-5ea3-0f97-946f1d403568@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200525112827.t4nf4lamz6g4g2c5@soft-dev3.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e6e08ca4-5a6d-5ea3-0f97-946f1d403568@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/05/2020 14:28, Horatiu Vultur wrote:
+On Sun, May 24, 2020 at 09:46:55PM -0500, Jeremy Linton wrote:
 > Hi,
 > 
-> While I was working on adding support for MRA role to MRP, I noticed that I
-> might have some issues with the netlink interface, so it would be great if you
-> can give me an advice on how to continue.
+> Thanks for taking a look at this.
 > 
-> First a node with MRA role can behave as a MRM(Manager) or as a
-> MRC(Client). The behaviour is decided by the priority of each node. So
-> to have this functionality I have to extend the MRP netlink interface
-> and this brings me to my issues.
+> On 5/23/20 1:20 PM, Russell King - ARM Linux admin wrote:
+> > On Fri, May 22, 2020 at 04:30:49PM -0500, Jeremy Linton wrote:
+> > > C45 devices are to return 0 for registers they haven't
+> > > implemented. This means in theory we can terminate the
+> > > device search loop without finding any MMDs. In that
+> > > case we want to immediately return indicating that
+> > > nothing was found rather than continuing to probe
+> > > and falling into the success state at the bottom.
+> > 
+> > This is a little confusing when you read this comment:
+> > 
+> >                          /*  If mostly Fs, there is no device there,
+> >                           *  then let's continue to probe more, as some
+> >                           *  10G PHYs have zero Devices In package,
+> >                           *  e.g. Cortina CS4315/CS4340 PHY.
+> >                           */
+> > 
+> > Since it appears to be talking about the case of a PHY where *devs will
+> > be zero.  However, tracking down the original submission, it seems this
+> > is not the case at all, and the comment is grossly misleading.
+> > 
+> > It seems these PHYs only report a valid data in the Devices In Package
+> > registers for devad=0 - it has nothing to do with a zero Devices In
+> > Package.
 > 
-> My first approach was to extend the 'struct br_mrp_instance' with a field that
-> contains the priority of the node. But this breaks the backwards compatibility,
-> and then every time when I need to change something, I will break the backwards
-> compatibility. Is this a way to go forward?
+> Yes, this ended up being my understanding of this commit, and is part of my
+> justification for starting the devices search at the reserved address 0
+> rather than 1.
 > 
-> Another approach is to restructure MRP netlink interface. What I was thinking to
-> keep the current attributes (IFLA_BRIDGE_MRP_INSTANCE,
-> IFLA_BRIDGE_MRP_PORT_STATE,...) but they will be nested attributes and each of
-> this attribute to contain the fields of the structures they represents.
-> For example:
-> [IFLA_AF_SPEC] = {
->     [IFLA_BRIDGE_FLAGS]
->     [IFLA_BRIDGE_MRP]
->         [IFLA_BRIDGE_MRP_INSTANCE]
->             [IFLA_BRIDGE_MRP_INSTANCE_RING_ID]
->             [IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]
->             [IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]
->         [IFLA_BRIDGE_MRP_RING_ROLE]
->             [IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]
->             [IFLA_BRIDGE_MRP_RING_ROLE_ROLE]
->         ...
-> }
-> And then I can parse each field separately and then fill up the structure
-> (br_mrp_instance, br_mrp_port_role, ...) which will be used forward.
-> Then when this needs to be extended with the priority it would have the
-> following format:
-> [IFLA_AF_SPEC] = {
->     [IFLA_BRIDGE_FLAGS]
->     [IFLA_BRIDGE_MRP]
->         [IFLA_BRIDGE_MRP_INSTANCE]
->             [IFLA_BRIDGE_MRP_INSTANCE_RING_ID]
->             [IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]
->             [IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]
->             [IFLA_BRIDGE_MRP_INSTANCE_PRIO]
->         [IFLA_BRIDGE_MRP_RING_ROLE]
->             [IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]
->             [IFLA_BRIDGE_MRP_RING_ROLE_ROLE]
->         ...
-> }
-> And also the br_mrp_instance will have a field called prio.
-> So now, if the userspace is not updated to have support for setting the prio
-> then the kernel will use a default value. Then if the userspace contains a field
-> that the kernel doesn't know about, then it would just ignore it.
-> So in this way every time when the netlink interface will be extended it would
-> be backwards compatible.
+> > 
+> > Can I suggest that this comment is fixed while we're changing the code
+> > to explicitly reject this "zero Devices In package" so that it's not
+> > confusing?
 > 
-> If it is not possible to break the compatibility then the safest way is to
-> just add more attributes under IFLA_BRIDGE_MRP but this would just complicate
-> the kernel and the userspace and it would make it much harder to be extended in
-> the future.
+> Its probably better to kill it in 5/11 with a mention that we are starting
+> at a reserved address?
 > 
-> My personal choice would be the second approach, even if it breaks the backwards
-> compatibility. Because it is the easier to go forward and there are only 3
-> people who cloned the userspace application
-> (https://github.com/microchip-ung/mrp/graphs/traffic). And two of
-> these unique cloners is me and Allan.
-> 
-> So if you have any advice on how to go forward it would be great.
-> 
+> OTOH, I'm a bit concerned that reading at 0 as the first address will cause
+> problems because the original code was only triggering it after a read
+> returning 0xFFFFFFFF at a valid MMD address. It does simplify/clarify the
+> loop though. If it weren't for this 0 read, I would have tried to avoid some
+> of the additional MMD reserved addresses.
 
-IIRC this is still in net-next only, right? If so - now would be the time to change it.
-Once it goes into a release, we'll be stuck with workarounds. So I'd go for solution 2).
+Yes, that is the worry, and as MMD 0 is marked as reserved, I don't
+think we should routinely probe it.
 
-I haven't cloned it, but I do sync your user-space mrp repo to check against the patches. :)
+As I've already mentioned, note that bit 0 of devices-in-package does
+not mean that there is a MMD 0 implemented, even if bit 0 is set.  Bit
+0 means that the clause 22 register set is available through clause 22
+cycles.  So, simplifying the loop to start at 0 and removing the work-
+around could end up breaking Cortina PHYs if they don't set bit 0 in
+their devices in package - but I don't see why we should depend on bit 0
+being set for their workaround.
 
+So, I think you're going to have to add a work-around to ignore bit 0,
+which brings up the question whether this is worth it or not.
+
+Hence, I think this is a "simplifcation" too far.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
