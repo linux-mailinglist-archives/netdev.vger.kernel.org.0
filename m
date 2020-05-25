@@ -2,115 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7901E08BD
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:24:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B761E08C0
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:25:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731359AbgEYIYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 04:24:49 -0400
-Received: from mta-p7.oit.umn.edu ([134.84.196.207]:38986 "EHLO
-        mta-p7.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725849AbgEYIYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:24:48 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p7.oit.umn.edu (Postfix) with ESMTP id 49Vqrv5CjHz9vYxx
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 08:24:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p7.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id OHvA6QCo7vHx for <netdev@vger.kernel.org>;
-        Mon, 25 May 2020 03:24:47 -0500 (CDT)
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 49Vqrv3G1Vz9vYxv
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:24:47 -0500 (CDT)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p7.oit.umn.edu 49Vqrv3G1Vz9vYxv
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p7.oit.umn.edu 49Vqrv3G1Vz9vYxv
-Received: by mail-io1-f70.google.com with SMTP id b11so264288ioh.22
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 01:24:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=UgPHdCth6FfAh45Sp7ZUoEgt/yFAzGGw7Kx8LIhpmq8=;
-        b=hXS2eopB+hvH691nPeB1Zs2AMGFgmIX2UDsXvN31/HKoTn0XPTA+V61fDS1KpI6EAP
-         fKAC4tW56wRc49zPqmwJOjxCgYCIy5aXHVtsIKjqoUBNRg/uUknqu47ZU04B3FanFDX0
-         VUApByauUqYaafkLS+r10m/lgxPlP0GV/0DcJLMQnKU2hfcQ2wRwCwoiym1+sZ3UN+Za
-         8tlPGzYreXpKNYgPWO3j3OCST7oTFyDc1Jw9hD2CKQjLWYlExq2//jW55N59s33I11xg
-         qRmPCa337Ja13H7oiv/S2E3Ul0DyhQtaV6Pc8rhU4x7h0OK/QUwWpAEtUDcTIf9o+00S
-         PfkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=UgPHdCth6FfAh45Sp7ZUoEgt/yFAzGGw7Kx8LIhpmq8=;
-        b=Sc9X6P9VpvpwFNnvlyJ5miS+0Xg6RdflGsK5IB5bdtAFySKyCrIGsW6HpziRs2oK1i
-         oqBgDJJDjCL3uro0TQws+GwtiJQORpKTJtOeAOfBpQa+VLcqWpu9SKq9XEkrUWIqnspV
-         U6KZhMRDnL+wUaCJ7FuOxTpOGMDIgP3ZMt4/zvOdK/NV+w1W/7pjR7TghuBtNkerpCyW
-         qmXm1z0ZJTMcwMOt4Rf3exv3EqMDmMX+pevrVgNL6uzgssljubX2HBDFlXKEei+qzT/A
-         DgDa3IIo1Hesr9pfK229Hk5U0MK/qzEGrb7KkoHprHwuRHu82O+rE7MM9supo3wOZHRG
-         UeJg==
-X-Gm-Message-State: AOAM532nxdohSK2pKpZ2Pf/wm7747AlmRBQMFy8B3C4U+3gD5UMnsN2Q
-        3XmKscFNcWd8FBXZic9ShdDytSQ1kUuJKOJMP6Ksdu1XGhIhp56vNb17uizXzJF0SZvXdsle9aC
-        Te1QjRwuUn3lG53IgV3k2
-X-Received: by 2002:a92:7f03:: with SMTP id a3mr7363179ild.269.1590395086906;
-        Mon, 25 May 2020 01:24:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLEnS9ErHtnXEYR675VkwcBtM4ELkTqkTi0AF3EzLzdY1KPbwvUJq+fAVZlkTlUM+RbSgA7Q==
-X-Received: by 2002:a92:7f03:: with SMTP id a3mr7363168ild.269.1590395086524;
-        Mon, 25 May 2020 01:24:46 -0700 (PDT)
-Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
-        by smtp.gmail.com with ESMTPSA id b7sm7173816ioq.40.2020.05.25.01.24.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 01:24:45 -0700 (PDT)
-From:   wu000273@umn.edu
-To:     shshaikh@marvell.com
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
-Subject: [PATCH] qlcnic: fix missing release in qlcnic_83xx_interrupt_test.
-Date:   Mon, 25 May 2020 03:24:39 -0500
-Message-Id: <20200525082439.14113-1-wu000273@umn.edu>
-X-Mailer: git-send-email 2.17.1
+        id S2387668AbgEYIZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 04:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728018AbgEYIZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:25:18 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB68C061A0E;
+        Mon, 25 May 2020 01:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Fgl1LUanRCvQTQW6eIED/H7/O1/NZzmuC8878hJnzF0=; b=lVIonNHNM18QiAzU0CCgTAjHy
+        O7vwnc3er81LAMP8FzNmuhSgE9pLd3LF5TtBKYtNS5kL9nccusJYLwQ4llvYgXAfvw/Mxxidtq9U7
+        wNCJsUAv/oQ2qhGLRBvTvwObkqoaJH2WRZFtDVIS8ukXQdE3GwW/YZ6BFaTxC0MvRNpX8frJCvZBy
+        8Zr2U3+W4lK4bsZ9fgLaSw3X7Yx2QCpteoZFYjFRNIb1rxEHgaNKFdPJzyWUbC+3fS/oIkZCPWrro
+        7c9TxUw4rOUse4tMrGsa00tQL9x3dr/bK5GPq9ftDIgNXmEkUJ+zHZP0tYKJjrQ/6t5Qa6EM4BP55
+        jEl3hAvtQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:34256)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jd8Q4-0004he-0l; Mon, 25 May 2020 09:25:12 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jd8Q2-0004CV-Ox; Mon, 25 May 2020 09:25:10 +0100
+Date:   Mon, 25 May 2020 09:25:10 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 08/11] net: phy: Allow mdio buses to auto-probe c45 devices
+Message-ID: <20200525082510.GH1551@shell.armlinux.org.uk>
+References: <20200522213059.1535892-1-jeremy.linton@arm.com>
+ <20200522213059.1535892-9-jeremy.linton@arm.com>
+ <20200524144449.GP610998@lunn.ch>
+ <ec63b0d4-2abc-0d32-69c0-ed1a822162cf@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ec63b0d4-2abc-0d32-69c0-ed1a822162cf@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+On Sun, May 24, 2020 at 11:28:52PM -0500, Jeremy Linton wrote:
+> Hi,
+> 
+> On 5/24/20 9:44 AM, Andrew Lunn wrote:
+> > > +++ b/include/linux/phy.h
+> > > @@ -275,6 +275,11 @@ struct mii_bus {
+> > >   	int reset_delay_us;
+> > >   	/* RESET GPIO descriptor pointer */
+> > >   	struct gpio_desc *reset_gpiod;
+> > > +	/* bus capabilities, used for probing */
+> > > +	enum {
+> > > +		MDIOBUS_C22_ONLY = 0,
+> > > +		MDIOBUS_C45_FIRST,
+> > > +	} probe_capabilities;
+> > >   };
+> > 
+> > 
+> > I'm not so keen on _FIRST. It suggest _LAST would also be valid.  But
+> > that then suggests this is not a bus property, but a PHY property, and
+> > some PHYs might need _FIRST and other phys need _LAST, and then you
+> > have a bus which has both sorts of PHY on it, and you have a problem.
+> > 
+> > So i think it would be better to have
+> > 
+> > 	enum {
+> > 		MDIOBUS_UNKNOWN = 0,
+> > 		MDIOBUS_C22,
+> > 		MDIOBUS_C45,
+> > 		MDIOBUS_C45_C22,
+> > 	} bus_capabilities;
+> > 
+> > Describe just what the bus master can support.
+> 
+> Yes, the naming is reasonable and I will update it in the next patch. I went
+> around a bit myself with this naming early on, and the problem I saw was
+> that a C45 capable master, can have C45 electrical phy's that only respond
+> to c22 requests (AFAIK).
 
-In function qlcnic_83xx_interrupt_test(), function
-qlcnic_83xx_diag_alloc_res() is not handled by function
-qlcnic_83xx_diag_free_res() after a call of the function
-qlcnic_alloc_mbx_args() failed. Fix this issue by adding
-a jump target "fail_mbx_args", and jump to this new target
-when qlcnic_alloc_mbx_args() failed.
+If you have a master that can only generate clause 45 cycles, and
+someone is daft enough to connect a clause 22 only PHY to it, the
+result is hardware that doesn't work - there's no getting around
+that.  The MDIO interface can't generate the appropriate cycles to
+access the clause 22 PHY.  So, this is not something we need care
+about.
 
-Fixes: b6b4316c8b2f ("qlcnic: Handle qlcnic_alloc_mbx_args() failure")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> So the MDIOBUS_C45 (I think I was calling it
+> C45_ONLY) is an invalid selection. Not, that it wouldn't be helpful to have
+> a C45_ONLY case, but that the assumption is that you wouldn't try and probe
+> c22 registers, which I thought was a mistake.
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-index 2a533280b124..29b9c728a65e 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-@@ -3651,7 +3651,7 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
- 	ahw->diag_cnt = 0;
- 	ret = qlcnic_alloc_mbx_args(&cmd, adapter, QLCNIC_CMD_INTRPT_TEST);
- 	if (ret)
--		goto fail_diag_irq;
-+		goto fail_mbx_args;
- 
- 	if (adapter->flags & QLCNIC_MSIX_ENABLED)
- 		intrpt_id = ahw->intr_tbl[0].id;
-@@ -3681,6 +3681,8 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
- 
- done:
- 	qlcnic_free_mbx_args(&cmd);
-+
-+fail_mbx_args:
- 	qlcnic_83xx_diag_free_res(netdev, drv_sds_rings);
- 
- fail_diag_irq:
+MDIOBUS_C45 means "I can generate clause 45 cycles".
+MDIOBUS_C22 means "I can generate clause 22 cycles".
+MDIOBUS_C45_C22 means "I can generate both clause 45 and clause 22
+cycles."
+
+Notice carefully the values these end up with - MDIOBUS_C22 = BIT(0),
+MDIOBUS_C45 = BIT(1), MDIOBUS_C45_C22 = BIT(0) | BIT(1).  I suspect
+that was no coincidence in Andrew's suggestion.
+
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
