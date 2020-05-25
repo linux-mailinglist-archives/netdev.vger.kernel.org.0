@@ -2,82 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA3B11E11C7
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 17:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4BD91E11DC
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 17:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404083AbgEYPcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 11:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404002AbgEYPcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 11:32:02 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CC9C061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 08:32:02 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id q16so17540330ybg.18
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 08:32:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=1aPJAz4aiRZJLGo9Zppdv6l/2UMHYuCErqh9nEDAlVw=;
-        b=YyhrYJdxW7Th9HHCMfEcljW9TMcq6yqlKP+g09M04H46XosgqxYKIuqivVkfRagJGi
-         4HTa7IJEqMafGxMXU3Q8BuJ1IhHwNQWzWXkQ2iuDaRO8GUQaddO29sVikEIflBpLPrpm
-         8TFsfR9ugSx6M5yULIhqDrhkDrTTrYvx7ImnKAAf8qsyYAnw+mNMpt4KHO976WzlVF2b
-         pAXf4hJESkFxemlW/aqX1fdCYU5gr06w4Np2N9F3Y3l2yuQo//qtxTZZ79w4GOeszwHk
-         Mt2rUdbpQcGYj89Af9cnHInj8RHz2Bx/HS4SJv4H37vQZWE+OVxeCz6XtAktkzty70jk
-         d5lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=1aPJAz4aiRZJLGo9Zppdv6l/2UMHYuCErqh9nEDAlVw=;
-        b=khjokN/Ns7bS4T3AzkdqymYRXpa/K5qHKFHXHVEbOt7V/drhmy1e3sqvFmnuJHslmo
-         6Z00iBixp1kwbfVjaM1lXIHowNDhqD6E76RupWird6a7UGtekQ7BQUw+dAK24k9jJdpn
-         IjyGlJNkLzTAXqtFA4kgTw6jvtleGjPO4QwOpVS0mp4fND+VPntwWqKIBNV12cZnQRoY
-         zgwyBC8WLE2WpOCZ2h2IFNnFTs7V9o1vx4I4ZF1qZr5XHgH5u1/HDjoOtByobqgl9xsh
-         D0oUAPv1QlCflXfkeUNFdA608bSLjauyo0lg9Q7IyDBUhKYCtAJ+AmCLVNbB1/E+/ClL
-         deWA==
-X-Gm-Message-State: AOAM5309cC0up5vTOCNptZ/d1ia7oAw5zzk+4h6ysTuJXp5SUBaRcR72
-        6c1agDek10NVaILIYAFLLOn8z73e1Wme
-X-Google-Smtp-Source: ABdhPJya/2GUziXPBk3NUocIvSMoZVWhlGIJuvfXIr49RmOkgaE3thIWHR39GaNnOmRGCJdlKCJr2u4JSiWD
-X-Received: by 2002:a5b:5c6:: with SMTP id w6mr44787174ybp.339.1590420721796;
- Mon, 25 May 2020 08:32:01 -0700 (PDT)
-Date:   Mon, 25 May 2020 17:31:58 +0200
-Message-Id: <20200525153158.247394-1-dvyukov@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
-Subject: [PATCH] net/smc: mark smc_pnet_policy as const
-From:   Dmitry Vyukov <dvyukov@google.com>
-To:     ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2404122AbgEYPgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 11:36:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48270 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403996AbgEYPgg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 11:36:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=nznL7t5RcKnQc14myjY4CZ1m22+A09eYxFEmxrWGKu4=; b=EozbGen20Gp0WM7zypoI1JpvwM
+        pW04+KCo9xvQR7avNNffqoUNlbLfdkwXtTALgIK+ZzEb2TBrF/SiKdmKTAXwWl6QkDSAviRO1rBD6
+        D2MdPO+oefgmBk3Tmopz3Iroxi0DjHslZhoQ2v1GiFr8T06m581T/TEczycQOS4/RPIY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jdF9S-003CRy-AC; Mon, 25 May 2020 17:36:30 +0200
+Date:   Mon, 25 May 2020 17:36:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] dpaa_eth: fix usage as DSA master, try 3
+Message-ID: <20200525153630.GC762220@lunn.ch>
+References: <20200524212251.3311546-1-olteanv@gmail.com>
+ <AM6PR04MB39762C1D25DF9A1788C39DC5ECB30@AM6PR04MB3976.eurprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR04MB39762C1D25DF9A1788C39DC5ECB30@AM6PR04MB3976.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netlink policies are generally declared as const.
-This is safer and prevents potential bugs.
+On Mon, May 25, 2020 at 03:20:09PM +0000, Madalin Bucur (OSS) wrote:
+> > -----Original Message-----
+> > From: Vladimir Oltean <olteanv@gmail.com>
+> > Sent: Monday, May 25, 2020 12:23 AM
+> > To: davem@davemloft.net
+> > Cc: andrew@lunn.ch; f.fainelli@gmail.com; vivien.didelot@gmail.com;
+> > Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; netdev@vger.kernel.org
+> > Subject: [PATCH] dpaa_eth: fix usage as DSA master, try 3
+> > 
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > The dpaa-eth driver probes on compatible string for the MAC node, and
+> > the fman/mac.c driver allocates a dpaa-ethernet platform device that
+> > triggers the probing of the dpaa-eth net device driver.
+> > 
+> > All of this is fine, but the problem is that the struct device of the
+> > dpaa_eth net_device is 2 parents away from the MAC which can be
+> > referenced via of_node. So of_find_net_device_by_node can't find it, and
+> > DSA switches won't be able to probe on top of FMan ports.
+> > 
+> > It would be a bit silly to modify a core function
+> > (of_find_net_device_by_node) to look for dev->parent->parent->of_node
+> > just for one driver. We're just 1 step away from implementing full
+> > recursion.
+> 
+> Changing a netdevice parent to satisfy this DSA assumption can be regarded as
+> being just as silly. How about changing the DSA assumption, not the generic
+> of_find_net_device_by_node API?
+> 
+> ACPI support is in the making for these platforms, is DSA going to work
+> with that?
 
-Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
----
- net/smc/smc_pnet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Madalin
 
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 2a5ed47c3e08..45d5ea570293 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -32,7 +32,7 @@
- 
- static struct net_device *pnet_find_base_ndev(struct net_device *ndev);
- 
--static struct nla_policy smc_pnet_policy[SMC_PNETID_MAX + 1] = {
-+static const struct nla_policy smc_pnet_policy[SMC_PNETID_MAX + 1] = {
- 	[SMC_PNETID_NAME] = {
- 		.type = NLA_NUL_STRING,
- 		.len = SMC_MAX_PNETID_LEN
--- 
-2.27.0.rc0.183.gde8f92d652-goog
+If you listen to what the ACPI people say, ACPI is never going to work
+with DSA. ACPI is too primitive, you need to use an advanced
+configuration system like DT.
 
+      Andrew
