@@ -2,147 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 788431E0B0D
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 11:53:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A85111E084A
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 09:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389667AbgEYJxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 05:53:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389333AbgEYJxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 05:53:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C99CC061A0E;
-        Mon, 25 May 2020 02:53:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TfDqog4RDttAQOCpkvIYADSKVsDf0mydvOJDMp1M4Qc=; b=ui7FSLtgjIFF1LG04NxMsXkOc
-        l8PXGeawfxrkE7xutfpP5BladqbWR0in9BTtePtImF+NfsRBKFnslnLgob2menAFTMI487ctkIiuE
-        WNSqznIfDq9Lp147Pd0TmEy3zQaBSVotKTjzCpD6jNtoC5ZAEfBpYGMlWXSk8TRfu2thsocQOJYQR
-        8K72hoGgT7JUgavXog9/7pK9Mm2VRGvIABqXqDUE5xNGvWg3Fs/gqFmYhPV7gJYRViR4O8Z0MK4l7
-        AWzmajdhgcNkJJsAO3hSo3choUiN0AkHJtqWKKr+xtqNTvbnJCwv4tDzwVwVCM+w0fucwUgaQNlBk
-        9P7/Hkp5w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36736)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jd9ni-0004tX-OV; Mon, 25 May 2020 10:53:42 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jd9nh-0004GM-BG; Mon, 25 May 2020 10:53:41 +0100
-Date:   Mon, 25 May 2020 10:53:41 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 04/11] net: phy: Handle c22 regs presence better
-Message-ID: <20200525095341.GL1551@shell.armlinux.org.uk>
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-5-jeremy.linton@arm.com>
- <20200523183731.GZ1551@shell.armlinux.org.uk>
- <f85e4d86-ff58-0ed2-785b-c51626916140@arm.com>
+        id S1726575AbgEYH4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 03:56:23 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:44907 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgEYH4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 03:56:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590393381; x=1621929381;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gka3xhQHdVujI+DvQjAJqTOsOu9U8CaV+bHB/w8dE/o=;
+  b=YyIwB8za8r2vJdfhDQU+5CVvtDoAlCxV2w513h3UyP0FCQ4sDaFKI4EU
+   HyEJL7a+otopljhrXC3rp9D20UNtt48Ls26mB+hBvjk2mNlE6U2EgM16W
+   h+p5OgAvFGYTwJ+uuGuOUBPfP3yD9jXn2iY3LKmasUzlOYFBYINMOyHCE
+   2vtk2VGlU+2gRQqnQwuNNTJxKFcPYzSBrv9DNhsDJexeJGb4YkgQ/ntlT
+   /KjNxduk89yYEGpQZpuWW3+uRYA5k3uxiD7rbaCVpsRRTsXDjIOvaGIzW
+   0eTaQtUhyvIBut6jS9RG4njEx0VOgs6z2Y1NAByrCxODO3oGjHbaFU51X
+   Q==;
+IronPort-SDR: Ku69RMxDc/Tw6URFoi4cr3b7iyBayER/a+CE1TVr4cboF+zCp4QXr0yIO0Pp2n7W9zFu10SaTX
+ VgWUNjMsFn5BPEnc7TiTexBUrXT76fvPrFq3lL7fds7XUsH3t+jaNq2vCtUa56eqflh7LogrE+
+ n7Kb9WRgi6JvSP1EyZA3OI5d1DogIajNEVhIchGkaJJXYdxtQn9SF7zT0O4hmE7vYwHfjSjnTN
+ Z/djyDiR90H/vR7J3EGgBpG3mgTx4aLk+TPb7NqXHyknlvpvJU40ColsgtH7HLxEJemQbS/Bdu
+ oNg=
+X-IronPort-AV: E=Sophos;i="5.73,432,1583218800"; 
+   d="scan'208";a="13408235"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2020 00:56:20 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 25 May 2020 00:56:22 -0700
+Received: from soft-dev3.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Mon, 25 May 2020 00:56:13 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        <syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com>
+Subject: [PATCH] bridge: mrp: Fix out-of-bounds read in br_mrp_parse
+Date:   Mon, 25 May 2020 09:55:41 +0000
+Message-ID: <20200525095541.46673-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f85e4d86-ff58-0ed2-785b-c51626916140@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 24, 2020 at 10:34:13PM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 5/23/20 1:37 PM, Russell King - ARM Linux admin wrote:
-> > On Fri, May 22, 2020 at 04:30:52PM -0500, Jeremy Linton wrote:
-> > > Until this point, we have been sanitizing the c22
-> > > regs presence bit out of all the MMD device lists.
-> > > This is incorrect as it causes the 0xFFFFFFFF checks
-> > > to incorrectly fail. Further, it turns out that we
-> > > want to utilize this flag to make a determination that
-> > > there is actually a phy at this location and we should
-> > > be accessing it using c22.
-> > > 
-> > > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> > > ---
-> > >   drivers/net/phy/phy_device.c | 16 +++++++++++++---
-> > >   1 file changed, 13 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > > index f0761fa5e40b..2d677490ecab 100644
-> > > --- a/drivers/net/phy/phy_device.c
-> > > +++ b/drivers/net/phy/phy_device.c
-> > > @@ -689,9 +689,6 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
-> > >   		return -EIO;
-> > >   	*devices_in_package |= phy_reg;
-> > > -	/* Bit 0 doesn't represent a device, it indicates c22 regs presence */
-> > > -	*devices_in_package &= ~BIT(0);
-> > > -
-> > >   	return 0;
-> > >   }
-> > > @@ -742,6 +739,8 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
-> > >   	int i;
-> > >   	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
-> > >   	u32 *devs = &c45_ids->devices_in_package;
-> > > +	bool c22_present = false;
-> > > +	bool valid_id = false;
-> > >   	/* Find first non-zero Devices In package. Device zero is reserved
-> > >   	 * for 802.3 c45 complied PHYs, so don't probe it at first.
-> > > @@ -770,6 +769,10 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
-> > >   		return 0;
-> > >   	}
-> > > +	/* Bit 0 doesn't represent a device, it indicates c22 regs presence */
-> > > +	c22_present = *devs & BIT(0);
-> > > +	*devs &= ~BIT(0);
-> > > +
-> > >   	/* Now probe Device Identifiers for each device present. */
-> > >   	for (i = 1; i < num_ids; i++) {
-> > >   		if (!(c45_ids->devices_in_package & (1 << i)))
-> > > @@ -778,6 +781,13 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
-> > >   		ret = _get_phy_id(bus, addr, i, &c45_ids->device_ids[i], true);
-> > >   		if (ret < 0)
-> > >   			return ret;
-> > > +		if (valid_phy_id(c45_ids->device_ids[i]))
-> > > +			valid_id = true;
-> > 
-> > Here you are using your "devices in package" validator to validate the
-> > PHY ID value.  One of the things it does is mask this value with
-> > 0x1fffffff.  That means you lose some of the vendor OUI.  To me, this
-> > looks completely wrong.
-> 
-> I think in this case I was just using it like the comment in
-> get_phy_device() "if the phy_id is mostly F's, there is no device here".
+The issue was reported by syzbot. When the function br_mrp_parse was
+called with a valid net_bridge_port, the net_bridge was an invalid
+pointer. Therefore the check br->stp_enabled could pass/fail
+depending where it was pointing in memory.
+The fix consists of setting the net_bridge pointer if the port is a
+valid pointer.
 
-Yes, that is certainly an interesting comment.  What's so magic about
-this 0x1fffffff?  If it's about the time taken for the bus to rise
-to logic 1 when not being actively driven by a PHY, then it actually
-makes little sense, because we perform two transations to read each half
-of the field, and both should have the same behaviour.  If this was the
-issue, we should be masking and testing against 0x1fff1fff rather than
-0x1fffffff.
+Reported-by: syzbot+9c6f0f1f8e32223df9a4@syzkaller.appspotmail.com
+Fixes: 6536993371fa ("bridge: mrp: Integrate MRP into the bridge")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ net/bridge/br_mrp_netlink.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> I just checked the OUI registration, and while there are a couple OUI's
-> registered that have a number of FFF's in them, none of those cases seems to
-> overlap sufficiently to cause this to throw them out. Plus a phy would also
-> have to have model+revision set to 'F's. So while might be possible, if
-> unlikely, at the moment I think the OUI registration keeps this from being a
-> problem. Particularly, if i'm reading the mapping correctly, the OUI mapping
-> guarantees that the field cannot be all '1's due to the OUI having X & M
-> bits cleared. It sort of looks like the mapping is trying to lose those
-> bits, by tossing bit 1 & 2, but the X & M are in the wrong octet (AFAIK, I
-> just read it three times cause it didn't make any sense).
-
-The most-bits-set OUI that is currently allocated is 5C-FF-FF.  This
-would result in a register value of 0x73fffc00 to 0x73ffffff, so as
-you say, it should be safe.
-
+diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
+index 397e7f710772a..4a08a99519b04 100644
+--- a/net/bridge/br_mrp_netlink.c
++++ b/net/bridge/br_mrp_netlink.c
+@@ -27,6 +27,12 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+ 	struct nlattr *tb[IFLA_BRIDGE_MRP_MAX + 1];
+ 	int err;
+ 
++	/* When this function is called for a port then the br pointer is
++	 * invalid, therefor set the br to point correctly
++	 */
++	if (p)
++		br = p->br;
++
+ 	if (br->stp_enabled != BR_NO_STP) {
+ 		NL_SET_ERR_MSG_MOD(extack, "MRP can't be enabled if STP is already enabled");
+ 		return -EINVAL;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+2.26.2
+
