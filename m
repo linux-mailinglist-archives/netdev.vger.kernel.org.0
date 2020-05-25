@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098B11E04BD
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 04:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BAE21E04BE
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 04:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388691AbgEYCcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 May 2020 22:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S2388707AbgEYCdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 May 2020 22:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388110AbgEYCcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 22:32:46 -0400
+        with ESMTP id S2388699AbgEYCdS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 May 2020 22:33:18 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A979C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 19:32:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90959C061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 19:33:18 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6A7CC1280D091;
-        Sun, 24 May 2020 19:32:43 -0700 (PDT)
-Date:   Sun, 24 May 2020 19:32:40 -0700 (PDT)
-Message-Id: <20200524.193240.1449992359091713647.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: Various trap changes - part 1
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 508E91280D09D;
+        Sun, 24 May 2020 19:33:18 -0700 (PDT)
+Date:   Sun, 24 May 2020 19:33:17 -0700 (PDT)
+Message-Id: <20200524.193317.884228561320046464.davem@davemloft.net>
+To:     W_Armin@gmx.de
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2] Fix various coding-style issues and improve
+ printk() usage
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200524215107.1315526-1-idosch@idosch.org>
-References: <20200524215107.1315526-1-idosch@idosch.org>
+In-Reply-To: <20200524.181512.1222378110120420383.davem@davemloft.net>
+References: <20200524222732.GA18675@mx-linux-amd>
+        <20200524.181512.1222378110120420383.davem@davemloft.net>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 24 May 2020 19:32:43 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 24 May 2020 19:33:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Mon, 25 May 2020 00:50:56 +0300
+From: David Miller <davem@davemloft.net>
+Date: Sun, 24 May 2020 18:15:12 -0700 (PDT)
 
-> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> This patch set contains various changes in mlxsw trap configuration.
-> Another set will perform similar changes before exposing control traps
-> (e.g., IGMP query, ARP request) via devlink-trap.
+> Please repost this with a proper subsystem/driver prefix in your Subject line
+> and the appropriate target GIT tree inside the [] brackets.
 > 
-> Tested with existing devlink-trap selftests. Please see individual
-> patches for a detailed changelog.
+> F.e. Subject: [PATCH v3 net] ne2k-pci: Fix various coding-style ...
 
-Series applied, thank you.
+Actually in this case "net-next" instead of "net" would be appropriate.
