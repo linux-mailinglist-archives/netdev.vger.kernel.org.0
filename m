@@ -2,76 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2101E1580
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA511E158C
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729911AbgEYVIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 17:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
+        id S1730454AbgEYVSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 17:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729550AbgEYVII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 17:08:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C06C061A0E;
-        Mon, 25 May 2020 14:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=CM3xbvfT6889wPKnUUjils4zHkgMqAlAinbEADPEzjg=; b=d4fo5X/icyYj5Xn8uC1O6UBcs
-        /c2uultrJSj6riGRJtx5DqN7YU3CLvhEDk+7l6i2sBln/Uqj9h8nV0uMToJK6fC/wKkPzf3bE1Y9n
-        vC5FWqWJZ5CLELKEg2d3qd7dQRhxYlY6MK1YpXNkz3VTH6dst/yMtQk1POklsUVRTs/un0hYAv1yf
-        W18mphu+Hgm9ivVgCqHVC5gpasHesJoqR77lR4PZ1+04lw+phtuAuf9uCVKRka1bm1tUE6LiTtw1F
-        t2No96ghT8LJ2dryRg/SITKaACHnkvS5rjg+oI02tHy0SqM2PdIkOcjgrBae07BgXDztD+Lo3v0i4
-        bMeYXTsxg==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44992)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jdKKD-00062L-7c; Mon, 25 May 2020 22:07:57 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jdKK7-0004fb-G0; Mon, 25 May 2020 22:07:51 +0100
-Date:   Mon, 25 May 2020 22:07:51 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 01/11] net: phy: Don't report success if devices weren't
- found
-Message-ID: <20200525210751.GN1551@shell.armlinux.org.uk>
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-2-jeremy.linton@arm.com>
- <20200523182054.GW1551@shell.armlinux.org.uk>
- <e6e08ca4-5a6d-5ea3-0f97-946f1d403568@arm.com>
- <20200525094536.GK1551@shell.armlinux.org.uk>
- <be729566-5c63-a711-9a99-acc53d871b88@arm.com>
+        with ESMTP id S1725809AbgEYVSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 17:18:51 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CCDC061A0E;
+        Mon, 25 May 2020 14:18:51 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id e16so8771218qtg.0;
+        Mon, 25 May 2020 14:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EEE9i9EJ57T3cOvJ5DFmf8mRafwm/Mp/1X37ijaEc9E=;
+        b=tDij+31TJbOz1MCFnYtZNFSHf7t48PkGiXoLqCMk26I+KUt3tw1ID5KVZqa0syeuQ2
+         FjCV3xfUFgdntQodSdy5U57ANMVPdc7nTTBNSt9ZWJc6kWXznzN9g6JorCM5r+g0VJPK
+         XhfiGnHDDPc8nmJQT/DFdZ3v+FDoMOLeA0pZTBCQm8gnYZzUfDYOJTWRtGrEblXLj7rt
+         bOLKB0R0Ke1xtjSQFzESN007F9hz8XiSNJeHcyGmbp2akWB6efgdIjp62urPSIG14NJf
+         nWtZlTmPIJBM4CcT1LLKRy8zmAMrSRI7kERfykh4/lkT+i4RAeUCzxZQ9PWi1oh+LP3g
+         4q2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EEE9i9EJ57T3cOvJ5DFmf8mRafwm/Mp/1X37ijaEc9E=;
+        b=QjA9LGUDQyebU35R4wEjxhKys3SeUiPSLAOPuZ2/g/N/c0ZLTVlWkLkpUxtz+dRH68
+         GdXF0YndYpMPJ9nrjyrnWj2Yu/C1QlzaXDqDovK96NZQfpe3KaKPoVaovScXp1+0BBLB
+         JKYOB7Yd9Ntr2EswoQH8Tfi34AeuplIWoFCCSz2l1PdDP9u6rHio3mWKsA3N/VPX9TWT
+         lvkv4pxvfRXSdqfLv/3YR23e/LUJq3VMDiuuz+T3ZwjeJ3l7M9ZyGLieh/Sr86gJr+gG
+         W5L3+tm2bZEmDj7UKEaiGY//50CnWQ1Q+yPCL5V3qDFJvtzITqsf5Z6bOj2zABJh5V+g
+         A31g==
+X-Gm-Message-State: AOAM530TgCl0JfkAFRhb79t/Xrgtwbkop1U4UI2AikYs411NPtMC520N
+        MeBhx7ENsSNXLALYTPfxAt8=
+X-Google-Smtp-Source: ABdhPJztTPnoAsqP2u5+PFMzv8mlHNLOpYASXIgJlPJl0Z2APR0OCLBeFffNr5CoPQgMl117TmvSCw==
+X-Received: by 2002:ac8:1303:: with SMTP id e3mr25556511qtj.25.1590441530208;
+        Mon, 25 May 2020 14:18:50 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.225])
+        by smtp.gmail.com with ESMTPSA id y28sm17041451qtc.62.2020.05.25.14.18.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 May 2020 14:18:49 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 197F9C1B76; Mon, 25 May 2020 18:18:47 -0300 (-03)
+Date:   Mon, 25 May 2020 18:18:47 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     'Christoph Hellwig' <hch@lst.de>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: do a single memdup_user in sctp_setsockopt
+Message-ID: <20200525211847.GD2491@localhost.localdomain>
+References: <20200521174724.2635475-1-hch@lst.de>
+ <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
+ <20200522143623.GA386664@localhost.localdomain>
+ <20200523071929.GA10466@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <be729566-5c63-a711-9a99-acc53d871b88@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200523071929.GA10466@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 04:02:13PM -0500, Jeremy Linton wrote:
-> > So, I think you're going to have to add a work-around to ignore bit 0,
-> > which brings up the question whether this is worth it or not.
+On Sat, May 23, 2020 at 09:19:29AM +0200, 'Christoph Hellwig' wrote:
+> On Fri, May 22, 2020 at 11:36:23AM -0300, Marcelo Ricardo Leitner wrote:
+...
+> > What if you two work on a joint patchset for this? The proposals are
+> > quite close. The differences around the setsockopt handling are
+> > minimal already. It is basically variable naming, indentation and one
+> > or another small change like:
 > 
-> It does ignore bit 0, it gets turned into the C22 regs flag, and
-> cleared/ignored in the remainder of the code (do to MMD loop indexes
-> starting at 1).
+> I don't really want to waste too much time on this, as what I really
+> need is to get the kernel_setsockopt removal series in ASAP.  I'm happy
+> to respin this once or twice with clear maintainer guidance (like the
+> memzero_explicit), but I have no idea what you even meant with your
+> other example or naming.  Tell me what exact changes you want, and
+> I can do a quick spin, but I don't really want a huge open ended
+> discussion on how to paint the bikeshed..
 
-However, I've already pointed out that that isn't the case in a
-number of functions that I listed in another email, and I suspect
-was glossed over.
+What I meant is that the 2 proposals were very close already, with
+only minimal differences. As David had posted his set first and you
+didn't add a RFC tag nor stated that you were just sharing the
+patches, I understood it was an alternative approach to David's, which
+is not optimal here. This topic is far from being that polemic, that
+could benefit from having 2 competing approaches. So first I wanted a
+joint approach, and then build on it.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+For now lets see how David's new patchset will look like. It was
+almost there already.
+
+> 
+> Alternatively I'll also happily only do a partial conversion for what
+> I need for the kernel_setsockopt removal and let you and Dave decided
+> what you guys prefer for the rest.
