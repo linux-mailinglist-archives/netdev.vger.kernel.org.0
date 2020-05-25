@@ -2,106 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA511E158C
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:18:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A73A01E171A
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730454AbgEYVSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 17:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
+        id S1730721AbgEYV0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 17:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgEYVSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 17:18:51 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CCDC061A0E;
-        Mon, 25 May 2020 14:18:51 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id e16so8771218qtg.0;
-        Mon, 25 May 2020 14:18:51 -0700 (PDT)
+        with ESMTP id S1729414AbgEYV0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 17:26:01 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB93C061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 14:26:00 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id z5so21754838ejb.3
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 14:26:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EEE9i9EJ57T3cOvJ5DFmf8mRafwm/Mp/1X37ijaEc9E=;
-        b=tDij+31TJbOz1MCFnYtZNFSHf7t48PkGiXoLqCMk26I+KUt3tw1ID5KVZqa0syeuQ2
-         FjCV3xfUFgdntQodSdy5U57ANMVPdc7nTTBNSt9ZWJc6kWXznzN9g6JorCM5r+g0VJPK
-         XhfiGnHDDPc8nmJQT/DFdZ3v+FDoMOLeA0pZTBCQm8gnYZzUfDYOJTWRtGrEblXLj7rt
-         bOLKB0R0Ke1xtjSQFzESN007F9hz8XiSNJeHcyGmbp2akWB6efgdIjp62urPSIG14NJf
-         nWtZlTmPIJBM4CcT1LLKRy8zmAMrSRI7kERfykh4/lkT+i4RAeUCzxZQ9PWi1oh+LP3g
-         4q2w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+5aGUCpfOQgqdswpS8J9Z0Dh+ojiHGHxzaRBOBqahy8=;
+        b=TfL7yJvkEkC0QZxKEjex7cSsGAqmJt8zxcrPtq299kWH9e5Q6bTgKE+LvqX13KwSsh
+         ezjqxcTL3vGVOk0+4BdEqBhIk92PF0sN0RPGBz8gNjVSX5+bKwN1Kz2NMOOQyQreKGaX
+         dHiB8kmn5O3H40D9BmXLcLRtDrcHzRobJJOY/XhaMFItSngYD/ZR3vTA6I1KmLxhkIvU
+         Y7wC0wZ/iGOuLW/zU/VKqa5TpR5JK538Li4dKq4uc5Alaj09I9qoMItXmBw9Kv+B3Gcq
+         LbgkNPSEtRY+QLQcTlnC/jlduUbhZUvUia63tspHuFU7JXWfR1zzOD4GVtAqSrA3b60m
+         5oBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EEE9i9EJ57T3cOvJ5DFmf8mRafwm/Mp/1X37ijaEc9E=;
-        b=QjA9LGUDQyebU35R4wEjxhKys3SeUiPSLAOPuZ2/g/N/c0ZLTVlWkLkpUxtz+dRH68
-         GdXF0YndYpMPJ9nrjyrnWj2Yu/C1QlzaXDqDovK96NZQfpe3KaKPoVaovScXp1+0BBLB
-         JKYOB7Yd9Ntr2EswoQH8Tfi34AeuplIWoFCCSz2l1PdDP9u6rHio3mWKsA3N/VPX9TWT
-         lvkv4pxvfRXSdqfLv/3YR23e/LUJq3VMDiuuz+T3ZwjeJ3l7M9ZyGLieh/Sr86gJr+gG
-         W5L3+tm2bZEmDj7UKEaiGY//50CnWQ1Q+yPCL5V3qDFJvtzITqsf5Z6bOj2zABJh5V+g
-         A31g==
-X-Gm-Message-State: AOAM530TgCl0JfkAFRhb79t/Xrgtwbkop1U4UI2AikYs411NPtMC520N
-        MeBhx7ENsSNXLALYTPfxAt8=
-X-Google-Smtp-Source: ABdhPJztTPnoAsqP2u5+PFMzv8mlHNLOpYASXIgJlPJl0Z2APR0OCLBeFffNr5CoPQgMl117TmvSCw==
-X-Received: by 2002:ac8:1303:: with SMTP id e3mr25556511qtj.25.1590441530208;
-        Mon, 25 May 2020 14:18:50 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.48.225])
-        by smtp.gmail.com with ESMTPSA id y28sm17041451qtc.62.2020.05.25.14.18.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+5aGUCpfOQgqdswpS8J9Z0Dh+ojiHGHxzaRBOBqahy8=;
+        b=iZYYW4bAfhTWogHxmi/5zSoYjwyR511ZSg/bhk1paC7UrOjHOaSoFv/Hjkr4g7Q/ek
+         lsPqTwjeAFvlIwEZHjwVeq9PBMmzdmrgU/VYlJ7kq0HxAVeG2bgSKIkSI6j0UIOK0CS+
+         dMqUui66yKkXl3dr4EpmVufz+nZ4PLzrN8lmNNTy6avaxYzRqcdweaXPLICkaXT4Wv9w
+         Nny2NZevkdmHN5wZzKdrVG3v2zq25GjS/TLES+Ue0QnhlKMN4a0rdXuRym+CeuYBnmbI
+         xg3tT/EeqhzU1gP8CZ4nzGXDFIrm6eRMQK5zg96QHW1iHLucETYTbrKkKgJRwtUEJCQ6
+         PpGg==
+X-Gm-Message-State: AOAM53103PZd5D2PQgquwjAVkKmGhLSj3NHuSHSa7UJQUxUJxgpLO05I
+        kNzMjSzowN/4nmdXymGin6w=
+X-Google-Smtp-Source: ABdhPJyUMzpn1A0ChaquwNu5rDU+e82G1r7EVBPw74732HlJJuCEk82Nm+fE7andwIkcbhovcujpsA==
+X-Received: by 2002:a17:906:1199:: with SMTP id n25mr21571460eja.14.1590441959552;
+        Mon, 25 May 2020 14:25:59 -0700 (PDT)
+Received: from localhost.localdomain ([151.56.81.222])
+        by smtp.gmail.com with ESMTPSA id lf23sm16041900ejb.46.2020.05.25.14.25.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 14:18:49 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 197F9C1B76; Mon, 25 May 2020 18:18:47 -0300 (-03)
-Date:   Mon, 25 May 2020 18:18:47 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     'Christoph Hellwig' <hch@lst.de>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: do a single memdup_user in sctp_setsockopt
-Message-ID: <20200525211847.GD2491@localhost.localdomain>
-References: <20200521174724.2635475-1-hch@lst.de>
- <348217b7a3e14c1fa4868e47362be9c5@AcuMS.aculab.com>
- <20200522143623.GA386664@localhost.localdomain>
- <20200523071929.GA10466@lst.de>
+        Mon, 25 May 2020 14:25:59 -0700 (PDT)
+From:   Daniele Palmas <dnlplm@gmail.com>
+To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Cc:     netdev@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
+Subject: [PATCH 1/1] net: usb: qmi_wwan: add Telit LE910C1-EUX composition
+Date:   Mon, 25 May 2020 23:25:37 +0200
+Message-Id: <20200525212537.2227-1-dnlplm@gmail.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200523071929.GA10466@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 23, 2020 at 09:19:29AM +0200, 'Christoph Hellwig' wrote:
-> On Fri, May 22, 2020 at 11:36:23AM -0300, Marcelo Ricardo Leitner wrote:
-...
-> > What if you two work on a joint patchset for this? The proposals are
-> > quite close. The differences around the setsockopt handling are
-> > minimal already. It is basically variable naming, indentation and one
-> > or another small change like:
-> 
-> I don't really want to waste too much time on this, as what I really
-> need is to get the kernel_setsockopt removal series in ASAP.  I'm happy
-> to respin this once or twice with clear maintainer guidance (like the
-> memzero_explicit), but I have no idea what you even meant with your
-> other example or naming.  Tell me what exact changes you want, and
-> I can do a quick spin, but I don't really want a huge open ended
-> discussion on how to paint the bikeshed..
+Add support for Telit LE910C1-EUX composition
 
-What I meant is that the 2 proposals were very close already, with
-only minimal differences. As David had posted his set first and you
-didn't add a RFC tag nor stated that you were just sharing the
-patches, I understood it was an alternative approach to David's, which
-is not optimal here. This topic is far from being that polemic, that
-could benefit from having 2 competing approaches. So first I wanted a
-joint approach, and then build on it.
+0x1031: tty, tty, tty, rmnet
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+---
+Hi Bjørn,
 
-For now lets see how David's new patchset will look like. It was
-almost there already.
+following the output of lsusb:
 
-> 
-> Alternatively I'll also happily only do a partial conversion for what
-> I need for the kernel_setsockopt removal and let you and Dave decided
-> what you guys prefer for the rest.
+Bus 003 Device 007: ID 1bc7:1031 Telit Wireless Solutions 
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  idVendor           0x1bc7 Telit Wireless Solutions
+  idProduct          0x1031 
+  bcdDevice            0.00
+  iManufacturer           3 Telit
+  iProduct                2 LE910C1-EUX
+  iSerial                 4 7e234fe0
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength          122
+    bNumInterfaces          4
+    bConfigurationValue     1
+    iConfiguration          1 Telit Configuration
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           3
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               5
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        2
+      bAlternateSetting       0
+      bNumEndpoints           3
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    254 
+      bInterfaceProtocol    255 
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x84  EP 4 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               5
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x85  EP 5 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x03  EP 3 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        3
+      bAlternateSetting       0
+      bNumEndpoints           3
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x86  EP 6 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               5
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x87  EP 7 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x04  EP 4 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+Device Qualifier (for other device speed):
+  bLength                10
+  bDescriptorType         6
+  bcdUSB               2.00
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  bNumConfigurations      1
+Device Status:     0x0000
+  (Bus Powered)
+
+Thanks
+---
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 4bb8552a00d3..4a2c7355be63 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1324,6 +1324,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x1bbb, 0x0203, 2)},	/* Alcatel L800MA */
+ 	{QMI_FIXED_INTF(0x2357, 0x0201, 4)},	/* TP-LINK HSUPA Modem MA180 */
+ 	{QMI_FIXED_INTF(0x2357, 0x9000, 4)},	/* TP-LINK MA260 */
++	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1031, 3)}, /* Telit LE910C1-EUX */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
+ 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
+ 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
+-- 
+2.17.1
+
