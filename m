@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9140A1E1442
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 20:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72231E1414
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 20:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389375AbgEYS0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 14:26:18 -0400
-Received: from mail-ej1-f67.google.com ([209.85.218.67]:36124 "EHLO
-        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387644AbgEYS0Q (ORCPT
+        id S2389417AbgEYS0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 14:26:19 -0400
+Received: from mail-ej1-f66.google.com ([209.85.218.66]:44954 "EHLO
+        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389294AbgEYS0Q (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 14:26:16 -0400
-Received: by mail-ej1-f67.google.com with SMTP id z5so21375647ejb.3;
-        Mon, 25 May 2020 11:26:13 -0700 (PDT)
+Received: by mail-ej1-f66.google.com with SMTP id x20so21290395ejb.11;
+        Mon, 25 May 2020 11:26:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tkUGbMkkypRL042+ieWSoDccuHFghwak5Hi3wVxhDmE=;
-        b=C6FvFlWGYjOrdkQk8jI5gKJ0FH/UIZfAILSeyIMoTRLVytb2uadwYyVnBKtqhCSTxo
-         aj7PGbUmhTcR+JDysusQTqgasRYDpRRQVxdYvRfjAv9VZB2QeepMKCxd5gfoeTRCiG/e
-         Jmgh6y48CMevLk1MxULlpxQvOwdtAh0T6TWBfaG9cwVabEG8HXYWfG+8hlVFUiRJhf7c
-         mtlCsuSP04spjmnUmGR4zpEhwRDaInkTdyS7yw8aXxmvRwo3qaUa74CaZKTiV/4cXz5v
-         TEJMF4mWPLspYAssS60gMRqErYpLcUVYYto+4tR5wIWJ4CrG4vDDmSFwZy+Kdd+wz9mq
-         Thig==
-X-Gm-Message-State: AOAM5325TrlWaByK3eWEBqeVkTpPT770+FJzp0atfEnrNtZYykD0dU5j
-        Ga9qYIw6jsILnnvzjKMDVjGtN1EA6vzgYy46
-X-Google-Smtp-Source: ABdhPJyLZsaw5mEGXRcLaNb9q3bD5AU4cxUKQ8Vo98mbYphbp21kYQ3Rc8jcjNp3ljuzgmIEt8D4Ug==
-X-Received: by 2002:a17:906:f1c3:: with SMTP id gx3mr19110160ejb.278.1590431172312;
-        Mon, 25 May 2020 11:26:12 -0700 (PDT)
+        bh=cTkeVh1JeKZCZ25CUvY4TadYKZCO3Tcb6SZa4hMT8IQ=;
+        b=ErZDhe/nw0VBHNE09tJiYT8HuuFIU8OF9d7KmDSDeh6OPhx9NfzI7GEZwtHgNIuIAo
+         z3Rug+PKmlFi0LSz53Y93viq4cKqJtIOZ3IATi1eJYnREu2hKEtuQmJzhI8G139ldjju
+         vtCJ+MwBw7G8La7TV0d1NqHwgK+0uY5A7k9Au2sTNX47qMtSbx4OSU6yf9ICZLA/O+OY
+         Ym36uvgEcDO8haC2zthQacXTgXVP4NeNF4/GN791QAkOCuGrzKxZMytch9ZnqJOdoCz7
+         rhgJstt5PA9Mn7nA2K3zway34GTCnPxeeb98i1+kiYEO+VIXfGbT0HwN2SeFX7s6EC5t
+         bZYg==
+X-Gm-Message-State: AOAM532QuPXqEBi3DCayGz3Xlt/5sh2THPMGZY1oVGCw30m+nSq8s+c4
+        mEd+uBa7D8vwh3WA0/KXFsU=
+X-Google-Smtp-Source: ABdhPJwJ72EePelVfvR4GiaP04Cb7Af4MA+NTBXjPW6AogUELMABp0aGx0/LBvMTHK50C97aqq0rIg==
+X-Received: by 2002:a17:906:ae93:: with SMTP id md19mr19856282ejb.4.1590431173903;
+        Mon, 25 May 2020 11:26:13 -0700 (PDT)
 Received: from workstation.lan ([95.155.85.46])
-        by smtp.gmail.com with ESMTPSA id n15sm15555707ejs.10.2020.05.25.11.26.10
+        by smtp.gmail.com with ESMTPSA id n15sm15555707ejs.10.2020.05.25.11.26.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 11:26:11 -0700 (PDT)
+        Mon, 25 May 2020 11:26:13 -0700 (PDT)
 From:   =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
 To:     Dan Carpenter <dan.carpenter@oracle.com>
 Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
@@ -56,9 +56,9 @@ Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH 1/8] driver core: Add helper for accessing Power Management callbacs
-Date:   Mon, 25 May 2020 18:26:01 +0000
-Message-Id: <20200525182608.1823735-2-kw@linux.com>
+Subject: [PATCH 2/8] ACPI: PM: Use the new device_to_pm() helper to access struct dev_pm_ops
+Date:   Mon, 25 May 2020 18:26:02 +0000
+Message-Id: <20200525182608.1823735-3-kw@linux.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200525182608.1823735-1-kw@linux.com>
 References: <20200525182608.1823735-1-kw@linux.com>
@@ -70,63 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver_to_pm() helper allowing for accessing the Power Management
-callbacs for a particular device.  Access to the callbacs (struct
-dev_pm_ops) is normally done through using the pm pointer that is
-embedded within the device_driver struct.
+Use the new device_to_pm() helper to access Power Management callbacs
+(struct dev_pm_ops) for a particular device (struct device_driver).
 
-Helper allows for the code required to reference the pm pointer and
-access Power Management callbas to be simplified.  Changing the
-following:
-
-  struct device_driver *drv = dev->driver;
-  if (dev->driver && dev->driver->pm && dev->driver->pm->prepare) {
-      int ret = dev->driver->pm->prepare(dev);
-
-To:
-
-  const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
-  if (pm && pm->prepare) {
-      int ret = pm->prepare(dev);
-
-Or, changing the following:
-
-     const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
-
-To:
-     const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
+No functional change intended.
 
 Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
 ---
- include/linux/device/driver.h | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/acpi/device_pm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
-index ee7ba5b5417e..ccd0b315fd93 100644
---- a/include/linux/device/driver.h
-+++ b/include/linux/device/driver.h
-@@ -236,6 +236,21 @@ driver_find_device_by_acpi_dev(struct device_driver *drv, const void *adev)
- }
- #endif
+diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
+index 5832bc10aca8..b98a32c48fbe 100644
+--- a/drivers/acpi/device_pm.c
++++ b/drivers/acpi/device_pm.c
+@@ -1022,9 +1022,10 @@ static bool acpi_dev_needs_resume(struct device *dev, struct acpi_device *adev)
+ int acpi_subsys_prepare(struct device *dev)
+ {
+ 	struct acpi_device *adev = ACPI_COMPANION(dev);
++	const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
  
-+/**
-+ * driver_to_pm - Return Power Management callbacs (struct dev_pm_ops) for
-+ *                a particular device.
-+ * @drv: Pointer to a device (struct device_driver) for which you want to access
-+ *       the Power Management callbacks.
-+ *
-+ * Returns a pointer to the struct dev_pm_ops embedded within the device (struct
-+ * device_driver), or returns NULL if Power Management is not present and the
-+ * pointer is not valid.
-+ */
-+static inline const struct dev_pm_ops *driver_to_pm(struct device_driver *drv)
-+{
-+	return drv && drv->pm ? drv->pm : NULL;
-+}
-+
- extern int driver_deferred_probe_timeout;
- void driver_deferred_probe_add(struct device *dev);
- int driver_deferred_probe_check_state(struct device *dev);
+-	if (dev->driver && dev->driver->pm && dev->driver->pm->prepare) {
+-		int ret = dev->driver->pm->prepare(dev);
++	if (pm && pm->prepare) {
++		int ret = pm->prepare(dev);
+ 
+ 		if (ret < 0)
+ 			return ret;
 -- 
 2.26.2
 
