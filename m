@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 947811E13B6
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 19:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E881E13B7
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 19:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389056AbgEYRw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 13:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
+        id S2389115AbgEYRw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 13:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388621AbgEYRw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 13:52:56 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F002C061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 10:52:55 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id e1so17799108wrt.5
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 10:52:55 -0700 (PDT)
+        with ESMTP id S2388621AbgEYRw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 13:52:57 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1776AC05BD43
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 10:52:56 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id q11so5646870wrp.3
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 10:52:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Trfgp8bWvPxJvXOLgtrXL0ImE+Teauq8YPcMJxUnrjU=;
-        b=fxlV+4IfKzrtU6g6JIJp8OZ5qWQnHxLW2TIsLg0iOAUTQX1yJElEVpbYG/PmOn/5oz
-         PNGAb4FE4UZ2t3j3jQLtpK/GlBOwFhbaB9ILS+Jdlgq6RFd0o6BfQ/uD6iDM/MMR2v3t
-         ESc2iJqJ1Kq760oCbnHjuCHfE3K+C/2hzZlpJXFZclpcJRwL+E/3NHXGFA0crSacPaIz
-         PqJtyFARsCMEvlU+Ru48IK1vO8BEXrSNg0ZVZUEOdjU3Q6JwgoC6P5uJwNPyWByCwggn
-         cNAIh6yz/Th+Cd8Y1mkjURA+I8pEJb0/vG7o0HPyFelJVZ4ChF6iO+knP/O940EozrRa
-         R8SA==
+        bh=BNjyKVzwici4RinYlcKbM+8VHzbVdQswveuWvZVOx3Q=;
+        b=nBPKzkPCKRBVAWx9jl36Tsz7xJpiXl7T7NwPIdLhxDKUYM4feCVYLX1hbrfCh7xg6L
+         KhKwS50hPAgQrtDCUlkhS14Fol2sXeIDo2/HxfeFADbwe1UD6FNyI8IpXGoQD+IA3Kv7
+         tQbgdfb4vGuiIZn2EdSeYGNVocPLO+KQw8VIt7KUo6kbGSx2Hc/pn0CGLHgTxa90joKN
+         EmiISVeoc7SE0W0UGMaoqd+acoXMS+aCxteTFKP85lw1YSyvdDMCI9/0Piy69VXUPfcW
+         vfsxG5gWsnSN0EBFypyqjAY0CrF/u0NU2zWBvKZzTsZV0AKEiI9MV5hPJek9/JjDo1qx
+         r8Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Trfgp8bWvPxJvXOLgtrXL0ImE+Teauq8YPcMJxUnrjU=;
-        b=rznF3opEzAHOcrPpHTI+7MwFvMFAvU6XmnlvdxzXuSJeYwjcg5QbAiea7NZi6Pvg+r
-         O9S9JYkH4G7aYcY5wBrAOwPaWqBgmvJdmyKHTKc4Wmj42nFSYBWC4fCl5jARs2O76/nN
-         evQDR6hwRLECT3I/AbRKu6y5IoUgcv7U7nhmH33Jqtebd1xFbnG0aZfuDnxL3SkGEkML
-         H8ut4aede6M1mHgETWsYSj2Yhey9GC2EvT6t4r+8vbynbqvF+u6VYYUNLlmCKxVt86NK
-         NgofUvs/wvjzmLPSiYwuBEjqbA14Nes6/C2YYckEna5PkeCioJ7LwmEC9kJcPWJHQrHO
-         6WbA==
-X-Gm-Message-State: AOAM531VRc4pBpQ+lFWC0dpX+sB1ZFYRySTbkMD9raysiVLj9rpp4F9N
-        7eTnCmASGGHn+/5XtYATEv/2cZWp
-X-Google-Smtp-Source: ABdhPJzD/+jTHezJcrNRG/oAqJPinUEqnLVMQVWPlv6GY4McsP6zjz7cuMQfXJLXInNnpOeBl1x3+g==
-X-Received: by 2002:adf:ce05:: with SMTP id p5mr17104266wrn.423.1590429173703;
-        Mon, 25 May 2020 10:52:53 -0700 (PDT)
+        bh=BNjyKVzwici4RinYlcKbM+8VHzbVdQswveuWvZVOx3Q=;
+        b=KVZm+FGF16Fi9zdtV1vM5CnUD33uXw6RAQlRnC3AeXlhDO/96kzX6CfQ/dGPWsKo8L
+         qPnhHpesGX/axFE2+Pn9bQQPe2/1K53Mgnw/8QlRkAjkvzUSXSZXwDmc1/neRMt5Bslz
+         +tu6j/3kmdX5p76BKq7eWyPPZEjoeHSi9SGvXeFTpqON4/22PRcR0zqwt5MNZ2WwIRDM
+         CFQDNrrQWpKGHIUE0vhfU8ZufTSpRDk2new/3C5whOmEy1kXqlo1XBtOip4Cm4E/c9ba
+         uRANKqhbUpEPB0yvSjtR08svVAVwiyNKkhPPniJHskDY+7qVmF6W8zh410RQf7vp8Lhb
+         uB3w==
+X-Gm-Message-State: AOAM531JwOaHhCNhYugMc+1xRoHlF27Cjp8FQPL7wXDq2DMf26b5dQt5
+        L8gkOYWGxz85bG+sY0a+TxlIX1TG
+X-Google-Smtp-Source: ABdhPJySeAiPLKmg5jwbpx1clDePWgKzV/zM3CtADcZ2px6xJFcIcRICicovH/+wE4I5bVfveGQDWw==
+X-Received: by 2002:a05:6000:12c2:: with SMTP id l2mr15633494wrx.133.1590429174596;
+        Mon, 25 May 2020 10:52:54 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f28:5200:fd94:3db4:1774:4731? (p200300ea8f285200fd943db417744731.dip0.t-ipconnect.de. [2003:ea:8f28:5200:fd94:3db4:1774:4731])
-        by smtp.googlemail.com with ESMTPSA id c16sm18711653wrv.62.2020.05.25.10.52.53
+        by smtp.googlemail.com with ESMTPSA id p7sm13869630wro.26.2020.05.25.10.52.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 May 2020 10:52:53 -0700 (PDT)
-Subject: [PATCH net-next 2/4] r8169: sync RTL8168h hw config with vendor
+        Mon, 25 May 2020 10:52:54 -0700 (PDT)
+Subject: [PATCH net-next 3/4] r8169: sync RTL8168evl hw config with vendor
  driver
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
@@ -56,8 +56,8 @@ To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <e9898548-158a-12d5-4c1a-efe8cfbe3416@gmail.com>
-Message-ID: <2ff383a5-3ec5-1b14-0317-bd20a44fbc4a@gmail.com>
-Date:   Mon, 25 May 2020 19:49:55 +0200
+Message-ID: <84946870-9257-0246-e403-4fc0f48d9eb9@gmail.com>
+Date:   Mon, 25 May 2020 19:50:38 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
@@ -70,27 +70,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sync hw config for RTL8168h with r8168 vendor driver.
+Sync hw config for RTL8168evl with r8168 vendor driver.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index d034a57a0..173a4c41c 100644
+index 173a4c41c..dfb07df47 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3250,9 +3250,8 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
+@@ -2926,12 +2926,14 @@ static void rtl_hw_start_8168e_2(struct rtl8169_private *tp)
+ 	rtl_ephy_init(tp, e_info_8168e_2);
  
- 	rtl_reset_packet_filter(tp);
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+-	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
++	rtl_eri_write(tp, 0xb8, ERIAR_MASK_1111, 0x0000);
+ 	rtl_set_fifo_size(tp, 0x10, 0x10, 0x02, 0x06);
++	rtl_eri_set_bits(tp, 0x0d4, 0x1f00);
++	rtl_eri_set_bits(tp, 0x1d0, BIT(1));
++	rtl_reset_packet_filter(tp);
++	rtl_eri_set_bits(tp, 0x1b0, BIT(4));
+ 	rtl_eri_write(tp, 0xcc, ERIAR_MASK_1111, 0x00000050);
+ 	rtl_eri_write(tp, 0xd0, ERIAR_MASK_1111, 0x07ff0060);
+-	rtl_eri_set_bits(tp, 0x1b0, BIT(4));
+-	rtl_w0w1_eri(tp, 0x0d4, 0x0c00, 0xff00);
  
--	rtl_eri_set_bits(tp, 0xdc, BIT(4));
--
- 	rtl_eri_set_bits(tp, 0xd4, 0x1f00);
-+	rtl_eri_set_bits(tp, 0xdc, 0x001c);
- 
- 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 	rtl_disable_clock_request(tp);
  
 -- 
 2.26.2
