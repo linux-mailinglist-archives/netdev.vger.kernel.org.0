@@ -2,160 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62BBB1E0673
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 07:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB861E0691
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 07:53:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729407AbgEYFlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 01:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        id S2388494AbgEYFxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 01:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbgEYFlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 01:41:39 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E615C061A0E
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 22:41:39 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id 67so7796244ybn.11
-        for <netdev@vger.kernel.org>; Sun, 24 May 2020 22:41:39 -0700 (PDT)
+        with ESMTP id S2388203AbgEYFxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 01:53:47 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1F6C061A0E
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 22:53:47 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id z64so3894096pfb.1
+        for <netdev@vger.kernel.org>; Sun, 24 May 2020 22:53:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SaxzSHKZP4NlOXFPgocTcAXqz7tuNOGiL801SvZLmxE=;
-        b=agfAFbs+vxfpjPMEvt0c+AJwJ7kXEV2t1pPfy5wE/rLUBxJ7y+CeHg6wqqYoqh4+Rv
-         EXCX5ATVYk7zvuMe4qvKuTtI/bj/3b8GgwPHQ6d/NX4ATOmT8MH4z+1ekAG4ObZD0aLp
-         cDSwUnlwMcG/J1EsukvDuFihzVXXnTIFPE1uNtZcz5DXHv3ohzS2VC85fssByDzLjxhR
-         KEz7kLRP32G8qh7hdOgRm3pDMylcbm1dbolKQIli9cS3RZn1uAo+YmGwVNQiieMd++os
-         pOy6yx0CTFj1dPLgErdezRkad6bdkJbVYzscb+MEHkJdv2a65RebvDXxlBoC3GA22F/t
-         nc6g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=TOP3q9Xu+rDoPF4OE5Ls4ZLZFtW3+K/hUT/lT0LErAo=;
+        b=OZeXiNr5uF9wFS19dhMpV3YxSnqLC6BSRSzC+VFWcA9cEUPLAs5OqcnrwBLgaFtwKw
+         pphzfVLFICEAZwICMsWyNCCMigNJxoXFlajr2XsbHxctSmEz2MksW9Hi4Vk56pIVLyrM
+         xze4haxBeyDhhcuX7duKLD7y4WGHPm/r4vjhOvCF55cz2qm1ByIYsEqiy8YKPgyD/Cf8
+         K6zNUuyU4SF/KAVsXCI8ZYhyxJm2AO8CRBWYY0qG7zTwFnrNgGLXod+zh+kMM+XmM9mZ
+         NVxp/TBhhn5YJyq+1kECPo++Ju4EKCjLi+tB/OqaTKEFr6VJWe/XPBYPIAI1vZJO4i1p
+         RXNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SaxzSHKZP4NlOXFPgocTcAXqz7tuNOGiL801SvZLmxE=;
-        b=poeVwBnnaGKT8v4QBsLqFDMbNjtr9qvt+O76F+s9yGsbJq0Hcs3qh+8Ufwn58udNZC
-         X89GZcxXPMvvl0wCjj3Ed2gbeqGjftkUHMw0l5lnlHgmiS76a44E99K/hpUVxPz4CkPt
-         wOZ5Gjrozrg4+H39pB7SpO2nwpl0vJ5h07GTQ+gz61AU3w4CazymP3syayY0Y7sFYlpX
-         a45SJLlPc7lc5RLpe9MBo9Y07PdxkUbJAwJlkK/uIiliBEGJo08CL2tP058+Qw8llvJq
-         pHk90ALH9YHLPP4tHWoHTU9/k965FW5kcUE1v4wm5Lu9wZwQ7JHVpe4NLjol1A/oAE4m
-         dBiw==
-X-Gm-Message-State: AOAM530I0mcd3HzjnatjtG15qIDLLcki4enkojhGEaUxQaZ/8vQZOxbd
-        DgFo/z3oM6rpWRXTw1lO6odoengjRpChppwM8ppJFvpY
-X-Google-Smtp-Source: ABdhPJyIs7mjV9+olFdH3TedbDM4r6UB2whNC6KWMuAOn1SPquX3tas8d5m8dJejEifwPy1ayzrALfWqSyEBsrNiq4g=
-X-Received: by 2002:a25:f309:: with SMTP id c9mr38243203ybs.364.1590385297846;
- Sun, 24 May 2020 22:41:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200525050137.412072-1-bpoirier@cumulusnetworks.com>
-In-Reply-To: <20200525050137.412072-1-bpoirier@cumulusnetworks.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 24 May 2020 22:41:26 -0700
-Message-ID: <CANn89iLdfOzRuhC--MALZuTDSoU6ncX7Xu_0iJnjZs1-9_gwmQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: Avoid spurious rx_dropped increases with
- tap and rx_handler
-To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TOP3q9Xu+rDoPF4OE5Ls4ZLZFtW3+K/hUT/lT0LErAo=;
+        b=QQXXkmoMFCOika+GuW2gN4CwnnDDY884aWBj1vwJl60wqpU/6doQERLO7g36FOjqsA
+         RiG3FZ+xeBsbF7V2F09bd+hrFL9RoQwxWQ1+HEie0y1U4KvNMBfnb9UBupzxkluarm1A
+         fTbXRjy333DE+DhoPDNvzVLDQFmyofs5FPOpdfv95d/+OhATXyCZIN9QqvHKWtb0wNxg
+         IcKjm6rBVkhbUDq83Z78Ve1OrwVIbZ5E2tTAPcH2k9wVrMfF99Lvl7wOcRILzlQJXSsM
+         V6FdKorM6D6jJMjbiaTQkGxUbHQf+VpvZFsdeDWaHsyjK3lclWxk3rR9i3nZdJr9XNZ4
+         WpuA==
+X-Gm-Message-State: AOAM5305wD773dKkpGiPZ0kqOKx19ydpaXMnetBC8iQ9dYiA87SBpYT7
+        tilxNkuH/3yp+hRnG/WtTxGuas6j
+X-Google-Smtp-Source: ABdhPJwkdQbgs4hXa6GxepeBjxctHMoZSl5zvNHo/oxkxU5pKTENtjmqLpYJQwsjsgX0G7JqQsY40A==
+X-Received: by 2002:a63:451c:: with SMTP id s28mr25745687pga.340.1590386026606;
+        Sun, 24 May 2020 22:53:46 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 5sm10656937pgl.4.2020.05.24.22.53.45
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 24 May 2020 22:53:46 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>, yuehaibing@huawei.com
+Subject: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
+Date:   Mon, 25 May 2020 13:53:37 +0800
+Message-Id: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 24, 2020 at 10:02 PM Benjamin Poirier
-<bpoirier@cumulusnetworks.com> wrote:
->
-> Consider an skb which doesn't match a ptype_base/ptype_specific handler. If
-> this skb is delivered to a ptype_all handler, it does not count as a drop.
-> However, if the skb is also processed by an rx_handler which returns
-> RX_HANDLER_PASS, the frame is now counted as a drop because pt_prev was
-> reset. An example of this situation is an LLDP frame received on a bridge
-> port while lldpd is listening on a packet socket with ETH_P_ALL (ex. by
-> specifying `lldpd -c`).
->
-> Fix by adding an extra condition variable to record if the skb was
-> delivered to a packet tap before running an rx_handler.
->
-> The situation is similar for RX_HANDLER_EXACT frames so their accounting is
-> also changed. OTOH, the behavior is unchanged for RX_HANDLER_ANOTHER frames
-> - they are accounted according to what happens with the new skb->dev.
->
-> Fixes: caf586e5f23c ("net: add a core netdev->rx_dropped counter")
+This waring can be triggered simply by:
 
-I disagree.
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 1 mark 0 mask 0x10  #[1]
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 2 mark 0 mask 0x1   #[2]
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 2 mark 0 mask 0x10  #[3]
 
-> Message-Id: <20200522011420.263574-1-bpoirier@cumulusnetworks.com>
-> Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
-> ---
->  net/core/dev.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index ae37586f6ee8..07957a0f57e6 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5061,11 +5061,11 @@ static inline int nf_ingress(struct sk_buff *skb, struct packet_type **pt_prev,
->  static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
->                                     struct packet_type **ppt_prev)
->  {
-> +       bool deliver_exact = false, rx_tapped = false;
->         struct packet_type *ptype, *pt_prev;
->         rx_handler_func_t *rx_handler;
->         struct sk_buff *skb = *pskb;
->         struct net_device *orig_dev;
-> -       bool deliver_exact = false;
->         int ret = NET_RX_DROP;
->         __be16 type;
->
-> @@ -5158,12 +5158,14 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
->                 if (pt_prev) {
->                         ret = deliver_skb(skb, pt_prev, orig_dev);
->                         pt_prev = NULL;
-> +                       rx_tapped = true;
->                 }
->                 switch (rx_handler(&skb)) {
->                 case RX_HANDLER_CONSUMED:
->                         ret = NET_RX_SUCCESS;
->                         goto out;
->                 case RX_HANDLER_ANOTHER:
-> +                       rx_tapped = false;
->                         goto another_round;
->                 case RX_HANDLER_EXACT:
->                         deliver_exact = true;
-> @@ -5234,11 +5236,13 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
->                         goto drop;
->                 *ppt_prev = pt_prev;
->         } else {
-> +               if (!rx_tapped) {
->  drop:
-> -               if (!deliver_exact)
-> -                       atomic_long_inc(&skb->dev->rx_dropped);
-> -               else
-> -                       atomic_long_inc(&skb->dev->rx_nohandler);
-> +                       if (!deliver_exact)
-> +                               atomic_long_inc(&skb->dev->rx_dropped);
-> +                       else
-> +                               atomic_long_inc(&skb->dev->rx_nohandler);
-> +               }
+Then dmesg shows:
 
-This does not make sense to me.
+  [ ] WARNING: CPU: 1 PID: 7265 at net/xfrm/xfrm_policy.c:1548
+  [ ] RIP: 0010:xfrm_policy_insert_list+0x2f2/0x1030
+  [ ] Call Trace:
+  [ ]  xfrm_policy_inexact_insert+0x85/0xe50
+  [ ]  xfrm_policy_insert+0x4ba/0x680
+  [ ]  xfrm_add_policy+0x246/0x4d0
+  [ ]  xfrm_user_rcv_msg+0x331/0x5c0
+  [ ]  netlink_rcv_skb+0x121/0x350
+  [ ]  xfrm_netlink_rcv+0x66/0x80
+  [ ]  netlink_unicast+0x439/0x630
+  [ ]  netlink_sendmsg+0x714/0xbf0
+  [ ]  sock_sendmsg+0xe2/0x110
 
-Here we call kfree_skb() meaning this packet is _dropped_.
-I understand it does not please some people, because they do not
-always understand the meaning of this counter, but it is a mere fact.
+The issue was introduced by Commit 7cb8a93968e3 ("xfrm: Allow inserting
+policies with matching mark and different priorities"). After that, the
+policies [1] and [2] would be able to be added with different priorities.
 
-Fact that a packet capture made a clone of this packet should not
-matter, tcpdump should not hide that a packet is _dropped_.
+However, policy [3] will actually match both [1] and [2]. Policy [1]
+was matched due to the 1st 'return true' in xfrm_policy_mark_match(),
+and policy [2] was matched due to the 2nd 'return true' in there. It
+caused WARN_ON() in xfrm_policy_insert_list().
 
->                 kfree_skb(skb);
->                 /* Jamal, now you will not able to escape explaining
->                  * me how you were going to use this. :-)
+This patch is to fix it by only (the same value and priority) as the
+same policy in xfrm_policy_mark_match().
 
+Thanks to Yuehaibing, we could make this fix better.
 
-Can we please not add code in the fast path ?
+v1->v2:
+  - check policy->mark.v == pol->mark.v only without mask.
 
-Why are LLDP packets so special, why are they not consumed ?
+Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/xfrm/xfrm_policy.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-I would suggest fixing the layer that handles LLDP packets so that we
-do not have to workaround this issue in a critical fast path.
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 297b2fd..564aa649 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1436,12 +1436,7 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
+ static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+ 				   struct xfrm_policy *pol)
+ {
+-	u32 mark = policy->mark.v & policy->mark.m;
+-
+-	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+-		return true;
+-
+-	if ((mark & pol->mark.m) == pol->mark.v &&
++	if (policy->mark.v == pol->mark.v &&
+ 	    policy->priority == pol->priority)
+ 		return true;
+ 
+-- 
+2.1.0
 
-Thanks.
