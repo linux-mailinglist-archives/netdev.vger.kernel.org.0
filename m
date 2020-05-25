@@ -2,195 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0FC1E091E
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:42:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C150D1E08E3
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 10:35:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389083AbgEYImK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 04:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S2388487AbgEYIfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 04:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388786AbgEYImK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:42:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBF0C061A0E;
-        Mon, 25 May 2020 01:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=wAm2I1AOEydHH9CYIKMSAc2QfOp8pMOdoNnrQ4sB5yE=; b=mhmvJ/rVfVyaZ1m+aA3FWBMim
-        X7uZAgugBoI6CFNRuNYEzxontKM3BZo99Jcd7CIilaeVu1U+aBgVqCKkbee3pgndZQwejUAuxNYRR
-        GKhHecTy2CEhnVs0nrusRk5iz0+l8YqmC2YDnr/ys5ewiKxX4GppYLly1zTWGhPxnV+EraUEiZyaW
-        zK6/FnhyknGpAOVN8mDcPrrZYm2BzVHCNMRFmrQmLSutdMResZVlDuwvrTfpkx/14ThJ87m82ELvt
-        mSXSnXtjvZkCygxAFYAz1XdD70XqbkPnUBMZ3sJwRktGc9M+U+KYFKiP8hkd5T5sdxAVrkcMBcnwP
-        0UXZ7yGMQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44772)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jd8gL-0004js-3C; Mon, 25 May 2020 09:42:01 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jd8gH-0004Dg-LI; Mon, 25 May 2020 09:41:57 +0100
-Date:   Mon, 25 May 2020 09:41:57 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        harini.katakam@xilinx.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        f.fainelli@gmail.com, antoine.tenart@bootlin.com,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 3/5] net: macb: fix macb_get/set_wol() when moving to
- phylink
-Message-ID: <20200525084157.GI1551@shell.armlinux.org.uk>
-References: <cover.1588763703.git.nicolas.ferre@microchip.com>
- <4aeebe901fde6db70a5ca12b10e793dd2ee6ce60.1588763703.git.nicolas.ferre@microchip.com>
- <20200513130536.GI1551@shell.armlinux.org.uk>
- <c0bc2167-e49e-1026-94e3-cb5931755389@microchip.com>
+        with ESMTP id S2388175AbgEYIfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 04:35:14 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB9AC061A0E;
+        Mon, 25 May 2020 01:35:14 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id j198so2486720wmj.0;
+        Mon, 25 May 2020 01:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=utTxuQuhV5kC1MhRAQXBvYt9lvtCYob3xbuIYIIjyLU=;
+        b=EtNfOKyN2JkBQlKiwqesSu9Ry83/fCOryWZZX9yiS1f4JWidvXoCv52kuYtaNfEgsJ
+         n1SWnxrzCZv0YijZwoDS7PSngrRPzDue+N5qjeMC2oEgG8BWTyDxmp8Mw8A5LZS1u9kS
+         Dc9bosy43uxf2k3z2fQJ+HAN26Rnk+RQddmNI3rjgJWqproQwl3qFDiYjFRSxUIySYLR
+         aY9cMYenbIAxC9tfgsKmmFMvVPyHXmzvujedBJ8Y04s7uKY9jAtCnPY3JYsqsZkaChZt
+         UibY405UJk6WWrJGBAEnZ01KkwFmXwlv384HfRjiy4fJZE3GCXD5Jy1C8i6SBq9WAYNc
+         Pu3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=utTxuQuhV5kC1MhRAQXBvYt9lvtCYob3xbuIYIIjyLU=;
+        b=e+XNVw08MASc+JnD16uBg+BMFDARuPAoT+N0/nPqySmpek+KE7vKE5PECDHo1I63ak
+         5BBolOB2Iap/YqlLdrNQVji7nwGChkaSlt5tJ417wsXThoVghVvtTKh+8D3Mv9WVL++x
+         8czO4c8zWbaj7dq9VrWCo3bYsobno7wGCBzvO9MK/lrDxmvDe/PNYWBmddMfPm70AA7n
+         YMdprjhWlrtLqijhlpd8ev4ioP1J+pigR2g0NPVpVc2dlWiTU2FaUsaDZi33tWmpJ18Y
+         TrL064WZqXGBXfyQoyQyRy7Q/k06sKxplUzAnXNp6AKe+BFO2uki1heWOsfZgxK+HQMC
+         Ftpg==
+X-Gm-Message-State: AOAM5304DtZG7EO7VwFhjgeTD9urxrqNvyNrTM8LTrIqld3HqnqKzcqC
+        1oN8mttuqOl2DgNy5o9OorDz5dSrN06NGDo/0UU=
+X-Google-Smtp-Source: ABdhPJy7weRrpmuFm2osnwPDsf+PWFLnSm7uM6pYCY7NCCawtOic2+bfs6votgnuA/S1AwhF8ActB2xRCOnqKnAbjt0=
+X-Received: by 2002:a7b:c253:: with SMTP id b19mr25292433wmj.110.1590395713230;
+ Mon, 25 May 2020 01:35:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c0bc2167-e49e-1026-94e3-cb5931755389@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
+ <20200513160116.GA2491@localhost.localdomain> <CABUN9aCuoA+CXLujUxXyiKWQPkwq9_eOXNqOR=MK7dPY++Fxng@mail.gmail.com>
+ <20200513213230.GE2491@localhost.localdomain> <CABUN9aBoxXjdPk9piKAZV-2dYOCEnuXr-4H5ZVVvqeMMFRsf7A@mail.gmail.com>
+ <20200519204229.GQ2491@localhost.localdomain> <CABUN9aD85O3mF8j72QfrC8vbXPzj5Q=L801t2M6XsbDHn+9D1A@mail.gmail.com>
+In-Reply-To: <CABUN9aD85O3mF8j72QfrC8vbXPzj5Q=L801t2M6XsbDHn+9D1A@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 25 May 2020 16:42:16 +0800
+Message-ID: <CADvbK_fpZWexYckNtmsEatb+JU_EW4=Xn9OpcL=Tk-a8odDHuw@mail.gmail.com>
+Subject: Re: [PATCH] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED} event
+To:     Jonas Falkevik <jonas.falkevik@gmail.com>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 04:16:04PM +0200, Nicolas Ferre wrote:
-> Russell,
-> 
-> Thanks for the feedback.
-> 
-> On 13/05/2020 at 15:05, Russell King - ARM Linux admin wrote:
-> > On Wed, May 06, 2020 at 01:37:39PM +0200, nicolas.ferre@microchip.com wrote:
-> > > From: Nicolas Ferre <nicolas.ferre@microchip.com>
-> > > 
-> > > Keep previous function goals and integrate phylink actions to them.
-> > > 
-> > > phylink_ethtool_get_wol() is not enough to figure out if Ethernet driver
-> > > supports Wake-on-Lan.
-> > > Initialization of "supported" and "wolopts" members is done in phylink
-> > > function, no need to keep them in calling function.
-> > > 
-> > > phylink_ethtool_set_wol() return value is not enough to determine
-> > > if WoL is enabled for the calling Ethernet driver. Call it first
-> > > but don't rely on its return value as most of simple PHY drivers
-> > > don't implement a set_wol() function.
-> > > 
-> > > Fixes: 7897b071ac3b ("net: macb: convert to phylink")
-> > > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> > > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > > Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-> > > Cc: Harini Katakam <harini.katakam@xilinx.com>
-> > > Cc: Antoine Tenart <antoine.tenart@bootlin.com>
-> > > ---
-> > >   drivers/net/ethernet/cadence/macb_main.c | 18 ++++++++++--------
-> > >   1 file changed, 10 insertions(+), 8 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> > > index 53e81ab048ae..24c044dc7fa0 100644
-> > > --- a/drivers/net/ethernet/cadence/macb_main.c
-> > > +++ b/drivers/net/ethernet/cadence/macb_main.c
-> > > @@ -2817,21 +2817,23 @@ static void macb_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-> > >   {
-> > >        struct macb *bp = netdev_priv(netdev);
-> > > 
-> > > -     wol->supported = 0;
-> > > -     wol->wolopts = 0;
-> > > -
-> > > -     if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET)
-> > > +     if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET) {
-> > >                phylink_ethtool_get_wol(bp->phylink, wol);
-> > > +             wol->supported |= WAKE_MAGIC;
-> > > +
-> > > +             if (bp->wol & MACB_WOL_ENABLED)
-> > > +                     wol->wolopts |= WAKE_MAGIC;
-> > > +     }
-> > >   }
-> > > 
-> > >   static int macb_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-> > >   {
-> > >        struct macb *bp = netdev_priv(netdev);
-> > > -     int ret;
-> > > 
-> > > -     ret = phylink_ethtool_set_wol(bp->phylink, wol);
-> > > -     if (!ret)
-> > > -             return 0;
-> > > +     /* Pass the order to phylink layer.
-> > > +      * Don't test return value as set_wol() is often not supported.
-> > > +      */
-> > > +     phylink_ethtool_set_wol(bp->phylink, wol);
-> > 
-> > If this returns an error, does that mean WOL works or does it not?
-> 
-> In my use case (simple phy: "Micrel KSZ8081"), if I have the error
-> "-EOPNOTSUPP", it simply means that this phy driver doesn't have the
-> set_wol() function. But on the MAC side, I can perfectly wake-up on WoL
-> event as the phy acts as a pass-through.
-> 
-> > Note that if set_wol() is not supported, this will return -EOPNOTSUPP.
-> > What about other errors?
-> 
-> True, I don't manage them. But for now this patch is a fix that only reverts
-> to previous behavior. In other terms, it only fixes the regression.
-> 
-> But can I make the difference, and how, between?
-> 1/ the phy doesn't support WoL and could prevent the WoL to happen on the
-> MAC
-> 2/ the phy doesn't implement (yet) the set_wol() function, if MAC can
-> manage, it's fine
+On Sat, May 23, 2020 at 8:04 PM Jonas Falkevik <jonas.falkevik@gmail.com> wrote:
+>
+> On Tue, May 19, 2020 at 10:42 PM Marcelo Ricardo Leitner
+> <marcelo.leitner@gmail.com> wrote:
+> >
+> > On Fri, May 15, 2020 at 10:30:29AM +0200, Jonas Falkevik wrote:
+> > > On Wed, May 13, 2020 at 11:32 PM Marcelo Ricardo Leitner
+> > > <marcelo.leitner@gmail.com> wrote:
+> > > >
+> > > > On Wed, May 13, 2020 at 10:11:05PM +0200, Jonas Falkevik wrote:
+> > > > > On Wed, May 13, 2020 at 6:01 PM Marcelo Ricardo Leitner
+> > > > > <marcelo.leitner@gmail.com> wrote:
+> > > > > >
+> > > > > > On Wed, May 13, 2020 at 04:52:16PM +0200, Jonas Falkevik wrote:
+> > > > > > > Do not generate SCTP_ADDR_{MADE_PRIM,ADDED} events for SCTP_FUTURE_ASSOC assocs.
+> > > > > >
+> > > > > > How did you get them?
+> > > > > >
+> > > > >
+> > > > > I think one case is when receiving INIT chunk in sctp_sf_do_5_1B_init().
+> > > > > Here a closed association is created, sctp_make_temp_assoc().
+> > > > > Which is later used when calling sctp_process_init().
+> > > > > In sctp_process_init() one of the first things are to call
+> > > > > sctp_assoc_add_peer()
+> > > > > on the closed / temp assoc.
+> > > > >
+> > > > > sctp_assoc_add_peer() are generating the SCTP_ADDR_ADDED event on the socket
+> > > > > for the potentially new association.
+> > > >
+> > > > I see, thanks. The SCTP_FUTURE_ASSOC means something different. It is
+> > > > for setting/getting socket options that will be used for new asocs. In
+> > > > this case, it is just a coincidence that asoc_id is not set (but
+> > > > initialized to 0) and SCTP_FUTURE_ASSOC is also 0.
+> > >
+> > > yes, you are right, I overlooked that.
+> > >
+> > > > Moreso, if I didn't
+> > > > miss anything, it would block valid events, such as those from
+> > > >  sctp_sf_do_5_1D_ce
+> > > >    sctp_process_init
+> > > > because sctp_process_init will only call sctp_assoc_set_id() by its
+> > > > end.
+> > >
+> > > Do we want these events at this stage?
+> > > Since the association is a newly established one, have the peer address changed?
+> > > Should we enqueue these messages with sm commands instead?
+> > > And drop them if we don't have state SCTP_STATE_ESTABLISHED?
+> > >
+> > > >
+> > > > I can't see a good reason for generating any event on temp assocs. So
+> > > > I'm thinking the checks on this patch should be on whether the asoc is
+> > > > a temporary one instead. WDYT?
+> > > >
+> > >
+> > > Agree, we shouldn't rely on coincidence.
+> > > Either check temp instead or the above mentioned state?
+> > >
+> > > > Then, considering the socket is locked, both code points should be
+> > > > allocating the IDR earlier. It's expensive, yes (point being, it could
+> > > > be avoided in case of other failures), but it should be generating
+> > > > events with the right assoc id. Are you interested in pursuing this
+> > > > fix as well?
+> > >
+> > > Sure.
+> > >
+> > > If we check temp status instead, we would need to allocate IDR earlier,
+> > > as you mention. So that we send the notification with correct assoc id.
+> > >
+> > > But shouldn't the SCTP_COMM_UP, for a newly established association, be the
+> > > first notification event sent?
+> > > The SCTP_COMM_UP notification is enqueued later in sctp_sf_do_5_1D_ce().
+> >
+> > The RFC doesn't mention any specific ordering for them, but it would
+> > make sense. Reading the FreeBSD code now (which I consider a reference
+> > implementation), it doesn't raise these notifications from
+> > INIT_ACK/COOKIE_ECHO at all. The only trigger for SCTP_ADDR_ADDED
+> > event is ASCONF ADD command itself. So these are extra in Linux, and
+> > I'm afraid we got to stick with them.
+> >
+> > Considering the error handling it already has, looks like the
+> > reordering is feasible and welcomed. I'm thinking the temp check and
+> > reordering is the best way forward here.
+> >
+> > Thoughts? Neil? Xin? The assoc_id change might be considered an UAPI
+> > breakage.
+>
+> Some order is mentioned in RFC 6458 Chapter 6.1.1.
+>
+>       SCTP_COMM_UP:  A new association is now ready, and data may be
+>          exchanged with this peer.  When an association has been
+>          established successfully, this notification should be the
+>          first one.
+If this is true, as SCTP_COMM_UP event is always followed by state changed
+to ESTABLISHED. So I'm thinking to NOT make addr events by checking the
+state:
 
-I think you need to read and understand the code, but don't worry, I'll
-do it for you.  There are not that many implementations in phylib, so
-it doesn't take long:
+@@ -343,6 +343,9 @@ void sctp_ulpevent_nofity_peer_addr_change(struct
+sctp_transport *transport,
+        struct sockaddr_storage addr;
+        struct sctp_ulpevent *event;
 
-m88e1318_set_wol(), dp83867_set_wol(), dp83822_set_wol(),
-at803x_set_wol(), lan88xx_set_wol(), and vsc85xx_wol_set().
++       if (asoc->state < SCTP_STATE_ESTABLISHED)
++               return;
++
+        memset(&addr, 0, sizeof(struct sockaddr_storage));
+        memcpy(&addr, &transport->ipaddr, transport->af_specific->sockaddr_len);
 
-For case 2, phylib returns -EOPNOTSUPP.
+It's not easy to completely do assoc_id change/event reordering/temp check.
+As:
 
-m88e1318_set_wol() returns zero on success, or propagates an error from
-the MDIO bus accessors.
+1. sctp_assoc_add_peer() is called in quite a few places where assoc_id is
+   not set.
+2. it's almost impossible to move SCTP_ADDR_ADDED from sctp_assoc_add_peer()
+   after SCTP_COMM_UP.
 
-dp83867_set_wol() returns zero on success, or -EINVAL if the MAC address
-is invalid. No bus errors are propagated.
-
-dp83822_set_wol() is the same as dp83867_set_wol().
-
-at803x_set_wol() returns zero on success, or -ENODEV if there is no
-netdev attached (which means you shouldn't be calling this anyway),
--EINVAL if the MAC address is invalid, or sometimes propagates an
-error from the MDIO bus accessors.
-
-lan88xx_set_wol() always returns zero, but the function does nothing
-other than saving the requested state, and uses that to avoid calling
-genphy_suspend() for this PHY.
-
-vsc85xx_wol_set() returns zero on success, or propagates an error from
-the MDIO bus accessors.
-
-So, what we can tell from the return code is:
-
-- If it returned zero, the PHY likely supports and properly configured
-  WoL, and you may not need to configure the MAC (depends on whether
-  the PHY can wake the system up on its own.)
-- If it returns -EOPNOTSUPP, there is no support for WoL at the PHY,
-  and you need to program your MAC - assuming that the PHY is going to
-  stay alive.
-- If it returns some other error code, there was a failure of some sort
-  to configure the PHY for WoL, which probably means the PHY is not
-  responding, and probably means the system isn't going to be capable
-  of waking up through this PHY.
-
-For case 1, there is no code path that detects whether the PHY concerned
-supports WoL or doesn't - the code paths in each driver assume that if
-the PHY supports WoL, then it supports WoL.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+>
+> I can make a patch with a check on temp and make COMM_UP event first.
+> Currently the COMM_UP event is enqueued via commands
+> while the SCTP_ADDR_ADDED event is enqueued directly.
+>
+> sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
+> vs.
+> asoc->stream.si->enqueue_event(&asoc->ulpq, event);
+>
+> Do you want me to change to use commands instead of enqueing?
+> Or should we enqueue the COMM_UP event directly?
+>
+> -Jonas
