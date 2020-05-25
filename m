@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE83E1E181C
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB211E1815
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389099AbgEYXGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 19:06:49 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:44035 "EHLO
+        id S2388930AbgEYXGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 19:06:32 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:44293 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388211AbgEYXG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:06:28 -0400
+        by vger.kernel.org with ESMTP id S2388895AbgEYXG3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:06:29 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id C4E6D5C0114;
-        Mon, 25 May 2020 19:06:27 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 2B4E75C018F;
+        Mon, 25 May 2020 19:06:29 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 25 May 2020 19:06:27 -0400
+  by compute4.internal (MEProxy); Mon, 25 May 2020 19:06:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=pWspccMfI3CAnlIfm/svAP+mY1UoKHUcfrTm03T2w18=; b=hc4yesQ6
-        c+xUSSc7hSe+mJXD/o/5NYVNbUprZmZMHICeIzegvxjqPi6SYGV4p7AWbt0xSSuk
-        LTzbsB3tobeCCabWoBgtpSu2yMBNwqI7Wzg0bRbZDzdH7Cd/tltPWMU7YyLKX6XR
-        sn6L+TtD+i1x8dpN6+DdEilRt3tJuwo9MOmG1prm0CTmaKhSeo9dTgav9ThdR6rc
-        k37g3/b/r9ls/zLDZDDCHHBVQIeAgZQWqnuMov5Wp9uXy+tdyUT8tq8Nl/ASa53i
-        ASw/bm082EudW7O0g6ULp1MEZyh3R7yKeDxk7refoAloXkBiqgGDMqJAfjgr1rhr
-        6D0c1y3NNeH6Iw==
-X-ME-Sender: <xms:c0_MXokynMT5UwDySh118zJ_s1Zz_385rZCdx2zq6AOZdz7u8raABw>
+        fm2; bh=UgY6Reut4m/gZ1thqFGWG1bFhRJny2vq+38q18UlVxk=; b=ZFqYb4yG
+        kHgyu0hjOwEGIT34mQvXmnnPmy7FEhyQWqd2GVzaSX0z5sdPSPOrppdQYhtICA5W
+        NWogzlPfXzSL3Ky/RIcee8MKpvdNyuv1CYFxxeEtm3lJR7RIY5zy0/eKAgBelQ0R
+        hlaXWi8rK749hi3rc2+3ZbO7bsvXf0p2KQfuMvXs7LDUSE9OCr4CgBK0Lg0LuuCw
+        /SPp6s/gL4WBjDw/NfKHpNQqurUW+HGMnj3mvMORjcA0YMkAnGBkX0wV9oVcXASk
+        /CS+j6TbpDbXVZpffuUlZesxokg15ShAW9xZ2Nv0nw3zKpdGxoBT8+RDggJ11DEH
+        KjneIFOMmheEbA==
+X-ME-Sender: <xms:dU_MXi9EuVXZr3v4QCPOAHP0llB1gEksmzESTHppZGilf5l46ilucQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvuddgudejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
-    necuvehluhhsthgvrhfuihiivgepgeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepleenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:c0_MXn22Krgq-56hKS8wilUtYpt11M58PFsNAgA3R2Yl0g_lXWI0iw>
-    <xmx:c0_MXmpZwGIHlVigq_Z2Cl5SCCxHN0eu0lUSzPLbWN7t_pY4cTwmqA>
-    <xmx:c0_MXkm61nqXPutmAx4-BeULaOBfA9DSnoB5gt5rc2tB8pTrsmtAJg>
-    <xmx:c0_MXr9lRZJ49KpQ1kM0_ypiTXVOo_NwtlWdurPOFnv3efsjboE7Zg>
+X-ME-Proxy: <xmx:dU_MXitebtgM2iJkyED9cyXLdn8X6T74HNTg1wbaHa80zychdGm6YA>
+    <xmx:dU_MXoASnWBKmcO-kHxlJsMBPJSiJoTkTvhGMV5MGnSFeYNFhYfDzA>
+    <xmx:dU_MXqdMY5Sw0CAbNQGVnnU5TePMRkfBklsymUbyj5LPWq9CgDoKxQ>
+    <xmx:dU_MXt2l4rWTXC-VrmGqlrSgwJd_A4a1qRaVrfAMKoWxwd3p9bfA1g>
 Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 809643280059;
-        Mon, 25 May 2020 19:06:26 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id DC1923280059;
+        Mon, 25 May 2020 19:06:27 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 09/14] mlxsw: spectrum_trap: Do not hard code "thin" policer identifier
-Date:   Tue, 26 May 2020 02:05:51 +0300
-Message-Id: <20200525230556.1455927-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/14] mlxsw: reg: Move all trap groups under the same enum
+Date:   Tue, 26 May 2020 02:05:52 +0300
+Message-Id: <20200525230556.1455927-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200525230556.1455927-1-idosch@idosch.org>
 References: <20200525230556.1455927-1-idosch@idosch.org>
@@ -62,85 +62,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-As explained in commit e612523041ab ("mlxsw: spectrum_trap: Introduce
-dummy group with thin policer"), the purpose of the "thin" policer is to
-pass as less packets as possible to the CPU.
-
-The identifier of this policer is currently set according to the maximum
-number of used trap groups, but this is fragile: On Spectrum-1 the
-maximum number of policers is less than the maximum number of trap
-groups, which might result in an invalid policer identifier in case the
-number of used trap groups grows beyond the policer limit.
-
-Solve this by dynamically allocating the policer identifier.
+After the previous patch the split is no longer necessary and all the
+trap groups can be moved under the same enum.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_trap.c | 17 +++++++++++------
- .../net/ethernet/mellanox/mlxsw/spectrum_trap.h |  2 ++
- 2 files changed, 13 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 78f983c1a056..f4b812276a5a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -441,8 +441,6 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 	},
- };
- 
--#define MLXSW_SP_THIN_POLICER_ID	(MLXSW_REG_HTGT_TRAP_GROUP_MAX + 1)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index fd5e18b71114..586a2f37fd12 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -5548,18 +5548,14 @@ enum mlxsw_reg_htgt_trap_group {
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_PKT_SAMPLE,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_FLOW_LOGGING,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_FID_MISS,
 -
- static struct mlxsw_sp_trap_policer_item *
- mlxsw_sp_trap_policer_item_lookup(struct mlxsw_sp *mlxsw_sp, u32 id)
- {
-@@ -487,14 +485,21 @@ mlxsw_sp_trap_item_lookup(struct mlxsw_sp *mlxsw_sp, u16 id)
- 
- static int mlxsw_sp_trap_cpu_policers_set(struct mlxsw_sp *mlxsw_sp)
- {
-+	struct mlxsw_sp_trap *trap = mlxsw_sp->trap;
- 	char qpcr_pl[MLXSW_REG_QPCR_LEN];
-+	u16 hw_id;
- 
- 	/* The purpose of "thin" policer is to drop as many packets
- 	 * as possible. The dummy group is using it.
- 	 */
--	__set_bit(MLXSW_SP_THIN_POLICER_ID, mlxsw_sp->trap->policers_usage);
--	mlxsw_reg_qpcr_pack(qpcr_pl, MLXSW_SP_THIN_POLICER_ID,
--			    MLXSW_REG_QPCR_IR_UNITS_M, false, 1, 4);
-+	hw_id = find_first_zero_bit(trap->policers_usage, trap->max_policers);
-+	if (WARN_ON(hw_id == trap->max_policers))
-+		return -ENOBUFS;
+-	__MLXSW_REG_HTGT_TRAP_GROUP_MAX,
+-	MLXSW_REG_HTGT_TRAP_GROUP_MAX = __MLXSW_REG_HTGT_TRAP_GROUP_MAX - 1
+-};
+-
+-enum mlxsw_reg_htgt_discard_trap_group {
+-	MLXSW_REG_HTGT_DISCARD_TRAP_GROUP_BASE = MLXSW_REG_HTGT_TRAP_GROUP_MAX,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_DUMMY,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_L2_DISCARDS,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_L3_DISCARDS,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_TUNNEL_DISCARDS,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_ACL_DISCARDS,
 +
-+	__set_bit(hw_id, trap->policers_usage);
-+	trap->thin_policer_hw_id = hw_id;
-+	mlxsw_reg_qpcr_pack(qpcr_pl, hw_id, MLXSW_REG_QPCR_IR_UNITS_M,
-+			    false, 1, 4);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qpcr), qpcr_pl);
- }
- 
-@@ -503,7 +508,7 @@ static int mlxsw_sp_trap_dummy_group_init(struct mlxsw_sp *mlxsw_sp)
- 	char htgt_pl[MLXSW_REG_HTGT_LEN];
- 
- 	mlxsw_reg_htgt_pack(htgt_pl, MLXSW_REG_HTGT_TRAP_GROUP_SP_DUMMY,
--			    MLXSW_SP_THIN_POLICER_ID, 0, 1);
-+			    mlxsw_sp->trap->thin_policer_hw_id, 0, 1);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(htgt), htgt_pl);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
-index 759146897b3a..13ac412f4d53 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
-@@ -17,6 +17,8 @@ struct mlxsw_sp_trap {
- 	struct mlxsw_sp_trap_item *trap_items_arr;
- 	u64 traps_count; /* Number of registered traps */
- 
-+	u16 thin_policer_hw_id;
-+
- 	u64 max_policers;
- 	unsigned long policers_usage[]; /* Usage bitmap */
++	__MLXSW_REG_HTGT_TRAP_GROUP_MAX,
++	MLXSW_REG_HTGT_TRAP_GROUP_MAX = __MLXSW_REG_HTGT_TRAP_GROUP_MAX - 1
  };
+ 
+ /* reg_htgt_trap_group
 -- 
 2.26.2
 
