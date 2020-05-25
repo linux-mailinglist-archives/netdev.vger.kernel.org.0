@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A33F21E1779
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 031671E1782
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 23:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388880AbgEYVyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 17:54:38 -0400
-Received: from correo.us.es ([193.147.175.20]:47316 "EHLO mail.us.es"
+        id S1731015AbgEYV7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 17:59:22 -0400
+Received: from foss.arm.com ([217.140.110.172]:44600 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389345AbgEYVyb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 17:54:31 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 07838FB479
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 23:54:30 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EC901DA707
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 23:54:29 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id CD6E6DA705; Mon, 25 May 2020 23:54:29 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3BE3FDA711;
-        Mon, 25 May 2020 23:54:27 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 25 May 2020 23:54:27 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 03D4942EE38F;
-        Mon, 25 May 2020 23:54:26 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 5/5] netfilter: nfnetlink_cthelper: unbreak userspace helper support
-Date:   Mon, 25 May 2020 23:54:20 +0200
-Message-Id: <20200525215420.2290-6-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200525215420.2290-1-pablo@netfilter.org>
-References: <20200525215420.2290-1-pablo@netfilter.org>
+        id S1727842AbgEYV7V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 17:59:21 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E9CE131B;
+        Mon, 25 May 2020 14:59:20 -0700 (PDT)
+Received: from [192.168.122.166] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 912333F6C4;
+        Mon, 25 May 2020 14:59:20 -0700 (PDT)
+Subject: Re: [RFC 01/11] net: phy: Don't report success if devices weren't
+ found
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
+        linux-kernel@vger.kernel.org
+References: <20200522213059.1535892-1-jeremy.linton@arm.com>
+ <20200522213059.1535892-2-jeremy.linton@arm.com>
+ <20200523182054.GW1551@shell.armlinux.org.uk>
+ <e6e08ca4-5a6d-5ea3-0f97-946f1d403568@arm.com>
+ <20200525094536.GK1551@shell.armlinux.org.uk>
+ <be729566-5c63-a711-9a99-acc53d871b88@arm.com>
+ <20200525210751.GN1551@shell.armlinux.org.uk>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <0eec69af-2099-2fee-f0f1-a83c7e4c2690@arm.com>
+Date:   Mon, 25 May 2020 16:59:16 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200525210751.GN1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Restore helper data size initialization and fix memcopy of the helper
-data size.
+Hi,
 
-Fixes: 157ffffeb5dc ("netfilter: nfnetlink_cthelper: reject too large userspace allocation requests")
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nfnetlink_cthelper.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 5/25/20 4:07 PM, Russell King - ARM Linux admin wrote:
+> On Mon, May 25, 2020 at 04:02:13PM -0500, Jeremy Linton wrote:
+>>> So, I think you're going to have to add a work-around to ignore bit 0,
+>>> which brings up the question whether this is worth it or not.
+>>
+>> It does ignore bit 0, it gets turned into the C22 regs flag, and
+>> cleared/ignored in the remainder of the code (do to MMD loop indexes
+>> starting at 1).
+> 
+> However, I've already pointed out that that isn't the case in a
+> number of functions that I listed in another email, and I suspect
+> was glossed over.
+> 
 
-diff --git a/net/netfilter/nfnetlink_cthelper.c b/net/netfilter/nfnetlink_cthelper.c
-index a5f294aa8e4c..5b0d0a77379c 100644
---- a/net/netfilter/nfnetlink_cthelper.c
-+++ b/net/netfilter/nfnetlink_cthelper.c
-@@ -103,7 +103,7 @@ nfnl_cthelper_from_nlattr(struct nlattr *attr, struct nf_conn *ct)
- 	if (help->helper->data_len == 0)
- 		return -EINVAL;
- 
--	nla_memcpy(help->data, nla_data(attr), sizeof(help->data));
-+	nla_memcpy(help->data, attr, sizeof(help->data));
- 	return 0;
- }
- 
-@@ -240,6 +240,7 @@ nfnl_cthelper_create(const struct nlattr * const tb[],
- 		ret = -ENOMEM;
- 		goto err2;
- 	}
-+	helper->data_len = size;
- 
- 	helper->flags |= NF_CT_HELPER_F_USERSPACE;
- 	memcpy(&helper->tuple, tuple, sizeof(struct nf_conntrack_tuple));
--- 
-2.20.1
+Hmm, right, I might not be understanding, I'm still considering your 
+comments in 4/11 and a couple others..
 
+OTOH, the mmd 0 logic could be completely removed, as its actually been 
+broken for a year or so in linux (AFAIK) because the code triggering it 
+was disabled when the C22 sanitation patch was merged. OTOH, this patch 
+is still clearing the C22 flag from devices, so anything dependent 
+entirely on that should have the same behavior as before.
+
+So, there is a bug in the is_valid_phy/device macro, because I messed it 
+up when I converted it to a function because its using a signed val, 
+when it should be unsigned. I don't think that is what you were hinting 
+in 4/11 though.
+
+Thanks,
