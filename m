@@ -2,128 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD16C1E183B
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 407F61E1843
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 01:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387888AbgEYXat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 19:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
+        id S1728748AbgEYXd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 19:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726408AbgEYXas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:30:48 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEE1C061A0E;
-        Mon, 25 May 2020 16:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=U1Ygj3xrhTKKUdcGnGrhi0Eqb0ZBnKIT+SrxZH8LzP8=; b=nVwxpcLFDDiMw8ugil1Y/JY82
-        e4LhWefOQaoHrpw/MZsIu+JMG6MXLWJ03SxtjzklRxAbMhJiTslUyk/EZG3iv4Q6gn+jGaEEDP94X
-        rw8yPG8M8N0zDTqCuDo1iaBPzMj8YMO8tOhB9L1Al1XyejOjjV4zpajlPv6YGtC/HbE31Uk9cAEbm
-        lBgt4d5UtFxtvda5HX0j+kxPpr+iHFBnb2pHY80z9j9u20dy00j67gi6P3txDrxWngD0MAZnMWLRx
-        WQ6goX5R9/I+0QZPIe8PXwAtl10LT0LOtLJFrjXamroOcVFzdJqTy1BK2o3QU89ZEBvfDMxG6Hlru
-        528jMUWqA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36976)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jdMYM-0006Er-8o; Tue, 26 May 2020 00:30:42 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jdMYK-0004mb-BB; Tue, 26 May 2020 00:30:40 +0100
-Date:   Tue, 26 May 2020 00:30:40 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        madalin.bucur@oss.nxp.com, calvin.johnson@oss.nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 04/11] net: phy: Handle c22 regs presence better
-Message-ID: <20200525233040.GS1551@shell.armlinux.org.uk>
-References: <20200522213059.1535892-1-jeremy.linton@arm.com>
- <20200522213059.1535892-5-jeremy.linton@arm.com>
- <20200523183731.GZ1551@shell.armlinux.org.uk>
- <f85e4d86-ff58-0ed2-785b-c51626916140@arm.com>
- <20200525100612.GM1551@shell.armlinux.org.uk>
- <63ca13e3-11ea-3ddf-e1c7-90597d4a5f8c@arm.com>
- <20200525220127.GO1551@shell.armlinux.org.uk>
- <bcffde0b-d87f-b615-7484-5d25ade1fb48@arm.com>
+        with ESMTP id S1726408AbgEYXd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 19:33:27 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDECC061A0E;
+        Mon, 25 May 2020 16:33:27 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id q8so2417372qkm.12;
+        Mon, 25 May 2020 16:33:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JGAlG5olRmFuMRb2dfcIhmtPFQGLh4l8c9TcPg47YH8=;
+        b=f6ArtC8fTuZ7i0MxeWQdo9EXk2iJL1KvUaSsECfpi7IXMrCdLGA/xVkJRw8BOlWF/6
+         gyF0tn2SW66TsWx7LQ/dk0MlYUsfkPFe/x7NZCnSEqxtIyVhv4wUXFJAq87XawnzJKXD
+         4eDxDrmyFgV/C0Gn3FGyysI7oz42PNVNu8zg7SJtFJOvbpnztdHQERe9mWLfXj8iyJv6
+         CSwhUBvtxaxH9O/u+lq3JzH3ws6HLagAIaDdEza/LdxQpsbDtnV6Q78CJrrhI5cFcFyL
+         dr6R/ynDforF+eCsy14M9vU+G814mU31ifaz2tTfqJYNPuOkfM97UoohZeF8qF7MVyDw
+         i+IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JGAlG5olRmFuMRb2dfcIhmtPFQGLh4l8c9TcPg47YH8=;
+        b=Hn4Wf9eTjmktm5isK/lqf9NQvRjRlFujimWww01yLsv7u5INyIVwgjiV7JZmqegZKY
+         HxL+QaUk/xkt2PPvuDFy/kFjP+CMibN2kUrdn0k350+yBt/te6TT/6/vDw6zit8OxNbR
+         BIYlefphQ+/nvmIMgo5zAwT6Xn6Qxj8A7G0ErxyjBp3bOp5LIApSD9Rz/L7iwZYoPFSv
+         pYMV8FjxaX7LFe0FmuaCEdhoiw0TtbbYg6z/vH9jeTl/+0PXgQrJspZCU4D+CJzO9Z6z
+         jf1KGZhrYY2SOsPtugo0pkL3A+PlQ+kTyO6w4Yvr2MmBXMsYcwWTGoeuBqz8c05ARUKa
+         /6EA==
+X-Gm-Message-State: AOAM530Oxgm2LE7eFucxzhb8cqW+3+gTjkCLp10W4jZCADRXsn1+6wB1
+        xlTDwMd2Py9iNKhlJ3HBJNRPta9fXtkZVdgyFtU=
+X-Google-Smtp-Source: ABdhPJxtVXxtnQhgrfWf3YU5FHvH2RIivq1f7vTuqkAH8K4RNq1/bCqv/go/GZxs7X/+sMu+GOiHPOE15D14eHy7NXM=
+X-Received: by 2002:a37:6508:: with SMTP id z8mr16863069qkb.39.1590449606535;
+ Mon, 25 May 2020 16:33:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bcffde0b-d87f-b615-7484-5d25ade1fb48@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200517195727.279322-1-andriin@fb.com> <20200517195727.279322-3-andriin@fb.com>
+ <20200522003433.GG2869@paulmck-ThinkPad-P72> <CAEf4BzaVeFfa2=-M4FCgH5HX17TSkcGsBTDZcjrZxo=He2QESg@mail.gmail.com>
+In-Reply-To: <CAEf4BzaVeFfa2=-M4FCgH5HX17TSkcGsBTDZcjrZxo=He2QESg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 25 May 2020 16:33:15 -0700
+Message-ID: <CAEf4Bza9aRM+6EfXaokV8xfEj_hRoKhNd5vYKtpc61XFAiewsA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/7] tools/memory-model: add BPF ringbuf MPSC
+ litmus tests
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 06:16:18PM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 5/25/20 5:01 PM, Russell King - ARM Linux admin wrote:
-> > On Mon, May 25, 2020 at 04:51:16PM -0500, Jeremy Linton wrote:
-> > > So, my goals here have been to first, not break anything, and then do a
-> > > slightly better job finding phy's that are (mostly?) responding correctly to
-> > > the 802.3 spec. So we can say "if you hardware is ACPI conformant, and you
-> > > have IEEE conformant phy's you should be ok". So, for your example phy, I
-> > > guess the immediate answer is "use DT" or "find a conformant phy", or even
-> > > "abstract it in the firmware and use a mailbox interface".
-> > 
-> > You haven't understood.  The PHY does conform for most of the MMDs,
-> > but there are a number that do not conform.
-> > 
-> 
-> Maybe I should clarify. This set is still terminating the search for a valid
-> MMD device list on the first MMD that responds. It then probes the same ID
-> registers of the flagged MMDs as before. What has changed is that we search
-> higher into the MMD address space for a device list. So previously if a
-> device didn't respond to MMD0-8 it was ignored. Now it needs to fail all of
-> 0-31 to be ignored. Similarly for the ID's, if we find what appears to be a
-> valid MMD device list, then we will probe not only the original 1-8 MMDs for
-> IDs, but 1-31 MMDs for IDs.
+On Fri, May 22, 2020 at 11:51 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, May 21, 2020 at 5:34 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Sun, May 17, 2020 at 12:57:22PM -0700, Andrii Nakryiko wrote:
+> > > Add 4 litmus tests for BPF ringbuf implementation, divided into two different
+> > > use cases.
+> > >
+> > > First, two unbounded case, one with 1 producer and another with
+> > > 2 producers, single consumer. All reservations are supposed to succeed.
+> > >
+> > > Second, bounded case with only 1 record allowed in ring buffer at any given
+> > > time. Here failures to reserve space are expected. Again, 1- and 2- producer
+> > > cases, single consumer, are validated.
+> > >
+> > > Just for the fun of it, I also wrote a 3-producer cases, it took *16 hours* to
+> > > validate, but came back successful as well. I'm not including it in this
+> > > patch, because it's not practical to run it. See output for all included
+> > > 4 cases and one 3-producer one with bounded use case.
+> > >
+> > > Each litmust test implements producer/consumer protocol for BPF ring buffer
+> > > implementation found in kernel/bpf/ringbuf.c. Due to limitations, all records
+> > > are assumed equal-sized and producer/consumer counters are incremented by 1.
+> > > This doesn't change the correctness of the algorithm, though.
+> >
+> > Very cool!!!
+> >
+> > However, these should go into Documentation/litmus-tests/bpf-rb or similar.
+> > Please take a look at Documentation/litmus-tests/ in -rcu, -tip, and
+> > -next, including the README file.
+> >
+> > The tools/memory-model/litmus-tests directory is for basic examples,
+> > not for the more complex real-world ones like these guys.  ;-)
+>
+> Oh, ok, I didn't realize there are more litmus tests under
+> Documentation/litmus-tests... Might have saved me some time (more
+> examples to learn from!) when I was writing mine :) Will check those
+> and move everything.
+>
 
-Clarification is not required; I understand what you're doing, but you
-are not understanding my points.
+Ok, so Documentation/litmus-tests is not present in bpf-next, so I
+guess I'll have to split this patch out and post it separately. BTW,
+it's not in -rcu tree either, should I post this against linux-next
+tree directly?
 
-For the 88x3310, your change means that the list of IDs for this PHY
-will not only 0x002b09aX, 0x01410daX (the official IDs), but also
-0x00000000 and 0xfffe0000 from MMD 30 and 31 respectively, which are
-not real IDs.  That's two incorrect IDs that should actually not be
-there.
 
-Here's what the first few registers from MMD 30 and 31 look like on
-this PHY:
-
-MMD30:
- Addr  Data
- 0000  0000 0000 0000 0000 0000 0000 0000 0000
- 0008  0000 0000 0000 0000 0000 0000 0000 0000
- 0010  0000 0000 0000 0000 0000 0000 0000 0000
-
-MMD31:
- 0000  fffe 0000 fffe 0000 fffe 0000 fffe 0000
- 0008  fffe 0000 fffe 0000 fffe 0000 fffe 0000
- 0010  fffe 0000 fffe 0000 fffe 0000 fffe 0000
-
-We've got away with it so far on several counts:
-1. The code doesn't probe that high for IDs.
-2. We have no driver that may match those IDs.
-
-You're taking away (1), so now all it takes is for condition (2) to
-be broken, and we can end up with a regression if another driver
-appears that may match using those.
-
-So, I would suggest that you avoid reading IDs from MMD 30/31, or
-maybe only read the ID from MMDs > 8 if register 8 indicates that
-there is a device present at that MMD.  That would be compliant
-with IEEE 802.3, preserve our existing behaviour, while allowing
-us to expand the IDs that we probe for to have a better chance of
-only detecting truely valid IDs.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+> >
+> >                                                                 Thanx, Paul
+> >
+>
+> [...]
