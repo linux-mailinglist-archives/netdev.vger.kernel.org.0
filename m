@@ -2,108 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 657291E0C1C
-	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 12:49:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4388D1E0C73
+	for <lists+netdev@lfdr.de>; Mon, 25 May 2020 13:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389897AbgEYKs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 06:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S2390028AbgEYLGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 07:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389484AbgEYKs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 06:48:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DBCC061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 03:48:56 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jdAf8-0007hT-7s; Mon, 25 May 2020 12:48:54 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jdAf3-0005hQ-V1; Mon, 25 May 2020 12:48:49 +0200
-Date:   Mon, 25 May 2020 12:48:49 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     fugang.duan@nxp.com
-Cc:     andrew@lunn.ch, martin.fuzzey@flowbird.group, davem@davemloft.net,
-        netdev@vger.kernel.org, robh+dt@kernel.org, shawnguo@kernel.org,
-        devicetree@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net v2 1/4] net: ethernet: fec: move GPR register offset
- and bit into DT
-Message-ID: <20200525104849.GQ11869@pengutronix.de>
-References: <1590390569-4394-1-git-send-email-fugang.duan@nxp.com>
- <1590390569-4394-2-git-send-email-fugang.duan@nxp.com>
+        with ESMTP id S2389897AbgEYLGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 07:06:16 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3790BC05BD43
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 04:06:15 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id m7so7389141plt.5
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 04:06:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=QcB2YOMl1yui9BYd9Im0D0BSfvlNUCbYy9AD2DvaL7w=;
+        b=CSD6a6sufHaZhkOBv9yKYCjMCC+YfHlcHQ+zV16z/tnX1WZhRGlK2aXjADa2LchTOA
+         hOyw6uLnjSabILRR52IJm8yt8qJ43zhdaGgeMeN8wxODr2Kpn8CLJ6JulYu8bRZCWYQW
+         4qQjvVwInFqFK4WF/wQQkNZpTxc27SH3Y+vwdEvmPgsXJHQEibkdiE9rqhX7Ty2iYHIT
+         /L7n1sWJ7n8FkDW7qWj0AWtWcwp3+PRvvDCc8pclYtyyy4zCFTJT3w5reDhk1lxQVPzP
+         KvViNl8uOnRYczcFW7SIYVL/6vXyA7AD5QFJThtiOD2/1NOpdZgnv4uHpGO1tlZ7ikg4
+         iOWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=QcB2YOMl1yui9BYd9Im0D0BSfvlNUCbYy9AD2DvaL7w=;
+        b=kjzzL3ATfkmq/YqCLku6+UYHORZjv7uVB9MTFHV9fiG2DaqxWvy1tgxsmBCL7MB5mh
+         Ls9Zgq2aAFPt8iunHD131lJXIR0eomrE9PkNZnZn4sfWA0NRNoivuev3yZ2sVBZrGu5y
+         hMSvqjoO+CpgsCZp2ToV2pDwrNJT3aUhlMqHmyld46LxGBDPT/y0kFL1uhkOBDKz6uQi
+         7cekzVeDkvpcH2d1zTyl38FZ7YH2mc/TDr1/vw5RazTlCS1Nyssx0UVEUSAYJgoSjMu8
+         vab/yQnB1bmeui8hX3pIevrUk3oEsS5vmQJuiBvxYLspHzlXSZqoo8Xv81HB3vVNGrZD
+         Sr+Q==
+X-Gm-Message-State: AOAM530Bix50jySz9rDs1TMxEsb3Ye8rSPDpqEbYy0BDBRtRkgxVXksv
+        /7fFgkUhMu0dt1atseQBdvCvyN+u0TqZDwJE810=
+X-Google-Smtp-Source: ABdhPJysSopkFhyvmH1+4sFFCOSLxRl7E6LiRtzcwS+hV0NJHoLPz+EgTXl3IWQkXL/2u0CLZC/ZsM2h+FEd311Z6yI=
+X-Received: by 2002:a17:90b:80f:: with SMTP id bk15mr20557933pjb.51.1590404774824;
+ Mon, 25 May 2020 04:06:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1590390569-4394-2-git-send-email-fugang.duan@nxp.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:34:52 up 95 days, 18:05, 115 users,  load average: 0.11, 0.12,
- 0.14
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Received: by 2002:a17:90a:36c6:0:0:0:0 with HTTP; Mon, 25 May 2020 04:06:14
+ -0700 (PDT)
+Reply-To: farmer2006@embarqmail.com
+From:   Mary Farmer <orabank751@gmail.com>
+Date:   Mon, 25 May 2020 13:06:14 +0200
+Message-ID: <CAB9NweQ63C8npBLM1-3zpp_e=+fofJKXLXEhXfe2LcHmXCDEeQ@mail.gmail.com>
+Subject: Dringend bitte lesen
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 03:09:26PM +0800, fugang.duan@nxp.com wrote:
-> From: Fugang Duan <fugang.duan@nxp.com>
-> 
-> The commit da722186f654 (net: fec: set GPR bit on suspend by DT
-> configuration) set the GPR reigster offset and bit in driver for
-> wake on lan feature.
-> 
-> But it introduces two issues here:
-> - one SOC has two instances, they have different bit
-> - different SOCs may have different offset and bit
-> 
-> So to support wake-on-lan feature on other i.MX platforms, it should
-> configure the GPR reigster offset and bit from DT.
-> 
-> So the patch is to improve the commit da722186f654 (net: fec: set GPR
-> bit on suspend by DT configuration) to support multiple ethernet
-> instances on i.MX series.
-> 
-> v2:
->  * switch back to store the quirks bitmask in driver_data
-> 
-> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 103 ++++++++++--------------------
->  1 file changed, 34 insertions(+), 69 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 2e20914..4f55d30 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -86,56 +86,6 @@ static void fec_enet_itr_coal_init(struct net_device *ndev);
->  #define FEC_ENET_OPD_V	0xFFF0
->  #define FEC_MDIO_PM_TIMEOUT  100 /* ms */
->  
-> -struct fec_devinfo {
-> -	u32 quirks;
-> -	u8 stop_gpr_reg;
-> -	u8 stop_gpr_bit;
-> -};
+--=20
+Lieber Freund,
 
-Honestly I like the approach of having a struct fec_devinfo for
-abstracting differences between different hardware variants. It gives
-you more freedom to describe the differences. Converting this back to a
-single bitfield is a step backward, even when currently struct
-fec_devinfo only contains a single value.
+Es gibt etwas sehr Wichtiges, das ich mit Ihnen besprechen muss.
 
-Sascha
+ Ich schreibe diesen Brief in Tr=C3=A4nen und Angst. In Tr=C3=A4nen, weil i=
+ch
+Ich werde bald abreisen und Angst haben, weil ich nicht wirklich wei=C3=9F,=
+ ob du
+werde dies treu tun.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Ich bin COVID-19-Patient und der Arzt hat bereits best=C3=A4tigt, dass ich =
+es kann
+nicht f=C3=BCr die n=C3=A4chsten 7 Tage dauern.
+
+Ich habe einen betr=C3=A4chtlichen Geldbetrag in einem Sicherheitstresor hi=
+nterlegt
+in deinem Land. Es ist in Kofferr=C3=A4umen und sobald ich erhalte
+Ihre Antwort und sehen Sie Ihre Bereitschaft, das Geld zu fordern
+Ich werde sofort die ben=C3=B6tigten Unterlagen und den Kontakt weiterleite=
+n
+des Sicherheitsgew=C3=B6lbes, in dem die Sendung deponiert ist,
+Ich bitte Sie nicht, mir etwas zu geben, aber ich m=C3=B6chte, dass Sie hel=
+fen
+Menschen, die mit 60% von diesem t=C3=B6dlichen Virus infiziert wurden
+Das Geld und 40% sollten f=C3=BCr Sie und Ihre Familie sein.
+
+Ich werde den genauen Betrag in den Feldern offenlegen, sobald ich
+Erhalten Sie Ihre Antwort.
+
+Gr=C3=BC=C3=9Fe.
