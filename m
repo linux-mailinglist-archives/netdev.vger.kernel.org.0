@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA641E1ED7
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 11:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636341E1ED9
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 11:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388713AbgEZJjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 05:39:14 -0400
+        id S2388724AbgEZJjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 05:39:18 -0400
 Received: from mail-db8eur05on2125.outbound.protection.outlook.com ([40.107.20.125]:25953
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388460AbgEZJjN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 05:39:13 -0400
+        id S2388704AbgEZJjR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 05:39:17 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hoVsOhef5LeZYpGtnPLYNYdqef8HzBGc7xWoe2vAHKA3TApdZC181qL9Y2Nw7ls4Jcxcvc0cEVB0csNUt1sSVzPz1YYPqszqnAGukdt4aKxEloEDrjECpH5WuGEKJhJnoialw73PL3fuzwW1PxEedddCerJkXp3+482F84CqOWlP0yRRHnI6V+xPA7LFgIdPVVbIsaEzbdu3/uF77v93P8NNE6aS/Crz8v5JGh45z9BlcPN/xiVzvVv7vo4yfVjB5k9slGqNB2oAUCxYqE0C2fMZRrA4ge3VwFVhwojCbZ+BynkxbaCQcWogvFqxiHeM378euT4WH+nu8ZqFa3Jw2g==
+ b=d0WEvYaiwapNil/TI0zr7KR4tCMMVU9YYiXscqXTWPe4rcSVqabvU82/Zf0fNkxKfK1iFTAqRL1etauGe2tc1bje+cljfuw6+hnc/7fPQADG8LRCV/0Fuj0QZEouWn09d/zZ/z/cL6H3b4hEarT8Rdln8cmjAenyov/1119ENa5X9r3s5T6LieJ9OEaqHe83NXeWFqRJlekqp9CfFTJZE6QYWkL+PziaKA6pfbzxfhzHr7LJ61fMVsydAJe/1IEfaNJbq7n9dRweBbOEgMG+9cYqGMoY8r0tBEtVNB7IQ1eAdisTWm8KIfNiC3Jm3QzYMmMkC4LCwO0Q9Yhda0Y/rQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YZgnXiJWAJQ1BJ20fpHt90xan4ymmSixFTEukR17O+Q=;
- b=dLnQ1V7tEjlYsntNxSDMV8NBQhpbR+oXtni2Ue+BEcetf1o18cJdsQQZVAcFVa4NTosummzGbpLfM7Uwzy3NTFFJrX0/O3tGaHD81EZHiPEJPfvbNaCr5x+qsDxs53QftiIYWnQ13ur1/mhGMGxqhQPsGiDAud1yTniN3Z3UuQRSDPqqNlLXLXTKP2SQKqpeu14xHvnu2rylcl+zK2jV847ZClhknNtEI3SQBadoyDe4Im+Tq3FwxXHbFAJg94fhW9pNWKUFhPgZKkpPd7LqZ6PqIRzy1rS+n2dqbw27zZjA3MUfgzOUCtcHp0igu+Xq+tPEQVvdI9KYD+wvOOHvEQ==
+ bh=CTFw79NPAHW5+YbOTDoUVkSxqhWOJ5it5fp/dkiDdWw=;
+ b=PqaQ/G51hpH+dQC7dHxKQAsXrQ7Vzz2FDCxvHLVX+vgTAtezF98ogR8AudfKvIku3qlBkIc+vsu1o0J2FjKVFcMBDh3eiTOUVfMoqukbTeftNpKpnpJCslUzTkY8Fw4kdOlga++G3+IdhKJEwXfMOKjLFy5T8fAT55+K9U1IqQIJii/Aw4R5jdTTEYJkntXyOfk+woY9mt0dbfR/LU+izoHdxG9wuCn6WiN2ZZkoWKXXbxx+4iLYMzzYM14ZhEjc+61sKV0YKtD/W5yCn49tRS5ZEtX9Ldp9rmV7UgpKzXkq3LvsW76n69oe9xVSzdsmz/3NrCALROuyabo7L1a7nw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=dektech.com.au; dmarc=pass action=none
  header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YZgnXiJWAJQ1BJ20fpHt90xan4ymmSixFTEukR17O+Q=;
- b=wAJImoTQ9JsS5rVcaRH0IuhwriZOIHdWM5PM+74B94uGJV86wy+rj8bObPAdjR7QxRRFkhEQl5IA5RqAV+WZagdgwm3ED7h50Nm2RjCKB5r+OIovVpU/Gpwlpwgd4YSGG+XXk7kISo17fGZstHU4S4XQfyWdox5jWXm+bMNBY4Y=
+ bh=CTFw79NPAHW5+YbOTDoUVkSxqhWOJ5it5fp/dkiDdWw=;
+ b=BRe/XIa0VGew04cchN6Cz9d0IowEoIS1TmwGzTkl2godmsbPViTog2We4RYvUxyiz21c+b8XvkOCGFYe9oaxrLGh7Z2+IUg3pb8WWTvN4DJW0t7aSg4oTDIYdnyyEeWt9C5gn4TSnkIDODWlsyfv1HFisEGT7dgdTdnZwc0oQ/g=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none
  header.from=dektech.com.au;
@@ -34,18 +34,18 @@ Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
  by AM6PR0502MB3718.eurprd05.prod.outlook.com (2603:10a6:209:11::29) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Tue, 26 May
- 2020 09:38:57 +0000
+ 2020 09:38:59 +0000
 Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
  ([fe80::4d5f:2ab:5a66:deaf]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
  ([fe80::4d5f:2ab:5a66:deaf%7]) with mapi id 15.20.3021.029; Tue, 26 May 2020
- 09:38:57 +0000
+ 09:38:59 +0000
 From:   Tuong Lien <tuong.t.lien@dektech.com.au>
 To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
         ying.xue@windriver.com, netdev@vger.kernel.org
 Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next 4/5] tipc: add support for broadcast rcv stats dumping
-Date:   Tue, 26 May 2020 16:38:37 +0700
-Message-Id: <20200526093838.17421-5-tuong.t.lien@dektech.com.au>
+Subject: [net-next 5/5] tipc: add test for Nagle algorithm effectiveness
+Date:   Tue, 26 May 2020 16:38:38 +0700
+Message-Id: <20200526093838.17421-6-tuong.t.lien@dektech.com.au>
 X-Mailer: git-send-email 2.13.7
 In-Reply-To: <20200526093838.17421-1-tuong.t.lien@dektech.com.au>
 References: <20200526093838.17421-1-tuong.t.lien@dektech.com.au>
@@ -55,545 +55,302 @@ X-ClientProxiedBy: HK2PR03CA0060.apcprd03.prod.outlook.com
  (2603:10a6:209:5::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by HK2PR03CA0060.apcprd03.prod.outlook.com (2603:1096:202:17::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3045.8 via Frontend Transport; Tue, 26 May 2020 09:38:54 +0000
+Received: from dektech.com.au (14.161.14.188) by HK2PR03CA0060.apcprd03.prod.outlook.com (2603:1096:202:17::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3045.8 via Frontend Transport; Tue, 26 May 2020 09:38:57 +0000
 X-Mailer: git-send-email 2.13.7
 X-Originating-IP: [14.161.14.188]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 28b76398-0668-4a54-44ad-08d801589c8c
+X-MS-Office365-Filtering-Correlation-Id: 7bf37cfc-085b-4da2-fd4d-08d801589e10
 X-MS-TrafficTypeDiagnostic: AM6PR0502MB3718:
-X-Microsoft-Antispam-PRVS: <AM6PR0502MB3718A6086E0271941159820DE2B00@AM6PR0502MB3718.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:67;
+X-Microsoft-Antispam-PRVS: <AM6PR0502MB37185246922D4EC0A6E1EBC8E2B00@AM6PR0502MB3718.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-Forefront-PRVS: 041517DFAB
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gjJOFor/6FZXTAdYiDsnaPJs5/Nn9x3iL1SoHyqMx38P/ZkdTNZx1QCEdoxtZgImBpQfmQcvWmGJlwrBRVCNTWWV4AJuOfcrfN3mWO/R7F4D26O3QOMaTccu9C7Uiauh8RyCa/OI97QEZx3QO5tbnQOSBsYtb5S79NNbHAWWDJkiJ78why5OfWf73dJvNAIxYUv3CJAw2usyvxng9o90zSXOPennrEY2N2WF9WxnimIWteWTHqKiwZU5J+gn49Jkl60Pb9OHQR8+p636r1pEuRAqG4f64jugVtKqi3NcmwX4KfucS0uoQAmuohFtFNQ+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(346002)(366004)(376002)(136003)(39850400004)(8676002)(16526019)(956004)(2616005)(103116003)(55016002)(186003)(6666004)(4326008)(66476007)(66556008)(2906002)(86362001)(36756003)(316002)(5660300002)(30864003)(26005)(66946007)(8936002)(52116002)(1076003)(478600001)(7696005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: zZBcYfl14zRFfgGrkfIUoCFsW52tqWsX/RrHUsjUYtjqUvXep5nCeWrbZwIXbxnYZUkRAtQJsLY19R0n/EZ9h0TJpjlZTbdsQgtqrlVJoFYxZKV8SawEyeIQ/Si/ahNpWTJNJonCGbQ5vQCfg7KrgOqJujKqqpYYJE43nXml+0w2PTHCF30HQEpIVCzenc5dI/zEdyqdIjkZCCpqr+TTfvobLWzKz9EaTZx1gWc9z+wfSAQmUc4d+/h7UVBYGtnhw503v7/rs1sorCTOju910Udw6vwO1qxYUoH3mTP15JvWHs9znrtbnsNzENbGmKrW0LwYTmfe18HgbL2WbN6e1+XKXPDQ2OCPniL7IiJGGWLDSilNKChTlrmzSV3b24yx0+DAmvnmhf4b3oe+8qaNwXXYaghvdubxENVzTTz47fZX2L06tL8C24qiG3FAW1T8X4YepMNzzrTNS3AYHCDo3Uje3AkjlzYzqcXgflKhMS4=
+X-Microsoft-Antispam-Message-Info: oO8+xj/kRnZ5vtei0jkNegMm30Jh5ul/R8ChRiY4PmwZ7tP7+TqlSs3aUJwKVMpnTBqWJYMTiZsY1zt8vpaiHoaIJh6XLd8lEUkzScIL8mE+8725G/J7cZhUsU+2a/qWPHplxD1etFSzlPe3OizuH7LgdjmtV1uSGaT/PNVVsSyi/xr1nsFPI+GoPNM/4uOdCq8WaQ/lcjGSlDRWQQOVWtwvvni5tr3h3O9hIyJ3QBUR6E1n6HnEc3nrVMPITggGk4qEkR0USW4TnUj7Z+SYebcspbGplEyToRKmg6dPKZDXXbz5xvNbLgLNlnK3+SQV
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(346002)(366004)(376002)(136003)(39850400004)(8676002)(16526019)(956004)(2616005)(103116003)(55016002)(186003)(6666004)(4326008)(66476007)(66556008)(2906002)(86362001)(36756003)(316002)(5660300002)(26005)(66946007)(8936002)(52116002)(1076003)(478600001)(7696005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 9ujbErDlYmfbC88vIUGwkQGD3hGau5HfflUjmqzqlL4s+FLkTHnExYwrYxDQXd8LFAwHwrUDK4UwKSMbCtV9cAMPDYFfW8I94rxa1/TYLnAnHG0ks1sS3U3m9ypeHZ+roWGAfLSjdJ3h+0TR47wAIPiAj9lUWvGbKDnxqXe2nWfGSy5hBL9+dxGdtB9Eqs+IxBUq2qqzP387jGOgEJ4dQygmIf9xRVK8ZB/lCSJpUoMs01DQpBEbpz8Ddx8llkSm7+kJwNtyT/DSD+QYIfyex5fqCe01+Y77bbe1nWJQPdSD8oFNvDTIHe9J5hS3LO0blAfN9BcWZvIsRV09mj6m/a1EDOaVt1BgSz4mwtso2dBj79B3rR6DXmAvtcISf+XHc0GB0IMdI2TXAsZ7aw6R4b4g3Ss0XFi0RQVu9bEYcEunzK/tPIywV6gw/mIqWXcVPhIMXyQiogc19xvIh8/Q/Wqbhw3YUjCM5tGgWI4NETs=
 X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28b76398-0668-4a54-44ad-08d801589c8c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2020 09:38:57.1911
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bf37cfc-085b-4da2-fd4d-08d801589e10
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2020 09:38:59.7076
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JXyZH3hESR4YntxqOuxSItEWPVhGYcnpd4YmwAKNzzrZ08iTevnvWOkaTYihuHiScis6J7Cgbm2pXt3+Y00DtmrRaIelBm0YbltszP7UM2M=
+X-MS-Exchange-CrossTenant-UserPrincipalName: kzq+FQX4bK58RoW2jGm9DDnhQHv5F+aBnINEkRYJL1nMLs+kUHJSYkhrav1HwzY0H/VXDDJ1NdvAbwUH/IaJqIzuJPd2OlmqS3WoKVhQ4/E=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0502MB3718
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit enables dumping the statistics of a broadcast-receiver link
-like the traditional 'broadcast-link' one (which is for broadcast-
-sender). The link dumping can be triggered via netlink (e.g. the
-iproute2/tipc tool) by the link flag - 'TIPC_NLA_LINK_BROADCAST' as the
-indicator.
+When streaming in Nagle mode, we try to bundle small messages from user
+as many as possible if there is one outstanding buffer, i.e. not ACK-ed
+by the receiving side, which helps boost up the overall throughput. So,
+the algorithm's effectiveness really depends on when Nagle ACK comes or
+what the specific network latency (RTT) is, compared to the user's
+message sending rate.
 
-The name of a broadcast-receiver link of a specific peer will be in the
-format: 'broadcast-link:<peer-id>'.
+In a bad case, the user's sending rate is low or the network latency is
+small, there will not be many bundles, so making a Nagle ACK or waiting
+for it is not meaningful.
+For example: a user sends its messages every 100ms and the RTT is 50ms,
+then for each messages, we require one Nagle ACK but then there is only
+one user message sent without any bundles.
 
-For example:
+In a better case, even if we have a few bundles (e.g. the RTT = 300ms),
+but now the user sends messages in medium size, then there will not be
+any difference at all, that says 3 x 1000-byte data messages if bundled
+will still result in 3 bundles with MTU = 1500.
 
-Link <broadcast-link:1001002>
-  Window:50 packets
-  RX packets:7841 fragments:2408/440 bundles:0/0
-  TX packets:0 fragments:0/0 bundles:0/0
-  RX naks:0 defs:124 dups:0
-  TX naks:21 acks:0 retrans:0
-  Congestion link:0  Send queue max:0 avg:0
+When Nagle is ineffective, the delay in user message sending is clearly
+wasted instead of sending directly.
 
-In addition, the broadcast-receiver link statistics can be reset in the
-usual way via netlink by specifying that link name in command.
+Besides, adding Nagle ACKs will consume some processor load on both the
+sending and receiving sides.
 
-Note: the 'tipc_link_name_ext()' is removed because the link name can
-now be retrieved simply via the 'l->name'.
+This commit adds a test on the effectiveness of the Nagle algorithm for
+an individual connection in the network on which it actually runs.
+Particularly, upon receipt of a Nagle ACK we will compare the number of
+bundles in the backlog queue to the number of user messages which would
+be sent directly without Nagle. If the ratio is good (e.g. >= 2), Nagle
+mode will be kept for further message sending. Otherwise, we will leave
+Nagle and put a 'penalty' on the connection, so it will have to spend
+more 'one-way' messages before being able to re-enter Nagle.
+
+In addition, the 'ack-required' bit is only set when really needed that
+the number of Nagle ACKs will be reduced during Nagle mode.
+
+Testing with benchmark showed that with the patch, there was not much
+difference in throughput for small messages since the tool continuously
+sends messages without a break, so Nagle would still take in effect.
 
 Acked-by: Ying Xue <ying.xue@windriver.com>
 Acked-by: Jon Maloy <jmaloy@redhat.com>
 Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
 ---
- net/tipc/bcast.c   |  6 ++---
- net/tipc/bcast.h   |  5 +++--
- net/tipc/link.c    | 65 +++++++++++++++++++++++++++---------------------------
- net/tipc/link.h    |  3 +--
- net/tipc/msg.c     |  9 ++++----
- net/tipc/msg.h     |  2 +-
- net/tipc/netlink.c |  2 +-
- net/tipc/node.c    | 61 +++++++++++++++++++++++++++++++++++++++++++-------
- net/tipc/trace.h   |  4 ++--
- 9 files changed, 101 insertions(+), 56 deletions(-)
+ net/tipc/msg.c    |  3 ---
+ net/tipc/msg.h    | 14 ++++++++++--
+ net/tipc/socket.c | 64 ++++++++++++++++++++++++++++++++++++++++++++-----------
+ 3 files changed, 64 insertions(+), 17 deletions(-)
 
-diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-index 50a16f8bebd9..383f87bc1061 100644
---- a/net/tipc/bcast.c
-+++ b/net/tipc/bcast.c
-@@ -563,10 +563,8 @@ void tipc_bcast_remove_peer(struct net *net, struct tipc_link *rcv_l)
- 		tipc_sk_rcv(net, inputq);
- }
- 
--int tipc_bclink_reset_stats(struct net *net)
-+int tipc_bclink_reset_stats(struct net *net, struct tipc_link *l)
- {
--	struct tipc_link *l = tipc_bc_sndlink(net);
--
- 	if (!l)
- 		return -ENOPROTOOPT;
- 
-@@ -694,7 +692,7 @@ int tipc_bcast_init(struct net *net)
- 	tn->bcbase = bb;
- 	spin_lock_init(&tipc_net(net)->bclock);
- 
--	if (!tipc_link_bc_create(net, 0, 0,
-+	if (!tipc_link_bc_create(net, 0, 0, NULL,
- 				 FB_MTU,
- 				 BCLINK_WIN_DEFAULT,
- 				 BCLINK_WIN_DEFAULT,
-diff --git a/net/tipc/bcast.h b/net/tipc/bcast.h
-index 97d3cf9d3e4d..4240c95188b1 100644
---- a/net/tipc/bcast.h
-+++ b/net/tipc/bcast.h
-@@ -96,9 +96,10 @@ void tipc_bcast_ack_rcv(struct net *net, struct tipc_link *l,
- int tipc_bcast_sync_rcv(struct net *net, struct tipc_link *l,
- 			struct tipc_msg *hdr,
- 			struct sk_buff_head *retrq);
--int tipc_nl_add_bc_link(struct net *net, struct tipc_nl_msg *msg);
-+int tipc_nl_add_bc_link(struct net *net, struct tipc_nl_msg *msg,
-+			struct tipc_link *bcl);
- int tipc_nl_bc_link_set(struct net *net, struct nlattr *attrs[]);
--int tipc_bclink_reset_stats(struct net *net);
-+int tipc_bclink_reset_stats(struct net *net, struct tipc_link *l);
- 
- u32 tipc_bcast_get_broadcast_mode(struct net *net);
- u32 tipc_bcast_get_broadcast_ratio(struct net *net);
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index af352391e2ab..ee3b8d0576b8 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -539,7 +539,7 @@ bool tipc_link_create(struct net *net, char *if_name, int bearer_id,
-  *
-  * Returns true if link was created, otherwise false
-  */
--bool tipc_link_bc_create(struct net *net, u32 ownnode, u32 peer,
-+bool tipc_link_bc_create(struct net *net, u32 ownnode, u32 peer, u8 *peer_id,
- 			 int mtu, u32 min_win, u32 max_win, u16 peer_caps,
- 			 struct sk_buff_head *inputq,
- 			 struct sk_buff_head *namedq,
-@@ -554,7 +554,18 @@ bool tipc_link_bc_create(struct net *net, u32 ownnode, u32 peer,
- 		return false;
- 
- 	l = *link;
--	strcpy(l->name, tipc_bclink_name);
-+	if (peer_id) {
-+		char peer_str[NODE_ID_STR_LEN] = {0,};
-+
-+		tipc_nodeid2string(peer_str, peer_id);
-+		if (strlen(peer_str) > 16)
-+			sprintf(peer_str, "%x", peer);
-+		/* Broadcast receiver link name: "broadcast-link:<peer>" */
-+		snprintf(l->name, sizeof(l->name), "%s:%s", tipc_bclink_name,
-+			 peer_str);
-+	} else {
-+		strcpy(l->name, tipc_bclink_name);
-+	}
- 	trace_tipc_link_reset(l, TIPC_DUMP_ALL, "bclink created!");
- 	tipc_link_reset(l);
- 	l->state = LINK_RESET;
-@@ -1412,11 +1423,8 @@ static u8 __tipc_build_gap_ack_blks(struct tipc_gap_ack_blks *ga,
- 			gacks[n].ack = htons(expect - 1);
- 			gacks[n].gap = htons(seqno - expect);
- 			if (++n >= MAX_GAP_ACK_BLKS / 2) {
--				char buf[TIPC_MAX_LINK_NAME];
--
- 				pr_info_ratelimited("Gacks on %s: %d, ql: %d!\n",
--						    tipc_link_name_ext(l, buf),
--						    n,
-+						    l->name, n,
- 						    skb_queue_len(&l->deferdq));
- 				return n;
- 			}
-@@ -1587,6 +1595,8 @@ static int tipc_link_advance_transmq(struct tipc_link *l, struct tipc_link *r,
- 			_skb->priority = TC_PRIO_CONTROL;
- 			__skb_queue_tail(xmitq, _skb);
- 			l->stats.retransmitted++;
-+			if (!is_uc)
-+				r->stats.retransmitted++;
- 			*retransmitted = true;
- 			/* Increase actual retrans counter & mark first time */
- 			if (!TIPC_SKB_CB(skb)->retr_cnt++)
-@@ -1753,7 +1763,8 @@ int tipc_link_rcv(struct tipc_link *l, struct sk_buff *skb,
- 
- 		/* Defer delivery if sequence gap */
- 		if (unlikely(seqno != rcv_nxt)) {
--			__tipc_skb_queue_sorted(defq, seqno, skb);
-+			if (!__tipc_skb_queue_sorted(defq, seqno, skb))
-+				l->stats.duplicates++;
- 			rc |= tipc_link_build_nack_msg(l, xmitq);
- 			break;
- 		}
-@@ -1787,15 +1798,15 @@ static void tipc_link_build_proto_msg(struct tipc_link *l, int mtyp, bool probe,
- 				      int tolerance, int priority,
- 				      struct sk_buff_head *xmitq)
- {
-+	struct tipc_mon_state *mstate = &l->mon_state;
-+	struct sk_buff_head *dfq = &l->deferdq;
- 	struct tipc_link *bcl = l->bc_rcvlink;
--	struct sk_buff *skb;
- 	struct tipc_msg *hdr;
--	struct sk_buff_head *dfq = &l->deferdq;
-+	struct sk_buff *skb;
- 	bool node_up = link_is_up(bcl);
--	struct tipc_mon_state *mstate = &l->mon_state;
-+	u16 glen = 0, bc_rcvgap = 0;
- 	int dlen = 0;
- 	void *data;
--	u16 glen = 0;
- 
- 	/* Don't send protocol message during reset or link failover */
- 	if (tipc_link_is_blocked(l))
-@@ -1833,7 +1844,8 @@ static void tipc_link_build_proto_msg(struct tipc_link *l, int mtyp, bool probe,
- 		if (l->peer_caps & TIPC_LINK_PROTO_SEQNO)
- 			msg_set_seqno(hdr, l->snd_nxt_state++);
- 		msg_set_seq_gap(hdr, rcvgap);
--		msg_set_bc_gap(hdr, link_bc_rcv_gap(bcl));
-+		bc_rcvgap = link_bc_rcv_gap(bcl);
-+		msg_set_bc_gap(hdr, bc_rcvgap);
- 		msg_set_probe(hdr, probe);
- 		msg_set_is_keepalive(hdr, probe || probe_reply);
- 		if (l->peer_caps & TIPC_GAP_ACK_BLOCK)
-@@ -1858,6 +1870,8 @@ static void tipc_link_build_proto_msg(struct tipc_link *l, int mtyp, bool probe,
- 		l->stats.sent_probes++;
- 	if (rcvgap)
- 		l->stats.sent_nacks++;
-+	if (bc_rcvgap)
-+		bcl->stats.sent_nacks++;
- 	skb->priority = TC_PRIO_CONTROL;
- 	__skb_queue_tail(xmitq, skb);
- 	trace_tipc_proto_build(skb, false, l->name);
-@@ -2358,8 +2372,6 @@ int tipc_link_bc_sync_rcv(struct tipc_link *l, struct tipc_msg *hdr,
- 	if (!l->bc_peer_is_up)
- 		return rc;
- 
--	l->stats.recv_nacks++;
--
- 	/* Ignore if peers_snd_nxt goes beyond receive window */
- 	if (more(peers_snd_nxt, l->rcv_nxt + l->window))
- 		return rc;
-@@ -2410,6 +2422,11 @@ int tipc_link_bc_ack_rcv(struct tipc_link *r, u16 acked, u16 gap,
- 	if (!link_is_up(r) || !r->bc_peer_is_up)
- 		return 0;
- 
-+	if (gap) {
-+		l->stats.recv_nacks++;
-+		r->stats.recv_nacks++;
-+	}
-+
- 	if (less(acked, r->acked) || (acked == r->acked && !gap && !ga))
- 		return 0;
- 
-@@ -2721,16 +2738,15 @@ static int __tipc_nl_add_bc_link_stat(struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
- 
--int tipc_nl_add_bc_link(struct net *net, struct tipc_nl_msg *msg)
-+int tipc_nl_add_bc_link(struct net *net, struct tipc_nl_msg *msg,
-+			struct tipc_link *bcl)
- {
- 	int err;
- 	void *hdr;
- 	struct nlattr *attrs;
- 	struct nlattr *prop;
--	struct tipc_net *tn = net_generic(net, tipc_net_id);
- 	u32 bc_mode = tipc_bcast_get_broadcast_mode(net);
- 	u32 bc_ratio = tipc_bcast_get_broadcast_ratio(net);
--	struct tipc_link *bcl = tn->bcl;
- 
- 	if (!bcl)
- 		return 0;
-@@ -2817,21 +2833,6 @@ void tipc_link_set_abort_limit(struct tipc_link *l, u32 limit)
- 	l->abort_limit = limit;
- }
- 
--char *tipc_link_name_ext(struct tipc_link *l, char *buf)
--{
--	if (!l)
--		scnprintf(buf, TIPC_MAX_LINK_NAME, "null");
--	else if (link_is_bc_sndlink(l))
--		scnprintf(buf, TIPC_MAX_LINK_NAME, "broadcast-sender");
--	else if (link_is_bc_rcvlink(l))
--		scnprintf(buf, TIPC_MAX_LINK_NAME,
--			  "broadcast-receiver, peer %x", l->addr);
--	else
--		memcpy(buf, l->name, TIPC_MAX_LINK_NAME);
--
--	return buf;
--}
--
- /**
-  * tipc_link_dump - dump TIPC link data
-  * @l: tipc link to be dumped
-diff --git a/net/tipc/link.h b/net/tipc/link.h
-index 4d0768cf91d5..fc07232c9a12 100644
---- a/net/tipc/link.h
-+++ b/net/tipc/link.h
-@@ -80,7 +80,7 @@ bool tipc_link_create(struct net *net, char *if_name, int bearer_id,
- 		      struct sk_buff_head *inputq,
- 		      struct sk_buff_head *namedq,
- 		      struct tipc_link **link);
--bool tipc_link_bc_create(struct net *net, u32 ownnode, u32 peer,
-+bool tipc_link_bc_create(struct net *net, u32 ownnode, u32 peer, u8 *peer_id,
- 			 int mtu, u32 min_win, u32 max_win, u16 peer_caps,
- 			 struct sk_buff_head *inputq,
- 			 struct sk_buff_head *namedq,
-@@ -111,7 +111,6 @@ u16 tipc_link_rcv_nxt(struct tipc_link *l);
- u16 tipc_link_acked(struct tipc_link *l);
- u32 tipc_link_id(struct tipc_link *l);
- char *tipc_link_name(struct tipc_link *l);
--char *tipc_link_name_ext(struct tipc_link *l, char *buf);
- u32 tipc_link_state(struct tipc_link *l);
- char tipc_link_plane(struct tipc_link *l);
- int tipc_link_prio(struct tipc_link *l);
 diff --git a/net/tipc/msg.c b/net/tipc/msg.c
-index 4d0e0bdd997b..c69fb99163fc 100644
+index c69fb99163fc..23809039dda1 100644
 --- a/net/tipc/msg.c
 +++ b/net/tipc/msg.c
-@@ -825,19 +825,19 @@ bool tipc_msg_pskb_copy(u32 dst, struct sk_buff_head *msg,
-  * @seqno: sequence number of buffer to add
-  * @skb: buffer to add
-  */
--void __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
-+bool __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
- 			     struct sk_buff *skb)
- {
- 	struct sk_buff *_skb, *tmp;
- 
- 	if (skb_queue_empty(list) || less(seqno, buf_seqno(skb_peek(list)))) {
- 		__skb_queue_head(list, skb);
--		return;
-+		return true;
- 	}
- 
- 	if (more(seqno, buf_seqno(skb_peek_tail(list)))) {
- 		__skb_queue_tail(list, skb);
--		return;
-+		return true;
- 	}
- 
- 	skb_queue_walk_safe(list, _skb, tmp) {
-@@ -846,9 +846,10 @@ void __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
- 		if (seqno == buf_seqno(_skb))
- 			break;
- 		__skb_queue_before(list, _skb, skb);
--		return;
-+		return true;
- 	}
- 	kfree_skb(skb);
-+	return false;
- }
- 
- void tipc_skb_reject(struct net *net, int err, struct sk_buff *skb,
+@@ -235,9 +235,6 @@ int tipc_msg_append(struct tipc_msg *_hdr, struct msghdr *m, int dlen,
+ 			msg_set_size(hdr, MIN_H_SIZE);
+ 			__skb_queue_tail(txq, skb);
+ 			total += 1;
+-			if (prev)
+-				msg_set_ack_required(buf_msg(prev), 0);
+-			msg_set_ack_required(hdr, 1);
+ 		}
+ 		hdr = buf_msg(skb);
+ 		curr = msg_blocks(hdr);
 diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index ca5f8689a33b..cd4281779468 100644
+index cd4281779468..58660d56bc83 100644
 --- a/net/tipc/msg.h
 +++ b/net/tipc/msg.h
-@@ -1145,7 +1145,7 @@ bool tipc_msg_assemble(struct sk_buff_head *list);
- bool tipc_msg_reassemble(struct sk_buff_head *list, struct sk_buff_head *rcvq);
- bool tipc_msg_pskb_copy(u32 dst, struct sk_buff_head *msg,
- 			struct sk_buff_head *cpy);
--void __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
-+bool __tipc_skb_queue_sorted(struct sk_buff_head *list, u16 seqno,
- 			     struct sk_buff *skb);
- bool tipc_msg_skb_clone(struct sk_buff_head *msg, struct sk_buff_head *cpy);
- 
-diff --git a/net/tipc/netlink.c b/net/tipc/netlink.c
-index bb9862410e68..c4aee6247d55 100644
---- a/net/tipc/netlink.c
-+++ b/net/tipc/netlink.c
-@@ -188,7 +188,7 @@ static const struct genl_ops tipc_genl_v2_ops[] = {
- 	},
- 	{
- 		.cmd	= TIPC_NL_LINK_GET,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.validate = GENL_DONT_VALIDATE_STRICT,
- 		.doit   = tipc_nl_node_get_link,
- 		.dumpit	= tipc_nl_node_dump_link,
- 	},
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 548207fdec15..0312fb181d94 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1138,7 +1138,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	if (unlikely(!n->bc_entry.link)) {
- 		snd_l = tipc_bc_sndlink(net);
- 		if (!tipc_link_bc_create(net, tipc_own_addr(net),
--					 addr, U16_MAX,
-+					 addr, peer_id, U16_MAX,
- 					 tipc_link_min_win(snd_l),
- 					 tipc_link_max_win(snd_l),
- 					 n->capabilities,
-@@ -2435,7 +2435,7 @@ int tipc_nl_node_get_link(struct sk_buff *skb, struct genl_info *info)
- 		return -ENOMEM;
- 
- 	if (strcmp(name, tipc_bclink_name) == 0) {
--		err = tipc_nl_add_bc_link(net, &msg);
-+		err = tipc_nl_add_bc_link(net, &msg, tipc_net(net)->bcl);
- 		if (err)
- 			goto err_free;
- 	} else {
-@@ -2479,6 +2479,7 @@ int tipc_nl_node_reset_link_stats(struct sk_buff *skb, struct genl_info *info)
- 	struct tipc_node *node;
- 	struct nlattr *attrs[TIPC_NLA_LINK_MAX + 1];
- 	struct net *net = sock_net(skb->sk);
-+	struct tipc_net *tn = tipc_net(net);
- 	struct tipc_link_entry *le;
- 
- 	if (!info->attrs[TIPC_NLA_LINK])
-@@ -2495,11 +2496,26 @@ int tipc_nl_node_reset_link_stats(struct sk_buff *skb, struct genl_info *info)
- 
- 	link_name = nla_data(attrs[TIPC_NLA_LINK_NAME]);
- 
--	if (strcmp(link_name, tipc_bclink_name) == 0) {
--		err = tipc_bclink_reset_stats(net);
-+	err = -EINVAL;
-+	if (!strcmp(link_name, tipc_bclink_name)) {
-+		err = tipc_bclink_reset_stats(net, tipc_bc_sndlink(net));
- 		if (err)
- 			return err;
- 		return 0;
-+	} else if (strstr(link_name, tipc_bclink_name)) {
-+		rcu_read_lock();
-+		list_for_each_entry_rcu(node, &tn->node_list, list) {
-+			tipc_node_read_lock(node);
-+			link = node->bc_entry.link;
-+			if (link && !strcmp(link_name, tipc_link_name(link))) {
-+				err = tipc_bclink_reset_stats(net, link);
-+				tipc_node_read_unlock(node);
-+				break;
-+			}
-+			tipc_node_read_unlock(node);
-+		}
-+		rcu_read_unlock();
-+		return err;
- 	}
- 
- 	node = tipc_node_find_by_name(net, link_name, &bearer_id);
-@@ -2523,7 +2539,8 @@ int tipc_nl_node_reset_link_stats(struct sk_buff *skb, struct genl_info *info)
- 
- /* Caller should hold node lock  */
- static int __tipc_nl_add_node_links(struct net *net, struct tipc_nl_msg *msg,
--				    struct tipc_node *node, u32 *prev_link)
-+				    struct tipc_node *node, u32 *prev_link,
-+				    bool bc_link)
- {
- 	u32 i;
- 	int err;
-@@ -2539,6 +2556,14 @@ static int __tipc_nl_add_node_links(struct net *net, struct tipc_nl_msg *msg,
- 		if (err)
- 			return err;
- 	}
-+
-+	if (bc_link) {
-+		*prev_link = i;
-+		err = tipc_nl_add_bc_link(net, msg, node->bc_entry.link);
-+		if (err)
-+			return err;
-+	}
-+
- 	*prev_link = 0;
- 
- 	return 0;
-@@ -2547,17 +2572,36 @@ static int __tipc_nl_add_node_links(struct net *net, struct tipc_nl_msg *msg,
- int tipc_nl_node_dump_link(struct sk_buff *skb, struct netlink_callback *cb)
- {
- 	struct net *net = sock_net(skb->sk);
-+	struct nlattr **attrs = genl_dumpit_info(cb)->attrs;
-+	struct nlattr *link[TIPC_NLA_LINK_MAX + 1];
- 	struct tipc_net *tn = net_generic(net, tipc_net_id);
- 	struct tipc_node *node;
- 	struct tipc_nl_msg msg;
- 	u32 prev_node = cb->args[0];
- 	u32 prev_link = cb->args[1];
- 	int done = cb->args[2];
-+	bool bc_link = cb->args[3];
- 	int err;
- 
- 	if (done)
- 		return 0;
- 
-+	if (!prev_node) {
-+		/* Check if broadcast-receiver links dumping is needed */
-+		if (attrs && attrs[TIPC_NLA_LINK]) {
-+			err = nla_parse_nested_deprecated(link,
-+							  TIPC_NLA_LINK_MAX,
-+							  attrs[TIPC_NLA_LINK],
-+							  tipc_nl_link_policy,
-+							  NULL);
-+			if (unlikely(err))
-+				return err;
-+			if (unlikely(!link[TIPC_NLA_LINK_BROADCAST]))
-+				return -EINVAL;
-+			bc_link = true;
-+		}
-+	}
-+
- 	msg.skb = skb;
- 	msg.portid = NETLINK_CB(cb->skb).portid;
- 	msg.seq = cb->nlh->nlmsg_seq;
-@@ -2581,7 +2625,7 @@ int tipc_nl_node_dump_link(struct sk_buff *skb, struct netlink_callback *cb)
- 						 list) {
- 			tipc_node_read_lock(node);
- 			err = __tipc_nl_add_node_links(net, &msg, node,
--						       &prev_link);
-+						       &prev_link, bc_link);
- 			tipc_node_read_unlock(node);
- 			if (err)
- 				goto out;
-@@ -2589,14 +2633,14 @@ int tipc_nl_node_dump_link(struct sk_buff *skb, struct netlink_callback *cb)
- 			prev_node = node->addr;
- 		}
- 	} else {
--		err = tipc_nl_add_bc_link(net, &msg);
-+		err = tipc_nl_add_bc_link(net, &msg, tn->bcl);
- 		if (err)
- 			goto out;
- 
- 		list_for_each_entry_rcu(node, &tn->node_list, list) {
- 			tipc_node_read_lock(node);
- 			err = __tipc_nl_add_node_links(net, &msg, node,
--						       &prev_link);
-+						       &prev_link, bc_link);
- 			tipc_node_read_unlock(node);
- 			if (err)
- 				goto out;
-@@ -2611,6 +2655,7 @@ int tipc_nl_node_dump_link(struct sk_buff *skb, struct netlink_callback *cb)
- 	cb->args[0] = prev_node;
- 	cb->args[1] = prev_link;
- 	cb->args[2] = done;
-+	cb->args[3] = bc_link;
- 
- 	return skb->len;
+@@ -340,9 +340,19 @@ static inline int msg_ack_required(struct tipc_msg *m)
+ 	return msg_bits(m, 0, 18, 1);
  }
-diff --git a/net/tipc/trace.h b/net/tipc/trace.h
-index e7535ab75255..04af83f0500c 100644
---- a/net/tipc/trace.h
-+++ b/net/tipc/trace.h
-@@ -255,7 +255,7 @@ DECLARE_EVENT_CLASS(tipc_link_class,
  
- 	TP_fast_assign(
- 		__assign_str(header, header);
--		tipc_link_name_ext(l, __entry->name);
-+		memcpy(__entry->name, tipc_link_name(l), TIPC_MAX_LINK_NAME);
- 		tipc_link_dump(l, dqueues, __get_str(buf));
- 	),
+-static inline void msg_set_ack_required(struct tipc_msg *m, u32 d)
++static inline void msg_set_ack_required(struct tipc_msg *m)
+ {
+-	msg_set_bits(m, 0, 18, 1, d);
++	msg_set_bits(m, 0, 18, 1, 1);
++}
++
++static inline int msg_nagle_ack(struct tipc_msg *m)
++{
++	return msg_bits(m, 0, 18, 1);
++}
++
++static inline void msg_set_nagle_ack(struct tipc_msg *m)
++{
++	msg_set_bits(m, 0, 18, 1, 1);
+ }
  
-@@ -295,7 +295,7 @@ DECLARE_EVENT_CLASS(tipc_link_transmq_class,
- 	),
+ static inline bool msg_is_rcast(struct tipc_msg *m)
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index e370ad0edd76..d6b67d07d22e 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -48,6 +48,8 @@
+ #include "group.h"
+ #include "trace.h"
  
- 	TP_fast_assign(
--		tipc_link_name_ext(r, __entry->name);
-+		memcpy(__entry->name, tipc_link_name(r), TIPC_MAX_LINK_NAME);
- 		__entry->from = f;
- 		__entry->to = t;
- 		__entry->len = skb_queue_len(tq);
++#define NAGLE_START_INIT	4
++#define NAGLE_START_MAX		1024
+ #define CONN_TIMEOUT_DEFAULT    8000    /* default connect timeout = 8s */
+ #define CONN_PROBING_INTV	msecs_to_jiffies(3600000)  /* [ms] => 1 h */
+ #define TIPC_FWD_MSG		1
+@@ -119,7 +121,10 @@ struct tipc_sock {
+ 	struct rcu_head rcu;
+ 	struct tipc_group *group;
+ 	u32 oneway;
++	u32 nagle_start;
+ 	u16 snd_backlog;
++	u16 msg_acc;
++	u16 pkt_cnt;
+ 	bool expect_ack;
+ 	bool nodelay;
+ 	bool group_is_open;
+@@ -143,7 +148,7 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
+ static void tipc_sk_remove(struct tipc_sock *tsk);
+ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
+ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk);
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
+ 
+ static const struct proto_ops packet_ops;
+ static const struct proto_ops stream_ops;
+@@ -474,6 +479,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	tsk = tipc_sk(sk);
+ 	tsk->max_pkt = MAX_PKT_DEFAULT;
+ 	tsk->maxnagle = 0;
++	tsk->nagle_start = NAGLE_START_INIT;
+ 	INIT_LIST_HEAD(&tsk->publications);
+ 	INIT_LIST_HEAD(&tsk->cong_links);
+ 	msg = &tsk->phdr;
+@@ -541,7 +547,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
+ 					    !tsk_conn_cong(tsk)));
+ 
+ 	/* Push out delayed messages if in Nagle mode */
+-	tipc_sk_push_backlog(tsk);
++	tipc_sk_push_backlog(tsk, false);
+ 	/* Remove pending SYN */
+ 	__skb_queue_purge(&sk->sk_write_queue);
+ 
+@@ -1252,14 +1258,37 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
+  *                         when socket is in Nagle mode
+  */
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk)
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
+ {
+ 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
++	struct sk_buff *skb = skb_peek_tail(txq);
+ 	struct net *net = sock_net(&tsk->sk);
+ 	u32 dnode = tsk_peer_node(tsk);
+-	struct sk_buff *skb = skb_peek(txq);
+ 	int rc;
+ 
++	if (nagle_ack) {
++		tsk->pkt_cnt += skb_queue_len(txq);
++		if (!tsk->pkt_cnt || tsk->msg_acc / tsk->pkt_cnt < 2) {
++			tsk->oneway = 0;
++			if (tsk->nagle_start < NAGLE_START_MAX)
++				tsk->nagle_start *= 2;
++			tsk->expect_ack = false;
++			pr_debug("tsk %10u: bad nagle %u -> %u, next start %u!\n",
++				 tsk->portid, tsk->msg_acc, tsk->pkt_cnt,
++				 tsk->nagle_start);
++		} else {
++			tsk->nagle_start = NAGLE_START_INIT;
++			if (skb) {
++				msg_set_ack_required(buf_msg(skb));
++				tsk->expect_ack = true;
++			} else {
++				tsk->expect_ack = false;
++			}
++		}
++		tsk->msg_acc = 0;
++		tsk->pkt_cnt = 0;
++	}
++
+ 	if (!skb || tsk->cong_link_cnt)
+ 		return;
+ 
+@@ -1267,9 +1296,10 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk)
+ 	if (msg_is_syn(buf_msg(skb)))
+ 		return;
+ 
++	if (tsk->msg_acc)
++		tsk->pkt_cnt += skb_queue_len(txq);
+ 	tsk->snt_unacked += tsk->snd_backlog;
+ 	tsk->snd_backlog = 0;
+-	tsk->expect_ack = true;
+ 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
+ 	if (rc == -ELINKCONG)
+ 		tsk->cong_link_cnt = 1;
+@@ -1322,8 +1352,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
+ 		return;
+ 	} else if (mtyp == CONN_ACK) {
+ 		was_cong = tsk_conn_cong(tsk);
+-		tsk->expect_ack = false;
+-		tipc_sk_push_backlog(tsk);
++		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
+ 		tsk->snt_unacked -= msg_conn_ack(hdr);
+ 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
+ 			tsk->snd_win = msg_adv_win(hdr);
+@@ -1516,6 +1545,7 @@ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dlen)
+ 	struct tipc_sock *tsk = tipc_sk(sk);
+ 	struct tipc_msg *hdr = &tsk->phdr;
+ 	struct net *net = sock_net(sk);
++	struct sk_buff *skb;
+ 	u32 dnode = tsk_peer_node(tsk);
+ 	int maxnagle = tsk->maxnagle;
+ 	int maxpkt = tsk->max_pkt;
+@@ -1544,17 +1574,25 @@ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dlen)
+ 			break;
+ 		send = min_t(size_t, dlen - sent, TIPC_MAX_USER_MSG_SIZE);
+ 		blocks = tsk->snd_backlog;
+-		if (tsk->oneway++ >= 4 && send <= maxnagle) {
++		if (tsk->oneway++ >= tsk->nagle_start && send <= maxnagle) {
+ 			rc = tipc_msg_append(hdr, m, send, maxnagle, txq);
+ 			if (unlikely(rc < 0))
+ 				break;
+ 			blocks += rc;
++			tsk->msg_acc++;
+ 			if (blocks <= 64 && tsk->expect_ack) {
+ 				tsk->snd_backlog = blocks;
+ 				sent += send;
+ 				break;
++			} else if (blocks > 64) {
++				tsk->pkt_cnt += skb_queue_len(txq);
++			} else {
++				skb = skb_peek_tail(txq);
++				msg_set_ack_required(buf_msg(skb));
++				tsk->expect_ack = true;
++				tsk->msg_acc = 0;
++				tsk->pkt_cnt = 0;
+ 			}
+-			tsk->expect_ack = true;
+ 		} else {
+ 			rc = tipc_msg_build(hdr, m, sent, send, maxpkt, txq);
+ 			if (unlikely(rc != send))
+@@ -2091,7 +2129,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
+ 		smp_wmb();
+ 		tsk->cong_link_cnt--;
+ 		wakeup = true;
+-		tipc_sk_push_backlog(tsk);
++		tipc_sk_push_backlog(tsk, false);
+ 		break;
+ 	case GROUP_PROTOCOL:
+ 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
+@@ -2180,7 +2218,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
+ 		return false;
+ 	case TIPC_ESTABLISHED:
+ 		if (!skb_queue_empty(&sk->sk_write_queue))
+-			tipc_sk_push_backlog(tsk);
++			tipc_sk_push_backlog(tsk, false);
+ 		/* Accept only connection-based messages sent by peer */
+ 		if (likely(con_msg && !err && pport == oport &&
+ 			   pnode == onode)) {
+@@ -2188,8 +2226,10 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
+ 				struct sk_buff *skb;
+ 
+ 				skb = tipc_sk_build_ack(tsk);
+-				if (skb)
++				if (skb) {
++					msg_set_nagle_ack(buf_msg(skb));
+ 					__skb_queue_tail(xmitq, skb);
++				}
+ 			}
+ 			return true;
+ 		}
 -- 
 2.13.7
 
