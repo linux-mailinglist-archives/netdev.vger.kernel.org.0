@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C23061E2EFD
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:33:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766A31E2EF7
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390862AbgEZTdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 15:33:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49186 "EHLO mail.kernel.org"
+        id S2389826AbgEZS4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 14:56:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49220 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389802AbgEZS4X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2388663AbgEZS4X (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 26 May 2020 14:56:23 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E3750208DB;
-        Tue, 26 May 2020 18:56:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E15E7208B6;
+        Tue, 26 May 2020 18:56:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590519382;
-        bh=JHG4u04g44eiuHlgDVIQOAvUt/HD3vMhtyq+qyyYGjM=;
+        s=default; t=1590519383;
+        bh=yNsGdnkwi3MCGrz0nWhBWVb160kiXOUhwsIe+xWy+Nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c2Frl8CyPeG4VaPQMlZpHfR1iGUOg7lt/7Hc+41dBrt3VvIidDgmSGYGvbY5vn+3c
-         GUIZ2SF8fnowqH4oyaOVYu6lSJnYE9Wa1RxDw6qJvJvW8QJzwLS5QmZofZXFmh5wzU
-         CoeHsWG4FQ07b2oKsCe4qQDNQs63RVAyuvu2vr8o=
+        b=k2wPjkAnjTgy8FGa3OIK+7kCsLlu0k5YIGKzH4q3weKosgesZUKgaZ15YeiDmWeFL
+         c8XdyH4g+xi7TLx/zUlK/FUJe8LfWr1Hsw1fJZsORddcDgB3Kp1jrfCoFhEI/DO0sE
+         WM7Hxgw07+zyjPbLs59m/ivqCpKogyYhIIyjdLJo=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nikolay@cumulusnetworks.com,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net v2 2/5] nexthops: don't modify published nexthop groups
-Date:   Tue, 26 May 2020 12:56:15 -0600
-Message-Id: <20200526185618.43748-3-dsahern@kernel.org>
+Subject: [PATCH net v2 4/5] ipv4: Refactor nhc evaluation in fib_table_lookup
+Date:   Tue, 26 May 2020 12:56:17 -0600
+Message-Id: <20200526185618.43748-5-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200526185618.43748-1-dsahern@kernel.org>
 References: <20200526185618.43748-1-dsahern@kernel.org>
@@ -40,200 +40,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+From: David Ahern <dsahern@gmail.com>
 
-We must avoid modifying published nexthop groups while they might be
-in use, otherwise we might see NULL ptr dereferences. In order to do
-that we allocate 2 nexthoup group structures upon nexthop creation
-and swap between them when we have to delete an entry. The reason is
-that we can't fail nexthop group removal, so we can't handle allocation
-failure thus we move the extra allocation on creation where we can
-safely fail and return ENOMEM.
+FIB lookups can return an entry that references an external nexthop.
+While walking the nexthop struct we do not want to make multiple calls
+into the nexthop code which can result in 2 different structs getting
+accessed - one returning the number of paths the rest of the loop
+seeing a different nh_grp struct. If the nexthop group shrunk, the
+result is an attempt to access a fib_nh_common that does not exist for
+the new nh_grp struct but did for the old one.
+
+To fix that move the device evaluation code to a helper that can be
+used for inline fib_nh path as well as external nexthops.
+
+Update the existing check for fi->nh in fib_table_lookup to call a
+new helper, nexthop_get_nhc_lookup, which walks the external nexthop
+with a single rcu dereference.
 
 Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 Signed-off-by: David Ahern <dsahern@gmail.com>
+Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- include/net/nexthop.h |  1 +
- net/ipv4/nexthop.c    | 91 +++++++++++++++++++++++++++----------------
- 2 files changed, 59 insertions(+), 33 deletions(-)
+ include/net/ip_fib.h  |  2 ++
+ include/net/nexthop.h | 33 ++++++++++++++++++++++++++++
+ net/ipv4/fib_trie.c   | 51 ++++++++++++++++++++++++++++++-------------
+ 3 files changed, 71 insertions(+), 15 deletions(-)
 
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index b219a8fe0950..771ce068bc96 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -479,6 +479,8 @@ void fib_nh_common_release(struct fib_nh_common *nhc);
+ void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri);
+ void fib_trie_init(void);
+ struct fib_table *fib_trie_table(u32 id, struct fib_table *alias);
++bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
++			 const struct flowi4 *flp);
+ 
+ static inline void fib_combine_itag(u32 *itag, const struct fib_result *res)
+ {
 diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index c440ccc861fc..8a343519ed7a 100644
+index f09e8d7d9886..9414ae46fc1c 100644
 --- a/include/net/nexthop.h
 +++ b/include/net/nexthop.h
-@@ -70,6 +70,7 @@ struct nh_grp_entry {
- };
- 
- struct nh_group {
-+	struct nh_group		*spare; /* spare group for removals */
- 	u16			num_nh;
- 	bool			mpath;
- 	bool			has_v4;
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index b4b772f120a7..563f71bcb2d7 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -63,9 +63,16 @@ static void nexthop_free_mpath(struct nexthop *nh)
- 	int i;
- 
- 	nhg = rcu_dereference_raw(nh->nh_grp);
--	for (i = 0; i < nhg->num_nh; ++i)
--		WARN_ON(nhg->nh_entries[i].nh);
-+	for (i = 0; i < nhg->num_nh; ++i) {
-+		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
- 
-+		WARN_ON(!list_empty(&nhge->nh_list));
-+		nexthop_put(nhge->nh);
-+	}
-+
-+	WARN_ON(nhg->spare == nhg);
-+
-+	kfree(nhg->spare);
- 	kfree(nhg);
+@@ -233,6 +233,39 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
+ 	return &nhi->fib_nhc;
  }
  
-@@ -697,46 +704,53 @@ static void nh_group_rebalance(struct nh_group *nhg)
- static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
- 				struct nl_info *nlinfo)
- {
-+	struct nh_grp_entry *nhges, *new_nhges;
- 	struct nexthop *nhp = nhge->nh_parent;
- 	struct nexthop *nh = nhge->nh;
--	struct nh_grp_entry *nhges;
--	struct nh_group *nhg;
--	bool found = false;
--	int i;
-+	struct nh_group *nhg, *newg;
-+	int i, j;
- 
- 	WARN_ON(!nh);
- 
--	list_del(&nhge->nh_list);
--
- 	nhg = rtnl_dereference(nhp->nh_grp);
--	nhges = nhg->nh_entries;
--	for (i = 0; i < nhg->num_nh; ++i) {
--		if (found) {
--			nhges[i-1].nh = nhges[i].nh;
--			nhges[i-1].weight = nhges[i].weight;
--			list_del(&nhges[i].nh_list);
--			list_add(&nhges[i-1].nh_list, &nhges[i-1].nh->grp_list);
--		} else if (nhg->nh_entries[i].nh == nh) {
--			found = true;
--		}
--	}
-+	newg = nhg->spare;
- 
--	if (WARN_ON(!found))
-+	/* last entry, keep it visible and remove the parent */
-+	if (nhg->num_nh == 1) {
-+		remove_nexthop(net, nhp, nlinfo);
- 		return;
-+	}
- 
--	nhg->num_nh--;
--	nhg->nh_entries[nhg->num_nh].nh = NULL;
-+	newg->has_v4 = nhg->has_v4;
-+	newg->mpath = nhg->mpath;
-+	newg->num_nh = nhg->num_nh;
- 
--	nh_group_rebalance(nhg);
-+	/* copy old entries to new except the one getting removed */
-+	nhges = nhg->nh_entries;
-+	new_nhges = newg->nh_entries;
-+	for (i = 0, j = 0; i < nhg->num_nh; ++i) {
-+		/* current nexthop getting removed */
-+		if (nhg->nh_entries[i].nh == nh) {
-+			newg->num_nh--;
-+			continue;
++/* called from fib_table_lookup with rcu_lock */
++static inline
++struct fib_nh_common *nexthop_get_nhc_lookup(const struct nexthop *nh,
++					     int fib_flags,
++					     const struct flowi4 *flp,
++					     int *nhsel)
++{
++	struct nh_info *nhi;
++
++	if (nh->is_group) {
++		struct nh_group *nhg = rcu_dereference(nh->nh_grp);
++		int i;
++
++		for (i = 0; i < nhg->num_nh; i++) {
++			struct nexthop *nhe = nhg->nh_entries[i].nh;
++
++			nhi = rcu_dereference(nhe->nh_info);
++			if (fib_lookup_good_nhc(&nhi->fib_nhc, fib_flags, flp)) {
++				*nhsel = i;
++				return &nhi->fib_nhc;
++			}
 +		}
- 
--	nexthop_put(nh);
-+		list_del(&nhges[i].nh_list);
-+		new_nhges[j].nh_parent = nhges[i].nh_parent;
-+		new_nhges[j].nh = nhges[i].nh;
-+		new_nhges[j].weight = nhges[i].weight;
-+		list_add(&new_nhges[j].nh_list, &new_nhges[j].nh->grp_list);
-+		j++;
++	} else {
++		nhi = rcu_dereference(nh->nh_info);
++		if (fib_lookup_good_nhc(&nhi->fib_nhc, fib_flags, flp)) {
++			*nhsel = 0;
++			return &nhi->fib_nhc;
++		}
 +	}
 +
-+	nh_group_rebalance(newg);
-+	rcu_assign_pointer(nhp->nh_grp, newg);
++	return NULL;
++}
 +
-+	list_del(&nhge->nh_list);
-+	nexthop_put(nhge->nh);
- 
- 	if (nlinfo)
- 		nexthop_notify(RTM_NEWNEXTHOP, nhp, nlinfo);
--
--	/* if this group has no more entries then remove it */
--	if (!nhg->num_nh)
--		remove_nexthop(net, nhp, nlinfo);
+ static inline unsigned int fib_info_num_path(const struct fib_info *fi)
+ {
+ 	if (unlikely(fi->nh))
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 4f334b425538..248f1c1959a6 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -1371,6 +1371,26 @@ static inline t_key prefix_mismatch(t_key key, struct key_vector *n)
+ 	return (key ^ prefix) & (prefix | -prefix);
  }
  
- static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
-@@ -746,6 +760,9 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
- 
- 	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list)
- 		remove_nh_grp_entry(net, nhge, nlinfo);
++bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
++			 const struct flowi4 *flp)
++{
++	if (nhc->nhc_flags & RTNH_F_DEAD)
++		return false;
 +
-+	/* make sure all see the newly published array before releasing rtnl */
-+	synchronize_rcu();
- }
++	if (ip_ignore_linkdown(nhc->nhc_dev) &&
++	    nhc->nhc_flags & RTNH_F_LINKDOWN &&
++	    !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
++		return false;
++
++	if (!(flp->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF)) {
++		if (flp->flowi4_oif &&
++		    flp->flowi4_oif != nhc->nhc_oif)
++			return false;
++	}
++
++	return true;
++}
++
+ /* should be called with rcu_read_lock */
+ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+ 		     struct fib_result *res, int fib_flags)
+@@ -1503,6 +1523,7 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+ 	/* Step 3: Process the leaf, if that fails fall back to backtracing */
+ 	hlist_for_each_entry_rcu(fa, &n->leaf, fa_list) {
+ 		struct fib_info *fi = fa->fa_info;
++		struct fib_nh_common *nhc;
+ 		int nhsel, err;
  
- static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
-@@ -759,10 +776,7 @@ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
- 		if (WARN_ON(!nhge->nh))
+ 		if ((BITS_PER_LONG > KEYLENGTH) || (fa->fa_slen < KEYLENGTH)) {
+@@ -1528,26 +1549,25 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+ 		if (fi->fib_flags & RTNH_F_DEAD)
  			continue;
  
--		list_del(&nhge->nh_list);
--		nexthop_put(nhge->nh);
--		nhge->nh = NULL;
--		nhg->num_nh--;
-+		list_del_init(&nhge->nh_list);
- 	}
- }
- 
-@@ -1085,6 +1099,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
- {
- 	struct nlattr *grps_attr = cfg->nh_grp;
- 	struct nexthop_grp *entry = nla_data(grps_attr);
-+	u16 num_nh = nla_len(grps_attr) / sizeof(*entry);
- 	struct nh_group *nhg;
- 	struct nexthop *nh;
- 	int i;
-@@ -1095,12 +1110,21 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 
- 	nh->is_group = 1;
- 
--	nhg = nexthop_grp_alloc(nla_len(grps_attr) / sizeof(*entry));
-+	nhg = nexthop_grp_alloc(num_nh);
- 	if (!nhg) {
- 		kfree(nh);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-+	/* spare group used for removals */
-+	nhg->spare = nexthop_grp_alloc(num_nh);
-+	if (!nhg) {
-+		kfree(nhg);
-+		kfree(nh);
-+		return NULL;
-+	}
-+	nhg->spare->spare = nhg;
+-		if (unlikely(fi->nh && nexthop_is_blackhole(fi->nh))) {
+-			err = fib_props[RTN_BLACKHOLE].error;
+-			goto out_reject;
++		if (unlikely(fi->nh)) {
++			if (nexthop_is_blackhole(fi->nh)) {
++				err = fib_props[RTN_BLACKHOLE].error;
++				goto out_reject;
++			}
 +
- 	for (i = 0; i < nhg->num_nh; ++i) {
- 		struct nexthop *nhe;
- 		struct nh_info *nhi;
-@@ -1132,6 +1156,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 	for (; i >= 0; --i)
- 		nexthop_put(nhg->nh_entries[i].nh);
++			nhc = nexthop_get_nhc_lookup(fi->nh, fib_flags, flp,
++						     &nhsel);
++			if (nhc)
++				goto set_result;
++			goto miss;
+ 		}
  
-+	kfree(nhg->spare);
- 	kfree(nhg);
- 	kfree(nh);
+ 		for (nhsel = 0; nhsel < fib_info_num_path(fi); nhsel++) {
+-			struct fib_nh_common *nhc = fib_info_nhc(fi, nhsel);
++			nhc = fib_info_nhc(fi, nhsel);
  
+-			if (nhc->nhc_flags & RTNH_F_DEAD)
++			if (!fib_lookup_good_nhc(nhc, fib_flags, flp))
+ 				continue;
+-			if (ip_ignore_linkdown(nhc->nhc_dev) &&
+-			    nhc->nhc_flags & RTNH_F_LINKDOWN &&
+-			    !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
+-				continue;
+-			if (!(flp->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF)) {
+-				if (flp->flowi4_oif &&
+-				    flp->flowi4_oif != nhc->nhc_oif)
+-					continue;
+-			}
+-
++set_result:
+ 			if (!(fib_flags & FIB_LOOKUP_NOREF))
+ 				refcount_inc(&fi->fib_clntref);
+ 
+@@ -1568,6 +1588,7 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+ 			return err;
+ 		}
+ 	}
++miss:
+ #ifdef CONFIG_IP_FIB_TRIE_STATS
+ 	this_cpu_inc(stats->semantic_match_miss);
+ #endif
 -- 
 2.21.1 (Apple Git-122.3)
 
