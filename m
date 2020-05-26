@@ -2,65 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0601E188F
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 02:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5051E1893
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 02:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388355AbgEZAtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 20:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        id S2388297AbgEZAxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 20:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387794AbgEZAtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 20:49:53 -0400
+        with ESMTP id S2388013AbgEZAxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 20:53:08 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CBDC061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 17:49:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87584C061A0E;
+        Mon, 25 May 2020 17:53:08 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 46AF512796418;
-        Mon, 25 May 2020 17:49:52 -0700 (PDT)
-Date:   Mon, 25 May 2020 17:49:51 -0700 (PDT)
-Message-Id: <20200525.174951.2144256991021641644.davem@davemloft.net>
-To:     gnault@redhat.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@mellanox.com,
-        benjamin.lahaise@netronome.com, tom@herbertland.com,
-        pieter.jansenvanvuuren@netronome.com, pablo@netfilter.org,
-        liels@mellanox.com, ronye@mellanox.com
-Subject: Re: [PATCH net-next v2 0/2] flow_dissector, cls_flower: Add
- support for multiple MPLS Label Stack Entries
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BA0D112796426;
+        Mon, 25 May 2020 17:53:07 -0700 (PDT)
+Date:   Mon, 25 May 2020 17:53:06 -0700 (PDT)
+Message-Id: <20200525.175306.1437742984438170741.davem@davemloft.net>
+To:     dan.carpenter@oracle.com
+Cc:     viro@zeniv.linux.org.uk, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] ipv4: potential underflow in
+ compat_ip_setsockopt()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200525.173818.1886112260004012915.davem@davemloft.net>
-References: <cover.1590081480.git.gnault@redhat.com>
-        <20200525.173818.1886112260004012915.davem@davemloft.net>
+In-Reply-To: <20200523174648.GA105146@mwanda>
+References: <20200523174648.GA105146@mwanda>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 25 May 2020 17:49:52 -0700 (PDT)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 25 May 2020 17:53:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogTW9uLCAyNSBN
-YXkgMjAyMCAxNzozODoxOCAtMDcwMCAoUERUKQ0KDQo+IFNlcmllcyBhcHBsaWVkLCB0aGFua3Mu
-DQoNClJldmVydGVkLCB0aGlzIGRvZXNuJ3QgZXZlbiBidWlsZCB3aXRoIHRoZSBvbmUgb2YgdGhl
-IG1vc3QgcG9wdWxhciBkcml2ZXJzDQppbiB0aGUgdHJlZSwgbWx4NS4NCg0KZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3RjX3R1bl9tcGxzb3VkcC5jOiBJbiBmdW5j
-dGlvbiChcGFyc2VfdHVubmVsojoNCmRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUv
-Y29yZS9lbi90Y190dW5fbXBsc291ZHAuYzoxMDU6NTI6IGVycm9yOiChc3RydWN0IGZsb3dfZGlz
-c2VjdG9yX2tleV9tcGxzoiBoYXMgbm8gbWVtYmVyIG5hbWVkIKFtcGxzX2xhYmVsog0KICAxMDUg
-fCAgICBvdXRlcl9maXJzdF9tcGxzX292ZXJfdWRwLm1wbHNfbGFiZWwsIG1hdGNoLm1hc2stPm1w
-bHNfbGFiZWwpOw0KICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBefg0KLi9pbmNsdWRlL2xpbnV4L21seDUvZGV2aWNlLmg6NzQ6MTE6IG5v
-dGU6IGluIGRlZmluaXRpb24gb2YgbWFjcm8goU1MWDVfU0VUog0KICAgNzQgfCAgdTMyIF92ID0g
-djsgXA0KICAgICAgfCAgICAgICAgICAgXg0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gv
-bWx4NS9jb3JlL2VuL3RjX3R1bl9tcGxzb3VkcC5jOjEwNzo1MTogZXJyb3I6IKFzdHJ1Y3QgZmxv
-d19kaXNzZWN0b3Jfa2V5X21wbHOiIGhhcyBubyBtZW1iZXIgbmFtZWQgoW1wbHNfbGFiZWyiDQog
-IDEwNyB8ICAgIG91dGVyX2ZpcnN0X21wbHNfb3Zlcl91ZHAubXBsc19sYWJlbCwgbWF0Y2gua2V5
-LT5tcGxzX2xhYmVsKTsNCiAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBefg0KLi9pbmNsdWRlL2xpbnV4L21seDUvZGV2aWNlLmg6NzQ6MTE6
-IG5vdGU6IGluIGRlZmluaXRpb24gb2YgbWFjcm8goU1MWDVfU0VUog0KICAgNzQgfCAgdTMyIF92
-ID0gdjsgXA0KICAgICAgfCAgICAgICAgICAgXg0K
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Sat, 23 May 2020 20:46:48 +0300
+
+> The value of "n" is capped at 0x1ffffff but it checked for negative
+> values.  I don't think this causes a problem but I'm not certain and
+> it's harmless to prevent it.
+> 
+> Fixes: 2e04172875c9 ("ipv4: do compat setsockopt for MCAST_MSFILTER directly")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+Applied.
