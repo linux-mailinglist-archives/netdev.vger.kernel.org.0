@@ -2,589 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BFF1E23AC
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8565D1E23AD
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbgEZOGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 10:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726856AbgEZOGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:06:13 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02987C03E96D;
-        Tue, 26 May 2020 07:06:12 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id q8so10226685pfu.5;
-        Tue, 26 May 2020 07:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NwNYzI1nPD9AbOrtA8ORjhhNqD+LEoRwPJ2aOw/lkeo=;
-        b=iM7FUPE9lKmGOwc6prsom4ZOxJnVONXwi1/O2QII32MaQ4fUo2RYJpT+s57IU6mgwB
-         IPEQvIV/Ahn6UC4pvdsXLDQOejnDzdmZxRhSffVHfPszwM8R9lTBwG3OEkg+KlB0Ea5a
-         IKT8yWiwnDIFRaCWlzaezjlp7tA3F+JsxUzkq/BCoKqoyDHG4A95jP7P72zJgfwMdtym
-         DiO78F36WG9qgzUuN3MNvRG1QE1XiqmV2Eron0X21VOxUoRz3GVjFqTBfiXfOE5ERZyK
-         asLVF0SdwDuqtWKZF4XaPHkhwWgL4iBWjduQsCEt5kJRf4rM+Uu+qYNGEbdZB5RrX6zx
-         x/KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NwNYzI1nPD9AbOrtA8ORjhhNqD+LEoRwPJ2aOw/lkeo=;
-        b=TADGlyNyFE0ewE/JTgZr0zjqAcEjQpPRt51vqQtCmTNR2BgIxkGS5+y0z4GI7VQqiW
-         hL6mVbrNTDYQp8GmC3H5x8Hw2jW09bDMzh/fq85/1ZJoZOFozn2LOU4LE0bmoIbbI6BL
-         VtI1RBPSK9aXfnFZPi1VdXMTCL7k0VM5k4EelTWkGT1VWuAn6UE6aGoSw+Azp7STYi+U
-         W3oA6Mqwcs/6DJd5UqyFV2hYS7G5CmSSZm7f9jAWoCulqCKEMD0k/V9MyOtNIYEDiInh
-         kXqYaWLFg8Jbr4C6jiQSB+HRsKVkXeyrofACb4bcjMD8aQu8FzdA6nFXu+7TQrQo5EB6
-         zEbQ==
-X-Gm-Message-State: AOAM530IHzuhYbJhphow8ZrP2EIKkyX55zvziBOam7aNemB8WSNAJqi5
-        x8MY4u8NDQs7zdvF2RQ4Y+lQNr5vdpjtew==
-X-Google-Smtp-Source: ABdhPJwXlCUlrkveFh6xLGKfMUXuZCHx3InQ/R3B35KlfJoA5ousomy+XdzGsM7or1EEfCTIcsqT6g==
-X-Received: by 2002:a62:1503:: with SMTP id 3mr22909247pfv.202.1590501970699;
-        Tue, 26 May 2020 07:06:10 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q201sm15506859pfq.40.2020.05.26.07.06.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 07:06:10 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv4 bpf-next 2/2] sample/bpf: add xdp_redirect_map_multicast test
-Date:   Tue, 26 May 2020 22:05:39 +0800
-Message-Id: <20200526140539.4103528-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200526140539.4103528-1-liuhangbin@gmail.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729284AbgEZOGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 10:06:43 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:32308 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgEZOGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:06:43 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 04QE6aO2006798;
+        Tue, 26 May 2020 07:06:36 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     kuba@kernel.org, secdev@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net v2] cxgb4/chcr: Enable ktls settings at run time
+Date:   Tue, 26 May 2020 19:36:34 +0530
+Message-Id: <20200526140634.21043-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a sample for xdp multicast. In the sample we have 3 forward
-groups and 1 exclude group. It will redirect each interface's
-packets to all the interfaces in the forward group, and exclude
-the interface in exclude map.
+Current design enables ktls setting from start, which is not
+efficient. Now the feature will be enabled when user demands
+TLS offload on any interface.
 
-For more testing details, please see the test description in
-xdp_redirect_map_multi.sh.
+v1->v2:
+- taking ULD module refcount till any single connection exists.
+- taking rtnl_lock() before clearing tls_devops.
 
-v4: no update.
-v3: add rxcnt map to show the packet transmit speed.
-v2: no update.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- samples/bpf/Makefile                      |   3 +
- samples/bpf/xdp_redirect_map_multi.sh     | 135 +++++++++++++++
- samples/bpf/xdp_redirect_map_multi_kern.c | 113 +++++++++++++
- samples/bpf/xdp_redirect_map_multi_user.c | 197 ++++++++++++++++++++++
- 4 files changed, 448 insertions(+)
- create mode 100755 samples/bpf/xdp_redirect_map_multi.sh
- create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
- create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ drivers/crypto/chelsio/chcr_core.c            |  1 +
+ drivers/crypto/chelsio/chcr_ktls.c            | 20 +++++-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  4 ++
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |  2 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 19 ++++-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.c    | 72 ++++++++++++++-----
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |  5 ++
+ drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h | 10 ++-
+ 8 files changed, 110 insertions(+), 23 deletions(-)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 8403e4762306..000709bb89c3 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -41,6 +41,7 @@ tprogs-y += test_map_in_map
- tprogs-y += per_socket_stats_example
- tprogs-y += xdp_redirect
- tprogs-y += xdp_redirect_map
-+tprogs-y += xdp_redirect_map_multi
- tprogs-y += xdp_redirect_cpu
- tprogs-y += xdp_monitor
- tprogs-y += xdp_rxq_info
-@@ -97,6 +98,7 @@ test_map_in_map-objs := bpf_load.o test_map_in_map_user.o
- per_socket_stats_example-objs := cookie_uid_helper_example.o
- xdp_redirect-objs := xdp_redirect_user.o
- xdp_redirect_map-objs := xdp_redirect_map_user.o
-+xdp_redirect_map_multi-objs := xdp_redirect_map_multi_user.o
- xdp_redirect_cpu-objs := bpf_load.o xdp_redirect_cpu_user.o
- xdp_monitor-objs := bpf_load.o xdp_monitor_user.o
- xdp_rxq_info-objs := xdp_rxq_info_user.o
-@@ -156,6 +158,7 @@ always-y += tcp_tos_reflect_kern.o
- always-y += tcp_dumpstats_kern.o
- always-y += xdp_redirect_kern.o
- always-y += xdp_redirect_map_kern.o
-+always-y += xdp_redirect_map_multi_kern.o
- always-y += xdp_redirect_cpu_kern.o
- always-y += xdp_monitor_kern.o
- always-y += xdp_rxq_info_kern.o
-diff --git a/samples/bpf/xdp_redirect_map_multi.sh b/samples/bpf/xdp_redirect_map_multi.sh
-new file mode 100755
-index 000000000000..bbf10ca06720
---- /dev/null
-+++ b/samples/bpf/xdp_redirect_map_multi.sh
-@@ -0,0 +1,135 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test topology:
-+#     - - - - - - - - - - - - - - - - - - - - - - - - -
-+#    | veth1         veth2         veth3         veth4 |  ... init net
-+#     - -| - - - - - - | - - - - - - | - - - - - - | - -
-+#    ---------     ---------     ---------     ---------
-+#    | veth0 |     | veth0 |     | veth0 |     | veth0 |  ...
-+#    ---------     ---------     ---------     ---------
-+#       ns1           ns2           ns3           ns4
-+#
-+# Forward multicast groups:
-+#     Forward group all has interfaces: veth1, veth2, veth3, veth4, ... (All traffic except IPv4, IPv6)
-+#     Forward group v4 has interfaces: veth1, veth3, veth4, ... (For IPv4 traffic only)
-+#     Forward group v6 has interfaces: veth2, veth3, veth4, ... (For IPv6 traffic only)
-+# Exclude Groups:
-+#     Exclude group: veth3 (assume ns3 is in black list)
-+#
-+# Test modules:
-+# XDP modes: generic, native
-+# map types: group v4 use DEVMAP, others use DEVMAP_HASH
-+#
-+# Test cases:
-+#     ARP(we didn't exclude ns3 in kern.c for ARP):
-+#        ns1 -> gw: ns2, ns3, ns4 should receive the arp request
-+#     IPv4:
-+#        ns1 -> ns2 (fail), ns1 -> ns3 (fail), ns1 -> ns4 (pass)
-+#     IPv6
-+#        ns2 -> ns1 (fail), ns2 -> ns3 (fail), ns2 -> ns4 (pass)
-+#
+diff --git a/drivers/crypto/chelsio/chcr_core.c b/drivers/crypto/chelsio/chcr_core.c
+index ffd4ec0c7374..49edc1f46504 100644
+--- a/drivers/crypto/chelsio/chcr_core.c
++++ b/drivers/crypto/chelsio/chcr_core.c
+@@ -46,6 +46,7 @@ static chcr_handler_func work_handlers[NUM_CPL_CMDS] = {
+ };
+ 
+ static struct cxgb4_uld_info chcr_uld_info = {
++	.owner = THIS_MODULE,
+ 	.name = DRV_MODULE_NAME,
+ 	.nrxq = MAX_ULD_QSETS,
+ 	/* Max ntxq will be derived from fw config file*/
+diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
+index 43d9e2420110..1c0f4bbb498e 100644
+--- a/drivers/crypto/chelsio/chcr_ktls.c
++++ b/drivers/crypto/chelsio/chcr_ktls.c
+@@ -409,6 +409,10 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
+ 	}
+ 
+ 	atomic64_inc(&tx_info->adap->chcr_stats.ktls_tx_connection_close);
++	/* check if ktls settings are no more required. */
++	cxgb4_set_ktls_feature(tx_info->adap,
++			       FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE);
 +
+ 	kvfree(tx_info);
+ 	tx_ctx->chcr_info = NULL;
+ }
+@@ -529,6 +533,9 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 		goto out2;
+ 
+ 	atomic64_inc(&adap->chcr_stats.ktls_tx_connection_open);
 +
-+# netns numbers
-+NUM=10
-+IFACES=""
-+DRV_MODE="generic drv"
++	cxgb4_set_ktls_feature(tx_info->adap,
++			       FW_PARAMS_PARAM_DEV_KTLS_HW_ENABLE);
+ 	return 0;
+ out2:
+ 	kvfree(tx_info);
+@@ -550,11 +557,17 @@ void chcr_enable_ktls(struct adapter *adap)
+ 	struct net_device *netdev;
+ 	int i;
+ 
++	/* clear refcount */
++	refcount_set(&adap->chcr_ktls.ktls_refcount, 0);
 +
-+test_pass()
-+{
-+	echo "Pass: $@"
-+}
+ 	for_each_port(adap, i) {
+ 		netdev = adap->port[i];
+-		netdev->features |= NETIF_F_HW_TLS_TX;
++		rtnl_lock();
+ 		netdev->hw_features |= NETIF_F_HW_TLS_TX;
+ 		netdev->tlsdev_ops = &chcr_ktls_ops;
 +
-+test_fail()
-+{
-+	echo "fail: $@"
-+}
++		netdev_update_features(netdev);
++		rtnl_unlock();
+ 	}
+ }
+ 
+@@ -568,9 +581,12 @@ void chcr_disable_ktls(struct adapter *adap)
+ 
+ 	for_each_port(adap, i) {
+ 		netdev = adap->port[i];
+-		netdev->features &= ~NETIF_F_HW_TLS_TX;
 +
-+clean_up()
-+{
-+	for i in $(seq $NUM); do
-+		ip netns del ns$i
-+	done
-+}
++		rtnl_lock();
+ 		netdev->hw_features &= ~NETIF_F_HW_TLS_TX;
+ 		netdev->tlsdev_ops = NULL;
++		netdev_update_features(netdev);
++		rtnl_unlock();
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 5a41801acb6a..cf69c6edcfec 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -1099,6 +1099,7 @@ struct adapter {
+ 
+ 	/* TC u32 offload */
+ 	struct cxgb4_tc_u32_table *tc_u32;
++	struct chcr_ktls chcr_ktls;
+ 	struct chcr_stats_debug chcr_stats;
+ 
+ 	/* TC flower offload */
+@@ -2060,4 +2061,7 @@ int cxgb_open(struct net_device *dev);
+ int cxgb_close(struct net_device *dev);
+ void cxgb4_enable_rx(struct adapter *adap, struct sge_rspq *q);
+ void cxgb4_quiesce_rx(struct sge_rspq *q);
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++int cxgb4_set_ktls_feature(struct adapter *adap, bool enable);
++#endif
+ #endif /* __CXGB4_H__ */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index c3dd50b45c48..41315712deb8 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -3491,6 +3491,8 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
+ 		   atomic_read(&adap->chcr_stats.tls_key));
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
+ 	seq_puts(seq, "\nChelsio KTLS Crypto Accelerator Stats\n");
++	seq_printf(seq, "Tx TLS offload refcount:          %20u\n",
++		   refcount_read(&adap->chcr_ktls.ktls_refcount));
+ 	seq_printf(seq, "Tx HW offload contexts added:     %20llu\n",
+ 		   atomic64_read(&adap->chcr_stats.ktls_tx_ctx));
+ 	seq_printf(seq, "Tx connection created:            %20llu\n",
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 7a0414f379be..b80891e8d352 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -1256,10 +1256,27 @@ int cxgb4_set_rspq_intr_params(struct sge_rspq *q,
+ 
+ static int cxgb_set_features(struct net_device *dev, netdev_features_t features)
+ {
+-	const struct port_info *pi = netdev_priv(dev);
+ 	netdev_features_t changed = dev->features ^ features;
++	const struct port_info *pi = netdev_priv(dev);
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++	bool enable;
++#endif
+ 	int err;
+ 
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++	/* tls offload will be enabled runtime on user request only, we are
++	 * going to inform the same to FW.
++	 */
++	enable = !!((features & NETIF_F_HW_TLS_TX) & dev->hw_features);
 +
-+setup_ns()
-+{
-+	local mode=$1
-+
-+	for i in $(seq $NUM); do
-+	        ip netns add ns$i
-+	        ip link add veth0 type veth peer name veth$i
-+	        ip link set veth0 netns ns$i
-+		ip -n ns$i link set veth0 up
-+		ip link set veth$i up
-+
-+		ip -n ns$i addr add 192.0.2.$i/24 dev veth0
-+		ip -n ns$i addr add 2001:db8::$i/24 dev veth0
-+		ip -n ns$i link set veth0 xdp$mode obj \
-+			xdp_redirect_map_multi_kern.o sec xdp_redirect_dummy &> /dev/null || \
-+			{ test_fail "Unable to load dummy xdp" && exit 1; }
-+		IFACES="$IFACES veth$i"
-+	done
-+}
-+
-+do_ping_tests()
-+{
-+	local drv_mode=$1
-+
-+	# arp test
-+	ip netns exec ns2 tcpdump -i veth0 -nn -l -e &> arp_ns1-2_${drv_mode}.log &
-+	ip netns exec ns3 tcpdump -i veth0 -nn -l -e &> arp_ns1-3_${drv_mode}.log &
-+	ip netns exec ns4 tcpdump -i veth0 -nn -l -e &> arp_ns1-4_${drv_mode}.log &
-+	ip netns exec ns1 ping 192.0.2.254 -c 4 &> /dev/null
-+	sleep 2
-+	pkill -9 tcpdump
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-2_${drv_mode}.log && \
-+		test_pass "$drv_mode arp ns1-2" || test_fail "$drv_mode arp ns1-2"
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-3_${drv_mode}.log && \
-+		test_pass "$drv_mode arp ns1-3" || test_fail "$drv_mode arp ns1-3"
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-4_${drv_mode}.log && \
-+		test_pass "$drv_mode arp ns1-4" || test_fail "$drv_mode arp ns1-4"
-+
-+	# ping test
-+	ip netns exec ns1 ping 192.0.2.2 -c 4 &> /dev/null && \
-+		test_fail "$drv_mode ping ns1-2" || test_pass "$drv_mode ping ns1-2"
-+	ip netns exec ns1 ping 192.0.2.3 -c 4 &> /dev/null && \
-+		test_fail "$drv_mode ping ns1-3" || test_pass "$drv_mode ping ns1-3"
-+	ip netns exec ns1 ping 192.0.2.4 -c 4 &> /dev/null && \
-+		test_pass "$drv_mode ping ns1-4" || test_fail "$drv_mode ping ns1-4"
-+
-+	# ping6 test
-+	ip netns exec ns2 ping6 2001:db8::1 -c 4 &> /dev/null && \
-+		test_fail "$drv_mode ping6 ns2-1" || test_pass "$drv_mode ping6 ns2-1"
-+	ip netns exec ns2 ping6 2001:db8::3 -c 4 &> /dev/null && \
-+		test_fail "$drv_mode ping6 ns2-3" || test_pass "$drv_mode ping6 ns2-3"
-+	ip netns exec ns2 ping6 2001:db8::4 -c 4 &> /dev/null && \
-+		test_pass "$drv_mode ping6 ns2-4" || test_fail "$drv_mode ping6 ns2-4"
-+}
-+
-+do_tests()
-+{
-+	local drv_mode=$1
-+	local drv_p
-+
-+	[ ${drv_mode} == "drv" ] && drv_p="-N" || drv_p="-S"
-+
-+	# run `ulimit -l unlimited` if you got errors like
-+	# libbpf: Error in bpf_object__probe_global_data():Operation not permitted(1).
-+	./xdp_redirect_map_multi $drv_p $IFACES &> xdp_${drv_mode}.log &
-+	xdp_pid=$!
-+	sleep 10
-+
-+	do_ping_tests $drv_mode
-+
-+	kill $xdp_pid
-+}
-+
-+for mode in ${DRV_MODE}; do
-+	setup_ns $mode
-+	do_tests $mode
-+	sleep 10
-+	clean_up
-+	sleep 5
-+done
-diff --git a/samples/bpf/xdp_redirect_map_multi_kern.c b/samples/bpf/xdp_redirect_map_multi_kern.c
-new file mode 100644
-index 000000000000..81f71461a252
---- /dev/null
-+++ b/samples/bpf/xdp_redirect_map_multi_kern.c
-@@ -0,0 +1,113 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * modify it under the terms of version 2 of the GNU General Public
-+ * License as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-+ * General Public License for more details.
-+ */
-+#define KBUILD_MODNAME "foo"
-+#include <uapi/linux/bpf.h>
-+#include <linux/in.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <bpf/bpf_helpers.h>
-+
-+/* In this sample we will use 3 forward maps and 1 exclude map to
-+ * show how to use the helper bpf_redirect_map_multi().
-+ *
-+ * In real world, there may have multi forward maps and exclude map. You can
-+ * use map-in-map type to store the forward and exlude maps. e.g.
-+ * forward_map_in_map[group_a_index] = forward_group_a_map
-+ * forward_map_in_map[group_b_index] = forward_group_b_map
-+ * exclude_map_in_map[iface_1_index] = iface_1_exclude_map
-+ * exclude_map_in_map[iface_2_index] = iface_2_exclude_map
-+ * Then store the forward group indexes based on IP/MAC policy in another
-+ * hash map, e.g.:
-+ * mcast_route_map[hash(subnet_a)] = group_a_index
-+ * mcast_route_map[hash(subnet_b)] = group_b_index
-+ *
-+ * You can init the maps in user.c, and find the forward group index from
-+ * mcast_route_map bye key hash(subnet) in kern.c, Then you could find
-+ * the forward group by the group index. You can also get the exclude map
-+ * simply by iface index in exclude_map_in_map.
-+ */
-+struct bpf_map_def SEC("maps") forward_map_v4 = {
-+	.type = BPF_MAP_TYPE_DEVMAP,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(int),
-+	.max_entries = 4096,
-+};
-+
-+struct bpf_map_def SEC("maps") forward_map_v6 = {
-+	.type = BPF_MAP_TYPE_DEVMAP_HASH,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(int),
-+	.max_entries = 128,
-+};
-+
-+struct bpf_map_def SEC("maps") forward_map_all = {
-+	.type = BPF_MAP_TYPE_DEVMAP_HASH,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(int),
-+	.max_entries = 128,
-+};
-+
-+struct bpf_map_def SEC("maps") exclude_map = {
-+	.type = BPF_MAP_TYPE_DEVMAP_HASH,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(int),
-+	.max_entries = 128,
-+};
-+
-+struct bpf_map_def SEC("maps") rxcnt = {
-+	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(long),
-+	.max_entries = 1,
-+};
-+
-+SEC("xdp_redirect_map_multi")
-+int xdp_redirect_map_multi_prog(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct ethhdr *eth = data;
-+	long *value;
-+	u16 h_proto;
-+	u32 key = 0;
-+	u64 nh_off;
-+
-+	nh_off = sizeof(*eth);
-+	if (data + nh_off > data_end)
-+		return XDP_DROP;
-+
-+	h_proto = eth->h_proto;
-+
-+	/* count packet in global counter */
-+	value = bpf_map_lookup_elem(&rxcnt, &key);
-+	if (value)
-+		*value += 1;
-+
-+	if (h_proto == htons(ETH_P_IP))
-+		return bpf_redirect_map_multi(&forward_map_v4, &exclude_map,
-+					      BPF_F_EXCLUDE_INGRESS);
-+	else if (h_proto == htons(ETH_P_IPV6))
-+		return bpf_redirect_map_multi(&forward_map_v6, &exclude_map,
-+					      BPF_F_EXCLUDE_INGRESS);
-+	else
-+		return bpf_redirect_map_multi(&forward_map_all, NULL,
-+					      BPF_F_EXCLUDE_INGRESS);
-+}
-+
-+SEC("xdp_redirect_dummy")
-+int xdp_redirect_dummy_prog(struct xdp_md *ctx)
-+{
-+	return XDP_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/samples/bpf/xdp_redirect_map_multi_user.c b/samples/bpf/xdp_redirect_map_multi_user.c
-new file mode 100644
-index 000000000000..7339ce4c7f9c
---- /dev/null
-+++ b/samples/bpf/xdp_redirect_map_multi_user.c
-@@ -0,0 +1,197 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <linux/if_link.h>
-+#include <assert.h>
-+#include <errno.h>
-+#include <signal.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <net/if.h>
-+#include <unistd.h>
-+#include <libgen.h>
-+
-+#include "bpf_util.h"
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#define MAX_IFACE_NUM 32
-+
-+static int ifaces[MAX_IFACE_NUM] = {};
-+static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static int rxcnt;
-+
-+static void int_exit(int sig)
-+{
-+	__u32 prog_id = 0;
-+	int i;
-+
-+	for (i = 0; ifaces[i] > 0; i++) {
-+		if (bpf_get_link_xdp_id(ifaces[i], &prog_id, xdp_flags)) {
-+			printf("bpf_get_link_xdp_id failed\n");
-+			exit(1);
-+		}
-+		if (prog_id)
-+			bpf_set_link_xdp_fd(ifaces[i], -1, xdp_flags);
++	if ((changed & NETIF_F_HW_TLS_TX) &&
++	    (pi->adapter->params.crypto & FW_CAPS_CONFIG_TLS_HW)) {
++		err = cxgb4_set_ktls_feature(pi->adapter, enable);
++		if (err)
++			return err;
 +	}
++#endif
 +
-+	exit(0);
+ 	if (!(changed & NETIF_F_HW_VLAN_CTAG_RX))
+ 		return 0;
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+index 6b1d3df4b9ba..3402f41cae1f 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+@@ -662,23 +662,72 @@ static int uld_attach(struct adapter *adap, unsigned int uld)
+ 	return 0;
+ }
+ 
++static bool cxgb4_uld_in_use(struct adapter *adap)
++{
++	const struct tid_info *t = &adap->tids;
++
++	return (atomic_read(&t->conns_in_use) || t->stids_in_use);
 +}
 +
-+static void poll_stats(int interval)
-+{
-+	unsigned int nr_cpus = bpf_num_possible_cpus();
-+	__u64 values[nr_cpus], prev[nr_cpus];
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
+ /* cxgb4_set_ktls_feature: request FW to enable/disable ktls settings.
+  * @adap: adapter info
+  * @enable: 1 to enable / 0 to disable ktls settings.
+  */
+-static void cxgb4_set_ktls_feature(struct adapter *adap, bool enable)
++int cxgb4_set_ktls_feature(struct adapter *adap, bool enable)
+ {
+-	u32 params = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
+-		      FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_KTLS_TX_HW) |
+-		      FW_PARAMS_PARAM_Y_V(enable));
+-	int ret = 0;
++	u32 params;
++	int ret;
 +
-+	memset(prev, 0, sizeof(prev));
++	params = FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
++		 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_KTLS_HW) |
++		 FW_PARAMS_PARAM_Y_V(enable) |
++		 FW_PARAMS_PARAM_Z_V(FW_PARAMS_PARAM_DEV_KTLS_HW_USER_ENABLE);
 +
-+	while (1) {
-+		__u64 sum = 0;
-+		__u32 key = 0;
-+		int i;
-+
-+		sleep(interval);
-+		assert(bpf_map_lookup_elem(rxcnt, &key, values) == 0);
-+		for (i = 0; i < nr_cpus; i++)
-+			sum += (values[i] - prev[i]);
-+		if (sum)
-+			printf("Forwarding %10llu pkt/s\n", sum / interval);
-+		memcpy(prev, values, sizeof(values));
-+	}
-+}
-+
-+static void usage(const char *prog)
-+{
-+	fprintf(stderr,
-+		"usage: %s [OPTS] <IFNAME|IFINDEX> <IFNAME|IFINDEX> ...\n"
-+		"OPTS:\n"
-+		"    -S    use skb-mode\n"
-+		"    -N    enforce native mode\n"
-+		"    -F    force loading prog\n",
-+		prog);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int prog_fd, group_all, group_v4, group_v6, exclude;
-+	struct bpf_prog_load_attr prog_load_attr = {
-+		.prog_type      = BPF_PROG_TYPE_XDP,
-+	};
-+	int i, ret, opt, ifindex;
-+	char ifname[IF_NAMESIZE];
-+	struct bpf_object *obj;
-+	char filename[256];
-+
-+	while ((opt = getopt(argc, argv, "SNF")) != -1) {
-+		switch (opt) {
-+		case 'S':
-+			xdp_flags |= XDP_FLAGS_SKB_MODE;
-+			break;
-+		case 'N':
-+			/* default, set below */
-+			break;
-+		case 'F':
-+			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
-+			break;
-+		default:
-+			usage(basename(argv[0]));
-+			return 1;
-+		}
-+	}
-+
-+	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
-+		xdp_flags |= XDP_FLAGS_DRV_MODE;
-+
-+	if (optind == argc) {
-+		printf("usage: %s <IFNAME|IFINDEX> <IFNAME|IFINDEX> ...\n", argv[0]);
-+		return 1;
-+	}
-+
-+	printf("Get interfaces");
-+	for (i = 0; i < MAX_IFACE_NUM && argv[optind + i]; i++) {
-+		ifaces[i] = if_nametoindex(argv[optind + i]);
-+		if (!ifaces[i])
-+			ifaces[i] = strtoul(argv[optind + i], NULL, 0);
-+		if (!if_indextoname(ifaces[i], ifname)) {
-+			perror("Invalid interface name or i");
-+			return 1;
-+		}
-+		printf(" %d", ifaces[i]);
-+	}
-+	printf("\n");
-+
-+	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-+	prog_load_attr.file = filename;
-+
-+	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
-+		return 1;
-+
-+	group_all = bpf_object__find_map_fd_by_name(obj, "forward_map_all");
-+	group_v4 = bpf_object__find_map_fd_by_name(obj, "forward_map_v4");
-+	group_v6 = bpf_object__find_map_fd_by_name(obj, "forward_map_v6");
-+	exclude = bpf_object__find_map_fd_by_name(obj, "exclude_map");
-+	rxcnt = bpf_object__find_map_fd_by_name(obj, "rxcnt");
-+
-+	if (group_all < 0 || group_v4 < 0 || group_v6 < 0 || exclude < 0 ||
-+	    rxcnt < 0) {
-+		printf("bpf_object__find_map_fd_by_name failed\n");
-+		return 1;
-+	}
-+
-+	signal(SIGINT, int_exit);
-+	signal(SIGTERM, int_exit);
-+
-+	/* Init forward multicast groups and exclude group */
-+	for (i = 0; ifaces[i] > 0; i++) {
-+		ifindex = ifaces[i];
-+
-+		/* Add all the interfaces to group all */
-+		ret = bpf_map_update_elem(group_all, &ifindex, &ifindex, 0);
-+		if (ret) {
-+			perror("bpf_map_update_elem");
-+			goto err_out;
-+		}
-+
-+		/* For testing: remove the 2nd interfaces from group v4 */
-+		if (i != 1) {
-+			ret = bpf_map_update_elem(group_v4, &ifindex, &ifindex, 0);
-+			if (ret) {
-+				perror("bpf_map_update_elem");
-+				goto err_out;
++	if (enable) {
++		if (!refcount_read(&adap->chcr_ktls.ktls_refcount)) {
++			/* At this moment if ULD connection are up means, other
++			 * ULD is/are already active, return failure.
++			 */
++			if (cxgb4_uld_in_use(adap)) {
++				dev_warn(adap->pdev_dev,
++					 "ULD connections (tid/stid) active. Can't enable kTLS\n");
++				return -EINVAL;
 +			}
++			refcount_set(&adap->chcr_ktls.ktls_refcount, 1);
++			pr_info("kTLS has been enabled. Restrictions placed on ULD support\n");
++		} else {
++			/* ktls settings already up, just increment refcount. */
++			refcount_inc(&adap->chcr_ktls.ktls_refcount);
++			return 0;
 +		}
-+
-+		/* For testing: remove the 1st interfaces from group v6 */
-+		if (i != 0) {
-+			ret = bpf_map_update_elem(group_v6, &ifindex, &ifindex, 0);
-+			if (ret) {
-+				perror("bpf_map_update_elem");
-+				goto err_out;
-+			}
-+		}
-+
-+		/* For testing: add the 3rd interfaces to exclude map */
-+		if (i == 2) {
-+			ret = bpf_map_update_elem(exclude, &ifindex, &ifindex, 0);
-+			if (ret) {
-+				perror("bpf_map_update_elem");
-+				goto err_out;
-+			}
-+		}
-+
-+		/* bind prog_fd to each interface */
-+		ret = bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags);
-+		if (ret) {
-+			printf("Set xdp fd failed on %d\n", ifindex);
-+			goto err_out;
-+		}
-+
++		/* we shouldn't remove CRYPTO ULD driver until any single
++		 * connection exists. Get ULD module's ref-count.
++		 */
++		try_module_get(adap->uld[CXGB4_ULD_CRYPTO].owner);
++	} else {
++		/* return failure if refcount is already 0. */
++		if (!refcount_read(&adap->chcr_ktls.ktls_refcount))
++			return -EINVAL;
++		/* decrement refcount and test, if 0, disable ktls feature,
++		 * else return command success.
++		 */
++		if (refcount_dec_and_test(&adap->chcr_ktls.ktls_refcount))
++			pr_info("kTLS is disabled. Restrictions on ULD support removed\n");
++		else
++			return 0;
++		/* no more connecton exists, clear module ref count */
++		module_put(adap->uld[CXGB4_ULD_CRYPTO].owner);
 +	}
+ 
+ 	ret = t4_set_params(adap, adap->mbox, adap->pf, 0, 1, &params, &params);
+ 	/* if fw returns failure, clear the ktls flag */
+ 	if (ret)
+ 		adap->params.crypto &= ~ULP_CRYPTO_KTLS_INLINE;
 +
-+	poll_stats(2);
++	return ret;
+ }
++EXPORT_SYMBOL(cxgb4_set_ktls_feature);
+ #endif
+ 
+ static void cxgb4_uld_alloc_resources(struct adapter *adap,
+@@ -705,12 +754,6 @@ static void cxgb4_uld_alloc_resources(struct adapter *adap,
+ 	}
+ 	if (adap->flags & CXGB4_FULL_INIT_DONE)
+ 		enable_rx_uld(adap, type);
+-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+-	/* send mbox to enable ktls related settings. */
+-	if (type == CXGB4_ULD_CRYPTO &&
+-	    (adap->params.crypto & FW_CAPS_CONFIG_TX_TLS_HW))
+-		cxgb4_set_ktls_feature(adap, 1);
+-#endif
+ 	if (adap->uld[type].add)
+ 		goto free_irq;
+ 	ret = setup_sge_txq_uld(adap, type, p);
+@@ -804,13 +847,6 @@ int cxgb4_unregister_uld(enum cxgb4_uld type)
+ 			continue;
+ 
+ 		cxgb4_shutdown_uld_adapter(adap, type);
+-
+-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+-		/* send mbox to disable ktls related settings. */
+-		if (type == CXGB4_ULD_CRYPTO &&
+-		    (adap->params.crypto & FW_CAPS_CONFIG_TX_TLS_HW))
+-			cxgb4_set_ktls_feature(adap, 0);
+-#endif
+ 	}
+ 
+ 	list_for_each_entry_safe(uld_entry, tmp, &uld_list, list_node) {
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+index 085fa1424f9a..8af6ba12fe57 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+@@ -268,6 +268,10 @@ struct filter_ctx {
+ 	u32 tid;			/* to store tid */
+ };
+ 
++struct chcr_ktls {
++	refcount_t ktls_refcount;
++};
 +
-+	return 0;
+ struct ch_filter_specification;
+ 
+ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
+@@ -446,6 +450,7 @@ struct cxgb4_lld_info {
+ };
+ 
+ struct cxgb4_uld_info {
++	struct module *owner;
+ 	char name[IFNAMSIZ];
+ 	void *handle;
+ 	unsigned int nrxq;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
+index 68fe734b9b37..0a326c054707 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
+@@ -1205,7 +1205,7 @@ enum fw_caps_config_crypto {
+ 	FW_CAPS_CONFIG_CRYPTO_LOOKASIDE = 0x00000001,
+ 	FW_CAPS_CONFIG_TLS_INLINE = 0x00000002,
+ 	FW_CAPS_CONFIG_IPSEC_INLINE = 0x00000004,
+-	FW_CAPS_CONFIG_TX_TLS_HW = 0x00000008,
++	FW_CAPS_CONFIG_TLS_HW = 0x00000008,
+ };
+ 
+ enum fw_caps_config_fcoe {
+@@ -1329,7 +1329,7 @@ enum fw_params_param_dev {
+ 	FW_PARAMS_PARAM_DEV_DBQ_TIMERTICK = 0x2A,
+ 	FW_PARAMS_PARAM_DEV_NUM_TM_CLASS = 0x2B,
+ 	FW_PARAMS_PARAM_DEV_FILTER = 0x2E,
+-	FW_PARAMS_PARAM_DEV_KTLS_TX_HW = 0x31,
++	FW_PARAMS_PARAM_DEV_KTLS_HW = 0x31,
+ };
+ 
+ /*
+@@ -1412,6 +1412,12 @@ enum fw_params_param_dmaq {
+ 	FW_PARAMS_PARAM_DMAQ_CONM_CTXT = 0x20,
+ };
+ 
++enum fw_params_param_dev_ktls_hw {
++	FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE      = 0x00,
++	FW_PARAMS_PARAM_DEV_KTLS_HW_ENABLE       = 0x01,
++	FW_PARAMS_PARAM_DEV_KTLS_HW_USER_ENABLE  = 0x01,
++};
 +
-+err_out:
-+	return 1;
-+}
+ enum fw_params_param_dev_phyfw {
+ 	FW_PARAMS_PARAM_DEV_PHYFW_DOWNLOAD = 0x00,
+ 	FW_PARAMS_PARAM_DEV_PHYFW_VERSION = 0x01,
 -- 
-2.25.4
+2.18.1
 
