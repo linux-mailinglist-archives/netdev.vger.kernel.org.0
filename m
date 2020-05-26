@@ -2,142 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2491E2680
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A73D01E26AE
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729718AbgEZQH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 12:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727941AbgEZQH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:07:28 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3638C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:07:28 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id n24so24425757ejd.0
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oUX2U4JS3w0Y2qYxpOXghH6eOc+2SRemQlTn795nUco=;
-        b=Y4NPsLdjzHhMjro6pFDoV1bAICpfzxuL4D4diGL2bQi8jjT77h2Djuh4nxjLz17cTI
-         gqU8n1bTGOtPg5PwOyejoMZntYBwNLjpJkZ0nL8cFb/sjQ2n1CzzKF9uIokea2RdJOWM
-         f56pqR/u//tsKXxztbMuF86GXIlQmJy2+pd6RNPA65b2ttFTxBgALQJwR2iHE6p5gmHA
-         WQeZ/fb2cHctLolp8PTPi9WOaZCHUPQROA6h/XmVIfSMVCcw16ANLBwL5jEGTKZ1Yhoz
-         VJC21zP2nUPJTxRcbTj2opbrKTYqMCi7fbpJcRh1JmNmcHYl/BsqPNb/PhSkx5cEyDOB
-         VKfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oUX2U4JS3w0Y2qYxpOXghH6eOc+2SRemQlTn795nUco=;
-        b=cO0wLZjG/S6KHlIRRsI5/sKOPi7bLpZGMjRbM5cDWESSOn5/yYKdaPcdXdcLT879jG
-         Uu51cymH2A6jz82iyhmUBrKveJlNilR+kpOD+/9F3rpXlJeHSeoIGnxf/bfhUeHwvsi+
-         7dO+rI+H1BHoGMgN8hsfUjtrJK8faUEHUESTBBnB2G5SyyBsC6k4mABu0Xkx3CCa/OyG
-         A6982o+Oh2da2hYtIeQ/j6I4Juouwi2GduO4GZpPGyyAxevfc6iCzHkpOdxgb8VvU+N7
-         D+SW0Mf3Y8VfuU3dybAKgqxCAzE60sFmfFotLp34P7yyh9jwp3CvOlHsflkih0s8cEB+
-         Apng==
-X-Gm-Message-State: AOAM531eTDKPjX0TQn8q5kw+FZ4XDc2HwZ3aCxY023GNM/DmCFUvrwst
-        dQPDzqxpZRnxcTs6FuLDySeQzfoSPymMl1WcmEM=
-X-Google-Smtp-Source: ABdhPJzfXlu8h+WqSL6k/XQ0gJO8pKHebaWk/1ATLnGYGzrwf5q05j3N5RdJkj74p5gGUhqdj29yMD+6fnf+WRI66Q4=
-X-Received: by 2002:a17:906:4803:: with SMTP id w3mr1728034ejq.316.1590509247324;
- Tue, 26 May 2020 09:07:27 -0700 (PDT)
+        id S1729467AbgEZQRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 12:17:14 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:41204 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728279AbgEZQRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:17:14 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7E2C5200FE;
+        Tue, 26 May 2020 16:17:13 +0000 (UTC)
+Received: from us4-mdac16-65.at1.mdlocal (unknown [10.110.50.184])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7911E8009B;
+        Tue, 26 May 2020 16:17:13 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.106])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EAB4040058;
+        Tue, 26 May 2020 16:17:12 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99780B4007E;
+        Tue, 26 May 2020 16:17:12 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 May
+ 2020 17:17:06 +0100
+Subject: Re: [PATCH net-next 0/3] net/sched: act_ct: Add support for
+ specifying tuple offload policy
+To:     Paul Blakey <paulb@mellanox.com>, Jiri Pirko <jiri@resnulli.us>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
+ <3d780eae-3d53-77bb-c3b9-775bf50477bf@solarflare.com>
+ <20200514144938.GD2676@nanopsycho>
+ <9f68872f-fe3f-e86a-4c74-8b33cd9ee433@solarflare.com>
+ <f7236849-420d-558f-8e66-2501e221ca1b@mellanox.com>
+ <64db5b99-2c67-750c-e5bd-79c7e426aaa2@solarflare.com>
+ <20200518172542.GE2193@nanopsycho>
+ <d5be2555-faf3-7ca0-0c23-f2bf92873621@solarflare.com>
+ <73cf369e-80bc-b7d2-b3f5-106633c3c617@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <9fb20da4-ac4d-54b4-8365-effaee1add3c@solarflare.com>
+Date:   Tue, 26 May 2020 17:17:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200525181508.13492-1-fw@strlen.de> <20200525181508.13492-3-fw@strlen.de>
-In-Reply-To: <20200525181508.13492-3-fw@strlen.de>
-From:   Christoph Paasch <christoph.paasch@gmail.com>
-Date:   Tue, 26 May 2020 09:07:16 -0700
-Message-ID: <CALMXkpa8iryjBDu0dpduHnZXROwT5xWWY9rifau93gDE1HJsxg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 2/2] mptcp: move recbuf adjustment to recvmsg path
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <73cf369e-80bc-b7d2-b3f5-106633c3c617@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25442.003
+X-TM-AS-Result: No-8.050200-8.000000-10
+X-TMASE-MatchedRID: xcONGPdDH5rmLzc6AOD8DfHkpkyUphL9sKzLQnnS/xwUE18jzz932paT
+        uLyNbZXgrW702S6GBasna5sZ1mBmvL7B68mjCRLBoxjrap5AGQtBSY6kx+M18deM7+ynemuGGCV
+        vCiARVvPll5HXtk7Wj0WyyHKLktK9ZMWKXMYF1HGiVU7u7I4INS9Xl/s/QdUMYAwzRYoPhqxzfv
+        mhvQjM3asX2h7dktoaxBu+r0f/xo9E/Sp0PD3Gx4mdvL31hbmuZAGtCJE23YgZSz1vvG+0mgrV1
+        iu1XB5tB1aphc+FW80QXv5QIP0BCsTrvy/DX1MPnMQdNQ64xfcBDya2JbH/+rZVMaEd3DdN2zMl
+        MhmuHAh91umf6Vbd4JzAuW1U1Efi9XUyefCCihAqsMfMfrOZRTVfUuzvrtymSg8ufp5n3T7HGPf
+        3UmVWP+Od/LibTZRK3BTxUdcaKkK/WXZS/HqJ2gtuKBGekqUpIG4YlbCDECsYpN+2ZkfdFzJ6UA
+        /CaBtWHTRWNH77H71ZNbsPeW96vjKaFvIdc38e4eZLp8bTU/Q=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.050200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25442.003
+X-MDID: 1590509833-3zhWh2upBlBo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 26/05/2020 10:25, Paul Blakey wrote:
+> On 5/18/2020 9:02 PM, Edward Cree wrote:
+>> Well, really it's related as much to flower ct_state as to act_ct: the
+>>  policy numbers control when a conntrack rule (from the zone) gets
+>>  offloaded into drivers, thus determining whether a packet (which has
+>>  been through an act_ct to make it +trk) is ±est.
+> It doesn't affect when a connection will become established (+est),
+> just the offloading of such connections.
+Yes; what I meant was that the packet wouldn't match a +trk+estrule in
+ hardware if the connection hadn't been offloaded (it would instead go
+ to software, where it would match).
+So the policy is in a sense controlling ct_state offload, as much as it
+ is act_ct offload.
 
-On Mon, May 25, 2020 at 3:19 PM Florian Westphal <fw@strlen.de> wrote:
+> I'm not sure how well it will sit with the flow table having a device while
+> the filter has a tc block which can have multiple devices.
 >
-> From: Paolo Abeni <pabeni@redhat.com>
->
-> Place receive window tuning in the recvmsg path.
-> This makes sure the size is only increased when userspace consumes data.
->
-> Previously we would grow the sk receive buffer towards tcp_rmem[2], now we
-> so only if userspace reads data.
->
-> Simply adjust the msk rcvbuf size to the largest receive buffer of any of
-> the existing subflows.
->
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  This patch is new in v2.
->
->  net/mptcp/protocol.c | 32 ++++++++++++++++++++++++--------
->  1 file changed, 24 insertions(+), 8 deletions(-)
->
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index dbb86cbb9e77..89a35c3fc499 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -190,13 +190,6 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
->                 return false;
->         }
->
-> -       if (!(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
-> -               int rcvbuf = max(ssk->sk_rcvbuf, sk->sk_rcvbuf);
-> -
-> -               if (rcvbuf > sk->sk_rcvbuf)
-> -                       sk->sk_rcvbuf = rcvbuf;
-> -       }
-> -
->         tp = tcp_sk(ssk);
->         do {
->                 u32 map_remaining, offset;
-> @@ -933,6 +926,25 @@ static bool __mptcp_move_skbs(struct mptcp_sock *msk)
->         return moved > 0;
->  }
->
-> +static void mptcp_rcv_space_adjust(struct mptcp_sock *msk)
-> +{
-> +       const struct mptcp_subflow_context *subflow;
-> +       struct sock *sk = (struct sock *)msk;
-> +       const struct sock *ssk;
-> +       int rcvbuf = 0;
-> +
-> +       if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
-> +               return;
-> +
-> +       mptcp_for_each_subflow(msk, subflow) {
-> +               ssk = mptcp_subflow_tcp_sock(subflow);
-> +               rcvbuf = max(ssk->sk_rcvbuf, rcvbuf);
+> And then we have the single IPS_OFFLOAD_BIT so a flow can't currently be
+> shared between different flow tables that will be created for different devices.
+> We will need to do a an atomic lookup/insert to each table.
+I see; it does get a bit complicated.  I agree that the 'policy per
+ device' use case is too speculative to justify all that work.
 
-tcp_rcv_space_adjust is called even when the app is not yet reading,
-thus wouldn't this mean that we still end up with an ever-growing
-window?
-E.g., imagine an app that does not read at all at the beginning. The
-call to tcp_rcv_space_adjust in patch 1/2 will make the subflow's
-window grow. Now, the app comes and reads one byte. Then, the window
-at MPTCP-level will jump regardless of how much the app actually read.
+But I think I can still make my dream happen with the global policy,
+ just by putting the "we used this CT zone in an action, we need to
+ offload it" smarts into TC rather than all the drivers.  Which I
+ suppose is orthogonal to the TC CT policy uAPI question; but I still
+ prefer the 'explicit CT object' approach.  To do those smarts, TC
+ would need a CT object internally anyway, so we may as well expose
+ it and get a clean policy API into the bargain.
 
-I think what is needed is to size the MPTCP-level window to 2 x the
-amount of data read by the application within an RTT (maximum RTT
-among all the active subflows). That way if an app reads 1 byte a
-second, the window will remain low. While for a bulk-transfer it will
-allow all subflows to receive at full speed [1].
+> What you are suggesting will require new userspace and kernel (builtin)
+> tc netlink API to manage conntrack zones/nf flow tables policies.
+Either way there's new API.  Yours may be a smaller change (just adding
+ new attributes hung off the act_ct), but you still need to update
+ userspace to take advantage of it, else you get the default policy.
+And `tc ct add zone 1 policy_timeout 120` (global policy) can be done
+ backwards-compatibly, too, as I described in my message before last.
 
-Or do you think that kind of tuning can be done in a follow-up patch?
+(Policy-per-device would be much more of a pain new-uAPI-wise; again,
+ I agree to drop that idea.)
 
-
-Christoph
-
-[1]: https://www.usenix.org/system/files/conference/nsdi12/nsdi12-final125.pdf
--> Section 4.2
+-ed
