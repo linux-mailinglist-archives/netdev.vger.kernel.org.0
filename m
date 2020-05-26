@@ -2,207 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BFE1E1A7A
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 06:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49E641E1AA4
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 07:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725971AbgEZErc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 00:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725771AbgEZErb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 00:47:31 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AAAC061A0E
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 21:47:30 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id h4so1869954wmb.4
-        for <netdev@vger.kernel.org>; Mon, 25 May 2020 21:47:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b7l+Roz213G9HerxC3DpVZJyciTPwZ/8WTa7s9bt+jE=;
-        b=ebotkvcpeNvni9wqEsGs1Xs3D82FFmkLWydaBGt8Oglqev+XCuW4NGByVcw+mqXwMT
-         5TaUOtQ16pd5qsUXwDDYYUke0/tXCt9jSaqWQyJucV0xArP2GGfGCgJHNru00/H18beN
-         SdqwZcjqqj8C2GKb23zQ/Z2Lop5vzBmNrolP5vC9VWT1La2fVo+Hir/1xOhz2l27MuEm
-         a0UORXFVdj+3+MXZmSZk01lisyXa2byHNYJP4c7lqpb6fJNpgPsFK2CkeQ9fP+JjxAzo
-         15ETMPLF1dyAWxQr2taj6/HqFFEVQPgMYichkZegJb0Ny/mAnajvXmzWmHb5wwvXjwB4
-         gHZw==
+        id S1726325AbgEZFQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 01:16:44 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34285 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725872AbgEZFQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 01:16:44 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r7so2394874wro.1
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 22:16:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b7l+Roz213G9HerxC3DpVZJyciTPwZ/8WTa7s9bt+jE=;
-        b=phu72tjNER8K0eI2kjypIiUAgKts771VHCVPe9uYcdqgKLPQccSDJ9yUCKJQZxiRbk
-         a952DJxO1YvWuCl/L20n+pLt/GF1fukYusTi+Vq9x5W1J9HcP+oZYrPQ3RlYKb0hs6us
-         5l5zddYT6eMO/wL+y6LzJZm30eo+fU+fXFW77R1eL+6OymXlUNFD0JxZ4fIiEHxNnPvu
-         Oyzf2sGGZULPkVgIKnEcOx53v2ZrIDXBiF46Y4lTigEJXXz02u/y1ckPWf+VWKEslCIl
-         RFHYAR+v2diFRhDe3yPO4F+GKNzPcKV0iLPQ39f1E+7J/5pLkHYLzrZbsuTl6ccNuSd+
-         rCdA==
-X-Gm-Message-State: AOAM533HLxPlzpgkyppktCUHBtfmkaK6PcSXnfkCJgxcmaof+4BUGAq+
-        MEloIRzSKCqsIR0uPhmylOcuuA==
-X-Google-Smtp-Source: ABdhPJxBZ9vaerYFiF1MSGIO/77brMKhkutj+kWOQYi1ubswkRn/IU6ut3D0LKjIHy+9gnqnPlFFcQ==
-X-Received: by 2002:a7b:cd04:: with SMTP id f4mr29412815wmj.118.1590468449039;
-        Mon, 25 May 2020 21:47:29 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id z132sm21589812wmc.29.2020.05.25.21.47.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 21:47:28 -0700 (PDT)
-Date:   Tue, 26 May 2020 06:47:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
- generic device parameter.
-Message-ID: <20200526044727.GB14161@nanopsycho>
-References: <1590214105-10430-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1590214105-10430-2-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200524045335.GA22938@nanopsycho>
- <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
- <20200525172602.GA14161@nanopsycho>
- <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=nJy5Y/wFhqFBhHT59jrIgHaVUD/qjpVN0AKUN1fDJdQ=;
+        b=gn54ZT7jhQUZ6gEUdUZh9eup5NydKVSRpRNYsHv9Y1a+gi6nOql4t+5+9zqNJYYxjX
+         ojkAJ+FxSILxnbXSODRzSgdAtwYy2FzKDJeZQ+bpRIZfiHa8TDEAwRvaOtFPMn8+zeoB
+         vU7hrAQ2ebdw+t/H/rEBoUWxSFGM4ezR+s1SSP77XSB9r8ay8vznh391hQcYQLEJIt0F
+         n1dk6CvZjk3JRvAlDJ0D0hp8FzjQV9xa1/cjFi1ldj7IlzFKx2hy2C50SC/hug05erg6
+         eRDuZAcjcm0p95Jrbi255QKDzX8j698qXrlZ4GsysvVwxPNqEUB+kr358yT96aIh34q2
+         QGdA==
+X-Gm-Message-State: AOAM533zWp5mhEaYVSpmOagIs1seHWwW0VnxWx5W4hk894Imol+4EpLr
+        NVxJuBQdk3MHuGQWTTnVgdU=
+X-Google-Smtp-Source: ABdhPJyMfKMei90bNH0yaIwELtH0DBWlPHSWNTMq2PHBi0nVjke+rsl1XhE4AKvnQFOJ7r2hpXI9PA==
+X-Received: by 2002:adf:e450:: with SMTP id t16mr19495513wrm.66.1590470202261;
+        Mon, 25 May 2020 22:16:42 -0700 (PDT)
+Received: from ?IPv6:2a02:21b0:9002:414a:5d95:b3ad:52db:6030? ([2a02:21b0:9002:414a:5d95:b3ad:52db:6030])
+        by smtp.gmail.com with ESMTPSA id 23sm12321010wmo.18.2020.05.25.22.16.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 May 2020 22:16:41 -0700 (PDT)
+Reply-To: valentin@longchamp.me
+Subject: Re: [PATCH] net/ethernet/freescale: rework quiesce/activate for
+ ucc_geth
+To:     David Miller <davem@davemloft.net>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        kuba@kernel.org, hkallweit1@gmail.com, matteo.ghidoni@ch.abb.com
+References: <20200520155350.1372-1-valentin@longchamp.me>
+ <20200522.155054.352367636201826991.davem@davemloft.net>
+From:   Valentin Longchamp <valentin@longchamp.me>
+Message-ID: <aa59c21d-c15a-b087-cc17-04535ebcdb41@longchamp.me>
+Date:   Tue, 26 May 2020 07:16:45 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
+In-Reply-To: <20200522.155054.352367636201826991.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 26, 2020 at 06:28:59AM CEST, vasundhara-v.volam@broadcom.com wrote:
->On Mon, May 25, 2020 at 10:56 PM Jiri Pirko <jiri@resnulli.us> wrote:
+Le 23.05.2020 à 00:50, David Miller a écrit :
+> From: Valentin Longchamp <valentin@longchamp.me>
+> Date: Wed, 20 May 2020 17:53:50 +0200
+> 
+>> ugeth_quiesce/activate are used to halt the controller when there is a
+>> link change that requires to reconfigure the mac.
 >>
->> Sun, May 24, 2020 at 08:29:56AM CEST, vasundhara-v.volam@broadcom.com wrote:
->> >On Sun, May 24, 2020 at 10:23 AM Jiri Pirko <jiri@resnulli.us> wrote:
->> >>
->> >> Sat, May 23, 2020 at 08:08:22AM CEST, vasundhara-v.volam@broadcom.com wrote:
->> >> >Add a new "allow_fw_live_reset" generic device bool parameter. When
->> >> >parameter is set, user is allowed to reset the firmware in real time.
->> >> >
->> >> >This parameter is employed to communicate user consent or dissent for
->> >> >the live reset to happen. A separate command triggers the actual live
->> >> >reset.
->> >> >
->> >> >Cc: Jiri Pirko <jiri@mellanox.com>
->> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->> >> >Signed-off-by: Michael Chan <michael.chan@broadcom.com>
->> >> >---
->> >> >v2: Rename param name to "allow_fw_live_reset" from
->> >> >"enable_hot_fw_reset".
->> >> >Update documentation for the param in devlink-params.rst file.
->> >> >---
->> >> > Documentation/networking/devlink/devlink-params.rst | 6 ++++++
->> >> > include/net/devlink.h                               | 4 ++++
->> >> > net/core/devlink.c                                  | 5 +++++
->> >> > 3 files changed, 15 insertions(+)
->> >> >
->> >> >diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
->> >> >index d075fd0..ad54dfb 100644
->> >> >--- a/Documentation/networking/devlink/devlink-params.rst
->> >> >+++ b/Documentation/networking/devlink/devlink-params.rst
->> >> >@@ -108,3 +108,9 @@ own name.
->> >> >    * - ``region_snapshot_enable``
->> >> >      - Boolean
->> >> >      - Enable capture of ``devlink-region`` snapshots.
->> >> >+   * - ``allow_fw_live_reset``
->> >> >+     - Boolean
->> >> >+     - Firmware live reset allows users to reset the firmware in real time.
->> >> >+       For example, after firmware upgrade, this feature can immediately reset
->> >> >+       to run the new firmware without reloading the driver or rebooting the
->> >>
->> >> This does not tell me anything about the reset being done on another
->> >> host. You need to emhasize that, in the name of the param too.
->> >I am not sure if I completely understand your query.
->> >
->> >Reset is actually initiated by one of the PF/host of the device, which
->> >resets the entire same device.
->> >
->> >Reset is not initiated by any other remote device/host.
+>> The previous implementation called netif_device_detach(). This however
+>> causes the initial activation of the netdevice to fail precisely because
+>> it's detached. For details, see [1].
 >>
->> Well, in case of multihost system, it might be, right?
+>> A possible workaround was the revert of commit
+>> net: linkwatch: add check for netdevice being present to linkwatch_do_dev
+>> However, the check introduced in the above commit is correct and shall be
+>> kept.
 >>
->In case of multi-host system also, it is one of the host that triggers
->the reset, which resets the entire same device. I don't think this is
->remote.
->
->As the parameter is a device parameter, it is applicable to the entire
->device. When a user initiates the reset from any of the host in case
->of multi-host and any of the PF in case of stand-alone or smartNIC
->device, the entire device goes for a reset.
->
->I will be expanding the description to the following to make it more clear.
->
->------------------------
->- Firmware live reset allows users to reset the firmware in real time.
->For example, after firmware upgrade, this feature can immediately
->reset to run the new firmware without reloading the driver or
->rebooting the system.
->When a user initiates the reset from any of the host (in case of
->multi-host system) / PF (in case of stand-alone or smartNIC device),
->the entire device goes for a reset when the parameter is enabled.
-
-Sorry, this is still not clear. I think that you are mixing up two
-different things:
-1) option of devlink reload to indicate that user is interested in "live
-   reset" of firmware without reloading driver
-2) devlink param that would indicate "I am okay if someone else (not by
-   my devlink instance) resets my firmware".
-
-Could you please split?
-
-
->------------------------
->
->Thanks,
->Vasundhara
+>> The netif_device_detach() is thus replaced with
+>> netif_tx_stop_all_queues() that prevents any tranmission. This allows to
+>> perform mac config change required by the link change, without detaching
+>> the corresponding netdevice and thus not preventing its initial
+>> activation.
 >>
->> >
->> >Thanks,
->> >Vasundhara
->> >>
->> >>
->> >>
->> >> >+       system.
->> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
->> >> >index 8ffc1b5c..488b61c 100644
->> >> >--- a/include/net/devlink.h
->> >> >+++ b/include/net/devlink.h
->> >> >@@ -406,6 +406,7 @@ enum devlink_param_generic_id {
->> >> >       DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
->> >> >       DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
->> >> >       DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
->> >> >+      DEVLINK_PARAM_GENERIC_ID_ALLOW_FW_LIVE_RESET,
->> >> >
->> >> >       /* add new param generic ids above here*/
->> >> >       __DEVLINK_PARAM_GENERIC_ID_MAX,
->> >> >@@ -443,6 +444,9 @@ enum devlink_param_generic_id {
->> >> > #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME "enable_roce"
->> >> > #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE DEVLINK_PARAM_TYPE_BOOL
->> >> >
->> >> >+#define DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_NAME "allow_fw_live_reset"
->> >> >+#define DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
->> >> >+
->> >> > #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)    \
->> >> > {                                                                     \
->> >> >       .id = DEVLINK_PARAM_GENERIC_ID_##_id,                           \
->> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
->> >> >index 7b76e5f..8544f23 100644
->> >> >--- a/net/core/devlink.c
->> >> >+++ b/net/core/devlink.c
->> >> >@@ -3011,6 +3011,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
->> >> >               .name = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME,
->> >> >               .type = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE,
->> >> >       },
->> >> >+      {
->> >> >+              .id = DEVLINK_PARAM_GENERIC_ID_ALLOW_FW_LIVE_RESET,
->> >> >+              .name = DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_NAME,
->> >> >+              .type = DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_TYPE,
->> >> >+      },
->> >> > };
->> >> >
->> >> > static int devlink_param_generic_verify(const struct devlink_param *param)
->> >> >--
->> >> >1.8.3.1
->> >> >
+>> [1] https://lists.openwall.net/netdev/2020/01/08/201
+>>
+>> Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+>> Acked-by: Matteo Ghidoni <matteo.ghidoni@ch.abb.com>
+> 
+> Applied, thanks.
+> 
+
+Thanks David.
+
+May I suggest that this get backported to stable until (including) the 
+4.19 stable release ?
+
+As the above mentioned commit, merged for 4.19,
+124eee3f6955 net: linkwatch: add check for netdevice being present to 
+linkwatch_do_dev
+does indeed break the ucc_geth driver, this patch can be considered as a 
+bugfix that should be taken into account for stable.
