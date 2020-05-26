@@ -2,148 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0051E2217
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 14:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A205D1E22CE
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 15:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389209AbgEZMlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 08:41:46 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60738 "EHLO mx2.suse.de"
+        id S1728558AbgEZNP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 09:15:28 -0400
+Received: from mga12.intel.com ([192.55.52.136]:38876 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388497AbgEZMlp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 08:41:45 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id B997AAFCD;
-        Tue, 26 May 2020 12:41:45 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id CF2036032A; Tue, 26 May 2020 14:41:39 +0200 (CEST)
-Date:   Tue, 26 May 2020 14:41:39 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>,
-        Amit Cohen <amitc@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
- support
-Message-ID: <20200526124139.mvsn52cixu2t5ljz@lion.mk-sys.cz>
-References: <20200526091025.25243-1-o.rempel@pengutronix.de>
+        id S1727034AbgEZNP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 09:15:28 -0400
+IronPort-SDR: EWgO04nPFkiriWKxrV5yP0RDL/yIzxNhq5o7dNPAIRzVl4tZe3ApOS66TIlCHARSjQoKOYjj/O
+ UtOl17E35WCA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 06:15:28 -0700
+IronPort-SDR: lNh3jkfJZKreBgpVTFVGv5kBERjmqXzXzjazaSx6FXzSnFbSVUi8RxVd1gjxP8nqVL0e/G8W6Y
+ Vnab/QspxK0w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; 
+   d="scan'208";a="266447104"
+Received: from rbalaz-mobl1.amr.corp.intel.com (HELO [10.251.20.147]) ([10.251.20.147])
+  by orsmga003.jf.intel.com with ESMTP; 26 May 2020 06:15:27 -0700
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>
+References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
+ <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
+ <20200520125437.GH31189@ziepe.ca>
+ <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
+ <20200521233437.GF17583@ziepe.ca>
+ <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+ <20200523062351.GD3156699@kroah.com>
+ <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+ <20200524063519.GB1369260@kroah.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
+Date:   Tue, 26 May 2020 08:15:26 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200526091025.25243-1-o.rempel@pengutronix.de>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200524063519.GB1369260@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 11:10:25AM +0200, Oleksij Rempel wrote:
-> This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
-> auto-negotiation support, we needed to be able to configure the
-> MASTER-SLAVE role of the port manually or from an application in user
-> space.
+
+
+On 5/24/20 1:35 AM, Greg KH wrote:
+> On Sat, May 23, 2020 at 02:41:51PM -0500, Pierre-Louis Bossart wrote:
+>>
+>>
+>> On 5/23/20 1:23 AM, Greg KH wrote:
+>>> On Fri, May 22, 2020 at 09:29:57AM -0500, Pierre-Louis Bossart wrote:
+>>>> This is not an hypothetical case, we've had this recurring problem when a
+>>>> PCI device creates an audio card represented as a platform device. When the
+>>>> card registration fails, typically due to configuration issues, the PCI
+>>>> probe still completes.
+>>>
+>>> Then fix that problem there.  The audio card should not be being created
+>>> as a platform device, as that is not what it is.  And even if it was,
+>>> the probe should not complete, it should clean up after itself and error
+>>> out.
+>>
+>> Did you mean 'the PCI probe should not complete and error out'?
 > 
-> The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-> force MASTER or SLAVE role. See IEEE 802.3-2018:
-> 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-> 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-> 40.5.2 MASTER-SLAVE configuration resolution
-> 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-> 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
+> Yes.
 > 
-> The MASTER-SLAVE role affects the clock configuration:
+>> If yes, that's yet another problem... During the PCI probe, we start a
+>> workqueue and return success to avoid blocking everything.
 > 
-> -------------------------------------------------------------------------------
-> When the  PHY is configured as MASTER, the PMA Transmit function shall
-> source TX_TCLK from a local clock source. When configured as SLAVE, the
-> PMA Transmit function shall source TX_TCLK from the clock recovered from
-> data stream provided by MASTER.
+> That's crazy.
 > 
-> iMX6Q                     KSZ9031                XXX
-> ------\                /-----------\        /------------\
->       |                |           |        |            |
->  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
->       |<--- 125 MHz ---+-<------/  |        | \          |
-> ------/                \-----------/        \------------/
->                                                ^
->                                                 \-TX_TCLK
+>> And only 'later' do we actually create the card. So that's two levels
+>> of probe that cannot report a failure. I didn't come up with this
+>> design, IIRC this is due to audio-DRM dependencies and it's been used
+>> for 10+ years.
 > 
-> -------------------------------------------------------------------------------
+> Then if the probe function fails, it needs to unwind everything itself
+> and unregister the device with the PCI subsystem so that things work
+> properly.  If it does not do that today, that's a bug.
 > 
-> Since some clock or link related issues are only reproducible in a
-> specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
-> to provide generic (not 100BASE-T1 specific) interface to the user space
-> for configuration flexibility and trouble shooting.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+> What kind of crazy dependencies cause this type of "requirement"?
 
-Please document the new command line argument in both "ethtool --help"
-output and manual page.
+I think it is related to the request_module("i915") in 
+snd_hdac_i915_init(), and possibly other firmware download.
 
-I would also prefer updating the UAPI header copies in a separate commit
-which would update all of them to a state of a specific kernel commit
-(either 4.8-rc1 or current net-next); cherry picking specific changes
-may lead to missing some parts. An easy way would be
-
-  # switch to kernel repository and check out what you want to copy from
-  make ... INSTALL_HDR_PATH=$somewhere headers_install
-  # switch back to ethtool repository
-  cd uapi
-  find . -type f -exec cp -v ${somewhere}/include/{} {} \;
-
-Also, as the kernel counterpart is only in net-next at the moment, this
-should probably wait until after ethtool 5.7 release (perhaps it would
-be helpful to have a "next" branch like iproute2). I'll submit my queued
-patches for 5.7 later this week; should have done so long ago but
-I hoped to have the netlink friendly test framework finished before I do
-(test-features.c is tied to ioctl interface too tightly).
-
-[...]
-> @@ -827,6 +861,14 @@ static const struct lookup_entry_u32 duplex_values[] = {
->  	{}
->  };
->  
-> +static const struct lookup_entry_u32 master_slave_values[] = {
-
-This should be struct lookup_entry_u8, you are using it with
-nl_parse_lookup_u8() to generate an NLA_U8 attribute.
-
-Michal
-
-> +	{ .arg = "master-preferred",	.val = PORT_MODE_CFG_MASTER_PREFERRED },
-> +	{ .arg = "slave-preferred",	.val = PORT_MODE_CFG_SLAVE_PREFERRED },
-> +	{ .arg = "master-force",	.val = PORT_MODE_CFG_MASTER_FORCE },
-> +	{ .arg = "slave-force",		.val = PORT_MODE_CFG_SLAVE_FORCE },
-> +	{}
-> +};
-> +
->  char wol_bit_chars[WOL_MODE_COUNT] = {
->  	[WAKE_PHY_BIT]		= 'p',
->  	[WAKE_UCAST_BIT]	= 'u',
-> @@ -917,6 +959,14 @@ static const struct param_parser sset_params[] = {
->  		.handler_data	= duplex_values,
->  		.min_argc	= 1,
->  	},
-> +	{
-> +		.arg		= "master-slave",
-> +		.group		= ETHTOOL_MSG_LINKMODES_SET,
-> +		.type		= ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,
-> +		.handler	= nl_parse_lookup_u8,
-> +		.handler_data	= master_slave_values,
-> +		.min_argc	= 1,
-> +	},
->  	{
->  		.arg		= "wol",
->  		.group		= ETHTOOL_MSG_WOL_SET,
+Adding Takashi for more details.
