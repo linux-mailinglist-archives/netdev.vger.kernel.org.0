@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E17771E1C6B
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 09:43:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 887941E1C92
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 09:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730479AbgEZHnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 03:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727042AbgEZHnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 03:43:52 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0172DC061A0E
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 00:43:51 -0700 (PDT)
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 04Q7hkjb032744
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Tue, 26 May 2020 09:43:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1590479026; bh=R8KKjUWgapLl4auxe9lG2Om3IouPth+S2fKVt+6G16E=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=Psfo51O8nOfTz581Wf7r+4Ydk2aDwsea02BozZ1SjuhqORt/m0yD2pUg3crczRZOF
-         ypbFc5QtOcpABeEaFqp/KxuFp5G5zC/MENwGvK4ldhadnZMW/wlrb8ZsVhlR0Axr+O
-         RFXWXD1yiFW999WJmie3DbJZLcoJEbnveGc04lWA=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1jdUFW-0007sO-2e; Tue, 26 May 2020 09:43:46 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit LE910C1-EUX composition
-Organization: m
-References: <20200525212537.2227-1-dnlplm@gmail.com>
-Date:   Tue, 26 May 2020 09:43:46 +0200
-In-Reply-To: <20200525212537.2227-1-dnlplm@gmail.com> (Daniele Palmas's
-        message of "Mon, 25 May 2020 23:25:37 +0200")
-Message-ID: <87o8qbcf9p.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1731651AbgEZHzZ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 26 May 2020 03:55:25 -0400
+Received: from relay-fr112.magwien.gv.at ([217.149.228.141]:50063 "EHLO
+        relay-fr112.magwien.gv.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731635AbgEZHzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 03:55:24 -0400
+X-Greylist: delayed 415 seconds by postgrey-1.27 at vger.kernel.org; Tue, 26 May 2020 03:55:23 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by relay-fr112.magwien.gv.at (Postfix) with ESMTP id AB6E320AA8;
+        Tue, 26 May 2020 09:48:26 +0200 (CEST)
+X-Virus-Scanned: by amavisd-new using Sophie and ClamAV at magwien.gv.at
+Received: from osmtp2.ssr-wien.gv.at (projekt.ssr-wien.gv.at [217.149.227.34])
+        by relay-fr112.magwien.gv.at (Postfix) with ESMTP id 1805E20A9A;
+        Tue, 26 May 2020 09:48:24 +0200 (CEST)
+Received: from EX2016SSR2.ssr-wien.gv.at (ex2016ssr2.ssr-wien.gv.at [172.27.127.149])
+        by osmtp2.ssr-wien.gv.at (Postfix) with ESMTP id 67AB8A002D;
+        Tue, 26 May 2020 09:47:41 +0200 (CEST)
+Received: from EX2016SSR1.ssr-wien.gv.at (172.27.127.148) by
+ EX2016SSR2.ssr-wien.gv.at (172.27.127.149) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1261.35; Tue, 26 May 2020 09:47:41 +0200
+Received: from EX2016SSR1.ssr-wien.gv.at ([fe80::4821:68d8:9d0b:eb15]) by
+ EX2016SSR1.ssr-wien.gv.at ([fe80::4821:68d8:9d0b:eb15%3]) with mapi id
+ 15.01.1261.035; Tue, 26 May 2020 09:47:41 +0200
+From:   METZ-VALNY Alexandra <Alexandra.METZ-VALNY@bildung-wien.gv.at>
+To:     METZ-VALNY Alexandra <Alexandra.METZ-VALNY@bildung-wien.gv.at>
+Subject: AW: IT-service helpdesk
+Thread-Topic: IT-service helpdesk
+Thread-Index: AQHWMy0V+Hnt+2bSpUyxr0gu80G2zai58+ssgAADKOiAAAMMYYAAAi1B
+Date:   Tue, 26 May 2020 07:47:40 +0000
+Message-ID: <3c84b52525e647249002ba79621addf8@bildung-wien.gv.at>
+References: <b669b34fef7642b68b5db8341a021705@bildung-wien.gv.at>,<b5091829e0234828b14c6c62cdd19f03@bildung-wien.gv.at>,<03901de3887e486f90eeebbf44a6e565@bildung-wien.gv.at>,<b812f164e5254c36b09018e9d5499a53@bildung-wien.gv.at>
+In-Reply-To: <b812f164e5254c36b09018e9d5499a53@bildung-wien.gv.at>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ex-source-area: SSR
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.2 at canardo
-X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniele Palmas <dnlplm@gmail.com> writes:
+Systemadministratör
 
-> Add support for Telit LE910C1-EUX composition
->
-> 0x1031: tty, tty, tty, rmnet
-> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+Ditt lösenord körs i (1) timme. Klicka på ( https://gsfs.creatorlink.net/ ) för att använda det aktuella lösenordet igen och uppdatera automatiskt det senaste e-postmeddelandet från Outlook Web Apps 2020.
+
+Om ditt lösenord inte uppdateras idag kommer ditt konto att blockeras inom 12 timmar.
+
+Systemadministratör,
+Ansluten till Microsoft Exchange.
+© 2020 Alla rättigheter förbehållna Microsoft Corporation.
+
+
