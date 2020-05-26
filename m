@@ -2,101 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D9C1E29EE
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 499B61E29F1
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729302AbgEZSVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 14:21:35 -0400
-Received: from mga07.intel.com ([134.134.136.100]:1876 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727112AbgEZSVf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 14:21:35 -0400
-IronPort-SDR: W+QG8ygLjaboXImOTt544NFwzc55FWBdkTLKEbbCu3Gc6VRc7w42Oz6j3PoJEBvsKzHVjRBCLO
- LyAxV4H4oauw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 11:21:34 -0700
-IronPort-SDR: EOkjK7S4wgIRZHxuoGjFz9fbkl4SXt4BZLSjv7Qqqc1t0b2kCIolRkuJnUHA30fQIcgydTO9RC
- RPKKSxY///fg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; 
-   d="scan'208";a="468399550"
-Received: from emfomenk-mobl.amr.corp.intel.com ([10.255.229.42])
-  by fmsmga005.fm.intel.com with ESMTP; 26 May 2020 11:21:33 -0700
-Date:   Tue, 26 May 2020 11:21:33 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@emfomenk-mobl.amr.corp.intel.com
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [PATCH net] mptcp: avoid NULL-ptr derefence on fallback
-In-Reply-To: <d7d7f946ab9c43e96720d97e68645e38fb8b233c.1590417507.git.pabeni@redhat.com>
-Message-ID: <alpine.OSX.2.22.394.2005261120500.8041@emfomenk-mobl.amr.corp.intel.com>
-References: <d7d7f946ab9c43e96720d97e68645e38fb8b233c.1590417507.git.pabeni@redhat.com>
-User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
+        id S1729597AbgEZSWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 14:22:00 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54552 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727112AbgEZSV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 14:21:59 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jdeD7-0008T5-IC; Tue, 26 May 2020 18:21:57 +0000
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: re: netfilter: nfnetlink_queue: resolve clash for unconfirmed
+ conntracks
+Message-ID: <15787b56-b43d-878d-195b-f8fd54662406@canonical.com>
+Date:   Tue, 26 May 2020 19:21:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 May 2020, Paolo Abeni wrote:
+Hi,
 
-> In the MPTCP receive path we must cope with TCP fallback
-> on blocking recvmsg(). Currently in such code path we detect
-> the fallback condition, but we don't fetch the struct socket
-> required for fallback.
->
-> The above allowed syzkaller to trigger a NULL pointer
-> dereference:
->
-> general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-> CPU: 1 PID: 7226 Comm: syz-executor523 Not tainted 5.7.0-rc6-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:sock_recvmsg_nosec net/socket.c:886 [inline]
-> RIP: 0010:sock_recvmsg+0x92/0x110 net/socket.c:904
-> Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 44 89 6c 24 04 e8 53 18 1d fb 4d 8d 6f 20 4c 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 4c 89 ef e8 20 12 5b fb bd a0 00 00 00 49 03 6d
-> RSP: 0018:ffffc90001077b98 EFLAGS: 00010202
-> RAX: 0000000000000004 RBX: ffffc90001077dc0 RCX: dffffc0000000000
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: ffffffff86565e59 R09: ffffed10115afeaa
-> R10: ffffed10115afeaa R11: 0000000000000000 R12: 1ffff9200020efbc
-> R13: 0000000000000020 R14: ffffc90001077de0 R15: 0000000000000000
-> FS:  00007fc6a3abe700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000004d0050 CR3: 00000000969f0000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
-> mptcp_recvmsg+0x18d5/0x19b0 net/mptcp/protocol.c:891
-> inet_recvmsg+0xf6/0x1d0 net/ipv4/af_inet.c:838
-> sock_recvmsg_nosec net/socket.c:886 [inline]
-> sock_recvmsg net/socket.c:904 [inline]
-> __sys_recvfrom+0x2f3/0x470 net/socket.c:2057
-> __do_sys_recvfrom net/socket.c:2075 [inline]
-> __se_sys_recvfrom net/socket.c:2071 [inline]
-> __x64_sys_recvfrom+0xda/0xf0 net/socket.c:2071
-> do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:295
-> entry_SYSCALL_64_after_hwframe+0x49/0xb3
->
-> Address the issue initializing the struct socket reference
-> before entering the fallback code.
->
-> Reported-and-tested-by: syzbot+c6bfc3db991edc918432@syzkaller.appspotmail.com
-> Suggested-by: Ondrej Mosnacek <omosnace@redhat.com>
-> Fixes: 8ab183deb26a ("mptcp: cope with later TCP fallback")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net/mptcp/protocol.c | 3 ++-
-> 1 file changed, 2 insertions(+), 1 deletion(-)
->
+Static analysis with Coverity has detected a potential issue with the
+commit in linux-next:
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+commit 368982cd7d1bd41cd39049c794990aca3770db44
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Wed May 23 09:17:24 2018 +0200
 
---
-Mat Martineau
-Intel
+    netfilter: nfnetlink_queue: resolve clash for unconfirmed conntracks
+
+Namely:
+
+2019 static int __nf_conntrack_update(struct net *net, struct sk_buff *skb,
+2020                                 struct nf_conn *ct)
+2021 {
+2022        struct nf_conntrack_tuple_hash *h;
+2023        struct nf_conntrack_tuple tuple;
+
+    1. var_decl: Declaring variable ctinfo without initializer.
+
+2024        enum ip_conntrack_info ctinfo;
+
+...
+...
+
+2066        nf_ct_put(ct);
+2067        ct = nf_ct_tuplehash_to_ctrack(h);
+
+Uninitialized scalar variable (UNINIT)7. uninit_use_in_call:
+Using uninitialized value ctinfo when calling nf_ct_set.
+
+2068        nf_ct_set(skb, ct, ctinfo);
+2069
+
+the call to nf_ct_set uses info as follows:
+
+316 static inline void
+317 nf_ct_set(struct sk_buff *skb, struct nf_conn *ct, enum
+ip_conntrack_info info)
+318 {
+319        skb_set_nfct(skb, (unsigned long)ct | info);
+320 }
+
+so this shows that the info arg (from ctinfo) is being used when it has
+not been initialized.
+
+Colin
