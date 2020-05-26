@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3641E1B54
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 08:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E56D1E1B67
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 08:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730279AbgEZGdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 02:33:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35540 "EHLO mail.kernel.org"
+        id S1729984AbgEZGfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 02:35:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726842AbgEZGdi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 02:33:38 -0400
+        id S1726776AbgEZGfY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 02:35:24 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 493922073B;
-        Tue, 26 May 2020 06:33:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF9752068D;
+        Tue, 26 May 2020 06:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590474816;
-        bh=ekoHJmuDYgfF1SuG9z404kGqxsTf0Kd2lPtuC2TdX78=;
+        s=default; t=1590474923;
+        bh=lT4rvAif71IsjSUrxQMACsE1/IWSMB9YtdoebR/hi/U=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=upgmfSg6+hyi2RnYD15UKVCUWWpzVmk35guz+ryNT4da9EZJ7evbDVNO0PKMLrqsQ
-         +fGZzarS6/XMZfmdW21nbzBX5BfMvv+D0W3fk0eD7I2f2aKeRnpBAyI0v+M2ILIryk
-         7qnBc+AjLpsROB+BxZwolVoeKKpBh4GZdOQAKZLI=
-Date:   Tue, 26 May 2020 08:33:34 +0200
+        b=TnaP6H+bfcIwQM2DdB81Z/y15ftt9v8BASFf0zYe1DVE1SWw2uZEVX4B8sm9OKNVL
+         U7W1SxfUlTqITkqwa7Wl9DLBh4VenSSpH0PyygxmtomnmGeuy8dcfzNYBZgXv408qp
+         NGe5za7/QN+ohkAa6M6oqOsAotjw69NQ2c+RPcMk=
+Date:   Tue, 26 May 2020 08:35:21 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
 Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
@@ -47,84 +47,55 @@ Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
         linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 1/8] driver core: Add helper for accessing Power
- Management callbacs
-Message-ID: <20200526063334.GB2578492@kroah.com>
+Subject: Re: [PATCH 8/8] net/iucv: Use the new device_to_pm() helper to
+ access struct dev_pm_ops
+Message-ID: <20200526063521.GC2578492@kroah.com>
 References: <20200525182608.1823735-1-kw@linux.com>
- <20200525182608.1823735-2-kw@linux.com>
+ <20200525182608.1823735-9-kw@linux.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200525182608.1823735-2-kw@linux.com>
+In-Reply-To: <20200525182608.1823735-9-kw@linux.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 06:26:01PM +0000, Krzysztof Wilczyński wrote:
-> Add driver_to_pm() helper allowing for accessing the Power Management
-> callbacs for a particular device.  Access to the callbacs (struct
-> dev_pm_ops) is normally done through using the pm pointer that is
-> embedded within the device_driver struct.
+On Mon, May 25, 2020 at 06:26:08PM +0000, Krzysztof Wilczyński wrote:
+> Use the new device_to_pm() helper to access Power Management callbacs
+> (struct dev_pm_ops) for a particular device (struct device_driver).
 > 
-> Helper allows for the code required to reference the pm pointer and
-> access Power Management callbas to be simplified.  Changing the
-> following:
-> 
->   struct device_driver *drv = dev->driver;
->   if (dev->driver && dev->driver->pm && dev->driver->pm->prepare) {
->       int ret = dev->driver->pm->prepare(dev);
-> 
-> To:
-> 
->   const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
->   if (pm && pm->prepare) {
->       int ret = pm->prepare(dev);
-> 
-> Or, changing the following:
-> 
->      const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
-> 
-> To:
->      const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
+> No functional change intended.
 > 
 > Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
 > ---
->  include/linux/device/driver.h | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>  net/iucv/iucv.c | 30 ++++++++++++++++++------------
+>  1 file changed, 18 insertions(+), 12 deletions(-)
 > 
-> diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
-> index ee7ba5b5417e..ccd0b315fd93 100644
-> --- a/include/linux/device/driver.h
-> +++ b/include/linux/device/driver.h
-> @@ -236,6 +236,21 @@ driver_find_device_by_acpi_dev(struct device_driver *drv, const void *adev)
->  }
->  #endif
+> diff --git a/net/iucv/iucv.c b/net/iucv/iucv.c
+> index 9a2d023842fe..1a3029ab7c1f 100644
+> --- a/net/iucv/iucv.c
+> +++ b/net/iucv/iucv.c
+> @@ -1836,23 +1836,23 @@ static void iucv_external_interrupt(struct ext_code ext_code,
 >  
-> +/**
-> + * driver_to_pm - Return Power Management callbacs (struct dev_pm_ops) for
-> + *                a particular device.
-> + * @drv: Pointer to a device (struct device_driver) for which you want to access
-> + *       the Power Management callbacks.
-> + *
-> + * Returns a pointer to the struct dev_pm_ops embedded within the device (struct
-> + * device_driver), or returns NULL if Power Management is not present and the
-> + * pointer is not valid.
-> + */
-> +static inline const struct dev_pm_ops *driver_to_pm(struct device_driver *drv)
-> +{
-> +	return drv && drv->pm ? drv->pm : NULL;
+>  static int iucv_pm_prepare(struct device *dev)
+>  {
+> -	int rc = 0;
+> +	const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
+>  
+>  #ifdef CONFIG_PM_DEBUG
+>  	printk(KERN_INFO "iucv_pm_prepare\n");
+>  #endif
+> -	if (dev->driver && dev->driver->pm && dev->driver->pm->prepare)
+> -		rc = dev->driver->pm->prepare(dev);
+> -	return rc;
+> +	return pm && pm->prepare ? pm->prepare(dev) : 0;
 
-I hate ? : lines with a passion, as they break normal pattern mattching
-in my brain.  Please just spell this all out:
-	if (drv && drv->pm)
-		return drv->pm;
-	return NULL;
+No need for ? : here either, just use if () please.
 
-Much easier to read, and the compiler will do the exact same thing.
-
-Only place ? : are ok to use in my opinion, are as function arguments.
+It's "interesting" how using your new helper doesn't actually make the
+code smaller.  Perhaps it isn't a good helper function?
 
 thanks,
 
