@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E56D1E1B67
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 08:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B9E1E1B98
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 08:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729984AbgEZGfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 02:35:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726776AbgEZGfY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 02:35:24 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF9752068D;
-        Tue, 26 May 2020 06:35:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590474923;
-        bh=lT4rvAif71IsjSUrxQMACsE1/IWSMB9YtdoebR/hi/U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TnaP6H+bfcIwQM2DdB81Z/y15ftt9v8BASFf0zYe1DVE1SWw2uZEVX4B8sm9OKNVL
-         U7W1SxfUlTqITkqwa7Wl9DLBh4VenSSpH0PyygxmtomnmGeuy8dcfzNYBZgXv408qp
-         NGe5za7/QN+ohkAa6M6oqOsAotjw69NQ2c+RPcMk=
-Date:   Tue, 26 May 2020 08:35:21 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>, Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        greybus-dev@lists.linaro.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 8/8] net/iucv: Use the new device_to_pm() helper to
- access struct dev_pm_ops
-Message-ID: <20200526063521.GC2578492@kroah.com>
-References: <20200525182608.1823735-1-kw@linux.com>
- <20200525182608.1823735-9-kw@linux.com>
+        id S1731270AbgEZG4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 02:56:42 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33400 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727873AbgEZG4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 02:56:41 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04Q6uJAa010778;
+        Mon, 25 May 2020 23:56:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=PZZ6yLmRgwYHiqWBYqcT0+ykcV30uS1VN1LfGXot3d0=;
+ b=GdGW8qxitvPLaMKWQaQ64zYfMoCZ02KrtO8OLIu3xTBVOFVHaAJwZoINbHgxXyyMPv9j
+ QyGzbFA2hD/IIjaEpSG5+B9et1a6dRTA7yAGuhwfqYcue9qu77eAZn1ErxeIYxazpNFo
+ TED/WoNCT23RPpTy0/GMV64DZjyFLf4B6GjyD+2MYRdrEHrR2438X2BuqPtdkh/nvpzz
+ D5GIvZxT6piudytu8CLMDU/whQ4V9xiZX+xg+D+qtFDNgRI2cEVqKtlgjMMo7TmgjUIb
+ RYn3GUHnZwRMhVSdXEE01oKuZ9YYqHRwrCxj86q7nKVxcq9LfVq0M74hoEjGA9WaaWCD +A== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3173bnqgh0-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 25 May 2020 23:56:39 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 May
+ 2020 23:53:15 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 May 2020 23:53:15 -0700
+Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
+        by maili.marvell.com (Postfix) with ESMTP id 502453F703F;
+        Mon, 25 May 2020 23:53:14 -0700 (PDT)
+From:   Michal Kalderon <michal.kalderon@marvell.com>
+To:     <davem@davemloft.net>, <michal.kalderon@marvell.com>,
+        <yuval.bason@marvell.com>, <ariel.elior@marvell.com>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH net-next] qed: Add EDPM mode type for user-fw compatibility
+Date:   Tue, 26 May 2020 09:41:20 +0300
+Message-ID: <20200526064120.750-1-michal.kalderon@marvell.com>
+X-Mailer: git-send-email 2.14.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200525182608.1823735-9-kw@linux.com>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-25_12:2020-05-25,2020-05-25 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 06:26:08PM +0000, Krzysztof Wilczyński wrote:
-> Use the new device_to_pm() helper to access Power Management callbacs
-> (struct dev_pm_ops) for a particular device (struct device_driver).
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
-> ---
->  net/iucv/iucv.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
-> 
-> diff --git a/net/iucv/iucv.c b/net/iucv/iucv.c
-> index 9a2d023842fe..1a3029ab7c1f 100644
-> --- a/net/iucv/iucv.c
-> +++ b/net/iucv/iucv.c
-> @@ -1836,23 +1836,23 @@ static void iucv_external_interrupt(struct ext_code ext_code,
->  
->  static int iucv_pm_prepare(struct device *dev)
->  {
-> -	int rc = 0;
-> +	const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
->  
->  #ifdef CONFIG_PM_DEBUG
->  	printk(KERN_INFO "iucv_pm_prepare\n");
->  #endif
-> -	if (dev->driver && dev->driver->pm && dev->driver->pm->prepare)
-> -		rc = dev->driver->pm->prepare(dev);
-> -	return rc;
-> +	return pm && pm->prepare ? pm->prepare(dev) : 0;
+From: Yuval Basson <yuval.bason@marvell.com>
 
-No need for ? : here either, just use if () please.
+In older FW versions the completion flag was treated as the ack flag in
+edpm messages. Expose the FW option of setting which mode the QP is in
+by adding a flag to the qedr <-> qed API.
 
-It's "interesting" how using your new helper doesn't actually make the
-code smaller.  Perhaps it isn't a good helper function?
+Flag is added for backward compatibility with libqedr.
+This flag will be set by qedr after determining whether the libqedr is
+using the updated version.
 
-thanks,
+Fixes: f10939403352 ("qed: Add support for QP verbs")
+Signed-off-by: Yuval Basson <yuval.bason@marvell.com>
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c | 1 +
+ drivers/net/ethernet/qlogic/qed/qed_rdma.h | 1 +
+ drivers/net/ethernet/qlogic/qed/qed_roce.c | 3 +++
+ include/linux/qed/qed_rdma_if.h            | 3 +++
+ 4 files changed, 8 insertions(+)
 
-greg k-h
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index 50985871cd3d..98455f698f53 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -1378,6 +1378,7 @@ qed_rdma_create_qp(void *rdma_cxt,
+ 		rc = qed_iwarp_create_qp(p_hwfn, qp, out_params);
+ 		qp->qpid = qp->icid;
+ 	} else {
++		qp->edpm_mode = GET_FIELD(in_params->flags, QED_ROCE_EDPM_MODE);
+ 		rc = qed_roce_alloc_cid(p_hwfn, &qp->icid);
+ 		qp->qpid = ((0xFF << 16) | qp->icid);
+ 	}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.h b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
+index 5a7ebc764bb6..3898cae61e7a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
+@@ -183,6 +183,7 @@ struct qed_rdma_qp {
+ 	void *shared_queue;
+ 	dma_addr_t shared_queue_phys_addr;
+ 	struct qed_iwarp_ep *ep;
++	u8 edpm_mode;
+ };
+ 
+ static inline bool qed_rdma_is_xrc_qp(struct qed_rdma_qp *qp)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index 46a4d09eacef..4566815f7b87 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -459,6 +459,9 @@ static int qed_roce_sp_create_requester(struct qed_hwfn *p_hwfn,
+ 		  ROCE_CREATE_QP_REQ_RAMROD_DATA_XRC_FLAG,
+ 		  qed_rdma_is_xrc_qp(qp));
+ 
++	SET_FIELD(p_ramrod->flags2,
++		  ROCE_CREATE_QP_REQ_RAMROD_DATA_EDPM_MODE, qp->edpm_mode);
++
+ 	p_ramrod->max_ord = qp->max_rd_atomic_req;
+ 	p_ramrod->traffic_class = qp->traffic_class_tos;
+ 	p_ramrod->hop_limit = qp->hop_limit_ttl;
+diff --git a/include/linux/qed/qed_rdma_if.h b/include/linux/qed/qed_rdma_if.h
+index f93edd5750a5..584077565f12 100644
+--- a/include/linux/qed/qed_rdma_if.h
++++ b/include/linux/qed/qed_rdma_if.h
+@@ -335,6 +335,9 @@ struct qed_rdma_create_qp_in_params {
+ 	u16 xrcd_id;
+ 	u8 stats_queue;
+ 	enum qed_rdma_qp_type qp_type;
++	u8 flags;
++#define QED_ROCE_EDPM_MODE_MASK      0x1
++#define QED_ROCE_EDPM_MODE_SHIFT     0
+ };
+ 
+ struct qed_rdma_create_qp_out_params {
+-- 
+2.14.5
+
