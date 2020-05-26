@@ -2,130 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDD61E1BE8
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 09:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B7C1E1CBC
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 09:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731470AbgEZHGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 03:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730279AbgEZHGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 03:06:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC0EC061A0E
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 00:06:04 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jdTez-0001OC-Lf; Tue, 26 May 2020 09:06:01 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jdTey-0006fQ-QE; Tue, 26 May 2020 09:06:00 +0200
-Date:   Tue, 26 May 2020 09:06:00 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        mkl@pengutronix.de, kernel@pengutronix.de,
-        David Jander <david@protonic.nl>
-Subject: PHYs with advanced cable diagnostic support
-Message-ID: <20200526070600.hw3fjlvevjy4prho@pengutronix.de>
-References: <20200511141310.GA2543@pengutronix.de>
- <20200511145926.GC8503@lion.mk-sys.cz>
- <20200512064858.GA16536@pengutronix.de>
- <20200512130418.GF409897@lunn.ch>
+        id S1731740AbgEZH7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 03:59:31 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:35074 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728364AbgEZH73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 03:59:29 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04Q72te3172987;
+        Tue, 26 May 2020 03:07:33 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 316yqhtjpg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 May 2020 03:07:33 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 04Q72ajK171037;
+        Tue, 26 May 2020 03:07:33 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 316yqhtjnu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 May 2020 03:07:33 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 04Q764jX026533;
+        Tue, 26 May 2020 07:07:31 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma01fra.de.ibm.com with ESMTP id 316uf8j6d8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 May 2020 07:07:31 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04Q77S5F62914722
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 May 2020 07:07:28 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3774FAE055;
+        Tue, 26 May 2020 07:07:28 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 57101AE05A;
+        Tue, 26 May 2020 07:07:27 +0000 (GMT)
+Received: from oc5311105230.ibm.com (unknown [9.145.70.211])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 26 May 2020 07:07:27 +0000 (GMT)
+Subject: Re: [PATCH 8/8] net/iucv: Use the new device_to_pm() helper to access
+ struct dev_pm_ops
+To:     =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        greybus-dev@lists.linaro.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
+References: <20200525182608.1823735-1-kw@linux.com>
+ <20200525182608.1823735-9-kw@linux.com>
+From:   Ursula Braun <ubraun@linux.ibm.com>
+Message-ID: <55c3d2eb-feff-bf33-235d-b89c0abef7b1@linux.ibm.com>
+Date:   Tue, 26 May 2020 09:07:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="h6z4u5j6gfsdwci3"
-Content-Disposition: inline
-In-Reply-To: <20200512130418.GF409897@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:43:22 up 192 days, 22:01, 191 users,  load average: 1.24, 1.29,
- 1.07
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200525182608.1823735-9-kw@linux.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-25_12:2020-05-25,2020-05-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 suspectscore=0 clxscore=1011 priorityscore=1501 bulkscore=0
+ lowpriorityscore=0 mlxlogscore=999 phishscore=0 adultscore=0 mlxscore=0
+ spamscore=0 cotscore=-2147483648 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005260049
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---h6z4u5j6gfsdwci3
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi Andrew,
+On 5/25/20 8:26 PM, Krzysztof Wilczyński wrote:
+> Use the new device_to_pm() helper to access Power Management callbacs
+> (struct dev_pm_ops) for a particular device (struct device_driver).
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
 
-I was looking for PHYs with more advanced cable testing support and
-information how it should be done properly.
+pm support is going to be removed (for s390 in general and) for
+net/iucv/iucv.c with this net-next patch:
 
-So far I found this links:
+commit 4b32f86bf1673acb16441dd55d7b325609f54897
+Author: Julian Wiedmann <jwi@linux.ibm.com>
+Date:   Tue May 19 21:10:08 2020 +0200
 
-A general information with some interesting examples:
-https://www.ti.com/lit/an/slyt755/slyt755.pdf
+    net/iucv: remove pm support
+    
+    commit 394216275c7d ("s390: remove broken hibernate / power management support")
+    removed support for ARCH_HIBERNATION_POSSIBLE from s390.
+    
+    So drop the unused pm ops from the s390-only iucv bus driver.
+    
+    CC: Hendrik Brueckner <brueckner@linux.ibm.com>
+    Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
 
-A PHY with the impulse amplitude and times storage, for multiple
-impulses:
-http://www.ti.com/lit/ds/symlink/dp83867cr.pdf
----------------------------------------------------------------------------=
------
-TDR measurement is allowed in the DP83867 in the following scenarios:
-* While Link partner is disconnected - cable is unplugged at the other side
-* Link partner is connected but remains quiet (for example,in power-down mo=
-de)
-* TDR could be automatically activated when the link fails or is dropped by
-setting bit 7 of register 0x0009(CFG1). The results of the TDR run after the
-link fails are saved in the TDR registers.
----------------------------------------------------------------------------=
------
+> ---
+>  net/iucv/iucv.c | 30 ++++++++++++++++++------------
+>  1 file changed, 18 insertions(+), 12 deletions(-)
+> 
+> diff --git a/net/iucv/iucv.c b/net/iucv/iucv.c
+> index 9a2d023842fe..1a3029ab7c1f 100644
+> --- a/net/iucv/iucv.c
+> +++ b/net/iucv/iucv.c
 
-It has following configuration bits:
-- TDR AUTO RUN: Automatic TDR on Link Down (can be done is software for
-  all PHYs)
-- TDR_AVG_NUM: number Of TDR Cycles (is it good to know, how many TDR
-  cycle we do?)
-- TDR_CYCLE_TIME: Set the time for each TDR cycle (is it needed to
-  sample only nearest damage? Probably this well need an UAPI for this)
-
-Making an automatic cable test on the link drop seems to be an
-interesting idea. May be we should do it for all PHY with cable test
-support?
-
-Regards,
-Oleksij
-
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---h6z4u5j6gfsdwci3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl7Mv9QACgkQ4omh9DUa
-UbOJaQ//eDnEn7kp2z0unTeLELVWAwUEKFyWDStrw6+m2Eo2oBsvnJI5jLN0jGWo
-jGF8SVy9GGBmjhPWhRWZX+sLNWx5Yc78aDJOVF8SjvH052rjh8n2XzIw1lwVrtwn
-Ok3wCbRlRFEyySuLTdWrRSjEY40XTYEDaoxdvR0L3PmmAng6uaSdYTcoPmWvYyfQ
-0L9jnjKbIUuOjpql1vZeb1QyHsQMRMk4V/L1NkevWVp189d4lj2UO9IQ/kB490AN
-ktlH+fIHtM52EjMS7sBCcH2bT+2L8L2ETS3pO7+Fy6h+vywF9rLA8XP8xl1D0EjD
-i692EM/XK/UyCOeSBe2jLHRgdjOMME5Hz3EDbxve0X4cPWD2s+ROd+uCFatW57KV
-qxotpJRe+mRLSd6xhzhQu0lssGwsFb1EFritowHM5pnWcsYXMqplyeUdZlYwtz63
-atETfzAL5PJ86tfPchDkNG0WLB+FdUqxGyTqgmxs7C0CQiaf0uG4myYFnvBJyWEV
-rosMNnJ3MZejVotcjUzLOBU6q2HKOuHD5n51x2eB6PzI0yc3335CiulzMicu5Osy
-YD8RnTriBD40PN3vTi4fgDiuC6MAp6O9Qcv+8E/aJYdUcz3yNYU1ic6Xf5BmMj9l
-Vfrq6Kg9p1y1+q6SzGBnmESJkfNVCXV0IzJh4DZbdKRLGVxIe0w=
-=C1rV
------END PGP SIGNATURE-----
-
---h6z4u5j6gfsdwci3--
+...
