@@ -2,96 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7341E29C0
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D9C1E29EE
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729611AbgEZSJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 14:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728945AbgEZSJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 14:09:51 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C04C03E96F
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 11:09:51 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id x11so7998668plv.9
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 11:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SwJVwRsf4JLRcqoa9J+40Z33dh8YZfs8m9tFvpvW4ww=;
-        b=QV6eN1wz/6AFupUQIoxfvaiVQr3VOLFnMyRTzupBK2x5UnbAlfVQHIl6yfVjKSnMu5
-         umzskbig4ieeQkFfLiBEUxyS/rwM3NDzxKtqi8fgYUz362ncGMXqwUf3DjNADPk94joc
-         sQer+mGXxLQjq5r5/VevoRSQ49Ax1BoPA19/0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SwJVwRsf4JLRcqoa9J+40Z33dh8YZfs8m9tFvpvW4ww=;
-        b=h7Gw5QHHsPq73xhrCfZz3/yNm2h3vMet+efY/y6M8nhQarMBANjDljatnByitDjhhh
-         rtZa3Pp+8qLmqHxD6SpXSp53F0ZfowXZXC3eEI+sYbSf6lJ5NRc1Pj+44XbaG9z2lk5f
-         Ezh6SKVloBWTttRFHPgsyIWUWXPQ0r26aN+2t0vCXFnBYmKOQpBHy9nM3Vo8850ZS1/F
-         6L3pPr3VWkMOeQpUAN5bWZE7bZcDYZqgN2gk9lmjEyv2shT1INNon+Vv2qAsWhZ8Iu0v
-         YrMtR02ZSahKHosWWIFQG/3/HXVGV4gdrUTwoCoGfLH5PRn2C8/5W6+BZh6wGj+9NR0u
-         LR/Q==
-X-Gm-Message-State: AOAM533XmXTothsH0CX62efGnHIvAJEYh0KScCCOX/9fHUB70jQ/SmQq
-        COorDcS+BS+PC/qr7giRK3OxIBMjb0AHR3wB8+D72A==
-X-Google-Smtp-Source: ABdhPJw0zdtsZqR6XZR5M0EU2Em6fXtef9eG1yF+ia1DKSMmJ8d7PdM5no22jZaDVe0gm/zwiK1kl46oQKDlpGuKAiA=
-X-Received: by 2002:a17:902:e903:: with SMTP id k3mr2106595pld.317.1590516590375;
- Tue, 26 May 2020 11:09:50 -0700 (PDT)
+        id S1729302AbgEZSVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 14:21:35 -0400
+Received: from mga07.intel.com ([134.134.136.100]:1876 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727112AbgEZSVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 14:21:35 -0400
+IronPort-SDR: W+QG8ygLjaboXImOTt544NFwzc55FWBdkTLKEbbCu3Gc6VRc7w42Oz6j3PoJEBvsKzHVjRBCLO
+ LyAxV4H4oauw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 11:21:34 -0700
+IronPort-SDR: EOkjK7S4wgIRZHxuoGjFz9fbkl4SXt4BZLSjv7Qqqc1t0b2kCIolRkuJnUHA30fQIcgydTO9RC
+ RPKKSxY///fg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; 
+   d="scan'208";a="468399550"
+Received: from emfomenk-mobl.amr.corp.intel.com ([10.255.229.42])
+  by fmsmga005.fm.intel.com with ESMTP; 26 May 2020 11:21:33 -0700
+Date:   Tue, 26 May 2020 11:21:33 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@emfomenk-mobl.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH net] mptcp: avoid NULL-ptr derefence on fallback
+In-Reply-To: <d7d7f946ab9c43e96720d97e68645e38fb8b233c.1590417507.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.22.394.2005261120500.8041@emfomenk-mobl.amr.corp.intel.com>
+References: <d7d7f946ab9c43e96720d97e68645e38fb8b233c.1590417507.git.pabeni@redhat.com>
+User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
 MIME-Version: 1.0
-References: <20200526145815.6415-1-mcgrof@kernel.org> <20200526145815.6415-7-mcgrof@kernel.org>
-In-Reply-To: <20200526145815.6415-7-mcgrof@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 26 May 2020 11:09:38 -0700
-Message-ID: <CACKFLikEm7r82jB=qB3YafPoHp+mK1joOtRKS67a2jyhJegtyA@mail.gmail.com>
-Subject: Re: [PATCH v3 6/8] bnxt_en: use new taint_firmware_crashed()
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     jeyu@kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, kvalo@codeaurora.org,
-        johannes@sipsolutions.net, akpm@linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        Baoquan He <bhe@redhat.com>, peterz@infradead.org,
-        tglx@linutronix.de, gpiccoli@canonical.com, pmladek@suse.com,
-        tiwai@suse.de, schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        derosier@gmail.com, keescook@chromium.org, daniel.vetter@ffwll.ch,
-        will@kernel.org, mchehab+samsung@kernel.org, vkoul@kernel.org,
-        mchehab+huawei@kernel.org, robh@kernel.org, mhiramat@kernel.org,
-        sfr@canb.auug.org.au, linux@dominikbrodowski.net,
-        glider@google.com, paulmck@kernel.org, elver@google.com,
-        bauerman@linux.ibm.com, yamada.masahiro@socionext.com,
-        samitolvanen@google.com, yzaikin@google.com, dvyukov@google.com,
-        rdunlap@infradead.org, corbet@lwn.net, dianders@chromium.org,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 7:58 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->
-> This makes use of the new module_firmware_crashed() to help
-> annotate when firmware for device drivers crash. When firmware
-> crashes devices can sometimes become unresponsive, and recovery
-> sometimes requires a driver unload / reload and in the worst cases
-> a reboot.
->
-> Using a taint flag allows us to annotate when this happens clearly.
->
-> Cc: Michael Chan <michael.chan@broadcom.com>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Acked-by: Rafael Aquini <aquini@redhat.com>
-> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+On Mon, 25 May 2020, Paolo Abeni wrote:
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+> In the MPTCP receive path we must cope with TCP fallback
+> on blocking recvmsg(). Currently in such code path we detect
+> the fallback condition, but we don't fetch the struct socket
+> required for fallback.
+>
+> The above allowed syzkaller to trigger a NULL pointer
+> dereference:
+>
+> general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+> CPU: 1 PID: 7226 Comm: syz-executor523 Not tainted 5.7.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:sock_recvmsg_nosec net/socket.c:886 [inline]
+> RIP: 0010:sock_recvmsg+0x92/0x110 net/socket.c:904
+> Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 44 89 6c 24 04 e8 53 18 1d fb 4d 8d 6f 20 4c 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 4c 89 ef e8 20 12 5b fb bd a0 00 00 00 49 03 6d
+> RSP: 0018:ffffc90001077b98 EFLAGS: 00010202
+> RAX: 0000000000000004 RBX: ffffc90001077dc0 RCX: dffffc0000000000
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+> RBP: 0000000000000000 R08: ffffffff86565e59 R09: ffffed10115afeaa
+> R10: ffffed10115afeaa R11: 0000000000000000 R12: 1ffff9200020efbc
+> R13: 0000000000000020 R14: ffffc90001077de0 R15: 0000000000000000
+> FS:  00007fc6a3abe700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000004d0050 CR3: 00000000969f0000 CR4: 00000000001406e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+> mptcp_recvmsg+0x18d5/0x19b0 net/mptcp/protocol.c:891
+> inet_recvmsg+0xf6/0x1d0 net/ipv4/af_inet.c:838
+> sock_recvmsg_nosec net/socket.c:886 [inline]
+> sock_recvmsg net/socket.c:904 [inline]
+> __sys_recvfrom+0x2f3/0x470 net/socket.c:2057
+> __do_sys_recvfrom net/socket.c:2075 [inline]
+> __se_sys_recvfrom net/socket.c:2071 [inline]
+> __x64_sys_recvfrom+0xda/0xf0 net/socket.c:2071
+> do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:295
+> entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>
+> Address the issue initializing the struct socket reference
+> before entering the fallback code.
+>
+> Reported-and-tested-by: syzbot+c6bfc3db991edc918432@syzkaller.appspotmail.com
+> Suggested-by: Ondrej Mosnacek <omosnace@redhat.com>
+> Fixes: 8ab183deb26a ("mptcp: cope with later TCP fallback")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> net/mptcp/protocol.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+--
+Mat Martineau
+Intel
