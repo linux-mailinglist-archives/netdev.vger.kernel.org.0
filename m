@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A84D1E2944
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 208C31E2954
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388836AbgEZRnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 13:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388411AbgEZRnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:43:04 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7516C03E96D;
-        Tue, 26 May 2020 10:43:02 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id s1so21460031qkf.9;
-        Tue, 26 May 2020 10:43:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BQN+VZ84dSHmhnUASEYXncTp1qj2l2GAA/bdjaWFvUo=;
-        b=oPgrvKlTowHGv23d5VIsIUsDCeOvz6avn7yp7nv+SNS6T7ipuxffWYMWmkx0S5oR64
-         Z9qh3JJarflx5ZPU59kmHSn8Y99TFwYwQZelkV2omuoiO3CncwSPogs/K40bja5g85k0
-         ZbDCwWvsYPZd5KTiCer5CjWffHS6HPJ1PpkCWViXQciHxVgrW2SLJEoi7wsu3uLYwl48
-         R4urwHR93MgujqF7M93H/JcwGDXPaxbFndY0N8v5d4ube+U1aE2Zk1HC90//UCCwZuTW
-         abpiXT6wfuZFtEagVdifOzUzklmrE31SRYuT5vVEzxObcVbUt9YL9TNfGLhRJsuyzQca
-         s1PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BQN+VZ84dSHmhnUASEYXncTp1qj2l2GAA/bdjaWFvUo=;
-        b=BqsiIZ7fgs7W/37zCIGs0enl6EYn578oHI0I5LXmcRpMeeQulJGHQ1y4XFNYkBF438
-         DpVWDQb9Cohqdpsdc1IV6z0DwWq6HabSM2GaFQwvF7PNP/zkRnVWi/36gIyQHP4fsHSR
-         eYTnVFM+w56q9eOFN1g3ZI0BA/bINv/WuPYNGjW6npxR2UNsFQwrTWhYovHTdlWITTEv
-         Eqm2WpM0GZxfiKy79/dadujDEQTXICJjbGiQ0rRENpRjHBy/rTq+J4Syj4HdvWpLdI9/
-         Fgf6JMP4OOPqPQMb9+N/N884nDJjcFAVmQaoTmYYor3ef3Tu1HlCwPHxq5aaZBx1ZuvP
-         dZPQ==
-X-Gm-Message-State: AOAM53223LrEe+eccK8uKbEyY4uSmKG7eGq0iVW+TV1/SCJxDBv4uI6k
-        ANs2HlQp80HTb0KFXz3DCOECT562P3alK2U96/A=
-X-Google-Smtp-Source: ABdhPJwBcf+juW2NSOERP4BbfKCZ/oFbTWUlpmV1x5TU7wt5Q0rERlPzqxA4/miDXq3tplJbEooST/FupiLsGnUirF4=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr2577860qkb.39.1590514981961;
- Tue, 26 May 2020 10:43:01 -0700 (PDT)
+        id S2388783AbgEZRre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 13:47:34 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:38176 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388654AbgEZRrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:47:33 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04QHlQ2o033068;
+        Tue, 26 May 2020 12:47:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1590515246;
+        bh=iSQV5HysmgZxxM+A2iVQvD9rooBBNm9bWlMSdggWHNk=;
+        h=From:To:CC:Subject:Date;
+        b=xERL7lEORdCCEkqE+rRq4k5zFVoAv3VZLB8GsaNIOVQZrPlfL71BuvDQbX2MVlnWD
+         Y5C5JXGqVZrmXudWnapwaIfbO9Y46iocMrJcYk4JeVohHEi+esHW1oh0i63hDa2q2p
+         b4qdcDXabJjHIuBCHaWLR5M3Iyst2qRxDEnRI0d8=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04QHlQk4020259
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 26 May 2020 12:47:26 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 26
+ May 2020 12:47:18 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 26 May 2020 12:47:17 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QHlHOr107880;
+        Tue, 26 May 2020 12:47:17 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next v3 0/4] RGMII Internal delay common property
+Date:   Tue, 26 May 2020 12:47:12 -0500
+Message-ID: <20200526174716.14116-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <159048487929.89441.7465713173442594608.stgit@ebuild>
-In-Reply-To: <159048487929.89441.7465713173442594608.stgit@ebuild>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 26 May 2020 10:42:51 -0700
-Message-ID: <CAEf4BzYyzQdukdACKaNHKuaZyFE4Qd2u0fJsUEV_hA_vhuSz4w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: add API to consume the perf ring
- buffer content
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 2:22 AM Eelco Chaudron <echaudro@redhat.com> wrote:
->
-> This new API, perf_buffer__consume, can be used as follows:
-> - When you have a perf ring where wakeup_events is higher than 1,
->   and you have remaining data in the rings you would like to pull
->   out on exit (or maybe based on a timeout).
-> - For low latency cases where you burn a CPU that constantly polls
->   the queues.
->
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> ---
+Hello
 
-Looks good, thanks. I'd really appreciate if you could follow up with
-a fix to perf_buffer__free() as well. If not, I will get to it
-eventually anyway :)
+The RGMII internal delay is a common setting found in most RGMII capable PHY
+devices.  It was found that many vendor specific device tree properties exist
+to do the same function. This creates a common property to be used for PHY's
+that have tunable internal delays for the Rx and Tx paths.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-[...]
+Dan Murphy (4):
+  dt-bindings: net: Add tx and rx internal delays
+  net: phy: Add a helper to return the index for of the internal delay
+  dt-bindings: net: Add RGMII internal delay for DP83869
+  net: dp83869: Add RGMII internal delay configuration
+
+ .../bindings/net/ethernet-controller.yaml     | 14 +++
+ .../devicetree/bindings/net/ti,dp83869.yaml   | 16 ++++
+ drivers/net/phy/dp83869.c                     | 91 +++++++++++++++++-
+ drivers/net/phy/phy_device.c                  | 94 +++++++++++++++++++
+ include/linux/phy.h                           |  2 +
+ 5 files changed, 214 insertions(+), 3 deletions(-)
+
+-- 
+2.26.2
+
