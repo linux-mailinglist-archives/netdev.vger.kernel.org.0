@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD91F1E27A6
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 037551E27BC
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731522AbgEZQsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 12:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
+        id S1728561AbgEZQzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 12:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731499AbgEZQsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:48:15 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AB2C03E979
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:15 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id o5so22732769iow.8
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:15 -0700 (PDT)
+        with ESMTP id S1726930AbgEZQzH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:55:07 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13790C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:55:06 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id l26so234149wme.3
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:55:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CDy85Gj7MYd1kNtILJcUzn7KVIhIM0XshsVeAc/i0tA=;
-        b=dCxwuhqpPbwbXsS8D4GR15Oi/vkWvJ2t6JE5jqhDuEYRBCxiAwo9cWnqARqt/pZ9N3
-         vSDlZ8wDeZydMMsvQgllY5SFL21AkwmUO/yVMpJRwkWuLZ+okFm2plV7st5ZUHxgg7+n
-         nw9y2DMW7Y1odFWc8D0ovkNrkmBQTlf+wVi0icllMuisiL6LQjhD1eU0HTahi0uvVson
-         7H1igoRa7sC3VzH0k6kw37/8QsEYXM6RYbG1TkZAtikaoCp3wlyHVEwAfTjAFYYV3q4L
-         NgflHMgnD8hmupC7gXChsbUVMFzyhgq3aBSV9WdpBp5mfIm6+JpoU8GgF7qXRXSqT3gV
-         qZIQ==
+        bh=i0BrIkzA9q8i9QNmQzvY9gP1lpuGfJrxZYwvAmWjhTg=;
+        b=rMoA3PCJUQ7q+aCaB/CujveFzvQLi0zHDbYZEkCay4FfcH7SGpdNVmKG+DxKks0Zxu
+         x6iBm0DO08JRG2pErjhRg+RD2Aac5+7sscDoeeinFA2Fl/24+TetDm08QNz4bUKcy+LE
+         cluWWStKSU2T7a/3gYuyi48hxrbbJYvTPbDkfEpyRS0U47VLZU5jvDIrqnMwo01+6TW2
+         UZL18t4/PsLStzaB+WOf2ijfj/z+yOdtcP9yCU0hg2NPF7RPsvrbHRMpTAY/yFbMSORD
+         Z71KFHBX2IhIRkP03jr6iFiv1CkbrBYe2XueIPZs+Qpp4TskgYHRQ95brL0EFHzQ3/qw
+         lVlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=CDy85Gj7MYd1kNtILJcUzn7KVIhIM0XshsVeAc/i0tA=;
-        b=BwiJ4aj63Ls8Bs6oaB2e0+dKIkSNCAbOw4inhgZnR7ee+H1HicyGA1HQ+MwTW9q8ZY
-         LTFgmtg8UPVtlhqY32MUiRJxPXaOdbrqc6E96zwhD5YXwD8jEj2fAngLXTBse71klEcs
-         436IPNpmhS7EY1pJxTKR1VqKROIpRHF5m/01cQMUnXDPjA0xv8CWJyIFSe3Yzpx5U5HR
-         ChWY5wpoE5rpUlIPmCM6s775+qm33Ft3RI4GqpRcu8ZCVUoSMzOLD5plgD9N57HKr4N5
-         xWaKG0Fc4TW/H835mYMpZF9FbnUPIisfGe6cEljefVnnekpfdDJmOQ52fVR6jVjaWnS/
-         cJmg==
-X-Gm-Message-State: AOAM531yOr+0uOym/xG2jNN5T+iVwPgQ5eC5xH8VL+COFrZr0GqGxZaT
-        ldunTimEcRRGmjuIsesDel8psw==
-X-Google-Smtp-Source: ABdhPJwt8EDbE+Md3qNwECgPyEhh34GzLnn6Kwx5Q+Egs2R3PU4UAkkaFOOCDwhKuojJpS4rMr4mTQ==
-X-Received: by 2002:a02:2708:: with SMTP id g8mr1921759jaa.52.1590511694529;
-        Tue, 26 May 2020 09:48:14 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id d29sm250489ild.42.2020.05.26.09.48.12
+        bh=i0BrIkzA9q8i9QNmQzvY9gP1lpuGfJrxZYwvAmWjhTg=;
+        b=OxoeEnuhFIAkavCjwEoph8HEzP6LtvjjITy/5DcuxkMOxFMyox8F2ZAVjRPlRwQYj5
+         A8RO5rlapOyqPMTOhwi43fDXAo2wnzoUBd+OdIzMyJzbgE+XZHdzVbrUKQDBFYeWxn5X
+         DJ25TbtL7cJcnuiRFSwdsvEQrYq0VIroWbK7Lk/2y0cX1N136oTQxa4l5WKF23q7O6jQ
+         uhigBc0K0uzubLvyT7Sbpu+3RtyvIPw8RLO9ULXDqa+ZP8cyH6xkhd3wRqw9HiIAqQU1
+         6GrY+xHFUrf8ktiFl3/Xijmts8+h6aN0wNkUaLrd0djpSqcPWb/YRM0yWzRmWrjlggBk
+         +cLw==
+X-Gm-Message-State: AOAM532gKuq7owWo4PUlYw1fEN8dUWhBBXp3Jc6n/6QxWkQZjjQtzudf
+        A6dxYH22CDj311rt75MZDzY=
+X-Google-Smtp-Source: ABdhPJzydMyl3wtj9F+bkoBZLZNQBi6xZSJESDsKdZqvQjwq0ezN9LrR4qsZSacpArcHTM2+SK/Wwg==
+X-Received: by 2002:a7b:cb4e:: with SMTP id v14mr181182wmj.54.1590512104401;
+        Tue, 26 May 2020 09:55:04 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id k14sm341538wrq.97.2020.05.26.09.55.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2020 09:48:13 -0700 (PDT)
-Subject: Re: [greybus-dev] [PATCH 8/8] net/iucv: Use the new device_to_pm()
- helper to access struct dev_pm_ops
-To:     =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>, linux-pci@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, Kevin Hilman <khilman@kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        linux-acpi@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Len Brown <lenb@kernel.org>, linux-pm@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Johan Hovold <johan@kernel.org>, greybus-dev@lists.linaro.org,
-        John Stultz <john.stultz@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Felipe Balbi <balbi@kernel.org>, Alex Elder <elder@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200525182608.1823735-1-kw@linux.com>
- <20200525182608.1823735-9-kw@linux.com> <20200526063521.GC2578492@kroah.com>
- <20200526150744.GC75990@rocinante>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <acb9415a-d0d0-3ebc-b5ae-c26a7dc2114a@linaro.org>
-Date:   Tue, 26 May 2020 11:48:12 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 26 May 2020 09:55:03 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: mdiobus: add clause 45 mdiobus accessors
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jeremy Linton <jeremy.linton@arm.com>
+References: <E1jdbWK-00083w-Ot@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <d338d9e1-3f3e-c6a1-3eea-4614e9c2437e@gmail.com>
+Date:   Tue, 26 May 2020 09:55:00 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <20200526150744.GC75990@rocinante>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <E1jdbWK-00083w-Ot@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/26/20 10:07 AM, Krzysztof Wilczyński wrote:
-> Hello Greg,
-> 
-> [...]
->> It's "interesting" how using your new helper doesn't actually make the
->> code smaller.  Perhaps it isn't a good helper function?
 
-Helper functions often improve code readability, which is
-beneficial even if it doesn't reduce code size or efficiency.
 
-But I won't argue for or against this particular change.
-It's OK with me either way.
+On 5/26/2020 8:29 AM, Russell King wrote:
+> There is a recurring pattern throughout some of the PHY code converting
+> a devad and regnum to our packed clause 45 representation. Rather than
+> having this scattered around the code, let's put a common translation
+> function in mdio.h, and provide some register accessors.
+> 
+> Convert the phylib core, phylink, bcm87xx and cortina to use these.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
 
-					-Alex
+[snip]
 
-> The idea for the helper was inspired by the comment Dan made to Bjorn
-> about Bjorn's change, as per:
-> 
->    https://lore.kernel.org/driverdev-devel/20191016135002.GA24678@kadam/
-> 
-> It looked like a good idea to try to reduce the following:
-> 
->    dev->driver && dev->driver->pm && dev->driver->pm->prepare
-> 
-> Into something more succinct.  Albeit, given the feedback from yourself
-> and Rafael, I gather that this helper is not really a good addition.
-> 
-> Thank you everyone and sorry for the commotion!
-> 
-> Krzysztof
-> _______________________________________________
-> greybus-dev mailing list
-> greybus-dev@lists.linaro.org
-> https://lists.linaro.org/mailman/listinfo/greybus-dev
-> 
+> --- a/drivers/net/phy/phy-core.c
+> +++ b/drivers/net/phy/phy-core.c
+> @@ -428,9 +428,8 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
 
+This should probably be changed to use u16 regnum in a separate patch.
+
+>  	if (phydev->drv && phydev->drv->read_mmd) {
+>  		val = phydev->drv->read_mmd(phydev, devad, regnum);
+>  	} else if (phydev->is_c45) {
+> -		u32 addr = MII_ADDR_C45 | (devad << 16) | (regnum & 0xffff);
+> -
+> -		val = __mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, addr);
+> +		val = __mdiobus_c45_read(phydev->mdio.bus, phydev->mdio.addr,
+> +					 devad, regnum);
+>  	} else {
+>  		struct mii_bus *bus = phydev->mdio.bus;
+>  		int phy_addr = phydev->mdio.addr;
+> @@ -485,10 +484,8 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
+
+and likewise.
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
