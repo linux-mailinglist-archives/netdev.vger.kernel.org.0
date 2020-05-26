@@ -2,193 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E7C1E27AB
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD91F1E27A6
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731534AbgEZQs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 12:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
+        id S1731522AbgEZQsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 12:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731499AbgEZQsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:48:25 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E38EC03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:25 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id t16so8895574plo.7
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:25 -0700 (PDT)
+        with ESMTP id S1731499AbgEZQsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:48:15 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AB2C03E979
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:15 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id o5so22732769iow.8
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:48:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dtmyfuqGTlQ/zWz9qxN+EzhJ/M4hzvfoqfhdZ74U/4k=;
-        b=UKbhkhcSW2YuEjZ7ucKhVHc3DMVuZ9uMK7xRB6quJSLrdbGB7K85dwbsRyhxdClIo+
-         +uRWmOB2wryK/uo5YUVsWXAbdK8OUct8gtjA753jYfNHE/ahzcZUGvdWjxM9yO9Bdf5N
-         phDp7SfIAzsjMMFFaL+aw/cYmZ+9RcRi2zoiQ=
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CDy85Gj7MYd1kNtILJcUzn7KVIhIM0XshsVeAc/i0tA=;
+        b=dCxwuhqpPbwbXsS8D4GR15Oi/vkWvJ2t6JE5jqhDuEYRBCxiAwo9cWnqARqt/pZ9N3
+         vSDlZ8wDeZydMMsvQgllY5SFL21AkwmUO/yVMpJRwkWuLZ+okFm2plV7st5ZUHxgg7+n
+         nw9y2DMW7Y1odFWc8D0ovkNrkmBQTlf+wVi0icllMuisiL6LQjhD1eU0HTahi0uvVson
+         7H1igoRa7sC3VzH0k6kw37/8QsEYXM6RYbG1TkZAtikaoCp3wlyHVEwAfTjAFYYV3q4L
+         NgflHMgnD8hmupC7gXChsbUVMFzyhgq3aBSV9WdpBp5mfIm6+JpoU8GgF7qXRXSqT3gV
+         qZIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=dtmyfuqGTlQ/zWz9qxN+EzhJ/M4hzvfoqfhdZ74U/4k=;
-        b=P+Wra7JZ3Pc+RGZ91eMGZvrkExNarB0QDsDq2p5aY7eblLcUDctejw+E4Q1/8UdtYr
-         +6sFpz4m9hEeR2zcNX4RDJiBdPBOTdrT/N7YpKWgoBPo4lrtsdoEAaH/8Ji9/7mrGbY9
-         8qC0BmFgppPE4ffYcla4BX+8BZnB3q72CPmw3g2e7RconOrc5xIO4AVmFAiEa1AYaSrI
-         c3w6VopC71yOV9pK/01JE8wdB5AMJYNN7Ono5O0LJoP12Gu9YzazrSqj23I8zQJy3vIp
-         qHe+4nigMS0l/UEoBwhwjNBgKOotSBwkDTQxqLX84nEQp72mOf7T+zlz/YYOMkpvsGAl
-         /Ojw==
-X-Gm-Message-State: AOAM531THkiMfbRJkOb/vSiEouvIitUHiiwzOjL/c/sW9OjwPBwYxUaJ
-        eBDsu5qPI52nncbc56drnkahxJD7Y6Y=
-X-Google-Smtp-Source: ABdhPJw3Fnipeso7DXtoTmmLj9s6Xk0ZYOdgtPhYtX8Re3P8DHOEGT4n84RAlCt16K9Xi/IMHE51Mw==
-X-Received: by 2002:a17:902:9a08:: with SMTP id v8mr1894672plp.90.1590511704434;
-        Tue, 26 May 2020 09:48:24 -0700 (PDT)
-Received: from alfred.cumulusnetworks.com ([216.129.126.119])
-        by smtp.gmail.com with ESMTPSA id y138sm101871pfb.33.2020.05.26.09.48.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 09:48:23 -0700 (PDT)
-From:   Stephen Worley <sworley@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, davem@davemloft.net, sworley1995@gmail.com,
-        Stephen Worley <sworley@cumulusnetworks.com>
-Subject: [PATCH] net-next: add large ecmp group nexthop tests
-Date:   Tue, 26 May 2020 12:48:04 -0400
-Message-Id: <20200526164804.477124-1-sworley@cumulusnetworks.com>
-X-Mailer: git-send-email 2.26.2
+        bh=CDy85Gj7MYd1kNtILJcUzn7KVIhIM0XshsVeAc/i0tA=;
+        b=BwiJ4aj63Ls8Bs6oaB2e0+dKIkSNCAbOw4inhgZnR7ee+H1HicyGA1HQ+MwTW9q8ZY
+         LTFgmtg8UPVtlhqY32MUiRJxPXaOdbrqc6E96zwhD5YXwD8jEj2fAngLXTBse71klEcs
+         436IPNpmhS7EY1pJxTKR1VqKROIpRHF5m/01cQMUnXDPjA0xv8CWJyIFSe3Yzpx5U5HR
+         ChWY5wpoE5rpUlIPmCM6s775+qm33Ft3RI4GqpRcu8ZCVUoSMzOLD5plgD9N57HKr4N5
+         xWaKG0Fc4TW/H835mYMpZF9FbnUPIisfGe6cEljefVnnekpfdDJmOQ52fVR6jVjaWnS/
+         cJmg==
+X-Gm-Message-State: AOAM531yOr+0uOym/xG2jNN5T+iVwPgQ5eC5xH8VL+COFrZr0GqGxZaT
+        ldunTimEcRRGmjuIsesDel8psw==
+X-Google-Smtp-Source: ABdhPJwt8EDbE+Md3qNwECgPyEhh34GzLnn6Kwx5Q+Egs2R3PU4UAkkaFOOCDwhKuojJpS4rMr4mTQ==
+X-Received: by 2002:a02:2708:: with SMTP id g8mr1921759jaa.52.1590511694529;
+        Tue, 26 May 2020 09:48:14 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id d29sm250489ild.42.2020.05.26.09.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2020 09:48:13 -0700 (PDT)
+Subject: Re: [greybus-dev] [PATCH 8/8] net/iucv: Use the new device_to_pm()
+ helper to access struct dev_pm_ops
+To:     =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>, linux-pci@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, Kevin Hilman <khilman@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        linux-acpi@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Len Brown <lenb@kernel.org>, linux-pm@vger.kernel.org,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Johan Hovold <johan@kernel.org>, greybus-dev@lists.linaro.org,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Felipe Balbi <balbi@kernel.org>, Alex Elder <elder@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200525182608.1823735-1-kw@linux.com>
+ <20200525182608.1823735-9-kw@linux.com> <20200526063521.GC2578492@kroah.com>
+ <20200526150744.GC75990@rocinante>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <acb9415a-d0d0-3ebc-b5ae-c26a7dc2114a@linaro.org>
+Date:   Tue, 26 May 2020 11:48:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <20200526150744.GC75990@rocinante>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a couple large ecmp group nexthop selftests to cover
-the remnant fixed by d69100b8eee27c2d60ee52df76e0b80a8d492d34.
+On 5/26/20 10:07 AM, Krzysztof Wilczyński wrote:
+> Hello Greg,
+> 
+> [...]
+>> It's "interesting" how using your new helper doesn't actually make the
+>> code smaller.  Perhaps it isn't a good helper function?
 
-The tests create 100 x32 ecmp groups of ipv4 and ipv6 and then
-dump them. On kernels without the fix, they will fail due
-to data remnant during the dump.
+Helper functions often improve code readability, which is
+beneficial even if it doesn't reduce code size or efficiency.
 
-Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 84 ++++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
+But I won't argue for or against this particular change.
+It's OK with me either way.
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 6560ed796ac4..41635859d245 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -19,8 +19,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -253,6 +253,60 @@ check_route6()
- 	check_output "${out}" "${expected}"
- }
- 
-+check_large_grp()
-+{
-+	local ipv=$1
-+	local ecmp=$2
-+	local grpnum=100
-+	local nhidstart=100
-+	local grpidstart=1000
-+	local iter=0
-+	local nhidstr=""
-+	local grpidstr=""
-+	local grpstr=""
-+	local ipstr=""
-+
-+	if [ $ipv -eq 4 ]; then
-+		ipstr="172.16.1."
-+	else
-+		ipstr="2001:db8:91::"
-+	fi
-+
-+	#
-+	# Create $grpnum groups with specified $ecmp and dump them
-+	#
-+
-+	# create nexthops with different gateways
-+	iter=2
-+	while [ $iter -le $(($ecmp + 1)) ]
-+	do
-+		nhidstr="$(($nhidstart + $iter))"
-+		run_cmd "$IP nexthop add id $nhidstr via $ipstr$iter dev veth1"
-+		check_nexthop "id $nhidstr" "id $nhidstr via $ipstr$iter dev veth1 scope link"
-+
-+		if [ $iter -le $ecmp ]; then
-+			grpstr+="$nhidstr/"
-+		else
-+			grpstr+="$nhidstr"
-+		fi
-+		((iter++))
-+	done
-+
-+	# create duplicate large ecmp groups
-+	iter=0
-+	while [ $iter -le $grpnum ]
-+	do
-+		grpidstr="$(($grpidstart + $iter))"
-+		run_cmd "$IP nexthop add id $grpidstr group $grpstr"
-+		check_nexthop "id $grpidstr" "id $grpidstr group $grpstr"
-+		((iter++))
-+	done
-+
-+	# dump large groups
-+	run_cmd "$IP nexthop list"
-+	log_test $? 0 "Dump large (x$ecmp) ecmp groups"
-+}
-+
- ################################################################################
- # basic operations (add, delete, replace) on nexthops and nexthop groups
- #
-@@ -519,6 +573,19 @@ ipv6_fcnal_runtime()
- 	# route with src address and using nexthop - not allowed
- }
- 
-+ipv6_large_grp()
-+{
-+	local ecmp=32
-+
-+	echo
-+	echo "IPv6 large groups (x$ecmp)"
-+	echo "---------------------"
-+
-+	check_large_grp 6 $ecmp
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+}
-+
- ipv4_fcnal()
- {
- 	local rc
-@@ -880,6 +947,19 @@ ipv4_fcnal_runtime()
- 	log_test $? 0 "IPv4 route with MPLS encap, v6 gw - check"
- }
- 
-+ipv4_large_grp()
-+{
-+	local ecmp=32
-+
-+	echo
-+	echo "IPv4 large groups (x$ecmp)"
-+	echo "---------------------"
-+
-+	check_large_grp 4 $ecmp
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+}
-+
- basic()
- {
- 	echo
+					-Alex
 
-base-commit: 1a6da4fcdd02d5cb2c1deaec1a5cc2b06efd2a4d
--- 
-2.26.2
+> The idea for the helper was inspired by the comment Dan made to Bjorn
+> about Bjorn's change, as per:
+> 
+>    https://lore.kernel.org/driverdev-devel/20191016135002.GA24678@kadam/
+> 
+> It looked like a good idea to try to reduce the following:
+> 
+>    dev->driver && dev->driver->pm && dev->driver->pm->prepare
+> 
+> Into something more succinct.  Albeit, given the feedback from yourself
+> and Rafael, I gather that this helper is not really a good addition.
+> 
+> Thank you everyone and sorry for the commotion!
+> 
+> Krzysztof
+> _______________________________________________
+> greybus-dev mailing list
+> greybus-dev@lists.linaro.org
+> https://lists.linaro.org/mailman/listinfo/greybus-dev
+> 
 
