@@ -2,94 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8501E2412
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9711B1E2419
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgEZOaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 10:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S1728110AbgEZObL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 10:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726954AbgEZO37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:29:59 -0400
+        with ESMTP id S1726965AbgEZObL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:31:11 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF74C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 07:29:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E332C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 07:31:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=tk6M32A7RpCZN/TdsUs8DZ3QM4091WZNUulcpczGgaI=; b=st2zJOzARG0vCXu3QoRcq0ux7
-        7JWjxVJnrfyXn3SR1SuZBANBOnHayLa4/FmEHO92ylbk8zzJh8415mqIQnvQQixCwj0zDRiQvnymg
-        MLyPTLCZwzhhVcSxd7VbQthP2OTENmfmht0rwToKzoK+xGxxoGCyOkftg/JYzOyNtcZXjT9uc5Zlf
-        fhgdu875mDPfn8EuLQ/B9D5bTv44IjYWYVmXAnC+CA0bCZ9OzQ18BzSexDistffRReX3FCNZyNIZu
-        vjWwRcfLNZzdd4ekxDrFyiBRIAGqko5WkAjPly1yHKv+RWUwXsV/CHFjeOxSSY4sI68qCRnjwidDB
-        E9BIz9Heg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37244)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=e+HA1z7TaoMSejUNHo10oR2XmKSNpkeoIiz+OFZ8Fjg=; b=mJE9y+GGWYyRRYEF2aUMrubhJD
+        vU87tr3gHHMCAOefwDOhlyMBJZrcuue0zOjqkV35kiok95vCKoznsZnDeitvgimhd1VUwbVNU3kfV
+        kOzwcvJ3k12WiKvTWiqyVkTbBWEyqMdVDcar5bA3C7tPb5lK5PXfX7Jx/cDRzy869LnK54inXL+SX
+        +rA9bTk4Hod5N90YxD7faeaZzkEshxJJ5U0qx/ecylCcY6QvfXG+yj1VoKsCDfZPp76LYlfSa6c5G
+        klRG4Q2RYrN8VigSd7yk36a0255WgctvmGeJ9kdDMCRGL+cAz1OID8ELhEOdj5EPpT6snZc2Je3vF
+        NyRhso+Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:39554 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jdaaU-000804-C8; Tue, 26 May 2020 15:29:50 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jdaaS-0005Rf-Ej; Tue, 26 May 2020 15:29:48 +0100
-Date:   Tue, 26 May 2020 15:29:48 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jdabe-00080I-Hv; Tue, 26 May 2020 15:31:02 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jdabd-0005s5-DB; Tue, 26 May 2020 15:31:01 +0100
+In-Reply-To: <20200526142948.GY1551@shell.armlinux.org.uk>
+References: <20200526142948.GY1551@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
-Subject: [PATCH RFC 0/7] Clause 45 PHY probing cleanups
-Message-ID: <20200526142948.GY1551@shell.armlinux.org.uk>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH RFC 1/7] net: mdiobus: add clause 45 mdiobus accessors
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jdabd-0005s5-DB@rmk-PC.armlinux.org.uk>
+Date:   Tue, 26 May 2020 15:31:01 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+There is a recurring pattern throughout some of the PHY code converting
+a devad and regnum to our packed clause 45 representation. Rather than
+having this scattered around the code, let's put a common translation
+function in mdio.h, and provide some register accessors.
 
-In response to the patch set that Jeremy posted, this is my proposal
-to expand our Clause 45 PHY probing.
+Convert the phylib core, phylink, bcm87xx and cortina to use these.
 
-I've taken a slightly different approach, with the view to avoiding
-as much behavioural change as possible.  The biggest difference is
-to do with "devices_in_package" - we were using it for two different
-purposes, which are now separated.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/bcm87xx.c    |  2 +-
+ drivers/net/phy/cortina.c    |  3 +--
+ drivers/net/phy/phy-core.c   | 11 ++++-------
+ drivers/net/phy/phy.c        |  4 ++--
+ drivers/net/phy/phy_device.c | 20 ++++++++------------
+ drivers/net/phy/phylink.c    | 11 +++++------
+ include/linux/mdio.h         | 31 +++++++++++++++++++++++++++++++
+ include/linux/phy.h          |  6 ------
+ 8 files changed, 52 insertions(+), 36 deletions(-)
 
-This is not against net-next nor net trees, but against my own private
-tree, but I'm posting it to serve as an illustration of what I think
-should be done - I knocked this up this morning.
-
-The only potential regression that I'm expecting is with 88x3310 PHYs
-of the later revision, which have the clause 22 registers implemented.
-I haven't yet checked whether they set bit 0, but if they do, the
-various decision points that we have based on that bit could adversely
-affect this PHY - it needs testing, which I'll do when I dig out the
-appropriate hardware.  Probably also needs the 2110 PHYs checked as
-well.
-
-I haven't tested this series yet beyond compile testing.
-
-Given the proximity of the merge window, this *isn't* code I'd like to
-see merged into net-next - it's way too risky at this point.  So, we
-have time to consider our options.
-
- drivers/net/phy/bcm87xx.c    |   2 +-
- drivers/net/phy/cortina.c    |   3 +-
- drivers/net/phy/phy-c45.c    |   4 +-
- drivers/net/phy/phy-core.c   |  11 ++--
- drivers/net/phy/phy.c        |   4 +-
- drivers/net/phy/phy_device.c | 141 +++++++++++++++++++++++++++----------------
- drivers/net/phy/phylink.c    |  19 +++---
- include/linux/mdio.h         |  31 ++++++++++
- include/linux/phy.h          |  14 ++---
- 9 files changed, 146 insertions(+), 83 deletions(-)
-
+diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
+index f6dce6850850..df360e1c5069 100644
+--- a/drivers/net/phy/bcm87xx.c
++++ b/drivers/net/phy/bcm87xx.c
+@@ -55,7 +55,7 @@ static int bcm87xx_of_reg_init(struct phy_device *phydev)
+ 		u16 mask	= be32_to_cpup(paddr++);
+ 		u16 val_bits	= be32_to_cpup(paddr++);
+ 		int val;
+-		u32 regnum = MII_ADDR_C45 | (devid << 16) | reg;
++		u32 regnum = mdiobus_c45_addr(devid, reg);
+ 		val = 0;
+ 		if (mask) {
+ 			val = phy_read(phydev, regnum);
+diff --git a/drivers/net/phy/cortina.c b/drivers/net/phy/cortina.c
+index 856cdc36aacd..d254f517d4d4 100644
+--- a/drivers/net/phy/cortina.c
++++ b/drivers/net/phy/cortina.c
+@@ -17,8 +17,7 @@
+ 
+ static int cortina_read_reg(struct phy_device *phydev, u16 regnum)
+ {
+-	return mdiobus_read(phydev->mdio.bus, phydev->mdio.addr,
+-			    MII_ADDR_C45 | regnum);
++	return mdiobus_c45_read(phydev->mdio.bus, phydev->mdio.addr, 0, regnum);
+ }
+ 
+ static int cortina_read_status(struct phy_device *phydev)
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 204a6d94535e..7182ed81f3ec 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -390,9 +390,8 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
+ 	if (phydev->drv->read_mmd) {
+ 		val = phydev->drv->read_mmd(phydev, devad, regnum);
+ 	} else if (phydev->is_c45) {
+-		u32 addr = MII_ADDR_C45 | (devad << 16) | (regnum & 0xffff);
+-
+-		val = __mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, addr);
++		val = __mdiobus_c45_read(phydev->mdio.bus, phydev->mdio.addr,
++					 devad, regnum);
+ 	} else {
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+@@ -447,10 +446,8 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
+ 	if (phydev->drv && phydev->drv->write_mmd) {
+ 		ret = phydev->drv->write_mmd(phydev, devad, regnum, val);
+ 	} else if (phydev->is_c45) {
+-		u32 addr = MII_ADDR_C45 | (devad << 16) | (regnum & 0xffff);
+-
+-		ret = __mdiobus_write(phydev->mdio.bus, phydev->mdio.addr,
+-				      addr, val);
++		ret = __mdiobus_c45_write(phydev->mdio.bus, phydev->mdio.addr,
++					  devad, regnum, val);
+ 	} else {
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 7bded691a5d3..d38de72c60c5 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -353,7 +353,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+ 		if (mdio_phy_id_is_c45(mii_data->phy_id)) {
+ 			prtad = mdio_phy_id_prtad(mii_data->phy_id);
+ 			devad = mdio_phy_id_devad(mii_data->phy_id);
+-			devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
++			devad = mdiobus_c45_addr(devad, mii_data->reg_num);
+ 		} else {
+ 			prtad = mii_data->phy_id;
+ 			devad = mii_data->reg_num;
+@@ -366,7 +366,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+ 		if (mdio_phy_id_is_c45(mii_data->phy_id)) {
+ 			prtad = mdio_phy_id_prtad(mii_data->phy_id);
+ 			devad = mdio_phy_id_devad(mii_data->phy_id);
+-			devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
++			devad = mdiobus_c45_addr(devad, mii_data->reg_num);
+ 		} else {
+ 			prtad = mii_data->phy_id;
+ 			devad = mii_data->reg_num;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 16728bb73766..d14c4ba24a90 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -673,16 +673,14 @@ EXPORT_SYMBOL(phy_device_create);
+ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
+ 				   u32 *devices_in_package)
+ {
+-	int phy_reg, reg_addr;
++	int phy_reg;
+ 
+-	reg_addr = MII_ADDR_C45 | dev_addr << 16 | MDIO_DEVS2;
+-	phy_reg = mdiobus_read(bus, addr, reg_addr);
++	phy_reg = mdiobus_c45_read(bus, addr, dev_addr, MDIO_DEVS2);
+ 	if (phy_reg < 0)
+ 		return -EIO;
+ 	*devices_in_package = phy_reg << 16;
+ 
+-	reg_addr = MII_ADDR_C45 | dev_addr << 16 | MDIO_DEVS1;
+-	phy_reg = mdiobus_read(bus, addr, reg_addr);
++	phy_reg = mdiobus_c45_read(bus, addr, dev_addr, MDIO_DEVS1);
+ 	if (phy_reg < 0)
+ 		return -EIO;
+ 	*devices_in_package |= phy_reg;
+@@ -707,11 +705,11 @@ static int get_phy_c45_devs_in_pkg(struct mii_bus *bus, int addr, int dev_addr,
+  *
+  */
+ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+-			   struct phy_c45_device_ids *c45_ids) {
+-	int phy_reg;
+-	int i, reg_addr;
++			   struct phy_c45_device_ids *c45_ids)
++{
+ 	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
+ 	u32 *devs = &c45_ids->devices_in_package;
++	int i, phy_reg;
+ 
+ 	/* Find first non-zero Devices In package. Device zero is reserved
+ 	 * for 802.3 c45 complied PHYs, so don't probe it at first.
+@@ -745,14 +743,12 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+ 		if (!(c45_ids->devices_in_package & (1 << i)))
+ 			continue;
+ 
+-		reg_addr = MII_ADDR_C45 | i << 16 | MII_PHYSID1;
+-		phy_reg = mdiobus_read(bus, addr, reg_addr);
++		phy_reg = mdiobus_c45_read(bus, addr, i, MII_PHYSID1);
+ 		if (phy_reg < 0)
+ 			return -EIO;
+ 		c45_ids->device_ids[i] = phy_reg << 16;
+ 
+-		reg_addr = MII_ADDR_C45 | i << 16 | MII_PHYSID2;
+-		phy_reg = mdiobus_read(bus, addr, reg_addr);
++		phy_reg = mdiobus_c45_read(bus, addr, i, MII_PHYSID2);
+ 		if (phy_reg < 0)
+ 			return -EIO;
+ 		c45_ids->device_ids[i] |= phy_reg;
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 425c24ba4bbe..6defd5eddd58 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1702,7 +1702,7 @@ static int phylink_phy_read(struct phylink *pl, unsigned int phy_id,
+ 	if (mdio_phy_id_is_c45(phy_id)) {
+ 		prtad = mdio_phy_id_prtad(phy_id);
+ 		devad = mdio_phy_id_devad(phy_id);
+-		devad = MII_ADDR_C45 | devad << 16 | reg;
++		devad = mdiobus_c45_addr(devad << 16, reg);
+ 	} else if (phydev->is_c45) {
+ 		switch (reg) {
+ 		case MII_BMCR:
+@@ -1725,7 +1725,7 @@ static int phylink_phy_read(struct phylink *pl, unsigned int phy_id,
+ 			return -EINVAL;
+ 		}
+ 		prtad = phy_id;
+-		devad = MII_ADDR_C45 | devad << 16 | reg;
++		devad = mdiobus_c45_addr(devad, reg);
+ 	} else {
+ 		prtad = phy_id;
+ 		devad = reg;
+@@ -1742,7 +1742,7 @@ static int phylink_phy_write(struct phylink *pl, unsigned int phy_id,
+ 	if (mdio_phy_id_is_c45(phy_id)) {
+ 		prtad = mdio_phy_id_prtad(phy_id);
+ 		devad = mdio_phy_id_devad(phy_id);
+-		devad = MII_ADDR_C45 | devad << 16 | reg;
++		devad = mdiobus_c45_addr(devad, reg);
+ 	} else if (phydev->is_c45) {
+ 		switch (reg) {
+ 		case MII_BMCR:
+@@ -1765,7 +1765,7 @@ static int phylink_phy_write(struct phylink *pl, unsigned int phy_id,
+ 			return -EINVAL;
+ 		}
+ 		prtad = phy_id;
+-		devad = MII_ADDR_C45 | devad << 16 | reg;
++		devad = mdiobus_c45_addr(devad, reg);
+ 	} else {
+ 		prtad = phy_id;
+ 		devad = reg;
+@@ -2525,7 +2525,6 @@ void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
+ }
+ EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
+ 
+-#define C45_ADDR(d,a)	(MII_ADDR_C45 | (d) << 16 | (a))
+ void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
+ 				   struct phylink_link_state *state)
+ {
+@@ -2533,7 +2532,7 @@ void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
+ 	int addr = pcs->addr;
+ 	int stat;
+ 
+-	stat = mdiobus_read(bus, addr, C45_ADDR(MDIO_MMD_PCS, MDIO_STAT1));
++	stat = mdiobus_c45_read(bus, addr, MDIO_MMD_PCS, MDIO_STAT1);
+ 	if (stat < 0) {
+ 		state->link = false;
+ 		return;
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 917e4bb2ed71..36d2e0673d03 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -9,6 +9,13 @@
+ #include <uapi/linux/mdio.h>
+ #include <linux/mod_devicetable.h>
+ 
++/* Or MII_ADDR_C45 into regnum for read/write on mii_bus to enable the 21 bit
++ * IEEE 802.3ae clause 45 addressing mode used by 10GIGE phy chips.
++ */
++#define MII_ADDR_C45		(1<<30)
++#define MII_DEVADDR_C45_SHIFT	16
++#define MII_REGADDR_C45_MASK	GENMASK(15, 0)
++
+ struct gpio_desc;
+ struct mii_bus;
+ 
+@@ -326,6 +333,30 @@ int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int mdiobus_modify(struct mii_bus *bus, int addr, u32 regnum, u16 mask,
+ 		   u16 set);
+ 
++static inline u32 mdiobus_c45_addr(int devad, u16 regnum)
++{
++	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
++}
++
++static inline int __mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
++				     u16 regnum)
++{
++	return __mdiobus_read(bus, prtad, mdiobus_c45_addr(devad, regnum));
++}
++
++static inline int __mdiobus_c45_write(struct mii_bus *bus, int prtad, int devad,
++				      u16 regnum, u16 val)
++{
++	return __mdiobus_write(bus, prtad, mdiobus_c45_addr(devad, regnum),
++			       val);
++}
++
++static inline int mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
++				   u16 regnum)
++{
++	return mdiobus_read(bus, prtad, mdiobus_c45_addr(devad, regnum));
++}
++
+ int mdiobus_register_device(struct mdio_device *mdiodev);
+ int mdiobus_unregister_device(struct mdio_device *mdiodev);
+ bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 90f5dfb835cc..9b7c46cf14d3 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -224,12 +224,6 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 
+ #define MII_BUS_ID_SIZE	61
+ 
+-/* Or MII_ADDR_C45 into regnum for read/write on mii_bus to enable the 21 bit
+-   IEEE 802.3ae clause 45 addressing mode used by 10GIGE phy chips. */
+-#define MII_ADDR_C45 (1<<30)
+-#define MII_DEVADDR_C45_SHIFT	16
+-#define MII_REGADDR_C45_MASK	GENMASK(15, 0)
+-
+ struct device;
+ struct phylink;
+ struct sfp_bus;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+2.20.1
+
