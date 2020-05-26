@@ -2,103 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C65E1E19B5
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 05:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F91F1E19BF
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 05:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388478AbgEZDFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 23:05:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45748 "EHLO mail.kernel.org"
+        id S2388591AbgEZDMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 23:12:50 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:37779 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388417AbgEZDFg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 23:05:36 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2388460AbgEZDMu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 May 2020 23:12:50 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 387982068D;
-        Tue, 26 May 2020 03:05:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590462335;
-        bh=ctHYGfwil2GD6Xy8r0jplUfevlrSVidZqSutpXSOtAQ=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=ZgeVcsu7LISLqTkj2BN7jZxIXtMbJDssuAHJSgunl3+0WpiYXEt5lGUtCHfYI80T9
-         459m8XdY7QHcoAGREvcPsuTog2UGhkyuE787QNUgMzdRugBIN7i49M9ORWkvbYfTqF
-         oBLojE89DKstpWGLQ/aqCEgrjDEHgSOpp8OF79OQ=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 1A1423522A6D; Mon, 25 May 2020 20:05:35 -0700 (PDT)
-Date:   Mon, 25 May 2020 20:05:35 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49WJtQ6Mthz9sRW;
+        Tue, 26 May 2020 13:12:46 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1590462768;
+        bh=ibjYOJ+mjGcTQ7SK0V45i01JnzyGkUrx46Df39/IMCM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Qt5OhoU57GhRKI5+nV9xTdZiUCDsydy1/brpQKpbkAWDkZmxifs59xK7MWvqHTVUV
+         Uyg5LBXVAmnHMPr+/iZluxJobEjwErOwTO2GftS1zxy8UiiRWQHAyGLArvgFIyXxPI
+         /dX7Bx9ORysmevIB9gH6Kq0HapKaBkO5mKmVbF/lXK7rXD6+CTls/UT9inGJ2k0Zfc
+         et/uiTHbeTA6/cX6CLSjmLnGu1Xz376Lsd+vNsum9vBmlkBTyd7GOqvEZTu0nragW6
+         UkHRmzCIybbZSdjQwLVcaThDSIt/ECzPqnQLzCqz/hlZS8lGTB1d0hCl3DqNoL5erT
+         GGv2IDBwGh3DA==
+Date:   Tue, 26 May 2020 13:12:43 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/7] tools/memory-model: add BPF ringbuf MPSC
- litmus tests
-Message-ID: <20200526030535.GE2869@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200517195727.279322-1-andriin@fb.com>
- <20200517195727.279322-3-andriin@fb.com>
- <20200522003433.GG2869@paulmck-ThinkPad-P72>
- <CAEf4BzaVeFfa2=-M4FCgH5HX17TSkcGsBTDZcjrZxo=He2QESg@mail.gmail.com>
- <CAEf4Bza9aRM+6EfXaokV8xfEj_hRoKhNd5vYKtpc61XFAiewsA@mail.gmail.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBl?= =?UTF-8?B?bA==?= 
+        <bjorn.topel@intel.com>
+Subject: linux-next: manual merge of the net-next tree with the bpf tree
+Message-ID: <20200526131243.0915e58c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bza9aRM+6EfXaokV8xfEj_hRoKhNd5vYKtpc61XFAiewsA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/signed; boundary="Sig_/hcL6WG8dNvQARE_6wapKFfn";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 04:33:15PM -0700, Andrii Nakryiko wrote:
-> On Fri, May 22, 2020 at 11:51 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, May 21, 2020 at 5:34 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > >
-> > > On Sun, May 17, 2020 at 12:57:22PM -0700, Andrii Nakryiko wrote:
-> > > > Add 4 litmus tests for BPF ringbuf implementation, divided into two different
-> > > > use cases.
-> > > >
-> > > > First, two unbounded case, one with 1 producer and another with
-> > > > 2 producers, single consumer. All reservations are supposed to succeed.
-> > > >
-> > > > Second, bounded case with only 1 record allowed in ring buffer at any given
-> > > > time. Here failures to reserve space are expected. Again, 1- and 2- producer
-> > > > cases, single consumer, are validated.
-> > > >
-> > > > Just for the fun of it, I also wrote a 3-producer cases, it took *16 hours* to
-> > > > validate, but came back successful as well. I'm not including it in this
-> > > > patch, because it's not practical to run it. See output for all included
-> > > > 4 cases and one 3-producer one with bounded use case.
-> > > >
-> > > > Each litmust test implements producer/consumer protocol for BPF ring buffer
-> > > > implementation found in kernel/bpf/ringbuf.c. Due to limitations, all records
-> > > > are assumed equal-sized and producer/consumer counters are incremented by 1.
-> > > > This doesn't change the correctness of the algorithm, though.
-> > >
-> > > Very cool!!!
-> > >
-> > > However, these should go into Documentation/litmus-tests/bpf-rb or similar.
-> > > Please take a look at Documentation/litmus-tests/ in -rcu, -tip, and
-> > > -next, including the README file.
-> > >
-> > > The tools/memory-model/litmus-tests directory is for basic examples,
-> > > not for the more complex real-world ones like these guys.  ;-)
-> >
-> > Oh, ok, I didn't realize there are more litmus tests under
-> > Documentation/litmus-tests... Might have saved me some time (more
-> > examples to learn from!) when I was writing mine :) Will check those
-> > and move everything.
-> 
-> Ok, so Documentation/litmus-tests is not present in bpf-next, so I
-> guess I'll have to split this patch out and post it separately. BTW,
-> it's not in -rcu tree either, should I post this against linux-next
-> tree directly?
+--Sig_/hcL6WG8dNvQARE_6wapKFfn
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It is on branch "dev" of -rcu, though yet not on branch "master".
+Hi all,
 
-							Thanx, Paul
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  net/xdp/xdp_umem.c
+
+between commit:
+
+  b16a87d0aef7 ("xsk: Add overflow check for u64 division, stored into u32")
+
+from the bpf tree and commit:
+
+  2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/xdp/xdp_umem.c
+index 3889bd9aec46,19e59d1a5e9f..000000000000
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@@ -389,13 -349,10 +353,10 @@@ static int xdp_umem_reg(struct xdp_ume
+  	if (headroom >=3D chunk_size - XDP_PACKET_HEADROOM)
+  		return -EINVAL;
+ =20
+- 	umem->address =3D (unsigned long)addr;
+- 	umem->chunk_mask =3D unaligned_chunks ? XSK_UNALIGNED_BUF_ADDR_MASK
+- 					    : ~((u64)chunk_size - 1);
+  	umem->size =3D size;
+  	umem->headroom =3D headroom;
+- 	umem->chunk_size_nohr =3D chunk_size - headroom;
++ 	umem->chunk_size =3D chunk_size;
+ -	umem->npgs =3D size / PAGE_SIZE;
+ +	umem->npgs =3D (u32)npgs;
+  	umem->pgs =3D NULL;
+  	umem->user =3D NULL;
+  	umem->flags =3D mr->flags;
+
+--Sig_/hcL6WG8dNvQARE_6wapKFfn
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7MiSsACgkQAVBC80lX
+0GzFOgf8DouWICsguEs8Ast+8L7nS6YDM+TWtX6ZH+95i3RHscLa0clIZ3dcBqoq
+YwPG6GVT5/8buiMD+GvcJfoyssMsSMcy2L81QEs/OJDnI225g/i7IE7HnAXNQOAD
+0C+D8lfzCcl8vdjp2EJ5VMHsqxzhEzc0dsma3gmH2wDaBfir/O6ZiXQaT1I4BuB1
+9zZs9KdM+A5JfKGZkAG26JTUFXyqcTXlURVv5E+bqiUftlxJnX9vUQ7K4KS7kJPt
+Fg/oR8kayjBCZjxWaWO4rBFYx4Nt9uvwTRGooT2EPkvNrqWgy9i3AJqCT4ULD5LT
+Ah9TZlb1tz2I8SHxSfphISmXK9hofQ==
+=v5to
+-----END PGP SIGNATURE-----
+
+--Sig_/hcL6WG8dNvQARE_6wapKFfn--
