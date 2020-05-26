@@ -2,122 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 926D21E2958
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6E31E2970
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388957AbgEZRsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 13:48:18 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:38200 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgEZRsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:48:18 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04QHmCBk033300;
-        Tue, 26 May 2020 12:48:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590515292;
-        bh=2WPRrdT9w8zDCVHBZqeCHpQW4EnwADnt8oLLDTr2XxI=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=l5g1bYITzSyPQnkWcHhX1xrW0MdQ2UjtYwF3K2LD5MfsRmvMQCTAHadJhL64eDWau
-         J9otJ50cYlH0eiCBiVnOC+nmwNA80GacjxMmggUvVzgK5Y1rS7s+WFSj6mB69f8m66
-         atoj7/YW9UgaTtbCrygmw1AjHbfwdJMJtjYSTU1Q=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04QHmCeq124373
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 May 2020 12:48:12 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 26
- May 2020 12:48:12 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 26 May 2020 12:48:12 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QHmCkL088235;
-        Tue, 26 May 2020 12:48:12 -0500
-Subject: Re: [PATCH net-next v2 4/4] net: dp83869: Add RGMII internal delay
- configuration
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200522122534.3353-1-dmurphy@ti.com>
- <20200522122534.3353-5-dmurphy@ti.com>
- <a1ec8ef0-1536-267b-e8f7-9902ed06c883@gmail.com>
- <948bfa24-97ad-ba35-f06c-25846432e506@ti.com>
- <20200523150951.GK610998@lunn.ch>
- <a59412a5-7cc6-dc70-b851-c7d65c1635b7@ti.com>
- <20200523220741.GO610998@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <b8648d0d-6064-f481-6ecf-6151736f1899@ti.com>
-Date:   Tue, 26 May 2020 12:48:11 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S2388767AbgEZRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 13:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388586AbgEZRxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:53:16 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6F6C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 10:53:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=S2Lf15ZgKfIbQ5psV7wEWY9WuP3+P2oIEbk5WmZ4HDQ=; b=OZHilzDKFH42c+mUIDlxZuJOE
+        YaC4PDifU8jqwgn1IQMi/u0zxTjn9ulr1KsiaI97VXxxeR5pD5DRA/Asda+xDpgXygqO6MjDlzJT+
+        tCzzjGT2Db74INh5qymluhkrOVEkcsHQVN8SVF1KbFaK4v/5STKhyZlpfUZwtRcwFF1tepqt7sN2S
+        DZ7ufJ+u9EnkHWq3VN6uJUhtJIvZvup+7HkFsZm2iw+Ji0dir0jIWjxqBxqXC+s+cCkOCXq0bColq
+        ixlupP9Mu1VvP5c5lmTsrqXEFhUavdtZLrdBkVzbSvekR+orKGywmWHZfNIGCxArG4j2m8dxrjCxK
+        8ZgMzD+ow==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45386)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jddlE-0008Uw-5W; Tue, 26 May 2020 18:53:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jddlB-0005am-H2; Tue, 26 May 2020 18:53:05 +0100
+Date:   Tue, 26 May 2020 18:53:05 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC 4/7] net: phy: add support for probing MMDs >= 8 for
+ devices-in-package
+Message-ID: <20200526175305.GI1551@shell.armlinux.org.uk>
+References: <20200526142948.GY1551@shell.armlinux.org.uk>
+ <E1jdabs-0005sW-P8@rmk-PC.armlinux.org.uk>
+ <20200526171454.GH1551@shell.armlinux.org.uk>
+ <be1dad52-c199-f4d7-fa36-8198151fe2dd@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200523220741.GO610998@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be1dad52-c199-f4d7-fa36-8198151fe2dd@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On Tue, May 26, 2020 at 12:20:10PM -0500, Jeremy Linton wrote:
+> Hi,
+> 
+> On 5/26/20 12:14 PM, Russell King - ARM Linux admin wrote:
+> > On Tue, May 26, 2020 at 03:31:16PM +0100, Russell King wrote:
+> > > Add support for probing MMDs above 7 for a valid devices-in-package
+> > > specifier.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >   drivers/net/phy/phy_device.c | 39 ++++++++++++++++++++++++++++++++++--
+> > >   include/linux/phy.h          |  2 ++
+> > >   2 files changed, 39 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > > index 0d6b6ca66216..fa9164ac0f3d 100644
+> > > --- a/drivers/net/phy/phy_device.c
+> > > +++ b/drivers/net/phy/phy_device.c
+> > > @@ -659,6 +659,28 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+> > >   }
+> > >   EXPORT_SYMBOL(phy_device_create);
+> > > +/* phy_c45_probe_present - checks to see if a MMD is present in the package
+> > > + * @bus: the target MII bus
+> > > + * @prtad: PHY package address on the MII bus
+> > > + * @devad: PHY device (MMD) address
+> > > + *
+> > > + * Read the MDIO_STAT2 register, and check whether a device is responding
+> > > + * at this address.
+> > > + *
+> > > + * Returns: negative error number on bus access error, zero if no device
+> > > + * is responding, or positive if a device is present.
+> > > + */
+> > > +static int phy_c45_probe_present(struct mii_bus *bus, int prtad, int devad)
+> > > +{
+> > > +	int stat2;
+> > > +
+> > > +	stat2 = mdiobus_c45_read(bus, prtad, devad, MDIO_STAT2);
+> > > +	if (stat2 < 0)
+> > > +		return stat2;
+> > > +
+> > > +	return (stat2 & MDIO_STAT2_DEVPRST) == MDIO_STAT2_DEVPRST_VAL;
+> > > +}
+> > > +
+> > >   /* get_phy_c45_devs_in_pkg - reads a MMD's devices in package registers.
+> > >    * @bus: the target MII bus
+> > >    * @addr: PHY address on the MII bus
+> > > @@ -709,12 +731,25 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > >   {
+> > >   	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
+> > >   	u32 *devs = &c45_ids->devices_in_package;
+> > > -	int i, phy_reg;
+> > > +	int i, ret, phy_reg;
+> > >   	/* Find first non-zero Devices In package. Device zero is reserved
+> > >   	 * for 802.3 c45 complied PHYs, so don't probe it at first.
+> > >   	 */
+> > > -	for (i = 1; i < num_ids && *devs == 0; i++) {
+> > > +	for (i = 1; i < MDIO_MMD_NUM && *devs == 0; i++) {
+> > > +		if (i >= 8) {
+> > > +			/* Only probe for the devices-in-package if there
+> > > +			 * is a PHY reporting as present here; this avoids
+> > > +			 * picking up on PHYs that implement non-IEEE802.3
+> > > +			 * compliant register spaces.
+> > > +			 */
+> > > +			ret = phy_c45_probe_present(bus, addr, i);
+> > > +			if (ret < 0)
+> > > +				return -EIO;
+> > > +
+> > > +			if (!ret)
+> > > +				continue;
+> > > +		}
+> > 
+> > A second look at 802.3, this can't be done for all MMDs (which becomes
+> > visible when I look at the results from the 88x3310.)  Only MMDs 1, 2,
+> > 3, 4, 5, 30 and 31 are defined to have this register with the "Device
+> > Present" bit pair.
+> > 
+> 
+> I'm not sure it helps, but my thought process following some of the
+> discussion last night was:
+> 
+> something to the effect:
+> 
+> 	for (i = 1; i < MDIO_MMD_NUM && *devs == 0; i++) {
+> +		if (i & RESERVED_MMDS)
+> +			continue;
+> 
+> where RESERVED_MMDS was a hardcoded bitfield matching the IEEE reserved
+> MMDs. or maybe a "IGNORE_MMDS" which also includes BIT0 and other MMDs the
+> code doesn't understand.
 
-On 5/23/20 5:07 PM, Andrew Lunn wrote:
->>> Any why is your PHY special, in that is does care about out of range
->>> delays, when others using new the new core helper don't?
->> We are not rounding to nearest here.  Basically the helper works to find the
->> best match
->>
->> If the delay passed in is less than or equal to the smallest delay then
->> return the smallest delay index
->>
->> If the delay passed in is greater then the largest delay then return the max
->> delay index
-> +               /* Find an approximate index by looking up the table */
-> +               if (delay > delay_values[i - 1] &&
-> +                   delay < delay_values[i]) {
-> +                       if (delay - delay_values[i - 1] < delay_values[i] - delay)
-> +                               return i - 1;
-> +                       else
-> +                               return i;
->
-> This appears to round to the nearest value when it is not an exact
-> match.
->
-> The documentation is a hint to the DT developer what value to put in
-> DT. By saying it rounders, the developer does not need to go digging
-> through the source code to find an exact value, otherwise -EINVAL will
-> be returned. They can just use the value the HW engineer suggested,
-> and the PHY will pick whatever is nearest.
->
->> Not sure what you mean about this PHY being special.  This helper is
->> not PHY specific.
-> As you said, if out of range, the helper returns the top/bottom
-> value. Your PHY is special, the top/bottom value is not good enough,
-> you throw an error.
->
-> The point of helpers is to give uniform behaviour. We have one line
-> helpers, simply because they give uniform behaviour, rather than have
-> each driver do it subtlety different. But it also means drivers should
-> try to not add additional constraints over what the helper already
-> has, unless it is actually required by the hardware.
->
->> After I think about this more I am thinking a helper may be over kill here
->> and the delay to setting should be done within the PHY driver itself
-> The helper is useful, it will result in uniform handling of rounding
-> between DT values and what the PHY can actually do. But please also
-> move your range check and error message inside the helper.
+That seems to be walking into a mine field - which MMDs are reserved
+depends on which revision of the IEEE 802.3 specification you look at:
 
+Spec version	Reserved MMDs
+2012, 2015	0, 12-28
+2018		0, 14-28
 
-I re-worked v3 to be a bit more of a helper and incorporated Florian's 
-and you comments
+and as technology progresses, it's likely more MMDs will no longer be
+reserved.
 
-Dan
+There is another problem: 802.3 explicitly defines the devices in
+package registers for MMD 1, 2, 3, 4, 5, 6, 7, and 29, but then goes
+on to say:
 
+"Each MMD contains registers 5 and 6, as defined in Table 45-2."
 
->       Andrew
+which seems rather contradictory.
+
+There is also the problem that some PHYs have different values
+in their devices-in-package register for each MMD:
+
+MMD	devices-in-package
+1,3,7	c000009a
+4	4000001a
+30	00000000 (device present = not present)
+31	fffe0000 (device present = not present)
+
+What fun.  Thankfully, MMD1 will be read first, so it doesn't
+cause us a problem.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
