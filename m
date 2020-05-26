@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D8F1E1CD7
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 10:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C19E31E1CDA
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 10:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731390AbgEZIE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 04:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
+        id S1731533AbgEZIFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 04:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727900AbgEZIEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 04:04:54 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DE1C03E97E;
-        Tue, 26 May 2020 01:04:53 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id bg4so3034802plb.3;
-        Tue, 26 May 2020 01:04:53 -0700 (PDT)
+        with ESMTP id S1727900AbgEZIFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 04:05:00 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9950C03E97E;
+        Tue, 26 May 2020 01:04:59 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id z15so4563016pjb.0;
+        Tue, 26 May 2020 01:04:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s99asDh3KqWhbtaAWLoxUL9KkIJuoxOh8yq3KY5BrWQ=;
-        b=Tz1zKCSoTHHucRUc2yQMyukp4e4qrrwhsUh8b0LQrY+j7riVutzUZ3CdlTFW/zCDVc
-         dnKevt+yNUl38GN2jcDl4l5Kvb2EIC6LSqa8H8/JFf55FpvMUDy0e60PpgI6GXxxC4Qe
-         28awVQt3Hm+8J3+1SFfBLTURZKgQwr2qQAspbd6CoJMSA9M0TCdlwjrXXX6/RULjc2T8
-         nc7NDHCX/ajltPg/trR5I8CnaKcaAFDRewfBGqkpphf4ryBTZelSLJEELCJCLHQKR/Bd
-         +WGauubie/aXE4QWdEIzL/I8XvsvJFMu+RPerGK9qY5r62v44NBvdMtTmKVABFYdoYW6
-         ms+A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jUN7Z5XSVYvGRqKnsaDJyJI44CO7kk2ydcRogwW0g9A=;
+        b=DZ24zU2kzBS10KM1oPqihig3W3Vzqz1C2+panFVc7mJDCLfPTOfPj2XQ1p8SPHrSbf
+         p3w5XWU822itPLD5+ikGpsY0k0LBjfX7TxUAi//EqbvSTfv+wp6JGplQS8PL1DLzX0GL
+         7YhJ5fmejEB0lw7B0QpejvATbBc97S9JlsEge5g6/YO/duz4OV5s/ondkAiF2YY6A0nZ
+         mUXEG2Ij/+9giVkfHI2C5gdKtAx0F3mJs3tAE8eKZ8vwcXhPOaIXJd0BiiDdgUlOZbmS
+         jr0Di9woJFL0xaqhNrvfWjbBMt/w4JFPrq2lKCliOAxVcxZ6ZEeeB8e7i9ettKzjEBCc
+         ggwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s99asDh3KqWhbtaAWLoxUL9KkIJuoxOh8yq3KY5BrWQ=;
-        b=PBbtXGvDrgxbV8fUNOjY8eGAvFBh35iBk+KSPFKL7KdvJbAMTQ/HKKaHQh4yABerug
-         76I54eUnjURUDEUz6ygORPctZyTJap5u1qWp75kf95D8/8DXDbnLlqJf89ZE8yv0Tj3t
-         VGDq4NKnSmiWar6qk+i7WAxzP6JihOwsPz+YOnxPOXBdzTyrkFSMAZNegCJ/6lz8heFi
-         u/A9+ODygq4pTvMgYUA+X3QbnLRNqS9EOn9tPjG/g3F+QVR7RBxnBX/r5TjH+iBa5JrA
-         cwP3jbsLuiJsITJrVe9sjVpuAyHxx33puqUS5j8Xbwa4S+k62cmGwTGWHQyNRSrA7RFH
-         1S1g==
-X-Gm-Message-State: AOAM531qdMwwDrH5ORR32mj/B6aJdoCMiNp8FjNPi6ky7AnxrnB75QgB
-        wdbrxQ9jfAL34AIxkHYzMFI=
-X-Google-Smtp-Source: ABdhPJy9soyYLetfBPPjblNk1wYJKFUpB+0tOinBo70tQjNFkLGhKbqWqfN4gafp7nz51rwX6HIOhg==
-X-Received: by 2002:a17:90b:3d7:: with SMTP id go23mr16352740pjb.9.1590480292908;
-        Tue, 26 May 2020 01:04:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jUN7Z5XSVYvGRqKnsaDJyJI44CO7kk2ydcRogwW0g9A=;
+        b=CQCquP6ZkXgzWzaDDGQMRGgRoEA409wMRrWJc7Zp0uhVj6bUBT13EBE8lp2U03eCpZ
+         HcYn73ID2z2XMRMuUOPutKAXOhLIhofR+CZ59WIBDbWyETksC7g3ej0juHQtIFQa77KN
+         GjGpnJlM1saz2sbMR3Y0vr0mgSMNiAdaBzpJl4qSdsofaEdyzKF8zEEaEDf0DB1daSWM
+         huJyY3YbfcMRvu345d5MSuqVlE+2iHaLMkvR978jSKhmWzDENq/sQCmpTSYgOKWw9OUl
+         ewYqQ1majYhmTT3Zc9u0/mlxQhoisJ5Vp4zTj715z96BRA/XhNkEwaqL2ShiMqQ1lXRp
+         xDVg==
+X-Gm-Message-State: AOAM531xM72jj6sbcg2EzrsmvAvGiw1hMPziiabpWFHoFrfG4P1i0bB3
+        RT0imkOevHxF22+Qk5IP+fl9rG6wTsyIqg==
+X-Google-Smtp-Source: ABdhPJw+WiWEIFxfAR2QfArjGdBo9QVw2y9nKBsz4PzBM1D5S9VNTZie6OeSTo4FFpdNH2d2r0BxnA==
+X-Received: by 2002:a17:90a:f098:: with SMTP id cn24mr25039148pjb.201.1590480299286;
+        Tue, 26 May 2020 01:04:59 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.152.209])
-        by smtp.gmail.com with ESMTPSA id fa19sm8614477pjb.18.2020.05.26.01.04.48
+        by smtp.gmail.com with ESMTPSA id fa19sm8614477pjb.18.2020.05.26.01.04.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 01:04:52 -0700 (PDT)
+        Tue, 26 May 2020 01:04:58 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -58,10 +58,12 @@ To:     Bjorn Helgaas <helgaas@kernel.org>,
 Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [RFC PATCH v1 0/3] ethernet: amd: Convert to generic power management
-Date:   Tue, 26 May 2020 13:33:21 +0530
-Message-Id: <20200526080324.69828-1-vaibhavgupta40@gmail.com>
+Subject: [RFC PATCH v1 1/3] pcnet32: Convert to generic power management
+Date:   Tue, 26 May 2020 13:33:22 +0530
+Message-Id: <20200526080324.69828-2-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200526080324.69828-1-vaibhavgupta40@gmail.com>
+References: <20200526080324.69828-1-vaibhavgupta40@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,30 +71,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linux Kernel Mentee: Remove Legacy Power Management.
+compile-tested only
 
-The purpose of this patch series is to remove legacy power management callbacks
-from amd ethernet drivers.
+Remove legacy PM callbacks and use generic operations. With legacy code,
+drivers were responsible for handling PCI PM operations like
+"pci_save_state()". In generic code, all these handled by PCI core.
 
-The callbacks performing suspend() and resume() operations are still calling
-pci_save_state(), pci_set_power_state(), etc. and handling the power management
-themselves, which is not recommended.
+The generic "suspend()" and "resume()" are called at the same point the
+legacy ones were called. Thus, it does not affect the normal functioning of
+the driver.
 
-The conversion requires the removal of the those function calls and change the
-callback definition accordingly and make use of dev_pm_ops structure.
+Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+---
+ drivers/net/ethernet/amd/pcnet32.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-All patches are compile-tested only.
-
-Vaibhav Gupta (3):
-  pcnet32: Convert to generic power management
-  amd8111e: Convert to generic power mangement
-  amd-xgbe: Convert to generic power management
-
- drivers/net/ethernet/amd/amd8111e.c      | 30 +++++++++---------------
- drivers/net/ethernet/amd/pcnet32.c       | 22 ++++++++---------
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 17 +++++++-------
- 3 files changed, 31 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/net/ethernet/amd/pcnet32.c b/drivers/net/ethernet/amd/pcnet32.c
+index 07e8211eea51..d32f54d760e7 100644
+--- a/drivers/net/ethernet/amd/pcnet32.c
++++ b/drivers/net/ethernet/amd/pcnet32.c
+@@ -2913,30 +2913,27 @@ static void pcnet32_watchdog(struct timer_list *t)
+ 	mod_timer(&lp->watchdog_timer, round_jiffies(PCNET32_WATCHDOG_TIMEOUT));
+ }
+ 
+-static int pcnet32_pm_suspend(struct pci_dev *pdev, pm_message_t state)
++static int pcnet32_pm_suspend(struct device *device_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(device_d);
+ 
+ 	if (netif_running(dev)) {
+ 		netif_device_detach(dev);
+ 		pcnet32_close(dev);
+ 	}
+-	pci_save_state(pdev);
+-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
++
+ 	return 0;
+ }
+ 
+-static int pcnet32_pm_resume(struct pci_dev *pdev)
++static int pcnet32_pm_resume(struct device *device_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pdev);
+-
+-	pci_set_power_state(pdev, PCI_D0);
+-	pci_restore_state(pdev);
++	struct net_device *dev = dev_get_drvdata(device_d);
+ 
+ 	if (netif_running(dev)) {
+ 		pcnet32_open(dev);
+ 		netif_device_attach(dev);
+ 	}
++
+ 	return 0;
+ }
+ 
+@@ -2957,13 +2954,16 @@ static void pcnet32_remove_one(struct pci_dev *pdev)
+ 	}
+ }
+ 
++static SIMPLE_DEV_PM_OPS(pcnet32_pm_ops, pcnet32_pm_suspend, pcnet32_pm_resume);
++
+ static struct pci_driver pcnet32_driver = {
+ 	.name = DRV_NAME,
+ 	.probe = pcnet32_probe_pci,
+ 	.remove = pcnet32_remove_one,
+ 	.id_table = pcnet32_pci_tbl,
+-	.suspend = pcnet32_pm_suspend,
+-	.resume = pcnet32_pm_resume,
++	.driver = {
++		.pm = &pcnet32_pm_ops,
++	},
+ };
+ 
+ /* An additional parameter that may be passed in... */
 -- 
 2.26.2
 
