@@ -2,116 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A301E242C
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C34B21E243D
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728466AbgEZOdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 10:33:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51888 "EHLO mail.kernel.org"
+        id S1728406AbgEZOjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 10:39:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49706 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726882AbgEZOdp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 10:33:45 -0400
-Received: from localhost (unknown [151.48.148.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1A692065F;
-        Tue, 26 May 2020 14:33:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590503625;
-        bh=LdvSxghRs9yS+Ku+gpT21dSwC2nEsXrTcmSQxsBjTFs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hTZdY/jwNcx7J8+XxmDvOXhxNRxaT0aBoyuzHh/4ahBXpBXvbV6T8XUeYta23l5lF
-         1SNvFF8HxcbypkvQ0v32CnIcsbRAE3RRFAr7wrMHJitmK+gywsrhEsVa7B3RgesfAb
-         EDCWak9andw7nCm4ZCvT7JqV8pfLho+yXBGrHYpA=
-Date:   Tue, 26 May 2020 16:33:40 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        davem@davemloft.net, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
-        toshiaki.makita1@gmail.com
-Subject: Re: [PATCH bpf-next] xdp: introduce convert_to_xdp_buff utility
- routine
-Message-ID: <20200526143340.GA3769@localhost.localdomain>
-References: <26bcdba277dc23a57298218b7617cd8ebe03676e.1590500470.git.lorenzo@kernel.org>
- <20200526162008.7bd2d18f@carbon>
+        id S1726437AbgEZOjL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 10:39:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=wl9BZBNvREjJb/srdAAXoRj2hTSd93f5CQXbd/2vFb8=; b=XiC9LrKxjvSem8C3BH/jLavZix
+        6on/uPIRJFsSzbrN4QQmS4s+wqWOG6lrziZNMvEmUiAyy6JiN9jCtOIJjyQfLoPD/LKhBdaiFmQPa
+        0yRIpbYQs0rVzHlF3YSl5G9B2wW/6yad9x/tWd+NRaGwBraAIGxCgF0aAZKcrl1wh9xw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jdajS-003I6i-AK; Tue, 26 May 2020 16:39:06 +0200
+Date:   Tue, 26 May 2020 16:39:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC 1/7] net: mdiobus: add clause 45 mdiobus accessors
+Message-ID: <20200526143906.GK768009@lunn.ch>
+References: <20200526142948.GY1551@shell.armlinux.org.uk>
+ <E1jdabd-0005s5-DB@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="OgqxwSJOaUobr8KG"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200526162008.7bd2d18f@carbon>
+In-Reply-To: <E1jdabd-0005s5-DB@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 26, 2020 at 03:31:01PM +0100, Russell King wrote:
+> There is a recurring pattern throughout some of the PHY code converting
+> a devad and regnum to our packed clause 45 representation. Rather than
+> having this scattered around the code, let's put a common translation
+> function in mdio.h, and provide some register accessors.
+> 
+> Convert the phylib core, phylink, bcm87xx and cortina to use these.
 
---OgqxwSJOaUobr8KG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Russell
 
-> On Tue, 26 May 2020 15:48:13 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->=20
+This is a useful patch whatever we decide about C45 probing. If you
+can do some basic testing of it, i say submit it for this merge
+window.
 
-[...]
-
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index 90f11760bd12..5dbdd65866a9 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -106,6 +106,16 @@ void xdp_warn(const char *msg, const char *func, c=
-onst int line);
-> > =20
-> >  struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
-> > =20
-> > +static inline
-> > +void convert_to_xdp_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-> > +{
-> > +	xdp->data_hard_start =3D (void *)frame;
->=20
-> This assumption is problematic.  You are suppose to deduct this from
-> frame->data pointer.
->=20
-> Currently the xdp_frame is designed and access such that is is possible
-> to use another memory area for xdp_frame.  That would break after this
-> change.
->=20
-> This should instead be:
->=20
->  xdp->data_hard_start =3D frame->data - (frame->headroom + sizeof(struct =
-xdp_frame));
-
-ack, fine. I will fix it v2.
-
-Regards,
-Lorenzo
-
->=20
-> > +	xdp->data =3D frame->data;
-> > +	xdp->data_end =3D frame->data + frame->len;
-> > +	xdp->data_meta =3D frame->data - frame->metasize;
-> > +	xdp->frame_sz =3D frame->frame_sz;
-> > +}
-> > +
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
---OgqxwSJOaUobr8KG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXs0owgAKCRA6cBh0uS2t
-rAAyAQCkFj/X0UTbyI5n4mzNdkWIBO289jPslneWxkfrK/x+SQEAxCqRUZrLQbhb
-4Lg74IaF1IKZhnPteuRuziUuyjVv1QI=
-=5SWW
------END PGP SIGNATURE-----
-
---OgqxwSJOaUobr8KG--
+	Andrew
