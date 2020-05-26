@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B173E1E1CDC
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 10:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CCDA1E1CDE
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 10:05:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731567AbgEZIFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 04:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
+        id S1731608AbgEZIFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 04:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727900AbgEZIFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 04:05:05 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C15CC03E97E;
-        Tue, 26 May 2020 01:05:05 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id z15so4563094pjb.0;
-        Tue, 26 May 2020 01:05:05 -0700 (PDT)
+        with ESMTP id S1727900AbgEZIFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 04:05:11 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AB3C03E97E;
+        Tue, 26 May 2020 01:05:11 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id w20so4606147pga.6;
+        Tue, 26 May 2020 01:05:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PlwFQdfdCmfSwOeUTRovD942w6tO4d7LRvzC7J4XcqA=;
-        b=pDkz+eJChZDIv9m2rtYLnfyfQOMv1f7nYKnKlGQuQ+paT+GzmxYrIz78q8SEZz5okF
-         4q8f9Z4NNdrvbaIg/sZq+yLfhIq9va4yW1c/kysxCU4YFOMTmZ9R+VgDno++IXcUaKZL
-         47tcm2H+k4dRpuv4+eLNweYz+T/u7aFxWJEe/8Fs8EAk5BDlk3UHpMJq+/I2yEn6xxgI
-         cv+X/DdGPPMhmT9djiGWOxWjCkk96xe0Oi8V0SCHlbzDQp8vBQaAgXXkvGfFcDv6ktWm
-         aPQbhmmdCP+IaCYVBiia7cYmX3T93rIGUjkP0JDCiWHvXng2+wkAWyoNfKSdglDZB7Rd
-         PYEg==
+        bh=ctzNEK9ct3Xheefnk+QOHIxDO7kXYLYdjrWKg/OFEKg=;
+        b=X3CG+oVNVMX0lnR1bi1OH2EBx9kaknDBst0b0ZXlD1lfVkqB9xV21QY6KlTOXvqitn
+         0smFZVRkdfWyhtq61P49oHA0xGA6wXQ1JLgF1/G4YuiyR7NlsJEKkw158Nc37bGnGIBn
+         0uAFuFDVBWHSzmJgM2SnNAEhX4pyBRHMNWuZOz9wy8n2/lQUX843A7Q/oSAjs4x22kyB
+         0Ho+PzQcqCnkDcrqqboUJFsG04pfnotwisLoJSeGqAzOrk/klA/a/N6LPb8zyyz5vcaV
+         tNpFvwffBFksgUI1WpGWYtkKwHoCUYfl0Yg0zdapn/RkupzOuLVN37cuQ62oKt4Fvl7k
+         jd+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PlwFQdfdCmfSwOeUTRovD942w6tO4d7LRvzC7J4XcqA=;
-        b=LotqSi4NTlGCr3iYuy69+NNJdSyKQesRD0ndFMn2MXhJX9VbqdHGBQw5LhaMD4rTMS
-         nIAi9HKAm414dFXYeOPBbbXyiqJsxP5zVZH5xGY29k1EoPjtO3RweAW4ILmZc/7U7cHN
-         ji7+RVOp+27AGCxyIbzyaTZDco4vfGw9luzkpvS1I3pFrTx7D1hcdKDQxQp2TjNbWuBu
-         gGUQTXM4qdsnsP3xiWvSktRYtQ+IapKlS4GAJ6MbaToM60GKpzYg9k9C33sSpssn7soj
-         CrmU0PfOFCFxNHRQBA0lp4NgitAN6QvFtjth95hVj0lEUclNX5zZ1HElcG9xmLQLUuPj
-         yq/A==
-X-Gm-Message-State: AOAM5324HvaR7tqI8P/VoyHaTOFKAiehGfQ1mftfPjpe82k+cRW2L5DL
-        q06CmvDLWaOyndukFh44zq4=
-X-Google-Smtp-Source: ABdhPJzWmQSDNQwEgG3hSXQXPPh564uH3Bj59AaIEpppfhcb0ZSx42XMCCIubBNsIaZom0CqcM0Ybg==
-X-Received: by 2002:a17:90a:b883:: with SMTP id o3mr23087659pjr.81.1590480305058;
-        Tue, 26 May 2020 01:05:05 -0700 (PDT)
+        bh=ctzNEK9ct3Xheefnk+QOHIxDO7kXYLYdjrWKg/OFEKg=;
+        b=DTsHeU6LKEBpGCYahHGgQWMUbw9F0x+EBjxhdKX84FOuL8+97XVFgBr4OojlCyLa3K
+         A591Lx/JYKjZsUJMgjQ2O6da3DmJOmVR2w3gfHMRGGUzA+XDGVifSH8PK/LT1UFbLGAD
+         g4yLAswRZtovhg/oloSt+ZLN8MgnJukB870/IokCikuy/isLheciClS6mLneaelujTPE
+         uZb+R7x/cQjt3cFJaP9Y/MGSsZv++asZ/mrqKVr/AkQdiDftmb8QhwUkGIyRpbkX0ub6
+         JLgRRIkvqfecJFT0BrWqOQW4fdmmKn0B1t3wPlAz3Qj7Z1wWhC14zaJ8iRiiIZJMmzSF
+         /HpQ==
+X-Gm-Message-State: AOAM533IknjMEyvGYv3TIpd5N0SOzZezk65YprMw2Vqy2QcBk/a6wWDQ
+        3bmCww8CDhRUzpqKVJNZesI=
+X-Google-Smtp-Source: ABdhPJztp+CYa62M7C0UA8/be7wZZ+tfVKlbQCJ9G2m7H6/p2rSXV64EhYvePkYTV3VRwa2BU5ITWA==
+X-Received: by 2002:a05:6a00:a:: with SMTP id h10mr21383389pfk.310.1590480310570;
+        Tue, 26 May 2020 01:05:10 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.152.209])
-        by smtp.gmail.com with ESMTPSA id fa19sm8614477pjb.18.2020.05.26.01.05.00
+        by smtp.gmail.com with ESMTPSA id fa19sm8614477pjb.18.2020.05.26.01.05.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 01:05:04 -0700 (PDT)
+        Tue, 26 May 2020 01:05:10 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -58,9 +58,9 @@ To:     Bjorn Helgaas <helgaas@kernel.org>,
 Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [RFC PATCH v1 2/3] amd8111e: Convert to generic power mangement
-Date:   Tue, 26 May 2020 13:33:23 +0530
-Message-Id: <20200526080324.69828-3-vaibhavgupta40@gmail.com>
+Subject: [RFC PATCH v1 3/3] amd-xgbe: Convert to generic power management
+Date:   Tue, 26 May 2020 13:33:24 +0530
+Message-Id: <20200526080324.69828-4-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200526080324.69828-1-vaibhavgupta40@gmail.com>
 References: <20200526080324.69828-1-vaibhavgupta40@gmail.com>
@@ -73,90 +73,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 compile-tested only
 
-Drivers should not save device registers and/or change the power state of
-the device. As per the generic PM approach, these are handled by PCI core.
+Use dev_pm_ops structure to call generic suspend() and resume() callbacks.
 
-The driver should support dev_pm_ops callbacks and bind them to pci_driver.
+Drivers should avoid saving device register and/or change power states
+using PCI helper functions. With generic approach, all these are handled by
+PCI core.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/net/ethernet/amd/amd8111e.c | 30 +++++++++++------------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/amd8111e.c b/drivers/net/ethernet/amd/amd8111e.c
-index 7a1286f8e983..c6591b33abcc 100644
---- a/drivers/net/ethernet/amd/amd8111e.c
-+++ b/drivers/net/ethernet/amd/amd8111e.c
-@@ -1580,9 +1580,10 @@ static void amd8111e_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	if(!err)
- 		netif_wake_queue(dev);
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+index 7b86240ecd5f..014cee31a1d4 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+@@ -421,9 +421,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
+ 	xgbe_free_pdata(pdata);
  }
--static int amd8111e_suspend(struct pci_dev *pci_dev, pm_message_t state)
-+
-+static int amd8111e_suspend(struct device *dev_d)
+ 
+-#ifdef CONFIG_PM
+-static int xgbe_pci_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused xgbe_pci_suspend(struct device *dev)
  {
--	struct net_device *dev = pci_get_drvdata(pci_dev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct amd8111e_priv *lp = netdev_priv(dev);
- 
- 	if (!netif_running(dev))
-@@ -1609,34 +1610,24 @@ static int amd8111e_suspend(struct pci_dev *pci_dev, pm_message_t state)
- 		if(lp->options & OPTION_WAKE_PHY_ENABLE)
- 			amd8111e_enable_link_change(lp);
- 
--		pci_enable_wake(pci_dev, PCI_D3hot, 1);
--		pci_enable_wake(pci_dev, PCI_D3cold, 1);
-+		device_set_wakeup_enable(dev_d, 1);
- 
- 	}
- 	else{
--		pci_enable_wake(pci_dev, PCI_D3hot, 0);
--		pci_enable_wake(pci_dev, PCI_D3cold, 0);
-+		device_set_wakeup_enable(dev_d, 0);
- 	}
- 
--	pci_save_state(pci_dev);
--	pci_set_power_state(pci_dev, PCI_D3hot);
--
- 	return 0;
++	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct xgbe_prv_data *pdata = pci_get_drvdata(pdev);
+ 	struct net_device *netdev = pdata->netdev;
+ 	int ret = 0;
+@@ -438,8 +438,9 @@ static int xgbe_pci_suspend(struct pci_dev *pdev, pm_message_t state)
+ 	return ret;
  }
--static int amd8111e_resume(struct pci_dev *pci_dev)
-+
-+static int amd8111e_resume(struct device *dev_d)
+ 
+-static int xgbe_pci_resume(struct pci_dev *pdev)
++static int __maybe_unused xgbe_pci_resume(struct device *dev)
  {
--	struct net_device *dev = pci_get_drvdata(pci_dev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct amd8111e_priv *lp = netdev_priv(dev);
++	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct xgbe_prv_data *pdata = pci_get_drvdata(pdev);
+ 	struct net_device *netdev = pdata->netdev;
+ 	int ret = 0;
+@@ -460,7 +461,6 @@ static int xgbe_pci_resume(struct pci_dev *pdev)
  
- 	if (!netif_running(dev))
- 		return 0;
+ 	return ret;
+ }
+-#endif /* CONFIG_PM */
  
--	pci_set_power_state(pci_dev, PCI_D0);
--	pci_restore_state(pci_dev);
--
--	pci_enable_wake(pci_dev, PCI_D3hot, 0);
--	pci_enable_wake(pci_dev, PCI_D3cold, 0); /* D3 cold */
--
- 	netif_device_attach(dev);
- 
- 	spin_lock_irq(&lp->lock);
-@@ -1918,13 +1909,14 @@ static const struct pci_device_id amd8111e_pci_tbl[] = {
+ static const struct xgbe_version_data xgbe_v2a = {
+ 	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
+@@ -502,15 +502,16 @@ static const struct pci_device_id xgbe_pci_table[] = {
  };
- MODULE_DEVICE_TABLE(pci, amd8111e_pci_tbl);
+ MODULE_DEVICE_TABLE(pci, xgbe_pci_table);
  
-+static SIMPLE_DEV_PM_OPS(amd8111e_pm_ops, amd8111e_suspend, amd8111e_resume);
++static SIMPLE_DEV_PM_OPS(xgbe_pci_pm_ops, xgbe_pci_suspend, xgbe_pci_resume);
 +
- static struct pci_driver amd8111e_driver = {
- 	.name   	= MODULE_NAME,
- 	.id_table	= amd8111e_pci_tbl,
- 	.probe		= amd8111e_probe_one,
- 	.remove		= amd8111e_remove_one,
--	.suspend	= amd8111e_suspend,
--	.resume		= amd8111e_resume
-+	.driver.pm	= &amd8111e_pm_ops
+ static struct pci_driver xgbe_driver = {
+ 	.name = XGBE_DRV_NAME,
+ 	.id_table = xgbe_pci_table,
+ 	.probe = xgbe_pci_probe,
+ 	.remove = xgbe_pci_remove,
+-#ifdef CONFIG_PM
+-	.suspend = xgbe_pci_suspend,
+-	.resume = xgbe_pci_resume,
+-#endif
++	.driver = {
++		.pm = &xgbe_pci_pm_ops,
++	}
  };
  
- module_pci_driver(amd8111e_driver);
+ int xgbe_pci_init(void)
 -- 
 2.26.2
 
