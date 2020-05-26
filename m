@@ -2,147 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE0B1E2A80
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:57:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ADBD1E2E32
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:27:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389841AbgEZS41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 14:56:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49216 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389808AbgEZS4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 14:56:23 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A3D12158C;
-        Tue, 26 May 2020 18:56:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590519382;
-        bh=6N28XbjQ7Rh/AuwOgk3EG7NoGIEnJ4WNZJvhxBs0Pek=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rBijDMVe2gM0AApUsHcEPc/WPLx5RVaL85T9qBw+47GlYsLO4Q+sP1NmUXhS/MdzG
-         kHyGrelVqqrup8Yj1WhwXA4+JMDpLhAFpqybgcbgeNZTnFXLEgmC+ih+S8RdI3nOsL
-         KyzK2m6FNc6ihZgGz9olSvBI8nEydtyE6ExyJKsY=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, nikolay@cumulusnetworks.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net v2 3/5] nexthop: Expand nexthop_is_multipath in a few places
-Date:   Tue, 26 May 2020 12:56:16 -0600
-Message-Id: <20200526185618.43748-4-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200526185618.43748-1-dsahern@kernel.org>
-References: <20200526185618.43748-1-dsahern@kernel.org>
+        id S2390044AbgEZTEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 15:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391353AbgEZTEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 15:04:22 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C508C03E96E
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 12:04:22 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id k22so2302720qtm.6
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 12:04:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=e8t8guVZHFpAEAEfeBH9ghZZNDxE1CgHbKBkfQhO7K8=;
+        b=LHb/8h4cZ8wLtJv56fAt0vw8vzxiEaZ6kmx9sruNdx2LNAzZoB+MztiLkJvtygxw9j
+         iIxhabS9YcYVIy3bmx3T6YW9m238ZsOyh2Rm5CkhET9wnlsKLhXlpZ9R2WMXFbXWFGUJ
+         p32gfaCaMoVLdQ3e3dMnPoR+LOXAQBRnq2p3EojoLg2h2BFCp95frpbCclrgJjcCECQp
+         Ag35FbKojbsowUUQZUq8qGQOE5HW05/c1a4QbBeJY+b+cvqi0m3sbm+VmqHdBxbHW978
+         QJGzGlcSpJvLcXLOX9Ou7/5jrG0tfwQvD2gZ0J7Jh5iK7SDSZrErqLdiesTitoqfTATQ
+         GtqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=e8t8guVZHFpAEAEfeBH9ghZZNDxE1CgHbKBkfQhO7K8=;
+        b=BFahBoU3FRf173HDh42SB6st/76ZlRt5OUuP9vuGdoF7ENcEGlYuSxUAurohqhr6rU
+         fOmPGqsXnFPmP3WwJsNYa+cjc00IPeoqGrxsWawHxwSaqKOdigPvtceZWh8HthQ9zvmd
+         cYIic/k9kgH8oarMaMIPyhKgR+5SQlsoZKoM9+dXFAfmZPxN7d4zRrTiu9sK0x/gYOIu
+         hvG7Sx1EuvIrXeqisyvfbtHx9RCjvzP07EeNFSI7i6aY/3cXVp2OlRXf8e8oG9Az88kl
+         ZB5Sp1dpjbN4hnNahkET/Nos+mAEY7dCQswUyZT2raWu2IsWVYJpKhc0fWYdT7Yi7NGI
+         RodQ==
+X-Gm-Message-State: AOAM532EPiwhsP3P5QT26DCQ4AP9Hv32FczpAHukGgmDx8FQ477l+4cd
+        Z3rT4CAQibrvhwnMu3kZY2mVcw==
+X-Google-Smtp-Source: ABdhPJymDvOfHg7eoUvIydpXUVyE1y9R7HrCnjGAkfFNHBGLmHfhqZai95OSEGlT6LifZ2cZqjb1Dg==
+X-Received: by 2002:ac8:7313:: with SMTP id x19mr246217qto.383.1590519861066;
+        Tue, 26 May 2020 12:04:21 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id h3sm395711qkl.28.2020.05.26.12.04.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 26 May 2020 12:04:20 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jdes8-0004pY-0f; Tue, 26 May 2020 16:04:20 -0300
+Date:   Tue, 26 May 2020 16:04:20 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH rdma-next v3 0/8] Driver part of the ECE
+Message-ID: <20200526190419.GA18519@ziepe.ca>
+References: <20200526115440.205922-1-leon@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200526115440.205922-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On Tue, May 26, 2020 at 02:54:32PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
+> 
+> Changelog:
+> v3:
+>  * Squashed patch "RDMA/mlx5: Advertise ECE support" into
+>  "RDMA/mlx5: Set ECE options during modify QP".
+> v2:
+> https://lore.kernel.org/linux-rdma/20200525174401.71152-1-leon@kernel.org
+>  * Rebased on latest wip/jgg-rdma-next branch, commit a94dae867c56
+>  * Fixed wrong setting of pm_state field in mlx5 conversion patch
+>  * Removed DC support for now
+> v1:
+> https://lore.kernel.org/linux-rdma/20200523132243.817936-1-leon@kernel.org
+>  * Fixed compatibility issue of "old" kernel vs. "new" rdma-core. This
+>    is handled in extra patch.
+>  * Improved comments and commit messages after feedback from Yishai.
+>  * Added Mark Z. ROB tags
+> v0:
+> https://lore.kernel.org/linux-rdma/20200520082919.440939-1-leon@kernel.org
+> 
+> 
+> Hi,
+> 
+> This is driver part of the RDMA-CM ECE series [1].
+> According to the IBTA, ECE data is completely vendor specific, so this
+> series extends mlx5_ib create_qp and modify_qp structs with extra field
+> to pass ECE options to/from the application.
+> 
+> Thanks
+> 
+> [1]
+> https://lore.kernel.org/linux-rdma/20200413141538.935574-1-leon@kernel.org
+> 
+> Leon Romanovsky (8):
+>   net/mlx5: Add ability to read and write ECE options
+>   RDMA/mlx5: Get ECE options from FW during create QP
+>   RDMA/mlx5: Set ECE options during QP create
+>   RDMA/mlx5: Use direct modify QP implementation
+>   RDMA/mlx5: Remove manually crafted QP context the query call
+>   RDMA/mlx5: Convert modify QP to use MLX5_SET macros
+>   RDMA/mlx5: Set ECE options during modify QP
+>   RDMA/mlx5: Return ECE data after modify QP
 
-I got too fancy consolidating checks on multipath type. The result
-is that path lookups can access 2 different nh_grp structs as exposed
-by Nik's torture tests. Expand nexthop_is_multipath within nexthop.h to
-avoid multiple, nh_grp dereferences and make decisions based on the
-consistent struct.
+It seems fine, can you add the one patch to the shared branch please
 
-Only 2 places left using nexthop_is_multipath are within IPv6, both
-only check that the nexthop is a multipath for a branching decision
-which are acceptable.
-
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- include/net/nexthop.h | 41 +++++++++++++++++++++++++----------------
- 1 file changed, 25 insertions(+), 16 deletions(-)
-
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 8a343519ed7a..f09e8d7d9886 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -137,21 +137,20 @@ static inline unsigned int nexthop_num_path(const struct nexthop *nh)
- {
- 	unsigned int rc = 1;
- 
--	if (nexthop_is_multipath(nh)) {
-+	if (nh->is_group) {
- 		struct nh_group *nh_grp;
- 
- 		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
--		rc = nh_grp->num_nh;
-+		if (nh_grp->mpath)
-+			rc = nh_grp->num_nh;
- 	}
- 
- 	return rc;
- }
- 
- static inline
--struct nexthop *nexthop_mpath_select(const struct nexthop *nh, int nhsel)
-+struct nexthop *nexthop_mpath_select(const struct nh_group *nhg, int nhsel)
- {
--	const struct nh_group *nhg = rcu_dereference_rtnl(nh->nh_grp);
--
- 	/* for_nexthops macros in fib_semantics.c grabs a pointer to
- 	 * the nexthop before checking nhsel
- 	 */
-@@ -186,12 +185,14 @@ static inline bool nexthop_is_blackhole(const struct nexthop *nh)
- {
- 	const struct nh_info *nhi;
- 
--	if (nexthop_is_multipath(nh)) {
--		if (nexthop_num_path(nh) > 1)
--			return false;
--		nh = nexthop_mpath_select(nh, 0);
--		if (!nh)
-+	if (nh->is_group) {
-+		struct nh_group *nh_grp;
-+
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		if (nh_grp->num_nh > 1)
- 			return false;
-+
-+		nh = nh_grp->nh_entries[0].nh;
- 	}
- 
- 	nhi = rcu_dereference_rtnl(nh->nh_info);
-@@ -217,10 +218,15 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
- 	BUILD_BUG_ON(offsetof(struct fib_nh, nh_common) != 0);
- 	BUILD_BUG_ON(offsetof(struct fib6_nh, nh_common) != 0);
- 
--	if (nexthop_is_multipath(nh)) {
--		nh = nexthop_mpath_select(nh, nhsel);
--		if (!nh)
--			return NULL;
-+	if (nh->is_group) {
-+		struct nh_group *nh_grp;
-+
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		if (nh_grp->mpath) {
-+			nh = nexthop_mpath_select(nh_grp, nhsel);
-+			if (!nh)
-+				return NULL;
-+		}
- 	}
- 
- 	nhi = rcu_dereference_rtnl(nh->nh_info);
-@@ -264,8 +270,11 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
- {
- 	struct nh_info *nhi;
- 
--	if (nexthop_is_multipath(nh)) {
--		nh = nexthop_mpath_select(nh, 0);
-+	if (nh->is_group) {
-+		struct nh_group *nh_grp;
-+
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		nh = nexthop_mpath_select(nh_grp, 0);
- 		if (!nh)
- 			return NULL;
- 	}
--- 
-2.21.1 (Apple Git-122.3)
-
+Thanks,
+Jason
