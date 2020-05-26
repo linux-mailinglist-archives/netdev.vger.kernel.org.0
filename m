@@ -2,382 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACB91E23B1
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136CF1E23C1
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgEZOLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 10:11:31 -0400
-Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:54831 "EHLO
-        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726761AbgEZOLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:11:30 -0400
-X-Greylist: delayed 561 seconds by postgrey-1.27 at vger.kernel.org; Tue, 26 May 2020 10:11:29 EDT
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.west.internal (Postfix) with ESMTP id DAC2151E;
-        Tue, 26 May 2020 10:02:06 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 26 May 2020 10:02:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=TWUJPX
-        xur3M/s1NvQjz3fwoiHbj+VD82vTqkXtcaXh4=; b=Y3cePOlcddYIYqfarrKTU0
-        W0aJqdBKik9zvoWESLN7o6tBKDXpK7sm/qCZ69/G6chkgcH28/CtxXB79TTn4ko6
-        63RdtcW8lnHOjNrmrq8cwKjWp2i58nXMPhHtUvZ9E0Vi0V7V/RIGMMD2GmJBVvVQ
-        tFaxcFw7NTVLvkJgelYk1beaK3JArqQBiYCvdAYtKL+omPwyaDI8h3KOHiWLGZRR
-        0ESoKSHvgremls1o1akudFS+0X6xPSWn1C2u7BfZPWauvEvv3YVEGL/pjvJZbKUK
-        94oK1t1vwKv3jlBEtdTM9dlzgG6eHdf50ehNuEfcsNs9Z/aPzzKWNWt9ldkWvzFA
-        ==
-X-ME-Sender: <xms:WyHNXqlTBpIULvYSqBdWFenA2UsmKjUz44X16QbJN5ThBZ2KNxHoaA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvvddgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtieevuedvgeffhfelfffhieevudefkedtheekuedvkefgveektdefudekvdfh
-    teenucffohhmrghinhepshhpihhnihgtshdrnhgvthdplhhkmhhlrdhorhhgpdihohhuth
-    husggvrdgtohhmnecukfhppeejledrudejiedrvdegrddutdejnecuvehluhhsthgvrhfu
-    ihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthh
-    drohhrgh
-X-ME-Proxy: <xmx:WyHNXh2RndE_wz5MFaknRKsDm5BjvvFH_ysWM_ENiUWiuu1VueNdnw>
-    <xmx:WyHNXoovk7SHAeZcaGPfxlFrahEEeBgAJ1Suyi-fbXSPI5UwSxi-2A>
-    <xmx:WyHNXumlfOPw9EFskdhE_W3nCCeiN0nW6-hDTwe8m9HPQIN7GZtA5g>
-    <xmx:XiHNXpIO9YEacMWnfRRP56LBHzF9cVOZRW9NlJE7BfLT2qP9JBWHmwfnxdk>
-Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 83A4D30665C4;
-        Tue, 26 May 2020 10:02:02 -0400 (EDT)
-Date:   Tue, 26 May 2020 17:01:59 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S1728299AbgEZOMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 10:12:34 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:54770 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbgEZOMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:12:34 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04QECP7j039103;
+        Tue, 26 May 2020 09:12:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1590502345;
+        bh=KS6Yiet+dACsCoEneMJeBIYfABi02rYAnHbgKuk68NE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=OoYrDgNjhuS0y5wSCzocrXuQIIK4VMrBnpT+YgP8Krp6MS5jZpSidadw0+Y9qKmbN
+         6FotA5ibh24Ng35/aqcshn5+jGmdAzdhZg/fC2T2pgoRTbakQit7kwRU1OugxGgMEX
+         gOdgpzkvQG0MBaZB4LVKjkXD5TTuk0vrKVCV/r8Q=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QECPWf037891;
+        Tue, 26 May 2020 09:12:25 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 26
+ May 2020 09:12:25 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 26 May 2020 09:12:25 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QECLYR081088;
+        Tue, 26 May 2020 09:12:22 -0500
+Subject: Re: [net-next RFC PATCH 00/13] net: hsr: Add PRP driver
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
         netdev <netdev@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
-Message-ID: <20200526140159.GA1485802@splinter>
-References: <20200521211036.668624-1-olteanv@gmail.com>
- <20200524140657.GA1281067@splinter>
- <CA+h21hoJwjBt=Uu_tYw3vv2Sze28iRdAAoR3S+LFrKbL6-iuJQ@mail.gmail.com>
- <20200525194808.GA1449199@splinter>
- <CA+h21hq+TULBNRHJRN-_UwR8weBxgzT5v762yNzzkRaM2iGx9A@mail.gmail.com>
+        lkml <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20200506163033.3843-1-m-karicheri2@ti.com>
+ <87r1vdkxes.fsf@intel.com>
+ <CA+h21hqiV71wc0v=-KkPbWNyXSY+-oiz+DsQLAe1XEJw7eP=_Q@mail.gmail.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <a7d1ebef-7161-9ecc-09ca-83f868ff7dac@ti.com>
+Date:   Tue, 26 May 2020 10:12:20 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hq+TULBNRHJRN-_UwR8weBxgzT5v762yNzzkRaM2iGx9A@mail.gmail.com>
+In-Reply-To: <CA+h21hqiV71wc0v=-KkPbWNyXSY+-oiz+DsQLAe1XEJw7eP=_Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 11:23:34PM +0300, Vladimir Oltean wrote:
-> Hi Ido,
+Hi Vladimir,
+
+On 5/25/20 5:37 PM, Vladimir Oltean wrote:
+> Hi Vinicius,
 > 
-> On Mon, 25 May 2020 at 22:48, Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Sun, May 24, 2020 at 07:24:27PM +0300, Vladimir Oltean wrote:
-> > > On Sun, 24 May 2020 at 17:07, Ido Schimmel <idosch@idosch.org> wrote:
-> > > >
-> > > > On Fri, May 22, 2020 at 12:10:23AM +0300, Vladimir Oltean wrote:
-> > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > >
-> > > > > This is a WIP series whose stated goal is to allow DSA and switchdev
-> > > > > drivers to flood less traffic to the CPU while keeping the same level of
-> > > > > functionality.
-> > > > >
-> > > > > The strategy is to whitelist towards the CPU only the {DMAC, VLAN} pairs
-> > > > > that the operating system has expressed its interest in, either due to
-> > > > > those being the MAC addresses of one of the switch ports, or addresses
-> > > > > added to our device's RX filter via calls to dev_uc_add/dev_mc_add.
-> > > > > Then, the traffic which is not explicitly whitelisted is not sent by the
-> > > > > hardware to the CPU, under the assumption that the CPU didn't ask for it
-> > > > > and would have dropped it anyway.
-> > > > >
-> > > > > The ground for these patches were the discussions surrounding RX
-> > > > > filtering with switchdev in general, as well as with DSA in particular:
-> > > > >
-> > > > > "[PATCH net-next 0/4] DSA: promisc on master, generic flow dissector code":
-> > > > > https://www.spinics.net/lists/netdev/msg651922.html
-> > > > > "[PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module":
-> > > > > https://www.spinics.net/lists/netdev/msg634859.html
-> > > > > "[PATCH v3 0/2] net: core: Notify on changes to dev->promiscuity":
-> > > > > https://lkml.org/lkml/2019/8/29/255
-> > > > > LPC2019 - SwitchDev offload optimizations:
-> > > > > https://www.youtube.com/watch?v=B1HhxEcU7Jg
-> > > > >
-> > > > > Unicast filtering comes to me as most important, and this includes
-> > > > > termination of MAC addresses corresponding to the network interfaces in
-> > > > > the system (DSA switch ports, VLAN sub-interfaces, bridge interface).
-> > > > > The first 4 patches use Ivan Khoronzhuk's IVDF framework for extending
-> > > > > network interface addresses with a Virtual ID (typically VLAN ID). This
-> > > > > matches DSA switches perfectly because their FDB already contains keys
-> > > > > of the {DMAC, VID} form.
-> > > >
-> > > > Hi,
-> > > >
-> > > > I read through the series and I'm not sure how unicast filtering works.
-> > > > Instead of writing a very long mail I just created a script with
-> > > > comments. I think it's clearer that way. Note that this is not a made up
-> > > > configuration. It is used in setups involving VRRP / VXLAN, for example.
-> > > >
-> > > > ```
-> > > > #!/bin/bash
-> > > >
-> > > > ip netns add ns1
-> > > >
-> > > > ip -n ns1 link add name br0 type bridge vlan_filtering 1
-> > > > ip -n ns1 link add name dummy10 up type dummy
-> > > >
-> > > > ip -n ns1 link set dev dummy10 master br0
-> > > > ip -n ns1 link set dev br0 up
-> > > >
-> > > > ip -n ns1 link add link br0 name vlan10 up type vlan id 10
-> > > > bridge -n ns1 vlan add vid 10 dev br0 self
-> > > >
-> > > > echo "Before adding macvlan:"
-> > > > echo "======================"
-> > > >
-> > > > echo -n "Promiscuous mode: "
-> > > > ip -n ns1 -j -p -d link show dev br0 | jq .[][\"promiscuity\"]
-> > > >
-> > > > echo -e "\nvlan10's MAC is in br0's FDB:"
-> > > > bridge -n ns1 fdb show br0 vlan 10
-> > > >
-> > > > echo
-> > > > echo "After adding macvlan:"
-> > > > echo "====================="
-> > > >
-> > > > ip -n ns1 link add link vlan10 name vlan10-v up address 00:00:5e:00:01:01 \
-> > > >         type macvlan mode private
-> > > >
-> > > > echo -n "Promiscuous mode: "
-> > > > ip -n ns1 -j -p -d link show dev br0 | jq .[][\"promiscuity\"]
-> > > >
-> > > > echo -e "\nvlan10-v's MAC is not in br0's FDB:"
-> > > > bridge -n ns1 fdb show br0 | grep master | grep 00:00:5e:00:01:01
-> > > > ```
-> > > >
-> > > > This is the output on my laptop (kernel 5.6.8):
-> > > >
-> > > > ```
-> > > > Before adding macvlan:
-> > > > ======================
-> > > > Promiscuous mode: 0
-> > > >
-> > > > vlan10's MAC is in br0's FDB:
-> > > > 42:bd:b1:cc:67:15 dev br0 vlan 10 master br0 permanent
-> > > >
-> > > > After adding macvlan:
-> > > > =====================
-> > > > Promiscuous mode: 1
-> > > >
-> > > > vlan10-v's MAC is not in br0's FDB:
-> > > > ```
-> > > >
-> > > > Basically, if the MAC of the VLAN device is not inherited from the
-> > > > bridge or you stack macvlans on top, then the bridge will go into
-> > > > promiscuous mode and it will locally receive all frames passing through
-> > > > it. It's not ideal, but it's a very old and simple behavior. It does not
-> > > > require you to track the VLAN associated with the MAC addresses, for
-> > > > example.
-> > > >
-> > >
-> > > This is a good point. I wasn't aware that the bridge 'gives up' with
-> > > macvlan upper devices, but if I understand correctly, we do have the
-> > > necessary tools to improve that.
-> > > But actually, I'm wondering if this simple behavior from the bridge is
-> > > correct.
-> >
-> > Why would it be incorrect?
-> >
-> > > As you, Jiri and Ivan pointed out in last summer's email
-> > > thread about the Linux bridge and promiscuous mode, putting the
-> > > interface in IFF_PROMISC is only going to guarantee acceptance through
-> > > the net device's RX filter, but not that the packets will go to the
-> > > CPU.
-> >
-> > IFF_PROMISC has no bearing on whether a packet should go to the CPU or
-> > not. It only influences the device's RX filter, like you said. If you
-> > only look at the software data path, the bridge being in promiscuous
-> > mode means that all received packets will be injected to the kernel's Rx
-> > path as if they were received through the bridge device. This includes,
-> > for example, an IPv4 packet with an unknown unicast MAC (does not
-> > correspond to your MAC). Such a packet will be later dropped by the IPv4
-> > code since it's not addressed to you:
-> >
-> > vi net/ipv4/ip_input.c +443
-> >
-> > We maintain the same behavior in the hardware data path. We don't have
-> > MAC filtering in the router like the software data path, so we only send
-> > to the router unicast MACs that correspond to the bridge's MAC and its
-> > uppers. If such packets later hit a local route (for example), then they
-> > will be trapped to the CPU, but the more common case is to simply route
-> > them through a different device due to a prefix / gateway route. These
-> > never reach the CPU.
-> >
-> > > So from that perspective, the current series would break things, so we
-> > > should definitely fix that and keep the {MAC, VLAN} pairs in the
-> > > bridge's local FDB.
-> >
-> > Not sure I follow. Can you explain what will break and why?
-> >
+> On Thu, 21 May 2020 at 20:33, Vinicius Costa Gomes
+> <vinicius.gomes@intel.com> wrote:
+>>
+>> Murali Karicheri <m-karicheri2@ti.com> writes:
+>>
+>>> This RFC series add support for Parallel Redundancy Protocol (PRP)
+>>> as defined in IEC-62439-3 in the kernel networking subsystem. PRP
+>>> Uses a Redundancy Control Trailer (RCT) the format of which is
+>>> similar to HSR Tag. This is used for implementing redundancy.
+>>> RCT consists of 6 bytes similar to HSR tag and contain following
+>>> fields:-
+>>>
+>>> - 16-bit sequence number (SeqNr);
+>>> - 4-bit LAN identifier (LanId);
+>>> - 12 bit frame size (LSDUsize);
+>>> - 16-bit suffix (PRPsuffix).
+>>>
+>>> The PRPsuffix identifies PRP frames and distinguishes PRP frames
+>>> from other protocols that also append a trailer to their useful
+>>> data. The LSDUsize field allows the receiver to distinguish PRP
+>>> frames from random, nonredundant frames as an additional check.
+>>> LSDUsize is the size of the Ethernet payload inclusive of the
+>>> RCT. Sequence number along with LanId is used for duplicate
+>>> detection and discard.
+>>>
+>>> PRP node is also known as Dual Attached Node (DAN-P) since it
+>>> is typically attached to two different LAN for redundancy.
+>>> DAN-P duplicates each of L2 frames and send it over the two
+>>> Ethernet links. Each outgoing frame is appended with RCT.
+>>> Unlike HSR, these are added to the end of L2 frame and may be
+>>> treated as padding by bridges and therefore would be work with
+>>> traditional bridges or switches, where as HSR wouldn't as Tag
+>>> is prefixed to the Ethenet frame. At the remote end, these are
+>>> received and the duplicate frame is discarded before the stripped
+>>> frame is send up the networking stack. Like HSR, PRP also sends
+>>> periodic Supervision frames to the network. These frames are
+>>> received and MAC address from the SV frames are populated in a
+>>> database called Node Table. The above functions are grouped into
+>>> a block called Link Redundancy Entity (LRE) in the IEC spec.
+>>>
+>>> As there are many similarities between HSR and PRP protocols,
+>>> this patch re-use the code from HSR driver to implement PRP
+>>> driver. As many part of the code can be re-used, this patch
+>>> introduces a new common API definitions for both protocols and
+>>> propose to obsolete the existing HSR defines in
+>>> include/uapi/linux/if_link.h. New definitions are prefixed
+>>> with a HSR_PRP prefix. Similarly include/uapi/linux/hsr_netlink.h
+>>> is proposed to be replaced with include/uapi/linux/hsr_prp_netlink.h
+>>> which also uses the HSR_PRP prefix. The netlink socket interface
+>>> code is migrated (as well as the iproute2 being sent as a follow up
+>>> patch) to use the new API definitions. To re-use the code,
+>>> following are done as a preparatory patch before adding the PRP
+>>> functionality:-
+>>>
+>>>    - prefix all common code with hsr_prp
+>>>    - net/hsr -> renamed to net/hsr-prp
+>>>    - All common struct types, constants, functions renamed with
+>>>      hsr{HSR}_prp{PRP} prefix.
+>>
+>> I don't really like these prefixes, I am thinking of when support for
+>> IEEE 802.1CB is added, do we rename this to "hsr_prp_frer"?
+>>
+>> And it gets even more complicated, and using 802.1CB you can configure
+>> the tagging method and the stream identification function so a system
+>> can interoperate in a HSR or PRP network.
+>>
 > 
-> I haven't done any further testing since yesterday, so my level of
-> (mis)understanding is the same. Let's hope at least I can explain
-> better this time.
+> Is it a given that 802.1CB in Linux should be implemented using an hsr
+> upper device?
+> 802.1CB is _much_ more flexible than both HSR and PRP. You can have
+> more than 2 ports, you can have per-stream rules (each stream has its
+> own sequence number), and those rules can identify the source, the
+> destination, or both the source and the destination.
 > 
-> I guess what I didn't understand from your "macvlan upper whose MAC
-> address isn't inherited from bridge" is why does the bridge go in
-> promiscuous mode.
+I haven't looked the spec for 802.1CB. If they re-use HSR/PRP Tag in the
+L2 protocol it make sense to enhance the driver. Else I don't see any
+re-use possibility. Do you know the above?
 
-Packets received from bridge slaves with DMAC equal to an active bridge
-upper (e.g., macvlan) should be received by this upper. When a packet is
-received from a bridge slave it performs FDB lookup. Since {VID, MAC}
-entries are not programmed for bridge uppers, packets addressed to such
-addresses will incur an FDB miss and be flooded. If the bridge is not in
-promiscuous mode, these packets will not be received via the bridge
-interface and will not reach the relevant upper device.
+Thanks
 
-> You said that it's so that the slave ports won't drop packets with
-> that DMAC,
-
-I did not say that. I explained above that if promiscuous mode is not
-enabled on the bridge interface itself (a soft device), the packet will
-not be received via the bridge interface and will not reach the upper
-device.
-
-> I said ok, yes the packets would get dropped without promisc, but also
-> promisc still doesn't mean the packets will land on the CPU. This is
-> one of the cases where the bridge puts an interface in promisc mode
-> with the intention of making the CPU see some frames,
-
-The statement "the bridge puts an interface in promisc mode with the
-intention of making the CPU see some frames" is incorrect. The bridge
-puts an interface in promiscuous mode so that the bridge will see all
-the frames received by this interface. If the bridge is offloaded,
-bridging happens in hardware and there is no reason to send all the
-frames to the CPU.
-
-> something which has been argued, in the context of switchdev, that was
-> never the case. You said that's all true, and that in mlxsw you're
-> giving the bridge a helping hand, by tracking the bridge's uppers in
-> order to keep something that works by accident in software working
-> with switchdev too.
-
-I never said that the software bridge works by accident. I explained
-why, to my understanding, the bridge works the way it's working and what
-can be done in order to prevent the bridge from going into promiscuous
-mode. It involves very careful (and error-prone?) tracking of the upper
-devices and their VLANs.
-
-Also, please differentiate between the bridge interface itself going
-into promiscuous mode and bridge slaves going into promiscuous mode.
-
-> I said that this is a
-> weird layering violation, because the bridge's job is to notify the
-> driver of addresses it needs to see, not for the driver to fish for
-> them.
-> As for "what will break and why". My current patch proposal is to only
-> send to the CPU the addresses added via dev_uc_add and dev_mc_add,
-> basically. The macvlan upper of the bridge would not be part of that
-> list. My rhetorical question then becomes: whose fault is it that
-> macvlan breaks? Mine for not tracking the bridge upper, or the bridge
-> for not notifying me and just pretending that 'promisc' means 'the CPU
-> will see all packets, including the ones I need'? Of course I think
-> it's the bridge.
+Murali
+>> So, I see this as different methods of achieving the same result, which
+>> makes me think that the different "methods/types" (HSR and PRP in your
+>> case) should be basically different implementations of a "struct
+>> hsr_ops" interface. With this hsr_ops something like this:
+>>
+>>     struct hsr_ops {
+>>            int (*handle_frame)()
+>>            int (*add_port)()
+>>            int (*remove_port)()
+>>            int (*setup)()
+>>            void (*teardown)()
+>>     };
+>>
+>>>
+>>> Please review this and provide me feedback so that I can work to
+>>> incorporate them and send a formal patch series for this. As this
+>>> series impacts user space, I am not sure if this is the right
+>>> approach to introduce a new definitions and obsolete the old
+>>> API definitions for HSR. The current approach is choosen
+>>> to avoid redundant code in iproute2 and in the netlink driver
+>>> code (hsr_netlink.c). Other approach we discussed internally was
+>>> to Keep the HSR prefix in the user space and kernel code, but
+>>> live with the redundant code in the iproute2 and hsr netlink
+>>> code. Would like to hear from you what is the best way to add
+>>> this feature to networking core. If there is any other
+>>> alternative approach possible, I would like to hear about the
+>>> same.
+>>
+>> Why redudant code is needed in the netlink parts and in iproute2 when
+>> keeping the hsr prefix?
+>>
+>>>
+>>> The patch was tested using two TI AM57x IDK boards which are
+>>> connected back to back over two CPSW ports.
+>>>
+>>> Script used for creating the hsr/prp interface is given below
+>>> and uses the ip link command. Also provided logs from the tests
+>>> I have executed for your reference.
+>>>
+>>> iproute2 related patches will follow soon....
+>>>
+>>> Murali Karicheri
+>>> Texas Instruments
+>>>
+>>> ============ setup.sh =================================================
+>>> #!/bin/sh
+>>> if [ $# -lt 4 ]
+>>> then
+>>>         echo "setup-cpsw.sh <hsr/prp> <MAC-Address of slave-A>"
+>>>         echo "  <ip address for hsr/prp interface>"
+>>>         echo "  <if_name of hsr/prp interface>"
+>>>         exit
+>>> fi
+>>>
+>>> if [ "$1" != "hsr" ] && [ "$1" != "prp" ]
+>>> then
+>>>         echo "use hsr or prp as first argument"
+>>>         exit
+>>> fi
+>>>
+>>> if_a=eth2
+>>> if_b=eth3
+>>> if_name=$4
+>>>
+>>> ifconfig $if_a down
+>>> ifconfig $if_b down
+>>> ifconfig $if_a hw ether $2
+>>> ifconfig $if_b hw ether $2
+>>> ifconfig $if_a up
+>>> ifconfig $if_b up
+>>>
+>>> echo "Setting up $if_name with MAC address $2 for slaves and IP address $3"
+>>> echo "          using $if_a and $if_b"
+>>>
+>>> if [ "$1" = "hsr" ]; then
+>>>         options="version 1"
+>>> else
+>>>         options=""
+>>> fi
+>>>
+>>> ip link add name $if_name type $1 slave1 $if_a slave2 $if_b supervision 0 $options
+>>> ifconfig $if_name $3 up
+>>> ==================================================================================
+>>> PRP Logs:
+>>>
+>>> DUT-1 : https://pastebin.ubuntu.com/p/hhsRjTQpcr/
+>>> DUT-2 : https://pastebin.ubuntu.com/p/snPFKhnpk4/
+>>>
+>>> HSR Logs:
+>>>
+>>> DUT-1 : https://pastebin.ubuntu.com/p/FZPNc6Nwdm/
+>>> DUT-2 : https://pastebin.ubuntu.com/p/CtV4ZVS3Yd/
+>>>
+>>> Murali Karicheri (13):
+>>>    net: hsr: Re-use Kconfig option to support PRP
+>>>    net: hsr: rename hsr directory to hsr-prp to introduce PRP
+>>>    net: hsr: rename files to introduce PRP support
+>>>    net: hsr: rename hsr variable inside struct hsr_port to priv
+>>>    net: hsr: rename hsr_port_get_hsr() to hsr_prp_get_port()
+>>>    net: hsr: some renaming to introduce PRP driver support
+>>>    net: hsr: introduce common uapi include/definitions for HSR and PRP
+>>>    net: hsr: migrate HSR netlink socket code to use new common API
+>>>    net: hsr: move re-usable code for PRP to hsr_prp_netlink.c
+>>>    net: hsr: add netlink socket interface for PRP
+>>>    net: prp: add supervision frame generation and handling support
+>>>    net: prp: add packet handling support
+>>>    net: prp: enhance debugfs to display PRP specific info in node table
+>>>
+>>>   MAINTAINERS                                   |   2 +-
+>>>   include/uapi/linux/hsr_netlink.h              |   3 +
+>>>   include/uapi/linux/hsr_prp_netlink.h          |  50 ++
+>>>   include/uapi/linux/if_link.h                  |  19 +
+>>>   net/Kconfig                                   |   2 +-
+>>>   net/Makefile                                  |   2 +-
+>>>   net/hsr-prp/Kconfig                           |  37 ++
+>>>   net/hsr-prp/Makefile                          |  11 +
+>>>   net/hsr-prp/hsr_netlink.c                     | 202 +++++++
+>>>   net/{hsr => hsr-prp}/hsr_netlink.h            |  15 +-
+>>>   .../hsr_prp_debugfs.c}                        |  82 +--
+>>>   net/hsr-prp/hsr_prp_device.c                  | 562 ++++++++++++++++++
+>>>   net/hsr-prp/hsr_prp_device.h                  |  23 +
+>>>   net/hsr-prp/hsr_prp_forward.c                 | 558 +++++++++++++++++
+>>>   .../hsr_prp_forward.h}                        |  10 +-
+>>>   .../hsr_prp_framereg.c}                       | 323 +++++-----
+>>>   net/hsr-prp/hsr_prp_framereg.h                |  68 +++
+>>>   net/hsr-prp/hsr_prp_main.c                    | 194 ++++++
+>>>   net/hsr-prp/hsr_prp_main.h                    | 289 +++++++++
+>>>   net/hsr-prp/hsr_prp_netlink.c                 | 365 ++++++++++++
+>>>   net/hsr-prp/hsr_prp_netlink.h                 |  28 +
+>>>   net/hsr-prp/hsr_prp_slave.c                   | 222 +++++++
+>>>   net/hsr-prp/hsr_prp_slave.h                   |  37 ++
+>>>   net/hsr-prp/prp_netlink.c                     | 141 +++++
+>>>   net/hsr-prp/prp_netlink.h                     |  27 +
+>>>   net/hsr/Kconfig                               |  29 -
+>>>   net/hsr/Makefile                              |  10 -
+>>>   net/hsr/hsr_device.c                          | 509 ----------------
+>>>   net/hsr/hsr_device.h                          |  22 -
+>>>   net/hsr/hsr_forward.c                         | 379 ------------
+>>>   net/hsr/hsr_framereg.h                        |  62 --
+>>>   net/hsr/hsr_main.c                            | 154 -----
+>>>   net/hsr/hsr_main.h                            | 188 ------
+>>>   net/hsr/hsr_netlink.c                         | 514 ----------------
+>>>   net/hsr/hsr_slave.c                           | 198 ------
+>>>   net/hsr/hsr_slave.h                           |  33 -
+>>>   36 files changed, 3084 insertions(+), 2286 deletions(-)
+>>>   create mode 100644 include/uapi/linux/hsr_prp_netlink.h
+>>>   create mode 100644 net/hsr-prp/Kconfig
+>>>   create mode 100644 net/hsr-prp/Makefile
+>>>   create mode 100644 net/hsr-prp/hsr_netlink.c
+>>>   rename net/{hsr => hsr-prp}/hsr_netlink.h (58%)
+>>>   rename net/{hsr/hsr_debugfs.c => hsr-prp/hsr_prp_debugfs.c} (52%)
+>>>   create mode 100644 net/hsr-prp/hsr_prp_device.c
+>>>   create mode 100644 net/hsr-prp/hsr_prp_device.h
+>>>   create mode 100644 net/hsr-prp/hsr_prp_forward.c
+>>>   rename net/{hsr/hsr_forward.h => hsr-prp/hsr_prp_forward.h} (50%)
+>>>   rename net/{hsr/hsr_framereg.c => hsr-prp/hsr_prp_framereg.c} (56%)
+>>>   create mode 100644 net/hsr-prp/hsr_prp_framereg.h
+>>>   create mode 100644 net/hsr-prp/hsr_prp_main.c
+>>>   create mode 100644 net/hsr-prp/hsr_prp_main.h
+>>>   create mode 100644 net/hsr-prp/hsr_prp_netlink.c
+>>>   create mode 100644 net/hsr-prp/hsr_prp_netlink.h
+>>>   create mode 100644 net/hsr-prp/hsr_prp_slave.c
+>>>   create mode 100644 net/hsr-prp/hsr_prp_slave.h
+>>>   create mode 100644 net/hsr-prp/prp_netlink.c
+>>>   create mode 100644 net/hsr-prp/prp_netlink.h
+>>>   delete mode 100644 net/hsr/Kconfig
+>>>   delete mode 100644 net/hsr/Makefile
+>>>   delete mode 100644 net/hsr/hsr_device.c
+>>>   delete mode 100644 net/hsr/hsr_device.h
+>>>   delete mode 100644 net/hsr/hsr_forward.c
+>>>   delete mode 100644 net/hsr/hsr_framereg.h
+>>>   delete mode 100644 net/hsr/hsr_main.c
+>>>   delete mode 100644 net/hsr/hsr_main.h
+>>>   delete mode 100644 net/hsr/hsr_netlink.c
+>>>   delete mode 100644 net/hsr/hsr_slave.c
+>>>   delete mode 100644 net/hsr/hsr_slave.h
+>>>
+>>> --
+>>> 2.17.1
+>>>
+>>
+>> --
+>> Vinicius
 > 
-> > >
-> > > > When you are offloading the Linux data path to hardware this behavior is
-> > > > not ideal as your hardware can handle much higher packet rates than the
-> > > > CPU.
-> > > >
-> > > > In mlxsw we handle this by tracking the upper devices of the bridge. I
-> > > > was hoping that with Ivan's patches we could add support for unicast
-> > > > filtering in the bridge driver and program the MAC addresses to its FDB
-> > > > with 'local' flag. Then the FDB entries would be notified via switchdev
-> > > > to device drivers.
-> > > >
-> > >
-> > > Yes, it should be possible to do that. I'll try and see how far I get.
-> > >
-> > > > >
-> > > > > Multicast filtering was taken and reworked from Florian Fainelli's
-> > > > > previous attempts, according to my own understanding of multicast
-> > > > > forwarding requirements of an IGMP snooping switch. This is the part
-> > > > > that needs the most extra work, not only in the DSA core but also in
-> > > > > drivers. For this reason, I've left out of this patchset anything that
-> > > > > has to do with driver-level configuration (since the audience is a bit
-> > > > > larger than usual), as I'm trying to focus more on policy for now, and
-> > > > > the series is already pretty huge.
-> > > >
-> > > > From what I remember, this is the logic in the Linux bridge:
-> > > >
-> > > > * Broadcast is always locally received
-> > > > * Multicast is locally received if:
-> > > >         * Snooping disabled
-> > > >         * Snooping enabled:
-> > > >                 * Bridge netdev is mrouter port
-> > > >                 or
-> > > >                 * Matches MDB entry with 'host_joined' indication
-> > > >
-> > > > >
-> > > > > Florian Fainelli (3):
-> > > > >   net: bridge: multicast: propagate br_mc_disabled_update() return
-> > > > >   net: dsa: add ability to program unicast and multicast filters for CPU
-> > > > >     port
-> > > > >   net: dsa: wire up multicast IGMP snooping attribute notification
-> > > > >
-> > > > > Ivan Khoronzhuk (4):
-> > > > >   net: core: dev_addr_lists: add VID to device address
-> > > > >   net: 8021q: vlan_dev: add vid tag to addresses of uc and mc lists
-> > > > >   net: 8021q: vlan_dev: add vid tag for vlan device own address
-> > > > >   ethernet: eth: add default vid len for all ethernet kind devices
-> > > > >
-> > > > > Vladimir Oltean (6):
-> > > > >   net: core: dev_addr_lists: export some raw __hw_addr helpers
-> > > > >   net: dsa: don't use switchdev_notifier_fdb_info in
-> > > > >     dsa_switchdev_event_work
-> > > > >   net: dsa: mroute: don't panic the kernel if called without the prepare
-> > > > >     phase
-> > > > >   net: bridge: add port flags for host flooding
-> > > > >   net: dsa: deal with new flooding port attributes from bridge
-> > > > >   net: dsa: treat switchdev notifications for multicast router connected
-> > > > >     to port
-> > > > >
-> > > > >  include/linux/if_bridge.h |   3 +
-> > > > >  include/linux/if_vlan.h   |   2 +
-> > > > >  include/linux/netdevice.h |  11 ++
-> > > > >  include/net/dsa.h         |  17 +++
-> > > > >  net/8021q/Kconfig         |  12 ++
-> > > > >  net/8021q/vlan.c          |   3 +
-> > > > >  net/8021q/vlan.h          |   2 +
-> > > > >  net/8021q/vlan_core.c     |  25 ++++
-> > > > >  net/8021q/vlan_dev.c      | 102 +++++++++++---
-> > > > >  net/bridge/br_if.c        |  40 ++++++
-> > > > >  net/bridge/br_multicast.c |  21 ++-
-> > > > >  net/bridge/br_switchdev.c |   4 +-
-> > > > >  net/core/dev_addr_lists.c | 144 +++++++++++++++----
-> > > > >  net/dsa/Kconfig           |   1 +
-> > > > >  net/dsa/dsa2.c            |   6 +
-> > > > >  net/dsa/dsa_priv.h        |  27 +++-
-> > > > >  net/dsa/port.c            | 155 ++++++++++++++++----
-> > > > >  net/dsa/slave.c           | 288 +++++++++++++++++++++++++++++++-------
-> > > > >  net/dsa/switch.c          |  36 +++++
-> > > > >  net/ethernet/eth.c        |  12 +-
-> > > > >  20 files changed, 780 insertions(+), 131 deletions(-)
-> > > > >
-> > > > > --
-> > > > > 2.25.1
-> > > > >
-> > >
-> > > Thanks,
-> > > -Vladimir
-> 
+> Thanks,
 > -Vladimir
+> 
+
+-- 
+Murali Karicheri
+Texas Instruments
