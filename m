@@ -2,117 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F91F1E19BF
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 05:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A3F1E19C2
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 05:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388591AbgEZDMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 May 2020 23:12:50 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:37779 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388460AbgEZDMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 May 2020 23:12:50 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49WJtQ6Mthz9sRW;
-        Tue, 26 May 2020 13:12:46 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1590462768;
-        bh=ibjYOJ+mjGcTQ7SK0V45i01JnzyGkUrx46Df39/IMCM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Qt5OhoU57GhRKI5+nV9xTdZiUCDsydy1/brpQKpbkAWDkZmxifs59xK7MWvqHTVUV
-         Uyg5LBXVAmnHMPr+/iZluxJobEjwErOwTO2GftS1zxy8UiiRWQHAyGLArvgFIyXxPI
-         /dX7Bx9ORysmevIB9gH6Kq0HapKaBkO5mKmVbF/lXK7rXD6+CTls/UT9inGJ2k0Zfc
-         et/uiTHbeTA6/cX6CLSjmLnGu1Xz376Lsd+vNsum9vBmlkBTyd7GOqvEZTu0nragW6
-         UkHRmzCIybbZSdjQwLVcaThDSIt/ECzPqnQLzCqz/hlZS8lGTB1d0hCl3DqNoL5erT
-         GGv2IDBwGh3DA==
-Date:   Tue, 26 May 2020 13:12:43 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBl?= =?UTF-8?B?bA==?= 
-        <bjorn.topel@intel.com>
-Subject: linux-next: manual merge of the net-next tree with the bpf tree
-Message-ID: <20200526131243.0915e58c@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hcL6WG8dNvQARE_6wapKFfn";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S2388478AbgEZDP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 May 2020 23:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388460AbgEZDP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 May 2020 23:15:29 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBFEC061A0E
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 20:15:28 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id v1so19088553ybo.23
+        for <netdev@vger.kernel.org>; Mon, 25 May 2020 20:15:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=8agX0shDRmCjP6wxw/PC1aFFve3cAljlU6Cfp1jYFZs=;
+        b=dSrLrbL9UWYLzviE7lM7O7b/npgNvasQfAv0mOh84TjY/IL5UXtSUlONsQw6b+Bf77
+         BDcXKiOyQ2JMqqzLsFKmNHDY+HmOk66nNvCAh9CEx72BroZnJpH/odmuwJGC4QMv+b6K
+         I7Vu6opi2DWcjEy//N74crNDxab72JxqdQK/FxXJ8YV8Gulmu18F2msHqaVTztdFjkpf
+         OehhnimmnQFc16+Nmn1is3LpC4LqStKEboi1ncP5gdKvu4/CQq66jpSOu+2Kpnth78Hb
+         GUZ6uIluLEkGWJdqhBM01hnw7C9y2SYz9fQyHYyGEf4gR3uxcAPYjLp47vv1tnFWjAGs
+         Zk/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=8agX0shDRmCjP6wxw/PC1aFFve3cAljlU6Cfp1jYFZs=;
+        b=h+bs6nQz1o/RwUWfSDZW2thx3okq4UnGlx0xuSQSkvOVOA2q1iWWJbXZs6K78muDns
+         580Rffc7DdPxcZNyNAsHw9CeXQknzjDJitrG/tjy3Mm0WfZgGT207wL6XPfbKgjL9rwX
+         2jjjljyya1qQ300Wzxkjc2KwazeJLuUgFRgdiJZoSL8F5CBBNnayP6VWN2amsJ/1u8Bu
+         fnvvZ5JLC75UVRjLQPSM7yF5kY9lu6KEilN5pGOqLfHjnI9VvFaSFtUHr5zNlbmyvUuI
+         qJscq837rq1gMrO6MdUpxrCxcezvyEGpxCRwSqPrz+PpySdyRxup0odYxliePd4bHTiD
+         /K9Q==
+X-Gm-Message-State: AOAM533fIlk3yumRwEGZbHz6hMyJZXx1rUzebM9/j54Nn9xqVIor3t2d
+        6KPNm6Qjrkhmz4192tan62TbWpBseISfqA==
+X-Google-Smtp-Source: ABdhPJxbRy3kikkUfLjjSyH2b5HpMAtqNtBUmYf59AwbjFsFztIWqRzEph4pXsw3MOWsCW77jEfo04aSJyTGAQ==
+X-Received: by 2002:a25:f507:: with SMTP id a7mr48307235ybe.176.1590462927392;
+ Mon, 25 May 2020 20:15:27 -0700 (PDT)
+Date:   Mon, 25 May 2020 20:15:24 -0700
+Message-Id: <20200526031524.72257-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
+Subject: [PATCH net-next] tcp: tcp_v4_err() icmp skb is named icmp_skb
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/hcL6WG8dNvQARE_6wapKFfn
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+I missed the fact that tcp_v4_err() differs from tcp_v6_err().
 
-Hi all,
+After commit 4d1a2d9ec1c1 ("Rename skb to icmp_skb in tcp_v4_err()")
+the skb argument has been renamed to icmp_skb only in one function.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+I will in a future patch reconciliate these functions to avoid
+this kind of confusion.
 
-  net/xdp/xdp_umem.c
+Fixes: 45af29ca761c ("tcp: allow traceroute -Mtcp for unpriv users")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv4/tcp_ipv4.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-between commit:
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 900c6d154cbcf04fb09d71f1445d0723bcf3c409..6789671f0f5a02aa760e12d7b4282b620b4e928f 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -573,7 +573,7 @@ int tcp_v4_err(struct sk_buff *icmp_skb, u32 info)
+ 		if (fastopen && !fastopen->sk)
+ 			break;
+ 
+-		ip_icmp_error(sk, skb, err, th->dest, info, (u8 *)th);
++		ip_icmp_error(sk, icmp_skb, err, th->dest, info, (u8 *)th);
+ 
+ 		if (!sock_owned_by_user(sk)) {
+ 			sk->sk_err = err;
+-- 
+2.27.0.rc0.183.gde8f92d652-goog
 
-  b16a87d0aef7 ("xsk: Add overflow check for u64 division, stored into u32")
-
-from the bpf tree and commit:
-
-  2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/xdp/xdp_umem.c
-index 3889bd9aec46,19e59d1a5e9f..000000000000
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@@ -389,13 -349,10 +353,10 @@@ static int xdp_umem_reg(struct xdp_ume
-  	if (headroom >=3D chunk_size - XDP_PACKET_HEADROOM)
-  		return -EINVAL;
- =20
-- 	umem->address =3D (unsigned long)addr;
-- 	umem->chunk_mask =3D unaligned_chunks ? XSK_UNALIGNED_BUF_ADDR_MASK
-- 					    : ~((u64)chunk_size - 1);
-  	umem->size =3D size;
-  	umem->headroom =3D headroom;
-- 	umem->chunk_size_nohr =3D chunk_size - headroom;
-+ 	umem->chunk_size =3D chunk_size;
- -	umem->npgs =3D size / PAGE_SIZE;
- +	umem->npgs =3D (u32)npgs;
-  	umem->pgs =3D NULL;
-  	umem->user =3D NULL;
-  	umem->flags =3D mr->flags;
-
---Sig_/hcL6WG8dNvQARE_6wapKFfn
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7MiSsACgkQAVBC80lX
-0GzFOgf8DouWICsguEs8Ast+8L7nS6YDM+TWtX6ZH+95i3RHscLa0clIZ3dcBqoq
-YwPG6GVT5/8buiMD+GvcJfoyssMsSMcy2L81QEs/OJDnI225g/i7IE7HnAXNQOAD
-0C+D8lfzCcl8vdjp2EJ5VMHsqxzhEzc0dsma3gmH2wDaBfir/O6ZiXQaT1I4BuB1
-9zZs9KdM+A5JfKGZkAG26JTUFXyqcTXlURVv5E+bqiUftlxJnX9vUQ7K4KS7kJPt
-Fg/oR8kayjBCZjxWaWO4rBFYx4Nt9uvwTRGooT2EPkvNrqWgy9i3AJqCT4ULD5LT
-Ah9TZlb1tz2I8SHxSfphISmXK9hofQ==
-=v5to
------END PGP SIGNATURE-----
-
---Sig_/hcL6WG8dNvQARE_6wapKFfn--
