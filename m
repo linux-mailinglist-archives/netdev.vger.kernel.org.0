@@ -2,136 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9C91E26E7
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5245A1E271B
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:34:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729123AbgEZQ06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 12:26:58 -0400
-Received: from mail-eopbgr70105.outbound.protection.outlook.com ([40.107.7.105]:28259
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726282AbgEZQ05 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 12:26:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bT6MIKNfoT0VfJ/nniB0VlG3al6dzMnev5sx3QqvmsY9+gzyYvqqbFo9J69/3rvix70PQLrx6WtkAq596CrxAf1oLqroCDC2Gf/sZTT8NqEchcgU0VxrLKuQDtiu3cQsARCMIEATHfchmqZtP8AQwiNg6HIRP/YO5cFHWIU/n8TBEJNJ0vfpbY/sdIQ/VkH/janN21Nbb29bWwcpvGOK2hylVZVKRLdpj7ak5Pm/DVfr1TkZwyOXpldcYzm99iJAZ3G8V+XrbR9R058+PC+xnQD4EI476lM8V9llhDjo5jUhWjnJ+6UfMT6ARUfM/IMWZL+9CbCeeTNcRjPkuWc+og==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EqaTJd/4h8LPF41NTuH+5LpQ0UNjZNLcjrp4V2ueno0=;
- b=mYruujUmMMYqdZpkQpmgGzu4tvOqVdTROPXeaSzsPTdY1OQ4pDrvcFhbFvIyIcSi6CM2r1jFrOJ/XcgOts6ZwNovWC3RELlLpbdcamJHbRPcvJ98e7w+vEEhnlN1Qfm8KashIJ+bA3AOyFPyM1yRflhB8yoEie1eakOlrBlT44KYOqSvhr8JinJba7w3J360YZ9DLfTlWMrFKFW9y56U6zlrOA0qUbY2pbM8GqU6w2H73sofe76dpbB1+d/ZeXcyATUNTlpLTX8ljK09k6+Uh5L0l0OeVgU3YMZhR4LkWNDb4r0EdbbPe85/DmU+GC4cE7vRGnkZWQoZ6hd02Rj64w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EqaTJd/4h8LPF41NTuH+5LpQ0UNjZNLcjrp4V2ueno0=;
- b=wrJHFfzGPEiQxsXxvmKVzAraM+/r/5Kd9XGgnBgRNr38hrtaxJI09MwpIHfQ5DczKcttvtFbJJuv09Oln2z67xnII/d7A/ZuSQ98Une7eYRqbdRI5QlyDge1sGk/Cf/koxgWdcdDmOh36O7qvl485SY8a6qmb8mNP9mTm4JNW+I=
-Authentication-Results: resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
- by VI1P190MB0528.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Tue, 26 May
- 2020 16:26:53 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::8149:8652:3746:574f]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::8149:8652:3746:574f%7]) with mapi id 15.20.3021.029; Tue, 26 May 2020
- 16:26:53 +0000
-Date:   Tue, 26 May 2020 19:26:44 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
- support
-Message-ID: <20200526162644.GA32356@plvision.eu>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-3-vadym.kochan@plvision.eu>
- <20200511112346.GG2245@nanopsycho>
+        id S1728570AbgEZQdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 12:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728339AbgEZQdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:33:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03098C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 09:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=qVkBQgAFIZOykC7HbI4BSicA+egFu//ByWvBBkbTvGA=; b=O196D2c7iR2HIK02rwpDeyPnM
+        DZ9NxTrQIrQPgfDAxsUhM/4iVnz85KD87ORko0O6WAaD9eOnaZdGcYj59Wbmx/9CFFsnjGZYgcFCS
+        VWHi0Yt3fRDBGGcE0nTBH6yN4s0k0BDIHgQVOMzJzL2BGJwRmqGWz6VHYrs0Dvq3LOwqavHUIPbdf
+        w+cuSIJRhoHb2OiIzq1Ioj8QaQgWalMWUECt75VDHzMESNY0Ga9E6wLouJ+9MzEtWZMm6m25v85P6
+        D98ZJEL9JS9K0z/tRjdW3d16Z22BPtZuzdj35PrGAL0HsFE8cXYRy2L004wpdNbjcAuUONSlCnIPa
+        wcdW/S7YA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:34858)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jdcWB-0008KJ-Sh; Tue, 26 May 2020 17:33:32 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jdcW9-0005XK-Tb; Tue, 26 May 2020 17:33:29 +0100
+Date:   Tue, 26 May 2020 17:33:29 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC 5/7] net: phy: set devices_in_package only after
+ validation
+Message-ID: <20200526163329.GE1605@shell.armlinux.org.uk>
+References: <20200526142948.GY1551@shell.armlinux.org.uk>
+ <E1jdabx-0005sh-T7@rmk-PC.armlinux.org.uk>
+ <758bd1ef-e7f8-f746-af76-b54c14dd5af2@arm.com>
+ <20200526155028.GF1551@shell.armlinux.org.uk>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200511112346.GG2245@nanopsycho>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: AM6PR0202CA0068.eurprd02.prod.outlook.com
- (2603:10a6:20b:3a::45) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM6PR0202CA0068.eurprd02.prod.outlook.com (2603:10a6:20b:3a::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend Transport; Tue, 26 May 2020 16:26:51 +0000
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3f0974cd-f241-4fd5-19ce-08d801919961
-X-MS-TrafficTypeDiagnostic: VI1P190MB0528:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1P190MB0528FA1EEA202BBA97DF469595B00@VI1P190MB0528.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
-X-Forefront-PRVS: 041517DFAB
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LgL7ZEk5ieu0x7ElVuHyhOHEmI1anld1hvU6JTsa6qk9JsYW6fBVbcM10WIDL5yUrVec9QGMaj/56AjqVasF8JgLBnB2Bx7Tr6WlVBxKuhNOHy0KHBKiVkapioJ8l3CZzABxXZp3LVOTjpCPlJz0mrI5wxuZVz/V/t/Te4JZBWipQWIyU1m/UrLPtzicRQl+N9fJfA+/7CNjO4MNUNJRY2rRy873g2xcBprQd3olR91YtSrqXYgyfUZdVyUlNWVZW7JdO6mnwLRQyw88F/yp/R/R4S8mb7uK584FiXV9a7wBQJLNnV+nC7AQn5qpTMpk+fhhQGZKOQPXDrwKTzj67Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(346002)(136003)(376002)(39830400003)(396003)(366004)(26005)(8936002)(2906002)(5660300002)(4326008)(54906003)(8886007)(316002)(7696005)(52116002)(956004)(2616005)(36756003)(66476007)(508600001)(4744005)(66556008)(44832011)(55016002)(33656002)(8676002)(6666004)(186003)(1076003)(16526019)(6916009)(66946007)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: b+fg0MVE73ej37oFmKzc83POTdAuMnEMdvMLXznMtdvFFSwOCKjC655ABRs/YtcZPgtkS7XWMwwYwU/expsvJxtrXUG6OWL7Gel4Gas25QGx94b/cvAXhBBfovQ3+Ryly4zW2EFG3MrROh3K9QUvcIFy0Hd85yOXcjQfYZvgqwDEf1BDEipRx+OKeVaYKsrCd8JYXBoshiESfo0CZnumA2MFHzzmRBguEwOojuKZ+S3i8bDdt6jm9d8eXes2/IUjuueEl3lrZlR0y0w2IvLmqBNPXBMgXFGyJzTxKwq3je+Xb8Gsc8DRSyk2ysq7nDW8D48R4Vn66+J0VvEzunnkjGvovfQu3KdgF9AWfla+MdhFP/ZxDTCGr4e1AwF1JbzLITcxk6YN//s60Bl6vaO0rhAVRU82utxdRYe+0FjtCz8NL4+OKSpB0wH5PV7gfZiniUZb2sWqvbh4YOuBSGWCB7oTbulHhosEKFFIPNFkGlnP42PeY6v3fo96YFNnTR06
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f0974cd-f241-4fd5-19ce-08d801919961
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2020 16:26:53.2106
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2i3PAtwUxXBAe1pbB+JAxX4evlB5RMhsycDNMTep0lVzCWBcc3FXhKn7eRrDcZMGpRF4He25EFjgFJVjG+/WtKx9UE0lPBScZWVSPj5TP9Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0528
+In-Reply-To: <20200526155028.GF1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 01:23:46PM +0200, Jiri Pirko wrote:
-> Fri, May 01, 2020 at 01:20:49AM CEST, vadym.kochan@plvision.eu wrote:
-> >Add PCI interface driver for Prestera Switch ASICs family devices, which
-> >provides:
+On Tue, May 26, 2020 at 04:50:28PM +0100, Russell King - ARM Linux admin wrote:
+> On Tue, May 26, 2020 at 10:39:49AM -0500, Jeremy Linton wrote:
+> > Hi,
+> > 
+> > On 5/26/20 9:31 AM, Russell King wrote:
+> > > Only set the devices_in_package to a non-zero value if we find a valid
+> > > value for this field, so we avoid leaving it set to e.g. 0x1fffffff.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >   drivers/net/phy/phy_device.c | 17 ++++++++++-------
+> > >   1 file changed, 10 insertions(+), 7 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > > index fa9164ac0f3d..a483d79cfc87 100644
+> > > --- a/drivers/net/phy/phy_device.c
+> > > +++ b/drivers/net/phy/phy_device.c
+> > > @@ -730,13 +730,13 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > >   			   struct phy_c45_device_ids *c45_ids)
+> > >   {
+> > >   	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
+> > > -	u32 *devs = &c45_ids->devices_in_package;
+> > > +	u32 devs_in_pkg = 0;
+> > >   	int i, ret, phy_reg;
+> > >   	/* Find first non-zero Devices In package. Device zero is reserved
+> > >   	 * for 802.3 c45 complied PHYs, so don't probe it at first.
+> > >   	 */
+> > > -	for (i = 1; i < MDIO_MMD_NUM && *devs == 0; i++) {
+> > > +	for (i = 1; i < MDIO_MMD_NUM && devs_in_pkg == 0; i++) {
+> > >   		if (i >= 8) {
+> > >   			/* Only probe for the devices-in-package if there
+> > >   			 * is a PHY reporting as present here; this avoids
+> > > @@ -750,22 +750,22 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > >   			if (!ret)
+> > >   				continue;
+> > >   		}
+> > > -		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, i, devs);
+> > > +		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, i, &devs_in_pkg);
+> > >   		if (phy_reg < 0)
+> > >   			return -EIO;
+> > >   	}
+> > > -	if ((*devs & 0x1fffffff) == 0x1fffffff) {
+> > > +	if ((devs_in_pkg & 0x1fffffff) == 0x1fffffff) {
+> > >   		/* If mostly Fs, there is no device there, then let's probe
+> > >   		 * MMD 0, as some 10G PHYs have zero Devices In package,
+> > >   		 * e.g. Cortina CS4315/CS4340 PHY.
+> > >   		 */
+> > > -		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, 0, devs);
+> > > +		phy_reg = get_phy_c45_devs_in_pkg(bus, addr, 0, &devs_in_pkg);
+> > >   		if (phy_reg < 0)
+> > >   			return -EIO;
+> > >   		/* no device there, let's get out of here */
+> > > -		if ((*devs & 0x1fffffff) == 0x1fffffff) {
+> > > +		if ((devs_in_pkg & 0x1fffffff) == 0x1fffffff) {
+> > >   			*phy_id = 0xffffffff;
+> > >   			return 0;
+> > >   		}
+> > > @@ -773,7 +773,7 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > >   	/* Now probe Device Identifiers for each device present. */
+> > >   	for (i = 1; i < num_ids; i++) {
+> > > -		if (!(c45_ids->devices_in_package & (1 << i)))
+> > > +		if (!(devs_in_pkg & (1 << i)))
+> > >   			continue;
+> > >   		phy_reg = mdiobus_c45_read(bus, addr, i, MII_PHYSID1);
+> > > @@ -786,6 +786,9 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
+> > >   			return -EIO;
+> > >   		c45_ids->device_ids[i] |= phy_reg;
+> > >   	}
+> > > +
+> > > +	c45_ids->devices_in_package = devs_in_pkg;
+> > > +
+> > >   	*phy_id = 0;
+> > >   	return 0;
+> > >   }
+> > > 
+> > 
+> > You have solved the case of 0xFFFFFFFFF devices in package, but It looks
+> > like the case of devs in package = 0  still gets a successful return from
+> > this path. Which can still create phys with phy_id=0 and 0 MMDs AFAIK.
+> 
+> Correct - I'm not looking to change the behaviour in this patch
+> beyond the intended change of ensuring that c45_ids->devices_in_package
+> remains untouched until we intend to return successfully.
+> 
+> The zero MMDs issue is an entirely orthogonal problem not addressed
+> in this series.
 
-[...]
-> 
-> This looks very specific. Is is related to 0xC804?
-> 
-Sorry, I missed this question. But I am not sure I got it.
+Please note that this problem has existed back to the original addition
+of clause 45 support in this commit:
 
-> 
-> >+	.id_table = prestera_pci_devices,
-> >+	.probe    = prestera_pci_probe,
-> >+	.remove   = prestera_pci_remove,
-> >+};
-> >+
-> >+static int __init prestera_pci_init(void)
-> >+{
-> >+	return pci_register_driver(&prestera_pci_driver);
-> >+}
-> >+
-> >+static void __exit prestera_pci_exit(void)
-> >+{
-> >+	pci_unregister_driver(&prestera_pci_driver);
-> >+}
-> >+
-> >+module_init(prestera_pci_init);
-> >+module_exit(prestera_pci_exit);
-> >+
-> >+MODULE_AUTHOR("Marvell Semi.");
-> 
-> Author is you, not a company.
-> 
-> 
-> >+MODULE_LICENSE("Dual BSD/GPL");
-> >+MODULE_DESCRIPTION("Marvell Prestera switch PCI interface");
-> >-- 
-> >2.17.1
-> >
+commit ac28b9f8cd66d6bc54f8063df59e99abd62173a4
+Author: David Daney <david.daney@cavium.com>
+Date:   Wed Jun 27 07:33:35 2012 +0000
+
+I think it only becomes a problem when we start autoprobing clause 45
+PHYs.
+
+The scanning in __mdiobus_register() does not support locating a
+clause 45 PHY - it only issues clause 22 cycles.  If you are lucky
+enough to have a clause 45 PHY that responds to clause 22 cycles,
+then the PHY device will be created using the information in the
+clause 22 registers.  get_phy_device() is called with is_c45 false.
+Hence, the path above will not be used.
+
+The only way for a clause 45 PHY to be created is explicitly via
+some method - either through DT declaring a C45 PHY, or via a driver
+calling get_phy_device() with is_c45 true.  There are two ethernet
+drivers which do this in drivers/net, using explicit addresses
+rather than autoprobing.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
