@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 221A81E2070
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 13:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE96C1E2081
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 13:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388968AbgEZLEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 07:04:30 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48229 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388858AbgEZLE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 07:04:27 -0400
+        id S2389061AbgEZLE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 07:04:59 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52000 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388953AbgEZLEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 07:04:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590491065;
+        s=mimecast20190719; t=1590491086;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xIB7OS97s2nZ+MWLVT+97VqO3rsy+o4p/6eLpkkCoU4=;
-        b=S2G0oL9zwlclxVOlxETk3UdyHxcpgFxaVngQrud6wSu3cWiz8Qo8iKH+DAFjiOM0dQu4nU
-        tMUgp6AKSHTFBliYLBIkLnbOwU3ldwhiTRHDEjLqLDIELUisI3lQ6k7mLqBOHL4gFFQHyK
-        QwZrA9Qvol3OXIPeDWopQ30lKI2FMBo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-274-EQM_ruCHOgKF5KRX8eIObQ-1; Tue, 26 May 2020 07:04:23 -0400
-X-MC-Unique: EQM_ruCHOgKF5KRX8eIObQ-1
-Received: by mail-wm1-f72.google.com with SMTP id g194so956540wmg.0
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 04:04:23 -0700 (PDT)
+        bh=5O6wmB+OtEgOpdTgMhwmvMej/HndgSjcssxfpqUYQvo=;
+        b=CDAPYAXx8VjJzCPRfvfkZOaH0Adt1owKDq7K9reCkr2w/r6y2r8kim2HhRg/RcGLrAEYJz
+        bQPCjD1yBCUvvqXIQpCbrdwYwFEwjT/NAtvP5VoWBxB+ZRvcLGfVBkUBT+LjcG6Yq8CCQR
+        +4vQFFEOO7R/jgErBsof9Q6KTagCOCc=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-95-0dsxdid-Pg2H2dcfxtj-gw-1; Tue, 26 May 2020 07:04:44 -0400
+X-MC-Unique: 0dsxdid-Pg2H2dcfxtj-gw-1
+Received: by mail-wm1-f69.google.com with SMTP id s15so704873wmc.8
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 04:04:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xIB7OS97s2nZ+MWLVT+97VqO3rsy+o4p/6eLpkkCoU4=;
-        b=VICWb3ZbvM9C5Q4xQ/TPy2LTbSaYYus38/olmnz8KPppG78xoPwoVnmW0N827A4jHa
-         p1jqpwPsldr2YMQ5T9YpbNYbNbRfOkHo7f6v2leBfPK5vZaD2g7cVjCkJrb4Y56j8d4x
-         xPnaSHO9uIoOGRl+HRiPQ6KQTv0021zPZW78bTY45H1Ep0C3H1m1TXK+4prNsYsu6QyH
-         5TKiUmUPyJ3tuK2ZwHbI+iUvLowy2Yl7Su44yw155gGvUXnepV8Gss/pU/mFeasUPOnr
-         XJhWmfqim/wS9W9Af7XVISL++5N+QePG36mmEpGhmpbsj0Jknmjl3vViKRgaLhVxkU9+
-         B8dw==
-X-Gm-Message-State: AOAM533XTJk90zAJmWz11QTOb9/7R9wqKLo7u4Gw29pPKY8ndV/PT/+r
-        tLImchk2oFfdtkGjvBwJX/mZy74y4lvKtM7aQoOtAMhp9DABI5hyja9b7NNCP89vGvHbXGOstuJ
-        i1qxyxrAYhqh9vOMz
-X-Received: by 2002:adf:f907:: with SMTP id b7mr20031444wrr.203.1590491062074;
-        Tue, 26 May 2020 04:04:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzNw+hbSCOnwHhQ8PSLX7KyYKugJu8XcdkmlAYSig3h7ARIiT+NtvA9gyUHdwlenr+GkL4fBw==
-X-Received: by 2002:adf:f907:: with SMTP id b7mr20031416wrr.203.1590491061680;
-        Tue, 26 May 2020 04:04:21 -0700 (PDT)
+        bh=5O6wmB+OtEgOpdTgMhwmvMej/HndgSjcssxfpqUYQvo=;
+        b=ePYwNLjCc+IQucKIGE8BfVBtYYm3fqt+UeAyJj5x3RZ3OmqnGhQn6EJ0wUZGSdoV3K
+         tGg+hFrWSxftuDT32aCraJ1Qxc8UZoHKlIs7GTCc8THEc47M8TG/80Pa4jHrvf+9G21H
+         Wx0XcyQEAERHBS7l1jfG1yOQrxb9vKh7RQB/TwMqPnjVgkBdm4OuLKLxmyRfraACH/Sq
+         7o3Rv2mn3auyzaxH+JDf3YVK2soNvjGqcNXnIF9fyB9ujc9H2c33TQGsUfpBheotDtDI
+         IMff3BUSqggujxmnspKTzxjsvPeeCriOhnyjKhNhrccjBrRprQtoamno08CyRWG8W8+N
+         n37A==
+X-Gm-Message-State: AOAM533cohdlhmn8y4C8tXRrBwmZi62MAG1gd77supDPgNpzlN7dXm8t
+        1xZfcWSiEpojqZatbknRDe4Xh1hX/wivV3vCQ30XPKzPMEkwDeXSAQyKmtrrwLjxhh0nID8QmrL
+        CdqyM/COcmpCfUvTv
+X-Received: by 2002:a1c:c2c5:: with SMTP id s188mr923808wmf.18.1590491082938;
+        Tue, 26 May 2020 04:04:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz5nQZudivZ6Pr1hFC05FMBitfCfMfBgLsi4yLshtoZEJ/TmA0F8Yn3yi1E4u4AmyKLDArSrw==
+X-Received: by 2002:a1c:c2c5:: with SMTP id s188mr923747wmf.18.1590491082186;
+        Tue, 26 May 2020 04:04:42 -0700 (PDT)
 Received: from localhost.localdomain.com ([194.230.155.118])
-        by smtp.gmail.com with ESMTPSA id d6sm22928240wrj.90.2020.05.26.04.03.50
+        by smtp.gmail.com with ESMTPSA id d6sm22928240wrj.90.2020.05.26.04.04.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 04:03:52 -0700 (PDT)
+        Tue, 26 May 2020 04:04:30 -0700 (PDT)
 From:   Emanuele Giuseppe Esposito <eesposit@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
@@ -64,9 +64,9 @@ Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
         linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
         Emanuele Giuseppe Esposito <eesposit@redhat.com>
-Subject: [PATCH v3 2/7] documentation for stats_fs
-Date:   Tue, 26 May 2020 13:03:12 +0200
-Message-Id: <20200526110318.69006-3-eesposit@redhat.com>
+Subject: [PATCH v3 3/7] kunit: tests for stats_fs API
+Date:   Tue, 26 May 2020 13:03:13 +0200
+Message-Id: <20200526110318.69006-4-eesposit@redhat.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200526110318.69006-1-eesposit@redhat.com>
 References: <20200526110318.69006-1-eesposit@redhat.com>
@@ -77,257 +77,1156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Html docs for a complete documentation of the stats_fs API,
-filesystem and usage.
+Add kunit tests to extensively test the stats_fs API functionality.
+
+In order to run them, the kernel .config must set CONFIG_KUNIT=y
+and a new .kunitconfig file must be created with CONFIG_STATS_FS=y
+and CONFIG_STATS_FS_TEST=y
+
+Tests can be then started by running the following command from the root
+directory of the linux kernel source tree:
+./tools/testing/kunit/kunit.py run --timeout=30 --jobs=`nproc --all`
 
 Signed-off-by: Emanuele Giuseppe Esposito <eesposit@redhat.com>
 ---
- Documentation/filesystems/index.rst    |   1 +
- Documentation/filesystems/stats_fs.rst | 222 +++++++++++++++++++++++++
- 2 files changed, 223 insertions(+)
- create mode 100644 Documentation/filesystems/stats_fs.rst
+ fs/Kconfig                   |    6 +
+ fs/stats_fs/Makefile         |    2 +
+ fs/stats_fs/stats_fs-tests.c | 1097 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 1105 insertions(+)
+ create mode 100644 fs/stats_fs/stats_fs-tests.c
 
-diff --git a/Documentation/filesystems/index.rst b/Documentation/filesystems/index.rst
-index e7b46dac7079..9a46fd851c6e 100644
---- a/Documentation/filesystems/index.rst
-+++ b/Documentation/filesystems/index.rst
-@@ -89,6 +89,7 @@ Documentation for filesystem implementations.
-    relay
-    romfs
-    squashfs
-+   stats_fs
-    sysfs
-    sysv-fs
-    tmpfs
-diff --git a/Documentation/filesystems/stats_fs.rst b/Documentation/filesystems/stats_fs.rst
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 684ad61129ab..02bbb0e4cdf7 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -227,6 +227,12 @@ config STATS_FS
+ 	  stats_fs is a virtual file system that provides counters and
+ 	  other statistics about the running kernel.
+ 
++config STATS_FS_TEST
++	bool "Tests for stats_fs"
++	depends on STATS_FS && KUNIT
++	help
++	  tests for the stats_fs API.
++
+ config STATS_FS_API
+ 	bool
+ 	imply STATS_FS
+diff --git a/fs/stats_fs/Makefile b/fs/stats_fs/Makefile
+index bd988daa4c39..bc59a54d5721 100644
+--- a/fs/stats_fs/Makefile
++++ b/fs/stats_fs/Makefile
+@@ -1,5 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ stats_fs-objs	:= stats_fs.o
++stats_fs-tests-objs	:= stats_fs-tests.o
+ 
+ obj-$(CONFIG_STATS_FS)	    += stats_fs.o
+ obj-$(CONFIG_STATS_FS_STUB) += stub.o
++obj-$(CONFIG_STATS_FS_TEST) += stats_fs-tests.o
+diff --git a/fs/stats_fs/stats_fs-tests.c b/fs/stats_fs/stats_fs-tests.c
 new file mode 100644
-index 000000000000..292c689ffb98
+index 000000000000..bbac133d7fe7
 --- /dev/null
-+++ b/Documentation/filesystems/stats_fs.rst
-@@ -0,0 +1,222 @@
-+========
-+Stats_FS
-+========
++++ b/fs/stats_fs/stats_fs-tests.c
+@@ -0,0 +1,1097 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/module.h>
++#include <linux/errno.h>
++#include <linux/file.h>
++#include <linux/fs.h>
++#include <linux/slab.h>
++#include <linux/anon_inodes.h>
++#include <linux/spinlock.h>
++#include <linux/uaccess.h>
++#include <linux/rwsem.h>
++#include <linux/list.h>
++#include <linux/kref.h>
 +
-+Stats_fs is a synthetic ram-based virtual filesystem that takes care of
-+gathering and displaying statistics for the Linux kernel subsystems.
++#include <linux/limits.h>
++#include <linux/stats_fs.h>
++#include <kunit/test.h>
++#include "internal.h"
 +
-+The motivation for stats_fs comes from the fact that there is no common
-+way for Linux kernel subsystems to expose statistics to userspace shared
-+throughout the Linux kernel; subsystems have to take care of gathering and
-+displaying statistics by themselves, for example in the form of files in
-+debugfs.
++#define STATS_FS_STAT(el, x, ...)                                              \
++	{                                                                      \
++		.name = #x, .offset = offsetof(struct container, el.x),        \
++		##__VA_ARGS__                                                  \
++	}
 +
-+Allowing each subsystem of the kernel to do so has two disadvantages.
-+First, it will introduce redundant code. Second, debugfs is anyway not the
-+right place for statistics (for example it is affected by lockdown).
++#define ARR_SIZE(el) ((int)(sizeof(el) / sizeof(struct stats_fs_value) - 1))
 +
-+Stats_fs offers a generic and stable API, allowing any kind of
-+directory/file organization and supporting multiple kind of aggregations
-+(not only sum, but also average, max, min and count_zero) and data types
-+(boolean, all unsigned/signed and custom types). The implementation takes
-+care of gathering and displaying information at run time; users only need
-+to specify the values to be included in each source. Optionally, users can
-+also provide a display function for each value, that will take care of
-+displaying the provided value in a custom format.
++struct test_values_struct {
++	uint64_t u64;
++	int32_t s32;
++	bool bo;
++	uint8_t u8;
++	int16_t s16;
++};
 +
-+Its main function is to display each statistics as a file in the desired
-+folder hierarchy defined through the API. Stats_fs files can be read, and
-+possibly cleared if their file mode allows it.
++struct container {
++	struct test_values_struct vals;
++};
 +
-+Stats_fs is typically mounted with a command like::
++struct stats_fs_value test_values[6] = {
++	STATS_FS_STAT(vals, u64, .type = &stats_fs_type_u64,
++		      .aggr_kind = STATS_FS_NONE,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, s32, .type = &stats_fs_type_s32,
++		      .aggr_kind = STATS_FS_NONE),
++	STATS_FS_STAT(vals, bo, .type = &stats_fs_type_bool,
++		      .aggr_kind = STATS_FS_NONE,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, u8, .type = &stats_fs_type_u8,
++		      .aggr_kind = STATS_FS_NONE),
++	STATS_FS_STAT(vals, s16, .type = &stats_fs_type_s16,
++		      .aggr_kind = STATS_FS_NONE,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	{ NULL },
++};
 +
-+    mount -t stats_fs stats_fs /sys/kernel/stats_fs
++struct stats_fs_value test_aggr[4] = {
++	STATS_FS_STAT(vals, s32, .type = &stats_fs_type_s32,
++		      .aggr_kind = STATS_FS_MIN,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, bo, .type = &stats_fs_type_bool,
++		      .aggr_kind = STATS_FS_MAX,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, u64, .type = &stats_fs_type_u64,
++		      .aggr_kind = STATS_FS_SUM,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	{ NULL },
++};
 +
-+(Or an equivalent /etc/fstab line).
++struct stats_fs_value test_same_name[3] = {
++	STATS_FS_STAT(vals, s32, .type = &stats_fs_type_s32,
++		      .aggr_kind = STATS_FS_NONE),
++	STATS_FS_STAT(vals, s32, .type = &stats_fs_type_s32,
++		      .aggr_kind = STATS_FS_MIN),
++	{ NULL },
++};
 +
-+Stats_fs has two main components: the public API defined by
-+include/linux/stats_fs.h, and the virtual file system in
-+/sys/kernel/stats.
++struct stats_fs_value test_all_aggr[6] = {
++	STATS_FS_STAT(vals, s32, .type = &stats_fs_type_s32,
++		      .aggr_kind = STATS_FS_MIN),
++	STATS_FS_STAT(vals, bo, .type = &stats_fs_type_bool,
++		      .aggr_kind = STATS_FS_COUNT_ZERO,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, u64, .type = &stats_fs_type_u64,
++		      .aggr_kind = STATS_FS_SUM),
++	STATS_FS_STAT(vals, u8, .type = &stats_fs_type_u8,
++		      .aggr_kind = STATS_FS_AVG,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	STATS_FS_STAT(vals, s16, .type = &stats_fs_type_s16,
++		      .aggr_kind = STATS_FS_MAX,
++		      .value_flag = STATS_FS_FLOATING_VALUE),
++	{ NULL },
++};
 +
-+The API has two main elements, values and sources. Kernel
-+subsystems will create a source, add child
-+sources/values/aggregates and register it to the root source (that on the
-+virtual fs would be /sys/kernel/stats).
++#define def_u64 ((uint64_t)64)
 +
-+The stats_fs API is defined in ``<linux/stats_fs.h>``.
++#define def_val_s32 ((int32_t)S32_MIN)
++#define def_val_bool ((bool)true)
++#define def_val_u8 ((uint8_t)127)
++#define def_val_s16 ((int16_t)10000)
 +
-+    Sources
-+        Sources are created via ``stats_fs_source_create()``, and each
-+        source becomes a directory in the file system. Sources form a
-+        parent-child relationship; root sources are added to the file
-+        system via ``stats_fs_source_register()``. Therefore each Linux
-+        subsystem will add its own entry to the root, filesystem similar
-+        to what it is done in debugfs. Every other source is added to or
-+        removed from a parent through the
-+        ``stats_fs_source_add_subordinate()`` and
-+        ``stats_fs_source_remove_subordinate()`` APIs. Once a source is
-+        created and added to the tree (via add_subordinate), it will be
-+        used to compute aggregate values in the parent source. A source
-+        can optionally be hidden from the filesystem but still considered
-+        in the aggregation operations if the corresponding flag is set
-+        during initialization.
++#define def_val2_s32 ((int32_t)S16_MAX)
++#define def_val2_bool ((bool)false)
++#define def_val2_u8 ((uint8_t)255)
++#define def_val2_s16 ((int16_t)-20000)
 +
-+    Values
-+        Values represent quantites that are gathered by the stats_fs user.
-+        Examples of values include the number of vm exits of a given kind,
-+        the amount of memory used by some data structure, the length of
-+        the longest hash table chain, or anything like that. Values are
-+        defined with the stats_fs_source_add_values function. Each value
-+        is defined by a ``struct stats_fs_value``; the same
-+        ``stats_fs_value`` can be added to many different sources. A value
-+        can be considered "simple" if it fetches data from a user-provided
-+        location, or "aggregate" if it groups all values in the
-+        subordinate sources that include the same ``stats_fs_value``.
-+        Values by default are considered to be cumulative, meaning the
-+        value they represent never decreases, but can also be defined as
-+        floating if they exibith a different behavior. The main difference
-+        between these two is reflected into the file permission, since a
-+        floating value file does not allow the user to clear it. Each
-+        value has a ``stats_fs_type`` pointer in order to allow the user
-+        to provide custom get and clear functions. The library, however,
-+        also exports default ``stats_fs_type`` structs for the standard
-+        types (all unsigned and signed types plus boolean). A value can
-+        also provide a show function that takes care of displaying the
-+        value in a custom string format. This can be especially useful
-+        when displaying enums.
++struct container cont = {
++	.vals = {
++			.u64 = def_u64,
++			.s32 = def_val_s32,
++			.bo = def_val_bool,
++			.u8 = def_val_u8,
++			.s16 = def_val_s16,
++		},
++};
 +
-+Because stats_fs is a different mountpoint than debugfs, it is not affected
-+by security lockdown.
++struct container cont2 = {
++	.vals = {
++			.u64 = def_u64,
++			.s32 = def_val2_s32,
++			.bo = def_val2_bool,
++			.u8 = def_val2_u8,
++			.s16 = def_val2_s16,
++		},
++};
 +
-+Using Stats_fs
-+================
++static void get_stats_at_addr(struct stats_fs_source *src, void *addr,
++			      int *aggr, int *val, int use_addr)
++{
++	struct stats_fs_value *entry;
++	struct stats_fs_value_source *src_entry;
++	int counter_val = 0, counter_aggr = 0;
 +
-+Define a value::
++	list_for_each_entry (src_entry, &src->values_head, list_element) {
++		if (use_addr && src_entry->base_addr != addr)
++			continue;
 +
-+        struct statistics{
-+                uint64_t exit;
-+                ...
-+        };
++		for (entry = src_entry->values; entry->name; entry++) {
++			if (entry->aggr_kind == STATS_FS_NONE)
++				counter_val++;
++			else
++				counter_aggr++;
++		}
++	}
 +
-+        struct kvm {
-+                ...
-+                struct statistics stat;
-+        };
++	if (aggr)
++		*aggr = counter_aggr;
 +
-+        struct stats_fs_value kvm_stats[] = {
-+                { "exit_vm", offsetof(struct kvm, stat.exit), &stats_fs_type_u64,
-+                  STATS_FS_SUM },
-+                { NULL }
-+        };
++	if (val)
++		*val = counter_val;
++}
 +
-+The same ``struct stats_fs_value`` is used for both simple and aggregate
-+values, though the type and offset are only used for simple values.
-+Aggregates merge all values that use the same ``struct stats_fs_value``.
++int source_has_subsource(struct stats_fs_source *src,
++			 struct stats_fs_source *sub)
++{
++	struct stats_fs_source *entry;
 +
-+Create the parent source::
++	list_for_each_entry (entry, &src->subordinates_head, list_element) {
++		if (entry == sub)
++			return 1;
++	}
++	return 0;
++}
 +
-+        struct stats_fs_source parent_source = stats_fs_source_create(0, "parent");
++int get_number_subsources(struct stats_fs_source *src)
++{
++	struct stats_fs_source *entry;
++	int counter = 0;
 +
-+Register it (files and folders
-+will only be visible after this function is called)::
++	list_for_each_entry (entry, &src->subordinates_head, list_element) {
++		counter++;
++	}
++	return counter;
++}
 +
-+        stats_fs_source_register(parent_source);
++int get_number_values(struct stats_fs_source *src)
++{
++	int counter = 0;
 +
-+Create and add a child::
++	get_stats_at_addr(src, NULL, NULL, &counter, 0);
++	return counter;
++}
 +
-+        struct stats_fs_source child_source = stats_fs_source_create(STATS_FS_HIDDEN, "child");
++int get_total_number_values(struct stats_fs_source *src)
++{
++	struct stats_fs_source *sub_entry;
++	int counter = 0;
 +
-+        stats_fs_source_add_subordinate(parent_source, child_source);
++	get_stats_at_addr(src, NULL, NULL, &counter, 0);
 +
-+The STATS_FS_HIDDEN attribute won't affect the aggregation, it will only
-+block the creation of the files.
++	list_for_each_entry (sub_entry, &src->subordinates_head, list_element) {
++		counter += get_total_number_values(sub_entry);
++	}
 +
-+Add values to parent and child (also here order doesn't matter)::
++	return counter;
++}
 +
-+        struct kvm *base_ptr = kmalloc(..., sizeof(struct kvm));
-+        ...
-+        stats_fs_source_add_values(child_source, kvm_stats, base_ptr, 0);
-+        stats_fs_source_add_values(parent_source, kvm_stats, NULL, STATS_FS_HIDDEN);
++int get_number_aggregates(struct stats_fs_source *src)
++{
++	int counter = 0;
 +
-+``child_source`` will be a simple value, since it has a non-NULL base
-+pointer, while ``parent_source`` will be an aggregate. During the adding
-+phase, also values can optionally be marked as hidden, so that the folder
-+and other values can be still shown.
++	get_stats_at_addr(src, NULL, &counter, NULL, 1);
++	return counter;
++}
 +
-+Of course the same ``struct stats_fs_value`` array can be also passed with a
-+different base pointer, to represent the same value but in another instance
-+of the kvm struct.
++int get_number_values_with_base(struct stats_fs_source *src, void *addr)
++{
++	int counter = 0;
 +
-+Search:
++	get_stats_at_addr(src, addr, NULL, &counter, 1);
++	return counter;
++}
 +
-+Fetch a value from the child source, returning the value
-+pointed by ``(uint64_t *) base_ptr + kvm_stats[0].offset``::
++int get_number_aggr_with_base(struct stats_fs_source *src, void *addr)
++{
++	int counter = 0;
 +
-+        uint64_t ret_child, ret_parent;
++	get_stats_at_addr(src, addr, &counter, NULL, 1);
++	return counter;
++}
 +
-+        stats_fs_source_get_value(child_source, &kvm_stats[0], &ret_child);
++static void test_empty_folder(struct kunit *test)
++{
++	struct stats_fs_source *src;
 +
-+Fetch an aggregate value, searching all subsources of ``parent_source`` for
-+the specified ``struct stats_fs_value``::
++	src = stats_fs_source_create(0, "kvm_%d", 123);
++	KUNIT_EXPECT_EQ(test, strcmp(src->name, "kvm_123"), 0);
++	KUNIT_EXPECT_EQ(test, get_number_subsources(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	stats_fs_source_put(src);
++}
 +
-+        stats_fs_source_get_value(parent_source, &kvm_stats[0], &ret_parent);
++static void test_add_subfolder(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub;
 +
-+        assert(ret_child == ret_parent); // check expected result
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
++	stats_fs_source_add_subordinate(src, sub);
++	KUNIT_EXPECT_EQ(test, source_has_subsource(src, sub), true);
++	KUNIT_EXPECT_EQ(test, get_number_subsources(src), 1);
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_values(sub), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(sub), 0);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
 +
-+To make it more interesting, add another child::
++	stats_fs_source_put(sub);
++	sub = stats_fs_source_create(0, "not a child");
++	KUNIT_EXPECT_EQ(test, source_has_subsource(src, sub), false);
++	KUNIT_EXPECT_EQ(test, get_number_subsources(src), 1);
 +
-+        struct stats_fs_source child_source2 = stats_fs_source_create(0, "child2");
++	stats_fs_source_put(sub);
++	stats_fs_source_put(src);
++}
 +
-+        stats_fs_source_add_subordinate(parent_source, child_source2);
-+        // now  the structure is parent -> child1
-+        //                              -> child2
++static void test_add_value(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	int n;
 +
-+        struct kvm *other_base_ptr = kmalloc(..., sizeof(struct kvm));
-+        ...
-+        stats_fs_source_add_values(child_source2, kvm_stats, other_base_ptr, 0);
++	src = stats_fs_source_create(0, "parent");
 +
-+Note that other_base_ptr points to another instance of kvm, so the struct
-+stats_fs_value is the same but the address at which they point is not.
++	// add values
++	n = stats_fs_source_add_values(src, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
 +
-+Now get the aggregate value::
++	// add same values, nothing happens
++	n = stats_fs_source_add_values(src, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, -EEXIST);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
 +
-+        uint64_t ret_child, ret_child2, ret_parent;
++	// size is invaried
++	KUNIT_EXPECT_EQ(test, get_number_values(src), ARR_SIZE(test_values));
 +
-+        stats_fs_source_get_value(child_source, &kvm_stats[0], &ret_child);
-+        stats_fs_source_get_value(parent_source, &kvm_stats[0], &ret_parent);
-+        stats_fs_source_get_value(child_source2, &kvm_stats[0], &ret_child2);
++	// no aggregates
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, get_number_values(src), ARR_SIZE(test_values));
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
 +
-+        assert((ret_child + ret_child2) == ret_parent);
++	stats_fs_source_put(src);
++}
 +
-+Cleanup::
++static void test_add_value_in_subfolder(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub, *sub_not;
++	int n;
 +
-+        stats_fs_source_remove_subordinate(parent_source, child_source);
-+        stats_fs_source_revoke(child_source);
-+        stats_fs_source_put(child_source);
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
 +
-+        stats_fs_source_remove_subordinate(parent_source, child_source2);
-+        stats_fs_source_revoke(child_source2);
-+        stats_fs_source_put(child_source2);
++	// src -> sub
++	stats_fs_source_add_subordinate(src, sub);
 +
-+        stats_fs_source_put(parent_source);
-+        kfree(other_base_ptr);
-+        kfree(base_ptr);
++	// add values
++	n = stats_fs_source_add_values(sub, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src),
++			ARR_SIZE(test_values));
 +
-+Calling stats_fs_source_revoke is very important, because it will ensure
-+that stats_fs will not access the data that were passed to
-+stats_fs_source_add_value for this source.
++	KUNIT_EXPECT_EQ(test, get_number_values(sub), ARR_SIZE(test_values));
++	// no values in sub
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(sub), 0);
 +
-+Because open files increase the reference count for a stats_fs_source, the
-+source can end up living longer than the data that provides the values for
-+the source.  Calling stats_fs_source_revoke just before the backing data
-+is freed avoids accesses to freed data structures. The sources will return
-+0.
++	// different folder
++	sub_not = stats_fs_source_create(0, "not a child");
 +
-+This is not needed for the parent_source, since it just contains
-+aggregates that would be 0 anyways if no matching child value exist.
++	// add values
++	n = stats_fs_source_add_values(sub_not, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub_not, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src),
++			ARR_SIZE(test_values));
 +
-+API Documentation
-+=================
++	// remove sub, check values is 0
++	stats_fs_source_remove_subordinate(src, sub);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
 +
-+.. kernel-doc:: include/linux/stats_fs.h
-+   :export: fs/stats_fs/*.c
-\ No newline at end of file
++	// re-add sub, check value are added
++	stats_fs_source_add_subordinate(src, sub);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src),
++			ARR_SIZE(test_values));
++
++	// add sub_not, check value are twice as many
++	stats_fs_source_add_subordinate(src, sub_not);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src),
++			ARR_SIZE(test_values) * 2);
++
++	KUNIT_EXPECT_EQ(test, get_number_values(sub_not),
++			ARR_SIZE(test_values));
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(sub_not), 0);
++
++	stats_fs_source_put(sub);
++	stats_fs_source_put(sub_not);
++	stats_fs_source_put(src);
++}
++
++static void test_search_value(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++
++	// add values
++	n = stats_fs_source_add_values(src, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++
++	// get u64
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ((bool)ret), def_val_bool);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	// get a non-added value
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	stats_fs_source_put(src);
++}
++
++static void test_search_value_in_subfolder(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
++
++	// src -> sub
++	stats_fs_source_add_subordinate(src, sub);
++
++	// add values to sub
++	n = stats_fs_source_add_values(sub, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++
++	n = stats_fs_source_get_value_by_name(sub, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ((bool)ret), def_val_bool);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	stats_fs_source_put(sub);
++	stats_fs_source_put(src);
++}
++
++static void test_search_value_in_empty_folder(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "empty folder");
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_subsources(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	stats_fs_source_put(src);
++}
++
++static void test_add_aggregate(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++
++	// add aggr to src, no values
++	n = stats_fs_source_add_values(src, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	// count values
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++
++	// add same array again, should not be added
++	n = stats_fs_source_add_values(src, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, -EEXIST);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), ARR_SIZE(test_aggr));
++
++	stats_fs_source_put(src);
++}
++
++static void test_add_aggregate_in_subfolder(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub, *sub_not;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
++	// src->sub
++	stats_fs_source_add_subordinate(src, sub);
++
++	// add aggr to sub
++	n = stats_fs_source_add_values(sub, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	KUNIT_EXPECT_EQ(test, get_number_values(sub), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(sub), ARR_SIZE(test_aggr));
++
++	// not a child
++	sub_not = stats_fs_source_create(0, "not a child");
++
++	// add aggr to "not a child"
++	n = stats_fs_source_add_values(sub_not, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub_not, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++	KUNIT_EXPECT_EQ(test, get_number_values(src), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), 0);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	// remove sub
++	stats_fs_source_remove_subordinate(src, sub);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	// re-add both
++	stats_fs_source_add_subordinate(src, sub);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++	stats_fs_source_add_subordinate(src, sub_not);
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	KUNIT_EXPECT_EQ(test, get_number_values(sub_not), 0);
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(sub_not),
++			ARR_SIZE(test_aggr));
++
++	stats_fs_source_put(sub);
++	stats_fs_source_put(sub_not);
++	stats_fs_source_put(src);
++}
++
++static void test_search_aggregate(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	n = stats_fs_source_add_values(src, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, (int64_t)ret, S64_MAX);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++	stats_fs_source_put(src);
++}
++
++static void test_search_aggregate_in_subfolder(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
++
++	stats_fs_source_add_subordinate(src, sub);
++
++	n = stats_fs_source_add_values(sub, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++	n = get_number_aggr_with_base(sub, &cont);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	// no u64 in test_aggr
++	n = stats_fs_source_get_value_by_name(sub, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, (int64_t)ret, S64_MAX);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	n = stats_fs_source_get_value_by_name(sub, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	stats_fs_source_put(sub);
++	stats_fs_source_put(src);
++}
++
++void test_search_same(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	n = stats_fs_source_add_values(src, test_same_name, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 1);
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 1);
++
++	n = stats_fs_source_add_values(src, test_same_name, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, -EEXIST);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 1);
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, 1);
++
++	// returns first the value
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	stats_fs_source_put(src);
++}
++
++static void test_add_mixed(struct kunit *test)
++{
++	struct stats_fs_source *src;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++
++	n = stats_fs_source_add_values(src, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_add_values(src, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++
++	n = stats_fs_source_add_values(src, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, -EEXIST);
++	n = get_number_values_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++	n = stats_fs_source_add_values(src, test_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, -EEXIST);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++
++	KUNIT_EXPECT_EQ(test, get_number_values(src), ARR_SIZE(test_values));
++	KUNIT_EXPECT_EQ(test, get_number_aggregates(src), ARR_SIZE(test_aggr));
++	stats_fs_source_put(src);
++}
++
++static void test_search_mixed(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub = stats_fs_source_create(0, "child");
++	stats_fs_source_add_subordinate(src, sub);
++
++	// src has the aggregates, sub the values. Just search
++	n = stats_fs_source_add_values(sub, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++	n = stats_fs_source_add_values(src, test_aggr, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_aggr));
++
++	// u64 is sum so again same value
++	n = stats_fs_source_get_value_by_name(sub, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	// s32 is min so return the value also in the aggregate
++	n = stats_fs_source_get_value_by_name(sub, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	// bo is max
++	n = stats_fs_source_get_value_by_name(sub, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, (bool)ret, def_val_bool);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, (bool)ret, def_val_bool);
++	KUNIT_EXPECT_EQ(test, n, 0);
++
++	n = stats_fs_source_get_value_by_name(sub, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++	n = stats_fs_source_get_value_by_name(src, "does not exist", &ret);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	KUNIT_EXPECT_EQ(test, n, -ENOENT);
++
++	stats_fs_source_put(sub);
++	stats_fs_source_put(src);
++}
++
++static void test_all_aggregations_agg_val_val(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub1, *sub2;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub1 = stats_fs_source_create(0, "child1");
++	sub2 = stats_fs_source_create(0, "child2");
++	stats_fs_source_add_subordinate(src, sub1);
++	stats_fs_source_add_subordinate(src, sub2);
++
++	n = stats_fs_source_add_values(sub1, test_all_aggr, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub1, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++	n = stats_fs_source_add_values(sub2, test_all_aggr, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub2, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_add_values(src, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	// sum
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64 * 2);
++
++	// min
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++
++	// count_0
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 1ull);
++
++	// avg
++	n = stats_fs_source_get_value_by_name(src, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 191ull);
++
++	// max
++	n = stats_fs_source_get_value_by_name(src, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val_s16);
++
++	stats_fs_source_put(sub1);
++	stats_fs_source_put(sub2);
++	stats_fs_source_put(src);
++}
++
++static void test_all_aggregations_val_agg_val(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub1, *sub2;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub1 = stats_fs_source_create(0, "child1");
++	sub2 = stats_fs_source_create(0, "child2");
++	stats_fs_source_add_subordinate(src, sub1);
++	stats_fs_source_add_subordinate(src, sub2);
++
++	n = stats_fs_source_add_values(src, test_all_aggr, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++	n = stats_fs_source_add_values(sub2, test_all_aggr, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub2, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_add_values(sub1, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub1, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++	n = stats_fs_source_get_value_by_name(sub1, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	n = stats_fs_source_get_value_by_name(sub2, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++	n = stats_fs_source_get_value_by_name(sub1, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int64_t)ret, S64_MAX); // MIN
++	n = stats_fs_source_get_value_by_name(sub2, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val2_s32);
++
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (bool)ret, def_val_bool);
++	n = stats_fs_source_get_value_by_name(sub1, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	n = stats_fs_source_get_value_by_name(sub2, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (bool)ret, def_val2_bool);
++
++	n = stats_fs_source_get_value_by_name(src, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (uint8_t)ret, def_val_u8);
++	n = stats_fs_source_get_value_by_name(sub1, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 0ull);
++	n = stats_fs_source_get_value_by_name(sub2, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (uint8_t)ret, def_val2_u8);
++
++	n = stats_fs_source_get_value_by_name(src, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val_s16);
++	n = stats_fs_source_get_value_by_name(sub1, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int64_t)ret, S64_MIN); // MAX
++	n = stats_fs_source_get_value_by_name(sub2, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val2_s16);
++
++	stats_fs_source_put(sub1);
++	stats_fs_source_put(sub2);
++	stats_fs_source_put(src);
++}
++
++static void test_all_aggregations_agg_val_val_sub(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub1, *sub11;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub1 = stats_fs_source_create(0, "child1");
++	sub11 = stats_fs_source_create(0, "child11");
++	stats_fs_source_add_subordinate(src, sub1);
++	stats_fs_source_add_subordinate(sub1, sub11); // changes here!
++
++	n = stats_fs_source_add_values(sub1, test_values, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub1, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++	n = stats_fs_source_add_values(sub11, test_values, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_values_with_base(sub11, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_values));
++
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src),
++			ARR_SIZE(test_values) * 2);
++
++	n = stats_fs_source_add_values(sub1, test_all_aggr, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub1, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++	n = stats_fs_source_add_values(sub11, test_all_aggr, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub11, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_add_values(src, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	// sum
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64 * 2);
++
++	// min
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++
++	// count_0
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 1ull);
++
++	// avg
++	n = stats_fs_source_get_value_by_name(src, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 191ull);
++
++	// max
++	n = stats_fs_source_get_value_by_name(src, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val_s16);
++
++	stats_fs_source_put(sub1);
++	stats_fs_source_put(sub11);
++	stats_fs_source_put(src);
++}
++
++static void test_all_aggregations_agg_no_val_sub(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub1, *sub11;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub1 = stats_fs_source_create(0, "child1");
++	sub11 = stats_fs_source_create(0, "child11");
++	stats_fs_source_add_subordinate(src, sub1);
++	stats_fs_source_add_subordinate(sub1, sub11);
++
++	n = stats_fs_source_add_values(sub11, test_all_aggr, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub11, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	n = stats_fs_source_add_values(src, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	// sum
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64);
++
++	// min
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val2_s32);
++
++	// count_0
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 1ull);
++
++	// avg
++	n = stats_fs_source_get_value_by_name(src, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (uint8_t)ret, def_val2_u8);
++
++	// max
++	n = stats_fs_source_get_value_by_name(src, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val2_s16);
++
++	stats_fs_source_put(sub1);
++	stats_fs_source_put(sub11);
++	stats_fs_source_put(src);
++}
++
++static void test_all_aggregations_agg_agg_val_sub(struct kunit *test)
++{
++	struct stats_fs_source *src, *sub1, *sub11, *sub12;
++	uint64_t ret;
++	int n;
++
++	src = stats_fs_source_create(0, "parent");
++	sub1 = stats_fs_source_create(0, "child1");
++	sub11 = stats_fs_source_create(0, "child11");
++	sub12 = stats_fs_source_create(0, "child12");
++	stats_fs_source_add_subordinate(src, sub1);
++	stats_fs_source_add_subordinate(sub1, sub11);
++	stats_fs_source_add_subordinate(sub1, sub12);
++
++	n = stats_fs_source_add_values(sub11, test_all_aggr, &cont2, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub11, &cont2);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_add_values(sub12, test_all_aggr, &cont, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub12, &cont);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	KUNIT_EXPECT_EQ(test, get_total_number_values(src), 0);
++
++	n = stats_fs_source_add_values(src, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(src, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	n = stats_fs_source_add_values(sub1, test_all_aggr, NULL, 0);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	n = get_number_aggr_with_base(sub1, NULL);
++	KUNIT_EXPECT_EQ(test, n, ARR_SIZE(test_all_aggr));
++
++	// sum
++	n = stats_fs_source_get_value_by_name(src, "u64", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, def_u64 * 2);
++
++	// min
++	n = stats_fs_source_get_value_by_name(src, "s32", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ((int32_t)ret), def_val_s32);
++
++	// count_0
++	n = stats_fs_source_get_value_by_name(src, "bo", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, ret, 1ull);
++
++	// avg
++	n = stats_fs_source_get_value_by_name(src, "u8", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (uint8_t)ret,
++			(uint8_t)((def_val2_u8 + def_val_u8) / 2));
++
++	// max
++	n = stats_fs_source_get_value_by_name(src, "s16", &ret);
++	KUNIT_EXPECT_EQ(test, n, 0);
++	KUNIT_EXPECT_EQ(test, (int16_t)ret, def_val_s16);
++
++	stats_fs_source_put(sub1);
++	stats_fs_source_put(sub11);
++	stats_fs_source_put(sub12);
++	stats_fs_source_put(src);
++}
++
++static struct kunit_case stats_fs_test_cases[] = {
++	KUNIT_CASE(test_empty_folder),
++	KUNIT_CASE(test_add_subfolder),
++	KUNIT_CASE(test_add_value),
++	KUNIT_CASE(test_add_value_in_subfolder),
++	KUNIT_CASE(test_search_value),
++	KUNIT_CASE(test_search_value_in_subfolder),
++	KUNIT_CASE(test_search_value_in_empty_folder),
++	KUNIT_CASE(test_add_aggregate),
++	KUNIT_CASE(test_add_aggregate_in_subfolder),
++	KUNIT_CASE(test_search_aggregate),
++	KUNIT_CASE(test_search_aggregate_in_subfolder),
++	KUNIT_CASE(test_search_same),
++	KUNIT_CASE(test_add_mixed),
++	KUNIT_CASE(test_search_mixed),
++	KUNIT_CASE(test_all_aggregations_agg_val_val),
++	KUNIT_CASE(test_all_aggregations_val_agg_val),
++	KUNIT_CASE(test_all_aggregations_agg_val_val_sub),
++	KUNIT_CASE(test_all_aggregations_agg_no_val_sub),
++	KUNIT_CASE(test_all_aggregations_agg_agg_val_sub),
++	{}
++};
++
++static struct kunit_suite stats_fs_test_suite = {
++	.name = "stats_fs",
++	.test_cases = stats_fs_test_cases,
++};
++
++kunit_test_suite(stats_fs_test_suite);
 -- 
 2.25.4
 
