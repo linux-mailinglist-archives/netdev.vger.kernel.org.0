@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5871E2503
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 17:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA30F1E2508
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 17:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729854AbgEZPIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 11:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        id S1729662AbgEZPJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 11:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728166AbgEZPIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 11:08:21 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6858C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:08:19 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id u13so3493980wml.1
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:08:19 -0700 (PDT)
+        with ESMTP id S1728166AbgEZPJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 11:09:18 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24229C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:09:18 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id x6so7123972wrm.13
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+kLxyT/PjROhQ9hjFK4vO6Gv1fHPKBD4OXzH6+45LL4=;
-        b=gMcBMDHoxpsiCxeilpX/R7WkopOqaqAt/WQ2MuU7bwXiiO/YUObMDNCDYuk6gPOwNk
-         UsF4HXF85YreUqMcul3H4GAGIxpGqDQYiuhoJSJuswxAfiOACgg4y0QO3kSAfr5h5Hid
-         DEjNaqE/8pm8i1T6wx7lUZoBStX3XMmtr8Ctw=
+        bh=ANJGgbl+4BOk6wSgQbcBdUObBpt8o4dWG/dFH1sxbP0=;
+        b=AIuG53HU/nC9SpEsRhv1r44dTqXHstKGOxzKUXlgcu9tvDtVtPYncbXR+/nvKKLOyf
+         EYHC4U+ROw9+hcxmXKFl1xqsJKmn5rLlHuT6vd3rwwvH4KKo1sQ7t1ZpHNJ+dwhpiTwH
+         WLYqBl0kkq3mADnmThSLWUsLbDIfLnh+1TPb8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+kLxyT/PjROhQ9hjFK4vO6Gv1fHPKBD4OXzH6+45LL4=;
-        b=X/dVjmIINGQ7tMgN72jjzw39+VRvgPZBbcSvfbydC6BIoSVq4OordEbkTQnDe5lSrD
-         4Nc4qYcAjoLY9u19xzPrMUqjWGtAgy2EUI1pR14UOI3ORAMcx8Rv3/Eb1LCkfYnS+XyE
-         uogBrxlKpiq3nyfKq1ijF3cIFzGxU3QtklqZMCqBOCfwOcXRgu0pujN9lhJVZ96+2YiK
-         QFOBY6miXD7ejCPx8V/yVrcrJ/tRJ1lIhAK2HkKebTIIQ8iKwUVLdTlTyJtH5jrFnMBH
-         vWrVzElNXc+M41aupVh1PkVH+Pa1qB1a0HCIp7wlQKzi/fSDSsLOzVI3lpDd14Vojy9K
-         z0zQ==
-X-Gm-Message-State: AOAM532dfgzTXQJMPEjgruprqwE+QT5ATrLCnLBIYnRxawalFMotBytm
-        j72w3uwQcFDsX76V0bZ0izcMbQ==
-X-Google-Smtp-Source: ABdhPJxhY9dQ64ZFFbZ/GCBdOs9phqlJnfq7VQ2PKAcN28xpN65LIa9RtzyWGqhVFBOTjO1SU0WyAQ==
-X-Received: by 2002:a1c:98cc:: with SMTP id a195mr1931953wme.32.1590505698558;
-        Tue, 26 May 2020 08:08:18 -0700 (PDT)
+        bh=ANJGgbl+4BOk6wSgQbcBdUObBpt8o4dWG/dFH1sxbP0=;
+        b=nP6s8VXVfsNLvq1lXX8UW4CURSwFY0IO5zrBUQfsXH/rXBT0Ibwn1xHbLNKGgFkuNW
+         r1z4+8hKW/kpH+XrQPpF71SpG8fy+224bdF9gwyvDCRGBVN5t2sGq/xEhsGC6mItYQNi
+         JDyCXHVyin8VCwuof1ZIv/s4bCfTi6t0o8RqOd/Cop24G+f1iK2C+FBKOgCxEDhLsqsk
+         SqmPY34hPNTIu2HdPn+jNN8ntpUEzs9sLvGrgE0HEvBim3cV9zZO9SpbFx/vd5TIwFNE
+         OvJSwN79IIlA2ykcIcSUk+c350crXumwB6HnV43GEEBsnjY6TYcyoHaYnlrm+1vjIwJk
+         OVYA==
+X-Gm-Message-State: AOAM533/LmbymfdFj5iEtehqGkXLT91ZXP7yKuLGu+d4LqjotuAai4uw
+        RlfouVeKpFh9k74oCEcZu37arg==
+X-Google-Smtp-Source: ABdhPJyfbFSEx8+HTi6xhYNDoIJGqfNYQR6tINqr+/ldKByFNrkwlsPCDttLVhCvSz1IBKNEsvwLSg==
+X-Received: by 2002:adf:e84c:: with SMTP id d12mr5172730wrn.284.1590505756889;
+        Tue, 26 May 2020 08:09:16 -0700 (PDT)
 Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t13sm133852wrn.64.2020.05.26.08.08.16
+        by smtp.gmail.com with ESMTPSA id u7sm155009wrm.23.2020.05.26.08.09.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2020 08:08:17 -0700 (PDT)
-Subject: Re: [PATCH net 3/5] nexthop: Expand nexthop_is_multipath in a few
- places
+        Tue, 26 May 2020 08:09:15 -0700 (PDT)
+Subject: Re: [PATCH net 4/5] ipv4: Refactor nhc evaluation in fib_table_lookup
 To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
         David Ahern <dsahern@gmail.com>
 References: <20200526150114.41687-1-dsahern@kernel.org>
- <20200526150114.41687-4-dsahern@kernel.org>
+ <20200526150114.41687-5-dsahern@kernel.org>
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <0fa0d437-dcfe-8326-dca6-c0e54a1a0009@cumulusnetworks.com>
-Date:   Tue, 26 May 2020 18:08:15 +0300
+Message-ID: <b1f5fdb2-70a7-1391-19ba-5cdd6e0023dc@cumulusnetworks.com>
+Date:   Tue, 26 May 2020 18:09:13 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200526150114.41687-4-dsahern@kernel.org>
+In-Reply-To: <20200526150114.41687-5-dsahern@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,108 +69,176 @@ X-Mailing-List: netdev@vger.kernel.org
 On 26/05/2020 18:01, David Ahern wrote:
 > From: David Ahern <dsahern@gmail.com>
 > 
-> I got too fancy consolidating checks on multipath type. The result
-> is that path lookups can access 2 different nh_grp structs as exposed
-> by Nik's torture tests. Expand nexthop_is_multipath within nexthop.h to
-> avoid multiple, nh_grp dereferences and make decisions based on the
-> consistent struct.
+> FIB lookups can return an entry that references an external nexthop.
+> While walking the nexthop struct we do not want to make multiple calls
+> into the nexthop code which can result in 2 different structs getting
+> accessed - one returning the number of paths the rest of the loop
+> seeing a different nh_grp struct. If the nexthop group shrunk, the
+> result is an attempt to access a fib_nh_common that does not exist for
+> the new nh_grp struct but did for the old one.
 > 
-> Only 2 places left using nexthop_is_multipath are within IPv6, both
-> only check that the nexthop is a multipath for a branching decision
-> which are acceptable.
+> To fix that move the device evaluation code to a helper that can be
+> used for inline fib_nh path as well as external nexthops.
+> 
+> Update the existing check for fi->nh in fib_table_lookup to call a
+> new helper, nexthop_get_nhc_lookup, which walks the external nexthop
+> with a single rcu dereference.
 > 
 > Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
 > Signed-off-by: David Ahern <dsahern@gmail.com>
 > ---
->  include/net/nexthop.h | 41 +++++++++++++++++++++++++----------------
->  1 file changed, 25 insertions(+), 16 deletions(-)
+>  include/net/ip_fib.h  |  2 ++
+>  include/net/nexthop.h | 33 ++++++++++++++++++++++++++++
+>  net/ipv4/fib_trie.c   | 51 ++++++++++++++++++++++++++++++-------------
+>  3 files changed, 71 insertions(+), 15 deletions(-)
 > 
 
 Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
+> diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+> index 59e0d4e99f94..1f1dd22980e4 100644
+> --- a/include/net/ip_fib.h
+> +++ b/include/net/ip_fib.h
+> @@ -480,6 +480,8 @@ void fib_nh_common_release(struct fib_nh_common *nhc);
+>  void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri);
+>  void fib_trie_init(void);
+>  struct fib_table *fib_trie_table(u32 id, struct fib_table *alias);
+> +bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
+> +			 const struct flowi4 *flp);
+>  
+>  static inline void fib_combine_itag(u32 *itag, const struct fib_result *res)
+>  {
 > diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index 8a343519ed7a..f09e8d7d9886 100644
+> index f09e8d7d9886..9414ae46fc1c 100644
 > --- a/include/net/nexthop.h
 > +++ b/include/net/nexthop.h
-> @@ -137,21 +137,20 @@ static inline unsigned int nexthop_num_path(const struct nexthop *nh)
->  {
->  	unsigned int rc = 1;
->  
-> -	if (nexthop_is_multipath(nh)) {
-> +	if (nh->is_group) {
->  		struct nh_group *nh_grp;
->  
->  		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> -		rc = nh_grp->num_nh;
-> +		if (nh_grp->mpath)
-> +			rc = nh_grp->num_nh;
->  	}
->  
->  	return rc;
+> @@ -233,6 +233,39 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
+>  	return &nhi->fib_nhc;
 >  }
 >  
->  static inline
-> -struct nexthop *nexthop_mpath_select(const struct nexthop *nh, int nhsel)
-> +struct nexthop *nexthop_mpath_select(const struct nh_group *nhg, int nhsel)
->  {
-> -	const struct nh_group *nhg = rcu_dereference_rtnl(nh->nh_grp);
-> -
->  	/* for_nexthops macros in fib_semantics.c grabs a pointer to
->  	 * the nexthop before checking nhsel
->  	 */
-> @@ -186,12 +185,14 @@ static inline bool nexthop_is_blackhole(const struct nexthop *nh)
->  {
->  	const struct nh_info *nhi;
->  
-> -	if (nexthop_is_multipath(nh)) {
-> -		if (nexthop_num_path(nh) > 1)
-> -			return false;
-> -		nh = nexthop_mpath_select(nh, 0);
-> -		if (!nh)
+> +/* called from fib_table_lookup with rcu_lock */
+> +static inline
+> +struct fib_nh_common *nexthop_get_nhc_lookup(const struct nexthop *nh,
+> +					     int fib_flags,
+> +					     const struct flowi4 *flp,
+> +					     int *nhsel)
+> +{
+> +	struct nh_info *nhi;
+> +
 > +	if (nh->is_group) {
-> +		struct nh_group *nh_grp;
+> +		struct nh_group *nhg = rcu_dereference(nh->nh_grp);
+> +		int i;
 > +
-> +		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> +		if (nh_grp->num_nh > 1)
->  			return false;
+> +		for (i = 0; i < nhg->num_nh; i++) {
+> +			struct nexthop *nhe = nhg->nh_entries[i].nh;
 > +
-> +		nh = nh_grp->nh_entries[0].nh;
->  	}
->  
->  	nhi = rcu_dereference_rtnl(nh->nh_info);
-> @@ -217,10 +218,15 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
->  	BUILD_BUG_ON(offsetof(struct fib_nh, nh_common) != 0);
->  	BUILD_BUG_ON(offsetof(struct fib6_nh, nh_common) != 0);
->  
-> -	if (nexthop_is_multipath(nh)) {
-> -		nh = nexthop_mpath_select(nh, nhsel);
-> -		if (!nh)
-> -			return NULL;
-> +	if (nh->is_group) {
-> +		struct nh_group *nh_grp;
-> +
-> +		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> +		if (nh_grp->mpath) {
-> +			nh = nexthop_mpath_select(nh_grp, nhsel);
-> +			if (!nh)
-> +				return NULL;
+> +			nhi = rcu_dereference(nhe->nh_info);
+> +			if (fib_lookup_good_nhc(&nhi->fib_nhc, fib_flags, flp)) {
+> +				*nhsel = i;
+> +				return &nhi->fib_nhc;
+> +			}
 > +		}
->  	}
->  
->  	nhi = rcu_dereference_rtnl(nh->nh_info);
-> @@ -264,8 +270,11 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
->  {
->  	struct nh_info *nhi;
->  
-> -	if (nexthop_is_multipath(nh)) {
-> -		nh = nexthop_mpath_select(nh, 0);
-> +	if (nh->is_group) {
-> +		struct nh_group *nh_grp;
+> +	} else {
+> +		nhi = rcu_dereference(nh->nh_info);
+> +		if (fib_lookup_good_nhc(&nhi->fib_nhc, fib_flags, flp)) {
+> +			*nhsel = 0;
+> +			return &nhi->fib_nhc;
+> +		}
+> +	}
 > +
-> +		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> +		nh = nexthop_mpath_select(nh_grp, 0);
->  		if (!nh)
->  			return NULL;
+> +	return NULL;
+> +}
+> +
+>  static inline unsigned int fib_info_num_path(const struct fib_info *fi)
+>  {
+>  	if (unlikely(fi->nh))
+> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+> index 4f334b425538..248f1c1959a6 100644
+> --- a/net/ipv4/fib_trie.c
+> +++ b/net/ipv4/fib_trie.c
+> @@ -1371,6 +1371,26 @@ static inline t_key prefix_mismatch(t_key key, struct key_vector *n)
+>  	return (key ^ prefix) & (prefix | -prefix);
+>  }
+>  
+> +bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
+> +			 const struct flowi4 *flp)
+> +{
+> +	if (nhc->nhc_flags & RTNH_F_DEAD)
+> +		return false;
+> +
+> +	if (ip_ignore_linkdown(nhc->nhc_dev) &&
+> +	    nhc->nhc_flags & RTNH_F_LINKDOWN &&
+> +	    !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
+> +		return false;
+> +
+> +	if (!(flp->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF)) {
+> +		if (flp->flowi4_oif &&
+> +		    flp->flowi4_oif != nhc->nhc_oif)
+> +			return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  /* should be called with rcu_read_lock */
+>  int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+>  		     struct fib_result *res, int fib_flags)
+> @@ -1503,6 +1523,7 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+>  	/* Step 3: Process the leaf, if that fails fall back to backtracing */
+>  	hlist_for_each_entry_rcu(fa, &n->leaf, fa_list) {
+>  		struct fib_info *fi = fa->fa_info;
+> +		struct fib_nh_common *nhc;
+>  		int nhsel, err;
+>  
+>  		if ((BITS_PER_LONG > KEYLENGTH) || (fa->fa_slen < KEYLENGTH)) {
+> @@ -1528,26 +1549,25 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+>  		if (fi->fib_flags & RTNH_F_DEAD)
+>  			continue;
+>  
+> -		if (unlikely(fi->nh && nexthop_is_blackhole(fi->nh))) {
+> -			err = fib_props[RTN_BLACKHOLE].error;
+> -			goto out_reject;
+> +		if (unlikely(fi->nh)) {
+> +			if (nexthop_is_blackhole(fi->nh)) {
+> +				err = fib_props[RTN_BLACKHOLE].error;
+> +				goto out_reject;
+> +			}
+> +
+> +			nhc = nexthop_get_nhc_lookup(fi->nh, fib_flags, flp,
+> +						     &nhsel);
+> +			if (nhc)
+> +				goto set_result;
+> +			goto miss;
+>  		}
+>  
+>  		for (nhsel = 0; nhsel < fib_info_num_path(fi); nhsel++) {
+> -			struct fib_nh_common *nhc = fib_info_nhc(fi, nhsel);
+> +			nhc = fib_info_nhc(fi, nhsel);
+>  
+> -			if (nhc->nhc_flags & RTNH_F_DEAD)
+> +			if (!fib_lookup_good_nhc(nhc, fib_flags, flp))
+>  				continue;
+> -			if (ip_ignore_linkdown(nhc->nhc_dev) &&
+> -			    nhc->nhc_flags & RTNH_F_LINKDOWN &&
+> -			    !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
+> -				continue;
+> -			if (!(flp->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF)) {
+> -				if (flp->flowi4_oif &&
+> -				    flp->flowi4_oif != nhc->nhc_oif)
+> -					continue;
+> -			}
+> -
+> +set_result:
+>  			if (!(fib_flags & FIB_LOOKUP_NOREF))
+>  				refcount_inc(&fi->fib_clntref);
+>  
+> @@ -1568,6 +1588,7 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
+>  			return err;
+>  		}
 >  	}
+> +miss:
+>  #ifdef CONFIG_IP_FIB_TRIE_STATS
+>  	this_cpu_inc(stats->semantic_match_miss);
+>  #endif
 > 
 
