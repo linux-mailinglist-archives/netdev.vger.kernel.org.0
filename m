@@ -2,181 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6E31E2970
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7FDD1E2976
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388767AbgEZRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 13:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        id S1728378AbgEZRyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 13:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388586AbgEZRxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:53:16 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6F6C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 10:53:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=S2Lf15ZgKfIbQ5psV7wEWY9WuP3+P2oIEbk5WmZ4HDQ=; b=OZHilzDKFH42c+mUIDlxZuJOE
-        YaC4PDifU8jqwgn1IQMi/u0zxTjn9ulr1KsiaI97VXxxeR5pD5DRA/Asda+xDpgXygqO6MjDlzJT+
-        tCzzjGT2Db74INh5qymluhkrOVEkcsHQVN8SVF1KbFaK4v/5STKhyZlpfUZwtRcwFF1tepqt7sN2S
-        DZ7ufJ+u9EnkHWq3VN6uJUhtJIvZvup+7HkFsZm2iw+Ji0dir0jIWjxqBxqXC+s+cCkOCXq0bColq
-        ixlupP9Mu1VvP5c5lmTsrqXEFhUavdtZLrdBkVzbSvekR+orKGywmWHZfNIGCxArG4j2m8dxrjCxK
-        8ZgMzD+ow==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45386)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jddlE-0008Uw-5W; Tue, 26 May 2020 18:53:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jddlB-0005am-H2; Tue, 26 May 2020 18:53:05 +0100
-Date:   Tue, 26 May 2020 18:53:05 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC 4/7] net: phy: add support for probing MMDs >= 8 for
- devices-in-package
-Message-ID: <20200526175305.GI1551@shell.armlinux.org.uk>
-References: <20200526142948.GY1551@shell.armlinux.org.uk>
- <E1jdabs-0005sW-P8@rmk-PC.armlinux.org.uk>
- <20200526171454.GH1551@shell.armlinux.org.uk>
- <be1dad52-c199-f4d7-fa36-8198151fe2dd@arm.com>
+        with ESMTP id S1726930AbgEZRyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:54:39 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC17C03E96D;
+        Tue, 26 May 2020 10:54:38 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c12so2635147qkk.13;
+        Tue, 26 May 2020 10:54:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hCYc7KV7Skpz/YZk+K4sEp1qqQzUr+pq6RyD+6BMZ9c=;
+        b=HQ994vIws5+/lquS0/4xe3lFDvwdNu/VbARMWOnw/enVUDTm0xwL6Jzb3DjKi1p6VB
+         Efwqa0X/ge0w9IdT6lpPQYuc+CFYP2ft9VHYlgGsU6Ik+IZ8/05h5M8uALn3GNOR7e6E
+         7pYOXJxkxRMl0bKfnjN6vjHvGIOS2zgs9s6yB4FN9QaQzSn+ShNXvKb3QnMow7Lrt2+P
+         z50N3f52p8nkoivdnMNJvgyvPD48qSfvyF8KOfRYP0wkaG7AlMU+VYApG6GL+v2KqBec
+         v60pV5CslI2xzZNCOJYpUByBq02BMgf/5wxL2WQouQMSFGcH+rfahUK+OUjSPg3V6vH+
+         D7Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hCYc7KV7Skpz/YZk+K4sEp1qqQzUr+pq6RyD+6BMZ9c=;
+        b=YJCrpeZvWqud7GemCj1J9au9t5Z5vprcAuieGXYd57geDdC2tOaWsV2TLLcBhV7sy5
+         +n9+X3IJa8Kd3Mu5KcRBbR0slVFFitxkZO0WZehFLZ++VMr60/VURl716oSB11A1yH3n
+         gxBCU0Wsaf+VmpLXlJbG4+jw9zjSGZzG6KEpp1xSzFZuSq07p+d0CAxJ02Pjd8wB3qoF
+         AvzTscytmoVVGPuvF6WveVSeGbtfrt+wsivQrGDzTStVLTcwLOMcXpGzEGvIyykKgNWa
+         bXLgAvDgkv+TrF7VL/T8pGxN37T4BqoKn9hnxOamDch88pzr6adIii5GSTI6OT5qnTMG
+         HnWw==
+X-Gm-Message-State: AOAM533VpHAz//LfBvalWaT7CGuk9vKyY/UiF7iA0GkNuUAdustfxroe
+        Fro+IAUqym+B4hFYL8bFicfGhqCg/h0UsIphz4o=
+X-Google-Smtp-Source: ABdhPJw1g7T2jfIUKzW0KqBXVwDKbkNOv+aSLcxKbJbL6XZHWFMsoxPd+J7rQRoW+xWQ+JSC56X+m5LGlckavYohd2c=
+X-Received: by 2002:a05:620a:12d2:: with SMTP id e18mr2772844qkl.437.1590515677414;
+ Tue, 26 May 2020 10:54:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <be1dad52-c199-f4d7-fa36-8198151fe2dd@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200522022336.899416-1-kafai@fb.com> <20200522022342.899756-1-kafai@fb.com>
+ <9c00ced2-983f-ad59-d805-777ebd1f1cab@iogearbox.net> <20200523010003.6iyavqny3aruv6u2@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200523010003.6iyavqny3aruv6u2@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 26 May 2020 10:54:26 -0700
+Message-ID: <CAEf4Bza===GwERi_x0Evf_Wjm+8=wBHnG4VHPNtZ=GPPZ+twiQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Consolidate inner-map-compatible
+ properties into bpf_types.h
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 12:20:10PM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 5/26/20 12:14 PM, Russell King - ARM Linux admin wrote:
-> > On Tue, May 26, 2020 at 03:31:16PM +0100, Russell King wrote:
-> > > Add support for probing MMDs above 7 for a valid devices-in-package
-> > > specifier.
-> > > 
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >   drivers/net/phy/phy_device.c | 39 ++++++++++++++++++++++++++++++++++--
-> > >   include/linux/phy.h          |  2 ++
-> > >   2 files changed, 39 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > > index 0d6b6ca66216..fa9164ac0f3d 100644
-> > > --- a/drivers/net/phy/phy_device.c
-> > > +++ b/drivers/net/phy/phy_device.c
-> > > @@ -659,6 +659,28 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
-> > >   }
-> > >   EXPORT_SYMBOL(phy_device_create);
-> > > +/* phy_c45_probe_present - checks to see if a MMD is present in the package
-> > > + * @bus: the target MII bus
-> > > + * @prtad: PHY package address on the MII bus
-> > > + * @devad: PHY device (MMD) address
-> > > + *
-> > > + * Read the MDIO_STAT2 register, and check whether a device is responding
-> > > + * at this address.
-> > > + *
-> > > + * Returns: negative error number on bus access error, zero if no device
-> > > + * is responding, or positive if a device is present.
+On Fri, May 22, 2020 at 6:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Sat, May 23, 2020 at 12:22:48AM +0200, Daniel Borkmann wrote:
+> > On 5/22/20 4:23 AM, Martin KaFai Lau wrote:
+> > [...]
+> > >   };
+> > > +/* Cannot be used as an inner map */
+> > > +#define BPF_MAP_NO_INNER_MAP (1 << 0)
+> > > +
+> > >   struct bpf_map {
+> > >     /* The first two cachelines with read-mostly members of which some
+> > >      * are also accessed in fast-path (e.g. ops, max_entries).
+> > > @@ -120,6 +123,7 @@ struct bpf_map {
+> > >     struct bpf_map_memory memory;
+> > >     char name[BPF_OBJ_NAME_LEN];
+> > >     u32 btf_vmlinux_value_type_id;
+> > > +   u32 properties;
+> > >     bool bypass_spec_v1;
+> > >     bool frozen; /* write-once; write-protected by freeze_mutex */
+> > >     /* 22 bytes hole */
+> > > @@ -1037,12 +1041,12 @@ extern const struct file_operations bpf_iter_fops;
+> > >   #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
+> > >     extern const struct bpf_prog_ops _name ## _prog_ops; \
+> > >     extern const struct bpf_verifier_ops _name ## _verifier_ops;
+> > > -#define BPF_MAP_TYPE(_id, _ops) \
+> > > +#define BPF_MAP_TYPE_FL(_id, _ops, properties) \
+> > >     extern const struct bpf_map_ops _ops;
+> > >   #define BPF_LINK_TYPE(_id, _name)
+> > >   #include <linux/bpf_types.h>
+> > >   #undef BPF_PROG_TYPE
+> > > -#undef BPF_MAP_TYPE
+> > > +#undef BPF_MAP_TYPE_FL
+> > >   #undef BPF_LINK_TYPE
+> > >   extern const struct bpf_prog_ops bpf_offload_prog_ops;
+> > > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> > > index 29d22752fc87..3f32702c9bf4 100644
+> > > --- a/include/linux/bpf_types.h
+> > > +++ b/include/linux/bpf_types.h
+> > > @@ -76,16 +76,25 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
+> > >   #endif /* CONFIG_BPF_LSM */
+> > >   #endif
+> > > +#define BPF_MAP_TYPE(x, y) BPF_MAP_TYPE_FL(x, y, 0)
+> > > +
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
+> > > -BPF_MAP_TYPE(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops)
+> > > +/* prog_array->aux->{type,jited} is a runtime binding.
+> > > + * Doing static check alone in the verifier is not enough,
+> > > + * so BPF_MAP_NO_INNTER_MAP is needed.
+> >
+> > typo: INNTER
+> Good catch.
+>
+> >
 > > > + */
-> > > +static int phy_c45_probe_present(struct mii_bus *bus, int prtad, int devad)
-> > > +{
-> > > +	int stat2;
-> > > +
-> > > +	stat2 = mdiobus_c45_read(bus, prtad, devad, MDIO_STAT2);
-> > > +	if (stat2 < 0)
-> > > +		return stat2;
-> > > +
-> > > +	return (stat2 & MDIO_STAT2_DEVPRST) == MDIO_STAT2_DEVPRST_VAL;
-> > > +}
-> > > +
-> > >   /* get_phy_c45_devs_in_pkg - reads a MMD's devices in package registers.
-> > >    * @bus: the target MII bus
-> > >    * @addr: PHY address on the MII bus
-> > > @@ -709,12 +731,25 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
-> > >   {
-> > >   	const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
-> > >   	u32 *devs = &c45_ids->devices_in_package;
-> > > -	int i, phy_reg;
-> > > +	int i, ret, phy_reg;
-> > >   	/* Find first non-zero Devices In package. Device zero is reserved
-> > >   	 * for 802.3 c45 complied PHYs, so don't probe it at first.
-> > >   	 */
-> > > -	for (i = 1; i < num_ids && *devs == 0; i++) {
-> > > +	for (i = 1; i < MDIO_MMD_NUM && *devs == 0; i++) {
-> > > +		if (i >= 8) {
-> > > +			/* Only probe for the devices-in-package if there
-> > > +			 * is a PHY reporting as present here; this avoids
-> > > +			 * picking up on PHYs that implement non-IEEE802.3
-> > > +			 * compliant register spaces.
-> > > +			 */
-> > > +			ret = phy_c45_probe_present(bus, addr, i);
-> > > +			if (ret < 0)
-> > > +				return -EIO;
-> > > +
-> > > +			if (!ret)
-> > > +				continue;
-> > > +		}
-> > 
-> > A second look at 802.3, this can't be done for all MMDs (which becomes
-> > visible when I look at the results from the 88x3310.)  Only MMDs 1, 2,
-> > 3, 4, 5, 30 and 31 are defined to have this register with the "Device
-> > Present" bit pair.
-> > 
-> 
-> I'm not sure it helps, but my thought process following some of the
-> discussion last night was:
-> 
-> something to the effect:
-> 
-> 	for (i = 1; i < MDIO_MMD_NUM && *devs == 0; i++) {
-> +		if (i & RESERVED_MMDS)
-> +			continue;
-> 
-> where RESERVED_MMDS was a hardcoded bitfield matching the IEEE reserved
-> MMDs. or maybe a "IGNORE_MMDS" which also includes BIT0 and other MMDs the
-> code doesn't understand.
+> > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops,
+> > > +           BPF_MAP_NO_INNER_MAP)
+> >
+> > Probably nit, but what is "FL"? flags? We do have map_flags already, but here the
+> > BPF_MAP_NO_INNER_MAP ends up in 'properties' instead. To avoid confusion, it would
+> > probably be better to name it 'map_flags_fixed' since this is what it really means;
+> > fixed flags that cannot be changed/controlled when creating a map.
+> ok. may be BPF_MAP_TYPE_FIXED_FL?
+>
+> >
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERF_EVENT_ARRAY, perf_event_array_map_ops)
+> > >   #ifdef CONFIG_CGROUPS
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_CGROUP_ARRAY, cgroup_array_map_ops)
+> > >   #endif
+> > >   #ifdef CONFIG_CGROUP_BPF
+> > > -BPF_MAP_TYPE(BPF_MAP_TYPE_CGROUP_STORAGE, cgroup_storage_map_ops)
+> > > -BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE, cgroup_storage_map_ops)
+> > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_CGROUP_STORAGE, cgroup_storage_map_ops,
+> > > +           BPF_MAP_NO_INNER_MAP)
+> > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE, cgroup_storage_map_ops,
+> > > +           BPF_MAP_NO_INNER_MAP)
+> > >   #endif
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_HASH, htab_map_ops)
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_HASH, htab_percpu_map_ops)
+> > > @@ -116,8 +125,10 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_REUSEPORT_SOCKARRAY, reuseport_array_ops)
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_QUEUE, queue_map_ops)
+> > >   BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
+> > >   #if defined(CONFIG_BPF_JIT)
+> > > -BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
+> > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops,
+> > > +           BPF_MAP_NO_INNER_MAP)
+> > >   #endif
+> > > +#undef BPF_MAP_TYPE
+> > >   BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
+> > >   BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
+> > [...]
+> > > diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
+> > > index 17738c93bec8..d965a1d328a9 100644
+> > > --- a/kernel/bpf/map_in_map.c
+> > > +++ b/kernel/bpf/map_in_map.c
+> > > @@ -17,13 +17,7 @@ struct bpf_map *bpf_map_meta_alloc(int inner_map_ufd)
+> > >     if (IS_ERR(inner_map))
+> > >             return inner_map;
+> > > -   /* prog_array->aux->{type,jited} is a runtime binding.
+> > > -    * Doing static check alone in the verifier is not enough.
+> > > -    */
+> > > -   if (inner_map->map_type == BPF_MAP_TYPE_PROG_ARRAY ||
+> > > -       inner_map->map_type == BPF_MAP_TYPE_CGROUP_STORAGE ||
+> > > -       inner_map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE ||
+> > > -       inner_map->map_type == BPF_MAP_TYPE_STRUCT_OPS) {
+> > > +   if (inner_map->properties & BPF_MAP_NO_INNER_MAP) {
+> > >             fdput(f);
+> > >             return ERR_PTR(-ENOTSUPP);
+> > >     }
+> >
+> > This whole check here is currently very fragile. For example, given we forbid cgroup
+> > local storage here, why do we not forbid socket local storage? What about other maps
+> > like stackmap? It's quite unclear if it even works as expected and if there's also a
+> > use-case we are aware of. Why not making this an explicit opt-in?
+> Re: "cgroup-local-storage", my understanding is,
+> cgroup-local-storage is local to the bpf's cgroup that it is running under,
+> so it is not ok for a cgroup's bpf to be able to access other cgroup's local
+> storage through map-in-map, so they are excluded here.
+>
+> sk-local-storage does not have this restriction.  For other maps, if there is
+> no known safety issue, why restricting it and create unnecessary API
+> discrepancy?
+>
+> I think we cannot restrict the existing map either unless there is a
+> known safety issue.
+>
+> >
+> > Like explicit annotating via struct bpf_map_ops where everything is visible in one
+> > single place where the map is defined:
+> >
+> > const struct bpf_map_ops array_map_ops = {
+> >         .map_alloc_check = array_map_alloc_check,
+> >         [...]
+> >         .map_flags_fixed = BPF_MAP_IN_MAP_OK,
+> > };
+> I am not sure about adding it to bpf_map_ops instead of bpf_types.h.
+> It will be easier to figure out what map types do not support MAP_IN_MAP (and
+> other future map's fixed properties) in one place "bpf_types.h" instead of
+> having to dig into each map src file.
 
-That seems to be walking into a mine field - which MMDs are reserved
-depends on which revision of the IEEE 802.3 specification you look at:
+I'm 100% with Daniel here. If we are consolidating such things, I'd
+rather have them in one place where differences between maps are
+defined, which is ops. Despite an "ops" name, this seems like a
+perfect place for specifying all those per-map-type properties and
+behaviors. Adding flags into bpf_types.h just splits everything into
+two places: bpf_types.h specifies some differences, while ops specify
+all the other ones.
 
-Spec version	Reserved MMDs
-2012, 2015	0, 12-28
-2018		0, 14-28
+Figuring out map-in-map support is just one of many questions one
+might ask about differences between map types, I don't think that
+justifies adding them to bpf_types.h. Grepping for struct bpf_map_ops
+with search context (i.e., -A15 or something like that) should be
+enough to get a quick glance at all possible maps and what they
+define/override.
 
-and as technology progresses, it's likely more MMDs will no longer be
-reserved.
+It also feels like adding this as bool field for each aspect instead
+of a collection of bits is cleaner and a bit more scalable. If we need
+to add another property with some parameter/constant, or just enum,
+defining one of few possible behaviors, it would be easier to just add
+another field, instead of trying to cram that into u32. It also solves
+your problem of "at the glance" view of map-in-map support features.
+Just name that field unique enough to grep by it :)
 
-There is another problem: 802.3 explicitly defines the devices in
-package registers for MMD 1, 2, 3, 4, 5, 6, 7, and 29, but then goes
-on to say:
-
-"Each MMD contains registers 5 and 6, as defined in Table 45-2."
-
-which seems rather contradictory.
-
-There is also the problem that some PHYs have different values
-in their devices-in-package register for each MMD:
-
-MMD	devices-in-package
-1,3,7	c000009a
-4	4000001a
-30	00000000 (device present = not present)
-31	fffe0000 (device present = not present)
-
-What fun.  Thankfully, MMD1 will be read first, so it doesn't
-cause us a problem.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+>
+> If the objective is to have the future map "consciously" opt-in, how about
+> keeping the "BPF_MAP_TYPE" name as is but add a fixed_flags param as the
+> earlier v1 and flip it from NO to OK flag.  It will be clear that,
+> it is a decision that the new map needs to make instead of a quiet 0
+> in "struct bpf_map_ops".
+>
+> For example,
+> BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops, BPF_MAP_IN_MAP_OK)
+> BPF_MAP_TYPE(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops, 0)
+> BPF_MAP_TYPE(BPF_MAP_TYPE_HASH, htab_map_ops, BPF_MAP_IN_MAP_OK | BPF_MAP_IN_MAP_DYNAMIC_SIZE_OK)
+>
+> >
+> > That way, if someone forgets to add .map_flags_fixed to a new map type, it's okay since
+> > it's _safe_ to forget to add these flags (and okay to add in future uapi-wise) as opposed
+> > to the other way round where one can easily miss the opt-out case and potentially crash
+> > the machine worst case.
