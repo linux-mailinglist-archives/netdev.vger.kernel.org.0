@@ -2,131 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 499B61E29F1
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DAB1E29FF
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 20:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729597AbgEZSWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 14:22:00 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54552 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgEZSV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 14:21:59 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jdeD7-0008T5-IC; Tue, 26 May 2020 18:21:57 +0000
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S1729051AbgEZSZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 14:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728179AbgEZSZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 14:25:58 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2805BC03E96D;
+        Tue, 26 May 2020 11:25:58 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id g9so18449956edr.8;
+        Tue, 26 May 2020 11:25:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=afKePXV5UqK2ZUvdMymIq9tPCqQ112HpkYrwABU1zys=;
+        b=plsjLQU/KzwWN+TjdGYXz8YVIQm1239ou0S/5f4jCz3we8r1Qke+/ts0DI3PeVuh6q
+         CKByTKnGyQ1iQaedMldR6pNpKsarP9nHRolpXCallJMpZENuq8sI6EN+3Pvo9tyWT8tj
+         JCDwK89P6jFFhPr0WlYTIwva8Vytyq0c8isR9+CHB+4DxJP9d9nYCx1mC5OF8eG3Np2Z
+         lZtfKGvFRkgFBB35MR4lDzVT4S7O4E+iv3Q+FZ2JvUs7+G2iuyN+YhMBaHWiijdumWEt
+         KanGWC1YQLH/IR9t+DoZn3y8NOOFE/OU/vrV1rwZHciT2nPrJ4u3v2prYAbzXBLN3Ky1
+         shSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=afKePXV5UqK2ZUvdMymIq9tPCqQ112HpkYrwABU1zys=;
+        b=gaGKBQnKWGKSqGCjmB8QRDyHyBqOI8cAil5Hb3gq4N8AY2Fm/Q0dSGQLfheFqy3I0L
+         GuQmT6ie1+Lq8PNsq8rBg3G3ZXRfn/ggVZ560xODB39Ngrxy8iu2II+CQ/G4RJUp55hV
+         DeK6yMocgPIH+w0jZyj7yaL0NX4qs0LJ5JM5LkPCUx36uCvJVV3UUyk/f7AAsyKUEhHC
+         rlY8zg7dnyfYYAcIp+OQUDjar62moQM4sJy8ElwotZNXRSkLDYdMKXRGmxz3Pd9BLO2w
+         XDgFFV0v1ElGjLeZCyP5UYF424nnsv1XaiarAacE3rzyd2O1cGBkv+R5hs9r3xR20qhD
+         Krtw==
+X-Gm-Message-State: AOAM531vo1nZDzDT3+ea8d2ZgDZDayrE0ymr5Zo8+9qzJbaag62h06vn
+        ROJXGsUKZFOCA5mrad5hM6BVQB+E4fXbGonDvMM=
+X-Google-Smtp-Source: ABdhPJwsR1pqQeQXVBF9HsfqPyD6Jf+HlQNxH16z4gWGUDFriR0DiCQ9c6m7YstoWMpumx7pSDsBYSFEhAx+d8iNeW0=
+X-Received: by 2002:a05:6402:2213:: with SMTP id cq19mr21276373edb.337.1590517556754;
+ Tue, 26 May 2020 11:25:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200506163033.3843-1-m-karicheri2@ti.com> <87r1vdkxes.fsf@intel.com>
+ <CA+h21hqiV71wc0v=-KkPbWNyXSY+-oiz+DsQLAe1XEJw7eP=_Q@mail.gmail.com> <a7d1ebef-7161-9ecc-09ca-83f868ff7dac@ti.com>
+In-Reply-To: <a7d1ebef-7161-9ecc-09ca-83f868ff7dac@ti.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 26 May 2020 21:25:45 +0300
+Message-ID: <CA+h21hp+khuj0jV9+keDuzPDe11Xz1Rs8KKkt=n8MeWVHkcmvQ@mail.gmail.com>
+Subject: Re: [net-next RFC PATCH 00/13] net: hsr: Add PRP driver
+To:     Murali Karicheri <m-karicheri2@ti.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: re: netfilter: nfnetlink_queue: resolve clash for unconfirmed
- conntracks
-Message-ID: <15787b56-b43d-878d-195b-f8fd54662406@canonical.com>
-Date:   Tue, 26 May 2020 19:21:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, linux-api@vger.kernel.org,
+        Sekhar Nori <nsekhar@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Murali,
 
-Static analysis with Coverity has detected a potential issue with the
-commit in linux-next:
+On Tue, 26 May 2020 at 17:12, Murali Karicheri <m-karicheri2@ti.com> wrote:
+>
+> Hi Vladimir,
+>
 
-commit 368982cd7d1bd41cd39049c794990aca3770db44
-Author: Pablo Neira Ayuso <pablo@netfilter.org>
-Date:   Wed May 23 09:17:24 2018 +0200
+> I haven't looked the spec for 802.1CB. If they re-use HSR/PRP Tag in the
+> L2 protocol it make sense to enhance the driver. Else I don't see any
+> re-use possibility. Do you know the above?
+>
+> Thanks
+>
+> Murali
 
-    netfilter: nfnetlink_queue: resolve clash for unconfirmed conntracks
+IEEE 802.1CB redundancy tag sits between Source MAC address and
+Ethertype or any VLAN tag, is 6 bytes in length, of which:
+- first 2 bytes are the 0xf1c1 EtherType
+- next 2 bytes are reserved
+- last 2 bytes are the sequence number
+There is also a pre-standard version of the IEEE 802.1CB redundancy
+tag, which is only 4 bytes in length. I assume vendors of pre-standard
+equipment will want to have support for this 4-byte tag as well, as
+well as a mechanism of converting between HSR/PRP/pre-standard 802.1CB
+tag on one set of ports, and 802.1CB on another set of ports.
 
-Namely:
+>
+> --
+> Murali Karicheri
+> Texas Instruments
 
-2019 static int __nf_conntrack_update(struct net *net, struct sk_buff *skb,
-2020                                 struct nf_conn *ct)
-2021 {
-2022        struct nf_conntrack_tuple_hash *h;
-2023        struct nf_conntrack_tuple tuple;
-
-    1. var_decl: Declaring variable ctinfo without initializer.
-
-2024        enum ip_conntrack_info ctinfo;
-
-...
-...
-
-2066        nf_ct_put(ct);
-2067        ct = nf_ct_tuplehash_to_ctrack(h);
-
-Uninitialized scalar variable (UNINIT)7. uninit_use_in_call:
-Using uninitialized value ctinfo when calling nf_ct_set.
-
-2068        nf_ct_set(skb, ct, ctinfo);
-2069
-
-the call to nf_ct_set uses info as follows:
-
-316 static inline void
-317 nf_ct_set(struct sk_buff *skb, struct nf_conn *ct, enum
-ip_conntrack_info info)
-318 {
-319        skb_set_nfct(skb, (unsigned long)ct | info);
-320 }
-
-so this shows that the info arg (from ctinfo) is being used when it has
-not been initialized.
-
-Colin
+Thanks,
+-Vladimir
