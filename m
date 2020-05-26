@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A851E2EFB
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:33:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C23061E2EFD
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:33:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390952AbgEZTdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 15:33:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49146 "EHLO mail.kernel.org"
+        id S2390862AbgEZTdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 15:33:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49186 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389797AbgEZS4W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 14:56:22 -0400
+        id S2389802AbgEZS4X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 14:56:23 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B544208B6;
+        by mail.kernel.org (Postfix) with ESMTPSA id E3750208DB;
         Tue, 26 May 2020 18:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590519381;
-        bh=zeB4mtttKcrEXgCO0k4Jm6TfTcjFPut91gntKbxyIQA=;
+        s=default; t=1590519382;
+        bh=JHG4u04g44eiuHlgDVIQOAvUt/HD3vMhtyq+qyyYGjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VxmNFSxr690I3/91/3edFgHROpPrDrzA4yk1JG1jOMekU47ADT+nOgOjJuWrlWkx1
-         XtwCF9p+y/VarGxIecuI+A9sVg0SmINiHDwzsFqOqeo3PtMbNhoKxJlJVOkRDuW3S2
-         Op7avDYJlEt2VbWRSLpWpgs1cLCXMywWjfWRFjO4=
+        b=c2Frl8CyPeG4VaPQMlZpHfR1iGUOg7lt/7Hc+41dBrt3VvIidDgmSGYGvbY5vn+3c
+         GUIZ2SF8fnowqH4oyaOVYu6lSJnYE9Wa1RxDw6qJvJvW8QJzwLS5QmZofZXFmh5wzU
+         CoeHsWG4FQ07b2oKsCe4qQDNQs63RVAyuvu2vr8o=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nikolay@cumulusnetworks.com,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net v2 1/5] nexthops: Move code from remove_nexthop_from_groups to remove_nh_grp_entry
-Date:   Tue, 26 May 2020 12:56:14 -0600
-Message-Id: <20200526185618.43748-2-dsahern@kernel.org>
+Subject: [PATCH net v2 2/5] nexthops: don't modify published nexthop groups
+Date:   Tue, 26 May 2020 12:56:15 -0600
+Message-Id: <20200526185618.43748-3-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200526185618.43748-1-dsahern@kernel.org>
 References: <20200526185618.43748-1-dsahern@kernel.org>
@@ -40,79 +40,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-Move nh_grp dereference and check for removing nexthop group due to
-all members gone into remove_nh_grp_entry.
+We must avoid modifying published nexthop groups while they might be
+in use, otherwise we might see NULL ptr dereferences. In order to do
+that we allocate 2 nexthoup group structures upon nexthop creation
+and swap between them when we have to delete an entry. The reason is
+that we can't fail nexthop group removal, so we can't handle allocation
+failure thus we move the extra allocation on creation where we can
+safely fail and return ENOMEM.
 
 Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 Signed-off-by: David Ahern <dsahern@gmail.com>
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/ipv4/nexthop.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ include/net/nexthop.h |  1 +
+ net/ipv4/nexthop.c    | 91 +++++++++++++++++++++++++++----------------
+ 2 files changed, 59 insertions(+), 33 deletions(-)
 
+diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+index c440ccc861fc..8a343519ed7a 100644
+--- a/include/net/nexthop.h
++++ b/include/net/nexthop.h
+@@ -70,6 +70,7 @@ struct nh_grp_entry {
+ };
+ 
+ struct nh_group {
++	struct nh_group		*spare; /* spare group for removals */
+ 	u16			num_nh;
+ 	bool			mpath;
+ 	bool			has_v4;
 diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 715e14475220..b4b772f120a7 100644
+index b4b772f120a7..563f71bcb2d7 100644
 --- a/net/ipv4/nexthop.c
 +++ b/net/ipv4/nexthop.c
-@@ -694,17 +694,21 @@ static void nh_group_rebalance(struct nh_group *nhg)
- 	}
+@@ -63,9 +63,16 @@ static void nexthop_free_mpath(struct nexthop *nh)
+ 	int i;
+ 
+ 	nhg = rcu_dereference_raw(nh->nh_grp);
+-	for (i = 0; i < nhg->num_nh; ++i)
+-		WARN_ON(nhg->nh_entries[i].nh);
++	for (i = 0; i < nhg->num_nh; ++i) {
++		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
+ 
++		WARN_ON(!list_empty(&nhge->nh_list));
++		nexthop_put(nhge->nh);
++	}
++
++	WARN_ON(nhg->spare == nhg);
++
++	kfree(nhg->spare);
+ 	kfree(nhg);
  }
  
--static void remove_nh_grp_entry(struct nh_grp_entry *nhge,
--				struct nh_group *nhg,
-+static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+@@ -697,46 +704,53 @@ static void nh_group_rebalance(struct nh_group *nhg)
+ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
  				struct nl_info *nlinfo)
  {
-+	struct nexthop *nhp = nhge->nh_parent;
++	struct nh_grp_entry *nhges, *new_nhges;
+ 	struct nexthop *nhp = nhge->nh_parent;
  	struct nexthop *nh = nhge->nh;
- 	struct nh_grp_entry *nhges;
-+	struct nh_group *nhg;
- 	bool found = false;
- 	int i;
+-	struct nh_grp_entry *nhges;
+-	struct nh_group *nhg;
+-	bool found = false;
+-	int i;
++	struct nh_group *nhg, *newg;
++	int i, j;
  
  	WARN_ON(!nh);
  
-+	list_del(&nhge->nh_list);
+-	list_del(&nhge->nh_list);
+-
+ 	nhg = rtnl_dereference(nhp->nh_grp);
+-	nhges = nhg->nh_entries;
+-	for (i = 0; i < nhg->num_nh; ++i) {
+-		if (found) {
+-			nhges[i-1].nh = nhges[i].nh;
+-			nhges[i-1].weight = nhges[i].weight;
+-			list_del(&nhges[i].nh_list);
+-			list_add(&nhges[i-1].nh_list, &nhges[i-1].nh->grp_list);
+-		} else if (nhg->nh_entries[i].nh == nh) {
+-			found = true;
+-		}
+-	}
++	newg = nhg->spare;
+ 
+-	if (WARN_ON(!found))
++	/* last entry, keep it visible and remove the parent */
++	if (nhg->num_nh == 1) {
++		remove_nexthop(net, nhp, nlinfo);
+ 		return;
++	}
+ 
+-	nhg->num_nh--;
+-	nhg->nh_entries[nhg->num_nh].nh = NULL;
++	newg->has_v4 = nhg->has_v4;
++	newg->mpath = nhg->mpath;
++	newg->num_nh = nhg->num_nh;
+ 
+-	nh_group_rebalance(nhg);
++	/* copy old entries to new except the one getting removed */
++	nhges = nhg->nh_entries;
++	new_nhges = newg->nh_entries;
++	for (i = 0, j = 0; i < nhg->num_nh; ++i) {
++		/* current nexthop getting removed */
++		if (nhg->nh_entries[i].nh == nh) {
++			newg->num_nh--;
++			continue;
++		}
+ 
+-	nexthop_put(nh);
++		list_del(&nhges[i].nh_list);
++		new_nhges[j].nh_parent = nhges[i].nh_parent;
++		new_nhges[j].nh = nhges[i].nh;
++		new_nhges[j].weight = nhges[i].weight;
++		list_add(&new_nhges[j].nh_list, &new_nhges[j].nh->grp_list);
++		j++;
++	}
 +
-+	nhg = rtnl_dereference(nhp->nh_grp);
- 	nhges = nhg->nh_entries;
- 	for (i = 0; i < nhg->num_nh; ++i) {
- 		if (found) {
-@@ -728,7 +732,11 @@ static void remove_nh_grp_entry(struct nh_grp_entry *nhge,
- 	nexthop_put(nh);
++	nh_group_rebalance(newg);
++	rcu_assign_pointer(nhp->nh_grp, newg);
++
++	list_del(&nhge->nh_list);
++	nexthop_put(nhge->nh);
  
  	if (nlinfo)
--		nexthop_notify(RTM_NEWNEXTHOP, nhge->nh_parent, nlinfo);
-+		nexthop_notify(RTM_NEWNEXTHOP, nhp, nlinfo);
-+
-+	/* if this group has no more entries then remove it */
-+	if (!nhg->num_nh)
-+		remove_nexthop(net, nhp, nlinfo);
+ 		nexthop_notify(RTM_NEWNEXTHOP, nhp, nlinfo);
+-
+-	/* if this group has no more entries then remove it */
+-	if (!nhg->num_nh)
+-		remove_nexthop(net, nhp, nlinfo);
  }
  
  static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
-@@ -736,17 +744,8 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
- {
- 	struct nh_grp_entry *nhge, *tmp;
+@@ -746,6 +760,9 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
  
--	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list) {
--		struct nh_group *nhg;
--
--		list_del(&nhge->nh_list);
--		nhg = rtnl_dereference(nhge->nh_parent->nh_grp);
--		remove_nh_grp_entry(nhge, nhg, nlinfo);
--
--		/* if this group has no more entries then remove it */
--		if (!nhg->num_nh)
--			remove_nexthop(net, nhge->nh_parent, nlinfo);
--	}
-+	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list)
-+		remove_nh_grp_entry(net, nhge, nlinfo);
+ 	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list)
+ 		remove_nh_grp_entry(net, nhge, nlinfo);
++
++	/* make sure all see the newly published array before releasing rtnl */
++	synchronize_rcu();
  }
  
  static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
+@@ -759,10 +776,7 @@ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
+ 		if (WARN_ON(!nhge->nh))
+ 			continue;
+ 
+-		list_del(&nhge->nh_list);
+-		nexthop_put(nhge->nh);
+-		nhge->nh = NULL;
+-		nhg->num_nh--;
++		list_del_init(&nhge->nh_list);
+ 	}
+ }
+ 
+@@ -1085,6 +1099,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ {
+ 	struct nlattr *grps_attr = cfg->nh_grp;
+ 	struct nexthop_grp *entry = nla_data(grps_attr);
++	u16 num_nh = nla_len(grps_attr) / sizeof(*entry);
+ 	struct nh_group *nhg;
+ 	struct nexthop *nh;
+ 	int i;
+@@ -1095,12 +1110,21 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ 
+ 	nh->is_group = 1;
+ 
+-	nhg = nexthop_grp_alloc(nla_len(grps_attr) / sizeof(*entry));
++	nhg = nexthop_grp_alloc(num_nh);
+ 	if (!nhg) {
+ 		kfree(nh);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 
++	/* spare group used for removals */
++	nhg->spare = nexthop_grp_alloc(num_nh);
++	if (!nhg) {
++		kfree(nhg);
++		kfree(nh);
++		return NULL;
++	}
++	nhg->spare->spare = nhg;
++
+ 	for (i = 0; i < nhg->num_nh; ++i) {
+ 		struct nexthop *nhe;
+ 		struct nh_info *nhi;
+@@ -1132,6 +1156,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ 	for (; i >= 0; --i)
+ 		nexthop_put(nhg->nh_entries[i].nh);
+ 
++	kfree(nhg->spare);
+ 	kfree(nhg);
+ 	kfree(nh);
+ 
 -- 
 2.21.1 (Apple Git-122.3)
 
