@@ -2,83 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A6E21E21B2
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 14:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D3F91E21D0
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 14:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729100AbgEZMQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 08:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S1730078AbgEZM1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 08:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727933AbgEZMQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 08:16:37 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36558C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 05:16:37 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id s18so7726140ioe.2
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 05:16:37 -0700 (PDT)
+        with ESMTP id S1726437AbgEZM1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 08:27:16 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED246C03E96D
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 05:27:15 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id fb16so9313367qvb.5
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 05:27:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=Xs1c6/A8GmpgdbMBrIroEWmoFbf3qfcFFbhS2ULR81Q=;
-        b=YshZgWTHdKaAQ+WWAU9rOaMBWCZ2A0mkNijpD0IS8YvAbYKOWvZEXVTC4iUiU5OW5u
-         NU4RZ4YUVirutAwKiLPih5om/a/uYy2Jn2OtHdQBThocVY4V9BIR4XOemmG9lq34rURT
-         iX0PuiHS33A+rCw8HsYWe0cRTgrpmb3PMVhyKSQR8c3CMiUADUOq1XlHEAAf4+9aMleN
-         rmid1LWGgm14uASEwc0HXglc6mYMufaqWpAsh6fdW2CRPkzMi9C6opj94NBkZcyVmmwz
-         S90X9Y0oE39bJpdkCuGdeS3Ug2o8fqOyrS418h8Aqja79fK47PNm88P6c4aS1bZ/90EA
-         cg3g==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5bjnTbxSymDBodMQJw+v0RTaXDOExpuPQyJbhorVKU4=;
+        b=SZ2OcLjwMnYMYIBP8p4GRPfKXMjtcrvr+j3A0T+qDw3dCVSw05paeZCeXFIdTfxMIU
+         0c9hbc7Y8BM6g3RJNl4G6djm44ltWY+8N+h+E3UMzYaEsLkLrZ0ARmN0ccQV+6M4r3wl
+         eicoMQcbU5PzpVAf7nm8ihw1H7IL4LL7yn1xOAp/curRptisSQ9tACJDtUUp4+QjIozG
+         oW8XNpgU5/kLDmgYdtWMeVLxQnghtFx0BQwjuILVbhoVHHZ4IPGFAbwKAuRRQpT9iNfq
+         RbNg/6IHf0RhusKAR5eVzSlidkq4ck9yGF8zBYgRUHsUqiwrONdHQHS1O4BDGWGKdF5X
+         L6KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=Xs1c6/A8GmpgdbMBrIroEWmoFbf3qfcFFbhS2ULR81Q=;
-        b=mX6SW4F+IWMPnuBLv2+kqApQkDmsONyCFM8UxY7wsYM+7sB/hlJeMGQngT3gW3X0ij
-         TVf5LG7eYQLj/SatBrIa/MhbZXxqUOhcDqHmaghDycOSITitNYW5+OZtVgNGCM0T5lHq
-         x97yFGqE2t8FVkNFdRzlzNrKuqjl9jlF2+UOtKg7VSmeBoVxGqiiRSoBBQY8syxPBsb0
-         hGAIAPcKz0ZnYkW7QPXtIdhYv+ljlvBq2WWHxnRYZr+z+KnER4S7jZ46JSM8l841htS+
-         c2yJNtzCDlnYW7PSgKNq9SRIZS+b4sE2r+GYPWubkNkaXnYENY81K+tdnZ8SBC/FLvHX
-         XCIw==
-X-Gm-Message-State: AOAM531UFhBmEVDnIccYj77N5mza8V1Ew7kz0relOTrmPb7+SXHR03CG
-        xC/9vVfvq35RAAOmRrkBoHEMxOOiO+FE+cleOvQ=
-X-Google-Smtp-Source: ABdhPJzZjKO4nJr4n91jRPiNlouvTflVHyO6sU4ltwNaykHjseLGUuDAPkbUq3K/Ctzx7iaIjrCpnRWrazIthj3FmpI=
-X-Received: by 2002:a5e:d910:: with SMTP id n16mr16786525iop.131.1590495396453;
- Tue, 26 May 2020 05:16:36 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5bjnTbxSymDBodMQJw+v0RTaXDOExpuPQyJbhorVKU4=;
+        b=C6VYI+qrqRaRiignFybmaxz5G48r1tcA1PBr6a/BgtXhuZ7kt74gYbXd6WMN9tZFxZ
+         sV94p32E8m8DSPm79wkBcziGa1sXWnrcx2GnBr/5GYwZuJZQeqMxLxl0ZHl+9DMA154W
+         PbFcUSoVBnlUMp4xG2g+SZzcvVCvC85CaOyATKEjx9z5kgWJXsFR1dlW3BHaCBMlnuis
+         K2LMlEVEOkyqZqQYD2bDcj1PVCelSjsHFJ0pPjM8+SKmacYJcIo37DjKYDgIGMsjYmRx
+         2GmfpWLNRbyv/eAMTJL3v4usThHGDQzFb/uycCD2Ung2RmLLdZkRLmNI2uNvd9/EAMMC
+         t0Ng==
+X-Gm-Message-State: AOAM530IMRmERjTd2Nj3QBaIEKX5DJNTnaI7d3HSgbwfwL0wwME9KJlC
+        cK63u3G0z9yNxHhr2NmHYC0WkUAjmKo2kw==
+X-Google-Smtp-Source: ABdhPJyfWTURvuJnAjCrXqljlJx7seJ3yRiirfvFRctG57kza947P3Q4eDennjGyq5Dz++N2GKPGeQ==
+X-Received: by 2002:ad4:4a8b:: with SMTP id h11mr20329603qvx.232.1590496035006;
+        Tue, 26 May 2020 05:27:15 -0700 (PDT)
+Received: from [10.42.0.108] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id h13sm17842260qti.32.2020.05.26.05.27.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2020 05:27:14 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v3 0/2] bpf: memory access fixes
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>, asmadeus@codewreck.org
+References: <20200423175857.20180-1-jhs@emojatatu.com>
+ <125e68f2-2868-34c1-7c13-f3fcdf844835@mojatatu.com>
+ <1d1e025b-346b-d5f7-6c44-da5a64f31a2c@mojatatu.com>
+ <e192690f-ad1a-14c1-8052-e1a3fc0a1b8f@iogearbox.net>
+ <f18653bd-f9a2-8a87-49a5-f682038a8477@mojatatu.com>
+ <CAPpH65zTiy-9WxoK=JzUj2eR8pNu8Mf4xqMmmHtjVVfwTSgydA@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <8559907b-7a39-b719-f8bd-c7851e669372@mojatatu.com>
+Date:   Tue, 26 May 2020 08:27:12 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Reply-To: mrahmedmuzashah@gmail.com
-Received: by 2002:a6b:6319:0:0:0:0:0 with HTTP; Tue, 26 May 2020 05:16:35
- -0700 (PDT)
-From:   "Mr.Ahmed Muzashah" <ahmedmuzashah@gmail.com>
-Date:   Tue, 26 May 2020 13:16:35 +0100
-X-Google-Sender-Auth: 4_BZ9c6DCUBh3Tb968lCefBAL8Y
-Message-ID: <CAO1QnqEqMG=xc1s_Qivkc=RzStbGsnZ1a=GpQNXrkfJHfg_LJQ@mail.gmail.com>
-Subject: From: Mr.Ahmed Muzashah
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAPpH65zTiy-9WxoK=JzUj2eR8pNu8Mf4xqMmmHtjVVfwTSgydA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day,
+On 2020-05-25 4:53 a.m., Andrea Claudi wrote:
 
-Please accept my apologies for writing you a surprise letter.I am Mr.
-Ahmed Muzashah, account Manager with an investment bank here in
-Burkina Faso.I have a very important business I want to discuss with
-you.There is a draft account opened in my firm by a long-time client
-of our bank.I have the opportunity of transferring the left over fund
-(15.8 Million UsDollars)Fiftheen Million Eight Hundred Thousand United
-States of American Dollars of one of my Bank clients who died at the
-collapsing of the world trade center at the United States on September
-11th 2001.
 
-I want to invest this funds and introduce you to our bank for this
-deal.All I require is your honest co-operation and I guarantee you
-that this will be executed under a legitimate arrangement that will
-protect us from any breach of the law.I agree that 40% of this money
-will be for you as my foreign partner,50% for me while 10% is for
-establishing of foundation for the less privilleges in your country.If
-you are really interested in my proposal further details of the
-Transfer will be forwarded unto you as soon as I receive your
-willingness mail for a successful transfer.
+> 
+> Reverting c0325b06382c will for sure fix the segfault identified by
+> Jamal and get rid of the problems highlighted by Daniel and others.
+> To fix the s[n]printf truncation warning we can simply check for its
+> return value. From the snprintf man page:
+> 
+> "a return value of size or more means that the output was truncated."
+> (caveat: until glibc 2.0.6 ret value for truncation is -1)
+> 
+> Jamal: if this works for you, I can submit an alternative to this
+> patch series doing what I proposed above. What do you think?
+> 
 
-Yours Sincerely,
-Mr.Ahmed Muzashah,
+I am ok with that approach.
+
+cheers,
+jamal
