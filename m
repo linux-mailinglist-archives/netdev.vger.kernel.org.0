@@ -2,222 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627C51E2968
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB291E2952
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389085AbgEZRsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 13:48:50 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:58428 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388499AbgEZRsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:48:50 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04QHmhNP103268;
-        Tue, 26 May 2020 12:48:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590515323;
-        bh=qHVpA1Q6epqnqSqEAx0SKTTya9mqUNPldRJpAOKn1GQ=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=keLEo3SzQPdpQzCKQ058xrEz58iG72v5jTMmZ4gBcHJ7BT3pWilfssK4BAB9A4Gio
-         XEU5p24R3OQ7SRLeHWjJw9Znv2Y+RUkLNQni9OPTwfvvsdIW8KIF+93oIb2dfAaM93
-         FPaoAuUTKZWNqdzrzSIIaMGTIBPuGUUPd+7dccZk=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04QHmhte124674
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 May 2020 12:48:43 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 26
- May 2020 12:47:18 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 26 May 2020 12:47:18 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QHlIgs107893;
-        Tue, 26 May 2020 12:47:18 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v3 4/4] net: dp83869: Add RGMII internal delay configuration
-Date:   Tue, 26 May 2020 12:47:16 -0500
-Message-ID: <20200526174716.14116-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200526174716.14116-1-dmurphy@ti.com>
-References: <20200526174716.14116-1-dmurphy@ti.com>
+        id S2388767AbgEZRrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 13:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726821AbgEZRrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:47:31 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76177C03E96D;
+        Tue, 26 May 2020 10:47:30 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id c185so7392215qke.7;
+        Tue, 26 May 2020 10:47:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=49i00jYU127vVVjkcUG3jGAuS2Gj6vFaNuDKHc8vb5g=;
+        b=B2gkg/HtGsn9dNHu7BKpysSH4n5Jy6pfh3aI49UN3AmJLCj3dXuWb1vZK8uGHyYS0L
+         edASTl1cllAuDouTKKrv5cZfp9nGLvtdkruy1oMQ6m5hzYLQ5iwoptS26wG4aBapfB0A
+         Zuh6KOadh/7sCyfTysCXQDOie2ZmirczhXuTyWCmWdGCZcNDRHmvgKp1yzy85luteUGF
+         1QYMEtX5lOL4TB3GoBm1U9SvyWT37t+/LWaQg4W09aaXOZZMpcO9N780G7tJ0ElNhwsS
+         7GngpVu/3RZexp6jW2G3ZH2q5iRM5IoTfZAfBPLn4nm2DqL+5cwr65wFevurSwsXkfyb
+         OhLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=49i00jYU127vVVjkcUG3jGAuS2Gj6vFaNuDKHc8vb5g=;
+        b=NylArhrMwLo5SNpt8hzg7ixMMH8X1XaZ68joghrolRY1epkcwf+Bj1tQRL2wivWz6H
+         FPKgF87ihkfRfvyz93eP8hjWDDhEBiWrJ0wOFlzSBZKLi6FKNdBXMp14a4Qt3UzhGg3u
+         PNzxBF5DjqvZjmN0Nvaj38N8sDM0ofetnAxmSoNXjz96zAKjLtdyzRNhy0U6+3i4Oddz
+         wyfqcJRXVe6p9XbTVBbTMPrlFW/2EWuVwKe97PvCrTIz0nPpeCgprXmbNRlZnzgbkies
+         a5VzXo4bMQ5CjyxuFgUI4g3rLbl+370P3vv7arw4S5utks2rK3Wu3mjBukg/ZevJ1wRD
+         17gA==
+X-Gm-Message-State: AOAM530d4W8ZuMgL1F/EwHg+8Rc8O3js/WO6uZH9HnRPQdzSXhC2KqbH
+        ujwUIeu6dFhggzfiYtOroyDcB59cdU3MON+QgQ0=
+X-Google-Smtp-Source: ABdhPJyjEzV808YgZSfDUmbZzR6curcUfJ3uJkZd8aXfXl0bZKd+2KFq8NOYbHZJDucOqcFE5cdcpiheZXSZktmKidw=
+X-Received: by 2002:a37:a3ca:: with SMTP id m193mr2792890qke.449.1590515249696;
+ Tue, 26 May 2020 10:47:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20200521191752.3448223-1-kafai@fb.com> <CAEf4BzYQmUCbQ-PB2UR5n=WEiCHU3T3zQcQCnjvqCew6rmjGLg@mail.gmail.com>
+ <20200521225939.7nmw7l5dk3wf557r@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZyhT6D6F2A+cN6TKvLFoH5GU5QVEVW7ZkG+KQRgJC-1w@mail.gmail.com> <20200521231618.x3s45pttduqijbjv@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200521231618.x3s45pttduqijbjv@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 26 May 2020 10:47:18 -0700
+Message-ID: <CAEf4BzagR04dQYvhCZOGq9Vt7SfGXjJNHhorw9MCNm9pH_xxHg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] bpf: Allow inner map with different max_entries
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RGMII internal delay configuration for Rx and Tx.
+On Thu, May 21, 2020 at 4:16 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, May 21, 2020 at 04:10:36PM -0700, Andrii Nakryiko wrote:
+> > > > 4. Then for size check change, again, it's really much simpler and
+> > > > cleaner just to have a special case in check in bpf_map_meta_equal for
+> > > > cases where map size matters.
+> > > It may be simpler but not necessary less fragile for future map type.
+> > >
+> > > I am OK for removing patch 1 and just check for a specific
+> > > type in patch 2 but I think it is fragile for future map
+> > > type IMO.
+> >
+> > Well, if we think that the good default needs to be to check size,
+> > then similar to above, explicitly list stuff that *does not* follow
+> > the default, i.e., maps that don't want max_elements verification. My
+> > point still stands.
+>
+> I think consoldating map properties in bpf_types.h is much cleaner
+> and less error prone.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 91 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 88 insertions(+), 3 deletions(-)
+Consolidation is good, but then we hopefully do it for all aspects of
+maps that currently have ad-hoc checks spread across a lot of places.
+Just looking at map_lookup_elem in syscall.c makes me wanna cry, for
+example :) I'll reply on another thread where Daniel proposed putting
+everything into ops, I like that better.
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index cfb22a21a2e6..1c440e0c0d64 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -64,6 +64,9 @@
- #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
- #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
- 
-+/* RGMIIDCTL */
-+#define DP83869_RGMII_CLK_DELAY_SHIFT		4
-+
- /* STRAP_STS1 bits */
- #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
- #define DP83869_STRAP_STS1_RESERVED		BIT(11)
-@@ -78,9 +81,6 @@
- #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
- #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
- 
--/* RGMIIDCTL bits */
--#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
--
- /* IO_MUX_CFG bits */
- #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
- 
-@@ -99,6 +99,10 @@
- #define DP83869_OP_MODE_MII			BIT(5)
- #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
- 
-+static int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500, 1750,
-+				       2000, 2250, 2500, 2750, 3000, 3250,
-+				       3500, 3750, 4000};
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -108,6 +112,8 @@ enum {
- struct dp83869_private {
- 	int tx_fifo_depth;
- 	int rx_fifo_depth;
-+	s32 rx_id_delay;
-+	s32 tx_id_delay;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -218,6 +224,7 @@ static int dp83869_of_init(struct phy_device *phydev)
- 		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
- 		if (ret < 0)
- 			return ret;
-+
- 		if (ret & DP83869_STRAP_MIRROR_ENABLED)
- 			dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
- 		else
-@@ -232,6 +239,20 @@ static int dp83869_of_init(struct phy_device *phydev)
- 				 &dp83869->tx_fifo_depth))
- 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
- 
-+	ret = of_property_read_u32(of_node, "rx-internal-delay-ps",
-+				   &dp83869->rx_id_delay);
-+	if (ret) {
-+		dp83869->rx_id_delay = ret;
-+		ret = 0;
-+	}
-+
-+	ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
-+				   &dp83869->tx_id_delay);
-+	if (ret) {
-+		dp83869->tx_id_delay = ret;
-+		ret = 0;
-+	}
-+
- 	return ret;
- }
- #else
-@@ -367,10 +388,45 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- 	return ret;
- }
- 
-+static int dp83869_get_delay(struct phy_device *phydev)
-+{
-+	struct dp83869_private *dp83869 = phydev->priv;
-+	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
-+	int tx_delay = 0;
-+	int rx_delay = 0;
-+
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
-+		tx_delay = phy_get_delay_index(phydev,
-+					       &dp83869_internal_delay[0],
-+					       delay_size, dp83869->tx_id_delay,
-+					       false);
-+		if (tx_delay < 0) {
-+			phydev_err(phydev, "Tx internal delay is invalid\n");
-+			return tx_delay;
-+		}
-+	}
-+
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
-+		rx_delay = phy_get_delay_index(phydev,
-+					       &dp83869_internal_delay[0],
-+					       delay_size, dp83869->rx_id_delay,
-+					       false);
-+		if (rx_delay < 0) {
-+			phydev_err(phydev, "Rx internal delay is invalid\n");
-+			return rx_delay;
-+		}
-+	}
-+
-+	return rx_delay | tx_delay << DP83869_RGMII_CLK_DELAY_SHIFT;
-+}
-+
- static int dp83869_config_init(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	int ret, val;
-+	int delay;
- 
- 	ret = dp83869_configure_mode(phydev, dp83869);
- 	if (ret)
-@@ -394,6 +450,35 @@ static int dp83869_config_init(struct phy_device *phydev)
- 				     dp83869->clk_output_sel <<
- 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
- 
-+	if (phy_interface_is_rgmii(phydev)) {
-+		ret = dp83869_get_delay(phydev);
-+		if (ret < 0)
-+			return ret;
-+
-+		delay = ret;
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
-+				    delay);
-+		if (ret)
-+			return ret;
-+
-+		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
-+		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+			 DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
-+			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+				DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
-+				    val);
-+	}
-+
- 	return ret;
- }
- 
--- 
-2.26.2
-
+> I'd only like to tweak the macro in patch 1 to avoid explicit ", 0)".
+> Can BPF_MAP_TYPE() macro stay as-is and additional macro introduced
+> for maps with properties ? BPF_MAP_TYPE_FL() ?
+> Or do some macro magic that the same macro can be used with 2 and 3 args?
