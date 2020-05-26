@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B0B1E2739
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D93EC1E2747
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 18:41:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729707AbgEZQju convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 26 May 2020 12:39:50 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:21958 "EHLO
+        id S2388425AbgEZQlD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 26 May 2020 12:41:03 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:38962 "EHLO
         eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728339AbgEZQju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:39:50 -0400
+        by vger.kernel.org with ESMTP id S1728561AbgEZQlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 12:41:03 -0400
 Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- uk-mta-181-6VB_yeiiNfKP9dF58f0TAw-1; Tue, 26 May 2020 17:39:45 +0100
-X-MC-Unique: 6VB_yeiiNfKP9dF58f0TAw-1
+ uk-mta-105-3_X4sytXO4m6Oi4kzGeDvg-1; Tue, 26 May 2020 17:39:50 +0100
+X-MC-Unique: 3_X4sytXO4m6Oi4kzGeDvg-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 26 May 2020 17:39:44 +0100
+ Server (TLS) id 15.0.1347.2; Tue, 26 May 2020 17:39:50 +0100
 Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
  AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 26 May 2020 17:39:44 +0100
+ Tue, 26 May 2020 17:39:50 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
 To:     'Vlad Yasevich' <vyasevich@gmail.com>,
         'Neil Horman' <nhorman@tuxdriver.com>,
@@ -30,13 +30,11 @@ To:     'Vlad Yasevich' <vyasevich@gmail.com>,
         "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
         'Christoph Hellwig' <hch@lst.de>,
         "'Marcelo Ricardo Leitner'" <marcelo.leitner@gmail.com>
-Subject: [PATCH v3 net-next 0/1] sctp: Pull the user copies out of the
- individual sockopt functions.
-Thread-Topic: [PATCH v3 net-next 0/1] sctp: Pull the user copies out of the
- individual sockopt functions.
-Thread-Index: AdYzesqv+HQT3q1/TBSaB1FzuCxCCg==
-Date:   Tue, 26 May 2020 16:39:44 +0000
-Message-ID: <dd5b77de1c264cc6955d45a25c870512@AcuMS.aculab.com>
+Subject: [PATCH v3 net-next 1/8] sctp: setsockopt, rename some locals.
+Thread-Topic: [PATCH v3 net-next 1/8] sctp: setsockopt, rename some locals.
+Thread-Index: AdYzeumDi4trGUbOSZOCDOvArtqS9w==
+Date:   Tue, 26 May 2020 16:39:50 +0000
+Message-ID: <0427477eddd345c79538a85947e73868@AcuMS.aculab.com>
 Accept-Language: en-GB, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -53,66 +51,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series moves all the copy_to/from_user() out of the
-individual socket option functions into the outer wrapper.
+Rename locals to avoid clash with structure fields in next patch.
 
-It also adds separate wrappers that use kernel buffers and could be
-exported to other modules.
+Signed-off-by: David Laight <david.laight@aculab.com>
 
-Because of the way SCTP 'abuses' socket options, the getsockopt() 
-has to do a full read-modify-write operation on the buffer.
+---
+ net/sctp/socket.c | 46 +++++++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-There are also both setsockopt() and getsockopt() functions that
-need to return positive values (probably used internally in libc).
-SCTP_SOCKOPT_CONNECTX3 also needs to update the user buffer and
-return an errno value.
-
-SCTP_SOCKOPT_CONNECTX3 is the only option that contains an indirect
-pointer. So cannot be called from within the kernel.
-Other calls provide the same functionality.
-
-There is also real fubar of SCTP_GET_LOCAL_ADDRS which has to
-return the wrong length 'for historic compatibility'.
-Although I'm not sure how portable that makes applications.
-
-I've managed to split the patch into 8 fragments.
-Some of the intermediate files aren't nice - but do compile.
-
-Commit 5960cefab (which limited some of the memdup_user() calls)
-can be reverted (one part is actually too generous), and a
-check added to the memdup_user() in SCTP_SOCKOPT_CONNECTX3
-which was ommitted previosly.
-
-I tried making the buffer to kernel_sctp_setsockopt() 'const'
-but that is probably a larger patch than this one!
-
-Patches 1-3 setsockopt:
-    1: Rename some local variables to avoid clashing with structure members.
-    2: Pull the copies out of sctp_setsockopt().
-       This uses some '#define foo (*foo)' to limit the changes.
-    3: Expand the #defines. This generates the same object code.
-Patches 4-6 getsockopt:
-    4: Rename some local variables to avoid clashing with structure members.
-    5: Pull the copies out of sctp_getsockopt().
-       This uses some '#define foo (*foo)' to limit the changes.
-    6: Expand the #defines. This generates the same object code.
-Patches 7-8 tidyup:
-    7: Replace most 'goto out' with 'return -Exxxxx'.
-    8: Code alignment.
-
-Changes for v3:
-- Split into 8 patches.
-- Use memzero_explicit() at the end of sctp_setsockopt_auth_key()
-- Correct the length check in sctp_setsockopt_paddr_thresholds().
-- Increase the maximum user buffer size to 256k (128k might not
-  be enough.)
-
-Changes for v2;
-- Add missing 'static'.
-- Increase maximum user buffer size from 64k to 128k to allow for some
-  maximal length buffers.
-
-	David
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 1b56fc4..c1c8215 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -3088,7 +3088,7 @@ static int sctp_setsockopt_nodelay(struct sock *sk, char __user *optval,
+  */
+ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigned int optlen)
+ {
+-	struct sctp_rtoinfo rtoinfo;
++	struct sctp_rtoinfo params;
+ 	struct sctp_association *asoc;
+ 	unsigned long rto_min, rto_max;
+ 	struct sctp_sock *sp = sctp_sk(sk);
+@@ -3096,18 +3096,18 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
+ 	if (optlen != sizeof (struct sctp_rtoinfo))
+ 		return -EINVAL;
+ 
+-	if (copy_from_user(&rtoinfo, optval, optlen))
++	if (copy_from_user(&params, optval, optlen))
+ 		return -EFAULT;
+ 
+-	asoc = sctp_id2assoc(sk, rtoinfo.srto_assoc_id);
++	asoc = sctp_id2assoc(sk, params.srto_assoc_id);
+ 
+ 	/* Set the values to the specific association */
+-	if (!asoc && rtoinfo.srto_assoc_id != SCTP_FUTURE_ASSOC &&
++	if (!asoc && params.srto_assoc_id != SCTP_FUTURE_ASSOC &&
+ 	    sctp_style(sk, UDP))
+ 		return -EINVAL;
+ 
+-	rto_max = rtoinfo.srto_max;
+-	rto_min = rtoinfo.srto_min;
++	rto_max = params.srto_max;
++	rto_min = params.srto_min;
+ 
+ 	if (rto_max)
+ 		rto_max = asoc ? msecs_to_jiffies(rto_max) : rto_max;
+@@ -3123,17 +3123,17 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
+ 		return -EINVAL;
+ 
+ 	if (asoc) {
+-		if (rtoinfo.srto_initial != 0)
++		if (params.srto_initial != 0)
+ 			asoc->rto_initial =
+-				msecs_to_jiffies(rtoinfo.srto_initial);
++				msecs_to_jiffies(params.srto_initial);
+ 		asoc->rto_max = rto_max;
+ 		asoc->rto_min = rto_min;
+ 	} else {
+ 		/* If there is no association or the association-id = 0
+ 		 * set the values to the endpoint.
+ 		 */
+-		if (rtoinfo.srto_initial != 0)
+-			sp->rtoinfo.srto_initial = rtoinfo.srto_initial;
++		if (params.srto_initial != 0)
++			sp->rtoinfo.srto_initial = params.srto_initial;
+ 		sp->rtoinfo.srto_max = rto_max;
+ 		sp->rtoinfo.srto_min = rto_min;
+ 	}
+@@ -3155,23 +3155,23 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
+ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsigned int optlen)
+ {
+ 
+-	struct sctp_assocparams assocparams;
++	struct sctp_assocparams params;
+ 	struct sctp_association *asoc;
+ 
+ 	if (optlen != sizeof(struct sctp_assocparams))
+ 		return -EINVAL;
+-	if (copy_from_user(&assocparams, optval, optlen))
++	if (copy_from_user(&params, optval, optlen))
+ 		return -EFAULT;
+ 
+-	asoc = sctp_id2assoc(sk, assocparams.sasoc_assoc_id);
++	asoc = sctp_id2assoc(sk, params.sasoc_assoc_id);
+ 
+-	if (!asoc && assocparams.sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
++	if (!asoc && params.sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
+ 	    sctp_style(sk, UDP))
+ 		return -EINVAL;
+ 
+ 	/* Set the values to the specific association */
+ 	if (asoc) {
+-		if (assocparams.sasoc_asocmaxrxt != 0) {
++		if (params.sasoc_asocmaxrxt != 0) {
+ 			__u32 path_sum = 0;
+ 			int   paths = 0;
+ 			struct sctp_transport *peer_addr;
+@@ -3188,24 +3188,24 @@ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsig
+ 			 * then one path.
+ 			 */
+ 			if (paths > 1 &&
+-			    assocparams.sasoc_asocmaxrxt > path_sum)
++			    params.sasoc_asocmaxrxt > path_sum)
+ 				return -EINVAL;
+ 
+-			asoc->max_retrans = assocparams.sasoc_asocmaxrxt;
++			asoc->max_retrans = params.sasoc_asocmaxrxt;
+ 		}
+ 
+-		if (assocparams.sasoc_cookie_life != 0)
+-			asoc->cookie_life = ms_to_ktime(assocparams.sasoc_cookie_life);
++		if (params.sasoc_cookie_life != 0)
++			asoc->cookie_life = ms_to_ktime(params.sasoc_cookie_life);
+ 	} else {
+ 		/* Set the values to the endpoint */
+ 		struct sctp_sock *sp = sctp_sk(sk);
+ 
+-		if (assocparams.sasoc_asocmaxrxt != 0)
++		if (params.sasoc_asocmaxrxt != 0)
+ 			sp->assocparams.sasoc_asocmaxrxt =
+-						assocparams.sasoc_asocmaxrxt;
+-		if (assocparams.sasoc_cookie_life != 0)
++						params.sasoc_asocmaxrxt;
++		if (params.sasoc_cookie_life != 0)
+ 			sp->assocparams.sasoc_cookie_life =
+-						assocparams.sasoc_cookie_life;
++						params.sasoc_cookie_life;
+ 	}
+ 	return 0;
+ }
+-- 
+1.8.1.2
 
 -
 Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
