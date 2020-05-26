@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753311E3137
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 23:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B83A1E313C
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 23:35:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389254AbgEZVaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 17:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388740AbgEZVad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 17:30:33 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0982C061A0F
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 14:30:33 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id y9so551907qvs.4
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 14:30:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=L6obmAuBJ2DQncnSreVld3CzySl3cPainjgkmE8zbyY=;
-        b=pcA6B1M2DaV5ulm8iEhff6eogaBiIeyE1I8Yp39EV9ETGPiHWPt9DQfXjlV85TntKn
-         pzQ1vX1q4dBRi0N78lircqyNTyWov/j/4fPta6gpywUHHz3wvDGMYU/K/0b4fOtZ06d7
-         NTxtBLxRQHoTSfSPqvDrAV5tWabxjP1t3SR9mvRo/pTJp+swi8QmsykakUtr8k3H8+N1
-         D8QQEoHk2uAFtzCKL5rwpoASci/NMarybsK3NVE+MaCJskyKxeDnzWPEuX0+MrAruIkn
-         MVlxW4CYypE5GAWea1yQOgE7yv2Td9nDpc3rLVNDhM9WrgSrwA84NICybpDT/H3+wKW6
-         Q4eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=L6obmAuBJ2DQncnSreVld3CzySl3cPainjgkmE8zbyY=;
-        b=nkS7cdqWwG7yRvhaUKDWO2Lq+Woa8I6ZOGXeu5RI9R0lsIrLPEbaGxnkZPEslVZ4+9
-         kyCLjmV64smdGQy4Ml1pBmPFiSunnQGyN2cAq9X6vuC4KogNKIKooLWBhBSdKHazVfls
-         HEAl9BXbYkyFfKUsK9gTXGrIOhl9SvmkgOx/bnO/MIl4tatf43v1CeIJ8The+zVimQPj
-         y1Kxyvnc5zfjNwCPeRD2Z6my2n0VDdosKv4NtpamWfD+fIkcU4BlBxIWDKCHfVhF/5je
-         hnDvbZwl/I0YN7Lh6OJxiFwwTYbjz7KDGdv38WWhN4k0r0KGTwPnKPFh2LcYE1SYVELK
-         zqSQ==
-X-Gm-Message-State: AOAM531ZRCiVKeinu8cH/kHm5F2Uo4h4WuQA6kUBRdRAzpQTwQknuVb/
-        g7nOrJzgXfjSw7MEsK0f2PQ=
-X-Google-Smtp-Source: ABdhPJxIGO8svpIJAkhtgT8jlcZP6ZR8lzqyD2kHSJVv2jf16r11L0/6sG4+AkgfwoZlkEfzax0a8g==
-X-Received: by 2002:a05:6214:1491:: with SMTP id bn17mr22747662qvb.138.1590528632664;
-        Tue, 26 May 2020 14:30:32 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
-        by smtp.googlemail.com with ESMTPSA id y28sm803081qtc.62.2020.05.26.14.30.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2020 14:30:32 -0700 (PDT)
-Subject: Re: bpf-next/net-next: panic using bpf_xdp_adjust_head
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "brouer@redhat.com" <brouer@redhat.com>
-References: <8d211628-9290-3315-fb1e-b0651d6e1966@gmail.com>
- <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4c24cb6b-eced-051f-014b-410cd95d5cef@gmail.com>
-Date:   Tue, 26 May 2020 15:30:29 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S2389678AbgEZVdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 17:33:14 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:52192 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388740AbgEZVdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 17:33:14 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04QLX8rf000603;
+        Tue, 26 May 2020 16:33:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1590528788;
+        bh=BlTc2XD4wveY6Y5v42t1Iy3n20uEtWA8G60rMOOS12M=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=fj8x4BcIDJiQKBswYbydlLW1JBAuSaRwx4NH0Ka2036RykFLtbC4ZWm4Lzn7aFWk3
+         Lyu1RAR7BnYlLGOpYen7MixGckUHqpEoRANIHWkiQ2puVTYDWsGEKVqr9mVDoTxBg8
+         J2k7iLndDXfXN/DbPqU6kQ6C+vsporWRx16+z1wU=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04QLX8oJ045675
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 26 May 2020 16:33:08 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 26
+ May 2020 16:33:07 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 26 May 2020 16:33:07 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04QLX7jN024529;
+        Tue, 26 May 2020 16:33:07 -0500
+Subject: Re: [net-next RFC PATCH 00/13] net: hsr: Add PRP driver
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20200506163033.3843-1-m-karicheri2@ti.com>
+ <87r1vdkxes.fsf@intel.com>
+ <CA+h21hqiV71wc0v=-KkPbWNyXSY+-oiz+DsQLAe1XEJw7eP=_Q@mail.gmail.com>
+ <a7d1ebef-7161-9ecc-09ca-83f868ff7dac@ti.com>
+ <CA+h21hp+khuj0jV9+keDuzPDe11Xz1Rs8KKkt=n8MeWVHkcmvQ@mail.gmail.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <2e9e56e4-be15-9745-f984-15f9188cdf80@ti.com>
+Date:   Tue, 26 May 2020 17:33:06 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CA+h21hp+khuj0jV9+keDuzPDe11Xz1Rs8KKkt=n8MeWVHkcmvQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/26/20 3:23 PM, Saeed Mahameed wrote:
+Hi Vladimir
+
+On 5/26/20 2:25 PM, Vladimir Oltean wrote:
+> Hi Murali,
 > 
-> looks like: xdp->data_meta has some invalid value.
-> and i think its boundaries should be checked on 
-> bpf_xdp_adjust_head() regardless of the issue that you are seeing.
-> 
-> Anyway I can't figure out the reason for this without extra digging
-> since in mlx5 we do xdp_set_data_meta_invalid(); before passing the xdp
-> buff to the bpf program, so it is not clear why would you hit the
-> memove in bpf_xdp_adjust_head().
-> 
->> [ 7270.033014]  bpf_xdp_adjust_head+0x68/0x80
->> [ 7270.037126]  bpf_prog_7d719f00afcf8e6c_xdp_l2fwd_prog+0x198/0xa10
->> [ 7270.043284]  mlx5e_xdp_handle+0x55/0x500 [mlx5_core]
->> [ 7270.048277]  mlx5e_skb_from_cqe_linear+0xf0/0x1b0 [mlx5_core]
->> [ 7270.054053]  mlx5e_handle_rx_cqe+0x64/0x140 [mlx5_core]
->> [ 7270.059297]  mlx5e_poll_rx_cq+0x8c8/0xa30 [mlx5_core]
->> [ 7270.064373]  mlx5e_napi_poll+0xdc/0x6a0 [mlx5_core]
->> [ 7270.069260]  net_rx_action+0x13d/0x3d0
->> [ 7270.073020]  __do_softirq+0xdd/0x2d0
+> On Tue, 26 May 2020 at 17:12, Murali Karicheri <m-karicheri2@ti.com> wrote:
 >>
->>
->> git bisect chased it to
->>   13209a8f7304 ("Merge
->> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+>> Hi Vladimir,
 >>
 > 
-> Are you testing vanilla kernel ? 
-
-yes - git bisect had no changes on top.
-
+>> I haven't looked the spec for 802.1CB. If they re-use HSR/PRP Tag in the
+>> L2 protocol it make sense to enhance the driver. Else I don't see any
+>> re-use possibility. Do you know the above?
+>>
+>> Thanks
+>>
+>> Murali
 > 
-> what does the xdp program do with the frame/xdp_buff other than
-> bpf_xdp_adjust_head()/ i mean which other bpf helper is it calling ?
+> IEEE 802.1CB redundancy tag sits between Source MAC address and
+> Ethertype or any VLAN tag, is 6 bytes in length, of which:
+> - first 2 bytes are the 0xf1c1 EtherType
+> - next 2 bytes are reserved
+> - last 2 bytes are the sequence number
+> There is also a pre-standard version of the IEEE 802.1CB redundancy
+> tag, which is only 4 bytes in length. I assume vendors of pre-standard
+> equipment will want to have support for this 4-byte tag as well, as
+> well as a mechanism of converting between HSR/PRP/pre-standard 802.1CB
+> tag on one set of ports, and 802.1CB on another set of ports.
+> 
+Thanks for sharing the details. I also took a quick glance at the
+802.1CB spec today. It answered also my above question
+1) In addition to FRER tag, it also includes HSR tag and PRP trailer
+that can be provisioned through management objects.
+2) Now I think I get what Vinicius refers to the interoperability. there
+can be HSR tag received on ingress port and PRP on the egress port of
+a relay function.
+
+Essentially tag usage is configurable on a stream basis. Since both
+HSR and PRP functions for frame formatting and decoding would be
+re-usable. In addition driver could be enhanced for FRER functions.
+
+Regards,
+
+Murali
+>>
+>> --
+>> Murali Karicheri
+>> Texas Instruments
+> 
+> Thanks,
+> -Vladimir
 > 
 
-nothing relevant. map lookup of a <mac,vlan> pair, map lookup of next
-index, pop the vlan header, redirect to tap device:
-
-   https://github.com/dsahern/bpf-progs/blob/master/ksrc/xdp_l2fwd.c
-
-A program that I have been using for 5-6 months.
+-- 
+Murali Karicheri
+Texas Instruments
