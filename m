@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D771E24C4
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 16:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C6C41E24F6
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 17:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731451AbgEZO6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 10:58:42 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46269 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731370AbgEZO6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 10:58:30 -0400
-Received: by mail-pg1-f193.google.com with SMTP id p21so10173164pgm.13;
-        Tue, 26 May 2020 07:58:30 -0700 (PDT)
+        id S1729611AbgEZPHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 11:07:43 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43897 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728166AbgEZPHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 11:07:43 -0400
+Received: by mail-pg1-f195.google.com with SMTP id 185so1979276pgb.10;
+        Tue, 26 May 2020 08:07:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lLNCK+WRq9ug4fTBP9sca/wv2hUwl+4zOX5ypfLbsKY=;
-        b=PRMSnGv9mhb+gmul9y6X87lLu6mjkdHuyfsamDsv/WYlYlThgQF+6/BczFv24RQh28
-         L+lPITIjmSkrk6wO/uGPYzBFd051KF8qqDjWhbeq03/yWGLdoP4l9tRxJdU9cqFxWzL6
-         mAuGdVIF39YP0xprXcM6hmG1QqsjR6pg/QBW7CNrkMEli2D/AYgvM/8ojuoS/cRwuZlL
-         Ml7n2KKTUSPikvIvcZJBOCIk8yb0KkfMeqIb4bb5AGTyQZ1PbA2vUYH2JE7kPFtkNwbT
-         rPAc2V4aiI1fcRhcenz8Y4biGUhhM6hoKIb6IhkZmypmQAatrLMQINzOHFZGJD368FFW
-         A9SQ==
-X-Gm-Message-State: AOAM531CVFYwY2upikhvWtfK+f73PfZfGgyeWTNQY3cMXddcYpMPgvJZ
-        tSx713+1uVf6O4LOkQQdqEOBIsDQD70g4w==
-X-Google-Smtp-Source: ABdhPJztJRZpLHdtJV036fTHC1B9gsIyCD7HAHmajg7pNI3kRXEq9jRzWhS4XEoXuX2KgzB1H0zWTA==
-X-Received: by 2002:a65:41c8:: with SMTP id b8mr1383705pgq.265.1590505109347;
-        Tue, 26 May 2020 07:58:29 -0700 (PDT)
+        bh=L6RbYv5B1MYyKpilgE+iTClDmvIVUX2RuuOQOJ/aMVQ=;
+        b=WNsW+JqxQqm1qgxF7HiiTvL2d/DCKjcYs294L0UiPjee0afDrntI3Dv7MkN3DB76Du
+         mNXg/263fBRfosNnylqs89JZoQraoQPxshz2dELM0PkQKQ9+7weFdHVsWVfhs9hn4lVA
+         txQyd6nhTuucLSYbP6J/HKM54X/VArZPLuQBEDrYsbjxQQo3teaKkXwEl8bFh8Pp5XEz
+         SXJFJgsS3CCQU57kzkwFnMeqZyURJJYDQh0y39OViYK0iEK8zerZnUqa+Ax1gmUE+lv4
+         REXXBKowtySHX40Bxnw4TEh/9IFy2n9fxy7Y9iVn8U1wQehKRaOzcbA4Kq2rKH+Gr7Zo
+         qtGg==
+X-Gm-Message-State: AOAM531ubOra4Ak3AP8d0Sf28+v1lbmilc6fvK83qiSUC5dF2LSGtB/i
+        uWRNR+cjooxSQOmEcfIebiwG8KwnupR1zw==
+X-Google-Smtp-Source: ABdhPJwU5ShAKbAvJXQtY62vZ1/Gh7rdLSj1+p4Kod680hhz3y98c6Kz9js7ZW4bm3wIfIjpQ2UATQ==
+X-Received: by 2002:aa7:880f:: with SMTP id c15mr22560560pfo.94.1590505662105;
+        Tue, 26 May 2020 08:07:42 -0700 (PDT)
 Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id y14sm15686666pfr.11.2020.05.26.07.58.22
+        by smtp.gmail.com with ESMTPSA id k18sm15699602pfg.217.2020.05.26.08.07.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 07:58:25 -0700 (PDT)
+        Tue, 26 May 2020 08:07:40 -0700 (PDT)
 Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id D804142309; Tue, 26 May 2020 14:58:18 +0000 (UTC)
+        id 0547C4230A; Tue, 26 May 2020 14:58:19 +0000 (UTC)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     jeyu@kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     michael.chan@broadcom.com, dchickles@marvell.com,
@@ -55,10 +55,11 @@ Cc:     michael.chan@broadcom.com, dchickles@marvell.com,
         samitolvanen@google.com, yzaikin@google.com, dvyukov@google.com,
         rdunlap@infradead.org, corbet@lwn.net, dianders@chromium.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH v3 7/8] liquidio: use new taint_firmware_crashed()
-Date:   Tue, 26 May 2020 14:58:14 +0000
-Message-Id: <20200526145815.6415-8-mcgrof@kernel.org>
+        linux-doc@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v3 8/8] qed: use new taint_firmware_crashed()
+Date:   Tue, 26 May 2020 14:58:15 +0000
+Message-Id: <20200526145815.6415-9-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.23.0.rc1
 In-Reply-To: <20200526145815.6415-1-mcgrof@kernel.org>
 References: <20200526145815.6415-1-mcgrof@kernel.org>
@@ -77,28 +78,27 @@ a reboot.
 
 Using a taint flag allows us to annotate when this happens clearly.
 
-Cc: Derek Chickles <dchickles@marvell.com>
-Cc: Satanand Burla <sburla@marvell.com>
-Cc: Felix Manlunas <fmanlunas@marvell.com>
+Cc: Ariel Elior <aelior@marvell.com>
+Cc: GR-everest-linux-l2@marvell.com
+Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
 Acked-by: Rafael Aquini <aquini@redhat.com>
-Reviewed-by: Derek Chickles <dchickles@marvell.com>
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- drivers/net/ethernet/cavium/liquidio/lio_main.c | 1 +
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-index 66d31c018c7e..ee1796ea4818 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-@@ -801,6 +801,7 @@ static int liquidio_watchdog(void *param)
- 			continue;
- 
- 		WRITE_ONCE(oct->cores_crashed, true);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index 9624616806e7..dd4357b0b5d1 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -566,6 +566,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		DP_NOTICE(p_hwfn,
+ 			  "The MFW failed to respond to command 0x%08x [param 0x%08x].\n",
+ 			  p_mb_params->cmd, p_mb_params->param);
 +		taint_firmware_crashed();
- 		other_oct = get_other_octeon_device(oct);
- 		if (other_oct)
- 			WRITE_ONCE(other_oct->cores_crashed, true);
+ 		qed_mcp_print_cpu_info(p_hwfn, p_ptt);
+ 
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
 -- 
 2.26.2
 
