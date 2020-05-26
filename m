@@ -2,150 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 967F41E2830
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623501E2810
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 19:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730262AbgEZROp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 13:14:45 -0400
-Received: from mail-eopbgr80131.outbound.protection.outlook.com ([40.107.8.131]:36848
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388612AbgEZROR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 13:14:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d9q9TLujYxPh4CF26CmLfUOPOToNgf7FvuitcoWsUY3HUVzAaxf8UZYpSYfzh4HX6VURXUmKIDCkeJrQKbv7yGh0FuliAkJhLR+vFsfTPpTkO57zxR3mXzogQB3Y+8DPvulwsU5pxiazvKFQPf4OOK9P8LiUQuLqacEuGheWOsAKwhB+lW8/MeJ5v3+zr1a5nHK04fRDtPmVN8uk4vNOsRunfx2iNyBQoKwu7Qtk+Eu6jFYajldvNYcRisxnJ42lyQ+sOrI8/S+lKUQrlVrIW0m/MkyNcW4I1lrOfHzOfAPz9TX854MvN5v+c1dCoQ33++EQ6U8+oLADhNNm8Yvasg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OUm1aS9UUuseD4nWcf7QHncYBRxQA+2Hm6PztoMAtIA=;
- b=e6rp5zvUY8PwFnf+dBh7JMFaWFAgZQBmRMS72wcj0UY/m4s4M4A/gD78nys91oRLYowNPh8hfx/BBVRVcM4d5bSEIe0fEh6a/ojwafE+EucoIhkS1CgAjsoDSmjCTuQ2QCVXyH5qWkzqC9N730w32FXmZBR/DDfnntsInGAP//UkipPUASk/pbbqBpti57KepSvB8M/sQjFqR6A8bG7L4LkWhPwflBTDdV4b+GUcC6nwfVsyuDJ/ihicfvcGPjOXtUiIQwnZv1xwG+ySx25UfYIGSINWFmlXBRoz87X544t9mCIjyIaq2MqZUl3iTpCyTSr0oBAd9QCvi5AGOvrTSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OUm1aS9UUuseD4nWcf7QHncYBRxQA+2Hm6PztoMAtIA=;
- b=eowH02iJ5OQMW1jolI+0oYysB+NullErXVP+JFtxUbnFPYciKjwdaDDDiiKpYQTJOppTk/dHkBfsftiMx4oGF9MtlL+rnOP5ZwMtmluqLcD2n15T63ctYAVZQnGGVCoNQ2a72zhLznAEogoJtlOqcc74KRaz+bq2e7syHynE7vU=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
- by VI1P190MB0431.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:2e::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Tue, 26 May
- 2020 17:13:51 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::8149:8652:3746:574f]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::8149:8652:3746:574f%7]) with mapi id 15.20.3021.029; Tue, 26 May 2020
- 17:13:51 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
+        id S1729605AbgEZRNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 13:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728503AbgEZRNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 13:13:22 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B4FC03E96D;
+        Tue, 26 May 2020 10:13:22 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id q8so10446014pfu.5;
+        Tue, 26 May 2020 10:13:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F1Q0365fQcCdID2kLoD71mWg1BqQGJpoHfozbnd6CZc=;
+        b=G93tJd93hLmaoT/aqbZdcPYPDjj+69hVL/nYU9NuDv8vJYlGr1uvLmZfdmFlCfih+F
+         uUaTNz24k3eX5ISGzDL9OG64MQ48hvOBQASoJaYIFVworZ28Fa8DeyElhu1uECrDMjfz
+         KTW4TVQzLQ3WpfAhJwQkymTuW7Xqj1PkJZEM7bR1EJOxwJf0HTTQERezzoueCeNDs7WT
+         t7+s1g76ekGrhBvAvrMrFtcaVsM06qSUy95npV1gLlbr8SpuRjdnD5ZHany8FdqKsOno
+         FnsSlPpeY2y4Oq7NBIOiEYJCrLujbnIAqvFxTe17BsPYzOBqsN//+WZOHHfjsO+dsu6T
+         tC1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F1Q0365fQcCdID2kLoD71mWg1BqQGJpoHfozbnd6CZc=;
+        b=UcGhiJpLPfFNGR1EuwsMpd8oxIihTKe0c9+sHVIizsR5vinIMTDZEhDOGT5AirsPuS
+         QwfNubsKrp3uVL4+pzdv9V3cTqzC+rd2xG2hawlv/zV5oKUmh4iVCy4N/IvTo1ABmknK
+         hPycWXNIji+tfAnjzf+1iwqLed/AX2oP9foyNZ6e3oj7/Dlbk2bve7iq3xTXDippEdpD
+         rgcGEGqZ/Yp7xSqN/FqEP8dsrLevOv79NaRL8c4zq/DU0haf5o+nRkN9vmKhjST5UZ9y
+         hZY+3K6VXyEJc8VmFhW0Rc9vRUx6lX2hxPqqeVns52lnqAmRoysQpju/oK7WHZfzcnSM
+         kN4w==
+X-Gm-Message-State: AOAM530/fagNDLDvLoL60DYgB940SGpvgKJRiO1PIlKctkK5l5DFzADw
+        jlotEbCEDid7JYq3NY24bIM=
+X-Google-Smtp-Source: ABdhPJy6qnu3WKbboaapp37lyLqmDYBXjUJcrBs4IPyQ0TWCoI/A9XkzSFJfpV+fDfaBdlrk3WenwA==
+X-Received: by 2002:aa7:95a5:: with SMTP id a5mr22174411pfk.151.1590513201862;
+        Tue, 26 May 2020 10:13:21 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z29sm119304pff.120.2020.05.26.10.13.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2020 10:13:20 -0700 (PDT)
+Subject: Re: [PATCH ethtool v1] netlink: add LINKSTATE SQI support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [net-next RFC v3 6/6] dt-bindings: marvell,prestera: Add description for device-tree bindings
-Date:   Tue, 26 May 2020 20:13:02 +0300
-Message-Id: <20200526171302.28649-7-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200526171302.28649-1-vadym.kochan@plvision.eu>
-References: <20200526171302.28649-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain
-X-ClientProxiedBy: AM6P192CA0061.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:209:82::38) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        "John W. Linville" <linville@tuxdriver.com>
+Cc:     David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>,
+        Amit Cohen <amitc@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>
+References: <20200526082942.28073-1-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8c167a35-c49f-9fc1-d53a-6970d4c95e75@gmail.com>
+Date:   Tue, 26 May 2020 10:13:18 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P192CA0061.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:82::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Tue, 26 May 2020 17:13:49 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3a104f7f-ed0e-4494-5e77-08d80198295f
-X-MS-TrafficTypeDiagnostic: VI1P190MB0431:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1P190MB04314F0DB6F9EEB7CEBBDA4895B00@VI1P190MB0431.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 041517DFAB
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: reD6EA3Cr8Vnzs43DCM1mBCUqfvQtM+faSFwYFZhcy4fGH/h1L/fpsBcEVQ8AtA7CvP2784Mcms87sjim6xxD0RS/1UdpJbGtFKUat28EjEogZ7hMxL5AwmkEg2ED6Ja66Go1WNUwyJvA/cA4wQiG88IJZVINwCHRgawXI5wlau5c4mqHlh+p1TloJssuiK0EMU03kRRPkoCRPtxdBJ4ba+5tZEvid4RrgCDlCmIun9xgWHNXz8NZYCqOa6ta2TmlNW72GHoInSouT13cawYjbdi3QZESO78Hf7H6BOynJ7ir5hLQogzm9b0l5mMlqke6S/F6tEkNMdc+fAiI+MHEcoO0d83baXsD4SVKkPK0rjyJLSna+zsqpN41MRZ0GResBOH1//BqfaS+xIpUinV8A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(366004)(396003)(39840400004)(376002)(136003)(346002)(508600001)(16526019)(52116002)(2906002)(4326008)(36756003)(6506007)(186003)(86362001)(26005)(6486002)(8676002)(8936002)(316002)(956004)(54906003)(66476007)(2616005)(6666004)(66946007)(5660300002)(110136005)(107886003)(66556008)(44832011)(1076003)(6512007)(142933001)(921003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 3L6zQF7MLzh/MbkpkDvThRVJH7/vs9zsgw8KOyBdW46hrNeHakP/0O+WueX41Vp0YGq4p8qy7+oOkTjQAmlWgSxObi2PiARj12F9vV2YT9qBL8jIUCorjUWNi8qaskGTrIdY991/TmVGMvOKEAvo/vxPfSdaub8FHJcdjKqxHawuw31jJlA6gQKvKNr2G4GgUYLvfB15VbLUgWog/FzSGoVv+vCNAPTnZ4RCkQJzyCcueyJHBBQeYK+wg5KvimIwbwNMmuZcOQ6MlnIUj6xPU8WHEnsLwYvmQxEglheTGjISMPAOYy26XjttFJoiygZ6q54KBH8ImlyDG7Rl8uaH23KajqUjqg4hhocCzsByzVejz5heEW21eJhH7x33bVTYPROuaRTiYwYnbiikNWfAYSMU6pR3wzh1WsrL5M0pTkdPLqretbTzf3F03xtqJ2w5UHaXy4KQCMDeOibV+IHrkhBLgDxPysnkEMlRA0zDB6o=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a104f7f-ed0e-4494-5e77-08d80198295f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2020 17:13:51.5147
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0hC22uUTkU/DnIzymAqUvTxJ5ogN6Zm8JGPdx5WqiubLNIngZf/f4GjP2Q+/TSYZxoWG3dx5/kpXam8u+4T8rmpl9NdRcliG0PipTNyNZbs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0431
+In-Reply-To: <20200526082942.28073-1-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add brief description how to configure base mac address binding in
-device-tree.
 
-Describe requirement for the PCI port which is connected to the ASIC, to
-allow access to the firmware related registers.
 
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
----
- .../bindings/net/marvell,prestera.txt         | 34 +++++++++++++++++++
- 1 file changed, 34 insertions(+)
+On 5/26/2020 1:29 AM, Oleksij Rempel wrote:
+> Some PHYs provide Signal Quality Index (SQI) if the link is in active
+> state. This information can help to diagnose cable and system design
+> related issues.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-index 83370ebf5b89..e28938ddfdf5 100644
---- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
-+++ b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-@@ -45,3 +45,37 @@ dfx-server {
- 	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
- 	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
- };
-+
-+Marvell Prestera SwitchDev bindings
-+-----------------------------------
-+Optional properties:
-+- compatible: must be "marvell,prestera"
-+- base-mac-provider: describes handle to node which provides base mac address,
-+	might be a static base mac address or nvme cell provider.
-+
-+Example:
-+
-+eeprom_mac_addr: eeprom-mac-addr {
-+       compatible = "eeprom,mac-addr-cell";
-+       status = "okay";
-+
-+       nvmem = <&eeprom_at24>;
-+};
-+
-+prestera {
-+       compatible = "marvell,prestera";
-+       status = "okay";
-+
-+       base-mac-provider = <&eeprom_mac_addr>;
-+};
-+
-+The current implementation of Prestera Switchdev PCI interface driver requires
-+that BAR2 is assigned to 0xf6000000 as base address from the PCI IO range:
-+
-+&cp0_pcie0 {
-+	ranges = <0x81000000 0x0 0xfb000000 0x0 0xfb000000 0x0 0xf0000
-+		0x82000000 0x0 0xf6000000 0x0 0xf6000000 0x0 0x2000000
-+		0x82000000 0x0 0xf9000000 0x0 0xf9000000 0x0 0x100000>;
-+	phys = <&cp0_comphy0 0>;
-+	status = "okay";
-+};
+
+The uapi updates should be separate commits as pointed out by Michal,
+with that:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
