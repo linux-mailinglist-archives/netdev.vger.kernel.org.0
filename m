@@ -2,109 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D7C1E1FCF
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 12:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42ACF1E2052
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 13:02:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731930AbgEZKgI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 26 May 2020 06:36:08 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:44980 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727890AbgEZKgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 06:36:07 -0400
-Received: by mail-ot1-f68.google.com with SMTP id f18so15836136otq.11;
-        Tue, 26 May 2020 03:36:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OP8/hxzSora7+RyKmdWGrhPbxw1jS07GePgn3bcs4Ls=;
-        b=c3uGYnrCb4WAGHZya8YQv3RDUmJ/iiligWaOKn8wjfpV6U65Cn+8P6/8We9RY7VPtq
-         WVO8PaEN3ZnluyQhcXt0N8r5TRkyvnCduaHHOdNx9nCECB95hckaw0sDD5uyk8Nn2QKu
-         4gvjRqM2nDflIKrbTKV/pirTNdtUlTyUoiyzenvnBJ1wIy8O4zwHHA8UOX7+4gSJzhAm
-         hcGSnaL4shRqSiAdcGS+tX0IMhd1J7bAattoBquo+F8QEF4b0cibfEMexFGyHrhAU1ho
-         MyMPIi+HTS5QCj8XKC+wRD34gPgMWUuSHGLmaRBDq20pXlFYwQyq8tgBaEUIV4BzrVX0
-         D1Iw==
-X-Gm-Message-State: AOAM533HtqFz8V6nIu1fgbPJqBp/IXkPI8Zs9ruj9GgQHQbhvJuyeNXF
-        s+xvlroxpkP7LQrddggsqwfl9h26kfXyLjRyJ5Q=
-X-Google-Smtp-Source: ABdhPJy1GHMjiBmqkoqcnOQswjrf3GtFhFuljSG5cgXHe0ZrV2FGIT0iVHs8J6BfXHu/3+89V/CmkBUjqTdpcpTHsMI=
-X-Received: by 2002:a9d:6c0f:: with SMTP id f15mr346512otq.118.1590489366099;
- Tue, 26 May 2020 03:36:06 -0700 (PDT)
+        id S2388767AbgEZLCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 07:02:07 -0400
+Received: from foss.arm.com ([217.140.110.172]:49256 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388704AbgEZLCG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 07:02:06 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C65A931B;
+        Tue, 26 May 2020 04:02:05 -0700 (PDT)
+Received: from [192.168.1.84] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 18D213F6C4;
+        Tue, 26 May 2020 04:02:02 -0700 (PDT)
+Subject: Re: [RFC PATCH v12 07/11] psci: Add hypercall service for kvm ptp.
+To:     Jianyong Wu <Jianyong.Wu@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, nd <nd@arm.com>
+References: <20200522083724.38182-1-jianyong.wu@arm.com>
+ <20200522083724.38182-8-jianyong.wu@arm.com>
+ <87fce07b-d0f5-47b0-05ce-dd664ce53eec@arm.com>
+ <HE1PR0802MB2555A66F063927D5B855E1C6F4B30@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+From:   Steven Price <steven.price@arm.com>
+Message-ID: <d7ec2534-95e4-ae79-fc53-4d48a4ea628c@arm.com>
+Date:   Tue, 26 May 2020 12:02:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200525182608.1823735-1-kw@linux.com> <20200525182608.1823735-3-kw@linux.com>
- <CAJZ5v0jQUmdDYmJsP43Ja3urpVLUxe-yD_Hm_Jd2LtCoPiXsrQ@mail.gmail.com> <20200526094518.GA4600@amd>
-In-Reply-To: <20200526094518.GA4600@amd>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 26 May 2020 12:35:55 +0200
-Message-ID: <CAJZ5v0ibtOMFDtCcyfmGeE15uR-+hQLw8tr6bfbp4aR4V7C3vA@mail.gmail.com>
-Subject: Re: [PATCH 2/8] ACPI: PM: Use the new device_to_pm() helper to access
- struct dev_pm_ops
-To:     Pavel Machek <pavel@denx.de>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>, Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        greybus-dev@lists.linaro.org, netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-s390@vger.kernel.org,
-        "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>,
-        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
-        <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <HE1PR0802MB2555A66F063927D5B855E1C6F4B30@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 11:45 AM Pavel Machek <pavel@denx.de> wrote:
->
-> On Tue 2020-05-26 10:37:36, Rafael J. Wysocki wrote:
-> > On Mon, May 25, 2020 at 8:26 PM Krzysztof Wilczyński <kw@linux.com> wrote:
-> > >
-> > > Use the new device_to_pm() helper to access Power Management callbacs
-> > > (struct dev_pm_ops) for a particular device (struct device_driver).
-> > >
-> > > No functional change intended.
-> > >
-> > > Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
-> > > ---
-> > >  drivers/acpi/device_pm.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
-> > > index 5832bc10aca8..b98a32c48fbe 100644
-> > > --- a/drivers/acpi/device_pm.c
-> > > +++ b/drivers/acpi/device_pm.c
-> > > @@ -1022,9 +1022,10 @@ static bool acpi_dev_needs_resume(struct device *dev, struct acpi_device *adev)
-> > >  int acpi_subsys_prepare(struct device *dev)
-> > >  {
-> > >         struct acpi_device *adev = ACPI_COMPANION(dev);
-> > > +       const struct dev_pm_ops *pm = driver_to_pm(dev->driver);
-> >
-> > I don't really see a reason for this change.
-> >
-> > What's wrong with the check below?
->
-> Duplicated code. Yes, compiler can sort it out, but... new version
-> looks better to me.
+On 25/05/2020 03:11, Jianyong Wu wrote:
+> Hi Steven,
 
-So the new code would not be duplicated?
+Hi Jianyong,
 
-Look at the other patches in the series then. :-)
+[...]>>> diff --git a/virt/kvm/arm/hypercalls.c b/virt/kvm/arm/hypercalls.c
+>>> index db6dce3d0e23..c964122f8dae 100644
+>>> --- a/virt/kvm/arm/hypercalls.c
+>>> +++ b/virt/kvm/arm/hypercalls.c
+>>> @@ -3,6 +3,7 @@
+>>>
+>>>    #include <linux/arm-smccc.h>
+>>>    #include <linux/kvm_host.h>
+>>> +#include <linux/clocksource_ids.h>
+>>>
+>>>    #include <asm/kvm_emulate.h>
+>>>
+>>> @@ -11,6 +12,10 @@
+>>>
+>>>    int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>>>    {
+>>> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+>>> +	struct system_time_snapshot systime_snapshot;
+>>> +	u64 cycles;
+>>> +#endif
+>>>    	u32 func_id = smccc_get_function(vcpu);
+>>>    	u32 val[4] = {SMCCC_RET_NOT_SUPPORTED};
+>>>    	u32 feature;
+>>> @@ -70,7 +75,49 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>>>    		break;
+>>>    	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+>>>    		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
+>>> +
+>>> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+>>> +		val[0] |= BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP); #endif
+>>>    		break;
+>>> +
+>>> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+>>> +	/*
+>>> +	 * This serves virtual kvm_ptp.
+>>> +	 * Four values will be passed back.
+>>> +	 * reg0 stores high 32-bit host ktime;
+>>> +	 * reg1 stores low 32-bit host ktime;
+>>> +	 * reg2 stores high 32-bit difference of host cycles and cntvoff;
+>>> +	 * reg3 stores low 32-bit difference of host cycles and cntvoff.
+>>> +	 */
+>>> +	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+>>> +		/*
+>>> +		 * system time and counter value must captured in the same
+>>> +		 * time to keep consistency and precision.
+>>> +		 */
+>>> +		ktime_get_snapshot(&systime_snapshot);
+>>> +		if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
+>>> +			break;
+>>> +		val[0] = upper_32_bits(systime_snapshot.real);
+>>> +		val[1] = lower_32_bits(systime_snapshot.real);
+>>> +		/*
+>>> +		 * which of virtual counter or physical counter being
+>>> +		 * asked for is decided by the first argument.
+>>> +		 */
+>>> +		feature = smccc_get_arg1(vcpu);
+>>> +		switch (feature) {
+>>> +		case ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID:
+>>> +			cycles = systime_snapshot.cycles;
+>>> +			break;
+>>> +		default:
+>>
+>> There's something a bit odd here.
+>>
+>> ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID and
+>> ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID look like they should
+>> be names of separate (top-level) functions, but actually the _PHY_ one is a
+>> parameter for the first. If the intention is to have a parameter then it would
+>> be better to pick a better name for the _PHY_ define and not define it using
+>> ARM_SMCCC_CALL_VAL.
+>>
+> Yeah, _PHY_ is not the same meaning with _PTP_FUNC_ID,  so I think it should be a different name.
+> What about ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_COUNTER?
+
+Personally I'd go with something much shorter, e.g. ARM_PTP_PHY_COUNTER. 
+This is just an argument to an SMCCC call so there's no need for most of 
+the prefix, indeed if (for whatever reason) there was a non-SMCCC 
+mechanism added to do the same thing it would be reasonable to reuse the 
+same values.
+
+>> Second the use of "default:" means that there's no possibility to later extend
+>> this interface for more clocks if needed in the future.
+>>
+> I think we can add more clocks by adding more cases, this "default" means we can use no first arg to determine the default clock.
+
+The problem with the 'default' is it means it's not possible to probe 
+whether the kernel supports any more clocks. If we used a different 
+value (that the kernel doesn't support) then we end up in the default 
+case and have no idea whether the clock value is the one we requested or 
+not.
+
+It's generally better when defining an ABI to explicitly return an error 
+for unknown parameters, that way a future user of the ABI can discover 
+whether the call did what was expected or not.
+
+>> Alternatively you could indeed implement as two top-level functions and
+>> change this to a...
+>>
+>> 	switch (func_id)
+>>
+>> ... along with multiple case labels as the functions would obviously be mostly
+>> the same.
+>>
+>> Also a minor style issue - you might want to consider splitting this into it's
+>> own function.
+>>
+> I think "switch (feature)" maybe better as this _PHY_ is not like a function id. Just like:
+> "
+> case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+>                  feature = smccc_get_arg1(vcpu);
+>                  switch (feature) {
+>                  case ARM_SMCCC_ARCH_WORKAROUND_1:
+> ...
+> "
+
+I'm happy either way - it's purely that the definition/naming of 
+ARM_SMCCC_VENDOR_HYP_KVM_PTP_PHY_FUNC_ID made it look like that was the 
+intention. My preference would be to stick with the 'feature' approach 
+as above because there's no need to "use up" the top-level SMCCC calls 
+(but equally there's a large space so we'd have to work very hard to run 
+out... ;) )
+
+>> Finally I do think it would be useful to add some documentation of the new
+>> SMC calls. It would be easier to review the interface based on that
+>> documentation rather than trying to reverse-engineer the interface from the
+>> code.
+>>
+> Yeah, more doc needed here.
+
+Thanks, I think it's a good idea to get the ABI nailed down before 
+worrying too much about the code, and it's easier to discuss based on 
+documentation rather than code.
+
+Thanks,
+
+Steve
