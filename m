@@ -2,153 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898C61E1AD0
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 07:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE241E1B0E
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 08:13:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgEZFt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 01:49:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56724 "EHLO mail.kernel.org"
+        id S1729628AbgEZGNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 02:13:14 -0400
+Received: from verein.lst.de ([213.95.11.211]:43248 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725959AbgEZFt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 01:49:58 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C532B20776;
-        Tue, 26 May 2020 05:49:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590472197;
-        bh=U88K5T1Zan4Jq/FR3aweJOo6lgnXrRGiQiUYK8qSWuY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rRJNuw2+b7VWIzP/J6gScT6Tv4ulqUEsQI+kD+X820P6QDx8gVU8cgvwsH+VHyYhl
-         D+M2lo6nz517/zzthJX84a1owGlSbalvc+ayu+QzJchs88UWXR0s9gPCm6bp3L1lly
-         dgfqmwmgROoDeqwe0kqNaNzLdg1tYK7K6qXPL7PQ=
-Date:   Tue, 26 May 2020 08:49:52 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-nvme@lists.infradead.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        target-devel@vger.kernel.org
-Subject: Re: [PATCH rdma-next v2 7/7] RDMA/cma: Provide ECE reject reason
-Message-ID: <20200526054952.GO10591@unreal>
-References: <20200413141538.935574-1-leon@kernel.org>
- <20200413141538.935574-8-leon@kernel.org>
- <20200525181417.GC24366@ziepe.ca>
- <20200525182242.GK10591@unreal>
- <20200525183647.GI744@ziepe.ca>
+        id S1726363AbgEZGNN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 02:13:13 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id BE22268BEB; Tue, 26 May 2020 08:13:09 +0200 (CEST)
+Date:   Tue, 26 May 2020 08:13:09 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>, x86@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: clean up and streamline probe_kernel_* and friends v4
+Message-ID: <20200526061309.GA15549@lst.de>
+References: <20200521152301.2587579-1-hch@lst.de> <20200525151912.34b20b978617e2893e484fa3@linux-foundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200525183647.GI744@ziepe.ca>
+In-Reply-To: <20200525151912.34b20b978617e2893e484fa3@linux-foundation.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 03:36:47PM -0300, Jason Gunthorpe wrote:
-> On Mon, May 25, 2020 at 09:22:42PM +0300, Leon Romanovsky wrote:
-> > On Mon, May 25, 2020 at 03:14:17PM -0300, Jason Gunthorpe wrote:
-> > > On Mon, Apr 13, 2020 at 05:15:38PM +0300, Leon Romanovsky wrote:
-> > > > @@ -4223,7 +4223,7 @@ int rdma_notify(struct rdma_cm_id *id, enum ib_event_type event)
-> > > >  EXPORT_SYMBOL(rdma_notify);
-> > > >
-> > > >  int rdma_reject(struct rdma_cm_id *id, const void *private_data,
-> > > > -		u8 private_data_len)
-> > > > +		u8 private_data_len, enum rdma_ucm_reject_reason reason)
-> > > >  {
-> > > >  	struct rdma_id_private *id_priv;
-> > > >  	int ret;
-> > > > @@ -4237,10 +4237,12 @@ int rdma_reject(struct rdma_cm_id *id, const void *private_data,
-> > > >  			ret = cma_send_sidr_rep(id_priv, IB_SIDR_REJECT, 0,
-> > > >  						private_data, private_data_len);
-> > > >  		} else {
-> > > > +			enum ib_cm_rej_reason r =
-> > > > +				(reason) ?: IB_CM_REJ_CONSUMER_DEFINED;
-> > > > +
-> > > >  			trace_cm_send_rej(id_priv);
-> > > > -			ret = ib_send_cm_rej(id_priv->cm_id.ib,
-> > > > -					     IB_CM_REJ_CONSUMER_DEFINED, NULL,
-> > > > -					     0, private_data, private_data_len);
-> > > > +			ret = ib_send_cm_rej(id_priv->cm_id.ib, r, NULL, 0,
-> > > > +					     private_data, private_data_len);
-> > > >  		}
-> > > >  	} else if (rdma_cap_iw_cm(id->device, id->port_num)) {
-> > > >  		ret = iw_cm_reject(id_priv->cm_id.iw,
-> > > > diff --git a/drivers/infiniband/core/ucma.c b/drivers/infiniband/core/ucma.c
-> > > > index d41598954cc4..99482dc5934b 100644
-> > > > +++ b/drivers/infiniband/core/ucma.c
-> > > > @@ -1178,12 +1178,17 @@ static ssize_t ucma_reject(struct ucma_file *file, const char __user *inbuf,
-> > > >  	if (copy_from_user(&cmd, inbuf, sizeof(cmd)))
-> > > >  		return -EFAULT;
-> > > >
-> > > > +	if (cmd.reason &&
-> > > > +	    cmd.reason != RDMA_USER_CM_REJ_VENDOR_OPTION_NOT_SUPPORTED)
-> > > > +		return -EINVAL;
-> > >
-> > > It would be clearer to set cmd.reason to IB_CM_REJ_CONSUMER_DEFINED at
-> > > this point..
-> > >
-> > > if (!cmd.reason)
-> > >    cmd.reason = IB_CM_REJ_CONSUMER_DEFINED
-> > >
-> > > if (cmd.reason != IB_CM_REJ_CONSUMER_DEFINED && cmd.reason !=
-> > >     RDMA_USER_CM_REJ_VENDOR_OPTION_NOT_SUPPORTED)
-> > >    return -EINVAL
-> > >
-> > > Esaier to follow and no reason userspace shouldn't be able to
-> > > explicitly specifiy the reason's that it is allowed to use.
-> > >
-> > >
-> > > > index 8d961d8b7cdb..f8781b132f62 100644
-> > > > +++ b/include/rdma/rdma_cm.h
-> > > > @@ -324,11 +324,12 @@ int __rdma_accept_ece(struct rdma_cm_id *id, struct rdma_conn_param *conn_param,
-> > > >   */
-> > > >  int rdma_notify(struct rdma_cm_id *id, enum ib_event_type event);
-> > > >
-> > > > +
-> > > >  /**
-> > >
-> > > Extra hunk?
-> > >
-> > > >   * rdma_reject - Called to reject a connection request or response.
-> > > >   */
-> > > >  int rdma_reject(struct rdma_cm_id *id, const void *private_data,
-> > > > -		u8 private_data_len);
-> > > > +		u8 private_data_len, enum rdma_ucm_reject_reason reason);
-> > > >
-> > > >  /**
-> > > >   * rdma_disconnect - This function disconnects the associated QP and
-> > > > diff --git a/include/uapi/rdma/rdma_user_cm.h b/include/uapi/rdma/rdma_user_cm.h
-> > > > index c4ca1412bcf9..e545f2de1e13 100644
-> > > > +++ b/include/uapi/rdma/rdma_user_cm.h
-> > > > @@ -78,6 +78,10 @@ enum rdma_ucm_port_space {
-> > > >  	RDMA_PS_UDP   = 0x0111,
-> > > >  };
-> > > >
-> > > > +enum rdma_ucm_reject_reason {
-> > > > +	RDMA_USER_CM_REJ_VENDOR_OPTION_NOT_SUPPORTED = 35
-> > > > +};
-> > >
-> > > not sure we need ABI defines for IBTA constants?
-> >
-> > Do you want to give an option to write any number?
-> > Right now, I'm enforcing only allowed by IBTA reason
-> > and which is used in user space.
->
-> no, just the allowed numbers, just wondering if we need constants for
-> fixed IBTA values ..
+On Mon, May 25, 2020 at 03:19:12PM -0700, Andrew Morton wrote:
+> hm.  Applying linux-next to this series generates a lot of rejects against
+> powerpc:
+> 
+> -rw-rw-r-- 1 akpm akpm  493 May 25 15:06 arch/powerpc/kernel/kgdb.c.rej
+> -rw-rw-r-- 1 akpm akpm 6461 May 25 15:06 arch/powerpc/kernel/trace/ftrace.c.rej
+> -rw-rw-r-- 1 akpm akpm  447 May 25 15:06 arch/powerpc/mm/fault.c.rej
+> -rw-rw-r-- 1 akpm akpm  623 May 25 15:06 arch/powerpc/perf/core-book3s.c.rej
+> -rw-rw-r-- 1 akpm akpm 1408 May 25 15:06 arch/riscv/kernel/patch.c.rej
+> 
+> the arch/powerpc/kernel/trace/ftrace.c ones aren't very trivial.
+> 
+> It's -rc7.  Perhaps we should park all this until 5.8-rc1?
 
-I will take a look.
-
-Thanks
-
->
-> Jason
+As this is a pre-condition for the set_fs removal I'd really like to
+get the actual changes in.  All these conflicts seem to be about the
+last three cleanup patches just doing renaming, so can we just skip
+those three for now?  Then we can do the rename right after 5.8-rc1
+when we have the least chances for conflicts.
