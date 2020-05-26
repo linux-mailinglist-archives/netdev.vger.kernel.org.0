@@ -2,146 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09B6C1E24F4
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 17:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DE91E24FC
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 17:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729385AbgEZPHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 11:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728205AbgEZPHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 11:07:34 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3928C03E96D
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:07:33 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id c71so3470452wmd.5
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 08:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jRMe2Agckd+9zqw+cPfu8pBAWUruno/pEek/W83qQjQ=;
-        b=IbBG81d/DgkALMuN2q6ob32VJ8xgOM7xF5WoeW06GxSbp+7Drh/YuRMasNi46h8sIZ
-         pplgDqelDRnkLBWYHNlbXomCPgLmSgpP9b5vA2mQdDLJypiumBACHo7o+bqxgjk151P7
-         HEGVykGTrejPQuJklEs0lPrmZ2LSvHF6sHA8g=
+        id S1729784AbgEZPHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 11:07:50 -0400
+Received: from mail-ej1-f65.google.com ([209.85.218.65]:43297 "EHLO
+        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728166AbgEZPHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 11:07:49 -0400
+Received: by mail-ej1-f65.google.com with SMTP id a2so24155918ejb.10;
+        Tue, 26 May 2020 08:07:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jRMe2Agckd+9zqw+cPfu8pBAWUruno/pEek/W83qQjQ=;
-        b=ttP7C2YAHGamdNj+GOCA/8yZhYjoego0JLN3MOJtpfaVRfgVK4JyfOTvUx4Gv+cgOj
-         An4HJNUNR8MHa3VKxjBnvyIeMahZ3tZA0sjJS36rA4CVYcYV3TpcBrqG0OzyYp2ese3w
-         qiLb6kQLXU1Rzf5zUS+5gLHqJZme9szOPKEmwKXtqp2oavxXrClrRUmTaQtA1u6T9VT3
-         hHyhAfaVAoyaGMV8MxNj4+ci8bb7/a14SW44VEqDdG+Wai/9f7t7Wz5udf+IvJm27FCq
-         HUQoTZsqlKwrPogZT1q1+jHsOtGQJZZoBIxy7NtgYWUeHMfPndy4RZzSvw/1j6g4Trej
-         PuQg==
-X-Gm-Message-State: AOAM530sfwL0xk/l6BGCdiTrU6u2fXOn5phv/5KqTsdLbCju7LTwzBxR
-        SnJtXxg9MsqQ0LC/jJ8GdJMH3A==
-X-Google-Smtp-Source: ABdhPJwBsO2WJFPIC7e77zvHUIx+fcdoPOnIOPfpS7sM3yNxQSKSDWBMT/KxBGBgwjAPlrln0YrRrQ==
-X-Received: by 2002:a05:600c:1:: with SMTP id g1mr1780101wmc.142.1590505652289;
-        Tue, 26 May 2020 08:07:32 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id q1sm7363726wmj.9.2020.05.26.08.07.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2020 08:07:31 -0700 (PDT)
-Subject: Re: [PATCH net 1/5] nexthops: Move code from
- remove_nexthop_from_groups to remove_nh_grp_entry
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        David Ahern <dsahern@gmail.com>
-References: <20200526150114.41687-1-dsahern@kernel.org>
- <20200526150114.41687-2-dsahern@kernel.org>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <c5667ed4-d50d-76b0-292b-503d51c3cd7f@cumulusnetworks.com>
-Date:   Tue, 26 May 2020 18:07:30 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KjgTih7A660W8l2Ai5zV0xie7l2fjS3cquiqxZY0eUs=;
+        b=lj0xOxS+RFiPf9SsOq/2HiLpzJM8NqDxbOEmL6gK5IWHwUO1MvEcGdGh/ue2UIwHEs
+         g1fuHrUZTMNafI1bJQlUpKzxnH0gIOZ2sDFdr3agSkIZjUNbR+E+3qyAH8GhAbdq+JQO
+         uowDnKKCjJIGxSvbMpLth3SFSzzIFsGZtL8EgFNZpGPyXxh2/PdBvnFAGRG+aE0vP4A8
+         Jk5rQMDzbtDospNqOqOlXNmu5iNO6beaa8MWhQt6lm/O3dx5IYX2B9t6zjPUsAQuBYGW
+         +1KPD8SnieaYmzDNPUcPPHZqGVuJBVrp4k5fShXQmCcuIFEyUovshFaMOKky8Wl3YcdI
+         ToQA==
+X-Gm-Message-State: AOAM5306iPBdlX3xOO+3pC8x3R7m9tVCiXk0LcQ01D98VdJJ/LLCrMTi
+        8Sp0+ggbBZLudgHz0UkIczY=
+X-Google-Smtp-Source: ABdhPJzpF2izaI7HGirZOZ/xZQdcIiUyWXIQKdVRDh55kJz8UdqLFQpxuDMPANNvmQBg9fruG2pCcw==
+X-Received: by 2002:a17:906:8748:: with SMTP id hj8mr1609977ejb.335.1590505666414;
+        Tue, 26 May 2020 08:07:46 -0700 (PDT)
+Received: from rocinante ([95.155.85.46])
+        by smtp.gmail.com with ESMTPSA id t22sm137834ejr.93.2020.05.26.08.07.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 May 2020 08:07:45 -0700 (PDT)
+Date:   Tue, 26 May 2020 17:07:44 +0200
+From:   Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        greybus-dev@lists.linaro.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 8/8] net/iucv: Use the new device_to_pm() helper to
+ access struct dev_pm_ops
+Message-ID: <20200526150744.GC75990@rocinante>
+References: <20200525182608.1823735-1-kw@linux.com>
+ <20200525182608.1823735-9-kw@linux.com>
+ <20200526063521.GC2578492@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20200526150114.41687-2-dsahern@kernel.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200526063521.GC2578492@kroah.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/05/2020 18:01, David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
-> 
-> Move nh_grp dereference and check for removing nexthop group due to
-> all members gone into remove_nh_grp_entry.
-> 
-> Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  net/ipv4/nexthop.c | 27 +++++++++++++--------------
->  1 file changed, 13 insertions(+), 14 deletions(-)
-> 
+Hello Greg,
 
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+[...]
+> It's "interesting" how using your new helper doesn't actually make the
+> code smaller.  Perhaps it isn't a good helper function?
 
-> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-> index 2a31c4af845e..0f68d9801808 100644
-> --- a/net/ipv4/nexthop.c
-> +++ b/net/ipv4/nexthop.c
-> @@ -693,17 +693,21 @@ static void nh_group_rebalance(struct nh_group *nhg)
->  	}
->  }
->  
-> -static void remove_nh_grp_entry(struct nh_grp_entry *nhge,
-> -				struct nh_group *nhg,
-> +static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
->  				struct nl_info *nlinfo)
->  {
-> +	struct nexthop *nhp = nhge->nh_parent;
->  	struct nexthop *nh = nhge->nh;
->  	struct nh_grp_entry *nhges;
-> +	struct nh_group *nhg;
->  	bool found = false;
->  	int i;
->  
->  	WARN_ON(!nh);
->  
-> +	list_del(&nhge->nh_list);
-> +
-> +	nhg = rtnl_dereference(nhp->nh_grp);
->  	nhges = nhg->nh_entries;
->  	for (i = 0; i < nhg->num_nh; ++i) {
->  		if (found) {
-> @@ -727,7 +731,11 @@ static void remove_nh_grp_entry(struct nh_grp_entry *nhge,
->  	nexthop_put(nh);
->  
->  	if (nlinfo)
-> -		nexthop_notify(RTM_NEWNEXTHOP, nhge->nh_parent, nlinfo);
-> +		nexthop_notify(RTM_NEWNEXTHOP, nhp, nlinfo);
-> +
-> +	/* if this group has no more entries then remove it */
-> +	if (!nhg->num_nh)
-> +		remove_nexthop(net, nhp, nlinfo);
->  }
->  
->  static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
-> @@ -735,17 +743,8 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
->  {
->  	struct nh_grp_entry *nhge, *tmp;
->  
-> -	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list) {
-> -		struct nh_group *nhg;
-> -
-> -		list_del(&nhge->nh_list);
-> -		nhg = rtnl_dereference(nhge->nh_parent->nh_grp);
-> -		remove_nh_grp_entry(nhge, nhg, nlinfo);
-> -
-> -		/* if this group has no more entries then remove it */
-> -		if (!nhg->num_nh)
-> -			remove_nexthop(net, nhge->nh_parent, nlinfo);
-> -	}
-> +	list_for_each_entry_safe(nhge, tmp, &nh->grp_list, nh_list)
-> +		remove_nh_grp_entry(net, nhge, nlinfo);
->  }
->  
->  static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
-> 
+The idea for the helper was inspired by the comment Dan made to Bjorn
+about Bjorn's change, as per:
 
+  https://lore.kernel.org/driverdev-devel/20191016135002.GA24678@kadam/
+
+It looked like a good idea to try to reduce the following:
+
+  dev->driver && dev->driver->pm && dev->driver->pm->prepare
+
+Into something more succinct.  Albeit, given the feedback from yourself
+and Rafael, I gather that this helper is not really a good addition.
+
+Thank you everyone and sorry for the commotion!
+
+Krzysztof
