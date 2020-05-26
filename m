@@ -2,242 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A19D1E1EDC
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 11:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEF21E1EDF
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 11:41:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgEZJlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 05:41:08 -0400
-Received: from mail-eopbgr70139.outbound.protection.outlook.com ([40.107.7.139]:6115
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728568AbgEZJlI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 05:41:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e3Tjp/8m+0T1X8N4yU0mVEkKI3r9UVxdV0aYL3GLUgSsh1588rAUPgf7gW25bNmTAqpeBkGtfP6eoMtNsgxvlSlYbeTxAEtmkO6IxRT9tNK8oj2i37NdBoe4NccI9ENdcw4gkVrvS+IwhTL9KnO/PBzKdW5u1hwpkxvyr05gxM+hgKxKFwHKHAbB3Yf/HB0+XB5+BYw41FYHUu8DtzfOh7nd74XU23d6JEdnUeswMP58uAjbDhXVTjD99yjHN9toyCRpsTE9YOC56LC4c6bxnATYf71crj0EmNyvgIgHJ5MmZtD8J11SLpyL9rK0S3hfflsUnFykSDCteiuBNsPMKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hNr3QO7rC4hoqJ+dsh1HpuPfnO8BgTP/4FB9r/LLJw0=;
- b=eqD0P9rrsCgMm0/hxKspIQLrHDGvlAn6gO4tveWrawz2blGdb5qB8Dgqq2w/gkYQYvTLvZpsgIxQlDqhjoTrDEH49LN9BFpVhHZ5GoY1Baje83Un8Hri1ZFWk3q9BQMdQAkc2UwiQ5Usnn078IwZGA4p7iMCwximRSnVNTfVnVzy5cploh3bajYSTLTg9NgnwaVhrZqJSi/HaL5pJvJ/1iz+PZ9XwZsKzaIZvej5XfxoVZVbo2ngIWy3M24rilMyeqyxvn4KxOzcU24ZjJjlmS0v3wwFF13XsFEoV7fNvFBRGciKw2yQR8udhbB+pYstMk7P1ANZ6bIY5i8aXiZXJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hNr3QO7rC4hoqJ+dsh1HpuPfnO8BgTP/4FB9r/LLJw0=;
- b=KiAYleKcAFPOhmXqpquRRR1NSGAyQvRm3WALIdlLhVylHU0yd2KCb7vdBqSdX0E81lWaWchOqF5SggAktT6KXgN/hOVQsje0plDFaFX9FUb0WMNDDXZf2OpRgAFnSvDwHm2Rz25vUL9deeo/KbUkEQDFDFg+NDJE+9Z59nOQm1I=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=dektech.com.au;
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
- by AM6PR0502MB3830.eurprd05.prod.outlook.com (2603:10a6:209:11::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Tue, 26 May
- 2020 09:41:03 +0000
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::4d5f:2ab:5a66:deaf]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::4d5f:2ab:5a66:deaf%7]) with mapi id 15.20.3021.029; Tue, 26 May 2020
- 09:41:03 +0000
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     dsahern@gmail.com, jmaloy@redhat.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [iproute2-next] tipc: enable printing of broadcast rcv link stats
-Date:   Tue, 26 May 2020 16:40:55 +0700
-Message-Id: <20200526094055.17526-1-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR03CA0059.apcprd03.prod.outlook.com
- (2603:1096:202:17::29) To AM6PR0502MB3925.eurprd05.prod.outlook.com
- (2603:10a6:209:5::28)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by HK2PR03CA0059.apcprd03.prod.outlook.com (2603:1096:202:17::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3045.8 via Frontend Transport; Tue, 26 May 2020 09:41:00 +0000
-X-Mailer: git-send-email 2.13.7
-X-Originating-IP: [14.161.14.188]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7921957b-8f90-4f84-a10f-08d80158e77d
-X-MS-TrafficTypeDiagnostic: AM6PR0502MB3830:
-X-Microsoft-Antispam-PRVS: <AM6PR0502MB383071CA10D81A18235683DDE2B00@AM6PR0502MB3830.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:127;
-X-Forefront-PRVS: 041517DFAB
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z2Zwq0Yu3eelAaHenUxAiIwcnu3/Ay6J8oRR1rsLIbmkB4Q05xYGOLuCOm/Y5hR7qTRLrVNKx6H/XnVFhrcvIHFoq62BgiQRjsQzjMLM0ylE+ipshh3gdJoIwFn3JqhbeNK9DABkxSbPoZybkLBMJF17pNSquLC2V0lGLK41i8/Qj2G3PJdcAVdYDz7qADWNUiIqBUftWl7ZEjM2kih0eSYKMvNio3ay6YjnUYilWlA5z3s9wfEXVRehyeyvT4Kbqz6gS+66wEYwTin7eBi5Vh7LmPbcGulK8V5WwPmhrgBbyIzpG6eDJN74FePN/SkE
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(39850400004)(396003)(136003)(366004)(36756003)(1076003)(6666004)(2906002)(2616005)(478600001)(956004)(66946007)(66556008)(66476007)(26005)(316002)(7696005)(52116002)(4326008)(16526019)(186003)(55016002)(86362001)(8936002)(8676002)(5660300002)(103116003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: aqNv3IDrW8jHGJN+4Z7+4Uwc1mh6jpcA06y/EGx+W+wxw5Uuu7hWP33CC91lNz4AuOPh4BlzNwSV5OR7KeGq35CxWnzULWzNa0LU2BgtqH00DXQk+7RWt/JTHMonRNET8ZdNP5fyI3ZF7c6B03fwux+ZQXPO7AU2yeK/X0vST7tdX6BdqmKAQ580NKDHze1O9hLj6A7aQQAt0No39LmJ52q7JY0beQmR5qMCdFxPV1EpDkoLQFgClhg8T8I99QVbXItE/kjANO26jC65vJ9Hnwpkwk5Q5isP1Fgh3o6qXk3WPbwM8DvA2lA8KINuvnnP2D7vzYSCGLs6KD9hqahNGmZlnWf5s1XU2SObKxHqizqfQ37kBLw7ebhEJVKAN7iSvZ8vhKeFxqR+f6fajm2Zp06W5ADSp+bwLbUCkIdbbANAmE5VS/WzavFT15wwOkIAMnbzf/MIG1o+SyiUcZ5x8o+24LDhe+YinFTboOzHqHs=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7921957b-8f90-4f84-a10f-08d80158e77d
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2020 09:41:02.9073
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S3CB4S6XOm5aN31VRiEf6zbNIu8l+FZfO32dZFGnldlNLvGKXe9O5hSmhfVjZBjYtTpEBmSckPi7ZicYOvTOUqfvkDcDwmkcMPVCihFhLCg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0502MB3830
+        id S1731687AbgEZJl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 05:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728568AbgEZJlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 05:41:55 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720B9C03E97E
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 02:41:55 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id ci21so1126854pjb.3
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 02:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=4ArQmoWdw/C2ck8BH1jip/LkbQmXVbex0NhxAJEq7tg=;
+        b=D+bUwwfUGZW1esk0agp/gWh0L7PDkg8dOJFOVfVpxEcRCIbphWG9qmfeN1yZGSku8K
+         /xpb82+dV5bknXbVWn9wN83wNXnJcr0gtTL7jReyZM7M4332Rji45FMl0imjXGU3oOmT
+         nZUSwMDYsxnofQiRT1RFPxnsLZHQ2EqAGaraYsAp0UU7SgO2TMfR5eciQ3VLOYeZ1Oy1
+         /3nAJdtaGxFZJ3RkYJHH2bwalyQjgYH6l2UCveOOPqPJPuI1oNeso45OtwlcdqVOOP+O
+         Sk0VjvgxLdWXDanXpalnGhdhPOtPFF2tiDJYtZlW05+aZnBT4xf3D6jt2zcpQT2TlxIp
+         kHGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4ArQmoWdw/C2ck8BH1jip/LkbQmXVbex0NhxAJEq7tg=;
+        b=Tm4uHnlvtYLQbhcQAnCK4Hmhg61qAA//oRehAG3ZdNWXgAXjnL9iDuTIOF/E7oTgyV
+         8PbZdnqPJRyaEXzkNGlklyDhRxyl1+SnTCl7ENOLa4Sy2Z0fjBlSXTZyqOTz4piQBGic
+         +sYOZhyihRKePXVx0q+sG2/JZ07EbM/frxTURoOU1e/nZgF/67pzOG7Pc1hLGpQQv74E
+         x4ckop14IJT8Dg1Mpyv8ba8GYJMmkarKPfZkPdFJtqZJfWeyPlJVV8ItIWQh09UcPGuq
+         w/aS5W2DZ60y14q1dOsXVTfK4Lusnxzvtmw4vb7cZiGFtQChWTlQOWf0x41dC8QG4XUy
+         gREQ==
+X-Gm-Message-State: AOAM530CHflbF7J5L0OCevURGIHka9nV3EVfM/k2iGdI/FOJpebfIpnL
+        3cQjKMcEW7e+pFK25pw+gdPrzcBn
+X-Google-Smtp-Source: ABdhPJw+k1vxNWTQC8NoZ4Rvba4RvF6IcdHHwPhpJsrRllkncz99ryF7oXgxkWN8pjSeVlMwrouLoA==
+X-Received: by 2002:a17:902:fe04:: with SMTP id g4mr241602plj.327.1590486114512;
+        Tue, 26 May 2020 02:41:54 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w73sm14937205pfd.113.2020.05.26.02.41.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 26 May 2020 02:41:53 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec] xfrm: fix a NULL-ptr deref in xfrm_local_error
+Date:   Tue, 26 May 2020 17:41:46 +0800
+Message-Id: <690acd84dbe4f2e3955f54a1d6bfe71548a481cf.1590486106.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit allows printing the statistics of a broadcast-receiver link
-using the same tipc command, but with additional 'link' options:
+This patch is to fix a crash:
 
-$ tipc link stat show --help
-Usage: tipc link stat show [ link { LINK | SUBSTRING | all } ]
+  [ ] kasan: GPF could be caused by NULL-ptr deref or user memory access
+  [ ] general protection fault: 0000 [#1] SMP KASAN PTI
+  [ ] RIP: 0010:ipv6_local_error+0xac/0x7a0
+  [ ] Call Trace:
+  [ ]  xfrm6_local_error+0x1eb/0x300
+  [ ]  xfrm_local_error+0x95/0x130
+  [ ]  __xfrm6_output+0x65f/0xb50
+  [ ]  xfrm6_output+0x106/0x46f
+  [ ]  udp_tunnel6_xmit_skb+0x618/0xbf0 [ip6_udp_tunnel]
+  [ ]  vxlan_xmit_one+0xbc6/0x2c60 [vxlan]
+  [ ]  vxlan_xmit+0x6a0/0x4276 [vxlan]
+  [ ]  dev_hard_start_xmit+0x165/0x820
+  [ ]  __dev_queue_xmit+0x1ff0/0x2b90
+  [ ]  ip_finish_output2+0xd3e/0x1480
+  [ ]  ip_do_fragment+0x182d/0x2210
+  [ ]  ip_output+0x1d0/0x510
+  [ ]  ip_send_skb+0x37/0xa0
+  [ ]  raw_sendmsg+0x1b4c/0x2b80
+  [ ]  sock_sendmsg+0xc0/0x110
 
-With:
-+ 'LINK'      : print the stats of the specific link 'LINK';
-+ 'SUBSTRING' : print the stats of all the links having the 'SUBSTRING'
-                in name;
-+ 'all'       : print all the links' stats incl. the broadcast-receiver
-                ones;
+This occurred when sending a v4 skb over vxlan6 over ipsec, in which case
+skb->protocol == htons(ETH_P_IPV6) while skb->sk->sk_family == AF_INET in
+xfrm_local_error(). Then it will go to xfrm6_local_error() where it tries
+to get ipv6 info from a ipv4 sk.
 
-Also, a link stats can be reset in the usual way by specifying the link
-name in command.
+This issue was actually fixed by Commit 628e341f319f ("xfrm: make local
+error reporting more robust"), but brought back by Commit 844d48746e4b
+("xfrm: choose protocol family by skb protocol").
 
-For example:
+So to fix it, we should call xfrm6_local_error() only when skb->protocol
+is htons(ETH_P_IPV6) and skb->sk->sk_family is AF_INET6.
 
-$ tipc l st sh l br
-Link <broadcast-link>
-  Window:50 packets
-  RX packets:0 fragments:0/0 bundles:0/0
-  TX packets:5011125 fragments:4968774/149643 bundles:38402/307061
-  RX naks:781484 defs:0 dups:0
-  TX naks:0 acks:0 retrans:330259
-  Congestion link:50657  Send queue max:0 avg:0
-
-Link <broadcast-link:1001001>
-  Window:50 packets
-  RX packets:95146 fragments:95040/1980 bundles:1/2
-  TX packets:0 fragments:0/0 bundles:0/0
-  RX naks:380938 defs:83962 dups:403
-  TX naks:8362 acks:0 retrans:170662
-  Congestion link:0  Send queue max:0 avg:0
-
-Link <broadcast-link:1001002>
-  Window:50 packets
-  RX packets:0 fragments:0/0 bundles:0/0
-  TX packets:0 fragments:0/0 bundles:0/0
-  RX naks:400546 defs:0 dups:0
-  TX naks:0 acks:0 retrans:159597
-  Congestion link:0  Send queue max:0 avg:0
-
-$ tipc l st sh l 1001002
-Link <1001003:data0-1001002:data0>
-  ACTIVE  MTU:1500  Priority:10  Tolerance:1500 ms  Window:50 packets
-  RX packets:99546 fragments:0/0 bundles:33/877
-  TX packets:629 fragments:0/0 bundles:35/828
-  TX profile sample:8 packets average:390 octets
-  0-64:75% -256:0% -1024:0% -4096:25% -16384:0% -32768:0% -66000:0%
-  RX states:488714 probes:7397 naks:0 defs:4 dups:5
-  TX states:27734 probes:18016 naks:5 acks:2305 retrans:0
-  Congestion link:0  Send queue max:0 avg:0
-
-Link <broadcast-link:1001002>
-  Window:50 packets
-  RX packets:0 fragments:0/0 bundles:0/0
-  TX packets:0 fragments:0/0 bundles:0/0
-  RX naks:400546 defs:0 dups:0
-  TX naks:0 acks:0 retrans:159597
-  Congestion link:0  Send queue max:0 avg:0
-
-$ tipc l st re l broadcast-link:1001002
-
-$ tipc l st sh l broadcast-link:1001002
-Link <broadcast-link:1001002>
-  Window:50 packets
-  RX packets:0 fragments:0/0 bundles:0/0
-  TX packets:0 fragments:0/0 bundles:0/0
-  RX naks:0 defs:0 dups:0
-  TX naks:0 acks:0 retrans:0
-  Congestion link:0  Send queue max:0 avg:0
-
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+Fixes: 844d48746e4b ("xfrm: choose protocol family by skb protocol")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- tipc/link.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ net/xfrm/xfrm_output.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tipc/link.c b/tipc/link.c
-index e123c186..ba77a201 100644
---- a/tipc/link.c
-+++ b/tipc/link.c
-@@ -334,7 +334,7 @@ static int _show_link_stat(const char *name, struct nlattr *attrs[],
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 69c33ca..69c4900 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -642,7 +642,8 @@ void xfrm_local_error(struct sk_buff *skb, int mtu)
  
- 	open_json_object(NULL);
- 
--	print_string(PRINT_ANY, "link", "\nLink <%s>\n", name);
-+	print_string(PRINT_ANY, "link", "Link <%s>\n", name);
- 	print_string(PRINT_JSON, "state", "", NULL);
- 	open_json_array(PRINT_JSON, NULL);
- 	if (attrs[TIPC_NLA_LINK_ACTIVE])
-@@ -433,7 +433,7 @@ static int _show_link_stat(const char *name, struct nlattr *attrs[],
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_LINK_CONGS]));
- 	print_uint(PRINT_ANY, "send queue max", "  Send queue max:%u",
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_MAX_QUEUE]));
--	print_uint(PRINT_ANY, "avg", " avg:%u\n",
-+	print_uint(PRINT_ANY, "avg", " avg:%u\n\n",
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_AVG_QUEUE]));
- 
- 	close_json_object();
-@@ -496,7 +496,7 @@ static int _show_bc_link_stat(const char *name, struct nlattr *prop[],
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_LINK_CONGS]));
- 	print_uint(PRINT_ANY, "send queue max", "  Send queue max:%u",
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_MAX_QUEUE]));
--	print_uint(PRINT_ANY, "avg", " avg:%u\n",
-+	print_uint(PRINT_ANY, "avg", " avg:%u\n\n",
- 			   mnl_attr_get_u32(stats[TIPC_NLA_STATS_AVG_QUEUE]));
- 	close_json_object();
- 
-@@ -527,8 +527,10 @@ static int link_stat_show_cb(const struct nlmsghdr *nlh, void *data)
- 
- 	name = mnl_attr_get_str(attrs[TIPC_NLA_LINK_NAME]);
- 
--	/* If a link is passed, skip all but that link */
--	if (link && (strcmp(name, link) != 0))
-+	/* If a link is passed, skip all but that link.
-+	 * Support a substring matching as well.
-+	 */
-+	if (link && !strstr(name, link))
- 		return MNL_CB_OK;
- 
- 	if (attrs[TIPC_NLA_LINK_BROADCAST]) {
-@@ -540,7 +542,7 @@ static int link_stat_show_cb(const struct nlmsghdr *nlh, void *data)
- 
- static void cmd_link_stat_show_help(struct cmdl *cmdl)
- {
--	fprintf(stderr, "Usage: %s link stat show [ link LINK ]\n",
-+	fprintf(stderr, "Usage: %s link stat show [ link { LINK | SUBSTRING | all } ]\n",
- 		cmdl->argv[0]);
- }
- 
-@@ -554,6 +556,7 @@ static int cmd_link_stat_show(struct nlmsghdr *nlh, const struct cmd *cmd,
- 		{ "link",		OPT_KEYVAL,	NULL },
- 		{ NULL }
- 	};
-+	struct nlattr *attrs;
- 	int err = 0;
- 
- 	if (help_flag) {
-@@ -571,8 +574,14 @@ static int cmd_link_stat_show(struct nlmsghdr *nlh, const struct cmd *cmd,
- 		return -EINVAL;
- 
- 	opt = get_opt(opts, "link");
--	if (opt)
--		link = opt->val;
-+	if (opt) {
-+		if (strcmp(opt->val, "all"))
-+			link = opt->val;
-+		/* Set the flag to dump all bc links */
-+		attrs = mnl_attr_nest_start(nlh, TIPC_NLA_LINK);
-+		mnl_attr_put(nlh, TIPC_NLA_LINK_BROADCAST, 0, NULL);
-+		mnl_attr_nest_end(nlh, attrs);
-+	}
- 
- 	new_json_obj(json);
- 	err = msg_dumpit(nlh, link_stat_show_cb, link);
+ 	if (skb->protocol == htons(ETH_P_IP))
+ 		proto = AF_INET;
+-	else if (skb->protocol == htons(ETH_P_IPV6))
++	else if (skb->protocol == htons(ETH_P_IPV6) &&
++		 skb->sk->sk_family == AF_INET6)
+ 		proto = AF_INET6;
+ 	else
+ 		return;
 -- 
-2.13.7
+2.1.0
 
