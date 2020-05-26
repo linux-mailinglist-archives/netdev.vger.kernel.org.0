@@ -2,115 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFFDB1E33BC
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 01:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12E371E33C8
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 01:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726025AbgEZXah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 19:30:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37724 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725944AbgEZXag (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 19:30:36 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6284E20849;
-        Tue, 26 May 2020 23:30:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590535835;
-        bh=Xktrl3iNjlq0DQXfwLdVjcGbCxddHqzKTW9NLLNfCJo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gWBafBW4xmfM510bdgGP9VD6NlS0DEcl9k/xoj8aRIgRQr1cER0h4d8UH2ikHPEC/
-         Z6wbMTiItGU4h1LEcShc76dEKFrOD1DFYE7/ju8aQ4qRb/XVrr5wS0Cq0I/AyvWQ/v
-         5f8RfOWYtfl8yRzTsPUHo3U3jFsuxw65wDiFZp5U=
-Date:   Tue, 26 May 2020 16:30:31 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     jeyu@kernel.org, davem@davemloft.net, michael.chan@broadcom.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        kvalo@codeaurora.org, johannes@sipsolutions.net,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        derosier@gmail.com, keescook@chromium.org, daniel.vetter@ffwll.ch,
-        will@kernel.org, mchehab+samsung@kernel.org, vkoul@kernel.org,
-        mchehab+huawei@kernel.org, robh@kernel.org, mhiramat@kernel.org,
-        sfr@canb.auug.org.au, linux@dominikbrodowski.net,
-        glider@google.com, paulmck@kernel.org, elver@google.com,
-        bauerman@linux.ibm.com, yamada.masahiro@socionext.com,
-        samitolvanen@google.com, yzaikin@google.com, dvyukov@google.com,
-        rdunlap@infradead.org, corbet@lwn.net, dianders@chromium.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3 0/8] kernel: taint when the driver firmware crashes
-Message-ID: <20200526163031.5c43fc1d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20200526230748.GS11244@42.do-not-panic.com>
-References: <20200526145815.6415-1-mcgrof@kernel.org>
-        <20200526154606.6a2be01f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20200526230748.GS11244@42.do-not-panic.com>
+        id S1726326AbgEZXgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 19:36:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34494 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgEZXga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 19:36:30 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jdj7E-0004iD-Ef; Wed, 27 May 2020 01:36:12 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jdj7D-000Fqz-W9; Wed, 27 May 2020 01:36:12 +0200
+Subject: Re: [PATCH RFC bpf-next 0/4] bpf: Add support for XDP programs in
+ DEVMAPs
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+References: <20200522010526.14649-1-dsahern@kernel.org>
+ <87lflkj6zs.fsf@toke.dk> <f94be4c8-c547-1be0-98c8-7e7cd3b7ee71@gmail.com>
+ <87v9kki523.fsf@toke.dk> <20200525144752.3e87f8cd@carbon>
+ <87pnasi35x.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0bb7b04c-60a9-525a-575d-944385851487@iogearbox.net>
+Date:   Wed, 27 May 2020 01:36:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <87pnasi35x.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25824/Tue May 26 14:27:30 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 May 2020 23:07:48 +0000 Luis Chamberlain wrote:
-> On Tue, May 26, 2020 at 03:46:06PM -0700, Jakub Kicinski wrote:
-> > On Tue, 26 May 2020 14:58:07 +0000 Luis Chamberlain wrote:  
-> > > To those new on CC -- this is intended to be a simple generic interface
-> > > to the kernel to annotate when the firwmare has crashed leaving the
-> > > driver or system in a questionable state, in the worst case requiring
-> > > full system reboot. This series is first addressing only a few
-> > > networking patches, however, I already have an idea of where such
-> > > firmware crashes happen across the tree. The goal with this series then
-> > > is to first introduce the simple framework, and only if that moves
-> > > forward will I continue to chug on with the rest of the drivers /
-> > > subsystems.
-> > > 
-> > > This is *not* a networking specific problem only.
-> > > 
-> > > This v3 augments the last series by introducing the uevent for panic
-> > > events, one of them is during tainting. The uvent mechanism is
-> > > independent from any of this firmware taint mechanism. I've also
-> > > addressed Jessica Yu's feedback. Given I've extended the patches a bit
-> > > with other minor cleanup which checkpatch.pl complains over, and since
-> > > this infrastructure is still being discussed, I've trimmed the patch
-> > > series size to only cover drivers for which I've received an Acked-by
-> > > from the respective driver maintainer, or where we have bug reports to
-> > > support such dire situations on the driver such as ath10k.
-> > > 
-> > > During the last v2 it was discussed that we should instead use devlink
-> > > for this work, however the initial RFC patches produced by Jakub
-> > > Kicinski [0] shows how devlink is networking specific, and the intent
-> > > behind this series is to produce simple helpers which can be used by *any*
-> > > device driver, for any subsystem, not just networking. Subsystem
-> > > specific infrastructure to help address firwmare crashes may still make
-> > > sense, however that does not mean we *don't* need something even more
-> > > generic regardless of the subsystem the issue happens on. Since uevents
-> > > for taints are exposed, we now expose these through uapi as well, and
-> > > that was something which eventually had to happen given that the current
-> > > scheme of relying on sensible character representations for each taint
-> > > will not scale beyond the alphabet.  
-> > 
-> > Nacked-by: Jakub Kicinski <kuba@kernel.org>  
+On 5/25/20 2:56 PM, Toke Høiland-Jørgensen wrote:
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>> On Mon, 25 May 2020 14:15:32 +0200
+>> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>> David Ahern <dsahern@gmail.com> writes:
+>>>> On 5/22/20 9:59 AM, Toke Høiland-Jørgensen wrote:
+>>>>> David Ahern <dsahern@kernel.org> writes:
+>>>>>    
+>>>>>> Implementation of Daniel's proposal for allowing DEVMAP entries to be
+>>>>>> a device index, program id pair. Daniel suggested an fd to specify the
+>>>>>> program, but that seems odd to me that you insert the value as an fd, but
+>>>>>> read it back as an id since the fd can be closed.
+>>>>>
+>>>>> While I can be sympathetic to the argument that it seems odd, every
+>>>>> other API uses FD for insert and returns ID, so why make it different
+>>>>> here? Also, the choice has privilege implications, since the CAP_BPF
+>>>>> series explicitly makes going from ID->FD a more privileged operation
+>>>>> than just querying the ID.
+
+[...]
+
+>> I sympathize with Ahern on this.  It seems very weird to insert/write
+>> one value-type, but read another value-type.
 > 
-> Care to elaborate?
+> Yeah, I do kinda agree that it's a bit weird. But it's what we do
+> everywhere else, so I think consistency wins out here. There might be an
+> argument that maps should be different (because they're conceptually a
+> read/write data structure not a syscall return value). But again, we
+> already have a map type that takes prog IDs, and that already does the
+> rewriting, so doing it different here would be even weirder...
 
-I elaborated in the previous thread and told you I will nack this, 
-but sure let's go over this again.
+Sorry for the late reply. Agree, it would at least be consistent to what is done
+in tail call maps, and the XDP netlink API where you have the fd->id in both cases.
+Either way, quick glance over the patches, the direction of this RFC looks good to
+me, better fit than the prior XDP egress approaches.
 
-For the third time saying the devlink is networking specific is not
-true. It was created as a netlink configuration channel for devices
-when there is no networking reference that could be used. It can be
-compiled in or out much like sysfs.
-
-And as I've shown you devlink already has the uAPI for what you're
-trying to achieve.
-
-Regardless of your opinions about wider interfaces, networking drivers
-should implement devlink, and not have to sprinkle magic taint calls.
+Thanks,
+Daniel
