@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2041E3222
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 00:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02A721E322A
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 00:14:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390953AbgEZWNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 18:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726814AbgEZWNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 18:13:18 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B597C061A0F
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 15:13:18 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 373F8120ED490;
-        Tue, 26 May 2020 15:13:16 -0700 (PDT)
-Date:   Tue, 26 May 2020 15:13:05 -0700 (PDT)
-Message-Id: <20200526.151305.1716055086821349329.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, maze@google.com
-Subject: Re: [PATCH net-next] tcp: tcp_v4_err() icmp skb is named icmp_skb
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200526031524.72257-1-edumazet@google.com>
-References: <20200526031524.72257-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S2391834AbgEZWOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 18:14:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50382 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390125AbgEZWOk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 18:14:40 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 745FB208E4;
+        Tue, 26 May 2020 22:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590531279;
+        bh=WNNrEBrRm5KQIcFUGq2TRMx27B76ntCZRhP1oAZarAY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FMN2hWIdPIBiaMtsGkpuCZ4zzLrzXrSUx1y95Ma8wbiEOfr/GNBW3xx8zpRKFyikG
+         a6sZLIiHHw9nfrPoRv23PAV2DijbnSSsTG7+sYtHRk+0Xy8QThWtb+fH3a7j+/pd86
+         gTP3fwLbqPiJadktGjnaEGsuT2P/pPicoO57dWQo=
+Date:   Tue, 26 May 2020 15:14:37 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 00/14] mlxsw: Various trap changes - part 2
+Message-ID: <20200526151437.6fc3fb67@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200525230556.1455927-1-idosch@idosch.org>
+References: <20200525230556.1455927-1-idosch@idosch.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 26 May 2020 15:13:16 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 25 May 2020 20:15:24 -0700
+On Tue, 26 May 2020 02:05:42 +0300 Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> This patch set contains another set of small changes in mlxsw trap
+> configuration. It is the last set before exposing control traps (e.g.,
+> IGMP query, ARP request) via devlink-trap.
 
-> I missed the fact that tcp_v4_err() differs from tcp_v6_err().
-> 
-> After commit 4d1a2d9ec1c1 ("Rename skb to icmp_skb in tcp_v4_err()")
-> the skb argument has been renamed to icmp_skb only in one function.
-> 
-> I will in a future patch reconciliate these functions to avoid
-> this kind of confusion.
-> 
-> Fixes: 45af29ca761c ("tcp: allow traceroute -Mtcp for unpriv users")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+When traps were introduced my understanding was that they are for
+reporting frames which hit an expectation on the datapath. IOW the
+primary use for them was troubleshooting. 
 
-Applied.
+Now, if I'm following things correctly we have explicit DHCP, IGMP,
+ARP, ND, BFD etc. traps. Are we still in the troubleshooting realm?
