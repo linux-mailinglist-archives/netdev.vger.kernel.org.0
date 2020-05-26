@@ -2,161 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 220471E1AB6
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 07:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66AF61E1AB9
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 07:36:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgEZFaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 01:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgEZFaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 01:30:10 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5339DC061A0E;
-        Mon, 25 May 2020 22:30:10 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id c185so5322946qke.7;
-        Mon, 25 May 2020 22:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m5KD4TdD0ILO59F8+Ngg2G7yCxN2FnLmCaPVN/3wcvc=;
-        b=oD0tCL6jFYQxeco5LC050cvnvy7dTfZ+2Mzy9Uw8Q1yH90aeiF98c3ehFRg3nDNGIU
-         Ox7Yvv3hL5BpWrxZRjIV/uAxDvhQiI5HEhLsYmhK5HZlJoyEjAkWMOPtjveJyghbf1X2
-         tB345+RKFYdmr3CciaEECrOHhm+QlCSzF9VbnP5Loovq8rd7f0cHgVOqXYk2IgUtTgym
-         KOjT/aQdK0/fcthCv2WRzp30FBip9+L1VVcQPFVvZR1vhLpg9NnucmShse6WRbT7rr9H
-         1t18QYsFsdsq2dz97snVgXfrLuywp3AH2vM9d1eLxQ/fvSPrkMKz4ZDPfsh+Pcz1CrdZ
-         SfIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m5KD4TdD0ILO59F8+Ngg2G7yCxN2FnLmCaPVN/3wcvc=;
-        b=HBpCZn3z6KYDmYAfj5Wq9pN1M6rvasoRd7S8LfzOTWf3fxnt1upvltBb44UQJiNzyz
-         CCYeoBGaJYGupm3jKoyx0NHnUnzbF9voWmafvdd1AlFtZVEL5p3zCYyUeAd7+tLMmxGY
-         4fc2VSBVcMPAnN6K/RSAnZzUIYh9D25BjeMg7O/5eayiBNbG5Z3sLV5u3WAkYUp2X9P1
-         abKiL8ABASXTPH9B9TgEeLHrhnZyKCZ4bLBZgSuAhpUPpjLQ/Y2NiZS+Ve0gDanA+BnD
-         DQCkF9Xia8nqGGv0JaJez00Qca4YbMmJTGo+90l50+DiJ69UU8B6mMKQ3iTfLVJduq0h
-         aXaQ==
-X-Gm-Message-State: AOAM532Kh+mzFe5CJmEQ09qg6QaJ85XYAAdb9b0q47mOI9H4Ao8qut1C
-        toH+l+eWTt8dfjlEQTs3XhOjOGdXqEA2FOPUJrE=
-X-Google-Smtp-Source: ABdhPJxY+FJt1Nh2U/egoJkZt2Z31lv5hYQhmHMuolTcDstkUNoTDIYi/9C6Ru4pucB2tLUZk7xBbknupPg3pdbqINc=
-X-Received: by 2002:a37:a89:: with SMTP id 131mr12315990qkk.92.1590471009492;
- Mon, 25 May 2020 22:30:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <159042332675.79900.6845937535091126683.stgit@ebuild>
-In-Reply-To: <159042332675.79900.6845937535091126683.stgit@ebuild>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 25 May 2020 22:29:58 -0700
-Message-ID: <CAEf4BzZqDz=0nKpxjfkowkXkGiH67eSJCZQxRywFcVT+2UeZ+w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: add API to consume the perf ring buffer content
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726363AbgEZFf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 01:35:56 -0400
+Received: from mga14.intel.com ([192.55.52.115]:20009 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725773AbgEZFf4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 01:35:56 -0400
+IronPort-SDR: 75n97el5uGZTIObyAj1H5ptVwaYdYcv8hOXWx2zz6NKYERpz+GSPgwrYW63A4YoJut68MC1SQg
+ SMwqrYADHwTA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2020 22:35:56 -0700
+IronPort-SDR: 8GuUvj2YEZwOCH+zeBzQGzidx1tkcc1NTDlrvncBzRNXwbmzFfOQ4wMAbrOH0d3XjFBsPvnH75
+ aWpwPrG8sZfQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,436,1583222400"; 
+   d="scan'208";a="256368416"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.54])
+  by fmsmga008.fm.intel.com with ESMTP; 25 May 2020 22:35:53 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jasowang@redhat.com
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH] vdpa: bypass waking up vhost_woker for vdpa vq kick
+Date:   Tue, 26 May 2020 13:32:25 +0800
+Message-Id: <1590471145-4436-1-git-send-email-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 2:01 PM Eelco Chaudron <echaudro@redhat.com> wrote:
->
-> This new API, perf_buffer__consume, can be used as follows:
+Standard vhost devices rely on waking up a vhost_worker to kick
+a virtquque. However vdpa devices have hardware backends, so it
+does not need this waking up routin. In this commit, vdpa device
+will kick a virtqueue directly, reduce the performance overhead
+caused by waking up a vhost_woker.
 
-I wonder, was it inspired by yet-to-be committed
-ring_buffer__consume() or it's just a coincidence?
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Suggested-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/vhost/vdpa.c | 100 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 100 insertions(+)
 
-> - When you have a perf ring where wakeup_events is higher than 1,
->   and you have remaining data in the rings you would like to pull
->   out on exit (or maybe based on a timeout).
-> - For low latency cases where you burn a CPU that constantly polls
->   the queues.
->
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c   |   23 +++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   |    1 +
->  tools/lib/bpf/libbpf.map |    1 +
->  3 files changed, 25 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index fa04cbe547ed..cbef3dac7507 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8456,6 +8456,29 @@ int perf_buffer__poll(struct perf_buffer *pb, int timeout_ms)
->         return cnt < 0 ? -errno : cnt;
->  }
->
-> +int perf_buffer__consume(struct perf_buffer *pb)
-> +{
-> +       int i;
-> +
-> +       if (!pb)
-> +               return -EINVAL;
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 0968361..d3a2aca 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -287,6 +287,66 @@ static long vhost_vdpa_get_vring_num(struct vhost_vdpa *v, u16 __user *argp)
+ 
+ 	return 0;
+ }
++void vhost_vdpa_poll_stop(struct vhost_virtqueue *vq)
++{
++	vhost_poll_stop(&vq->poll);
++}
++
++int vhost_vdpa_poll_start(struct vhost_virtqueue *vq)
++{
++	struct vhost_poll *poll = &vq->poll;
++	struct file *file = vq->kick;
++	__poll_t mask;
++
++
++	if (poll->wqh)
++		return 0;
++
++	mask = vfs_poll(file, &poll->table);
++	if (mask)
++		vq->handle_kick(&vq->poll.work);
++	if (mask & EPOLLERR) {
++		vhost_poll_stop(poll);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static long vhost_vdpa_set_vring_kick(struct vhost_virtqueue *vq,
++				      void __user *argp)
++{
++	bool pollstart = false, pollstop = false;
++	struct file *eventfp, *filep = NULL;
++	struct vhost_vring_file f;
++	long r;
++
++	if (copy_from_user(&f, argp, sizeof(f)))
++		return -EFAULT;
++
++	eventfp = f.fd == -1 ? NULL : eventfd_fget(f.fd);
++	if (IS_ERR(eventfp)) {
++		r = PTR_ERR(eventfp);
++		return r;
++	}
++
++	if (eventfp != vq->kick) {
++		pollstop = (filep = vq->kick) != NULL;
++		pollstart = (vq->kick = eventfp) != NULL;
++	} else
++		filep = eventfp;
++
++	if (pollstop && vq->handle_kick)
++		vhost_vdpa_poll_stop(vq);
++
++	if (filep)
++		fput(filep);
++
++	if (pollstart && vq->handle_kick)
++		r = vhost_vdpa_poll_start(vq);
++
++	return r;
++}
+ 
+ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 				   void __user *argp)
+@@ -316,6 +376,11 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 		return 0;
+ 	}
+ 
++	if (cmd == VHOST_SET_VRING_KICK) {
++		r = vhost_vdpa_set_vring_kick(vq, argp);
++		return r;
++	}
++
+ 	if (cmd == VHOST_GET_VRING_BASE)
+ 		vq->last_avail_idx = ops->get_vq_state(v->vdpa, idx);
+ 
+@@ -667,6 +732,39 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
+ 	v->domain = NULL;
+ }
+ 
++static int vhost_vdpa_poll_worker(wait_queue_entry_t *wait, unsigned int mode,
++				  int sync, void *key)
++{
++	struct vhost_poll *poll = container_of(wait, struct vhost_poll, wait);
++	struct vhost_virtqueue *vq = container_of(poll, struct vhost_virtqueue,
++						  poll);
++
++	if (!(key_to_poll(key) & poll->mask))
++		return 0;
++
++	vq->handle_kick(&vq->poll.work);
++
++	return 0;
++}
++
++void vhost_vdpa_poll_init(struct vhost_dev *dev)
++{
++	struct vhost_virtqueue *vq;
++	struct vhost_poll *poll;
++	int i;
++
++	for (i = 0; i < dev->nvqs; i++) {
++		vq = dev->vqs[i];
++		poll = &vq->poll;
++		if (vq->handle_kick) {
++			init_waitqueue_func_entry(&poll->wait,
++						  vhost_vdpa_poll_worker);
++			poll->work.fn = vq->handle_kick;
++		}
++
++	}
++}
++
+ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ {
+ 	struct vhost_vdpa *v;
+@@ -697,6 +795,8 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0,
+ 		       vhost_vdpa_process_iotlb_msg);
+ 
++	vhost_vdpa_poll_init(dev);
++
+ 	dev->iotlb = vhost_iotlb_alloc(0, 0);
+ 	if (!dev->iotlb) {
+ 		r = -ENOMEM;
+-- 
+1.8.3.1
 
-we don't check this in perf_buffer__poll, IMO, checking this in every
-"method" is an overkill.
-
-> +
-> +       if (!pb->cpu_bufs)
-> +               return 0;
-
-no need to check. It's either non-NULL for valid perf_buffer, or
-calloc could return NULL if pb->cpu_cnt is zero (not sure it's
-possible, but still), but then loop below will never access
-pb->cpu_bufs[i].
-
-> +
-> +       for (i = 0; i < pb->cpu_cnt && pb->cpu_bufs[i]; i++) {
-
-I think pb->cpu_bufs[i] check is wrong, it will stop iteration
-prematurely if cpu_bufs are sparsely populated. So move check inside
-and continue loop if NULL.
-
-> +               int err;
-
-nit: declare it together with "i" above, similar to how
-perf_buffer__poll does it
-
-> +               struct perf_cpu_buf *cpu_buf = pb->cpu_bufs[i];
-> +
-> +               err = perf_buffer__process_records(pb, cpu_buf);
-> +               if (err) {
-> +                       pr_warn("error while processing records: %d\n", err);
-> +                       return err;
-> +               }
-> +       }
-> +       return 0;
-> +}
-> +
->  struct bpf_prog_info_array_desc {
->         int     array_offset;   /* e.g. offset of jited_prog_insns */
->         int     count_offset;   /* e.g. offset of jited_prog_len */
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 8ea69558f0a8..1e2e399a5f2c 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -533,6 +533,7 @@ perf_buffer__new_raw(int map_fd, size_t page_cnt,
->
->  LIBBPF_API void perf_buffer__free(struct perf_buffer *pb);
->  LIBBPF_API int perf_buffer__poll(struct perf_buffer *pb, int timeout_ms);
-> +LIBBPF_API int perf_buffer__consume(struct perf_buffer *pb);
->
->  typedef enum bpf_perf_event_ret
->         (*bpf_perf_event_print_t)(struct perf_event_header *hdr,
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 0133d469d30b..381a7342ecfc 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -262,4 +262,5 @@ LIBBPF_0.0.9 {
->                 bpf_link_get_fd_by_id;
->                 bpf_link_get_next_id;
->                 bpf_program__attach_iter;
-> +               perf_buffer__consume;
->  } LIBBPF_0.0.8;
->
