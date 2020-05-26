@@ -2,150 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D9D1E2EFA
-	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 21:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C831E1E2FCA
+	for <lists+netdev@lfdr.de>; Tue, 26 May 2020 22:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390002AbgEZTdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 15:33:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49200 "EHLO mail.kernel.org"
+        id S2390569AbgEZUK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 16:10:28 -0400
+Received: from correo.us.es ([193.147.175.20]:51868 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389789AbgEZS4Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 14:56:24 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2390075AbgEZUK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 16:10:28 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 5D626172C86
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 22:10:26 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4E948DA714
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 22:10:26 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4CFA4DA713; Tue, 26 May 2020 22:10:26 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 431F2DA715;
+        Tue, 26 May 2020 22:10:24 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 26 May 2020 22:10:24 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 678F82086A;
-        Tue, 26 May 2020 18:56:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590519383;
-        bh=EDdkK6dIOQTKwvtUxwXYy4/4X/dxjHM+E4M4/arruR0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNrbjWeDR4TCYwBOSs4WRIv4ifr8HDt/kdpUbPMpRebOZkfmLC/pKHZFmtw5vDaBz
-         IYXXp9oz+BmQbnTcejTwGcdN7hQ9boQkA15mfrguZiD9SYT89xBx018ipixMpZe4eB
-         cn3Z9CLigy2Ifo6wqfg2o7QTJE7LvUPeX/WPZjIw=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, nikolay@cumulusnetworks.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net v2 5/5] ipv4: nexthop version of fib_info_nh_uses_dev
-Date:   Tue, 26 May 2020 12:56:18 -0600
-Message-Id: <20200526185618.43748-6-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200526185618.43748-1-dsahern@kernel.org>
-References: <20200526185618.43748-1-dsahern@kernel.org>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 24D2D42EF42A;
+        Tue, 26 May 2020 22:10:24 +0200 (CEST)
+Date:   Tue, 26 May 2020 22:10:23 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        kuba@kernel.org
+Subject: Re: [PATCH 0/5] Netfilter fixes for net
+Message-ID: <20200526201023.GA26232@salvia>
+References: <20200525215420.2290-1-pablo@netfilter.org>
+ <20200525.182901.536565434439717149.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200525.182901.536565434439717149.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On Mon, May 25, 2020 at 06:29:01PM -0700, David Miller wrote:
+> From: Pablo Neira Ayuso <pablo@netfilter.org>
+> Date: Mon, 25 May 2020 23:54:15 +0200
+> 
+> > The following patchset contains Netfilter fixes for net:
+> > 
+> > 1) Set VLAN tag in tcp reset/icmp unreachable packets to reject
+> >    connections in the bridge family, from Michael Braun.
+> > 
+> > 2) Incorrect subcounter flag update in ipset, from Phil Sutter.
+> > 
+> > 3) Possible buffer overflow in the pptp conntrack helper, based
+> >    on patch from Dan Carpenter.
+> > 
+> > 4) Restore userspace conntrack helper hook logic that broke after
+> >    hook consolidation rework.
+> > 
+> > 5) Unbreak userspace conntrack helper registration via
+> >    nfnetlink_cthelper.
+> > 
+> > You can pull these changes from:
+> > 
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+> 
+> Pulled, thank you.
 
-Similar to the last path, need to fix fib_info_nh_uses_dev for
-external nexthops to avoid referencing multiple nh_grp structs.
-Move the device check in fib_info_nh_uses_dev to a helper and
-create a nexthop version that is called if the fib_info uses an
-external nexthop.
+If it's still possible, it would be good to toss this pull request.
 
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- include/net/ip_fib.h    | 10 ++++++++++
- include/net/nexthop.h   | 25 +++++++++++++++++++++++++
- net/ipv4/fib_frontend.c | 19 ++++++++++---------
- 3 files changed, 45 insertions(+), 9 deletions(-)
+Otherwise, I will send another pull request to address the kbuild
+reports.
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 771ce068bc96..2ec062aaa978 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -447,6 +447,16 @@ static inline int fib_num_tclassid_users(struct net *net)
- #endif
- int fib_unmerge(struct net *net);
- 
-+static inline bool nhc_l3mdev_matches_dev(const struct fib_nh_common *nhc,
-+const struct net_device *dev)
-+{
-+	if (nhc->nhc_dev == dev ||
-+	    l3mdev_master_ifindex_rcu(nhc->nhc_dev) == dev->ifindex)
-+		return true;
-+
-+	return false;
-+}
-+
- /* Exported by fib_semantics.c */
- int ip_fib_check_default(__be32 gw, struct net_device *dev);
- int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force);
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 9414ae46fc1c..8c9f1a718859 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -266,6 +266,31 @@ struct fib_nh_common *nexthop_get_nhc_lookup(const struct nexthop *nh,
- 	return NULL;
- }
- 
-+static inline bool nexthop_uses_dev(const struct nexthop *nh,
-+				    const struct net_device *dev)
-+{
-+	struct nh_info *nhi;
-+
-+	if (nh->is_group) {
-+		struct nh_group *nhg = rcu_dereference(nh->nh_grp);
-+		int i;
-+
-+		for (i = 0; i < nhg->num_nh; i++) {
-+			struct nexthop *nhe = nhg->nh_entries[i].nh;
-+
-+			nhi = rcu_dereference(nhe->nh_info);
-+			if (nhc_l3mdev_matches_dev(&nhi->fib_nhc, dev))
-+				return true;
-+		}
-+	} else {
-+		nhi = rcu_dereference(nh->nh_info);
-+		if (nhc_l3mdev_matches_dev(&nhi->fib_nhc, dev))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static inline unsigned int fib_info_num_path(const struct fib_info *fi)
- {
- 	if (unlikely(fi->nh))
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 1bf9da3a75f9..41079490a118 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -309,17 +309,18 @@ bool fib_info_nh_uses_dev(struct fib_info *fi, const struct net_device *dev)
- {
- 	bool dev_match = false;
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
--	int ret;
-+	if (unlikely(fi->nh)) {
-+		dev_match = nexthop_uses_dev(fi->nh, dev);
-+	} else {
-+		int ret;
- 
--	for (ret = 0; ret < fib_info_num_path(fi); ret++) {
--		const struct fib_nh_common *nhc = fib_info_nhc(fi, ret);
-+		for (ret = 0; ret < fib_info_num_path(fi); ret++) {
-+			const struct fib_nh_common *nhc = fib_info_nhc(fi, ret);
- 
--		if (nhc->nhc_dev == dev) {
--			dev_match = true;
--			break;
--		} else if (l3mdev_master_ifindex_rcu(nhc->nhc_dev) == dev->ifindex) {
--			dev_match = true;
--			break;
-+			if (nhc_l3mdev_matches_dev(nhc, dev)) {
-+				dev_match = true;
-+				break;
-+			}
- 		}
- 	}
- #else
--- 
-2.21.1 (Apple Git-122.3)
-
+Thank you.
