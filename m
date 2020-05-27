@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C23D1E3508
+	by mail.lfdr.de (Postfix) with ESMTP id 88F171E3509
 	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728442AbgE0Buo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 21:50:44 -0400
-Received: from mail-eopbgr40067.outbound.protection.outlook.com ([40.107.4.67]:57088
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        id S1728446AbgE0Buq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 21:50:46 -0400
+Received: from mail-vi1eur05on2068.outbound.protection.outlook.com ([40.107.21.68]:61537
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728223AbgE0Buk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 21:50:40 -0400
+        id S1728373AbgE0Buo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 21:50:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iq0NWQoP4AXHgzNN2NdkrdHn5B1Fld8e3r8GjMB/Oh4AU63qXZkbSvQYcnirZtKuQAZT4ODQElOyKbmnmAK2eCc9ryzzR0Noacxr1OUMPn5Rd1wg+tM90LZdPKE8YkL8DyK9ohks93xmU6D3qEd2iQcyJotwl17FJgamAcjegEpteAN4E9vbAIiptpSfGnQ/B16KVO7SWjeWIA5+G83swcZXIYWItfNO3+k0ApMEeez5+2/Hx33Qu35zrzhqMIZeJXmJ+U5JeDuK+roox3tqdxaxlg36IHzHKJz+n9qd3EaqlIAH3F6uV2I+ltO/JPQn4JIaRIBDEl9rTBZgClP0kA==
+ b=ezJLkZWUiNCC+EFfuO/WppqcIbRoLSVsArNN4+SXPATBOXQpXo6DM8lSvXQ9zWSkJx3RES6IryzTLZauxsI17OGPdKJ8vr7WzgUe8Ynhb7bwn1gl1UKJgIIC6RhxRXxhFSEA5BVb/R2+trBBm8cb/5LHvKCmIUoBSZarHvyVB9/MM4WfJHrZPnG+u4CsbPkkiQivpiiSsAc33GX0t+RVGCbU8uToq/DKpgCWO+UhBdkFWUGt9dz3R18kjJXlDsciOsDZ2iWA9b8ta6vpP8co75oMnoD84v06TbjJ8e86z2URLTtis82grRIgWhQ91bMwfw0ZR45xGX5gkZiXwo+Uag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qj1eiSik3vxTxYesZrsKuXlzr0f3YzXCeXcFtTHsV1g=;
- b=fa/ALaO3W+Y/Moz1VS+f3LNx2A5YDHpmyRDkQ+022yWBifbm3KRm0RTW+f0zjdaACJumabAHjLcJp60xLiBY3IifzCGYyyXZXflcnRZ7M1LxtPjQwYW1U1SMpVCebu7chA6DDbAgsxG5hTFsMz+kXcblx8POtTzg2spwl8Gyt/sh37mGX1jpdQBPjbXXHEo1NjAhj9ZzCFn/Y0y0pZCNpv6aW/H4wknseb9PNmEsuN8C+Rp4R3pPmtAhr/Ov3lZXFPddgC7OivRLlB31sRmQ3fVnEAqpIU+Fw+nm/itgyDTh8nCMwRn2H41qsRMTS+28Ux/putZUqffYWT05UwY9Aw==
+ bh=otbVZdgMdC3AHs8VfZl+E2KfEUCjmQP2vmf4TrfQ2nY=;
+ b=W+7arwyhTsLwrhLsRtQQfvaOifFXO1K+hH32QxybF0hWbL9/rjrPzZn20HblrWGGBw+h2yPysd7dxDmVmidT61l7p5x0PTVcQ448mvR3BpnxFDXBVWscs/k1Kl75RjNPqrVnrkloz5H6vefBuQ1s4tO3MqRknbl/WXyFsjphePLbQkFrteRyT5eICf2EUCPi9yHWcHFIDSyPG2M6a3imo4rnAK7ugUASStk9k+UFOdBkpKsq29VAP98ekTk6BMbPVqYnDN5NRXBfZdFio+oit9nvFxCbnkszwIcMlbszwY8cYoUY7dDK8liPaAzdY0g+ysYR1qIqrh1AZWW3a8jR1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qj1eiSik3vxTxYesZrsKuXlzr0f3YzXCeXcFtTHsV1g=;
- b=BqIp9cfU4hR/6VN75u8g2vS5dthlJWdQycuG9L8/QEdeObVPheuuHm7elYiX0h64u3V/LopbDOyV0AZi5zHAROzjvJ4BQpdc4JlMFm4pKjZxcUiUF7bDPxsVzEVLqs6nEBwAUij0rpgH8LOyYBjBAIxTZTwXwXeNN5DLP13gaaU=
+ bh=otbVZdgMdC3AHs8VfZl+E2KfEUCjmQP2vmf4TrfQ2nY=;
+ b=YUszg+uYNl9wJCkGyvhHkxVv2ehTblPq20+QBsgw/FyiudUqPN9w+JLU8qUMZva9IqPpgqo0JRnIlTJcr6FbnWh8HOjH0csQ8kTGoTGkCJEh0g/zl91mhFCJrb2nZT8nPiaaLhDXfixdwBwGYAFarLPphkw2bnPuk2DPzmN+4KQ=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB4704.eurprd05.prod.outlook.com (2603:10a6:802:68::19) with
+ by VI1PR05MB6637.eurprd05.prod.outlook.com (2603:10a6:800:142::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 01:50:28 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26; Wed, 27 May
+ 2020 01:50:30 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 01:50:27 +0000
+ 01:50:30 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Alex Vesker <valex@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
+        Erez Shitrit <erezsh@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 15/16] net/mlx5: DR, Add a spinlock to protect the send ring
-Date:   Tue, 26 May 2020 18:49:23 -0700
-Message-Id: <20200527014924.278327-16-saeedm@mellanox.com>
+Subject: [net-next 16/16] net/mlx5: DR, Split RX and TX lock for parallel insertion
+Date:   Tue, 26 May 2020 18:49:24 -0700
+Message-Id: <20200527014924.278327-17-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200527014924.278327-1-saeedm@mellanox.com>
 References: <20200527014924.278327-1-saeedm@mellanox.com>
@@ -56,31 +57,31 @@ X-ClientProxiedBy: BYAPR11CA0061.namprd11.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR11CA0061.namprd11.prod.outlook.com (2603:10b6:a03:80::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24 via Frontend Transport; Wed, 27 May 2020 01:50:25 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR11CA0061.namprd11.prod.outlook.com (2603:10b6:a03:80::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24 via Frontend Transport; Wed, 27 May 2020 01:50:28 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 404dab16-fe4d-420a-dc65-08d801e05466
-X-MS-TrafficTypeDiagnostic: VI1PR05MB4704:
+X-MS-Office365-Filtering-Correlation-Id: 5c063166-a49b-4f95-6ca9-08d801e055c9
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6637:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB470492C010D2A4F7F260E586BEB10@VI1PR05MB4704.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:612;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB663736ABF8057EFB87E32F9DBEB10@VI1PR05MB6637.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
 X-Forefront-PRVS: 04163EF38A
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hQLhmt8IO/CgKbShARSS9UCUFeOS7l8Ps5dmbYVNu4zfCaxsFoCC8PZeS6wZSF7zvevX1+vMtLFokTgTpqIzHwjxrMK0m/HbQkAaC/cLdngUOenwXU0FClcGq14AZF4V/CXd+TrDF25grhiGOdZq0/3DAEHtl++aBxGLr+2L7bUIlUYPCRHgENR31bPW+u4GkB5nnPza5zU3MXElxrLaIqvfKPe+0Fy2Qc948pe9ESSocPHwxZZlTZmDAQYK4oYOpa95VU8l1+Llp7HOQNczfETzVTJ91+ADNF2KoRxhNNIpekEV6SWr2edKc1L/UrXALEd6aGtBR7RT4E3qNpKNt/g8YxUqMv3xB34Mq9lZV2igVtfInEh34UuCMMzrBk9x
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(39850400004)(396003)(136003)(366004)(2906002)(2616005)(66556008)(26005)(66476007)(66946007)(956004)(6506007)(6512007)(52116002)(478600001)(36756003)(316002)(186003)(4326008)(16526019)(54906003)(107886003)(1076003)(86362001)(8936002)(8676002)(5660300002)(83380400001)(6486002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Pb0bmLPdYvLENL1MaMr4Qn3PNYXq+EkDitsVr4uoJPSpVKm6tuvPBfhxQytv0kVO7UfsRJG8aM7CtVyFMGdlxH7KSeoOhvRQqqGE7afJDP4k1L4CazXNdWlM/NjpdcLUIWztIrWdxpw11S6rgxKVkj60sgtK3TJW8I06oQbYMcN5Quz/A+MtGJSNUHoTmev3UjZeY3aOa186S/2TEuxF4jY8PtLvCffW1jirmTArndd9v/MY2BVd7/Q2w8N5n8p/e87TlWJtFD+d8gJDVR0tjkKC5nJbOFi7wdWMgOgvNX8uagKixEYCtnPgElcDgMZD23gyylP/bXbAMmfddEDSMRfznU36dxExHVRTgXNU7j6E3KHoBUjk+iEDtXh9hBrq6A/mv1fgKDa75TwEnfAt0zGjj5NkgARmq519W2Fh9sxUoSLwP8vwHShe7fcBmAenPdalvMvBwVNE2je6sMD0+7WTTrNVLd41LWQpyzW2T4s=
+X-Microsoft-Antispam-Message-Info: np26/RJyYrPUqiOgppA3VfgiRxpztiyXRpk0HrAJHj8C7XuNyV9ITLF8aAkK2JVNqOEpUKdwbp5keQqoeHHVPCGWMTlCiPbtvr82pl3ylAQq1WJmp6Z9bT/mtF2tYG0JT7o2PphTqOYAoKJdwVB0v9nNWmOIJfgReJZvfmwFO0CZnEnMjdjTXs2lRwC1FtCwpUJR4RmxU66xJ9sk8TZDRI+qp8Ig+jjl7sXcGKbz582OdSstY9i3DkPG5VY7xT4UG4qHAyeqs8eUwvZyvCs3MQZ1ntUAkIrn9PxJEZYxn4hnvTmWHNz8MwazegzzgjERtqsOu1Xde2Ecd0ulEfL8uF58r9NlDwcLSH1Xo71/GVeM82NsRxQC/Nhd1uxuwjjg
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(366004)(396003)(376002)(39850400004)(26005)(6506007)(6486002)(6512007)(8676002)(478600001)(16526019)(86362001)(2906002)(186003)(6666004)(5660300002)(1076003)(66476007)(36756003)(54906003)(2616005)(956004)(66946007)(107886003)(8936002)(316002)(52116002)(66556008)(4326008)(83380400001)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: CD3zv+U2cE5T7MDY23nKG0f+D2mptf6VbIbPJkY+B6Mb13X1OvVxmS3mcCf0n2HNeMlQ1U70LW9pHb1eF+ii0dPaGGxgWkR4yCwI3dms9qM2WIlx6cQBf23I5rxkkml5l44WFBlGcJQ+S8NTE7BgjMw+8wbivLeIkfPEQBUUoeBTM/Dd61hAbirakdnQv+Pe6uzmwArzfDjCdTkgldEwxd3OUTOquXLH2F+lUnfHOB9nR+noEODcfUiaZ2GhLp8Yw0idnnAGd4XBiPp3hdsPFl3kvuiAsWS7S1t4YtdgCytcSxmKAvw2oI6oJl2jq3skeJPUJcydbJWt4ta7hvZ/7vNoml35jj7JZ5Kjy6WshOVkL49hYnldZer4cWdnRalFlfv+9PElwvrN6Q941EpI7OWZs8OIDg3dJNzs+lbI2fly73EDrXLaj2clyEl7s5aSiZDjwE7wwfnFjb0btcES+6vfmUPra5vRjYXiuUvRWzU=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 404dab16-fe4d-420a-dc65-08d801e05466
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 01:50:27.5433
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c063166-a49b-4f95-6ca9-08d801e055c9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 01:50:30.1118
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BPZU+KFs13LJl808Lo6tbhJ5S2SVkAill1pf8gSr4UhUREDr5epiSQsaxjCD4XMDf2uakjVEGrXULVWIhefE8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4704
+X-MS-Exchange-CrossTenant-UserPrincipalName: c1DA0GEqiGig4LQwe55IbqjiEcAXAp3Pq1QR0gtIDq403cYSU5QF3pHaQ9KhXVPzvWUztzgQbUTRPekhvxvShA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6637
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -88,85 +89,327 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Vesker <valex@mellanox.com>
 
-Adding this lock will allow writing steering entries without
-locking the dr_domain and allow parallel insertion.
+Change the locking flow to support RX and TX locks, splitting
+the single lock to two will allow inserting rules in parallel
+for RX and TX parts of the FDB.
+
+Locking the dr_domain will be done by locking the RX domain
+and the TX domain locks, this is mostly used for control operations
+on the dr_domain. When inserting rules for RX or TX the single
+nic_doamin RX or TX lock will be used. Splitting the lock is safe since
+RX and TX domains are logically separated from each other, shared
+objects such the send-ring and memory pool are protected by locks.
 
 Signed-off-by: Alex Vesker <valex@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
+Reviewed-by: Erez Shitrit <erezsh@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/steering/dr_send.c  | 13 +++++++++----
- .../ethernet/mellanox/mlx5/core/steering/dr_types.h |  1 +
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_domain.c   | 14 +++++----
+ .../mellanox/mlx5/core/steering/dr_matcher.c  | 10 +++---
+ .../mellanox/mlx5/core/steering/dr_rule.c     | 31 +++++++++----------
+ .../mellanox/mlx5/core/steering/dr_table.c    | 12 +++----
+ .../mellanox/mlx5/core/steering/dr_types.h    | 24 +++++++++++++-
+ 5 files changed, 56 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index b8d97d44be7b..f421013b0b54 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -357,9 +357,11 @@ static int dr_postsend_icm_data(struct mlx5dr_domain *dmn,
- 	u32 buff_offset;
- 	int ret;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 48b6358b6845..890767a2a7cb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -297,7 +297,8 @@ mlx5dr_domain_create(struct mlx5_core_dev *mdev, enum mlx5dr_domain_type type)
+ 	dmn->mdev = mdev;
+ 	dmn->type = type;
+ 	refcount_set(&dmn->refcount, 1);
+-	mutex_init(&dmn->mutex);
++	mutex_init(&dmn->info.rx.mutex);
++	mutex_init(&dmn->info.tx.mutex);
  
-+	spin_lock(&send_ring->lock);
-+
- 	ret = dr_handle_pending_wc(dmn, send_ring);
+ 	if (dr_domain_caps_init(mdev, dmn)) {
+ 		mlx5dr_err(dmn, "Failed init domain, no caps\n");
+@@ -345,9 +346,9 @@ int mlx5dr_domain_sync(struct mlx5dr_domain *dmn, u32 flags)
+ 	int ret = 0;
+ 
+ 	if (flags & MLX5DR_DOMAIN_SYNC_FLAGS_SW) {
+-		mutex_lock(&dmn->mutex);
++		mlx5dr_domain_lock(dmn);
+ 		ret = mlx5dr_send_ring_force_drain(dmn);
+-		mutex_unlock(&dmn->mutex);
++		mlx5dr_domain_unlock(dmn);
+ 		if (ret) {
+ 			mlx5dr_err(dmn, "Force drain failed flags: %d, ret: %d\n",
+ 				   flags, ret);
+@@ -371,7 +372,8 @@ int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
+ 	dr_domain_uninit_cache(dmn);
+ 	dr_domain_uninit_resources(dmn);
+ 	dr_domain_caps_uninit(dmn);
+-	mutex_destroy(&dmn->mutex);
++	mutex_destroy(&dmn->info.tx.mutex);
++	mutex_destroy(&dmn->info.rx.mutex);
+ 	kfree(dmn);
+ 	return 0;
+ }
+@@ -379,7 +381,7 @@ int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
+ void mlx5dr_domain_set_peer(struct mlx5dr_domain *dmn,
+ 			    struct mlx5dr_domain *peer_dmn)
+ {
+-	mutex_lock(&dmn->mutex);
++	mlx5dr_domain_lock(dmn);
+ 
+ 	if (dmn->peer_dmn)
+ 		refcount_dec(&dmn->peer_dmn->refcount);
+@@ -389,5 +391,5 @@ void mlx5dr_domain_set_peer(struct mlx5dr_domain *dmn,
+ 	if (dmn->peer_dmn)
+ 		refcount_inc(&dmn->peer_dmn->refcount);
+ 
+-	mutex_unlock(&dmn->mutex);
++	mlx5dr_domain_unlock(dmn);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+index a95938874798..31abcbb95ca2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -690,7 +690,7 @@ mlx5dr_matcher_create(struct mlx5dr_table *tbl,
+ 	refcount_set(&matcher->refcount, 1);
+ 	INIT_LIST_HEAD(&matcher->matcher_list);
+ 
+-	mutex_lock(&tbl->dmn->mutex);
++	mlx5dr_domain_lock(tbl->dmn);
+ 
+ 	ret = dr_matcher_init(matcher, mask);
  	if (ret)
--		return ret;
-+		goto out_unlock;
+@@ -700,14 +700,14 @@ mlx5dr_matcher_create(struct mlx5dr_table *tbl,
+ 	if (ret)
+ 		goto matcher_uninit;
  
- 	if (send_info->write.length > dmn->info.max_inline_size) {
- 		buff_offset = (send_ring->tx_head &
-@@ -377,7 +379,9 @@ static int dr_postsend_icm_data(struct mlx5dr_domain *dmn,
- 	dr_fill_data_segs(send_ring, send_info);
- 	dr_post_send(send_ring->qp, send_info);
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
  
--	return 0;
-+out_unlock:
-+	spin_unlock(&send_ring->lock);
-+	return ret;
+ 	return matcher;
+ 
+ matcher_uninit:
+ 	dr_matcher_uninit(matcher);
+ free_matcher:
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
+ 	kfree(matcher);
+ dec_ref:
+ 	refcount_dec(&tbl->refcount);
+@@ -791,13 +791,13 @@ int mlx5dr_matcher_destroy(struct mlx5dr_matcher *matcher)
+ 	if (refcount_read(&matcher->refcount) > 1)
+ 		return -EBUSY;
+ 
+-	mutex_lock(&tbl->dmn->mutex);
++	mlx5dr_domain_lock(tbl->dmn);
+ 
+ 	dr_matcher_remove_from_tbl(matcher);
+ 	dr_matcher_uninit(matcher);
+ 	refcount_dec(&matcher->tbl->refcount);
+ 
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
+ 	kfree(matcher);
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index cce3ee7a6614..cd708dcc2e3a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -938,7 +938,10 @@ static bool dr_rule_verify(struct mlx5dr_matcher *matcher,
+ static int dr_rule_destroy_rule_nic(struct mlx5dr_rule *rule,
+ 				    struct mlx5dr_rule_rx_tx *nic_rule)
+ {
++	mlx5dr_domain_nic_lock(nic_rule->nic_matcher->nic_tbl->nic_dmn);
+ 	dr_rule_clean_rule_members(rule, nic_rule);
++	mlx5dr_domain_nic_unlock(nic_rule->nic_matcher->nic_tbl->nic_dmn);
++
+ 	return 0;
  }
  
- static int dr_get_tbl_copy_details(struct mlx5dr_domain *dmn,
-@@ -563,9 +567,7 @@ int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
- 	send_info.remote_addr = action->rewrite.chunk->mr_addr;
- 	send_info.rkey = action->rewrite.chunk->rkey;
+@@ -1039,18 +1042,18 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
+ 	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param))
+ 		return 0;
  
--	mutex_lock(&dmn->mutex);
- 	ret = dr_postsend_icm_data(dmn, &send_info);
--	mutex_unlock(&dmn->mutex);
++	hw_ste_arr = kzalloc(DR_RULE_MAX_STE_CHAIN * DR_STE_SIZE, GFP_KERNEL);
++	if (!hw_ste_arr)
++		return -ENOMEM;
++
++	mlx5dr_domain_nic_lock(nic_dmn);
++
+ 	ret = mlx5dr_matcher_select_builders(matcher,
+ 					     nic_matcher,
+ 					     dr_rule_get_ipv(&param->outer),
+ 					     dr_rule_get_ipv(&param->inner));
+ 	if (ret)
+-		goto out_err;
+-
+-	hw_ste_arr = kzalloc(DR_RULE_MAX_STE_CHAIN * DR_STE_SIZE, GFP_KERNEL);
+-	if (!hw_ste_arr) {
+-		ret = -ENOMEM;
+-		goto out_err;
+-	}
++		goto free_hw_ste;
  
+ 	/* Set the tag values inside the ste array */
+ 	ret = mlx5dr_ste_build_ste_arr(matcher, nic_matcher, param, hw_ste_arr);
+@@ -1115,6 +1118,8 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
+ 	if (htbl)
+ 		mlx5dr_htbl_put(htbl);
+ 
++	mlx5dr_domain_nic_unlock(nic_dmn);
++
+ 	kfree(hw_ste_arr);
+ 
+ 	return 0;
+@@ -1129,8 +1134,8 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
+ 		kfree(ste_info);
+ 	}
+ free_hw_ste:
++	mlx5dr_domain_nic_unlock(nic_dmn);
+ 	kfree(hw_ste_arr);
+-out_err:
  	return ret;
  }
-@@ -886,6 +888,7 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
- 	init_attr.pdn = dmn->pdn;
- 	init_attr.uar = dmn->uar;
- 	init_attr.max_send_wr = QUEUE_SIZE;
-+	spin_lock_init(&dmn->send_ring->lock);
  
- 	dmn->send_ring->qp = dr_create_rc_qp(dmn->mdev, &init_attr);
- 	if (!dmn->send_ring->qp)  {
-@@ -990,7 +993,9 @@ int mlx5dr_send_ring_force_drain(struct mlx5dr_domain *dmn)
- 			return ret;
+@@ -1232,31 +1237,23 @@ struct mlx5dr_rule *mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
+ {
+ 	struct mlx5dr_rule *rule;
+ 
+-	mutex_lock(&matcher->tbl->dmn->mutex);
+ 	refcount_inc(&matcher->refcount);
+ 
+ 	rule = dr_rule_create_rule(matcher, value, num_actions, actions);
+ 	if (!rule)
+ 		refcount_dec(&matcher->refcount);
+ 
+-	mutex_unlock(&matcher->tbl->dmn->mutex);
+-
+ 	return rule;
+ }
+ 
+ int mlx5dr_rule_destroy(struct mlx5dr_rule *rule)
+ {
+ 	struct mlx5dr_matcher *matcher = rule->matcher;
+-	struct mlx5dr_table *tbl = rule->matcher->tbl;
+ 	int ret;
+ 
+-	mutex_lock(&tbl->dmn->mutex);
+-
+ 	ret = dr_rule_destroy_rule(rule);
+-
+-	mutex_unlock(&tbl->dmn->mutex);
+-
+ 	if (!ret)
+ 		refcount_dec(&matcher->refcount);
++
+ 	return ret;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
+index c2fe48d7b75a..b599b6beb5b9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
+@@ -14,7 +14,7 @@ int mlx5dr_table_set_miss_action(struct mlx5dr_table *tbl,
+ 	if (action && action->action_type != DR_ACTION_TYP_FT)
+ 		return -EOPNOTSUPP;
+ 
+-	mutex_lock(&tbl->dmn->mutex);
++	mlx5dr_domain_lock(tbl->dmn);
+ 
+ 	if (!list_empty(&tbl->matcher_list))
+ 		last_matcher = list_last_entry(&tbl->matcher_list,
+@@ -78,7 +78,7 @@ int mlx5dr_table_set_miss_action(struct mlx5dr_table *tbl,
+ 		refcount_inc(&action->refcount);
+ 
+ out:
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
+ 	return ret;
+ }
+ 
+@@ -95,7 +95,7 @@ static void dr_table_uninit_fdb(struct mlx5dr_table *tbl)
+ 
+ static void dr_table_uninit(struct mlx5dr_table *tbl)
+ {
+-	mutex_lock(&tbl->dmn->mutex);
++	mlx5dr_domain_lock(tbl->dmn);
+ 
+ 	switch (tbl->dmn->type) {
+ 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
+@@ -112,7 +112,7 @@ static void dr_table_uninit(struct mlx5dr_table *tbl)
+ 		break;
  	}
  
-+	spin_lock(&send_ring->lock);
- 	ret = dr_handle_pending_wc(dmn, send_ring);
-+	spin_unlock(&send_ring->lock);
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
+ }
+ 
+ static int dr_table_init_nic(struct mlx5dr_domain *dmn,
+@@ -177,7 +177,7 @@ static int dr_table_init(struct mlx5dr_table *tbl)
+ 
+ 	INIT_LIST_HEAD(&tbl->matcher_list);
+ 
+-	mutex_lock(&tbl->dmn->mutex);
++	mlx5dr_domain_lock(tbl->dmn);
+ 
+ 	switch (tbl->dmn->type) {
+ 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
+@@ -201,7 +201,7 @@ static int dr_table_init(struct mlx5dr_table *tbl)
+ 		break;
+ 	}
+ 
+-	mutex_unlock(&tbl->dmn->mutex);
++	mlx5dr_domain_unlock(tbl->dmn);
  
  	return ret;
  }
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 984783238baa..b6061c639cb1 100644
+index b6061c639cb1..c6d5a81d138b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1043,6 +1043,7 @@ struct mlx5dr_send_ring {
- 	struct ib_wc wc[MAX_SEND_CQE];
- 	u8 sync_buff[MIN_READ_SYNC];
- 	struct mlx5dr_mr *sync_mr;
-+	spinlock_t lock; /* Protect the data path of the send ring */
+@@ -636,6 +636,7 @@ struct mlx5dr_domain_rx_tx {
+ 	u64 drop_icm_addr;
+ 	u64 default_icm_addr;
+ 	enum mlx5dr_ste_entry_type ste_type;
++	struct mutex mutex; /* protect rx/tx domain */
  };
  
- int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn);
+ struct mlx5dr_domain_info {
+@@ -660,7 +661,6 @@ struct mlx5dr_domain {
+ 	struct mlx5_uars_page *uar;
+ 	enum mlx5dr_domain_type type;
+ 	refcount_t refcount;
+-	struct mutex mutex; /* protect domain */
+ 	struct mlx5dr_icm_pool *ste_icm_pool;
+ 	struct mlx5dr_icm_pool *action_icm_pool;
+ 	struct mlx5dr_send_ring *send_ring;
+@@ -814,6 +814,28 @@ struct mlx5dr_icm_chunk {
+ 	struct list_head *miss_list;
+ };
+ 
++static inline void mlx5dr_domain_nic_lock(struct mlx5dr_domain_rx_tx *nic_dmn)
++{
++	mutex_lock(&nic_dmn->mutex);
++}
++
++static inline void mlx5dr_domain_nic_unlock(struct mlx5dr_domain_rx_tx *nic_dmn)
++{
++	mutex_unlock(&nic_dmn->mutex);
++}
++
++static inline void mlx5dr_domain_lock(struct mlx5dr_domain *dmn)
++{
++	mlx5dr_domain_nic_lock(&dmn->info.rx);
++	mlx5dr_domain_nic_lock(&dmn->info.tx);
++}
++
++static inline void mlx5dr_domain_unlock(struct mlx5dr_domain *dmn)
++{
++	mlx5dr_domain_nic_unlock(&dmn->info.tx);
++	mlx5dr_domain_nic_unlock(&dmn->info.rx);
++}
++
+ static inline int
+ mlx5dr_matcher_supp_flex_parser_icmp_v4(struct mlx5dr_cmd_caps *caps)
+ {
 -- 
 2.26.2
 
