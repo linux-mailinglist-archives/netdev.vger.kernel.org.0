@@ -2,85 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD591E4476
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0A11E4495
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388880AbgE0Nvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:51:41 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:54443 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388516AbgE0Nvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:51:40 -0400
-Received: from threadripper.lan ([149.172.98.151]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1N1fei-1itmw20YYa-011xf5; Wed, 27 May 2020 15:51:26 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH] bridge: multicast: work around clang bug
-Date:   Wed, 27 May 2020 15:51:13 +0200
-Message-Id: <20200527135124.1082844-1-arnd@arndb.de>
+        id S2388713AbgE0NyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:54:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387581AbgE0NyO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 09:54:14 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4496207D8;
+        Wed, 27 May 2020 13:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590587654;
+        bh=KNF1MfvZeNs28YKn0ZbgwmTVTyWpQUW/7KydDhpaqPc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rDhW+TTp92kWLUpYQ/dFN2veC2uvctixIATLUo4BF8twB0diqlNfuyV2j/BlStGx/
+         cn5VXVj6+atmwCm3kkvcRL+Y7rMWrZw72mqxyIh9UOOkeaSxgw0jdBMHb7+AjWB0HO
+         yVkJ1j+7ANiEMnG9q7yIP4kE3zmjmIMrL+RYJCMk=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lijun Ou <oulijun@huawei.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Weihang Li <liweihang@huawei.com>,
+        "Wei Hu(Xavier)" <huwei87@hisilicon.com>
+Subject: [PATCH rdma-next v1 00/11] RAW format dumps through RDMAtool
+Date:   Wed, 27 May 2020 16:53:57 +0300
+Message-Id: <20200527135408.480878-1-leon@kernel.org>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:tNJGImBksv3+uHh4LK9iDkXQuSmBokYMQI86sR1uOpirtHXc2NK
- CrX21qK2bbI6xhZ/Ib4t+RJHd4UNZzA3A8i8Udhs+Nj6xtysytaLytX2xtrUB3t5bOmtrDH
- Ibtv+P8HKRJy4pUycJSjjYzaNl2DkK5nnWSAL7d8WuvguMsMdN+CvlSnMfp143rT9MKRdXy
- GJne/oiPD9a6i+xx4Thjg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BuiwkU7bU2Y=:GCvuv9qB6dHCgoInEOLGK9
- 808pZ65A3+ZvuUmKlZmMiMD+KWWW2i9sI6v31khsncel949CUjtROBxfQ/YqLPiJUBV2ZsN9j
- qQV6S3goxKEOk9KzwOExut5lMc8AjOFOiF7jXZmTEB/owEEAV0SUx3tM8L1tkLLBxrJELyN6J
- PqyBUv8hhDmxkOB5b+/7AwSSKMb+THSX2UgAaAdjJXpHwVzyyPLJtTMOxmpQCb7DzClmRCS/u
- dSbxI4gPROhiPNa8PXGS6rZ9c0mebdDsIs42fVsJKJMSaRpWjWffc9pt5Y8+y0CmvHl4n3vAt
- qH9K9bG8kV4OEwviLn4j3mWr8mFsal3Pz9anJ5PlSWXDL46FLykAv6jQouHtV/hri3R2yFyb+
- hwhaFktbARAdRFXtEcygRtIZxEfRg6b7j0WKdyJe8Dc1aBg13Zi4xs1rtC1MrDU3qgpxPIWcX
- ME2+KIlcSe8RyJWLuNR2qQLQcPKIeQZUeQyjQNfAYeIJG6gcWSzqAk7UUppgM7hX/9AzZgiPl
- 7EdDeK3BKgwKGWGRypzGiRdQOk/cb/6PY1mti/GTsTFSrbPz8N6apCWYpoIx2bg4EY2Lhk7QN
- ua8LzeoeF5dWNsDG8BvW9SP1/8hmPZ7Q1cuPp6P0l2vReHontQz/GesEr++93qzBrWIpccEbi
- QjLD6J7noL6sgsnqeNoIwHa8y1tl2XpOQYJ1KDVXNob0pyUWKGelHT+PJVJmrf8ooIbe/a5E5
- Ejc2tS5hwpNiGyKjwaRcItpmmNZPROwbjJcVBXMabwtIKubudHvMqjW+19SuMHF+eWEbZNHjL
- m6RSK50uvvuP0D73KZUz5T2LuCfFaMWnR9CemE+ZRKpt2N+Oh0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang-10 and clang-11 run into a corner case of the register
-allocator on 32-bit ARM, leading to excessive stack usage from
-register spilling:
+From: Leon Romanovsky <leonro@mellanox.com>
 
-net/bridge/br_multicast.c:2422:6: error: stack frame size of 1472 bytes in function 'br_multicast_get_stats' [-Werror,-Wframe-larger-than=]
+Changelog:
+v1:
+ * Maor dropped controversial change to dummy interface.
+v0: https://lore.kernel.org/linux-rdma/20200513095034.208385-1-leon@kernel.org
 
-Work around this by marking one of the internal functions as
-noinline_for_stack.
+Hi,
 
-Link: https://bugs.llvm.org/show_bug.cgi?id=45802#c9
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/bridge/br_multicast.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The following series adds support to get the RDMA resource data in RAW
+format. The main motivation for doing this is to enable vendors to return
+the entire QP/CQ/MR data without a need from the vendor to set each field
+separately.
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index ad12fe3fca8c..83490bf73a13 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -2413,7 +2413,8 @@ void br_multicast_uninit_stats(struct net_bridge *br)
- 	free_percpu(br->mcast_stats);
- }
- 
--static void mcast_stats_add_dir(u64 *dst, u64 *src)
-+/* noinline for https://bugs.llvm.org/show_bug.cgi?id=45802#c9 */
-+static noinline_for_stack void mcast_stats_add_dir(u64 *dst, u64 *src)
- {
- 	dst[BR_MCAST_DIR_RX] += src[BR_MCAST_DIR_RX];
- 	dst[BR_MCAST_DIR_TX] += src[BR_MCAST_DIR_TX];
--- 
+Thanks
+
+Maor Gottlieb (11):
+  net/mlx5: Export resource dump interface
+  net/mlx5: Add support in query QP, CQ and MKEY segments
+  RDMA/core: Don't call fill_res_entry for PD
+  RDMA: Add dedicated MR resource tracker function
+  RDMA: Add dedicated CQ resource tracker function
+  RDMA: Add dedicated QP resource tracker function
+  RDMA: Add dedicated CM_ID resource tracker function
+  RDMA: Add support to dump resource tracker in RAW format
+  RDMA/mlx5: Add support to get QP resource in raw format
+  RDMA/mlx5: Add support to get CQ resource in RAW format
+  RDMA/mlx5: Add support to get MR resource in RAW format
+
+ drivers/infiniband/core/device.c              |   7 +-
+ drivers/infiniband/core/nldev.c               | 128 +++++++++---------
+ drivers/infiniband/hw/cxgb4/iw_cxgb4.h        |   7 +-
+ drivers/infiniband/hw/cxgb4/provider.c        |  11 +-
+ drivers/infiniband/hw/cxgb4/restrack.c        |  33 ++---
+ drivers/infiniband/hw/hns/hns_roce_device.h   |   4 +-
+ drivers/infiniband/hw/hns/hns_roce_main.c     |   2 +-
+ drivers/infiniband/hw/hns/hns_roce_restrack.c |  17 +--
+ drivers/infiniband/hw/mlx5/main.c             |   6 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |  11 +-
+ drivers/infiniband/hw/mlx5/restrack.c         | 105 +++++++++++---
+ .../mellanox/mlx5/core/diag/rsc_dump.c        |   6 +
+ .../mellanox/mlx5/core/diag/rsc_dump.h        |  33 +----
+ .../diag => include/linux/mlx5}/rsc_dump.h    |  25 ++--
+ include/rdma/ib_verbs.h                       |  13 +-
+ include/uapi/rdma/rdma_netlink.h              |   2 +
+ 16 files changed, 225 insertions(+), 185 deletions(-)
+ copy {drivers/net/ethernet/mellanox/mlx5/core/diag => include/linux/mlx5}/rsc_dump.h (68%)
+
+--
 2.26.2
 
