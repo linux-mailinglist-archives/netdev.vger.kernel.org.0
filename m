@@ -2,94 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7FB41E51D1
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 01:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9D71E51E9
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 01:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbgE0XaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 19:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
+        id S1725879AbgE0XlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 19:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbgE0XaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 19:30:19 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CFEC08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:30:18 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id nr22so13702085ejb.6
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:30:18 -0700 (PDT)
+        with ESMTP id S1725385AbgE0XlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 19:41:24 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EBDC08C5C1
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:24 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id d24so21668935eds.11
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8Qn1sNN93vjGFHV23I2hJe/V3lPZZX+YpFcwc+6cSrQ=;
-        b=nwnoO3iXHW/L1m4aGdLp6EnhL+RSzsYj7+7eflHqLiuiVNEBp8N4q6jPl/v87MonCo
-         unOBrt+NFgCSj6RsuD4dMP2bAc65nziMgEvFGM07rbL5gZT+U/H3jpOPZH2aH8DygQUO
-         37vD0bxm3xh/WEoXfXOcH2d/nQ6BOhJTjPwq6rsgyn45x7gT19rZNxv2xINcxbC300TX
-         HSVwyKDOpX1p65iNR/kTG1RNZb9le3r51idPf4njeJnNSs/5XfrFeTeWI9d3qFf38U0x
-         0F5D8C5r7CV/S0Lkt5eMZUZtfAUFLXCvtfl/wBBk7FDQkRyXKf+p3FIY/kWhFXqL9L5y
-         /Y+g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WG+IbJTAWVlyRr98MhMi0L/HJjJQCsOaKsayvqo1ZOo=;
+        b=cG6KGS06QNsKrfVVvhHuJss/dmkW/hrBvBmHDCFl3nhzxACBiPS55xfPaLMtn60OvM
+         NiKtNXGDWG1xJa2Ri+kOT5a1BegOwUrDiG9oTx2S3vDGXfBfEFjd2C3qDPX32UEaWdjW
+         6Kdbo1RIM41kfIFZDnaAME7UawTG22pj2ueAx1X+X7Sbp7HCEUASDag1dssHox720wzh
+         iBH2n9p2UxtjfJ6KlI1wDcAJTwK1sqItFHAWuS7prOSgh39exU7/H4QsRxdL349O1WWf
+         7HCqxNlSNSx19tvymncVNyX4Tpj7GbXh056Kews70v3MpWItz7yewm60gL8KqmxWkodt
+         U+pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8Qn1sNN93vjGFHV23I2hJe/V3lPZZX+YpFcwc+6cSrQ=;
-        b=OHOC8QL6GpmuPyck4dviG/WRexBl+SvR4/9monmIKTcmMzm33lSzRnhejrMTzBdwUX
-         sOgEAWNWZhoHLa90EBCdZjlvD30gkCSi5uAExS23Zs6028klMriJJcmUc8BqL1+XcD65
-         5fihbEFfaRMKoZwOmA5VNzGMHmUO+bqQaXOWS1UFPBhGCASyT+DavbgjliEZUXpG63cO
-         OX+Ixg+KAYMFQJU68FBZIuEdzbIINuNlekFNgeTIgvZVSAPSIhC8LqB93ymoeIA25cDZ
-         jtoAUmi2qdDMt8QwDOYhsRWrNWdEcNz2OaxuXGCRlH7H4n7JhygvGbq9oxp4rl2Lt5f5
-         eLvA==
-X-Gm-Message-State: AOAM533B7IWqCtzKhvCNN7vle3B0JXWFdoxE6MdDXU/KjvA8Wa3c4MB+
-        nv65RoONHOf3lxWPPFcZubvE+XUsQO5sUJobLgA=
-X-Google-Smtp-Source: ABdhPJxTX8eW33atG7lLPT6DTMZtnCsDH+4dm4m7R277QtJ1Xt1PEWwIHhvpzf2yOZUogpma0x6RiBg1vP/UF2jFdTw=
-X-Received: by 2002:a17:906:a415:: with SMTP id l21mr689522ejz.100.1590622216876;
- Wed, 27 May 2020 16:30:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200527203850.1354202-1-olteanv@gmail.com> <87eer5j6um.fsf@intel.com>
-In-Reply-To: <87eer5j6um.fsf@intel.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WG+IbJTAWVlyRr98MhMi0L/HJjJQCsOaKsayvqo1ZOo=;
+        b=dOmwFxQZ44T6nzEDWFSFAJESvgcbW1A0/P9TZfIETwdoMv7lOdtlkd+h/52zHl4hik
+         NP9y4XA4h4AUWdaPHwqNwyeryyymFd4kEIxZRFXVEoYAbabHqUuDnjWDNR2pUBfkvmF+
+         fTRCTLWZoEQA1BekNDKrAuuGcdFfV+cYEjmbIV55CzsTbRWhSaudL5acisX6039SAcmi
+         EFB1mHojSTKeRKBlB9yNsITRYv57GU7iLoVKyoZZ1J3M+k/Uys/Em220M5sWrdrfHlWk
+         1SJ+5V8x/wIiTZUO2gC4t/CkIyEfXiT5b6KtZswkyVxTiXejA7g/TVnaRamHWnI+6iAp
+         EvfA==
+X-Gm-Message-State: AOAM532SWjDleqVHBM8FS3K+eFGky5YMr18PI8gARKaJ7X6HIOa5Doot
+        enlnpTzQAQDrn39JcxflRac=
+X-Google-Smtp-Source: ABdhPJzQJJ6Rab8mBBUrThs7Qax/qyZMw7G6MsFmC3dPrCbjJNtXxcR6tBDSzPRrUMXwFBSHe2xgRA==
+X-Received: by 2002:a50:f182:: with SMTP id x2mr506941edl.336.1590622883029;
+        Wed, 27 May 2020 16:41:23 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.147.193])
+        by smtp.gmail.com with ESMTPSA id a13sm3236555eds.6.2020.05.27.16.41.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 16:41:22 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 28 May 2020 02:30:05 +0300
-Message-ID: <CA+h21hpLnZRHX75MXE7utoers2Dcfoz-K60ru5cN_b1+y5zLMg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: offload the Credit-Based
- Shaper qdisc
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, linux@armlinux.org.uk,
+        antoine.tenart@bootlin.com, alexandre.belloni@bootlin.com,
+        horatiu.vultur@microchip.com, allan.nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        claudiu.manoil@nxp.com, madalin.bucur@oss.nxp.com,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
+Subject: [PATCH net-next 00/11] New DSA driver for VSC9953 Seville switch
+Date:   Thu, 28 May 2020 02:41:02 +0300
+Message-Id: <20200527234113.2491988-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 May 2020 at 02:28, Vinicius Costa Gomes
-<vinicius.gomes@intel.com> wrote:
->
-> Vladimir Oltean <olteanv@gmail.com> writes:
->
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > SJA1105, being AVB/TSN switches, provide hardware assist for the
-> > Credit-Based Shaper as described in the IEEE 8021Q-2018 document.
-> >
-> > First generation has 10 shapers, freely assignable to any of the 4
-> > external ports and 8 traffic classes, and second generation has 16
-> > shapers.
-> >
-> > We also need to provide a dummy implementation of mqprio qdisc offload,
-> > since this seems to be necessary for shaping any traffic class other
-> > than zero.
->
-> This is false, right?
->
->
-> Cheers,
-> --
-> Vinicius
+Looking at the Felix and Ocelot drivers, Maxim asked if it would be
+possible to use them as a base for a new driver for the switch inside
+NXP T1040. Turns out, it is! The result is a driver eerily similar to
+Felix.
 
-Yes, good catch, I forgot to remove this paragraph from the commit
-description. Do I need to send a v3, I wonder?
+The biggest challenge seems to be getting register read/write API
+generic enough to cover such wild bitfield variations between hardware
+generations. There is a patch on the regmap core which I would like to
+get in through the networking subsystem, if possible (and if Mark is
+ok), since it's a trivial addition.
 
-Thanks,
--Vladimir
+Maxim Kochetkov (4):
+  soc/mscc: ocelot: add MII registers description
+  net: mscc: ocelot: convert SYS_PAUSE_CFG register access to regfield
+  net: mscc: ocelot: extend watermark encoding function
+  net: dsa: ocelot: introduce driver for Seville VSC9953 switch
+
+Vladimir Oltean (7):
+  regmap: add helper for per-port regfield initialization
+  net: mscc: ocelot: unexport ocelot_probe_port
+  net: mscc: ocelot: convert port registers to regmap
+  net: mscc: ocelot: convert QSYS_SWITCH_PORT_MODE and SYS_PORT_MODE to
+    regfields
+  net: dsa: ocelot: create a template for the DSA tags on xmit
+  net: mscc: ocelot: split writes to pause frame enable bit and to
+    thresholds
+  net: mscc: ocelot: disable flow control on NPI interface
+
+ drivers/net/dsa/ocelot/Kconfig           |   12 +
+ drivers/net/dsa/ocelot/Makefile          |    6 +
+ drivers/net/dsa/ocelot/felix.c           |   49 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c   |   72 +-
+ drivers/net/dsa/ocelot/seville.c         |  742 +++++++++++++++
+ drivers/net/dsa/ocelot/seville.h         |   50 +
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 1064 ++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c       |   87 +-
+ drivers/net/ethernet/mscc/ocelot.h       |    9 +-
+ drivers/net/ethernet/mscc/ocelot_board.c |   21 +-
+ drivers/net/ethernet/mscc/ocelot_io.c    |   18 +-
+ drivers/net/ethernet/mscc/ocelot_regs.c  |   57 ++
+ include/linux/regmap.h                   |    8 +
+ include/soc/mscc/ocelot.h                |   68 +-
+ include/soc/mscc/ocelot_dev.h            |   78 --
+ include/soc/mscc/ocelot_qsys.h           |   13 -
+ include/soc/mscc/ocelot_sys.h            |   23 -
+ net/dsa/tag_ocelot.c                     |   21 +-
+ 18 files changed, 2196 insertions(+), 202 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/seville.c
+ create mode 100644 drivers/net/dsa/ocelot/seville.h
+ create mode 100644 drivers/net/dsa/ocelot/seville_vsc9953.c
+
+-- 
+2.25.1
+
