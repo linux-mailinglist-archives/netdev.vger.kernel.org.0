@@ -2,176 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15C451E4200
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FBE91E41F6
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729082AbgE0MYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 08:24:04 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:60570 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbgE0MYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 08:24:03 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04RCNutA122607;
-        Wed, 27 May 2020 07:23:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590582236;
-        bh=Vpls28zqWFv+m2tzlLEDxZh3MhqxOrWIWFXc0hTbBhU=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=GGpgcHcWLWt8PBvTah72vKywx522Jzw48hhG1JEeoQ+fNenGAeln8FLJeKtSd6Gfo
-         WBbTppo0OfL9zlyCBy0VdjL7TPki1YJF34drqsG2Rv7D4bSwLN3Bws1geCjUD0nPOj
-         mE0nPw7SXb+xk9HPGwYLIjMbecUC2RM6yHP3rNfg=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04RCNuQV039174
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 May 2020 07:23:56 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 27
- May 2020 07:23:56 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 27 May 2020 07:23:56 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04RCNueD076213;
-        Wed, 27 May 2020 07:23:56 -0500
-Subject: Re: [PATCH net-next v3 4/4] net: dp83869: Add RGMII internal delay
- configuration
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200526174716.14116-1-dmurphy@ti.com>
- <20200526174716.14116-5-dmurphy@ti.com> <20200527005224.GF782807@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <c0867d48-6f04-104b-8192-d61d4464a65f@ti.com>
-Date:   Wed, 27 May 2020 07:23:56 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728887AbgE0MWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 08:22:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38726 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728583AbgE0MWm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 08:22:42 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7BAE6208DB;
+        Wed, 27 May 2020 12:22:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590582162;
+        bh=p2DrqgY25EEbGCylK1hOYEmGCh4GyjfDtY7J6BvROyU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OKKippJo7mc951M71C+pDN1YQmxMTwq3A1W/pbGKxgDZiWrSX13JXSBpyrrD/2MrU
+         PcXHuTJ9wXtwbDqP3yYnBTuI/jcqDlNv0s6SCxb1hvR0h2ahyZg/QHlN9dakaOP+Co
+         oTAENoTpVhWYGwTiwQkrvbUPMSrHUszPejdiWuMM=
+Date:   Wed, 27 May 2020 07:27:37 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH v2][net-next] ice: Replace one-element arrays with
+ flexible-arrays
+Message-ID: <20200527122737.GA18133@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <20200527005224.GF782807@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+The current codebase makes use of one-element arrays in the following
+form:
 
-On 5/26/20 7:52 PM, Andrew Lunn wrote:
->> @@ -218,6 +224,7 @@ static int dp83869_of_init(struct phy_device *phydev)
->>   		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
->>   		if (ret < 0)
->>   			return ret;
->> +
->>   		if (ret & DP83869_STRAP_MIRROR_ENABLED)
->>   			dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
->>   		else
-> This random white space change does not belong in this patch.
+struct something {
+    int length;
+    u8 data[1];
+};
 
-OK
+struct something *instance;
 
+instance = kmalloc(sizeof(*instance) + size, GFP_KERNEL);
+instance->length = size;
+memcpy(instance->data, source, size);
 
->> @@ -232,6 +239,20 @@ static int dp83869_of_init(struct phy_device *phydev)
->>   				 &dp83869->tx_fifo_depth))
->>   		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
->>   
->> +	ret = of_property_read_u32(of_node, "rx-internal-delay-ps",
->> +				   &dp83869->rx_id_delay);
->> +	if (ret) {
->> +		dp83869->rx_id_delay = ret;
->> +		ret = 0;
->> +	}
-> This looks odd.
->
-> If this optional property is not found, -EINVAL will be returned. It
-> could also return -ENODATA. You then assign this error value to
-> dp83869->rx_id_delay? I would of expected you to assign 2000, the
-> default value?
+but the preferred mechanism to declare variable-length types such as
+these ones is a flexible array member[1][2], introduced in C99:
 
-Well the driver cannot assume this is the intended value.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-If the dt defines rgmii-rx/tx-id then these values are required not 
-optional.  That was the discussion on the binding.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on. So, replace
+the one-element array with a flexible-array member.
 
-I set these to errno because when config_init is called the driver 
-verifies that the values are valid and present and if they
+Also, make use of the offsetof() helper in order to simplify the macros
+that calculate the size of the structures that contain flexible-array
+members.
 
-are not then the PHY will fail to init.
+This issue was found with the help of Coccinelle and, audited _manually_.
 
-If we set the delay to default then the PHY may be programmed with the 
-wrong delay.
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
 
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+Changes in v2:
+ - Use offsetof(struct ice_aqc_sw_rules_elem, pdata) instead of
+   sizeof(struct ice_aqc_sw_rules_elem) - sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata)
+ - Update changelog text. 
 
->> +
->> +	ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
->> +				   &dp83869->tx_id_delay);
->> +	if (ret) {
->> +		dp83869->tx_id_delay = ret;
->> +		ret = 0;
->> +	}
->> +
->>   	return ret;
->>   }
->>   #else
->> @@ -367,10 +388,45 @@ static int dp83869_configure_mode(struct phy_device *phydev,
->>   	return ret;
->>   }
->>   
->> +static int dp83869_get_delay(struct phy_device *phydev)
->> +{
->> +	struct dp83869_private *dp83869 = phydev->priv;
->> +	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
->> +	int tx_delay = 0;
->> +	int rx_delay = 0;
->> +
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
->> +		tx_delay = phy_get_delay_index(phydev,
->> +					       &dp83869_internal_delay[0],
->> +					       delay_size, dp83869->tx_id_delay,
->> +					       false);
->> +		if (tx_delay < 0) {
->> +			phydev_err(phydev, "Tx internal delay is invalid\n");
->> +			return tx_delay;
->> +		}
->> +	}
->> +
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
->> +		rx_delay = phy_get_delay_index(phydev,
->> +					       &dp83869_internal_delay[0],
->> +					       delay_size, dp83869->rx_id_delay,
->> +					       false);
->> +		if (rx_delay < 0) {
->> +			phydev_err(phydev, "Rx internal delay is invalid\n");
->> +			return rx_delay;
->> +		}
->> +	}
-> So any PHY using these properties is going to pretty much reproduce
-> this code. Meaning is should all be in a helper.
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  6 ++---
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 26 +++++++------------
+ 2 files changed, 13 insertions(+), 19 deletions(-)
 
-The issue here is that the phy_mode may only be rgmii-txid so you only 
-want to find the tx_delay and return.
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 586d69491268a..faa21830e40d8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -570,7 +570,7 @@ struct ice_sw_rule_lkup_rx_tx {
+ 	 * lookup-type
+ 	 */
+ 	__le16 hdr_len;
+-	u8 hdr[1];
++	u8 hdr[];
+ } __packed;
+ 
+ /* Add/Update/Remove large action command/response entry
+@@ -580,7 +580,7 @@ struct ice_sw_rule_lkup_rx_tx {
+ struct ice_sw_rule_lg_act {
+ 	__le16 index; /* Index in large action table */
+ 	__le16 size;
+-	__le32 act[1]; /* array of size for actions */
++	__le32 act[]; /* array of size for actions */
+ 	/* Max number of large actions */
+ #define ICE_MAX_LG_ACT	4
+ 	/* Bit 0:1 - Action type */
+@@ -640,7 +640,7 @@ struct ice_sw_rule_lg_act {
+ struct ice_sw_rule_vsi_list {
+ 	__le16 index; /* Index of VSI/Prune list */
+ 	__le16 number_vsi;
+-	__le16 vsi[1]; /* Array of number_vsi VSI numbers */
++	__le16 vsi[]; /* Array of number_vsi VSI numbers */
+ };
+ 
+ /* Query VSI list command/response entry */
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 0156b73df1b1f..df0ddffaf03a2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -29,25 +29,19 @@ static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
+ 							0x81, 0, 0, 0};
+ 
+ #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
+-	(sizeof(struct ice_aqc_sw_rules_elem) - \
+-	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
+-	 sizeof(struct ice_sw_rule_lkup_rx_tx) + DUMMY_ETH_HDR_LEN - 1)
++	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
++	 sizeof(struct ice_sw_rule_lkup_rx_tx) + DUMMY_ETH_HDR_LEN)
+ #define ICE_SW_RULE_RX_TX_NO_HDR_SIZE \
+-	(sizeof(struct ice_aqc_sw_rules_elem) - \
+-	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
+-	 sizeof(struct ice_sw_rule_lkup_rx_tx) - 1)
++	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
++	 sizeof(struct ice_sw_rule_lkup_rx_tx))
+ #define ICE_SW_RULE_LG_ACT_SIZE(n) \
+-	(sizeof(struct ice_aqc_sw_rules_elem) - \
+-	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
+-	 sizeof(struct ice_sw_rule_lg_act) - \
+-	 sizeof(((struct ice_sw_rule_lg_act *)0)->act) + \
+-	 ((n) * sizeof(((struct ice_sw_rule_lg_act *)0)->act)))
++	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
++	 offsetof(struct ice_sw_rule_lg_act, act) + \
++	 ((n) * sizeof(__le32)))
+ #define ICE_SW_RULE_VSI_LIST_SIZE(n) \
+-	(sizeof(struct ice_aqc_sw_rules_elem) - \
+-	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
+-	 sizeof(struct ice_sw_rule_vsi_list) - \
+-	 sizeof(((struct ice_sw_rule_vsi_list *)0)->vsi) + \
+-	 ((n) * sizeof(((struct ice_sw_rule_vsi_list *)0)->vsi)))
++	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
++	 offsetof(struct ice_sw_rule_vsi_list, vsi) + \
++	 ((n) * sizeof(__le16)))
+ 
+ /**
+  * ice_init_def_sw_recp - initialize the recipe book keeping tables
+-- 
+2.26.2
 
-Same with the RXID.  How is the helper supposed to know what delay to 
-return and look for?
-
-The PHY also only needs to use the helper if the PHY is in certain modes.
-
-And the decision to use the checks is really based on the PHY driver.
-
-Not sure if other PHYs delays require both delays to be set or if the 
-delays are independent.
-
-The helper cannot assume this.
-
-Dan
-
-
->
->       Andrew
