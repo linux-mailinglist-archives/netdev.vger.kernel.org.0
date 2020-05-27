@@ -2,54 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9074A1E433E
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C721E42F6
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388035AbgE0NQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32974 "EHLO
+        id S1730213AbgE0NLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387979AbgE0NQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:16:28 -0400
-X-Greylist: delayed 545 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 May 2020 06:16:27 PDT
-Received: from msa13.plala.or.jp (msa13.plala.or.jp [IPv6:2400:7800:0:502e::13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C57EC08C5C1;
-        Wed, 27 May 2020 06:16:27 -0700 (PDT)
-Received: from mwebp13 ([172.23.13.133]) by msa13.plala.or.jp with ESMTP
-          id <20200527130720.YBOE25516.msa13.plala.or.jp@mwebp13>;
-          Wed, 27 May 2020 22:07:20 +0900
-Date:   Wed, 27 May 2020 22:07:20 +0900
-From:   "Mrs.Judith Rice" <hamurafujimi@tmail.plala.or.jp>
-Reply-To: jonesevansje@gmail.com
-Message-ID: <20200527220720.X7MWP.786.root@mwebp13>
-Subject: Spende
+        with ESMTP id S1725267AbgE0NLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:11:54 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82891C08C5C1
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 06:11:54 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id y5so2998910iob.12
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 06:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1WLoOkjIJCDA1BewY9LFjorEXn8Wgw2koH7bihFp+VM=;
+        b=YjN+FJFFmOwcv8/tnPZGcduh9ObP/27w1eRT0OS/LI189ehVWw3TWZSI606EkGLbcF
+         V7E6UcqTnN6vDvKsl9lisEXaJbSNowyvp/+R3BpLAuB5yfEKGKB5XqdsSdL8E0nlQ2nO
+         NNM1Cs4mAsztTC0JSs0rR1HqswD0CaY94OB2B1yz/fz3mwqL0Llo210knz97imiuUMBA
+         R33HItADK/wzduoz0gMXM8bE5sTbdgfeAKN/S+RskKiYuE8b1ZpSD46lXob3iS6fVesS
+         EvujMw3kVmCZxFwDwgv+4YRMhfx+lv7/SDAg6B2hzn3ZYs/OC6wLkK+54eyiYmoJLAvU
+         eG8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1WLoOkjIJCDA1BewY9LFjorEXn8Wgw2koH7bihFp+VM=;
+        b=oTVSd1SXf2jz+GR2pBGJPw/2q9imB1QHTM+63gPYc2b5X1WC7W7SIrnh5ZmLkL/tV5
+         Yi/svfEr8PWzfmLV/seLnTwYiAjAVW4+PqXdO6prm1v77rv83f6+fag4yekgS3/A1UxG
+         IgSqFaG5nrghvwFmTdPlAlWrLaua2lxpBVIOOPxfnO3nlPhpDkRxDO7UeWJaKfFfCles
+         +CBMgCum+YaGD4TS8rzUp+TwBe7IF50IvZKbiYCjgIz4XOQ/d49U2QlpcULWOVarmWtX
+         H8TPaSiHdqTGeLrhrtm0OvyHhJBm3UeCrXhK7o4wpaCwRs0lU+n1Hy/0v9FwaSnsiEgt
+         tMbw==
+X-Gm-Message-State: AOAM532hybE9FNS9eSa6GIksgvIfjj35OdI+JACvuLjg9qCPVsSEA6Es
+        NtVBaKR5ytPCvosnlGkkftIBzpmTHl7MhQr/mqw=
+X-Google-Smtp-Source: ABdhPJxEbKPYFOvoeokh7GXSLIwEGaMJYwyp3ZViZuD0lefzwSndLSS79KrE5yGLJkrU94xWBlOJhl7cV3273ZlLIX8=
+X-Received: by 2002:a02:3b45:: with SMTP id i5mr5503340jaf.47.1590585113771;
+ Wed, 27 May 2020 06:11:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Transfer-Encoding: 7bit
-X-Priority: 3 (Normal)
-Sensitivity: Normal
-X-VirusScan: Outbound; mvir-ac13; Wed, 27 May 2020 22:07:20 +0900
-To:     unlisted-recipients:; (no To-header on input)
+Received: by 2002:a5d:87d3:0:0:0:0:0 with HTTP; Wed, 27 May 2020 06:11:53
+ -0700 (PDT)
+Reply-To: warrenbuffett696@gmail.com
+From:   Warren Buffett Foundation <wedassdfgf@gmail.com>
+Date:   Wed, 27 May 2020 07:11:53 -0600
+Message-ID: <CAO68hq0vqcVjOhMSFQVZsqYGZTczDWT5jEhRdDJyziVMnX-a7w@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attn:
+-- 
+Hello Lucky One.
 
-Es tut uns leid, dass wir Sie aufgrund eines Mismanagent of Beneficaries-Fonds von unseren ernannten Zonal Managern versp&#228;tet kontaktiert haben. Bitte beachten Sie, dass Sie qualifiziert sind, die Zahlung von 900.000,00 USD an der ATM-Karte mit neunhunderttausend Dollar zu erhalten.
+My Name is Warren Buffett, An American business magnate, investor,
+speaker and philanthropist who serves as the chairman and CEO of
+Berkshire Hathaway,The Buffett Foundation is a charitable organisation
+formed 1964 in Omaha, Nebraska, by me (Warren Buffett) as a vehicle to
+manage my charitable giving, so because of this Covid19 situation i
+have decided to give away $27,900,000.00 each to two unknown randomly
+selected individual Emails online, I simply attempt to be fearful when
+others are greedy and to be greedy only when others are fearful.Price
+is what you pay. Value is what you get, Someone's sitting in the shade
+today because someone
+planted a tree a long time ago.
 
-Als Entsch&#228;digung von WORLD BANK / IWF (Internationaler W&#228;hrungsfonds) f&#252;r die automatisch &#252;ber einen E-Mail-Wahlautomaten gezogenen, die in der Vergangenheit noch nicht abgeschlossene Transaktionen hatten.
+You have been selected to receive this $27,900,000.00, as a lucky one
+confirm back to me that this selected unknown email is valid Via my
+personal Email: warrenbuffett696@gmail.com
 
-F&#252;r weitere Informationen kontaktieren Sie bitte Rev.EVANS JONES ( jonesevansje@gmail.com )
+Visit the web page to know more about me:
+https://en.wikipedia.org/wiki/Warren_Buffett
 
-Bitte senden Sie ihm Ihre pers&#246;nlichen Daten wie:
-
-Vollst&#228;ndiger Name:
-Wohnanschrift:
-Telefonnummer:
-Herkunftsland:
-
-Gr&#252;&#223;e,
-Mrs. Judith Rice
-
+Regards
+Warren Buffett Foundation
