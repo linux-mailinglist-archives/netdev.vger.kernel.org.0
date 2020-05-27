@@ -2,59 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4621E5134
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07931E515C
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgE0Wcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 18:32:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55042 "EHLO mail.kernel.org"
+        id S1725836AbgE0Wkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 18:40:43 -0400
+Received: from correo.us.es ([193.147.175.20]:33430 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725780AbgE0Wcu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 18:32:50 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99B3920707;
-        Wed, 27 May 2020 22:32:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590618769;
-        bh=G4KfFF72ZP/5iafEUV2q8lKQyCbx8/b35XY+5A9cvNQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jyaXf8FdBYU9duz7kEKkk1yUTz7JYaMxE2uttEDtNxwEurGmlBsdulgQ2NIFwX7OE
-         smRm+22fPto1IJU8f0U3Ag/sEvZWifT7uj3xAWE89zoSaNYpO8MORE+D7NSxPA8Tdp
-         wVoYdNppLgBQJ9LjEBr1YPJYfLWkPpHXCTv11Zr8=
-Date:   Wed, 27 May 2020 15:32:48 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Boris Pismenny <borisp@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next] net/tls: Add force_resync for driver resync
-Message-ID: <20200527153248.53965eee@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20200527092526.3657-1-tariqt@mellanox.com>
-References: <20200527092526.3657-1-tariqt@mellanox.com>
+        id S1725446AbgE0Wkn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 18:40:43 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9707BEB46C
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:40:42 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 89B31DA712
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:40:42 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 7DB9EDA716; Thu, 28 May 2020 00:40:42 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D9CC8DA705;
+        Thu, 28 May 2020 00:40:38 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 28 May 2020 00:40:38 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id AAE0A42EF4E0;
+        Thu, 28 May 2020 00:40:38 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 0/3] Netfilter fixes for net
+Date:   Thu, 28 May 2020 00:40:15 +0200
+Message-Id: <20200527224018.3610-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 May 2020 12:25:26 +0300 Tariq Toukan wrote:
-> This patch adds a field to the tls rx offload context which enables
-> drivers to force a send_resync call.
-> 
-> This field can be used by drivers to request a resync at the next
-> possible tls record. It is beneficial for hardware that provides the
-> resync sequence number asynchronously. In such cases, the packet that
-> triggered the resync does not contain the information required for a
-> resync. Instead, the driver requests resync for all the following
-> TLS record until the asynchronous notification with the resync request
-> TCP sequence arrives.
->
-> A following series for mlx5e ConnectX-6DX TLS RX offload support will
-> use this mechanism.
+Hi,
 
-Please document this, in tls-offload.rst.
+The following patchset contains Netfilter fixes for net:
+
+1) Uninitialized when used in __nf_conntrack_update(), from
+   Nathan Chancellor.
+
+2) Comparison of unsigned expression in nf_confirm_cthelper().
+
+3) Remove 'const' type qualifier with no effect.
+
+This batch is addressing fallout from the previous pull request.
+
+Please, pull this updates from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit a4976a3ef844c510ae9120290b23e9f3f47d6bce:
+
+  crypto: chelsio/chtls: properly set tp->lsndtime (2020-05-26 23:24:00 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 4946ea5c1237036155c3b3a24f049fd5f849f8f6:
+
+  netfilter: nf_conntrack_pptp: fix compilation warning with W=1 build (2020-05-27 13:39:08 +0200)
+
+----------------------------------------------------------------
+Nathan Chancellor (1):
+      netfilter: conntrack: Pass value of ctinfo to __nf_conntrack_update
+
+Pablo Neira Ayuso (2):
+      netfilter: conntrack: comparison of unsigned in cthelper confirmation
+      netfilter: nf_conntrack_pptp: fix compilation warning with W=1 build
+
+ include/linux/netfilter/nf_conntrack_pptp.h | 2 +-
+ net/netfilter/nf_conntrack_core.c           | 8 ++++----
+ net/netfilter/nf_conntrack_pptp.c           | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
