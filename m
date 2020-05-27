@@ -2,235 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD88A1E349A
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C20181E34BE
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728305AbgE0BSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 21:18:54 -0400
-Received: from mail-eopbgr60050.outbound.protection.outlook.com ([40.107.6.50]:17070
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727937AbgE0BSx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 21:18:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hfxlsc3jX6USfxfAnzzXVN3AoMrcSJjKZKV0rSuw6sI=;
- b=P65Bcm9/+FRMs9516UlTcneX7e2VdQM04wuFukBZP83zETB33erCTffn3/uP1WXnaglHWkL+QhwC3rTt1PnGF3/XCDs05A3PMNPjjR2HEsAOl0zBGmv6aZMMifbe654PoEl25h5gOPvTRBfYDhA53vs2MMNE8gFP7tQ+L9+3kt8=
-Received: from AM7PR03CA0015.eurprd03.prod.outlook.com (2603:10a6:20b:130::25)
- by VI1PR0802MB2191.eurprd08.prod.outlook.com (2603:10a6:800:a1::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 01:18:47 +0000
-Received: from AM5EUR03FT008.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:20b:130:cafe::85) by AM7PR03CA0015.outlook.office365.com
- (2603:10a6:20b:130::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.25 via Frontend
- Transport; Wed, 27 May 2020 01:18:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
- action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- AM5EUR03FT008.mail.protection.outlook.com (10.152.16.123) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3021.23 via Frontend Transport; Wed, 27 May 2020 01:18:47 +0000
-Received: ("Tessian outbound b157666c5529:v57"); Wed, 27 May 2020 01:18:46 +0000
-X-CR-MTA-TID: 64aa7808
-Received: from b8f23aa01c1f.3
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 8779F77F-481B-4AC6-A5AD-892AE1A4A799.1;
-        Wed, 27 May 2020 01:18:41 +0000
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id b8f23aa01c1f.3
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
-    Wed, 27 May 2020 01:18:41 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nrtw4VeQFHL2X6wTzDHuIOHRHfiXW4uQoyI0+Ui7pMUtBu5DQ0aZ3RH4K/fDKOIuljxhWW5V+OYz6q7ycTKdpbfMuyrqnLtrqlti+zEEjU3bicCzGMbyHGTpbP44YADmCHB8T1PxTlOn+MsQsWvDZWloATkFSk1lAqxIUBjexRSV6SdjYXNOzjySGexC9iqUHYJNu3q2XrCaLEvd/j5vxiDHtZiZmrBiqyCmHRZkq6zNU89V2IEU1Jnz0SWAHsuTxG2iD6oSFvYIR3yPWiiWjMyxptImpbKRZDB2g2OIoac7JfN86Hx8y3rkpH0ax4DdHVjd5oRrm3XjwjBShiRhQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hfxlsc3jX6USfxfAnzzXVN3AoMrcSJjKZKV0rSuw6sI=;
- b=cjZ3HCJcwYTawCnYOEIFz9nPz4B9U/iX9PyB3LVIDQSnulm1a1aTOU1/dG5QqpoLMySgAgwNsT80YEFn4fQPYmkAGP6scYgS7eASFkD2s3Av9qi8DMjL2kTMgxBqUlpHjbzhVljW87siQVi7BCzFPpYKpWSqAYVWJy3n/fJPssKNR/CVMZ8EJfP8sVCFcOzjlbX8GhIy7PkA1aK7eBSNT4n4Z/u9tWkvtnLpLkDjTlPdLFtpvFGyAQaFlujCpwvG3eDdWoCqpGIgVvtMhd3SZecnu96AAD8kYH70xB7nX1GIGaRrRAXAeC40mv91RdTji8meMHyXjoCwnVwxvTasIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hfxlsc3jX6USfxfAnzzXVN3AoMrcSJjKZKV0rSuw6sI=;
- b=P65Bcm9/+FRMs9516UlTcneX7e2VdQM04wuFukBZP83zETB33erCTffn3/uP1WXnaglHWkL+QhwC3rTt1PnGF3/XCDs05A3PMNPjjR2HEsAOl0zBGmv6aZMMifbe654PoEl25h5gOPvTRBfYDhA53vs2MMNE8gFP7tQ+L9+3kt8=
-Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com (2603:10a6:3:e0::7)
- by HE1PR0802MB2572.eurprd08.prod.outlook.com (2603:10a6:3:db::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Wed, 27 May
- 2020 01:18:39 +0000
-Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com
- ([fe80::b1eb:9515:4851:8be]) by HE1PR0802MB2555.eurprd08.prod.outlook.com
- ([fe80::b1eb:9515:4851:8be%6]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 01:18:39 +0000
-From:   Jianyong Wu <Jianyong.Wu@arm.com>
-To:     Sudeep Holla <Sudeep.Holla@arm.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        Justin He <Justin.He@arm.com>, Wei Chen <Wei.Chen@arm.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kaly Xin <Kaly.Xin@arm.com>, nd <nd@arm.com>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [RFC PATCH v12 03/11] psci: export smccc conduit get helper.
-Thread-Topic: [RFC PATCH v12 03/11] psci: export smccc conduit get helper.
-Thread-Index: AQHWMBRUBAdOXBezXUymOTKynRIElai0FQYAgAP0TiCAAiI7gIAA/S6w
-Date:   Wed, 27 May 2020 01:18:38 +0000
-Message-ID: <HE1PR0802MB255517F7BD5E3E78ACC99F35F4B10@HE1PR0802MB2555.eurprd08.prod.outlook.com>
-References: <20200522083724.38182-1-jianyong.wu@arm.com>
- <20200522083724.38182-4-jianyong.wu@arm.com> <20200522131206.GA15171@bogus>
- <HE1PR0802MB255537CD21C5E7F7F4A899A2F4B30@HE1PR0802MB2555.eurprd08.prod.outlook.com>
- <20200526101019.GB11414@bogus>
-In-Reply-To: <20200526101019.GB11414@bogus>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ts-tracking-id: a2136aa6-da3a-4747-aa72-cc10e4192b6a.1
-x-checkrecipientchecked: true
-Authentication-Results-Original: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-x-originating-ip: [203.126.0.111]
-x-ms-publictraffictype: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 1dbf6bd0-51af-48ff-ad37-08d801dbe7cc
-x-ms-traffictypediagnostic: HE1PR0802MB2572:|VI1PR0802MB2191:
-x-ms-exchange-transport-forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0802MB2191DA6F30B4794AD32741CAF4B10@VI1PR0802MB2191.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-nodisclaimer: true
-x-ms-oob-tlc-oobclassifiers: OLM:3826;OLM:3826;
-x-forefront-prvs: 04163EF38A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: DRizxo7Q5GpNNuUh0+p4MhFOUl0nsBEIdtU8FRwxBrGBTxYQCin0tnkJf6nyEpSFr2RX3eK5xMKHqlh9VEDJE/4CdZC/W1Fa4RzpXb27vVt/DDrd1jJIZ55ewkwR3SzWGDBQI9w2v+u+MIvreuimZccUPun/Fgcbx2EqB20W9qGECQBqi8WAgX3RfJbnBKsZqLCBJoaVu9Z4vdhfwCe0FqZwNTU3/tzesXcVkxuMpsTzoJEZ4og8c4SSPhnQ/0YlyrPHp/bG+VGMBlR1B2f8uO1dIYVEahExQVycqHU1Mo4X/O6KqfbMefvtSEk1TYhuBZ79nmCnpziqH5f5Lmx9TA==
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2555.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(71200400001)(55016002)(33656002)(9686003)(316002)(6636002)(5660300002)(54906003)(64756008)(2906002)(7416002)(66446008)(478600001)(52536014)(53546011)(86362001)(66476007)(186003)(8676002)(6862004)(66946007)(8936002)(76116006)(26005)(4326008)(66556008)(6506007)(7696005)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 55/ZCLMvFOTmC6yxUT23hxqJEMqgWKDCQCcUXLiAzUYs6sRbEECEaJeehv9HKUl2aBzMgP5z0/811qo1ZVKcUQCzxOkaQGtZ2NqG9fn/62CQR5EWA2clEq4zTI95WnqC5jdtTMVoYNDujambgUAfTvBb2ahbzBHpoP5RMSqro32jJne17uhVJO8nR3YrBLfotekN+oYo7D0aIgslzazxoiGZxPwRnBB25v7Wpwv04uWjeT+682XsCQrL5/G/b6HpTj7/ZDjoezS37TxKkm8PiX2dkBrsnGHEJLXEM7449W7dGtLQMPbssVqMuiV++d43IlFjRRC/k4VWlnb7qdpAzXjVc7BqxUVhdjZOlcn8cEq9jmVswZ48vRDy6BxdOkYHUw+tgcb+VvGWipu5e8cjrIrWdV4aHmQqO6fEa7NsIahFrKiNruu8e+y5RoHuuTLDSfc81nRpUWqCmYiMYc6tTaQ23lKnhq2v5hjNsAptDYY=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1725905AbgE0Baz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 21:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725287AbgE0Baz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 21:30:55 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA1EC061A0F
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 18:30:52 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id x29so4759047qtv.4
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 18:30:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pumpkinnet-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=T399jxmluAL6GYrVs/c9Tg7xwcBs0iovgEru9FwLBU0=;
+        b=JCX6QQUlnGi7m79AsZ2+GiW1ugmYSDmml1HCRvW2kfQ38gBFhWLQFggjq/IELQ29CQ
+         NWUZsYXcJuHj9iprGfZnTrkcQTYgir5pc+PfNjiFoYWiBt7kACFZ49M0sNF/qKAxx2pN
+         nIC2wBB6DBTaOrQEbYIG3tySrjKxH1eLe1iItPn21A40hnfGkH88sfFlsNNZwvj0Vu9b
+         0ENQ5bRcL5OyfhS+MYuOXbUvMWDG6AQ2SMDf9xclwtrbIb+WrjkNPn9p3NecNkm6mbB7
+         SLKTdZi3D6xjrHDE4O6eEjOVonJLq46H7AoQ0MTqBbZAFHtCVHnUk60M4lMZT/JfySv1
+         9p0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=T399jxmluAL6GYrVs/c9Tg7xwcBs0iovgEru9FwLBU0=;
+        b=jVbk8KgmsyTUCBBZcvVEOibD5Z2RilsSpW/PkJFVYC7yGE2eLwCbA7DJCB47AtGK/R
+         37MIpu5BE6Ij9VezhoE5UnDIDMqcl02uPGiPldJrbxGuWy5YOLUF+A8IjCuM6ZsG6RRu
+         RI8Mu1oYy8CTaUL+0SKQG6xo6wK5tvScF4TvRiFeoPOmxoBZb/ftgdSb7JbYrmTHFOBh
+         mwkxzmi40VZ81iGinVEw5hdlXo3nlmT5yxecu+4E0c7GYzdnsdXQ+u+EYlal2Hbd50nj
+         Mph8Ba09iaMltkBZGtRmOSdBJC0tW+std7qaC6ZGey8k+wBif+ViYLS0tZBrQHwUlMa8
+         EeTg==
+X-Gm-Message-State: AOAM532W2YfFE4Xdp8cepFlkWz01oqaN1iMGETLPv6G7eTS0binZEOcr
+        3eQuTcKn8t+3BUMM+f4XeZhP2WlWM6DK1RxDNWluGqogI/E=
+X-Google-Smtp-Source: ABdhPJwrzCL3KoqUgVTI2InQ9XCdMbyFbX8skWLsP8pmJDBSlYKi15MAilhhWT++D4utpizXwsu2azkAs14sreGwnqk=
+X-Received: by 2002:ac8:ec7:: with SMTP id w7mr1784299qti.197.1590543052059;
+ Tue, 26 May 2020 18:30:52 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0802MB2572
-Original-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT008.eop-EUR03.prod.protection.outlook.com
-X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(136003)(396003)(39850400004)(46966005)(316002)(36906005)(356005)(9686003)(55016002)(33656002)(5660300002)(54906003)(52536014)(6636002)(82310400002)(450100002)(4326008)(8936002)(8676002)(86362001)(47076004)(6506007)(6862004)(107886003)(53546011)(336012)(82740400003)(186003)(26005)(81166007)(7696005)(478600001)(70206006)(2906002)(83380400001)(70586007);DIR:OUT;SFP:1101;
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 94192dc5-2fe9-4701-ba9c-08d801dbe2fe
-X-Forefront-PRVS: 04163EF38A
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pvAyKtOfW6y6/iMdZl3583R6nCEZlgZkIXUzM1qaAgkQVENQBIBsO7BP7c8qCuwLkx4FWM47I2IST40wrOObeLibKPV4n6Pj6eWbWWauJXXlsUBy7KzGmFKoJ5SKALPpkQo5LJpZZ4Uh/SHDGDWchpP4paCX2RPIyz2zgENRLclYg3gnH59an8KbO/CwGA2/G1cTn/tq62ore+5YEqdG7j7/nd7TD0Cd03pn9XQtn7R2yZWhyX1kG1ciGfnbxtlv0JNaG7/5Y6N79ud7ZoDSz/NdvfCE1ZFDHn6ABPBpzPCkBP0DTCaiyt3970fUrqbZZkggo5037X3yiCTv8molEsgWoESgLsiveHfZkgntbJpe/LBZUnRM7SC5sREjFApWDE3zE4zxGYNH8FVc9epG8w==
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 01:18:47.0311
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1dbf6bd0-51af-48ff-ad37-08d801dbe7cc
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0802MB2191
+References: <CALMTMJJG7-VmS7pa2bgH=YsmgUJzi=YSnO8OtKpW=VyjyXWTkQ@mail.gmail.com>
+ <20200526075417.n2xdtzpwnpu3vzxx@lion.mk-sys.cz>
+In-Reply-To: <20200526075417.n2xdtzpwnpu3vzxx@lion.mk-sys.cz>
+From:   =?UTF-8?B?6rCV7Jyg6rG0?= <yugun819@pumpkinnet.com>
+Date:   Wed, 27 May 2020 10:30:42 +0900
+Message-ID: <CALMTMJLJYP=FSVFhwLqBLuKC6jNk-Bas1jjkJM+OvuNkt5jETQ@mail.gmail.com>
+Subject: Re: With regard to processing overlapping fragment packet
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sudeep,
+Thank you for explaining in detail and letting me know the website.
 
-> -----Original Message-----
-> From: Sudeep Holla <sudeep.holla@arm.com>
-> Sent: Tuesday, May 26, 2020 6:10 PM
-> To: Jianyong Wu <Jianyong.Wu@arm.com>
-> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
-> tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
-> maz@kernel.org; richardcochran@gmail.com; Mark Rutland
-> <Mark.Rutland@arm.com>; will@kernel.org; Suzuki Poulose
-> <Suzuki.Poulose@arm.com>; Steven Price <Steven.Price@arm.com>; Justin
-> He <Justin.He@arm.com>; Wei Chen <Wei.Chen@arm.com>;
-> kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; linux-
-> kernel@vger.kernel.org; Kaly Xin <Kaly.Xin@arm.com>; nd <nd@arm.com>;
-> Sudeep Holla <Sudeep.Holla@arm.com>; kvmarm@lists.cs.columbia.edu;
-> linux-arm-kernel@lists.infradead.org
-> Subject: Re: [RFC PATCH v12 03/11] psci: export smccc conduit get helper.
->=20
-> On Mon, May 25, 2020 at 01:37:56AM +0000, Jianyong Wu wrote:
-> > Hi Sudeep,
+thanks to you, I learned a little about how to RFC works.
+
+
+2020=EB=85=84 5=EC=9B=94 26=EC=9D=BC (=ED=99=94) =EC=98=A4=ED=9B=84 4:54, M=
+ichal Kubecek <mkubecek@suse.cz>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+>
+> On Tue, May 26, 2020 at 02:47:25PM +0900, =EA=B0=95=EC=9C=A0=EA=B1=B4 wro=
+te:
+> > Hello
 > >
-> > > -----Original Message-----
-> > > From: Sudeep Holla <sudeep.holla@arm.com>
-> > > Sent: Friday, May 22, 2020 9:12 PM
-> > > To: Jianyong Wu <Jianyong.Wu@arm.com>
-> > > Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com;
-> > > john.stultz@linaro.org; tglx@linutronix.de; pbonzini@redhat.com;
-> > > sean.j.christopherson@intel.com; maz@kernel.org;
-> > > richardcochran@gmail.com; Mark Rutland <Mark.Rutland@arm.com>;
-> > > will@kernel.org; Suzuki Poulose <Suzuki.Poulose@arm.com>; Steven
-> > > Price <Steven.Price@arm.com>; Justin He <Justin.He@arm.com>; Wei
-> > > Chen <Wei.Chen@arm.com>; kvm@vger.kernel.org; Steve Capper
-> > > <Steve.Capper@arm.com>; linux- kernel@vger.kernel.org; Kaly Xin
-> > > <Kaly.Xin@arm.com>; nd <nd@arm.com>; Sudeep Holla
-> > > <Sudeep.Holla@arm.com>; kvmarm@lists.cs.columbia.edu;
-> > > linux-arm-kernel@lists.infradead.org
-> > > Subject: Re: [RFC PATCH v12 03/11] psci: export smccc conduit get hel=
-per.
-> > >
-> > > On Fri, May 22, 2020 at 04:37:16PM +0800, Jianyong Wu wrote:
-> > > > Export arm_smccc_1_1_get_conduit then modules can use smccc
-> helper
-> > > > which adopts it.
-> > > >
-> > > > Acked-by: Mark Rutland <mark.rutland@arm.com>
-> > > > Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-> > > > ---
-> > > >  drivers/firmware/psci/psci.c | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >
-> > > > diff --git a/drivers/firmware/psci/psci.c
-> > > > b/drivers/firmware/psci/psci.c index 2937d44b5df4..fd3c88f21b6a
-> > > > 100644
-> > > > --- a/drivers/firmware/psci/psci.c
-> > > > +++ b/drivers/firmware/psci/psci.c
-> > > > @@ -64,6 +64,7 @@ enum arm_smccc_conduit
-> > > > arm_smccc_1_1_get_conduit(void)
-> > > >
-> > > >  	return psci_ops.conduit;
-> > > >  }
-> > > > +EXPORT_SYMBOL(arm_smccc_1_1_get_conduit);
-> > > >
-> > >
-> > > I have moved this into drivers/firmware/smccc/smccc.c [1] Please
-> > > update this accordingly.
+> > Actually, I'm not sure if it's right to send mail here.
 > >
-> > Ok, I will remove this patch next version.
->=20
-> You may need it still, just that this patch won't apply as the function i=
-s moved
-> to a new file.
->=20
-Yeah, Thanks for remainder!
+> > I'm testing ipv6ready Self Test 5.0.4 using linux-4.19.118 kernel.
+> > ( https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-=
+core/index.htm
+> > )
+> >
+> > Test failed in 82. Part B: Reverse Order Fragments ( Link-Local ) in
+> > Section 1. spec
+> >
+> > In test 82, source transmits 3 fragment packets in reverse order that
+> > are originally a icmpv6 packet.
+> > There is an overlapping interval between the 2nd and 3rd packet.
+> >
+> > The test requires the destination MUST drop all packets and respond not=
+hing,
+> > but the dest replies Time Exceeded / Reassembly Timeout.
+> >
+> > I've read some /net/ipv6 codes and think when the kernel receives the
+> > 2nd packet ( overlapping occurs ), it drops 3rd and 2nd packets and
+> > recognizes the 1st packet as a new fragment packet.
+> > ( Is it right ? )
+> >
+> > In RFC5722, when a node receives the overlapping fragment, it MUST
+> > discard those not yet received. (  In this case, I think it applies to
+> > 1st packet )
+> >
+> > Please let me know if I misunderstood RFC or if it wasn't implemented
+> > in the kernel.
+>
+> You understood the requirement of the RFC correctly but the problem is
+> that implementing it would be too complicated, would make the
+> implementation susceptible to DoS attacks and could even result in
+> dropping legitimate (new) fragments. Therefore an erratum to RFC 5722
+> was accepted which drops the requirement to also drop fragments not
+> received yet:
+>
+>   https://www.rfc-editor.org/errata/eid3089
+>
+> Michal
 
-Thanks
-Jianyong=20
 
-> --
-> Regards,
-> Sudeep
+
+--=20
+
+
+=EA=B0=95 =EC=9C=A0 =EA=B1=B4 =EC=82=AC=EC=9B=90
+
+=ED=8E=8C=ED=82=A8=EB=84=A4=ED=8A=B8=EC=9B=8D=EC=8A=A4=E3=88=9C =EA=B0=9C=
+=EB=B0=9C1=ED=8C=80
+
+08380 =EC=84=9C=EC=9A=B8=EC=8B=9C =EA=B5=AC=EB=A1=9C=EA=B5=AC =EB=94=94=EC=
+=A7=80=ED=84=B8=EB=A1=9C31=EA=B8=B8 20 =EC=97=90=EC=9D=B4=EC=8A=A4=ED=85=8C=
+=ED=81=AC=EB=85=B8=ED=83=80=EC=9B=8C 5=EC=B0=A8 405=ED=98=B8
+
+Direct: 070-4263-9937
+
+Mobile: 010-9887-3517
+
+E-mail: yugun819@pumpkinnet.com
+
+Tel: 02-863-9380, Fax: 02-2109-6675
+
+www.pumpkinnet.co.kr
