@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6C51E3BFB
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7212F1E3C4F
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729593AbgE0Ibp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 May 2020 04:31:45 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:27984 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725949AbgE0Ibo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 04:31:44 -0400
-X-Greylist: delayed 57110 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 May 2020 04:31:43 EDT
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-89-NiIl-uWIP3-PCjHOUhpORQ-1; Wed, 27 May 2020 09:31:39 +0100
-X-MC-Unique: NiIl-uWIP3-PCjHOUhpORQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 27 May 2020 09:31:39 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 27 May 2020 09:31:39 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Miller' <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
-Thread-Topic: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
-Thread-Index: AdYze5zo5xQMv/KcR+CMEQN8gd6YZwAATgFgAAo43YAAFr9esA==
-Date:   Wed, 27 May 2020 08:31:39 +0000
-Message-ID: <f4662a514b374d2e85ada6d400aed31e@AcuMS.aculab.com>
-References: <bab9a624ee2d4e05b1198c3f7344a200@AcuMS.aculab.com>
-        <8bb56a30edfb4ff696d44cf9af909d82@AcuMS.aculab.com>
- <20200526.153631.1486651154492951372.davem@davemloft.net>
-In-Reply-To: <20200526.153631.1486651154492951372.davem@davemloft.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2388151AbgE0ImQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 04:42:16 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:52986 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387929AbgE0ImP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 04:42:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590568934;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cRnUD5oK5sLVCVcFqnFWAetwGl+ORfvUve2vTyNoLZU=;
+        b=iugJLkCLdgmtEK9JYJkt9PEVEKIfQCO9pgbcMXqyBtyyawlFSIZJmnSwIIxo3So6E9jUfk
+        YTyjph1n2/JJwE1/a2Ze3kmf6TcIFb6BqIeGi/3Z8a9+CoRt2qOszS5ugHlQeyeFS/dhip
+        3ok9fnf98uHMVTIgUSfSeTYuzo5+mZo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-284--Y7aSUawNriOQ3BKB4PO7g-1; Wed, 27 May 2020 04:42:10 -0400
+X-MC-Unique: -Y7aSUawNriOQ3BKB4PO7g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 195D8107ACF3;
+        Wed, 27 May 2020 08:42:09 +0000 (UTC)
+Received: from ebuild.redhat.com (ovpn-112-147.ams2.redhat.com [10.36.112.147])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 615E35D9E5;
+        Wed, 27 May 2020 08:42:04 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, toke@redhat.com
+Subject: [PATCH bpf-next] libbpf: fix perf_buffer__free() API for sparse allocs
+Date:   Wed, 27 May 2020 10:42:00 +0200
+Message-Id: <159056888305.330763.9684536967379110349.stgit@ebuild>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller
-> Sent: 26 May 2020 23:37
-> > This should be 3/8.
-> 
-> David just respin this at some point and with this fixed and also the
-> header posting saying "0/8" properly instead of "0/1", this is really
-> messy.
+In case the cpu_bufs are sparsely allocated they are not
+all free'ed. These changes will fix this.
 
-I have to copy patches onto a windows box.
-Then open them in wordpad so I can cut&paste the tabs into outlook.
-Then find the correct 'to' address list.
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+ tools/lib/bpf/libbpf.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-It is somewhat too manual and error prone.
-
-But I'll fix the masters for the next respin (bound to be one).
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 5d60de6fd818..74d967619dcf 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8137,9 +8137,12 @@ void perf_buffer__free(struct perf_buffer *pb)
+ 	if (!pb)
+ 		return;
+ 	if (pb->cpu_bufs) {
+-		for (i = 0; i < pb->cpu_cnt && pb->cpu_bufs[i]; i++) {
++		for (i = 0; i < pb->cpu_cnt; i++) {
+ 			struct perf_cpu_buf *cpu_buf = pb->cpu_bufs[i];
+ 
++			if (!cpu_buf)
++				continue;
++
+ 			bpf_map_delete_elem(pb->map_fd, &cpu_buf->map_key);
+ 			perf_buffer__free_cpu_buf(pb, cpu_buf);
+ 		}
 
