@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 058091E43D3
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A371E43E3
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388364AbgE0Nfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:35:38 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:35437 "EHLO
+        id S2388330AbgE0Nhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:37:32 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:60557 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387664AbgE0Nfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:35:37 -0400
+        with ESMTP id S2387682AbgE0Nhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:37:31 -0400
 Received: from localhost.localdomain ([149.172.98.151]) by
  mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MUD7D-1jUlQi0JwB-00RKHc; Wed, 27 May 2020 15:35:19 +0200
+ 1MelWf-1j437k3y2n-00aqFI; Wed, 27 May 2020 15:36:58 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     Felix Fietkau <nbd@openwrt.org>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Chih-Min Chen <chih-min.chen@mediatek.com>,
+        Shihwei Lin <shihwei.lin@mediatek.com>,
+        Yiwei Chung <yiwei.chung@mediatek.com>,
+        YF Luo <yf.luo@mediatek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        YueHaibing <yuehaibing@huawei.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] [net-next] mtk-star-emac: mark PM functions as __maybe_unused
-Date:   Wed, 27 May 2020 15:34:45 +0200
-Message-Id: <20200527133513.579367-1-arnd@arndb.de>
+Subject: [PATCH] [wireless-next] mt75: fix enum type mismatch
+Date:   Wed, 27 May 2020 15:36:30 +0200
+Message-Id: <20200527133655.617357-1-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:cjj7qKhbYdAc+XoRu26dmgr99+0Mva2jDkFaa+78wl0aZCmV0UC
- ncWKQldljAs9dUqWY0pwFACTSCYn+/UUUoGqoBekQdJxfEOmZ8sl1HSxzBgSyVaAO/n82XN
- AkaShtBDsW9lZ8jpzC0+KlPr+2Y837pRS9hMODZSl5LC0r0sD1Ic6quun77ngs6pdMvub+y
- RyKC7kjWmzV29q58j/l4Q==
+X-Provags-ID: V03:K1:2xsdauHeCgoTJqtAjoy1w439KhbI5AyVOuAxW1IHW47YA4Gorsi
+ Uh4YCVjbYsbddzHdqSL/9Nyka228g3hOyRaepN6TWoIe5HUzp67ihrRMluLbPYi2hFTnxyw
+ 1JRB8qLO9BliOGYOZdkWVaHW2CucwMbhaxuLQUo9QhEp3DP9AIG3a/U+jSsmX/6lg/tAn8j
+ 7jHNArva+RLoRfuAuh3Cw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oj+4JOX6juU=:0m8IpO+rj+vvHLiYhZyv58
- D4pCaNsPZ1/q70Tk2+JpIvmlDIZoPGimTin1lF+Sc16SU5olSM75WbhAaB7DcPnDWoTSgDxpT
- Rs1v3nRGTX5OU7FHDg7T0TwbHPu8hz5P0lA7uSExtaCZ9MdwFbiBA4V5Uifyi7+mFGBB3Ku05
- 1p2K/sQLMSkLJ7R5YWl9J1xgm9Q13Dpx9yCdIhSHCNIfbGhxl2xhR1kr/IAB6H+7X+b5MfncL
- hilM5lyLg367eb/mY5vEOmG/BFU7qUYxOx51fTaKMD5piYkjGhe+VbbXk7wXmb8XFrunvAoaO
- stSL9IuHMslwPrE8R9t0OuJyoyD4p9ORgUJAt/aNnOzVWToYoM2Bz2ptG+brORPXNpQleY0vU
- ytUjSljBF9rh/7KWROwvrrIYKSfIksSCrriVubLuVKuTGEg4tF9VM0ENRChN6mstZXasxBdKb
- 3kRtme4WFswSSMmttxf00aRO1IxGerzYscCJCqnR5KElnjHh9lUfU1rwx+E00RMappZji8y9N
- wc7oMm2EMBKGmQRYKrNdCboJP3EUNkmaqMf8PmI8lbEUmT6We8ZYT4uqyejwDtqRDlgL+yCsf
- oNg9rZBeBQB9urX3AOO68xlnOj4kSTQGcTYzdp1093vZpJINl9lErqkTeKoKWgRqeU0dZB9dI
- 908SW4x0C349asxQQdKek789w1MRNkNgHYeeXo8yhlORH7/8e6gYpWQB6RjTBMZBs/Js+k4aP
- UPfmHIS6Tj4wmqsdhSBh5MmevMDEqNlXA2lfa12XRaqCtpj8w97k/qOMQG5W9LGa5paADueGt
- OMrDQ5hTnr6zTtfaIXcL+PRkXXI6gsp4NOpc4g/BJwgRSgpXJ0=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FtVcgZauz7o=:scUFGVl1oIETlCqq2XG30+
+ BY+OSB/p/C2PHbQV8moxHzruH1uP9Hs2Cmkfuzt1pzAyXtW82VPL+i6XhfkL4Kzn7fV4xIawJ
+ A2HAq5Il64nn45Q6XqxowsRnC3JKSDVcU6+/hxjOI0t5GljWTrL92TJl527WU8NnDHJS4Tsmr
+ KsgZU4nD98sSiKPVkTHHG6nMcDBR3BIOtqB5sWIH6/bz3j+ogz/P1rSXjrKE0QGmIvpjlYWua
+ 3SS7ZaIIfPGwxYYgrFIJ+K+IdIdOXXvEY8bX+OteZNxdWkg2RjR6bBm/P/yo4S8qC8nEl6Bow
+ YJpUhM/w7lN9lF3hGTidifdzL9moxS+mjIcV6NaE77kl9pTr1m1pdb19VurLWicwiNgTE2fgG
+ 6wGAv4DAXmgkb6c6AwimTkBPyjXRsaK2gl5t/gWIv5dz++WZzoYVa+r+a2J4ZpwrK6K6pH5EU
+ Z5Dy7USzvBQWE/JgGDaFqcG+Zk8lbixikSTtHW+LPnfyiDbiKHjlimzlMGpd4+NVXmrgc8uJd
+ YgMB9mM3nsWcahk0NbkhXZsVMe14iaKWstbUlaF/zFJ1TnQC3bPfKIooWLd7eSJkNYMY6dJ41
+ zAneqRyKhsqVGB16LHOiS9GXVxbBwaemmq2+f9F08NizeJDLOrW4MAY0hLNAQ5WzoMC9RUliB
+ vSvJiyC5p01107GyNrmS7vC+Nfi31gg21wIlE8ej7ZltRD0sM09YzWVBnr5fkky8ZBGd4pQfE
+ YxO/L8TcnJlj9bmltBSZuOTgEL8rM/nVk034s2QC/YfSrq20qSaPTCrGtTgxQncP9Ds0LSwdn
+ lOjGQJNACJeHLPwBGXaDbUg2u7n3XaDiXVfLbhmQB6Wp7qadf4=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without CONFIG_PM, the compiler warns about two unused functions:
+The __mt7915_mcu_msg_send() calls a generic function that expects a mt76_txq_id
+rather than mt7915_txq_id, and it also uses the values according to that
+type, which are different from the similarly named MT7915_TXQ_ constants:
 
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1472:12: error: unused function 'mtk_star_suspend' [-Werror,-Wunused-function]
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1488:12: error: unused function 'mtk_star_resume' [-Werror,-Wunused-function]
+drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:232:9: error: implicit conversion from enumeration type 'enum mt76_txq_id' to different enumeration type 'enum mt7915_txq_id' [-Werror,-Wenum-conversion]
+                txq = MT_TXQ_FWDL;
+                    ~ ^~~~~~~~~~~
+drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:287:36: error: implicit conversion from enumeration type 'enum mt7915_txq_id' to different enumeration type 'enum mt76_txq_id' [-Werror,-Wenum-conversion]
+        return mt76_tx_queue_skb_raw(dev, txq, skb, 0);
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+drivers/net/wireless/mediatek/mt76/mt7915/../mt76.h:668:97: note: expanded from macro 'mt76_tx_queue_skb_raw'
 
-Mark these as __maybe_unused.
+Use the mt76 types consistently.
 
-Fixes: 8c7bd5a454ff ("net: ethernet: mtk-star-emac: new driver")
+Fixes: e57b7901469f ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/mediatek/mtk_star_emac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-index b18ce47c4f2e..3223567fe1cb 100644
---- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-+++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-@@ -1469,7 +1469,7 @@ static int mtk_star_mdio_init(struct net_device *ndev)
- 	return ret;
- }
- 
--static int mtk_star_suspend(struct device *dev)
-+static __maybe_unused int mtk_star_suspend(struct device *dev)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 99eeea42478f..001b3078c48e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -220,7 +220,7 @@ static int __mt7915_mcu_msg_send(struct mt7915_dev *dev, struct sk_buff *skb,
  {
- 	struct mtk_star_priv *priv;
- 	struct net_device *ndev;
-@@ -1485,7 +1485,7 @@ static int mtk_star_suspend(struct device *dev)
- 	return 0;
- }
+ 	struct mt7915_mcu_txd *mcu_txd;
+ 	u8 seq, pkt_fmt, qidx;
+-	enum mt7915_txq_id txq;
++	enum mt76_txq_id txq;
+ 	__le32 *txd;
+ 	u32 val;
  
--static int mtk_star_resume(struct device *dev)
-+static __maybe_unused int mtk_star_resume(struct device *dev)
- {
- 	struct mtk_star_priv *priv;
- 	struct net_device *ndev;
 -- 
 2.26.2
 
