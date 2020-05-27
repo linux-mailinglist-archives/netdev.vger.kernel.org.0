@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 207D81E340D
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C321E3412
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgE0AbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 20:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726835AbgE0AbT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 20:31:19 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69586C061A0F
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:31:19 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id p4so10398502qvr.10
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:31:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=uIp0501mG3+8ATxnA4TxYZmA6hz0mrHIWE9JDA6LiYw=;
-        b=olrYooBjXi6S+f2JUAvySajwthmEIu27lEW00jJ5JfZDiRCxa4Q5qA50iAv36cOlCd
-         3qZMjF6/PXfKzL0m6D33VUPbrheScryZzGZG3H58q6zpSGpHLl4np+pQl8XTEFINTAee
-         7KICEU9lhOVQeeZgv2O0/+Qg8LV6TP/F0IsuGOPSz3vqzpBFlgqVjKcH6UN+BFDsis9J
-         0bbNt//wUB42UJGKGaUi5CtaHoQATbXetwsRDvjbRmEu3/JTA8dPj/nSCCo9fy9HwbSD
-         8mz1uv9ZYjq2h2aPBWX+/EjQuqAE6aWUmpFQlFIaSzz38LGNOE+mhpdszKnfnSymwE9x
-         gC4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uIp0501mG3+8ATxnA4TxYZmA6hz0mrHIWE9JDA6LiYw=;
-        b=kFN/rcBtf+qbiVbFAfEurkvp4htNBqp/2hMZc5pGuZymuuuEqgA9VZrVvd1EgNcvbw
-         juxAtzfbCzbb4ZGoqsTbm0nPHd080nilNGlXmwlz4auVU7yG8HHGGPeQTV5+1VlbBu+x
-         zgFi494GZl70gcwXugHdJ1mtTSGH2gew62yhCDn+OYhEHnCaspQDQ0YIsDHlWz0Kqnx0
-         U5x3L/w/0ZvzQ369snNxnkHpB07mDxb90FEfdzeoSspPwDptOZ7gzn5mCNr4JyNJON+U
-         SXMyCt647hKFS+wIC2JxQ84ZwTTlkHGiNvtfxkRvfF1qfhrVHdEUGCO6Ep44OqHYla2S
-         GoCA==
-X-Gm-Message-State: AOAM533gtU+YRr7GGMc7pBw36E9FVv/RTMf004zXTlNgc0rAnaL7I/UI
-        2c4wEmhwOyTIczBIl9AxGbaH68gf
-X-Google-Smtp-Source: ABdhPJxcYPRAMuEX66jBlcHCxab1wyg4uObm0ydf3lCsnSPpg5qcBru+RSViPwuW31MHDSRdML+quQ==
-X-Received: by 2002:a0c:b516:: with SMTP id d22mr253029qve.88.1590539476132;
-        Tue, 26 May 2020 17:31:16 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
-        by smtp.googlemail.com with ESMTPSA id u41sm1181263qte.28.2020.05.26.17.31.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2020 17:31:15 -0700 (PDT)
-Subject: Re: bpf-next/net-next: panic using bpf_xdp_adjust_head
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "brouer@redhat.com" <brouer@redhat.com>
-References: <8d211628-9290-3315-fb1e-b0651d6e1966@gmail.com>
- <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0ee9e514-9008-6b30-9665-38607169146d@gmail.com>
-Date:   Tue, 26 May 2020 18:31:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1726928AbgE0Ad0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 20:33:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50814 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726835AbgE0AdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 May 2020 20:33:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8XQiPl3J4Z+p4woOPKcPHigRSA+YLSXLLEdL58R3tic=; b=GG3L+diVvZhRkr5tFVxVy5Rjv+
+        yF3z/M9pnQzAXSgseibShXFvWc4rlA9YMc25DJmBt8sNuKbLSHeWZAwHFBU0/x8UpJ0zM4OQRBknL
+        jaSNCRSo6D/elxX6SZ5pxP7otqifDPO5s7kv+qXFt18zC3WdnW37bbHt35p0KNu3PiNs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jdk0W-003L8I-Hv; Wed, 27 May 2020 02:33:20 +0200
+Date:   Wed, 27 May 2020 02:33:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH net-next v2 1/2] net: enetc: Initialize SerDes for SGMII
+ and SXGMII protocols
+Message-ID: <20200527003320.GC782807@lunn.ch>
+References: <20200526225050.5997-1-michael@walle.cc>
+ <20200526225050.5997-2-michael@walle.cc>
 MIME-Version: 1.0
-In-Reply-To: <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200526225050.5997-2-michael@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/26/20 3:23 PM, Saeed Mahameed wrote:
-> Anyway I can't figure out the reason for this without extra digging
-> since in mlx5 we do xdp_set_data_meta_invalid(); before passing the xdp
-> buff to the bpf program, so it is not clear why would you hit the
-> memove in bpf_xdp_adjust_head().
+On Wed, May 27, 2020 at 12:50:49AM +0200, Michael Walle wrote:
+> From: Claudiu Manoil <claudiu.manoil@nxp.com>
+> 
+> ENETC has ethernet MACs capable of SGMII and SXGMII but in order to use
+> these protocols some serdes configurations need to be performed. The
+> SerDes is configurable via an internal MDIO bus connected to an internal
+> PCS device, all reads/writes are performed at address 0.
+> 
+> This patch basically removes the dependency on bootloader regarding
+> SerDes initialization.
+> 
+> Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../net/ethernet/freescale/enetc/enetc_hw.h   | 17 ++++
+>  .../net/ethernet/freescale/enetc/enetc_pf.c   | 98 +++++++++++++++++++
+>  .../net/ethernet/freescale/enetc/enetc_pf.h   |  1 +
+>  3 files changed, 116 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> index 6314051bc6c1..ee5851486388 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> @@ -224,6 +224,23 @@ enum enetc_bdr_type {TX, RX};
+>  #define ENETC_PM0_MAXFRM	0x8014
+>  #define ENETC_SET_TX_MTU(val)	((val) << 16)
+>  #define ENETC_SET_MAXFRM(val)	((val) & 0xffff)
+> +
+> +#define ENETC_PM_IMDIO_BASE	0x8030
+> +/* PCS registers */
+> +#define ENETC_PCS_CR			0x0
+> +#define ENETC_PCS_CR_RESET_AN		0x1200
+> +#define ENETC_PCS_CR_DEF_VAL		0x0140
+> +#define ENETC_PCS_CR_LANE_RESET		0x8000
 
-I commented out the metalen check in bpf_xdp_adjust_head to move on.
+Hi Michael
 
-There are number of changes in the mlx5 driver related to xdp_buff setup
-and running the programs, so it is the likely candidate. Let me know if
-you have something to test.
+This looks like a standard BMCR. I know Russell King has pushed for
+just using MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART, BMCR_FULLDPLX |
+BMCR_SPEED1000, etc, since people understand what they mean.
 
-Thanks
+> +#define ENETC_PCS_DEV_ABILITY		0x04
+> +#define ENETC_PCS_DEV_ABILITY_SGMII	0x4001
+> +#define ENETC_PCS_DEV_ABILITY_SXGMII	0x5001
+> +#define ENETC_PCS_LINK_TIMER1		0x12
+> +#define ENETC_PCS_LINK_TIMER1_VAL	0x06a0
+> +#define ENETC_PCS_LINK_TIMER2		0x13
+> +#define ENETC_PCS_LINK_TIMER2_VAL	0x0003
+> +#define ENETC_PCS_IF_MODE		0x14
+> +#define ENETC_PCS_IF_MODE_SGMII_AN	0x0003
+
+It would be nice to document what these individual bits mean.
+
+   Andrew
