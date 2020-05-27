@@ -2,107 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C151E350E
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A651E3513
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727852AbgE0B4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 21:56:20 -0400
-Received: from mail-eopbgr60072.outbound.protection.outlook.com ([40.107.6.72]:1154
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727772AbgE0B4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 21:56:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YAcrkIBSMGQmn8iuIhmz5CzZJHwRDcIzm+K9S2fCDgoZuxMZ8agrwT1tZSw7BsyvxtIpFtywr6DCsdCKZYwff3/iz7ybjAjzn+86Ng2fPxd7G4Fo7Jalmxnjn67Z3f7QrHKT79yud/DnjIb+YzciJNNpAcNU1QfgoVRUwp3xUPMK315DrMabzloaCMLBTjeIq36mJkOi61Tab36bTp0xhHFSFFVRLgJt95tsFMr8aYZfiPN7JidQzEEJZFe3rvPHEUr32ChVdJNkB1Fgn94vbDU6rz+fxL+osQfqBLdqCpX7LwaddBn2d1jsk0JbDSSjkVNGCd1nbudhwuJd8JIPtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oLOPHHQsEWlhxFQWFkc9Oxxf9x5nlDZXpjUWrKWcskY=;
- b=XVlktO9scNpcFa0o4/rkTqowOdKauy2PgvlZHpqmtDkfa+lBX7hsxexIj8SRKieWM+T0woD/rhOv4R1Kh64RXEDlt7tcu2lUPp8o7BfLOVYNt5jDmkW3583ZQhaNn2SfeRrps2SpBAanvSmZDYh6Nj5J3HpJROxs+zsu/Xt6+MYoItcOZeuxh7c2W0+xPALfUnmiUR5Oom0Sx0CGRVrXrTfAw5L8QUb6D9Inf0ZHYb0VghJXZpy+NjbBXo/aNGijleawhGHgb05nXXg7Vq/jDbiNOoKSzZ8nopJ2yyhEln6UqEDJ9umrQx4bSg7GSn2bWcTsFh/yeNNlNYeyLuy5sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oLOPHHQsEWlhxFQWFkc9Oxxf9x5nlDZXpjUWrKWcskY=;
- b=Su+j117I7lcq+TZyNlSt7nFZA0Ha4NKWZuO9DNOfiFjRPd7Mr7rB4JeKgUC2sEGif9YoK1Oi6Pw8XO2qjPPS8qI40ntbwN0Xpu/dGSodW6jZRo6bspVSrIRV1631k6BtA4cX2aDIjodKfw6SKfZebn5mNnNckiZnFv48vBV9+Pk=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB4704.eurprd05.prod.outlook.com (2603:10a6:802:68::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 01:56:16 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 01:56:16 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "brouer@redhat.com" <brouer@redhat.com>
-Subject: Re: bpf-next/net-next: panic using bpf_xdp_adjust_head
-Thread-Topic: bpf-next/net-next: panic using bpf_xdp_adjust_head
-Thread-Index: AQHWM5CHfIT64iBK50WQOTz4iga31Ki64JOAgAA0jQCAABe+gA==
-Date:   Wed, 27 May 2020 01:56:15 +0000
-Message-ID: <e7d481d62d13607f57d5ecbdaf92f1c45b189bb6.camel@mellanox.com>
-References: <8d211628-9290-3315-fb1e-b0651d6e1966@gmail.com>
-         <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
-         <0ee9e514-9008-6b30-9665-38607169146d@gmail.com>
-In-Reply-To: <0ee9e514-9008-6b30-9665-38607169146d@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.2 (3.36.2-1.fc32) 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7b7f7100-fccf-4df5-0bc0-08d801e12444
-x-ms-traffictypediagnostic: VI1PR05MB4704:
-x-microsoft-antispam-prvs: <VI1PR05MB4704D709D178679FA8DC43F4BEB10@VI1PR05MB4704.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rRMLTmZKbJB1JS64mNnFcDvGihmhOHBrVJQ7U3Qd9bmlYIbCM8IlXyoFNz5Kszp24/PaB4e9TckS9FOOduYtbWy5gSeEUbGMHW/RDPpQkIHuaYyiEBOrO8AtVjTMfrlnipia573ANnGcPOdnACjs08EZNME72NIxcuy1EZFEl+fx0Au4zxUNDQ6P4rJu0DxEBMPZ1RyI2RZ86BXNiCxmI7POIavyXDLSgX9ReZjRTK1CZUNOv5HjFMwokb3Ui6VhnRvNHAKiS0nGRLXauU4/+5Zonfm4FRjaaHNxG3LbJlDCiAsHgEK5NA7ixQSHT4ePbatE6uLtDF8YaQABcJz8Xg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(39850400004)(396003)(136003)(366004)(2906002)(2616005)(66556008)(53546011)(66446008)(26005)(64756008)(91956017)(76116006)(66476007)(66946007)(6506007)(6512007)(478600001)(36756003)(316002)(186003)(110136005)(86362001)(4744005)(8936002)(71200400001)(8676002)(5660300002)(83380400001)(6486002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: SulAAH5XWb9faSjXUbIuh2LkuAEa4+Jn5kbBpdpnniXqejDnADfzuuIA/Uw4s7uM0QFJvu4mSa1R9f6hx8hF40WonH/D+/5I9XeNcRZyfmfM/BJ1Sg9iCTVB43J2AN8dERceLZKR6tOqBsQChvQX3udFshveTrIFueYAzkCnMTwT6H6Q4jTWRVLTmA6DFTRxkCv5DnH5J1mNmK4RHAD9h09zXIIMARB5YzXw7ZdNn8jF6qzFgLKBEDd2agag/WJFcn6UZ3aMur4xbEgAyIl7xFlB/i7ZFhlu5YKe+x07fhiScwAU5mZi75iK9QTwe34MCjoaBaT9Nsp8eppsVpQjrmpvod/ulNuMWuAkRlAl48EMHUx5Q4jxqdgL3L/YvjTtjbaZZWYM5yGvCl6QbQzsWYzq6Z2AlddUUNXGMcmG7o++zpCmna4lkvLZjePfZd4c7cqtqaoi6ee3C6HaSM+lC7QlP0a533xkl9v4V1TD/Jo=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0518BB176FA85A4B9300F29A077F5A56@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727937AbgE0B5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 21:57:22 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:36855 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726222AbgE0B5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 21:57:22 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id F0D13580130;
+        Tue, 26 May 2020 21:57:20 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 26 May 2020 21:57:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm3; bh=SR919SUjGUEOgu6aawZxJ9MFHn
+        ifhK/bHfB0G/3X0fI=; b=cq4cSNvpUw5lOvBat5Giz2d/mr1nInrFIantibAv0K
+        hJokOcclOiA06jjYNSb/wn1Eq99VWz7t87UWoWweDteZTadzoS0BMOPSFqjdBnXR
+        baXzdq18JfaMZUuI++PwPsvSytyM6i4sPIMU6l6pozWlIT+xBvoQKhfiO/VMDePQ
+        s2QRrK9WMyrNj696s0KB5yej99lkL4NLPw2Hpe+RmQkrpEF/t6+h9uYok6XezVl4
+        epRQ4hbNre15zLlTqdi7xngcag2LKieQTlJNZ2p2Zq1beYoNlqUsRKiujgKV+JBu
+        UthzjWkEE4WzE3nHU/bp9G/oVWoUPQXiQsFFhhT9CKyg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=SR919SUjGUEOgu6aa
+        wZxJ9MFHnifhK/bHfB0G/3X0fI=; b=k7o/aCqWbLvj/TYg2w/MHA6UebWGpIuHz
+        fMLSc4EZ+B5wiVvpSjYr1azP5krszIp5mx9fEvgd/ogZKxR7BvDPfyLvWKs7uzlO
+        LDt3s+G4qY+eePW9wDrt0HCas//JVU+38ylAXF0N7UyQL9F0ynvemc+j9pkFtwub
+        Zsw8Ef5Xh3zjylnEdiOxmk0SsMA8YISTGiiRTXqO9G9y/UF5RjHIpdEMo+a8uC/v
+        sHv2bdo7iiCjmysnlVvYegdw0El9fCSYRGA5D2/VP9u4ahLQlAi+iyALe+FZgnNZ
+        fMN6iOQffm46Ut30h9Mptqf+DlhccGuVNDVPYeffEJTKx28NVSAWw==
+X-ME-Sender: <xms:AMnNXhkgQRzrFeZXHml6CVKTpKr1BjPRrTCG9X5wY4FFJqiMEAZzFQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvfedghedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdljedtmdenucfjughrpefhvf
+    fufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihu
+    segugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeeifffgledvffeitdeljedvte
+    effeeivdefheeiveevjeduieeigfetieevieffffenucfkphepjeefrdelfedrvdegjedr
+    udefgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    gugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:AMnNXs08kxfcZlxVTfc6s5Mg2voABwVlKDQCbkm9n-ClABInitVuGA>
+    <xmx:AMnNXnpprRwZEB6eNarDnIcbEN8WqO-OHmH7cc7yFLcLmdkBpoZ5nQ>
+    <xmx:AMnNXhnx9E-k8BokHtE2BFPaQkWVpn3YJwf5r8zLd5wF1-wehTV5Dg>
+    <xmx:AMnNXtOWFFfbbb8vIDMv-joayJ2cUsN9uzADKJb9B1ijBs-RYannvQ>
+Received: from localhost.localdomain (c-73-93-247-134.hsd1.ca.comcast.net [73.93.247.134])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7A02E3060F09;
+        Tue, 26 May 2020 21:57:18 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        bpf@vger.kernel.org
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH bpf-next] libbpf: Export bpf_object__load_vmlinux_btf
+Date:   Tue, 26 May 2020 18:57:04 -0700
+Message-Id: <20200527015704.2294223-1-dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b7f7100-fccf-4df5-0bc0-08d801e12444
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 01:56:15.8914
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ulsqEIjZJKwf3IueEfDVz0bMBDe7Jvm2/kWTSmesLSr8AezVsXODiAlBR3/4BlYxMfxOnzRi8n2YYiL3clemcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4704
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTA1LTI2IGF0IDE4OjMxIC0wNjAwLCBEYXZpZCBBaGVybiB3cm90ZToNCj4g
-T24gNS8yNi8yMCAzOjIzIFBNLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToNCj4gPiBBbnl3YXkgSSBj
-YW4ndCBmaWd1cmUgb3V0IHRoZSByZWFzb24gZm9yIHRoaXMgd2l0aG91dCBleHRyYSBkaWdnaW5n
-DQo+ID4gc2luY2UgaW4gbWx4NSB3ZSBkbyB4ZHBfc2V0X2RhdGFfbWV0YV9pbnZhbGlkKCk7IGJl
-Zm9yZSBwYXNzaW5nIHRoZQ0KPiA+IHhkcA0KPiA+IGJ1ZmYgdG8gdGhlIGJwZiBwcm9ncmFtLCBz
-byBpdCBpcyBub3QgY2xlYXIgd2h5IHdvdWxkIHlvdSBoaXQgdGhlDQo+ID4gbWVtb3ZlIGluIGJw
-Zl94ZHBfYWRqdXN0X2hlYWQoKS4NCj4gDQo+IEkgY29tbWVudGVkIG91dCB0aGUgbWV0YWxlbiBj
-aGVjayBpbiBicGZfeGRwX2FkanVzdF9oZWFkIHRvIG1vdmUgb24uDQo+IA0KPiBUaGVyZSBhcmUg
-bnVtYmVyIG9mIGNoYW5nZXMgaW4gdGhlIG1seDUgZHJpdmVyIHJlbGF0ZWQgdG8geGRwX2J1ZmYN
-Cj4gc2V0dXANCg0KVGhlc2UgY2hhbmdlcyBhcmUgZnJvbSBuZXQtbmV4dCwgdGhlIG9mZmVuZGlu
-ZyBtZXJnZSBjb21taXQgaXMgZnJvbQ0KbmV0Li4NCnNvIGVpdGhlciBpdCBpcyB0aGUgY29tYmlu
-YXRpb24gb2YgYm90aCBvciBzb21lIHNpbmdsZSBwYXRjaCBpc3N1ZSBmcm9tDQpuZXQuDQoNCj4g
-YW5kIHJ1bm5pbmcgdGhlIHByb2dyYW1zLCBzbyBpdCBpcyB0aGUgbGlrZWx5IGNhbmRpZGF0ZS4g
-TGV0IG1lIGtub3cNCj4gaWYNCj4geW91IGhhdmUgc29tZXRoaW5nIHRvIHRlc3QuDQo+IA0KDQpT
-dXJlLCBsZXQncyBhaW0gdG93YXJkIHRoaXMgVGh1cnNkYXkgb3IgRnJpZGF5Lg0KSSB3aWxsIGxl
-dCB5b3Uga25vdy4NCg0KDQpUaGFua3MsDQpTYWVlZC4NCg0K
+Right now the libbpf model encourages loading the entire object at once.
+In this model, libbpf handles loading BTF from vmlinux for us. However,
+it can be useful to selectively load certain maps and programs inside an
+object without loading everything else.
+
+In the latter model, there was perviously no way to load BTF on-demand.
+This commit exports the bpf_object__load_vmlinux_btf such that we are
+able to load BTF on demand.
+
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+---
+ tools/lib/bpf/libbpf.c   | 2 +-
+ tools/lib/bpf/libbpf.h   | 1 +
+ tools/lib/bpf/libbpf.map | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 5d60de6fd818..399094b1f580 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -2477,7 +2477,7 @@ static inline bool libbpf_prog_needs_vmlinux_btf(struct bpf_program *prog)
+ 	return false;
+ }
+ 
+-static int bpf_object__load_vmlinux_btf(struct bpf_object *obj)
++int bpf_object__load_vmlinux_btf(struct bpf_object *obj)
+ {
+ 	struct bpf_program *prog;
+ 	int err;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 1e2e399a5f2c..6cbd678eb124 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -147,6 +147,7 @@ LIBBPF_API unsigned int bpf_object__kversion(const struct bpf_object *obj);
+ struct btf;
+ LIBBPF_API struct btf *bpf_object__btf(const struct bpf_object *obj);
+ LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
++LIBBPF_API int bpf_object__load_vmlinux_btf(struct bpf_object *obj);
+ 
+ LIBBPF_API struct bpf_program *
+ bpf_object__find_program_by_title(const struct bpf_object *obj,
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 381a7342ecfc..56415e671c70 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -261,6 +261,7 @@ LIBBPF_0.0.9 {
+ 		bpf_iter_create;
+ 		bpf_link_get_fd_by_id;
+ 		bpf_link_get_next_id;
++		bpf_object__load_vmlinux_btf;
+ 		bpf_program__attach_iter;
+ 		perf_buffer__consume;
+ } LIBBPF_0.0.8;
+-- 
+2.26.2
+
