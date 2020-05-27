@@ -2,114 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46E831E4FF3
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 23:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C04C1E506B
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 23:25:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728653AbgE0VRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 17:17:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53148 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726482AbgE0VRi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 17:17:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=e7tiZMIiYuTbb+03A1KtQnZH+j3s8ttBBXpLw45dAS0=; b=6LlhV+r1K7qAycippK72vCEiPn
-        c0NM4ZjQCpKRVzGcyTa9buhlm2plrnI2+LoPj8rGLnzkAaEhBdDOH6GhSkIyt4RSrRmo2k/KhZwHP
-        m6wfFs/dCwrLP9yBfZx7nVTzQ9gsQi2SPB1cmp4AI3lsnCf4AM+6SZ+A19c0HtPu+LYk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1je3QV-003SEI-M8; Wed, 27 May 2020 23:17:27 +0200
-Date:   Wed, 27 May 2020 23:17:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Emanuele Giuseppe Esposito <eesposit@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Emanuele Giuseppe Esposito <e.emanuelegiuseppe@gmail.com>,
-        linux-kernel@vger.kernel.org, kvm-ppc@vger.kernel.org,
-        Jonathan Adams <jwadams@google.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        David Rientjes <rientjes@google.com>,
-        linux-fsdevel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org,
-        Jim Mattson <jmattson@google.com>
-Subject: Re: [PATCH v3 0/7] Statsfs: a new ram-based file system for Linux
- kernel statistics
-Message-ID: <20200527211727.GB818296@lunn.ch>
-References: <20200526110318.69006-1-eesposit@redhat.com>
+        id S1727004AbgE0VZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 17:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726718AbgE0VZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 17:25:39 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38583C05BD1E
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:25:39 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id i17so2157631pli.13
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6kV8Dkezyb5UgWlLi2qsTU60tuPmZldK8CY3zGrToAM=;
+        b=gGX5wNiQnovr3FoA6EC0i8yeBltT2y0mXyXIEusDrHNDzS/pH34I4Htn0Topac/caq
+         Ua24S3xOFL5MZho74Ee5Q9xdBiV7gx7r56BVVm5LUNPCpXO+LtkbNZs8wnFjy44xRdQ8
+         VNuO2e26SRfose2GPE/rlD3k/BH/oqkfNSRJs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6kV8Dkezyb5UgWlLi2qsTU60tuPmZldK8CY3zGrToAM=;
+        b=GIMfnGgC93uUOFSCrhY2eXhaMpZ/mdgz216U73zqmZv3lMQdErF6LF4aADHfdlnMdf
+         Sy/4OwTiGOii0V+29mZzU7TpQxlykturvyhbcwTgOvX8+uaR7tpcKA9GOx8Af3LTAECX
+         pNjqUVKeE0QTbcKai2/oFIvPxklhsdowF77jXdWQvQljK+Qmut3zQ1UCA2O5nM5riL5Z
+         fJPh391lWYmWoelBrAGwzwZ/wN8PAcHPpGYz2RpTKLGaYzgsGjuWpv8mDkxMGDOtbKFD
+         76nVAlILPtQ0wAxDc9SWf1M6fi7Og76q+cqGRcoSbdQJmpT44EmxzTgzASxxZ3qojtO3
+         RYsA==
+X-Gm-Message-State: AOAM5325oXON9DmTVpppAgsGv6McA1UiyI3ukw0rgs7oPV0D13sYEHrr
+        kfpCcjAYyoUT3GmC3ELWg6Dys8Kgg519Jko6E/3b1Pnqm75pCBwhIjeumvGyejBjPDTmHye3aL9
+        f4FZrcoagA8XXh8IFgvwaiE5GF725JDraHDSWerW0sc0B4rjOYDy/oo2PKDdk7y0GGbfByixm
+X-Google-Smtp-Source: ABdhPJz1fdBXEqRC7VyWfTZnVVwokiZ8z/VQ4M5B3wETmE0VHAf2k3/V/39U5LbHgmb0A3UHWqDZDQ==
+X-Received: by 2002:a17:90a:bf08:: with SMTP id c8mr342156pjs.13.1590614737854;
+        Wed, 27 May 2020 14:25:37 -0700 (PDT)
+Received: from localhost.localdomain ([2600:8802:202:f600::ddf])
+        by smtp.gmail.com with ESMTPSA id c4sm2770344pfb.130.2020.05.27.14.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 14:25:37 -0700 (PDT)
+From:   Edwin Peer <edwin.peer@broadcom.com>
+To:     netdev@vger.kernel.org
+Cc:     Edwin Peer <edwin.peer@broadcom.com>, edumazet@google.com,
+        linville@tuxdriver.com, shemminger@vyatta.com,
+        mirq-linux@rere.qmqm.pl, jesse.brandeburg@intel.com,
+        jchapman@katalix.com, david@weave.works, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, sridhar.samudrala@intel.com,
+        jiri@mellanox.com, geoff@infradead.org, mokuno@sm.sony.co.jp,
+        msink@permonline.ru, mporter@kernel.crashing.org,
+        inaky.perez-gonzalez@intel.com, jwi@linux.ibm.com,
+        kgraul@linux.ibm.com, ubraun@linux.ibm.com,
+        grant.likely@secretlab.ca, hadi@cyberus.ca, dsahern@kernel.org,
+        shrijeet@gmail.com, jon.mason@intel.com, dave.jiang@intel.com,
+        saeedm@mellanox.com, hadarh@mellanox.com, ogerlitz@mellanox.com,
+        allenbh@gmail.com, michael.chan@broadcom.com
+Subject: [RFC PATCH net-next 00/11] Nested VLANs - decimate flags and add another
+Date:   Wed, 27 May 2020 14:25:01 -0700
+Message-Id: <20200527212512.17901-1-edwin.peer@broadcom.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200526110318.69006-1-eesposit@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 01:03:10PM +0200, Emanuele Giuseppe Esposito wrote:
-> There is currently no common way for Linux kernel subsystems to expose
-> statistics to userspace shared throughout the Linux kernel; subsystems have
-> to take care of gathering and displaying statistics by themselves, for
-> example in the form of files in debugfs. For example KVM has its own code
-> section that takes care of this in virt/kvm/kvm_main.c, where it sets up
-> debugfs handlers for displaying values and aggregating them from various
-> subfolders to obtain information about the system state (i.e. displaying
-> the total number of exits, calculated by summing all exits of all cpus of
-> all running virtual machines).
-> 
-> Allowing each section of the kernel to do so has two disadvantages. First,
-> it will introduce redundant code. Second, debugfs is anyway not the right
-> place for statistics (for example it is affected by lockdown)
-> 
-> In this patch series I introduce statsfs, a synthetic ram-based virtual
-> filesystem that takes care of gathering and displaying statistics for the
-> Linux kernel subsystems.
-> 
-> The file system is mounted on /sys/kernel/stats and would be already used
-> by kvm. Statsfs was initially introduced by Paolo Bonzini [1].
-> 
-> Statsfs offers a generic and stable API, allowing any kind of
-> directory/file organization and supporting multiple kind of aggregations
-> (not only sum, but also average, max, min and count_zero) and data types
-> (boolean, unsigned/signed and custom types). The implementation, which is
-> a generalization of KVM’s debugfs statistics code, takes care of gathering
-> and displaying information at run time; users only need to specify the
-> values to be included in each source.
-> 
-> Statsfs would also be a different mountpoint from debugfs, and would not
-> suffer from limited access due to the security lock down patches. Its main
-> function is to display each statistics as a file in the desired folder
-> hierarchy defined through the API. Statsfs files can be read, and possibly
-> cleared if their file mode allows it.
-> 
-> Statsfs has two main components: the public API defined by
-> include/linux/statsfs.h, and the virtual file system which should end up in
-> /sys/kernel/stats.
-> 
+This series began life as a modest attempt to fix two issues pertaining
+to VLANs nested inside Geneve tunnels and snowballed from there. The
+first issue, addressed by a simple one-liner, is that GSO is not enabled
+for upper VLAN devices on top of Geneve. The second issue, addressed by
+the balance of the series, deals largely with MTU handling. VLAN devices
+above L2 in L3 tunnels inherit the MTU of the underlying device. This
+causes IP fragmentation because the inner L2 cannot be expanded within
+the same maximum L3 size to accommodate the additional VLAN tag.
 
-Hi Emanuele
+As a first attempt, a new flag was introduced to generalize what was
+already being done for MACsec devices. This flag was unconditionally
+set for all devices that have a size constrained L2, such as is the
+case for Geneve and VXLAN tunnel devices. This doesn't quite do the
+right thing, however, if the underlying device MTU happens to be
+configured to a lower MTU than is supported. Thus, the approach was
+further refined to set IFF_NO_VLAN_ROOM when changing MTU, based on
+whether the underlying device L2 still has room for VLAN tags, but
+stopping short of registering device notifiers to update upper device
+MTU whenever a lower device changes. VLAN devices will thus do the
+sensible thing if they are applied to an already configured device,
+but will not dynamically update whenever the underlying device's MTU
+is subsequently changed (this seemed a bridge too far).
 
-> The API has two main elements, values and sources. Kernel subsystems like
-> KVM can use the API to create a source, add child sources/values/aggregates
-> and register it to the root source (that on the virtual fs would be
-> /sys/kernel/statsfs).
+Aggregate devices presented the next challenge. Transitively propagating
+IFF_NO_VLAN_ROOM via bonds, teams and the like seemed similar in
+principle to the handling of IFF_XMIT_DST_RELEASE (only the opposite),
+but IFF_XMIT_DST_RELEASE_PERM evaded understanding. Ultimately this flag
+failed to justify its existence, allowing the new flag to take its place
+and avoid taking up the last bit in the enum.
 
-Another issue i see with networking is that statistic counters can be
-dynamic. They can come and go. One of the drivers i work on has extra
-statistics available when a fibre interface is used, compared to a
-copper interface. And this happens at run time. The netlink API has no
-problems with this. It is a snapshot of what counters are currently
-available. There is no state in the API.
+Finally, an audit of the other net devices in the tree was conducted to
+discover where else this new behavior may be appropriate. At this point
+it was also discovered that GRE devices would happily allow VLANs to be
+added even when L3 is being tunneled in L3, hence restricting VLANs to
+ARPHRD_ETHER devices. Between ARPHRD_ETHER and IFF_NO_VLAN_ROOM, it now
+seemed only a hop and a skip to eliminate NET_F_VLAN_CHALLENGED too, but
+alas there are still a few holdouts that would appear to require more of
+a moonshot to address.
 
-In my humble opinion, networking is unlikely to adopt your approach.
-You probably want to look around for other subsystems which have
-statistics, and see if you can cover their requirements, and get them
-on board.
+Edwin Peer (11):
+  net: geneve: enable vlan offloads
+  net: do away with the IFF_XMIT_DST_RELEASE_PERM flag
+  net: vlan: add IFF_NO_VLAN_ROOM to constrain MTU
+  net: geneve: constrain upper VLAN MTU using IFF_NO_VLAN_ROOM
+  net: vxlan: constrain upper VLAN MTU using IFF_NO_VLAN_ROOM
+  net: l2tp_eth: constrain upper VLAN MTU using IFF_NO_VLAN_ROOM
+  net: gre: constrain upper VLAN MTU using IFF_NO_VLAN_ROOM
+  net: distribute IFF_NO_VLAN_ROOM into aggregate devs
+  net: ntb_netdev: support VLAN using IFF_NO_VLAN_ROOM
+  net: vlan: disallow non-Ethernet devices
+  net: leverage IFF_NO_VLAN_ROOM to limit NETIF_F_VLAN_CHALLENGED
 
-   Andrew
+ Documentation/networking/netdev-features.rst  |   4 +-
+ drivers/infiniband/ulp/ipoib/ipoib_main.c     |   3 +-
+ drivers/net/bonding/bond_main.c               |  15 ++-
+ drivers/net/ethernet/intel/e100.c             |  15 ++-
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |  52 ++++++--
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c  |  12 +-
+ drivers/net/ethernet/wiznet/w5100.c           |   6 +-
+ drivers/net/ethernet/wiznet/w5300.c           |   6 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c   |   1 -
+ drivers/net/geneve.c                          |  17 ++-
+ drivers/net/ifb.c                             |   4 +
+ drivers/net/loopback.c                        |   1 -
+ drivers/net/macsec.c                          |   6 +-
+ drivers/net/net_failover.c                    |  31 +++--
+ drivers/net/ntb_netdev.c                      |   8 +-
+ drivers/net/rionet.c                          |   3 +
+ drivers/net/sb1000.c                          |   1 +
+ drivers/net/team/team.c                       |  16 +--
+ drivers/net/vrf.c                             |   4 +-
+ drivers/net/vxlan.c                           |  10 +-
+ drivers/net/wimax/i2400m/netdev.c             |   5 +-
+ drivers/s390/net/qeth_l2_main.c               |  12 +-
+ include/linux/if_vlan.h                       |  48 ++++++++
+ include/linux/netdevice.h                     |  12 +-
+ net/8021q/vlan.c                              |   2 +-
+ net/8021q/vlan_dev.c                          |   9 ++
+ net/8021q/vlan_netlink.c                      |   2 +
+ net/core/dev.c                                |   2 +-
+ net/ipv4/ip_tunnel.c                          |   2 +
+ net/ipv6/ip6_gre.c                            |   4 +-
+ net/l2tp/l2tp_eth.c                           | 114 ++++++++++--------
+ net/sched/sch_teql.c                          |   3 +
+ 32 files changed, 290 insertions(+), 140 deletions(-)
+
+-- 
+2.26.2
+
