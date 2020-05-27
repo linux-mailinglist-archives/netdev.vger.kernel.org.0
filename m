@@ -2,62 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9B81E3B09
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7427A1E3B15
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387709AbgE0HyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 03:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387566AbgE0HyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:54:24 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AF8C061A0F;
-        Wed, 27 May 2020 00:54:24 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jdqtC-003xsS-AB; Wed, 27 May 2020 09:54:14 +0200
-Message-ID: <0131b3dbcb2f97b6a76ad5be0c50f26e11af1c5a.camel@sipsolutions.net>
-Subject: Re: [PATCH] mac80211_hwsim: report the WIPHY_FLAG_SUPPORTS_5_10_MHZ
- capability
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Ramon Fontes <ramonreisfontes@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        kvalo@codeaurora.org, davem@davemloft.net
-Date:   Wed, 27 May 2020 09:54:13 +0200
-In-Reply-To: <CAK8U23ZaUhoPVdWo-fkFpg4pGOcQQrk7oSbs9z1XPVE3cR_Jow@mail.gmail.com> (sfid-20200526_133629_197342_B46A5EA6)
-References: <20200515164640.97276-1-ramonreisfontes@gmail.com>
-         <ab7cac9c73dc8ef956a1719dc090167bcfc24b63.camel@sipsolutions.net>
-         <CAK8U23ZaUhoPVdWo-fkFpg4pGOcQQrk7oSbs9z1XPVE3cR_Jow@mail.gmail.com>
-         (sfid-20200526_133629_197342_B46A5EA6)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.2 (3.36.2-1.fc32) 
+        id S2387731AbgE0H5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 03:57:09 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38464 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387663AbgE0H5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:57:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590566227;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5F/o7OGwvhTxyKAdmFEBVbFxDhCXeuX/gkHyEAGjn5o=;
+        b=ZtsZGbobsNTF7aG4fRDZMG5tIz5D01s8qvtWTs5t59hwf+Rqvzdy9fxQWqH0onQZ8G/l5G
+        1pqWZxy2+eDSE5jTCa85IdLdDO4amVddEuWfjnY/T1C8OR7+DZpedeJl2xSnQGbPuK+ONY
+        51Aogl5VP39as12WM481W5kwbTSmeSk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-105-JqPXZLUmPgCJ4ZQEMQYfdw-1; Wed, 27 May 2020 03:57:03 -0400
+X-MC-Unique: JqPXZLUmPgCJ4ZQEMQYfdw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B72B4107ACF2;
+        Wed, 27 May 2020 07:57:01 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-113-178.ams2.redhat.com [10.36.113.178])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CE4E81A7DB;
+        Wed, 27 May 2020 07:56:56 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     davem@davemloft.net
+Cc:     George Zhang <georgezhang@vmware.com>,
+        Andy King <acking@vmware.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Dmitry Torokhov <dtor@vmware.com>, netdev@vger.kernel.org,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] vsock: fix timeout in vsock_accept()
+Date:   Wed, 27 May 2020 09:56:55 +0200
+Message-Id: <20200527075655.69889-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-05-26 at 08:36 -0300, Ramon Fontes wrote:
-> > Not sure this is enough? How about wmediumd, for example?
-> 
-> It works with wmediumd too. At least I was able to enable 5 / 10MHz
-> via iw with 5.9GHz
+The accept(2) is an "input" socket interface, so we should use
+SO_RCVTIMEO instead of SO_SNDTIMEO to set the timeout.
 
-Yeah, but wmediumd won't know that it's not 20 MHz, I guess :-)
+So this patch replace sock_sndtimeo() with sock_rcvtimeo() to
+use the right timeout in the vsock_accept().
 
-> > And also, 5/10 MHz has many more channels inbetween the normal ones, no?
-> > Shouldn't those also be added?
-> 
-> Tested with 5855MHz - 5925MHz
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yeah, but which channels? I believe with 10 MHz you can also use channel
-175, for example, which doesn't exist in 20 MHz channelization.
-
-Anyway, I've applied it now, we can fix more later.
-
-johannes
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index a5f28708e0e7..626bf9044418 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1408,7 +1408,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
+ 	/* Wait for children sockets to appear; these are the new sockets
+ 	 * created upon connection establishment.
+ 	 */
+-	timeout = sock_sndtimeo(listener, flags & O_NONBLOCK);
++	timeout = sock_rcvtimeo(listener, flags & O_NONBLOCK);
+ 	prepare_to_wait(sk_sleep(listener), &wait, TASK_INTERRUPTIBLE);
+ 
+ 	while ((connected = vsock_dequeue_accept(listener)) == NULL &&
+-- 
+2.25.4
 
