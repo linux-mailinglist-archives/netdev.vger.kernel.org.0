@@ -2,166 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93641E4E32
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 21:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B801E4E39
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 21:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725872AbgE0Tbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 15:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgE0Tbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 15:31:50 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D239C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 12:31:50 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id y13so7491326eju.2
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 12:31:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=3iP99u7MW7LTm3Pdh5bRsJ3IqZrIPpHpVGyoisVCKsU=;
-        b=AjPKXFtQ2WSAX1TAxoqV85vpgz5xH97VjezmwwxoWgTMCCq8DjHRYLphJP1rAXlarn
-         orfUkhp97c9IrH9ToW0h8GrMz13uSWqZJ70oWgnxHt8wx1D8QdjHO75wuUVfu21jVhZo
-         znx4J8vz0UJ4pl2skNq5uEFDhmk7B3JBj+uto=
+        id S1726915AbgE0TeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 15:34:21 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:43872 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726459AbgE0TeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 15:34:18 -0400
+Received: by mail-io1-f70.google.com with SMTP id 184so17771673iow.10
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 12:34:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=3iP99u7MW7LTm3Pdh5bRsJ3IqZrIPpHpVGyoisVCKsU=;
-        b=TwtZYUULLHmZvgs3etGGlH1dfjQaQNKZL+nOz1/VWSnBiLf6MsGbICnd3nmjBAhTed
-         07DETGyUbEVT5y/P13TX2vIheBSqcKceaK8s3fc30ciwjgPcmfk0c26eaEO9EpZWX4P0
-         iFQOZ6SwdPWoQXBIhTg56IoDVF8zQ6gW1IdRJsCmOlwkJnLTPYqxcW7dC7fB2yqCf99U
-         SwwGsHx9GGbX0PlsGU9hViBDa2xT5kXPFp20YrN6z2baa1bLrAqm+BP/y3mJHo1Uy2HK
-         in1OsCEq9Tn8DQUMJXQpp01hHR0SKhHB6sfBHt+0xfA0x/spZohLStOutSXVznn5P5Jc
-         8kBQ==
-X-Gm-Message-State: AOAM531YvtqfLBk7LeyANgmKPJ8niU1vWNbnCdXUdmi0XXQ1KSd+d009
-        NM50KFhWkvYe+3UoxsQ/6MyRrw==
-X-Google-Smtp-Source: ABdhPJzv3AJ4zpOiPWvrhAIqoAxtjELfOueixe6KrwJQpm7ictkx5IKCchceOIpP3U/Wz4JG4rKixg==
-X-Received: by 2002:a17:906:48ce:: with SMTP id d14mr5326982ejt.468.1590607908608;
-        Wed, 27 May 2020 12:31:48 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id v8sm2925796eds.20.2020.05.27.12.31.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 12:31:48 -0700 (PDT)
-References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-4-jakub@cloudflare.com> <20200527174036.GF49942@google.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     sdf@google.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 3/8] net: Introduce netns_bpf for BPF programs attached to netns
-In-reply-to: <20200527174036.GF49942@google.com>
-Date:   Wed, 27 May 2020 21:31:47 +0200
-Message-ID: <87v9kh2mzg.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=W56eeROf/6B9r0VDmmlfml93PYb/srpgJXNe3sUJhfA=;
+        b=KExVqg24KXImBZyyqjATsJAfKoey0SCDTcn6EJrBXAor6ejJkto+iFaZKyoJXvkjrT
+         DGIIosqYWW6LES+N1nfYCJOILslgYJp+N+6CPfG66AWmqUkHppO4afmo0TUTMbY0i30O
+         L+GXu69aHLPBkGwyfIryw9ROoCPeSofXGZL3CHaYlX+5aQbGD521TE8+dXVaTQP0ocLG
+         AS1pmqHOjptrsqlKzMQ8/RJrEna0DO46sFAb0RbUSs6OIxVCYVZwLZkgmcelYMegywlH
+         ax4Q5CCE7wI6V1O+ULhJMpeC2elu1m3b6D37RKo5P7LA6J21ADd15o9Z4Btu4KiGs8xU
+         Noog==
+X-Gm-Message-State: AOAM530eHCcH1E8fd0zG67P22XPK2FuY1HyNvdP2KseqRq8T72k16Y6u
+        z3/xlt+5g4zG4t+Qt4bSBYHCP7PTf3cASLJ0zg1U4WVL7RYg
+X-Google-Smtp-Source: ABdhPJwUS6XHZxoufD0yHNyC0/Cvb3zkIpNDyUoYuNmWrKQMfwLf7Oa3fAJmDgN5goFXbKIJxCUUxX7yZLXE9dsLd9OdgA0p3H2J
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a05:6602:2431:: with SMTP id g17mr3540300iob.3.1590608056779;
+ Wed, 27 May 2020 12:34:16 -0700 (PDT)
+Date:   Wed, 27 May 2020 12:34:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000033888405a6a64c2f@google.com>
+Subject: general protection fault in __tipc_sendstream
+From:   syzbot <syzbot+8eac6d030e7807c21d32@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, tuong.t.lien@dektech.com.au,
+        ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 07:40 PM CEST, sdf@google.com wrote:
-> On 05/27, Jakub Sitnicki wrote:
->> In order to:
->
->>   (1) attach more than one BPF program type to netns, or
->>   (2) support attaching BPF programs to netns with bpf_link, or
->>   (3) support multi-prog attach points for netns
->
->> we will need to keep more state per netns than a single pointer like we
->> have now for BPF flow dissector program.
->
->> Prepare for the above by extracting netns_bpf that is part of struct net,
->> for storing all state related to BPF programs attached to netns.
->
->> Turn flow dissector callbacks for querying/attaching/detaching a program
->> into generic ones that operate on netns_bpf. Next patch will move the
->> generic callbacks into their own module.
->
->> This is similar to how it is organized for cgroup with cgroup_bpf.
->
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>   include/linux/bpf-netns.h   | 56 ++++++++++++++++++++++
->>   include/linux/skbuff.h      | 26 ----------
->>   include/net/net_namespace.h |  4 +-
->>   include/net/netns/bpf.h     | 17 +++++++
->>   kernel/bpf/syscall.c        |  7 +--
->>   net/core/flow_dissector.c   | 96 ++++++++++++++++++++++++-------------
->>   6 files changed, 143 insertions(+), 63 deletions(-)
->>   create mode 100644 include/linux/bpf-netns.h
->>   create mode 100644 include/net/netns/bpf.h
->
->> diff --git a/include/linux/bpf-netns.h b/include/linux/bpf-netns.h
->> new file mode 100644
->> index 000000000000..f3aec3d79824
->> --- /dev/null
->> +++ b/include/linux/bpf-netns.h
->> @@ -0,0 +1,56 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +#ifndef _BPF_NETNS_H
->> +#define _BPF_NETNS_H
->> +
->> +#include <linux/mutex.h>
->> +#include <uapi/linux/bpf.h>
->> +
->> +enum netns_bpf_attach_type {
->> +	NETNS_BPF_INVALID = -1,
->> +	NETNS_BPF_FLOW_DISSECTOR = 0,
->> +	MAX_NETNS_BPF_ATTACH_TYPE
->> +};
->> +
->> +static inline enum netns_bpf_attach_type
->> +to_netns_bpf_attach_type(enum bpf_attach_type attach_type)
->> +{
->> +	switch (attach_type) {
->> +	case BPF_FLOW_DISSECTOR:
->> +		return NETNS_BPF_FLOW_DISSECTOR;
->> +	default:
->> +		return NETNS_BPF_INVALID;
->> +	}
->> +}
->> +
->> +/* Protects updates to netns_bpf */
->> +extern struct mutex netns_bpf_mutex;
-> I wonder whether it's a good time to make this mutex per-netns, WDYT?
->
-> The only problem I see is that it might complicate the global
-> mode of flow dissector where we go over every ns to make sure no
-> progs are attached. That will be racy with per-ns mutex unless
-> we do something about it...
+Hello,
 
-It crossed my mind. I stuck with a global mutex for a couple of
-reasons. Different that one you bring up, which I forgot about.
+syzbot found the following crash on:
 
-1. Don't know if it has potential to be a bottleneck.
+HEAD commit:    fb8ddaa9 Merge tag 'batadv-next-for-davem-20200526' of git..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=161c99e2100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7e1bc97341edbea6
+dashboard link: https://syzkaller.appspot.com/bug?extid=8eac6d030e7807c21d32
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125ef99a100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14741416100000
 
-cgroup BPF uses a global mutex too. Even one that serializes access to
-more data than just BPF programs attached to a cgroup.
+The bug was bisected to:
 
-Also, we grab the netns_bpf_mutex only on prog attach/detach, and link
-create/update/release. Netns teardown is not grabbing it. So if you're
-not using netns BPF you're not going to "feel" contention.
+commit 0a3e060f340dbe232ffa290c40f879b7f7db595b
+Author: Tuong Lien <tuong.t.lien@dektech.com.au>
+Date:   Tue May 26 09:38:38 2020 +0000
 
-2. Makes locking on nets bpf_link release trickier
+    tipc: add test for Nagle algorithm effectiveness
 
-In bpf_netns_link_release (patch 5), we deref pointer from link to
-struct net under RCU read lock, in case the net is being destroyed
-simulatneously.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=173f1cd2100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=14bf1cd2100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10bf1cd2100000
 
-However, we're also grabbing the netns_bpf_mutex, in case of another
-possible scenario, when struct net is alive and well (refcnt > 0), but
-we're racing with a prog attach/detach to access net->bpf.{links,progs}.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+8eac6d030e7807c21d32@syzkaller.appspotmail.com
+Fixes: 0a3e060f340d ("tipc: add test for Nagle algorithm effectiveness")
 
-Making the mutex part of net->bpf means I first need to somehow ensure
-netns stays alive if I go to sleep waiting for the lock. Or it would
-have to be a spinlock, or some better (simpler?) locking scheme.
+general protection fault, probably for non-canonical address 0xdffffc0000000019: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x00000000000000c8-0x00000000000000cf]
+CPU: 1 PID: 7060 Comm: syz-executor394 Not tainted 5.7.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__tipc_sendstream+0xbde/0x11f0 net/tipc/socket.c:1591
+Code: 00 00 00 00 48 39 5c 24 28 48 0f 44 d8 e8 fa 3e db f9 48 b8 00 00 00 00 00 fc ff df 48 8d bb c8 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 e2 04 00 00 48 8b 9b c8 00 00 00 48 b8 00 00 00
+RSP: 0018:ffffc90003ef7818 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8797fd9d
+RDX: 0000000000000019 RSI: ffffffff8797fde6 RDI: 00000000000000c8
+RBP: ffff888099848040 R08: ffff88809a5f6440 R09: fffffbfff1860b4c
+R10: ffffffff8c305a5f R11: fffffbfff1860b4b R12: ffff88809984857e
+R13: 0000000000000000 R14: ffff888086aa4000 R15: 0000000000000000
+FS:  00000000009b4880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000140 CR3: 00000000a7fdf000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ tipc_sendstream+0x4c/0x70 net/tipc/socket.c:1533
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x32f/0x810 net/socket.c:2352
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+ __sys_sendmmsg+0x195/0x480 net/socket.c:2496
+ __do_sys_sendmmsg net/socket.c:2525 [inline]
+ __se_sys_sendmmsg net/socket.c:2522 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2522
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x440199
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe74856df8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440199
+RDX: 0492492492492619 RSI: 0000000020003240 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a20
+R13: 0000000000401ab0 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 0d2e71066c248d44 ]---
+RIP: 0010:__tipc_sendstream+0xbde/0x11f0 net/tipc/socket.c:1591
+Code: 00 00 00 00 48 39 5c 24 28 48 0f 44 d8 e8 fa 3e db f9 48 b8 00 00 00 00 00 fc ff df 48 8d bb c8 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 e2 04 00 00 48 8b 9b c8 00 00 00 48 b8 00 00 00
+RSP: 0018:ffffc90003ef7818 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8797fd9d
+RDX: 0000000000000019 RSI: ffffffff8797fde6 RDI: 00000000000000c8
+RBP: ffff888099848040 R08: ffff88809a5f6440 R09: fffffbfff1860b4c
+R10: ffffffff8c305a5f R11: fffffbfff1860b4b R12: ffff88809984857e
+R13: 0000000000000000 R14: ffff888086aa4000 R15: 0000000000000000
+FS:  00000000009b4880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000140 CR3: 00000000a7fdf000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-The above two convinced me that I should start with a global mutex, and
-go for more pain if there's contention.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Thanks for giving the series a review.
-
--jkbs
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
