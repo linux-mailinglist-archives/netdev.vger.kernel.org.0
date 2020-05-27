@@ -2,120 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 160181E4DF7
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 21:14:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCAF1E4DFA
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 21:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729098AbgE0TOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 15:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
+        id S1729215AbgE0TO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 15:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729181AbgE0TOn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 15:14:43 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EA0C08C5C2
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 12:14:43 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id y18so6904348iow.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 12:14:43 -0700 (PDT)
+        with ESMTP id S1728025AbgE0TO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 15:14:58 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9EFC08C5C1;
+        Wed, 27 May 2020 12:14:57 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id z13so20654996ljn.7;
+        Wed, 27 May 2020 12:14:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/LyIXax8ojmidoGcCgb4SrFybK4Cj9Ao48/94qITCf8=;
-        b=dU0xEYJhyGvKKOMD5IriF8FlOFxGrrgPx5SowmIk7Bu09cSGSRBh+ErCffThGEjZzL
-         49URZ3JtjgGeP0pOkst8SBzsth30otVZfrfpER64ia+R0VWsxQ2ufDiBnd/J94hjf7bN
-         HAPSeiaCtXZuPegow13jbJpsN/o9dAvGpz9S+Kz2NHeghQcPcsHF0SPkBZe9huizFQ9A
-         /s6O6e4SRe2ISqGIehsVOQMKUwIae7k0wdl9R04FXm58RRkfTQxypk210IKgazpshKle
-         FpHYQU/H+7RulYLmI8pRHwVPeQqhXhoi0gNQJK5DjbmYbwc608mhMGrY/tjE19hw0ggY
-         Ydsw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vIHelVmHmpv+LPchrobAxBcJ2T90U0P8hBKPd9Ksmgg=;
+        b=RiNqN3c2HvT+2txBAfmbTApoxnsb7mk0xUeBZFU58WZ8NSgj7GzlH8TpsQv/C4KgE5
+         x+mCJ8QSF/uwcKBL2xBkFqvfPWaffY4xoHZaRH3mCRxGkpDpSFNYHEldTrsu/dOKygJu
+         M7J3EW956Lan7jiHkIGsimtGBjv4dzBOcyq8vwmorxyMQcPwh2HRce/yfO+NltX15781
+         /6r86+o7G0jwAB/vFsZgZII0B0HzBH5pnzoUXVE4O173qGJSe+zUoWbZG2fAjVZJfDmo
+         7yTBIYFH3kHBdq2wUen1+qJFUH9A8UrfCiuGCTY8aHBCtXMpqETny0CtZFA4tZ+GYhfx
+         3TsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/LyIXax8ojmidoGcCgb4SrFybK4Cj9Ao48/94qITCf8=;
-        b=DkxxcE3ZHU7io6ScNAF3PrVBvNKRkfwOQAimfQe71bk5MME5fweM2kSItvJdCASgef
-         BcjyKQj2ZIjtGrV1WmPuidxBQJz1Bu2QmgiIogEE85sdWi6szNcf8xHtzvYahif5LOoX
-         RODg2gTMLobqFymu22V7+KGAValKqvjdbshA4BhDbjJv5pLI+WLkTunIN/jxInBSo7Kf
-         2/HQzTxR/vm6rHgqnxWIAJCSNupEkOBWsDyv5Yvpq0aTfq/0h4kX4uQn97G+vG9edqVK
-         dOnI4CPWu9TbrFJHGqJ1UtryV6krilnfzclo6X30g5pyNVrB4Ki/WcZFboXqpBd+DTc6
-         x0aw==
-X-Gm-Message-State: AOAM5313/CwAqc1aAQPGuovbELAr7WFV/HXk7dGeA3OdKc0U1Qzlnr0Z
-        7fnsr9HZ/E3/XE4N8iXBCnn5Vw==
-X-Google-Smtp-Source: ABdhPJw49faPPr0w7sTkoGxcuY4JK3ypYb0AJBBaamDL920cZTbTpo185VABlk95/KbRcuzhc2l52g==
-X-Received: by 2002:a05:6602:cc:: with SMTP id z12mr22083743ioe.190.1590606882713;
-        Wed, 27 May 2020 12:14:42 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id t17sm1966186ilo.60.2020.05.27.12.14.42
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 27 May 2020 12:14:42 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1je1Vh-0005Q2-Jl; Wed, 27 May 2020 16:14:41 -0300
-Date:   Wed, 27 May 2020 16:14:41 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH rdma-next v3 0/8] Driver part of the ECE
-Message-ID: <20200527191441.GB20778@ziepe.ca>
-References: <20200526115440.205922-1-leon@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vIHelVmHmpv+LPchrobAxBcJ2T90U0P8hBKPd9Ksmgg=;
+        b=WgXShTtSzJ051hjBcC9sN6LVoeWNP9T4E3BUUnBuSfUdW3QkhoxjYR5oNp1i62OYQt
+         +f89znAUNrmrr4Jv8pTH0QmCvceIgd5rp7HGo2OJMVFQ3zJxUmvw7Wy+K5i1WvaKXgGT
+         gO19Rv7WScRaP91H/yrC/RKZnKy4C2PSXrzRx4qj97NHlzqpPolC0dFqg5adp3ucDHVb
+         5aXIxdGOwwJRZiOuy0vgWEmEqO+ZSQZYmIEWnXtiBJj7J1wi97NP0RbCXwL9CTLCVnDE
+         rK+TThVwZhRwwHCOGBJOHOFqlX7cQWu7tpj8LrlaYGn6QkRcOWhJPDSLzp+xhalelAU0
+         UJYg==
+X-Gm-Message-State: AOAM5312FDmYdI5f7W3t3tcdJOEtj/YVOHkZtDMnBBxw0Oa7t0jiFYZz
+        ynW6v98RTyrLsptSqPFVgUnDXryfz2awJA4e+rPR//zK
+X-Google-Smtp-Source: ABdhPJzG+P7meWe0LTEGaQLJTcvyJ54tgeEboR+VAW3PqoFGc2E/Q3mSFPXCYvEK3b0EJI1VO/Ry8s3DFVhZ3KO5P3g=
+X-Received: by 2002:a2e:8884:: with SMTP id k4mr3904355lji.170.1590606896315;
+ Wed, 27 May 2020 12:14:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200526115440.205922-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200515164640.97276-1-ramonreisfontes@gmail.com>
+ <ab7cac9c73dc8ef956a1719dc090167bcfc24b63.camel@sipsolutions.net>
+ <CAK8U23ZaUhoPVdWo-fkFpg4pGOcQQrk7oSbs9z1XPVE3cR_Jow@mail.gmail.com> <0131b3dbcb2f97b6a76ad5be0c50f26e11af1c5a.camel@sipsolutions.net>
+In-Reply-To: <0131b3dbcb2f97b6a76ad5be0c50f26e11af1c5a.camel@sipsolutions.net>
+From:   Ramon Fontes <ramonreisfontes@gmail.com>
+Date:   Wed, 27 May 2020 16:14:44 -0300
+Message-ID: <CAK8U23YFGaWrzXnHiMA5KDeSDFLO7F7c+Dgp8CDTTEM2VastLg@mail.gmail.com>
+Subject: Re: [PATCH] mac80211_hwsim: report the WIPHY_FLAG_SUPPORTS_5_10_MHZ capability
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        kvalo@codeaurora.org, davem@davemloft.net
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 02:54:32PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> Changelog:
-> v3:
->  * Squashed patch "RDMA/mlx5: Advertise ECE support" into
->  "RDMA/mlx5: Set ECE options during modify QP".
-> v2:
-> https://lore.kernel.org/linux-rdma/20200525174401.71152-1-leon@kernel.org
->  * Rebased on latest wip/jgg-rdma-next branch, commit a94dae867c56
->  * Fixed wrong setting of pm_state field in mlx5 conversion patch
->  * Removed DC support for now
-> v1:
-> https://lore.kernel.org/linux-rdma/20200523132243.817936-1-leon@kernel.org
->  * Fixed compatibility issue of "old" kernel vs. "new" rdma-core. This
->    is handled in extra patch.
->  * Improved comments and commit messages after feedback from Yishai.
->  * Added Mark Z. ROB tags
-> v0:
-> https://lore.kernel.org/linux-rdma/20200520082919.440939-1-leon@kernel.org
-> 
-> ----------------------------------------------------------------------
-> 
-> Hi,
-> 
-> This is driver part of the RDMA-CM ECE series [1].
-> According to the IBTA, ECE data is completely vendor specific, so this
-> series extends mlx5_ib create_qp and modify_qp structs with extra field
-> to pass ECE options to/from the application.
-> 
-> Thanks
-> 
-> [1]
-> https://lore.kernel.org/linux-rdma/20200413141538.935574-1-leon@kernel.org
-> 
-> Leon Romanovsky (8):
->   net/mlx5: Add ability to read and write ECE options
->   RDMA/mlx5: Get ECE options from FW during create QP
->   RDMA/mlx5: Set ECE options during QP create
->   RDMA/mlx5: Use direct modify QP implementation
->   RDMA/mlx5: Remove manually crafted QP context the query call
->   RDMA/mlx5: Convert modify QP to use MLX5_SET macros
->   RDMA/mlx5: Set ECE options during modify QP
->   RDMA/mlx5: Return ECE data after modify QP
+> Yeah, but wmediumd won't know that it's not 20 MHz, I guess :-)
 
-Applied to for-next, thanks
+Yes, I know. You're right! I hope advances in wmediumd in this regard :).
 
-Jason
+> Yeah, but which channels? I believe with 10 MHz you can also use channel
+> 175, for example, which doesn't exist in 20 MHz channelization.
+
+I'm doing some research with 802.11p and I could use all the channels
+between 171 and 185 with both 5 and 10MHz.
+
+> Anyway, I've applied it now, we can fix more later.
+Thanks!
+
+
+Ramon
