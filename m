@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 154F11E49CD
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6E91E49DC
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390956AbgE0QWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:22:46 -0400
-Received: from mail-eopbgr20041.outbound.protection.outlook.com ([40.107.2.41]:46308
+        id S2391008AbgE0QXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:23:40 -0400
+Received: from mail-eopbgr20053.outbound.protection.outlook.com ([40.107.2.53]:63619
         "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389823AbgE0QWp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 12:22:45 -0400
+        id S2389863AbgE0QXi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 12:23:38 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FSDoQLHWzv/2g/W3ZwfCZk9iwYm0xp6rCP49nPsKnG2sG16E9OvDCw0dtdv+z9ZR+IRBaX+TsPTwz/B3dX9xDDHB42xz9EtqMzB3VDOB0H5ZXPUTUmFEG6WTP5GhZXPDxQzJ+03abFap+4ORNo8oeLdErSloeFIwsw8V3O5OVM8L8o6+pHz0gYAL/8YNoHtv0i9vuVOVg1jQio8DzYhgnimG/8jtFe5H89Ss1nWIdnPU+vCp3rKaNj8+s2WskAFmPKqDaNRPv8aizYxrcPHtjOJh9gnSsU38z3OwmY+qwniq9CXpUIf7f7eKsvr5pZfGAq7za1XLM2TdHnne7p8rRA==
+ b=mZkh1ul0wdbKByxRkEhjzoq68J4ijMrRYGTH78aWTFvMRUfgvxXS2Pbs8C/QftoCMznWUqTahKmcfMuKJwCpfBZFc0KkoUT2yP9C7wQwgN04e4SZSz34bvR//O8ms0ygoZsxOYS/BFtsY5ZPuEwTmdvZkuFRBLuHCL3a/mVVZci1XHPD28fvnD0UrVnEyISzhHevqk133NzYXR2Qvuqa1yhg/HWxtsi7wg/zKNtaJXEBiqI0urPDzOwBK1iPIAN5pMnuRArSNow9M9mrdVKrd5hVQS+8UzR/AGADS2W8Of9BklEflnUB6MG8aMqr39AahhrUa65z7McUok/beUo78A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RfSckdmHtmnlCd+A90fYSwXkozT7ksq6RQGX0M2vkN4=;
- b=KpDnDHzAtpCc1y+bkrsoPSNE9mypkIEaHvx2fC0VIkACBrlTz/lg7YYNoYYyKAOk24tk9G/wvxtHOYzTrVxPJQ8rZcR8h8F7IS9+em0M48inSOSNjPgoMW3Vp0upRnMFUPJxudI0iCdLoWxaQo5PZ4KB6Dm9YXPwqKDcYFESzir6gAOWE9luwO6O6FIFu1bB1E4Ljmph2rAi7RQIRh29JrA6mtXkcmaTzc8dTpUiou054sngwRj0BjWbwyOn8oNZiqLkXLe8cXtN/R+YbVo0ekHRXvdVHtNav3BVG1KWqAswZfxoutwk7WwIMFrlusktNx2jJPRPuWTA+/JzVn2NRw==
+ bh=a5jv1coGLOcN4ZC3zHRB4Rb8XVO0zNaRQFJ70ZfVQLM=;
+ b=TlaHFmoijZr5amCXrF1EUeb19dALY3DENE7edx2WryDIK1ygd4Hx9E99cmHY1Cex/JQbxeCWw6xVqVM1isE5uyFbXIdF02p5BKB/sj/j0KvDUuJjp3Tl6yL4RtyPcvsFRV1WUr/fJifFg8yuyyn6D27dwF/fvCO/egUz9Rzaj2NsnEDQvppQ7Us3EuwMGEy4V3+qgbx32fVpbOlu/zbfodF+SEQqzEecvIU/oZHKLp+u/gShYC2Lr18HrquSP8stpNirq7VHc8rB68KHgKHXU4qs4H4lDYl+jHidYgqt8L8OwmysQkfvASuWtQlRLCy1r7Np5XQRNHiMQOe2bPUFeA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RfSckdmHtmnlCd+A90fYSwXkozT7ksq6RQGX0M2vkN4=;
- b=OpNWmP4dp1y1BGLYSchMIeVKzIFdlkKhZanB8xT2WzQVZiVslv1yUZlYDfHc6Sz+rdya5NHDbOTMfFlxr/eLnh6X+9E6ajtKfaNG71lCP/yU9uVwvLKKx3sltkgKEgXQCtMH++9WGvQyxtj8ReZRXozZMqS8c5BViNyX8WzWFdQ=
+ bh=a5jv1coGLOcN4ZC3zHRB4Rb8XVO0zNaRQFJ70ZfVQLM=;
+ b=bCEnpPRFHf6WGMdNUzrIwAu9uOk/j7w0ZplQ3NJ3aIfVyaYwQGiAMeNUr5uXUWBZ6JXtJJ3cOgp7HrR5JpaA2yxLmypksmn/FgfMWSfC1LMv/OElv5nHcffe7cF78vlR177/jXOZwn4MIypJRHbl1R7Xp0HQDAh63R6KWDuC0JY=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5054.eurprd05.prod.outlook.com (2603:10a6:803:56::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Wed, 27 May
- 2020 16:22:13 +0000
+ 2020 16:22:16 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 16:22:13 +0000
+ 16:22:16 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Vu Pham <vuhuong@mellanox.com>,
         Parav Pandit <parav@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 07/15] net/mlx5e: Add bond_metadata and its slave entries
-Date:   Wed, 27 May 2020 09:21:31 -0700
-Message-Id: <20200527162139.333643-8-saeedm@mellanox.com>
+Subject: [net-next V2 08/15] net/mlx5: E-Switch, Alloc and free unique metadata for match
+Date:   Wed, 27 May 2020 09:21:32 -0700
+Message-Id: <20200527162139.333643-9-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200527162139.333643-1-saeedm@mellanox.com>
 References: <20200527162139.333643-1-saeedm@mellanox.com>
@@ -57,30 +57,30 @@ X-ClientProxiedBy: BYAPR02CA0071.namprd02.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR02CA0071.namprd02.prod.outlook.com (2603:10b6:a03:54::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18 via Frontend Transport; Wed, 27 May 2020 16:22:11 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR02CA0071.namprd02.prod.outlook.com (2603:10b6:a03:54::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18 via Frontend Transport; Wed, 27 May 2020 16:22:13 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b1a48043-b690-4823-2510-08d8025a1d46
+X-MS-Office365-Filtering-Correlation-Id: 0c3cb9f0-65f4-4a7a-2722-08d8025a1e99
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5054:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB50540A7C67DD006ADA7B6998BEB10@VI1PR05MB5054.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:425;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB505415EFCF1FC0544DAE69D3BEB10@VI1PR05MB5054.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
 X-Forefront-PRVS: 04163EF38A
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r+3Ts0Y+opw1RAEwsTXeqtHHE4J8o80xCV4VtvuMJrQiIYhCCn71WAgZB2U9ETnk5aOPj8k9uWTfZll0A6f4H8uw/ubVN9bvpzg/6GYHvNzMXbGuZhPdogWh9HSapc7Yb+sKf+gJA6xLxLMvQJG+ztcAOz4BOomGDORlPNZAj5/9N+wL7V3MQdlFuodD7TLRiYuj10vF9ZYhrX+OYujtxHpkzhodnrYq+gjIypMUgYDWTsp/0m2vedBgGe4gORz+AbEHsAG2CruEjc10OWLGM5OzhFw+gUTq4VoeqKAsbhf4I7o1TiDp8/GQ0LqZeAQlZGARLAvs4ABt9zjJcxi3B+hIUG5f6e+feovolw9fR7PrFcEPpM29jDX+7jpBs/mH
+X-Microsoft-Antispam-Message-Info: ulM6K4cEY3uhdYqdNVL1lj2zANtKtgXFvlQ4h18ERKUtu+uwbYT5sXIBcWARDRWYbTgChOWK2t0IF+D7PeDrHKVQgPKZHB1ENruIjU5nkob/AI2EIiMJElDFZuAVFglpHH1WhR3qTkow6EP/PFca9X1eP7npveSNuWKLmvFL8FpWkv2eh10HKSTW8P/g+GrleN8Yh1Ti7NX3LKcces1Wia8wiawgJoNvReTUWD0zPUht1J68Ub1lXHx6HvqRZ0qNbKB3/RL730dvoc6kWHGjRp7L1J3YRpl1/P+tfrqI+nhMLQd8mqpjXPvJk0uRKmXdGry5D/6PfFYi4omWRDyd6EzX10OnRtL3/j06cLFERDejSgk6RHq+tQ3Frf6cbue2
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(136003)(396003)(39860400002)(366004)(6512007)(107886003)(66476007)(66946007)(66556008)(52116002)(956004)(2616005)(6506007)(5660300002)(6666004)(8676002)(26005)(1076003)(86362001)(8936002)(478600001)(2906002)(4326008)(186003)(6486002)(16526019)(316002)(54906003)(36756003)(83380400001)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 2cc9qe0aAqwWKobiw7O9HYxBFFyAiuRi7Wkce5uCKAlAWzIlLYDSHxc7TReVPQokMiKeGMdnny9iPToMcc1ESFvLguoCvlbXECYLQmGlhdEBtzuFRBRT5JKoy9nZESZm1OzbykhCdxVRXJ1mjbqbtGjrjSDZg0nPM1E/ve5klxe3bxxP+JCm/RF1AxKVikkKglvqQe3hEePNCuDdV7WWX+rgf3gmmJY82U9axOmpECUcmO6YvxBHlVVkmQyuMHI1/hB5WTzMxCtuCzmuRTiTYpwbHe9JULGbVcU1U+QbsgiDAmVnKc5Wl4zBPWvvUUXqgYJp+GGL1+YiFXrCBH52F6UCGobXEQC3n7BPk/W2CnFIbPwBgXPF978ToXgc+agHwY8Dla2Hedx8+1D3UyqdTbRUKrnAZ9DgH75L+Mgtkgz7wDlLkipV6JhfDZdS6qnK3ctZLbvwmXFyc5I0xIDyxLFjYyxtkOlOxVR208ig9f4=
+X-MS-Exchange-AntiSpam-MessageData: MDJCNWE64E86Au/9eOxzYFtP+itq1yNXVjhmP45Vi5hfTcfpd8kvf686It4lmC5jPDlKBGAKWz5KWmWEdDRhJGNJeOJGVWa1VfapOc1i0sSt7S7Y6N7CuWQbM8P3ZMZm/WNRoBknnuuasckZXiVuCbVg1DR6puOmxXAy9LAJ1ccPMgsPXgKk3v/E2T/yFjUQxhhd8g7OtHarybKX+ACguCIuOZktfGIS6x9oKqHNpU34AQPTCA8k8SZk7XtLMixrpgBTMORJ2bNvxU2X6Q/hGeIwIjponHdGFk3GJz48fPxywC+wySXns3AqAdpGztjy7jO28j8HdcfuFBXypK5hMp7XvEHO+iaqZyDHB2i5oT7G6Z17VZ1mJKrUx8M4Vt/3GdmVTuXRPYfezX7ISipguBg1qw+B4Bc6XpBS8qlN6f5jnDZPOWP9J/ta/hOGkWJcmh8fxpukzdw4DTrlBcECtOEj7Yho1SKcYGffsM+tvmc=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1a48043-b690-4823-2510-08d8025a1d46
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 16:22:13.6322
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c3cb9f0-65f4-4a7a-2722-08d8025a1e99
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 16:22:15.8479
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i1hsnVHnl9nFRyMTaTMJjaktphD9A5CjtBbAHqKYzcXSOhAKZSXCpD+bzxStvxda0OcusD5ooZoUUuD7fWwZ9A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ojQD0YTLTDLhuboZPBlJ0QeFUMre4YScLoH4rlEdMVF//+yfuKEyFjXBa3fC3uXbAhidbBXjmIgIs/vvJRwetQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5054
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -89,210 +89,276 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vu Pham <vuhuong@mellanox.com>
 
-Adding bond_metadata and its slave entries to represent a lag device
-and its slaves VF representors. Bond_metadata structure includes a
-unique metadata shared by slaves VF respresentors, and a list of slaves
-representors slave entries.
+Introduce infrastructure to create unique metadata for match
+for vport without depending on vport_num. Vport uses its
+default metadata for match in standalone configuration but
+will share a different unique "bond_metadata" for match with
+other vports in bond configuration.
 
-On enslaving event, create a bond_metadata structure representing
-the upper lag device of this slave representor if it has not been
-created yet. Create and add entry for the slave representor to the
-slaves list.
+Using ida to generate unique metadata for match for vports
+in default and bond configurations.
 
-On unslaving event, free the slave entry of the slave representor.
-On the last unslave event, free the bond_metadata structure and its
-resources.
-
-Introduce APIs to create and remove bond_metadata and its resources,
-enslave and unslave VF representor slave entries.
+Introduce APIs to generate, free metadata for match.
+Introduce APIs to set vport's bond_metadata and replace its
+ingress acl rules with bond_metatada.
 
 Signed-off-by: Vu Pham <vuhuong@mellanox.com>
 Reviewed-by: Parav Pandit <parav@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/rep/bond.c | 128 ++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   5 +
- 2 files changed, 133 insertions(+)
+ .../mellanox/mlx5/core/esw/acl/ingress_ofld.c | 29 ++++++
+ .../mellanox/mlx5/core/esw/acl/ofld.h         |  2 +
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  2 +
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  6 ++
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 96 ++++++++++++-------
+ 5 files changed, 103 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-index d0aab36f1947..932e94362ceb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2020 Mellanox Technologies Inc. All rights reserved. */
- 
-+#include <linux/netdevice.h>
-+#include <linux/list.h>
- #include <net/lag.h>
- 
- #include "mlx5_core.h"
-@@ -11,8 +13,132 @@
- struct mlx5e_rep_bond {
- 	struct notifier_block nb;
- 	struct netdev_net_notifier nn;
-+	struct list_head metadata_list;
- };
- 
-+struct mlx5e_rep_bond_slave_entry {
-+	struct list_head list;
-+	struct net_device *netdev;
-+};
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
+index 1bae549f3fa7..4e55d7225a26 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
+@@ -291,3 +291,32 @@ void esw_acl_ingress_ofld_cleanup(struct mlx5_eswitch *esw,
+ 	esw_acl_ingress_ofld_groups_destroy(vport);
+ 	esw_acl_ingress_table_destroy(vport);
+ }
 +
-+struct mlx5e_rep_bond_metadata {
-+	struct list_head list; /* link to global list of rep_bond_metadata */
-+	struct mlx5_eswitch *esw;
-+	 /* private of uplink holding rep bond metadata list */
-+	struct net_device *lag_dev;
-+	u32 metadata_reg_c_0;
-+
-+	struct list_head slaves_list; /* slaves list */
-+	int slaves;
-+};
-+
-+static struct mlx5e_rep_bond_metadata *
-+mlx5e_lookup_rep_bond_metadata(struct mlx5_rep_uplink_priv *uplink_priv,
-+			       const struct net_device *lag_dev)
++/* Caller must hold rtnl_lock */
++int mlx5_esw_acl_ingress_vport_bond_update(struct mlx5_eswitch *esw, u16 vport_num,
++					   u32 metadata)
 +{
-+	struct mlx5e_rep_bond_metadata *found = NULL;
-+	struct mlx5e_rep_bond_metadata *cur;
++	struct mlx5_vport *vport = mlx5_eswitch_get_vport(esw, vport_num);
++	int err;
 +
-+	list_for_each_entry(cur, &uplink_priv->bond->metadata_list, list) {
-+		if (cur->lag_dev == lag_dev) {
-+			found = cur;
-+			break;
-+		}
++	if (WARN_ON_ONCE(IS_ERR(vport))) {
++		esw_warn(esw->dev, "vport(%d) invalid!\n", vport_num);
++		err = PTR_ERR(vport);
++		goto out;
 +	}
 +
-+	return found;
-+}
++	esw_acl_ingress_ofld_rules_destroy(esw, vport);
 +
-+static struct mlx5e_rep_bond_slave_entry *
-+mlx5e_lookup_rep_bond_slave_entry(struct mlx5e_rep_bond_metadata *mdata,
-+				  const struct net_device *netdev)
-+{
-+	struct mlx5e_rep_bond_slave_entry *found = NULL;
-+	struct mlx5e_rep_bond_slave_entry *cur;
++	vport->metadata = metadata ? metadata : vport->default_metadata;
 +
-+	list_for_each_entry(cur, &mdata->slaves_list, list) {
-+		if (cur->netdev == netdev) {
-+			found = cur;
-+			break;
-+		}
-+	}
-+
-+	return found;
-+}
-+
-+static void mlx5e_rep_bond_metadata_release(struct mlx5e_rep_bond_metadata *mdata)
-+{
-+	netdev_dbg(mdata->lag_dev, "destroy rep_bond_metadata(%d)\n",
-+		   mdata->metadata_reg_c_0);
-+	list_del(&mdata->list);
-+	WARN_ON(!list_empty(&mdata->slaves_list));
-+	kfree(mdata);
-+}
-+
-+/* This must be called under rtnl_lock */
-+int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
-+			   struct net_device *lag_dev)
-+{
-+	struct mlx5e_rep_bond_slave_entry *s_entry;
-+	struct mlx5e_rep_bond_metadata *mdata;
-+	struct mlx5e_rep_priv *rpriv;
-+
-+	ASSERT_RTNL();
-+
-+	rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	mdata = mlx5e_lookup_rep_bond_metadata(&rpriv->uplink_priv, lag_dev);
-+	if (!mdata) {
-+		/* First netdev becomes slave, no metadata presents the lag_dev. Create one */
-+		mdata = kzalloc(sizeof(*mdata), GFP_KERNEL);
-+		if (!mdata)
-+			return -ENOMEM;
-+
-+		mdata->lag_dev = lag_dev;
-+		mdata->esw = esw;
-+		INIT_LIST_HEAD(&mdata->slaves_list);
-+		list_add(&mdata->list, &rpriv->uplink_priv.bond->metadata_list);
-+
-+		netdev_dbg(lag_dev, "create rep_bond_metadata(%d)\n",
-+			   mdata->metadata_reg_c_0);
-+	}
-+
-+	s_entry = kzalloc(sizeof(*s_entry), GFP_KERNEL);
-+	if (!s_entry)
-+		return -ENOMEM;
-+
-+	s_entry->netdev = netdev;
-+	mdata->slaves++;
-+	list_add_tail(&s_entry->list, &mdata->slaves_list);
++	/* Recreate ingress acl rules with vport->metadata */
++	err = esw_acl_ingress_ofld_rules_create(esw, vport);
++	if (err)
++		goto out;
 +
 +	return 0;
++
++out:
++	vport->metadata = vport->default_metadata;
++	return err;
 +}
-+
-+/* This must be called under rtnl_lock */
-+void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
-+			    const struct net_device *netdev,
-+			    const struct net_device *lag_dev)
-+{
-+	struct mlx5e_rep_bond_slave_entry *s_entry;
-+	struct mlx5e_rep_bond_metadata *mdata;
-+	struct mlx5e_rep_priv *rpriv;
-+
-+	ASSERT_RTNL();
-+
-+	rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	mdata = mlx5e_lookup_rep_bond_metadata(&rpriv->uplink_priv, lag_dev);
-+	if (!mdata)
-+		return;
-+
-+	s_entry = mlx5e_lookup_rep_bond_slave_entry(mdata, netdev);
-+	if (!s_entry)
-+		return;
-+
-+	list_del(&s_entry->list);
-+	if (--mdata->slaves == 0)
-+		mlx5e_rep_bond_metadata_release(mdata);
-+	kfree(s_entry);
-+}
-+
- static bool mlx5e_rep_is_lag_netdev(struct net_device *netdev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-@@ -133,6 +259,7 @@ int mlx5e_rep_bond_init(struct mlx5e_rep_priv *rpriv)
- 		goto out;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
+index 90ddc5d7da46..c57869b93d60 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h
+@@ -23,5 +23,7 @@ static inline bool mlx5_esw_acl_egress_fwd2vport_supported(struct mlx5_eswitch *
+ /* Eswitch acl ingress external APIs */
+ int esw_acl_ingress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);
+ void esw_acl_ingress_ofld_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);
++int mlx5_esw_acl_ingress_vport_bond_update(struct mlx5_eswitch *esw, u16 vport_num,
++					   u32 metadata);
  
-+	INIT_LIST_HEAD(&uplink_priv->bond->metadata_list);
- 	uplink_priv->bond->nb.notifier_call = mlx5e_rep_esw_bond_netevent;
- 	ret = register_netdevice_notifier_dev_net(netdev,
- 						  &uplink_priv->bond->nb,
-@@ -142,6 +269,7 @@ int mlx5e_rep_bond_init(struct mlx5e_rep_priv *rpriv)
- 		kvfree(uplink_priv->bond);
- 		uplink_priv->bond = NULL;
- 	}
+ #endif /* __MLX5_ESWITCH_ACL_OFLD_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 20ab13ff2303..1116ab9bea6c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1730,6 +1730,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
+ 	mutex_init(&esw->offloads.decap_tbl_lock);
+ 	hash_init(esw->offloads.decap_tbl);
+ 	atomic64_set(&esw->offloads.num_flows, 0);
++	ida_init(&esw->offloads.vport_metadata_ida);
+ 	mutex_init(&esw->state_lock);
+ 	mutex_init(&esw->mode_lock);
+ 
+@@ -1768,6 +1769,7 @@ void mlx5_eswitch_cleanup(struct mlx5_eswitch *esw)
+ 	esw_offloads_cleanup_reps(esw);
+ 	mutex_destroy(&esw->mode_lock);
+ 	mutex_destroy(&esw->state_lock);
++	ida_destroy(&esw->offloads.vport_metadata_ida);
+ 	mutex_destroy(&esw->offloads.mod_hdr.lock);
+ 	mutex_destroy(&esw->offloads.encap_tbl_lock);
+ 	mutex_destroy(&esw->offloads.decap_tbl_lock);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index 7b6b3686b666..a5175e98c0b3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -149,6 +149,8 @@ struct mlx5_vport {
+ 
+ 	struct vport_ingress    ingress;
+ 	struct vport_egress     egress;
++	u32                     default_metadata;
++	u32                     metadata;
+ 
+ 	struct mlx5_vport_info  info;
+ 
+@@ -224,6 +226,7 @@ struct mlx5_esw_offload {
+ 	u8 inline_mode;
+ 	atomic64_t num_flows;
+ 	enum devlink_eswitch_encap_mode encap;
++	struct ida vport_metadata_ida;
+ };
+ 
+ /* E-Switch MC FDB table hash node */
+@@ -292,6 +295,9 @@ int esw_offloads_enable(struct mlx5_eswitch *esw);
+ void esw_offloads_cleanup_reps(struct mlx5_eswitch *esw);
+ int esw_offloads_init_reps(struct mlx5_eswitch *esw);
+ 
++u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw);
++void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata);
 +
- out:
- 	return ret;
+ int mlx5_esw_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num,
+ 			       u32 rate_mbps);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 11bc9cc1d5f0..060354bb211a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -31,6 +31,7 @@
+  */
+ 
+ #include <linux/etherdevice.h>
++#include <linux/idr.h>
+ #include <linux/mlx5/driver.h>
+ #include <linux/mlx5/mlx5_ifc.h>
+ #include <linux/mlx5/vport.h>
+@@ -1877,15 +1878,69 @@ static bool esw_use_vport_metadata(const struct mlx5_eswitch *esw)
+ 	       esw_check_vport_match_metadata_supported(esw);
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-index 7e56787aa224..ed741b6e6af2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -217,6 +217,11 @@ void mlx5e_rep_register_vport_reps(struct mlx5_core_dev *mdev);
- void mlx5e_rep_unregister_vport_reps(struct mlx5_core_dev *mdev);
- int mlx5e_rep_bond_init(struct mlx5e_rep_priv *rpriv);
- void mlx5e_rep_bond_cleanup(struct mlx5e_rep_priv *rpriv);
-+int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
-+			   struct net_device *lag_dev);
-+void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
-+			    const struct net_device *netdev,
-+			    const struct net_device *lag_dev);
  
- bool mlx5e_is_uplink_rep(struct mlx5e_priv *priv);
- int mlx5e_add_sqs_fwd_rules(struct mlx5e_priv *priv);
++u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw)
++{
++	u32 num_vports = GENMASK(ESW_VPORT_BITS - 1, 0) - 1;
++	u32 vhca_id_mask = GENMASK(ESW_VHCA_ID_BITS - 1, 0);
++	u32 vhca_id = MLX5_CAP_GEN(esw->dev, vhca_id);
++	u32 start;
++	u32 end;
++	int id;
++
++	/* Make sure the vhca_id fits the ESW_VHCA_ID_BITS */
++	WARN_ON_ONCE(vhca_id >= BIT(ESW_VHCA_ID_BITS));
++
++	/* Trim vhca_id to ESW_VHCA_ID_BITS */
++	vhca_id &= vhca_id_mask;
++
++	start = (vhca_id << ESW_VPORT_BITS);
++	end = start + num_vports;
++	if (!vhca_id)
++		start += 1; /* zero is reserved/invalid metadata */
++	id = ida_alloc_range(&esw->offloads.vport_metadata_ida, start, end, GFP_KERNEL);
++
++	return (id < 0) ? 0 : id;
++}
++
++void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata)
++{
++	ida_free(&esw->offloads.vport_metadata_ida, metadata);
++}
++
++static int esw_offloads_vport_metadata_setup(struct mlx5_eswitch *esw,
++					     struct mlx5_vport *vport)
++{
++	if (vport->vport == MLX5_VPORT_UPLINK)
++		return 0;
++
++	vport->default_metadata = mlx5_esw_match_metadata_alloc(esw);
++	vport->metadata = vport->default_metadata;
++	return vport->metadata ? 0 : -ENOSPC;
++}
++
++static void esw_offloads_vport_metadata_cleanup(struct mlx5_eswitch *esw,
++						struct mlx5_vport *vport)
++{
++	if (vport->vport == MLX5_VPORT_UPLINK || !vport->default_metadata)
++		return;
++
++	WARN_ON(vport->metadata != vport->default_metadata);
++	mlx5_esw_match_metadata_free(esw, vport->default_metadata);
++}
++
+ int
+ esw_vport_create_offloads_acl_tables(struct mlx5_eswitch *esw,
+ 				     struct mlx5_vport *vport)
+ {
+ 	int err;
+ 
++	err = esw_offloads_vport_metadata_setup(esw, vport);
++	if (err)
++		goto metadata_err;
++
+ 	err = esw_acl_ingress_ofld_setup(esw, vport);
+ 	if (err)
+-		return err;
++		goto ingress_err;
+ 
+ 	if (mlx5_eswitch_is_vf_vport(esw, vport->vport)) {
+ 		err = esw_acl_egress_ofld_setup(esw, vport);
+@@ -1897,6 +1952,9 @@ esw_vport_create_offloads_acl_tables(struct mlx5_eswitch *esw,
+ 
+ egress_err:
+ 	esw_acl_ingress_ofld_cleanup(esw, vport);
++ingress_err:
++	esw_offloads_vport_metadata_cleanup(esw, vport);
++metadata_err:
+ 	return err;
+ }
+ 
+@@ -1906,6 +1964,7 @@ esw_vport_destroy_offloads_acl_tables(struct mlx5_eswitch *esw,
+ {
+ 	esw_acl_egress_ofld_cleanup(vport);
+ 	esw_acl_ingress_ofld_cleanup(esw, vport);
++	esw_offloads_vport_metadata_cleanup(esw, vport);
+ }
+ 
+ static int esw_create_uplink_offloads_acl_tables(struct mlx5_eswitch *esw)
+@@ -2571,38 +2630,11 @@ EXPORT_SYMBOL(mlx5_eswitch_vport_match_metadata_enabled);
+ u32 mlx5_eswitch_get_vport_metadata_for_match(struct mlx5_eswitch *esw,
+ 					      u16 vport_num)
+ {
+-	u32 vport_num_mask = GENMASK(ESW_VPORT_BITS - 1, 0);
+-	u32 vhca_id_mask = GENMASK(ESW_VHCA_ID_BITS - 1, 0);
+-	u32 vhca_id = MLX5_CAP_GEN(esw->dev, vhca_id);
+-	u32 val;
++	struct mlx5_vport *vport = mlx5_eswitch_get_vport(esw, vport_num);
+ 
+-	/* Make sure the vhca_id fits the ESW_VHCA_ID_BITS */
+-	WARN_ON_ONCE(vhca_id >= BIT(ESW_VHCA_ID_BITS));
+-
+-	/* Trim vhca_id to ESW_VHCA_ID_BITS */
+-	vhca_id &= vhca_id_mask;
+-
+-	/* Make sure pf and ecpf map to end of ESW_VPORT_BITS range so they
+-	 * don't overlap with VF numbers, and themselves, after trimming.
+-	 */
+-	WARN_ON_ONCE((MLX5_VPORT_UPLINK & vport_num_mask) <
+-		     vport_num_mask - 1);
+-	WARN_ON_ONCE((MLX5_VPORT_ECPF & vport_num_mask) <
+-		     vport_num_mask - 1);
+-	WARN_ON_ONCE((MLX5_VPORT_UPLINK & vport_num_mask) ==
+-		     (MLX5_VPORT_ECPF & vport_num_mask));
+-
+-	/* Make sure that the VF vport_num fits ESW_VPORT_BITS and don't
+-	 * overlap with pf and ecpf.
+-	 */
+-	if (vport_num != MLX5_VPORT_UPLINK &&
+-	    vport_num != MLX5_VPORT_ECPF)
+-		WARN_ON_ONCE(vport_num >= vport_num_mask - 1);
+-
+-	/* We can now trim vport_num to ESW_VPORT_BITS */
+-	vport_num &= vport_num_mask;
++	if (WARN_ON_ONCE(IS_ERR(vport)))
++		return 0;
+ 
+-	val = (vhca_id << ESW_VPORT_BITS) | vport_num;
+-	return val << (32 - ESW_SOURCE_PORT_METADATA_BITS);
++	return vport->metadata << (32 - ESW_SOURCE_PORT_METADATA_BITS);
+ }
+ EXPORT_SYMBOL(mlx5_eswitch_get_vport_metadata_for_match);
 -- 
 2.26.2
 
