@@ -2,102 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1C51E351D
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 03:58:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1585D1E3534
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 04:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728125AbgE0B6U convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 26 May 2020 21:58:20 -0400
-Received: from mga01.intel.com ([192.55.52.88]:42453 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725271AbgE0B6T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 21:58:19 -0400
-IronPort-SDR: SoCC1puBUZD5ZGGfMRXrDBGlTAJgfw060MJd7zMKX73Fh03R8tKEHzmXIVir4T6rSMIUCeMb6D
- IQF63kiRR5vQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 18:58:19 -0700
-IronPort-SDR: mDXG3KMwrj0GEbQCwuUN3MN+A/IVZpszY+s4Dwc5TeT8ZXZxJreODBQ5uk0D/rXugnkvrwIz/Z
- 2IALXHl/SxPA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,439,1583222400"; 
-   d="scan'208";a="255329125"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
-  by fmsmga007.fm.intel.com with ESMTP; 26 May 2020 18:58:19 -0700
-Received: from fmsmsx122.amr.corp.intel.com (10.18.125.37) by
- FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 26 May 2020 18:58:18 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.63]) by
- fmsmsx122.amr.corp.intel.com ([169.254.5.111]) with mapi id 14.03.0439.000;
- Tue, 26 May 2020 18:58:18 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Gal Pressman <galpress@amazon.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "jgg@mellanox.com" <jgg@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: RE: [RDMA RFC v6 16/16] RDMA/irdma: Update MAINTAINERS file
-Thread-Topic: [RDMA RFC v6 16/16] RDMA/irdma: Update MAINTAINERS file
-Thread-Index: AQHWLnTlyDOLqDRTOEW6y4JOM/BCS6ixDraAgAI4IpA=
-Date:   Wed, 27 May 2020 01:58:18 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7EE040496@fmsmsx124.amr.corp.intel.com>
-References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
- <20200520070415.3392210-17-jeffrey.t.kirsher@intel.com>
- <7a82fb8b-b16e-3b40-1d30-d9f52d0ff496@amazon.com>
-In-Reply-To: <7a82fb8b-b16e-3b40-1d30-d9f52d0ff496@amazon.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.106]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726788AbgE0CJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 22:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbgE0CJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 22:09:17 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BC8C061A0F
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 19:09:16 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id c185so8858716qke.7
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 19:09:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=++YgWJmE9usQTz9HhRezxGF1VBPAiquT6bkgDCcIGBI=;
+        b=FL87orvk0g1Zib130oy5cdqwWlgUeGwECs1uUJjEl06PPweyEfaeEWU7982YIg9/WC
+         tf4KCjB0F48yRP6A28IivPxe+zHej5iJx10Vt3bLQkf4hWGOSKr1GVxrbO+PBIDEx5nh
+         5jrpYcB2c4rE1Qmjb8FBhqRT8TS40xYNzeMv7mRni24rRHNTATY3R1NBT1zxedj4ukA7
+         IKCNAWggRPtJueOm2A4I+i7mQUzQuNCnk8F/ztkcXKBi4zhfpZV4E36FIPQ7WKQfFbnx
+         4h6+OiF5do5M6SltwfaDqYct6QR0VGm0uy6/u50BwvI3/SwOc5xQPvODAPse6X4DsfuU
+         +JgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=++YgWJmE9usQTz9HhRezxGF1VBPAiquT6bkgDCcIGBI=;
+        b=rLvAQBSb8xGzusOvLOJxmnzfhBIDvu1ZpBAEk/rzobefvZDZFR8sYiDe5pyVpj5vx8
+         Y7ciex6vQpzmkveeQ5QA9RAdqYynYg3wol/f5egJBIcG7Ftt/ApSZYEVNqBUp6AlpUfv
+         j61dsR+grABjWf3huf+UcdHpPu3YEZnB88Ir0lyicD3/CwhLggInjX8fWfF2uDWscB9g
+         StNK0gezDMXRy4090vqY2IUBsflEemAwArzH/gUjwsyMCD+3BPhuMpSvLpdFzdLvEidO
+         p7+T9o/9QHUS2ffe5iOMcaRx2mqV5IoxN4Ni+OCskRc35q7TTghxg8Q6FJMyfSWZamJc
+         TqGA==
+X-Gm-Message-State: AOAM5336dIQ0LIBuav1WmSyI4dSky9pTze9mE7f2SzLWy+pIzt8FtuxZ
+        mS4ilsNKEPHI4AoPX6DnOTizG/dZ
+X-Google-Smtp-Source: ABdhPJxFg/pg6bgQzmsZwJe76FX73gcxX1l9mbFm8dgj21En4TmFQAVEZ1tEi06bnZ/Mhw1U8EuWZg==
+X-Received: by 2002:a37:4351:: with SMTP id q78mr1698386qka.242.1590545355835;
+        Tue, 26 May 2020 19:09:15 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
+        by smtp.googlemail.com with ESMTPSA id u205sm1251227qka.81.2020.05.26.19.09.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2020 19:09:15 -0700 (PDT)
+Subject: Re: [iproute2-next] tipc: enable printing of broadcast rcv link stats
+To:     Tuong Lien <tuong.t.lien@dektech.com.au>, jmaloy@redhat.com,
+        maloy@donjonn.com, ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+References: <20200526094055.17526-1-tuong.t.lien@dektech.com.au>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9152136d-5ae4-f3e6-0929-0227d50fd3d9@gmail.com>
+Date:   Tue, 26 May 2020 20:09:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <20200526094055.17526-1-tuong.t.lien@dektech.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [RDMA RFC v6 16/16] RDMA/irdma: Update MAINTAINERS file
+On 5/26/20 3:40 AM, Tuong Lien wrote:
+> This commit allows printing the statistics of a broadcast-receiver link
+> using the same tipc command, but with additional 'link' options:
 > 
-> On 20/05/2020 10:04, Jeff Kirsher wrote:
-> > From: Shiraz Saleem <shiraz.saleem@intel.com>
-> >
-> > Add maintainer entry for irdma driver.
-> >
-> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > ---
-> >  MAINTAINERS | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS index
-> > 598d0e1b3501..8b8e3e0064cf 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -8745,6 +8745,14 @@ L:	linux-pm@vger.kernel.org
-> >  S:	Supported
-> >  F:	drivers/cpufreq/intel_pstate.c
-> >
-> > +INTEL ETHERNET PROTOCL DRIVER FOR RDMA
-> > +M:	Mustafa Ismail <mustafa.ismail@intel.com>
-> > +M:	Shiraz Saleem <shiraz.saleem@intel.com>
-> > +L:	linux-rdma@vger.kernel.org
-> > +S:	Supported
-> > +F:	drivers/infiniband/hw/irdma/
-> > +F:	include/uapi/rdma/irdma-abi.h
+> $ tipc link stat show --help
+> Usage: tipc link stat show [ link { LINK | SUBSTRING | all } ]
 > 
-> This list should be sorted alphabetically.
+> With:
+> + 'LINK'      : print the stats of the specific link 'LINK';
+> + 'SUBSTRING' : print the stats of all the links having the 'SUBSTRING'
+>                 in name;
+> + 'all'       : print all the links' stats incl. the broadcast-receiver
+>                 ones;
+> 
+> Also, a link stats can be reset in the usual way by specifying the link
+> name in command.
+> 
+> For example:
+> 
+> $ tipc l st sh l br
+> Link <broadcast-link>
+>   Window:50 packets
+>   RX packets:0 fragments:0/0 bundles:0/0
+>   TX packets:5011125 fragments:4968774/149643 bundles:38402/307061
+>   RX naks:781484 defs:0 dups:0
+>   TX naks:0 acks:0 retrans:330259
+>   Congestion link:50657  Send queue max:0 avg:0
+> 
+> Link <broadcast-link:1001001>
+>   Window:50 packets
+>   RX packets:95146 fragments:95040/1980 bundles:1/2
+>   TX packets:0 fragments:0/0 bundles:0/0
+>   RX naks:380938 defs:83962 dups:403
+>   TX naks:8362 acks:0 retrans:170662
+>   Congestion link:0  Send queue max:0 avg:0
+> 
+> Link <broadcast-link:1001002>
+>   Window:50 packets
+>   RX packets:0 fragments:0/0 bundles:0/0
+>   TX packets:0 fragments:0/0 bundles:0/0
+>   RX naks:400546 defs:0 dups:0
+>   TX naks:0 acks:0 retrans:159597
+>   Congestion link:0  Send queue max:0 avg:0
+> 
+> $ tipc l st sh l 1001002
+> Link <1001003:data0-1001002:data0>
+>   ACTIVE  MTU:1500  Priority:10  Tolerance:1500 ms  Window:50 packets
+>   RX packets:99546 fragments:0/0 bundles:33/877
+>   TX packets:629 fragments:0/0 bundles:35/828
+>   TX profile sample:8 packets average:390 octets
+>   0-64:75% -256:0% -1024:0% -4096:25% -16384:0% -32768:0% -66000:0%
+>   RX states:488714 probes:7397 naks:0 defs:4 dups:5
+>   TX states:27734 probes:18016 naks:5 acks:2305 retrans:0
+>   Congestion link:0  Send queue max:0 avg:0
+> 
+> Link <broadcast-link:1001002>
+>   Window:50 packets
+>   RX packets:0 fragments:0/0 bundles:0/0
+>   TX packets:0 fragments:0/0 bundles:0/0
+>   RX naks:400546 defs:0 dups:0
+>   TX naks:0 acks:0 retrans:159597
+>   Congestion link:0  Send queue max:0 avg:0
+> 
+> $ tipc l st re l broadcast-link:1001002
+> 
+> $ tipc l st sh l broadcast-link:1001002
+> Link <broadcast-link:1001002>
+>   Window:50 packets
+>   RX packets:0 fragments:0/0 bundles:0/0
+>   TX packets:0 fragments:0/0 bundles:0/0
+>   RX naks:0 defs:0 dups:0
+>   TX naks:0 acks:0 retrans:0
+>   Congestion link:0  Send queue max:0 avg:0
+> 
+> Acked-by: Ying Xue <ying.xue@windriver.com>
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+> ---
+>  tipc/link.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
 > 
 
-Yes. Thanks!
+Applied to iproute2-next. Thanks for the examples in the commit message.
+
