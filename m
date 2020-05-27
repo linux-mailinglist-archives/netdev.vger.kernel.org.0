@@ -2,127 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C26D61E4B56
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C77971E4B97
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731096AbgE0RDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 13:03:13 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27512 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728883AbgE0RDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:03:12 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04RH37T4023301;
-        Wed, 27 May 2020 10:03:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=NTM0qa7M097oTKEFNDFu8B8ukDLXO1qR2oZ5BBPrAUY=;
- b=jp7MqC8P7fOpbZnbGy02fpMVIVoIFF4P5K6V5RXV76MH8B01qErP+rIh5dHjgh0Pk3d2
- KkSMMqAEeGYHWL1jg8QVdYODiFjcHgz9GpBGWb8t0T6Ur8jwZ5jrwiUpGu2NZGqBuQJ1
- 28U6y5mAyv/bP//zWTDKYYSvcu+5eo2Xp38= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 317ktsqdr8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 27 May 2020 10:03:11 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 27 May 2020 10:02:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NIZ2mlADj5BNu771mqG7fYxpZk5X2w/GzSNkvsN6bUKY53cucweiPikJDUeS6NDE3fGuDYckfgiQPor75BKfrbuBBvf7xCWpK6jkyyNv8WE8Pb67ZxMNGrhvS46BDIkctNl4FCLSxn6bIGtkc8FBXEt96eMir1saSxeJm+S8prSCV9maQuJJHpc2152tIz/6TMMTUFpF8D+Cp2tqXm0UwC+8JG4tE8yFLTKwNJHGdGgGt26c5Fmbv4d7b2AnYPTWEdCzHxmMMU83eepOe/oJ9MX3WulR5pHhe005AkUlMRmddIgnzSyRSFg596yPxJFLvkSozpKp+4oMnfPxUvc1qg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NTM0qa7M097oTKEFNDFu8B8ukDLXO1qR2oZ5BBPrAUY=;
- b=Ca49uF5iTRf35H6ZuxDDqlXbM5ld0+OLeXxeGzJ37pUXdtdxCBGXQkz9WyRi/ofpwoII62Glo+Sc8gkzgQqtF2i7ZaTVcFpQGjnLnKZtd0vGZBJpkc7kkSgyHnFwziJR6fVk3nATG1uuiNLCYit/tubugL4y7Ntyd7cHb/EbFoP1LVt76t/ViNWiGg249CxoiW8acK78jJfB2hSA2Dgk1PbGlD31bmbMWwNVICj9BSb65iQzh7Z2WZeUOSSMTuuJbwvxKo/6gCGF8RzbhLUks9tZ6YKLujX/Y/3W3jM7wuCIScmuL6pkxGBx4NrauZEP0gbkfWR7HyoqBeeW8SX1XA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NTM0qa7M097oTKEFNDFu8B8ukDLXO1qR2oZ5BBPrAUY=;
- b=f7GPLs7jvLsK5XOSmbWmPld9yHp7Y9e6PEwI1JznHSEvNN2l/7Houvkt9c+YdDqpIoxrynohGdWfCGiaQqHNR/jLIxkSpqFSE51590p6SybU6g79q/U4lzlBPrHABRYaU3tnHqFLwdSy33rY2zIXptfnEF/Q9mmBdn3aaORObP0=
-Authentication-Results: yandex-team.ru; dkim=none (message not signed)
- header.d=none;yandex-team.ru; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BY5PR15MB3666.namprd15.prod.outlook.com (2603:10b6:a03:1fc::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 17:02:28 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6%7]) with mapi id 15.20.3021.030; Wed, 27 May 2020
- 17:02:28 +0000
-Date:   Wed, 27 May 2020 10:02:21 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Dmitry Yakunin <zeil@yandex-team.ru>
-CC:     <davem@davemloft.net>, <brakmo@fb.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf: add SO_KEEPALIVE and related options to
- bpf_setsockopt
-Message-ID: <20200527170221.iutwmch6sim35bkt@kafai-mbp>
-References: <20200527150543.93335-1-zeil@yandex-team.ru>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200527150543.93335-1-zeil@yandex-team.ru>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BYAPR11CA0058.namprd11.prod.outlook.com
- (2603:10b6:a03:80::35) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:30fa) by BYAPR11CA0058.namprd11.prod.outlook.com (2603:10b6:a03:80::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18 via Frontend Transport; Wed, 27 May 2020 17:02:27 +0000
-X-Originating-IP: [2620:10d:c090:400::5:30fa]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a5bcfb6-5073-4211-421c-08d8025fbc7f
-X-MS-TrafficTypeDiagnostic: BY5PR15MB3666:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BY5PR15MB366658B7650BFEAD75F56384D5B10@BY5PR15MB3666.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 04163EF38A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ov89Zwzs6RN0ZTN3vu9poc+imyOldqIRkvofDLt05Az3B8R0a0nL/rVOxczuiYGmXbGugQPaM2+WijoFLIuJYsXoAcC/1MomRTDZRYSfiotsMKNkfaKnUKnkFjU3KBh2iSzECFNNIhKBH9HJp8Z8eKAkeQ8NHl+r+MYf7aNkxd3wJghaLBTeHBEF5Etajd0KwKhdm1c+Bybv95HtqD6Smp8VgT6EcMkhJrsaYNC1z9pfpibFFWUffHscXg1iUWFjR+9FfmYpBxgCTzv1/UhTIiNnwI5jiOS1LvFMnzv4Gl7r7XD23wkzVZ1egtC3D1tn3hTAuL97mWbT6tqrZCb5tQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39860400002)(136003)(346002)(376002)(366004)(6496006)(66556008)(66476007)(4744005)(4326008)(8676002)(1076003)(8936002)(316002)(52116002)(66946007)(478600001)(9686003)(55016002)(16526019)(186003)(33716001)(86362001)(6666004)(83380400001)(2906002)(5660300002)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: rLsojpqiK5LgK10feyv1BvRI9vRFY2lxdWjFysArwRiR14rdiNmJGfB87mxYiqHeOten6lazhtx/yJdC3E2/eWSlc3Dd/lB/zAQm2qmkFyFQ9G7DKPDBD1apcrTsGuJMTGfRd3QEo+lD2lIgwpI5R6gXQqsHAcaOFa77ivxBoydl20ieRpuXHiaxLkPO0bp4FHDdNNF8mdtobiiAb/l7zfLMWRC4hBU4TEjDJTadfyDkjWvHXC50W7Qid6BNyEdNoNfatPbNVRznB6PxWvaaDdUWK7NXsa+53L0JeVGJ5ael7e3lj9dfKilXaaCj76i53XS6XwafeWCKuYLxWTIdx/dDFTU160QKcBvFf5VAmU3fTuCRqq+4bsiGo84K7nN7Z5YAVC9BTJYDS58sAf9v2VIl4rO1x00ht5/+oqVqh8CHtvnC6XMEq2WNqK4KTMeHCTc7n/zzDoC/h4Uq/9RKoJsOJ83eKaCyE7kw2awP5Rl4dC3AwyJ7IRmomh6iqV+/Zn5RG7jzaTC0QBGA29JhZA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a5bcfb6-5073-4211-421c-08d8025fbc7f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 17:02:28.3738
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SWJ0PRYs+NKU2MSN/dEC0PAP3o1LEE3YCaEYG6jWgtyDo0iC9VofJzNe49sqel7F
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3666
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-05-27_03:2020-05-27,2020-05-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- cotscore=-2147483648 phishscore=0 impostorscore=0 adultscore=0
- mlxlogscore=741 clxscore=1011 bulkscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 suspectscore=18 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005270133
-X-FB-Internal: deliver
+        id S1731234AbgE0RMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 13:12:34 -0400
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:55191 "EHLO
+        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729894AbgE0RMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:12:33 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id 022B8A97;
+        Wed, 27 May 2020 13:12:31 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 27 May 2020 13:12:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
+        content-transfer-encoding:content-type:in-reply-to:date:cc
+        :subject:from:to:message-id; s=fm3; bh=6pxEigjWfelMjOWs/Jq1DeSXe
+        YEVsneKZclbXHsrvFQ=; b=Dx1/DmhtipYpfHdvAyM/R5S0l0Urw1kxEabTy7ndJ
+        KTekDH5RnTfTmgtWbw1GPf0w0zy//8W2XsYDGENYLAJYsG0M8MFKQSDtejpoMNaj
+        hAnXIlNbMdyUmtqWBcPkLMwrLpd0M7Nc9TADOGV8r3gsiI1QSzzcbcOKvskxWyKF
+        nWVGqyFKvv8np6XOsHfTuSvEfCcTazr4q8NN3JRTDddw3g5bkUEkEjt7XqafB7mF
+        s6kv6nZ29QgL09L95cmnqmIRb0l/H+XOyd3tVem/EXMHCkWlMabbx17u+lEyIi6K
+        3pthk+jGFVzijmv9tcwao0yLwP9yMl0ot6BCt4x7h51LQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=6pxEig
+        jWfelMjOWs/Jq1DeSXeYEVsneKZclbXHsrvFQ=; b=0IfLJJFz1oyDNl66pJNJfD
+        fK4c+ZqgBV1JRd7wxvWo0TU2bYMX+yWOONUwtiB+FAnfw5CoMWYA3HuOJmeEcBPU
+        q/R1AyizBPiuyjRbbfpR4f7oAz/w44K8x1bfsWuD6eRh21k1csZ/bGwbNjAylRqG
+        S+zKp5kTf584fTAjy65FIqG4zQT2eZj8e1EzY0n//TpCX4X5shiCofJRsWRjhz+v
+        d8/6CyoSQmHjzKPaqDddMQGkUE8+Pfxftj15FQ6LpZOcIGiJYWbn/7iaf/xmQiV7
+        cU4CzpS/asntOs7f7QqfBxMPHb3C9yAf8NwoTMtLn7S9qV5cTx0tWsr3I2WKHtPw
+        ==
+X-ME-Sender: <xms:fp_OXnzMMddzuGs3DxMkcMGcAaZYDGTqZrX0dF1dx5rYHJOk_uyfcw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvgedgleelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdljedtmdenucfjughrpefgtggjfffuhffvkfesthhqredttddtjeen
+    ucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurdighiiiqeenuc
+    ggtffrrghtthgvrhhnpeelleelfeekudehudeitdefkeeutdfhieeiudeggfdutdetleek
+    vedtteevieffteenucfkphepjeefrdelfedrvdegjedrudefgeenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:fp_OXvSUMbDbI3ZC12QTnicdy3P20kMOKD3dc3jOfmeB3oesg5oXDA>
+    <xmx:fp_OXhX8P3FO9-Nt1LGVYuVV2rj-Slpt8I8KW0srICQtB7EPwbtJUQ>
+    <xmx:fp_OXhif-JI4R5yF4LAsFNrABBnXAQv97F_q5pBCEdII_QRGP4NGBg>
+    <xmx:f5_OXt7AKk-ovSiZzUxVTphnwaOqRn5Id8NRDUl4Od2wBnp27IJaxlzjc_g>
+Received: from localhost (c-73-93-247-134.hsd1.ca.comcast.net [73.93.247.134])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7C89A3280063;
+        Wed, 27 May 2020 13:12:29 -0400 (EDT)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CAEf4BzbR+7X-boCBC-f60jugp8xWKVTeFTyUmrcv8Qy4iKsvjg@mail.gmail.com>
+Date:   Wed, 27 May 2020 10:03:56 -0700
+Cc:     "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Martin Lau" <kafai@fb.com>, "Song Liu" <songliubraving@fb.com>,
+        "Yonghong Song" <yhs@fb.com>, "Andrii Nakryiko" <andriin@fb.com>,
+        "john fastabend" <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        "bpf" <bpf@vger.kernel.org>, "Networking" <netdev@vger.kernel.org>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        "clang-built-linux" <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH bpf-next] libbpf: Export bpf_object__load_vmlinux_btf
+From:   "Daniel Xu" <dxu@dxuuu.xyz>
+To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
+Message-Id: <C31OATROKNZK.27CUNDSXX9I4K@maharaja>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 06:05:43PM +0300, Dmitry Yakunin wrote:
-> This patch adds support of SO_KEEPALIVE flag and TCP related options
-> to bpf_setsockopt() routine. This is helpful if we want to enable or tune
-> TCP keepalive for applications which don't do it in the userspace code.
-> In order to avoid copy-paste, common code from classic setsockopt was moved
-> to auxiliary functions in the headers.
-Thanks for refatoring some of the pieces.  I suspect some more can be done.
-In the long run, I don't think this copy-and-paste is scalable.
-For most of the options (integer value and do not need ns_capable()),
-do_tcp_setsockopt() and sock_setsockopt() can be directly called with
-some refactoring.
+Hi Andrii,
 
+On Tue May 26, 2020 at 3:09 PM PST, Andrii Nakryiko wrote:
+> On Tue, May 26, 2020 at 7:09 PM Daniel Xu <dxu@dxuuu.xyz> wrote:
+> >
+> > Right now the libbpf model encourages loading the entire object at once=
+.
+> > In this model, libbpf handles loading BTF from vmlinux for us. However,
+> > it can be useful to selectively load certain maps and programs inside a=
+n
+> > object without loading everything else.
+>
+> There is no way to selectively load or not load a map. All maps are
+> created, unless they are reusing map FD or pinned instances. See
+> below, I'd like to understand the use case better.
+>
+> >
+> > In the latter model, there was perviously no way to load BTF on-demand.
+> > This commit exports the bpf_object__load_vmlinux_btf such that we are
+> > able to load BTF on demand.
+> >
+>
+> Let's start with the real problem, not a solution. Do you have
+> specific use case where you need bpf_object__load_vmlinux_btf()? It
+> might not do anything if none of BPF programs in the object requires
+> BTF, because it's very much tightly coupled with loading bpf_object as
+> a whole model. I'd like to understand what you are after with this,
+> before exposing internal implementation details as an API.
 
-The change looks good.  For this patch,
+If I try loading a program through the following sequence:
 
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+    bpf_object__open_file()
+    bpf_object__find_program_by_name()
+    bpf_program__load()
+
+And the program require BTF (tp_btf), I get an unavoidable (to the best
+of my knowledge) segfault in the following code path:
+
+    bpf_program__load()
+      libbpf_find_attach_btf_id()    <-- [0]
+        __find_vmlinx_btf_id()
+          find_btf_by_prefix_kind()
+            btf__find_by_name_kind() <-- boom (btf->nr_types)
+
+because [0] passes prog->obj->btf_vmlinux which is still null. So the
+solution I'm proposing is exporting bpf_object__load_vmlinux_btf() and
+calling that on struct bpf_object before performing prog loads.
+
+[...]
+
+Thanks,
+Daniel
