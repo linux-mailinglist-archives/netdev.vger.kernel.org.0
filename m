@@ -2,234 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E39951E4A77
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A201E4A76
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389733AbgE0QkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S1728177AbgE0QkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgE0QkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:40:16 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D46C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:40:15 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id e10so20803558edq.0
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:40:15 -0700 (PDT)
+        with ESMTP id S1725613AbgE0QkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:40:13 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA2FC05BD1E
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:40:12 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id x18so9202855pll.6
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:40:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZlD6G96C59XcwrXI1TGeJCOEYLySzbqe5I3feupaN9s=;
-        b=WxbMvW3woYTHlxwf423367G/Enr7g0nDP6GkgvKDfc0OJKiFu9jRii95e4QiT3YCeB
-         YWhat+vBG4Px1Qeff81/BnxeGspO7Djrfu2GUtCWgLd++QpgAF7762NsBr/JbUiifeBv
-         oW7Ky494RUeN10Z8b4//OVddXxQTkYsBH7C/QF9ZGBOD0NE6L2NproplzwTwyugu1oX1
-         52Kz/CieePPtcaBWQwIpQOpUYS2U6O+Z4WQSjZhUXjUKgTj2I5cBo2MTXX93WY6/dCMH
-         +NV0ty3HJIFuzdLvKkyL1wAz0vD/5gsTFjHOBSv0hwm52JTwkWt9iYsbVbvSFlmD1WPI
-         SuLg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FqsRU4Vn3V5A4st1AodLDFwmDmt3vpdNCX50A/gRKLA=;
+        b=KExyOdMxYGhA7k7YVVvg5atcmryUkbMZ/KyW0lGHo4SCKsOt9LVrThdVZsD+IsSmZR
+         Ov95GYX+fo9oivudGnx3xySX73LIngZcvR88Ei2LxXuElz/4acwouiYbsf0XtkyNrdT3
+         vLjkD0ZUXbnZIueqqz92yTN5T+0riLbMH9uf1shjAs/MrIT7VyW3ssD0lyFup91Pqcsw
+         wn7TonNii2Vn0uJYu28UP0acYo0K/R/VYV5v8c/WWjHiig6gidWPxrGqvC7hwTvu+jan
+         jIJ81oz/Xu6ZSptNKT4nMwLosw2kAIZpEoBYe8nSpo/3X3XNGQWlZ2Vc8LU5w92loclH
+         CQLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ZlD6G96C59XcwrXI1TGeJCOEYLySzbqe5I3feupaN9s=;
-        b=i+9f7/rJpukqrOd3BkfXTFo6ilewWxm0/PaC1GYFB2psy99qXLGZE7WvMy1+kcsdJW
-         74gxB+TuOmcJXNnhAUUrbSIOK+u08HivJlCrcsdF9CBARP5JgnQTuQ1MA9ew1iEAE8Sk
-         6FzJE7lkhYX5KQhOrD3GBFDF1kyn7nm/k28OHuyX54xPpgvE51EQdkAsjetDbpzeSVI/
-         StdGQ4rYg6eLcd5AU1Biq4xElBVqVOsss8/9x5EZf9EPukwtIES8toUWId1ZmCa5smeZ
-         I7oyFP6eh3fMoKtAc4ThTcNQrwLf7/bp5kqK0Vku10eR06Tf/94s4RYHYNXyTF1nqObC
-         voew==
-X-Gm-Message-State: AOAM530ebbME6zYMZbIm2nGhAGZTveX9Z+3Qz8lciCUI9U2BfPxgXeW/
-        TIFeQuRtTdWXoU6MD/QED0g=
-X-Google-Smtp-Source: ABdhPJxYxmanPrhr5Os1xaV8WHVIdVk/23TbiYuAvwiHn+oXHlOQWUb6sZW9m8SJheP4BsFYsnkTKQ==
-X-Received: by 2002:a50:e14e:: with SMTP id i14mr3095254edl.279.1590597614267;
-        Wed, 27 May 2020 09:40:14 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id g22sm1526311edj.63.2020.05.27.09.40.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 09:40:13 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: sja1105: fix port mirroring for P/Q/R/S
-Date:   Wed, 27 May 2020 19:40:06 +0300
-Message-Id: <20200527164006.1080903-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=FqsRU4Vn3V5A4st1AodLDFwmDmt3vpdNCX50A/gRKLA=;
+        b=oyv8VzNtyF+Ftpf6CGEjP6Z6Vhgzpv2+ngxV1FqQFK/4+8A0lRwub8I4VZQnAPk3Gm
+         rD1CpYs08+kfsJyoaMdqFnuRi5bgmxOMn31shd1mzR4XbDHYfftiWKG7h6+RN78USnwq
+         0klmKUgjmgen/FLZD0Pnwtbufwe7ztrK6VICDR4IApvtnWHGjBETpobLLB2bHzKJAM8W
+         4fQlUH+aNfbKMmT4ClpOFkCRx9ulVCUUY2hzLgjHV4XfqYeTbtq2KRhCVERWi+S4GzY1
+         rVG1DTEXI8Bd7BsUzTCvvPntEA636ktclmk0PUThBJxfdnTxb9bErp9yhIJC5zRvYOne
+         jk0w==
+X-Gm-Message-State: AOAM532fXNoKvecqWxvCqhOj4wE0cp5UdLzZoQc3zTVwg1/M1j8B1QPm
+        sEc1NacSkAskpthdj6kfQg7c9Gmr
+X-Google-Smtp-Source: ABdhPJxzC+ZPg5XgL015uE3mjILNjtX+FrI8x7vVuUSXf0H6sfGg1McS6Ar7Tu+US+CKEEoEI9DY8Q==
+X-Received: by 2002:a17:902:c213:: with SMTP id 19mr6698413pll.190.1590597611198;
+        Wed, 27 May 2020 09:40:11 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n8sm3001176pjq.49.2020.05.27.09.40.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 May 2020 09:40:10 -0700 (PDT)
+Subject: Re: [PATCH RFC v2 9/9] net: phy: read MMD ID from all present MMDs
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
+References: <20200527103318.GK1551@shell.armlinux.org.uk>
+ <E1jdtOF-00084V-7R@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <fb078299-4e50-68ae-fbfc-6a088ebf6126@gmail.com>
+Date:   Wed, 27 May 2020 09:40:08 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1jdtOF-00084V-7R@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The dynamic configuration interface for the General Params and the L2
-Lookup Params tables was copy-pasted between E/T devices and P/Q/R/S
-devices. Nonetheless, these interfaces are bitwise different (and not to
-mention, located at different SPI addresses).
 
-The driver is using dynamic reconfiguration of the General Parameters
-table for the port mirroring feature, which was therefore broken on
-P/Q/R/S.
+On 5/27/2020 3:34 AM, Russell King wrote:
+> Expand the device_ids[] array to allow all MMD IDs to be read rather
+> than just the first 8 MMDs, but only read the ID if the MDIO_STAT2
+> register reports that a device really is present here for these new
+> devices to maintain compatibility with our current behaviour.
+> 
+> 88X3310 PHY vendor MMDs do are marked as present in the
+> devices_in_package, but do not contain IEE 802.3 compatible register
+> sets in their lower space.  This avoids reading incorrect values as MMD
+> identifiers.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Note that I don't think this patch can be backported very far to stable
-trees (since it conflicts with some other development done since the
-introduction of the driver).
-
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105.h             |  4 ++
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 50 +++++++++++++++----
- .../net/dsa/sja1105/sja1105_static_config.c   | 10 ++--
- 3 files changed, 48 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 198d2a7d7f95..303b21470d77 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -322,6 +322,10 @@ int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
- 			const unsigned char *addr, u16 vid);
- 
- /* Common implementations for the static and dynamic configs */
-+size_t sja1105pqrs_general_params_entry_packing(void *buf, void *entry_ptr,
-+						enum packing_op op);
-+size_t sja1105pqrs_l2_lookup_params_entry_packing(void *buf, void *entry_ptr,
-+						  enum packing_op op);
- size_t sja1105_l2_forwarding_entry_packing(void *buf, void *entry_ptr,
- 					   enum packing_op op);
- size_t sja1105pqrs_l2_lookup_entry_packing(void *buf, void *entry_ptr,
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 2a8fbd7fdedc..f98c98a063e7 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -127,9 +127,15 @@
- #define SJA1105ET_SIZE_L2_LOOKUP_PARAMS_DYN_CMD			\
- 	SJA1105_SIZE_DYN_CMD
- 
-+#define SJA1105PQRS_SIZE_L2_LOOKUP_PARAMS_DYN_CMD		\
-+	(SJA1105_SIZE_DYN_CMD + SJA1105PQRS_SIZE_L2_LOOKUP_PARAMS_ENTRY)
-+
- #define SJA1105ET_SIZE_GENERAL_PARAMS_DYN_CMD			\
- 	SJA1105_SIZE_DYN_CMD
- 
-+#define SJA1105PQRS_SIZE_GENERAL_PARAMS_DYN_CMD			\
-+	(SJA1105_SIZE_DYN_CMD + SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY)
-+
- #define SJA1105PQRS_SIZE_AVB_PARAMS_DYN_CMD			\
- 	(SJA1105_SIZE_DYN_CMD + SJA1105PQRS_SIZE_AVB_PARAMS_ENTRY)
- 
-@@ -137,7 +143,7 @@
- 	(SJA1105_SIZE_DYN_CMD + SJA1105_SIZE_RETAGGING_ENTRY)
- 
- #define SJA1105_MAX_DYN_CMD_SIZE				\
--	SJA1105PQRS_SIZE_MAC_CONFIG_DYN_CMD
-+	SJA1105PQRS_SIZE_GENERAL_PARAMS_DYN_CMD
- 
- struct sja1105_dyn_cmd {
- 	bool search;
-@@ -494,6 +500,18 @@ sja1105et_l2_lookup_params_entry_packing(void *buf, void *entry_ptr,
- 	return 0;
- }
- 
-+static void
-+sja1105pqrs_l2_lookup_params_cmd_packing(void *buf,
-+					 struct sja1105_dyn_cmd *cmd,
-+					 enum packing_op op)
-+{
-+	u8 *p = buf + SJA1105PQRS_SIZE_L2_LOOKUP_PARAMS_ENTRY;
-+	const int size = SJA1105_SIZE_DYN_CMD;
-+
-+	sja1105_packing(p, &cmd->valid,   31, 31, size, op);
-+	sja1105_packing(p, &cmd->rdwrset, 30, 30, size, op);
-+}
-+
- static void
- sja1105et_general_params_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- 				     enum packing_op op)
-@@ -516,6 +534,18 @@ sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
- 	return 0;
- }
- 
-+static void
-+sja1105pqrs_general_params_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+				       enum packing_op op)
-+{
-+	u8 *p = buf + SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY;
-+	const int size = SJA1105_SIZE_DYN_CMD;
-+
-+	sja1105_packing(p, &cmd->valid,   31, 31, size, op);
-+	sja1105_packing(p, &cmd->errors,  30, 30, size, op);
-+	sja1105_packing(p, &cmd->rdwrset, 28, 28, size, op);
-+}
-+
- static void
- sja1105pqrs_avb_params_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- 				   enum packing_op op)
-@@ -693,12 +723,12 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_SCHEDULE_ENTRY_POINTS_PARAMS] = {0},
- 	[BLK_IDX_VL_FORWARDING_PARAMS] = {0},
- 	[BLK_IDX_L2_LOOKUP_PARAMS] = {
--		.entry_packing = sja1105et_l2_lookup_params_entry_packing,
--		.cmd_packing = sja1105et_l2_lookup_params_cmd_packing,
-+		.entry_packing = sja1105pqrs_l2_lookup_params_entry_packing,
-+		.cmd_packing = sja1105pqrs_l2_lookup_params_cmd_packing,
- 		.max_entry_count = SJA1105_MAX_L2_LOOKUP_PARAMS_COUNT,
- 		.access = (OP_READ | OP_WRITE),
--		.packed_size = SJA1105ET_SIZE_L2_LOOKUP_PARAMS_DYN_CMD,
--		.addr = 0x38,
-+		.packed_size = SJA1105PQRS_SIZE_L2_LOOKUP_PARAMS_DYN_CMD,
-+		.addr = 0x54,
- 	},
- 	[BLK_IDX_L2_FORWARDING_PARAMS] = {0},
- 	[BLK_IDX_AVB_PARAMS] = {
-@@ -710,12 +740,12 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.addr = 0x8003,
- 	},
- 	[BLK_IDX_GENERAL_PARAMS] = {
--		.entry_packing = sja1105et_general_params_entry_packing,
--		.cmd_packing = sja1105et_general_params_cmd_packing,
-+		.entry_packing = sja1105pqrs_general_params_entry_packing,
-+		.cmd_packing = sja1105pqrs_general_params_cmd_packing,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
--		.access = OP_WRITE,
--		.packed_size = SJA1105ET_SIZE_GENERAL_PARAMS_DYN_CMD,
--		.addr = 0x34,
-+		.access = (OP_READ | OP_WRITE),
-+		.packed_size = SJA1105PQRS_SIZE_GENERAL_PARAMS_DYN_CMD,
-+		.addr = 0x3B,
- 	},
- 	[BLK_IDX_RETAGGING] = {
- 		.entry_packing = sja1105_retagging_entry_packing,
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
-index 780aca034cdc..ff3fe471efc2 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
-@@ -146,9 +146,8 @@ static size_t sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
- /* TPID and TPID2 are intentionally reversed so that semantic
-  * compatibility with E/T is kept.
-  */
--static size_t
--sja1105pqrs_general_params_entry_packing(void *buf, void *entry_ptr,
--					 enum packing_op op)
-+size_t sja1105pqrs_general_params_entry_packing(void *buf, void *entry_ptr,
-+						enum packing_op op)
- {
- 	const size_t size = SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY;
- 	struct sja1105_general_params_entry *entry = entry_ptr;
-@@ -228,9 +227,8 @@ sja1105et_l2_lookup_params_entry_packing(void *buf, void *entry_ptr,
- 	return size;
- }
- 
--static size_t
--sja1105pqrs_l2_lookup_params_entry_packing(void *buf, void *entry_ptr,
--					   enum packing_op op)
-+size_t sja1105pqrs_l2_lookup_params_entry_packing(void *buf, void *entry_ptr,
-+						  enum packing_op op)
- {
- 	const size_t size = SJA1105PQRS_SIZE_L2_LOOKUP_PARAMS_ENTRY;
- 	struct sja1105_l2_lookup_params_entry *entry = entry_ptr;
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
