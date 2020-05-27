@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 116881E3E2D
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 11:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 988641E3E38
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 12:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729653AbgE0J5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 05:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S1729668AbgE0KAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 06:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729645AbgE0J5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 05:57:06 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96F1C061A0F;
-        Wed, 27 May 2020 02:57:05 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id w10so28201630ljo.0;
-        Wed, 27 May 2020 02:57:05 -0700 (PDT)
+        with ESMTP id S1729660AbgE0KAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 06:00:12 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307B3C061A0F;
+        Wed, 27 May 2020 03:00:12 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 82so14112513lfh.2;
+        Wed, 27 May 2020 03:00:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jTJhwZSJoyE8wrAnL4MnSgyDxfzg5z5BsSA6iH2Lsr4=;
-        b=I/UHm7IDoWtRiKnycgBMtf56gDPpQrztOCVzmZO2cu1mUG+xbHnZbehIc1PDMmyz2n
-         ipHj41QkegdeoTMWOWO8A6VHn6DgveZ+lAyiYeWBzJwwAJyejmudwu2WGe8gCh5IVzc3
-         1tKpxNl5f9WCa13bPo4T65791GJSXC/SLHR8I78o73aZz0NGRMDY7Q4nDrao3SbnYWab
-         22zuvOQfGaK6eLadMZWrEWgajDmWY2ercb6vreHeixQnjC3KhxLd14NRXL+VfPv0Ohs1
-         NUxbcl0X0BmOQEI9cmhoNatcks3sc6LYGr+s9bibIJhB3CMQnyDQ3+O3cjiVeOey3lDf
-         erkQ==
+        bh=bbRbY0KHq/DE+xFk5645tlp6NSa7U4JheXhifJETtOk=;
+        b=dY2Hl6yz+u8UpWZluySalMS34lkd6sqP3T362dnhpLDzJCp/mW5Lgng/U9FbxmgLI0
+         knpM5H3J7aBoPMWknfjyhUzp961K8AJqPIRMA3K0V4rEdSWnZXHR5Cwj376AMlWzkTeq
+         PJ1RZJIONAMG8gi9GvLp4rLNBavViZ1+XyU/j3qIUwXxfy7npFFSL33ParXr3KC3d7rS
+         Y5zr1TVVqtCd532tWpwyvUsOyTcq843ZErI+oXztfq+Nm23exJcxfvN7y606WUZHcO/Q
+         zZ9PtgKt2v8PwgvB4nrbxqnMK6hFS38StFIha62CXIzTNNM2IUYQyJxSWhWXGpcHJYu7
+         vDNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jTJhwZSJoyE8wrAnL4MnSgyDxfzg5z5BsSA6iH2Lsr4=;
-        b=dpqBOopuoD/IQqfwZUGyYyGUOIWFuNOPe39CI54DdeXYlFFcg+o71PA4/dxUoRGVcH
-         BXOgIKNp/Ca/KICuwLiaM6/UQQ2j4HjPlM2yyobmz8SAODHMPtdPrS7n1JygI2t96Nkr
-         VOiC8cQ8Ruc4XFRfoQIXNQHAVE6t+dS+JJ0Jjcfv94pk52rj7+9M6MNAb8+TEsOC326q
-         uu8pGpywTmgsqXVFvJdf1y50nsinl2bOWZR1bnNjUuGe23+rwVbq0PdhWjHOBTGauA8J
-         foiXRfvHubfyyNRcTyuYWm+YGEYh8MJIJfwVA7dOi+/RiWrhCTQvxIQrSJvCgpTbP75M
-         0YvA==
-X-Gm-Message-State: AOAM530U11RvQhCaXewIWXoyrWWXF7mIeFqojG2/PiUnmZ6u/KSvzxLk
-        Ebv4bEUuF4qnXS1kGWJo1+k=
-X-Google-Smtp-Source: ABdhPJzw5Z55iO0cTtVwUE5LkxageVrap6NYxPm2ll+URyAOP+9OobfaJ3meIyFBdtMHyQPG0lpeFg==
-X-Received: by 2002:a2e:9a0d:: with SMTP id o13mr2430084lji.15.1590573424447;
-        Wed, 27 May 2020 02:57:04 -0700 (PDT)
+        bh=bbRbY0KHq/DE+xFk5645tlp6NSa7U4JheXhifJETtOk=;
+        b=kAj6qDXPXi+YvOS1Z7gGVW+/wk+gGcGug/T/vitdlz8EPZRWcIzoE2SscMindXN2tR
+         gkwWc4BDpMAexNff6qrrsDL6Ok0gIYb2b1iRxXL9I+BEW/gXo6yfZS8nTV4mRMRvHskw
+         nViQ/RkRGS3CRQxdj2dbUPSgYB+t+prTdlzToiRK6oZf3hZO0ybNpjA8LVPu1Colo1C2
+         ECqjabdt7nYb9427Ri/BOm9wo9eDodot7vuZFijGvR+/b5GYq7WV14KJ3A5DhOBTQA0J
+         tcnq2irH7zGE1ml1LJLR3SZh0Xas0rUsK53Qux+2YMpBQQvju3234plmDTvJUXX0iP5+
+         xEWw==
+X-Gm-Message-State: AOAM530zX2r4RocKaZYOMcq6C6ULgrDQjGmd23iFv8rAvrtFcvVGljDJ
+        3f/r4SMERyQ3xN+VLaaq0sEB4qzcnhtlyQ==
+X-Google-Smtp-Source: ABdhPJzjWDaSMoFOsQ2TplozOLoo5AwFO5OdvrTjJYl39AF9HfCDXhR+zx09AkYyl/7AkcHS6UWNfQ==
+X-Received: by 2002:a19:8b06:: with SMTP id n6mr2676424lfd.66.1590573610386;
+        Wed, 27 May 2020 03:00:10 -0700 (PDT)
 Received: from bitter.drabanten.lan ([195.178.180.206])
-        by smtp.gmail.com with ESMTPSA id s8sm700499lfc.83.2020.05.27.02.57.02
+        by smtp.gmail.com with ESMTPSA id x28sm599811ljd.53.2020.05.27.03.00.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 02:57:03 -0700 (PDT)
+        Wed, 27 May 2020 03:00:09 -0700 (PDT)
 From:   Jonas Falkevik <jonas.falkevik@gmail.com>
 To:     marcelo.leitner@gmail.com, lucien.xin@gmail.com,
         nhorman@tuxdriver.com, vyasevich@gmail.com, davem@davemloft.net,
         kuba@kernel.org, linux-sctp@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jonas Falkevik <jonas.falkevik@gmail.com>
-Subject: [PATCH v2] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED} event
-Date:   Wed, 27 May 2020 11:56:40 +0200
-Message-Id: <20200527095640.270986-1-jonas.falkevik@gmail.com>
+Subject: [PATCH] sctp: fix typo sctp_ulpevent_nofity_peer_addr_change
+Date:   Wed, 27 May 2020 11:59:43 +0200
+Message-Id: <20200527095943.271140-1-jonas.falkevik@gmail.com>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,40 +64,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure SCTP_ADDR_{MADE_PRIM,ADDED} are sent only for associations
-that have been established.
-
-These events are described in rfc6458#section-6.1
-SCTP_PEER_ADDR_CHANGE:
-This tag indicates that an address that is
-part of an existing association has experienced a change of
-state (e.g., a failure or return to service of the reachability
-of an endpoint via a specific transport address).
+change typo in function name "nofity" to "notify"
+sctp_ulpevent_nofity_peer_addr_change ->
+sctp_ulpevent_notify_peer_addr_change
 
 Signed-off-by: Jonas Falkevik <jonas.falkevik@gmail.com>
 ---
-Changes in v2:
- - Check asoc state to be at least established.
-   Instead of associd being SCTP_FUTURE_ASSOC.
- - Common check for all peer addr change event
+ include/net/sctp/ulpevent.h | 2 +-
+ net/sctp/associola.c        | 8 ++++----
+ net/sctp/ulpevent.c         | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
- net/sctp/ulpevent.c | 3 +++
- 1 file changed, 3 insertions(+)
-
+diff --git a/include/net/sctp/ulpevent.h b/include/net/sctp/ulpevent.h
+index 0b032b92da0b..994e984eef32 100644
+--- a/include/net/sctp/ulpevent.h
++++ b/include/net/sctp/ulpevent.h
+@@ -80,7 +80,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_assoc_change(
+ 	struct sctp_chunk *chunk,
+ 	gfp_t gfp);
+ 
+-void sctp_ulpevent_nofity_peer_addr_change(struct sctp_transport *transport,
++void sctp_ulpevent_notify_peer_addr_change(struct sctp_transport *transport,
+ 					   int state, int error);
+ 
+ struct sctp_ulpevent *sctp_ulpevent_make_remote_error(
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index 437079a4883d..72315137d7e7 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -432,7 +432,7 @@ void sctp_assoc_set_primary(struct sctp_association *asoc,
+ 		changeover = 1 ;
+ 
+ 	asoc->peer.primary_path = transport;
+-	sctp_ulpevent_nofity_peer_addr_change(transport,
++	sctp_ulpevent_notify_peer_addr_change(transport,
+ 					      SCTP_ADDR_MADE_PRIM, 0);
+ 
+ 	/* Set a default msg_name for events. */
+@@ -574,7 +574,7 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
+ 
+ 	asoc->peer.transport_count--;
+ 
+-	sctp_ulpevent_nofity_peer_addr_change(peer, SCTP_ADDR_REMOVED, 0);
++	sctp_ulpevent_notify_peer_addr_change(peer, SCTP_ADDR_REMOVED, 0);
+ 	sctp_transport_free(peer);
+ }
+ 
+@@ -714,7 +714,7 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
+ 	list_add_tail_rcu(&peer->transports, &asoc->peer.transport_addr_list);
+ 	asoc->peer.transport_count++;
+ 
+-	sctp_ulpevent_nofity_peer_addr_change(peer, SCTP_ADDR_ADDED, 0);
++	sctp_ulpevent_notify_peer_addr_change(peer, SCTP_ADDR_ADDED, 0);
+ 
+ 	/* If we do not yet have a primary path, set one.  */
+ 	if (!asoc->peer.primary_path) {
+@@ -840,7 +840,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+ 	 * to the user.
+ 	 */
+ 	if (ulp_notify)
+-		sctp_ulpevent_nofity_peer_addr_change(transport,
++		sctp_ulpevent_notify_peer_addr_change(transport,
+ 						      spc_state, error);
+ 
+ 	/* Select new active and retran paths. */
 diff --git a/net/sctp/ulpevent.c b/net/sctp/ulpevent.c
-index c82dbdcf13f2..77d5c36a8991 100644
+index 77d5c36a8991..0c3d2b4d7321 100644
 --- a/net/sctp/ulpevent.c
 +++ b/net/sctp/ulpevent.c
-@@ -343,6 +343,9 @@ void sctp_ulpevent_nofity_peer_addr_change(struct sctp_transport *transport,
- 	struct sockaddr_storage addr;
- 	struct sctp_ulpevent *event;
+@@ -336,7 +336,7 @@ static struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
+ 	return NULL;
+ }
  
-+	if (asoc->state < SCTP_STATE_ESTABLISHED)
-+		return;
-+
- 	memset(&addr, 0, sizeof(struct sockaddr_storage));
- 	memcpy(&addr, &transport->ipaddr, transport->af_specific->sockaddr_len);
- 
+-void sctp_ulpevent_nofity_peer_addr_change(struct sctp_transport *transport,
++void sctp_ulpevent_notify_peer_addr_change(struct sctp_transport *transport,
+ 					   int state, int error)
+ {
+ 	struct sctp_association *asoc = transport->asoc;
 -- 
 2.25.4
 
