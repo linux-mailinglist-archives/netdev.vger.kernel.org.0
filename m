@@ -2,84 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A144F1E3D6C
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 11:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95141E3D7C
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 11:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728477AbgE0JRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 05:17:47 -0400
-Received: from mga12.intel.com ([192.55.52.136]:52630 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725820AbgE0JRr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 05:17:47 -0400
-IronPort-SDR: EPJim9tSr0LXmvlOxmZmWr+63LG0lBTy6x26zTWWoUioO5ZC7r6+uVzh1rAOnj047fct0ylO8Q
- NPZeVYCquLMg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 02:17:46 -0700
-IronPort-SDR: 40oXLoq2PILk5e50dpXaB6hUneU0F+HlXUvD3DxEWqiiKhfzcf7eE1X1PvDXbUadDuvii9iRTR
- PYV49oHaa5nA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,440,1583222400"; 
-   d="scan'208";a="414138598"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 27 May 2020 02:17:44 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jdsBz-000Bjv-75; Wed, 27 May 2020 17:17:43 +0800
-Date:   Wed, 27 May 2020 17:16:46 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jasowang@redhat.com
-Cc:     kbuild-all@lists.01.org, lulu@redhat.com, dan.daly@intel.com,
-        cunming.liang@intel.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [RFC PATCH] vdpa: vhost_vdpa_poll_stop() can be static
-Message-ID: <20200527091646.GA80910@369e1fe990b8>
-References: <1590471145-4436-1-git-send-email-lingshan.zhu@intel.com>
+        id S1728599AbgE0JYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 05:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728585AbgE0JYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 05:24:20 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4411C061A0F
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 02:24:19 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id r15so2305715wmh.5
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 02:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iK/p1RCXvKF/OvIr3JooWyPvnEDB/sbZcEn98mkIDwE=;
+        b=K9sfDNJcKCyRlgVNfYviMiUKOkM1L1ErbyvdGqC349mim10kIuJ7iesKN3kHKaByg/
+         9aMV+55ANv6LyrS67uYorbrZ7jMaXwcPPtbOq66POFClQLvDUGeA3ckVrMl1X8Obagqx
+         E2oZe/pmR+eoF1mVMwgvRp3DI33gG466+YY4+Qd3Fl5YXJ9zW433Xk0/0UNwi3JxbOpI
+         SwVI4dnmpxTuQqJF12eLnupZw2ZTGgpRF6DHpEppgi+dgLsu7l6Nm5Bm+8r0y5glNSl8
+         z3cCOiDxTJ+vg4IFq8+dNTQ4VLZSIOW4fExS/0qo3rcOcCpBlh6FS1kkDKAKDbrqPfzb
+         xFcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iK/p1RCXvKF/OvIr3JooWyPvnEDB/sbZcEn98mkIDwE=;
+        b=HDBm//I1+0YysKnbM4CrvYkEooqwhffRwb5QBhwKQs5PZ2eVQhPLRyoeVpeGXwRLnx
+         ihWlxzeeGQTz1K6RUwpa0Rnwod8TAZXNxaGj2UQ51IBSj4k+0PZuTzFdUw09xJ2eWDpl
+         l0fTqPOTRVdazPiO8IkJsmv5P3TaG7eLUqrLCstzhdQollDSJ2GlzKrTh7VnUy8efYSz
+         +lGUmX/A3mX81OXctb/nvENuDl3tftFf+GQ8J2e6Xauxs6iaCvKdITF8JnniPD6oWLql
+         L4e0uwQ+eOZZ5N4MxJ0wkNOBMLWCf2Oju+OehnzSrldMZDeBAf5bh/EZLU5Z3RyP3oUp
+         M2Yg==
+X-Gm-Message-State: AOAM532fancqokwx5TNMZUPdfWLQCQy67EBcaqk2KYjUtRI8cJmBQfWx
+        DZaG6VHj0RqNPFRsXbntJipVdQ==
+X-Google-Smtp-Source: ABdhPJyCox//hlsTwOFPPKuQKWeWBXVZn0uc8sk6yk61mpiZuZ7Lb2amN/+W7d8zFEtcVbRbgYS+mw==
+X-Received: by 2002:a05:600c:2614:: with SMTP id h20mr3540149wma.155.1590571458351;
+        Wed, 27 May 2020 02:24:18 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id o6sm2278500wrp.3.2020.05.27.02.24.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 02:24:17 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] net: ethernet: mtk-star-emac: fix error path in RX handling
+Date:   Wed, 27 May 2020 11:24:04 +0200
+Message-Id: <20200527092404.3567-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1590471145-4436-1-git-send-email-lingshan.zhu@intel.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Signed-off-by: kbuild test robot <lkp@intel.com>
+The dma_addr field in desc_data must not be overwritten until after the
+new skb is mapped. Currently we do replace it with uninitialized value
+in error path. This change fixes it by moving the assignment before the
+label to which we jump after mapping or allocation errors.
+
+Fixes: 8c7bd5a454ff ("net: ethernet: mtk-star-emac: new driver")
+Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- vdpa.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index d3a2acafedecd4..5037ce7f48cd42 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -287,12 +287,12 @@ static long vhost_vdpa_get_vring_num(struct vhost_vdpa *v, u16 __user *argp)
+diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+index b74349cede28..72bb624a6a68 100644
+--- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
++++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+@@ -1308,6 +1308,8 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
+ 		goto push_new_skb;
+ 	}
  
- 	return 0;
- }
--void vhost_vdpa_poll_stop(struct vhost_virtqueue *vq)
-+static void vhost_vdpa_poll_stop(struct vhost_virtqueue *vq)
- {
- 	vhost_poll_stop(&vq->poll);
- }
++	desc_data.dma_addr = new_dma_addr;
++
+ 	/* We can't fail anymore at this point: it's safe to unmap the skb. */
+ 	mtk_star_dma_unmap_rx(priv, &desc_data);
  
--int vhost_vdpa_poll_start(struct vhost_virtqueue *vq)
-+static int vhost_vdpa_poll_start(struct vhost_virtqueue *vq)
- {
- 	struct vhost_poll *poll = &vq->poll;
- 	struct file *file = vq->kick;
-@@ -747,7 +747,7 @@ static int vhost_vdpa_poll_worker(wait_queue_entry_t *wait, unsigned int mode,
- 	return 0;
- }
+@@ -1318,7 +1320,6 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
+ 	netif_receive_skb(desc_data.skb);
  
--void vhost_vdpa_poll_init(struct vhost_dev *dev)
-+static void vhost_vdpa_poll_init(struct vhost_dev *dev)
- {
- 	struct vhost_virtqueue *vq;
- 	struct vhost_poll *poll;
+ push_new_skb:
+-	desc_data.dma_addr = new_dma_addr;
+ 	desc_data.len = skb_tailroom(new_skb);
+ 	desc_data.skb = new_skb;
+ 
+-- 
+2.25.0
+
