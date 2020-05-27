@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A006F1E4B8A
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:11:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF911E4B9A
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731167AbgE0RLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 13:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        id S2387708AbgE0RM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 13:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbgE0RLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:11:33 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB04C08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:11:33 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id p20so13430200iop.11
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:11:33 -0700 (PDT)
+        with ESMTP id S2387476AbgE0RM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:12:58 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E15C03E97D
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:12:58 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id l10so2058536wrr.10
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=ahHryfq5nLP7OxK7AYhV0J7hu5fGF/+Tti5VS7s9PGY=;
-        b=LElVz68MiE/YQDaQQkjnIce2x8Dp72FAmdzi9u6cMlW5QOxCfMAHEVZGRsqVX5mpXC
-         XFl0fP6CtVCeyb6KGocVAlBzo4eJh1t3LZ9leAqqCcOCP+D4KfHUerX23DpoV5FPP2dp
-         rwgefUVg9DscpsWiswBskJBCWxWPQnUB8pbaeeRukkyBb3tddMZAHl74S/fCexuRZrpf
-         MV4BYsWxXwxhQRhTEEH4BEI80Gq1fduPhL+urfsUed94PDAOB5hVrHulP9XWSx9jtrHD
-         ELrUxbe2N8532doDagOConj6vAYlqv2PkbeRMAFebDIRKToIWc11KXSI5HyZiggVdBHu
-         02TQ==
+        bh=WqY7cizXXGsMVaJroiLPzVUybPi9E2RhTXUhz7jhHk0=;
+        b=rhsHAfKbP502QjgpgDbEkj61Pl15Mnx+N+Opubpu5E3/8vk4ut48ixR8HFOj40H84w
+         h6tM+s0vVW9iwNUzPbD7dVV9VwBIpXPf/0LRCmXtQzJRYffvMTOWCXNbgkv3VjHEzy6A
+         bsmIPwAKzPjQanX5aQhvnFjIUMfDLzHKjZMrvDtz0/tIyVENn5myXb0eWBY7PWZrsEmB
+         WTXpzoZO68vlLRzNMYL7mziwc69QHkFVIDdEsg3p6Bwf0vYYo+jpbhl5i/tdpQ9jZLB6
+         l6uL+Vvq9fceKvjV+0wFVl0CPnWg1OdsJ+cjyyOgYx6wTmXb2SNad5jO5D609ENx2f6S
+         zKrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ahHryfq5nLP7OxK7AYhV0J7hu5fGF/+Tti5VS7s9PGY=;
-        b=A/8aecfCpwvl53Zov4Kl3Svbfr9q546xA0g0vlcIx6FdvaUN7S2do+obUSOH9oLEsl
-         muR2AfgDqdedHUJutlt402CU48EMkVAgUbz+qAcWCiMqqnv5LJTAk2Wh/dJBP3NSaBHb
-         GdRlzfzUAo0UqKp8eYeNlKnrBAW4i50UBTq1i5suF91tBYo3CbSa+lAjqCW3LAQzqFjd
-         yyqvhhQgh+InPjiPzDY3eZX4l+yDqzBRQXy+hkMY2C1uKWfAxrFeBG4WTG4qeKknEOcJ
-         xsdmoIcuHfN014Km/wbWlV9l6Q5QFaMHRMrPSqBPBYbffMeaAqM/Cy8UQSG3y5PW5VYE
-         l8JQ==
-X-Gm-Message-State: AOAM530lrRFwFlj2xMC32uoZviiCb41Ixka7aiDFGn+p0koJc7io7Cb5
-        m1k1qq9GWUsj45M1/3ogF+kbPBIPdh3mpNA+3fSTBA==
-X-Google-Smtp-Source: ABdhPJzRJWD2xome9tmo6qlIlwT/4yiFIyh+d5ScsqUx9bHKbFX0P+hIQwjCVykxFquNovp8ybfZbwyVzATHrIEOpfg=
-X-Received: by 2002:a05:6602:2c88:: with SMTP id i8mr22263788iow.74.1590599492383;
- Wed, 27 May 2020 10:11:32 -0700 (PDT)
+        bh=WqY7cizXXGsMVaJroiLPzVUybPi9E2RhTXUhz7jhHk0=;
+        b=WQfxu9QXW1g6w9+HMukJ1AdVb60uSeZi8DztY28h3ZQuX9k2eMe8+BRpeBlND+f/ef
+         VuVZRVNgKA829e7PfjdyTXWwZVovcPrh2sCHeYh0oiRR0JDRUCF9lB00hZlvkh2AEFUg
+         yKozesYQcsTZk/+j7K1S+fpPIde8Y9YfzO7IiB70QoI0v97dIOQNqBSDe8sCMSPfcEbQ
+         0OokxsrL/FiXk5mSWBIbVG9QFiSGKDWl7lLrB6oxRaYk4JwjMov/rdmRrDm6+5eU0DuC
+         zlcIfWPDFoxVUK5abW1gVURoUw6o9NBxUGsuLAgmawDOi226Qvc73D28sB5+PPqCNKK4
+         2FVA==
+X-Gm-Message-State: AOAM532XEYzT/S0aETMlWdlNLLBDWX28dWk9HbN+x/nN88yE8I4SuCdb
+        xv/uLzJeg/m+D8k6dbJnzAtOPL/KaOHvz+e7DubAXX7kl1o=
+X-Google-Smtp-Source: ABdhPJyTlDgHHNfoaIxbU8IbM5uMbpJA27aUqHT2fmwPO/FKwY1XyxONVG+HPc7BE6mdKDtY4vHeBP7E/JzTek+YYWU=
+X-Received: by 2002:a5d:4282:: with SMTP id k2mr18901506wrq.196.1590599576856;
+ Wed, 27 May 2020 10:12:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200525154633.GB22403@atlantis>
-In-Reply-To: <20200525154633.GB22403@atlantis>
-From:   Christophe Gouault <christophe.gouault@6wind.com>
-Date:   Wed, 27 May 2020 19:11:21 +0200
-Message-ID: <CADdy8Ho0v7SV_dNR+syBFX79U+iE62sumLjDQypgkxs536fCbQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] xfrm: no-anti-replay protection flag
-To:     =?UTF-8?Q?Petr_Van=C4=9Bk?= <pv@excello.cz>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <CAG_fn=W55uuPbpvjzCphgiMbmhnFmmWY=KcOGvmUv14_JOGc5g@mail.gmail.com>
+ <20181213115936.GG21324@unicorn.suse.cz> <20181213122004.GH21324@unicorn.suse.cz>
+ <CAG_fn=VSEw2NvrE=GE4f4H6CAD-6BjUQvz3W06nLmF8tg7CfBA@mail.gmail.com>
+ <def5d586-3a8c-01b7-c6dd-bc284336b76e@iogearbox.net> <7bf9e46f-93a1-b6ff-7e75-53ace009c77c@iogearbox.net>
+ <CAG_fn=WrWLC7v8btiZfRSSj1Oj6WymLmwWq4x1Ss3rQ4P0cOOA@mail.gmail.com>
+ <CAG_fn=W_BCW5OvP2tayQLcrTuiXCXDBYDYSJ7U6xHftDFyLu3A@mail.gmail.com> <CAADnVQ+GFuDkx+xW42wL60=W4bz5C8Q-pNNP+f2txy_hY-TeUA@mail.gmail.com>
+In-Reply-To: <CAADnVQ+GFuDkx+xW42wL60=W4bz5C8Q-pNNP+f2txy_hY-TeUA@mail.gmail.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Wed, 27 May 2020 19:12:45 +0200
+Message-ID: <CAG_fn=WfQ4KG5FCwYQPbHX6PJ1f8wvJYq+Q9fBugyCbMBdiB6Q@mail.gmail.com>
+Subject: Re: Self-XORing BPF registers is undefined behavior
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Dmitriy Vyukov <dvyukov@google.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -63,102 +68,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Petr,
+On Wed, May 27, 2020 at 6:58 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, May 27, 2020 at 8:52 AM Alexander Potapenko <glider@google.com> w=
+rote:
+> >
+> > This basically means that BPF's output register was uninitialized when
+> > ___bpf_prog_run() returned.
+> >
+> > When I replace the lines initializing registers A and X in net/core/fil=
+ter.c:
+> >
+> > -               *new_insn++ =3D BPF_ALU32_REG(BPF_XOR, BPF_REG_A, BPF_R=
+EG_A);
+> > -               *new_insn++ =3D BPF_ALU32_REG(BPF_XOR, BPF_REG_X, BPF_R=
+EG_X);
+> >
+> > with
+> >
+> > +               *new_insn++ =3D BPF_MOV32_IMM(BPF_REG_A, 0);
+> > +               *new_insn++ =3D BPF_MOV32_IMM(BPF_REG_X, 0);
+> >
+> > , the bug goes away, therefore I think it's being caused by XORing the
+> > initially uninitialized registers with themselves.
+> >
+> > kernel/bpf/core.c:1408, where the uninitialized value was stored to
+> > memory, points to the "ALU(ADD,  +)" macro in ___bpf_prog_run().
+> > But the debug info seems to be incorrect here: if I comment this line
+> > out and unroll the macro manually, KMSAN points to "ALU(SUB,  -)".
+> > Most certainly it's actually one of the XOR instruction declarations.
+> >
+> > Do you think it makes sense to use the UB-proof BPF_MOV32_IMM
+> > instructions to initialize the registers?
+>
+> I think it's better for UBsan to get smarter about xor-ing.
 
-This patch is useful, however I think you should change the name of
-the option and amend its description:
-the option does not disable anti-replay in output (it can only be
-disabled in input), it allows the output sequence number to wrap, and
-it assumes that the remote peer disabled anti-replay in input.
+Could you please elaborate on this? How exactly should KMSAN handle
+this situation?
+Note that despite the source says "BPF_ALU32_REG(BPF_XOR, BPF_REG_A,
+BPF_REG_A);", it doesn't necessarily boil down to an expression like A
+=3D A ^ A. It's more likely that temporary values will be involved,
+making it quite hard to figure out whether the two operands are really
+the same.
+For an expression like A =3D B ^ C, KMSAN just calculates A's shadow
+bits based on the values and the shadow bits of B and C. If either B
+or C is uninitialized, the result will be uninitialized as well, even
+if both B and C contain the same values. It's therefore strange to
+expect the tool to behave differently if B and C are the same
+variable.
 
-So you I suggest you change the name of the option to something like
-XFRM_SA_XFLAG_OSEQ_MAY_WRAP or XFRM_SA_XFLAG_ALLOW_OSEQ_WRAP.
-
-Best regards,
-Christophe
 
 
-Le lun. 25 mai 2020 =C3=A0 17:53, Petr Van=C4=9Bk <pv@excello.cz> a =C3=A9c=
-rit :
->
-> RFC 4303 in section 3.3.3 suggests to disable anti-replay for manually
-> distributed ICVs.
->
-> This patch introduces new extra_flag XFRM_SA_XFLAG_NO_ANTI_REPLAY which
-> disables anti-replay for outbound packets if set. The flag is used only
-> in legacy and bmp code, because esn should not be negotiated if
-> anti-replay is disabled (see note in 3.3.3 section).
->
-> Signed-off-by: Petr Van=C4=9Bk <pv@excello.cz>
-> ---
->  include/uapi/linux/xfrm.h |  1 +
->  net/xfrm/xfrm_replay.c    | 12 ++++++++----
->  2 files changed, 9 insertions(+), 4 deletions(-)
->
-> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-> index 5f3b9fec7b5f..4842b1ed49e9 100644
-> --- a/include/uapi/linux/xfrm.h
-> +++ b/include/uapi/linux/xfrm.h
-> @@ -387,6 +387,7 @@ struct xfrm_usersa_info {
->  };
->
->  #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP  1
-> +#define XFRM_SA_XFLAG_NO_ANTI_REPLAY   2
->
->  struct xfrm_usersa_id {
->         xfrm_address_t                  daddr;
-> diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-> index 98943f8d01aa..1602843aa2ec 100644
-> --- a/net/xfrm/xfrm_replay.c
-> +++ b/net/xfrm/xfrm_replay.c
-> @@ -89,7 +89,8 @@ static int xfrm_replay_overflow(struct xfrm_state *x, s=
-truct sk_buff *skb)
->         if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
->                 XFRM_SKB_CB(skb)->seq.output.low =3D ++x->replay.oseq;
->                 XFRM_SKB_CB(skb)->seq.output.hi =3D 0;
-> -               if (unlikely(x->replay.oseq =3D=3D 0)) {
-> +               if (unlikely(x->replay.oseq =3D=3D 0) &&
-> +                   !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY=
-)) {
->                         x->replay.oseq--;
->                         xfrm_audit_state_replay_overflow(x, skb);
->                         err =3D -EOVERFLOW;
-> @@ -168,7 +169,8 @@ static int xfrm_replay_overflow_bmp(struct xfrm_state=
- *x, struct sk_buff *skb)
->         if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
->                 XFRM_SKB_CB(skb)->seq.output.low =3D ++replay_esn->oseq;
->                 XFRM_SKB_CB(skb)->seq.output.hi =3D 0;
-> -               if (unlikely(replay_esn->oseq =3D=3D 0)) {
-> +               if (unlikely(replay_esn->oseq =3D=3D 0) &&
-> +                   !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY=
-)) {
->                         replay_esn->oseq--;
->                         xfrm_audit_state_replay_overflow(x, skb);
->                         err =3D -EOVERFLOW;
-> @@ -572,7 +574,8 @@ static int xfrm_replay_overflow_offload(struct xfrm_s=
-tate *x, struct sk_buff *sk
->
->                 XFRM_SKB_CB(skb)->seq.output.hi =3D 0;
->                 xo->seq.hi =3D 0;
-> -               if (unlikely(oseq < x->replay.oseq)) {
-> +               if (unlikely(oseq < x->replay.oseq) &&
-> +                   !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY=
-)) {
->                         xfrm_audit_state_replay_overflow(x, skb);
->                         err =3D -EOVERFLOW;
->
-> @@ -611,7 +614,8 @@ static int xfrm_replay_overflow_offload_bmp(struct xf=
-rm_state *x, struct sk_buff
->
->                 XFRM_SKB_CB(skb)->seq.output.hi =3D 0;
->                 xo->seq.hi =3D 0;
-> -               if (unlikely(oseq < replay_esn->oseq)) {
-> +               if (unlikely(oseq < replay_esn->oseq) &&
-> +                   !(x->props.extra_flags & XFRM_SA_XFLAG_NO_ANTI_REPLAY=
-)) {
->                         xfrm_audit_state_replay_overflow(x, skb);
->                         err =3D -EOVERFLOW;
->
-> --
-> 2.26.2
->
+--=20
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
