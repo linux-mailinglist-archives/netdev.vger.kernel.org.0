@@ -2,99 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6342B1E4263
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649391E4286
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730025AbgE0Meu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 08:34:50 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:31342 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728143AbgE0Mes (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 08:34:48 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590582887; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=+mQNVzce+4+RLoIQRxILi9XM/m92f1kvOextGxb68/E=; b=Q4bDhs1ZaNLV4wvZzLGIeVd0/uaDwXXKkwtXUjhwK+yNdjcVm6YQ5RDIcr4a2sRDe1Xcp5Nv
- RDSvYUnCEvRG3WPGMaRz3CHMg9LaUdi8+9C9B0/8xovTrIprjNTe/VlB7MNO2iJtnWWHW1kN
- NS32XqZtfxuO4Og74RhTyQIpeqw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5ece5e62b4f0a9ae220406ba (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 27 May 2020 12:34:42
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 52CF1C43391; Wed, 27 May 2020 12:34:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D435FC433C9;
-        Wed, 27 May 2020 12:34:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D435FC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 00/10] staging: wfx: introduce nl80211 vendor extensions
-References: <20200526171821.934581-1-Jerome.Pouiller@silabs.com>
-Date:   Wed, 27 May 2020 15:34:37 +0300
-In-Reply-To: <20200526171821.934581-1-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Tue, 26 May 2020 19:18:11 +0200")
-Message-ID: <87imghv9nm.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1730154AbgE0MjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 08:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729919AbgE0MjK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 08:39:10 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D63BC08C5C1;
+        Wed, 27 May 2020 05:39:10 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q24so1476968pjd.1;
+        Wed, 27 May 2020 05:39:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cNOcuDRmAg9W+Ilz7Xfca09ahL9N+UWy02PGGnf96EQ=;
+        b=iIoAWEEfsTTQlC4b85tbUnew0L5PF+2vid+TiL+M4Oy26yYzMNA9xKZtL9VXI34DBW
+         c56wYH4BZikqN8GN5vHsWLF5ZBnlCpIqFV8nTNvZbk/SIz/pRlsouWLzuAe9aemCh2bL
+         LTK7u3Dx/YIGZ6Coma7Kp/lIcXoRBSQNyrns0xGysmw8qovS538/m6s76Vlhl4mC5By9
+         GEV77e/rqPiZyyw26Vsd00z7B1FfDxJSdUsHiO1jFFT2OmeF+523hn6XgqgsEkeL2cXN
+         0oiLzIH40kKuZBhme8JerS0K3dCzpZAQIJ5TDHgbyM+x9zuiV8OTxXw9vtKQp/0Uvwzw
+         7Vlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cNOcuDRmAg9W+Ilz7Xfca09ahL9N+UWy02PGGnf96EQ=;
+        b=pDlweMWkQF9cT7GtH1rZ3W8MoLgRnKqMSqpMuEIjfyFiCFdQGfubfYX02FWomQNgi7
+         zCBDQtojmaZVGzuYQPVMMja+Z9Qif09PUfIULCI5oXX2p36h5bhIKCukbtdJFOOLrRcb
+         rNvJnfNU+JUEvjQ68rXO49FS8nSqjQ7ZQ5EnxzHPm49qmf6Nzr59+oHD4gII60+o4DeD
+         oculnja8WPn0I8hDwjowzPIe9oa9zMZyoMV4RKhSCj+djgrVmLRsie4bG1DJ2zRxNvj1
+         jHdg/J7POm9p9UZ+OaB1+bvQ3GVed82jysOCE19oBNRiZJkawmbof3j8jEgbFiT7CMJO
+         2C8w==
+X-Gm-Message-State: AOAM531gvDc91TwMYnw2cig548k37DIRLoW4ixlUUuK8HxlMHnEJsgB9
+        5Nm/YYv3qLr/1rskPk9QGGw=
+X-Google-Smtp-Source: ABdhPJxIUMIO6trfpPAR6lWOc9IVk96ID3Uk2TR5iyHdA6cQg8aOHP2SJNMmK2pNBSr7jhwFvQwaTA==
+X-Received: by 2002:a17:90a:1a90:: with SMTP id p16mr4492000pjp.185.1590583149637;
+        Wed, 27 May 2020 05:39:09 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q12sm2139236pfn.129.2020.05.27.05.39.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 05:39:08 -0700 (PDT)
+Date:   Wed, 27 May 2020 20:38:58 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
+Message-ID: <20200527123858.GH102436@dhcp-12-153.nay.redhat.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+ <20200526140539.4103528-1-liuhangbin@gmail.com>
+ <87zh9t1xvh.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87zh9t1xvh.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+On Wed, May 27, 2020 at 12:21:54PM +0200, Toke Høiland-Jørgensen wrote:
+> > The example in patch 2 is functional, but not a lot of effort
+> > has been made on performance optimisation. I did a simple test(pkt size 64)
+> > with pktgen. Here is the test result with BPF_MAP_TYPE_DEVMAP_HASH
+> > arrays:
+> >
+> > bpf_redirect_map() with 1 ingress, 1 egress:
+> > generic path: ~1600k pps
+> > native path: ~980k pps
+> >
+> > bpf_redirect_map_multi() with 1 ingress, 3 egress:
+> > generic path: ~600k pps
+> > native path: ~480k pps
+> >
+> > bpf_redirect_map_multi() with 1 ingress, 9 egress:
+> > generic path: ~125k pps
+> > native path: ~100k pps
+> >
+> > The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
+> > the arrays and do clone skb/xdpf. The native path is slower than generic
+> > path as we send skbs by pktgen. So the result looks reasonable.
+> 
+> How are you running these tests? Still on virtual devices? We really
 
-> This series introduces some nl80211 vendor extensions to the wfx driver.
->
-> This series may lead to some discussions:
->
->   1. Patch 7 allows to change the dynamic PS timeout. I have found
->      an API in wext (cfg80211_wext_siwpower()) that do more or less the
->      same thing. However, I have not found any equivalent in nl80211. Is it
->      expected or this API should be ported to nl80211?
+I run it with the test topology in patch 2/2. The test is run on physical
+machines, but I use veth interface. Do you mean use a physical NIC driver
+for testing?
 
-struct wireless_dev::ps_timeout doesn't work for you?
 
->
->   2. The device The device allows to do Packet Traffic Arbitration (PTA or
->      also Coex). This feature allows the device to communicate with another
->      RF device in order to share the access to the RF. The patch 9 provides
->      a way to configure that. However, I think that this chip is not the
->      only one to provide this feature. Maybe a standard way to change
->      these parameters should be provided?
->
->   3. For these vendor extensions, I have used the new policy introduced by
->      the commit 901bb989185516 ("nl80211: require and validate vendor
->      command policy"). However, it seems that my version of 'iw' is not
->      able to follow this new policy (it does not pack the netlink
->      attributes into a NLA_NESTED). I could develop a tool specifically for
->      that API, but it is not very handy. So, in patch 10, I have also
->      introduced an API for compatibility with iw. Any comments about this?
+BTW, when using pktgen, I got an panic because the skb don't have enough
+header room. The code path looks like
 
-If you want the driver out of staging I recommend not adding any vendor
-commands until the driver is moved to drivers/net/wireless. Also do note
-that we have special rules for nl80211 vendor commands:
+do_xdp_generic()
+  - netif_receive_generic_xdp()
+    - skb_headroom(skb) < XDP_PACKET_HEADROOM
+      - pskb_expand_head()
+        - BUG_ON(skb_shared(skb))
 
-https://wireless.wiki.kernel.org/en/developers/documentation/nl80211#vendor-specific_api
+So I added a draft patch for pktgen, not sure if it has any influence.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+index 08e2811b5274..fee17310c178 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -170,6 +170,7 @@
+ #include <linux/uaccess.h>
+ #include <asm/dma.h>
+ #include <asm/div64.h>         /* do_div */
++#include <linux/bpf.h>
+
+ #define VERSION        "2.75"
+ #define IP_NAME_SZ 32
+@@ -2692,7 +2693,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
+ static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
+                                        struct pktgen_dev *pkt_dev)
+ {
+-       unsigned int extralen = LL_RESERVED_SPACE(dev);
++       unsigned int extralen = LL_RESERVED_SPACE(dev) + XDP_PACKET_HEADROOM;
+        struct sk_buff *skb = NULL;
+        unsigned int size;
+
+> need results from a physical setup in native mode to assess the impact
+> on the native-XDP fast path. The numbers above don't tell much in this
+> regard. I'd also like to see a before/after patch for straight
+> bpf_redirect_map(), since you're messing with the fast path, and we want
+> to make sure it's not causing a performance regression for regular
+> redirect.
+
+OK, I will write a test with 1 ingress + 1 egress for bpf_redirect_map_multi.
+Just as Eelco said.
+> 
+> Finally, since the overhead seems to be quite substantial: A comparison
+> with a regular network stack bridge might make sense? After all we also
+> want to make sure it's a performance win over that :)
+
+OK, Will do it.
+
+Thanks
+Hangbin
