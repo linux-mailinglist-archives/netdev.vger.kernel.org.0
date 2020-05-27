@@ -2,216 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE0C1E3AA6
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:32:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436681E3AB7
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387572AbgE0Hb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 03:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387411AbgE0Hbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:31:55 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A729DC061A0F;
-        Wed, 27 May 2020 00:31:55 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j21so11379542pgb.7;
-        Wed, 27 May 2020 00:31:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dDm+9Z+VPJSjQt7jMvgBvDOrkZkCZvbOfUxGN5gTgvk=;
-        b=S+SvSCvKaczRkh6E5rg4fK7H9JKrdv2NKFW/1Jl8phKXX0v58SP3vNScUBJJeZ1jiH
-         9wLuz07hmh7lsd6yMzwVIkkkVf8ceMzdc0Yr6NBA6knAhwlR7t2dO3BIjvTCJ3OLCbD2
-         eiX5wWpq6qq7lit0AHrOMDrsc9wZAA/LPJbP3dVzoWAMjMaPLScRQHGXskjrUV5c3sb7
-         t/0QV6wVICKk9vPcOmHRH9xT2sdZam18hOEPpAHY8rWLzwzdQxnWPKS9L1QVix2lwmEo
-         IrwgiicjTwyOegjjNIG+cM8VayUT02sRe5t6mz8WhQ577Wlpb7Kl0FtGgsbzhKr0iCcx
-         MPXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dDm+9Z+VPJSjQt7jMvgBvDOrkZkCZvbOfUxGN5gTgvk=;
-        b=VqgEVy1HOR1sSHbLyTTuMT6rEA3t8qTD/KdM68ubjzoCfy7jOlm9Sh29m1a3xCID06
-         Icdbr4I69/2zHEF14thfGW3DekDHyiJvy3L4Cvjrb74RNPG/2KAMYaIeU9RDig1hPXBB
-         am6WEPusU9G9gKclpYqiOFlNawRCDUMy85bKynjQaUz54ryty49PHHCPtzsjrfTQmBFh
-         jakL1DyvbFCtjEYNNti2uyMkBQCaM6SO9QzdUiPcuel3k+dOIGWnhP7POH3x+OPGxL5D
-         arJ98iaFNbEAdPH5E+FB5/abXH2/4NHczloYBP46wdVnY7uvDccGxhHPdFp3XZtFDc0b
-         Oktw==
-X-Gm-Message-State: AOAM531oEkwRoGUAeTAQSijVGp4U6IMOJTiiCDZVsNHE6v99PhwjpnRA
-        u/nytypaOWvTu2t6x9r/elg=
-X-Google-Smtp-Source: ABdhPJzvlSTCcW6WROkDcDvZLRqu96Xzc6vtJDJ3FS/a0I++olF+01zUgD6+TMAJ9TnmwyAr3yE5Dg==
-X-Received: by 2002:a65:498f:: with SMTP id r15mr2697101pgs.345.1590564714992;
-        Wed, 27 May 2020 00:31:54 -0700 (PDT)
-Received: from ubuntu-s3-xlarge-x86 ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id u14sm1371787pfc.87.2020.05.27.00.31.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 00:31:53 -0700 (PDT)
-Date:   Wed, 27 May 2020 00:31:50 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH v5 06/11] net: ethernet: mtk-star-emac: new driver
-Message-ID: <20200527073150.GA3384158@ubuntu-s3-xlarge-x86>
-References: <20200522120700.838-1-brgl@bgdev.pl>
- <20200522120700.838-7-brgl@bgdev.pl>
+        id S1729102AbgE0Hgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 03:36:45 -0400
+Received: from mail-eopbgr1320107.outbound.protection.outlook.com ([40.107.132.107]:19736
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728888AbgE0Hgo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 03:36:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MPgL7Tuasm/8D0249D2D0DYQ1kBAB3RI+WeUrxPEZ63oVTSt/5TOaE/z2Qnzo8RgKOCXL3ofRpDbseJv/X7h93Px+U1ORAvUoL7qZnHj6lj/PNJo+Q5i2MRRwVrWXH5y/KIbuuLe4E1fAkaiz998jk+K+KjxI/FLjJP7XFa1MyXyD/hdKmtuJN8eIhTaJKJ2KJTPdvHjdoIRfD8MpzJnAluD5rMNU7ZyRJVQJ4ml8+Z43zUj+8AdDq9XpufPGyQrkmkam1qPGALqRSr6fD5X/1EDJSwdp3pPofNljgNJlX4YQpgKbiKCPXsQcwn5RQSiRf/90WETOWghoaBvFEGo2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mvYMmb3S49axYVUkZnXGtxEVS7p+qSD3mCyZpN1Gjxg=;
+ b=SooRjHoKgFbLLNsY5hIE7jRulQR3sJR9dUmwwRrQqfAr5RAlBznO1KtWx0y0dY2jVlZzxirCs+HexsrcWnleLE/D6rgiyict1Tc7cJYdGhSUg4w2NbuegCLvWO6tUFwKb6Pws46y9Fi7IHY05qJTNXHsZSCXe3VpA5edBpyuzTfoudT70qyULzB9vi7/L+CH6zeArYPbkwAGizWIALTzcRTKVfOUGgTxj/6CTxtIvfpFlZRC5aGe8vyRSF1hkfDCzhCAalM/Bf/7DNnw1fYyAcaURf8aXs1ny6H4LhQfXVrY77Ppgm9B6gsL6Pio6yBHEF6/iEiwFf/imevXgHKTgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mvYMmb3S49axYVUkZnXGtxEVS7p+qSD3mCyZpN1Gjxg=;
+ b=JH7hRT7elvC8M2fhMR7EL8dUOTK5KwFnyedFEtCAxg4njyAgHNPWIvf8GqphjmWdEunLbBSLJuomEYhregcC135qCA+gLb4lDq3myWhc1pyhBNefGVRGJ+mSTPDY0mfMJ9N6a+eb96uV3ugOjftSFxNhXjZAkrF6oU3aQ6ALTBk=
+Received: from HK0P153MB0113.APCP153.PROD.OUTLOOK.COM (2603:1096:203:19::14)
+ by HK0P153MB0162.APCP153.PROD.OUTLOOK.COM (2603:1096:203:1a::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.3; Wed, 27 May
+ 2020 07:36:40 +0000
+Received: from HK0P153MB0113.APCP153.PROD.OUTLOOK.COM
+ ([fe80::c196:a6cb:9d5:c814]) by HK0P153MB0113.APCP153.PROD.OUTLOOK.COM
+ ([fe80::c196:a6cb:9d5:c814%6]) with mapi id 15.20.3066.005; Wed, 27 May 2020
+ 07:36:40 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: RE: [net-next 12/16] net/mlx5: Add basic suspend/resume support
+Thread-Topic: [net-next 12/16] net/mlx5: Add basic suspend/resume support
+Thread-Index: AQHWM8k0A8TPUi0hPEqoBNdYwshccai7ffNg
+Date:   Wed, 27 May 2020 07:36:39 +0000
+Message-ID: <HK0P153MB011343BFB6F88FD5AC34F6B9BFB10@HK0P153MB0113.APCP153.PROD.OUTLOOK.COM>
+References: <20200527014924.278327-1-saeedm@mellanox.com>
+ <20200527014924.278327-13-saeedm@mellanox.com>
+In-Reply-To: <20200527014924.278327-13-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-05-27T07:36:38Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4db8ad74-6bfc-4c4f-9c46-d26d4859baaa;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [2601:600:a280:7f70:7d03:fb34:57ae:dcea]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9773cb0b-0c50-42ae-28ef-08d80210b21d
+x-ms-traffictypediagnostic: HK0P153MB0162:
+x-microsoft-antispam-prvs: <HK0P153MB0162FEA343C9CB4699C8F722BFB10@HK0P153MB0162.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04163EF38A
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7rrYvNPT7ZKY1evlkhGexUW2C+KVXWhsigwA3ZATArVXMcd9tpbSkm+n71wm0x0aXm+IP1y56kWVriMElRyFaLDvjK4Umv8Vn2J74ak4e9ImMm+LexMX4brB797cLlb+3yamBJTNIGgAkHWwZOyC2LZsjCkoelcuHOOKlYZ9QjO2zksWk4TyIYIgP/YdVUtpzjvqZAtdNt2fE7wjNEOW9Ggze2c2cez6LLOqIjE9TDWNjJV0NUqLQ9I+BX6cO64D9VVe1LTwLlY5QmkoWHXmk6+fby2DSBe4Ax4jqp4xTRWUTH2rVoeG2tp5aTtRoS7a
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0P153MB0113.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(186003)(55016002)(86362001)(33656002)(5660300002)(82950400001)(82960400001)(6506007)(7696005)(83380400001)(8936002)(9686003)(15650500001)(8990500004)(2906002)(8676002)(53546011)(110136005)(66476007)(64756008)(76116006)(66446008)(66556008)(52536014)(4326008)(71200400001)(54906003)(316002)(66946007)(478600001)(10290500003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 7PwuQDsNL77M7zhNcQ66f0DLVg+N63aaabFdHswJ5kQApcEPumSekUdP7uYAz4m2SOtmgAIah0K2TJIqnuVToCIEhqrm4iabdFbv5n3+5mZjGDKSRSqngOFlnT1RJCgdm6sLIOQLhaMeO7S6U9VMuiZghPA60DOmnTo6efNSsFiLhCKD9zuqXYMC7Wa8dhabIx2xdRH0IYf4V+z2eLwVUs27i+RJurO8gx2HkV+uoI5eARjTmEuo43u+xq0yMX7CcMhCNFSiTKk4Ulmui+7cZpgjvQN81MBXuHKq+d06JczJv8BfhDYGSQeiBqLUbWXwDTa2xT3P4kXnLeZbRhLJjmwwrtwC4KgV3oaO9+APd2zjp+JDgXnAcSkQ+QhtevQMjkv5CILIy5yiHCxE8q6cbe4e4kaeW1E5iXdqTl6dLxtnweANeS9zoyCMr+F5TXXgKcl0BQBG+xs+0tlKcTtEKVSsX1CHcHBgSWwpuU+EWKI9AZhS3McimsQt8Q7J32ubaigAliYHC5elCw5kRYtfGxrnSYombJdQ0mHNjdYRCpOiLSa/5stJPxV35yLVL8nK
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200522120700.838-7-brgl@bgdev.pl>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9773cb0b-0c50-42ae-28ef-08d80210b21d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 07:36:39.9705
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SawF2o2x47cj+wcMh14QRQ4yBC8NbvMaFVzzGU3bqgBwoBw72JzhzksIuc/tjV0B38bvsMkIEKfz7t+QlDJ1FA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0162
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 22, 2020 at 02:06:55PM +0200, Bartosz Golaszewski wrote:
-
-<snip>
-
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> new file mode 100644
-> index 000000000000..789c77af501f
-> --- /dev/null
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -0,0 +1,1678 @@
-
-<snip>
-
-I've searched netdev and I cannot find any reports from others but this
-function introduces a clang warning:
-
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:6: warning: variable 'new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-        if (!new_skb) {
-            ^~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialized use occurs here
-        desc_data.dma_addr = new_dma_addr;
-                             ^~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:2: note: remove the 'if' if its condition is always false
-        if (!new_skb) {
-        ^~~~~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable 'new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-        if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialized use occurs here
-        desc_data.dma_addr = new_dma_addr;
-                             ^~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:2: note: remove the 'if' if its condition is always false
-        if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable 'new_dma_addr' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
-        if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialized use occurs here
-        desc_data.dma_addr = new_dma_addr;
-                             ^~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: note: remove the '||' if its condition is always false
-        if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mediatek/mtk_star_emac.c:1274:25: note: initialize the variable 'new_dma_addr' to silence this warning
-        dma_addr_t new_dma_addr;
-                               ^
-                                = 0
-3 warnings generated.
-
-> +static int mtk_star_receive_packet(struct mtk_star_priv *priv)
+> From: Saeed Mahameed <saeedm@mellanox.com>
+> Sent: Tuesday, May 26, 2020 6:49 PM
+> To: David S. Miller <davem@davemloft.net>; kuba@kernel.org
+> Cc: netdev@vger.kernel.org; Mark Bloch <markb@mellanox.com>; Dexuan Cui
+> <decui@microsoft.com>; Moshe Shemesh <moshe@mellanox.com>; Saeed
+> Mahameed <saeedm@mellanox.com>
+> Subject: [net-next 12/16] net/mlx5: Add basic suspend/resume support
+>=20
+> From: Mark Bloch <markb@mellanox.com>
+>=20
+> Add callbacks so the NIC could be suspended and resumed.
+>=20
+> Tested-by: Dexuan Cui <decui@microsoft.com>
+> Signed-off-by: Mark Bloch <markb@mellanox.com>
+> Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/main.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> index 30de3bf35c6d..408ee64aa33b 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> @@ -1539,6 +1539,22 @@ static void shutdown(struct pci_dev *pdev)
+>  	mlx5_pci_disable_device(dev);
+>  }
+>=20
+> +static int mlx5_suspend(struct pci_dev *pdev, pm_message_t state)
 > +{
-> +	struct mtk_star_ring *ring = &priv->rx_ring;
-> +	struct device *dev = mtk_star_get_dev(priv);
-> +	struct mtk_star_ring_desc_data desc_data;
-> +	struct net_device *ndev = priv->ndev;
-> +	struct sk_buff *curr_skb, *new_skb;
-> +	dma_addr_t new_dma_addr;
-
-Uninitialized here
-
-> +	int ret;
+> +	struct mlx5_core_dev *dev =3D pci_get_drvdata(pdev);
 > +
-> +	spin_lock(&priv->lock);
-> +	ret = mtk_star_ring_pop_tail(ring, &desc_data);
-> +	spin_unlock(&priv->lock);
-> +	if (ret)
-> +		return -1;
-> +
-> +	curr_skb = desc_data.skb;
-> +
-> +	if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-> +	    (desc_data.flags & MTK_STAR_DESC_BIT_RX_OSIZE)) {
-> +		/* Error packet -> drop and reuse skb. */
-> +		new_skb = curr_skb;
-> +		goto push_new_skb;
-
-this goto
-
-> +	}
-> +
-> +	/* Prepare new skb before receiving the current one. Reuse the current
-> +	 * skb if we fail at any point.
-> +	 */
-> +	new_skb = mtk_star_alloc_skb(ndev);
-> +	if (!new_skb) {
-> +		ndev->stats.rx_dropped++;
-> +		new_skb = curr_skb;
-> +		goto push_new_skb;
-
-and this goto
-
-> +	}
-> +
-> +	new_dma_addr = mtk_star_dma_map_rx(priv, new_skb);
-> +	if (dma_mapping_error(dev, new_dma_addr)) {
-> +		ndev->stats.rx_dropped++;
-> +		dev_kfree_skb(new_skb);
-> +		new_skb = curr_skb;
-> +		netdev_err(ndev, "DMA mapping error of RX descriptor\n");
-> +		goto push_new_skb;
-> +	}
-> +
-> +	/* We can't fail anymore at this point: it's safe to unmap the skb. */
-> +	mtk_star_dma_unmap_rx(priv, &desc_data);
-> +
-> +	skb_put(desc_data.skb, desc_data.len);
-> +	desc_data.skb->ip_summed = CHECKSUM_NONE;
-> +	desc_data.skb->protocol = eth_type_trans(desc_data.skb, ndev);
-> +	desc_data.skb->dev = ndev;
-> +	netif_receive_skb(desc_data.skb);
-> +
-> +push_new_skb:
-> +	desc_data.dma_addr = new_dma_addr;
-
-assign it uninitialized here.
-
-> +	desc_data.len = skb_tailroom(new_skb);
-> +	desc_data.skb = new_skb;
-> +
-> +	spin_lock(&priv->lock);
-> +	mtk_star_ring_push_head_rx(ring, &desc_data);
-> +	spin_unlock(&priv->lock);
+> +	mlx5_unload_one(dev, false);
 > +
 > +	return 0;
 > +}
+> +
+> +static int mlx5_resume(struct pci_dev *pdev)
+> +{
+> +	struct mlx5_core_dev *dev =3D pci_get_drvdata(pdev);
+> +
+> +	return mlx5_load_one(dev, false);
+> +}
+> +
+>  static const struct pci_device_id mlx5_core_pci_table[] =3D {
+>  	{ PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_CONNECTIB) },
+>  	{ PCI_VDEVICE(MELLANOX, 0x1012), MLX5_PCI_DEV_IS_VF},	/*
+> Connect-IB VF */
+> @@ -1582,6 +1598,8 @@ static struct pci_driver mlx5_core_driver =3D {
+>  	.id_table       =3D mlx5_core_pci_table,
+>  	.probe          =3D init_one,
+>  	.remove         =3D remove_one,
+> +	.suspend        =3D mlx5_suspend,
+> +	.resume         =3D mlx5_resume,
+>  	.shutdown	=3D shutdown,
+>  	.err_handler	=3D &mlx5_err_handler,
+>  	.sriov_configure   =3D mlx5_core_sriov_configure,
+> --
+> 2.26.2
 
-I don't know if there should be a new label that excludes that
-assignment for those particular gotos or if new_dma_addr should
-be initialized to something at the top. Please take a look at
-addressing this when you get a chance.
+Hi David,
+Can you please consider this patch for v5.7 and the stable tree v5.6.y?
 
-Cheers,
-Nathan
+I understand it's already v5.7-rc7 now, but IHMO applying this patch
+to v5.7 and v5.6.y can bring an immediate benefit and can not break
+anything existing: currently a Linux system with the mlx5 NIC always=20
+crashes upon hibernation. With this patch, hibernation works fine with
+the NIC in my tests.=20
+
+Some users who are trying to hiberante their VMs (which run on Hyper-V
+and Azure) have reported the crash to me for several months, so IMHO
+it would be really great if the patch can land in v5.7 and v5.6.y rather=20
+than land in v5.8 in ~2 months and is backported to v5.6.y and v5.7.y.
+
+Thanks,
+-- Dexuan
