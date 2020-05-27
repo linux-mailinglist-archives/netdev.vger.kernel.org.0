@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA161E4740
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF60A1E475C
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388145AbgE0PYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 11:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbgE0PYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 11:24:24 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E47C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 08:24:24 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 205so11569536qkg.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 08:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Yi7+iHRYQ8OWEMfVa78HFcdfDUsVwxQcfoowVXBQ3Zo=;
-        b=E3Cygbvlixm+DfscmTxsbLgkAaERIqQoPVWt1nYcpRgRrsT+T5IXk0eqqTgjdH4hFx
-         RUlWJ5ZhTyTHdiisBoFAfAMRtTWEDM7ZXXGFA98BH4rGIEdBg6au95xK2sTqYuDSB0dr
-         LvAI3LDbZosSrKkRwViXiSa+IrmXGW3VDVpEuvdrS0Zq8+DFrML9SNtPFh8Iz5XeUkL8
-         9GcTpfBb+StXQw6FbZO8zDuY15+f4+kWdE5vFJLfNmxWY+sD90oeb+rHY6WKVrPenq4j
-         /9cStwVF8Su5cOXFhUcndgQ/WGfjwNkV6qTWeWjUU61yE3RzZQdpTAHxRPbtvn/xmaVp
-         rM6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Yi7+iHRYQ8OWEMfVa78HFcdfDUsVwxQcfoowVXBQ3Zo=;
-        b=MCzq8CYcck33/Xd22n5XaxEBL2xYOC28bi5qc003lvOoO9KmBL7Ilp37e0e+cHs63c
-         dolyw1/wCSMXOUYPRE7VpKX2VTFZ4S7BY83H51QlRuaK9Rda2V7oCCfXdKClF/yW0lDO
-         IPO+Vfz6aRYYYStBVMRnaFkkgyXNnp9KVY2LWfRyH3rYBGBhWxI53nnh7TJ3Gv+hUOYW
-         0P3W6ph0YmdiRjFbd5Yu567e9u9oAYSg2ICJLspajOzUQIXBmyQ4gKNO6JUzr9TXR6W/
-         0WnVW0dulICUF+5gI1Zf3ej8VxRinlvhNyEc5gt22oRYyXDbj1b6xhp3Hvl9ryBqKiwq
-         xyKA==
-X-Gm-Message-State: AOAM531lpImIh880iZFWk0OyFvXh7SseRj41s8gRkLsjsGY4VsZXQKJH
-        8g2piSj6QsnQXY5mDjHkk34=
-X-Google-Smtp-Source: ABdhPJwUK7290RgqgtyMr/HogTEfCe8WB1wUNU7jgP+rE1WubCmRehKwC/AvtU7lgwnFT0P9VE+rNw==
-X-Received: by 2002:a05:620a:95d:: with SMTP id w29mr4246460qkw.445.1590593063264;
-        Wed, 27 May 2020 08:24:23 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
-        by smtp.googlemail.com with ESMTPSA id q187sm2528036qka.34.2020.05.27.08.24.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 May 2020 08:24:22 -0700 (PDT)
+        id S2389602AbgE0Pao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 11:30:44 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:24135 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388145AbgE0Pao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 11:30:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590593443;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qBFd5SKDdf1t0kkoyAdfirqzLgby4wpAUw4OqWeZPFE=;
+        b=XAmYsgZJjZUnNSdo7QQ/GERgixJfEYowB1NhN/E9MPHOOrjAJG1vnEHN/bcIb9PN0bCjgX
+        xZ1q3wKZOO5orI582C6RDYCwC8dRMoojtGL5J/4UPReM6s19Q1Uo0n0nOE2ZHhiw2BVAh6
+        oZF1ItM332dW6ZgAbVuHXF/7hAtIoeI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-0OtYbYCdM-6qSZPjG_rmpg-1; Wed, 27 May 2020 11:30:38 -0400
+X-MC-Unique: 0OtYbYCdM-6qSZPjG_rmpg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F7DE108BD0A;
+        Wed, 27 May 2020 15:30:34 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E8B76E71D;
+        Wed, 27 May 2020 15:30:23 +0000 (UTC)
+Date:   Wed, 27 May 2020 17:30:21 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, toke@redhat.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        brouer@redhat.com
 Subject: Re: [PATCH bpf-next 1/5] bpf: Handle 8-byte values in DEVMAP and
  DEVMAP_HASH
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+Message-ID: <20200527173021.10468d8b@carbon>
+In-Reply-To: <bb30af38-c74c-1c78-0b10-a00de39b434b@gmail.com>
 References: <20200527010905.48135-1-dsahern@kernel.org>
- <20200527010905.48135-2-dsahern@kernel.org> <20200527122612.579fbb25@carbon>
- <c58f11be-af67-baff-bd70-753ca84de0dd@gmail.com> <87tv011l4m.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d8e9cc89-16c8-859d-62a7-65ff8806871f@gmail.com>
-Date:   Wed, 27 May 2020 09:24:20 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        <20200527010905.48135-2-dsahern@kernel.org>
+        <20200527122612.579fbb25@carbon>
+        <bb30af38-c74c-1c78-0b10-a00de39b434b@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <87tv011l4m.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/27/20 8:57 AM, Toke Høiland-Jørgensen wrote:
-> 
-> Either way you're creating a contract where the kernel says "first four
-> bytes is the ifindex, second four bytes is the fd/id". BTF just makes
-> that explicit, and allows userspace to declare that it agrees this is
-> what the fields should mean. And gives us more flexibility when
-> extending the API later than just adding stuff at the end and looking at
-> the size...
-> 
->> You need to know precisely which 4 bytes is the program fd that needs
->> to be looked up, and that AFAIK is beyond the scope of BTF.
-> 
-> Exactly - BTF is a way for userspace to explicitly tell the kernel "I am
-> going to put the fd into these four bytes of the value field", instead
-> of the kernel implicitly assuming it's always bytes 5-8.
-> 
+On Wed, 27 May 2020 08:27:36 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Really, I should define that struct in uapi/linux/bpf.h. The ifindex
-field has special meaning: the kernel needs to convert it to a
-net_device. The prog_fd field has special meaning: it should map to a
-bpf program.
+> On 5/27/20 4:26 AM, Jesper Dangaard Brouer wrote:
+> > IMHO we really need to leverage BTF here, as I'm sure we need to do more
+> > extensions, and this size matching will get more and more unmaintainable.
+> > 
+> > With BTF in place, dumping the map via bpftool, will also make the
+> > fields "self-documenting".  
+> 
+> furthermore, the kernel is changing the value - an fd is passed in and
+> an id is returned. I do not see how any of this fits into BTF.
 
-This use case is not in BTF's scope. But, prove me wrong. Ideas are
-cheap; code is hard. Show me the code that implements your idea.
+It can, as BTF actually support union's (I just tested that).
+
+For the sake of end-users understanding this, I do wonder if it is
+better to define the struct without the union, and have longer names
+that will be part of BTF description, e.g (dumped via bpftool):
+
+ struct dev_map_ext_val {
+        u32 ifindex;
+        int bpf_prog_fd_write;
+        u32 bpf_prog_id_read;
+ };
+
+But a union would also work (also tested via BPF loading and BTF dumpinmg):
+
+ struct dev_map_ext_val {
+        u32 ifindex;
+        union {
+                int bpf_prog_fd_write;
+                u32 bpf_prog_id_read;
+        };
+ };
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
