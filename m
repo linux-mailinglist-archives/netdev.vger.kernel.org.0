@@ -2,173 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436681E3AB7
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220D01E3ABE
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbgE0Hgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 03:36:45 -0400
-Received: from mail-eopbgr1320107.outbound.protection.outlook.com ([40.107.132.107]:19736
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728888AbgE0Hgo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 03:36:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MPgL7Tuasm/8D0249D2D0DYQ1kBAB3RI+WeUrxPEZ63oVTSt/5TOaE/z2Qnzo8RgKOCXL3ofRpDbseJv/X7h93Px+U1ORAvUoL7qZnHj6lj/PNJo+Q5i2MRRwVrWXH5y/KIbuuLe4E1fAkaiz998jk+K+KjxI/FLjJP7XFa1MyXyD/hdKmtuJN8eIhTaJKJ2KJTPdvHjdoIRfD8MpzJnAluD5rMNU7ZyRJVQJ4ml8+Z43zUj+8AdDq9XpufPGyQrkmkam1qPGALqRSr6fD5X/1EDJSwdp3pPofNljgNJlX4YQpgKbiKCPXsQcwn5RQSiRf/90WETOWghoaBvFEGo2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mvYMmb3S49axYVUkZnXGtxEVS7p+qSD3mCyZpN1Gjxg=;
- b=SooRjHoKgFbLLNsY5hIE7jRulQR3sJR9dUmwwRrQqfAr5RAlBznO1KtWx0y0dY2jVlZzxirCs+HexsrcWnleLE/D6rgiyict1Tc7cJYdGhSUg4w2NbuegCLvWO6tUFwKb6Pws46y9Fi7IHY05qJTNXHsZSCXe3VpA5edBpyuzTfoudT70qyULzB9vi7/L+CH6zeArYPbkwAGizWIALTzcRTKVfOUGgTxj/6CTxtIvfpFlZRC5aGe8vyRSF1hkfDCzhCAalM/Bf/7DNnw1fYyAcaURf8aXs1ny6H4LhQfXVrY77Ppgm9B6gsL6Pio6yBHEF6/iEiwFf/imevXgHKTgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mvYMmb3S49axYVUkZnXGtxEVS7p+qSD3mCyZpN1Gjxg=;
- b=JH7hRT7elvC8M2fhMR7EL8dUOTK5KwFnyedFEtCAxg4njyAgHNPWIvf8GqphjmWdEunLbBSLJuomEYhregcC135qCA+gLb4lDq3myWhc1pyhBNefGVRGJ+mSTPDY0mfMJ9N6a+eb96uV3ugOjftSFxNhXjZAkrF6oU3aQ6ALTBk=
-Received: from HK0P153MB0113.APCP153.PROD.OUTLOOK.COM (2603:1096:203:19::14)
- by HK0P153MB0162.APCP153.PROD.OUTLOOK.COM (2603:1096:203:1a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.3; Wed, 27 May
- 2020 07:36:40 +0000
-Received: from HK0P153MB0113.APCP153.PROD.OUTLOOK.COM
- ([fe80::c196:a6cb:9d5:c814]) by HK0P153MB0113.APCP153.PROD.OUTLOOK.COM
- ([fe80::c196:a6cb:9d5:c814%6]) with mapi id 15.20.3066.005; Wed, 27 May 2020
- 07:36:40 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Bloch <markb@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>
-Subject: RE: [net-next 12/16] net/mlx5: Add basic suspend/resume support
-Thread-Topic: [net-next 12/16] net/mlx5: Add basic suspend/resume support
-Thread-Index: AQHWM8k0A8TPUi0hPEqoBNdYwshccai7ffNg
-Date:   Wed, 27 May 2020 07:36:39 +0000
-Message-ID: <HK0P153MB011343BFB6F88FD5AC34F6B9BFB10@HK0P153MB0113.APCP153.PROD.OUTLOOK.COM>
-References: <20200527014924.278327-1-saeedm@mellanox.com>
- <20200527014924.278327-13-saeedm@mellanox.com>
-In-Reply-To: <20200527014924.278327-13-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-05-27T07:36:38Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4db8ad74-6bfc-4c4f-9c46-d26d4859baaa;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
-authentication-results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [2601:600:a280:7f70:7d03:fb34:57ae:dcea]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9773cb0b-0c50-42ae-28ef-08d80210b21d
-x-ms-traffictypediagnostic: HK0P153MB0162:
-x-microsoft-antispam-prvs: <HK0P153MB0162FEA343C9CB4699C8F722BFB10@HK0P153MB0162.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7rrYvNPT7ZKY1evlkhGexUW2C+KVXWhsigwA3ZATArVXMcd9tpbSkm+n71wm0x0aXm+IP1y56kWVriMElRyFaLDvjK4Umv8Vn2J74ak4e9ImMm+LexMX4brB797cLlb+3yamBJTNIGgAkHWwZOyC2LZsjCkoelcuHOOKlYZ9QjO2zksWk4TyIYIgP/YdVUtpzjvqZAtdNt2fE7wjNEOW9Ggze2c2cez6LLOqIjE9TDWNjJV0NUqLQ9I+BX6cO64D9VVe1LTwLlY5QmkoWHXmk6+fby2DSBe4Ax4jqp4xTRWUTH2rVoeG2tp5aTtRoS7a
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0P153MB0113.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(186003)(55016002)(86362001)(33656002)(5660300002)(82950400001)(82960400001)(6506007)(7696005)(83380400001)(8936002)(9686003)(15650500001)(8990500004)(2906002)(8676002)(53546011)(110136005)(66476007)(64756008)(76116006)(66446008)(66556008)(52536014)(4326008)(71200400001)(54906003)(316002)(66946007)(478600001)(10290500003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 7PwuQDsNL77M7zhNcQ66f0DLVg+N63aaabFdHswJ5kQApcEPumSekUdP7uYAz4m2SOtmgAIah0K2TJIqnuVToCIEhqrm4iabdFbv5n3+5mZjGDKSRSqngOFlnT1RJCgdm6sLIOQLhaMeO7S6U9VMuiZghPA60DOmnTo6efNSsFiLhCKD9zuqXYMC7Wa8dhabIx2xdRH0IYf4V+z2eLwVUs27i+RJurO8gx2HkV+uoI5eARjTmEuo43u+xq0yMX7CcMhCNFSiTKk4Ulmui+7cZpgjvQN81MBXuHKq+d06JczJv8BfhDYGSQeiBqLUbWXwDTa2xT3P4kXnLeZbRhLJjmwwrtwC4KgV3oaO9+APd2zjp+JDgXnAcSkQ+QhtevQMjkv5CILIy5yiHCxE8q6cbe4e4kaeW1E5iXdqTl6dLxtnweANeS9zoyCMr+F5TXXgKcl0BQBG+xs+0tlKcTtEKVSsX1CHcHBgSWwpuU+EWKI9AZhS3McimsQt8Q7J32ubaigAliYHC5elCw5kRYtfGxrnSYombJdQ0mHNjdYRCpOiLSa/5stJPxV35yLVL8nK
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729334AbgE0HjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 03:39:04 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:33275 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729052AbgE0HjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:39:04 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 997685C015B;
+        Wed, 27 May 2020 03:39:02 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 27 May 2020 03:39:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=f5aJS9QDbAD/hyEHrks1T9hZMof+S7ywS5O69RY4a
+        lk=; b=PFek1m0zs+VxsPfMKxUAKYsG/kxkgMZ8NA1H/BxuPeY7LmUZgSKk0xFzz
+        HcrYbCrXBien7PFyGikJ1twStn9/xznEZTJgeh5r8mo+9dd4UvGRTQaanZVNwCCl
+        gX+g7UY7LcO2o5qAbCF3IqWGweN9mMCGqScrfUkn9taTXIaycJflZLy2woK4ZawE
+        nNdAeBDjm+UNDXR95OpuJHKjPD64oJA0sQpj50Xq0chTYedh7LtTqRlL7bcTQobO
+        5voo3ALeaxzP12+sw3FZCrhT80/lgOp/1hYct2K9rYGa/9Rid1WPWfMcGbhyXSFI
+        GXNwpbeEvXsIDW6W3S7wWbatkd8QA==
+X-ME-Sender: <xms:FhnOXtl5G9zvlQvlqmU0wUUqcPFuQFfh8luv9MJ04JgC0DvH4DSqAQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvfedgudduiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtugfgjgesth
+    ekredttddtjeenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
+    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnheptefgvdefudehteegudeuhfetvd
+    duheetgfefgffhkeetleeiueefueehfeekffevnecuffhomhgrihhnpehgihhthhhusgdr
+    tghomhdpsghoohhtlhhinhdrtghomhenucfkphepuddtledrieehrddufeelrddukedtne
+    cuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhs
+    tghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:FhnOXo3zLTGhwSpEH513aA86ypeTOPwi4GGyyHHhABwjnkRUbgoFkQ>
+    <xmx:FhnOXjq5vfxs9r0ZPuBeT6Um08JIOhll-Z_QrGRD2l5MTHSJ0np9rQ>
+    <xmx:FhnOXtlljWPN1RiZUNc0NUMfQJ1l0FKAHM6_i39BQTbcBQZj_fEXwg>
+    <xmx:FhnOXk_zL0InA13GaX0Fl4qRGTccDi8MRv1Cm-3a9uq8wRrHRz3clA>
+Received: from localhost (bzq-109-65-139-180.red.bezeqint.net [109.65.139.180])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 952BB3061CB6;
+        Wed, 27 May 2020 03:39:01 -0400 (EDT)
+Date:   Wed, 27 May 2020 10:38:57 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 00/14] mlxsw: Various trap changes - part 2
+Message-ID: <20200527073857.GA1511819@splinter>
+References: <20200525230556.1455927-1-idosch@idosch.org>
+ <20200526151437.6fc3fb67@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20200526231905.GA1507270@splinter>
+ <20200526164323.565c8309@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9773cb0b-0c50-42ae-28ef-08d80210b21d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 07:36:39.9705
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SawF2o2x47cj+wcMh14QRQ4yBC8NbvMaFVzzGU3bqgBwoBw72JzhzksIuc/tjV0B38bvsMkIEKfz7t+QlDJ1FA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0162
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200526164323.565c8309@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Saeed Mahameed <saeedm@mellanox.com>
-> Sent: Tuesday, May 26, 2020 6:49 PM
-> To: David S. Miller <davem@davemloft.net>; kuba@kernel.org
-> Cc: netdev@vger.kernel.org; Mark Bloch <markb@mellanox.com>; Dexuan Cui
-> <decui@microsoft.com>; Moshe Shemesh <moshe@mellanox.com>; Saeed
-> Mahameed <saeedm@mellanox.com>
-> Subject: [net-next 12/16] net/mlx5: Add basic suspend/resume support
->=20
-> From: Mark Bloch <markb@mellanox.com>
->=20
-> Add callbacks so the NIC could be suspended and resumed.
->=20
-> Tested-by: Dexuan Cui <decui@microsoft.com>
-> Signed-off-by: Mark Bloch <markb@mellanox.com>
-> Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/main.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> index 30de3bf35c6d..408ee64aa33b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> @@ -1539,6 +1539,22 @@ static void shutdown(struct pci_dev *pdev)
->  	mlx5_pci_disable_device(dev);
->  }
->=20
-> +static int mlx5_suspend(struct pci_dev *pdev, pm_message_t state)
-> +{
-> +	struct mlx5_core_dev *dev =3D pci_get_drvdata(pdev);
-> +
-> +	mlx5_unload_one(dev, false);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mlx5_resume(struct pci_dev *pdev)
-> +{
-> +	struct mlx5_core_dev *dev =3D pci_get_drvdata(pdev);
-> +
-> +	return mlx5_load_one(dev, false);
-> +}
-> +
->  static const struct pci_device_id mlx5_core_pci_table[] =3D {
->  	{ PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_CONNECTIB) },
->  	{ PCI_VDEVICE(MELLANOX, 0x1012), MLX5_PCI_DEV_IS_VF},	/*
-> Connect-IB VF */
-> @@ -1582,6 +1598,8 @@ static struct pci_driver mlx5_core_driver =3D {
->  	.id_table       =3D mlx5_core_pci_table,
->  	.probe          =3D init_one,
->  	.remove         =3D remove_one,
-> +	.suspend        =3D mlx5_suspend,
-> +	.resume         =3D mlx5_resume,
->  	.shutdown	=3D shutdown,
->  	.err_handler	=3D &mlx5_err_handler,
->  	.sriov_configure   =3D mlx5_core_sriov_configure,
-> --
-> 2.26.2
+On Tue, May 26, 2020 at 04:43:23PM -0700, Jakub Kicinski wrote:
+> On Wed, 27 May 2020 02:19:05 +0300 Ido Schimmel wrote:
+> > On Tue, May 26, 2020 at 03:14:37PM -0700, Jakub Kicinski wrote:
+> > > On Tue, 26 May 2020 02:05:42 +0300 Ido Schimmel wrote:  
+> > > > From: Ido Schimmel <idosch@mellanox.com>
+> > > > 
+> > > > This patch set contains another set of small changes in mlxsw trap
+> > > > configuration. It is the last set before exposing control traps (e.g.,
+> > > > IGMP query, ARP request) via devlink-trap.  
+> > > 
+> > > When traps were introduced my understanding was that they are for
+> > > reporting frames which hit an expectation on the datapath. IOW the
+> > > primary use for them was troubleshooting.
+> > > 
+> > > Now, if I'm following things correctly we have explicit DHCP, IGMP,
+> > > ARP, ND, BFD etc. traps. Are we still in the troubleshooting realm?  
+> > 
+> > First of all, we always had them. This patch set mainly performs some
+> > cleanups in mlxsw.
+> > 
+> > Second, I don't understand how you got the impression that the primary
+> > use of devlink-trap is troubleshooting. I was very clear and transparent
+> > about the scope of the work from the very beginning and I don't wish to
+> > be portrayed as if I wasn't.
+> > 
+> > The first two paragraphs from the kernel documentation [1] explicitly
+> > mention the ability to trap control packets to the CPU:
+> > 
+> > "Devices capable of offloading the kernel’s datapath and perform
+> > functions such as bridging and routing must also be able to send
+> > specific packets to the kernel (i.e., the CPU) for processing.
+> > 
+> > For example, a device acting as a multicast-aware bridge must be able to
+> > send IGMP membership reports to the kernel for processing by the bridge
+> > module. Without processing such packets, the bridge module could never
+> > populate its MDB."
+> > 
+> > In my reply to you from almost a year ago I outlined the entire plan for
+> > devlink-trap [2]:
+> > 
+> > "Switch ASICs have dedicated traps for specific packets. Usually, these
+> > packets are control packets (e.g., ARP, BGP) which are required for the
+> > correct functioning of the control plane. You can see this in the SAI
+> > interface, which is an abstraction layer over vendors' SDKs:
+> > 
+> > https://github.com/opencomputeproject/SAI/blob/master/inc/saihostif.h#L157
+> > 
+> > We need to be able to configure the hardware policers of these traps and
+> > read their statistics to understand how many packets they dropped. We
+> > currently do not have a way to do any of that and we rely on hardcoded
+> > defaults in the driver which do not fit every use case (from
+> > experience):
+> > 
+> > https://elixir.bootlin.com/linux/v5.2/source/drivers/net/ethernet/mellanox/mlxsw/spectrum.c#L4103
+> > 
+> > We plan to extend devlink-trap mechanism to cover all these use cases. I
+> > hope you agree that this functionality belongs in devlink given it is a
+> > device-specific configuration and not a netdev-specific one.
+> > 
+> > That being said, in its current form, this mechanism is focused on traps
+> > that correlate to packets the device decided to drop as this is very
+> > useful for debugging."
+> > 
+> > In the last cycle, when I added the ability to configure trap policers
+> > [3] I again mentioned under "Future plans" that I plan to "Add more
+> > packet traps.  For example, for control packets (e.g., IGMP)".
+> > 
+> > If you worry that packets received via control traps will be somehow
+> > tunneled to user space via drop_monitor, then I can assure you this is
+> > not the case. You can refer to this commit [4] from the next submission.
+> 
+> Perhaps the troubleshooting is how I justified the necessity of having
+> devlink traps to myself. It's much harder to get visibility into what
+> HW is doing and therefore we need this special interface.
+> 
+> But we should be able to configure a DHCP daemon without any special
+> sauce. What purpose does the DHCP trap serve?
+> 
+> What's the packet flow for BFD? How does the HW case differ from a SW
+> router?
 
-Hi David,
-Can you please consider this patch for v5.7 and the stable tree v5.6.y?
+There is no special sauce required to get a DHCP daemon working nor BFD.
+It is supposed to Just Work. Same for IGMP / MLD snooping, STP etc. This
+is enabled by the ASIC trapping the required packets to the CPU.
 
-I understand it's already v5.7-rc7 now, but IHMO applying this patch
-to v5.7 and v5.6.y can bring an immediate benefit and can not break
-anything existing: currently a Linux system with the mlx5 NIC always=20
-crashes upon hibernation. With this patch, hibernation works fine with
-the NIC in my tests.=20
+However, having a 3.2/6.4/12.8 Tbps ASIC (it keeps growing all the time)
+send traffic to the CPU can very easily result in denial of service. You
+need to have hardware policers and classification to different traffic
+classes ensuring the system remains functional regardless of the havoc
+happening in the offloaded data path.
 
-Some users who are trying to hiberante their VMs (which run on Hyper-V
-and Azure) have reported the crash to me for several months, so IMHO
-it would be really great if the patch can land in v5.7 and v5.6.y rather=20
-than land in v5.8 in ~2 months and is backported to v5.6.y and v5.7.y.
+This control plane policy has been hard coded in mlxsw for a few years
+now (based on sane defaults), but it obviously does not fit everyone's
+needs. Different users have different use cases and different CPUs
+connected to the ASIC. Some have Celeron / Atom while others have more
+high-end Xeon CPUs, which are obviously capable of handling more packets
+per second. You also have zero visibility into how many packets were
+dropped by these hardware policers.
 
-Thanks,
--- Dexuan
+By exposing these traps we allow users to tune these policers and get
+visibility into how many packets they dropped. In the future also
+changing their traffic class, so that (for example), packets hitting
+local routes are scheduled towards the CPU before packets dropped due to
+ingress VLAN filter.
+
+If you don't have any special needs you are probably OK with the
+defaults, in which case you don't need to do anything (no special
+sauce).
