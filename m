@@ -2,50 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DD81E3695
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 05:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C828E1E3697
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 05:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728586AbgE0DcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 23:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgE0DcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 23:32:19 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A99C061A0F;
-        Tue, 26 May 2020 20:32:19 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A0A7512796434;
-        Tue, 26 May 2020 20:32:18 -0700 (PDT)
-Date:   Tue, 26 May 2020 20:32:18 -0700 (PDT)
-Message-Id: <20200526.203218.883210335462387015.davem@davemloft.net>
-To:     chris.packham@alliedtelesis.co.nz
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, trivial@kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH] net: sctp: Fix spelling in Kconfig help
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200525225559.13596-1-chris.packham@alliedtelesis.co.nz>
-References: <20200525225559.13596-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 26 May 2020 20:32:19 -0700 (PDT)
+        id S1728610AbgE0Dcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 23:32:39 -0400
+Received: from m17616.mail.qiye.163.com ([59.111.176.16]:19320 "EHLO
+        m17616.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbgE0Dci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 23:32:38 -0400
+Received: from ubuntu.localdomain (unknown [58.251.74.226])
+        by m17616.mail.qiye.163.com (Hmail) with ESMTPA id AB9831086E6;
+        Wed, 27 May 2020 11:32:34 +0800 (CST)
+From:   Wang Wenhu <wenhu.wang@vivo.com>
+To:     davem@davemloft.net, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com, trivial@kernel.org,
+        Wang Wenhu <wenhu.wang@vivo.com>
+Subject: [PATCH] drivers: ipa: remove discription of nonexistent element
+Date:   Tue, 26 May 2020 20:32:22 -0700
+Message-Id: <20200527033222.34410-1-wenhu.wang@vivo.com>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZTVVITU9LS0tISUtPSE9OTFlXWShZQU
+        hPN1dZLVlBSVdZDwkaFQgSH1lBWRJOKzI4HD8VChITKEhDSh4pSRg6OjpWVlVITyhJWVdZCQ4XHg
+        hZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NTo6Azo5STgzLyMjT0IfHQJR
+        LB0KFD1VSlVKTkJLTk5LSE5MSkxOVTMWGhIXVQweFRMOVQwaFRw7DRINFFUYFBZFWVdZEgtZQVlO
+        Q1VJTkpVTE9VSUlNWVdZCAFZQUpPQ0I3Bg++
+X-HM-Tid: 0a7254305c6b9374kuwsab9831086e6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Date: Tue, 26 May 2020 10:55:59 +1200
+No element named "client" exists within "struct ipa_endpoint".
+It might be a heritage forgotten to be removed. Delete it now.
 
-> Change 'handeled' to 'handled' in the Kconfig help for SCTP.
-> 
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
+---
+ drivers/net/ipa/ipa_endpoint.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-Applied.
+diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
+index 4b336a1f759d..bbee9535d4b2 100644
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -41,7 +41,6 @@ enum ipa_endpoint_name {
+ 
+ /**
+  * struct ipa_endpoint - IPA endpoint information
+- * @client:	Client associated with the endpoint
+  * @channel_id:	EP's GSI channel
+  * @evt_ring_id: EP's GSI channel event ring
+  */
+-- 
+2.17.1
+
