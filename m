@@ -2,82 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C721E42F6
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BA9B1E42FD
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730213AbgE0NLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgE0NLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:11:54 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82891C08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 06:11:54 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id y5so2998910iob.12
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 06:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=1WLoOkjIJCDA1BewY9LFjorEXn8Wgw2koH7bihFp+VM=;
-        b=YjN+FJFFmOwcv8/tnPZGcduh9ObP/27w1eRT0OS/LI189ehVWw3TWZSI606EkGLbcF
-         V7E6UcqTnN6vDvKsl9lisEXaJbSNowyvp/+R3BpLAuB5yfEKGKB5XqdsSdL8E0nlQ2nO
-         NNM1Cs4mAsztTC0JSs0rR1HqswD0CaY94OB2B1yz/fz3mwqL0Llo210knz97imiuUMBA
-         R33HItADK/wzduoz0gMXM8bE5sTbdgfeAKN/S+RskKiYuE8b1ZpSD46lXob3iS6fVesS
-         EvujMw3kVmCZxFwDwgv+4YRMhfx+lv7/SDAg6B2hzn3ZYs/OC6wLkK+54eyiYmoJLAvU
-         eG8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=1WLoOkjIJCDA1BewY9LFjorEXn8Wgw2koH7bihFp+VM=;
-        b=oTVSd1SXf2jz+GR2pBGJPw/2q9imB1QHTM+63gPYc2b5X1WC7W7SIrnh5ZmLkL/tV5
-         Yi/svfEr8PWzfmLV/seLnTwYiAjAVW4+PqXdO6prm1v77rv83f6+fag4yekgS3/A1UxG
-         IgSqFaG5nrghvwFmTdPlAlWrLaua2lxpBVIOOPxfnO3nlPhpDkRxDO7UeWJaKfFfCles
-         +CBMgCum+YaGD4TS8rzUp+TwBe7IF50IvZKbiYCjgIz4XOQ/d49U2QlpcULWOVarmWtX
-         H8TPaSiHdqTGeLrhrtm0OvyHhJBm3UeCrXhK7o4wpaCwRs0lU+n1Hy/0v9FwaSnsiEgt
-         tMbw==
-X-Gm-Message-State: AOAM532hybE9FNS9eSa6GIksgvIfjj35OdI+JACvuLjg9qCPVsSEA6Es
-        NtVBaKR5ytPCvosnlGkkftIBzpmTHl7MhQr/mqw=
-X-Google-Smtp-Source: ABdhPJxEbKPYFOvoeokh7GXSLIwEGaMJYwyp3ZViZuD0lefzwSndLSS79KrE5yGLJkrU94xWBlOJhl7cV3273ZlLIX8=
-X-Received: by 2002:a02:3b45:: with SMTP id i5mr5503340jaf.47.1590585113771;
- Wed, 27 May 2020 06:11:53 -0700 (PDT)
+        id S1730251AbgE0NMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:12:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51940 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730223AbgE0NMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 09:12:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EtYek3xh0NCAHtiuyFEgblF7PX4bt3OdqY2DFTWaqaw=; b=mOe4zXFPx8EdQqXNyqy+g+J1+2
+        HzV/gm6ROLE4vJxTi3s/U8LkSpVRQjjCJZ5b1Oizrqn/syhiECKi+ejysDz+pD/dcmjnxyO6aII1g
+        xJ39C1oNaiF2iXShOWsia4784lr08/fW1bNYSgKN/PWKhD9Aww8D7UKkbIKof4chBKwo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jdvqm-003PCu-Dt; Wed, 27 May 2020 15:12:04 +0200
+Date:   Wed, 27 May 2020 15:12:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        robh@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/4] net: dp83869: Add RGMII internal delay
+ configuration
+Message-ID: <20200527131204.GB793752@lunn.ch>
+References: <20200526174716.14116-1-dmurphy@ti.com>
+ <20200526174716.14116-5-dmurphy@ti.com>
+ <20200527005224.GF782807@lunn.ch>
+ <c0867d48-6f04-104b-8192-d61d4464a65f@ti.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:87d3:0:0:0:0:0 with HTTP; Wed, 27 May 2020 06:11:53
- -0700 (PDT)
-Reply-To: warrenbuffett696@gmail.com
-From:   Warren Buffett Foundation <wedassdfgf@gmail.com>
-Date:   Wed, 27 May 2020 07:11:53 -0600
-Message-ID: <CAO68hq0vqcVjOhMSFQVZsqYGZTczDWT5jEhRdDJyziVMnX-a7w@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c0867d48-6f04-104b-8192-d61d4464a65f@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello Lucky One.
+> If the dt defines rgmii-rx/tx-id then these values are required not
+> optional.  That was the discussion on the binding.
 
-My Name is Warren Buffett, An American business magnate, investor,
-speaker and philanthropist who serves as the chairman and CEO of
-Berkshire Hathaway,The Buffett Foundation is a charitable organisation
-formed 1964 in Omaha, Nebraska, by me (Warren Buffett) as a vehicle to
-manage my charitable giving, so because of this Covid19 situation i
-have decided to give away $27,900,000.00 each to two unknown randomly
-selected individual Emails online, I simply attempt to be fearful when
-others are greedy and to be greedy only when others are fearful.Price
-is what you pay. Value is what you get, Someone's sitting in the shade
-today because someone
-planted a tree a long time ago.
+How many times do i need to say it. They are optional. If not
+specified, default to 2ns.
 
-You have been selected to receive this $27,900,000.00, as a lucky one
-confirm back to me that this selected unknown email is valid Via my
-personal Email: warrenbuffett696@gmail.com
+> > > +	ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
+> > > +				   &dp83869->tx_id_delay);
+> > > +	if (ret) {
+> > > +		dp83869->tx_id_delay = ret;
+> > > +		ret = 0;
+> > > +	}
+> > > +
+> > >   	return ret;
+> > >   }
+> > >   #else
+> > > @@ -367,10 +388,45 @@ static int dp83869_configure_mode(struct phy_device *phydev,
+> > >   	return ret;
+> > >   }
+> > > +static int dp83869_get_delay(struct phy_device *phydev)
+> > > +{
+> > > +	struct dp83869_private *dp83869 = phydev->priv;
+> > > +	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
+> > > +	int tx_delay = 0;
+> > > +	int rx_delay = 0;
+> > > +
+> > > +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
+> > > +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
+> > > +		tx_delay = phy_get_delay_index(phydev,
+> > > +					       &dp83869_internal_delay[0],
+> > > +					       delay_size, dp83869->tx_id_delay,
+> > > +					       false);
+> > > +		if (tx_delay < 0) {
+> > > +			phydev_err(phydev, "Tx internal delay is invalid\n");
+> > > +			return tx_delay;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+> > > +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) {
+> > > +		rx_delay = phy_get_delay_index(phydev,
+> > > +					       &dp83869_internal_delay[0],
+> > > +					       delay_size, dp83869->rx_id_delay,
+> > > +					       false);
+> > > +		if (rx_delay < 0) {
+> > > +			phydev_err(phydev, "Rx internal delay is invalid\n");
+> > > +			return rx_delay;
+> > > +		}
+> > > +	}
+> > So any PHY using these properties is going to pretty much reproduce
+> > this code. Meaning is should all be in a helper.
+> 
+> The issue here is that the phy_mode may only be rgmii-txid so you only want
+> to find the tx_delay and return.
+> 
+> Same with the RXID.  How is the helper supposed to know what delay to return
+> and look for?
 
-Visit the web page to know more about me:
-https://en.wikipedia.org/wiki/Warren_Buffett
+How does this code do it? It looks at the value of interface.
 
-Regards
-Warren Buffett Foundation
+    Andrew
