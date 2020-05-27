@@ -2,206 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F33B1E4AF5
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B06C1E4AF7
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730987AbgE0QuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:50:04 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:45080 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730694AbgE0QuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:50:02 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04RGnuiV083922;
-        Wed, 27 May 2020 11:49:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590598196;
-        bh=dRys4SyEsTPUvsxrlOxuMVmtB0m1gpns1jd3eGMUcZw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=dlhgtTeYMp/xt7dYzysTxRMaJtQF7L8hXJQGd4zSMwyYJolqFlJsLSVhix3cEiLtA
-         0msBn2iG2K1r0BsycwjQOwdN87Tm2rXLmPpITDOlyBwi3pvPSWIJW9Gh+hTW2mi6E7
-         maHOL/1Blw0lIYoiiwe4TSgpM63kAMPtZAy/dp9A=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04RGnull006021
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 May 2020 11:49:56 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 27
- May 2020 11:49:56 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 27 May 2020 11:49:56 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04RGnuVL085739;
-        Wed, 27 May 2020 11:49:56 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v4 4/4] net: dp83869: Add RGMII internal delay configuration
-Date:   Wed, 27 May 2020 11:49:34 -0500
-Message-ID: <20200527164934.28651-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200527164934.28651-1-dmurphy@ti.com>
-References: <20200527164934.28651-1-dmurphy@ti.com>
+        id S1730995AbgE0QuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730993AbgE0QuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:50:12 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30160C05BD1E
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:50:12 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id 23so12045500pfy.8
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:50:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QmerZ6zfORjEPxfrN/UgjjeBC/u4zEEQZFJoWufWlcw=;
+        b=oD99m5bMfMK7zBnEU/SmUYuuXG9C8wgzkKnYHTNCRhL+xTyTYe+3/EogtANtI1NHct
+         c/V+eh3hFUyk2WjORdl9JevNMrE1LxFi2YTRgln1mHPq8J9TVtEbI6p9qsFdZek9D/OQ
+         7ikkXqmJoJfFvRAeGk9XxdsUXveG+IOxidaDv46c8TXbXmIxGTDtLwswdqZfF3nvOFNq
+         9phjlfHxqrY8pLXLhNW3veK1aSJvBbRW8GB4FtWFrQECk4LRJ7EDjJ0HkIS+gfMOYhHP
+         YXI7PpVrDgkSV1qevzdqOb2561FbLUf4WA3/t7ylesE86VW9JZ8Cg+GMQ8ynvyMEqLxc
+         mxhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QmerZ6zfORjEPxfrN/UgjjeBC/u4zEEQZFJoWufWlcw=;
+        b=TZzNF9LEwhpgeNBtbIMu111fR/ZiEDqwL0e6/buGgISrCCC1uEkPic1P3hrOOyHZV6
+         VAaC6bpsPpcQ0VaWhqbVnw6KVKcnC6BC4aW0YgGUSfNvad5QQcwkH6ZYQTgWKlP0O6MU
+         lxZyQwTS8m4nM9VMit9AuwqRlAeyFsPRD2BHbmyFHqXg11Mjz/en4Pzuq8J59fdVw+NP
+         qQK5/GCGMvxBD8S7QCVQeXKPD9XJ8frbsbNDfHshTg8CvZ9ImICGMfWOiHU5u0zUXqTm
+         22o2x3qpj1JXYI5uc6sJ6GLWV7hLpw0br5FDhqgHr9HD+cag/+jZQCvof0FFVpNx/iBi
+         /XAQ==
+X-Gm-Message-State: AOAM530+qz2mg6wRgpJzot+TM+l3isGNRnkvHIvIzAmxGcUsq7RItjsa
+        rDfVSQSGEDj4xnQoAfbt3sFBNxET
+X-Google-Smtp-Source: ABdhPJxqoTSrmvG0YX7qZdi8C0DMgEICeqdDCRAa7+pp7ca8wD/IBFaHOffExJRT5s5iaIWjjcTFKg==
+X-Received: by 2002:a63:fd15:: with SMTP id d21mr4691872pgh.31.1590598210912;
+        Wed, 27 May 2020 09:50:10 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z20sm3150410pjn.53.2020.05.27.09.50.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 May 2020 09:50:10 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: felix: send VLANs on CPU port as
+ egress-tagged
+To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, netdev@vger.kernel.org
+References: <20200527164803.1083420-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <e585473b-08b4-86b1-47ad-142951619e7a@gmail.com>
+Date:   Wed, 27 May 2020 09:50:08 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20200527164803.1083420-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RGMII internal delay configuration for Rx and Tx.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 82 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 79 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index cfb22a21a2e6..ba1e3d599888 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -64,6 +64,10 @@
- #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
- #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
- 
-+/* RGMIIDCTL */
-+#define DP83869_RGMII_CLK_DELAY_SHIFT		4
-+#define DP83869_CLK_DELAY_DEF			7
-+
- /* STRAP_STS1 bits */
- #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
- #define DP83869_STRAP_STS1_RESERVED		BIT(11)
-@@ -78,9 +82,6 @@
- #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
- #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
- 
--/* RGMIIDCTL bits */
--#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
--
- /* IO_MUX_CFG bits */
- #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
- 
-@@ -99,6 +100,10 @@
- #define DP83869_OP_MODE_MII			BIT(5)
- #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
- 
-+static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
-+					     1750, 2000, 2250, 2500, 2750, 3000,
-+					     3250, 3500, 3750, 4000};
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -108,6 +113,8 @@ enum {
- struct dp83869_private {
- 	int tx_fifo_depth;
- 	int rx_fifo_depth;
-+	s32 rx_id_delay;
-+	s32 tx_id_delay;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -232,6 +239,22 @@ static int dp83869_of_init(struct phy_device *phydev)
- 				 &dp83869->tx_fifo_depth))
- 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
- 
-+	ret = of_property_read_u32(of_node, "rx-internal-delay-ps",
-+				   &dp83869->rx_id_delay);
-+	if (ret) {
-+		dp83869->rx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+		ret = 0;
-+	}
-+
-+	ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
-+				   &dp83869->tx_id_delay);
-+	if (ret) {
-+		dp83869->tx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+		ret = 0;
-+	}
-+
- 	return ret;
- }
- #else
-@@ -367,10 +390,35 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- 	return ret;
- }
- 
-+static int dp83869_get_delay(struct phy_device *phydev)
-+{
-+	struct dp83869_private *dp83869 = phydev->priv;
-+	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
-+	int tx_delay;
-+	int rx_delay;
-+
-+	tx_delay = phy_get_delay_index(phydev, &dp83869_internal_delay[0],
-+				       delay_size, dp83869->tx_id_delay);
-+	if (tx_delay < 0) {
-+		phydev_err(phydev, "Tx internal delay is invalid\n");
-+		return tx_delay;
-+	}
-+
-+	rx_delay = phy_get_delay_index(phydev, &dp83869_internal_delay[0],
-+				       delay_size, dp83869->rx_id_delay);
-+	if (rx_delay < 0) {
-+		phydev_err(phydev, "Rx internal delay is invalid\n");
-+		return rx_delay;
-+	}
-+
-+	return rx_delay | tx_delay << DP83869_RGMII_CLK_DELAY_SHIFT;
-+}
-+
- static int dp83869_config_init(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	int ret, val;
-+	int delay;
- 
- 	ret = dp83869_configure_mode(phydev, dp83869);
- 	if (ret)
-@@ -394,6 +442,34 @@ static int dp83869_config_init(struct phy_device *phydev)
- 				     dp83869->clk_output_sel <<
- 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
- 
-+	if (phy_interface_is_rgmii(phydev)) {
-+		delay = dp83869_get_delay(phydev);
-+		if (delay < 0)
-+			return delay;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
-+				    delay);
-+		if (ret)
-+			return ret;
-+
-+		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
-+		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+			 DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
-+			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+				DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
-+				    val);
-+	}
-+
- 	return ret;
- }
- 
+On 5/27/2020 9:48 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> As explained in other commits before (b9cd75e66895 and 87b0f983f66f),
+> ocelot switches have a single egress-untagged VLAN per port, and the
+> driver would deny adding a second one while an egress-untagged VLAN
+> already exists.
+> 
+> But on the CPU port (where the VLAN configuration is implicit, because
+> there is no net device for the bridge to control), the DSA core attempts
+> to add a VLAN using the same flags as were used for the front-panel
+> port. This would make adding any untagged VLAN fail due to the CPU port
+> rejecting the configuration:
+> 
+> bridge vlan add dev swp0 vid 100 pvid untagged
+> [ 1865.854253] mscc_felix 0000:00:00.5: Port already has a native VLAN: 1
+> [ 1865.860824] mscc_felix 0000:00:00.5: Failed to add VLAN 100 to port 5: -16
+> 
+> (note that port 5 is the CPU port and not the front-panel swp0).
+> 
+> So this hardware will send all VLANs as tagged towards the CPU.
+> 
+> Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.26.2
-
+Florian
