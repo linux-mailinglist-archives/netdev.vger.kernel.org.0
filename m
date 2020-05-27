@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396AF1E51F1
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 01:42:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7383B1E51F3
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 01:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgE0Xlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 19:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
+        id S1726445AbgE0Xlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 19:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbgE0Xli (ORCPT
+        with ESMTP id S1726086AbgE0Xli (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 19:41:38 -0400
 Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8813C08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:36 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o15so8708986ejm.12
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167CAC08C5C2
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:38 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id z5so30109760ejb.3
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 16:41:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p6NFCIT12d9evx2OFd+iOGXSpqp9ITQc+G8YVnNynXE=;
-        b=QfTNcygxt7sX95nFLIEoUuaUS57QQ3T4yKybzKJ4zisrzWyW4Xk7JYUmecZtoYVK/h
-         NA9PaKfHav9vYY8bDies122ux1dc4Bbcg/uIHapPCSZhICA4Ta7RlKEeb1GWR7UIwe7h
-         6qjyDA7mWf3q/tTbd06eskfNNtQcaXvkxXQ5mtfdL8QwWZo922SJO1WrhpMPjO+WrI2O
-         i4GAoUwnsk3EvKm6Cmv04hx13DELvvj6z9YIIuBZNrmt+7cu1ZxdyrUBM2etlvwVx3Eq
-         Mm6y0mK1JNKpvXIF65UQXcmuz8lqkLB/6mDijVXJYir1c8i3+2VQwZ57nZER99DxS3LB
-         5FeQ==
+        bh=OJUz/sdOGlH0F+LYx1lbLdlOI9OhVr63im+F452Sb9U=;
+        b=ETUH/XCIC57wQkwEErXtN/JRVb0JUiaoYTsPgs06Ko0GnKkcRJgr6ne7eNxHi4j3A/
+         BMHZb8CBt5+JzioaTE3bzrjH0FeSnCT5izEehRHIXCgxiQcSwPcWn9Rb/ObD/cjdz2iM
+         smH1/wCa+lGWEpiSEFqLP9yKb0LI4AVCHCKDMYXVb0HBuoO5R3kAnAAzmxmhx4yP6THT
+         9Ib/VQPIquO5cW+2wR8/2Rw10SZVCGLMXnBrjHYgdgjAzQhqIEdrWc/p3MDP13bVMoOb
+         mp4tuAsH/VVbXjy0GlZsAprlpOEld901R+Lchy9JhOwUJxnWJ7xhw66AGJaWLgMaFFc7
+         J3cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p6NFCIT12d9evx2OFd+iOGXSpqp9ITQc+G8YVnNynXE=;
-        b=KSpr6/sUmkwzvqDBDe3L1DQfNk+FIHyp6wPwYeD2FaXp3zseY0LiG7bUSR6m7RjC54
-         PE4f13KXFVi3YtP3SSDY+mqNze4cHmzzVjh4inhqo88lbNYD1orVZALNSL4bN44pjSFM
-         8F+ZTKkpqtGnkU7+M6J6/ddJEGJYtRWtfBgCaV6BmoMS/+5rjHzBG2qrG+on9l17QLg8
-         vt2Z+8lQ6piAgTBqiVhD73+Glfu33PedXoUIDt/BfpSyg7LVsJSIdQD0oAKh1QURf8lY
-         XzTeMKRHnf5JFY//UlSILs8eUXRBA0oGNeVbWrDq3nEB8iO6UiyzkOzP3WqbWbjhkx34
-         iE6Q==
-X-Gm-Message-State: AOAM533i827qTtSnsoHcsaCoM5ntO86xppAKt+ybLod432LRIvjXgWki
-        0udsgXnmAp9RpAPx7fMcU+w=
-X-Google-Smtp-Source: ABdhPJwpixtktR4vLCkNdkpifDxOgNT2f6N3Tfw6wlYz9TC3Vl+emt1M4I/pGtElaGpuH6f35g7BPA==
-X-Received: by 2002:a17:906:4ec2:: with SMTP id i2mr651321ejv.211.1590622895396;
-        Wed, 27 May 2020 16:41:35 -0700 (PDT)
+        bh=OJUz/sdOGlH0F+LYx1lbLdlOI9OhVr63im+F452Sb9U=;
+        b=l4LuYOdQhLUXauTMUUuYEuzqrzMSuVZ7sqcVwQlJgkyGGhKBv9/CBeDoFHfCJfisHp
+         W5x5qnJBCBpgcTNjkmZ60FL0LSijODWgprmdkspVvvLwpePP0//DpUKoepHV233WKQyH
+         seIZUzUIcUA47xMgdrUsl5G1h/6nSPHtNUzXQK+C1BRHUNOtZw66kEEO/FsUG+97nJPL
+         bXyjlw4CzxVPDs41xCi7joOzFIIMFD5j1A77oK6GfxONCAyABeCOkqE83mqandCrJD1U
+         /lkKu+7vIfcTl4eRhaoD2dWj88Umg3Ef8tpLH0A3hakBxs5BwMSdGGc9nnokw2EA9E29
+         1Xhw==
+X-Gm-Message-State: AOAM530dlIZRvt6lL9ZEwQ7ZJRK8UZF0KAnAyMZVoHY6Wci4vvcLXcwq
+        hnjjY4rgOtJv/jFQbLUBH2k=
+X-Google-Smtp-Source: ABdhPJwOkteZ3VoxX785svZwhMfygXifbQuwol5nmcYMtTerpAYzPbQFRniDmYBpTz9AxEwpMgGOsg==
+X-Received: by 2002:a17:906:5941:: with SMTP id g1mr692732ejr.182.1590622896796;
+        Wed, 27 May 2020 16:41:36 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id a13sm3236555eds.6.2020.05.27.16.41.34
+        by smtp.gmail.com with ESMTPSA id a13sm3236555eds.6.2020.05.27.16.41.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 16:41:34 -0700 (PDT)
+        Wed, 27 May 2020 16:41:36 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
         claudiu.manoil@nxp.com, madalin.bucur@oss.nxp.com,
         radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Subject: [PATCH net-next 09/11] net: mscc: ocelot: convert SYS_PAUSE_CFG register access to regfield
-Date:   Thu, 28 May 2020 02:41:11 +0300
-Message-Id: <20200527234113.2491988-10-olteanv@gmail.com>
+Subject: [PATCH net-next 10/11] net: mscc: ocelot: extend watermark encoding function
+Date:   Thu, 28 May 2020 02:41:12 +0300
+Message-Id: <20200527234113.2491988-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200527234113.2491988-1-olteanv@gmail.com>
 References: <20200527234113.2491988-1-olteanv@gmail.com>
@@ -71,120 +71,120 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Kochetkov <fido_max@inbox.ru>
 
-Seville has a different bitwise layout than Ocelot and Felix.
+The ocelot_wm_encode function deals with setting thresholds for pause
+frame start and stop. In Ocelot and Felix the register layout is the
+same, but for Seville, it isn't. The easiest way to accommodate Seville
+hardware configuration is to introduce a function pointer for setting
+this up.
 
 Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c  |  3 +++
- drivers/net/ethernet/mscc/ocelot.c      | 14 ++++++--------
- drivers/net/ethernet/mscc/ocelot_regs.c |  3 +++
- include/soc/mscc/ocelot.h               |  3 +++
- include/soc/mscc/ocelot_sys.h           | 10 ----------
- 5 files changed, 15 insertions(+), 18 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c   | 13 +++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c       | 16 ++--------------
+ drivers/net/ethernet/mscc/ocelot_board.c | 13 +++++++++++++
+ include/soc/mscc/ocelot.h                |  1 +
+ 4 files changed, 29 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index dc9480e82d70..bd0bb720558c 100644
+index bd0bb720558c..8efcc2bda2b0 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -514,6 +514,9 @@ static const struct reg_field vsc9959_regfields[] = {
- 	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 7, 4),
- 	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 7, 4),
- 	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 7, 4),
-+	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 10, 18, 7, 4),
-+	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 9, 7, 4),
-+	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 7, 4),
+@@ -1162,8 +1162,21 @@ static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
+ 	}
+ }
+ 
++/* Watermark encode
++ * Bit 8:   Unit; 0:1, 1:16
++ * Bit 7-0: Value to be multiplied with unit
++ */
++static u16 vsc9959_wm_enc(u16 value)
++{
++	if (value >= BIT(8))
++		return BIT(8) | (value / 16);
++
++	return value;
++}
++
+ static const struct ocelot_ops vsc9959_ops = {
+ 	.reset			= vsc9959_reset,
++	.wm_enc			= vsc9959_wm_enc,
  };
  
- static const struct ocelot_stat_layout vsc9959_stats_layout[] = {
+ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 41d1026ec5b3..b66589a5300c 100644
+index b66589a5300c..583f62c52131 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2029,10 +2029,10 @@ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
- 	/* Set Pause watermark hysteresis */
- 	pause_start = 6 * maxlen / OCELOT_BUFFER_CELL_SZ;
- 	pause_stop = 4 * maxlen / OCELOT_BUFFER_CELL_SZ;
--	ocelot_rmw_rix(ocelot, SYS_PAUSE_CFG_PAUSE_START(pause_start),
--		       SYS_PAUSE_CFG_PAUSE_START_M, SYS_PAUSE_CFG, port);
--	ocelot_rmw_rix(ocelot, SYS_PAUSE_CFG_PAUSE_STOP(pause_stop),
--		       SYS_PAUSE_CFG_PAUSE_STOP_M, SYS_PAUSE_CFG, port);
-+	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_START,
-+			    pause_start);
-+	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_STOP,
-+			    pause_stop);
+@@ -396,18 +396,6 @@ static void ocelot_vlan_init(struct ocelot *ocelot)
+ 	}
+ }
  
+-/* Watermark encode
+- * Bit 8:   Unit; 0:1, 1:16
+- * Bit 7-0: Value to be multiplied with unit
+- */
+-static u16 ocelot_wm_enc(u16 value)
+-{
+-	if (value >= BIT(8))
+-		return BIT(8) | (value / 16);
+-
+-	return value;
+-}
+-
+ void ocelot_adjust_link(struct ocelot *ocelot, int port,
+ 			struct phy_device *phydev)
+ {
+@@ -2037,9 +2025,9 @@ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
  	/* Tail dropping watermark */
  	atop_wm = (ocelot->shared_queue_sz - 9 * maxlen) /
-@@ -2096,8 +2096,7 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
- 	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_LOW_CFG);
+ 		   OCELOT_BUFFER_CELL_SZ;
+-	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * maxlen),
++	ocelot_write_rix(ocelot, ocelot->ops->wm_enc(9 * maxlen),
+ 			 SYS_ATOP, port);
+-	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
++	ocelot_write(ocelot, ocelot->ops->wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
+ }
+ EXPORT_SYMBOL(ocelot_port_set_maxlen);
  
- 	/* Enable transmission of pause frames */
--	ocelot_rmw_rix(ocelot, SYS_PAUSE_CFG_PAUSE_ENA, SYS_PAUSE_CFG_PAUSE_ENA,
--		       SYS_PAUSE_CFG, port);
-+	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index b6ea9694c3ae..4a807a9027f5 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -239,8 +239,21 @@ static int ocelot_reset(struct ocelot *ocelot)
+ 	return 0;
+ }
  
- 	/* Drop frames with multicast source address */
- 	ocelot_rmw_gix(ocelot, ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
-@@ -2202,8 +2201,7 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
- 				    injection);
- 
- 		/* Disable transmission of pause frames */
--		ocelot_rmw_rix(ocelot, 0, SYS_PAUSE_CFG_PAUSE_ENA,
--			       SYS_PAUSE_CFG, npi);
-+		ocelot_fields_write(ocelot, npi, SYS_PAUSE_CFG_PAUSE_ENA, 0);
- 	}
- 
- 	/* Enable CPU port module */
-diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c b/drivers/net/ethernet/mscc/ocelot_regs.c
-index 56bdb1bb2f36..eeb4771a9a2a 100644
---- a/drivers/net/ethernet/mscc/ocelot_regs.c
-+++ b/drivers/net/ethernet/mscc/ocelot_regs.c
-@@ -352,6 +352,9 @@ static const struct reg_field ocelot_regfields[] = {
- 	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 11, 4),
- 	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 11, 4),
- 	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 11, 4),
-+	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 10, 18, 11, 4),
-+	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 9, 11, 4),
-+	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 11, 4),
++/* Watermark encode
++ * Bit 8:   Unit; 0:1, 1:16
++ * Bit 7-0: Value to be multiplied with unit
++ */
++static u16 ocelot_wm_enc(u16 value)
++{
++	if (value >= BIT(8))
++		return BIT(8) | (value / 16);
++
++	return value;
++}
++
+ static const struct ocelot_ops ocelot_ops = {
+ 	.reset			= ocelot_reset,
++	.wm_enc			= ocelot_wm_enc,
  };
  
- static const struct ocelot_stat_layout ocelot_stats_layout[] = {
+ static const struct vcap_field vsc7514_vcap_is2_keys[] = {
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 1a87a3a32616..a97cc1796b5e 100644
+index a97cc1796b5e..8a2cb5ea17e7 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -496,6 +496,9 @@ enum ocelot_regfield {
- 	GCB_SOFT_RST_SWC_RST,
- 	GCB_MIIM_MII_STATUS_PENDING,
- 	GCB_MIIM_MII_STATUS_BUSY,
-+	SYS_PAUSE_CFG_PAUSE_START,
-+	SYS_PAUSE_CFG_PAUSE_STOP,
-+	SYS_PAUSE_CFG_PAUSE_ENA,
- 	REGFIELD_MAX
+@@ -526,6 +526,7 @@ struct ocelot;
+ 
+ struct ocelot_ops {
+ 	int (*reset)(struct ocelot *ocelot);
++	u16 (*wm_enc)(u16 value);
  };
  
-diff --git a/include/soc/mscc/ocelot_sys.h b/include/soc/mscc/ocelot_sys.h
-index 8a95fc93fde5..79cf40ccdbe6 100644
---- a/include/soc/mscc/ocelot_sys.h
-+++ b/include/soc/mscc/ocelot_sys.h
-@@ -43,16 +43,6 @@
- #define SYS_TIMESTAMP_OFFSET_TIMESTAMP_OFFSET(x)          ((x) & GENMASK(5, 0))
- #define SYS_TIMESTAMP_OFFSET_TIMESTAMP_OFFSET_M           GENMASK(5, 0)
- 
--#define SYS_PAUSE_CFG_RSZ                                 0x4
--
--#define SYS_PAUSE_CFG_PAUSE_START(x)                      (((x) << 10) & GENMASK(18, 10))
--#define SYS_PAUSE_CFG_PAUSE_START_M                       GENMASK(18, 10)
--#define SYS_PAUSE_CFG_PAUSE_START_X(x)                    (((x) & GENMASK(18, 10)) >> 10)
--#define SYS_PAUSE_CFG_PAUSE_STOP(x)                       (((x) << 1) & GENMASK(9, 1))
--#define SYS_PAUSE_CFG_PAUSE_STOP_M                        GENMASK(9, 1)
--#define SYS_PAUSE_CFG_PAUSE_STOP_X(x)                     (((x) & GENMASK(9, 1)) >> 1)
--#define SYS_PAUSE_CFG_PAUSE_ENA                           BIT(0)
--
- #define SYS_PAUSE_TOT_CFG_PAUSE_TOT_START(x)              (((x) << 9) & GENMASK(17, 9))
- #define SYS_PAUSE_TOT_CFG_PAUSE_TOT_START_M               GENMASK(17, 9)
- #define SYS_PAUSE_TOT_CFG_PAUSE_TOT_START_X(x)            (((x) & GENMASK(17, 9)) >> 9)
+ struct ocelot_acl_block {
 -- 
 2.25.1
 
