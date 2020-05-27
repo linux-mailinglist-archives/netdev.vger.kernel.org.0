@@ -2,117 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A4741E4ADE
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B5E91E4AE9
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725385AbgE0QsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387629AbgE0QsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:48:08 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04EBC03E97D
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:48:08 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id e10so20823632edq.0
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KHSSGSYFMhLn2TxJeu4ikhApcAsJ0J/jhGYOtcoeCzo=;
-        b=uyud49XArDbrnEeWpLkLxAMJ+cOjEhVeetmYyeLPE4Lgkt51ojsUiG+zKKM2bsS3pc
-         XzO0rxOf5Pt/JVSFYD5b4/Eox6VrZd1CdJ+NT2rJHQax42JL0rRN3Hq8OXDJNVHpzgr7
-         oxrRuClLY/MwVVPR2Y+69Z/H2/33/42AhQMy0/RmenRU26ZRIdwis8018YvAPatyHe79
-         PtpTEttDwu9vIKTvsSZqnVa/W42nDG/+z4eEou0PVIL8JQiKB6g5nCrpL2gS5ldDiqx8
-         V8201WuZP/WXvIAH7W3k0cChiKag0Qtrl2sr45v9EskfrSQXjPYwf/i3zn47DGNamaMU
-         GOyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KHSSGSYFMhLn2TxJeu4ikhApcAsJ0J/jhGYOtcoeCzo=;
-        b=tq7bz+U92n5a/CSgvbD0Dn+IR+s5CJNjw07xeCKJpczfTUoAnZAJmhWLmg2CpvwSds
-         8ePCKRiD5/vwO+futbmL9ChUu7Ek1rANBvUWYVRfq1dHX6a8nAOmYZaSz9+pIyJbRMuq
-         QKODgFTDa7FGrp5Vbz7NwvZ2iG9+hhGV3UGsgucXS5na7jUrwHJnm3B9n46yKqnKxUd8
-         5mYKRdDJfn+6jrkBjedU6NLJSs9uu4zxCtiJSx2I0Ast6QRvFjRlWb1aZKaGTtJv+OBR
-         wkTWVehyvl3IUzFUj4wFtko1nDVlx9t1JKUPxZv/GlzGxwC1ADA5K9w9TVCS5QbZl8z1
-         7q5w==
-X-Gm-Message-State: AOAM531KDgEGghmzbKU0d6PixtqZxfw8ATe/GyUa+WyWJxBhMxkc4aK3
-        CQT3ZpNoq60ppcxHZ1uyyRY=
-X-Google-Smtp-Source: ABdhPJzeYRxNmXpAavQCtQabGmcs25TNwSPhaD1J8B5VN9B9oJ0f7tPFn7zYEKmGXjo1xZXGMO+Kow==
-X-Received: by 2002:a50:de03:: with SMTP id z3mr23963693edk.50.1590598087406;
-        Wed, 27 May 2020 09:48:07 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id dn15sm3525080ejc.26.2020.05.27.09.48.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 09:48:06 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: felix: send VLANs on CPU port as egress-tagged
-Date:   Wed, 27 May 2020 19:48:03 +0300
-Message-Id: <20200527164803.1083420-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1729999AbgE0Qtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:49:47 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:47260 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728067AbgE0Qtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:49:47 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04RGne3t104888;
+        Wed, 27 May 2020 11:49:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1590598180;
+        bh=+orVkdrpm42KPb/u5OPot2y6lpiRhwvF/BS4zRx0eQY=;
+        h=From:To:CC:Subject:Date;
+        b=itrOtIMKQCjJHn1Xa4Z0oEvQL+qhnDL0l3TcADboTmw7NdQ933Tz7k3hrYvdKozTr
+         rZ2pK2UnuO1vPcqBDv+xpus44Tttm6jeC4rScf8RD3/Ud5+SmSeggOMDwotnOqxeM1
+         lIhVRN/rsSk3tSL4TNtL1OpGKNxqpL/pvh6dTEZo=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04RGnep2121105
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 May 2020 11:49:40 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 27
+ May 2020 11:49:40 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 27 May 2020 11:49:40 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04RGneER049223;
+        Wed, 27 May 2020 11:49:40 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next v4 0/4] RGMII Internal delay common property
+Date:   Wed, 27 May 2020 11:49:30 -0500
+Message-ID: <20200527164934.28651-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hello
 
-As explained in other commits before (b9cd75e66895 and 87b0f983f66f),
-ocelot switches have a single egress-untagged VLAN per port, and the
-driver would deny adding a second one while an egress-untagged VLAN
-already exists.
+The RGMII internal delay is a common setting found in most RGMII capable PHY
+devices.  It was found that many vendor specific device tree properties exist
+to do the same function. This creates a common property to be used for PHY's
+that have tunable internal delays for the Rx and Tx paths.
 
-But on the CPU port (where the VLAN configuration is implicit, because
-there is no net device for the bridge to control), the DSA core attempts
-to add a VLAN using the same flags as were used for the front-panel
-port. This would make adding any untagged VLAN fail due to the CPU port
-rejecting the configuration:
+Dan Murphy (4):
+  dt-bindings: net: Add tx and rx internal delays
+  net: phy: Add a helper to return the index for of the internal delay
+  dt-bindings: net: Add RGMII internal delay for DP83869
+  net: dp83869: Add RGMII internal delay configuration
 
-bridge vlan add dev swp0 vid 100 pvid untagged
-[ 1865.854253] mscc_felix 0000:00:00.5: Port already has a native VLAN: 1
-[ 1865.860824] mscc_felix 0000:00:00.5: Failed to add VLAN 100 to port 5: -16
+ .../bindings/net/ethernet-controller.yaml     | 14 ++++
+ .../devicetree/bindings/net/ti,dp83869.yaml   | 16 ++++
+ drivers/net/phy/dp83869.c                     | 82 ++++++++++++++++++-
+ drivers/net/phy/phy_device.c                  | 51 ++++++++++++
+ include/linux/phy.h                           |  2 +
+ 5 files changed, 162 insertions(+), 3 deletions(-)
 
-(note that port 5 is the CPU port and not the front-panel swp0).
-
-So this hardware will send all VLANs as tagged towards the CPU.
-
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index a6e272d2110d..66648986e6e3 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -103,13 +103,17 @@ static void felix_vlan_add(struct dsa_switch *ds, int port,
- 			   const struct switchdev_obj_port_vlan *vlan)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	u16 flags = vlan->flags;
- 	u16 vid;
- 	int err;
- 
-+	if (dsa_is_cpu_port(ds, port))
-+		flags &= ~BRIDGE_VLAN_INFO_UNTAGGED;
-+
- 	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
- 		err = ocelot_vlan_add(ocelot, port, vid,
--				      vlan->flags & BRIDGE_VLAN_INFO_PVID,
--				      vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
-+				      flags & BRIDGE_VLAN_INFO_PVID,
-+				      flags & BRIDGE_VLAN_INFO_UNTAGGED);
- 		if (err) {
- 			dev_err(ds->dev, "Failed to add VLAN %d to port %d: %d\n",
- 				vid, port, err);
 -- 
-2.25.1
+2.26.2
 
