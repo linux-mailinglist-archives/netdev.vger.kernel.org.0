@@ -2,102 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 454251E3AD9
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:44:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391111E3AF5
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 09:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387665AbgE0Hoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 03:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
+        id S2387580AbgE0HvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 03:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387505AbgE0Hoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:44:34 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43035C061A0F
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 00:44:34 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id e2so26773250eje.13
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 00:44:34 -0700 (PDT)
+        with ESMTP id S1729052AbgE0HvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 03:51:07 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B04C061A0F;
+        Wed, 27 May 2020 00:51:07 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id q24so1164448pjd.1;
+        Wed, 27 May 2020 00:51:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=DfwOZgo35KGpzcj4qNlL/rLMTnakMSgVX5UxS1ERamY=;
-        b=bjKgywSo+zlaLz5UIWSwAMrO1R7c85dPsA9yqrQpJT9hvAjtWNw42ABzjOfTsY1F9L
-         maZBsvWJF4rfa8vGsLPjdWe26Cnhc1V85yTG3npqw1/VPrgZ2BoSqMX/hnLgeJDmiVVq
-         eSMYMqX8pl8DDSEn8CTqjMiWuyueCcNnSKkw/ktddz+riXQRHOibaiRmvTMg4dFywU+O
-         ocIFHFMZxjLa3YtCwhrwKu9gzJOsqIuYmG8BEH7CZhPIptk34Bwkctr9TKKLVRXpoJez
-         SbvlRCNTmlBhZf1Ym9v+DLKYmrFH/olvgwAiaBgYV7zVUhZEaWrDpajXyGnJzIWKVeiW
-         sGfA==
+        bh=lVQfYsDAh0Z24p4AneVfNcvrH/seQIrLDjjV5CDfqUA=;
+        b=XmeGLa0EtTmu/2gSfi5c1sXBVVRgeLyoAEq8SYefdqXVvWWvvDqkvjb5c0GRxLaam0
+         IPOGn+/AI9uCkUQDuodifGbYvT0nB21tjPxt7rcb/xMOfxvUihM8QPdZrzScsq9HUbyD
+         uYE5zrQD99iTXQno+528dOCLB4oaD48/TmPeoARY9h2KDXV5UnvV/7YIY/OUzYaGca+7
+         WbgZM9dKTugi95NNUuo4ZADrHP49F29Fe+38KuUHP1SggGJwZkQQNsK22HhOXeIN0EJQ
+         ASm1MvGxC8/PqQ2LR24mKtVNw+708lyqi9770tCxMGKWUIjbPLDaJyeIPmplQQHpDEOs
+         ntyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=DfwOZgo35KGpzcj4qNlL/rLMTnakMSgVX5UxS1ERamY=;
-        b=M6p0CfnvE9OCHOuV1ZQ/YAGQ6uS5/Vq/FM5WPKNdAGnNk/quLugzWBGfevN1uNOI8G
-         N5SWcmDLbmvXELoU0+Y1/YoliDbWLhAafh2KYr8ObibMx4fhrgV0MQ34neTWy5Z41nyM
-         sQDpmRoGApLhS5ktekE02l/a2/sR+FEDEaxmAx6DI2wyJnPXiN0LMIK6KdRatQ8cfpUd
-         cTx4ZZez/g1HkXdx1E3geeSs3lGTn5kRsYlO0jH3YbOUAvV2nNt1z/33zUqYGZNUGeh9
-         ohmY/ZFbzxctz29JOhWBjD17jbIlELIbFW/00Ipi0dl1ryGRoob6fDPNDZk3W00Euw6o
-         izfA==
-X-Gm-Message-State: AOAM531JEN47T1aqUM09Pjkrts6vuRQMIt6KBMb5I3xQtpJ8mioyi/C4
-        4U3A5rUEdoikp5fjDRTJfsAkew==
-X-Google-Smtp-Source: ABdhPJybK5+la7pI9lx2eoF+emzRouMfxWcaeWovv4VJKWhuuztoAc1FHuhTKbSz7+3Ksvb2gUU4Kg==
-X-Received: by 2002:a17:906:7e56:: with SMTP id z22mr4581253ejr.60.1590565472950;
-        Wed, 27 May 2020 00:44:32 -0700 (PDT)
-Received: from madeliefje.horms.nl ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id z7sm1640871edq.38.2020.05.27.00.44.31
+        bh=lVQfYsDAh0Z24p4AneVfNcvrH/seQIrLDjjV5CDfqUA=;
+        b=EjgvLoqGijmR7OxIZYJfbvaLwq9i45K6XuMKB9HHvBm++D+wV4RlRYWusEP/doVkOs
+         XSloW+ZESO6IBYBUHLBr8bd1rDTCsxJ98JLC2oyCGODYUgfdTLl4mTuJx0RZOIExFMK8
+         3AgCuJQVbnl1nYvYJzjnoQ623xNz5zDpr9p0Px0H/Nvvzf4B+IbKAA2TPzNDQZb7bbfK
+         e5Oo/o+o0a4Ma0xnWTabNhDTsIPU+B0Oi0vnR+Yk7SLxiSqIfc0LWE94kwP3qYL2PIU4
+         RHmSyf9ZjLt2O7owxXWNGJD7oPdtIU2lJDqrQI6byK3Ok5uUDlMsMlLsDS5fDpV3rtXU
+         M1yQ==
+X-Gm-Message-State: AOAM533+2EW9ahqD1MuHxw8B5tufOcLLgv5RD34sWlPKpDdEiaGPH31/
+        PmU2JDFRvhFV+nHXn7QOnt0=
+X-Google-Smtp-Source: ABdhPJxr8ZxmDGZ+hM3kVqELCR7QP1gaFkHTm7tIQeOayjhIS9dRSFDLUX0jX/fgqWbW+MmD4eDv0g==
+X-Received: by 2002:a17:90a:2586:: with SMTP id k6mr3595800pje.121.1590565866882;
+        Wed, 27 May 2020 00:51:06 -0700 (PDT)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id 206sm1341234pfy.97.2020.05.27.00.51.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 00:44:32 -0700 (PDT)
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Heinrich Kuhn <heinrich.kuhn@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net] nfp: flower: fix used time of merge flow statistics
-Date:   Wed, 27 May 2020 09:44:20 +0200
-Message-Id: <20200527074420.11232-1-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 27 May 2020 00:51:06 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] net/mlx5e: Don't use err uninitialized in mlx5e_attach_decap
+Date:   Wed, 27 May 2020 00:50:22 -0700
+Message-Id: <20200527075021.3457912-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.27.0.rc0
 MIME-Version: 1.0
+X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heinrich Kuhn <heinrich.kuhn@netronome.com>
+Clang warns:
 
-Prior to this change the correct value for the used counter is calculated
-but not stored nor, therefore, propagated to user-space. In use-cases such
-as OVS use-case at least this results in active flows being removed from
-the hardware datapath. Which results in both unnecessary flow tear-down
-and setup, and packet processing on the host.
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3712:6: warning:
+variable 'err' is used uninitialized whenever 'if' condition is false
+[-Wsometimes-uninitialized]
+        if (IS_ERR(d->pkt_reformat)) {
+            ^~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3718:6: note:
+uninitialized use occurs here
+        if (err)
+            ^~~
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3712:2: note: remove the
+'if' if its condition is always true
+        if (IS_ERR(d->pkt_reformat)) {
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3670:9: note: initialize
+the variable 'err' to silence this warning
+        int err;
+               ^
+                = 0
+1 warning generated.
 
-This patch addresses the problem by saving the calculated used value
-which allows the value to propagate to user-space.
+It is not wrong, err is only ever initialized in if statements but this
+one is not in one. Initialize err to 0 to fix this.
 
-Found by inspection.
-
-Fixes: aa6ce2ea0c93 ("nfp: flower: support stats update for merge flows")
-Signed-off-by: Heinrich Kuhn <heinrich.kuhn@netronome.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
+Fixes: 14e6b038afa0 ("net/mlx5e: Add support for hw decapsulation of MPLS over UDP")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1037
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index c694dbc239d0..6b60771ccb19 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1440,7 +1440,8 @@ __nfp_flower_update_merge_stats(struct nfp_app *app,
- 		ctx_id = be32_to_cpu(sub_flow->meta.host_ctx_id);
- 		priv->stats[ctx_id].pkts += pkts;
- 		priv->stats[ctx_id].bytes += bytes;
--		max_t(u64, priv->stats[ctx_id].used, used);
-+		priv->stats[ctx_id].used = max_t(u64, used,
-+						 priv->stats[ctx_id].used);
- 	}
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index fdb7d2686c35..6d0d4896fe0c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3667,7 +3667,7 @@ static int mlx5e_attach_decap(struct mlx5e_priv *priv,
+ 	struct mlx5e_decap_entry *d;
+ 	struct mlx5e_decap_key key;
+ 	uintptr_t hash_key;
+-	int err;
++	int err = 0;
  
+ 	parse_attr = attr->parse_attr;
+ 	if (sizeof(parse_attr->eth) > MLX5_CAP_ESW(priv->mdev, max_encap_header_size)) {
+
+base-commit: d3d9065ad99d0d8d732c950cc0a37a7883cd0c60
 -- 
-2.20.1
+2.27.0.rc0
 
