@@ -2,122 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF11F1E49EA
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B38B81E49EF
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391056AbgE0QYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:24:05 -0400
-Received: from mail-eopbgr140074.outbound.protection.outlook.com ([40.107.14.74]:1142
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S2389862AbgE0QZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:25:20 -0400
+Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:3141
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391022AbgE0QYD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 12:24:03 -0400
+        id S1725613AbgE0QZT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 12:25:19 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EpDGKi4aYvNLmB4UITPWRCZBorK0j1p++3l9oZU/S8H9gDHeZ09CJ+dqxom/JX3Lpn5xdHB3xFApGlBIK6Ggo/pUrMPrVtAMUGqVfeQ49LYXqgVWvULuHRMgl1mCVCQCfmPmDRkdlCqPB9np1+lsnORVs6pqEK0ED9W8LZN/GuIT8JX4D7Krs2Qt7HBYnGmOrIbcCxpWstfFdwnLRUrkZHBiC8PI9airiwZLO5Iyfw0xzsTB65fdYJo8J+YQN1MPVcKW8W19/AcNWApuI/LWJw5uVGciebmPKT8M64ugiNkImfHsJmuyvKcsH6BrVRr0i+1ErRtSMw0yid98dcr56g==
+ b=ZpMZOAaBZ9GOhOeYu4pK6XCW43JlwBB1gdcgQfYMvf68kNSRX60Z7F5SdHuJUeOE0BqTNdNAgiXIFAwiN2nWs8U2KVxGyDKUFv6hLsBfaimj9kL0BRhXqmQVmzWPsDuQJC8qpYlJ6mvJD0347+hG8csH0PdBF2Qask/okR0p5Zj9x4CSFPPK+DIUseTLBJSu7z4oQRQObFkmM6vZdkV77FEbSxt4B7YpNWwQCtM8smD3XxjsINVovp1ssxiF7V+DC6DhkeEXX+t1O+L5/2uksD8hso3p6HPznZfiK1EuelPVybUE49jhhYIDqY1LksqqlL7GmnWStGexx+zPJ4EQrw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1CrRlJoFucLC066RgI2MkMtjWmVI2AX+aN6RGKPW6jY=;
- b=al8rl8pgIa/laIPQlRUkXzyXpARF4OwNOvPAcPW6hwgYsm7Amj5rNsQqxHiVzOM5T7a7wQb4Lwu4oJTwjPxOrWk5w/mGv54Pj/hkKcG04UMpiGXD/20253o/l0fUnVO12nr5P7rEFDMdW7R6l0omsJv/BzA0tv360BT5W73iWc9yvRzr647Kzx6B1RaGNiRYUovGtb93kAKmdgeCtVELyzBN/rXnehVDiCP27MwgInHikCw+IJOWYmElKdAydMIRUNZVyPIcpd/Qa53d3i8rvjofqNcj8yZt7gGfDporr+FnyrSJ+4i8LPlKkFMODaLHWH8Ntk1Pu8hsXNvfICxxpA==
+ bh=acmEXfLb/v606jw6NyWtQVxSS0cg2gkM9uNufA2WSY0=;
+ b=HPRIh28GqICgjYry38pSvAA9jso/wG2OkEYh8tJUcjGyDMfhaec0xF+KmUkLUxYWKdy6gaHVvxeealxe+mFtZd+CE6/P+p5NIk+Y5Jba1lX0MXIdHRRPv5NEo9yzF5DqrsJVp534YBYaGyJveNWpHIS55+hMLTQyi9u8vnNygSD2dY7yzSHFGc8XhV8DNW+0k44xTQJrOlXqp04kOlf3EV155tWS8+qI8f48n/EE2ZdXJEFqYvWEE/XQQzzvC7GI8V/2AetFTdLm+smyi54IyEGmAHvjkJ4+jNgb72ErA9cmcpJ0WwH9t5+I6iHmBWNBWiNkR+Ndi9fnO/CFe10iWA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1CrRlJoFucLC066RgI2MkMtjWmVI2AX+aN6RGKPW6jY=;
- b=bA1NkLa//V+6Hn6ONR64l73ymWzHZc8vbcN68D3Cvv4iHdMZIo6n1nmIhrtBko1Ag+P9ml+EPn0ujaTshN4yVAtYgKoDqcuasOWLcyJ3YXjMafyoLpCNqYTSOUIvk1Fjbj5tWMC6/k0LfROWaySeebzaU3SKWMV1i3+J5BEI3/w=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB4589.eurprd05.prod.outlook.com (2603:10a6:802:63::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 16:24:00 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 16:24:00 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "brouer@redhat.com" <brouer@redhat.com>
-Subject: Re: [PATCH net-next] mlx5: fix xdp data_meta setup in
- mlx5e_fill_xdp_buff
-Thread-Topic: [PATCH net-next] mlx5: fix xdp data_meta setup in
- mlx5e_fill_xdp_buff
-Thread-Index: AQHWNCzwqaT7tlDgcE+aJr9FLtW9nai7+DUAgAAl4wA=
-Date:   Wed, 27 May 2020 16:24:00 +0000
-Message-ID: <00b84a99d52d5828d95a9b32bff81fc8f8b4aef4.camel@mellanox.com>
-References: <8d211628-9290-3315-fb1e-b0651d6e1966@gmail.com>
-         <159058704935.247267.18235681992710936316.stgit@firesoul>
-         <41538e35-cc81-73b5-a63d-42a7176c1e74@gmail.com>
-In-Reply-To: <41538e35-cc81-73b5-a63d-42a7176c1e74@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.2 (3.36.2-1.fc32) 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0d036d6a-a255-4f10-ad42-08d8025a5cfa
-x-ms-traffictypediagnostic: VI1PR05MB4589:
-x-microsoft-antispam-prvs: <VI1PR05MB45897044D4D0BD80D4322827BEB10@VI1PR05MB4589.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2733;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VDxcscb5BHr4VfZP6HvcaKFq2TYYJi2U18bSzsXDaNG6Xg5ZaD2wtCYXcsiEfSYSYmUV66zE57UDnIzkGFDHUlNdYE+QFQjq+eWSbiPW1Yq45rZ1SP/MYbiGH/ykrPwMJSfYz4pLOlNMl7gd+HL7MJqx2zyaBo5SJhGLtecQLylvnvF7mRuXdcB2aomxCsdsybpczR9RT67v3o4kWBEgWBwzshMEd17HHci6Nhtd1dY+BNehQIn/WTIPy2SgY80v4zX4axAq9YZfYhiJBE6dT8Ee3xZuF07g0eCQD/yyuwX5LiVFoujD0VBLOicxB9ThKppsP8j6Izi3NuygRIfpEw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(39860400002)(136003)(366004)(376002)(36756003)(6506007)(86362001)(186003)(53546011)(316002)(110136005)(71200400001)(5660300002)(2906002)(26005)(66476007)(66556008)(91956017)(66946007)(8936002)(64756008)(2616005)(6512007)(76116006)(6486002)(8676002)(478600001)(83380400001)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: C3Fh550uyCFs0Jf1Mq33fS2iDjRtBwPHE5+bdBOLUDXKPOLXipKxWrpAqJisR6/oIhTBi88RVoYODs+rTho7kbxJP2mDABT6CLfb76gTqSFUnGQ+ISGFvCg/Tu4ODhjkpi6J59aj+EoRxzFydlhNKzxqFZhTrnF5m5k5Mm7SluYOEraM2wfaM3HuRRozVmMRP8aN625JNEkUNhrt1wyskGop3e3Z6TLXQW5trDoC95Zyxg17VwQFMrFm93MT/HtR4JDNnypBFqmSOotr1tq2VUEY/zfI5hI+/8tzA+X51bUoC+aBoU22BvI+jUiJtmSWqOgfvUha83Ui6Yb+1glISaByetl7n31q8beu3JXh5iiSHEeAm5jkmHag08jPPyq39nobSE6r93nPOiukuWgL1UV/iL23lLrxbF3nj1ydkom3ExbiA0mSV5IqYNqhATRJJYejWUmDBOpTOeHlFXhntliO0IENbfoZGshxL3VkMWE=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <589CBC46187EC24889BAD7D807092272@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ bh=acmEXfLb/v606jw6NyWtQVxSS0cg2gkM9uNufA2WSY0=;
+ b=BcwzKN91qztyrMo4hiPe7tsHmYS3QolEt4X4PhC59NEy2gjnCGlCTAcKZtqSdpyFRv83N+uFcFVhSC13hEvpsAK7ot0cIEqANMTSG7nK3YXuv/yetoexI5nKavyqGhz1YuPfXL6qHKHvlhihZAGOLS/jfgPYZmKsI3nEr3YbaDA=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR05MB3307.eurprd05.prod.outlook.com (2603:10a6:7:31::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3045.17; Wed, 27 May 2020 16:25:15 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3045.018; Wed, 27 May 2020
+ 16:25:14 +0000
+References: <cover.1590512901.git.petrm@mellanox.com> <CA+h21hqUKN9+Staoff++CoMd7wAkYBnwHOcunzX4nOFuAK_XHg@mail.gmail.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 0/3] TC: Introduce qevents
+In-reply-to: <CA+h21hqUKN9+Staoff++CoMd7wAkYBnwHOcunzX4nOFuAK_XHg@mail.gmail.com>
+Date:   Wed, 27 May 2020 18:25:10 +0200
+Message-ID: <871rn5uyzd.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR07CA0015.eurprd07.prod.outlook.com
+ (2603:10a6:208:ac::28) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (46.135.76.89) by AM0PR07CA0015.eurprd07.prod.outlook.com (2603:10a6:208:ac::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.7 via Frontend Transport; Wed, 27 May 2020 16:25:13 +0000
+X-Originating-IP: [46.135.76.89]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ba45964e-ef0b-4908-90bd-08d8025a8902
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3307:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB33079AC764A930814BE6DB12DBB10@HE1PR05MB3307.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 04163EF38A
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eF5bTWl+JrsHb/GjJ2lcUnHmjZzXml5SqAU5GJf25jKoP9CLfznnVh6bqlY7sv+EH30flZLd5+Cqf/bjkaAUYxdzml5DTswe1cnVyODoeFN/IbrzWJIEF+1AyptMMQIDBmuE0UNqHCqSgEzY15giRyR0lDCd5enEqqpfa9qNMti48X5fz5L1AP5W0sJy+w8SedXuo1XEHEzWDXNRbkvhrdTo+9P98ArMCUhzvScfiTYQl+hVGRksg+CIOvjUDQt9Klng9XAqRV1Xhn+tSC3Bzo/ulbeFA1QgF0ho4b/axHNYcnJdlrehAPmi2NLQP1Ssly0roHrig51/vAKJdk+2gQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(39860400002)(396003)(346002)(376002)(8936002)(8676002)(66476007)(186003)(4326008)(36756003)(66946007)(66556008)(107886003)(956004)(2616005)(16526019)(5660300002)(86362001)(6496006)(26005)(54906003)(2906002)(6486002)(52116002)(316002)(6916009)(478600001)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: v4i8bkCOM0mt2KvSCNhm89Oh75jd9jjMrUSIL/P7vm8+M7iyKtf8Nkci6FeW71ODobgdhNEP/lDZlq/3vy09J1cNL+3LtU25p2YGx+qsPMDAsGaHI9lk/6iCziEHtskLNuvkL6VHILoqAbjwDmkq1KExFC3zAUp3w0lb0ot9NEk0taOoCyvprPVZ1kvPpkm1ALdHKqbclp+Lv+Onk8yG50BhU+N1IuvVmnUaEzQl0Jpn2SfNiPg0O/2nW7DF92UgG2T702bkyNUd2WyNER0Y2h5mFxojTifMiNRWwcMVurHNcpf3cY+OAvU3dZQLsndResG9I127IMY6TK8KLAKXTxMq+Nsbx4RILItNmlT3ncifp7jvLtcZ0p/GAB22cQclzxala4DM0jLdCW5t51VWBP5IHRamIRnsFVdpnAsmvsrcLRiRo//TkV4sKpE1VJ7p1Jla5iPcBhfLLXoSuHWxBQkBdalhhLSDx3ctH54S+yc=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d036d6a-a255-4f10-ad42-08d8025a5cfa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 16:24:00.1890
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba45964e-ef0b-4908-90bd-08d8025a8902
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 16:25:14.6671
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hkKsmuWqve0H7KiIHgCJepJF2hSAZsyWu6GaPnnb9s1CEMua039o23Q519fVVNbvPc7fioWv+gQ2XPFiJ/8QWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4589
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e5zZL/Oda3l7TX6Jd5L/zFYO3o2J9uWt7rFrJMcSBtmcWTVPHfq0qEjuEy8Hl8ZRveZ52bMpJKFZFp9lT54HYg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3307
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTA1LTI3IGF0IDA4OjA4IC0wNjAwLCBEYXZpZCBBaGVybiB3cm90ZToNCj4g
-T24gNS8yNy8yMCA3OjQ0IEFNLCBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIHdyb3RlOg0KPiA+IFRo
-ZSBoZWxwZXIgZnVuY3Rpb24geGRwX3NldF9kYXRhX21ldGFfaW52YWxpZCgpIG11c3QgYmUgY2Fs
-bGVkDQo+ID4gYWZ0ZXINCj4gPiBzZXR0aW5nIHhkcC0+ZGF0YSBhcyBpdCBkZXBlbmRzIG9uIGl0
-Lg0KPiA+IA0KPiA+IFRoZSBidWcgd2FzIGludHJvZHVjZWQgaW4gMzlkNjQ0M2M4ZGFmICgibWx4
-NSwgeHNrOiBNaWdyYXRlIHRvDQo+ID4gbmV3IE1FTV9UWVBFX1hTS19CVUZGX1BPT0wiKSwgYW5k
-IGNhdXNlIHRoZSBrZXJuZWwgdG8gY3Jhc2ggd2hlbg0KPiA+IHVzaW5nIEJQRiBoZWxwZXIgYnBm
-X3hkcF9hZGp1c3RfaGVhZCgpIG9uIG1seDUgZHJpdmVyLg0KPiA+IA0KPiA+IEZpeGVzOiAzOWQ2
-NDQzYzhkYWYgKCJtbHg1LCB4c2s6IE1pZ3JhdGUgdG8gbmV3DQo+ID4gTUVNX1RZUEVfWFNLX0JV
-RkZfUE9PTCIpDQo+ID4gUmVwb3J0ZWQtYnk6IERhdmlkIEFoZXJuIDxkc2FoZXJuQGtlcm5lbC5v
-cmc+DQo+ID4gU2lnbmVkLW9mZi1ieTogSmVzcGVyIERhbmdhYXJkIEJyb3VlciA8YnJvdWVyQHJl
-ZGhhdC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
-eDUvY29yZS9lbl9yeC5jIHwgICAgMiArLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRp
-b24oKyksIDEgZGVsZXRpb24oLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yeC5jDQo+ID4gaW5kZXggNmIzYzgyZGExOTlj
-Li5kYmIxYzYzMjM5NjcgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
-bGFub3gvbWx4NS9jb3JlL2VuX3J4LmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
-ZWxsYW5veC9tbHg1L2NvcmUvZW5fcnguYw0KPiA+IEBAIC0xMDU2LDggKzEwNTYsOCBAQCBzdGF0
-aWMgdm9pZCBtbHg1ZV9maWxsX3hkcF9idWZmKHN0cnVjdA0KPiA+IG1seDVlX3JxICpycSwgdm9p
-ZCAqdmEsIHUxNiBoZWFkcm9vbSwNCj4gPiAgCQkJCXUzMiBsZW4sIHN0cnVjdCB4ZHBfYnVmZiAq
-eGRwKQ0KPiA+ICB7DQo+ID4gIAl4ZHAtPmRhdGFfaGFyZF9zdGFydCA9IHZhOw0KPiA+IC0JeGRw
-X3NldF9kYXRhX21ldGFfaW52YWxpZCh4ZHApOw0KPiA+ICAJeGRwLT5kYXRhID0gdmEgKyBoZWFk
-cm9vbTsNCj4gPiArCXhkcF9zZXRfZGF0YV9tZXRhX2ludmFsaWQoeGRwKTsNCj4gPiAgCXhkcC0+
-ZGF0YV9lbmQgPSB4ZHAtPmRhdGEgKyBsZW47DQo+ID4gIAl4ZHAtPnJ4cSA9ICZycS0+eGRwX3J4
-cTsNCj4gPiAgCXhkcC0+ZnJhbWVfc3ogPSBycS0+YnVmZi5mcmFtZTBfc3o7DQo+ID4gDQo+ID4g
-DQo+IA0KPiBnb29kIGNhdGNoLiBJIGxvb2tlZCByaWdodCBwYXN0IHRoYXQgeWVzdGVyZGF5Lg0K
-PiANCj4gVGVzdGVkLWJ5OiBEYXZpZCBBaGVybiA8ZHNhaGVybkBnbWFpbC5jb20+DQoNCkFwcGxp
-ZWQgdG8gbmV0LW5leHQtbWx4NSwgd2lsbCBzZW5kIHNob3J0bHkgdG8gbmV0LW5leHQuDQpUaGFu
-a3MsDQpTYWVlZC4NCg0K
+
+Vladimir Oltean <olteanv@gmail.com> writes:
+
+> I only took a cursory glance at your patches. Can these "qevents" be
+> added to code outside of the packet scheduler, like to the bridge, for
+> example? Or can the bridge mark the packets somehow, and then any
+> generic qdisc be able to recognize this mark without specific code?
+> A very common use case which is currently not possible to implement is
+> to rate-limit flooded (broadcast, unknown unicast, unknown multicast)
+> traffic. Can your "qevents" be used to describe this, or must it be
+> described separately?
+
+You mean something like a "flood" qevent? In principle nothing prevents
+this, but it does not strike me as a very good fit. These events are
+meant to be used on qdiscs, hence the "q" in the name. I am not sure it
+makes sense to reuse them for bridge traffic policing.
+
+Peeking in 802.1Q, I see "Managed objects for per-stream filtering and
+policing". If that's related, it seems like it would be conservative to
+model the policing directly in the bridge, instead of this round-about
+through TC.
