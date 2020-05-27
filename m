@@ -2,662 +2,552 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EAB1E3EFF
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 12:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A9801E3E94
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 12:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729062AbgE0K3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 06:29:52 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31933 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727018AbgE0K3w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 06:29:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590575389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yeWLzzdfnmAr/jVgKw9Z2K/4Rd9YahDOKhiAerWw/9E=;
-        b=QpBf6s90AKyYd4mL7Ihpa7Vmz96f7T8uzZ2iHnYCyvMXlLec+ttx0WvquDvzfTYjjU+1mN
-        xxUANQOyCS+/2wse28eVWs6g8QJLvKOOwolx2BIiB6HcNCtQAyIjlMmJl8xAXnMJzJUvpJ
-        UuYjiZUgogWaGduTS9N3vapUHf671t4=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-471-FuV1AT5OMF2h-dAvbuoFFg-1; Wed, 27 May 2020 06:29:47 -0400
-X-MC-Unique: FuV1AT5OMF2h-dAvbuoFFg-1
-Received: by mail-ej1-f70.google.com with SMTP id ng1so8661289ejb.22
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 03:29:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=yeWLzzdfnmAr/jVgKw9Z2K/4Rd9YahDOKhiAerWw/9E=;
-        b=GdbYjlzmM7qbl6D3fjvJfwGsVw6wpalT4Xl39Pfb7uH7iPCcrCdJY0lDFw1kTRIoYn
-         RMw+9hVq3lsA4w5KZ/y4/hZL2t/JKOydqH/QVAKlFlGrP/Lsezn/FQ/RPKfgWWzErqRE
-         KtrexGSc7LyrLsQiplCOy5L4xtf1dhFSE5PU15SCAahp06aU7b9jm3unZOv1f3y60WlY
-         DCLg6i85UH39G8RlFaZPCoo/NExqWrTzFcxVIaiz93iNg0saYIRKLY6e1SkMWOG7Mqld
-         iJaeURjcNUxgDc+K9fxVJgNarD/LkV43PRYvPtxTwnVRjmjL/THbAkGIupASM0IoH1De
-         Uw/w==
-X-Gm-Message-State: AOAM531fKTBGzYKymLmZR/hb9ZzRRn53mIyqgzBAlzYdeXHk+SnA2v2A
-        s1KGm8XxKZRSBG+WjX+lpvVT3Xee5FCRELDZqg2sEqBMOra9Xsue8+TY7uMp4RC5HxcVGpdJQ3J
-        1fqbMaah+/Rul667/
-X-Received: by 2002:a17:907:20d9:: with SMTP id qq25mr5130948ejb.202.1590575385645;
-        Wed, 27 May 2020 03:29:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy6PSWEP8ajqc+OlCrGQYtUByHvgx90+UqZahsYp/pF99lTB0PxE0pH4kmqrV7gtrzM27AG+Q==
-X-Received: by 2002:a17:907:20d9:: with SMTP id qq25mr5130922ejb.202.1590575385240;
-        Wed, 27 May 2020 03:29:45 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x26sm1903805edv.61.2020.05.27.03.29.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 03:29:44 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 06F4E1804EB; Wed, 27 May 2020 12:29:44 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map multicast support
-In-Reply-To: <20200526140539.4103528-2-liuhangbin@gmail.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com> <20200526140539.4103528-1-liuhangbin@gmail.com> <20200526140539.4103528-2-liuhangbin@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 27 May 2020 12:29:43 +0200
-Message-ID: <87wo4x1xig.fsf@toke.dk>
+        id S1728666AbgE0KHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 06:07:16 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:18801 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728510AbgE0KHQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 06:07:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590574036; x=1622110036;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=IlafGHbVBOyHM/HpV/Q8IwpqfHSPXdpqcPSfkTcdTM4=;
+  b=Su/YuH9rzPDnrvXlhWITcFX4fXLRim8kt0TCgpFmTx1rtcne9wEyAEI+
+   4dfdnEwiqxKR1PBno89OemRh1eV58NOSqCBlGNxT7V+KqxJQuA6cZ9Jwf
+   O04S4yztbC35i6h/AUMUIbvJa0+UBzbk8OStEkaAM2OaqazjXCqJkUPyq
+   RiHFl1tm3+wUx6p82zLfMHJ5QCe44f2PxJwO/iTz7aGTDLCkuF9aNey6i
+   crQxb68YOSrOTM2XYMpP2YpbwN1h3q3GCorzN23o5C+W0jmJu60Zqiv+2
+   Gy+dLwkGqGYGIn0NauHVmHt6NcEhyLq948bkNvSUMA50Zt7usr13kiGSw
+   w==;
+IronPort-SDR: A0Qq7o8ocUhyEl3iXXXK2P4U9qNednG9jAH9ctv2NYdqkup1Tlsbmi2OznJyNJ4UwSDi2Mz0bj
+ cQDvsCoVAb7UTF3g6CXXiQJaQV/KjNeXRKT0EoyY7Qo/ZUZX3f1Ukim5ckPY58Qu+x8BWenrFC
+ 9kRjVTF0HVAe42b5dR7a21AINy62JptlgoZcEpRXSuUEgXE3c486oX/rdWIDBPMd43YwPSNYph
+ p5HGEtWmHcMWTRxnF827FR+FT4yk3nxur4LslNuoV+frlxbtLJiR7BKag/jjcLjN6087TvClTv
+ HPM=
+X-IronPort-AV: E=Sophos;i="5.73,440,1583218800"; 
+   d="scan'208";a="13649739"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2020 03:07:15 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 27 May 2020 03:07:15 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 27 May 2020 03:07:14 -0700
+Date:   Wed, 27 May 2020 12:06:54 +0000
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <roopa@cumulusnetworks.com>, <mkubecek@suse.cz>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next] bridge: mrp: Rework the MRP netlink interface
+Message-ID: <20200527120654.n4gpk722uqhsxdur@soft-dev3.localdomain>
+References: <20200526142249.386410-1-horatiu.vultur@microchip.com>
+ <29e8111a-8151-4395-8743-2c8455290601@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <29e8111a-8151-4395-8743-2c8455290601@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
+The 05/27/2020 11:59, Nikolay Aleksandrov wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On 26/05/2020 17:22, Horatiu Vultur wrote:
+> > This patch rework the MRP netlink interface. Before, each attribute
+> > represented a binary structure which made it hard to be extended.
+> > Therefore update the MRP netlink interface such that each existing
+> > attribute to be a nested attribute which contains the fields of the
+> > binary structures.
+> > In this way the MRP netlink interface can be extended without breaking
+> > the backwards compatibility. It is also using strict checking for
+> > attributes under the MRP top attribute.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  include/uapi/linux/if_bridge.h |  64 ++++++++-
+> >  net/bridge/br_mrp.c            |   8 +-
+> >  net/bridge/br_mrp_netlink.c    | 248 ++++++++++++++++++++++++++++-----
+> >  net/bridge/br_private_mrp.h    |   2 +-
+> >  4 files changed, 272 insertions(+), 50 deletions(-)
+> >
+> 
+> Hi Horatiu,
+> I think the functions below should be static. Also you could do better with the error
+> reporting. It seems extack is passed down, so you could return something meaningful for
+> each missing value.
 
-> This patch is for xdp multicast support. In this implementation we
-> add a new helper to accept two maps: forward map and exclude map.
-> We will redirect the packet to all the interfaces in *forward map*, but
-> exclude the interfaces that in *exclude map*.
->
-> To achive this I add a new ex_map for struct bpf_redirect_info.
-> in the helper I set tgt_value to NULL to make a difference with
-> bpf_xdp_redirect_map()
->
-> We also add a flag *BPF_F_EXCLUDE_INGRESS* incase you don't want to
-> create a exclude map for each interface and just want to exclude the
-> ingress interface.
->
-> The general data path is kept in net/core/filter.c. The native data
-> path is in kernel/bpf/devmap.c so we can use direct calls to
-> get better performace.
->
-> v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
->
-> v3: Based on Toke's suggestion, do the following update
-> a) Update bpf_redirect_map_multi() description in bpf.h.
-> b) Fix exclude_ifindex checking order in dev_in_exclude_map().
-> c) Fix one more xdpf clone in dev_map_enqueue_multi().
-> d) Go find next one in dev_map_enqueue_multi() if the interface is not
->    able to forward instead of abort the whole loop.
-> e) Remove READ_ONCE/WRITE_ONCE for ex_map.
->
-> v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
-> include/exclude maps directly.
->
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  include/linux/bpf.h            |  20 ++++++
->  include/linux/filter.h         |   1 +
->  include/net/xdp.h              |   1 +
->  include/uapi/linux/bpf.h       |  22 +++++-
->  kernel/bpf/devmap.c            | 124 +++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c          |   6 ++
->  net/core/filter.c              | 101 +++++++++++++++++++++++++--
->  net/core/xdp.c                 |  26 +++++++
->  tools/include/uapi/linux/bpf.h |  22 +++++-
->  9 files changed, 316 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index efe8836b5c48..d1c169bec6b5 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1240,6 +1240,11 @@ int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
->  		    struct net_device *dev_rx);
->  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->  		    struct net_device *dev_rx);
-> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map,
-> +			int exclude_ifindex);
-> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
-> +			  struct bpf_map *map, struct bpf_map *ex_map,
-> +			  bool exclude_ingress);
->  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
->  			     struct bpf_prog *xdp_prog);
->  
-> @@ -1377,6 +1382,21 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->  	return 0;
->  }
->  
-> +static inline
-> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map,
-> +			int exclude_ifindex)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline
-> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
-> +			  struct bpf_map *map, struct bpf_map *ex_map,
-> +			  bool exclude_ingress)
-> +{
-> +	return 0;
-> +}
-> +
->  struct sk_buff;
->  
->  static inline int dev_map_generic_redirect(struct bpf_dtab_netdev *dst,
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 73d06a39e2d6..5d9c6ac6ade3 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -612,6 +612,7 @@ struct bpf_redirect_info {
->  	u32 tgt_index;
->  	void *tgt_value;
->  	struct bpf_map *map;
-> +	struct bpf_map *ex_map;
->  	u32 kern_flags;
->  };
->  
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 90f11760bd12..967684aa096a 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -105,6 +105,7 @@ void xdp_warn(const char *msg, const char *func, const int line);
->  #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
->  
->  struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
-> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf);
->  
->  /* Convert xdp_buff to xdp_frame */
->  static inline
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 97e1fd19ff58..000b0cf961ea 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3157,6 +3157,20 @@ union bpf_attr {
->   *		**bpf_sk_cgroup_id**\ ().
->   *	Return
->   *		The id is returned or 0 in case the id could not be retrieved.
-> + *
-> + * int bpf_redirect_map_multi(struct bpf_map *map, struct bpf_map *ex_map, u64 flags)
-> + * 	Description
-> + * 		Redirect the packet to ALL the interfaces in *map*, but
-> + * 		exclude the interfaces in *ex_map* (which may be NULL).
-> + *
-> + * 		Currently the *flags* only supports *BPF_F_EXCLUDE_INGRESS*,
-> + * 		which additionally excludes the current ingress device.
-> + *
-> + * 		See also bpf_redirect_map(), which supports redirecting
-> + * 		packet to a specific ifindex in the map.
-> + * 	Return
-> + * 		**XDP_REDIRECT** on success, or **XDP_ABORTED** on error.
-> + *
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -3288,7 +3302,8 @@ union bpf_attr {
->  	FN(seq_printf),			\
->  	FN(seq_write),			\
->  	FN(sk_cgroup_id),		\
-> -	FN(sk_ancestor_cgroup_id),
-> +	FN(sk_ancestor_cgroup_id),	\
-> +	FN(redirect_map_multi),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> @@ -3417,6 +3432,11 @@ enum bpf_lwt_encap_mode {
->  	BPF_LWT_ENCAP_IP,
->  };
->  
-> +/* BPF_FUNC_redirect_map_multi flags. */
-> +enum {
-> +	BPF_F_EXCLUDE_INGRESS		= (1ULL << 0),
-> +};
-> +
->  #define __bpf_md_ptr(type, name)	\
->  union {					\
->  	type name;			\
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index a51d9fb7a359..ecc5c44a5bab 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -455,6 +455,130 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->  	return __xdp_enqueue(dev, xdp, dev_rx);
->  }
->  
-> +/* Use direct call in fast path instead of  map->ops->map_get_next_key() */
-> +static int devmap_get_next_key(struct bpf_map *map, void *key, void *next_key)
-> +{
-> +
-> +	switch (map->map_type) {
-> +	case BPF_MAP_TYPE_DEVMAP:
-> +		return dev_map_get_next_key(map, key, next_key);
-> +	case BPF_MAP_TYPE_DEVMAP_HASH:
-> +		return dev_map_hash_get_next_key(map, key, next_key);
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -ENOENT;
-> +}
-> +
-> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map,
-> +			int exclude_ifindex)
-> +{
-> +	struct bpf_dtab_netdev *in_obj = NULL;
-> +	u32 key, next_key;
-> +	int err;
-> +
-> +	if (obj->dev->ifindex == exclude_ifindex)
-> +		return true;
-> +
-> +	if (!map)
-> +		return false;
-> +
-> +	devmap_get_next_key(map, NULL, &key);
+Hi Nik,
 
-You also need to check if this fails; the map could be empty... This
-goes for all the places you loop through maps below, but not going to
-repeat the comment :)
+Yes, they should be static, they should not be used outside of this
+file.
+I will create a new patch, where I will fix this and add more
+meaningful messages in case of a missing value.
 
-> +	for (;;) {
-> +		switch (map->map_type) {
-> +		case BPF_MAP_TYPE_DEVMAP:
-> +			in_obj = __dev_map_lookup_elem(map, key);
-> +			break;
-> +		case BPF_MAP_TYPE_DEVMAP_HASH:
-> +			in_obj = __dev_map_hash_lookup_elem(map, key);
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (in_obj && in_obj->dev->ifindex == obj->dev->ifindex)
-> +			return true;
-> +
-> +		err = devmap_get_next_key(map, &key, &next_key);
-> +
-> +		if (err)
-> +			break;
-> +
-> +		key = next_key;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
-> +			  struct bpf_map *map, struct bpf_map *ex_map,
-> +			  bool exclude_ingress)
-> +{
-> +	struct bpf_dtab_netdev *obj = NULL;
-> +	struct xdp_frame *xdpf, *nxdpf;
-> +	struct net_device *dev;
-> +	bool first = true;
-> +	u32 key, next_key;
-> +	int err;
-> +
-> +	devmap_get_next_key(map, NULL, &key);
-> +
-> +	xdpf = convert_to_xdp_frame(xdp);
-> +	if (unlikely(!xdpf))
-> +		return -EOVERFLOW;
-> +
-> +	for (;;) {
-> +		switch (map->map_type) {
-> +		case BPF_MAP_TYPE_DEVMAP:
-> +			obj = __dev_map_lookup_elem(map, key);
-> +			break;
-> +		case BPF_MAP_TYPE_DEVMAP_HASH:
-> +			obj = __dev_map_hash_lookup_elem(map, key);
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (!obj || dev_in_exclude_map(obj, ex_map,
-> +					       exclude_ingress ? dev_rx->ifindex : 0))
-> +			goto find_next;
-> +
-> +		dev = obj->dev;
-> +
-> +		if (!dev->netdev_ops->ndo_xdp_xmit)
-> +			goto find_next;
-> +
-> +		err = xdp_ok_fwd_dev(dev, xdp->data_end - xdp->data);
-> +		if (unlikely(err))
-> +			goto find_next;
-> +
-> +		if (!first) {
-> +			nxdpf = xdpf_clone(xdpf);
-> +			if (unlikely(!nxdpf))
-> +				return -ENOMEM;
-> +
-> +			bq_enqueue(dev, nxdpf, dev_rx);
-> +		} else {
-> +			bq_enqueue(dev, xdpf, dev_rx);
-> +			first = false;
-> +		}
-> +
-> +find_next:
-> +		err = devmap_get_next_key(map, &key, &next_key);
-> +		if (err)
-> +			break;
-> +		key = next_key;
-> +	}
-> +
-> +	/* didn't find anywhere to forward to, free buf */
-> +	if (first)
-> +		xdp_return_frame_rx_napi(xdpf);
-> +
-> +	return 0;
-> +}
-> +
->  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
->  			     struct bpf_prog *xdp_prog)
->  {
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index d2e27dba4ac6..a5857953248d 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -3946,6 +3946,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
->  	case BPF_MAP_TYPE_DEVMAP:
->  	case BPF_MAP_TYPE_DEVMAP_HASH:
->  		if (func_id != BPF_FUNC_redirect_map &&
-> +		    func_id != BPF_FUNC_redirect_map_multi &&
->  		    func_id != BPF_FUNC_map_lookup_elem)
->  			goto error;
->  		break;
-> @@ -4038,6 +4039,11 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
->  		    map->map_type != BPF_MAP_TYPE_XSKMAP)
->  			goto error;
->  		break;
-> +	case BPF_FUNC_redirect_map_multi:
-> +		if (map->map_type != BPF_MAP_TYPE_DEVMAP &&
-> +		    map->map_type != BPF_MAP_TYPE_DEVMAP_HASH)
-> +			goto error;
-> +		break;
->  	case BPF_FUNC_sk_redirect_map:
->  	case BPF_FUNC_msg_redirect_map:
->  	case BPF_FUNC_sock_map_update:
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index bd2853d23b50..f07eb1408f70 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3473,12 +3473,17 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
->  };
->  
->  static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
-> -			    struct bpf_map *map, struct xdp_buff *xdp)
-> +			    struct bpf_map *map, struct xdp_buff *xdp,
-> +			    struct bpf_map *ex_map, bool exclude_ingress)
+> 
+> net/bridge/br_mrp_netlink.c:27:5: warning: no previous prototype for ‘br_mrp_instance_parse’ [-Wmissing-prototypes]
+>    27 | int br_mrp_instance_parse(struct net_bridge *br, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~
+> net/bridge/br_mrp_netlink.c:64:5: warning: no previous prototype for ‘br_mrp_port_state_parse’ [-Wmissing-prototypes]
+>    64 | int br_mrp_port_state_parse(struct net_bridge_port *p, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~~
+> net/bridge/br_mrp_netlink.c:90:5: warning: no previous prototype for ‘br_mrp_port_role_parse’ [-Wmissing-prototypes]
+>    90 | int br_mrp_port_role_parse(struct net_bridge_port *p, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~
+> net/bridge/br_mrp_netlink.c:117:5: warning: no previous prototype for ‘br_mrp_ring_state_parse’ [-Wmissing-prototypes]
+>   117 | int br_mrp_ring_state_parse(struct net_bridge *br, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~~
+> net/bridge/br_mrp_netlink.c:148:5: warning: no previous prototype for ‘br_mrp_ring_role_parse’ [-Wmissing-prototypes]
+>   148 | int br_mrp_ring_role_parse(struct net_bridge *br, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~
+> net/bridge/br_mrp_netlink.c:181:5: warning: no previous prototype for ‘br_mrp_start_test_parse’ [-Wmissing-prototypes]
+>   181 | int br_mrp_start_test_parse(struct net_bridge *br, struct nlattr *attr,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> Cheers,
+>  Nik
+> 
+> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+> > index bd8c95488f161..5a43eb86c93bf 100644
+> > --- a/include/uapi/linux/if_bridge.h
+> > +++ b/include/uapi/linux/if_bridge.h
+> > @@ -169,17 +169,69 @@ enum {
+> >       __IFLA_BRIDGE_MRP_MAX,
+> >  };
+> >
+> > +#define IFLA_BRIDGE_MRP_MAX (__IFLA_BRIDGE_MRP_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_INSTANCE_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_INSTANCE_RING_ID,
+> > +     IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX,
+> > +     IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX,
+> > +     __IFLA_BRIDGE_MRP_INSTANCE_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_INSTANCE_MAX (__IFLA_BRIDGE_MRP_INSTANCE_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_PORT_STATE_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_PORT_STATE_STATE,
+> > +     __IFLA_BRIDGE_MRP_PORT_STATE_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_PORT_STATE_MAX (__IFLA_BRIDGE_MRP_PORT_STATE_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_PORT_ROLE_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_PORT_ROLE_ROLE,
+> > +     __IFLA_BRIDGE_MRP_PORT_ROLE_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_PORT_ROLE_MAX (__IFLA_BRIDGE_MRP_PORT_ROLE_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_RING_STATE_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_RING_STATE_RING_ID,
+> > +     IFLA_BRIDGE_MRP_RING_STATE_STATE,
+> > +     __IFLA_BRIDGE_MRP_RING_STATE_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_RING_STATE_MAX (__IFLA_BRIDGE_MRP_RING_STATE_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_RING_ROLE_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_RING_ROLE_RING_ID,
+> > +     IFLA_BRIDGE_MRP_RING_ROLE_ROLE,
+> > +     __IFLA_BRIDGE_MRP_RING_ROLE_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_RING_ROLE_MAX (__IFLA_BRIDGE_MRP_RING_ROLE_MAX - 1)
+> > +
+> > +enum {
+> > +     IFLA_BRIDGE_MRP_START_TEST_UNSPEC,
+> > +     IFLA_BRIDGE_MRP_START_TEST_RING_ID,
+> > +     IFLA_BRIDGE_MRP_START_TEST_INTERVAL,
+> > +     IFLA_BRIDGE_MRP_START_TEST_MAX_MISS,
+> > +     IFLA_BRIDGE_MRP_START_TEST_PERIOD,
+> > +     __IFLA_BRIDGE_MRP_START_TEST_MAX,
+> > +};
+> > +
+> > +#define IFLA_BRIDGE_MRP_START_TEST_MAX (__IFLA_BRIDGE_MRP_START_TEST_MAX - 1)
+> > +
+> >  struct br_mrp_instance {
+> >       __u32 ring_id;
+> >       __u32 p_ifindex;
+> >       __u32 s_ifindex;
+> >  };
+> >
+> > -struct br_mrp_port_role {
+> > -     __u32 ring_id;
+> > -     __u32 role;
+> > -};
+> > -
+> >  struct br_mrp_ring_state {
+> >       __u32 ring_id;
+> >       __u32 ring_state;
+> > @@ -197,8 +249,6 @@ struct br_mrp_start_test {
+> >       __u32 period;
+> >  };
+> >
+> > -#define IFLA_BRIDGE_MRP_MAX (__IFLA_BRIDGE_MRP_MAX - 1)
+> > -
+> >  struct bridge_stp_xstats {
+> >       __u64 transition_blk;
+> >       __u64 transition_fwd;
+> > diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+> > index 528d767eb026f..8ea59504ef47a 100644
+> > --- a/net/bridge/br_mrp.c
+> > +++ b/net/bridge/br_mrp.c
+> > @@ -376,24 +376,24 @@ int br_mrp_set_port_state(struct net_bridge_port *p,
+> >   * note: already called with rtnl_lock
+> >   */
+> >  int br_mrp_set_port_role(struct net_bridge_port *p,
+> > -                      struct br_mrp_port_role *role)
+> > +                      enum br_mrp_port_role_type role)
+> >  {
+> >       struct br_mrp *mrp;
+> >
+> >       if (!p || !(p->flags & BR_MRP_AWARE))
+> >               return -EINVAL;
+> >
+> > -     mrp = br_mrp_find_id(p->br, role->ring_id);
+> > +     mrp = br_mrp_find_port(p->br, p);
+> >
+> >       if (!mrp)
+> >               return -EINVAL;
+> >
+> > -     if (role->role == BR_MRP_PORT_ROLE_PRIMARY)
+> > +     if (role == BR_MRP_PORT_ROLE_PRIMARY)
+> >               rcu_assign_pointer(mrp->p_port, p);
+> >       else
+> >               rcu_assign_pointer(mrp->s_port, p);
+> >
+> > -     br_mrp_port_switchdev_set_role(p, role->role);
+> > +     br_mrp_port_switchdev_set_role(p, role);
+> >
+> >       return 0;
+> >  }
+> > diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
+> > index 4a08a99519b04..cfad5d1cff050 100644
+> > --- a/net/bridge/br_mrp_netlink.c
+> > +++ b/net/bridge/br_mrp_netlink.c
+> > @@ -8,19 +8,204 @@
+> >
+> >  static const struct nla_policy br_mrp_policy[IFLA_BRIDGE_MRP_MAX + 1] = {
+> >       [IFLA_BRIDGE_MRP_UNSPEC]        = { .type = NLA_REJECT },
+> > -     [IFLA_BRIDGE_MRP_INSTANCE]      = { .type = NLA_EXACT_LEN,
+> > -                                 .len = sizeof(struct br_mrp_instance)},
+> > -     [IFLA_BRIDGE_MRP_PORT_STATE]    = { .type = NLA_U32 },
+> > -     [IFLA_BRIDGE_MRP_PORT_ROLE]     = { .type = NLA_EXACT_LEN,
+> > -                                 .len = sizeof(struct br_mrp_port_role)},
+> > -     [IFLA_BRIDGE_MRP_RING_STATE]    = { .type = NLA_EXACT_LEN,
+> > -                                 .len = sizeof(struct br_mrp_ring_state)},
+> > -     [IFLA_BRIDGE_MRP_RING_ROLE]     = { .type = NLA_EXACT_LEN,
+> > -                                 .len = sizeof(struct br_mrp_ring_role)},
+> > -     [IFLA_BRIDGE_MRP_START_TEST]    = { .type = NLA_EXACT_LEN,
+> > -                                 .len = sizeof(struct br_mrp_start_test)},
+> > +     [IFLA_BRIDGE_MRP_INSTANCE]      = { .type = NLA_NESTED },
+> > +     [IFLA_BRIDGE_MRP_PORT_STATE]    = { .type = NLA_NESTED },
+> > +     [IFLA_BRIDGE_MRP_PORT_ROLE]     = { .type = NLA_NESTED },
+> > +     [IFLA_BRIDGE_MRP_RING_STATE]    = { .type = NLA_NESTED },
+> > +     [IFLA_BRIDGE_MRP_RING_ROLE]     = { .type = NLA_NESTED },
+> > +     [IFLA_BRIDGE_MRP_START_TEST]    = { .type = NLA_NESTED },
+> >  };
+> >
+> > +static const struct nla_policy
+> > +br_mrp_instance_policy[IFLA_BRIDGE_MRP_INSTANCE_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_INSTANCE_UNSPEC]       = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_INSTANCE_RING_ID]      = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]    = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]    = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_instance_parse(struct net_bridge *br, struct nlattr *attr,
+> > +                       int cmd, struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_INSTANCE_MAX + 1];
+> > +     struct br_mrp_instance inst;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_INSTANCE_MAX, attr,
+> > +                            br_mrp_instance_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_INSTANCE_RING_ID] ||
+> > +         !tb[IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX] ||
+> > +         !tb[IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX])
+> > +             return -EINVAL;
+> > +
+> > +     memset(&inst, 0, sizeof(inst));
+> > +
+> > +     inst.ring_id = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_RING_ID]);
+> > +     inst.p_ifindex = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]);
+> > +     inst.s_ifindex = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]);
+> > +
+> > +     if (cmd == RTM_SETLINK)
+> > +             return br_mrp_add(br, &inst);
+> > +     else
+> > +             return br_mrp_del(br, &inst);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct nla_policy
+> > +br_mrp_port_state_policy[IFLA_BRIDGE_MRP_PORT_STATE_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_PORT_STATE_UNSPEC]     = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_PORT_STATE_STATE]      = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_port_state_parse(struct net_bridge_port *p, struct nlattr *attr,
+> > +                         struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_PORT_STATE_MAX + 1];
+> > +     enum br_mrp_port_state_type state;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_PORT_STATE_MAX, attr,
+> > +                            br_mrp_port_state_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_PORT_STATE_STATE])
+> > +             return -EINVAL;
+> > +
+> > +     state = nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_STATE_STATE]);
+> > +
+> > +     return br_mrp_set_port_state(p, state);
+> > +}
+> > +
+> > +static const struct nla_policy
+> > +br_mrp_port_role_policy[IFLA_BRIDGE_MRP_PORT_ROLE_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_PORT_ROLE_UNSPEC]      = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_PORT_ROLE_ROLE]        = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_port_role_parse(struct net_bridge_port *p, struct nlattr *attr,
+> > +                        struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_PORT_ROLE_MAX + 1];
+> > +     enum br_mrp_port_role_type role;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_PORT_ROLE_MAX, attr,
+> > +                            br_mrp_port_role_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_PORT_ROLE_ROLE])
+> > +             return -EINVAL;
+> > +
+> > +     role = nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_ROLE_ROLE]);
+> > +
+> > +     return br_mrp_set_port_role(p, role);
+> > +}
+> > +
+> > +static const struct nla_policy
+> > +br_mrp_ring_state_policy[IFLA_BRIDGE_MRP_RING_STATE_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_RING_STATE_UNSPEC]     = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_RING_STATE_RING_ID]    = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_RING_STATE_STATE]      = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_ring_state_parse(struct net_bridge *br, struct nlattr *attr,
+> > +                         struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_RING_STATE_MAX + 1];
+> > +     struct br_mrp_ring_state state;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_RING_STATE_MAX, attr,
+> > +                            br_mrp_ring_state_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_RING_STATE_RING_ID] ||
+> > +         !tb[IFLA_BRIDGE_MRP_RING_STATE_STATE])
+> > +             return -EINVAL;
+> > +
+> > +     memset(&state, 0x0, sizeof(state));
+> > +
+> > +     state.ring_id = nla_get_u32(tb[IFLA_BRIDGE_MRP_RING_STATE_RING_ID]);
+> > +     state.ring_state = nla_get_u32(tb[IFLA_BRIDGE_MRP_RING_STATE_STATE]);
+> > +
+> > +     return br_mrp_set_ring_state(br, &state);
+> > +}
+> > +
+> > +static const struct nla_policy
+> > +br_mrp_ring_role_policy[IFLA_BRIDGE_MRP_RING_ROLE_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_RING_ROLE_UNSPEC]      = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]     = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_RING_ROLE_ROLE]        = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_ring_role_parse(struct net_bridge *br, struct nlattr *attr,
+> > +                        struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_RING_ROLE_MAX + 1];
+> > +     struct br_mrp_ring_role role;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_RING_ROLE_MAX, attr,
+> > +                            br_mrp_ring_role_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_RING_ROLE_RING_ID] ||
+> > +         !tb[IFLA_BRIDGE_MRP_RING_ROLE_ROLE])
+> > +             return -EINVAL;
+> > +
+> > +     memset(&role, 0x0, sizeof(role));
+> > +
+> > +     role.ring_id = nla_get_u32(tb[IFLA_BRIDGE_MRP_RING_ROLE_RING_ID]);
+> > +     role.ring_role = nla_get_u32(tb[IFLA_BRIDGE_MRP_RING_ROLE_ROLE]);
+> > +
+> > +     return br_mrp_set_ring_role(br, &role);
+> > +}
+> > +
+> > +static const struct nla_policy
+> > +br_mrp_start_test_policy[IFLA_BRIDGE_MRP_START_TEST_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_START_TEST_UNSPEC]     = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_START_TEST_RING_ID]    = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_START_TEST_INTERVAL]   = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_START_TEST_MAX_MISS]   = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_START_TEST_PERIOD]     = { .type = NLA_U32 },
+> > +};
+> > +
+> > +int br_mrp_start_test_parse(struct net_bridge *br, struct nlattr *attr,
+> > +                         struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_START_TEST_MAX + 1];
+> > +     struct br_mrp_start_test test;
+> > +     int err;
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_START_TEST_MAX, attr,
+> > +                            br_mrp_start_test_policy, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (!tb[IFLA_BRIDGE_MRP_START_TEST_RING_ID] ||
+> > +         !tb[IFLA_BRIDGE_MRP_START_TEST_INTERVAL] ||
+> > +         !tb[IFLA_BRIDGE_MRP_START_TEST_MAX_MISS] ||
+> > +         !tb[IFLA_BRIDGE_MRP_START_TEST_PERIOD])
+> > +             return -EINVAL;
+> > +
+> > +     memset(&test, 0x0, sizeof(test));
+> > +
+> > +     test.ring_id = nla_get_u32(tb[IFLA_BRIDGE_MRP_START_TEST_RING_ID]);
+> > +     test.interval = nla_get_u32(tb[IFLA_BRIDGE_MRP_START_TEST_INTERVAL]);
+> > +     test.max_miss = nla_get_u32(tb[IFLA_BRIDGE_MRP_START_TEST_MAX_MISS]);
+> > +     test.period = nla_get_u32(tb[IFLA_BRIDGE_MRP_START_TEST_PERIOD]);
+> > +
+> > +     return br_mrp_start_test(br, &test);
+> > +}
+> > +
+> >  int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> >                struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
+> >  {
+> > @@ -44,58 +229,45 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> >               return err;
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_INSTANCE]) {
+> > -             struct br_mrp_instance *instance =
+> > -                     nla_data(tb[IFLA_BRIDGE_MRP_INSTANCE]);
+> > -
+> > -             if (cmd == RTM_SETLINK)
+> > -                     err = br_mrp_add(br, instance);
+> > -             else
+> > -                     err = br_mrp_del(br, instance);
+> > +             err = br_mrp_instance_parse(br, tb[IFLA_BRIDGE_MRP_INSTANCE],
+> > +                                         cmd, extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_PORT_STATE]) {
+> > -             enum br_mrp_port_state_type state =
+> > -                     nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_STATE]);
+> > -
+> > -             err = br_mrp_set_port_state(p, state);
+> > +             err = br_mrp_port_state_parse(p, tb[IFLA_BRIDGE_MRP_PORT_STATE],
+> > +                                           extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_PORT_ROLE]) {
+> > -             struct br_mrp_port_role *role =
+> > -                     nla_data(tb[IFLA_BRIDGE_MRP_PORT_ROLE]);
+> > -
+> > -             err = br_mrp_set_port_role(p, role);
+> > +             err = br_mrp_port_role_parse(p, tb[IFLA_BRIDGE_MRP_PORT_ROLE],
+> > +                                          extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_RING_STATE]) {
+> > -             struct br_mrp_ring_state *state =
+> > -                     nla_data(tb[IFLA_BRIDGE_MRP_RING_STATE]);
+> > -
+> > -             err = br_mrp_set_ring_state(br, state);
+> > +             err = br_mrp_ring_state_parse(br,
+> > +                                           tb[IFLA_BRIDGE_MRP_RING_STATE],
+> > +                                           extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_RING_ROLE]) {
+> > -             struct br_mrp_ring_role *role =
+> > -                     nla_data(tb[IFLA_BRIDGE_MRP_RING_ROLE]);
+> > -
+> > -             err = br_mrp_set_ring_role(br, role);
+> > +             err = br_mrp_ring_role_parse(br, tb[IFLA_BRIDGE_MRP_RING_ROLE],
+> > +                                          extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> >
+> >       if (tb[IFLA_BRIDGE_MRP_START_TEST]) {
+> > -             struct br_mrp_start_test *test =
+> > -                     nla_data(tb[IFLA_BRIDGE_MRP_START_TEST]);
+> > -
+> > -             err = br_mrp_start_test(br, test);
+> > +             err = br_mrp_start_test_parse(br,
+> > +                                           tb[IFLA_BRIDGE_MRP_START_TEST],
+> > +                                           extack);
+> >               if (err)
+> >                       return err;
+> >       }
+> > diff --git a/net/bridge/br_private_mrp.h b/net/bridge/br_private_mrp.h
+> > index 2921a4b59f8e7..a0f53cc3ab85c 100644
+> > --- a/net/bridge/br_private_mrp.h
+> > +++ b/net/bridge/br_private_mrp.h
+> > @@ -37,7 +37,7 @@ int br_mrp_del(struct net_bridge *br, struct br_mrp_instance *instance);
+> >  int br_mrp_set_port_state(struct net_bridge_port *p,
+> >                         enum br_mrp_port_state_type state);
+> >  int br_mrp_set_port_role(struct net_bridge_port *p,
+> > -                      struct br_mrp_port_role *role);
+> > +                      enum br_mrp_port_role_type role);
+> >  int br_mrp_set_ring_state(struct net_bridge *br,
+> >                         struct br_mrp_ring_state *state);
+> >  int br_mrp_set_ring_role(struct net_bridge *br, struct br_mrp_ring_role *role);
+> >
+> 
 
-Maybe just pass through the flags argument here?
-
->  {
->  	switch (map->map_type) {
->  	case BPF_MAP_TYPE_DEVMAP:
->  	case BPF_MAP_TYPE_DEVMAP_HASH:
-> -		return dev_map_enqueue(fwd, xdp, dev_rx);
-
-Using a NULL target_value to distinguish between multicast and unicast
-forwarding is clever, but bordering on 'too clever' :) - took me a
-little while to figure out this was what you were doing, at least. So
-please add a comment explaining this, here and in the helper.
-
-> +		if (fwd)
-> +			return dev_map_enqueue(fwd, xdp, dev_rx);
-> +		else
-> +			return dev_map_enqueue_multi(xdp, dev_rx, map, ex_map,
-> +						     exclude_ingress);
->  	case BPF_MAP_TYPE_CPUMAP:
->  		return cpu_map_enqueue(fwd, xdp, dev_rx);
->  	case BPF_MAP_TYPE_XSKMAP:
-> @@ -3534,6 +3539,8 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->  		    struct bpf_prog *xdp_prog)
->  {
->  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> +	bool exclude_ingress = !!(ri->flags & BPF_F_EXCLUDE_INGRESS);
-> +	struct bpf_map *ex_map = ri->ex_map;
->  	struct bpf_map *map = READ_ONCE(ri->map);
->  	u32 index = ri->tgt_index;
->  	void *fwd = ri->tgt_value;
-> @@ -3541,6 +3548,7 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->  
->  	ri->tgt_index = 0;
->  	ri->tgt_value = NULL;
-> +	ri->ex_map = NULL;
->  	WRITE_ONCE(ri->map, NULL);
->  
->  	if (unlikely(!map)) {
-> @@ -3552,7 +3560,7 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->  
->  		err = dev_xdp_enqueue(fwd, xdp, dev);
->  	} else {
-> -		err = __bpf_tx_xdp_map(dev, fwd, map, xdp);
-> +		err = __bpf_tx_xdp_map(dev, fwd, map, xdp, ex_map, exclude_ingress);
->  	}
->  
->  	if (unlikely(err))
-> @@ -3566,6 +3574,50 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->  }
->  EXPORT_SYMBOL_GPL(xdp_do_redirect);
->  
-> +static int dev_map_redirect_multi(struct net_device *dev, struct sk_buff *skb,
-> +				  struct bpf_prog *xdp_prog,
-> +				  struct bpf_map *map, struct bpf_map *ex_map,
-> +				  bool exclude_ingress)
-> +
-> +{
-> +	struct bpf_dtab_netdev *dst;
-> +	struct sk_buff *nskb;
-> +	u32 key, next_key;
-> +	int err;
-> +	void *fwd;
-> +
-> +	/* Get first key from forward map */
-> +	map->ops->map_get_next_key(map, NULL, &key);
-> +
-> +	for (;;) {
-> +		fwd = __xdp_map_lookup_elem(map, key);
-> +		if (fwd) {
-> +			dst = (struct bpf_dtab_netdev *)fwd;
-> +			if (dev_in_exclude_map(dst, ex_map,
-> +					       exclude_ingress ? dev->ifindex : 0))
-> +				goto find_next;
-> +
-> +			nskb = skb_clone(skb, GFP_ATOMIC);
-> +			if (!nskb)
-> +				return -ENOMEM;
-> +
-> +			err = dev_map_generic_redirect(dst, nskb, xdp_prog);
-> +			if (unlikely(err))
-> +				return err;
-> +		}
-> +
-> +find_next:
-> +		err = map->ops->map_get_next_key(map, &key, &next_key);
-> +		if (err)
-> +			break;
-> +
-> +		key = next_key;
-> +	}
-> +
-> +	consume_skb(skb);
-> +	return 0;
-> +}
-> +
->  static int xdp_do_generic_redirect_map(struct net_device *dev,
->  				       struct sk_buff *skb,
->  				       struct xdp_buff *xdp,
-> @@ -3573,19 +3625,29 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
->  				       struct bpf_map *map)
->  {
->  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> +	bool exclude_ingress = !!(ri->flags & BPF_F_EXCLUDE_INGRESS);
-> +	struct bpf_map *ex_map = ri->ex_map;
->  	u32 index = ri->tgt_index;
->  	void *fwd = ri->tgt_value;
->  	int err = 0;
->  
->  	ri->tgt_index = 0;
->  	ri->tgt_value = NULL;
-> +	ri->ex_map = NULL;
->  	WRITE_ONCE(ri->map, NULL);
->  
->  	if (map->map_type == BPF_MAP_TYPE_DEVMAP ||
->  	    map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
-> -		struct bpf_dtab_netdev *dst = fwd;
-
-Same as above - please add a comment explaining this test...
-
-> +		if (fwd) {
-> +			struct bpf_dtab_netdev *dst = fwd;
-> +
-> +			err = dev_map_generic_redirect(dst, skb, xdp_prog);
-> +		} else {
-> +			/* Deal with multicast maps */
-> +			err = dev_map_redirect_multi(dev, skb, xdp_prog, map,
-> +						     ex_map, exclude_ingress);
-> +		}
->  
-> -		err = dev_map_generic_redirect(dst, skb, xdp_prog);
->  		if (unlikely(err))
->  			goto err;
->  	} else if (map->map_type == BPF_MAP_TYPE_XSKMAP) {
-> @@ -3699,6 +3761,33 @@ static const struct bpf_func_proto bpf_xdp_redirect_map_proto = {
->  	.arg3_type      = ARG_ANYTHING,
->  };
->  
-> +BPF_CALL_3(bpf_xdp_redirect_map_multi, struct bpf_map *, map,
-> +	   struct bpf_map *, ex_map, u64, flags)
-> +{
-> +	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> +
-> +	if (unlikely(!map || flags > BPF_F_EXCLUDE_INGRESS))
-> +		return XDP_ABORTED;
-> +
-> +	ri->tgt_index = 0;
-> +	ri->tgt_value = NULL;
-> +	ri->flags = flags;
-> +	ri->ex_map = ex_map;
-> +
-> +	WRITE_ONCE(ri->map, map);
-> +
-> +	return XDP_REDIRECT;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_xdp_redirect_map_multi_proto = {
-> +	.func           = bpf_xdp_redirect_map_multi,
-> +	.gpl_only       = false,
-> +	.ret_type       = RET_INTEGER,
-> +	.arg1_type      = ARG_CONST_MAP_PTR,
-> +	.arg2_type      = ARG_CONST_MAP_PTR,
-> +	.arg3_type      = ARG_ANYTHING,
-> +};
-> +
->  static unsigned long bpf_skb_copy(void *dst_buff, const void *skb,
->  				  unsigned long off, unsigned long len)
->  {
-> @@ -6363,6 +6452,8 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  		return &bpf_xdp_redirect_proto;
->  	case BPF_FUNC_redirect_map:
->  		return &bpf_xdp_redirect_map_proto;
-> +	case BPF_FUNC_redirect_map_multi:
-> +		return &bpf_xdp_redirect_map_multi_proto;
->  	case BPF_FUNC_xdp_adjust_tail:
->  		return &bpf_xdp_adjust_tail_proto;
->  	case BPF_FUNC_fib_lookup:
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 90f44f382115..acdc63833b1f 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -475,3 +475,29 @@ void xdp_warn(const char *msg, const char *func, const int line)
->  	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
->  };
->  EXPORT_SYMBOL_GPL(xdp_warn);
-> +
-> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
-> +{
-> +	unsigned int headroom, totalsize;
-> +	struct xdp_frame *nxdpf;
-> +	struct page *page;
-> +	void *addr;
-> +
-> +	headroom = xdpf->headroom + sizeof(*xdpf);
-> +	totalsize = headroom + xdpf->len;
-> +
-> +	if (unlikely(totalsize > PAGE_SIZE))
-> +		return NULL;
-> +	page = dev_alloc_page();
-> +	if (!page)
-> +		return NULL;
-> +	addr = page_to_virt(page);
-> +
-> +	memcpy(addr, xdpf, totalsize);
-> +
-> +	nxdpf = addr;
-> +	nxdpf->data = addr + headroom;
-> +
-> +	return nxdpf;
-> +}
-> +EXPORT_SYMBOL_GPL(xdpf_clone);
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 97e1fd19ff58..000b0cf961ea 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3157,6 +3157,20 @@ union bpf_attr {
->   *		**bpf_sk_cgroup_id**\ ().
->   *	Return
->   *		The id is returned or 0 in case the id could not be retrieved.
-> + *
-> + * int bpf_redirect_map_multi(struct bpf_map *map, struct bpf_map *ex_map, u64 flags)
-> + * 	Description
-> + * 		Redirect the packet to ALL the interfaces in *map*, but
-> + * 		exclude the interfaces in *ex_map* (which may be NULL).
-> + *
-> + * 		Currently the *flags* only supports *BPF_F_EXCLUDE_INGRESS*,
-> + * 		which additionally excludes the current ingress device.
-> + *
-> + * 		See also bpf_redirect_map(), which supports redirecting
-> + * 		packet to a specific ifindex in the map.
-> + * 	Return
-> + * 		**XDP_REDIRECT** on success, or **XDP_ABORTED** on error.
-> + *
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -3288,7 +3302,8 @@ union bpf_attr {
->  	FN(seq_printf),			\
->  	FN(seq_write),			\
->  	FN(sk_cgroup_id),		\
-> -	FN(sk_ancestor_cgroup_id),
-> +	FN(sk_ancestor_cgroup_id),	\
-> +	FN(redirect_map_multi),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> @@ -3417,6 +3432,11 @@ enum bpf_lwt_encap_mode {
->  	BPF_LWT_ENCAP_IP,
->  };
->  
-> +/* BPF_FUNC_redirect_map_multi flags. */
-> +enum {
-> +	BPF_F_EXCLUDE_INGRESS		= (1ULL << 0),
-> +};
-> +
->  #define __bpf_md_ptr(type, name)	\
->  union {					\
->  	type name;			\
-> -- 
-> 2.25.4
-
+-- 
+/Horatiu
