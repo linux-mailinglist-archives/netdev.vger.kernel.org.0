@@ -2,55 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 118D51E4A92
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E08821E4ADD
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391342AbgE0Qmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390729AbgE0Qme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:42:34 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56150C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:42:34 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id e11so11086536pfn.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 09:42:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JIF7v1WChr+BTVMRZm4F04l1in0YhHw2Q6aVok5z4FA=;
-        b=XbI8lnG2LJ2OhBOO5/Rifzc3DelQXL0rSVgVdaQjQ3Ze9kQ4/vHJKcjg+RNJmmHrf+
-         T4Xlcv3uz0Up2I6iy9VHXVq0WfBNazetlXR80Jmv0IgrLJTxFK89l2Sdg9Ise8c8UVgz
-         m8VjmY8K8fKh0nD0COeixWED98aM4rHckGOEQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JIF7v1WChr+BTVMRZm4F04l1in0YhHw2Q6aVok5z4FA=;
-        b=PUFh6VmrSDXfy0F84anJnK2jzv+xcsEg6pP1/CCZA8aHfmJwRqrinXkUbyXDZPnrOV
-         PtCFRnsKLBfPZW/zo6p55LM/KGizedxpX72H5vETBic1ESwz8FLLYAyPmMwB3huAAaaf
-         P9QlilILH9uz8tWMz3Tgqt2dXHJ1qO9K9ni08xRhq0050gmrAap2z7W5X6SGaRuyRzKF
-         QvqvnsiunqwjitQuazQLT2x7HWe1TvPeC/sd8EOsPE6+bITikEbxIdwVijOt93L5tYGB
-         zi8fTT5tSPbcSHfE4Onx/9Nox53u/yKhoAgq8ohmYQkDCLvhetC7yMht1UmUjNq9g+cr
-         avaQ==
-X-Gm-Message-State: AOAM53138DlS4ThMI+ZS0dOFhjuH+X3g0H2Rl1tGynpgJtl9UXYonmTA
-        p2ChLkV3EOrSNKQfRDEg+5Kha5oOLRQ=
-X-Google-Smtp-Source: ABdhPJyTMn2mYKF1MHCkfXUYZYr2OXH7g0LNYBbQTJ1/uDEhytaFjZUK8l0cQUjF75WoyGGCZGRe/g==
-X-Received: by 2002:a63:5644:: with SMTP id g4mr4618659pgm.381.1590597753218;
-        Wed, 27 May 2020 09:42:33 -0700 (PDT)
-Received: from alfred.cumulusnetworks.com ([216.129.126.119])
-        by smtp.gmail.com with ESMTPSA id f23sm3234189pjt.13.2020.05.27.09.42.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 09:42:32 -0700 (PDT)
-From:   Stephen Worley <sworley@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, davem@davemloft.net, sworley1995@gmail.com,
-        Stephen Worley <sworley@cumulusnetworks.com>
-Subject: [PATCH v2 net-next] net: add large ecmp group nexthop tests
-Date:   Wed, 27 May 2020 12:41:42 -0400
-Message-Id: <20200527164142.1356955-1-sworley@cumulusnetworks.com>
+        id S2391497AbgE0Qqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:46:33 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:41049 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388249AbgE0Qqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:46:33 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id D0DFA1BF20E;
+        Wed, 27 May 2020 16:46:27 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
+        foss@0leil.net, antoine.tenart@bootlin.com
+Subject: [PATCH net-next 0/8] net: phy: mscc: PHC and timestamping support
+Date:   Wed, 27 May 2020 18:41:50 +0200
+Message-Id: <20200527164158.313025-1-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -59,136 +34,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a couple large ecmp group nexthop selftests to cover
-the remnant fixed by d69100b8eee27c2d60ee52df76e0b80a8d492d34.
+Hello,
 
-The tests create 100 x32 ecmp groups of ipv4 and ipv6 and then
-dump them. On kernels without the fix, they will fail due
-to data remnant during the dump.
+This series aims at adding support for PHC and timestamping operations
+in the MSCC PHY driver, for the VSC858x and VSC8575. Those PHYs are
+capable of timestamping in 1-step and 2-step for both L2 and L4 traffic.
 
-Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 84 ++++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
+As of this series, only IPv4 support was implemented when using L4 mode.
+This is because of an hardware limitation which prevents us for
+supporting both IPv4 and IPv6 at the same time. Implementing support for
+IPv6 should be quite easy (I do have the modifications needed for the
+hardware configuration) but I did not see a way to retrieve this
+information in hwtstamp(). What would you suggest?
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 51f8e9afe6ae..1e2f61262e4e 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -19,8 +19,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode ipv4_fdb_grp_fcnal"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode ipv6_fdb_grp_fcnal"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -254,6 +254,60 @@ check_route6()
- 	check_output "${out}" "${expected}"
- }
- 
-+check_large_grp()
-+{
-+	local ipv=$1
-+	local ecmp=$2
-+	local grpnum=100
-+	local nhidstart=100
-+	local grpidstart=1000
-+	local iter=0
-+	local nhidstr=""
-+	local grpidstr=""
-+	local grpstr=""
-+	local ipstr=""
-+
-+	if [ $ipv -eq 4 ]; then
-+		ipstr="172.16.1."
-+	else
-+		ipstr="2001:db8:91::"
-+	fi
-+
-+	#
-+	# Create $grpnum groups with specified $ecmp and dump them
-+	#
-+
-+	# create nexthops with different gateways
-+	iter=2
-+	while [ $iter -le $(($ecmp + 1)) ]
-+	do
-+		nhidstr="$(($nhidstart + $iter))"
-+		run_cmd "$IP nexthop add id $nhidstr via $ipstr$iter dev veth1"
-+		check_nexthop "id $nhidstr" "id $nhidstr via $ipstr$iter dev veth1 scope link"
-+
-+		if [ $iter -le $ecmp ]; then
-+			grpstr+="$nhidstr/"
-+		else
-+			grpstr+="$nhidstr"
-+		fi
-+		((iter++))
-+	done
-+
-+	# create duplicate large ecmp groups
-+	iter=0
-+	while [ $iter -le $grpnum ]
-+	do
-+		grpidstr="$(($grpidstart + $iter))"
-+		run_cmd "$IP nexthop add id $grpidstr group $grpstr"
-+		check_nexthop "id $grpidstr" "id $grpidstr group $grpstr"
-+		((iter++))
-+	done
-+
-+	# dump large groups
-+	run_cmd "$IP nexthop list"
-+	log_test $? 0 "Dump large (x$ecmp) ecmp groups"
-+}
-+
- start_ip_monitor()
- {
- 	local mtype=$1
-@@ -700,6 +754,19 @@ ipv6_fcnal_runtime()
- 	# route with src address and using nexthop - not allowed
- }
- 
-+ipv6_large_grp()
-+{
-+	local ecmp=32
-+
-+	echo
-+	echo "IPv6 large groups (x$ecmp)"
-+	echo "---------------------"
-+
-+	check_large_grp 6 $ecmp
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+}
-+
- ipv4_fcnal()
- {
- 	local rc
-@@ -1066,6 +1133,19 @@ ipv4_fcnal_runtime()
- 	log_test $? 0 "IPv4 route with MPLS encap, v6 gw - check"
- }
- 
-+ipv4_large_grp()
-+{
-+	local ecmp=32
-+
-+	echo
-+	echo "IPv4 large groups (x$ecmp)"
-+	echo "---------------------"
-+
-+	check_large_grp 4 $ecmp
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+}
-+
- sysctl_nexthop_compat_mode_check()
- {
- 	local sysctlname="net.ipv4.nexthop_compat_mode"
+Those PHYs are distributed in hardware packages containing multiple
+times the PHY. The VSC8584 for example is composed of 4 PHYs. With
+hardware packages, parts of the logic is usually common and one of the
+PHY has to be used for some parts of the initialization. Following this
+logic, the 1588 blocks of those PHYs are shared between two PHYs and
+accessing the registers has to be done using the "base" PHY of the
+group. This is handled thanks to helpers in the PTP code (and locks).
+We also need the MDIO bus lock while performing a single read or write
+to the 1588 registers as the read/write are composed of multiple MDIO
+transactions (and we don't want other threads updating the page).
 
-base-commit: dc0f3ed1973f101508957b59e529e03da1349e09
+To get and set the PHC time, a GPIO has to be used and changes are only
+retrieved or committed when on a rising edge. The same GPIO is shared by
+all PHYs, so the granularity of the lock protecting it has to be
+different from the ones protecting the 1588 registers (the VSC8584 PHY
+has 2 1588 blocks, and a single load/save pin).
+
+Patch 1 extends the recently added helpers to share information between
+PHYs of the same hardware package; to allow having part of the probe to
+be shared (in addition to the already supported init part). This will be
+used when adding support for PHC/TS to initialize locks.
+
+Patches 2 and 3 are mostly cosmetic.
+
+Patch 4 takes into account the 1588 block in the MACsec initialization,
+to allow having both the MACsec and 1588 blocks initialized on a running
+system.
+
+Patches 5 and 6 add support for PHC and timestamping operations in the
+MSCC driver. An initialization of the 1588 block (plus all the registers
+definition; and helpers) is added first; and then comes a patch to
+implement the PHC and timestamping API.
+
+Patches 7 and 8 add the required hardware description for device trees,
+to be able to use the load/save GPIO pin on the PCB120 board.
+
+To use this on a PCB120 board, two other series are needed and have
+already been sent upstream (one is merged). There are no dependency
+between all those series.
+
+Thanks!
+Antoine
+
+Antoine Tenart (5):
+  net: phy: add support for a common probe between shared PHYs
+  net: phy: mscc: fix copyright and author information in MACsec
+  net: phy: mscc: take into account the 1588 block in MACsec init
+  net: phy: mscc: timestamping and PHC support
+  dt-bindings: net: phy: vsc8531: document the load/save GPIO
+
+Quentin Schulz (3):
+  net: phy: mscc: remove the TR CLK disable magic value
+  net: phy: mscc: 1588 block initialization
+  MIPS: dts: ocelot: describe the load/save GPIO
+
+ .../bindings/net/mscc-phy-vsc8531.txt         |    3 +
+ arch/mips/boot/dts/mscc/ocelot_pcb120.dts     |   12 +-
+ drivers/net/phy/mscc/Makefile                 |    4 +
+ drivers/net/phy/mscc/mscc.h                   |   63 +
+ drivers/net/phy/mscc/mscc_fc_buffer.h         |    2 +-
+ drivers/net/phy/mscc/mscc_mac.h               |    2 +-
+ drivers/net/phy/mscc/mscc_macsec.c            |   10 +-
+ drivers/net/phy/mscc/mscc_macsec.h            |    2 +-
+ drivers/net/phy/mscc/mscc_main.c              |   63 +-
+ drivers/net/phy/mscc/mscc_ptp.c               | 1608 +++++++++++++++++
+ drivers/net/phy/mscc/mscc_ptp.h               |  477 +++++
+ include/linux/phy.h                           |   18 +-
+ 12 files changed, 2243 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.c
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.h
+
 -- 
 2.26.2
 
