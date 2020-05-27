@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B021E5076
+	by mail.lfdr.de (Postfix) with ESMTP id EF0C81E5077
 	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 23:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387596AbgE0V0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 17:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S2387616AbgE0V0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 17:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387412AbgE0V0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 17:26:13 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A57C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:26:13 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id e11so11485627pfn.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:26:13 -0700 (PDT)
+        with ESMTP id S2387412AbgE0V0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 17:26:16 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F60CC05BD1E
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:26:16 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id z64so7921528pfb.1
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:26:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HdChYpAFg6TyWIfjSjmt+eP+fiPnuv6p6ph8IaoYRaE=;
-        b=ECfBpEqQwU7Ea0EXVX7hA34ppoL2ATv7zKJ0tmIvLzipxocKsJz7OF6n36XRpVSNgk
-         Bi7PQ45D7VBGnQcN7fhFC596OHF7xLv6Yzd/u9vSFYUL6NScNEaN2l0mLJXdT5t4k9SY
-         E10K++zuHVzokjrqdEklhisASBhvYaBzNogu0=
+        bh=HWEGO/iE0XxNGyN+z1BODXRHBWSEu9H1jpC3AeUzrKE=;
+        b=Fa6hhPCjOuTZ+HSLigGAcgAQjY6tz1HY6FDAZ+aRsa2/tvTDA/cIGDvHdDUlVW5k10
+         QEwxDlksIALB01UxEX7HjgY6uOPkHpl6Mxsw6PMJW1HxbJpcbxxxJ0AhkMHYTB6LEmIq
+         3rKGU5yFrMU7IQa9v/2pt2WI175yKewcgsbq0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HdChYpAFg6TyWIfjSjmt+eP+fiPnuv6p6ph8IaoYRaE=;
-        b=IEUFJiYtw46iy6p0ynjBpRl9MJBzfNBjWwSVthD+v6tdwlgEep7b+RkLwZVKmsdV0i
-         sk3p6Hej262/nGxNxFCGv1bR20J6dSObXn/2cbFwLhUICm/GTSOUkRKtHsYUB8wMQTfT
-         cTB8UZJVHlc12aZvoTNTZKspX/cRcu2JQf5jQsGlScaaJoZ6QvaCcg4kIs6Y3v6dTNZb
-         odnt89VUN8MaewajXjALTaXPAIThm6UBy18ovUt0ghd1EYNnjXn87MPTeY52X0DCCSbL
-         ECDTocKLoHYj7U5rGrF3dvRvCoPsonZl33QrWxNqWLsZpY27hqk8AQJWUxHyJc2pUQYS
-         DhgA==
-X-Gm-Message-State: AOAM531tNrkXGHpKcEs0+VBPjl8x7EnEyJNJmGnwlpY6/pAl6FMySUSV
-        SFnFHBzOVQEPXzHBvs9Qj4KZpKhA3N2ZmiP2ql7em0phdI+WWoyYRz2GWDpHfHo+zFTPuiyVYSZ
-        wd2B3Q7fGS6uCGyHmHrFQpWGe8kwmhtr7jUVllLYAyQxRxQHrDTmacPAka42mbNcGwnFFlk5S
-X-Google-Smtp-Source: ABdhPJwLWMTXmKXxYt0EzL4fSGtxSQF9sORdu2AieqfyTTG5souowqdegkszf47Dsc4BwBjjXAlfqw==
-X-Received: by 2002:a62:1681:: with SMTP id 123mr5593778pfw.306.1590614771949;
-        Wed, 27 May 2020 14:26:11 -0700 (PDT)
+        bh=HWEGO/iE0XxNGyN+z1BODXRHBWSEu9H1jpC3AeUzrKE=;
+        b=LhTX0moqw8gZUPtv8QNlDxFS0t2mRnzdzDgATz+8/c9Ip7K6+wxPIADzXIHNcojkQx
+         8vaUWck9o2kz+W/LOf7XyshWLH6kQxMPGyVBVFtwXGtJ/zPKQXm3PZ11WNsYu/xanRYT
+         5Y7VSqgrATm2ldbTrtM0nTgNmySxdskRw6LJPgPOLR3dTe29oTVaRjjHGzBU0J7D8pLt
+         QS89j5wR1W+fg4XvW18onWLkJY7b6Dl6vKhdgCamy78mhJyh3ntXrMBNB19j8ODJ4pKa
+         z4OM5siuO6GQlp4Ku2Ep7EvrrbSWNci9t+xJlX/dDg190nwZEqHqajCNesCK8bAE4t8q
+         xRPQ==
+X-Gm-Message-State: AOAM532tCWi0ZxakWDQ+eYOMHK0TGAnS8CRbTZ+lo7iO4ukqFyZNc6rY
+        UwxuxOsTZNYxSIhEdyB6Spki8j4k51TNAj/Gm3tn2MBTiO4Cxc7KK16xemGBh+xgfPGppyPLexa
+        6eAgI0mn66UHbp09Dmyz3AfYWPYuiUNQgIZ0DTqERAu0HUvJNxq2Wf6qn463KgAwqDIKW2eUG
+X-Google-Smtp-Source: ABdhPJzv6Wgs3C1CuH+vYbbPvcIWxn4HMZYllnavytyIYs7XCm6ET8vQKXqSto+LFcAuje9ZVMIk/A==
+X-Received: by 2002:a63:f74b:: with SMTP id f11mr5793647pgk.368.1590614775074;
+        Wed, 27 May 2020 14:26:15 -0700 (PDT)
 Received: from localhost.localdomain ([2600:8802:202:f600::ddf])
-        by smtp.gmail.com with ESMTPSA id c4sm2770344pfb.130.2020.05.27.14.26.08
+        by smtp.gmail.com with ESMTPSA id c4sm2770344pfb.130.2020.05.27.14.26.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 14:26:11 -0700 (PDT)
+        Wed, 27 May 2020 14:26:14 -0700 (PDT)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>, edumazet@google.com,
@@ -60,9 +60,9 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>, edumazet@google.com,
         shrijeet@gmail.com, jon.mason@intel.com, dave.jiang@intel.com,
         saeedm@mellanox.com, hadarh@mellanox.com, ogerlitz@mellanox.com,
         allenbh@gmail.com, michael.chan@broadcom.com
-Subject: [RFC PATCH net-next 10/11] net: vlan: disallow non-Ethernet devices
-Date:   Wed, 27 May 2020 14:25:11 -0700
-Message-Id: <20200527212512.17901-11-edwin.peer@broadcom.com>
+Subject: [RFC PATCH net-next 11/11] net: leverage IFF_NO_VLAN_ROOM to limit NETIF_F_VLAN_CHALLENGED
+Date:   Wed, 27 May 2020 14:25:12 -0700
+Message-Id: <20200527212512.17901-12-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200527212512.17901-1-edwin.peer@broadcom.com>
 References: <20200527212512.17901-1-edwin.peer@broadcom.com>
@@ -73,204 +73,390 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Layering VLANs on top of non-Ethernet devices is not defined. This
-prevents nonsensical combinations like VLANs on top of raw IP in
-IP tunnels, for example.
+This addresses an old FIXME in netdev-features.txt. The new
+IFF_NO_VLAN_ROOM infrastructure makes supporting VLANs on most of these
+limited devices trivial. VLANs are now supported on these devices if
+either:
 
-Checking the device type means that some devices no longer need to
-explicitly set NETIF_F_VLAN_CHALLENGED. Remove this flags from those
-devices where this is trivially the case.
+a) the underlying device's MTU is configured VLAN_HLEN smaller than the
+maximum supported MTU, or
 
-The failover device does not explicitly check device types when adding
-slaves (team and bonding drivers do), so include the device type check
-when VLANs are in use too.
+b) by the upper VLAN automatically configuring a reduced MTU if the
+configured device MTU is too large.
 
-TEQL scheduling devices have historically allowed VLANs and this change
-would break that. Inherit the slave device's type instead of ARPHRD_VOID
-and enforce that all slaves have the same type.
+The Mellanox switch driver required a little more refactoring than most
+to access the maximum supported MTU from ndo_change_mtu.
 
-IFB devices do not have a normal xmit function and so VLAN devices
-cannot forward frames (packets must be redirected). IFB devices are
-also IFF_NOARP, so we can set the device type accordingly to disable
-support for VLANs. Similarly the SB1000 is RX only.
+The Intel WiMAX 2400M is natively a raw IP device, but the driver
+emulates Ethernet headers to present a fake Ethernet device. All these
+contortions are probably entirely unnecessary, but absent hardware to
+test, changing this aspect seems risky.
 
-VLANs don't make sense for VRF devices because they are raw IP. Relying
-on NETIF_F_VLAN_CHALLENGED is unnecessary if the device type is set
-appropriately.
+The ps3_gelic_net device is also interesting. An outer VLAN is
+sometimes used internally to distinguish the output device, but there
+doesn't appear to be any reason nested VLAN tags cannot be supported.
+Furthermore, with an advertised maximum MTU of 1518, there should be
+sufficient room for an additional tag too.
+
+The remaining VLAN challenged holdouts are:
+	net/hsr/hsr_device.c
+	drivers/net/ipvlan/ipvlan_main.c
+	drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+
+The HSR device could in theory support VLANs, but this would appear to
+be a nontrivial exercise. It's not clear why mlx5 representors don't
+handle VLANs, but other VF representors do appear to, so perhaps this
+could be revised too. That would leave only ipvlan, which unfortantely
+does not lend itself to removing NET_F_VLAN_CHALLENGED entirely, since
+it has a mode exposing an L2 Ethernet device for which VLANs do not
+have any sensible meaning.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- drivers/infiniband/ulp/ipoib/ipoib_main.c   | 3 +--
- drivers/net/ethernet/xilinx/ll_temac_main.c | 1 -
- drivers/net/ifb.c                           | 4 ++++
- drivers/net/loopback.c                      | 1 -
- drivers/net/net_failover.c                  | 3 +--
- drivers/net/sb1000.c                        | 1 +
- drivers/net/vrf.c                           | 4 +---
- include/linux/if_vlan.h                     | 8 ++++++++
- net/8021q/vlan.c                            | 2 +-
- net/sched/sch_teql.c                        | 3 +++
- 10 files changed, 20 insertions(+), 10 deletions(-)
+ Documentation/networking/netdev-features.rst  |  4 +-
+ drivers/net/ethernet/intel/e100.c             | 15 +++++-
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    | 52 ++++++++++++++-----
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c  | 12 +----
+ drivers/net/ethernet/wiznet/w5100.c           |  6 ++-
+ drivers/net/ethernet/wiznet/w5300.c           |  6 ++-
+ drivers/net/rionet.c                          |  3 ++
+ drivers/net/wimax/i2400m/netdev.c             |  5 +-
+ drivers/s390/net/qeth_l2_main.c               | 12 ++++-
+ 9 files changed, 80 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-index 81b8227214f1..a4404957b39b 100644
---- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
-+++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-@@ -2086,8 +2086,7 @@ void ipoib_setup_common(struct net_device *dev)
- 	dev->addr_len		 = INFINIBAND_ALEN;
- 	dev->type		 = ARPHRD_INFINIBAND;
- 	dev->tx_queue_len	 = ipoib_sendq_size * 2;
--	dev->features		 = (NETIF_F_VLAN_CHALLENGED	|
--				    NETIF_F_HIGHDMA);
-+	dev->features		 = NETIF_F_HIGHDMA;
- 	netif_keep_dst(dev);
+diff --git a/Documentation/networking/netdev-features.rst b/Documentation/networking/netdev-features.rst
+index a2d7d7160e39..ca4632839f59 100644
+--- a/Documentation/networking/netdev-features.rst
++++ b/Documentation/networking/netdev-features.rst
+@@ -157,9 +157,7 @@ Don't use it in drivers.
+  * VLAN challenged
  
- 	memcpy(dev->broadcast, ipv4_bcast_addr, INFINIBAND_ALEN);
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 929244064abd..731326d1e99f 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -1375,7 +1375,6 @@ static int temac_probe(struct platform_device *pdev)
- 	ndev->features |= NETIF_F_HW_VLAN_CTAG_TX; /* Transmit VLAN hw accel */
- 	ndev->features |= NETIF_F_HW_VLAN_CTAG_RX; /* Receive VLAN hw acceleration */
- 	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER; /* Receive VLAN filtering */
--	ndev->features |= NETIF_F_VLAN_CHALLENGED; /* cannot handle VLAN pkts */
- 	ndev->features |= NETIF_F_GSO; /* Enable software GSO. */
- 	ndev->features |= NETIF_F_MULTI_QUEUE; /* Has multiple TX/RX queues */
- 	ndev->features |= NETIF_F_LRO; /* large receive offload */
-diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
-index 7fe306e76281..3ac6b4282113 100644
---- a/drivers/net/ifb.c
-+++ b/drivers/net/ifb.c
-@@ -213,6 +213,10 @@ static void ifb_setup(struct net_device *dev)
+ NETIF_F_VLAN_CHALLENGED should be set for devices which can't cope with VLAN
+-headers. Some drivers set this because the cards can't handle the bigger MTU.
+-[FIXME: Those cases could be fixed in VLAN code by allowing only reduced-MTU
+-VLANs. This may be not useful, though.]
++headers.
  
- 	/* Fill in device structure with ethernet-generic values. */
- 	ether_setup(dev);
-+
-+	/* Override ARPHRD_ETHER to disallow upper VLAN devices (no xmit). */
-+	dev->type = ARPHRD_NONE;
-+
- 	dev->tx_queue_len = TX_Q_LIMIT;
+ *  rx-fcs
  
- 	dev->features |= IFB_FEATURES;
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index a1c77cc00416..59c7aa726245 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -183,7 +183,6 @@ static void gen_lo_setup(struct net_device *dev,
- 		| NETIF_F_HIGHDMA
- 		| NETIF_F_LLTX
- 		| NETIF_F_NETNS_LOCAL
--		| NETIF_F_VLAN_CHALLENGED
- 		| NETIF_F_LOOPBACK;
- 	dev->ethtool_ops	= eth_ops;
- 	dev->header_ops		= hdr_ops;
-diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
-index a085d292b4cf..78ef32642c85 100644
---- a/drivers/net/net_failover.c
-+++ b/drivers/net/net_failover.c
-@@ -496,8 +496,7 @@ static int net_failover_slave_pre_register(struct net_device *slave_dev,
- 				  !dev_is_pci(slave_dev->dev.parent)))
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 1b8d015ebfb0..caea569a76c5 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -2753,6 +2753,18 @@ static int e100_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
+ 	return generic_mii_ioctl(&nic->mii, if_mii(ifr), cmd, NULL);
+ }
  
--	if (failover_dev->features & NETIF_F_VLAN_CHALLENGED &&
--	    vlan_uses_dev(failover_dev)) {
-+	if (vlan_challenged(failover_dev) && vlan_uses_dev(failover_dev)) {
- 		netdev_err(failover_dev, "Device %s is VLAN challenged and failover device has VLAN set up\n",
- 			   failover_dev->name);
- 		return -EINVAL;
-diff --git a/drivers/net/sb1000.c b/drivers/net/sb1000.c
-index e88af978f63c..0cb3fb563160 100644
---- a/drivers/net/sb1000.c
-+++ b/drivers/net/sb1000.c
-@@ -192,6 +192,7 @@ sb1000_probe_one(struct pnp_dev *pdev, const struct pnp_device_id *id)
- 	 * The SB1000 is an rx-only cable modem device.  The uplink is a modem
- 	 * and we do not want to arp on it.
- 	 */
-+	dev->type = ARPHRD_NONE;
- 	dev->flags = IFF_POINTOPOINT|IFF_NOARP;
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 43928a1c2f2a..f490f3cfa358 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -860,6 +860,7 @@ static int vrf_dev_init(struct net_device *dev)
- 	if (vrf_rt6_create(dev) != 0)
- 		goto out_rth;
- 
-+	dev->type = ARPHRD_RAWIP;
- 	dev->flags = IFF_MASTER | IFF_NOARP;
- 
- 	/* MTU is irrelevant for VRF device; set to 64k similar to lo */
-@@ -1271,9 +1272,6 @@ static void vrf_setup(struct net_device *dev)
- 	/* don't allow vrf devices to change network namespaces. */
- 	dev->features |= NETIF_F_NETNS_LOCAL;
- 
--	/* does not make sense for a VLAN to be added to a vrf device */
--	dev->features   |= NETIF_F_VLAN_CHALLENGED;
--
- 	/* enable offload features */
- 	dev->features   |= NETIF_F_GSO_SOFTWARE;
- 	dev->features   |= NETIF_F_RXCSUM | NETIF_F_HW_CSUM | NETIF_F_SCTP_CRC;
-diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
-index e4a5532fb179..7c2781ec7013 100644
---- a/include/linux/if_vlan.h
-+++ b/include/linux/if_vlan.h
-@@ -12,6 +12,7 @@
- #include <linux/rtnetlink.h>
- #include <linux/bug.h>
- #include <uapi/linux/if_vlan.h>
-+#include <uapi/linux/if_arp.h>
- 
- #define VLAN_HLEN	4		/* The additional bytes required by VLAN
- 					 * (in addition to the Ethernet header)
-@@ -789,4 +790,11 @@ static inline void vlan_constrain_mtu(struct net_device *dev)
-  */
- int vlan_constrained_change_mtu(struct net_device *dev, int new_mtu);
- 
-+/* in addition to NETIF_F_VLAN_CHALLENGED, non-Ethernet devices can't VLAN */
-+static inline bool vlan_challenged(struct net_device *dev)
++static int e100_change_mtu(struct net_device *netdev, int new_mtu)
 +{
-+	return dev->type != ARPHRD_ETHER ||
-+	       dev->features & NETIF_F_VLAN_CHALLENGED;
++	struct nic *nic = netdev_priv(netdev);
++
++	netdev->mtu = new_mtu;
++	/* D100 MAC doesn't allow rx of vlan packets with normal MTU */
++	if (nic->mac < mac_82558_D101_A4)
++		vlan_constrain_mtu(netdev);
++
++	return 0;
 +}
 +
- #endif /* !(_LINUX_IF_VLAN_H_) */
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index d4bcfd8f95bf..eb162b020ec9 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -127,7 +127,7 @@ int vlan_check_real_dev(struct net_device *real_dev,
+ static int e100_alloc(struct nic *nic)
  {
- 	const char *name = real_dev->name;
+ 	nic->mem = pci_alloc_consistent(nic->pdev, sizeof(struct mem),
+@@ -2808,6 +2820,7 @@ static const struct net_device_ops e100_netdev_ops = {
+ 	.ndo_set_rx_mode	= e100_set_multicast_list,
+ 	.ndo_set_mac_address	= e100_set_mac_address,
+ 	.ndo_do_ioctl		= e100_do_ioctl,
++	.ndo_change_mtu		= e100_change_mtu,
+ 	.ndo_tx_timeout		= e100_tx_timeout,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	.ndo_poll_controller	= e100_netpoll,
+@@ -2883,7 +2896,7 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
--	if (real_dev->features & NETIF_F_VLAN_CHALLENGED) {
-+	if (vlan_challenged(real_dev)) {
- 		pr_info("VLANs not supported on %s\n", name);
- 		NL_SET_ERR_MSG_MOD(extack, "VLANs not supported on device");
- 		return -EOPNOTSUPP;
-diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
-index 689ef6f3ded8..7ef08bd16b24 100644
---- a/net/sched/sch_teql.c
-+++ b/net/sched/sch_teql.c
-@@ -181,6 +181,8 @@ static int teql_qdisc_init(struct Qdisc *sch, struct nlattr *opt,
- 	skb_queue_head_init(&q->q);
+ 	/* D100 MAC doesn't allow rx of vlan packets with normal MTU */
+ 	if (nic->mac < mac_82558_D101_A4)
+-		netdev->features |= NETIF_F_VLAN_CHALLENGED;
++		netdev->priv_flags |= IFF_NO_VLAN_ROOM;
  
- 	if (m->slaves) {
-+		if (m->dev->type != dev->type)
-+			return -EINVAL;
- 		if (m->dev->flags & IFF_UP) {
- 			if ((m->dev->flags & IFF_POINTOPOINT &&
- 			     !(dev->flags & IFF_POINTOPOINT)) ||
-@@ -205,6 +207,7 @@ static int teql_qdisc_init(struct Qdisc *sch, struct nlattr *opt,
- 	} else {
- 		q->next = sch;
- 		m->slaves = sch;
-+		m->dev->type = dev->type;
- 		m->dev->mtu = dev->mtu;
- 		m->dev->flags = (m->dev->flags&~FMASK)|(dev->flags&FMASK);
+ 	/* locks must be initialized before calling hw_reset */
+ 	spin_lock_init(&nic->cb_lock);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index b438f5576e18..cc25e4bade16 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -184,38 +184,54 @@ static int mlxsw_sx_port_oper_status_get(struct mlxsw_sx_port *mlxsw_sx_port,
+ 	return 0;
+ }
+ 
+-static int __mlxsw_sx_port_mtu_set(struct mlxsw_sx_port *mlxsw_sx_port,
+-				   u16 mtu)
++static int mlxsw_sx_port_mtu_max(struct mlxsw_sx_port *mlxsw_sx_port)
+ {
+ 	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
+ 	char pmtu_pl[MLXSW_REG_PMTU_LEN];
+-	int max_mtu;
+ 	int err;
+ 
+ 	mlxsw_reg_pmtu_pack(pmtu_pl, mlxsw_sx_port->local_port, 0);
+ 	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(pmtu), pmtu_pl);
+ 	if (err)
+-		return err;
+-	max_mtu = mlxsw_reg_pmtu_max_mtu_get(pmtu_pl);
++		return err; /* all errors are negative */
++	return mlxsw_reg_pmtu_max_mtu_get(pmtu_pl);
++}
+ 
+-	if (mtu > max_mtu)
+-		return -EINVAL;
++static int ____mlxsw_sx_port_mtu_eth_set(struct mlxsw_sx_port *mlxsw_sx_port,
++					 u16 mtu)
++{
++	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
++	char pmtu_pl[MLXSW_REG_PMTU_LEN];
+ 
+ 	mlxsw_reg_pmtu_pack(pmtu_pl, mlxsw_sx_port->local_port, mtu);
+ 	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(pmtu), pmtu_pl);
+ }
+ 
++static int __mlxsw_sx_port_mtu_eth_set(struct mlxsw_sx_port *mlxsw_sx_port,
++				       u16 mtu)
++{
++	int max_mtu = mlxsw_sx_port_mtu_max(mlxsw_sx_port);
++
++	if (max_mtu < 0)
++		return max_mtu; /* error code */
++
++	if (mtu > max_mtu)
++		return -EINVAL;
++
++	return ____mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
++}
++
+ static int mlxsw_sx_port_mtu_eth_set(struct mlxsw_sx_port *mlxsw_sx_port,
+ 				     u16 mtu)
+ {
+ 	mtu += MLXSW_TXHDR_LEN + ETH_HLEN;
+-	return __mlxsw_sx_port_mtu_set(mlxsw_sx_port, mtu);
++	return __mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
+ }
+ 
+ static int mlxsw_sx_port_mtu_ib_set(struct mlxsw_sx_port *mlxsw_sx_port,
+ 				    u16 mtu)
+ {
+-	return __mlxsw_sx_port_mtu_set(mlxsw_sx_port, mtu);
++	return __mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
+ }
+ 
+ static int mlxsw_sx_port_ib_port_set(struct mlxsw_sx_port *mlxsw_sx_port,
+@@ -336,12 +352,23 @@ static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
+ static int mlxsw_sx_port_change_mtu(struct net_device *dev, int mtu)
+ {
+ 	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
++	int max_mtu = mlxsw_sx_port_mtu_max(mlxsw_sx_port);
+ 	int err;
+ 
+-	err = mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
++	if (max_mtu < 0)
++		return max_mtu; /* error code */
++
++	max_mtu -= MLXSW_TXHDR_LEN + ETH_HLEN;
++	if (mtu > max_mtu)
++		return -EINVAL;
++
++	err = ____mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
+ 	if (err)
+ 		return err;
++
+ 	dev->mtu = mtu;
++	__vlan_constrain_mtu(dev, max_mtu);
++
+ 	return 0;
+ }
+ 
+@@ -1013,8 +1040,9 @@ static int __mlxsw_sx_port_eth_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
+ 
+ 	netif_carrier_off(dev);
+ 
+-	dev->features |= NETIF_F_NETNS_LOCAL | NETIF_F_LLTX | NETIF_F_SG |
+-			 NETIF_F_VLAN_CHALLENGED;
++	dev->features |= NETIF_F_NETNS_LOCAL | NETIF_F_LLTX | NETIF_F_SG;
++
++	dev->priv_flags |= IFF_NO_VLAN_ROOM;
+ 
+ 	dev->min_mtu = 0;
+ 	dev->max_mtu = ETH_MAX_MTU;
+diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+index 310e6839c6e5..7e008139ad22 100644
+--- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
++++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+@@ -1479,18 +1479,8 @@ int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
  	}
+ 	memcpy(netdev->dev_addr, &v1, ETH_ALEN);
+ 
+-	if (card->vlan_required) {
++	if (card->vlan_required)
+ 		netdev->hard_header_len += VLAN_HLEN;
+-		/*
+-		 * As vlan is internally used,
+-		 * we can not receive vlan packets
+-		 */
+-		netdev->features |= NETIF_F_VLAN_CHALLENGED;
+-	}
+-
+-	/* MTU range: 64 - 1518 */
+-	netdev->min_mtu = GELIC_NET_MIN_MTU;
+-	netdev->max_mtu = GELIC_NET_MAX_MTU;
+ 
+ 	status = register_netdev(netdev);
+ 	if (status) {
+diff --git a/drivers/net/ethernet/wiznet/w5100.c b/drivers/net/ethernet/wiznet/w5100.c
+index c0d181a7f83a..a417c0dbce56 100644
+--- a/drivers/net/ethernet/wiznet/w5100.c
++++ b/drivers/net/ethernet/wiznet/w5100.c
+@@ -24,6 +24,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/gpio.h>
++#include <linux/if_vlan.h>
+ 
+ #include "w5100.h"
+ 
+@@ -1038,6 +1039,7 @@ static const struct net_device_ops w5100_netdev_ops = {
+ 	.ndo_set_rx_mode	= w5100_set_rx_mode,
+ 	.ndo_set_mac_address	= w5100_set_macaddr,
+ 	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_change_mtu		= vlan_constrained_change_mtu,
+ };
+ 
+ static int w5100_mmio_probe(struct platform_device *pdev)
+@@ -1137,9 +1139,9 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
+ 	netif_napi_add(ndev, &priv->napi, w5100_napi_poll, 16);
+ 
+ 	/* This chip doesn't support VLAN packets with normal MTU,
+-	 * so disable VLAN for this device.
++	 * so constrain MTU of upper VLAN devices.
+ 	 */
+-	ndev->features |= NETIF_F_VLAN_CHALLENGED;
++	ndev->priv_flags |= IFF_NO_VLAN_ROOM;
+ 
+ 	err = register_netdev(ndev);
+ 	if (err < 0)
+diff --git a/drivers/net/ethernet/wiznet/w5300.c b/drivers/net/ethernet/wiznet/w5300.c
+index 46aae30c4636..e4d97a6749b3 100644
+--- a/drivers/net/ethernet/wiznet/w5300.c
++++ b/drivers/net/ethernet/wiznet/w5300.c
+@@ -25,6 +25,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/gpio.h>
++#include <linux/if_vlan.h>
+ 
+ #define DRV_NAME	"w5300"
+ #define DRV_VERSION	"2012-04-04"
+@@ -520,6 +521,7 @@ static const struct net_device_ops w5300_netdev_ops = {
+ 	.ndo_set_rx_mode	= w5300_set_rx_mode,
+ 	.ndo_set_mac_address	= w5300_set_macaddr,
+ 	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_change_mtu		= vlan_constrained_change_mtu,
+ };
+ 
+ static int w5300_hw_probe(struct platform_device *pdev)
+@@ -606,9 +608,9 @@ static int w5300_probe(struct platform_device *pdev)
+ 	netif_napi_add(ndev, &priv->napi, w5300_napi_poll, 16);
+ 
+ 	/* This chip doesn't support VLAN packets with normal MTU,
+-	 * so disable VLAN for this device.
++	 * so constrain MTU of upper VLAN devices.
+ 	 */
+-	ndev->features |= NETIF_F_VLAN_CHALLENGED;
++	ndev->priv_flags |= IFF_NO_VLAN_ROOM;
+ 
+ 	err = register_netdev(ndev);
+ 	if (err < 0)
+diff --git a/drivers/net/rionet.c b/drivers/net/rionet.c
+index 2056d6ad04b5..1fd7df17d552 100644
+--- a/drivers/net/rionet.c
++++ b/drivers/net/rionet.c
+@@ -21,6 +21,7 @@
+ #include <linux/crc32.h>
+ #include <linux/ethtool.h>
+ #include <linux/reboot.h>
++#include <linux/if_vlan.h>
+ 
+ #define DRV_NAME        "rionet"
+ #define DRV_VERSION     "0.3"
+@@ -476,6 +477,7 @@ static const struct net_device_ops rionet_netdev_ops = {
+ 	.ndo_start_xmit		= rionet_start_xmit,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_set_mac_address	= eth_mac_addr,
++	.ndo_change_mtu		= vlan_constrained_change_mtu,
+ };
+ 
+ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
+@@ -514,6 +516,7 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
+ 	ndev->min_mtu = ETH_MIN_MTU;
+ 	ndev->max_mtu = RIONET_MAX_MTU;
+ 	ndev->features = NETIF_F_LLTX;
++	ndev->priv_flags |= IFF_NO_VLAN_ROOM;
+ 	SET_NETDEV_DEV(ndev, &mport->dev);
+ 	ndev->ethtool_ops = &rionet_ethtool_ops;
+ 
+diff --git a/drivers/net/wimax/i2400m/netdev.c b/drivers/net/wimax/i2400m/netdev.c
+index a7fcbceb6e6b..4097182a21c7 100644
+--- a/drivers/net/wimax/i2400m/netdev.c
++++ b/drivers/net/wimax/i2400m/netdev.c
+@@ -583,13 +583,12 @@ void i2400m_netdev_setup(struct net_device *net_dev)
+ {
+ 	d_fnstart(3, NULL, "(net_dev %p)\n", net_dev);
+ 	ether_setup(net_dev);
++	net_dev->type = ARPHRD_RAWIP;
+ 	net_dev->mtu = I2400M_MAX_MTU;
+ 	net_dev->min_mtu = 0;
+ 	net_dev->max_mtu = I2400M_MAX_MTU;
+ 	net_dev->tx_queue_len = I2400M_TX_QLEN;
+-	net_dev->features =
+-		  NETIF_F_VLAN_CHALLENGED
+-		| NETIF_F_HIGHDMA;
++	net_dev->features = NETIF_F_HIGHDMA;
+ 	net_dev->flags =
+ 		IFF_NOARP		/* i2400m is apure IP device */
+ 		& (~IFF_BROADCAST	/* i2400m is P2P */
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index da47e423e1b1..e9507237f3b7 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -629,6 +629,15 @@ static void qeth_l2_set_rx_mode(struct net_device *dev)
+ 	schedule_work(&card->rx_mode_work);
+ }
+ 
++static int qeth_l2_change_mtu(struct net_device *dev, int new_mtu)
++{
++	struct qeth_card *card = dev->ml_priv;
++
++	dev->mtu = new_mtu;
++	if (IS_OSM(card))
++		vlan_constrain_mtu(dev);
++}
++
+ static const struct net_device_ops qeth_l2_netdev_ops = {
+ 	.ndo_open		= qeth_open,
+ 	.ndo_stop		= qeth_stop,
+@@ -640,6 +649,7 @@ static const struct net_device_ops qeth_l2_netdev_ops = {
+ 	.ndo_set_rx_mode	= qeth_l2_set_rx_mode,
+ 	.ndo_do_ioctl		= qeth_do_ioctl,
+ 	.ndo_set_mac_address    = qeth_l2_set_mac_address,
++	.ndo_change_mtu		= qeth_l2_change_mtu,
+ 	.ndo_vlan_rx_add_vid	= qeth_l2_vlan_rx_add_vid,
+ 	.ndo_vlan_rx_kill_vid   = qeth_l2_vlan_rx_kill_vid,
+ 	.ndo_tx_timeout	   	= qeth_tx_timeout,
+@@ -675,7 +685,7 @@ static int qeth_l2_setup_netdev(struct qeth_card *card)
+ 	card->dev->priv_flags |= IFF_UNICAST_FLT;
+ 
+ 	if (IS_OSM(card)) {
+-		card->dev->features |= NETIF_F_VLAN_CHALLENGED;
++		card->dev->priv_flags |= IFF_NO_VLAN_ROOM;
+ 	} else {
+ 		if (!IS_VM_NIC(card))
+ 			card->dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
 -- 
 2.26.2
 
