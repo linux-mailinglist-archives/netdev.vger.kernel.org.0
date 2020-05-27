@@ -2,172 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3E41E4FB7
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 22:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6505C1E500D
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 23:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728730AbgE0U5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 16:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
+        id S2387536AbgE0VS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 17:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726887AbgE0U5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 16:57:23 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC5AC05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 13:57:23 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id z1so8374296qtn.2
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 13:57:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vb7HtBs/AWjeuby2BhCfCxuMEVlvnnUDFNR4Y4qQPJI=;
-        b=Pjv3Rn+0oXbB+u917d6mptsgIdWn+b2B5bS2geWj5qXfKmjXaMmaIRwQhG1zhMzKox
-         a2EWnz9F/OUrxbYILZWmmeD2LiUYM2+wGrFSIqwigK80yS72r5ME07bb7+QgOkkZ6Iu4
-         zca1VjnDl8T0zaxtNwgPy39RI5jh6rMCx5/Qw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vb7HtBs/AWjeuby2BhCfCxuMEVlvnnUDFNR4Y4qQPJI=;
-        b=nTm5NFSx3YsrKqvpt4N4ScTBEsupPiAntu1+0ssnq3AcsD+v+ynh4o+DaaoXahpPM0
-         Q/pcMmt/8D2jIFbtBk5nNXeDEIwW+idExV5wqU2ZLC/Tw/jIsXivQCL35to+p9Zv/Ea+
-         kfa+NCeIzur/QdA7o8ExBwVTDQE6rLl7xgjFc8VppIdeKMa42303hBc30m0zyTdDWcyY
-         VZp1gLu18/3TsRM9N2j2/tRz6CLs67Ioh2ZojIIzAn1b54p9fBxFLTDwHNYvRcZ9pT8c
-         VYSvtQidD+duIp3GWD9rR8+Wvryhjz5XaALvytvnMF2y0xEcFxyV7Eg/V0AqNAxHKQ0/
-         cIAg==
-X-Gm-Message-State: AOAM533ysikgqaAsK98e3zPuo1O9jc1UNhLUN1VwLKJL6m4f6PEvqEqI
-        1G9/SFEgaCKNafJzsVCRPoThfh2N8Jn2FIukWPhuyw==
-X-Google-Smtp-Source: ABdhPJz1nMbZwk39o7uIxT4zZ3PQFnQQVq6nFkXgtyJONcCREkr4FYiNha5i5NpDKePr3fFK6mmurJWTN6femjwUrek=
-X-Received: by 2002:aed:3fa4:: with SMTP id s33mr6479938qth.148.1590613042616;
- Wed, 27 May 2020 13:57:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <1590214105-10430-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1590214105-10430-2-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200524045335.GA22938@nanopsycho> <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
- <20200525172602.GA14161@nanopsycho> <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
- <20200526044727.GB14161@nanopsycho> <CAACQVJp8SfmP=R=YywDWC8njhA=ntEcs5o_KjBoHafPkHaj-iA@mail.gmail.com>
- <20200526134032.GD14161@nanopsycho> <CAACQVJrwFB4oHjTAw4DK28grxGGP15x52+NskjDtOYQdOUMbOg@mail.gmail.com>
- <CAACQVJqTc9s2KwUCEvGLfG3fh7kKj3-KmpeRgZMWM76S-474+w@mail.gmail.com> <20200527131401.2e269ab8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20200527131401.2e269ab8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Wed, 27 May 2020 13:57:11 -0700
-Message-ID: <CACKFLi=+Q4CkOvaxQQm5Ya8+Ft=jNMwCAuK+=5SMxAfNGGriBw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
- generic device parameter.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1726114AbgE0VS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 17:18:58 -0400
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D79CC05BD1E
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 14:18:58 -0700 (PDT)
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04RKTBBK028325;
+        Wed, 27 May 2020 21:30:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id; s=jan2016.eng;
+ bh=Jp1odPUnHVMIifCJnHgqnNOFnJ9HPnsIKTs8DyuRooQ=;
+ b=h0Z06EIyexp2NbRGBc/pEBrQAM0CXYZ0CSO3iSyVbiYajsCccNkeHAr+pz2lMMxHWiH+
+ L6PDC1WeeQUXN66Py78s0V6j7oCDffdXP/2BpDMz9ZCSH2jFtSWJg2iUkH2ZLwB9OGb+
+ 254eQlyd1Iu/6IG1s+QtViGikOTb8Lak0rebfm+Mj0rM4pBBIZUhPjsM/thU5NcEzw67
+ 5nh2ud2BRk4fhB4Itoj5sqSMveziizoRRJH+zpuD+4krVNphtx+DJvnMK2wjIyPHkgLO
+ Tg+noLYFYfOmHtEAstbD8vuW18BqUQ5RcxQ4wzXrLEkCmkafkga3PnmYcrIhH6anS+W3 Xw== 
+Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 316ug52h5q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 May 2020 21:30:24 +0100
+Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
+        by prod-mail-ppoint3.akamai.com (8.16.0.27/8.16.0.27) with SMTP id 04RK2Igm019712;
+        Wed, 27 May 2020 16:30:23 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint3.akamai.com with ESMTP id 319uwvha22-1;
+        Wed, 27 May 2020 16:30:23 -0400
+Received: from bos-lpjec.145bw.corp.akamai.com (bos-lpjec.145bw.corp.akamai.com [172.28.3.71])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 4FBE86017F;
+        Wed, 27 May 2020 20:30:23 +0000 (GMT)
+From:   Jason Baron <jbaron@akamai.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us
+Subject: [net-next 0/2] net: sched: cls-flower: add support for port-based fragment filtering
+Date:   Wed, 27 May 2020 16:25:28 -0400
+Message-Id: <1590611130-19146-1-git-send-email-jbaron@akamai.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-27_03:2020-05-27,2020-05-27 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=989
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2004280000 definitions=main-2005270153
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-27_03:2020-05-27,2020-05-27 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=1
+ cotscore=-2147483648 mlxscore=0 lowpriorityscore=0 adultscore=0
+ spamscore=0 mlxlogscore=939 priorityscore=1501 malwarescore=0
+ clxscore=1011 bulkscore=0 impostorscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005270156
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 1:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 27 May 2020 09:07:09 +0530 Vasundhara Volam wrote:
-> > Here is a sample sequence of commands to do a "live reset" to get some
-> > clear idea.
-> > Note that I am providing the examples based on the current patchset.
-> >
-> > 1. FW live reset is disabled in the device/adapter. Here adapter has 2
-> > physical ports.
-> >
-> > $ devlink dev
-> > pci/0000:3b:00.0
-> > pci/0000:3b:00.1
-> > pci/0000:af:00.0
-> > $ devlink dev param show pci/0000:3b:00.0 name allow_fw_live_reset
-> > pci/0000:3b:00.0:
-> >   name allow_fw_live_reset type generic
-> >     values:
-> >       cmode runtime value false
-> >       cmode permanent value false
-> > $ devlink dev param show pci/0000:3b:00.1 name allow_fw_live_reset
-> > pci/0000:3b:00.1:
-> >   name allow_fw_live_reset type generic
-> >     values:
-> >       cmode runtime value false
-> >       cmode permanent value false
->
-> What's the permanent value? What if after reboot the driver is too old
-> to change this, is the reset still allowed?
+Port based allow rules must currently allow all fragments since the
+port number is not included in the 1rst fragment. We want to restrict
+allowing all fragments by inclucding the port number in the 1rst
+fragments.
 
-The permanent value should be the NVRAM value.  If the NVRAM value is
-false, the feature is always and unconditionally disabled.  If the
-permanent value is true, the feature will only be available when all
-loaded drivers indicate support for it and set the runtime value to
-true.  If an old driver is loaded afterwards, it wouldn't indicate
-support for this feature and it wouldn't set the runtime value to
-true.  So the feature will not be available until the old driver is
-unloaded or upgraded.
+For example, we can now allow fragments for only port 80 via:
 
->
-> > 2. If a user issues "ethtool --reset p1p1 all", the device cannot
-> > perform "live reset" as capability is not enabled.
-> >
-> > User needs to do a driver reload, for firmware to undergo reset.
->
-> Why does driver reload have anything to do with resetting a potentially
-> MH device?
+# tc filter add dev $DEVICE parent ffff: priority 1 protocol ipv4 flower
+  ip_proto tcp dst_port 80 action pass
+# tc filter add dev $DEVICE parent ffff: priority 2 protocol ipv4 flower
+  ip_flags frag/nofirstfrag action pass
 
-I think she meant that all drivers have to be unloaded before the
-reset would take place in case it's a MH device since live reset is
-not supported.  If it's a single function device, unloading this
-driver is sufficient.
+The first patch includes ports for 1rst fragments.
+The second patch adds test cases, demonstrating the new behavior.
 
->
-> > $ ethtool --reset p1p1 all
->
-> Reset probably needs to be done via devlink. In any case you need a new
-> reset level for resetting MH devices and smartnics, because the current
-> reset mask covers port local, and host local cases, not any form of MH.
+Jason Baron (2):
+  net: sched: cls-flower: include ports in 1rst fragment
+  selftests: tc_flower: add destination port tests
 
-RIght.  This reset could be just a single function reset in this example.
+ net/core/flow_dissector.c                          |  4 +-
+ net/sched/cls_flower.c                             |  3 +-
+ .../testing/selftests/net/forwarding/tc_flower.sh  | 73 +++++++++++++++++++++-
+ 3 files changed, 77 insertions(+), 3 deletions(-)
 
->
-> > ETHTOOL_RESET 0xffffffff
-> > Components reset:     0xff0000
-> > Components not reset: 0xff00ffff
-> > $ dmesg
-> > [  198.745822] bnxt_en 0000:3b:00.0 p1p1: Firmware reset request successful.
-> > [  198.745836] bnxt_en 0000:3b:00.0 p1p1: Reload driver to complete reset
->
-> You said the reset was not performed, yet there is no information to
-> that effect in the log?!
+-- 
+2.7.4
 
-The firmware has been requested to reset, but the reset hasn't taken
-place yet because live reset cannot be done.  We can make the logs
-more clear.
-
->
-> > 3. Now enable the capability in the device and reboot for device to
-> > enable the capability. Firmware does not get reset just by setting the
-> > param to true.
-> >
-> > $ devlink dev param set pci/0000:3b:00.1 name allow_fw_live_reset
-> > value true cmode permanent
-> >
-> > 4. After reboot, values of param.
->
-> Is the reboot required here?
->
-
-In general, our new NVRAM permanent parameters will take effect after
-reset (or reboot).
-
-> > $ devlink dev param show pci/0000:3b:00.1 name allow_fw_live_reset
-> > pci/0000:3b:00.1:
-> >   name allow_fw_live_reset type generic
-> >     values:
-> >       cmode runtime value true
->
-> Why is runtime value true now?
->
-
-If the permanent (NVRAM) parameter is true, all loaded new drivers
-will indicate support for this feature and set the runtime value to
-true by default.  The runtime value would not be true if any loaded
-driver is too old or has set the runtime value to false.
