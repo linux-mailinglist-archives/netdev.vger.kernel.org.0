@@ -2,70 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A751E45D1
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 16:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A0B1E464A
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 16:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389228AbgE0O1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 10:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388138AbgE0O1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 10:27:40 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FD5C08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 07:27:40 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b6so24431735qkh.11
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 07:27:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2UfzX4p4RxW/OjjKlUuQ3pMQwGefFgXA0tcEgztkUP8=;
-        b=txFtu9Z//iIFXM6zKzKRNXEE0+H83vORvpvOITiU91bJDdVf0zrH5NT8Dxe1D66/ZT
-         0wNfFcDysOatMRVJ8KnO8mwlZaoAan4hK6JfZZ0BzlYVQXQi6My+JWmdoKVyWfO6J0Ub
-         5iMZjdaMvlMqFzfz+iB2PIf0syiAEt5KqXnIR2NdyMCc+vYAq0Bvfq8XAoxpspr0rjSM
-         2Hph2wjVtBTCe64T+rY6bijXTWaWvESR/SKjpDFPjqLkzEteOU6jOV93zvS/D1Tcx3aD
-         7407w1BpEIqe72/L4XbvjflAi3a5n6mnmcddG/u05/vrlX9EkD8Y8JBnGBpr1QNpF4d8
-         k1VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2UfzX4p4RxW/OjjKlUuQ3pMQwGefFgXA0tcEgztkUP8=;
-        b=R5gMX1inWlFYCT01UCce9yy8CPBb2nn0J2Qi23bsq9AssnYfNCdFFMp6U8R8i+fI+h
-         DtPoS9iLXjLLgJ5pCNP8nnl9BKBKJGxgYTahqqW0Fla4e7rQKNWHKqxdxVcD9Ts6lW9X
-         fdrZJrvAYKe9RyaaO2ilbMIaNQFySSogB0jtNeikmZP9DRB47LEhUssJ+NR3Pz6NhcrP
-         0Ao4EB4Fcy9K40v/fTWuWVW07pv0XIdUej/OUpkRkPw6qgeL6DG17iCxe8YjJxinWiLC
-         TOl7O5jZEVzfk2MQODYXZZjNF8/9ipCW+tHhWWDilR+XdNUfkVvHxocOJaMtiBm+5mkA
-         EaGg==
-X-Gm-Message-State: AOAM533Wornf+QwUhTEC40BH+AOpgGCFoub29klAruYgeyDUjB2z7RvT
-        KUooNJ8aevrtiGjTo4xM1jk=
-X-Google-Smtp-Source: ABdhPJwOfeH6WVpza1CeVg7+7f1J+jEFZifwTIGkMi1QLq6EfjSqknn/EJKQClDNDpJT1rQH/y/Lgw==
-X-Received: by 2002:a37:b501:: with SMTP id e1mr1499813qkf.269.1590589659417;
-        Wed, 27 May 2020 07:27:39 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
-        by smtp.googlemail.com with ESMTPSA id n35sm2624552qte.55.2020.05.27.07.27.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 May 2020 07:27:38 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 1/5] bpf: Handle 8-byte values in DEVMAP and
- DEVMAP_HASH
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        toke@redhat.com, daniel@iogearbox.net, john.fastabend@gmail.com,
-        ast@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        andriin@fb.com
-References: <20200527010905.48135-1-dsahern@kernel.org>
- <20200527010905.48135-2-dsahern@kernel.org> <20200527122612.579fbb25@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bb30af38-c74c-1c78-0b10-a00de39b434b@gmail.com>
-Date:   Wed, 27 May 2020 08:27:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S2388931AbgE0OpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 10:45:04 -0400
+Received: from mga04.intel.com ([192.55.52.120]:54217 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388356AbgE0OpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 10:45:04 -0400
+IronPort-SDR: PTQURh6rKttCQ8AVE4ZKvNld3EDDraFxi6GEX9ODVmnoOQ55iRYRw+KQErjvupd6VW2NQOXsFP
+ Jk6bVZJ+o0NA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 07:45:03 -0700
+IronPort-SDR: OtwnxPNxSmHczI5y7ictvpQ5bh36kD5GZa4Az9rPhj5aUykRKMs6MgV55/P3mKY+gUH8dqvSZz
+ 6L6TY1wTgDPQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,441,1583222400"; 
+   d="scan'208";a="468763162"
+Received: from vmgould-mobl.amr.corp.intel.com (HELO [10.252.133.103]) ([10.252.133.103])
+  by fmsmga006.fm.intel.com with ESMTP; 27 May 2020 07:45:02 -0700
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+To:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
+References: <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
+ <20200520125437.GH31189@ziepe.ca>
+ <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
+ <20200521233437.GF17583@ziepe.ca>
+ <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+ <20200523062351.GD3156699@kroah.com>
+ <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+ <20200524063519.GB1369260@kroah.com>
+ <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
+ <s5h5zcistpb.wl-tiwai@suse.de> <20200527071733.GB52617@kroah.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <76007750-e0ec-4bc1-d6ae-96677584a51c@linux.intel.com>
+Date:   Wed, 27 May 2020 09:05:16 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200527122612.579fbb25@carbon>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200527071733.GB52617@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -73,12 +58,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/27/20 4:26 AM, Jesper Dangaard Brouer wrote:
-> IMHO we really need to leverage BTF here, as I'm sure we need to do more
-> extensions, and this size matching will get more and more unmaintainable.
-> 
-> With BTF in place, dumping the map via bpftool, will also make the
-> fields "self-documenting".
 
-furthermore, the kernel is changing the value - an fd is passed in and
-an id is returned. I do not see how any of this fits into BTF.
+
+>>>>> If yes, that's yet another problem... During the PCI probe, we start a
+>>>>> workqueue and return success to avoid blocking everything.
+>>>>
+>>>> That's crazy.
+>>>>
+>>>>> And only 'later' do we actually create the card. So that's two levels
+>>>>> of probe that cannot report a failure. I didn't come up with this
+>>>>> design, IIRC this is due to audio-DRM dependencies and it's been used
+>>>>> for 10+ years.
+>>>>
+>>>> Then if the probe function fails, it needs to unwind everything itself
+>>>> and unregister the device with the PCI subsystem so that things work
+>>>> properly.  If it does not do that today, that's a bug.
+>>>>
+>>>> What kind of crazy dependencies cause this type of "requirement"?
+>>>
+>>> I think it is related to the request_module("i915") in
+>>> snd_hdac_i915_init(), and possibly other firmware download.
+>>>
+>>> Adding Takashi for more details.
+>>
+>> Right, there are a few levels of complexity there.  The HD-audio
+>> PCI controller driver, for example, is initialized in an async way
+>> with a work.  It loads the firmware files with
+>> request_firmware_nowait() and also binds itself as a component master
+>> with the DRM graphics driver via component framework.
+>>
+>> Currently it has no way to unwind the PCI binding itself at the error
+>> path, though.  In theory it should be possible to unregister the PCI
+>> from the driver itself in the work context, but it failed in the
+>> earlier experiments, hence the driver sets itself in a disabled state
+>> instead.  Maybe worth to try again.
+>>
+>> But, to be noted, all belonging sub-devices aren't instantiated but
+>> deleted at the error path.  Only the main PCI binding is kept in a
+>> disabled state just as a place holder until it's unbound explicitly.
+> 
+> Ok, that's good to hear.  But platform devices should never be showing
+> up as a child of a PCI device.  In the "near future" when we get the
+> virtual bus code merged, we can convert any existing users like this to
+> the new code.
+
+yes that's the plan. It'll be however more than a 1:1 replacement, i.e. 
+we want to use this opportunity to split existing cards into separate 
+ones when it makes sense to do so. There's really no rationale for 
+having code to deal with HDMI in each machine driver when we could have 
+a single driver for HDMI. That's really what drove us to suggest this 
+patchset based on the virtual bus: removal of platform devices + 
+repartition.
