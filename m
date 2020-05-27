@@ -2,240 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CB9F1E3C77
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C7E1E3CC2
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388200AbgE0IqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 04:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388107AbgE0IqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 04:46:20 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E5CC061A0F
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 01:46:20 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id k18so25131116ion.0
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 01:46:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=cpwITzrftWrJAY0LVaSeu6jYTmkJe1PVewzQjLawjdA=;
-        b=GxKyCH668dBc5VipkdT8YFjPTCx5H6Ette6THzOjjs/DRDGNcXIMDQi5ZP5v3Sf9Oa
-         mwVrP6RSqnYeL10DiHJM1SOkKIcn6brwgQRHX0b0oKqUeDUGj/rjNQW55Xq53NQfseRD
-         vXhZTU3mB8ZA8VEHKczO26DPAktbj8hdettUmRE8i6vyRvcYoYFGvApZ8ukhZ5+bQK7D
-         9L8+5xCW38IQadhYPoyI/PQs166Rw+w8+8SWRYvSIyYFnkV+77MOB9qUtGq2ER6cdPV/
-         +/sr0UAOp1UfaGH7K0FiwaDoGqoJN+EI3wjFXv9n4Zv/oSigkjbvRq3z7WEgWAq+aZOX
-         0EsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cpwITzrftWrJAY0LVaSeu6jYTmkJe1PVewzQjLawjdA=;
-        b=NgPJtcJvX887u1MAWoRx6bViAixSn0ACW43Pk/cVN6cOgixDnqOnSF/NKydlyqjX/v
-         3EWS8m3IFyAxWARZctEikRtRWxaieQk+YLWQi5un1N69N4hjLboKSPtw8fc20PW8AWjq
-         Nuz57dfxAFNVwQdbRCM+EXbQ6c3/kNEfeOPan955damzK63jtYK4wcpuX/NGsh60X3qu
-         swrayKLTBxKAD3dkMQDmvBcCsbI9+sEHdXpDrvcFdH7tZR0sOAtya6lX67BiMn/RX+VP
-         E9rck4S/VW1eKXvoMLdWiM8ZppT++jXEJ0WOcgGcsp9/eKFUAXCfv8ovvZkkdNbqS0k5
-         S5oQ==
-X-Gm-Message-State: AOAM531+iL2Chn1UAA6xV3ylBqrtQmT+lzSNYU+Xqwvoox99Go09u6+W
-        /FXe5DtH7Ah5+cliJvLX2NmNtffy1cmPcH9mHNS2FQ==
-X-Google-Smtp-Source: ABdhPJwMXQdy6+RxEU74Dd9WQ5Tly2o2sH55kV9ZSrhh4NH0gl/D2WFHak2VKletNu2Ql3a2wNrDFJNkEIRMls/7rZo=
-X-Received: by 2002:a02:3e06:: with SMTP id s6mr4481666jas.57.1590569179357;
- Wed, 27 May 2020 01:46:19 -0700 (PDT)
+        id S1729578AbgE0I4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 04:56:09 -0400
+Received: from mail-eopbgr40121.outbound.protection.outlook.com ([40.107.4.121]:38464
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728152AbgE0I4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 04:56:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cV9+N++sl5nsTBWbGIraYVZsAmbAA/APnlMFLLEvxnFhEKKTs+Odg3ZzsZZk03AQ5u9f+z4AhSNXrjv7MWlmyZi7cqNFOdYEjuiXMeYwdKOOeAny1yVZFMukyJ4/2nJxqfuwjHc+kg6JiTfR1d5ydzKUgaoXhFISJnH3tq39VIpIvnq6lb1bZaKhi1dmyZ3iOb06iV3HvB5GTSF5vyFlykAFQEjL5rKnUAdDCFutTsDFL5VQwdS77kiumXO9xpdcyYfggQAwnqsyy7OxJ4C+vU6zy/K8klGKBWZ8vuEuDh1+KPTAbJV1eyHhfvf+qs7uGTyZrrL06yBlK0Lq0SKNoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J+fvXWkMkehPtVt+p31dqzo7m6Wun6usH51TKefFn8A=;
+ b=Cl1sQuFytulAbbB1Uap+0Z8Kf9HnkN+4XoYTnG0pNenUmrMBVLMipgqgSGkmv20xpT3luae2XtbAPseGavzQWS0VOqBEnqwHgeK0PTRuaS1MY7piuL+bOy3e/O7vfpdJXcF0LtIwiwNALg61F9FXrLJHxvZM3izHeDZB3CsGllEiYvASiXkcho3AwIQsUR2YJKJeW9ahAH/Iyra9wwMS+xo/r+9fTN+AZJcogpNI+rQf/hfbUcYg58eFwfxib/mOTK1dlnrtW1ibp0dK0HVSXRPOJbBxAHjJMJb/CkUUwWsvjMvOWZ2UJsS8DMf+A3GrOENIy3NBG3TzwhrXRCz9JQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J+fvXWkMkehPtVt+p31dqzo7m6Wun6usH51TKefFn8A=;
+ b=Pxpjz2BfaOuaynfFkDjsb12t2j0toaDOas1yU1tjpx/RJ2frwrPqiqpDbv1EyUs6VrOv8Flo4SMlwG7izIXL3iDwfbHg6Yn2+msFZ47uL1kPAg2rMXOLPFJAkeHkYibjwbDeLollWNjXk1dkPqeRO2r54M+/NS9pouIoYegpQeM=
+Authentication-Results: resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=none action=none header.from=plvision.eu;
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
+ by VI1P190MB0142.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:a5::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Wed, 27 May
+ 2020 08:56:05 +0000
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::8149:8652:3746:574f]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::8149:8652:3746:574f%7]) with mapi id 15.20.3045.018; Wed, 27 May 2020
+ 08:56:05 +0000
+Date:   Wed, 27 May 2020 11:55:57 +0300
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
+ support
+Message-ID: <20200527085538.GA18716@plvision.eu>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-3-vadym.kochan@plvision.eu>
+ <20200511112346.GG2245@nanopsycho>
+ <20200526162644.GA32356@plvision.eu>
+ <20200527055305.GF14161@nanopsycho>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200527055305.GF14161@nanopsycho>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: BE0P281CA0014.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::24) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:802:35::10)
 MIME-Version: 1.0
-References: <20200522120700.838-1-brgl@bgdev.pl> <20200522120700.838-7-brgl@bgdev.pl>
- <20200527073150.GA3384158@ubuntu-s3-xlarge-x86>
-In-Reply-To: <20200527073150.GA3384158@ubuntu-s3-xlarge-x86>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 27 May 2020 10:46:08 +0200
-Message-ID: <CAMRc=MevVsYZFDQif+8Zyv41sSkbS8XqWbKGdCvHooneXz88hg@mail.gmail.com>
-Subject: Re: [PATCH v5 06/11] net: ethernet: mtk-star-emac: new driver
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plvision.eu (217.20.186.93) by BE0P281CA0014.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18 via Frontend Transport; Wed, 27 May 2020 08:56:03 +0000
+X-Originating-IP: [217.20.186.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c0f0689-bb9a-45ed-39dc-08d8021bca05
+X-MS-TrafficTypeDiagnostic: VI1P190MB0142:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1P190MB0142D55EFD94C3041796A16E95B10@VI1P190MB0142.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 04163EF38A
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oF2cZ62HsnID79yHCeqZRedt7qQT5Iv4OiRhH7pi8Dr1b/3CC5Gn2HR4Hx3qRB5ajtSJ6cyx3LozX67WBPtTWYJg0zOrfSTWEFye5WnfhPQxG7UxcLyz0dHX82hm08+n/4Ka8cq5bdl/c+ztfQ3QPvs1Uv8U1flQAw+mjQiq31p3H/reMzthwo8gBnhCIwdAX28V+4N18dA4gSb33CgwfJ7A84x2YOpZ8/i+Rhn6E1cXmSowIfeUhm7a/uwjc80Al0REJLN0YyCMPOk3Qbat47f3DgUOCMSaj9vD7mzEoMFi3LsBBsZo7e86GSfEnD7n
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(136003)(39830400003)(346002)(396003)(376002)(366004)(2616005)(956004)(55016002)(54906003)(26005)(36756003)(8886007)(508600001)(186003)(44832011)(16526019)(8676002)(5660300002)(8936002)(1076003)(6666004)(316002)(2906002)(86362001)(52116002)(66556008)(4326008)(6916009)(33656002)(7696005)(66476007)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: OPtldAQRTlqoLwm+iUxgeST34au8uZUz/2MpRljba2QBqWTaE8fKKs/cmjLU638bhRcsrMm9aKurixoc1fr1B0mgCtAJF8NEM7VH+Rduk9vL7riSXZYPKAdXj5EDyXeLfKlaMtRN4EPskiVdss6G04qcX3QfWyGbek+EVRpne12XDVsZZ1YqYq4YHm5PSHJa1E04/i0g3HOkmS0MOyzQF3U9ja8cptauwYpNvXCcinfedBXBuYIauREhM0UM3V5yq1MYjhkg1d6QEq7EMvzlvOCQeb36xQEtAiNh7oul3xHiN7R2h24UZHZ90sQt6cYXCBiaIyTCIhm+Z0Q2+mZpiCbTu9nMqCIjfydENzHe+kwdwrx0YNFvaqV5RZrx9YwBsPez1bp8thwH+HFwk7QackAgLA6CCkL5QVOHpV3AZ2aogzyCtOHHmcv80u1dcvZVD6P0tSojM7SguS/9drstUmXy1AUo38qmYE3FVSdH/oePa4CwERgaYu+3oIlj19Nw
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c0f0689-bb9a-45ed-39dc-08d8021bca05
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 08:56:05.1996
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7kMCQNgal7WgDydmbYO0vttuvf6YoKAnsnPg2CaPeaZv6wNl2Lyb2ZJCuk5fuckZv94xTuV60cuyHNiILshI9EzKdrXXWW+E4voYw4TKLvo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0142
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 27 maj 2020 o 09:31 Nathan Chancellor <natechancellor@gmail.com>
-napisa=C5=82(a):
->
-> On Fri, May 22, 2020 at 02:06:55PM +0200, Bartosz Golaszewski wrote:
->
-> <snip>
->
-> > diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/ne=
-t/ethernet/mediatek/mtk_star_emac.c
-> > new file mode 100644
-> > index 000000000000..789c77af501f
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> > @@ -0,0 +1,1678 @@
->
-> <snip>
->
-> I've searched netdev and I cannot find any reports from others but this
-> function introduces a clang warning:
->
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:6: warning: variable '=
-new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsome=
-times-uninitialized]
->         if (!new_skb) {
->             ^~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
-d use occurs here
->         desc_data.dma_addr =3D new_dma_addr;
->                              ^~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:2: note: remove the 'i=
-f' if its condition is always false
->         if (!new_skb) {
->         ^~~~~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable '=
-new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsome=
-times-uninitialized]
->         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
->             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
-d use occurs here
->         desc_data.dma_addr =3D new_dma_addr;
->                              ^~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:2: note: remove the 'i=
-f' if its condition is always false
->         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
->         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable '=
-new_dma_addr' is used uninitialized whenever '||' condition is true [-Wsome=
-times-uninitialized]
->         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
->             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
-d use occurs here
->         desc_data.dma_addr =3D new_dma_addr;
->                              ^~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: note: remove the '|=
-|' if its condition is always false
->         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
->             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mediatek/mtk_star_emac.c:1274:25: note: initialize t=
-he variable 'new_dma_addr' to silence this warning
->         dma_addr_t new_dma_addr;
->                                ^
->                                 =3D 0
-> 3 warnings generated.
->
-> > +static int mtk_star_receive_packet(struct mtk_star_priv *priv)
-> > +{
-> > +     struct mtk_star_ring *ring =3D &priv->rx_ring;
-> > +     struct device *dev =3D mtk_star_get_dev(priv);
-> > +     struct mtk_star_ring_desc_data desc_data;
-> > +     struct net_device *ndev =3D priv->ndev;
-> > +     struct sk_buff *curr_skb, *new_skb;
-> > +     dma_addr_t new_dma_addr;
->
-> Uninitialized here
->
-> > +     int ret;
-> > +
-> > +     spin_lock(&priv->lock);
-> > +     ret =3D mtk_star_ring_pop_tail(ring, &desc_data);
-> > +     spin_unlock(&priv->lock);
-> > +     if (ret)
-> > +             return -1;
-> > +
-> > +     curr_skb =3D desc_data.skb;
-> > +
-> > +     if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
-> > +         (desc_data.flags & MTK_STAR_DESC_BIT_RX_OSIZE)) {
-> > +             /* Error packet -> drop and reuse skb. */
-> > +             new_skb =3D curr_skb;
-> > +             goto push_new_skb;
->
-> this goto
->
-> > +     }
-> > +
-> > +     /* Prepare new skb before receiving the current one. Reuse the cu=
-rrent
-> > +      * skb if we fail at any point.
-> > +      */
-> > +     new_skb =3D mtk_star_alloc_skb(ndev);
-> > +     if (!new_skb) {
-> > +             ndev->stats.rx_dropped++;
-> > +             new_skb =3D curr_skb;
-> > +             goto push_new_skb;
->
-> and this goto
->
-> > +     }
-> > +
-> > +     new_dma_addr =3D mtk_star_dma_map_rx(priv, new_skb);
-> > +     if (dma_mapping_error(dev, new_dma_addr)) {
-> > +             ndev->stats.rx_dropped++;
-> > +             dev_kfree_skb(new_skb);
-> > +             new_skb =3D curr_skb;
-> > +             netdev_err(ndev, "DMA mapping error of RX descriptor\n");
-> > +             goto push_new_skb;
-> > +     }
-> > +
-> > +     /* We can't fail anymore at this point: it's safe to unmap the sk=
-b. */
-> > +     mtk_star_dma_unmap_rx(priv, &desc_data);
-> > +
-> > +     skb_put(desc_data.skb, desc_data.len);
-> > +     desc_data.skb->ip_summed =3D CHECKSUM_NONE;
-> > +     desc_data.skb->protocol =3D eth_type_trans(desc_data.skb, ndev);
-> > +     desc_data.skb->dev =3D ndev;
-> > +     netif_receive_skb(desc_data.skb);
-> > +
-> > +push_new_skb:
-> > +     desc_data.dma_addr =3D new_dma_addr;
->
-> assign it uninitialized here.
->
-> > +     desc_data.len =3D skb_tailroom(new_skb);
-> > +     desc_data.skb =3D new_skb;
-> > +
-> > +     spin_lock(&priv->lock);
-> > +     mtk_star_ring_push_head_rx(ring, &desc_data);
-> > +     spin_unlock(&priv->lock);
-> > +
-> > +     return 0;
-> > +}
->
-> I don't know if there should be a new label that excludes that
-> assignment for those particular gotos or if new_dma_addr should
-> be initialized to something at the top. Please take a look at
-> addressing this when you get a chance.
->
-> Cheers,
-> Nathan
+Hi Jiri,
 
-Hi Nathan,
+On Wed, May 27, 2020 at 07:53:05AM +0200, Jiri Pirko wrote:
+> Tue, May 26, 2020 at 06:26:44PM CEST, vadym.kochan@plvision.eu wrote:
+> >On Mon, May 11, 2020 at 01:23:46PM +0200, Jiri Pirko wrote:
+> >> Fri, May 01, 2020 at 01:20:49AM CEST, vadym.kochan@plvision.eu wrote:
+> >> >Add PCI interface driver for Prestera Switch ASICs family devices, which
+> >> >provides:
+> >
+> >[...]
+> >> 
+> >> This looks very specific. Is is related to 0xC804?
+> >> 
+> >Sorry, I missed this question. But I am not sure I got it.
+> 
+> Is 0xC804 pci id of "Prestera AC3x 98DX326x"? If so and in future you
+> add support for another chip/revision to this driver, the name "Prestera
+> AC3x 98DX326x" would be incorrect. I suggest to use some more generic
+> name, like "Prestera".
 
-Thanks for reporting this! I have a fix ready and will send it shortly.
+We are planning to support addition devices within the same family of
+'Prestera AC3x' and therefore "Prestera AC3x 98DX32xx" is mentioned.
+Additional families also up-coming: "Prestera ALD2 98DX84xx"
 
-Bartosz
+> 
+> 
+> 
+> >
+> >> 
+> >> >+	.id_table = prestera_pci_devices,
+> >> >+	.probe    = prestera_pci_probe,
+> >> >+	.remove   = prestera_pci_remove,
+> >> >+};
+> >> >+
+> >> >+static int __init prestera_pci_init(void)
+> >> >+{
+> >> >+	return pci_register_driver(&prestera_pci_driver);
+> >> >+}
+> >> >+
+> >> >+static void __exit prestera_pci_exit(void)
+> >> >+{
+> >> >+	pci_unregister_driver(&prestera_pci_driver);
+> >> >+}
+> >> >+
+> >> >+module_init(prestera_pci_init);
+> >> >+module_exit(prestera_pci_exit);
+> >> >+
+> >> >+MODULE_AUTHOR("Marvell Semi.");
+> >> 
+> >> Author is you, not a company.
+> >> 
+> >> 
+> >> >+MODULE_LICENSE("Dual BSD/GPL");
+> >> >+MODULE_DESCRIPTION("Marvell Prestera switch PCI interface");
+> >> >-- 
+> >> >2.17.1
+> >> >
