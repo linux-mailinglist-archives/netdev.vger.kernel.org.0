@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A0A11E4495
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:54:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3ED1E4497
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388713AbgE0NyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:54:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50468 "EHLO mail.kernel.org"
+        id S2388772AbgE0NyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:54:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50522 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387581AbgE0NyO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 09:54:14 -0400
+        id S2387581AbgE0NyT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 09:54:19 -0400
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4496207D8;
-        Wed, 27 May 2020 13:54:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B13FE2078C;
+        Wed, 27 May 2020 13:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590587654;
-        bh=KNF1MfvZeNs28YKn0ZbgwmTVTyWpQUW/7KydDhpaqPc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rDhW+TTp92kWLUpYQ/dFN2veC2uvctixIATLUo4BF8twB0diqlNfuyV2j/BlStGx/
-         cn5VXVj6+atmwCm3kkvcRL+Y7rMWrZw72mqxyIh9UOOkeaSxgw0jdBMHb7+AjWB0HO
-         yVkJ1j+7ANiEMnG9q7yIP4kE3zmjmIMrL+RYJCMk=
+        s=default; t=1590587658;
+        bh=ZcvPiY6rInQxm8MdEFotpjAJ0VBH7aHR9Rho09RNyIQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JEh4z/arPGTuebbteK+ufToOVMGi7B4hYjO7JDDuCnRKbtGXNbgkRouDpNdbCc+1Y
+         hLaAs5IvbgX3BYSD5/ttW4/YIccGbyxxX0CR/hvnK9kshbZzOPd4ySBS8zmlE02A4d
+         9aigrok59BxVIKI1W1LUfvPvBwkp01x0dsP16VIw=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lijun Ou <oulijun@huawei.com>, linux-rdma@vger.kernel.org,
-        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Weihang Li <liweihang@huawei.com>,
-        "Wei Hu(Xavier)" <huwei87@hisilicon.com>
-Subject: [PATCH rdma-next v1 00/11] RAW format dumps through RDMAtool
-Date:   Wed, 27 May 2020 16:53:57 +0300
-Message-Id: <20200527135408.480878-1-leon@kernel.org>
+Cc:     Maor Gottlieb <maorg@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [PATCH mlx5-next v1 01/11] net/mlx5: Export resource dump interface
+Date:   Wed, 27 May 2020 16:53:58 +0300
+Message-Id: <20200527135408.480878-2-leon@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200527135408.480878-1-leon@kernel.org>
+References: <20200527135408.480878-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -45,54 +42,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+From: Maor Gottlieb <maorg@mellanox.com>
 
-Changelog:
-v1:
- * Maor dropped controversial change to dummy interface.
-v0: https://lore.kernel.org/linux-rdma/20200513095034.208385-1-leon@kernel.org
+Export some of the resource dump API, so it could be
+used by the mlx5_ib driver as well.
 
-Hi,
-
-The following series adds support to get the RDMA resource data in RAW
-format. The main motivation for doing this is to enable vendors to return
-the entire QP/CQ/MR data without a need from the vendor to set each field
-separately.
-
-Thanks
-
-Maor Gottlieb (11):
-  net/mlx5: Export resource dump interface
-  net/mlx5: Add support in query QP, CQ and MKEY segments
-  RDMA/core: Don't call fill_res_entry for PD
-  RDMA: Add dedicated MR resource tracker function
-  RDMA: Add dedicated CQ resource tracker function
-  RDMA: Add dedicated QP resource tracker function
-  RDMA: Add dedicated CM_ID resource tracker function
-  RDMA: Add support to dump resource tracker in RAW format
-  RDMA/mlx5: Add support to get QP resource in raw format
-  RDMA/mlx5: Add support to get CQ resource in RAW format
-  RDMA/mlx5: Add support to get MR resource in RAW format
-
- drivers/infiniband/core/device.c              |   7 +-
- drivers/infiniband/core/nldev.c               | 128 +++++++++---------
- drivers/infiniband/hw/cxgb4/iw_cxgb4.h        |   7 +-
- drivers/infiniband/hw/cxgb4/provider.c        |  11 +-
- drivers/infiniband/hw/cxgb4/restrack.c        |  33 ++---
- drivers/infiniband/hw/hns/hns_roce_device.h   |   4 +-
- drivers/infiniband/hw/hns/hns_roce_main.c     |   2 +-
- drivers/infiniband/hw/hns/hns_roce_restrack.c |  17 +--
- drivers/infiniband/hw/mlx5/main.c             |   6 +-
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |  11 +-
- drivers/infiniband/hw/mlx5/restrack.c         | 105 +++++++++++---
- .../mellanox/mlx5/core/diag/rsc_dump.c        |   6 +
- .../mellanox/mlx5/core/diag/rsc_dump.h        |  33 +----
- .../diag => include/linux/mlx5}/rsc_dump.h    |  25 ++--
- include/rdma/ib_verbs.h                       |  13 +-
- include/uapi/rdma/rdma_netlink.h              |   2 +
- 16 files changed, 225 insertions(+), 185 deletions(-)
+Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ .../mellanox/mlx5/core/diag/rsc_dump.c        |  3 ++
+ .../mellanox/mlx5/core/diag/rsc_dump.h        | 33 +------------------
+ .../diag => include/linux/mlx5}/rsc_dump.h    | 22 ++++---------
+ 3 files changed, 10 insertions(+), 48 deletions(-)
  copy {drivers/net/ethernet/mellanox/mlx5/core/diag => include/linux/mlx5}/rsc_dump.h (68%)
 
---
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
+index 17ab7efe693d..10218c2324cc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
+@@ -130,11 +130,13 @@ struct mlx5_rsc_dump_cmd *mlx5_rsc_dump_cmd_create(struct mlx5_core_dev *dev,
+ 	cmd->mem_size = key->size;
+ 	return cmd;
+ }
++EXPORT_SYMBOL(mlx5_rsc_dump_cmd_create);
+ 
+ void mlx5_rsc_dump_cmd_destroy(struct mlx5_rsc_dump_cmd *cmd)
+ {
+ 	kfree(cmd);
+ }
++EXPORT_SYMBOL(mlx5_rsc_dump_cmd_destroy);
+ 
+ int mlx5_rsc_dump_next(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
+ 		       struct page *page, int *size)
+@@ -155,6 +157,7 @@ int mlx5_rsc_dump_next(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
+ 
+ 	return more_dump;
+ }
++EXPORT_SYMBOL(mlx5_rsc_dump_next);
+ 
+ #define MLX5_RSC_DUMP_MENU_SEGMENT 0xffff
+ static int mlx5_rsc_dump_menu(struct mlx5_core_dev *dev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
+index 148270073e71..64c4956db6d2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
+@@ -4,41 +4,10 @@
+ #ifndef __MLX5_RSC_DUMP_H
+ #define __MLX5_RSC_DUMP_H
+ 
++#include <linux/mlx5/rsc_dump.h>
+ #include <linux/mlx5/driver.h>
+ #include "mlx5_core.h"
+ 
+-enum mlx5_sgmt_type {
+-	MLX5_SGMT_TYPE_HW_CQPC,
+-	MLX5_SGMT_TYPE_HW_SQPC,
+-	MLX5_SGMT_TYPE_HW_RQPC,
+-	MLX5_SGMT_TYPE_FULL_SRQC,
+-	MLX5_SGMT_TYPE_FULL_CQC,
+-	MLX5_SGMT_TYPE_FULL_EQC,
+-	MLX5_SGMT_TYPE_FULL_QPC,
+-	MLX5_SGMT_TYPE_SND_BUFF,
+-	MLX5_SGMT_TYPE_RCV_BUFF,
+-	MLX5_SGMT_TYPE_SRQ_BUFF,
+-	MLX5_SGMT_TYPE_CQ_BUFF,
+-	MLX5_SGMT_TYPE_EQ_BUFF,
+-	MLX5_SGMT_TYPE_SX_SLICE,
+-	MLX5_SGMT_TYPE_SX_SLICE_ALL,
+-	MLX5_SGMT_TYPE_RDB,
+-	MLX5_SGMT_TYPE_RX_SLICE_ALL,
+-	MLX5_SGMT_TYPE_MENU,
+-	MLX5_SGMT_TYPE_TERMINATE,
+-
+-	MLX5_SGMT_TYPE_NUM, /* Keep last */
+-};
+-
+-struct mlx5_rsc_key {
+-	enum mlx5_sgmt_type rsc;
+-	int index1;
+-	int index2;
+-	int num_of_obj1;
+-	int num_of_obj2;
+-	int size;
+-};
+-
+ #define MLX5_RSC_DUMP_ALL 0xFFFF
+ struct mlx5_rsc_dump_cmd;
+ struct mlx5_rsc_dump;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h b/include/linux/mlx5/rsc_dump.h
+similarity index 68%
+copy from drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
+copy to include/linux/mlx5/rsc_dump.h
+index 148270073e71..87415fa754fe 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
++++ b/include/linux/mlx5/rsc_dump.h
+@@ -1,11 +1,10 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (c) 2019 Mellanox Technologies. */
+-
+-#ifndef __MLX5_RSC_DUMP_H
+-#define __MLX5_RSC_DUMP_H
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2020 Mellanox Technologies inc. */
+ 
+ #include <linux/mlx5/driver.h>
+-#include "mlx5_core.h"
++
++#ifndef __MLX5_RSC_DUMP
++#define __MLX5_RSC_DUMP
+ 
+ enum mlx5_sgmt_type {
+ 	MLX5_SGMT_TYPE_HW_CQPC,
+@@ -39,20 +38,11 @@ struct mlx5_rsc_key {
+ 	int size;
+ };
+ 
+-#define MLX5_RSC_DUMP_ALL 0xFFFF
+ struct mlx5_rsc_dump_cmd;
+-struct mlx5_rsc_dump;
+-
+-struct mlx5_rsc_dump *mlx5_rsc_dump_create(struct mlx5_core_dev *dev);
+-void mlx5_rsc_dump_destroy(struct mlx5_core_dev *dev);
+-
+-int mlx5_rsc_dump_init(struct mlx5_core_dev *dev);
+-void mlx5_rsc_dump_cleanup(struct mlx5_core_dev *dev);
+ 
+ struct mlx5_rsc_dump_cmd *mlx5_rsc_dump_cmd_create(struct mlx5_core_dev *dev,
+ 						   struct mlx5_rsc_key *key);
+ void mlx5_rsc_dump_cmd_destroy(struct mlx5_rsc_dump_cmd *cmd);
+-
+ int mlx5_rsc_dump_next(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
+ 		       struct page *page, int *size);
+-#endif
++#endif /* __MLX5_RSC_DUMP */
+-- 
 2.26.2
 
