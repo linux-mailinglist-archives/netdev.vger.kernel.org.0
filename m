@@ -2,94 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA431E5161
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E401E51CB
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 01:28:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726161AbgE0Wkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 18:40:47 -0400
-Received: from correo.us.es ([193.147.175.20]:33466 "EHLO mail.us.es"
+        id S1725927AbgE0X2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 19:28:18 -0400
+Received: from mga14.intel.com ([192.55.52.115]:5300 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725385AbgE0Wkq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 18:40:46 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 6EC75EB478
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:40:43 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5FFD1DA715
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:40:43 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 53D0FDA709; Thu, 28 May 2020 00:40:43 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 1750EDA701;
-        Thu, 28 May 2020 00:40:41 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 28 May 2020 00:40:41 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id DC56542EF4E0;
-        Thu, 28 May 2020 00:40:40 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 3/3] netfilter: nf_conntrack_pptp: fix compilation warning with W=1 build
-Date:   Thu, 28 May 2020 00:40:18 +0200
-Message-Id: <20200527224018.3610-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200527224018.3610-1-pablo@netfilter.org>
-References: <20200527224018.3610-1-pablo@netfilter.org>
+        id S1725267AbgE0X2R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 19:28:17 -0400
+IronPort-SDR: 86b2vKlgJpBy7nFXMF2ZtIcz82i47YQmpRMq2BY+OS6zNjfYV9xn4xGQW5g2Qiobu7V+IouFmk
+ XFaBXWi0r0RA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 16:28:17 -0700
+IronPort-SDR: ymWlNhG63YMw460FI2bhH3CSGRN0fjZDHCO10avwA3is357mE41AFiDVBZAN9wsL/9moOXXoK9
+ tOpF6kFiZrgw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,442,1583222400"; 
+   d="scan'208";a="468921730"
+Received: from unknown (HELO ellie) ([10.212.136.193])
+  by fmsmga006.fm.intel.com with ESMTP; 27 May 2020 16:28:17 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: offload the Credit-Based Shaper qdisc
+In-Reply-To: <20200527203850.1354202-1-olteanv@gmail.com>
+References: <20200527203850.1354202-1-olteanv@gmail.com>
+Date:   Wed, 27 May 2020 16:28:17 -0700
+Message-ID: <87eer5j6um.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> include/linux/netfilter/nf_conntrack_pptp.h:13:20: warning: 'const' type qualifier on return type has no effect [-Wignored-qualifiers]
-extern const char *const pptp_msg_name(u_int16_t msg);
-^~~~~~
+Vladimir Oltean <olteanv@gmail.com> writes:
 
-Reported-by: kbuild test robot <lkp@intel.com>
-Fixes: 4c559f15efcc ("netfilter: nf_conntrack_pptp: prevent buffer overflows in debug code")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/linux/netfilter/nf_conntrack_pptp.h | 2 +-
- net/netfilter/nf_conntrack_pptp.c           | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> SJA1105, being AVB/TSN switches, provide hardware assist for the
+> Credit-Based Shaper as described in the IEEE 8021Q-2018 document.
+>
+> First generation has 10 shapers, freely assignable to any of the 4
+> external ports and 8 traffic classes, and second generation has 16
+> shapers.
+>
+> We also need to provide a dummy implementation of mqprio qdisc offload,
+> since this seems to be necessary for shaping any traffic class other
+> than zero.
 
-diff --git a/include/linux/netfilter/nf_conntrack_pptp.h b/include/linux/netfilter/nf_conntrack_pptp.h
-index 6a4ff6d5ebc2..a28aa289afdc 100644
---- a/include/linux/netfilter/nf_conntrack_pptp.h
-+++ b/include/linux/netfilter/nf_conntrack_pptp.h
-@@ -10,7 +10,7 @@
- #include <net/netfilter/nf_conntrack_expect.h>
- #include <uapi/linux/netfilter/nf_conntrack_tuple_common.h>
- 
--extern const char *const pptp_msg_name(u_int16_t msg);
-+const char *pptp_msg_name(u_int16_t msg);
- 
- /* state of the control session */
- enum pptp_ctrlsess_state {
-diff --git a/net/netfilter/nf_conntrack_pptp.c b/net/netfilter/nf_conntrack_pptp.c
-index 7ad247784cfa..1f44d523b512 100644
---- a/net/netfilter/nf_conntrack_pptp.c
-+++ b/net/netfilter/nf_conntrack_pptp.c
-@@ -91,7 +91,7 @@ static const char *const pptp_msg_name_array[PPTP_MSG_MAX + 1] = {
- 	[PPTP_SET_LINK_INFO]		= "SET_LINK_INFO"
- };
- 
--const char *const pptp_msg_name(u_int16_t msg)
-+const char *pptp_msg_name(u_int16_t msg)
- {
- 	if (msg > PPTP_MSG_MAX)
- 		return pptp_msg_name_array[0];
+This is false, right?
+
+
+Cheers,
 -- 
-2.20.1
-
+Vinicius
