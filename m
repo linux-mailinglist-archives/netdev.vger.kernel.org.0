@@ -2,20 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9901E4AD3
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D571E4ACC
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 18:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391675AbgE0QrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 12:47:17 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:37935 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391569AbgE0Qqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:46:45 -0400
-X-Originating-IP: 90.76.143.236
+        id S2391606AbgE0Qqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 12:46:49 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:36487 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391570AbgE0Qqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 12:46:46 -0400
 Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 0E6EAE0003;
-        Wed, 27 May 2020 16:46:40 +0000 (UTC)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id C441110000C;
+        Wed, 27 May 2020 16:46:43 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
         hkallweit1@gmail.com, richardcochran@gmail.com,
@@ -23,9 +22,9 @@ To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
         foss@0leil.net, antoine.tenart@bootlin.com
-Subject: [PATCH net-next 7/8] dt-bindings: net: phy: vsc8531: document the load/save GPIO
-Date:   Wed, 27 May 2020 18:41:57 +0200
-Message-Id: <20200527164158.313025-8-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next 8/8] MIPS: dts: ocelot: describe the load/save GPIO
+Date:   Wed, 27 May 2020 18:41:58 +0200
+Message-Id: <20200527164158.313025-9-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200527164158.313025-1-antoine.tenart@bootlin.com>
 References: <20200527164158.313025-1-antoine.tenart@bootlin.com>
@@ -36,34 +35,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new optional property can be used to reference the load/save GPIO,
-used for PTP hardware clock (PHC) operations. This patch documents it in
-the binding documentation.
+From: Quentin Schulz <quentin.schulz@bootlin.com>
 
+This patch adds a description of the load/save GPIN pin, used in the
+VSC8584 PHY for timestamping operations. The related pinctrl description
+is also added.
+
+Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
 Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/mips/boot/dts/mscc/ocelot_pcb120.dts | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-index 5ff37c68c941..87a27d775d48 100644
---- a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-+++ b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-@@ -31,6 +31,8 @@ Optional properties:
- 			  VSC8531_LINK_100_ACTIVITY (2),
- 			  VSC8531_LINK_ACTIVITY (0) and
- 			  VSC8531_DUPLEX_COLLISION (8).
-+- load-save-gpios	: GPIO used for the load/save operation of the PTP
-+			  hardware clock (PHC).
+diff --git a/arch/mips/boot/dts/mscc/ocelot_pcb120.dts b/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
+index 33991fd209f5..897de5025d7f 100644
+--- a/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
++++ b/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
+@@ -3,6 +3,7 @@
  
+ /dts-v1/;
  
- Table: 1 - Edge rate change
-@@ -67,4 +69,5 @@ Example:
-                 vsc8531,edge-slowdown	= <7>;
-                 vsc8531,led-0-mode	= <LINK_1000_ACTIVITY>;
-                 vsc8531,led-1-mode	= <LINK_100_ACTIVITY>;
-+		load-save-gpios		= <&gpio 10 GPIO_ACTIVE_HIGH>;
-         };
++#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/phy/phy-ocelot-serdes.h>
+ #include "ocelot.dtsi"
+@@ -25,6 +26,11 @@ phy_int_pins: phy_int_pins {
+ 		pins = "GPIO_4";
+ 		function = "gpio";
+ 	};
++
++	phy_load_save_pins: phy_load_save_pins {
++		pins = "GPIO_10";
++		function = "ptp2";
++	};
+ };
+ 
+ &mdio0 {
+@@ -34,27 +40,31 @@ &mdio0 {
+ &mdio1 {
+ 	status = "okay";
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&miim1>, <&phy_int_pins>;
++	pinctrl-0 = <&miim1>, <&phy_int_pins>, <&phy_load_save_pins>;
+ 
+ 	phy7: ethernet-phy@0 {
+ 		reg = <0>;
+ 		interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
+ 		interrupt-parent = <&gpio>;
++		load-save-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+ 	};
+ 	phy6: ethernet-phy@1 {
+ 		reg = <1>;
+ 		interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
+ 		interrupt-parent = <&gpio>;
++		load-save-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+ 	};
+ 	phy5: ethernet-phy@2 {
+ 		reg = <2>;
+ 		interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
+ 		interrupt-parent = <&gpio>;
++		load-save-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+ 	};
+ 	phy4: ethernet-phy@3 {
+ 		reg = <3>;
+ 		interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
+ 		interrupt-parent = <&gpio>;
++		load-save-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+ 	};
+ };
+ 
 -- 
 2.26.2
 
