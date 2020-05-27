@@ -2,127 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2254F1E4F4A
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 22:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9F951E4F62
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 22:36:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728799AbgE0U1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 16:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        id S1728356AbgE0UgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 16:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728356AbgE0U1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 16:27:12 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDB2C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 13:27:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:To:From:Date:Reply-To:Cc:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UmfSvcEvY7Xh1gr3KBdJrkUiNtcLc1+s02FTv9S+B8s=; b=ctEfPZu8Sm1IlhLpPQiSXmq9X
-        5WMSTwaLRXjkfbq1dS4XY0ovVJPsOF8bU+IFMdcXfN4XDWAWivkAInB0kMBD/izMJuLJ4QpBFKPSd
-        JphXTdP+i9U0og0v2x95JwKePBML0NPzHk/4uw2PZYfTtH98QwWCOhDoYFTiB/lHdGUQ5TyggNeR3
-        bC8kshHBZ0UtvLjgu3rYfCkYRfA4ku1e9aAjYgehF3Or0R9pYXYNuYSJ0OIrLWeGOQ1IkE9QdUE6m
-        xDrw5zk64sQ78xCjWBZP/NwesuWhe3CAVmWffGobr73h39SVWrGt5qY6tI9WPWLuD5ty//AVcmedy
-        MRXjkEe6Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45864)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1je2dl-0003br-0H; Wed, 27 May 2020 21:27:05 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1je2di-0006jY-9b; Wed, 27 May 2020 21:27:02 +0100
-Date:   Wed, 27 May 2020 21:27:02 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: Weird bridge behaviour - suddenly dropping vlan packets
-Message-ID: <20200527202702.GR1551@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1727090AbgE0UgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 16:36:10 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3607C03E97D
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 13:36:09 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id k186so25682306ybc.19
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 13:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=EfHclXenZ/21aYnUW6IuRxH/Q4eYl3HezzB4IqPMdTQ=;
+        b=IE125gGfLV3foCyLAxKW8a9FJgHV/0eFC1VEnTtIQZ/qyv6HF0U5UlfIhsgcWee/ko
+         K3fzYuKPioJy8DpVmFoj6p1M7sNHYsNTZ6GXWw6f5UYdEdbAECNxGrivHZPjwzi7SVx4
+         SwUioZxS8AOk2DSnNogLBOPu0O9UoL5iaNVX0vNvefT/2YYquAmAYUuuYAWMHM8ZfwyK
+         nPSxKtSMbBR+WPTLPn6ZC/1fH1vmHEXunK9jx3elcGHgBHr4VnOhrvDP582hn+95M4z6
+         cJVaRTLKgd4lELqYqprWXSd3shC9NSbVx+ELgFpQjjj4JR/wGVBxWSulYvm3nRYgQ5D1
+         Jy4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=EfHclXenZ/21aYnUW6IuRxH/Q4eYl3HezzB4IqPMdTQ=;
+        b=pdjn53yN+U2403Fc7ME+MWfrvhSqCpwcA3N/SSdMm8rw/L7eqpuufnneh3m7ExwnVs
+         8MpgDX9lJtuN0ctYEQEf8QFu3ooX0Y/VsH2W/6nKm1rV9ajSBIIyFzkJllAkjLlNJt+s
+         Y8nLmetkXcDYu8pxxo+tWXATGfq8Fh0Mwkwdtt9DUVkvHayYfovPNhmi3KIfSLUgfnAx
+         nuzxL4B+r46wt5heCDI0yM4x1y/Gwfruel8mhxd1bMugIhqs1OLa05D5wTKaPDGHyklh
+         1ypWxbTG3JGakJYbqzjPraeOtvQci4tEcaA249VjWLFiNRjkGs/dUmmWgKYczYFKNIlU
+         Suqw==
+X-Gm-Message-State: AOAM532fPiD3IcD6f6VOB3FPfLlIy21m/2DvNdAEE5wpNWl+AWGcInQM
+        xAJMOzSv6hktEuBt8vAG0cd/9fQ=
+X-Google-Smtp-Source: ABdhPJztnfkVo1dCE6M0kPVAdMSshdL0A4FZgGWqvacF0vK/e4ivC2+NpxpFb9LqaAXc4I0LR/pUU9U=
+X-Received: by 2002:a25:d6c3:: with SMTP id n186mr12507146ybg.375.1590611769049;
+ Wed, 27 May 2020 13:36:09 -0700 (PDT)
+Date:   Wed, 27 May 2020 13:36:07 -0700
+In-Reply-To: <87v9kh2mzg.fsf@cloudflare.com>
+Message-Id: <20200527203607.GA57268@google.com>
+Mime-Version: 1.0
+References: <20200527170840.1768178-1-jakub@cloudflare.com>
+ <20200527170840.1768178-4-jakub@cloudflare.com> <20200527174036.GF49942@google.com>
+ <87v9kh2mzg.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf-next 3/8] net: Introduce netns_bpf for BPF programs
+ attached to netns
+From:   sdf@google.com
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 05/27, Jakub Sitnicki wrote:
+> On Wed, May 27, 2020 at 07:40 PM CEST, sdf@google.com wrote:
+> > On 05/27, Jakub Sitnicki wrote:
+> >> In order to:
+> >
+> >>   (1) attach more than one BPF program type to netns, or
+> >>   (2) support attaching BPF programs to netns with bpf_link, or
+> >>   (3) support multi-prog attach points for netns
+> >
+> >> we will need to keep more state per netns than a single pointer like we
+> >> have now for BPF flow dissector program.
+> >
+> >> Prepare for the above by extracting netns_bpf that is part of struct  
+> net,
+> >> for storing all state related to BPF programs attached to netns.
+> >
+> >> Turn flow dissector callbacks for querying/attaching/detaching a  
+> program
+> >> into generic ones that operate on netns_bpf. Next patch will move the
+> >> generic callbacks into their own module.
+> >
+> >> This is similar to how it is organized for cgroup with cgroup_bpf.
+> >
+> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >> ---
+> >>   include/linux/bpf-netns.h   | 56 ++++++++++++++++++++++
+> >>   include/linux/skbuff.h      | 26 ----------
+> >>   include/net/net_namespace.h |  4 +-
+> >>   include/net/netns/bpf.h     | 17 +++++++
+> >>   kernel/bpf/syscall.c        |  7 +--
+> >>   net/core/flow_dissector.c   | 96  
+> ++++++++++++++++++++++++-------------
+> >>   6 files changed, 143 insertions(+), 63 deletions(-)
+> >>   create mode 100644 include/linux/bpf-netns.h
+> >>   create mode 100644 include/net/netns/bpf.h
+> >
+> >> diff --git a/include/linux/bpf-netns.h b/include/linux/bpf-netns.h
+> >> new file mode 100644
+> >> index 000000000000..f3aec3d79824
+> >> --- /dev/null
+> >> +++ b/include/linux/bpf-netns.h
+> >> @@ -0,0 +1,56 @@
+> >> +/* SPDX-License-Identifier: GPL-2.0 */
+> >> +#ifndef _BPF_NETNS_H
+> >> +#define _BPF_NETNS_H
+> >> +
+> >> +#include <linux/mutex.h>
+> >> +#include <uapi/linux/bpf.h>
+> >> +
+> >> +enum netns_bpf_attach_type {
+> >> +	NETNS_BPF_INVALID = -1,
+> >> +	NETNS_BPF_FLOW_DISSECTOR = 0,
+> >> +	MAX_NETNS_BPF_ATTACH_TYPE
+> >> +};
+> >> +
+> >> +static inline enum netns_bpf_attach_type
+> >> +to_netns_bpf_attach_type(enum bpf_attach_type attach_type)
+> >> +{
+> >> +	switch (attach_type) {
+> >> +	case BPF_FLOW_DISSECTOR:
+> >> +		return NETNS_BPF_FLOW_DISSECTOR;
+> >> +	default:
+> >> +		return NETNS_BPF_INVALID;
+> >> +	}
+> >> +}
+> >> +
+> >> +/* Protects updates to netns_bpf */
+> >> +extern struct mutex netns_bpf_mutex;
+> > I wonder whether it's a good time to make this mutex per-netns, WDYT?
+> >
+> > The only problem I see is that it might complicate the global
+> > mode of flow dissector where we go over every ns to make sure no
+> > progs are attached. That will be racy with per-ns mutex unless
+> > we do something about it...
 
-I've just had a weird problem on my network - I have a clearfogbase
-(ARM) platform which has three network ports, running 5.6.  These
-three network ports are bridged together, and the bridge has vlan
-filtering enabled.
+> It crossed my mind. I stuck with a global mutex for a couple of
+> reasons. Different that one you bring up, which I forgot about.
 
-I need two ports (eno0 and eno1) to forward VLAN V between them, so
-I've added that in the interfaces file:
+> 1. Don't know if it has potential to be a bottleneck.
 
-iface brlan inet static
-	...
-	bridge-ports eno0 eno1 eno2
-	bridge-wait 0
-	...
-        up ip link set $IFACE type bridge vlan_filtering 1
-	up bridge vlan add vid V dev eno0
-	up bridge vlan add vid V dev eno1
+> cgroup BPF uses a global mutex too. Even one that serializes access to
+> more data than just BPF programs attached to a cgroup.
 
-This vlan is used for WiFi.
+> Also, we grab the netns_bpf_mutex only on prog attach/detach, and link
+> create/update/release. Netns teardown is not grabbing it. So if you're
+> not using netns BPF you're not going to "feel" contention.
 
-This worked fine for some time, until recently (possibly this
-evening) when someone complained that they couldn't connect to the
-wifi.
+> 2. Makes locking on nets bpf_link release trickier
 
-Debugging using tcpdump revealed that native traffic was passing
-through the bridge fine, but the bridge was blocking all VLAN V
-traffic - I could see packets (mostly ARPs being broadcast for
-IPs on either side of the bridge) arriving on both interfaces, but
-not leaving.
+> In bpf_netns_link_release (patch 5), we deref pointer from link to
+> struct net under RCU read lock, in case the net is being destroyed
+> simulatneously.
 
-Anything beyind the vlan configuration on the bridge should be fine
-otherwise I would have expected problems with the untagged LAN
-traffic.
+> However, we're also grabbing the netns_bpf_mutex, in case of another
+> possible scenario, when struct net is alive and well (refcnt > 0), but
+> we're racing with a prog attach/detach to access net->bpf.{links,progs}.
 
-The fdb entries seemed to be correct; I tried flushing them with
-"ip li set brlan type bridge fdb_flush" - no apparent effect.  It
-seemed to learn the MAC addresses on either side and associate them
-with the vlan.
+> Making the mutex part of net->bpf means I first need to somehow ensure
+> netns stays alive if I go to sleep waiting for the lock. Or it would
+> have to be a spinlock, or some better (simpler?) locking scheme.
 
-I tried adding the vlan to the brlan interface too, which was
-successfully added, but no, there were no vlan packets there either
-despite plenty of activity on the incoming interfaces for that vlan.
 
-It basically seems that the Linux software bridge decided on its own
-accord that it would drop all the vlan packets on the floor with no
-explanation what so ever.
+> The above two convinced me that I should start with a global mutex, and
+> go for more pain if there's contention.
 
-I tried turning vlan filtering off - even that didn't help.
-
-Having tried a number of other things (including removing the vids
-from each interface and adding them back) I decided that the only way
-to get the network working again was to reboot the machine.  Hey
-presto, things started working again.
-
-This now means that there's nothing to debug, because the problem
-has gone away.  However, I suspect it may return in another 49 or
-so days.
-
-It could have been some weird network driver issue, but I don't see
-how that could produce valid vlan packets to tcpdump but prevent
-the bridge from forwarding them.
-
-It isn't some accidental reconfiguration; the machine has not had
-anyone logged in to be able to make any changes for the last month
-and it certainly has worked during that period - and there is no
-other way to make changes other than being logged in (it has a
-minimal debian stable install.)
-
-Has anyone seen this kind of behaviour?
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+> Thanks for giving the series a review.
+Yeah, everything makes sense, agreed, feel free to slap:
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
