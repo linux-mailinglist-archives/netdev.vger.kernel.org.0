@@ -2,168 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FBE91E41F6
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C42B31E4245
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728887AbgE0MWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 08:22:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728583AbgE0MWm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 08:22:42 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7BAE6208DB;
-        Wed, 27 May 2020 12:22:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590582162;
-        bh=p2DrqgY25EEbGCylK1hOYEmGCh4GyjfDtY7J6BvROyU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OKKippJo7mc951M71C+pDN1YQmxMTwq3A1W/pbGKxgDZiWrSX13JXSBpyrrD/2MrU
-         PcXHuTJ9wXtwbDqP3yYnBTuI/jcqDlNv0s6SCxb1hvR0h2ahyZg/QHlN9dakaOP+Co
-         oTAENoTpVhWYGwTiwQkrvbUPMSrHUszPejdiWuMM=
-Date:   Wed, 27 May 2020 07:27:37 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH v2][net-next] ice: Replace one-element arrays with
- flexible-arrays
-Message-ID: <20200527122737.GA18133@embeddedor>
+        id S1729920AbgE0M2b convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 May 2020 08:28:31 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:54951 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729812AbgE0M2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 08:28:30 -0400
+Received: from mail-qk1-f175.google.com ([209.85.222.175]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1N2E9e-1isAKI1XpO-013aAV; Wed, 27 May 2020 14:28:28 +0200
+Received: by mail-qk1-f175.google.com with SMTP id w1so649129qkw.5;
+        Wed, 27 May 2020 05:28:27 -0700 (PDT)
+X-Gm-Message-State: AOAM532osS/AFq3CkigcS15Y6Sv7PR6JWzFoZ1tv+w478Legne8yYC2Q
+        IUOGoI5OcwuDIDsny3PqaE5aIM+BZAlJ4cXL924=
+X-Google-Smtp-Source: ABdhPJwaAgzroHfp7pJ7RNhUPIcAie1aEFqd1EprpZ9PmXq2JihQh/b6bzG/FLdwRDsYzWluddqdrXxjIL6hkdgwLDI=
+X-Received: by 2002:a37:bc7:: with SMTP id 190mr3695944qkl.286.1590582507016;
+ Wed, 27 May 2020 05:28:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200522120700.838-1-brgl@bgdev.pl> <20200522120700.838-7-brgl@bgdev.pl>
+ <20200527073150.GA3384158@ubuntu-s3-xlarge-x86> <CAMRc=MevVsYZFDQif+8Zyv41sSkbS8XqWbKGdCvHooneXz88hg@mail.gmail.com>
+ <CAK8P3a3WXGZpeX0E8Kyuo5Rkv5acdkZN6_HNS61Y1=Jh+G+pRQ@mail.gmail.com> <CAMRc=Md1w_6+dU9gCwiiB5R+dMcYMPFLPrA++RBkKp5zaY6Riw@mail.gmail.com>
+In-Reply-To: <CAMRc=Md1w_6+dU9gCwiiB5R+dMcYMPFLPrA++RBkKp5zaY6Riw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 27 May 2020 14:28:10 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3L6aGtKqv4ikNJc3or_mX2VvRE1sgaZZ9esD6jx+Hyug@mail.gmail.com>
+Message-ID: <CAK8P3a3L6aGtKqv4ikNJc3or_mX2VvRE1sgaZZ9esD6jx+Hyug@mail.gmail.com>
+Subject: Re: [PATCH v5 06/11] net: ethernet: mtk-star-emac: new driver
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:42xuInEhqB0LXEINV+ATzXFlSMMIjNK510ngCJoHuhHdNsuqk4w
+ 68JRv4VvYzZWx1vsiWvmeFS+1NeUsk0M37H9qQ5WgGs8IVw2uVu/a5xFALDPbCNQ3zFm+2P
+ 508dd+urfo1iRHl5MaflH+JN9p90uLD3a8C+zj9c2lLetniKhTImGSr4IDkMFlKnaCpNRgn
+ MoXoURCWf2iSPksOB9qmQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xAdFMfLVBtI=:DTxMeHJVSg8YjC8fXbe+DT
+ s/o+xcigouZHqnyFyjG0dXlhkLJhSljvBRxoAP2CKpCv7v2VYsLxsRWMubVGv7YM9R9XINm/x
+ 8OwWsm7+k9eP5KKUkjlkFQCWYYR7sdSiYnAEq27LrYFH2e7goybUfvb6DLuXt6Xa9xEQq7+LT
+ aghXQDp7gK4F20sj/yU1wagnazrG2B1n23nJp6jwWL5WTWAmU2JTL7Q0MJn//OL0Z1MIHbMqa
+ qPQCpCQXQ6hOTIC7QAleQT8agF21K/s0hmxSd4Cblf/YYQKFA4oDXlRlDPrCSvK5BdcgAYuVL
+ XcVKOGQD0gL5IO7iUBciV4qqU6g+yMWKsaDhbfev6Y/Km7aGlGnz4RezjxC8XAbj9vwJYDE74
+ SCbfl5UcsTncNSM929NBgl0JS9WNUe0gdhBx6l40zflwRPUeVdM3WnUyLTVwAJ+E90hwQrsRr
+ 0sGSfKf/cFJJEYkNweUDOsKw2RkooDS11SQwXFS+eDHCzS4LPS2Fkipg7UySi0pvfKKBUbEuO
+ Qt/reNs/nYwY0+PXJhJ0y71lKGLvQYFRrs9ZaeaTOyaQWrCqhiYKfPlXrpnqbKuCwtQjYXqWu
+ /8SSP+3rFjdn8EUupqi9rVdMQ+GMkJEv9BWKpcZSVGQtV8rKveRiwSpYOJlUXj52Xl1Z6TFiV
+ SgWLNjzPVwryybtSrCy4nzmjkR4uqqvcmvEhedUROHoypouBP6rKQCGXzaBFXYyuQVQcoIYuE
+ +46SpmkItW5PUP2nM1lj5CezoKiJUq+m4AN579NyOyVhsnl0ZLAEOafo1IrbNwjr7x1t8Xrd6
+ RfSQdrBOK2LJRkq7b+AmrJAeitmOCj/ltItIMg6rHg8qeDUcy4=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of one-element arrays in the following
-form:
+On Wed, May 27, 2020 at 1:49 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+>
+> śr., 27 maj 2020 o 13:33 Arnd Bergmann <arnd@arndb.de> napisał(a):
+> >
+> > On Wed, May 27, 2020 at 10:46 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> > > Thanks for reporting this! I have a fix ready and will send it shortly.
+> >
+> > I already have a workaround for this bug as well as another one
+> > in my tree that I'll send later today after some more testing.
+> >
+> > Feel free to wait for that, or just ignore mine if you already have a fix.
+> >
+>
+> I already posted a fix[1]. Sorry for omitting you, but somehow your
+> name didn't pop up in get_maintainers.pl.
 
-struct something {
-    int length;
-    u8 data[1];
-};
+I'm not a maintainer for this, I just do a lot of build fixes on the side,
+as I verify the stuff that I merge myself ;-)
 
-struct something *instance;
+> [1] https://lkml.org/lkml/2020/5/27/378
 
-instance = kmalloc(sizeof(*instance) + size, GFP_KERNEL);
-instance->length = size;
-memcpy(instance->data, source, size);
+Ok, perfect, that is indeed the correct fix and mine was wrong. I'll
+just send a fix for the other bug (unused-function warning) then.
 
-but the preferred mechanism to declare variable-length types such as
-these ones is a flexible array member[1][2], introduced in C99:
-
-struct foo {
-        int stuff;
-        struct boo array[];
-};
-
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on. So, replace
-the one-element array with a flexible-array member.
-
-Also, make use of the offsetof() helper in order to simplify the macros
-that calculate the size of the structures that contain flexible-array
-members.
-
-This issue was found with the help of Coccinelle and, audited _manually_.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
-Changes in v2:
- - Use offsetof(struct ice_aqc_sw_rules_elem, pdata) instead of
-   sizeof(struct ice_aqc_sw_rules_elem) - sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata)
- - Update changelog text. 
-
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  6 ++---
- drivers/net/ethernet/intel/ice/ice_switch.c   | 26 +++++++------------
- 2 files changed, 13 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 586d69491268a..faa21830e40d8 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -570,7 +570,7 @@ struct ice_sw_rule_lkup_rx_tx {
- 	 * lookup-type
- 	 */
- 	__le16 hdr_len;
--	u8 hdr[1];
-+	u8 hdr[];
- } __packed;
- 
- /* Add/Update/Remove large action command/response entry
-@@ -580,7 +580,7 @@ struct ice_sw_rule_lkup_rx_tx {
- struct ice_sw_rule_lg_act {
- 	__le16 index; /* Index in large action table */
- 	__le16 size;
--	__le32 act[1]; /* array of size for actions */
-+	__le32 act[]; /* array of size for actions */
- 	/* Max number of large actions */
- #define ICE_MAX_LG_ACT	4
- 	/* Bit 0:1 - Action type */
-@@ -640,7 +640,7 @@ struct ice_sw_rule_lg_act {
- struct ice_sw_rule_vsi_list {
- 	__le16 index; /* Index of VSI/Prune list */
- 	__le16 number_vsi;
--	__le16 vsi[1]; /* Array of number_vsi VSI numbers */
-+	__le16 vsi[]; /* Array of number_vsi VSI numbers */
- };
- 
- /* Query VSI list command/response entry */
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 0156b73df1b1f..df0ddffaf03a2 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -29,25 +29,19 @@ static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
- 							0x81, 0, 0, 0};
- 
- #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
--	(sizeof(struct ice_aqc_sw_rules_elem) - \
--	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
--	 sizeof(struct ice_sw_rule_lkup_rx_tx) + DUMMY_ETH_HDR_LEN - 1)
-+	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
-+	 sizeof(struct ice_sw_rule_lkup_rx_tx) + DUMMY_ETH_HDR_LEN)
- #define ICE_SW_RULE_RX_TX_NO_HDR_SIZE \
--	(sizeof(struct ice_aqc_sw_rules_elem) - \
--	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
--	 sizeof(struct ice_sw_rule_lkup_rx_tx) - 1)
-+	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
-+	 sizeof(struct ice_sw_rule_lkup_rx_tx))
- #define ICE_SW_RULE_LG_ACT_SIZE(n) \
--	(sizeof(struct ice_aqc_sw_rules_elem) - \
--	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
--	 sizeof(struct ice_sw_rule_lg_act) - \
--	 sizeof(((struct ice_sw_rule_lg_act *)0)->act) + \
--	 ((n) * sizeof(((struct ice_sw_rule_lg_act *)0)->act)))
-+	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
-+	 offsetof(struct ice_sw_rule_lg_act, act) + \
-+	 ((n) * sizeof(__le32)))
- #define ICE_SW_RULE_VSI_LIST_SIZE(n) \
--	(sizeof(struct ice_aqc_sw_rules_elem) - \
--	 sizeof(((struct ice_aqc_sw_rules_elem *)0)->pdata) + \
--	 sizeof(struct ice_sw_rule_vsi_list) - \
--	 sizeof(((struct ice_sw_rule_vsi_list *)0)->vsi) + \
--	 ((n) * sizeof(((struct ice_sw_rule_vsi_list *)0)->vsi)))
-+	(offsetof(struct ice_aqc_sw_rules_elem, pdata) + \
-+	 offsetof(struct ice_sw_rule_vsi_list, vsi) + \
-+	 ((n) * sizeof(__le16)))
- 
- /**
-  * ice_init_def_sw_recp - initialize the recipe book keeping tables
--- 
-2.26.2
-
+     Arnd
