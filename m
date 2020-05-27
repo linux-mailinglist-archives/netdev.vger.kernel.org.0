@@ -2,60 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10A571E3BD7
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6C51E3BFB
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729425AbgE0IWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 04:22:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35846 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729292AbgE0IWg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 04:22:36 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 382D42078B;
-        Wed, 27 May 2020 08:22:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590567755;
-        bh=eXHQT/1Txk/LjuPuO/dUddJu7s+CPQcxAaC1arWn6HM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mvoZB9D4XfmNA8tN76taVyyTgErc2IyXhCR9MqyFHHrMMj3LYI6tpdzFYb/3+W3rk
-         WpEc0HgBsz7HSzWGA//iHsFXf0uvxK3K9KZmG6gVg0Db9fdo+1DqzfsCJx3RDse3tW
-         JKTzJW2K0P4ZPz1B2Iqz2ZClO7/7s5Q5EEkhIEiM=
-Date:   Wed, 27 May 2020 10:22:33 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 00/10] staging: wfx: introduce nl80211 vendor extensions
-Message-ID: <20200527082233.GA148298@kroah.com>
-References: <20200526171821.934581-1-Jerome.Pouiller@silabs.com>
+        id S1729593AbgE0Ibp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 May 2020 04:31:45 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:27984 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725949AbgE0Ibo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 04:31:44 -0400
+X-Greylist: delayed 57110 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 May 2020 04:31:43 EDT
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-89-NiIl-uWIP3-PCjHOUhpORQ-1; Wed, 27 May 2020 09:31:39 +0100
+X-MC-Unique: NiIl-uWIP3-PCjHOUhpORQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 27 May 2020 09:31:39 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 27 May 2020 09:31:39 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'David Miller' <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
+Thread-Topic: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
+Thread-Index: AdYze5zo5xQMv/KcR+CMEQN8gd6YZwAATgFgAAo43YAAFr9esA==
+Date:   Wed, 27 May 2020 08:31:39 +0000
+Message-ID: <f4662a514b374d2e85ada6d400aed31e@AcuMS.aculab.com>
+References: <bab9a624ee2d4e05b1198c3f7344a200@AcuMS.aculab.com>
+        <8bb56a30edfb4ff696d44cf9af909d82@AcuMS.aculab.com>
+ <20200526.153631.1486651154492951372.davem@davemloft.net>
+In-Reply-To: <20200526.153631.1486651154492951372.davem@davemloft.net>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200526171821.934581-1-Jerome.Pouiller@silabs.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 07:18:11PM +0200, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+From: David Miller
+> Sent: 26 May 2020 23:37
+> > This should be 3/8.
 > 
-> Hello,
-> 
-> This series introduces some nl80211 vendor extensions to the wfx driver.
-> 
-> This series may lead to some discussions:
+> David just respin this at some point and with this fixed and also the
+> header posting saying "0/8" properly instead of "0/1", this is really
+> messy.
 
-I've applied the first 6 patches here, until you get some answers from
-the wifi developers about what to do with the rest.  Once you do, please
-fix up / change them to meet their requirements, and then resend.
+I have to copy patches onto a windows box.
+Then open them in wordpad so I can cut&paste the tabs into outlook.
+Then find the correct 'to' address list.
 
-thanks,
+It is somewhat too manual and error prone.
 
-greg k-h
+But I'll fix the masters for the next respin (bound to be one).
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
