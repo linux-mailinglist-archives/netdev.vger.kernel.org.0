@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A0B1E464A
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 16:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3481F1E4622
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 16:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388931AbgE0OpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 10:45:04 -0400
-Received: from mga04.intel.com ([192.55.52.120]:54217 "EHLO mga04.intel.com"
+        id S2389366AbgE0OiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 10:38:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388356AbgE0OpE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 10:45:04 -0400
-IronPort-SDR: PTQURh6rKttCQ8AVE4ZKvNld3EDDraFxi6GEX9ODVmnoOQ55iRYRw+KQErjvupd6VW2NQOXsFP
- Jk6bVZJ+o0NA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 07:45:03 -0700
-IronPort-SDR: OtwnxPNxSmHczI5y7ictvpQ5bh36kD5GZa4Az9rPhj5aUykRKMs6MgV55/P3mKY+gUH8dqvSZz
- 6L6TY1wTgDPQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,441,1583222400"; 
-   d="scan'208";a="468763162"
-Received: from vmgould-mobl.amr.corp.intel.com (HELO [10.252.133.103]) ([10.252.133.103])
-  by fmsmga006.fm.intel.com with ESMTP; 27 May 2020 07:45:02 -0700
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-To:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
-References: <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200523062351.GD3156699@kroah.com>
- <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
- <20200524063519.GB1369260@kroah.com>
- <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
- <s5h5zcistpb.wl-tiwai@suse.de> <20200527071733.GB52617@kroah.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <76007750-e0ec-4bc1-d6ae-96677584a51c@linux.intel.com>
-Date:   Wed, 27 May 2020 09:05:16 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S2389341AbgE0OiV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 10:38:21 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8EBCF20C09;
+        Wed, 27 May 2020 14:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590590300;
+        bh=suJ353lRv1UQx7HSHjKB0euqpTIy3Nz0DHiPmdHpvHU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dz0t6hwefzpF3FUmlaHc8XA8cVnWy5nxuMwqo6MyQfhb9xnuOh25xZ5iEUMLyIraK
+         +i2k40cRkMt3FPAIXWsizHEIFFw0WHp53r2Sktwd72HtGOBbqLdNz6flS5gYvS4s3H
+         E8c8qsLiDCajLBRwCnN3Lstkh4l0DvqpsjkGPKjY=
+Received: by mail-ot1-f45.google.com with SMTP id d26so19301394otc.7;
+        Wed, 27 May 2020 07:38:20 -0700 (PDT)
+X-Gm-Message-State: AOAM533afaxOT08GXEm65d7/tfSCsCn8wb3x2opy1uFC+7mqBU84kPx9
+        xgrj9T74bDEf/TT3JlUcqDi2pVsjR9f1GkQOSA==
+X-Google-Smtp-Source: ABdhPJyp+iNzxT9P6anI85WQIrsM8pRrlKHEOY9o2oN/zH/c34nmR9QO5xYjGblk5qKho8HgjNiUwGAutpyoqXPmJrk=
+X-Received: by 2002:a05:6830:3104:: with SMTP id b4mr4930496ots.192.1590590299856;
+ Wed, 27 May 2020 07:38:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200527071733.GB52617@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200527013136.GA838011@bogus> <CA+V-a8t6mXkTUac69V=T8_27r_sdN+=MktDTM1mmtbXRn8SSQQ@mail.gmail.com>
+In-Reply-To: <CA+V-a8t6mXkTUac69V=T8_27r_sdN+=MktDTM1mmtbXRn8SSQQ@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 27 May 2020 08:38:08 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJUn9iOy5FT6VRmsC-uAhSdN8_Sne0Vn_7Q1dHudbzopw@mail.gmail.com>
+Message-ID: <CAL_JsqJUn9iOy5FT6VRmsC-uAhSdN8_Sne0Vn_7Q1dHudbzopw@mail.gmail.com>
+Subject: Re: [PATCH 16/17] dt-bindings: watchdog: renesas,wdt: Document
+ r8a7742 support
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jens Axboe <axboe@kernel.dk>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 27, 2020 at 5:23 AM Lad, Prabhakar
+<prabhakar.csengg@gmail.com> wrote:
+>
+> Hi Rob,
+>
+> On Wed, May 27, 2020 at 2:31 AM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Fri, May 15, 2020 at 04:08:56PM +0100, Lad Prabhakar wrote:
+> > > RZ/G1H (R8A7742) watchdog implementation is compatible with R-Car Gen2,
+> > > therefore add relevant documentation.
+> > >
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/watchdog/renesas,wdt.txt | 1 +
+> > >  1 file changed, 1 insertion(+)
+> >
+> > Meanwhile in the DT tree, converting this schema landed. Can you prepare
+> > a version based on the schema.
+> >
+> This was kindly taken care by Stephen during merge in linux-next [1].
 
+Yes, I'm aware of that. I was hoping for a better commit message which
+stands on its own (essentially the one here).
 
->>>>> If yes, that's yet another problem... During the PCI probe, we start a
->>>>> workqueue and return success to avoid blocking everything.
->>>>
->>>> That's crazy.
->>>>
->>>>> And only 'later' do we actually create the card. So that's two levels
->>>>> of probe that cannot report a failure. I didn't come up with this
->>>>> design, IIRC this is due to audio-DRM dependencies and it's been used
->>>>> for 10+ years.
->>>>
->>>> Then if the probe function fails, it needs to unwind everything itself
->>>> and unregister the device with the PCI subsystem so that things work
->>>> properly.  If it does not do that today, that's a bug.
->>>>
->>>> What kind of crazy dependencies cause this type of "requirement"?
->>>
->>> I think it is related to the request_module("i915") in
->>> snd_hdac_i915_init(), and possibly other firmware download.
->>>
->>> Adding Takashi for more details.
->>
->> Right, there are a few levels of complexity there.  The HD-audio
->> PCI controller driver, for example, is initialized in an async way
->> with a work.  It loads the firmware files with
->> request_firmware_nowait() and also binds itself as a component master
->> with the DRM graphics driver via component framework.
->>
->> Currently it has no way to unwind the PCI binding itself at the error
->> path, though.  In theory it should be possible to unregister the PCI
->> from the driver itself in the work context, but it failed in the
->> earlier experiments, hence the driver sets itself in a disabled state
->> instead.  Maybe worth to try again.
->>
->> But, to be noted, all belonging sub-devices aren't instantiated but
->> deleted at the error path.  Only the main PCI binding is kept in a
->> disabled state just as a place holder until it's unbound explicitly.
-> 
-> Ok, that's good to hear.  But platform devices should never be showing
-> up as a child of a PCI device.  In the "near future" when we get the
-> virtual bus code merged, we can convert any existing users like this to
-> the new code.
-
-yes that's the plan. It'll be however more than a 1:1 replacement, i.e. 
-we want to use this opportunity to split existing cards into separate 
-ones when it makes sense to do so. There's really no rationale for 
-having code to deal with HDMI in each machine driver when we could have 
-a single driver for HDMI. That's really what drove us to suggest this 
-patchset based on the virtual bus: removal of platform devices + 
-repartition.
+Rob
