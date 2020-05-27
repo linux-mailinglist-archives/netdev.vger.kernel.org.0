@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F4291E46AD
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A8B1E46B6
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389399AbgE0PAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 11:00:51 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:48673 "EHLO
+        id S2389501AbgE0PBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 11:01:22 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:50055 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389364AbgE0PAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 11:00:50 -0400
+        by vger.kernel.org with ESMTP id S2389419AbgE0PBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 11:01:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590591648;
+        s=mimecast20190719; t=1590591681;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=S79dLGaDC34U88k/muBN2/cWWvIJSeZD2zX/jWO3DQQ=;
-        b=bDDpE2gNlwNf5Z+ph3dXAJ1M+XkBoEdNnF4SLBt0skQq3BWmCnaCmK5xwhQJNTMzG5/5/T
-        QTEu0GOFKTimtY351fvoq8XT4vhcctH64iK7Ucs3HiyADlRUAe8BtE/SKfs0ETv3EQBQFe
-        WhDV7JEibaMfS00t7aTfhUQ/GHBrQVE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-310-DsS9-EnUN-6GTyNBOavp1w-1; Wed, 27 May 2020 11:00:47 -0400
-X-MC-Unique: DsS9-EnUN-6GTyNBOavp1w-1
-Received: by mail-ed1-f71.google.com with SMTP id o12so10135600edj.12
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 08:00:47 -0700 (PDT)
+        bh=FyJKrIw1CrnW6A8RoV6krfHUwL+5u7uAIuDAT1bP2Y4=;
+        b=e0TLWhGCk7Dg3cjNK1QPmRCCR++rDRZRQ9nT9opYJ4QtHq6DahorREWcQhhgjUF/ln3uuh
+        wKraXa4vhJeXz4KO9na5Rk7nBFFOGc1TTAFmt+xxTI5Ddq7Jj/di2zFQV6hRpHz82dlHyE
+        muHz3CwoIYxVV1h7yOKpndjnOM4voyU=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-146-Haueb3rOOUO2XTig2GaqPA-1; Wed, 27 May 2020 11:01:14 -0400
+X-MC-Unique: Haueb3rOOUO2XTig2GaqPA-1
+Received: by mail-ed1-f70.google.com with SMTP id k21so10211954edq.13
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 08:01:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=S79dLGaDC34U88k/muBN2/cWWvIJSeZD2zX/jWO3DQQ=;
-        b=Dj5Kd27K32BnBrgL/4igHxr1O8DPxjFtAW76J+6jQsWVPN0u7neqTl01FNLg5IA0hf
-         z1r70R6xWAT5zf19Am104Ut3fH+XV5pfwBWp0FQrbiyFp+n/X56AqD3X+M6lYECJnu0d
-         wncCDsYeRZQYjD3+nXTEDDVgCueprU4hbUVU2yn28H4zEIDzWwBDm2jzpMNSW9zHzljS
-         w24GcZUqv3qDFSPG/YVL1I5hFa8nEbhEdatFu2zU/DmYOSN2eFs36035al9JxylziKvA
-         Z42GnuhGizeNVCdtUYOZ+bwIVcmvbonRcV3XAqfRfROZobQCYG+oxPVlsFuX/Fb3Y3X7
-         twvg==
-X-Gm-Message-State: AOAM533qPL9rlvqtbFnirEdM3jKeoQOLamIas3Dpk8NUdimbF1O4X5zm
-        qmMmzLbsqICn2l/wkoGeHFfQCfhy35j4MjiEgpN+ZvO4cyH7i4HPxS7X8+Gbpq2et2TunsIie0I
-        lQxTSUATd8Ck1Q0YW
-X-Received: by 2002:a17:906:1442:: with SMTP id q2mr3491299ejc.33.1590591646048;
-        Wed, 27 May 2020 08:00:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzxzNY5UhO1mssuYEm2F2UYGESNfuhTc2d/FaV+VoTyW39e+803AKyGa34dCi6Lxc3HyJGruA==
-X-Received: by 2002:a17:906:1442:: with SMTP id q2mr3491234ejc.33.1590591645542;
-        Wed, 27 May 2020 08:00:45 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:3c1c:ffba:c624:29b8? ([2001:b07:6468:f312:3c1c:ffba:c624:29b8])
-        by smtp.gmail.com with ESMTPSA id l1sm3053400ejd.114.2020.05.27.08.00.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 May 2020 08:00:45 -0700 (PDT)
-Subject: Re: [PATCH v3 0/7] Statsfs: a new ram-based file system for Linux
- kernel statistics
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Emanuele Giuseppe Esposito <eesposit@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Jim Mattson <jmattson@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Emanuele Giuseppe Esposito <e.emanuelegiuseppe@gmail.com>,
-        David Rientjes <rientjes@google.com>,
-        Jonathan Adams <jwadams@google.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org, kvm-ppc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
-References: <20200526110318.69006-1-eesposit@redhat.com>
- <20200526153128.448bfb43@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <6a754b40-b148-867d-071d-8f31c5c0d172@redhat.com>
- <20200527133309.GC793752@lunn.ch>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <b0d11337-3ea4-d874-6013-ff8c3e9d6f26@redhat.com>
-Date:   Wed, 27 May 2020 17:00:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=FyJKrIw1CrnW6A8RoV6krfHUwL+5u7uAIuDAT1bP2Y4=;
+        b=RpeX7mwtcRcf+D6MNy80Xx4BVo4gEuXae+gxLZAxlGhEj5wJychYbOLWbc4E79Pe3b
+         F/UB2lO5iFlYuarMwBQpEOu52TTROFNvllj4cNf8Q3GizJZeZU7Z/s84Z31QqjgzkMhr
+         qqFezbOyg66PdJZWsfhtr7Dk7AiETvM/eoCtDrBeVvlGMo2m9GEQRBdydY6dw/Q/yhdU
+         P2NgRSrUT110cPFSqjIx1PNVxt+3vl3LoAOaPLsS4z9r49M5NdvWKxH6sRnOrS0L/WcC
+         kd3I2naxghsy2UFhwOUM4h90p3RyRaOVwFen1lvkhe18aleklIDYSAlj6/ZVJFrfwI0l
+         aFfA==
+X-Gm-Message-State: AOAM531Cf+SALBI3J/Ln+OpLANG7InTqWy3LxwXsFP4iHuPxsHkiAlJa
+        zEDcoOE2HaDxfYqgThTAur4G5fat/9D6O577D2XYewJeOrB40srl0unRpHC9+6NVN7rkzpRNv/d
+        wQl9t/xgYSLJZkNJ1
+X-Received: by 2002:a17:906:41a:: with SMTP id d26mr6704618eja.217.1590591672203;
+        Wed, 27 May 2020 08:01:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxFo9kZXADSdcLyilVxy8fmDIdkt1zP24HiTrWOtf7UYSDyM98j1j0yroBRYojyNEGo1Lgetw==
+X-Received: by 2002:a17:906:41a:: with SMTP id d26mr6704547eja.217.1590591671759;
+        Wed, 27 May 2020 08:01:11 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id dd7sm2452550edb.19.2020.05.27.08.01.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 08:01:11 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id BB6031804EB; Wed, 27 May 2020 17:01:10 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+Subject: Re: [PATCH bpf-next 4/5] bpftool: Add SEC name for xdp programs attached to device map
+In-Reply-To: <18823a44-09ba-0b45-2ce3-f34c08c6ea5f@gmail.com>
+References: <20200527010905.48135-1-dsahern@kernel.org> <20200527010905.48135-5-dsahern@kernel.org> <87367l3dcd.fsf@toke.dk> <18823a44-09ba-0b45-2ce3-f34c08c6ea5f@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 27 May 2020 17:01:10 +0200
+Message-ID: <87o8q91ky1.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200527133309.GC793752@lunn.ch>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/05/20 15:33, Andrew Lunn wrote:
->> I don't really know a lot about the networking subsystem, and as it was
->> pointed out in another email on patch 7 by Andrew, networking needs to
->> atomically gather and display statistics in order to make them consistent,
->> and currently this is not supported by stats_fs but could be added in
->> future.
-> 
-> Do you have any idea how you will support atomic access? It does not
-> seem easy to implement in a filesystem based model.
+David Ahern <dsahern@gmail.com> writes:
 
-Hi Andrew,
+> On 5/27/20 4:02 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> David Ahern <dsahern@kernel.org> writes:
+>>=20
+>>> Support SEC("xdp_dm*") as a short cut for loading the program with
+>>> type BPF_PROG_TYPE_XDP and expected attach type BPF_XDP_DEVMAP.
+>>=20
+>> You're not using this in the selftest; shouldn't you be? Also, the
+>> prefix should be libbpf: not bpftool:, no?
+>>=20
+>
+> The selftest is exercising kernel APIs - what is allowed and what is
+> not.
 
-there are plans to support binary access.  Emanuele and I don't really
-have a plan for how to implement it, but there are developers from
-Google that have ideas (because Google has a similar "metricfs" thing
-in-house).
+Sure, but they also de facto serve as example code for features that are
+not documented anywhere else, so just seemed a bit odd to me that you
+were not using this to mark the programs.
 
-I think atomic access would use some kind of "source_ops" struct
-containing create_snapshot and release_snapshot function pointers.
+Anyway, not going to insist if you prefer explicitly setting
+expected_attach_type...
 
-Paolo
+-Toke
 
