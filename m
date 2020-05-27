@@ -2,119 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85C6F1E48BA
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95571E48D0
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 17:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390611AbgE0PzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 11:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390626AbgE0Pyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 11:54:52 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AC7C05BD1E;
-        Wed, 27 May 2020 08:54:52 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id x10so10268752plr.4;
-        Wed, 27 May 2020 08:54:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nkIhbxtFT/sWyLG+CNPMvzFZfh5YwCelX3IPeKtDVng=;
-        b=PAMb3Gighhz0cCKhjZLQ89rDfM+umkVZTkpYgFwBdzZ9PIGR1KNuJfANRSBsICHGU1
-         9GFY4+NhktZozymnBZgQaGPkn8QdPxDOXGhFk13RvLQfW7JVN2KYbsdVXfBT1OinJLIp
-         zrRy0l+YVDGcMRQy8Ldm4ZecscejFQHzikG3HLWm++8UC3ai8KnWZCyKH6z7T/HA1xRI
-         Wp+WUBUbWpR2kBaZ0JpFXShORG+eXejQ1vCRS83kPuIkPDQqhhjsTVcFK0GFU7CbfTMs
-         dACufN3iOpLHsbWp1FGFQTUumq0BZHbJAIhG4FZ5GeQo+es6H96EK3UqJhZ/+Te+5OLe
-         Y23A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nkIhbxtFT/sWyLG+CNPMvzFZfh5YwCelX3IPeKtDVng=;
-        b=VTFzvqV8dkwr6K3401itxGBMTwC/kf60dgg1UExx0SDsciPoRL8jZsRcDUNi2ZPYqL
-         g4eNnaOBZwpzdA3A6AH42DXVzZ2pSuJR6+p8E4mVdL8h20Gea/3oY74RMAzOLSBVo6Np
-         e0MHf6VW07iMxisYI/HfLkuJfGWmqywdTKPF5eV6xD75APqL8IbmWkmOhHCkP/K0zaL3
-         JtZi8G2v1UTZfy4XIOKsijtNfO3BG+oEewqSikwPkM9MfhhfSuRwZAX6pH9Z6piKX7FX
-         6sYtrXbmEz1Udm6quaUCKI13Rm/wZsaCueVC4q5vKOlDx8Doq/K63eC5ftyILemkbFx3
-         jVQQ==
-X-Gm-Message-State: AOAM533JrVD2xKcTbGKafB6hE5xCQ+9xrvi2rGh4y2PSaCPzePXbXsTJ
-        yXCMvyvkhF67Y5+AKoRhet8=
-X-Google-Smtp-Source: ABdhPJxjWquEPV+JeRdzbhyTylh3GgQILPCaziRrufi5RFxgpIErfBy/fC56S/kQiDi7y42BfuoXZQ==
-X-Received: by 2002:a17:902:9882:: with SMTP id s2mr6368400plp.184.1590594891507;
-        Wed, 27 May 2020 08:54:51 -0700 (PDT)
-Received: from ubuntu-s3-xlarge-x86 ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id q44sm3286859pja.2.2020.05.27.08.54.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 08:54:50 -0700 (PDT)
-Date:   Wed, 27 May 2020 08:54:47 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH] net: ethernet: mtk-star-emac: fix error path in RX
- handling
-Message-ID: <20200527155447.GA568403@ubuntu-s3-xlarge-x86>
-References: <20200527092404.3567-1-brgl@bgdev.pl>
+        id S2388828AbgE0P4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 11:56:22 -0400
+Received: from mga01.intel.com ([192.55.52.88]:22331 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730653AbgE0P4S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 11:56:18 -0400
+IronPort-SDR: DUR7626C4qgR3m+cxOnq/Bct9PdyfSey5x9YTgd5JRj2wnbmNJAuqXhmwyAH0ituuFHfXYcG5t
+ a4tK/g6Qiq2g==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 08:56:17 -0700
+IronPort-SDR: yGuV4xpMZr+zNio7qTLq5DGkrGYGLUPipVRGTokL6bhXNdfndk0b3tQB9CFvntq2utX+Bn0cCk
+ BL0FMl1gkTnA==
+X-IronPort-AV: E=Sophos;i="5.73,441,1583222400"; 
+   d="scan'208";a="442572372"
+Received: from ddalessa-mobl.amr.corp.intel.com (HELO [10.254.202.202]) ([10.254.202.202])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 08:56:15 -0700
+Subject: Re: [PATCH 5/9] RDMA/rdmavt: remove FMR memory registration
+To:     Max Gurtovoy <maxg@mellanox.com>, jgg@mellanox.com,
+        dledford@redhat.com, leon@kernel.org, galpress@amazon.com,
+        netdev@vger.kernel.org, sagi@grimberg.me,
+        linux-rdma@vger.kernel.org, bvanassche@acm.org,
+        santosh.shilimkar@oracle.com, tom@talpey.com
+Cc:     aron.silverton@oracle.com, israelr@mellanox.com, oren@mellanox.com,
+        shlomin@mellanox.com, vladimirk@mellanox.com
+References: <20200527094634.24240-1-maxg@mellanox.com>
+ <20200527094634.24240-6-maxg@mellanox.com>
+From:   Dennis Dalessandro <dennis.dalessandro@intel.com>
+Message-ID: <7b9775c9-0a37-4d8e-c30b-25f65a609eee@intel.com>
+Date:   Wed, 27 May 2020 11:56:13 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200527092404.3567-1-brgl@bgdev.pl>
+In-Reply-To: <20200527094634.24240-6-maxg@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 11:24:04AM +0200, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On 5/27/2020 5:46 AM, Max Gurtovoy wrote:
+> Use FRWR method to register memory by default and remove the ancient and
+> unsafe FMR method.
 > 
-> The dma_addr field in desc_data must not be overwritten until after the
-> new skb is mapped. Currently we do replace it with uninitialized value
-> in error path. This change fixes it by moving the assignment before the
-> label to which we jump after mapping or allocation errors.
-> 
-> Fixes: 8c7bd5a454ff ("net: ethernet: mtk-star-emac: new driver")
-> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
 
-Tested-by: Nathan Chancellor <natechancellor@gmail.com> # build
+See the expected failures.
 
-> ---
->  drivers/net/ethernet/mediatek/mtk_star_emac.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> index b74349cede28..72bb624a6a68 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -1308,6 +1308,8 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
->  		goto push_new_skb;
->  	}
->  
-> +	desc_data.dma_addr = new_dma_addr;
-> +
->  	/* We can't fail anymore at this point: it's safe to unmap the skb. */
->  	mtk_star_dma_unmap_rx(priv, &desc_data);
->  
-> @@ -1318,7 +1320,6 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
->  	netif_receive_skb(desc_data.skb);
->  
->  push_new_skb:
-> -	desc_data.dma_addr = new_dma_addr;
->  	desc_data.len = skb_tailroom(new_skb);
->  	desc_data.skb = new_skb;
->  
-> -- 
-> 2.25.0
-> 
+Tested-by: Dennis Dalessandro <dennis.dalessandro@intel.com>
+Acked-by: Dennis Dalessandro <dennis.dalessandro@intel.com>
+
