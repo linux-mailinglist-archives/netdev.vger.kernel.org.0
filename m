@@ -2,128 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 830831E3409
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5AA1E340A
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:29:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbgE0A17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 20:27:59 -0400
-Received: from mga02.intel.com ([134.134.136.20]:60944 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726737AbgE0A16 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 May 2020 20:27:58 -0400
-IronPort-SDR: Ht0xLvmJvkh5fsDrZnQCEIarakOcJfxQM4dsa5z7HkSO9Udf/9odwe0RlHbXrwf7lgf4F80cU2
- ym+p1qlghLbQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 17:27:58 -0700
-IronPort-SDR: G7cwKbdMIJC6XaNVa8hEvW392OYDVsCtXR2eTBiWRTqTycTDlyRnNB/hpo1ZYupdpfcvNhwQzg
- h7VNV31jHK6A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,439,1583222400"; 
-   d="scan'208";a="468508626"
-Received: from anambiar-mobl.amr.corp.intel.com (HELO [10.209.177.241]) ([10.209.177.241])
-  by fmsmga005.fm.intel.com with ESMTP; 26 May 2020 17:27:57 -0700
-Subject: Re: [bpf-next PATCH v2] bpf: Add rx_queue_mapping to bpf_sock
-To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        davem@davemloft.net, ast@kernel.org
-Cc:     kafai@fb.com, sridhar.samudrala@intel.com
-References: <159017210823.76267.780907394437543496.stgit@anambiarhost.jf.intel.com>
- <a648441b-6546-c904-d2a0-583b4c9e77d7@iogearbox.net>
-From:   "Nambiar, Amritha" <amritha.nambiar@intel.com>
-Message-ID: <c2aa1fe8-606c-bee7-672d-2fcfed86a263@intel.com>
-Date:   Tue, 26 May 2020 17:27:57 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <a648441b-6546-c904-d2a0-583b4c9e77d7@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726898AbgE0A3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 20:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726737AbgE0A3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 20:29:00 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4829FC061A0F
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:29:00 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id p192so1853638ybc.12
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=M+zpk3jA+779uDSsVYHEQLQf4U3UltneMSql7OeISrg=;
+        b=Sw1fLrONPSImZ13jO7MUZSgosJhwPybdfdEQLHZpI5jdjy54TUKslwbrrjMrZ9hM7h
+         P+UoZNHMPlpDT8e9QGvuUCv8Y1nHoXikd7JoSvdNwlngoTJWiaPm/5/tXkkp5NLK/lK0
+         PP0CLwedzXYIaFzHP4fA78zfeT9iQXHSUupvy+ipx5xG8UCCQWh+8+zsrp6fDLfLnut3
+         p2KW+J0BMi7FH1ny8d9pDjZi7WGhiuqEGJx754D9Vb7aQ3hhjnTlo0tNWlMOJc32dVoB
+         3lSoRwCCtu5QrHst8zgdX0A7Nb/WeGGXrefWqwLt/NkxJEywL8GoSaVMlUcACkFgxXZm
+         jJog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=M+zpk3jA+779uDSsVYHEQLQf4U3UltneMSql7OeISrg=;
+        b=El/iMKJ8MrgYRkYAcNsJzxJj0+j90oTtHG2MCBxfAmw5fDhvMr73HayyREu+wpDla3
+         LqpVcVWw548E2gqxG+qtJ1Datrzyt9ap1m/VHeRMHPQuOK4tyxEuDi/Lrh5YvSAYQdX3
+         n49cd6h0tOlQCVdYQND5BQ45EmLjtFI72yZfOyKrY517VEoHstoNgHt+T+nyD3S5m+LL
+         fZIKZQrbXhPuEdGc3/3Ab9yTvftH6ohrDQdJE1thAsnbX8GkRIojtgkM5M3VzTfFZgFS
+         wXsmPPel/oiaVTcesUNbJF5N31ZbKlKcZQywthUj8fP79wLMPupgXSbGG01LDsAGlJkx
+         BbsQ==
+X-Gm-Message-State: AOAM530QCsG4j0hI9RUFG5CYJ7DmFztPNx85EGSEDBx0XOFKFES9osh4
+        nx04AmEE9hEtcqF8HWbyUdZrYnhrp5M51Q==
+X-Google-Smtp-Source: ABdhPJydAluUWDnjk5dKk4/YRVEaWSwWHRwypvXCpoXG0bcLMWMPXU4j/5ucnz0eDAS8hTTExWeerHmEM/7vyw==
+X-Received: by 2002:a25:60c4:: with SMTP id u187mr5599395ybb.509.1590539339321;
+ Tue, 26 May 2020 17:28:59 -0700 (PDT)
+Date:   Tue, 26 May 2020 17:28:56 -0700
+Message-Id: <20200527002856.212293-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
+Subject: [PATCH net] crypto: chelsio/chtls: properly set tp->lsndtime
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/22/2020 4:34 PM, Daniel Borkmann wrote:
-> On 5/22/20 8:28 PM, Amritha Nambiar wrote:
->> Add "rx_queue_mapping" to bpf_sock. This gives read access for the
->> existing field (sk_rx_queue_mapping) of struct sock from bpf_sock.
->> Semantics for the bpf_sock rx_queue_mapping access are similar to
->> sk_rx_queue_get(), i.e the value NO_QUEUE_MAPPING is not allowed
->> and -1 is returned in that case.
-> 
-> This adds the "what this patch does" but could you also add a 
-> description for
-> the use-case in here?
-> 
+TCP tp->lsndtime unit/base is tcp_jiffies32, not tcp_time_stamp()
 
-Will fix in v3.
+Fixes: 36bedb3f2e5b ("crypto: chtls - Inline TLS record Tx")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Ayush Sawal <ayush.sawal@chelsio.com>
+Cc: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+---
+ drivers/crypto/chelsio/chtls/chtls_io.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->> v2: fixed build error for CONFIG_XPS wrapping, reported by
->>      kbuild test robot <lkp@intel.com>
->>
->> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
->> ---
->>   include/uapi/linux/bpf.h |    1 +
->>   net/core/filter.c        |   18 ++++++++++++++++++
->>   2 files changed, 19 insertions(+)
->>
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 97e1fd19ff58..d2acd5aeae8d 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -3530,6 +3530,7 @@ struct bpf_sock {
->>       __u32 dst_ip4;
->>       __u32 dst_ip6[4];
->>       __u32 state;
->> +    __u32 rx_queue_mapping;
->>   };
->>   struct bpf_tcp_sock {
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index bd2853d23b50..c4ba92204b73 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -6829,6 +6829,7 @@ bool bpf_sock_is_valid_access(int off, int size, 
->> enum bpf_access_type type,
->>       case offsetof(struct bpf_sock, protocol):
->>       case offsetof(struct bpf_sock, dst_port):
->>       case offsetof(struct bpf_sock, src_port):
->> +    case offsetof(struct bpf_sock, rx_queue_mapping):
->>       case bpf_ctx_range(struct bpf_sock, src_ip4):
->>       case bpf_ctx_range_till(struct bpf_sock, src_ip6[0], src_ip6[3]):
->>       case bpf_ctx_range(struct bpf_sock, dst_ip4):
->> @@ -7872,6 +7873,23 @@ u32 bpf_sock_convert_ctx_access(enum 
->> bpf_access_type type,
->>                               skc_state),
->>                          target_size));
->>           break;
->> +    case offsetof(struct bpf_sock, rx_queue_mapping):
->> +#ifdef CONFIG_XPS
->> +        *insn++ = BPF_LDX_MEM(
->> +            BPF_FIELD_SIZEOF(struct sock, sk_rx_queue_mapping),
->> +            si->dst_reg, si->src_reg,
->> +            bpf_target_off(struct sock, sk_rx_queue_mapping,
->> +                       sizeof_field(struct sock,
->> +                            sk_rx_queue_mapping),
->> +                       target_size));
->> +        *insn++ = BPF_JMP_IMM(BPF_JNE, si->dst_reg, NO_QUEUE_MAPPING,
->> +                      1);
->> +        *insn++ = BPF_MOV64_IMM(si->dst_reg, -1);
->> +#else
->> +        *insn++ = BPF_MOV64_IMM(si->dst_reg, 0);
-> 
-> This should be -1 as queue mapping as well if XPS is not configured, no?
-> Otherwise, how do you tell it apart from an actual mapping to 0 if XPS is
-> built-in?
-> 
+diff --git a/drivers/crypto/chelsio/chtls/chtls_io.c b/drivers/crypto/chelsio/chtls/chtls_io.c
+index dccef3a2908b391e772944d504d953a062001d9f..e1401d9cc756cea07f7ad310c17fed29e0f3e9db 100644
+--- a/drivers/crypto/chelsio/chtls/chtls_io.c
++++ b/drivers/crypto/chelsio/chtls/chtls_io.c
+@@ -682,7 +682,7 @@ int chtls_push_frames(struct chtls_sock *csk, int comp)
+ 				make_tx_data_wr(sk, skb, immdlen, len,
+ 						credits_needed, completion);
+ 			tp->snd_nxt += len;
+-			tp->lsndtime = tcp_time_stamp(tp);
++			tp->lsndtime = tcp_jiffies32;
+ 			if (completion)
+ 				ULP_SKB_CB(skb)->flags &= ~ULPCB_FLAG_NEED_HDR;
+ 		} else {
+-- 
+2.27.0.rc0.183.gde8f92d652-goog
 
-Agree. My bad. Will fix in v3.
-
->> +        *target_size = 2;
->> +#endif
->> +        break;
->>       }
->>       return insn - insn_buf;
->>
-> 
