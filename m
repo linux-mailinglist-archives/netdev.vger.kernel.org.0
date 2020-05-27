@@ -2,130 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 268B41E4C28
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9F61E4C42
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388523AbgE0Rkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 13:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        id S2403881AbgE0RpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 13:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387564AbgE0Rkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:40:39 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E02C08C5C1
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:40:39 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id x6so7495361qts.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:40:39 -0700 (PDT)
+        with ESMTP id S2391538AbgE0RpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:45:17 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341DAC03E97D
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:45:17 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id w65so14237081vsw.11
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:45:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hcV5y/448NucPuCFDD5s80WvaLV/+L6Y6aWTXNhPJ6M=;
-        b=b/bZTy4vE6/uduslr+Kb3ocuKQlHq2Is7+CEKiiImtdISm09h2fkkq3jav+Epoghrh
-         CyJhRCA46mxHpds7YnkQN1lDiSMhiLqgtP3Emm9kOmNy7/+mFmc9NqgRgKQytUf7cnhZ
-         UlrHefwWqeVWjBylxOyItGC1PkIvI1bPCNYRq37R+AymTtgUtxwVjPGiZbNnS6dWFM+V
-         Zxs2bkr/E6NvLQGVKwukbRAETdxS0Sb5xLd5+buVJ4S9JEL44/2ZkIEn3JmNYlAbqJhk
-         Wbyr9g0z5kFhtxLAin1PFmuFN11TZx19x9PsvS5VlJjZf1WZFcT05y5Vs/VzeB00lSty
-         t1Zw==
+        bh=cWSomY7wv64p/JXEgkVAKgEgM9pUufmtEajS9WeLigk=;
+        b=BSOrTZPHnzA63lEcKPXFjmJdjVeQI9acycJ4ngCcIz1gVzWPM0GbnMKu9gIsQsKdWq
+         XlFn/1oWq568STbkgWuuIw3c0j43kTe971NkX+sRaCzf3gedhr/tREgjdEJokQPHfBXe
+         i50LSqpiisl5Yf4Dj/SO1vYhu2uaCAMfEw3NmRS0Fsk5uOWCWBuioiCphJZJMyID463e
+         z3Jjhk6JILhfeT+Q4sAT7A34cKqKB6+jUBCCM5y1yuMRJIXshoTsokgcqWvwiRlXIsJa
+         szimhZ/MWkzcVUPTiNbMDdsT/hF2mhIW2AHRY5OwhkzHWYwT479ATAdNost82niai1lX
+         aA2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=hcV5y/448NucPuCFDD5s80WvaLV/+L6Y6aWTXNhPJ6M=;
-        b=q+2YviuozqKil4fZJ57vayWjVOWeRH0VFK/8X+FPxxFcKQIppM+H0YReiWvSIeYlxr
-         v69CEIEFMiZXiNPVjzh1maf8iCyaIfbTIYKV8nKYb57apEz5Om8uRrjxSJ0EukIBCJMY
-         jmjgObu1QtcCf99GQ1viFUzBfCFk6Uz9O+a02ba6Pt6CrVmrvuLIQ6Ua3Vy42oGnmDm6
-         gYQ2TdOPRldSTl9IGtbwpTNAkh8SIIYBY66CoQvGlhzRbajbc9MQjSwntkBwoYKcM/dH
-         LEMuljdIw/IJcoRLr6PRuMeAdiioKOoYenZ3YQaELFGgcPKnoWS83KhpqfVURafaPlE1
-         g+fg==
-X-Gm-Message-State: AOAM532m1cEqRC/Nw8OiwRvmFuPUXj1s321qOR+Q2CBPzJVi7BEJSSYv
-        0KON4J3QbpaU7/qr1s9pksNsZ6Q=
-X-Google-Smtp-Source: ABdhPJwBJ98QhfL2t1UhVy+T83POjlR8Ywppmx99tCxRxf3pJkEqt367bijcpIXOQwtoKw/hHQzoBOA=
-X-Received: by 2002:a0c:f445:: with SMTP id h5mr24198190qvm.151.1590601238703;
- Wed, 27 May 2020 10:40:38 -0700 (PDT)
-Date:   Wed, 27 May 2020 10:40:36 -0700
-In-Reply-To: <20200527170840.1768178-4-jakub@cloudflare.com>
-Message-Id: <20200527174036.GF49942@google.com>
-Mime-Version: 1.0
-References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-4-jakub@cloudflare.com>
-Subject: Re: [PATCH bpf-next 3/8] net: Introduce netns_bpf for BPF programs
- attached to netns
-From:   sdf@google.com
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cWSomY7wv64p/JXEgkVAKgEgM9pUufmtEajS9WeLigk=;
+        b=rFwr1SFWcyQHAolIkVOp8VqTc8zbCR7ACxqShHpS5cX4iOKNTl/SeuN4XO+OH9Xb4D
+         qgyejuLiAqFaCJhaumPixFORQujI9jGgFJgCfeM67raytCLOle3KIzDPlaU8vIQzRRtA
+         3rc6zULzgilp0p1SVK0K9rStx0qENCP1kzwAmnvnHPx+1tflA70aSXkx5yD/ZDnTZQjO
+         lE2be3Hkr93auM+CamXq+yBy34gOd3UVrhhmyR/Id22EdNfON02Q/VJ9DozUxfxg1fd7
+         ZRP/EaGpwwTxhdIqSHT6obclWXAM7jY4fO9Nd5162yZLCQZQYatLCAd9uq9yMGejbV43
+         TLdw==
+X-Gm-Message-State: AOAM5317wvATuUHNth0UbMzvYIxKDArP2bni2pwll2JJA26+ypJKj+6S
+        LzKmrnohGgo6XqxDsZsf0HM9Aeq29Y24n/wk0q//rQ==
+X-Google-Smtp-Source: ABdhPJz6BmfwZ6sYgedK4fVPkI/lm4+ikgEYMR8Esd7vFVFJ/zvREE2Tsi2IATX3ik12vwt+g5fRIUx71hi3C0/NRLQ=
+X-Received: by 2002:a67:8b47:: with SMTP id n68mr5233373vsd.159.1590601515858;
+ Wed, 27 May 2020 10:45:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200527024850.81404-1-edumazet@google.com> <20200527024850.81404-3-edumazet@google.com>
+In-Reply-To: <20200527024850.81404-3-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 27 May 2020 13:44:59 -0400
+Message-ID: <CADVnQykrbKT6z11JchcbqGPT1J3qQTWmVwC1Mghuzb2dnXFYvw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] tcp: rename tcp_v4_err() skb parameter
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/27, Jakub Sitnicki wrote:
-> In order to:
-
->   (1) attach more than one BPF program type to netns, or
->   (2) support attaching BPF programs to netns with bpf_link, or
->   (3) support multi-prog attach points for netns
-
-> we will need to keep more state per netns than a single pointer like we
-> have now for BPF flow dissector program.
-
-> Prepare for the above by extracting netns_bpf that is part of struct net,
-> for storing all state related to BPF programs attached to netns.
-
-> Turn flow dissector callbacks for querying/attaching/detaching a program
-> into generic ones that operate on netns_bpf. Next patch will move the
-> generic callbacks into their own module.
-
-> This is similar to how it is organized for cgroup with cgroup_bpf.
-
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+On Tue, May 26, 2020 at 10:49 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> This essentially reverts 4d1a2d9ec1c1 ("Revert Backoff [v3]:
+> Rename skb to icmp_skb in tcp_v4_err()")
+>
+> Now we have tcp_ld_RTO_revert() helper, we can use the usual
+> name for sk_buff parameter, so that tcp_v4_err() and
+> tcp_v6_err() use similar names.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 > ---
->   include/linux/bpf-netns.h   | 56 ++++++++++++++++++++++
->   include/linux/skbuff.h      | 26 ----------
->   include/net/net_namespace.h |  4 +-
->   include/net/netns/bpf.h     | 17 +++++++
->   kernel/bpf/syscall.c        |  7 +--
->   net/core/flow_dissector.c   | 96 ++++++++++++++++++++++++-------------
->   6 files changed, 143 insertions(+), 63 deletions(-)
->   create mode 100644 include/linux/bpf-netns.h
->   create mode 100644 include/net/netns/bpf.h
 
-> diff --git a/include/linux/bpf-netns.h b/include/linux/bpf-netns.h
-> new file mode 100644
-> index 000000000000..f3aec3d79824
-> --- /dev/null
-> +++ b/include/linux/bpf-netns.h
-> @@ -0,0 +1,56 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _BPF_NETNS_H
-> +#define _BPF_NETNS_H
-> +
-> +#include <linux/mutex.h>
-> +#include <uapi/linux/bpf.h>
-> +
-> +enum netns_bpf_attach_type {
-> +	NETNS_BPF_INVALID = -1,
-> +	NETNS_BPF_FLOW_DISSECTOR = 0,
-> +	MAX_NETNS_BPF_ATTACH_TYPE
-> +};
-> +
-> +static inline enum netns_bpf_attach_type
-> +to_netns_bpf_attach_type(enum bpf_attach_type attach_type)
-> +{
-> +	switch (attach_type) {
-> +	case BPF_FLOW_DISSECTOR:
-> +		return NETNS_BPF_FLOW_DISSECTOR;
-> +	default:
-> +		return NETNS_BPF_INVALID;
-> +	}
-> +}
-> +
-> +/* Protects updates to netns_bpf */
-> +extern struct mutex netns_bpf_mutex;
-I wonder whether it's a good time to make this mutex per-netns, WDYT?
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-The only problem I see is that it might complicate the global
-mode of flow dissector where we go over every ns to make sure no
-progs are attached. That will be racy with per-ns mutex unless
-we do something about it...
+Thanks, Eric!
+
+neal
