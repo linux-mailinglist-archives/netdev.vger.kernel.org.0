@@ -2,233 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A1E1E4C45
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:45:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6921E4C59
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 19:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403901AbgE0RpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 13:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S2391717AbgE0RsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 13:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403784AbgE0RpX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:45:23 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27B7C03E97D
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:45:22 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id k11so3870698ejr.9
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:45:22 -0700 (PDT)
+        with ESMTP id S2391704AbgE0RsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 13:48:08 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B58C08C5C1
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:48:08 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id x30so26562521qte.14
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 10:48:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7+7cu78aytAMSlzpUJTCZJjA0IHw4pd9w+Lv9A6HBOE=;
-        b=ACU0hCfpP2g0VBtUv3swsE9U1027mdYxQTXYWyb6Ud9hmZFjs9qBwfMPykjOKhspeY
-         ekrEw902NzSPg8BrVZA63m+nAIOzn95nFL5srupHT7N+UI5M059pLk1JAlyKzBow6Gc4
-         7w0jL7+/Ua2h3vKnKncR0tBdl8vJ2LdSsjozHdCCBrYT/Os5d+hh2bAwiBr4fYLCS+Y2
-         8CxhxCkHQBuOFksrtE8kkUeF1t+vfWUFxO0VXNQtisWFvNrIeJfRT20RPUUpJ+KwGQjq
-         OR9AIHRE2WGy34Z50j6JjUTmX1Iy47plGjQ5qso4EMgtwJqpgFikDUqn2Lz0nDhgkfC/
-         c6eg==
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=hCh6x28F7RCb/iRwPUgrfvOqv0uQyjWT7o6ARE6uy94=;
+        b=buh8K4Ebwqz0vYSel8dZkg1XwFAfHoXQdpKcLLhuErjdwEO3cTujJFqQlCwMgp06Hh
+         L5PA/poWu0ooGUHqzv7ipkX2cuuq2XH+MNF2QGxnsB284zZdq+YHOB8lkVD6j9trL//Q
+         NvNx+7FHseulPD3GfEsK2BXLoC6b/SlBsh+31twwqZqlQiEOS9Ro+WrgRSEcE9naro3t
+         tBrJxWU1uWtIW1dyWQexaPzRDBXgq4ay2HOe9SD9otSbWv9qDdwOYY015p93xnXxczP8
+         sMeVOl4PgeX4LKluhlOUYzY9v+Lj1cW6oEKqqR5gcwxqFEPs900VHvdhM3fWimeU7P93
+         j97Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7+7cu78aytAMSlzpUJTCZJjA0IHw4pd9w+Lv9A6HBOE=;
-        b=pD6pm0fhbeTyI2gYvE71bTQr4gdQgiPd3t5qKuAFEOAkHZmOggW6DdEKseXfl1JtS9
-         xDzQCzRs3vj36AObAvLfW9BekGRlcm4Ts6A0eePguje9FVzfw75Cxw0S7QLaKuQvJf54
-         qorzRrlmieR3MZCvgYLa/oVcOhYgUNVN2FUoHemF4KS3ZbUKP0m32FZvIBs+AYiHY72/
-         CaPdpNZF7L4w8ml76WDIks+yAdqVVDMIRdH9f5MwlLWwRiwCzCXG6qizIgIgABu1KGzq
-         0sjnqWWnFa4/W7dCZE4WNTq314rOjt9mbDOC7gZMI6Rl3TsNjXpIv6mjJJOeRVWRLxDh
-         Pmqg==
-X-Gm-Message-State: AOAM531E3KxwLa2qS6c1LtUeb125zrrXh1Zi6QJAHxMYGv5C925EFBxw
-        0mVGfGyM1KqNAxFUm2UPODltaYHT
-X-Google-Smtp-Source: ABdhPJyecgmJNDzavKpQ6v4PskQ6OszkImC7iDr4TRJvzo3Dz2rAz60U5nGUEnzNwDcGuOtCMTUSyQ==
-X-Received: by 2002:a17:907:1005:: with SMTP id ox5mr6891751ejb.480.1590601521540;
-        Wed, 27 May 2020 10:45:21 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id f4sm3460692ejk.17.2020.05.27.10.45.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 10:45:20 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: declare lockless TX feature for slave ports
-Date:   Wed, 27 May 2020 20:45:15 +0300
-Message-Id: <20200527174515.1147398-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=hCh6x28F7RCb/iRwPUgrfvOqv0uQyjWT7o6ARE6uy94=;
+        b=k+3Z5zsibIGHyH88QmTyorJq5bLfGqqHxV3w30u1DYpkq5jp8j/F/+/bjRdBkdb5ar
+         ngp3FeA6csS7TjvanJ3e+sa61LTo32dQ5P4Jl9C6LET/clCaRSH//8fqB4SUs4iAiE1L
+         A+s/+39cJitPY3IAjbEMCAGU+PDJfvc/pQTY3nOwv5G4pJGiLPKNztzks4yGyA0WeDZa
+         0bkGVBi3PFC24ANrWIr+kYod8HNbmucEUKi7gc9Ti48xOPFtmXu9g36IbFx1YW7k0P2c
+         ww23PABVhY6T7XVET7jOs3vGF8ElYT3cidkqL7qiEuD5PJ1J/icxQP8i4zeCw2kvWMz6
+         wMlA==
+X-Gm-Message-State: AOAM531x0rbINFAwLCvFREq19+YsekNMFHNZekVVaneTAnWEvT48K6ag
+        wRTBvaMWjEG9DTjUJ6eZwv2fIh4=
+X-Google-Smtp-Source: ABdhPJwnVrg5lq5Zze8uh9HWudikqOpQQ1aOF9BZdxGZF1Ms86JDN765C3hY/aC807lhNfYtxACa3G0=
+X-Received: by 2002:a05:6214:1371:: with SMTP id c17mr4053196qvw.186.1590601687264;
+ Wed, 27 May 2020 10:48:07 -0700 (PDT)
+Date:   Wed, 27 May 2020 10:48:05 -0700
+In-Reply-To: <20200527170840.1768178-6-jakub@cloudflare.com>
+Message-Id: <20200527174805.GG49942@google.com>
+Mime-Version: 1.0
+References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-6-jakub@cloudflare.com>
+Subject: Re: [PATCH bpf-next 5/8] bpf: Add link-based BPF program attachment
+ to network namespace
+From:   sdf@google.com
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 05/27, Jakub Sitnicki wrote:
+> Add support for bpf() syscall subcommands that operate on
+> bpf_link (LINK_CREATE, LINK_UPDATE, OBJ_GET_INFO) for attach points tied  
+> to
+> network namespaces (that is flow dissector at the moment).
 
-Be there a platform with the following layout:
+> Link-based and prog-based attachment can be used interchangeably, but only
+> one can be in use at a time. Attempts to attach a link when a prog is
+> already attached directly, and the other way around, will be met with
+> -EBUSY.
 
-      Regular NIC
-       |
-       +----> DSA master for switch port
-               |
-               +----> DSA master for another switch port
+> Attachment of multiple links of same attach type to one netns is not
+> supported, with the intention to lift it when a use-case presents
+> itself. Because of that attempts to create a netns link, when one already
+> exists result in -E2BIG error, signifying that there is no space left for
+> another attachment.
 
-After changing DSA back to static lockdep class keys in commit
-1a33e10e4a95 ("net: partially revert dynamic lockdep key changes"), this
-kernel splat can be seen:
+> Link-based attachments to netns don't keep a netns alive by holding a ref
+> to it. Instead links get auto-detached from netns when the latter is being
+> destroyed by a pernet pre_exit callback.
 
-[   13.361198] ============================================
-[   13.366524] WARNING: possible recursive locking detected
-[   13.371851] 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988 Not tainted
-[   13.377874] --------------------------------------------
-[   13.383201] swapper/0/0 is trying to acquire lock:
-[   13.388004] ffff0000668ff298 (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at: __dev_queue_xmit+0x84c/0xbe0
-[   13.397879]
-[   13.397879] but task is already holding lock:
-[   13.403727] ffff0000661a1698 (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at: __dev_queue_xmit+0x84c/0xbe0
-[   13.413593]
-[   13.413593] other info that might help us debug this:
-[   13.420140]  Possible unsafe locking scenario:
-[   13.420140]
-[   13.426075]        CPU0
-[   13.428523]        ----
-[   13.430969]   lock(&dsa_slave_netdev_xmit_lock_key);
-[   13.435946]   lock(&dsa_slave_netdev_xmit_lock_key);
-[   13.440924]
-[   13.440924]  *** DEADLOCK ***
-[   13.440924]
-[   13.446860]  May be due to missing lock nesting notation
-[   13.446860]
-[   13.453668] 6 locks held by swapper/0/0:
-[   13.457598]  #0: ffff800010003de0 ((&idev->mc_ifc_timer)){+.-.}-{0:0}, at: call_timer_fn+0x0/0x400
-[   13.466593]  #1: ffffd4d3fb478700 (rcu_read_lock){....}-{1:2}, at: mld_sendpack+0x0/0x560
-[   13.474803]  #2: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x64/0xb10
-[   13.483886]  #3: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x6c/0xbe0
-[   13.492793]  #4: ffff0000661a1698 (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at: __dev_queue_xmit+0x84c/0xbe0
-[   13.503094]  #5: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x6c/0xbe0
-[   13.512000]
-[   13.512000] stack backtrace:
-[   13.516369] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988
-[   13.530421] Call trace:
-[   13.532871]  dump_backtrace+0x0/0x1d8
-[   13.536539]  show_stack+0x24/0x30
-[   13.539862]  dump_stack+0xe8/0x150
-[   13.543271]  __lock_acquire+0x1030/0x1678
-[   13.547290]  lock_acquire+0xf8/0x458
-[   13.550873]  _raw_spin_lock+0x44/0x58
-[   13.554543]  __dev_queue_xmit+0x84c/0xbe0
-[   13.558562]  dev_queue_xmit+0x24/0x30
-[   13.562232]  dsa_slave_xmit+0xe0/0x128
-[   13.565988]  dev_hard_start_xmit+0xf4/0x448
-[   13.570182]  __dev_queue_xmit+0x808/0xbe0
-[   13.574200]  dev_queue_xmit+0x24/0x30
-[   13.577869]  neigh_resolve_output+0x15c/0x220
-[   13.582237]  ip6_finish_output2+0x244/0xb10
-[   13.586430]  __ip6_finish_output+0x1dc/0x298
-[   13.590709]  ip6_output+0x84/0x358
-[   13.594116]  mld_sendpack+0x2bc/0x560
-[   13.597786]  mld_ifc_timer_expire+0x210/0x390
-[   13.602153]  call_timer_fn+0xcc/0x400
-[   13.605822]  run_timer_softirq+0x588/0x6e0
-[   13.609927]  __do_softirq+0x118/0x590
-[   13.613597]  irq_exit+0x13c/0x148
-[   13.616918]  __handle_domain_irq+0x6c/0xc0
-[   13.621023]  gic_handle_irq+0x6c/0x160
-[   13.624779]  el1_irq+0xbc/0x180
-[   13.627927]  cpuidle_enter_state+0xb4/0x4d0
-[   13.632120]  cpuidle_enter+0x3c/0x50
-[   13.635703]  call_cpuidle+0x44/0x78
-[   13.639199]  do_idle+0x228/0x2c8
-[   13.642433]  cpu_startup_entry+0x2c/0x48
-[   13.646363]  rest_init+0x1ac/0x280
-[   13.649773]  arch_call_rest_init+0x14/0x1c
-[   13.653878]  start_kernel+0x490/0x4bc
+> When auto-detached, link lives in defunct state as long there are open FDs
+> for it. -ENOLINK is returned if a user tries to update a defunct link.
 
-Lockdep keys themselves were added in commit ab92d68fc22f ("net: core:
-add generic lockdep keys"), and it's very likely that this splat existed
-since then, but I have no real way to check, since this stacked platform
-wasn't supported by mainline back then.
+> Because bpf_link to netns doesn't hold a ref to struct net, special care  
+> is
+> taken when releasing the link. The netns might be getting torn down when
+> the release function tries to access it to detach the link.
 
-From Taehee's own words:
+> To ensure the struct net object is alive when release function accesses it
+> we rely on the fact that cleanup_net(), struct net destructor, calls
+> synchronize_rcu() after invoking pre_exit callbacks. If auto-detach from
+> pre_exit happens first, link release will not attempt to access struct  
+> net.
 
-  This patch was considered that all stackable devices have LLTX flag.
-  But the dsa doesn't have LLTX, so this splat happened.
-  After this patch, dsa shares the same lockdep class key.
-  On the nested dsa interface architecture, which you illustrated,
-  the same lockdep class key will be used in __dev_queue_xmit() because
-  dsa doesn't have LLTX.
-  So that lockdep detects deadlock because the same lockdep class key is
-  used recursively although actually the different locks are used.
-  There are some ways to fix this problem.
+> Same applies the other way around, network namespace doesn't keep an
+> attached link alive because by not holding a ref to it. Instead bpf_links
+> to netns are RCU-freed, so that pernet pre_exit callback can safely access
+> and auto-detach the link when racing with link release/free.
 
-  1. using NETIF_F_LLTX flag.
-  If possible, using the LLTX flag is a very clear way for it.
-  But I'm so sorry I don't know whether the dsa could have LLTX or not.
-
-  2. using dynamic lockdep again.
-  It means that each interface uses a separate lockdep class key.
-  So, lockdep will not detect recursive locking.
-  But this way has a problem that it could consume lockdep class key
-  too many.
-  Currently, lockdep can have 8192 lockdep class keys.
-   - you can see this number with the following command.
-     cat /proc/lockdep_stats
-     lock-classes:                         1251 [max: 8192]
-     ...
-     The [max: 8192] means that the maximum number of lockdep class keys.
-  If too many lockdep class keys are registered, lockdep stops to work.
-  So, using a dynamic(separated) lockdep class key should be considered
-  carefully.
-  In addition, updating lockdep class key routine might have to be existing.
-  (lockdep_register_key(), lockdep_set_class(), lockdep_unregister_key())
-
-  3. Using lockdep subclass.
-  A lockdep class key could have 8 subclasses.
-  The different subclass is considered different locks by lockdep
-  infrastructure.
-  But "lock-classes" is not counted by subclasses.
-  So, it could avoid stopping lockdep infrastructure by an overflow of
-  lockdep class keys.
-  This approach should also have an updating lockdep class key routine.
-  (lockdep_set_subclass())
-
-  4. Using nonvalidate lockdep class key.
-  The lockdep infrastructure supports nonvalidate lockdep class key type.
-  It means this lockdep is not validated by lockdep infrastructure.
-  So, the splat will not happen but lockdep couldn't detect real deadlock
-  case because lockdep really doesn't validate it.
-  I think this should be used for really special cases.
-  (lockdep_set_novalidate_class())
-
-Further discussion here:
-https://patchwork.ozlabs.org/project/netdev/patch/20200503052220.4536-2-xiyou.wangcong@gmail.com/
-
-There appears to be no negative side-effect to declaring lockless TX for
-the DSA virtual interfaces, which means they handle their own locking.
-So that's what we do to make the splat go away.
-
-Patch tested in a wide variety of cases: unicast, multicast, PTP, etc.
-
-Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
-Suggested-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/slave.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 886490fb203d..4188290f8edd 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1746,6 +1746,8 @@ int dsa_slave_create(struct dsa_port *port)
- 	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
- 		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
- 	slave_dev->hw_features |= NETIF_F_HW_TC;
-+	slave_dev->features |= NETIF_F_LLTX;
-+	slave_dev->hw_features |= NETIF_F_LLTX;
- 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
- 	if (!IS_ERR_OR_NULL(port->mac))
- 		ether_addr_copy(slave_dev->dev_addr, port->mac);
--- 
-2.25.1
-
+[..]
+> +	rcu_read_lock();
+>   	for (type = 0; type < MAX_NETNS_BPF_ATTACH_TYPE; type++) {
+> -		if (rcu_access_pointer(net->bpf.progs[type]))
+> +		if (rcu_access_pointer(net->bpf.links[type]))
+> +			bpf_netns_link_auto_detach(net, type);
+> +		else if (rcu_access_pointer(net->bpf.progs[type]))
+>   			__netns_bpf_prog_detach(net, type);
+>   	}
+> +	rcu_read_unlock();
+Aren't you doing RCU_INIT_POINTER in __netns_bpf_prog_detach?
+Is it allowed under rcu_read_load?
