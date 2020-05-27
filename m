@@ -2,83 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD101E5132
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4621E5134
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725747AbgE0Wcl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 May 2020 18:32:41 -0400
-Received: from mga12.intel.com ([192.55.52.136]:50051 "EHLO mga12.intel.com"
+        id S1726130AbgE0Wcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 18:32:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725385AbgE0Wcl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 18:32:41 -0400
-IronPort-SDR: u4FzEBCI5bMo07PcWRmU7eVVjT1IDNCAmpWfOwY+9LjchBma1QHtTJrE/1o4VpE530LiHF6jZO
- G3g4YWNeADjw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 15:32:41 -0700
-IronPort-SDR: fpBj0o/fB4SSLMtM+Fjosio9kbsvNmixmkc3G+EStU5cqsbPuqTEbffjSGl6qFmqXCMD4IJUZF
- 7Y/kCYOOJ5iQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,442,1583222400"; 
-   d="scan'208";a="291766281"
-Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
-  by fmsmga004.fm.intel.com with ESMTP; 27 May 2020 15:32:38 -0700
-Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
- ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 27 May 2020 15:32:34 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.61]) by
- ORSMSX161.amr.corp.intel.com ([169.254.4.154]) with mapi id 14.03.0439.000;
- Wed, 27 May 2020 15:32:34 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
-        "Burra, Phani R" <phani.r.burra@intel.com>,
-        "Brady, Alan" <alan.brady@intel.com>,
-        "Michael, Alice" <alice.michael@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: RE: [net-next RFC 00/15] Intel Ethernet Common Module and Data
-Thread-Topic: [net-next RFC 00/15] Intel Ethernet Common Module and Data
-Thread-Index: AQHWM99qPqE7VmXdPkmQAFF1oTkHpai88tEA//+SXgA=
-Date:   Wed, 27 May 2020 22:32:33 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D94044986DBDEF@ORSMSX112.amr.corp.intel.com>
-References: <20200527042921.3951830-1-jeffrey.t.kirsher@intel.com>
- <20200527150310.362b99e4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20200527150310.362b99e4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1725780AbgE0Wcu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 18:32:50 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99B3920707;
+        Wed, 27 May 2020 22:32:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590618769;
+        bh=G4KfFF72ZP/5iafEUV2q8lKQyCbx8/b35XY+5A9cvNQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jyaXf8FdBYU9duz7kEKkk1yUTz7JYaMxE2uttEDtNxwEurGmlBsdulgQ2NIFwX7OE
+         smRm+22fPto1IJU8f0U3Ag/sEvZWifT7uj3xAWE89zoSaNYpO8MORE+D7NSxPA8Tdp
+         wVoYdNppLgBQJ9LjEBr1YPJYfLWkPpHXCTv11Zr8=
+Date:   Wed, 27 May 2020 15:32:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tariq Toukan <tariqt@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Boris Pismenny <borisp@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next] net/tls: Add force_resync for driver resync
+Message-ID: <20200527153248.53965eee@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200527092526.3657-1-tariqt@mellanox.com>
+References: <20200527092526.3657-1-tariqt@mellanox.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, May 27, 2020 15:03
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; nhorman@redhat.com;
-> sassmann@redhat.com
-> Subject: Re: [net-next RFC 00/15] Intel Ethernet Common Module and Data
+On Wed, 27 May 2020 12:25:26 +0300 Tariq Toukan wrote:
+> This patch adds a field to the tls rx offload context which enables
+> drivers to force a send_resync call.
 > 
-> On Tue, 26 May 2020 21:29:06 -0700 Jeff Kirsher wrote:
-> > This series introduces both the Intel Ethernet Common Module and the
-> > Intel Data Plane Function.  The patches also incorporate extended
-> > features and functionality added in the virtchnl.h file.
-> 
-> Is this a driver for your SmartNIC? Or a common layer for ice, iavf, or whatnot
-> to use? Could you clarify the relationship with existing drivers?
-[Kirsher, Jeffrey T] 
+> This field can be used by drivers to request a resync at the next
+> possible tls record. It is beneficial for hardware that provides the
+> resync sequence number asynchronously. In such cases, the packet that
+> triggered the resync does not contain the information required for a
+> resync. Instead, the driver requests resync for all the following
+> TLS record until the asynchronous notification with the resync request
+> TCP sequence arrives.
+>
+> A following series for mlx5e ConnectX-6DX TLS RX offload support will
+> use this mechanism.
 
-Adding the developers to this thread to help explain.
+Please document this, in tls-offload.rst.
