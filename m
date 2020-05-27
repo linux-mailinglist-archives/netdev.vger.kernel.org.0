@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5AA1E340A
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:29:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207D81E340D
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 02:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgE0A3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 May 2020 20:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        id S1726901AbgE0AbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 May 2020 20:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726737AbgE0A3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 20:29:00 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4829FC061A0F
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:29:00 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id p192so1853638ybc.12
-        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:29:00 -0700 (PDT)
+        with ESMTP id S1726835AbgE0AbT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 May 2020 20:31:19 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69586C061A0F
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:31:19 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id p4so10398502qvr.10
+        for <netdev@vger.kernel.org>; Tue, 26 May 2020 17:31:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=M+zpk3jA+779uDSsVYHEQLQf4U3UltneMSql7OeISrg=;
-        b=Sw1fLrONPSImZ13jO7MUZSgosJhwPybdfdEQLHZpI5jdjy54TUKslwbrrjMrZ9hM7h
-         P+UoZNHMPlpDT8e9QGvuUCv8Y1nHoXikd7JoSvdNwlngoTJWiaPm/5/tXkkp5NLK/lK0
-         PP0CLwedzXYIaFzHP4fA78zfeT9iQXHSUupvy+ipx5xG8UCCQWh+8+zsrp6fDLfLnut3
-         p2KW+J0BMi7FH1ny8d9pDjZi7WGhiuqEGJx754D9Vb7aQ3hhjnTlo0tNWlMOJc32dVoB
-         3lSoRwCCtu5QrHst8zgdX0A7Nb/WeGGXrefWqwLt/NkxJEywL8GoSaVMlUcACkFgxXZm
-         jJog==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=uIp0501mG3+8ATxnA4TxYZmA6hz0mrHIWE9JDA6LiYw=;
+        b=olrYooBjXi6S+f2JUAvySajwthmEIu27lEW00jJ5JfZDiRCxa4Q5qA50iAv36cOlCd
+         3qZMjF6/PXfKzL0m6D33VUPbrheScryZzGZG3H58q6zpSGpHLl4np+pQl8XTEFINTAee
+         7KICEU9lhOVQeeZgv2O0/+Qg8LV6TP/F0IsuGOPSz3vqzpBFlgqVjKcH6UN+BFDsis9J
+         0bbNt//wUB42UJGKGaUi5CtaHoQATbXetwsRDvjbRmEu3/JTA8dPj/nSCCo9fy9HwbSD
+         8mz1uv9ZYjq2h2aPBWX+/EjQuqAE6aWUmpFQlFIaSzz38LGNOE+mhpdszKnfnSymwE9x
+         gC4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=M+zpk3jA+779uDSsVYHEQLQf4U3UltneMSql7OeISrg=;
-        b=El/iMKJ8MrgYRkYAcNsJzxJj0+j90oTtHG2MCBxfAmw5fDhvMr73HayyREu+wpDla3
-         LqpVcVWw548E2gqxG+qtJ1Datrzyt9ap1m/VHeRMHPQuOK4tyxEuDi/Lrh5YvSAYQdX3
-         n49cd6h0tOlQCVdYQND5BQ45EmLjtFI72yZfOyKrY517VEoHstoNgHt+T+nyD3S5m+LL
-         fZIKZQrbXhPuEdGc3/3Ab9yTvftH6ohrDQdJE1thAsnbX8GkRIojtgkM5M3VzTfFZgFS
-         wXsmPPel/oiaVTcesUNbJF5N31ZbKlKcZQywthUj8fP79wLMPupgXSbGG01LDsAGlJkx
-         BbsQ==
-X-Gm-Message-State: AOAM530QCsG4j0hI9RUFG5CYJ7DmFztPNx85EGSEDBx0XOFKFES9osh4
-        nx04AmEE9hEtcqF8HWbyUdZrYnhrp5M51Q==
-X-Google-Smtp-Source: ABdhPJydAluUWDnjk5dKk4/YRVEaWSwWHRwypvXCpoXG0bcLMWMPXU4j/5ucnz0eDAS8hTTExWeerHmEM/7vyw==
-X-Received: by 2002:a25:60c4:: with SMTP id u187mr5599395ybb.509.1590539339321;
- Tue, 26 May 2020 17:28:59 -0700 (PDT)
-Date:   Tue, 26 May 2020 17:28:56 -0700
-Message-Id: <20200527002856.212293-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
-Subject: [PATCH net] crypto: chelsio/chtls: properly set tp->lsndtime
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uIp0501mG3+8ATxnA4TxYZmA6hz0mrHIWE9JDA6LiYw=;
+        b=kFN/rcBtf+qbiVbFAfEurkvp4htNBqp/2hMZc5pGuZymuuuEqgA9VZrVvd1EgNcvbw
+         juxAtzfbCzbb4ZGoqsTbm0nPHd080nilNGlXmwlz4auVU7yG8HHGGPeQTV5+1VlbBu+x
+         zgFi494GZl70gcwXugHdJ1mtTSGH2gew62yhCDn+OYhEHnCaspQDQ0YIsDHlWz0Kqnx0
+         U5x3L/w/0ZvzQ369snNxnkHpB07mDxb90FEfdzeoSspPwDptOZ7gzn5mCNr4JyNJON+U
+         SXMyCt647hKFS+wIC2JxQ84ZwTTlkHGiNvtfxkRvfF1qfhrVHdEUGCO6Ep44OqHYla2S
+         GoCA==
+X-Gm-Message-State: AOAM533gtU+YRr7GGMc7pBw36E9FVv/RTMf004zXTlNgc0rAnaL7I/UI
+        2c4wEmhwOyTIczBIl9AxGbaH68gf
+X-Google-Smtp-Source: ABdhPJxcYPRAMuEX66jBlcHCxab1wyg4uObm0ydf3lCsnSPpg5qcBru+RSViPwuW31MHDSRdML+quQ==
+X-Received: by 2002:a0c:b516:: with SMTP id d22mr253029qve.88.1590539476132;
+        Tue, 26 May 2020 17:31:16 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
+        by smtp.googlemail.com with ESMTPSA id u41sm1181263qte.28.2020.05.26.17.31.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2020 17:31:15 -0700 (PDT)
+Subject: Re: bpf-next/net-next: panic using bpf_xdp_adjust_head
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "brouer@redhat.com" <brouer@redhat.com>
+References: <8d211628-9290-3315-fb1e-b0651d6e1966@gmail.com>
+ <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0ee9e514-9008-6b30-9665-38607169146d@gmail.com>
+Date:   Tue, 26 May 2020 18:31:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <52d793f86d36baac455630a03d76f09a388e549f.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP tp->lsndtime unit/base is tcp_jiffies32, not tcp_time_stamp()
+On 5/26/20 3:23 PM, Saeed Mahameed wrote:
+> Anyway I can't figure out the reason for this without extra digging
+> since in mlx5 we do xdp_set_data_meta_invalid(); before passing the xdp
+> buff to the bpf program, so it is not clear why would you hit the
+> memove in bpf_xdp_adjust_head().
 
-Fixes: 36bedb3f2e5b ("crypto: chtls - Inline TLS record Tx")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Ayush Sawal <ayush.sawal@chelsio.com>
-Cc: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
----
- drivers/crypto/chelsio/chtls/chtls_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I commented out the metalen check in bpf_xdp_adjust_head to move on.
 
-diff --git a/drivers/crypto/chelsio/chtls/chtls_io.c b/drivers/crypto/chelsio/chtls/chtls_io.c
-index dccef3a2908b391e772944d504d953a062001d9f..e1401d9cc756cea07f7ad310c17fed29e0f3e9db 100644
---- a/drivers/crypto/chelsio/chtls/chtls_io.c
-+++ b/drivers/crypto/chelsio/chtls/chtls_io.c
-@@ -682,7 +682,7 @@ int chtls_push_frames(struct chtls_sock *csk, int comp)
- 				make_tx_data_wr(sk, skb, immdlen, len,
- 						credits_needed, completion);
- 			tp->snd_nxt += len;
--			tp->lsndtime = tcp_time_stamp(tp);
-+			tp->lsndtime = tcp_jiffies32;
- 			if (completion)
- 				ULP_SKB_CB(skb)->flags &= ~ULPCB_FLAG_NEED_HDR;
- 		} else {
--- 
-2.27.0.rc0.183.gde8f92d652-goog
+There are number of changes in the mlx5 driver related to xdp_buff setup
+and running the programs, so it is the likely candidate. Let me know if
+you have something to test.
 
+Thanks
