@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABA51E50F6
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3686C1E50FA
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 00:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726019AbgE0WKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 18:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        id S1725915AbgE0WKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 18:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgE0WKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 18:10:05 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B66C05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 15:10:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4B61C128CE456;
-        Wed, 27 May 2020 15:10:05 -0700 (PDT)
-Date:   Wed, 27 May 2020 15:10:04 -0700 (PDT)
-Message-Id: <20200527.151004.24719580946330092.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] net: dsa: declare lockless TX feature for slave
- ports
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200527180805.1245991-1-olteanv@gmail.com>
-References: <20200527180805.1245991-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 27 May 2020 15:10:05 -0700 (PDT)
+        with ESMTP id S1725267AbgE0WKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 18:10:39 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DA5C05BD1E;
+        Wed, 27 May 2020 15:10:39 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id h9so10434146qtj.7;
+        Wed, 27 May 2020 15:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=G1XVpETlJJP2/jiBYqi8DO5iH3KbcawIwgPnsLm6SC8=;
+        b=Tp59n4X8czCiReNvvETssPFFJvGvIGmo5rc4qluvNzypT/Tkr2LkJFYlrlbkYvGBSz
+         SMKmCostg8pAueCS5/Bey4mSxgdfZcVcg37ZcuvQ+F/yvaQ1Yk7qsRNQpz2c9RHn85bx
+         0MygTRpTy6xgU4z7fifDIit8ixqEiYh1bUfDfIZTPp4/MOZ7Lmkm4NMbh5Np6AeZlOk2
+         ftXWKIFgDL4ibrSK28kKyruj+2F6hBBpntD6FMbx1JwEb6fdA2r5x/HhpD2sQBVTcGUm
+         urc73dd/+t0N6gBrMvWpf5fjRaJhgHlda4Q5OX1WqJN9cHDvznyuTUL47hrgNkCgG1us
+         IBsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G1XVpETlJJP2/jiBYqi8DO5iH3KbcawIwgPnsLm6SC8=;
+        b=VqiaLePLy+N1sXi7As+9KK9gWg7CXXmtl9WQK7oOclUjdP7km527vCpw2/44dSQyDU
+         J7WhVMBi81jAmzYyTxKGFhe4iX6cYE6O5DqI0XxfZ2NHjK0WdIw51EYLczKxdBiJgkoL
+         B25GDv4n8oOdzRa2E96pFAqNOWuq/TVUTWQ9ePlZ/VnUV8Wsr4J+QnzwXsJcvfrS8I7L
+         quS2XtZS3s/vDTBpR5DuMUZWVv5qbvYnF5mhxaU/f+L8w0n/TjWX1FTl2iXHh514eQ50
+         rCmjm1KMcy2RZGGjKyUWMRAKrNml2pH3+PbZ2QMHew6Prb939MCTYOk64g1D24SMOoAh
+         zCTg==
+X-Gm-Message-State: AOAM532Yfu21Ke9u3LK7vMVwHYaGDlahTi0k3M2BZ6v2IWcsbdtp1MLy
+        RYSFsgNMB/uBU90TKMgz7d4=
+X-Google-Smtp-Source: ABdhPJyvPQqfUeH5p1gAxZJINHZv485sQezDQXZjkMcuPkV3lWTZYCE9XvqscSdhtwB0fetxjN3oBA==
+X-Received: by 2002:ac8:226d:: with SMTP id p42mr73463qtp.1.1590617438572;
+        Wed, 27 May 2020 15:10:38 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:8992:a39b:b6ab:3df8:5b60])
+        by smtp.gmail.com with ESMTPSA id i3sm3530811qkf.39.2020.05.27.15.10.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 15:10:37 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 6A1E0C1B84; Wed, 27 May 2020 19:10:35 -0300 (-03)
+Date:   Wed, 27 May 2020 19:10:35 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jonas Falkevik <jonas.falkevik@gmail.com>
+Cc:     lucien.xin@gmail.com, nhorman@tuxdriver.com, vyasevich@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED}
+ event
+Message-ID: <20200527221035.GB47547@localhost.localdomain>
+References: <20200527095640.270986-1-jonas.falkevik@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200527095640.270986-1-jonas.falkevik@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Wed, 27 May 2020 21:08:05 +0300
+On Wed, May 27, 2020 at 11:56:40AM +0200, Jonas Falkevik wrote:
+> Make sure SCTP_ADDR_{MADE_PRIM,ADDED} are sent only for associations
+> that have been established.
+> 
+> These events are described in rfc6458#section-6.1
+> SCTP_PEER_ADDR_CHANGE:
+> This tag indicates that an address that is
+> part of an existing association has experienced a change of
+> state (e.g., a failure or return to service of the reachability
+> of an endpoint via a specific transport address).
+> 
+> Signed-off-by: Jonas Falkevik <jonas.falkevik@gmail.com>
 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Be there a platform with the following layout:
-> 
->       Regular NIC
->        |
->        +----> DSA master for switch port
->                |
->                +----> DSA master for another switch port
-> 
-> After changing DSA back to static lockdep class keys in commit
-> 1a33e10e4a95 ("net: partially revert dynamic lockdep key changes"), this
-> kernel splat can be seen:
-> 
-> [   13.361198] ============================================
-> [   13.366524] WARNING: possible recursive locking detected
-> [   13.371851] 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988 Not tainted
-> [   13.377874] --------------------------------------------
-> [   13.383201] swapper/0/0 is trying to acquire lock:
-> [   13.388004] ffff0000668ff298 (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at: __dev_queue_xmit+0x84c/0xbe0
-> [   13.397879]
-> [   13.397879] but task is already holding lock:
-> [   13.403727] ffff0000661a1698 (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at: __dev_queue_xmit+0x84c/0xbe0
- ...
-> There appears to be no negative side-effect to declaring lockless TX for
-> the DSA virtual interfaces, which means they handle their own locking.
-> So that's what we do to make the splat go away.
-> 
-> Patch tested in a wide variety of cases: unicast, multicast, PTP, etc.
-> 
-> Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
-> Suggested-by: Taehee Yoo <ap420073@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Thanks!
 
-Applied, thanks.
+> ---
+> Changes in v2:
+>  - Check asoc state to be at least established.
+>    Instead of associd being SCTP_FUTURE_ASSOC.
+>  - Common check for all peer addr change event
+> 
+>  net/sctp/ulpevent.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/sctp/ulpevent.c b/net/sctp/ulpevent.c
+> index c82dbdcf13f2..77d5c36a8991 100644
+> --- a/net/sctp/ulpevent.c
+> +++ b/net/sctp/ulpevent.c
+> @@ -343,6 +343,9 @@ void sctp_ulpevent_nofity_peer_addr_change(struct sctp_transport *transport,
+>  	struct sockaddr_storage addr;
+>  	struct sctp_ulpevent *event;
+>  
+> +	if (asoc->state < SCTP_STATE_ESTABLISHED)
+> +		return;
+> +
+>  	memset(&addr, 0, sizeof(struct sockaddr_storage));
+>  	memcpy(&addr, &transport->ipaddr, transport->af_specific->sockaddr_len);
+>  
+> -- 
+> 2.25.4
+> 
