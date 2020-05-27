@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC561E4469
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD591E4476
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388838AbgE0Nui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 09:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388516AbgE0Nuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:50:37 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFE4C08C5C1;
-        Wed, 27 May 2020 06:50:37 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id g25so19142139otp.13;
-        Wed, 27 May 2020 06:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c1yMGFc/Yll5Sz5MGXdvhG1FugIsGM9W+ytuc/q7G4Q=;
-        b=ma0FMBM6TOulssZLJOKChFLjqdDRS/WTu2agPcAhvqBzUtQ3cMhQakybz4wdiDwYVr
-         XvVV31eGWlqhGUZ0akT0oD28uzuZb4++ket+9Wu24g2pcLfKT/AU6tPC6IaFYYzo/wyN
-         d2sODLhOedCRfoLcuBPzMSfV2Khq0GpkeJaFdE0tAwSSSwfH8D9wQpHBC9YgvXTRcq8g
-         58WENqPRhCm1RoMPVNzR9+ooPgb/hXaaCm38lW+IIpmhD1Iv+9HrRSacHuktz9ZSOTHA
-         GPgvvHJm+8ZgWfdcjR/iRn+C97Xus5VS5nHzJiMXeqqYpY+kyuykqFA3U8pMCWW/HRNQ
-         FVEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=c1yMGFc/Yll5Sz5MGXdvhG1FugIsGM9W+ytuc/q7G4Q=;
-        b=K5nyRwey1DkpcStSJbq+GgrrIP5xZlv6/HW/Td2hcT3k+nTkVbERP+WfrToJo5QL5t
-         cGlMPtR18dBiTdihTgjSQvP9k0OJXGw1t4hGexUoZDlfmJdnQ3OILEMBehl6yjUNQZMR
-         Ucrb0pfZ6fYlpljf7J769JpmIMTUpIOnJgCKK5iSiOd8z8LeU96WZz5SZsEw5vjeWSeb
-         lEj4GzL/UAzXAqBG/4pECi9uFIPqDpPbwvRSS6otmcwdmQxMKcuwZAMN3DPpQm72DTd7
-         gBgTuhGJB/UdBnupjzKosZHUtHr2BPTmlnl6H9ek+/xxTRmNv6DiXOpshREx8lrzzY2i
-         qeTA==
-X-Gm-Message-State: AOAM530ij7kXDaJ14DY7RyF7MV5QXBSvsodqvomEoIVW2vt//uNcO6FJ
-        5gePeHK28Mztljax1C21/0hpJf7Q
-X-Google-Smtp-Source: ABdhPJyXfhc1ET4DwZfQZb1+KWAEECTnrOjE6+YNAs+r7ggG7n7CKsSqqBEx3Odtfn8LQ7TSio9TDA==
-X-Received: by 2002:a9d:23a6:: with SMTP id t35mr4652252otb.217.1590587437175;
-        Wed, 27 May 2020 06:50:37 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:85b5:c99:767e:c12? ([2601:282:803:7700:85b5:c99:767e:c12])
-        by smtp.googlemail.com with ESMTPSA id g10sm57046otn.34.2020.05.27.06.50.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 May 2020 06:50:36 -0700 (PDT)
-Subject: Re: [PATCH net-next] nexthop: Fix type of event_type in
- call_nexthop_notifiers
-To:     Nathan Chancellor <natechancellor@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
+        id S2388880AbgE0Nvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 09:51:41 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:54443 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388516AbgE0Nvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 09:51:40 -0400
+Received: from threadripper.lan ([149.172.98.151]) by mrelayeu.kundenserver.de
+ (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1N1fei-1itmw20YYa-011xf5; Wed, 27 May 2020 15:51:26 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>, netdev@vger.kernel.org,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20200527080019.3489332-1-natechancellor@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <37961e7c-3f71-a095-f2c4-bd9e768fc05b@gmail.com>
-Date:   Wed, 27 May 2020 07:50:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+Subject: [PATCH] bridge: multicast: work around clang bug
+Date:   Wed, 27 May 2020 15:51:13 +0200
+Message-Id: <20200527135124.1082844-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200527080019.3489332-1-natechancellor@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:tNJGImBksv3+uHh4LK9iDkXQuSmBokYMQI86sR1uOpirtHXc2NK
+ CrX21qK2bbI6xhZ/Ib4t+RJHd4UNZzA3A8i8Udhs+Nj6xtysytaLytX2xtrUB3t5bOmtrDH
+ Ibtv+P8HKRJy4pUycJSjjYzaNl2DkK5nnWSAL7d8WuvguMsMdN+CvlSnMfp143rT9MKRdXy
+ GJne/oiPD9a6i+xx4Thjg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BuiwkU7bU2Y=:GCvuv9qB6dHCgoInEOLGK9
+ 808pZ65A3+ZvuUmKlZmMiMD+KWWW2i9sI6v31khsncel949CUjtROBxfQ/YqLPiJUBV2ZsN9j
+ qQV6S3goxKEOk9KzwOExut5lMc8AjOFOiF7jXZmTEB/owEEAV0SUx3tM8L1tkLLBxrJELyN6J
+ PqyBUv8hhDmxkOB5b+/7AwSSKMb+THSX2UgAaAdjJXpHwVzyyPLJtTMOxmpQCb7DzClmRCS/u
+ dSbxI4gPROhiPNa8PXGS6rZ9c0mebdDsIs42fVsJKJMSaRpWjWffc9pt5Y8+y0CmvHl4n3vAt
+ qH9K9bG8kV4OEwviLn4j3mWr8mFsal3Pz9anJ5PlSWXDL46FLykAv6jQouHtV/hri3R2yFyb+
+ hwhaFktbARAdRFXtEcygRtIZxEfRg6b7j0WKdyJe8Dc1aBg13Zi4xs1rtC1MrDU3qgpxPIWcX
+ ME2+KIlcSe8RyJWLuNR2qQLQcPKIeQZUeQyjQNfAYeIJG6gcWSzqAk7UUppgM7hX/9AzZgiPl
+ 7EdDeK3BKgwKGWGRypzGiRdQOk/cb/6PY1mti/GTsTFSrbPz8N6apCWYpoIx2bg4EY2Lhk7QN
+ ua8LzeoeF5dWNsDG8BvW9SP1/8hmPZ7Q1cuPp6P0l2vReHontQz/GesEr++93qzBrWIpccEbi
+ QjLD6J7noL6sgsnqeNoIwHa8y1tl2XpOQYJ1KDVXNob0pyUWKGelHT+PJVJmrf8ooIbe/a5E5
+ Ejc2tS5hwpNiGyKjwaRcItpmmNZPROwbjJcVBXMabwtIKubudHvMqjW+19SuMHF+eWEbZNHjL
+ m6RSK50uvvuP0D73KZUz5T2LuCfFaMWnR9CemE+ZRKpt2N+Oh0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/27/20 2:00 AM, Nathan Chancellor wrote:
-> Clang warns:
-> 
-> net/ipv4/nexthop.c:841:30: warning: implicit conversion from enumeration
-> type 'enum nexthop_event_type' to different enumeration type 'enum
-> fib_event_type' [-Wenum-conversion]
->         call_nexthop_notifiers(net, NEXTHOP_EVENT_DEL, nh);
->         ~~~~~~~~~~~~~~~~~~~~~~      ^~~~~~~~~~~~~~~~~
-> 1 warning generated.
-> 
-> Use the right type for event_type so that clang does not warn.
-> 
-> Fixes: 8590ceedb701 ("nexthop: add support for notifiers")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1038
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> ---
->  net/ipv4/nexthop.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+Clang-10 and clang-11 run into a corner case of the register
+allocator on 32-bit ARM, leading to excessive stack usage from
+register spilling:
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+net/bridge/br_multicast.c:2422:6: error: stack frame size of 1472 bytes in function 'br_multicast_get_stats' [-Werror,-Wframe-larger-than=]
+
+Work around this by marking one of the internal functions as
+noinline_for_stack.
+
+Link: https://bugs.llvm.org/show_bug.cgi?id=45802#c9
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ net/bridge/br_multicast.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index ad12fe3fca8c..83490bf73a13 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -2413,7 +2413,8 @@ void br_multicast_uninit_stats(struct net_bridge *br)
+ 	free_percpu(br->mcast_stats);
+ }
+ 
+-static void mcast_stats_add_dir(u64 *dst, u64 *src)
++/* noinline for https://bugs.llvm.org/show_bug.cgi?id=45802#c9 */
++static noinline_for_stack void mcast_stats_add_dir(u64 *dst, u64 *src)
+ {
+ 	dst[BR_MCAST_DIR_RX] += src[BR_MCAST_DIR_RX];
+ 	dst[BR_MCAST_DIR_TX] += src[BR_MCAST_DIR_TX];
+-- 
+2.26.2
+
