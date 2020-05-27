@@ -2,450 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8899A1E389B
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 07:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F241E38D1
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 08:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbgE0Fyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 01:54:47 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:40746 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbgE0Fyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 01:54:47 -0400
-Received: from cyclone.blr.asicdesigners.com (cyclone.blr.asicdesigners.com [10.193.186.206])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 04R5sPu1008680;
-        Tue, 26 May 2020 22:54:26 -0700
-From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, borisp@mellanox.com,
-        jakub@cloudflare.com, secdev@chelsio.com,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Subject: [PATCH net-next,v2] crypto/chtls: IPv6 support for inline TLS
-Date:   Wed, 27 May 2020 11:23:52 +0530
-Message-Id: <20200527055352.7103-1-vinay.yadav@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1727923AbgE0GIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 02:08:36 -0400
+Received: from ozlabs.org ([203.11.71.1]:44889 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725267AbgE0GIg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 02:08:36 -0400
+Received: by ozlabs.org (Postfix, from userid 1023)
+        id 49X0kp299jz9sSW; Wed, 27 May 2020 16:08:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
+        t=1590559714; bh=hZQnCgxdydb3gtmG6TGmUAu7vpiPMlaiiu7ud8Cr4g8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uZD3sEtaHFDW7AR+fp2QDCso9T9AJ2LnrpvpFPuRrtIadGrL+pJPUa56Xu8jNoppx
+         JSdTi4N9LCG4E8kTDKA0yJPTeMyJ8qQwxReVSQmpPblIMz8SU9/r/TmbMNMn0YQ9JQ
+         Yvnk8i5ItsjHywqhO4+17K5cuQq4r47/UmkdC60CcsJmua1t8Gj+hnNCDXsRU99zuY
+         HzW46ZEg7lna+PxfUeWVRglRMOXlXk/6axcxSPHBZ2ulrYnFnNfbE605/V/kw07aEJ
+         TaneuAGcxKTrgXHlXXiXz7kZ8GiH70SKyxhIIB6hS2EtgVA3i2dq/IXUpYre7gEh6q
+         uuuRoQrIsWafg==
+From:   Jeremy Kerr <jk@ozlabs.org>
+To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     Freddy Xin <freddy@asix.com.tw>, Peter Fink <pfink@christ-es.de>,
+        Allan Chou <allan@asix.com.tw>
+Subject: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
+Date:   Wed, 27 May 2020 14:03:34 +0800
+Message-Id: <20200527060334.19441-1-jk@ozlabs.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extends support to IPv6 for Inline TLS server.
+Using a AX88179 device (0b95:1790), I see two bytes of appended data on
+every RX packet. For example, this 48-byte ping, using 0xff as a
+payload byte:
 
-Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+  04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
+	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
+	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
+	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
+	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
+	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
+	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
+	0x0060:  ffff 961f
 
-v1->v2:
-- cc'd tcp folks.
+Those last two bytes - 96 1f - aren't part of the original packet.
+
+In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte
+'alignment pseudo header' from the start of the packet, and sets the
+length from a per-packet field populated by hardware. It looks like that
+length field *includes* the 2-byte header; the current driver assumes
+that it's excluded.
+
+This change trims the 2-byte alignment header after we've set the packet
+length, so the resulting packet length is correct. While we're moving
+the comment around, this also fixes the spelling of 'pseudo'.
+
+Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
+
 ---
- drivers/crypto/chelsio/chtls/chtls_cm.c   | 195 +++++++++++++++++-----
- drivers/crypto/chelsio/chtls/chtls_cm.h   |   1 +
- drivers/crypto/chelsio/chtls/chtls_main.c |  14 +-
- net/ipv6/tcp_ipv6.c                       |   1 +
- 4 files changed, 168 insertions(+), 43 deletions(-)
+RFC: I don't have access to docs for this hardware, so this is all based
+on observed behaviour of the reported packet length.
+---
+ drivers/net/usb/ax88179_178a.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.c b/drivers/crypto/chelsio/chtls/chtls_cm.c
-index d5720a859443..9a642c79a657 100644
---- a/drivers/crypto/chelsio/chtls/chtls_cm.c
-+++ b/drivers/crypto/chelsio/chtls/chtls_cm.c
-@@ -18,13 +18,20 @@
- #include <linux/kallsyms.h>
- #include <linux/kprobes.h>
- #include <linux/if_vlan.h>
-+#include <linux/ipv6.h>
-+#include <net/ipv6.h>
-+#include <net/transp_v6.h>
-+#include <net/ip6_route.h>
- #include <net/inet_common.h>
- #include <net/tcp.h>
- #include <net/dst.h>
- #include <net/tls.h>
-+#include <net/addrconf.h>
-+#include <net/secure_seq.h>
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 93044cf1417a..1fe4cc28d154 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		}
  
- #include "chtls.h"
- #include "chtls_cm.h"
-+#include "clip_tbl.h"
- 
- /*
-  * State transitions and actions for close.  Note that if we are in SYN_SENT
-@@ -82,15 +89,36 @@ static void chtls_sock_release(struct kref *ref)
- 	kfree(csk);
- }
- 
--static struct net_device *chtls_ipv4_netdev(struct chtls_dev *cdev,
-+static struct net_device *chtls_find_netdev(struct chtls_dev *cdev,
- 					    struct sock *sk)
- {
- 	struct net_device *ndev = cdev->ports[0];
-+	struct net_device *temp;
-+	int addr_type;
-+
-+	switch (sk->sk_family) {
-+	case PF_INET:
-+		if (likely(!inet_sk(sk)->inet_rcv_saddr))
-+			return ndev;
-+		ndev = ip_dev_find(&init_net, inet_sk(sk)->inet_rcv_saddr);
-+		break;
-+	case PF_INET6:
-+		addr_type = ipv6_addr_type(&sk->sk_v6_rcv_saddr);
-+		if (likely(addr_type == IPV6_ADDR_ANY))
-+			return ndev;
-+
-+	for_each_netdev_rcu(&init_net, temp) {
-+		if (ipv6_chk_addr(&init_net, (struct in6_addr *)
-+				  &sk->sk_v6_rcv_saddr, temp, 1)) {
-+			ndev = temp;
-+			break;
-+		}
-+	}
-+	break;
-+	default:
-+		return NULL;
-+	}
- 
--	if (likely(!inet_sk(sk)->inet_rcv_saddr))
--		return ndev;
--
--	ndev = ip_dev_find(&init_net, inet_sk(sk)->inet_rcv_saddr);
- 	if (!ndev)
- 		return NULL;
- 
-@@ -446,7 +474,10 @@ void chtls_destroy_sock(struct sock *sk)
- 	free_tls_keyid(sk);
- 	kref_put(&csk->kref, chtls_sock_release);
- 	csk->cdev = NULL;
--	sk->sk_prot = &tcp_prot;
-+	if (sk->sk_family == AF_INET)
-+		sk->sk_prot = &tcp_prot;
-+	else
-+		sk->sk_prot = &tcpv6_prot;
- 	sk->sk_prot->destroy(sk);
- }
- 
-@@ -473,7 +504,8 @@ static void chtls_disconnect_acceptq(struct sock *listen_sk)
- 	while (*pprev) {
- 		struct request_sock *req = *pprev;
- 
--		if (req->rsk_ops == &chtls_rsk_ops) {
-+		if (req->rsk_ops == &chtls_rsk_ops ||
-+		    req->rsk_ops == &chtls_rsk_opsv6) {
- 			struct sock *child = req->sk;
- 
- 			*pprev = req->dl_next;
-@@ -600,14 +632,13 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
- 	struct listen_ctx *ctx;
- 	struct adapter *adap;
- 	struct port_info *pi;
-+	bool clip_valid;
- 	int stid;
- 	int ret;
- 
--	if (sk->sk_family != PF_INET)
--		return -EAGAIN;
--
-+	clip_valid = false;
- 	rcu_read_lock();
--	ndev = chtls_ipv4_netdev(cdev, sk);
-+	ndev = chtls_find_netdev(cdev, sk);
- 	rcu_read_unlock();
- 	if (!ndev)
- 		return -EBADF;
-@@ -638,16 +669,35 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
- 	if (!listen_hash_add(cdev, sk, stid))
- 		goto free_stid;
- 
--	ret = cxgb4_create_server(ndev, stid,
--				  inet_sk(sk)->inet_rcv_saddr,
--				  inet_sk(sk)->inet_sport, 0,
--				  cdev->lldi->rxq_ids[0]);
-+	if (sk->sk_family == PF_INET) {
-+		ret = cxgb4_create_server(ndev, stid,
-+					  inet_sk(sk)->inet_rcv_saddr,
-+					  inet_sk(sk)->inet_sport, 0,
-+					  cdev->lldi->rxq_ids[0]);
-+	} else {
-+		int addr_type;
-+
-+		addr_type = ipv6_addr_type(&sk->sk_v6_rcv_saddr);
-+		if (addr_type != IPV6_ADDR_ANY) {
-+			ret = cxgb4_clip_get(ndev, (const u32 *)
-+					     &sk->sk_v6_rcv_saddr, 1);
-+			if (ret)
-+				goto del_hash;
-+			clip_valid = true;
-+		}
-+		ret = cxgb4_create_server6(ndev, stid,
-+					   &sk->sk_v6_rcv_saddr,
-+					   inet_sk(sk)->inet_sport,
-+					   cdev->lldi->rxq_ids[0]);
-+	}
- 	if (ret > 0)
- 		ret = net_xmit_errno(ret);
- 	if (ret)
- 		goto del_hash;
- 	return 0;
- del_hash:
-+	if (clip_valid)
-+		cxgb4_clip_release(ndev, (const u32 *)&sk->sk_v6_rcv_saddr, 1);
- 	listen_hash_del(cdev, sk);
- free_stid:
- 	cxgb4_free_stid(cdev->tids, stid, sk->sk_family);
-@@ -661,6 +711,8 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
- void chtls_listen_stop(struct chtls_dev *cdev, struct sock *sk)
- {
- 	struct listen_ctx *listen_ctx;
-+	struct chtls_sock *csk;
-+	int addr_type = 0;
- 	int stid;
- 
- 	stid = listen_hash_del(cdev, sk);
-@@ -671,7 +723,16 @@ void chtls_listen_stop(struct chtls_dev *cdev, struct sock *sk)
- 	chtls_reset_synq(listen_ctx);
- 
- 	cxgb4_remove_server(cdev->lldi->ports[0], stid,
--			    cdev->lldi->rxq_ids[0], 0);
-+			    cdev->lldi->rxq_ids[0], sk->sk_family == PF_INET6);
-+
-+	if (sk->sk_family == PF_INET6) {
-+		csk = rcu_dereference_sk_user_data(sk);
-+		addr_type = ipv6_addr_type((const struct in6_addr *)
-+					  &sk->sk_v6_rcv_saddr);
-+		if (addr_type != IPV6_ADDR_ANY)
-+			cxgb4_clip_release(csk->egress_dev, (const u32 *)
-+					   &sk->sk_v6_rcv_saddr, 1);
-+	}
- 	chtls_disconnect_acceptq(sk);
- }
- 
-@@ -880,7 +941,10 @@ static unsigned int chtls_select_mss(const struct chtls_sock *csk,
- 	tp = tcp_sk(sk);
- 	tcpoptsz = 0;
- 
--	iphdrsz = sizeof(struct iphdr) + sizeof(struct tcphdr);
-+	if (sk->sk_family == AF_INET6)
-+		iphdrsz = sizeof(struct ipv6hdr) + sizeof(struct tcphdr);
-+	else
-+		iphdrsz = sizeof(struct iphdr) + sizeof(struct tcphdr);
- 	if (req->tcpopt.tstamp)
- 		tcpoptsz += round_up(TCPOLEN_TIMESTAMP, 4);
- 
-@@ -1045,11 +1109,29 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- 	if (!newsk)
- 		goto free_oreq;
- 
--	dst = inet_csk_route_child_sock(lsk, newsk, oreq);
--	if (!dst)
--		goto free_sk;
-+	if (lsk->sk_family == AF_INET) {
-+		dst = inet_csk_route_child_sock(lsk, newsk, oreq);
-+		if (!dst)
-+			goto free_sk;
- 
--	n = dst_neigh_lookup(dst, &iph->saddr);
-+		n = dst_neigh_lookup(dst, &iph->saddr);
-+	} else {
-+		const struct ipv6hdr *ip6h;
-+		struct flowi6 fl6;
-+
-+		ip6h = (const struct ipv6hdr *)network_hdr;
-+		memset(&fl6, 0, sizeof(fl6));
-+		fl6.flowi6_proto = IPPROTO_TCP;
-+		fl6.saddr = ip6h->daddr;
-+		fl6.daddr = ip6h->saddr;
-+		fl6.fl6_dport = inet_rsk(oreq)->ir_rmt_port;
-+		fl6.fl6_sport = htons(inet_rsk(oreq)->ir_num);
-+		security_req_classify_flow(oreq, flowi6_to_flowi(&fl6));
-+		dst = ip6_dst_lookup_flow(sock_net(lsk), lsk, &fl6, NULL);
-+		if (IS_ERR(dst))
-+			goto free_sk;
-+		n = dst_neigh_lookup(dst, &ip6h->saddr);
-+	}
- 	if (!n)
- 		goto free_sk;
- 
-@@ -1072,9 +1154,28 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- 	tp = tcp_sk(newsk);
- 	newinet = inet_sk(newsk);
- 
--	newinet->inet_daddr = iph->saddr;
--	newinet->inet_rcv_saddr = iph->daddr;
--	newinet->inet_saddr = iph->daddr;
-+	if (iph->version == 0x4) {
-+		newinet->inet_daddr = iph->saddr;
-+		newinet->inet_rcv_saddr = iph->daddr;
-+		newinet->inet_saddr = iph->daddr;
-+	} else {
-+		struct tcp6_sock *newtcp6sk = (struct tcp6_sock *)newsk;
-+		struct inet_request_sock *treq = inet_rsk(oreq);
-+		struct ipv6_pinfo *newnp = inet6_sk(newsk);
-+		struct ipv6_pinfo *np = inet6_sk(lsk);
-+
-+		inet_sk(newsk)->pinet6 = &newtcp6sk->inet6;
-+		memcpy(newnp, np, sizeof(struct ipv6_pinfo));
-+		newsk->sk_v6_daddr = treq->ir_v6_rmt_addr;
-+		newsk->sk_v6_rcv_saddr = treq->ir_v6_loc_addr;
-+		inet6_sk(newsk)->saddr = treq->ir_v6_loc_addr;
-+		newnp->ipv6_fl_list = NULL;
-+		newnp->pktoptions = NULL;
-+		newsk->sk_bound_dev_if = treq->ir_iif;
-+		newinet->inet_opt = NULL;
-+		newinet->inet_daddr = LOOPBACK4_IPV6;
-+		newinet->inet_saddr = LOOPBACK4_IPV6;
-+	}
- 
- 	oreq->ts_recent = PASS_OPEN_TID_G(ntohl(req->tos_stid));
- 	sk_setup_caps(newsk, dst);
-@@ -1156,6 +1257,7 @@ static void chtls_pass_accept_request(struct sock *sk,
- 	struct sk_buff *reply_skb;
- 	struct chtls_sock *csk;
- 	struct chtls_dev *cdev;
-+	struct ipv6hdr *ip6h;
- 	struct tcphdr *tcph;
- 	struct sock *newsk;
- 	struct ethhdr *eh;
-@@ -1196,37 +1298,50 @@ static void chtls_pass_accept_request(struct sock *sk,
- 	if (sk_acceptq_is_full(sk))
- 		goto reject;
- 
--	oreq = inet_reqsk_alloc(&chtls_rsk_ops, sk, true);
--	if (!oreq)
--		goto reject;
--
--	oreq->rsk_rcv_wnd = 0;
--	oreq->rsk_window_clamp = 0;
--	oreq->cookie_ts = 0;
--	oreq->mss = 0;
--	oreq->ts_recent = 0;
- 
- 	eth_hdr_len = T6_ETH_HDR_LEN_G(ntohl(req->hdr_len));
- 	if (eth_hdr_len == ETH_HLEN) {
- 		eh = (struct ethhdr *)(req + 1);
- 		iph = (struct iphdr *)(eh + 1);
-+		ip6h = (struct ipv6hdr *)(eh + 1);
- 		network_hdr = (void *)(eh + 1);
- 	} else {
- 		vlan_eh = (struct vlan_ethhdr *)(req + 1);
- 		iph = (struct iphdr *)(vlan_eh + 1);
-+		ip6h = (struct ipv6hdr *)(vlan_eh + 1);
- 		network_hdr = (void *)(vlan_eh + 1);
- 	}
--	if (iph->version != 0x4)
--		goto free_oreq;
- 
--	tcph = (struct tcphdr *)(iph + 1);
--	skb_set_network_header(skb, (void *)iph - (void *)req);
-+	if (iph->version == 0x4) {
-+		tcph = (struct tcphdr *)(iph + 1);
-+		skb_set_network_header(skb, (void *)iph - (void *)req);
-+		oreq = inet_reqsk_alloc(&chtls_rsk_ops, sk, true);
-+	} else {
-+		tcph = (struct tcphdr *)(ip6h + 1);
-+		skb_set_network_header(skb, (void *)ip6h - (void *)req);
-+		oreq = inet_reqsk_alloc(&chtls_rsk_opsv6, sk, false);
-+	}
-+
-+	if (!oreq)
-+		goto reject;
-+
-+	oreq->rsk_rcv_wnd = 0;
-+	oreq->rsk_window_clamp = 0;
-+	oreq->cookie_ts = 0;
-+	oreq->mss = 0;
-+	oreq->ts_recent = 0;
- 
- 	tcp_rsk(oreq)->tfo_listener = false;
- 	tcp_rsk(oreq)->rcv_isn = ntohl(tcph->seq);
- 	chtls_set_req_port(oreq, tcph->source, tcph->dest);
--	chtls_set_req_addr(oreq, iph->daddr, iph->saddr);
--	ip_dsfield = ipv4_get_dsfield(iph);
-+	if (iph->version == 0x4) {
-+		chtls_set_req_addr(oreq, iph->daddr, iph->saddr);
-+		ip_dsfield = ipv4_get_dsfield(iph);
-+	} else {
-+		inet_rsk(oreq)->ir_v6_rmt_addr = ipv6_hdr(skb)->saddr;
-+		inet_rsk(oreq)->ir_v6_loc_addr = ipv6_hdr(skb)->daddr;
-+		ip_dsfield = ipv6_get_dsfield(ipv6_hdr(skb));
-+	}
- 	if (req->tcpopt.wsf <= 14 &&
- 	    sock_net(sk)->ipv4.sysctl_tcp_window_scaling) {
- 		inet_rsk(oreq)->wscale_ok = 1;
-@@ -1243,7 +1358,7 @@ static void chtls_pass_accept_request(struct sock *sk,
- 
- 	newsk = chtls_recv_sock(sk, oreq, network_hdr, req, cdev);
- 	if (!newsk)
--		goto reject;
-+		goto free_oreq;
- 
- 	if (chtls_get_module(newsk))
- 		goto reject;
-diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.h b/drivers/crypto/chelsio/chtls/chtls_cm.h
-index 3fac0c74a41f..47ba81e42f5d 100644
---- a/drivers/crypto/chelsio/chtls/chtls_cm.h
-+++ b/drivers/crypto/chelsio/chtls/chtls_cm.h
-@@ -79,6 +79,7 @@ enum {
- 
- typedef void (*defer_handler_t)(struct chtls_dev *dev, struct sk_buff *skb);
- extern struct request_sock_ops chtls_rsk_ops;
-+extern struct request_sock_ops chtls_rsk_opsv6;
- 
- struct deferred_skb_cb {
- 	defer_handler_t handler;
-diff --git a/drivers/crypto/chelsio/chtls/chtls_main.c b/drivers/crypto/chelsio/chtls/chtls_main.c
-index 2110d0893bc7..7dfffdde9593 100644
---- a/drivers/crypto/chelsio/chtls/chtls_main.c
-+++ b/drivers/crypto/chelsio/chtls/chtls_main.c
-@@ -13,6 +13,8 @@
- #include <linux/net.h>
- #include <linux/ip.h>
- #include <linux/tcp.h>
-+#include <net/ipv6.h>
-+#include <net/transp_v6.h>
- #include <net/tcp.h>
- #include <net/tls.h>
- 
-@@ -30,8 +32,8 @@ static DEFINE_MUTEX(cdev_mutex);
- 
- static DEFINE_MUTEX(notify_mutex);
- static RAW_NOTIFIER_HEAD(listen_notify_list);
--static struct proto chtls_cpl_prot;
--struct request_sock_ops chtls_rsk_ops;
-+static struct proto chtls_cpl_prot, chtls_cpl_protv6;
-+struct request_sock_ops chtls_rsk_ops, chtls_rsk_opsv6;
- static uint send_page_order = (14 - PAGE_SHIFT < 0) ? 0 : 14 - PAGE_SHIFT;
- 
- static void register_listen_notifier(struct notifier_block *nb)
-@@ -586,7 +588,10 @@ static struct cxgb4_uld_info chtls_uld_info = {
- 
- void chtls_install_cpl_ops(struct sock *sk)
- {
--	sk->sk_prot = &chtls_cpl_prot;
-+	if (sk->sk_family == AF_INET)
-+		sk->sk_prot = &chtls_cpl_prot;
-+	else
-+		sk->sk_prot = &chtls_cpl_protv6;
- }
- 
- static void __init chtls_init_ulp_ops(void)
-@@ -603,6 +608,9 @@ static void __init chtls_init_ulp_ops(void)
- 	chtls_cpl_prot.recvmsg		= chtls_recvmsg;
- 	chtls_cpl_prot.setsockopt	= chtls_setsockopt;
- 	chtls_cpl_prot.getsockopt	= chtls_getsockopt;
-+	chtls_cpl_protv6		= chtls_cpl_prot;
-+	chtls_init_rsk_ops(&chtls_cpl_protv6, &chtls_rsk_opsv6,
-+			   &tcpv6_prot, PF_INET6);
- }
- 
- static int __init chtls_register(void)
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 413b3425ac66..456cb6648c05 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -2110,6 +2110,7 @@ struct proto tcpv6_prot = {
- #endif
- 	.diag_destroy		= tcp_abort,
- };
-+EXPORT_SYMBOL(tcpv6_prot);
- 
- /* thinking of making this const? Don't.
-  * early_demux can change based on sysctl.
+ 		if (pkt_cnt == 0) {
+-			/* Skip IP alignment psudo header */
+-			skb_pull(skb, 2);
+ 			skb->len = pkt_len;
+-			skb_set_tail_pointer(skb, pkt_len);
++			/* Skip IP alignment pseudo header */
++			skb_pull(skb, 2);
++			skb_set_tail_pointer(skb, skb->len);
+ 			skb->truesize = pkt_len + sizeof(struct sk_buff);
+ 			ax88179_rx_checksum(skb, pkt_hdr);
+ 			return 1;
+@@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		ax_skb = skb_clone(skb, GFP_ATOMIC);
+ 		if (ax_skb) {
+ 			ax_skb->len = pkt_len;
+-			ax_skb->data = skb->data + 2;
+-			skb_set_tail_pointer(ax_skb, pkt_len);
++			/* Skip IP alignment pseudo header */
++			skb_pull(ax_skb, 2);
++			skb_set_tail_pointer(ax_skb, ax_skb->len);
+ 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+ 			ax88179_rx_checksum(ax_skb, pkt_hdr);
+ 			usbnet_skb_return(dev, ax_skb);
 -- 
-2.18.1
+2.17.1
 
