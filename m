@@ -2,126 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC2C1E3C68
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:45:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB9F1E3C77
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 10:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388233AbgE0Iop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 04:44:45 -0400
-Received: from mail-bn8nam11on2041.outbound.protection.outlook.com ([40.107.236.41]:35072
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388215AbgE0Ioj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 04:44:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lVKKsmkP8qAecNXmBK3ICa+09LpIz1Myb0JLXHjFO3K6/Lu9gPgUgExrpDGe2yDbvDgj+0XVSE6HzmGWk6eVqLjGRaiEOoGlrajjSseaUcU4uxcYAs1VmUFwZ8vuD8rys/xZq+k6o5MSkPMWItVpQaA2w8KQF8l7nl4iqnWi0BZzHKyi12RC6lIhDAH0Hd9wYyRsis9dV6kJ8WA8lW7nUAhdppajEfgDeX6M2mF8ujTYUXXFudl5F3o/9Ci6MospVXI4LjtvS9D9TpKkQTCH/VS0eipufpCN2WZt4zuh8eYqveH5mqBkOuI+43BKCo6lMKALHjz5By6SQoLXmulIFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hAagga99GFN+ODWjfqYd82ZIzQuKXuON23XxpS8BSnk=;
- b=D/rIzPuxW2FFbL+GB+9bBeBl9YWd0ZzgVPjEpDUuQIjosm6i2cQ0Bvp6/b30PBQWNg2Y+yPx4RGz36WC0aGNcgepGw0CQ2iTHu+nqYVGrhtTDMU8J6DISot+Xc58Nf0nYgKhsSxdmp/AYhzxhBFm5o5j4CsMQM1Qpke6BjaikJ14DMSfkvE+Lj9zvkkDsbBOLOpe8y/KHdbIfLMmWb4kc7MCjQhPmBHUls7UBKFTt37AYj/vg0zBFrGGKHAzJurWG8wjDFyUCHPrUaMoIcDLXnqb0dzTuMlJhpFQtbm2GClIggXoAdZ37M4LmdqSxylh/eylPfhQprNyS7Dq8z/WOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hAagga99GFN+ODWjfqYd82ZIzQuKXuON23XxpS8BSnk=;
- b=rcYYLmkDawIvsqz7LYH48W1lkBWxyZc//XyhIfDHBlUvKXbP6XKpGaTDQBG0LS+3nx+BeYi0ObOgZkwe1OWJ3aAlvWCy4O7i3MRUyfnDY17RWIwCsiJmy0e3fP4irw0ACUbeg/2rkKEVkeFAtmLeS5N5IWImQoj6fukq96vd1kg=
-Received: from DM5PR05MB3452.namprd05.prod.outlook.com (2603:10b6:4:41::11) by
- DM5PR05MB3017.namprd05.prod.outlook.com (2603:10b6:3:52::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3045.7; Wed, 27 May 2020 08:44:36 +0000
-Received: from DM5PR05MB3452.namprd05.prod.outlook.com
- ([fe80::2d96:bf09:a581:8b60]) by DM5PR05MB3452.namprd05.prod.outlook.com
- ([fe80::2d96:bf09:a581:8b60%7]) with mapi id 15.20.3045.014; Wed, 27 May 2020
- 08:44:36 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     'Stefano Garzarella' <sgarzare@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     George Zhang <georgezhang@vmware.com>,
-        Andy King <acking@vmware.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Dmitry Torokhov <dtor@vmware.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [PATCH net] vsock: fix timeout in vsock_accept()
-Thread-Topic: [PATCH net] vsock: fix timeout in vsock_accept()
-Thread-Index: AQHWM/xtrRnaG233x0K8YqiP0g9JX6i7nX0g
-Date:   Wed, 27 May 2020 08:44:36 +0000
-Message-ID: <DM5PR05MB345254AA5CAE454B47E11DEEDAB10@DM5PR05MB3452.namprd05.prod.outlook.com>
-References: <20200527075655.69889-1-sgarzare@redhat.com>
-In-Reply-To: <20200527075655.69889-1-sgarzare@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=vmware.com;
-x-originating-ip: [208.91.2.2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 398622d1-e3c7-4e30-ce7b-08d8021a2fe0
-x-ms-traffictypediagnostic: DM5PR05MB3017:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR05MB301736172FF64E283AFC205FDAB10@DM5PR05MB3017.namprd05.prod.outlook.com>
-x-vmwhitelist: True
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NMRshgNuAhf+tRW+J1rRHLZUQgOa1/QN8lhGLJYvoG8JqLZE+2HDqoGJAGAO/8a6vb8cSUS5xQx/cUGmaYIZKqLS+gPLwFtPjiqM1WVa0UrrFWNb67ST1rgpK7DBd8TnpbPY3kiCf/nLovMIM4QXHINVsZkSfdEwBY+uGD7s3Rdct840e9ctbUlzqY23UdWxMaA0HrUQb9LKUE/e5Jwd6Pv94QVIX+AwTK0d/5IJOssh+CuFeZaA1roBian+iNS3hWwdNdxD3jAHtsAxBg39JDQT1XEUVIv1c81ps6MA99DfrIDNyuw/PJv0a6CTRN8o+XRj8kuEMkwJx84Mjr5Ixw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR05MB3452.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(366004)(346002)(396003)(39860400002)(316002)(2906002)(66556008)(66946007)(76116006)(478600001)(66446008)(66476007)(7696005)(4326008)(83380400001)(26005)(8936002)(6506007)(5660300002)(64756008)(186003)(71200400001)(8676002)(110136005)(54906003)(86362001)(33656002)(55016002)(9686003)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 3Rzey7yd6Awvk7tZSoFxVvmfYf04L7mQx94x4CnLbJ/IViHD97F6j9pVo6cSlI6F1psyALc4qrI1DZPN0EfO8n0YGrqgZGOvV5R8sOEFDdrOEMRXOEJ7nX1LHzdTpQmeB6EEncnV+BlGUhpEwy6mX8ipqWUo/wHk+n4Fi9F3NKrDYExmP/YbDkIic5nDT3Q8O0qur1M5RIsrgcA0WwX5mlMm+LAzu/IcWOcjwvQAxzg/ClDiMQwVQMPEYQjz80oy7bT/3KU01dk1Wu/FVkSKmQrR5Pcyd2IqbgFEpRqAxTI5taoK509W80bTp6buYF6bGvdLknhRRi7vyh+ku1ixltvpG+ii8uWL/+uFZjtmcXeXbVJKuI3zvFdc5iVEqwSyTwvAtIsOJGD2ZLtcEmTntEKZoKZbN81LRYCq7H/YHeLBNTCNcF1vPtDlqLy7vpGYfbd26lNObYOBoJu3X+P3dyGSl+BMqxYTNOPtBQ1X4MM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2388200AbgE0IqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 04:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388107AbgE0IqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 04:46:20 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E5CC061A0F
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 01:46:20 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id k18so25131116ion.0
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 01:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cpwITzrftWrJAY0LVaSeu6jYTmkJe1PVewzQjLawjdA=;
+        b=GxKyCH668dBc5VipkdT8YFjPTCx5H6Ette6THzOjjs/DRDGNcXIMDQi5ZP5v3Sf9Oa
+         mwVrP6RSqnYeL10DiHJM1SOkKIcn6brwgQRHX0b0oKqUeDUGj/rjNQW55Xq53NQfseRD
+         vXhZTU3mB8ZA8VEHKczO26DPAktbj8hdettUmRE8i6vyRvcYoYFGvApZ8ukhZ5+bQK7D
+         9L8+5xCW38IQadhYPoyI/PQs166Rw+w8+8SWRYvSIyYFnkV+77MOB9qUtGq2ER6cdPV/
+         +/sr0UAOp1UfaGH7K0FiwaDoGqoJN+EI3wjFXv9n4Zv/oSigkjbvRq3z7WEgWAq+aZOX
+         0EsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cpwITzrftWrJAY0LVaSeu6jYTmkJe1PVewzQjLawjdA=;
+        b=NgPJtcJvX887u1MAWoRx6bViAixSn0ACW43Pk/cVN6cOgixDnqOnSF/NKydlyqjX/v
+         3EWS8m3IFyAxWARZctEikRtRWxaieQk+YLWQi5un1N69N4hjLboKSPtw8fc20PW8AWjq
+         Nuz57dfxAFNVwQdbRCM+EXbQ6c3/kNEfeOPan955damzK63jtYK4wcpuX/NGsh60X3qu
+         swrayKLTBxKAD3dkMQDmvBcCsbI9+sEHdXpDrvcFdH7tZR0sOAtya6lX67BiMn/RX+VP
+         E9rck4S/VW1eKXvoMLdWiM8ZppT++jXEJ0WOcgGcsp9/eKFUAXCfv8ovvZkkdNbqS0k5
+         S5oQ==
+X-Gm-Message-State: AOAM531+iL2Chn1UAA6xV3ylBqrtQmT+lzSNYU+Xqwvoox99Go09u6+W
+        /FXe5DtH7Ah5+cliJvLX2NmNtffy1cmPcH9mHNS2FQ==
+X-Google-Smtp-Source: ABdhPJwMXQdy6+RxEU74Dd9WQ5Tly2o2sH55kV9ZSrhh4NH0gl/D2WFHak2VKletNu2Ql3a2wNrDFJNkEIRMls/7rZo=
+X-Received: by 2002:a02:3e06:: with SMTP id s6mr4481666jas.57.1590569179357;
+ Wed, 27 May 2020 01:46:19 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 398622d1-e3c7-4e30-ce7b-08d8021a2fe0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 08:44:36.6603
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WXxZOdorDDkI9gePZ4uyTFmlckeefr90jcQu4qKO/pf9K+ONTgSyrgsMxELzMFk1r8j95L+xLpR1V98Z+JZRsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR05MB3017
+References: <20200522120700.838-1-brgl@bgdev.pl> <20200522120700.838-7-brgl@bgdev.pl>
+ <20200527073150.GA3384158@ubuntu-s3-xlarge-x86>
+In-Reply-To: <20200527073150.GA3384158@ubuntu-s3-xlarge-x86>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 27 May 2020 10:46:08 +0200
+Message-ID: <CAMRc=MevVsYZFDQif+8Zyv41sSkbS8XqWbKGdCvHooneXz88hg@mail.gmail.com>
+Subject: Re: [PATCH v5 06/11] net: ethernet: mtk-star-emac: new driver
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Stefano Garzarella <sgarzare@redhat.com>
-> Sent: Wednesday, May 27, 2020 9:57 AM
->=20
-> The accept(2) is an "input" socket interface, so we should use
-> SO_RCVTIMEO instead of SO_SNDTIMEO to set the timeout.
->=20
-> So this patch replace sock_sndtimeo() with sock_rcvtimeo() to
-> use the right timeout in the vsock_accept().
->=20
-> Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->  net/vmw_vsock/af_vsock.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index a5f28708e0e7..626bf9044418 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -1408,7 +1408,7 @@ static int vsock_accept(struct socket *sock, struct
-> socket *newsock, int flags,
->  	/* Wait for children sockets to appear; these are the new sockets
->  	 * created upon connection establishment.
->  	 */
-> -	timeout =3D sock_sndtimeo(listener, flags & O_NONBLOCK);
-> +	timeout =3D sock_rcvtimeo(listener, flags & O_NONBLOCK);
->  	prepare_to_wait(sk_sleep(listener), &wait, TASK_INTERRUPTIBLE);
->=20
->  	while ((connected =3D vsock_dequeue_accept(listener)) =3D=3D NULL &&
-> --
-> 2.25.4
+=C5=9Br., 27 maj 2020 o 09:31 Nathan Chancellor <natechancellor@gmail.com>
+napisa=C5=82(a):
+>
+> On Fri, May 22, 2020 at 02:06:55PM +0200, Bartosz Golaszewski wrote:
+>
+> <snip>
+>
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/ne=
+t/ethernet/mediatek/mtk_star_emac.c
+> > new file mode 100644
+> > index 000000000000..789c77af501f
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+> > @@ -0,0 +1,1678 @@
+>
+> <snip>
+>
+> I've searched netdev and I cannot find any reports from others but this
+> function introduces a clang warning:
+>
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:6: warning: variable '=
+new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsome=
+times-uninitialized]
+>         if (!new_skb) {
+>             ^~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
+d use occurs here
+>         desc_data.dma_addr =3D new_dma_addr;
+>                              ^~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1296:2: note: remove the 'i=
+f' if its condition is always false
+>         if (!new_skb) {
+>         ^~~~~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable '=
+new_dma_addr' is used uninitialized whenever 'if' condition is true [-Wsome=
+times-uninitialized]
+>         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
+>             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
+d use occurs here
+>         desc_data.dma_addr =3D new_dma_addr;
+>                              ^~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:2: note: remove the 'i=
+f' if its condition is always false
+>         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: warning: variable '=
+new_dma_addr' is used uninitialized whenever '||' condition is true [-Wsome=
+times-uninitialized]
+>         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
+>             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1321:23: note: uninitialize=
+d use occurs here
+>         desc_data.dma_addr =3D new_dma_addr;
+>                              ^~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1285:6: note: remove the '|=
+|' if its condition is always false
+>         if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
+>             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/mediatek/mtk_star_emac.c:1274:25: note: initialize t=
+he variable 'new_dma_addr' to silence this warning
+>         dma_addr_t new_dma_addr;
+>                                ^
+>                                 =3D 0
+> 3 warnings generated.
+>
+> > +static int mtk_star_receive_packet(struct mtk_star_priv *priv)
+> > +{
+> > +     struct mtk_star_ring *ring =3D &priv->rx_ring;
+> > +     struct device *dev =3D mtk_star_get_dev(priv);
+> > +     struct mtk_star_ring_desc_data desc_data;
+> > +     struct net_device *ndev =3D priv->ndev;
+> > +     struct sk_buff *curr_skb, *new_skb;
+> > +     dma_addr_t new_dma_addr;
+>
+> Uninitialized here
+>
+> > +     int ret;
+> > +
+> > +     spin_lock(&priv->lock);
+> > +     ret =3D mtk_star_ring_pop_tail(ring, &desc_data);
+> > +     spin_unlock(&priv->lock);
+> > +     if (ret)
+> > +             return -1;
+> > +
+> > +     curr_skb =3D desc_data.skb;
+> > +
+> > +     if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
+> > +         (desc_data.flags & MTK_STAR_DESC_BIT_RX_OSIZE)) {
+> > +             /* Error packet -> drop and reuse skb. */
+> > +             new_skb =3D curr_skb;
+> > +             goto push_new_skb;
+>
+> this goto
+>
+> > +     }
+> > +
+> > +     /* Prepare new skb before receiving the current one. Reuse the cu=
+rrent
+> > +      * skb if we fail at any point.
+> > +      */
+> > +     new_skb =3D mtk_star_alloc_skb(ndev);
+> > +     if (!new_skb) {
+> > +             ndev->stats.rx_dropped++;
+> > +             new_skb =3D curr_skb;
+> > +             goto push_new_skb;
+>
+> and this goto
+>
+> > +     }
+> > +
+> > +     new_dma_addr =3D mtk_star_dma_map_rx(priv, new_skb);
+> > +     if (dma_mapping_error(dev, new_dma_addr)) {
+> > +             ndev->stats.rx_dropped++;
+> > +             dev_kfree_skb(new_skb);
+> > +             new_skb =3D curr_skb;
+> > +             netdev_err(ndev, "DMA mapping error of RX descriptor\n");
+> > +             goto push_new_skb;
+> > +     }
+> > +
+> > +     /* We can't fail anymore at this point: it's safe to unmap the sk=
+b. */
+> > +     mtk_star_dma_unmap_rx(priv, &desc_data);
+> > +
+> > +     skb_put(desc_data.skb, desc_data.len);
+> > +     desc_data.skb->ip_summed =3D CHECKSUM_NONE;
+> > +     desc_data.skb->protocol =3D eth_type_trans(desc_data.skb, ndev);
+> > +     desc_data.skb->dev =3D ndev;
+> > +     netif_receive_skb(desc_data.skb);
+> > +
+> > +push_new_skb:
+> > +     desc_data.dma_addr =3D new_dma_addr;
+>
+> assign it uninitialized here.
+>
+> > +     desc_data.len =3D skb_tailroom(new_skb);
+> > +     desc_data.skb =3D new_skb;
+> > +
+> > +     spin_lock(&priv->lock);
+> > +     mtk_star_ring_push_head_rx(ring, &desc_data);
+> > +     spin_unlock(&priv->lock);
+> > +
+> > +     return 0;
+> > +}
+>
+> I don't know if there should be a new label that excludes that
+> assignment for those particular gotos or if new_dma_addr should
+> be initialized to something at the top. Please take a look at
+> addressing this when you get a chance.
+>
+> Cheers,
+> Nathan
 
-Thanks for fixing this!
+Hi Nathan,
 
-Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
+Thanks for reporting this! I have a fix ready and will send it shortly.
+
+Bartosz
