@@ -2,124 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF241E4EF9
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 22:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F12AC1E4F00
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 22:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbgE0UL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 16:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728395AbgE0ULz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 16:11:55 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA00C05BD1E;
-        Wed, 27 May 2020 13:11:55 -0700 (PDT)
-Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
-        by Galois.linutronix.de with esmtp (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1je2Oc-0005ku-9X; Wed, 27 May 2020 22:11:26 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mike Galbraith <umgwanakikbuti@gmail.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, netdev@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v3 5/7] connector/cn_proc: Protect send_msg() with a local lock
-Date:   Wed, 27 May 2020 22:11:17 +0200
-Message-Id: <20200527201119.1692513-6-bigeasy@linutronix.de>
-X-Mailer: git-send-email 2.27.0.rc0
-In-Reply-To: <20200527201119.1692513-1-bigeasy@linutronix.de>
-References: <20200527201119.1692513-1-bigeasy@linutronix.de>
+        id S1728149AbgE0UOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 16:14:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45120 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726887AbgE0UOE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 16:14:04 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BB9CB2073B;
+        Wed, 27 May 2020 20:14:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590610444;
+        bh=xDqL+7wCx+Yw6YyP2dedBJCsLJSoJR2OYd8fxMjAi8I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oJ3f/7ME3fBb2y4vFWcD7txKvfYkxEg9Ho2LjZgMqqUUYC4krH5vefQNUgVTvVEze
+         pdiBJ4cqLxh+eUlSeJoWpzaoSiYbuipOWZ8jjAYAcLOf+9Fdh28ptaQfTFQJUYXwn2
+         xb4DNrIAbgfh4rV3QzfgB6QkUG84cYsMdK6tvjc4=
+Date:   Wed, 27 May 2020 13:14:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
+ generic device parameter.
+Message-ID: <20200527131401.2e269ab8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAACQVJqTc9s2KwUCEvGLfG3fh7kKj3-KmpeRgZMWM76S-474+w@mail.gmail.com>
+References: <1590214105-10430-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        <1590214105-10430-2-git-send-email-vasundhara-v.volam@broadcom.com>
+        <20200524045335.GA22938@nanopsycho>
+        <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
+        <20200525172602.GA14161@nanopsycho>
+        <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
+        <20200526044727.GB14161@nanopsycho>
+        <CAACQVJp8SfmP=R=YywDWC8njhA=ntEcs5o_KjBoHafPkHaj-iA@mail.gmail.com>
+        <20200526134032.GD14161@nanopsycho>
+        <CAACQVJrwFB4oHjTAw4DK28grxGGP15x52+NskjDtOYQdOUMbOg@mail.gmail.com>
+        <CAACQVJqTc9s2KwUCEvGLfG3fh7kKj3-KmpeRgZMWM76S-474+w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Galbraith <umgwanakikbuti@gmail.com>
+On Wed, 27 May 2020 09:07:09 +0530 Vasundhara Volam wrote:
+> Here is a sample sequence of commands to do a "live reset" to get some
+> clear idea.
+> Note that I am providing the examples based on the current patchset.
+> 
+> 1. FW live reset is disabled in the device/adapter. Here adapter has 2
+> physical ports.
+> 
+> $ devlink dev
+> pci/0000:3b:00.0
+> pci/0000:3b:00.1
+> pci/0000:af:00.0
+> $ devlink dev param show pci/0000:3b:00.0 name allow_fw_live_reset
+> pci/0000:3b:00.0:
+>   name allow_fw_live_reset type generic
+>     values:
+>       cmode runtime value false
+>       cmode permanent value false
+> $ devlink dev param show pci/0000:3b:00.1 name allow_fw_live_reset
+> pci/0000:3b:00.1:
+>   name allow_fw_live_reset type generic
+>     values:
+>       cmode runtime value false
+>       cmode permanent value false
 
-send_msg() disables preemption to avoid out-of-order messages. As the
-code inside the preempt disabled section acquires regular spinlocks,
-which are converted to 'sleeping' spinlocks on a PREEMPT_RT kernel and
-eventually calls into a memory allocator, this conflicts with the RT
-semantics.
+What's the permanent value? What if after reboot the driver is too old
+to change this, is the reset still allowed?
 
-Convert it to a local_lock which allows RT kernels to substitute them with
-a real per CPU lock. On non RT kernels this maps to preempt_disable() as
-before. No functional change.
+> 2. If a user issues "ethtool --reset p1p1 all", the device cannot
+> perform "live reset" as capability is not enabled.
+>
+> User needs to do a driver reload, for firmware to undergo reset.
 
-[bigeasy: Patch description]
+Why does driver reload have anything to do with resetting a potentially
+MH device?
 
-Cc: Evgeniy Polyakov <zbr@ioremap.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Mike Galbraith <umgwanakikbuti@gmail.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/connector/cn_proc.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+> $ ethtool --reset p1p1 all
 
-diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-index d58ce664da843..646ad385e4904 100644
---- a/drivers/connector/cn_proc.c
-+++ b/drivers/connector/cn_proc.c
-@@ -18,6 +18,7 @@
- #include <linux/pid_namespace.h>
-=20
- #include <linux/cn_proc.h>
-+#include <linux/local_lock.h>
-=20
- /*
-  * Size of a cn_msg followed by a proc_event structure.  Since the
-@@ -38,25 +39,31 @@ static inline struct cn_msg *buffer_to_cn_msg(__u8 *buf=
-fer)
- static atomic_t proc_event_num_listeners =3D ATOMIC_INIT(0);
- static struct cb_id cn_proc_event_id =3D { CN_IDX_PROC, CN_VAL_PROC };
-=20
--/* proc_event_counts is used as the sequence number of the netlink message=
- */
--static DEFINE_PER_CPU(__u32, proc_event_counts) =3D { 0 };
-+/* local_event.count is used as the sequence number of the netlink message=
- */
-+struct local_event {
-+	local_lock_t lock;
-+	__u32 count;
-+};
-+static DEFINE_PER_CPU(struct local_event, local_event) =3D {
-+	.lock =3D INIT_LOCAL_LOCK(lock),
-+};
-=20
- static inline void send_msg(struct cn_msg *msg)
- {
--	preempt_disable();
-+	local_lock(&local_event.lock);
-=20
--	msg->seq =3D __this_cpu_inc_return(proc_event_counts) - 1;
-+	msg->seq =3D __this_cpu_inc_return(local_event.count) - 1;
- 	((struct proc_event *)msg->data)->cpu =3D smp_processor_id();
-=20
- 	/*
--	 * Preemption remains disabled during send to ensure the messages are
--	 * ordered according to their sequence numbers.
-+	 * local_lock() disables preemption during send to ensure the messages
-+	 * are ordered according to their sequence numbers.
- 	 *
- 	 * If cn_netlink_send() fails, the data is not sent.
- 	 */
- 	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
-=20
--	preempt_enable();
-+	local_unlock(&local_event.lock);
- }
-=20
- void proc_fork_connector(struct task_struct *task)
---=20
-2.27.0.rc0
+Reset probably needs to be done via devlink. In any case you need a new
+reset level for resetting MH devices and smartnics, because the current
+reset mask covers port local, and host local cases, not any form of MH.
+
+> ETHTOOL_RESET 0xffffffff
+> Components reset:     0xff0000
+> Components not reset: 0xff00ffff
+> $ dmesg
+> [  198.745822] bnxt_en 0000:3b:00.0 p1p1: Firmware reset request successful.
+> [  198.745836] bnxt_en 0000:3b:00.0 p1p1: Reload driver to complete reset
+
+You said the reset was not performed, yet there is no information to
+that effect in the log?!
+
+> 3. Now enable the capability in the device and reboot for device to
+> enable the capability. Firmware does not get reset just by setting the
+> param to true.
+> 
+> $ devlink dev param set pci/0000:3b:00.1 name allow_fw_live_reset
+> value true cmode permanent
+> 
+> 4. After reboot, values of param.
+
+Is the reboot required here?
+
+> $ devlink dev param show pci/0000:3b:00.1 name allow_fw_live_reset
+> pci/0000:3b:00.1:
+>   name allow_fw_live_reset type generic
+>     values:
+>       cmode runtime value true
+
+Why is runtime value true now?
+
+>       cmode permanent value true
+> $ devlink dev param show pci/0000:3b:00.0 name allow_fw_live_reset
+> pci/0000:3b:00.0:
+>   name allow_fw_live_reset type generic
+>     values:
+>       cmode runtime value true
+>       cmode permanent value true
+> 
+> 5. Now issue the "ethtool --reset p1p1 all" and device will undergo
+> the "live reset". Reloading the driver is not required.
+> 
+> $ ethtool --reset p1p1 all
+> ETHTOOL_RESET 0xffffffff
+> Components reset:     0xff0000
+> Components not reset: 0xff00ffff
+> $ dmesg
+> [  117.432013] bnxt_en 0000:3b:00.0 p1p1: Firmware non-fatal reset
+> event received, max wait time 4200 msec
+> [  117.432015] bnxt_en 0000:3b:00.0 p1p1: Firmware reset request successful.
+> [  117.432032] bnxt_en 0000:3b:00.1 p1p2: Firmware non-fatal reset
+> event received, max wait time 4200 msec
+> $ devlink health show pci/0000:3b:00.0 reporter fw_reset
+> pci/0000:3b:00.0:
+>   reporter fw_reset
+>     state healthy error 1 recover 1 grace_period 0 auto_recover true
+> 
+> 6. If one of the host/PF turns off runtime param to false, "ethtool
+> --reset p1p1 all" behaves similar to step 2, until it turns it back
+> on.
+> 
+> $ devlink dev param set pci/0000:3b:00.1 name allow_fw_live_reset
+> value false cmode runtime
+> $ ethtool --reset p1p1 all
+> ETHTOOL_RESET 0xffffffff
+> Components reset:     0xff0000
+> Components not reset: 0xff00ffff
+> $ dmesg
+> [  327.610814] bnxt_en 0000:3b:00.0 p1p1: Firmware reset request successful.
+> [  327.610828] bnxt_en 0000:3b:00.0 p1p1: Reload driver to complete reset
 
