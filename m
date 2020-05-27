@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C50B1E3D8D
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 11:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 440EE1E3D9C
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 11:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728806AbgE0J2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 05:28:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42492 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgE0J2c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 05:28:32 -0400
-Received: from lore-desk.lan (unknown [151.48.148.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8E70A20890;
-        Wed, 27 May 2020 09:28:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590571712;
-        bh=NCIcF/aN6YMziToxCMz9vHqC8BzCusF3Ikf1iEZXrP0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YEEPhdZ+avzBIFB/R3U5P9UMMBhEwEjXjbbO+dAdoVjJ2ORsv2RfMAAC3fQSc4Dpg
-         DHa6aZ7uvvjz/rtO/UkUn76Y0N6eSYqSB3opz0npaZqePm9xIvLULNtJVxFezXBC17
-         lH/6M99SjoILImYM/Ow6jA1awjaqNq5drvnspE+Y=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     ast@kernel.org, davem@davemloft.net, brouer@redhat.com,
-        daniel@iogearbox.net, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org, toshiaki.makita1@gmail.com
-Subject: [PATCH v2 bpf-next] xdp: introduce convert_to_xdp_buff utility routine
-Date:   Wed, 27 May 2020 11:28:03 +0200
-Message-Id: <80a0128d78f6c77210a8cccf7c5a78f53c45e7d3.1590571528.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1728029AbgE0Ja2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 05:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbgE0Ja2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 05:30:28 -0400
+Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0A2C061A0F
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 02:30:26 -0700 (PDT)
+Received: by mail-ua1-x943.google.com with SMTP id g14so2523617uaq.0
+        for <netdev@vger.kernel.org>; Wed, 27 May 2020 02:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZU/ZBqN4BLqYBaEPQDhgrh0Yq4FkwnGaL+MP/a30sak=;
+        b=GFfcpkR0n00jJljb4ARaqYzyxDlOfTwGj4W3DLhGfmRdBaInm9pR+vCXpaw9S/nUn+
+         khCqPoHUpJpVquM15+Ysh4E3Jt3xTm5+TU36zlEw32vlMVIbFEHcAdhSc5Qni6MIGx59
+         MbepF+WEZAbRUueAvMmSHQoQTfFdn+gBm5vSYjHKTqm7qhwpGJ/Wc7D5Q+K/cnMTA1Ot
+         PByPFD71QFzJv7x443Btit8CUNXZFLiHExpXKwsodjDb2NBEkW0MRf/LnymaNhULe2wh
+         vvNMazHAHpHo0HgXk/tB4N6mjwDCYG5M/VALBk9kGyOAPUCZXh5YUS0BKXp82FV0iW6m
+         3c7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZU/ZBqN4BLqYBaEPQDhgrh0Yq4FkwnGaL+MP/a30sak=;
+        b=lDfBm118ccnTeyPdC/3Yv5uAKsY/kMVDm6l+o0G1U3+qiu/x4+ue6Nqv3vPp4gy4j7
+         wGURTFtuxLncFT/nmhX1LpSsBaCOMF1ttK6qHYBQ2ozh5PvcZyQ1SR3j4Rzgq5k6+q0a
+         rpNZHFh8oCux1VC9WZtEFxKZqnk0/oKrv9LRtNe+DGnt3aOaA/xKMS41ca4tgVtCzd8/
+         /tREfkhCKWwouGDih1/aTpwmnzV/fWMGyLf0qSfNvCbdqzDE+OlmyogepDzYz8hrIbfI
+         5gJJ90LAmHwuoCUK2JOi+D0XiL2ErjFVql78rZtQMIfZnQ9lxtZnZirghKWoRUsUN4R4
+         /kMg==
+X-Gm-Message-State: AOAM530ANIaq7WC5ajwnBZSTvx22Jg4KnhFmLk/9UQlb2hZ6ngn1Tqgu
+        QxUADoPR8np2SRc7PYyNBN9WiHsDF2lQGDLtpaA7hg==
+X-Google-Smtp-Source: ABdhPJxkVX8QEjnWSH5yWfzdKjVBprXUPRDJ4ZyGxgr/ncTEgX5bSl7p4T0awwkG91XEi9yG1bmWAHqraJfd5F0nABM=
+X-Received: by 2002:ab0:554a:: with SMTP id u10mr4008626uaa.43.1590571825912;
+ Wed, 27 May 2020 02:30:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200519120748.115833-1-brambonne@google.com> <CAKD1Yr2T2S__ZpPOwvwcUqbm=60E9OGODD7RXq+dUFAGQkWPWA@mail.gmail.com>
+ <CABWXKLxGwWdYhzuUPFukUZ4F7=yHsYg+BJBi=OViyc42WSfKJg@mail.gmail.com> <20200520.113349.506785638582427245.davem@davemloft.net>
+In-Reply-To: <20200520.113349.506785638582427245.davem@davemloft.net>
+From:   =?UTF-8?Q?Bram_Bonn=C3=A9?= <brambonne@google.com>
+Date:   Wed, 27 May 2020 11:30:14 +0200
+Message-ID: <CABWXKLxQYEMu9sDu+5RF+xfqGERUH19nq7hxukcohgxr43uRuQ@mail.gmail.com>
+Subject: Re: [PATCH] ipv6: Add IN6_ADDR_GEN_MODE_STABLE_PRIVACY_SOFTMAC mode
+To:     David Miller <davem@davemloft.net>
+Cc:     Lorenzo Colitti <lorenzo@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Jeffrey Vander Stoep <jeffv@google.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce convert_to_xdp_buff utility routine to initialize xdp_buff
-fields from xdp_frames ones. Rely on convert_to_xdp_buff in veth xdp
-code
+On Wed, May 20, 2020 at 8:33 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Bram Bonn=C3=A9 <brambonne@google.com>
+> Date: Wed, 20 May 2020 15:16:53 +0200
+>
+> > Trying to change the MAC when the device is up errors with EBUSY on my
+> > machines, so I was under the assumption that the device needs to be
+> > down to change the MAC. I could very well be wrong though.
+>
+> Not all drivers/devices have this limitation, the generic code allows thi=
+s
+> just fine.
+>
 
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
-Changes since v1:
-- rely on frame->data pointer to compute xdp->data_hard_start one
----
- drivers/net/veth.c |  6 +-----
- include/net/xdp.h  | 10 ++++++++++
- 2 files changed, 11 insertions(+), 5 deletions(-)
+Thanks David. I was able to test the behavior of changing the MAC
+while connected to a network. It does not seem to trigger address
+generation, leaving the link-local address intact.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index b586d2fa5551..9f91e79b7823 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -575,11 +575,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 		struct xdp_buff xdp;
- 		u32 act;
- 
--		xdp.data_hard_start = hard_start;
--		xdp.data = frame->data;
--		xdp.data_end = frame->data + frame->len;
--		xdp.data_meta = frame->data - frame->metasize;
--		xdp.frame_sz = frame->frame_sz;
-+		convert_to_xdp_buff(frame, &xdp);
- 		xdp.rxq = &rq->xdp_rxq;
- 
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 90f11760bd12..df99d5d267b2 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -106,6 +106,16 @@ void xdp_warn(const char *msg, const char *func, const int line);
- 
- struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
- 
-+static inline
-+void convert_to_xdp_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-+{
-+	xdp->data_hard_start = frame->data - frame->headroom - sizeof(*frame);
-+	xdp->data = frame->data;
-+	xdp->data_end = frame->data + frame->len;
-+	xdp->data_meta = frame->data - frame->metasize;
-+	xdp->frame_sz = frame->frame_sz;
-+}
-+
- /* Convert xdp_buff to xdp_frame */
- static inline
- struct xdp_frame *convert_to_xdp_frame(struct xdp_buff *xdp)
--- 
-2.26.2
-
+Do we know about any scenarios (apart from dev reconfiguration) that
+would trigger address generation? My understanding based on the code
+is that any other scenario would add an additional link-local address,
+rather than removing the old one.
