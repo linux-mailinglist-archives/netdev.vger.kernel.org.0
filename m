@@ -2,50 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 579851E40E7
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 13:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BFFC1E4118
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729451AbgE0Lz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 07:55:59 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:51116 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387857AbgE0Lzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 07:55:52 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jduev-0006U9-E8; Wed, 27 May 2020 13:55:45 +0200
-Date:   Wed, 27 May 2020 13:55:45 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     fw@strlen.de, netdev@vger.kernel.org, matthieu.baerts@tessares.net,
-        mathew.j.martineau@linux.intel.com, pabeni@redhat.com
-Subject: Re: [PATCH v2 net-next 0/2] mptcp: adjust tcp rcvspace on rx
-Message-ID: <20200527115545.GH2915@breakpoint.cc>
-References: <20200525181508.13492-1-fw@strlen.de>
- <20200526.202812.2041217173134298145.davem@davemloft.net>
+        id S1726787AbgE0MBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 08:01:36 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57892 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgE0MBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 08:01:35 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jdukT-0003EU-NN; Wed, 27 May 2020 12:01:29 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: dsa: b53: remove redundant premature assignment to new_pvid
+Date:   Wed, 27 May 2020 13:01:29 +0100
+Message-Id: <20200527120129.172676-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200526.202812.2041217173134298145.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> wrote:
-> From: Florian Westphal <fw@strlen.de>
-> Date: Mon, 25 May 2020 20:15:06 +0200
-> 
-> > These two patches improve mptcp throughput by making sure tcp grows
-> > the receive buffer when we move skbs from subflow socket to the
-> > mptcp socket.
-> > 
-> > The second patch moves mptcp receive buffer increase to the recvmsg
-> > path, i.e. we only change its size when userspace processes/consumes
-> > the data.  This is done by using the largest rcvbuf size of the active
-> > subflows.
-> 
-> What's the follow-up wrt. Christoph's feedback on patch #2?
+From: Colin Ian King <colin.king@canonical.com>
 
-Please drop these patches, I have no idea (yet?) how to address it.
+Variable new_pvid is being assigned with a value that is never read,
+the following if statement updates new_pvid with a new value in both
+of the if paths. The assignment is redundant and can be removed.
+
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/dsa/b53/b53_common.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index ceb8be653182..1df05841ab6b 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1325,7 +1325,6 @@ int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
+ 	u16 pvid, new_pvid;
+ 
+ 	b53_read16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port), &pvid);
+-	new_pvid = pvid;
+ 	if (!vlan_filtering) {
+ 		/* Filtering is currently enabled, use the default PVID since
+ 		 * the bridge does not expect tagging anymore
+-- 
+2.25.1
+
