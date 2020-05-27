@@ -2,151 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 649391E4286
-	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 14:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A5E1E42D4
+	for <lists+netdev@lfdr.de>; Wed, 27 May 2020 15:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730154AbgE0MjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 08:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729919AbgE0MjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 08:39:10 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D63BC08C5C1;
-        Wed, 27 May 2020 05:39:10 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id q24so1476968pjd.1;
-        Wed, 27 May 2020 05:39:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=cNOcuDRmAg9W+Ilz7Xfca09ahL9N+UWy02PGGnf96EQ=;
-        b=iIoAWEEfsTTQlC4b85tbUnew0L5PF+2vid+TiL+M4Oy26yYzMNA9xKZtL9VXI34DBW
-         c56wYH4BZikqN8GN5vHsWLF5ZBnlCpIqFV8nTNvZbk/SIz/pRlsouWLzuAe9aemCh2bL
-         LTK7u3Dx/YIGZ6Coma7Kp/lIcXoRBSQNyrns0xGysmw8qovS538/m6s76Vlhl4mC5By9
-         GEV77e/rqPiZyyw26Vsd00z7B1FfDxJSdUsHiO1jFFT2OmeF+523hn6XgqgsEkeL2cXN
-         0oiLzIH40kKuZBhme8JerS0K3dCzpZAQIJ5TDHgbyM+x9zuiV8OTxXw9vtKQp/0Uvwzw
-         7Vlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=cNOcuDRmAg9W+Ilz7Xfca09ahL9N+UWy02PGGnf96EQ=;
-        b=pDlweMWkQF9cT7GtH1rZ3W8MoLgRnKqMSqpMuEIjfyFiCFdQGfubfYX02FWomQNgi7
-         zCBDQtojmaZVGzuYQPVMMja+Z9Qif09PUfIULCI5oXX2p36h5bhIKCukbtdJFOOLrRcb
-         rNvJnfNU+JUEvjQ68rXO49FS8nSqjQ7ZQ5EnxzHPm49qmf6Nzr59+oHD4gII60+o4DeD
-         oculnja8WPn0I8hDwjowzPIe9oa9zMZyoMV4RKhSCj+djgrVmLRsie4bG1DJ2zRxNvj1
-         jHdg/J7POm9p9UZ+OaB1+bvQ3GVed82jysOCE19oBNRiZJkawmbof3j8jEgbFiT7CMJO
-         2C8w==
-X-Gm-Message-State: AOAM531gvDc91TwMYnw2cig548k37DIRLoW4ixlUUuK8HxlMHnEJsgB9
-        5Nm/YYv3qLr/1rskPk9QGGw=
-X-Google-Smtp-Source: ABdhPJxIUMIO6trfpPAR6lWOc9IVk96ID3Uk2TR5iyHdA6cQg8aOHP2SJNMmK2pNBSr7jhwFvQwaTA==
-X-Received: by 2002:a17:90a:1a90:: with SMTP id p16mr4492000pjp.185.1590583149637;
-        Wed, 27 May 2020 05:39:09 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q12sm2139236pfn.129.2020.05.27.05.39.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 05:39:08 -0700 (PDT)
-Date:   Wed, 27 May 2020 20:38:58 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200527123858.GH102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
- <87zh9t1xvh.fsf@toke.dk>
+        id S1730207AbgE0NAB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 May 2020 09:00:01 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2150 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730045AbgE0NAB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 09:00:01 -0400
+Received: from DGGEML403-HUB.china.huawei.com (unknown [172.30.72.53])
+        by Forcepoint Email with ESMTP id 6274EA3AC46CB98C2FC5;
+        Wed, 27 May 2020 20:59:58 +0800 (CST)
+Received: from DGGEML523-MBX.china.huawei.com ([169.254.4.221]) by
+ DGGEML403-HUB.china.huawei.com ([fe80::74d9:c659:fbec:21fa%31]) with mapi id
+ 14.03.0487.000; Wed, 27 May 2020 20:59:52 +0800
+From:   Fengtiantian <fengtiantian@huawei.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        "open list:NETWORKING [GENERAL" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        "Jiri Pirko" <jiri@mellanox.com>, Arnd Bergmann <arnd@arndb.de>,
+        Hadar Hen Zion <hadarh@mellanox.com>
+CC:     "Huangweidong (C)" <weidong.huang@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>
+Subject: [patch] flow_dissector:  Fix wrong vlan header offset in
+ __skb_flow_dissect
+Thread-Topic: [patch] flow_dissector:  Fix wrong vlan header offset in
+ __skb_flow_dissect
+Thread-Index: AdY0IeXHJXIXgx+ATVmoGwihjqqNXQ==
+Date:   Wed, 27 May 2020 12:59:52 +0000
+Message-ID: <2A6E6328DF026B458DBF90B38941F981871A42F1@DGGEML523-MBX.china.huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.149.160]
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87zh9t1xvh.fsf@toke.dk>
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 12:21:54PM +0200, Toke Høiland-Jørgensen wrote:
-> > The example in patch 2 is functional, but not a lot of effort
-> > has been made on performance optimisation. I did a simple test(pkt size 64)
-> > with pktgen. Here is the test result with BPF_MAP_TYPE_DEVMAP_HASH
-> > arrays:
-> >
-> > bpf_redirect_map() with 1 ingress, 1 egress:
-> > generic path: ~1600k pps
-> > native path: ~980k pps
-> >
-> > bpf_redirect_map_multi() with 1 ingress, 3 egress:
-> > generic path: ~600k pps
-> > native path: ~480k pps
-> >
-> > bpf_redirect_map_multi() with 1 ingress, 9 egress:
-> > generic path: ~125k pps
-> > native path: ~100k pps
-> >
-> > The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
-> > the arrays and do clone skb/xdpf. The native path is slower than generic
-> > path as we send skbs by pktgen. So the result looks reasonable.
-> 
-> How are you running these tests? Still on virtual devices? We really
+We use the openvswitch 2.7.0 and find the issue when ovs use the skb_get_hash() to get the hash of QinQ skb. Because the
+__skb_flow_dissect() get the wrong vlan protocol headers.
 
-I run it with the test topology in patch 2/2. The test is run on physical
-machines, but I use veth interface. Do you mean use a physical NIC driver
-for testing?
+Someone report bonding driver has the same issue use the
+__skb_flow_dissect() to count hash in bond_xmit_hash:
+https://lore.kernel.org/netdev/00a5d09f-a23e-661f-60c0-
+75fba6227451@huawei.com/T/.
 
+Because in netif_receive_skb, the skb_network_header points to vlan head, but in dev_hard_start_xmit, the skb_network_header points to IP header. So use the skb_network_offset to get the vlan head is not reliable.
 
-BTW, when using pktgen, I got an panic because the skb don't have enough
-header room. The code path looks like
+Should we use the skb_mac_offset instead the skb_network_offset to get the vlan head when proto is ETH_P_8021AD or ETH_P_8021Q?
 
-do_xdp_generic()
-  - netif_receive_generic_xdp()
-    - skb_headroom(skb) < XDP_PACKET_HEADROOM
-      - pskb_expand_head()
-        - BUG_ON(skb_shared(skb))
+Signed-off-by: Feng tiantian <fengtiantian@huawei.com>
+---
+ net/core/flow_dissector.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-So I added a draft patch for pktgen, not sure if it has any influence.
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c index 415b95f..9a77d5d 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -629,6 +629,13 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
+ 			 skb->vlan_proto : skb->protocol;
+ 		nhoff = skb_network_offset(skb);
+ 		hlen = skb_headlen(skb);
++
++		if (proto == htons(ETH_P_8021AD) ||
++		    proto == htons(ETH_P_8021Q)) {
++			if (skb_mac_header_was_set(skb))
++				nhoff = skb_mac_offset(skb) + ETH_HLEN;
++		}
++
+ #if IS_ENABLED(CONFIG_NET_DSA)
+ 		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev))) {
+ 			const struct dsa_device_ops *ops;
+--
+1.8.3.1
 
-index 08e2811b5274..fee17310c178 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -170,6 +170,7 @@
- #include <linux/uaccess.h>
- #include <asm/dma.h>
- #include <asm/div64.h>         /* do_div */
-+#include <linux/bpf.h>
-
- #define VERSION        "2.75"
- #define IP_NAME_SZ 32
-@@ -2692,7 +2693,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
- static struct sk_buff *pktgen_alloc_skb(struct net_device *dev,
-                                        struct pktgen_dev *pkt_dev)
- {
--       unsigned int extralen = LL_RESERVED_SPACE(dev);
-+       unsigned int extralen = LL_RESERVED_SPACE(dev) + XDP_PACKET_HEADROOM;
-        struct sk_buff *skb = NULL;
-        unsigned int size;
-
-> need results from a physical setup in native mode to assess the impact
-> on the native-XDP fast path. The numbers above don't tell much in this
-> regard. I'd also like to see a before/after patch for straight
-> bpf_redirect_map(), since you're messing with the fast path, and we want
-> to make sure it's not causing a performance regression for regular
-> redirect.
-
-OK, I will write a test with 1 ingress + 1 egress for bpf_redirect_map_multi.
-Just as Eelco said.
-> 
-> Finally, since the overhead seems to be quite substantial: A comparison
-> with a regular network stack bridge might make sense? After all we also
-> want to make sure it's a performance win over that :)
-
-OK, Will do it.
-
-Thanks
-Hangbin
