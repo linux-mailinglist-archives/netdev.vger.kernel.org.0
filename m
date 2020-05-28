@@ -2,141 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 387291E624C
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B45E1E6257
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390397AbgE1NbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S2390377AbgE1Ncw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390326AbgE1NbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:31:00 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03763C05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:31:00 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id x1so32050728ejd.8
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:30:59 -0700 (PDT)
+        with ESMTP id S2390355AbgE1Ncv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:32:51 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EB9C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:32:51 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id j8so29903300iog.13
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=Qq6LtiJc7oZZsG5dSDojr2AJoXCd+/57zdD2ct7qvTE=;
-        b=KBxzecz93E2ctvuaeYcE+QlG+SIix17xPC3sUFo58EXRZC5C3iIFzps0Er3DIG75z9
-         F8LBwZ1iBiVeQlxh2Pi2DXkyXS7JB74KnBXBFWoMn74+cBOugvD8LPxClI1uLmqNoF08
-         giTsYQgl9iowQGfEtmg7gLcfSRqDz5PRlkgzA=
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W6Ng+4krUrmarKse2LeV5TbqCd00mWN+CVVq8JMM5SE=;
+        b=NJ0ybiSwbgGo1ahGYgAEwAdeEVE39Up4uZ5A1HFgeBFSeLdYyEjBoxzLaGany3U5qV
+         tjyrvq25hqP+szOxI6JhW3xweR3C+uklX69AslmSgzZCTItj/lE1GwHfTH3xcf08EAt3
+         mIwE34/rwjc7maTJJIaEZzx9+zgsTJyg16wtDEVvAZDos92VaeKTKyLujiHiG6B1cOYc
+         KIuFtxHGqOtrjVeCdhdPy1poHODMArChjps6RUTUQ889ANVor3RtIvsULAyoI9a8m+lM
+         yGQ/vmJQnyAURdQlFeawVfHk0vmYbLrVgpgL5isYwZKpihaGQitPE1wijKFtYBpDmHAO
+         jbyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=Qq6LtiJc7oZZsG5dSDojr2AJoXCd+/57zdD2ct7qvTE=;
-        b=LL/IxUP6zuR21fEG6JThXS9PHv7m5x52OguR/1lth8wNBsiGw84xI7qrnfJ33LXzH1
-         VtKWHhc7SxUDjDwmv70WLkXRKk0BD3xVh5XKQSlZZEUnvwYcjD6gJOGQYo9wVOnap+3A
-         ndg/FJij7JRDMt5VV9BLmvlGFxOI9I1OMgTNa9uB4vAP1xgax6/Qy/IpxAlTmjoM/0fI
-         OZNfDmX41hiuYhUZbLc8JvoBnaxzo56luflPRTn9EfxxS+vJ33ph4vLqF4yjNhwyJi2m
-         pgMCrlu/3rbN1kaei9vJyjAmME1+yipVbu4m6k7/zyPlK5IKmvenEEOSdVorvcrZel2/
-         Lg1g==
-X-Gm-Message-State: AOAM531422zDxxzZMe25ChCrM8GKDYrol6gh6LRt3K5q6jUwo7kZscF4
-        SHbBSLY8E9saYfsUnCTyafsPvQ==
-X-Google-Smtp-Source: ABdhPJzUuhvEzfbaS7DhgOZKhIKc7EMeqxhZWaru2STFBXP+ifTXAJc/cvAeOb9qG1uhhBp8wXVmrA==
-X-Received: by 2002:a17:907:1103:: with SMTP id qu3mr2865013ejb.453.1590672658570;
-        Thu, 28 May 2020 06:30:58 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id m8sm5216384ejk.100.2020.05.28.06.30.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 06:30:58 -0700 (PDT)
-References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-6-jakub@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 5/8] bpf: Add link-based BPF program attachment to network namespace
-In-reply-to: <20200527170840.1768178-6-jakub@cloudflare.com>
-Date:   Thu, 28 May 2020 15:30:57 +0200
-Message-ID: <87k10w2nla.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W6Ng+4krUrmarKse2LeV5TbqCd00mWN+CVVq8JMM5SE=;
+        b=LUzM3zNGleFr6DaCQYDohmSnYidZn5vU/njfYQ2nI1lkdoxgwGI40zFgvWDia8PaaT
+         ZK7MSBK7k8eJ214CbzPUwSwpXbHYYpC4+3WlQ/ShVfN2LxxQhMoEn9dVxpCHtS1+cGIJ
+         0a4XZLDvlIYS/fGSM78Sl5IXyPx1twf16edDbUj8IWnh8zJC5K766tMyC34APptsUheb
+         u0DS31pTOvsYPlGKp/AINgSHu5Bp8Wl74WBoMSaE+w03tpP5rsYN5eUEELBFNai3/ZA3
+         ioEmyO1kVzBgULML+gkqKsarHKzLeNxlk3eF9S/roqqugWyecNV+b3AdU+UzSvs6wuxQ
+         Zk8A==
+X-Gm-Message-State: AOAM531l01J1dXFPyD8+FldSfzj5RXemt1VV9i+ADGCOXOkXG5q5hkOM
+        jr8dp5Z5INIOXphQosU+Anx8YBlZYv7IIeBBqFAs2A==
+X-Google-Smtp-Source: ABdhPJzo7KSXJqLmG4j0rLnWfVnluS/E9w7gshGux7pMtHXApV9skQgthF60OVdfNho6c1thzgPYEEykEs0OHoviWNw=
+X-Received: by 2002:a5e:981a:: with SMTP id s26mr2322972ioj.131.1590672771135;
+ Thu, 28 May 2020 06:32:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200528123459.21168-1-brgl@bgdev.pl> <20200528123459.21168-2-brgl@bgdev.pl>
+ <20200528132938.GC3606@sirena.org.uk>
+In-Reply-To: <20200528132938.GC3606@sirena.org.uk>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 28 May 2020 15:32:40 +0200
+Message-ID: <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] regmap: provide helpers for simple bit operations
+To:     Mark Brown <broonie@kernel.org>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 07:08 PM CEST, Jakub Sitnicki wrote:
-> Add support for bpf() syscall subcommands that operate on
-> bpf_link (LINK_CREATE, LINK_UPDATE, OBJ_GET_INFO) for attach points tied to
-> network namespaces (that is flow dissector at the moment).
+czw., 28 maj 2020 o 15:29 Mark Brown <broonie@kernel.org> napisa=C5=82(a):
 >
-> Link-based and prog-based attachment can be used interchangeably, but only
-> one can be in use at a time. Attempts to attach a link when a prog is
-> already attached directly, and the other way around, will be met with
-> -EBUSY.
+> On Thu, May 28, 2020 at 02:34:58PM +0200, Bartosz Golaszewski wrote:
 >
-> Attachment of multiple links of same attach type to one netns is not
-> supported, with the intention to lift it when a use-case presents
-> itself. Because of that attempts to create a netns link, when one already
-> exists result in -E2BIG error, signifying that there is no space left for
-> another attachment.
+> > This adds three new macros for simple bit operations: set_bits,
+> > clear_bits and test_bits.
 >
-> Link-based attachments to netns don't keep a netns alive by holding a ref
-> to it. Instead links get auto-detached from netns when the latter is being
-> destroyed by a pernet pre_exit callback.
->
-> When auto-detached, link lives in defunct state as long there are open FDs
-> for it. -ENOLINK is returned if a user tries to update a defunct link.
->
-> Because bpf_link to netns doesn't hold a ref to struct net, special care is
-> taken when releasing the link. The netns might be getting torn down when
-> the release function tries to access it to detach the link.
->
-> To ensure the struct net object is alive when release function accesses it
-> we rely on the fact that cleanup_net(), struct net destructor, calls
-> synchronize_rcu() after invoking pre_exit callbacks. If auto-detach from
-> pre_exit happens first, link release will not attempt to access struct net.
->
-> Same applies the other way around, network namespace doesn't keep an
-> attached link alive because by not holding a ref to it. Instead bpf_links
-> to netns are RCU-freed, so that pernet pre_exit callback can safely access
-> and auto-detach the link when racing with link release/free.
->
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+> Why macros and not static inlines?
 
-[...]
+The existing regmap_update_bits_*() helpers are macros too, so I tried
+to stay consistent. Any reason why they are macros and not static
+inlines? If there's none, then why not convert them too? Otherwise
+we'd have a static inline expanding a macro which in turn is calling a
+function (regmap_update_bits_base()).
 
-> +static int bpf_netns_link_update_prog(struct bpf_link *link,
-> +				      struct bpf_prog *new_prog,
-> +				      struct bpf_prog *old_prog)
-> +{
-> +	struct bpf_netns_link *net_link = to_bpf_netns_link(link);
-> +	struct net *net;
-> +	int ret = 0;
-> +
-> +	if (old_prog && old_prog != link->prog)
-> +		return -EPERM;
-> +	if (new_prog->type != link->prog->type)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&netns_bpf_mutex);
-> +	rcu_read_lock();
-> +
-> +	net = rcu_dereference(net_link->net);
-> +	if (!net || !check_net(net)) {
-> +		/* Link auto-detached or netns dying */
-> +		ret = -ENOLINK;
-> +		goto out_unlock;
-> +	}
-> +
-> +	old_prog = xchg(&link->prog, new_prog);
-> +	bpf_prog_put(old_prog);
-
-I've noticed a bug here. I should be updating net->bpf.progs[type] here
-as well. Will fix in v2.
-
-> +
-> +out_unlock:
-> +	rcu_read_unlock();
-> +	mutex_unlock(&netns_bpf_mutex);
-> +
-> +	return ret;
-> +}
-
-[...]
+Bartosz
