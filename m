@@ -2,219 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 639521E6167
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C281E61CE
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389952AbgE1MvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:51:15 -0400
-Received: from mail-oo1-f66.google.com ([209.85.161.66]:36172 "EHLO
-        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389871AbgE1MvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 08:51:13 -0400
-Received: by mail-oo1-f66.google.com with SMTP id 18so955162ooy.3;
-        Thu, 28 May 2020 05:51:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8pYGFtFyatP+IpEQk4dFYcmOyF7X2b0QYiv1bngggIM=;
-        b=ZbSgCd7ks7qWCHLDzzdEFMZ1bFQeQTyqAaHbhfqwByWY/43nn5dCz0v/y9JDSePgWZ
-         Mj3rvxAIXb7r1F3Ar6dtPbCBElBmvkQGRwmjOyYq7/JUtUL9Ng9ApUTCkFpXTrpkxqQW
-         k9Mov4jwAud8+S7dCodt/mSvNr6Ll1d+SjT3iavRTwdlIfQTBIASxeTj4vZaQN1T58uj
-         BLoKK8IVz94wDYR21re9o7sohwCEcuOUVfHTmS+AvdTT9xhAWnZfjP1b1y3ONQtnNWaR
-         1Kz8Epu6+8J5VhE5LbvtzfiK33do2g7HqZcX0DocD/oklrcm9/mZ9o3A87In7AQf0Vhg
-         ToXQ==
-X-Gm-Message-State: AOAM530+mO7e28MyTvGGOdyS2IQpbgc1OWdlnCLxd6Ew9BM23aA6qaNh
-        NcfMh+fvlZdG4z/2Db2uWdc9z+VkXCK+ug3DQNQ=
-X-Google-Smtp-Source: ABdhPJwEUCALhLYjNIRgWe3b4phiryyKuwHSM/2W0YurC8R6JrROmO0iWcdAiHjfnVjJnC6PIDA8gr0bzjxR8A79E6U=
-X-Received: by 2002:a4a:e0d1:: with SMTP id e17mr2328258oot.1.1590670271933;
- Thu, 28 May 2020 05:51:11 -0700 (PDT)
+        id S2390208AbgE1NKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:10:07 -0400
+Received: from mail.xenproject.org ([104.130.215.37]:42924 "EHLO
+        mail.xenproject.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390012AbgE1NKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:10:05 -0400
+X-Greylist: delayed 2332 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 May 2020 09:10:04 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=xen.org;
+        s=20200302mail; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
+        :Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=yT0YCeVmS31oUgr3kcKp2rb0acVnrFO8fotP62VttFc=; b=AYKcpbquSFiA+Fd7AjYabIdcNc
+        4c2MIIx960LxN3oKeum4woXDrPd63sTz6u9RAt3c7TQ/aIhITEKF4IXMi/5azqQSLBSyOIsbayblx
+        Rr4HoSXPO1rM1AF1bil9f9PjFl8RKeIwRbeNJz/k/np4qPa4pVnpN0eeWuRSLh7XOXmI=;
+Received: from xenbits.xenproject.org ([104.239.192.120])
+        by mail.xenproject.org with esmtp (Exim 4.92)
+        (envelope-from <roger@xen.org>)
+        id 1jeHfy-000317-0c; Thu, 28 May 2020 12:30:22 +0000
+Received: from [93.176.191.173] (helo=localhost)
+        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <roger@xen.org>)
+        id 1jeHfx-0002M2-9k; Thu, 28 May 2020 12:30:21 +0000
+Date:   Thu, 28 May 2020 14:30:12 +0200
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger@xen.org>
+To:     Anchal Agarwal <anchalag@amazon.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+        x86@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com,
+        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
+        sstabellini@kernel.org, konrad.wilk@oracle.com, axboe@kernel.dk,
+        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
+        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
+        sblbir@amazon.com, xen-devel@lists.xenproject.org,
+        vkuznets@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
+        benh@kernel.crashing.org
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
+ hibernation
+Message-ID: <20200528122956.GF1195@Air-de-Roger>
+References: <cover.1589926004.git.anchalag@amazon.com>
+ <ad580b4d5b76c18fe2fe409704f25622e01af361.1589926004.git.anchalag@amazon.com>
 MIME-Version: 1.0
-References: <20200422072137.8517-1-o.rempel@pengutronix.de>
- <CAMuHMdU1ZmSm_tjtWxoFNako2fzmranGVz5qqD2YRNEFRjX0Sw@mail.gmail.com>
- <20200428154718.GA24923@lunn.ch> <6791722391359fce92b39e3a21eef89495ccf156.camel@toradex.com>
- <CAMuHMdXm7n6cE5-ZjwxU_yKSrCaZCwqc_tBA+M_Lq53hbH2-jg@mail.gmail.com>
- <20200429092616.7ug4kdgdltxowkcs@pengutronix.de> <CAMuHMdWf1f95ZcOLd=k1rd4WE98T1qh_3YsJteyDGtYm1m_Nfg@mail.gmail.com>
- <3a6f6ecc5ea4de7600716a23739c13dc5b02771e.camel@toradex.com>
-In-Reply-To: <3a6f6ecc5ea4de7600716a23739c13dc5b02771e.camel@toradex.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 28 May 2020 14:51:00 +0200
-Message-ID: <CAMuHMdWnSPrAX1=Q3PQNr3QaE3nrtfr4jbE_r1_BmKke-rC92w@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: phy: micrel: add phy-mode support for
- the KSZ9031 PHY
-To:     Philippe Schenker <philippe.schenker@toradex.com>
-Cc:     "o.rempel@pengutronix.de" <o.rempel@pengutronix.de>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "sergei.shtylyov@cogentembedded.com" 
-        <sergei.shtylyov@cogentembedded.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "david@protonic.nl" <david@protonic.nl>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "kazuya.mizuguchi.ks@renesas.com" <kazuya.mizuguchi.ks@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ad580b4d5b76c18fe2fe409704f25622e01af361.1589926004.git.anchalag@amazon.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Philippe,
+On Tue, May 19, 2020 at 11:27:50PM +0000, Anchal Agarwal wrote:
+> From: Munehisa Kamata <kamatam@amazon.com>
+> 
+> S4 power transition states are much different than xen
+> suspend/resume. Former is visible to the guest and frontend drivers should
+> be aware of the state transitions and should be able to take appropriate
+> actions when needed. In transition to S4 we need to make sure that at least
+> all the in-flight blkif requests get completed, since they probably contain
+> bits of the guest's memory image and that's not going to get saved any
+> other way. Hence, re-issuing of in-flight requests as in case of xen resume
+> will not work here. This is in contrast to xen-suspend where we need to
+> freeze with as little processing as possible to avoid dirtying RAM late in
+> the migration cycle and we know that in-flight data can wait.
+> 
+> Add freeze, thaw and restore callbacks for PM suspend and hibernation
+> support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
+> events, need to implement these xenbus_driver callbacks. The freeze handler
+> stops block-layer queue and disconnect the frontend from the backend while
+> freeing ring_info and associated resources. Before disconnecting from the
+> backend, we need to prevent any new IO from being queued and wait for existing
+> IO to complete. Freeze/unfreeze of the queues will guarantee that there are no
+> requests in use on the shared ring. However, for sanity we should check
+> state of the ring before disconnecting to make sure that there are no
+> outstanding requests to be processed on the ring. The restore handler
+> re-allocates ring_info, unquiesces and unfreezes the queue and re-connect to
+> the backend, so that rest of the kernel can continue to use the block device
+> transparently.
+> 
+> Note:For older backends,if a backend doesn't have commit'12ea729645ace'
+> xen/blkback: unmap all persistent grants when frontend gets disconnected,
+> the frontend may see massive amount of grant table warning when freeing
+> resources.
+> [   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
+> [   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
+> 
+> In this case, persistent grants would need to be disabled.
+> 
+> [Anchal Changelog: Removed timeout/request during blkfront freeze.
+> Reworked the whole patch to work with blk-mq and incorporate upstream's
+> comments]
 
-On Thu, May 28, 2020 at 10:20 AM Philippe Schenker
-<philippe.schenker@toradex.com> wrote:
-> On Wed, 2020-05-27 at 21:11 +0200, Geert Uytterhoeven wrote:
-> > On Wed, Apr 29, 2020 at 11:26 AM Oleksij Rempel <
-> > o.rempel@pengutronix.de> wrote:
-> > > On Wed, Apr 29, 2020 at 10:45:35AM +0200, Geert Uytterhoeven wrote:
-> > > > On Tue, Apr 28, 2020 at 6:16 PM Philippe Schenker
-> > > > <philippe.schenker@toradex.com> wrote:
-> > > > > On Tue, 2020-04-28 at 17:47 +0200, Andrew Lunn wrote:
-> > > > > > On Tue, Apr 28, 2020 at 05:28:30PM +0200, Geert Uytterhoeven
-> > > > > > wrote:
-> > > > > > > This triggers on Renesas Salvator-X(S):
-> > > > > > >
-> > > > > > >     Micrel KSZ9031 Gigabit PHY e6800000.ethernet-
-> > > > > > > ffffffff:00:
-> > > > > > > *-skew-ps values should be used only with phy-mode = "rgmii"
-> > > > > > >
-> > > > > > > which uses:
-> > > > > > >
-> > > > > > >         phy-mode = "rgmii-txid";
-> > > > > > >
-> > > > > > > and:
-> > > > > > >
-> > > > > > >         rxc-skew-ps = <1500>;
-> > > > > > >
-> > > > > > > If I understand
-> > > > > > > Documentation/devicetree/bindings/net/ethernet-
-> > > > > > > controller.yaml
-> > > > > > > correctly:
-> > > > > >
-> > > > > > Checking for skews which might contradict the PHY-mode is new.
-> > > > > > I think
-> > > > > > this is the first PHY driver to do it. So i'm not too
-> > > > > > surprised it has
-> > > > > > triggered a warning, or there is contradictory documentation.
-> > > > > >
-> > > > > > Your use cases is reasonable. Have the normal transmit delay,
-> > > > > > and a
-> > > > > > bit shorted receive delay. So we should allow it. It just
-> > > > > > makes the
-> > > > > > validation code more complex :-(
-> > > > >
-> > > > > I reviewed Oleksij's patch that introduced this warning. I just
-> > > > > want to
-> > > > > explain our thinking why this is a good thing, but yes maybe we
-> > > > > change
-> > > > > that warning a little bit until it lands in mainline.
-> > > > >
-> > > > > The KSZ9031 driver didn't support for proper phy-modes until now
-> > > > > as it
-> > > > > don't have dedicated registers to control tx and rx delays. With
-> > > > > Oleksij's patch this delay is now done accordingly in skew
-> > > > > registers as
-> > > > > best as possible. If you now also set the rxc-skew-ps registers
-> > > > > those
-> > > > > values you previously set with rgmii-txid or rxid get
-> > > > > overwritten.
-> >
-> > While I don't claim that the new implementation is incorrect, my
-> > biggest
-> > gripe is that this change breaks existing setups (cfr. Grygorii's
-> > report,
-> > plus see below).  People fine-tuned the parameters in their DTS files
-> > according to the old driver behavior, and now have to update their
-> > DTBs,
-> > which violates DTB backwards-compatibility rules.
-> > I know it's ugly, but I'm afraid the only backwards-compatible
-> > solution
-> > is to add a new DT property to indicate if the new rules apply.
-> >
-> > > > > We chose the warning to occur on phy-modes 'rgmii-id', 'rgmii-
-> > > > > rxid' and
-> > > > > 'rgmii-txid' as on those, with the 'rxc-skew-ps' value present,
-> > > > > overwriting skew values could occur and you end up with values
-> > > > > you do
-> > > > > not wanted. We thought, that most of the boards have just
-> > > > > 'rgmii' set in
-> > > > > phy-mode with specific skew-values present.
-> > > > >
-> > > > > @Geert if you actually want the PHY to apply RXC and TXC delays
-> > > > > just
-> > > > > insert 'rgmii-id' in your DT and remove those *-skew-ps values.
-> > > > > If you
-> > > >
-> > > > That seems to work for me, but of course doesn't take into account
-> > > > PCB
-> > > > routing.
-> >
-> > Of course I talked too soon.  Both with the existing DTS that triggers
-> > the warning, and after changing the mode to "rgmii-id", and dropping
-> > the
-> > *-skew-ps values, Ethernet became flaky on R-Car M3-W ES1.0.  While
-> > the
-> > system still boots, it boots very slow.
-> > Using nuttcp, I discovered TX performance dropped from ca. 400 Mbps to
-> > 0.1-0.3 Mbps, while RX performance looks unaffected.
-> >
-> > So I did some more testing:
-> >   1. Plain "rgmii-txid" and "rgmii" break the network completely, on
-> > all
-> >      R-Car Gen3 platforms,
-> >   2. "rgmii-id" and "rgmii-rxid" work, but cause slowness on R-Car M3-
-> > W,
-> >   3. "rgmii" with *-skew-ps values that match the old values (default
-> >      420 for everything, but default 900 for txc-skew-ps, and the 1500
-> >      override for rxc-skew-ps), behaves exactly the same as "rgmii-
-> > id",
-> >   4. "rgmii-txid" with *-skew-ps values that match the old values does
-> > work, i.e.
-> >      adding to arch/arm64/boot/dts/renesas/salvator-common.dtsi:
-> >      +               rxd0-skew-ps = <420>;
-> >      +               rxd1-skew-ps = <420>;
-> >      +               rxd2-skew-ps = <420>;
-> >      +               rxd3-skew-ps = <420>;
-> >      +               rxdv-skew-ps = <420>;
-> >      +               txc-skew-ps = <900>;
-> >      +               txd0-skew-ps = <420>;
-> >      +               txd1-skew-ps = <420>;
-> >      +               txd2-skew-ps = <420>;
-> >      +               txd3-skew-ps = <420>;
-> >      +               txen-skew-ps = <420>;
-> >
-> > You may wonder what's the difference between 3 and 4? It's not just
-> > the
-> > PHY driver that looks at phy-mode!
-> > drivers/net/ethernet/renesas/ravb_main.c:ravb_set_delay_mode() also
-> > does, and configures an additional TX clock delay of 1.8 ns if TXID is
-> > enabled.  Doing so fixes R-Car M3-W, but doesn't seem to be needed,
-> > or harm, on R-Car H3 ES2.0 and R-Car M3-N.
->
-> Sorry for chiming in on this topic but I also did make my thoughts about
-> this implementation.
->
-> The documentation in Documentation/devicetree/bindings/net/ethernet-
-> controller.yaml clearly states, that rgmii-id is meaning the delay is
-> provided by the PHY and MAC should not add anything in this case.
+Please tag versions using vX and it would be helpful if you could list
+the specific changes that you performed between versions. There where
+3 RFC versions IIRC, and there's no log of the changes between them.
 
-Thank you for your very valuable comment!
-That means the semantics are clear, and is the reason behind the existence
-of properties like "amlogic,tx-delay-ns", which do apply to the MAC.
+> 
+> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+> ---
+>  drivers/block/xen-blkfront.c | 122 +++++++++++++++++++++++++++++++++--
+>  1 file changed, 115 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+> index 3b889ea950c2..464863ed7093 100644
+> --- a/drivers/block/xen-blkfront.c
+> +++ b/drivers/block/xen-blkfront.c
+> @@ -48,6 +48,8 @@
+>  #include <linux/list.h>
+>  #include <linux/workqueue.h>
+>  #include <linux/sched/mm.h>
+> +#include <linux/completion.h>
+> +#include <linux/delay.h>
+>  
+>  #include <xen/xen.h>
+>  #include <xen/xenbus.h>
+> @@ -80,6 +82,8 @@ enum blkif_state {
+>  	BLKIF_STATE_DISCONNECTED,
+>  	BLKIF_STATE_CONNECTED,
+>  	BLKIF_STATE_SUSPENDED,
+> +	BLKIF_STATE_FREEZING,
+> +	BLKIF_STATE_FROZEN
 
-Gr{oetje,eeting}s,
+Nit: adding a terminating ',' would prevent further additions from
+having to modify this line.
 
-                        Geert
+>  };
+>  
+>  struct grant {
+> @@ -219,6 +223,7 @@ struct blkfront_info
+>  	struct list_head requests;
+>  	struct bio_list bio_list;
+>  	struct list_head info_list;
+> +	struct completion wait_backend_disconnected;
+>  };
+>  
+>  static unsigned int nr_minors;
+> @@ -1005,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+>  	info->sector_size = sector_size;
+>  	info->physical_sector_size = physical_sector_size;
+>  	blkif_set_queue_limits(info);
+> +	init_completion(&info->wait_backend_disconnected);
+>  
+>  	return 0;
+>  }
+> @@ -1057,7 +1063,7 @@ static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
+>  		case XEN_SCSI_DISK5_MAJOR:
+>  		case XEN_SCSI_DISK6_MAJOR:
+>  		case XEN_SCSI_DISK7_MAJOR:
+> -			*offset = (*minor / PARTS_PER_DISK) + 
+> +			*offset = (*minor / PARTS_PER_DISK) +
+>  				((major - XEN_SCSI_DISK1_MAJOR + 1) * 16) +
+>  				EMULATED_SD_DISK_NAME_OFFSET;
+>  			*minor = *minor +
+> @@ -1072,7 +1078,7 @@ static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
+>  		case XEN_SCSI_DISK13_MAJOR:
+>  		case XEN_SCSI_DISK14_MAJOR:
+>  		case XEN_SCSI_DISK15_MAJOR:
+> -			*offset = (*minor / PARTS_PER_DISK) + 
+> +			*offset = (*minor / PARTS_PER_DISK) +
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Unrelated changes, please split to a pre-patch.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>  				((major - XEN_SCSI_DISK8_MAJOR + 8) * 16) +
+>  				EMULATED_SD_DISK_NAME_OFFSET;
+>  			*minor = *minor +
+> @@ -1353,6 +1359,8 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+>  	unsigned int i;
+>  	struct blkfront_ring_info *rinfo;
+>  
+> +	if (info->connected == BLKIF_STATE_FREEZING)
+> +		goto free_rings;
+>  	/* Prevent new requests being issued until we fix things up. */
+>  	info->connected = suspend ?
+>  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
+> @@ -1360,6 +1368,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+>  	if (info->rq)
+>  		blk_mq_stop_hw_queues(info->rq);
+>  
+> +free_rings:
+>  	for_each_rinfo(info, rinfo, i)
+>  		blkif_free_ring(rinfo);
+>  
+> @@ -1563,8 +1572,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+>  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+>  	struct blkfront_info *info = rinfo->dev_info;
+>  
+> -	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
+> -		return IRQ_HANDLED;
+> +	if (unlikely(info->connected != BLKIF_STATE_CONNECTED
+> +		    && info->connected != BLKIF_STATE_FREEZING)){
+
+Extra tab and missing space between '){'. Also my preference would be
+for the && to go at the end of the previous line, like it's done
+elsewhere in the file.
+
+> +	    return IRQ_HANDLED;
+> +	}
+>  
+>  	spin_lock_irqsave(&rinfo->ring_lock, flags);
+>   again:
+> @@ -2027,6 +2038,7 @@ static int blkif_recover(struct blkfront_info *info)
+>  	unsigned int segs;
+>  	struct blkfront_ring_info *rinfo;
+>  
+> +	bool frozen = info->connected == BLKIF_STATE_FROZEN;
+
+Please put this together with the rest of the variable definitions,
+and leave the empty line as a split between variable definitions and
+code. I've already requested this on RFC v3 but you seem to have
+dropped some of the requests I've made there.
+
+>  	blkfront_gather_backend_features(info);
+>  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
+>  	blkif_set_queue_limits(info);
+> @@ -2048,6 +2060,9 @@ static int blkif_recover(struct blkfront_info *info)
+>  		kick_pending_request_queues(rinfo);
+>  	}
+>  
+> +	if (frozen)
+> +		return 0;
+> +
+>  	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
+>  		/* Requeue pending requests (flush or discard) */
+>  		list_del_init(&req->queuelist);
+> @@ -2364,6 +2379,7 @@ static void blkfront_connect(struct blkfront_info *info)
+>  
+>  		return;
+>  	case BLKIF_STATE_SUSPENDED:
+> +	case BLKIF_STATE_FROZEN:
+>  		/*
+>  		 * If we are recovering from suspension, we need to wait
+>  		 * for the backend to announce it's features before
+> @@ -2481,12 +2497,36 @@ static void blkback_changed(struct xenbus_device *dev,
+>  		break;
+>  
+>  	case XenbusStateClosed:
+> -		if (dev->state == XenbusStateClosed)
+> +		if (dev->state == XenbusStateClosed) {
+> +			if (info->connected == BLKIF_STATE_FREEZING) {
+> +				blkif_free(info, 0);
+> +				info->connected = BLKIF_STATE_FROZEN;
+> +				complete(&info->wait_backend_disconnected);
+> +				break;
+
+There's no need for the break here, you can rely on the break below.
+
+> +			}
+> +
+>  			break;
+> +		}
+> +
+> +		/*
+> +		 * We may somehow receive backend's Closed again while thawing
+> +		 * or restoring and it causes thawing or restoring to fail.
+> +		 * Ignore such unexpected state regardless of the backend state.
+> +		 */
+> +		if (info->connected == BLKIF_STATE_FROZEN) {
+
+I think you can join this with the previous dev->state == XenbusStateClosed?
+
+Also, won't the device be in the Closed state already if it's in state
+frozen?
+
+> +			dev_dbg(&dev->dev,
+> +					"ignore the backend's Closed state: %s",
+> +					dev->nodename);
+> +			break;
+> +		}
+>  		/* fall through */
+>  	case XenbusStateClosing:
+> -		if (info)
+> -			blkfront_closing(info);
+> +		if (info) {
+> +			if (info->connected == BLKIF_STATE_FREEZING)
+> +				xenbus_frontend_closed(dev);
+> +			else
+> +				blkfront_closing(info);
+> +		}
+>  		break;
+>  	}
+>  }
+> @@ -2630,6 +2670,71 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+>  	mutex_unlock(&blkfront_mutex);
+>  }
+>  
+> +static int blkfront_freeze(struct xenbus_device *dev)
+> +{
+> +	unsigned int i;
+> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> +	struct blkfront_ring_info *rinfo;
+> +	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
+> +	unsigned int timeout = 5 * HZ;
+> +	unsigned long flags;
+> +	int err = 0;
+> +
+> +	info->connected = BLKIF_STATE_FREEZING;
+> +
+> +	blk_mq_freeze_queue(info->rq);
+> +	blk_mq_quiesce_queue(info->rq);
+> +
+> +	for_each_rinfo(info, rinfo, i) {
+> +	    /* No more gnttab callback work. */
+> +	    gnttab_cancel_free_callback(&rinfo->callback);
+> +	    /* Flush gnttab callback work. Must be done with no locks held. */
+> +	    flush_work(&rinfo->work);
+> +	}
+> +
+> +	for_each_rinfo(info, rinfo, i) {
+> +	    spin_lock_irqsave(&rinfo->ring_lock, flags);
+> +	    if (RING_FULL(&rinfo->ring)
+> +		    || RING_HAS_UNCONSUMED_RESPONSES(&rinfo->ring)) {
+
+'||' should go at the end of the previous line.
+
+> +		xenbus_dev_error(dev, err, "Hibernation Failed.
+> +			The ring is still busy");
+> +		info->connected = BLKIF_STATE_CONNECTED;
+> +		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
+
+You need to unfreeze the queues here, or else the device will be in a
+blocked state AFAICT.
+
+> +		return -EBUSY;
+> +	}
+> +	    spin_unlock_irqrestore(&rinfo->ring_lock, flags);
+> +	}
+
+This block has indentation all messed up.
+
+> +	/* Kick the backend to disconnect */
+> +	xenbus_switch_state(dev, XenbusStateClosing);
+> +
+> +	/*
+> +	 * We don't want to move forward before the frontend is diconnected
+> +	 * from the backend cleanly.
+> +	 */
+> +	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
+> +					      timeout);
+> +	if (!timeout) {
+> +		err = -EBUSY;
+
+Note err is only used here, and I think could just be dropped.
+
+> +		xenbus_dev_error(dev, err, "Freezing timed out;"
+> +				 "the device may become inconsistent state");
+
+Leaving the device in this state is quite bad, as it's in a closed
+state and with the queues frozen. You should make an attempt to
+restore things to a working state.
+
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +static int blkfront_restore(struct xenbus_device *dev)
+> +{
+> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> +	int err = 0;
+> +
+> +	err = talk_to_blkback(dev, info);
+> +	blk_mq_unquiesce_queue(info->rq);
+> +	blk_mq_unfreeze_queue(info->rq);
+> +	if (!err)
+> +	    blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
+
+Bad indentation. Also shouldn't you first update the queues and then
+unfreeze them?
+
+Thanks, Roger.
