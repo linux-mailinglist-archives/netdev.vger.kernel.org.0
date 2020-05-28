@@ -2,56 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B45E1E6257
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B821E62AC
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390377AbgE1Ncw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390355AbgE1Ncv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:32:51 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EB9C05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:32:51 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id j8so29903300iog.13
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:32:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W6Ng+4krUrmarKse2LeV5TbqCd00mWN+CVVq8JMM5SE=;
-        b=NJ0ybiSwbgGo1ahGYgAEwAdeEVE39Up4uZ5A1HFgeBFSeLdYyEjBoxzLaGany3U5qV
-         tjyrvq25hqP+szOxI6JhW3xweR3C+uklX69AslmSgzZCTItj/lE1GwHfTH3xcf08EAt3
-         mIwE34/rwjc7maTJJIaEZzx9+zgsTJyg16wtDEVvAZDos92VaeKTKyLujiHiG6B1cOYc
-         KIuFtxHGqOtrjVeCdhdPy1poHODMArChjps6RUTUQ889ANVor3RtIvsULAyoI9a8m+lM
-         yGQ/vmJQnyAURdQlFeawVfHk0vmYbLrVgpgL5isYwZKpihaGQitPE1wijKFtYBpDmHAO
-         jbyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W6Ng+4krUrmarKse2LeV5TbqCd00mWN+CVVq8JMM5SE=;
-        b=LUzM3zNGleFr6DaCQYDohmSnYidZn5vU/njfYQ2nI1lkdoxgwGI40zFgvWDia8PaaT
-         ZK7MSBK7k8eJ214CbzPUwSwpXbHYYpC4+3WlQ/ShVfN2LxxQhMoEn9dVxpCHtS1+cGIJ
-         0a4XZLDvlIYS/fGSM78Sl5IXyPx1twf16edDbUj8IWnh8zJC5K766tMyC34APptsUheb
-         u0DS31pTOvsYPlGKp/AINgSHu5Bp8Wl74WBoMSaE+w03tpP5rsYN5eUEELBFNai3/ZA3
-         ioEmyO1kVzBgULML+gkqKsarHKzLeNxlk3eF9S/roqqugWyecNV+b3AdU+UzSvs6wuxQ
-         Zk8A==
-X-Gm-Message-State: AOAM531l01J1dXFPyD8+FldSfzj5RXemt1VV9i+ADGCOXOkXG5q5hkOM
-        jr8dp5Z5INIOXphQosU+Anx8YBlZYv7IIeBBqFAs2A==
-X-Google-Smtp-Source: ABdhPJzo7KSXJqLmG4j0rLnWfVnluS/E9w7gshGux7pMtHXApV9skQgthF60OVdfNho6c1thzgPYEEykEs0OHoviWNw=
-X-Received: by 2002:a5e:981a:: with SMTP id s26mr2322972ioj.131.1590672771135;
- Thu, 28 May 2020 06:32:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200528123459.21168-1-brgl@bgdev.pl> <20200528123459.21168-2-brgl@bgdev.pl>
- <20200528132938.GC3606@sirena.org.uk>
-In-Reply-To: <20200528132938.GC3606@sirena.org.uk>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 28 May 2020 15:32:40 +0200
-Message-ID: <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] regmap: provide helpers for simple bit operations
-To:     Mark Brown <broonie@kernel.org>
+        id S2390581AbgE1NsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:48:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47152 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390486AbgE1NsF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 09:48:05 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 900B4207D3;
+        Thu, 28 May 2020 13:48:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590673685;
+        bh=hCc/4WkpOoMnYzAs7vLH2tpFPjfk82hCbKAhbeXkNI0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y4k39ZFaQ41ExRlY1FpyEQJR61aEW8XCAqj3dq0dkZ3PCbvGQ8q/L0EwtUR+BdXqt
+         b+coz6x9QHt1uSD8fvSAyy9Ku/2ke4nRaAGrNDGhCFHwPI7+CSialN6cbAZJ9geC2r
+         dKuhxH11yqWoiaq+GxLW8DRut8Peg/xIRNbM6Fpw=
+Date:   Thu, 28 May 2020 14:48:02 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
 Cc:     John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
         Mark Lee <Mark-MC.Lee@mediatek.com>,
@@ -68,26 +42,57 @@ Cc:     John Crispin <john@phrozen.org>,
         Pedro Tsai <pedro.tsai@mediatek.com>,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/2] regmap: provide helpers for simple bit operations
+Message-ID: <20200528134802.GE3606@sirena.org.uk>
+References: <20200528123459.21168-1-brgl@bgdev.pl>
+ <20200528123459.21168-2-brgl@bgdev.pl>
+ <20200528132938.GC3606@sirena.org.uk>
+ <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Ns7jmDPpOpCD+GE/"
+Content-Disposition: inline
+In-Reply-To: <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
+X-Cookie: Small is beautiful.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-czw., 28 maj 2020 o 15:29 Mark Brown <broonie@kernel.org> napisa=C5=82(a):
->
-> On Thu, May 28, 2020 at 02:34:58PM +0200, Bartosz Golaszewski wrote:
->
-> > This adds three new macros for simple bit operations: set_bits,
-> > clear_bits and test_bits.
->
-> Why macros and not static inlines?
 
-The existing regmap_update_bits_*() helpers are macros too, so I tried
-to stay consistent. Any reason why they are macros and not static
-inlines? If there's none, then why not convert them too? Otherwise
-we'd have a static inline expanding a macro which in turn is calling a
-function (regmap_update_bits_base()).
+--Ns7jmDPpOpCD+GE/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Bartosz
+On Thu, May 28, 2020 at 03:32:40PM +0200, Bartosz Golaszewski wrote:
+> czw., 28 maj 2020 o 15:29 Mark Brown <broonie@kernel.org> napisa=C5=82(a):
+
+> > Why macros and not static inlines?
+
+> The existing regmap_update_bits_*() helpers are macros too, so I tried
+> to stay consistent. Any reason why they are macros and not static
+> inlines? If there's none, then why not convert them too? Otherwise
+> we'd have a static inline expanding a macro which in turn is calling a
+> function (regmap_update_bits_base()).
+
+Not really, I think it was just that they're argument tables.  It'd be
+good to convert them.
+
+--Ns7jmDPpOpCD+GE/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7PwREACgkQJNaLcl1U
+h9BZlQf/Rnk3QvRXUU9UWRrY62o3tOtAkM+YDOn1qkCahCNlR3xn6spu/jZ2xpm8
+wtG0/ml9T9EeXbWZU0n2vWYQowTecwv3zFcQgHRtEaN+Q0F1pZeBoGo7Hazyp47Y
+2UI0x5pTwKgEs6xwxQ9hDWy9KhGgLODt7MWUQv8T8m7XxDRmoCh9MbMAiEm2GPLb
+Vt5FGW0iBTVJh/h0J84HpA1BY1bXPFBwICbqISunBPso9Gj7D5YzmK9iKvz4qW+g
+eCfgV0eYbRbMCcL7UG9jOWOZxuznG+BfLNmzOLl/eydOppXcHVWhah9Q8Q8xsdqG
++R17K+lbB6MGwp7pU0Fr2sp98g43Cw==
+=Zc21
+-----END PGP SIGNATURE-----
+
+--Ns7jmDPpOpCD+GE/--
