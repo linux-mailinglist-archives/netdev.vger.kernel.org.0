@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E737A1E6453
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 16:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63CDE1E646E
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 16:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728571AbgE1OpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 10:45:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725922AbgE1OpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 10:45:00 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5BEB6207D3;
-        Thu, 28 May 2020 14:44:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590677100;
-        bh=X9YK+GDEsdW2T8WyDGxweojlNXR+vB7BnE1HKRUoVxo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l2E2WVrocVGuy1b/MoQhvijltZBfFRIPA1HuIMFqM5dN6XLFuQWc89P9MA+V3Em7x
-         9Rgm9qI719tIY6fUpzodZNDu7Nt24Upte5jX83v0rzQGTFaN+0PlHnIxzjfDBJ8YwR
-         f5bCGf7jklLlgV/qFq/P4M6JnQzRot0Ta1CnpqS0=
-Date:   Thu, 28 May 2020 15:44:56 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH v2 1/2] regmap: provide helpers for simple bit operations
-Message-ID: <20200528144456.GG3606@sirena.org.uk>
-References: <20200528142241.20466-1-brgl@bgdev.pl>
- <20200528142241.20466-2-brgl@bgdev.pl>
+        id S2391247AbgE1Os0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 10:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391239AbgE1OsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 10:48:19 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35D2C08C5C6;
+        Thu, 28 May 2020 07:48:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=J3qtwoPGVq2JnofuWBUzY3t5O++ntiuaSHaA9oo7zgE=; b=i6tISO3cy0Rn3AIZnYcCDlqr2
+        NCV3DZV1tHZzrztGy8KpdbGlyyTGMPQfHuG4VjdJtPkLcbWYVklV333UL5/u8OagVtmC5BpegHIjh
+        jEfjmy6SkJgf6P4q/LtHeNz0WiX8+Imv1CrbXYEofjaLFoarRo87EvstIEUi2gWg5zzw7fQfJhXI9
+        q31nGg6eBCzcFJljEFCfMMXegiKgNip9Tz3DXTlKQT2POkPVKHlzZEu69vfwq2Nhsoc7aipnkSBdh
+        P+aeNKMNoRcT3E0MDOuAEO0gDb7OHJ5qGQPRavseqRgovuGhA4ByFUihR4wNT9j+JApVYEyvKdR4j
+        ULn5ZNVFA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38164)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jeJpJ-0005dJ-Gk; Thu, 28 May 2020 15:48:09 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jeJpF-0007Z6-Qp; Thu, 28 May 2020 15:48:05 +0100
+Date:   Thu, 28 May 2020 15:48:05 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
+ 1000BaseX/2500BaseX ports
+Message-ID: <20200528144805.GW1551@shell.armlinux.org.uk>
+References: <20200528121121.125189-1-tbogendoerfer@suse.de>
+ <20200528130738.GT1551@shell.armlinux.org.uk>
+ <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
+ <20200528135608.GU1551@shell.armlinux.org.uk>
+ <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RMedoP2+Pr6Rq0N2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200528142241.20466-2-brgl@bgdev.pl>
-X-Cookie: Small is beautiful.
+In-Reply-To: <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 28, 2020 at 04:33:35PM +0200, Thomas Bogendoerfer wrote:
+> below is the dts part for the two network interfaces. The switch to
+> the outside has two ports, which correlate to the two internal ports.
+> And the switch propagates the link state of the external ports to
+> the internal ports.
 
---RMedoP2+Pr6Rq0N2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Okay, so this DTS hasn't been reviewed...
 
-On Thu, May 28, 2020 at 04:22:40PM +0200, Bartosz Golaszewski wrote:
+> &cp0_eth1 {
+>         status = "okay";
+>         phy-mode = "2500base-x";
+>         mac-address = [00 00 00 00 00 01];
+>         interrupts = <41 IRQ_TYPE_LEVEL_HIGH>,
+>         <45 IRQ_TYPE_LEVEL_HIGH>,
+>         <49 IRQ_TYPE_LEVEL_HIGH>,
+>         <53 IRQ_TYPE_LEVEL_HIGH>,
+>         <57 IRQ_TYPE_LEVEL_HIGH>,
+>         <61 IRQ_TYPE_LEVEL_HIGH>,
+>         <65 IRQ_TYPE_LEVEL_HIGH>,
+>         <69 IRQ_TYPE_LEVEL_HIGH>,
+>         <73 IRQ_TYPE_LEVEL_HIGH>,
+>         <127 IRQ_TYPE_LEVEL_HIGH>;
+>         interrupt-names = "hif0", "hif1", "hif2",
+>         "hif3", "hif4", "hif5", "hif6", "hif7",
+>         "hif8", "link";
+>         port-id = <2>;
+>         gop-port-id = <3>;
 
-> +	return (val & bits) == bits ? 1 : 0;
+This seems to correlate with the eth2 node in armada-cp11x.dtsi -
+you do not need to specify the interrupts, interrupt-names, port-id
+and gop-port-id unless you need to change them just because you want
+to add a few properties to this node - you can just list the new or
+altered properties.  To delete a property, you need to prefix the
+property name with /delete-property/.
 
-The tenery here is redundant, it's converting a boolean value into a
-boolean value.  Otherwise this looks good.
+>         managed = "in-band-status";
 
---RMedoP2+Pr6Rq0N2
-Content-Type: application/pgp-signature; name="signature.asc"
+This isn't correct - you are requesting that in-band status is used
+(i.o.w. the in-band control word, see commit 4cba5c210365), but your
+bug report wants to enable AN bypass because there is no in-band
+control word.  This seems to be rather contradictory.
 
------BEGIN PGP SIGNATURE-----
+May I suggest you use a fixed-link here, which will not have any
+inband status, as there is no in-band control word being sent by
+the switch?  That is also the conventional way of handling switch
+links.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7PzmcACgkQJNaLcl1U
-h9DzXAf9EwegJko8ZtKiJNAmWI/0roZMdNBpTkKJLOfFqs0LbMZdg1Tg3UA+jOe6
-AM9PSwU009hn4dmLdAbnqIfXhp1e1zPUb537lozVi/6cAbc6yzwzZBxajJjUxjk9
-amrt61H/LZBJyyP1qrY4a/vNtu0R558ozAuMmINAfkEsFdGQq6WZ63N+bcJzPiF4
-kxSTX7Mewb0jyB6ZAilOMkuRFNR+bCGjV0MNVd41MUT+zEcgaMP7Dv6eJ/PUBJ2y
-klySoD2xOzlpxBUpKblFYuso9Q8iRrGGjr49/rh1rYuKjRz/wt8cbwe4NjrG0N+q
-E8vZUZWNgG2ZVnG3DbKIx5QlNJxtDA==
-=EkdN
------END PGP SIGNATURE-----
+Thanks.
 
---RMedoP2+Pr6Rq0N2--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
