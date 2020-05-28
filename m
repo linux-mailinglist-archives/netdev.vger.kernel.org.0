@@ -2,73 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDA71E593E
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E381E5A82
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 10:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgE1Ho1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 03:44:27 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5298 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725811AbgE1Ho1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 03:44:27 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D494069D223870CB3645;
-        Thu, 28 May 2020 15:44:24 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 28 May 2020 15:44:15 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        "Kalle Valo" <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
-CC:     YueHaibing <yuehaibing@huawei.com>,
-        <linux-wireless@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <kernel-janitors@vger.kernel.org>
-Subject: [PATCH] mt76: mt7615: Use kmemdup in mt7615_queue_key_update()
-Date:   Thu, 28 May 2020 07:48:56 +0000
-Message-ID: <20200528074856.118279-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726579AbgE1IOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 04:14:48 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:49828 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726441AbgE1IOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 04:14:48 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04397;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0TzscnAD_1590653683;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0TzscnAD_1590653683)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 28 May 2020 16:14:44 +0800
+Subject: Re: [RFC PATCH] samples:bpf: introduce task detector
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+References: <6561a67d-6dac-0302-8590-5f46bb0205c2@linux.alibaba.com>
+ <CAEf4BzYwO59x0kJWNk1sfwKz=Lw+Sb_ouyRpx8-v1x8XFoqMOw@mail.gmail.com>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <9a78329c-8bfe-2b83-b418-3de88e972c5a@linux.alibaba.com>
+Date:   Thu, 28 May 2020 16:14:43 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+In-Reply-To: <CAEf4BzYwO59x0kJWNk1sfwKz=Lw+Sb_ouyRpx8-v1x8XFoqMOw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use kmemdup rather than duplicating its implementation
+Hi, Andrii
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/wireless/mediatek/mt76/mt7615/main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thanks for your comments :-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-index 2e9e9d3519d7..c32f06c85f0f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -289,12 +289,11 @@ mt7615_queue_key_update(struct mt7615_dev *dev, enum set_key_cmd cmd,
- 	wd->type = MT7615_WTBL_KEY_DESC;
- 	wd->sta = msta;
- 
--	wd->key.key = kzalloc(key->keylen, GFP_KERNEL);
-+	wd->key.key = kmemdup(key->key, key->keylen, GFP_KERNEL);
- 	if (!wd->key.key) {
- 		kfree(wd);
- 		return -ENOMEM;
- 	}
--	memcpy(wd->key.key, key->key, key->keylen);
- 	wd->key.cipher = key->cipher;
- 	wd->key.keyidx = key->keyidx;
- 	wd->key.keylen = key->keylen;
+On 2020/5/28 下午2:36, Andrii Nakryiko wrote:
+[snip]
+>> ---
+> 
+> I haven't looked through implementation thoroughly yet. But I have few
+> general remarks.
+> 
+> This looks like a useful and generic tool. I think it will get most
+> attention and be most useful if it will be part of BCC tools. There is
+> already a set of generic tools that use libbpf and CO-RE, see [0]. It
+> feels like this belongs there.
+> 
+> Some of the annoying parts (e.g., syscall name translation) is already
+> generalized as part of syscount tool PR (to be hopefully merged soon),
+> so you'll be able to save quite a lot of code with this. There is also
+> a common build infra that takes care of things like vmlinux.h, which
+> would provide definitions for all those xxx_args structs that you had
+> to manually define.
+> 
+> With CO-RE, it also will allow to compile this tool once and run it on
+> many different kernels without recompilation. Please do take a look
+> and submit a PR there, it will be a good addition to the toolkit (and
+> will force you write a bit of README explaining use of this tool as
+> well ;).
 
+Aha, I used to think bcc only support python and cpp :-P
 
+I'll try to rework it and submit PR, I'm glad to know that you think
+this tool as a helpful one, we do solved some tough issue with it
+already.
 
+> 
+> As for the code itself, I haven't gone through it much, but please
+> convert map definition syntax to BTF-defined one. The one you are
+> using is a legacy one. Thanks!
+> 
+>   [0] https://github.com/iovisor/bcc/tree/master/libbpf-tools
+
+Will check the example there :-)
+
+Regards,
+Michael Wang
+
+> 
+>>  samples/bpf/Makefile             |   3 +
+>>  samples/bpf/task_detector.h      | 382 +++++++++++++++++++++++++++++++++++++++
+>>  samples/bpf/task_detector_kern.c | 329 +++++++++++++++++++++++++++++++++
+>>  samples/bpf/task_detector_user.c | 314 ++++++++++++++++++++++++++++++++
+>>  4 files changed, 1028 insertions(+)
+>>  create mode 100644 samples/bpf/task_detector.h
+>>  create mode 100644 samples/bpf/task_detector_kern.c
+>>  create mode 100644 samples/bpf/task_detector_user.c
+>>
+> 
+> [...]
+> 
