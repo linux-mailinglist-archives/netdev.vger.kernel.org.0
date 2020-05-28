@@ -2,118 +2,448 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3AA1E571B
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E45F01E571D
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbgE1F4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 01:56:54 -0400
-Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:23726
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727092AbgE1F4x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 01:56:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LIj1Tb8q22tCC10GHhLHVsBdtXf8rVlUpJOOya8nhncol/FvVnrYEb4HY79VXhgAon5o4ZfENQ93zlPhaWKxoJvNKakhmkGKzSRC8XsqB8dBi1aM2VpBuFdQYp9qOyzJNSqPpaTWbH/mnyT9AYIjx9zcWonLCkpr15/gR59/NHM8uUtz084BAa9nJhPRZ8TW4l2cILOVsjCPP8igr+yPdEW9vHu5XUwoxNa8HIW/PxRY23Ffh+fEIV9uzIESHiOayuOu+rj6kUzpAzuHSjWXA5sm4M1xYERru/wsIPHS7DU/UfHNPiGS3Ve6aP0uyZYK+JyUIlNA3XnGGYWxiQokqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GSCSgtjBOFA0XYB6otUzvsWSLjpWEtA5QgnsOZkW6/0=;
- b=LSQVcJKf2RaKD/InCcXidXoXhLAsKv9vimUSWc3JfqIXuDmjFV0B5BLPfuisGxwu2NcnFAf66Kh53A6rp9k8uHpgkRAh/624DLIFod8XHGdEH3Eim4wuoko03TUDUj/JP/2G2UiQoM6aZIWxK++q3ZKMQurgnSKQQk9Gm5m8DEeS79cu5hU4/cIvTkRbUmU5sKeOcsvaNiEwW1cVss0/8An/LEAZHXSnmYrepnetHq7oaUsEkO224tK0aZfcTgEpnDUXVzycrh2QbznMPXqJ46vMowUZs3bYWZ0Zyu0KoBXwLvycoSgf2ZNsV5ahY3cQ+5MquerJydLs9JZNr37g8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GSCSgtjBOFA0XYB6otUzvsWSLjpWEtA5QgnsOZkW6/0=;
- b=lkLzBr+4r2BQOtqvh3Fc169SsRCvN69NBdyZEvtlfVI2uG6glLPJMrR5PTo44EPQC0SacDad+mNEdmjZD64oYv7pZkIye9AlxlvN5i4FAbJ+JhSoY3/F1wNFhRbXF2UmxC/43T3VCfFGowgBRPNfmCRrzsFoSxeL2miANu5bo+M=
-Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
- (2603:10a6:208:1b::25) by AM0PR0502MB3666.eurprd05.prod.outlook.com
- (2603:10a6:208:17::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Thu, 28 May
- 2020 05:56:48 +0000
-Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
- ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
- ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3021.029; Thu, 28 May 2020
- 05:56:47 +0000
-From:   Amit Cohen <amitc@mellanox.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     mlxsw <mlxsw@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "o.rempel@pengutronix.de" <o.rempel@pengutronix.de>
-Subject: RE: Link down reasons
-Thread-Topic: Link down reasons
-Thread-Index: AdY0MRsCf+pEVriLQBWXdVHGjFy9PgAPhZ2AABC/emA=
-Date:   Thu, 28 May 2020 05:56:47 +0000
-Message-ID: <AM0PR0502MB38267B345D7829A00790285DD78E0@AM0PR0502MB3826.eurprd05.prod.outlook.com>
-References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com>
- <20200527213843.GC818296@lunn.ch>
-In-Reply-To: <20200527213843.GC818296@lunn.ch>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [87.68.150.248]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: edf3c620-6905-4e2d-2c0f-08d802cbe8c3
-x-ms-traffictypediagnostic: AM0PR0502MB3666:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR0502MB3666FCA8B4D5978D1FB1EBF1D78E0@AM0PR0502MB3666.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0417A3FFD2
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jSGID7YLy2eioxKBrMmMLtHozyuU+WJxdby2fxtVzdtfPqOI8I8miJJbZHbdHlXl52eFJvAoS+iGAKZ+SlieAtFZ/qN0sjZhyPgpcoGAnOgRhN4rA355Adpp8+OuqliQMWtGyjPiP8bOidJ3UXRcm92En7vdg1vyN3HbynfZLy6jD7n9jsV0GJXDTO6CPHgH3GjdNCBuLBL2yOt66chaHhsRbfc4LF6OJs0kkfosInvOlaK++NSZX7v69v9CGD5DZKYwhnJKwt+Z6InSN8VyeI103jzAwmpd0LFgTx7qY46PDu/kdzGRak9AzGhfkJVlIUY1HtNyKlb5bRze1LzVdQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(396003)(136003)(346002)(71200400001)(76116006)(64756008)(66946007)(66476007)(6506007)(66556008)(26005)(186003)(5660300002)(7696005)(83380400001)(66446008)(8676002)(8936002)(3480700007)(7116003)(52536014)(478600001)(4326008)(6916009)(55016002)(33656002)(9686003)(86362001)(54906003)(2906002)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: +JpmmbvAJ6S6U8G/penK9I1f3yk5FjvfmjDmZrgKrX00dI8X5V4JHYyJbw9uBqrFo1uZL970t+MkB00MSewb2zk5z6384jEDVwAkHFyvQxLqogtWyQgBeCbGg4e3icVmnxAHdiMP32eEyHDhenjKICYLpk0xSMthcDTrms/7uGgJidCpMGdBthnbUWcn4Lxj0JZ7bxMf7oMJTFlcKrFYANIyLpgAEPXFHBKn/AISxGpNCQz79GrQdp7q6NhbWQTRHoPPLoJlSBRUqhdcRn+/CEoiX2c5S2jdn+LfKlESBrXbVH6EvZVMt5GTH7xN+mdfdDy0L3ndr1EC9dI2m25KaGdRjs8MprAsqfoIpKW5EgSfsLXc4REOeYrj4cn1ZAHP21y2owr0EwMIrf08S3/TmlYcMODFM3cjPJ35sypfJzTnfECdgzd0KaIDW0kDtDiCwoeQKSc9kfOu5d9CNWjOrfqCCRgTPaJMtTkrHuUog7M=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727797AbgE1F5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 01:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727056AbgE1F5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:57:00 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BC8C05BD1E;
+        Wed, 27 May 2020 22:56:59 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id x12so21320217qts.9;
+        Wed, 27 May 2020 22:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AvpsEDVUwttVKEGb36DExS1qgVG2OouNqnOR1shDuFA=;
+        b=XQYMFAWvXgqfkzTs+24KICIvQJ1fuuP7UncbSYf3i8wAe/BkgiXLrlHPBU9bILrzqp
+         uspAZ5JSn4w5sDNwEU84JJzbgjePW0P98DPI0W4mZ3T2jZESaCfqV1f5XD0U8WyZFbGD
+         QhmSHmzP6yvTFcSg2FVV34FJwbwKzSRZ6N0nZpOmewjiUYe991z9T9F2pGp9IPGWqsRz
+         D9zGPj9VtXrYO0vPrJLO8FLr5E1Rwy2Z/8geNe1xh6Y0Mnxm6Pn82TkBAmt+2/CqpJiC
+         hwLUYO1fKOV289cnQdMB7FE79Kpe0NUr+6tfLwQim2ox17DI04V04gDhz5AkfLMSjq6g
+         4Klw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AvpsEDVUwttVKEGb36DExS1qgVG2OouNqnOR1shDuFA=;
+        b=gP6bjCu6YYuKoKUCy1u+gttUbvP8pVtGIg7wgBgl2wl3VggMeMB56oU/Ui3UYneHeg
+         uqI4XwHK74Bjata7/iiP2zHeARDVgWDJ5nTqhhMfuH7NEib78NTVHsdzBVGhGKBUlNc4
+         J3aoYiUgvnsTMPGWVL51Ahf82XwIPtPmbWY7p4oRrOH8KNdiYuLz8sfdcW00fOkA9vZ1
+         Ykzjf7CmfRiw9cTzM5LKMQrazXPXDPZXg1ctyKFsoGHuqeACV2GZnnC8A4J6MA1DZFtm
+         +nfMsSVAu097tZERGPgmZpaE4DVmNN49F4k14g71vQdA4DT9/s4q4AZ/TcC2LnSkdwQp
+         nL1Q==
+X-Gm-Message-State: AOAM531WEr1LnSRVCXklpgs7FG28+AIJkqMxLxv5BPlfLMhDR3yDVKup
+        1jArwdQ9jOj6ZlVd4rB3/YqLyT5RBYbPFEGvdkI=
+X-Google-Smtp-Source: ABdhPJyCLpQSd4VDC8jdpKqgS+6AKQ3IlS4XvW4iV2+R3Xx1gWoSR/Rh3jCNGpu0ePBYhOCNUW7C70+CFWCjE280D5w=
+X-Received: by 2002:ac8:2dc3:: with SMTP id q3mr1402085qta.141.1590645418882;
+ Wed, 27 May 2020 22:56:58 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edf3c620-6905-4e2d-2c0f-08d802cbe8c3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2020 05:56:47.8997
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ep6KY/Kq4UoQaiqHIuIZOC1XIdiF204iz4pBdXdG4kYoSAKI5okcuC1hTipSJkHPBczGNOJNdAYctYKTZZ5wLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3666
+References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-6-jakub@cloudflare.com>
+In-Reply-To: <20200527170840.1768178-6-jakub@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 27 May 2020 22:56:47 -0700
+Message-ID: <CAEf4BzZQQk8A9nUx2CrVXQqFcetr3PXnAtEm8JE05czHJvA5og@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/8] bpf: Add link-based BPF program attachment
+ to network namespace
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPiB3cml0ZXM6DQoNCj5PbiBXZWQsIE1heSAyNywg
-MjAyMCBhdCAwMzo0MToyMlBNICswMDAwLCBBbWl0IENvaGVuIHdyb3RlOg0KPj4gSGkgQW5kcmV3
-LA0KPj4gDQo+PiBXZSBhcmUgcGxhbm5pbmcgdG8gc2VuZCBhIHNldCB0aGF0IGV4cG9zZXMgbGlu
-ay1kb3duIHJlYXNvbiBpbiBldGh0b29sLg0KPj4gDQo+PiBJdCBzZWVtcyB0aGF0IHRoZSBhYmls
-aXR5IG9mIHlvdXIgc2V0IOKAnEV0aGVybmV0IGNhYmxlIHRlc3Qgc3VwcG9ydOKAnSANCj4+IGNh
-biBiZSBpbnRlZ3JhdGVkIHdpdGggbGluay1kb3duIHJlYXNvbi4NCj4+IA0KPj4gIA0KPj4gDQo+
-PiBUaGUgaWRlYSBpcyB0byBleHBvc2UgcmVhc29uIGFuZCBzdWJyZWFzb24gKGlmIHRoZXJlIGlz
-KToNCj4+IA0KPj4gJCBldGh0b29sIGV0aFgNCj4+IA0KPj4g4oCmDQo+PiANCj4+IExpbmsgZGV0
-ZWN0ZWQ6IG5vIChObyBjYWJsZSkgLy8gTm8gc3ViIHJlYXNvbg0KPj4gDQo+PiAgDQo+PiANCj4+
-ICQgZXRodG9vbCBldGhZDQo+PiANCj4+IExpbmsgZGV0ZWN0ZWQ6IG5vIChBdXRvbmVnIGZhaWx1
-cmUsIE5vIHBhcnRuZXIgZGV0ZWN0ZWQpDQo+PiANCj4+ICANCj4+IA0KPj4gQ3VycmVudGx5IHdl
-IGhhdmUgcmVhc29uIOKAnGNhYmxlIGlzc3Vl4oCdIGFuZCBzdWJyZWFzb25zIOKAnHVuc3VwcG9y
-dGVkIA0KPj4gY2FibGXigJ0gYW5kIOKAnHNob3J0ZWQgY2FibGXigJ0uDQo+PiANCj4+IFRoZSBt
-ZWNoYW5pc20gb2YgY2FibGUgdGVzdCBjYW4gYmUgaW50ZWdyYXRlZCBhbmQgYWxsb3cgdXMgcmVw
-b3J0IOKAnGNhYmxlIGlzc3Vl4oCdDQo+PiByZWFzb24gYW5kIOKAnHNob3J0ZWQgY2FibGXigJ0g
-c3VicmVhc29uLg0KPg0KPkhpIEFtaXQNCj4NCj5JIGRvbid0IHJlYWxseSBzZWUgdGhlbSBiZWlu
-ZyBjb21iaW5hYmxlLiBGaXJzdCBvZmYsIHlvdXIgQVBJIHNlZW1zIHRvbyBsaW1pdGluZy4gSG93
-IGRvIHlvdSBzYXkgd2hpY2ggcGFpciBpcyBicm9rZW4sIG9yIGF0IHdoYXQgZGlzdGFuY2U/IFdo
-YXQgYWJvdXQgb3BlbiBjYWJsZSwgYXMgb3Bwb3NlZCB0byBzaG9ydGVkIGNhYmxlPw0KPg0KPlNv
-IGkgd291bGQgc3VnZ2VzdDoNCj4NCj5MaW5rIGRldGVjdGVkOiBubyAoY2FibGUgaXNzdWUpDQo+
-DQo+QW5kIHRoZW4gcmVjb21tZW5kIHRoZSB1c2VyIHVzZXMgZXRodG9vbCAtLWNhYmxlLXRlc3Qg
-dG8gZ2V0IGFsbCB0aGUgZGV0YWlscywgYW5kIHlvdSBoYXZlIGEgbXVjaCBtb3JlIGZsZXhpYmxl
-IEFQSSB0byBwcm92aWRlIGFzIG11Y2ggb3IgYXMgbGl0dGxlIGluZm9ybWF0aW9uIGFzIHlvdSBo
-YXZlLg0KPg0KPiAgIEFuZHJldw0KDQpUaGFua3MhDQpMaW5rLWRvd24gcmVhc29uIGhhcyB0byBj
-b25zaWRlciBjYWJsZS10ZXN0IG9yIG5vdD8gSW4gb3JkZXIgdG8gcmVwb3J0ICJjYWJsZSBpc3N1
-ZSIsIHdlIGFzc3VtZSB0aGF0IHRoZSBkcml2ZXIgaW1wbGVtZW50ZWQgbGluay1kb3duIHJlYXNv
-biBpbiBhZGRpdGlvbiB0byBjYWJsZS10ZXN0Pw0KSSdtIGFza2luZyBhYm91dCBQSFkgZHJpdmVy
-IGZvciBleGFtcGxlIHRoYXQgaW1wbGVtZW50ZWQgY2FibGUtdGVzdCBhbmQgbm90IGxpbmstZG93
-biByZWFzb24sIHNvIGFjY29yZGluZyB0byBjYWJsZS10ZXN0IHdlIHNob3VsZCByZXBvcnQgImNh
-YmxlIGlzc3VlIiBhcyBhIGxpbmstZG93biByZWFzb24gb3IgZG8gbm90IGV4cG9zZSByZWFzb24g
-aGVyZT8NCg0K
+On Wed, May 27, 2020 at 12:16 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Add support for bpf() syscall subcommands that operate on
+> bpf_link (LINK_CREATE, LINK_UPDATE, OBJ_GET_INFO) for attach points tied to
+> network namespaces (that is flow dissector at the moment).
+>
+> Link-based and prog-based attachment can be used interchangeably, but only
+> one can be in use at a time. Attempts to attach a link when a prog is
+> already attached directly, and the other way around, will be met with
+> -EBUSY.
+>
+> Attachment of multiple links of same attach type to one netns is not
+> supported, with the intention to lift it when a use-case presents
+> itself. Because of that attempts to create a netns link, when one already
+> exists result in -E2BIG error, signifying that there is no space left for
+> another attachment.
+>
+> Link-based attachments to netns don't keep a netns alive by holding a ref
+> to it. Instead links get auto-detached from netns when the latter is being
+> destroyed by a pernet pre_exit callback.
+>
+> When auto-detached, link lives in defunct state as long there are open FDs
+> for it. -ENOLINK is returned if a user tries to update a defunct link.
+>
+> Because bpf_link to netns doesn't hold a ref to struct net, special care is
+> taken when releasing the link. The netns might be getting torn down when
+> the release function tries to access it to detach the link.
+>
+> To ensure the struct net object is alive when release function accesses it
+> we rely on the fact that cleanup_net(), struct net destructor, calls
+> synchronize_rcu() after invoking pre_exit callbacks. If auto-detach from
+> pre_exit happens first, link release will not attempt to access struct net.
+>
+> Same applies the other way around, network namespace doesn't keep an
+> attached link alive because by not holding a ref to it. Instead bpf_links
+> to netns are RCU-freed, so that pernet pre_exit callback can safely access
+> and auto-detach the link when racing with link release/free.
+>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  include/linux/bpf-netns.h      |   8 +
+>  include/net/netns/bpf.h        |   1 +
+>  include/uapi/linux/bpf.h       |   5 +
+>  kernel/bpf/net_namespace.c     | 257 ++++++++++++++++++++++++++++++++-
+>  kernel/bpf/syscall.c           |   3 +
+>  net/core/filter.c              |   1 +
+>  tools/include/uapi/linux/bpf.h |   5 +
+>  7 files changed, 278 insertions(+), 2 deletions(-)
+>
+
+[...]
+
+>  struct netns_bpf {
+>         struct bpf_prog __rcu *progs[MAX_NETNS_BPF_ATTACH_TYPE];
+> +       struct bpf_link __rcu *links[MAX_NETNS_BPF_ATTACH_TYPE];
+>  };
+>
+
+[...]
+
+>
+> -/* Protects updates to netns_bpf */
+> +struct bpf_netns_link {
+> +       struct bpf_link link;
+> +       enum bpf_attach_type type;
+> +       enum netns_bpf_attach_type netns_type;
+> +
+> +       /* struct net is not RCU-freed but we treat it as such because
+> +        * our pre_exit callback will NULL this pointer before
+> +        * cleanup_net() calls synchronize_rcu().
+> +        */
+> +       struct net __rcu *net;
+
+It feels to me (see comments below), that if you use mutex
+consistently, then this shouldn't be __rcu and you won't even need
+rcu_read_lock() when working with this pointer, because auto_detach
+and everything else won't be racing: if you got mutex in release() and
+you see non-null net pointer, auto-detach either didn't happen yet, or
+is happening at the same time, but is blocked on mutex. If you got
+mutex and see net == NULL, ok, auto-detach succeeded before release,
+so ignore net clean-up. Easy, no?
+
+> +
+> +       /* bpf_netns_link is RCU-freed for pre_exit callback invoked
+> +        * by cleanup_net() to safely access the link.
+> +        */
+> +       struct rcu_head rcu;
+> +};
+> +
+> +/* Protects updates to netns_bpf. */
+>  DEFINE_MUTEX(netns_bpf_mutex);
+>
+> +static inline struct bpf_netns_link *to_bpf_netns_link(struct bpf_link *link)
+> +{
+> +       return container_of(link, struct bpf_netns_link, link);
+> +}
+> +
+> +/* Called with RCU read lock. */
+> +static void __net_exit
+> +bpf_netns_link_auto_detach(struct net *net, enum netns_bpf_attach_type type)
+> +{
+> +       struct bpf_netns_link *net_link;
+> +       struct bpf_link *link;
+> +
+> +       link = rcu_dereference(net->bpf.links[type]);
+> +       if (!link)
+> +               return;
+> +       net_link = to_bpf_netns_link(link);
+> +       RCU_INIT_POINTER(net_link->net, NULL);
+
+Given link attach and release is done under netns_bpf_mutex, shouldn't
+this be done under the same mutex? You are modifying link concurrently
+with update, but you are not synchronizing that access.
+
+> +}
+> +
+> +static void bpf_netns_link_release(struct bpf_link *link)
+> +{
+> +       struct bpf_netns_link *net_link = to_bpf_netns_link(link);
+> +       enum netns_bpf_attach_type type = net_link->netns_type;
+> +       struct net *net;
+> +
+> +       /* Link auto-detached by dying netns. */
+> +       if (!rcu_access_pointer(net_link->net))
+> +               return;
+> +
+> +       mutex_lock(&netns_bpf_mutex);
+> +
+> +       /* Recheck after potential sleep. We can race with cleanup_net
+> +        * here, but if we see a non-NULL struct net pointer pre_exit
+> +        * and following synchronize_rcu() has not happened yet, and
+> +        * we have until the end of grace period to access net.
+> +        */
+> +       rcu_read_lock();
+> +       net = rcu_dereference(net_link->net);
+> +       if (net) {
+> +               RCU_INIT_POINTER(net->bpf.links[type], NULL);
+> +               RCU_INIT_POINTER(net->bpf.progs[type], NULL);
+
+bpf.progs[type] is supposed to be NULL already, why setting it again here?
+
+> +       }
+> +       rcu_read_unlock();
+> +
+> +       mutex_unlock(&netns_bpf_mutex);
+> +}
+> +
+> +static void bpf_netns_link_dealloc(struct bpf_link *link)
+> +{
+> +       struct bpf_netns_link *net_link = to_bpf_netns_link(link);
+> +
+> +       /* Delay kfree in case we're racing with cleanup_net. */
+> +       kfree_rcu(net_link, rcu);
+
+It feels to me like this RCU stuff for links is a bit overcomplicated.
+If I understand your changes correctly (and please correct me if I'm
+wrong), netns_bpf's progs are sort of like "effective progs" for
+cgroup. Regardless if attachment was bpf_link-based or straight
+bpf_prog-based, prog will always be set. link[type] would be set
+additionally only if bpf_link-based attachment was done. And that
+makes sense to make dissector hot path faster and simpler.
+
+But if that's the case, link itself is always (except for auto-detach,
+which I think should be fixed) accessed under mutex and doesn't
+need/rely on rcu_read_lock() at all. So __rcu annotation for links is
+not necessary, all the rcu dereferences for links are unnecessary, and
+this kfree_rcu() is unnecessary. If that's not the case, please help
+me understand why not.
+
+> +}
+> +
+> +static int bpf_netns_link_update_prog(struct bpf_link *link,
+> +                                     struct bpf_prog *new_prog,
+> +                                     struct bpf_prog *old_prog)
+> +{
+> +       struct bpf_netns_link *net_link = to_bpf_netns_link(link);
+> +       struct net *net;
+> +       int ret = 0;
+> +
+> +       if (old_prog && old_prog != link->prog)
+> +               return -EPERM;
+> +       if (new_prog->type != link->prog->type)
+> +               return -EINVAL;
+> +
+> +       mutex_lock(&netns_bpf_mutex);
+> +       rcu_read_lock();
+> +
+> +       net = rcu_dereference(net_link->net);
+> +       if (!net || !check_net(net)) {
+> +               /* Link auto-detached or netns dying */
+> +               ret = -ENOLINK;
+
+This is an interesting error code. If we are going to adopt this, we
+should change it for similar cgroup link situation as well.
+
+> +               goto out_unlock;
+> +       }
+> +
+> +       old_prog = xchg(&link->prog, new_prog);
+> +       bpf_prog_put(old_prog);
+> +
+> +out_unlock:
+> +       rcu_read_unlock();
+> +       mutex_unlock(&netns_bpf_mutex);
+> +
+> +       return ret;
+> +}
+> +
+> +static int bpf_netns_link_fill_info(const struct bpf_link *link,
+> +                                   struct bpf_link_info *info)
+> +{
+> +       const struct bpf_netns_link *net_link;
+> +       unsigned int inum;
+> +       struct net *net;
+> +
+> +       net_link = container_of(link, struct bpf_netns_link, link);
+
+you use to_bpf_netns_link() in few places above, but straight
+container_of() here. Let's do this consistently (I'd rather stick to
+straight container_of, but that's minor).
+
+> +
+> +       rcu_read_lock();
+> +       net = rcu_dereference(net_link->net);
+> +       if (net)
+> +               inum = net->ns.inum;
+> +       rcu_read_unlock();
+> +
+> +       info->netns.netns_ino = inum;
+> +       info->netns.attach_type = net_link->type;
+> +       return 0;
+> +}
+> +
+> +static void bpf_netns_link_show_fdinfo(const struct bpf_link *link,
+> +                                      struct seq_file *seq)
+> +{
+> +       struct bpf_link_info info = {};
+> +
+> +       bpf_netns_link_fill_info(link, &info);
+> +       seq_printf(seq,
+> +                  "netns_ino:\t%u\n"
+> +                  "attach_type:\t%u\n",
+> +                  info.netns.netns_ino,
+> +                  info.netns.attach_type);
+> +}
+> +
+> +static const struct bpf_link_ops bpf_netns_link_ops = {
+> +       .release = bpf_netns_link_release,
+> +       .dealloc = bpf_netns_link_dealloc,
+> +       .update_prog = bpf_netns_link_update_prog,
+> +       .fill_link_info = bpf_netns_link_fill_info,
+> +       .show_fdinfo = bpf_netns_link_show_fdinfo,
+> +};
+> +
+>  int netns_bpf_prog_query(const union bpf_attr *attr,
+>                          union bpf_attr __user *uattr)
+>  {
+> @@ -67,6 +213,13 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+>
+>         net = current->nsproxy->net_ns;
+>         mutex_lock(&netns_bpf_mutex);
+> +
+> +       /* Attaching prog directly is not compatible with links */
+> +       if (rcu_access_pointer(net->bpf.links[type])) {
+> +               ret = -EBUSY;
+
+EEXIST would be returned if another prog is attached. Given in this
+case attaching prog or link has same semantics (one cannot replace
+attached program, unlike for cgroups), should we keep it consistent
+and return EEXIST here as well?
+
+> +               goto unlock;
+> +       }
+> +
+>         switch (type) {
+>         case NETNS_BPF_FLOW_DISSECTOR:
+>                 ret = flow_dissector_bpf_prog_attach(net, prog);
+> @@ -75,6 +228,7 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+>                 ret = -EINVAL;
+>                 break;
+>         }
+> +unlock:
+>         mutex_unlock(&netns_bpf_mutex);
+>
+>         return ret;
+> @@ -85,6 +239,10 @@ static int __netns_bpf_prog_detach(struct net *net,
+>  {
+>         struct bpf_prog *attached;
+>
+> +       /* Progs attached via links cannot be detached */
+> +       if (rcu_access_pointer(net->bpf.links[type]))
+> +               return -EBUSY;
+
+This is more of -EINVAL?
+
+> +
+>         /* No need for update-side lock when net is going away. */
+>         attached = rcu_dereference_protected(net->bpf.progs[type],
+>                                              !check_net(net) ||
+> @@ -112,14 +270,109 @@ int netns_bpf_prog_detach(const union bpf_attr *attr)
+>         return ret;
+>  }
+>
+> +static int __netns_bpf_link_attach(struct net *net, struct bpf_link *link,
+> +                                  enum netns_bpf_attach_type type)
+> +{
+> +       int err;
+> +
+> +       /* Allow attaching only one prog or link for now */
+> +       if (rcu_access_pointer(net->bpf.links[type]))
+> +               return -E2BIG;
+> +       /* Links are not compatible with attaching prog directly */
+> +       if (rcu_access_pointer(net->bpf.progs[type]))
+> +               return -EBUSY;
+
+Same as above. Do we need three different error codes instead of
+consistently using EEXIST?
+
+
+> +
+> +       switch (type) {
+> +       case NETNS_BPF_FLOW_DISSECTOR:
+> +               err = flow_dissector_bpf_prog_attach(net, link->prog);
+> +               break;
+> +       default:
+> +               err = -EINVAL;
+> +               break;
+> +       }
+> +       if (!err)
+> +               rcu_assign_pointer(net->bpf.links[type], link);
+> +       return err;
+> +}
+> +
+
+[...]
+
+> +       err = bpf_link_prime(&net_link->link, &link_primer);
+> +       if (err) {
+> +               kfree(net_link);
+> +               goto out_put_net;
+> +       }
+> +
+> +       err = netns_bpf_link_attach(net, &net_link->link, netns_type);
+> +       if (err) {
+> +               bpf_link_cleanup(&link_primer);
+> +               goto out_put_net;
+> +       }
+> +
+> +       err = bpf_link_settle(&link_primer);
+
+This looks a bit misleading. bpf_link_settle() cannot fail and returns
+FD, but here it looks like it might return error. I think it would be
+more straightforward to just:
+
+    put_net(net);
+    return bpf_link_settle(&link_primer);
+
+out_put_net:
+    put_net(net);
+    return err;
+
+> +out_put_net:
+> +       /* To auto-detach the link from netns when it is getting
+> +        * destroyed, we can't hold a ref to it. Instead, we rely on
+> +        * RCU when accessing link->net pointer.
+> +        */
+> +       put_net(net);
+> +       return err;
+> +}
+> +
+>  static void __net_exit netns_bpf_pernet_pre_exit(struct net *net)
+>  {
+>         enum netns_bpf_attach_type type;
+>
+> +       rcu_read_lock();
+>         for (type = 0; type < MAX_NETNS_BPF_ATTACH_TYPE; type++) {
+> -               if (rcu_access_pointer(net->bpf.progs[type]))
+> +               if (rcu_access_pointer(net->bpf.links[type]))
+> +                       bpf_netns_link_auto_detach(net, type);
+> +               else if (rcu_access_pointer(net->bpf.progs[type]))
+>                         __netns_bpf_prog_detach(net, type);
+>         }
+> +       rcu_read_unlock();
+>  }
+>
+
+[...]
