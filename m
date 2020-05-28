@@ -2,90 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A77281E5387
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:58:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E0C1E539F
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 04:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbgE1B5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 21:57:45 -0400
-Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:9113 "EHLO
-        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726883AbgE1B5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 21:57:43 -0400
-Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
- EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
- 15.0.1156.6; Wed, 27 May 2020 18:54:49 -0700
-Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 7190E402C2;
-        Wed, 27 May 2020 18:54:52 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        "VMware, Inc." <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 4/4] vmxnet3: update to version 4
-Date:   Wed, 27 May 2020 18:54:26 -0700
-Message-ID: <20200528015426.8285-5-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200528015426.8285-1-doshir@vmware.com>
-References: <20200528015426.8285-1-doshir@vmware.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+        id S1726277AbgE1CEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 22:04:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725849AbgE1CEe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 22:04:34 -0400
+Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7583D207CB;
+        Thu, 28 May 2020 02:04:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590631473;
+        bh=Bm2dTuY2AQspqM7SzMj2c/DT+ozxm6kUi6HWpA8TsHk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P1CBXYMU6KgliH8T3/2k6OMetj5IIP9IfCeW6vXHFuAVES38CNoXgmhsLExw5WPRS
+         BGr2sIDNzBzrcfeE+DMAJESNZIIeUKJWWPI8HGY2ObOdmL8XyU7KUun0WVlXahBjEC
+         cDYAJp751q754Z0TTj9fuvNilxFW+islAyRbCf+k=
+Date:   Wed, 27 May 2020 19:04:32 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 12/23] bpf: handle the compat string in
+ bpf_trace_copy_string better
+Message-Id: <20200527190432.e4af1fba00c13cb1421f5a37@linux-foundation.org>
+In-Reply-To: <20200521152301.2587579-13-hch@lst.de>
+References: <20200521152301.2587579-1-hch@lst.de>
+        <20200521152301.2587579-13-hch@lst.de>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all vmxnet3 version 4 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 4, provided
-the emulation advertises support for version 4.
+On Thu, 21 May 2020 17:22:50 +0200 Christoph Hellwig <hch@lst.de> wrote:
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
+> User the proper helper for kernel or userspace addresses based on
+> TASK_SIZE instead of the dangerous strncpy_from_unsafe function.
+> 
+> ...
+>
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -331,8 +331,11 @@ static void bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
+>  	switch (fmt_ptype) {
+>  	case 's':
+>  #ifdef CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+> -		strncpy_from_unsafe(buf, unsafe_ptr, bufsz);
+> -		break;
+> +		if ((unsigned long)unsafe_ptr < TASK_SIZE) {
+> +			strncpy_from_user_nofault(buf, user_ptr, bufsz);
+> +			break;
+> +		}
+> +		fallthrough;
+>  #endif
+>  	case 'k':
+>  		strncpy_from_kernel_nofault(buf, unsafe_ptr, bufsz);
+
+Another user of strncpy_from_unsafe() has popped up in linux-next's
+bpf.  I did the below, but didn't try very hard - it's probably wrong
+if CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=n?
+
+Anyway, please take a look at all the bpf_trace.c changes in
+linux-next.
+
+
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: bpf:bpf_seq_printf(): handle potentially unsafe format string better
+
+User the proper helper for kernel or userspace addresses based on
+TASK_SIZE instead of the dangerous strncpy_from_unsafe function.
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 8930717bdcf1..58ac63783b28 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3492,7 +3492,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
+ kernel/trace/bpf_trace.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+--- a/kernel/trace/bpf_trace.c~xxx
++++ a/kernel/trace/bpf_trace.c
+@@ -588,15 +588,22 @@ BPF_CALL_5(bpf_seq_printf, struct seq_fi
+ 		}
  
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_3)) {
-+	if (ver & (1 << VMXNET3_REV_4)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_4);
-+		adapter->version = VMXNET3_REV_4 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_3)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_3);
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index 86db809c7592..5d2b062215a2 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.4.17.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.5.0.0-k"
+ 		if (fmt[i] == 's') {
++			void *unsafe_ptr;
++
+ 			/* try our best to copy */
+ 			if (memcpy_cnt >= MAX_SEQ_PRINTF_MAX_MEMCPY) {
+ 				err = -E2BIG;
+ 				goto out;
+ 			}
  
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01041100
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01050000
- 
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
--- 
-2.11.0
+-			err = strncpy_from_unsafe(bufs->buf[memcpy_cnt],
+-						  (void *) (long) args[fmt_cnt],
+-						  MAX_SEQ_PRINTF_STR_LEN);
++			unsafe_ptr = (void *)(long)args[fmt_cnt];
++			if ((unsigned long)unsafe_ptr < TASK_SIZE) {
++				err = strncpy_from_user_nofault(
++					bufs->buf[memcpy_cnt], unsafe_ptr,
++					MAX_SEQ_PRINTF_STR_LEN);
++			} else {
++				err = -EFAULT;
++			}
+ 			if (err < 0)
+ 				bufs->buf[memcpy_cnt][0] = '\0';
+ 			params[fmt_cnt] = (u64)(long)bufs->buf[memcpy_cnt];
+_
 
