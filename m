@@ -2,144 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E08E11E6962
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 20:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4791E6977
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 20:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405849AbgE1Sem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 14:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405831AbgE1Sej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 14:34:39 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E52C08C5C6;
-        Thu, 28 May 2020 11:34:39 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id s1so4068077qkf.9;
-        Thu, 28 May 2020 11:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DrK+nlSE8fWyydBa/BxyXKvC67NSQZxVCHU0aPhkfzA=;
-        b=i+qwcWWGjVfNAnpXXgA+vCCmiuQTw7bThfut4HpZ/2X6FtCMgCtQiesLYJLyhf3YyJ
-         G5oQH4x+DWlsFuCRN8Qt3Zc2ReMAB3x0suEWPZzsbDxaRthTSWlolP6vMSRHW/A8wWTf
-         xjghj71+g2h0p5l06ou0mb4bYMMkL4TMpp+ZVvS1F8qAY7qUx5T4hu8js19FJi3+aKhL
-         /l2lbRuEmoSF7N5zwCWfsfInjo2G1pV2NH7PGEOOxAJ97KzzcCnN1VU6uQgYLBAjYtYM
-         PuqLAdFW1RrDAW47Vg/ErZ8NdsJtyuxv9NjhXJ5ll33Uk//PqfiGth5SZUgpglh0J+J1
-         denw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DrK+nlSE8fWyydBa/BxyXKvC67NSQZxVCHU0aPhkfzA=;
-        b=gvwTEuENkgsI3PhxxndJJUhWdjEI0ixkjVDYbzu/nYTTPqaO/OWHwqBnNCqsZ4cymo
-         yx5oznflfk7cU7T6aXcAXMRHyAGxHKvyRlPxPmNWkW5wHwS6QCkFsi1a2EphQTCKkpIS
-         obYjhiWj69ODarIX+qyoYiniJ8PvKEsul+3bRPc/zKXizMzSAisIp/1IewcdDhA88TCN
-         /gwqNfL0qR4Yszd8WHIT8jr0IInASGkjGuJLktDZjGvdVrIBr0Jt8dd0l3IUbldGtE2M
-         oHasrC36izXJDSrOblY6jaHg7JccgbSpulh5WtKRgP/EiBMA8zdDK7gnGfQt1WuxqvY/
-         Yj9Q==
-X-Gm-Message-State: AOAM5315qGSKES76EW56gA3u8MJKQPuNRAZXm+bnS2bjNdpxkHeLDCc6
-        hU+qOkWf+8q/OuD3n5HLdzrVjwH5WGhmPNAYRLE=
-X-Google-Smtp-Source: ABdhPJxHIJaijQGVGt4J7VFlFnpm+fHBMOcm6yDEkhzLyizj/o2AKkKihujlAX+A305iqR/zOFNNocd0RLEffDyRMgc=
-X-Received: by 2002:a37:4595:: with SMTP id s143mr4546043qka.449.1590690878252;
- Thu, 28 May 2020 11:34:38 -0700 (PDT)
+        id S2405940AbgE1SgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 14:36:25 -0400
+Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:26976 "EHLO
+        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405890AbgE1SgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 14:36:20 -0400
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
+ 15.0.1156.6; Thu, 28 May 2020 11:36:15 -0700
+Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id A5F84B2240;
+        Thu, 28 May 2020 14:36:19 -0400 (EDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net-next 0/4] vmxnet3: upgrade to version 4
+Date:   Thu, 28 May 2020 11:36:11 -0700
+Message-ID: <20200528183615.27212-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <6561a67d-6dac-0302-8590-5f46bb0205c2@linux.alibaba.com>
- <CAEf4BzYwO59x0kJWNk1sfwKz=Lw+Sb_ouyRpx8-v1x8XFoqMOw@mail.gmail.com> <9a78329c-8bfe-2b83-b418-3de88e972c5a@linux.alibaba.com>
-In-Reply-To: <9a78329c-8bfe-2b83-b418-3de88e972c5a@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 28 May 2020 11:34:25 -0700
-Message-ID: <CAEf4BzYHFAbOeVbs8Y2j5HjYOavDC+M+HtOst69Qtm2h5A3M=A@mail.gmail.com>
-Subject: Re: [RFC PATCH] samples:bpf: introduce task detector
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 1:14 AM =E7=8E=8B=E8=B4=87 <yun.wang@linux.alibaba.=
-com> wrote:
->
-> Hi, Andrii
->
-> Thanks for your comments :-)
->
-> On 2020/5/28 =E4=B8=8B=E5=8D=882:36, Andrii Nakryiko wrote:
-> [snip]
-> >> ---
-> >
-> > I haven't looked through implementation thoroughly yet. But I have few
-> > general remarks.
-> >
-> > This looks like a useful and generic tool. I think it will get most
-> > attention and be most useful if it will be part of BCC tools. There is
-> > already a set of generic tools that use libbpf and CO-RE, see [0]. It
-> > feels like this belongs there.
-> >
-> > Some of the annoying parts (e.g., syscall name translation) is already
-> > generalized as part of syscount tool PR (to be hopefully merged soon),
-> > so you'll be able to save quite a lot of code with this. There is also
-> > a common build infra that takes care of things like vmlinux.h, which
-> > would provide definitions for all those xxx_args structs that you had
-> > to manually define.
-> >
-> > With CO-RE, it also will allow to compile this tool once and run it on
-> > many different kernels without recompilation. Please do take a look
-> > and submit a PR there, it will be a good addition to the toolkit (and
-> > will force you write a bit of README explaining use of this tool as
-> > well ;).
->
-> Aha, I used to think bcc only support python and cpp :-P
->
+vmxnet3 emulation has recently added several new features which includes
+offload support for tunnel packets, support for new commands the driver
+can issue to emulation, change in descriptor fields, etc. This patch
+series extends the vmxnet3 driver to leverage these new features.
 
-libbpf-tools don't use BCC at all, they are just co-located with BCC
-and BCC tools in the same repository and are lightweight alternatives
-to BCC-based tools. But it needs kernel with BTF built-in, which is
-the only (temporary) downside.
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 4.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
-> I'll try to rework it and submit PR, I'm glad to know that you think
-> this tool as a helpful one, we do solved some tough issue with it
-> already.
->
-> >
-> > As for the code itself, I haven't gone through it much, but please
-> > convert map definition syntax to BTF-defined one. The one you are
-> > using is a legacy one. Thanks!
-> >
-> >   [0] https://github.com/iovisor/bcc/tree/master/libbpf-tools
->
-> Will check the example there :-)
->
-> Regards,
-> Michael Wang
->
-> >
-> >>  samples/bpf/Makefile             |   3 +
-> >>  samples/bpf/task_detector.h      | 382 ++++++++++++++++++++++++++++++=
-+++++++++
-> >>  samples/bpf/task_detector_kern.c | 329 ++++++++++++++++++++++++++++++=
-+++
-> >>  samples/bpf/task_detector_user.c | 314 ++++++++++++++++++++++++++++++=
-++
-> >>  4 files changed, 1028 insertions(+)
-> >>  create mode 100644 samples/bpf/task_detector.h
-> >>  create mode 100644 samples/bpf/task_detector_kern.c
-> >>  create mode 100644 samples/bpf/task_detector_user.c
-> >>
-> >
-> > [...]
-> >
+In particular, following changes are introduced:
+
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 4 comparison
+  and updates Copyright information.
+
+Patch 2:
+  This patch implements get_rss_hash_opts and set_rss_hash_opts methods
+  to allow querying and configuring different Rx flow hash configurations
+  which can be used to support UDP/ESP RSS.
+
+Patch 3:
+  This patch introduces segmentation and checksum offload support for
+  encapsulated packets. This avoids segmenting and calculating checksum
+  for each segment and hence gives performance boost.
+
+Patch 4:
+  With all vmxnet3 version 4 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 4.
+
+Changes in v2:
+   - Fixed compilation issue due to missing closed brace
+   - added fallthrough comment
+
+Ronak Doshi (4):
+  vmxnet3: prepare for version 4 changes
+  vmxnet3: add support to get/set rx flow hash
+  vmxnet3: add geneve and vxlan tunnel offload support
+  vmxnet3: update to version 4
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   5 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  31 +++-
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 164 ++++++++++++++++++---
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 268 +++++++++++++++++++++++++++++++++-
+ drivers/net/vmxnet3/vmxnet3_int.h     |  25 +++-
+ 6 files changed, 453 insertions(+), 42 deletions(-)
+
+-- 
+2.11.0
+
