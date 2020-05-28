@@ -2,86 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 127B31E6779
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 18:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAFF1E6783
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 18:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405059AbgE1Qdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 12:33:35 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42500 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404897AbgE1Qdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 12:33:33 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 124so7506759pgi.9;
-        Thu, 28 May 2020 09:33:33 -0700 (PDT)
+        id S2405047AbgE1QgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 12:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405021AbgE1QgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 12:36:11 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B57C08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 09:36:10 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id y13so688278eju.2
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 09:36:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W8kyIIZUNOskPOpwDELH6x1qbZGwUsjevZc+PK3ZMnQ=;
+        b=K4U3MVfnSHCQ7ylmpf/eTMWVECMl9OZHaguleVT8ltvuc0HWhkF+ciY6J8vwbtOI0v
+         mIVK4x/J4VODdcoyylcjOztWzGd5Ha8wku0t47D2tqinTbud/xdRecZf1groHzvWbp9+
+         wIbBW8MrNXeDeiZL5VzkZF5bBd4tpfAWksioHYSJNJVJTBD84RzJkZeJa51TA5NUEsug
+         6J9M/9if22MEq943SNxMSWuEZJ5RJz+MZXgEkJDrWt88Ou9AkDc7EWaIAStWC6hJ0DMN
+         4VzyqYtZYTeZHc6/M00U01ceEknq8WNcjDgH8L0ln55pPIKkOHr8FIn4bqyecXwkQRV2
+         94+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XxXOHuyOlTLP5clwe4Wfz+4oQPRkCpYLYjIK2vvc1Vc=;
-        b=V5M+o2gHEw668QnUY5F6f44G5KUR6NgQbGhYD/8t5UebEoI1A7tCaNCr2C8ftiVkLN
-         34J+wDay4hiC3L3UhEAPS8xtk6AeZNI5Xzw8T/ZrqSMVepQvgAc5PBnjVEjRpKunXgV2
-         nPcxBiTpQZAt4E6B/iO7xQu4akNlqGhV1oCb1P6meSSST90w5LgHrxIWAMr5fIFzGNAY
-         rkrd9udr4gbTF+n/olKDvjpmXJSZUYeTv9JMHvwojqSLm1XBD9T0sqsA9sROl++7SumZ
-         ldNgNVX3DzRXssODuYwN52kE+3cLd5AFrOMYXqv5tPK8OCU5UeaZLsGXElyO7YHXU0jo
-         j0uQ==
-X-Gm-Message-State: AOAM532NovqiXzIxhh+BtIsZD0CJpqmUlyH86/qqjO0OnpDx5Gv7vJx5
-        9bMLR+Zvq3wv2TEAqUxFNF7cynRVHpLoog==
-X-Google-Smtp-Source: ABdhPJx1jBQzRGhW2319wh/Cdnj+1/Ow9Nn2swZRY4W4Fm3QkC33znEjHcM8N6hO+Dn0qaSsElNinw==
-X-Received: by 2002:a63:c34a:: with SMTP id e10mr3799891pgd.412.1590683611946;
-        Thu, 28 May 2020 09:33:31 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id i11sm5189778pfq.2.2020.05.28.09.33.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 09:33:30 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 09B3640605; Thu, 28 May 2020 16:33:30 +0000 (UTC)
-Date:   Thu, 28 May 2020 16:33:29 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, jeyu@kernel.org,
-        davem@davemloft.net, michael.chan@broadcom.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        kvalo@codeaurora.org, johannes@sipsolutions.net,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        derosier@gmail.com, keescook@chromium.org, daniel.vetter@ffwll.ch,
-        will@kernel.org, mchehab+samsung@kernel.org, vkoul@kernel.org,
-        mchehab+huawei@kernel.org, robh@kernel.org, mhiramat@kernel.org,
-        sfr@canb.auug.org.au, linux@dominikbrodowski.net,
-        glider@google.com, paulmck@kernel.org, elver@google.com,
-        bauerman@linux.ibm.com, yamada.masahiro@socionext.com,
-        samitolvanen@google.com, yzaikin@google.com, dvyukov@google.com,
-        rdunlap@infradead.org, corbet@lwn.net, dianders@chromium.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: [PATCH v3 0/8] kernel: taint when the driver firmware crashes
-Message-ID: <20200528163329.GT11244@42.do-not-panic.com>
-References: <20200526145815.6415-1-mcgrof@kernel.org>
- <20200526154606.6a2be01f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20200526230748.GS11244@42.do-not-panic.com>
- <20200526163031.5c43fc1d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20200527031918.GU11244@42.do-not-panic.com>
- <20200527143642.5e4ffba0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20200528142705.GQ11244@42.do-not-panic.com>
- <58639bf9-b67c-0cbb-d4c0-69c4e400daff@candelatech.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W8kyIIZUNOskPOpwDELH6x1qbZGwUsjevZc+PK3ZMnQ=;
+        b=PKG3nUsge5u/Z5PS33/NFNX76ubQ3SaKvFYbEWk5BPTDd8eAGITTWYuh4W92sjBWC+
+         z4KDeYmZLCiLcA+/sKdIfFyC2LrHWrhiftWhkgK+R02WFkrlCPJ4YYGT0xSIC2bQOeuk
+         69gujyuP9X44UalV8Zmkh4LsUcBdbvl3Bq54/Lm0nmsjmmyjttUmcKAvaQsE2YGRnSFc
+         yMFgEEuVaTKfkh8lfM0sB+4aspx/LX71SxXkbcHCuUmq1OPEKpex3T0ShgCcQrKVzjYa
+         3GkdJmkxER6ufbJOQfWln2xHwYyKJCDV8V2DUeiC5WZFhuQIP1LfYnCJgtuA+SEFZp1T
+         gBNg==
+X-Gm-Message-State: AOAM533JxjlrFQqH/cA9E52iX6oNsPL+69pxG3fhj4ohKulQM9bAUwAL
+        ZXlMaLFdaexOETJYFoKhUhO+KhGHS/nTuIXxksw=
+X-Google-Smtp-Source: ABdhPJz4ng1/ohrOhw31awdf1ftPJ7f8YajEAjahOycGPEIK22p2gQ8+kA0KRoZqiEdyNIL2x+GU3HjehnzGontX0vY=
+X-Received: by 2002:a17:906:a0c2:: with SMTP id bh2mr3726141ejb.406.1590683769525;
+ Thu, 28 May 2020 09:36:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <58639bf9-b67c-0cbb-d4c0-69c4e400daff@candelatech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200527234113.2491988-1-olteanv@gmail.com> <20200527234113.2491988-3-olteanv@gmail.com>
+ <20200528092112.6892e6b5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200528092112.6892e6b5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 28 May 2020 19:35:58 +0300
+Message-ID: <CA+h21hqKUj-MgFVvm1VPajZz60iWUj3Xe2GdHwnQrT9Su+YfVQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 02/11] net: mscc: ocelot: unexport ocelot_probe_port
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 08:04:50AM -0700, Ben Greear wrote:
-> 
-> Could you post your devlink RFC patches somewhere public?
+On Thu, 28 May 2020 at 19:21, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 28 May 2020 02:41:04 +0300 Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > This is not being used by any other module except ocelot (i.e. felix
+> > does not use it). So remove the EXPORT_SYMBOL.
+> >
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
+> >  drivers/net/ethernet/mscc/ocelot.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> > index e621c4c3ee86..ff875c2f1d46 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot.c
+> > @@ -2152,7 +2152,6 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+> >
+> >       return err;
+> >  }
+> > -EXPORT_SYMBOL(ocelot_probe_port);
+> >
+> >  /* Configure and enable the CPU port module, which is a set of queues.
+> >   * If @npi contains a valid port index, the CPU port module is connected
+>
+> Strangely I get an error after this patch:
+>
+> ERROR: modpost: "ocelot_probe_port"
+> [drivers/net/ethernet/mscc/ocelot_board.ko] undefined! make[2]: ***
+> [__modpost] Error 1 make[1]: *** [modules] Error 2
+> make: *** [sub-make] Error 2
+>
+> Maybe a build system error, could you double check?
 
-This cover letter provided a URL to these.
-
-  Luis
+Oh, I keep forgetting that CONFIG_MSCC_OCELOT_SWITCH and
+CONFIG_MSCC_OCELOT_SWITCH_OCELOT are different modules....
+Ok, so moving ocelot_probe_port to ocelot_board.c needs a bit more
+work, I guess I'll just skip this patch for now.
