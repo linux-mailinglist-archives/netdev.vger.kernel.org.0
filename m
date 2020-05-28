@@ -2,60 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477261E6DF9
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 23:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5C31E6E28
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 23:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436712AbgE1VoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 17:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436581AbgE1VoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 17:44:00 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30FFC08C5C6;
-        Thu, 28 May 2020 14:43:59 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4CBEE129654F2;
-        Thu, 28 May 2020 14:43:59 -0700 (PDT)
-Date:   Thu, 28 May 2020 14:43:58 -0700 (PDT)
-Message-Id: <20200528.144358.1981651162176500485.davem@davemloft.net>
-To:     doshir@vmware.com
-Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 3/4] vmxnet3: add geneve and vxlan tunnel
- offload support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200528213204.29803-4-doshir@vmware.com>
-References: <20200528213204.29803-1-doshir@vmware.com>
-        <20200528213204.29803-4-doshir@vmware.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 28 May 2020 14:43:59 -0700 (PDT)
+        id S2436733AbgE1Vx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 17:53:26 -0400
+Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:58496 "EHLO
+        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2436690AbgE1VxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 17:53:24 -0400
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
+ 15.0.1156.6; Thu, 28 May 2020 14:53:20 -0700
+Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 1321AB26B0;
+        Thu, 28 May 2020 17:53:24 -0400 (EDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 net-next 0/4] vmxnet3: upgrade to version 4
+Date:   Thu, 28 May 2020 14:53:18 -0700
+Message-ID: <20200528215322.31682-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+MIME-Version: 1.0
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ronak Doshi <doshir@vmware.com>
-Date: Thu, 28 May 2020 14:32:02 -0700
+vmxnet3 emulation has recently added several new features which includes
+offload support for tunnel packets, support for new commands the driver
+can issue to emulation, change in descriptor fields, etc. This patch
+series extends the vmxnet3 driver to leverage these new features.
 
-> +			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp) &&
-> +			       !(le32_to_cpu(gdesc->dword[0]) &
-> +				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
-> +			BUG_ON(gdesc->rcd.frg &&
-> +			       !(le32_to_cpu(gdesc->dword[0]) &
-> +				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
- ...
-> +			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp) &&
-> +			       !(le32_to_cpu(gdesc->dword[0]) &
-> +				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
-> +			BUG_ON(gdesc->rcd.frg &&
-> +			       !(le32_to_cpu(gdesc->dword[0]) &
-> +				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 4.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
-Just to be clear I'm not applying stuff like this.
+In particular, following changes are introduced:
+
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 4 comparison
+  and updates Copyright information.
+
+Patch 2:
+  This patch implements get_rss_hash_opts and set_rss_hash_opts methods
+  to allow querying and configuring different Rx flow hash configurations
+  which can be used to support UDP/ESP RSS.
+
+Patch 3:
+  This patch introduces segmentation and checksum offload support for
+  encapsulated packets. This avoids segmenting and calculating checksum
+  for each segment and hence gives performance boost.
+
+Patch 4:
+  With all vmxnet3 version 4 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 4.
+
+Changes in v3 -> v4:
+   - Replaced BUG_ON() with WARN_ON_ONCE()
+
+Changes in v2 -> v3:
+   - fixed get_rss_hash_opts to return correct values for udp rss
+
+Changes in v2:
+   - Fixed compilation issue due to missing closed brace
+   - added fallthrough comment
+
+Ronak Doshi (4):
+  vmxnet3: prepare for version 4 changes
+  vmxnet3: add support to get/set rx flow hash
+  vmxnet3: add geneve and vxlan tunnel offload support
+  vmxnet3: update to version 4
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   5 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  31 ++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 164 ++++++++++++++++++---
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 263 +++++++++++++++++++++++++++++++++-
+ drivers/net/vmxnet3/vmxnet3_int.h     |  25 +++-
+ 6 files changed, 448 insertions(+), 42 deletions(-)
+
+-- 
+2.11.0
+
