@@ -2,113 +2,508 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BC91E6E63
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18A671E6E66
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436846AbgE1WJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 18:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436828AbgE1WJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:09:28 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7CDC08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:28 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id p18so144647eds.7
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IZH8xO2bNTUfc6Ggzpl8ejhUhNMqJqxoQu8e0NmITWs=;
-        b=A9RdZDs2Gov0UizhpRfuutPqAnolJ3F3GTqhyfUTHCVlM82kLMrjmy2VaOnRRSKQDY
-         iwWfaq7x2dU+UzChYpRvtiXM/vbX8YXffaquQM/lkaVXmAifrB9E7v4pv8gW3RX7nYrL
-         6Zt2EWH7wuwqwr230VQEP8XHZBu1QGWupLvXI25b2TO0W+IO8lV7WltDAniaYS06lMbV
-         1tw7Rvku5K0OtYmMybSnaqNX/8KgKeIC70u2j59W+JFz50ZqTyJD/mxbEq3YB2cJ4jP1
-         zW/L/VqsPRwiaIkuW7l54pKlVLTF6CHRPoHFU2wrEsgkdvBjLHojXd7FDfBO6jxezfEA
-         ycYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IZH8xO2bNTUfc6Ggzpl8ejhUhNMqJqxoQu8e0NmITWs=;
-        b=ongo0J3PHt75G6sycq8LiOq4v8Wlk5uLpcwpOj4W2dtiIXDBR4t7sp5OebgskxnuWR
-         +uZDzui2NW1ds80Yi0MiXMkVL/HdPE5czfN2MhE/HUumvhro76IvTVgfWw+zzc75zhdr
-         ueNwiVXoRYkTbJGQ1F3IN7H7Uu+xP594BsIaC1Yg5xNBJgbFdLlBuXU9jwEy17715VS5
-         u9/4SsTEdzCiwr0qSzOM7usGUIcQBu/wtdg35UWPm3iz1H9kYAUSh2Gdz5Tfxqnu/bYR
-         L5PQMoj58cNbeeoCZR5tXAnEav3sIKIy5rFzOl4+hV26ZZ3lW5Uo18/GTP/pLm+njpR7
-         ei4Q==
-X-Gm-Message-State: AOAM530D4KJJoo56oaTt9YMc1Et5zGJOEbMvF+yjb46bIZu0Ell+Oj5K
-        fJgb0GxxLFu6mN74ipqvGe51sDj9z2if/pNDsYg=
-X-Google-Smtp-Source: ABdhPJwgMyjjHIDuet/cEjdv4bTSjCh+wSSdtr/ObcU7TfneYuckwsdUAf0XLopK6o2HJvte0SmyCr+eCt9NN4R7mNc=
-X-Received: by 2002:aa7:d8c2:: with SMTP id k2mr5450683eds.145.1590703767054;
- Thu, 28 May 2020 15:09:27 -0700 (PDT)
+        id S2436884AbgE1WLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 18:11:44 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49796 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436844AbgE1WLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:11:42 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jeQkT-0006fq-7p; Fri, 29 May 2020 00:11:37 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jeQkS-000CJf-To; Fri, 29 May 2020 00:11:36 +0200
+Subject: Re: [PATCH v3 bpf-next 1/5] bpf: implement BPF ring buffer and
+ verifier support for it
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+References: <20200526063255.1675186-1-andriin@fb.com>
+ <20200526063255.1675186-2-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <15c1dd7f-b24b-6482-bdf0-f80b79280e91@iogearbox.net>
+Date:   Fri, 29 May 2020 00:11:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200527234113.2491988-1-olteanv@gmail.com> <20200527234113.2491988-12-olteanv@gmail.com>
- <20200528215618.GA853774@lunn.ch>
-In-Reply-To: <20200528215618.GA853774@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 29 May 2020 01:09:16 +0300
-Message-ID: <CA+h21hoVQPVJiYDQV7j+d7Vt8o5rK+Z8APO2Hp85Dt8cOU7e4w@mail.gmail.com>
-Subject: Re: [PATCH net-next 11/11] net: dsa: ocelot: introduce driver for
- Seville VSC9953 switch
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200526063255.1675186-2-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25826/Thu May 28 14:33:30 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 May 2020 at 00:56, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > Extending the Felix driver to probe a PCI as well as a platform device
-> > would have introduced unnecessary complexity. The 'meat' of both drivers
-> > is in drivers/net/ethernet/mscc/ocelot*.c anyway, so let's just
-> > duplicate the Felix driver, s/Felix/Seville/, and define the low-level
-> > bits in seville_vsc9953.c.
->
-> Hi Vladimir
->
-> That has resulted in a lot of duplicated code.
->
-> Is there an overall family name for these switch?
->
-> Could you add foo_set_ageing_time() with both felix and saville share?
->
->       Andrew
+Hey Andrii,
 
-Yes, it looks like I can. I can move Felix PCI probing to
-felix_vsc9959.c, Seville platform device probing to seville_vsc9953.c,
-and remove seville.c.
-I would not be in a position to know whether there's any larger family
-name which should be used here. According to
-https://media.digikey.com/pdf/Data%20Sheets/Microsemi%20PDFs/Ocelot_Family_of_Ethernet_Switches_Dec2016.pdf,
-"Ocelot is a low port count, small form factor Ethernet switch family
-for the Industrial IoT market". Seville would not qualify as part of
-the Ocelot family (high port count, no 1588) but that doesn't mean it
-can't use the Ocelot driver. As confusing as it might be for the
-people at Microchip, I would tend to call anything that probes as pure
-switchdev "ocelot" and anything that probes as DSA "felix", since
-these were the first 2 drivers that entered mainline. Under this
-working model, Seville would reuse the struct dsa_switch_ops
-felix_switch_ops, while having its own low-level seville_vsc9953.c
-that deals with platform integration specific stuff (probing, internal
-MDIO, register map, etc), and the felix_switch_ops would call into
-ocelot for the common functionalities.
-What do you think?
+On 5/26/20 8:32 AM, Andrii Nakryiko wrote:
+[...]
+> +static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+> +{
+> +	const gfp_t flags = GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_NOWARN |
+> +			    __GFP_ZERO;
+> +	int nr_meta_pages = RINGBUF_PGOFF + RINGBUF_POS_PAGES;
+> +	int nr_data_pages = data_sz >> PAGE_SHIFT;
+> +	int nr_pages = nr_meta_pages + nr_data_pages;
+> +	struct page **pages, *page;
+> +	size_t array_size;
+> +	void *addr;
+> +	int i;
+> +
+> +	/* Each data page is mapped twice to allow "virtual"
+> +	 * continuous read of samples wrapping around the end of ring
+> +	 * buffer area:
+> +	 * ------------------------------------------------------
+> +	 * | meta pages |  real data pages  |  same data pages  |
+> +	 * ------------------------------------------------------
+> +	 * |            | 1 2 3 4 5 6 7 8 9 | 1 2 3 4 5 6 7 8 9 |
+> +	 * ------------------------------------------------------
+> +	 * |            | TA             DA | TA             DA |
+> +	 * ------------------------------------------------------
+> +	 *                               ^^^^^^^
+> +	 *                                  |
+> +	 * Here, no need to worry about special handling of wrapped-around
+> +	 * data due to double-mapped data pages. This works both in kernel and
+> +	 * when mmap()'ed in user-space, simplifying both kernel and
+> +	 * user-space implementations significantly.
+> +	 */
+> +	array_size = (nr_meta_pages + 2 * nr_data_pages) * sizeof(*pages);
+> +	if (array_size > PAGE_SIZE)
+> +		pages = vmalloc_node(array_size, numa_node);
+> +	else
+> +		pages = kmalloc_node(array_size, flags, numa_node);
+> +	if (!pages)
+> +		return NULL;
+> +
+> +	for (i = 0; i < nr_pages; i++) {
+> +		page = alloc_pages_node(numa_node, flags, 0);
+> +		if (!page) {
+> +			nr_pages = i;
+> +			goto err_free_pages;
+> +		}
+> +		pages[i] = page;
+> +		if (i >= nr_meta_pages)
+> +			pages[nr_data_pages + i] = page;
+> +	}
+> +
+> +	addr = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+> +		    VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
+> +	if (addr)
+> +		return addr;
 
--Vladimir
+Does this need an explicit vunmap() as well in bpf_ringbuf_free()? I can see that the
+__vfree() calls __vunmap(addr, 1) which does the deallocation, but how does this stand
+with the case of kmalloc_node()? (And does it even make sense to support < PAGE_SIZE
+array size here?)
+
+> +err_free_pages:
+> +	for (i = 0; i < nr_pages; i++)
+> +		free_page((unsigned long)pages[i]);
+> +	kvfree(pages);
+> +	return NULL;
+> +}
+> +
+> +static void bpf_ringbuf_notify(struct irq_work *work)
+> +{
+> +	struct bpf_ringbuf *rb = container_of(work, struct bpf_ringbuf, work);
+> +
+> +	wake_up_all(&rb->waitq);
+> +}
+> +
+> +static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
+> +{
+> +	struct bpf_ringbuf *rb;
+> +
+> +	if (!data_sz || !PAGE_ALIGNED(data_sz))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +#ifdef CONFIG_64BIT
+> +	/* on 32-bit arch, it's impossible to overflow record's hdr->pgoff */
+> +	if (data_sz > RINGBUF_MAX_DATA_SZ)
+> +		return ERR_PTR(-E2BIG);
+> +#endif
+> +
+> +	rb = bpf_ringbuf_area_alloc(data_sz, numa_node);
+> +	if (!rb)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	spin_lock_init(&rb->spinlock);
+> +	init_waitqueue_head(&rb->waitq);
+> +	init_irq_work(&rb->work, bpf_ringbuf_notify);
+> +
+> +	rb->mask = data_sz - 1;
+> +	rb->consumer_pos = 0;
+> +	rb->producer_pos = 0;
+> +
+> +	return rb;
+> +}
+> +
+> +static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +	u64 cost;
+> +	int err;
+> +
+> +	if (attr->map_flags & ~RINGBUF_CREATE_FLAG_MASK)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	if (attr->key_size || attr->value_size ||
+> +	    attr->max_entries == 0 || !PAGE_ALIGNED(attr->max_entries))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	rb_map = kzalloc(sizeof(*rb_map), GFP_USER);
+> +	if (!rb_map)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	bpf_map_init_from_attr(&rb_map->map, attr);
+> +
+> +	cost = sizeof(struct bpf_ringbuf_map) +
+> +	       sizeof(struct bpf_ringbuf) +
+> +	       attr->max_entries;
+> +	err = bpf_map_charge_init(&rb_map->map.memory, cost);
+> +	if (err)
+> +		goto err_free_map;
+> +
+> +	rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
+> +	if (IS_ERR(rb_map->rb)) {
+> +		err = PTR_ERR(rb_map->rb);
+> +		goto err_uncharge;
+> +	}
+> +
+> +	return &rb_map->map;
+> +
+> +err_uncharge:
+> +	bpf_map_charge_finish(&rb_map->map.memory);
+> +err_free_map:
+> +	kfree(rb_map);
+> +	return ERR_PTR(err);
+> +}
+> +
+> +static void bpf_ringbuf_free(struct bpf_ringbuf *ringbuf)
+> +{
+> +	kvfree(ringbuf);
+
+... here.
+
+> +}
+> +
+> +static void ringbuf_map_free(struct bpf_map *map)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +
+> +	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+> +	 * so the programs (can be more than one that used this map) were
+> +	 * disconnected from events. Wait for outstanding critical sections in
+> +	 * these programs to complete
+> +	 */
+> +	synchronize_rcu();
+> +
+> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+> +	bpf_ringbuf_free(rb_map->rb);
+> +	kfree(rb_map);
+> +}
+> +
+> +static void *ringbuf_map_lookup_elem(struct bpf_map *map, void *key)
+> +{
+> +	return ERR_PTR(-ENOTSUPP);
+> +}
+> +
+> +static int ringbuf_map_update_elem(struct bpf_map *map, void *key, void *value,
+> +				   u64 flags)
+> +{
+> +	return -ENOTSUPP;
+> +}
+> +
+> +static int ringbuf_map_delete_elem(struct bpf_map *map, void *key)
+> +{
+> +	return -ENOTSUPP;
+> +}
+> +
+> +static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
+> +				    void *next_key)
+> +{
+> +	return -ENOTSUPP;
+> +}
+
+One use-case we'd have that would be quite interesting to resolve as well is
+to implement ->map_push_elem() callback from here and have a bpf_ringbuf_output()
+like way to feed also data from user space into the same ring buffer that BPF
+programs do. In our case we use perf RB for all sort of event messages from BPF
+side and we also have trace events from our golang agent, both get "merged" into
+an event stream together and then exported. I think it might be really useful to
+allow this here natively.
+
+> +static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
+> +{
+> +	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
+> +
+> +	/* consumer page + producer page + 2 x data pages */
+> +	return RINGBUF_POS_PAGES + 2 * data_pages;
+> +}
+> +
+> +static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +	size_t mmap_sz;
+> +
+> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+> +	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
+> +
+> +	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
+> +		return -EINVAL;
+> +
+> +	return remap_vmalloc_range(vma, rb_map->rb,
+> +				   vma->vm_pgoff + RINGBUF_PGOFF);
+> +}
+> +
+> +static unsigned long ringbuf_avail_data_sz(struct bpf_ringbuf *rb)
+> +{
+> +	unsigned long cons_pos, prod_pos;
+> +
+> +	cons_pos = smp_load_acquire(&rb->consumer_pos);
+> +	prod_pos = smp_load_acquire(&rb->producer_pos);
+> +	return prod_pos - cons_pos;
+> +}
+> +
+> +static __poll_t ringbuf_map_poll(struct bpf_map *map, struct file *filp,
+> +				 struct poll_table_struct *pts)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +
+> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+> +	poll_wait(filp, &rb_map->rb->waitq, pts);
+> +
+> +	if (ringbuf_avail_data_sz(rb_map->rb))
+> +		return EPOLLIN | EPOLLRDNORM;
+> +	return 0;
+> +}
+> +
+> +const struct bpf_map_ops ringbuf_map_ops = {
+> +	.map_alloc = ringbuf_map_alloc,
+> +	.map_free = ringbuf_map_free,
+> +	.map_mmap = ringbuf_map_mmap,
+> +	.map_poll = ringbuf_map_poll,
+> +	.map_lookup_elem = ringbuf_map_lookup_elem,
+> +	.map_update_elem = ringbuf_map_update_elem,
+> +	.map_delete_elem = ringbuf_map_delete_elem,
+> +	.map_get_next_key = ringbuf_map_get_next_key,
+> +};
+> +
+> +/* Given pointer to ring buffer record metadata and struct bpf_ringbuf itself,
+> + * calculate offset from record metadata to ring buffer in pages, rounded
+> + * down. This page offset is stored as part of record metadata and allows to
+> + * restore struct bpf_ringbuf * from record pointer. This page offset is
+> + * stored at offset 4 of record metadata header.
+> + */
+> +static size_t bpf_ringbuf_rec_pg_off(struct bpf_ringbuf *rb,
+> +				     struct bpf_ringbuf_hdr *hdr)
+> +{
+> +	return ((void *)hdr - (void *)rb) >> PAGE_SHIFT;
+> +}
+> +
+> +/* Given pointer to ring buffer record header, restore pointer to struct
+> + * bpf_ringbuf itself by using page offset stored at offset 4
+> + */
+> +static struct bpf_ringbuf *
+> +bpf_ringbuf_restore_from_rec(struct bpf_ringbuf_hdr *hdr)
+> +{
+> +	unsigned long addr = (unsigned long)(void *)hdr;
+> +	unsigned long off = (unsigned long)hdr->pg_off << PAGE_SHIFT;
+> +
+> +	return (void*)((addr & PAGE_MASK) - off);
+> +}
+> +
+> +static void *__bpf_ringbuf_reserve(struct bpf_ringbuf *rb, u64 size)
+> +{
+> +	unsigned long cons_pos, prod_pos, new_prod_pos, flags;
+> +	u32 len, pg_off;
+> +	struct bpf_ringbuf_hdr *hdr;
+> +
+> +	if (unlikely(size > RINGBUF_MAX_RECORD_SZ))
+> +		return NULL;
+> +
+> +	len = round_up(size + BPF_RINGBUF_HDR_SZ, 8);
+> +	cons_pos = smp_load_acquire(&rb->consumer_pos);
+> +
+> +	if (in_nmi()) {
+> +		if (!spin_trylock_irqsave(&rb->spinlock, flags))
+> +			return NULL;
+> +	} else {
+> +		spin_lock_irqsave(&rb->spinlock, flags);
+
+Should this side probe with trylock as well to avoid potential blockage?
+
+> +	}
+> +
+> +	prod_pos = rb->producer_pos;
+> +	new_prod_pos = prod_pos + len;
+> +
+> +	/* check for out of ringbuf space by ensuring producer position
+> +	 * doesn't advance more than (ringbuf_size - 1) ahead
+> +	 */
+> +	if (new_prod_pos - cons_pos > rb->mask) {
+> +		spin_unlock_irqrestore(&rb->spinlock, flags);
+> +		return NULL;
+> +	}
+> +
+> +	hdr = (void *)rb->data + (prod_pos & rb->mask);
+> +	pg_off = bpf_ringbuf_rec_pg_off(rb, hdr);
+> +	hdr->len = size | BPF_RINGBUF_BUSY_BIT;
+> +	hdr->pg_off = pg_off;
+> +
+> +	/* pairs with consumer's smp_load_acquire() */
+> +	smp_store_release(&rb->producer_pos, new_prod_pos);
+> +
+> +	spin_unlock_irqrestore(&rb->spinlock, flags);
+> +
+> +	return (void *)hdr + BPF_RINGBUF_HDR_SZ;
+> +}
+> +
+> +BPF_CALL_3(bpf_ringbuf_reserve, struct bpf_map *, map, u64, size, u64, flags)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +
+> +	if (unlikely(flags))
+> +		return 0;
+> +
+> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+> +	return (unsigned long)__bpf_ringbuf_reserve(rb_map->rb, size);
+> +}
+> +
+> +const struct bpf_func_proto bpf_ringbuf_reserve_proto = {
+> +	.func		= bpf_ringbuf_reserve,
+> +	.ret_type	= RET_PTR_TO_ALLOC_MEM_OR_NULL,
+> +	.arg1_type	= ARG_CONST_MAP_PTR,
+> +	.arg2_type	= ARG_CONST_ALLOC_SIZE_OR_ZERO,
+> +	.arg3_type	= ARG_ANYTHING,
+> +};
+> +
+> +static void bpf_ringbuf_commit(void *sample, u64 flags, bool discard)
+> +{
+> +	unsigned long rec_pos, cons_pos;
+> +	struct bpf_ringbuf_hdr *hdr;
+> +	struct bpf_ringbuf *rb;
+> +	u32 new_len;
+> +
+> +	hdr = sample - BPF_RINGBUF_HDR_SZ;
+> +	rb = bpf_ringbuf_restore_from_rec(hdr);
+> +	new_len = hdr->len ^ BPF_RINGBUF_BUSY_BIT;
+> +	if (discard)
+> +		new_len |= BPF_RINGBUF_DISCARD_BIT;
+> +
+> +	/* update record header with correct final size prefix */
+> +	xchg(&hdr->len, new_len);
+> +
+> +	/* if consumer caught up and is waiting for our record, notify about
+> +	 * new data availability
+> +	 */
+> +	rec_pos = (void *)hdr - (void *)rb->data;
+> +	cons_pos = smp_load_acquire(&rb->consumer_pos) & rb->mask;
+> +
+> +	if (flags & BPF_RB_FORCE_WAKEUP)
+> +		irq_work_queue(&rb->work);
+> +	else if (cons_pos == rec_pos && !(flags & BPF_RB_NO_WAKEUP))
+> +		irq_work_queue(&rb->work);
+> +}
+> +
+> +BPF_CALL_2(bpf_ringbuf_submit, void *, sample, u64, flags)
+> +{
+> +	bpf_ringbuf_commit(sample, flags, false /* discard */);
+> +	return 0;
+> +}
+> +
+> +const struct bpf_func_proto bpf_ringbuf_submit_proto = {
+> +	.func		= bpf_ringbuf_submit,
+> +	.ret_type	= RET_VOID,
+> +	.arg1_type	= ARG_PTR_TO_ALLOC_MEM,
+> +	.arg2_type	= ARG_ANYTHING,
+> +};
+> +
+> +BPF_CALL_2(bpf_ringbuf_discard, void *, sample, u64, flags)
+> +{
+> +	bpf_ringbuf_commit(sample, flags, true /* discard */);
+> +	return 0;
+> +}
+> +
+> +const struct bpf_func_proto bpf_ringbuf_discard_proto = {
+> +	.func		= bpf_ringbuf_discard,
+> +	.ret_type	= RET_VOID,
+> +	.arg1_type	= ARG_PTR_TO_ALLOC_MEM,
+> +	.arg2_type	= ARG_ANYTHING,
+> +};
+> +
+> +BPF_CALL_4(bpf_ringbuf_output, struct bpf_map *, map, void *, data, u64, size,
+> +	   u64, flags)
+> +{
+> +	struct bpf_ringbuf_map *rb_map;
+> +	void *rec;
+> +
+> +	if (unlikely(flags & ~(BPF_RB_NO_WAKEUP | BPF_RB_FORCE_WAKEUP)))
+> +		return -EINVAL;
+> +
+> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+> +	rec = __bpf_ringbuf_reserve(rb_map->rb, size);
+> +	if (!rec)
+> +		return -EAGAIN;
+> +
+> +	memcpy(rec, data, size);
+
+As discussed, (non-linear) skb capture would be needed as well. Is the plan to
+integrate this here into the same record (data + skb capture as one)?
+
+> +	bpf_ringbuf_commit(rec, flags, false /* discard */);
+> +	return 0;
+> +}
+> +
+> +const struct bpf_func_proto bpf_ringbuf_output_proto = {
+> +	.func		= bpf_ringbuf_output,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_CONST_MAP_PTR,
+> +	.arg2_type	= ARG_PTR_TO_MEM,
+> +	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
+> +	.arg4_type	= ARG_ANYTHING,
+> +};
+> +
+> +BPF_CALL_2(bpf_ringbuf_query, struct bpf_map *, map, u64, flags)
+> +{
+> +	struct bpf_ringbuf *rb;
+> +
+> +	rb = container_of(map, struct bpf_ringbuf_map, map)->rb;
+> +
+> +	switch (flags) {
+> +	case BPF_RB_AVAIL_DATA:
+> +		return ringbuf_avail_data_sz(rb);
+> +	case BPF_RB_RING_SIZE:
+> +		return rb->mask + 1;
+> +	case BPF_RB_CONS_POS:
+> +		return smp_load_acquire(&rb->consumer_pos);
+> +	case BPF_RB_PROD_POS:
+> +		return smp_load_acquire(&rb->producer_pos);
+
+Do you have an example where the latter two are needed/useful for non-debugging?
+Maybe leave out for now if only used for debugging?
+
+> +	default:
+> +		return 0;
+> +	}
+> +}
+> +
+> +const struct bpf_func_proto bpf_ringbuf_query_proto = {
+> +	.func		= bpf_ringbuf_query,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_CONST_MAP_PTR,
+> +	.arg2_type	= ARG_ANYTHING,
+> +};
