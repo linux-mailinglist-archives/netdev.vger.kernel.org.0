@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C81EF1E6B98
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E361E6B99
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406733AbgE1TsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 15:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        id S2406743AbgE1TsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 15:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728695AbgE1TqE (ORCPT
+        with ESMTP id S1728690AbgE1TqE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:46:04 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32C9C008631
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:02 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id n141so107061qke.2
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:02 -0700 (PDT)
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43EFC08C5D1
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:00 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id c12so1066700qtq.11
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5+BwgOBuP6iUsEctzv6vUxvp4p35WYKqoYBTK/xbTlU=;
-        b=FG+uuejO5gaCwDQG+SexOl8ffSQvf0EoVumat82XyA1jMg70XaDsk+95BmUWjRjNyl
-         cn2avv0c+3OH1tnITkxrTqxu6YyqYFc4wD0aTpjUbK/eEzImS5BKqvWAWNh368iuS+Jm
-         Gq7FGQrqZD4KscrcbkLD6bTGbWcL6EwBzVoSEGRonCD3q7QcnPQPk0ubnHVgNGFnhS1t
-         2d9+l0w2sjcA4ouKk1TICC1nQi0lOtBNXhaNJ/OTlHNTKbeIwrZNidfw/eK/YZ7YktRj
-         b1aBwU2S+S6h3sTWDr7voK2EVHVA2QEXPrMVfPEt51T7wWmDuOSsg7MG/MLWvNHKqxnX
-         Qgzw==
+        bh=EY2/UtKZBl5qdG+6wGZSTexrqNxwXEJQFPSAzqLwxtM=;
+        b=V5nlgps+xMmIVamW837PYQZMZwStNV8Pjy8Yn8d+z52O0K4X3NAn1joaultP1jL9K/
+         /LQQFh2QpBIUXZzkVcegQ6xLY7vXogsrEax0BLu3ra8UvBAWwrLsR4452Z8yz7WXr1CS
+         6739U6Ye5q0ooDl9fZX2zyZ+r1HamYTiYZlqDzQEsPuYzuKCXGD8hN6ItIjsEE+hBKPc
+         7Pucn/pye1xRHFaQgP5eMTMk09nDAog2ECw0OcQmD/KqGcNfb6awLlKaLeY87uF85FEw
+         Aq3gVdioSdTUEeoHf5/67r79yOUQfPP0SU2QzmCCK9ZINSRlrDH+aApjEHCtYlFtpbLu
+         VcZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5+BwgOBuP6iUsEctzv6vUxvp4p35WYKqoYBTK/xbTlU=;
-        b=RsSHyUP2ysBSLph9AW8yVxWAGBZ2TbiJj2itI38myXgK0jq2zkOHrmRsKQ8H45tXWw
-         DFqcsmCkf/iYtdc3nPh7FxAfsQWNOziO3BPYTMWTJWjoJBku7+1lZeM7DXNDqXnR1Nsj
-         KGd01i1Gp/5O2C9VQCmMA6oED3QhzOsvEYlkg7HIUz3S+czMNx3937t5d7e0/GPfrD5H
-         wTRptzC7Tv3AOs2ms4M7rjYwiQhEGcSQ/v0hHhNpzlivDWmIJe/q/IXch0pyHQGN9kVC
-         H3mbXr5g8X5AdC9KNM2iAREHEFXn6pQ4cj5BNcfiTHHQ28j4wzgAmVMXaS6thH/JK6fi
-         36JA==
-X-Gm-Message-State: AOAM532Xb8UorB08Gx3vmKyA+NbkrSSm1O1HvP1M3l3CdVkCd4aoptyN
-        +uo2rjtAqQfuq3oo0r62tEK6+Q==
-X-Google-Smtp-Source: ABdhPJwWFHmtBMtpumUA+7hjvhVG35jTK3jT7/Bl/X4v7qlDQEwre7qvOANxHa3Ou9XN95pgWxCqRA==
-X-Received: by 2002:a37:850:: with SMTP id 77mr4464088qki.498.1590695161810;
-        Thu, 28 May 2020 12:46:01 -0700 (PDT)
+        bh=EY2/UtKZBl5qdG+6wGZSTexrqNxwXEJQFPSAzqLwxtM=;
+        b=fvJs3Qhytz5H/fdDiPDT6GH8Ft6NKMiDarbjwoGjbxhZXGr8XuTF4alFrvZtPLkuQf
+         TV/tMsU10gp69nJxRx4gUpxJIwhUcv5S8G7W+YVLwLkxXWNziYFBqIsuNHZw8z7/hCsS
+         /GNhFwPRx+yS5mlxeAvwC4fVYETbCe0+N3VMLQowv5UxVaW/Wn8XcZTC0QUxgCQ+umt2
+         Jreg+hu84FVKHfw/8K9GLxY6Wz18HAcmeLpQ8cnne3ilTiBouEWGCf8MNz42Cq/ppOqg
+         b+0N1vqfzmey64aY+Q0kilv48k6DQUB1r9E6oksta7kXpZV6gexzbZqv8R8nxZoj7H8t
+         Knsw==
+X-Gm-Message-State: AOAM531QsZxseiL07/h2tnvOViurH32UkWrn+iF8jv7U2NaFlouOObZu
+        8ch4wuzS2K347nGtqybp2nJNkw==
+X-Google-Smtp-Source: ABdhPJwUE9Hig2qEA7XXiV6Y3TBkTas0ErZP3FZDIo72H16N8FFekmlkhERAYacFYfRuyYzQwBH3yA==
+X-Received: by 2002:ac8:1858:: with SMTP id n24mr4908918qtk.189.1590695159958;
+        Thu, 28 May 2020 12:45:59 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id 207sm3733320qki.134.2020.05.28.12.45.56
+        by smtp.gmail.com with ESMTPSA id x4sm6396086qtj.43.2020.05.28.12.45.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
         Thu, 28 May 2020 12:45:57 -0700 (PDT)
 Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
         (envelope-from <jgg@ziepe.ca>)
-        id 1jeOTU-0006he-Cw; Thu, 28 May 2020 16:45:56 -0300
+        id 1jeOTU-0006hl-EI; Thu, 28 May 2020 16:45:56 -0300
 From:   Jason Gunthorpe <jgg@ziepe.ca>
 To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Max Gurtovoy <maxg@mellanox.com>, oren@mellanox.com,
-        shlomin@mellanox.com, vladimirk@mellanox.com
-Subject: [PATCH v3 09/13] RDMA/mthca: Remove FMR support for memory registration
-Date:   Thu, 28 May 2020 16:45:51 -0300
-Message-Id: <9-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
+Cc:     Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        oren@mellanox.com, shlomin@mellanox.com, vladimirk@mellanox.com
+Subject: [PATCH v3 10/13] RDMA/rdmavt: Remove FMR memory registration
+Date:   Thu, 28 May 2020 16:45:52 -0300
+Message-Id: <10-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 In-Reply-To: <0-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 References: 
 MIME-Version: 1.0
@@ -68,471 +70,261 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Max Gurtovoy <maxg@mellanox.com>
 
-Remove the ancient and unsafe FMR method.
+Use FRWR method to register memory by default and remove the ancient and
+unsafe FMR method.
 
-Reviewed-by: Max Gurtovoy <maxg@mellanox.com>
 Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
+Tested-by: Dennis Dalessandro <dennis.dalessandro@intel.com>
+Acked-by: Dennis Dalessandro <dennis.dalessandro@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Cc: Dennis Dalessandro <dennis.dalessandro@intel.com>
+Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
 ---
- drivers/infiniband/hw/mthca/mthca_dev.h      |  10 -
- drivers/infiniband/hw/mthca/mthca_mr.c       | 262 +------------------
- drivers/infiniband/hw/mthca/mthca_provider.c |  86 ------
- drivers/infiniband/hw/mthca/mthca_provider.h |  23 --
- 4 files changed, 1 insertion(+), 380 deletions(-)
+ drivers/infiniband/sw/rdmavt/mr.c | 154 ------------------------------
+ drivers/infiniband/sw/rdmavt/mr.h |  15 ---
+ drivers/infiniband/sw/rdmavt/vt.c |   4 -
+ 3 files changed, 173 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mthca/mthca_dev.h b/drivers/infiniband/hw/mthca/mthca_dev.h
-index 599794c5a78f0f..7550e9d03decea 100644
---- a/drivers/infiniband/hw/mthca/mthca_dev.h
-+++ b/drivers/infiniband/hw/mthca/mthca_dev.h
-@@ -478,16 +478,6 @@ int mthca_mr_alloc_phys(struct mthca_dev *dev, u32 pd,
- 			u32 access, struct mthca_mr *mr);
- void mthca_free_mr(struct mthca_dev *dev,  struct mthca_mr *mr);
- 
--int mthca_fmr_alloc(struct mthca_dev *dev, u32 pd,
--		    u32 access, struct mthca_fmr *fmr);
--int mthca_tavor_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
--			     int list_len, u64 iova);
--void mthca_tavor_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr);
--int mthca_arbel_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
--			     int list_len, u64 iova);
--void mthca_arbel_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr);
--int mthca_free_fmr(struct mthca_dev *dev,  struct mthca_fmr *fmr);
--
- int mthca_map_eq_icm(struct mthca_dev *dev, u64 icm_virt);
- void mthca_unmap_eq_icm(struct mthca_dev *dev);
- 
-diff --git a/drivers/infiniband/hw/mthca/mthca_mr.c b/drivers/infiniband/hw/mthca/mthca_mr.c
-index 4250b2c18c6492..ce0e0867e4883b 100644
---- a/drivers/infiniband/hw/mthca/mthca_mr.c
-+++ b/drivers/infiniband/hw/mthca/mthca_mr.c
-@@ -541,7 +541,7 @@ int mthca_mr_alloc_phys(struct mthca_dev *dev, u32 pd,
- 	return err;
+diff --git a/drivers/infiniband/sw/rdmavt/mr.c b/drivers/infiniband/sw/rdmavt/mr.c
+index 72f6534fbb52b7..ddb0c0d771c257 100644
+--- a/drivers/infiniband/sw/rdmavt/mr.c
++++ b/drivers/infiniband/sw/rdmavt/mr.c
+@@ -713,160 +713,6 @@ int rvt_invalidate_rkey(struct rvt_qp *qp, u32 rkey)
  }
+ EXPORT_SYMBOL(rvt_invalidate_rkey);
  
--/* Free mr or fmr */
-+/* Free mr */
- static void mthca_free_region(struct mthca_dev *dev, u32 lkey)
- {
- 	mthca_table_put(dev, dev->mr_table.mpt_table,
-@@ -564,266 +564,6 @@ void mthca_free_mr(struct mthca_dev *dev, struct mthca_mr *mr)
- 	mthca_free_mtt(dev, mr->mtt);
- }
- 
--int mthca_fmr_alloc(struct mthca_dev *dev, u32 pd,
--		    u32 access, struct mthca_fmr *mr)
+-/**
+- * rvt_alloc_fmr - allocate a fast memory region
+- * @pd: the protection domain for this memory region
+- * @mr_access_flags: access flags for this memory region
+- * @fmr_attr: fast memory region attributes
+- *
+- * Return: the memory region on success, otherwise returns an errno.
+- */
+-struct ib_fmr *rvt_alloc_fmr(struct ib_pd *pd, int mr_access_flags,
+-			     struct ib_fmr_attr *fmr_attr)
 -{
--	struct mthca_mpt_entry *mpt_entry;
--	struct mthca_mailbox *mailbox;
--	u64 mtt_seg;
--	u32 key, idx;
--	int list_len = mr->attr.max_pages;
--	int err = -ENOMEM;
--	int i;
+-	struct rvt_fmr *fmr;
+-	int m;
+-	struct ib_fmr *ret;
+-	int rval = -ENOMEM;
 -
--	if (mr->attr.page_shift < 12 || mr->attr.page_shift >= 32)
--		return -EINVAL;
+-	/* Allocate struct plus pointers to first level page tables. */
+-	m = (fmr_attr->max_pages + RVT_SEGSZ - 1) / RVT_SEGSZ;
+-	fmr = kzalloc(struct_size(fmr, mr.map, m), GFP_KERNEL);
+-	if (!fmr)
+-		goto bail;
 -
--	/* For Arbel, all MTTs must fit in the same page. */
--	if (mthca_is_memfree(dev) &&
--	    mr->attr.max_pages * sizeof *mr->mem.arbel.mtts > PAGE_SIZE)
--		return -EINVAL;
+-	rval = rvt_init_mregion(&fmr->mr, pd, fmr_attr->max_pages,
+-				PERCPU_REF_INIT_ATOMIC);
+-	if (rval)
+-		goto bail;
 -
--	mr->maps = 0;
+-	/*
+-	 * ib_alloc_fmr() will initialize fmr->ibfmr except for lkey &
+-	 * rkey.
+-	 */
+-	rval = rvt_alloc_lkey(&fmr->mr, 0);
+-	if (rval)
+-		goto bail_mregion;
+-	fmr->ibfmr.rkey = fmr->mr.lkey;
+-	fmr->ibfmr.lkey = fmr->mr.lkey;
+-	/*
+-	 * Resources are allocated but no valid mapping (RKEY can't be
+-	 * used).
+-	 */
+-	fmr->mr.access_flags = mr_access_flags;
+-	fmr->mr.max_segs = fmr_attr->max_pages;
+-	fmr->mr.page_shift = fmr_attr->page_shift;
 -
--	key = mthca_alloc(&dev->mr_table.mpt_alloc);
--	if (key == -1)
--		return -ENOMEM;
--	key = adjust_key(dev, key);
+-	ret = &fmr->ibfmr;
+-done:
+-	return ret;
 -
--	idx = key & (dev->limits.num_mpts - 1);
--	mr->ibmr.rkey = mr->ibmr.lkey = hw_index_to_key(dev, key);
--
--	if (mthca_is_memfree(dev)) {
--		err = mthca_table_get(dev, dev->mr_table.mpt_table, key);
--		if (err)
--			goto err_out_mpt_free;
--
--		mr->mem.arbel.mpt = mthca_table_find(dev->mr_table.mpt_table, key, NULL);
--		BUG_ON(!mr->mem.arbel.mpt);
--	} else
--		mr->mem.tavor.mpt = dev->mr_table.tavor_fmr.mpt_base +
--			sizeof *(mr->mem.tavor.mpt) * idx;
--
--	mr->mtt = __mthca_alloc_mtt(dev, list_len, dev->mr_table.fmr_mtt_buddy);
--	if (IS_ERR(mr->mtt)) {
--		err = PTR_ERR(mr->mtt);
--		goto err_out_table;
--	}
--
--	mtt_seg = mr->mtt->first_seg * dev->limits.mtt_seg_size;
--
--	if (mthca_is_memfree(dev)) {
--		mr->mem.arbel.mtts = mthca_table_find(dev->mr_table.mtt_table,
--						      mr->mtt->first_seg,
--						      &mr->mem.arbel.dma_handle);
--		BUG_ON(!mr->mem.arbel.mtts);
--	} else
--		mr->mem.tavor.mtts = dev->mr_table.tavor_fmr.mtt_base + mtt_seg;
--
--	mailbox = mthca_alloc_mailbox(dev, GFP_KERNEL);
--	if (IS_ERR(mailbox)) {
--		err = PTR_ERR(mailbox);
--		goto err_out_free_mtt;
--	}
--
--	mpt_entry = mailbox->buf;
--
--	mpt_entry->flags = cpu_to_be32(MTHCA_MPT_FLAG_SW_OWNS     |
--				       MTHCA_MPT_FLAG_MIO         |
--				       MTHCA_MPT_FLAG_REGION      |
--				       access);
--
--	mpt_entry->page_size = cpu_to_be32(mr->attr.page_shift - 12);
--	mpt_entry->key       = cpu_to_be32(key);
--	mpt_entry->pd        = cpu_to_be32(pd);
--	memset(&mpt_entry->start, 0,
--	       sizeof *mpt_entry - offsetof(struct mthca_mpt_entry, start));
--	mpt_entry->mtt_seg   = cpu_to_be64(dev->mr_table.mtt_base + mtt_seg);
--
--	if (0) {
--		mthca_dbg(dev, "Dumping MPT entry %08x:\n", mr->ibmr.lkey);
--		for (i = 0; i < sizeof (struct mthca_mpt_entry) / 4; ++i) {
--			if (i % 4 == 0)
--				printk("[%02x] ", i * 4);
--			printk(" %08x", be32_to_cpu(((__be32 *) mpt_entry)[i]));
--			if ((i + 1) % 4 == 0)
--				printk("\n");
--		}
--	}
--
--	err = mthca_SW2HW_MPT(dev, mailbox,
--			      key & (dev->limits.num_mpts - 1));
--	if (err) {
--		mthca_warn(dev, "SW2HW_MPT failed (%d)\n", err);
--		goto err_out_mailbox_free;
--	}
--
--	mthca_free_mailbox(dev, mailbox);
--	return 0;
--
--err_out_mailbox_free:
--	mthca_free_mailbox(dev, mailbox);
--
--err_out_free_mtt:
--	mthca_free_mtt(dev, mr->mtt);
--
--err_out_table:
--	mthca_table_put(dev, dev->mr_table.mpt_table, key);
--
--err_out_mpt_free:
--	mthca_free(&dev->mr_table.mpt_alloc, key);
--	return err;
+-bail_mregion:
+-	rvt_deinit_mregion(&fmr->mr);
+-bail:
+-	kfree(fmr);
+-	ret = ERR_PTR(rval);
+-	goto done;
 -}
 -
--int mthca_free_fmr(struct mthca_dev *dev, struct mthca_fmr *fmr)
+-/**
+- * rvt_map_phys_fmr - set up a fast memory region
+- * @ibfmr: the fast memory region to set up
+- * @page_list: the list of pages to associate with the fast memory region
+- * @list_len: the number of pages to associate with the fast memory region
+- * @iova: the virtual address of the start of the fast memory region
+- *
+- * This may be called from interrupt context.
+- *
+- * Return: 0 on success
+- */
+-
+-int rvt_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
+-		     int list_len, u64 iova)
 -{
--	if (fmr->maps)
+-	struct rvt_fmr *fmr = to_ifmr(ibfmr);
+-	struct rvt_lkey_table *rkt;
+-	unsigned long flags;
+-	int m, n;
+-	unsigned long i;
+-	u32 ps;
+-	struct rvt_dev_info *rdi = ib_to_rvt(ibfmr->device);
+-
+-	i = atomic_long_read(&fmr->mr.refcount.count);
+-	if (i > 2)
 -		return -EBUSY;
 -
--	mthca_free_region(dev, fmr->ibmr.lkey);
--	mthca_free_mtt(dev, fmr->mtt);
--
--	return 0;
--}
--
--static inline int mthca_check_fmr(struct mthca_fmr *fmr, u64 *page_list,
--				  int list_len, u64 iova)
--{
--	int i, page_mask;
--
--	if (list_len > fmr->attr.max_pages)
+-	if (list_len > fmr->mr.max_segs)
 -		return -EINVAL;
 -
--	page_mask = (1 << fmr->attr.page_shift) - 1;
--
--	/* We are getting page lists, so va must be page aligned. */
--	if (iova & page_mask)
--		return -EINVAL;
--
--	/* Trust the user not to pass misaligned data in page_list */
--	if (0)
--		for (i = 0; i < list_len; ++i) {
--			if (page_list[i] & ~page_mask)
--				return -EINVAL;
+-	rkt = &rdi->lkey_table;
+-	spin_lock_irqsave(&rkt->lock, flags);
+-	fmr->mr.user_base = iova;
+-	fmr->mr.iova = iova;
+-	ps = 1 << fmr->mr.page_shift;
+-	fmr->mr.length = list_len * ps;
+-	m = 0;
+-	n = 0;
+-	for (i = 0; i < list_len; i++) {
+-		fmr->mr.map[m]->segs[n].vaddr = (void *)page_list[i];
+-		fmr->mr.map[m]->segs[n].length = ps;
+-		trace_rvt_mr_fmr_seg(&fmr->mr, m, n, (void *)page_list[i], ps);
+-		if (++n == RVT_SEGSZ) {
+-			m++;
+-			n = 0;
 -		}
--
--	if (fmr->maps >= fmr->attr.max_maps)
--		return -EINVAL;
--
--	return 0;
--}
--
--
--int mthca_tavor_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
--			     int list_len, u64 iova)
--{
--	struct mthca_fmr *fmr = to_mfmr(ibfmr);
--	struct mthca_dev *dev = to_mdev(ibfmr->device);
--	struct mthca_mpt_entry mpt_entry;
--	u32 key;
--	int i, err;
--
--	err = mthca_check_fmr(fmr, page_list, list_len, iova);
--	if (err)
--		return err;
--
--	++fmr->maps;
--
--	key = tavor_key_to_hw_index(fmr->ibmr.lkey);
--	key += dev->limits.num_mpts;
--	fmr->ibmr.lkey = fmr->ibmr.rkey = tavor_hw_index_to_key(key);
--
--	writeb(MTHCA_MPT_STATUS_SW, fmr->mem.tavor.mpt);
--
--	for (i = 0; i < list_len; ++i) {
--		__be64 mtt_entry = cpu_to_be64(page_list[i] |
--					       MTHCA_MTT_FLAG_PRESENT);
--		mthca_write64_raw(mtt_entry, fmr->mem.tavor.mtts + i);
 -	}
--
--	mpt_entry.lkey   = cpu_to_be32(key);
--	mpt_entry.length = cpu_to_be64(list_len * (1ull << fmr->attr.page_shift));
--	mpt_entry.start  = cpu_to_be64(iova);
--
--	__raw_writel((__force u32) mpt_entry.lkey, &fmr->mem.tavor.mpt->key);
--	memcpy_toio(&fmr->mem.tavor.mpt->start, &mpt_entry.start,
--		    offsetof(struct mthca_mpt_entry, window_count) -
--		    offsetof(struct mthca_mpt_entry, start));
--
--	writeb(MTHCA_MPT_STATUS_HW, fmr->mem.tavor.mpt);
--
+-	spin_unlock_irqrestore(&rkt->lock, flags);
 -	return 0;
 -}
 -
--int mthca_arbel_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
--			     int list_len, u64 iova)
+-/**
+- * rvt_unmap_fmr - unmap fast memory regions
+- * @fmr_list: the list of fast memory regions to unmap
+- *
+- * Return: 0 on success.
+- */
+-int rvt_unmap_fmr(struct list_head *fmr_list)
 -{
--	struct mthca_fmr *fmr = to_mfmr(ibfmr);
--	struct mthca_dev *dev = to_mdev(ibfmr->device);
--	u32 key;
--	int i, err;
+-	struct rvt_fmr *fmr;
+-	struct rvt_lkey_table *rkt;
+-	unsigned long flags;
+-	struct rvt_dev_info *rdi;
 -
--	err = mthca_check_fmr(fmr, page_list, list_len, iova);
--	if (err)
--		return err;
--
--	++fmr->maps;
--
--	key = arbel_key_to_hw_index(fmr->ibmr.lkey);
--	if (dev->mthca_flags & MTHCA_FLAG_SINAI_OPT)
--		key += SINAI_FMR_KEY_INC;
--	else
--		key += dev->limits.num_mpts;
--	fmr->ibmr.lkey = fmr->ibmr.rkey = arbel_hw_index_to_key(key);
--
--	*(u8 *) fmr->mem.arbel.mpt = MTHCA_MPT_STATUS_SW;
--
--	wmb();
--
--	dma_sync_single_for_cpu(&dev->pdev->dev, fmr->mem.arbel.dma_handle,
--				list_len * sizeof(u64), DMA_TO_DEVICE);
--
--	for (i = 0; i < list_len; ++i)
--		fmr->mem.arbel.mtts[i] = cpu_to_be64(page_list[i] |
--						     MTHCA_MTT_FLAG_PRESENT);
--
--	dma_sync_single_for_device(&dev->pdev->dev, fmr->mem.arbel.dma_handle,
--				   list_len * sizeof(u64), DMA_TO_DEVICE);
--
--	fmr->mem.arbel.mpt->key    = cpu_to_be32(key);
--	fmr->mem.arbel.mpt->lkey   = cpu_to_be32(key);
--	fmr->mem.arbel.mpt->length = cpu_to_be64(list_len * (1ull << fmr->attr.page_shift));
--	fmr->mem.arbel.mpt->start  = cpu_to_be64(iova);
--
--	wmb();
--
--	*(u8 *) fmr->mem.arbel.mpt = MTHCA_MPT_STATUS_HW;
--
--	wmb();
--
+-	list_for_each_entry(fmr, fmr_list, ibfmr.list) {
+-		rdi = ib_to_rvt(fmr->ibfmr.device);
+-		rkt = &rdi->lkey_table;
+-		spin_lock_irqsave(&rkt->lock, flags);
+-		fmr->mr.user_base = 0;
+-		fmr->mr.iova = 0;
+-		fmr->mr.length = 0;
+-		spin_unlock_irqrestore(&rkt->lock, flags);
+-	}
 -	return 0;
 -}
 -
--void mthca_tavor_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr)
+-/**
+- * rvt_dealloc_fmr - deallocate a fast memory region
+- * @ibfmr: the fast memory region to deallocate
+- *
+- * Return: 0 on success.
+- */
+-int rvt_dealloc_fmr(struct ib_fmr *ibfmr)
 -{
--	if (!fmr->maps)
--		return;
+-	struct rvt_fmr *fmr = to_ifmr(ibfmr);
+-	int ret = 0;
 -
--	fmr->maps = 0;
--
--	writeb(MTHCA_MPT_STATUS_SW, fmr->mem.tavor.mpt);
+-	rvt_free_lkey(&fmr->mr);
+-	rvt_put_mr(&fmr->mr); /* will set completion if last */
+-	ret = rvt_check_refs(&fmr->mr, __func__);
+-	if (ret)
+-		goto out;
+-	rvt_deinit_mregion(&fmr->mr);
+-	kfree(fmr);
+-out:
+-	return ret;
 -}
 -
--void mthca_arbel_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr)
--{
--	if (!fmr->maps)
--		return;
--
--	fmr->maps = 0;
--
--	*(u8 *) fmr->mem.arbel.mpt = MTHCA_MPT_STATUS_SW;
--}
--
- int mthca_init_mr_table(struct mthca_dev *dev)
- {
- 	phys_addr_t addr;
-diff --git a/drivers/infiniband/hw/mthca/mthca_provider.c b/drivers/infiniband/hw/mthca/mthca_provider.c
-index bc3e3d741ca381..de2124a8ee2be6 100644
---- a/drivers/infiniband/hw/mthca/mthca_provider.c
-+++ b/drivers/infiniband/hw/mthca/mthca_provider.c
-@@ -958,69 +958,6 @@ static int mthca_dereg_mr(struct ib_mr *mr, struct ib_udata *udata)
- 	return 0;
- }
+ /**
+  * rvt_sge_adjacent - is isge compressible
+  * @last_sge: last outgoing SGE written
+diff --git a/drivers/infiniband/sw/rdmavt/mr.h b/drivers/infiniband/sw/rdmavt/mr.h
+index 2c8d0752e8e34a..780fc63af98b75 100644
+--- a/drivers/infiniband/sw/rdmavt/mr.h
++++ b/drivers/infiniband/sw/rdmavt/mr.h
+@@ -49,10 +49,6 @@
+  */
  
--static struct ib_fmr *mthca_alloc_fmr(struct ib_pd *pd, int mr_access_flags,
--				      struct ib_fmr_attr *fmr_attr)
--{
--	struct mthca_fmr *fmr;
--	int err;
--
--	fmr = kmalloc(sizeof *fmr, GFP_KERNEL);
--	if (!fmr)
--		return ERR_PTR(-ENOMEM);
--
--	memcpy(&fmr->attr, fmr_attr, sizeof *fmr_attr);
--	err = mthca_fmr_alloc(to_mdev(pd->device), to_mpd(pd)->pd_num,
--			     convert_access(mr_access_flags), fmr);
--
--	if (err) {
--		kfree(fmr);
--		return ERR_PTR(err);
--	}
--
--	return &fmr->ibmr;
--}
--
--static int mthca_dealloc_fmr(struct ib_fmr *fmr)
--{
--	struct mthca_fmr *mfmr = to_mfmr(fmr);
--	int err;
--
--	err = mthca_free_fmr(to_mdev(fmr->device), mfmr);
--	if (err)
--		return err;
--
--	kfree(mfmr);
--	return 0;
--}
--
--static int mthca_unmap_fmr(struct list_head *fmr_list)
--{
--	struct ib_fmr *fmr;
--	int err;
--	struct mthca_dev *mdev = NULL;
--
--	list_for_each_entry(fmr, fmr_list, list) {
--		if (mdev && to_mdev(fmr->device) != mdev)
--			return -EINVAL;
--		mdev = to_mdev(fmr->device);
--	}
--
--	if (!mdev)
--		return 0;
--
--	if (mthca_is_memfree(mdev)) {
--		list_for_each_entry(fmr, fmr_list, list)
--			mthca_arbel_fmr_unmap(mdev, to_mfmr(fmr));
--
--		wmb();
--	} else
--		list_for_each_entry(fmr, fmr_list, list)
--			mthca_tavor_fmr_unmap(mdev, to_mfmr(fmr));
--
--	err = mthca_SYNC_TPT(mdev);
--	return err;
--}
--
- static ssize_t hw_rev_show(struct device *device,
- 			   struct device_attribute *attr, char *buf)
- {
-@@ -1204,20 +1141,6 @@ static const struct ib_device_ops mthca_dev_tavor_srq_ops = {
- 	INIT_RDMA_OBJ_SIZE(ib_srq, mthca_srq, ibsrq),
+ #include <rdma/rdma_vt.h>
+-struct rvt_fmr {
+-	struct ib_fmr ibfmr;
+-	struct rvt_mregion mr;        /* must be last */
+-};
+ 
+ struct rvt_mr {
+ 	struct ib_mr ibmr;
+@@ -60,11 +56,6 @@ struct rvt_mr {
+ 	struct rvt_mregion mr;  /* must be last */
  };
  
--static const struct ib_device_ops mthca_dev_arbel_fmr_ops = {
--	.alloc_fmr = mthca_alloc_fmr,
--	.dealloc_fmr = mthca_dealloc_fmr,
--	.map_phys_fmr = mthca_arbel_map_phys_fmr,
--	.unmap_fmr = mthca_unmap_fmr,
--};
--
--static const struct ib_device_ops mthca_dev_tavor_fmr_ops = {
--	.alloc_fmr = mthca_alloc_fmr,
--	.dealloc_fmr = mthca_dealloc_fmr,
--	.map_phys_fmr = mthca_tavor_map_phys_fmr,
--	.unmap_fmr = mthca_unmap_fmr,
--};
--
- static const struct ib_device_ops mthca_dev_arbel_ops = {
- 	.post_recv = mthca_arbel_post_receive,
- 	.post_send = mthca_arbel_post_send,
-@@ -1276,15 +1199,6 @@ int mthca_register_device(struct mthca_dev *dev)
- 					  &mthca_dev_tavor_srq_ops);
- 	}
- 
--	if (dev->mthca_flags & MTHCA_FLAG_FMR) {
--		if (mthca_is_memfree(dev))
--			ib_set_device_ops(&dev->ib_dev,
--					  &mthca_dev_arbel_fmr_ops);
--		else
--			ib_set_device_ops(&dev->ib_dev,
--					  &mthca_dev_tavor_fmr_ops);
--	}
--
- 	ib_set_device_ops(&dev->ib_dev, &mthca_dev_ops);
- 
- 	if (mthca_is_memfree(dev))
-diff --git a/drivers/infiniband/hw/mthca/mthca_provider.h b/drivers/infiniband/hw/mthca/mthca_provider.h
-index 596acc45569b9a..84c64bff0d92b2 100644
---- a/drivers/infiniband/hw/mthca/mthca_provider.h
-+++ b/drivers/infiniband/hw/mthca/mthca_provider.h
-@@ -76,24 +76,6 @@ struct mthca_mr {
- 	struct mthca_mtt *mtt;
- };
- 
--struct mthca_fmr {
--	struct ib_fmr      ibmr;
--	struct ib_fmr_attr attr;
--	struct mthca_mtt  *mtt;
--	int                maps;
--	union {
--		struct {
--			struct mthca_mpt_entry __iomem *mpt;
--			u64 __iomem *mtts;
--		} tavor;
--		struct {
--			struct mthca_mpt_entry *mpt;
--			__be64 *mtts;
--			dma_addr_t dma_handle;
--		} arbel;
--	} mem;
--};
--
- struct mthca_pd {
- 	struct ib_pd    ibpd;
- 	u32             pd_num;
-@@ -301,11 +283,6 @@ static inline struct mthca_ucontext *to_mucontext(struct ib_ucontext *ibucontext
- 	return container_of(ibucontext, struct mthca_ucontext, ibucontext);
- }
- 
--static inline struct mthca_fmr *to_mfmr(struct ib_fmr *ibmr)
+-static inline struct rvt_fmr *to_ifmr(struct ib_fmr *ibfmr)
 -{
--	return container_of(ibmr, struct mthca_fmr, ibmr);
+-	return container_of(ibfmr, struct rvt_fmr, ibfmr);
 -}
 -
- static inline struct mthca_mr *to_mmr(struct ib_mr *ibmr)
+ static inline struct rvt_mr *to_imr(struct ib_mr *ibmr)
  {
- 	return container_of(ibmr, struct mthca_mr, ibmr);
+ 	return container_of(ibmr, struct rvt_mr, ibmr);
+@@ -83,11 +74,5 @@ struct ib_mr *rvt_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
+ 			   u32 max_num_sg, struct ib_udata *udata);
+ int rvt_map_mr_sg(struct ib_mr *ibmr, struct scatterlist *sg,
+ 		  int sg_nents, unsigned int *sg_offset);
+-struct ib_fmr *rvt_alloc_fmr(struct ib_pd *pd, int mr_access_flags,
+-			     struct ib_fmr_attr *fmr_attr);
+-int rvt_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
+-		     int list_len, u64 iova);
+-int rvt_unmap_fmr(struct list_head *fmr_list);
+-int rvt_dealloc_fmr(struct ib_fmr *ibfmr);
+ 
+ #endif          /* DEF_RVTMR_H */
+diff --git a/drivers/infiniband/sw/rdmavt/vt.c b/drivers/infiniband/sw/rdmavt/vt.c
+index 72b031ab7092d8..f904bb34477ae7 100644
+--- a/drivers/infiniband/sw/rdmavt/vt.c
++++ b/drivers/infiniband/sw/rdmavt/vt.c
+@@ -378,7 +378,6 @@ enum {
+ static const struct ib_device_ops rvt_dev_ops = {
+ 	.uverbs_abi_ver = RVT_UVERBS_ABI_VERSION,
+ 
+-	.alloc_fmr = rvt_alloc_fmr,
+ 	.alloc_mr = rvt_alloc_mr,
+ 	.alloc_pd = rvt_alloc_pd,
+ 	.alloc_ucontext = rvt_alloc_ucontext,
+@@ -387,7 +386,6 @@ static const struct ib_device_ops rvt_dev_ops = {
+ 	.create_cq = rvt_create_cq,
+ 	.create_qp = rvt_create_qp,
+ 	.create_srq = rvt_create_srq,
+-	.dealloc_fmr = rvt_dealloc_fmr,
+ 	.dealloc_pd = rvt_dealloc_pd,
+ 	.dealloc_ucontext = rvt_dealloc_ucontext,
+ 	.dereg_mr = rvt_dereg_mr,
+@@ -399,7 +397,6 @@ static const struct ib_device_ops rvt_dev_ops = {
+ 	.get_dma_mr = rvt_get_dma_mr,
+ 	.get_port_immutable = rvt_get_port_immutable,
+ 	.map_mr_sg = rvt_map_mr_sg,
+-	.map_phys_fmr = rvt_map_phys_fmr,
+ 	.mmap = rvt_mmap,
+ 	.modify_ah = rvt_modify_ah,
+ 	.modify_device = rvt_modify_device,
+@@ -420,7 +417,6 @@ static const struct ib_device_ops rvt_dev_ops = {
+ 	.reg_user_mr = rvt_reg_user_mr,
+ 	.req_notify_cq = rvt_req_notify_cq,
+ 	.resize_cq = rvt_resize_cq,
+-	.unmap_fmr = rvt_unmap_fmr,
+ 
+ 	INIT_RDMA_OBJ_SIZE(ib_ah, rvt_ah, ibah),
+ 	INIT_RDMA_OBJ_SIZE(ib_cq, rvt_cq, ibcq),
 -- 
 2.26.2
 
