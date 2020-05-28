@@ -2,77 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B0041E5F43
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154681E6084
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389188AbgE1MAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:00:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51038 "EHLO mail.kernel.org"
+        id S2389502AbgE1MLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:11:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45760 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389185AbgE1L6K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:58:10 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FD3C21655;
-        Thu, 28 May 2020 11:58:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590667090;
-        bh=GELtTFp9ruuM9aY2aXlJwocB5WM+c31I0FreOGmeJjo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u2VKOXTF86B3FXIJkvTXLMZRYe6+1QdkI8HLYyxok2rKDh65zY+/CwJITKwaOqZzA
-         MU+8V5C/XayQWOc2VYJKRyIA1SOsXpU7frtDsxxQeRkBjMfVdnN8c2bM9ziEqUA3yW
-         L9I9Qg1fpgueZgK/NvwRAQeXdL8dwHqxtCxq6QWw=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qiushi Wu <wu000273@umn.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 8/9] net/mlx4_core: fix a memory leak bug.
-Date:   Thu, 28 May 2020 07:57:59 -0400
-Message-Id: <20200528115800.1406703-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200528115800.1406703-1-sashal@kernel.org>
-References: <20200528115800.1406703-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S2389724AbgE1MLa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 08:11:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 606DAAD4B;
+        Thu, 28 May 2020 12:11:28 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: mvpp2: Enable autoneg bypass for 1000BaseX/2500BaseX ports
+Date:   Thu, 28 May 2020 14:11:21 +0200
+Message-Id: <20200528121121.125189-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+Commit d14e078f23cc ("net: marvell: mvpp2: only reprogram what is necessary
+ on mac_config") disabled auto negotiation bypass completely, which breaks
+platforms enabling bypass via firmware (not the best option, but it worked).
+Since 1000BaseX/2500BaseX ports neither negotiate speed nor duplex mode
+we could enable auto negotiation bypass to get back information about link
+state.
 
-[ Upstream commit febfd9d3c7f74063e8e630b15413ca91b567f963 ]
-
-In function mlx4_opreq_action(), pointer "mailbox" is not released,
-when mlx4_cmd_box() return and error, causing a memory leak bug.
-Fix this issue by going to "out" label, mlx4_free_cmd_mailbox() can
-free this pointer.
-
-Fixes: fe6f700d6cbb ("net/mlx4_core: Respond to operation request by firmware")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d14e078f23cc ("net: marvell: mvpp2: only reprogram what is necessary on mac_config")
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 ---
- drivers/net/ethernet/mellanox/mlx4/fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/fw.c b/drivers/net/ethernet/mellanox/mlx4/fw.c
-index 9af0887c8a29..fe9dc1b3078c 100644
---- a/drivers/net/ethernet/mellanox/mlx4/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/fw.c
-@@ -2704,7 +2704,7 @@ void mlx4_opreq_action(struct work_struct *work)
- 		if (err) {
- 			mlx4_err(dev, "Failed to retrieve required operation: %d\n",
- 				 err);
--			return;
-+			goto out;
- 		}
- 		MLX4_GET(modifier, outbox, GET_OP_REQ_MODIFIER_OFFSET);
- 		MLX4_GET(token, outbox, GET_OP_REQ_TOKEN_OFFSET);
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 2b5dad2ec650..ddcd781052e1 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -5043,6 +5043,7 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
+ 			MVPP2_GMAC_CONFIG_GMII_SPEED |
+ 			MVPP2_GMAC_CONFIG_FULL_DUPLEX);
+ 		an |= MVPP2_GMAC_IN_BAND_AUTONEG |
++		      MVPP2_GMAC_IN_BAND_AUTONEG_BYPASS |
+ 		      MVPP2_GMAC_CONFIG_GMII_SPEED |
+ 		      MVPP2_GMAC_CONFIG_FULL_DUPLEX;
+ 
 -- 
-2.25.1
+2.16.4
 
