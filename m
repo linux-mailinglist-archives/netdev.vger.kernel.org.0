@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853771E5885
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928891E5890
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbgE1HZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 03:25:43 -0400
+        id S1726816AbgE1H0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 03:26:07 -0400
 Received: from mga02.intel.com ([134.134.136.20]:14682 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726467AbgE1HZm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 03:25:42 -0400
-IronPort-SDR: hMbLhpIlWdn91i6s3Dp73aWdTFAclrLrADc/+SHaTidpWxJJf8RkB3edtWrCjpckE9fC3Fjzmw
- 6F/FnkDkQG7g==
+        id S1726549AbgE1HZn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 03:25:43 -0400
+IronPort-SDR: CeUsagxLyV7qs6Toz+ofHetg50wLbKNxQrxvArZBzmlMk2RWnyoDEQ2B0MxL6HbBWWxur3xhRp
+ XVYkND6S+uBA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 00:25:41 -0700
-IronPort-SDR: NDFEoLio8WpxICJ+oiHIYWatG8jJPMaYW+gJgJuHca6Y3w69mQBgZvQjzhPY6Vkzq8dqwB6TVH
- UXVTd6Ni9c9A==
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 00:25:42 -0700
+IronPort-SDR: 6BtxsrULGgmPkC6rhVUbkdtxJiIfUStjxr/yslznz3DxMhSAj060moh01eVDfVc9jyF5W7di1A
+ MGP8MVuhsWsw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; 
-   d="scan'208";a="310831109"
+   d="scan'208";a="310831115"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by FMSMGA003.fm.intel.com with ESMTP; 28 May 2020 00:25:41 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Surabhi Boob <surabhi.boob@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 04/15] ice: fix MAC write command
-Date:   Thu, 28 May 2020 00:25:27 -0700
-Message-Id: <20200528072538.1621790-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 05/15] ice: Fix memory leak
+Date:   Thu, 28 May 2020 00:25:28 -0700
+Message-Id: <20200528072538.1621790-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200528072538.1621790-1-jeffrey.t.kirsher@intel.com>
 References: <20200528072538.1621790-1-jeffrey.t.kirsher@intel.com>
@@ -43,60 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Surabhi Boob <surabhi.boob@intel.com>
 
-The manage MAC write command was implemented in an overly complex way
-that actually didn't work, as it wasn't symmetric to the manage MAC
-read command, and was feeding bytes out of order to the firmware. Fix
-the implementation by just using a simple array to represent the MAC
-address when it is being written via firmware command.
+Handle memory leak on filter management initialization failure.
 
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Surabhi Boob <surabhi.boob@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_adminq_cmd.h | 10 ++++------
- drivers/net/ethernet/intel/ice/ice_common.c     |  5 +----
- 2 files changed, 5 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_common.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 586d69491268..f04c338fb6e0 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -156,13 +156,11 @@ struct ice_aqc_manage_mac_write {
- #define ICE_AQC_MAN_MAC_WR_MC_MAG_EN		BIT(0)
- #define ICE_AQC_MAN_MAC_WR_WOL_LAA_PFR_KEEP	BIT(1)
- #define ICE_AQC_MAN_MAC_WR_S		6
--#define ICE_AQC_MAN_MAC_WR_M		(3 << ICE_AQC_MAN_MAC_WR_S)
-+#define ICE_AQC_MAN_MAC_WR_M		ICE_M(3, ICE_AQC_MAN_MAC_WR_S)
- #define ICE_AQC_MAN_MAC_UPDATE_LAA	0
--#define ICE_AQC_MAN_MAC_UPDATE_LAA_WOL	(BIT(0) << ICE_AQC_MAN_MAC_WR_S)
--	/* High 16 bits of MAC address in big endian order */
--	__be16 sah;
--	/* Low 32 bits of MAC address in big endian order */
--	__be32 sal;
-+#define ICE_AQC_MAN_MAC_UPDATE_LAA_WOL	BIT(ICE_AQC_MAN_MAC_WR_S)
-+	/* byte stream in network order */
-+	u8 mac_addr[ETH_ALEN];
- 	__le32 addr_high;
- 	__le32 addr_low;
- };
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 0a0b00fffaf7..5da369ae33e0 100644
+index 5da369ae33e0..ee62cfa3a69e 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -1994,10 +1994,7 @@ ice_aq_manage_mac_write(struct ice_hw *hw, const u8 *mac_addr, u8 flags,
- 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_manage_mac_write);
+@@ -387,6 +387,7 @@ ice_aq_set_mac_cfg(struct ice_hw *hw, u16 max_frame_size, struct ice_sq_cd *cd)
+ static enum ice_status ice_init_fltr_mgmt_struct(struct ice_hw *hw)
+ {
+ 	struct ice_switch_info *sw;
++	enum ice_status status;
  
- 	cmd->flags = flags;
--
--	/* Prep values for flags, sah, sal */
--	cmd->sah = htons(*((const u16 *)mac_addr));
--	cmd->sal = htonl(*((const u32 *)(mac_addr + 2)));
-+	ether_addr_copy(cmd->mac_addr, mac_addr);
+ 	hw->switch_info = devm_kzalloc(ice_hw_to_dev(hw),
+ 				       sizeof(*hw->switch_info), GFP_KERNEL);
+@@ -397,7 +398,12 @@ static enum ice_status ice_init_fltr_mgmt_struct(struct ice_hw *hw)
  
- 	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
+ 	INIT_LIST_HEAD(&sw->vsi_list_map_head);
+ 
+-	return ice_init_def_sw_recp(hw);
++	status = ice_init_def_sw_recp(hw);
++	if (status) {
++		devm_kfree(ice_hw_to_dev(hw), hw->switch_info);
++		return status;
++	}
++	return 0;
  }
+ 
+ /**
 -- 
 2.26.2
 
