@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65EC81E6035
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C274F1E602D
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388839AbgE1MIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:08:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48612 "EHLO mail.kernel.org"
+        id S2389663AbgE1MIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:08:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388769AbgE1L4f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:35 -0400
+        id S2388776AbgE1L4g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1FC8020DD4;
-        Thu, 28 May 2020 11:56:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 49C75212CC;
+        Thu, 28 May 2020 11:56:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1590666995;
-        bh=K7lgPnmnyd9zaQE8Biv09xlGJPFmPcPUvqaqpNNNsKY=;
+        bh=O5JZywhz7iAfb7m4Z4WcOq4q0ejSwcFYHqTjUmqM/h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jKT4rEJnVSgVj1rAi1sBSz6+ZavTbFy743Tw0jg/N3SnCu0XHijX+MgHUUucvGTYl
-         QGeVN2VwGiDBPQFqOSUm39wcwas4yr/VfcrLWUEmikSzjk/Ea12GllV8TB6H8Ca8Rn
-         41BeDr6iIE9IfsoPi+gHsLdU0YbrEApUVcdKPzo8=
+        b=R4YoPlj55F+YcfFnDMJ3o8f+l4TNk36tCQ/z6wbRbVvSd3P5KkZjmaCXj5l0Ochvu
+         d15byqVHLsm3F8YTtIpyodTGMhLOuTMtWfe2CMkBl3zq47VPikn5uN2APDZ+Je57xJ
+         XbScbusjhZOQwtPzZVQufevPwqyFod5g8J7mZA3Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Valentin Longchamp <valentin@longchamp.me>,
-        Matteo Ghidoni <matteo.ghidoni@ch.abb.com>,
+Cc:     Jonathan McDowell <noodles@earth.li>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.6 30/47] net/ethernet/freescale: rework quiesce/activate for ucc_geth
-Date:   Thu, 28 May 2020 07:55:43 -0400
-Message-Id: <20200528115600.1405808-30-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 31/47] net: ethernet: stmmac: Enable interface clocks on probe for IPQ806x
+Date:   Thu, 28 May 2020 07:55:44 -0400
+Message-Id: <20200528115600.1405808-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
@@ -45,76 +43,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Valentin Longchamp <valentin@longchamp.me>
+From: Jonathan McDowell <noodles@earth.li>
 
-[ Upstream commit 79dde73cf9bcf1dd317a2667f78b758e9fe139ed ]
+[ Upstream commit a96ac8a0045e3cbe3e5af6d1b3c78c6c2065dec5 ]
 
-ugeth_quiesce/activate are used to halt the controller when there is a
-link change that requires to reconfigure the mac.
+The ipq806x_gmac_probe() function enables the PTP clock but not the
+appropriate interface clocks. This means that if the bootloader hasn't
+done so attempting to bring up the interface will fail with an error
+like:
 
-The previous implementation called netif_device_detach(). This however
-causes the initial activation of the netdevice to fail precisely because
-it's detached. For details, see [1].
+[   59.028131] ipq806x-gmac-dwmac 37600000.ethernet: Failed to reset the dma
+[   59.028196] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_hw_setup: DMA engine initialization failed
+[   59.034056] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_open: Hw setup failed
 
-A possible workaround was the revert of commit
-net: linkwatch: add check for netdevice being present to linkwatch_do_dev
-However, the check introduced in the above commit is correct and shall be
-kept.
+This patch, a slightly cleaned up version of one posted by Sergey
+Sergeev in:
 
-The netif_device_detach() is thus replaced with
-netif_tx_stop_all_queues() that prevents any tranmission. This allows to
-perform mac config change required by the link change, without detaching
-the corresponding netdevice and thus not preventing its initial
-activation.
+https://forum.openwrt.org/t/support-for-mikrotik-rb3011uias-rm/4064/257
 
-[1] https://lists.openwall.net/netdev/2020/01/08/201
+correctly enables the clock; we have already configured the source just
+before this.
 
-Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
-Acked-by: Matteo Ghidoni <matteo.ghidoni@ch.abb.com>
+Tested on a MikroTik RB3011.
+
+Signed-off-by: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/ucc_geth.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-index 0d101c00286f..ab1b4a77b4a3 100644
---- a/drivers/net/ethernet/freescale/ucc_geth.c
-+++ b/drivers/net/ethernet/freescale/ucc_geth.c
-@@ -42,6 +42,7 @@
- #include <soc/fsl/qe/ucc.h>
- #include <soc/fsl/qe/ucc_fast.h>
- #include <asm/machdep.h>
-+#include <net/sch_generic.h>
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index 6ae13dc19510..02102c781a8c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -319,6 +319,19 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ 	/* Enable PTP clock */
+ 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
+ 	val |= NSS_COMMON_CLK_GATE_PTP_EN(gmac->id);
++	switch (gmac->phy_mode) {
++	case PHY_INTERFACE_MODE_RGMII:
++		val |= NSS_COMMON_CLK_GATE_RGMII_RX_EN(gmac->id) |
++			NSS_COMMON_CLK_GATE_RGMII_TX_EN(gmac->id);
++		break;
++	case PHY_INTERFACE_MODE_SGMII:
++		val |= NSS_COMMON_CLK_GATE_GMII_RX_EN(gmac->id) |
++				NSS_COMMON_CLK_GATE_GMII_TX_EN(gmac->id);
++		break;
++	default:
++		/* We don't get here; the switch above will have errored out */
++		unreachable();
++	}
+ 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
  
- #include "ucc_geth.h"
- 
-@@ -1548,11 +1549,8 @@ static int ugeth_disable(struct ucc_geth_private *ugeth, enum comm_dir mode)
- 
- static void ugeth_quiesce(struct ucc_geth_private *ugeth)
- {
--	/* Prevent any further xmits, plus detach the device. */
--	netif_device_detach(ugeth->ndev);
--
--	/* Wait for any current xmits to finish. */
--	netif_tx_disable(ugeth->ndev);
-+	/* Prevent any further xmits */
-+	netif_tx_stop_all_queues(ugeth->ndev);
- 
- 	/* Disable the interrupt to avoid NAPI rescheduling. */
- 	disable_irq(ugeth->ug_info->uf_info.irq);
-@@ -1565,7 +1563,10 @@ static void ugeth_activate(struct ucc_geth_private *ugeth)
- {
- 	napi_enable(&ugeth->napi);
- 	enable_irq(ugeth->ug_info->uf_info.irq);
--	netif_device_attach(ugeth->ndev);
-+
-+	/* allow to xmit again  */
-+	netif_tx_wake_all_queues(ugeth->ndev);
-+	__netdev_watchdog_up(ugeth->ndev);
- }
- 
- /* Called every time the controller might need to be made
+ 	if (gmac->phy_mode == PHY_INTERFACE_MODE_SGMII) {
 -- 
 2.25.1
 
