@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F481E602C
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44C2F1E6023
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388896AbgE1MIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:08:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48612 "EHLO mail.kernel.org"
+        id S2389503AbgE1MHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:07:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388755AbgE1L4h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:37 -0400
+        id S2388790AbgE1L4j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4845721532;
-        Thu, 28 May 2020 11:56:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 976F420DD4;
+        Thu, 28 May 2020 11:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590666997;
-        bh=t3/DUnZ7Va7LfUYt2PknXD6yTzNvyjCApmOw95O2kAk=;
+        s=default; t=1590666999;
+        bh=5wVdSo/m/klrs/pKqUNgd+2X0/V5oaDF1kVU9FsYKQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tsGlU3An/C895GRREflbRkXT1/0mwHYwqESDHife5OKSe9aPosK+5jqc/v9LvW2XP
-         Ji1IZGtCOpC/ghrBZem2VAjhD4535EAkZCpnjhkrgoYC0hi8mIw6DjkilOKbkumTZ7
-         G98yCWqQc2Ow9rRefgNt0tAal7HcVmLlmRbla5ls=
+        b=SCuAZ2BBliRy92EPXFSy+wb4VSuvWXpKjOcbVi7XDycqpEYKid/0GRBXMEgTPrSSd
+         vNCiL6UOc8phn9MRWlkVZjBG4KB7uUV+GEkGgoPUskV8EhtWkEQ06XEugzGzBRTISb
+         YBjcD0+c8dEBpd8LU+oSfxR6uRK7Ge5eRYB+RsOU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 32/47] mlxsw: spectrum: Fix use-after-free of split/unsplit/type_set in case reload fails
-Date:   Thu, 28 May 2020 07:55:45 -0400
-Message-Id: <20200528115600.1405808-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 34/47] r8169: fix OCP access on RTL8117
+Date:   Thu, 28 May 2020 07:55:47 -0400
+Message-Id: <20200528115600.1405808-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
@@ -45,112 +43,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 4340f42f207eacb81e7a6b6bb1e3b6afad9a2e26 ]
+[ Upstream commit 561535b0f23961ced071b82575d5e83e6351a814 ]
 
-In case of reload fail, the mlxsw_sp->ports contains a pointer to a
-freed memory (either by reload_down() or reload_up() error path).
-Fix this by initializing the pointer to NULL and checking it before
-dereferencing in split/unsplit/type_set callpaths.
+According to r8168 vendor driver DASHv3 chips like RTL8168fp/RTL8117
+need a special addressing for OCP access.
+Fix is compile-tested only due to missing test hardware.
 
-Fixes: 24cc68ad6c46 ("mlxsw: core: Add support for reload")
-Reported-by: Danielle Ratson <danieller@mellanox.com>
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Fixes: 1287723aa139 ("r8169: add support for RTL8117")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 14 ++++++++++++--
- drivers/net/ethernet/mellanox/mlxsw/switchx2.c |  8 ++++++++
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 7358b5bc7eb6..58ebabe99876 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4043,6 +4043,7 @@ static void mlxsw_sp_ports_remove(struct mlxsw_sp *mlxsw_sp)
- 			mlxsw_sp_port_remove(mlxsw_sp, i);
- 	mlxsw_sp_cpu_port_remove(mlxsw_sp);
- 	kfree(mlxsw_sp->ports);
-+	mlxsw_sp->ports = NULL;
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 07a6b609f741..6e4fe2566f6b 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1044,6 +1044,13 @@ static u16 rtl_ephy_read(struct rtl8169_private *tp, int reg_addr)
+ 		RTL_R32(tp, EPHYAR) & EPHYAR_DATA_MASK : ~0;
  }
  
- static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
-@@ -4079,6 +4080,7 @@ err_port_create:
- 	mlxsw_sp_cpu_port_remove(mlxsw_sp);
- err_cpu_port_create:
- 	kfree(mlxsw_sp->ports);
-+	mlxsw_sp->ports = NULL;
- 	return err;
- }
- 
-@@ -4200,6 +4202,14 @@ static int mlxsw_sp_local_ports_offset(struct mlxsw_core *mlxsw_core,
- 	return mlxsw_core_res_get(mlxsw_core, local_ports_in_x_res_id);
- }
- 
-+static struct mlxsw_sp_port *
-+mlxsw_sp_port_get_by_local_port(struct mlxsw_sp *mlxsw_sp, u8 local_port)
++static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
 +{
-+	if (mlxsw_sp->ports && mlxsw_sp->ports[local_port])
-+		return mlxsw_sp->ports[local_port];
-+	return NULL;
++	/* based on RTL8168FP_OOBMAC_BASE in vendor driver */
++	if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
++		*cmd |= 0x7f0 << 18;
 +}
 +
- static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
- 			       unsigned int count,
- 			       struct netlink_ext_ack *extack)
-@@ -4213,7 +4223,7 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
- 	int i;
- 	int err;
- 
--	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+	mlxsw_sp_port = mlxsw_sp_port_get_by_local_port(mlxsw_sp, local_port);
- 	if (!mlxsw_sp_port) {
- 		dev_err(mlxsw_sp->bus_info->dev, "Port number \"%d\" does not exist\n",
- 			local_port);
-@@ -4308,7 +4318,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
- 	int offset;
- 	int i;
- 
--	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+	mlxsw_sp_port = mlxsw_sp_port_get_by_local_port(mlxsw_sp, local_port);
- 	if (!mlxsw_sp_port) {
- 		dev_err(mlxsw_sp->bus_info->dev, "Port number \"%d\" does not exist\n",
- 			local_port);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-index f0e98ec8f1ee..c69232445ab7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-@@ -1259,6 +1259,7 @@ static void mlxsw_sx_ports_remove(struct mlxsw_sx *mlxsw_sx)
- 		if (mlxsw_sx_port_created(mlxsw_sx, i))
- 			mlxsw_sx_port_remove(mlxsw_sx, i);
- 	kfree(mlxsw_sx->ports);
-+	mlxsw_sx->ports = NULL;
- }
- 
- static int mlxsw_sx_ports_create(struct mlxsw_sx *mlxsw_sx)
-@@ -1293,6 +1294,7 @@ err_port_module_info_get:
- 		if (mlxsw_sx_port_created(mlxsw_sx, i))
- 			mlxsw_sx_port_remove(mlxsw_sx, i);
- 	kfree(mlxsw_sx->ports);
-+	mlxsw_sx->ports = NULL;
- 	return err;
- }
- 
-@@ -1376,6 +1378,12 @@ static int mlxsw_sx_port_type_set(struct mlxsw_core *mlxsw_core, u8 local_port,
- 	u8 module, width;
- 	int err;
- 
-+	if (!mlxsw_sx->ports || !mlxsw_sx->ports[local_port]) {
-+		dev_err(mlxsw_sx->bus_info->dev, "Port number \"%d\" does not exist\n",
-+			local_port);
-+		return -EINVAL;
-+	}
+ DECLARE_RTL_COND(rtl_eriar_cond)
+ {
+ 	return RTL_R32(tp, ERIAR) & ERIAR_FLAG;
+@@ -1052,9 +1059,12 @@ DECLARE_RTL_COND(rtl_eriar_cond)
+ static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+ 			   u32 val, int type)
+ {
++	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
 +
- 	if (new_type == DEVLINK_PORT_TYPE_AUTO)
- 		return -EOPNOTSUPP;
+ 	BUG_ON((addr & 3) || (mask == 0));
+ 	RTL_W32(tp, ERIDR, val);
+-	RTL_W32(tp, ERIAR, ERIAR_WRITE_CMD | type | mask | addr);
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
  
+ 	rtl_udelay_loop_wait_low(tp, &rtl_eriar_cond, 100, 100);
+ }
+@@ -1067,7 +1077,10 @@ static void rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+ 
+ static u32 _rtl_eri_read(struct rtl8169_private *tp, int addr, int type)
+ {
+-	RTL_W32(tp, ERIAR, ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr);
++	u32 cmd = ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr;
++
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
+ 
+ 	return rtl_udelay_loop_wait_high(tp, &rtl_eriar_cond, 100, 100) ?
+ 		RTL_R32(tp, ERIDR) : ~0;
 -- 
 2.25.1
 
