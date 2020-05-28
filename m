@@ -2,110 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DBB61E6603
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 17:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F6D1E6657
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 17:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404386AbgE1P2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 11:28:17 -0400
-Received: from lists.gateworks.com ([108.161.130.12]:57323 "EHLO
-        lists.gateworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404080AbgE1P2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 11:28:15 -0400
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by lists.gateworks.com with esmtp (Exim 4.82)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1jeKUi-0000Yg-Hz; Thu, 28 May 2020 15:30:56 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Timo=20Schl=C3=BC=C3=9Fler?= <schluessler@krause.de>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH] can: mcp251x: add support for half duplex controllers
-Date:   Thu, 28 May 2020 08:27:57 -0700
-Message-Id: <1590679677-2678-1-git-send-email-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.7.4
+        id S2404510AbgE1PkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 11:40:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54780 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404383AbgE1PkN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 11:40:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=vISeVBA39C4KgDGVhcVMI0rOohaYtufXdJxJGAHnXFY=; b=qCpZsI/QWFRgwySZ7NVTihSBV3
+        tZrsaJGHw7N89kdrdI30QyUCjg++XeZFZf5IrTDMT+Yje2gZL+pnf2+L+VGJN9LfSRjTqD5moBBPy
+        MWuKpNRTycdf+dc3HmpN4xNijJy2o0a714z8BXmupK235ppNFi52k7Tys75K15ViMiJY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jeKde-003Y3H-SY; Thu, 28 May 2020 17:40:10 +0200
+Date:   Thu, 28 May 2020 17:40:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Amit Cohen <amitc@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "o.rempel@pengutronix.de" <o.rempel@pengutronix.de>
+Subject: Re: Link down reasons
+Message-ID: <20200528154010.GD840827@lunn.ch>
+References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com>
+ <20200527213843.GC818296@lunn.ch>
+ <AM0PR0502MB38267B345D7829A00790285DD78E0@AM0PR0502MB3826.eurprd05.prod.outlook.com>
+ <87zh9stocb.fsf@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87zh9stocb.fsf@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some SPI host controllers do not support full-duplex SPI and are
-marked as such via the SPI_CONTROLLER_HALF_DUPLEX controller flag.
+> Andrew, pardon my ignorance in these matters, can a PHY driver in
+> general determine that the issue is with the cable, even without running
+> the fairly expensive cable test?
 
-For such controllers use half duplex transactions but retain full
-duplex transactions for the controllers that can handle those.
+No. To diagnose a problem, you need the link to be idle. If the link
+peer is sending frames, they interfere with TDR. So all the cable
+testing i've seen first manipulates the auto-negotiation to make the
+link peer go quiet. That takes 1 1/2 seconds. There are some
+optimizations possible, e.g. if the cable is so broken it never
+establishes link, you can skip this. But Ethernet tends to be robust,
+it drops back to 100Mbps only using two pairs if one of the four pairs
+is broken, for example.
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
- drivers/net/can/spi/mcp251x.c | 34 +++++++++++++++++++++++++++-------
- 1 file changed, 27 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index 5009ff2..203ef20 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -290,8 +290,12 @@ static u8 mcp251x_read_reg(struct spi_device *spi, u8 reg)
- 	priv->spi_tx_buf[0] = INSTRUCTION_READ;
- 	priv->spi_tx_buf[1] = reg;
- 
--	mcp251x_spi_trans(spi, 3);
--	val = priv->spi_rx_buf[2];
-+	if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-+		spi_write_then_read(spi, priv->spi_tx_buf, 2, &val, 1);
-+	} else {
-+		mcp251x_spi_trans(spi, 3);
-+		val = priv->spi_rx_buf[2];
-+	}
- 
- 	return val;
- }
-@@ -303,10 +307,18 @@ static void mcp251x_read_2regs(struct spi_device *spi, u8 reg, u8 *v1, u8 *v2)
- 	priv->spi_tx_buf[0] = INSTRUCTION_READ;
- 	priv->spi_tx_buf[1] = reg;
- 
--	mcp251x_spi_trans(spi, 4);
-+	if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-+		u8 val[2] = { 0 };
- 
--	*v1 = priv->spi_rx_buf[2];
--	*v2 = priv->spi_rx_buf[3];
-+		spi_write_then_read(spi, priv->spi_tx_buf, 2, val, 2);
-+		*v1 = val[0];
-+		*v2 = val[1];
-+	} else {
-+		mcp251x_spi_trans(spi, 4);
-+
-+		*v1 = priv->spi_rx_buf[2];
-+		*v2 = priv->spi_rx_buf[3];
-+	}
- }
- 
- static void mcp251x_write_reg(struct spi_device *spi, u8 reg, u8 val)
-@@ -409,8 +421,16 @@ static void mcp251x_hw_rx_frame(struct spi_device *spi, u8 *buf,
- 			buf[i] = mcp251x_read_reg(spi, RXBCTRL(buf_idx) + i);
- 	} else {
- 		priv->spi_tx_buf[RXBCTRL_OFF] = INSTRUCTION_READ_RXB(buf_idx);
--		mcp251x_spi_trans(spi, SPI_TRANSFER_BUF_LEN);
--		memcpy(buf, priv->spi_rx_buf, SPI_TRANSFER_BUF_LEN);
-+		if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-+			spi_write_then_read(spi, priv->spi_tx_buf, 1,
-+					    priv->spi_rx_buf,
-+					    SPI_TRANSFER_BUF_LEN);
-+			memcpy(buf + 1, priv->spi_rx_buf,
-+			       SPI_TRANSFER_BUF_LEN - 1);
-+		} else {
-+			mcp251x_spi_trans(spi, SPI_TRANSFER_BUF_LEN);
-+			memcpy(buf, priv->spi_rx_buf, SPI_TRANSFER_BUF_LEN);
-+		}
- 	}
- }
- 
--- 
-2.7.4
-
+   Andrew
