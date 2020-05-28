@@ -2,256 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C921E57A9
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 08:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 845661E5801
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 08:57:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbgE1GjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 02:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbgE1GjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 02:39:12 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3A9C08C5C2;
-        Wed, 27 May 2020 23:39:12 -0700 (PDT)
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D1EA522FF5;
-        Thu, 28 May 2020 08:39:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1590647950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HeGfKCd+4LBwe+ZctpYjqSbe80vwDvlgrNIqCjdXMcw=;
-        b=DojyPH9xtJvMB8K22IQ30Fk69ltEf6lpqKMct+iksJSp6Ty50V8sn+hcu0OF/QbtR78kbM
-        SmnDb2/m3P3ZkwmanDiZgipKlVvCg90NGUHfEmHP3CY903yANRBoPazm8NFcZXhrFheYlq
-        xIFQpdBb2Xl3ORxdQtvkKVVes3X//OQ=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>
-Subject: [PATCH net-next v3 3/3] net: enetc: Use DT protocol information to set up the ports
-Date:   Thu, 28 May 2020 08:38:47 +0200
-Message-Id: <20200528063847.27704-4-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200528063847.27704-1-michael@walle.cc>
-References: <20200528063847.27704-1-michael@walle.cc>
+        id S1726356AbgE1G5r convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 28 May 2020 02:57:47 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:44941 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725308AbgE1G5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 02:57:47 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id E914E40013;
+        Thu, 28 May 2020 06:57:43 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200527103513.05ee36e9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20200527164158.313025-1-antoine.tenart@bootlin.com> <20200527164158.313025-6-antoine.tenart@bootlin.com> <20200527103513.05ee36e9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
+        foss@0leil.net
+To:     Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 5/8] net: phy: mscc: 1588 block initialization
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+Message-ID: <159064906267.314251.13734785844479438819@kwain>
+Date:   Thu, 28 May 2020 08:57:42 +0200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Marginean <alexandru.marginean@nxp.com>
+Hello Jakub,
 
-Use DT information rather than in-band information from bootloader to
-set up MAC for XGMII. For RGMII use the DT indication in addition to
-RGMII defaults in hardware.
-However, this implies that PHY connection information needs to be
-extracted before netdevice creation, when the ENETC Port MAC is
-being configured.
+Quoting Jakub Kicinski (2020-05-27 19:35:13)
+> 
+> This doesn't build on my system :S
 
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 57 ++++++++++---------
- .../net/ethernet/freescale/enetc/enetc_pf.h   |  3 +
- 2 files changed, 34 insertions(+), 26 deletions(-)
+I'll have a look at this and fix it for v2.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 79499a81c77b..414a9b1b2813 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -481,7 +481,8 @@ static void enetc_port_si_configure(struct enetc_si *si)
- 	enetc_port_wr(hw, ENETC_PSIVLANFMR, ENETC_PSIVLANFMR_VS);
- }
- 
--static void enetc_configure_port_mac(struct enetc_hw *hw)
-+static void enetc_configure_port_mac(struct enetc_hw *hw,
-+				     phy_interface_t phy_mode)
- {
- 	enetc_port_wr(hw, ENETC_PM0_MAXFRM,
- 		      ENETC_SET_MAXFRM(ENETC_RX_MAXFRM_SIZE));
-@@ -497,9 +498,11 @@ static void enetc_configure_port_mac(struct enetc_hw *hw)
- 		      ENETC_PM0_CMD_TXP	| ENETC_PM0_PROMISC |
- 		      ENETC_PM0_TX_EN | ENETC_PM0_RX_EN);
- 	/* set auto-speed for RGMII */
--	if (enetc_port_rd(hw, ENETC_PM0_IF_MODE) & ENETC_PMO_IFM_RG)
-+	if (enetc_port_rd(hw, ENETC_PM0_IF_MODE) & ENETC_PMO_IFM_RG ||
-+	    phy_interface_mode_is_rgmii(phy_mode))
- 		enetc_port_wr(hw, ENETC_PM0_IF_MODE, ENETC_PM0_IFM_RGAUTO);
--	if (enetc_global_rd(hw, ENETC_G_EPFBLPR(1)) == ENETC_G_EPFBLPR1_XGMII)
-+
-+	if (phy_mode == PHY_INTERFACE_MODE_USXGMII)
- 		enetc_port_wr(hw, ENETC_PM0_IF_MODE, ENETC_PM0_IFM_XGMII);
- }
- 
-@@ -523,7 +526,7 @@ static void enetc_configure_port(struct enetc_pf *pf)
- 
- 	enetc_configure_port_pmac(hw);
- 
--	enetc_configure_port_mac(hw);
-+	enetc_configure_port_mac(hw, pf->if_mode);
- 
- 	enetc_port_si_configure(pf->si);
- 
-@@ -783,27 +786,27 @@ static void enetc_mdio_remove(struct enetc_pf *pf)
- 		mdiobus_unregister(pf->mdio);
- }
- 
--static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
-+static int enetc_of_get_phy(struct enetc_pf *pf)
- {
--	struct enetc_pf *pf = enetc_si_priv(priv->si);
--	struct device_node *np = priv->dev->of_node;
-+	struct device *dev = &pf->si->pdev->dev;
-+	struct device_node *np = dev->of_node;
- 	struct device_node *mdio_np;
- 	int err;
- 
--	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
--	if (!priv->phy_node) {
-+	pf->phy_node = of_parse_phandle(np, "phy-handle", 0);
-+	if (!pf->phy_node) {
- 		if (!of_phy_is_fixed_link(np)) {
--			dev_err(priv->dev, "PHY not specified\n");
-+			dev_err(dev, "PHY not specified\n");
- 			return -ENODEV;
- 		}
- 
- 		err = of_phy_register_fixed_link(np);
- 		if (err < 0) {
--			dev_err(priv->dev, "fixed link registration failed\n");
-+			dev_err(dev, "fixed link registration failed\n");
- 			return err;
- 		}
- 
--		priv->phy_node = of_node_get(np);
-+		pf->phy_node = of_node_get(np);
- 	}
- 
- 	mdio_np = of_get_child_by_name(np, "mdio");
-@@ -811,15 +814,15 @@ static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
- 		of_node_put(mdio_np);
- 		err = enetc_mdio_probe(pf);
- 		if (err) {
--			of_node_put(priv->phy_node);
-+			of_node_put(pf->phy_node);
- 			return err;
- 		}
- 	}
- 
--	err = of_get_phy_mode(np, &priv->if_mode);
-+	err = of_get_phy_mode(np, &pf->if_mode);
- 	if (err) {
--		dev_err(priv->dev, "missing phy type\n");
--		of_node_put(priv->phy_node);
-+		dev_err(dev, "missing phy type\n");
-+		of_node_put(pf->phy_node);
- 		if (of_phy_is_fixed_link(np))
- 			of_phy_deregister_fixed_link(np);
- 		else
-@@ -831,14 +834,14 @@ static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
- 	return 0;
- }
- 
--static void enetc_of_put_phy(struct enetc_ndev_priv *priv)
-+static void enetc_of_put_phy(struct enetc_pf *pf)
- {
--	struct device_node *np = priv->dev->of_node;
-+	struct device_node *np = pf->si->pdev->dev.of_node;
- 
- 	if (np && of_phy_is_fixed_link(np))
- 		of_phy_deregister_fixed_link(np);
--	if (priv->phy_node)
--		of_node_put(priv->phy_node);
-+	if (pf->phy_node)
-+		of_node_put(pf->phy_node);
- }
- 
- static int enetc_imdio_init(struct enetc_pf *pf, bool is_c45)
-@@ -1002,6 +1005,10 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	pf->si = si;
- 	pf->total_vfs = pci_sriov_get_totalvfs(pdev);
- 
-+	err = enetc_of_get_phy(pf);
-+	if (err)
-+		dev_warn(&pdev->dev, "Fallback to PHY-less operation\n");
-+
- 	enetc_configure_port(pf);
- 
- 	enetc_get_si_caps(si);
-@@ -1016,6 +1023,8 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	enetc_pf_netdev_setup(si, ndev, &enetc_ndev_ops);
- 
- 	priv = netdev_priv(ndev);
-+	priv->phy_node = pf->phy_node;
-+	priv->if_mode = pf->if_mode;
- 
- 	enetc_init_si_rings_params(priv);
- 
-@@ -1031,10 +1040,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 		goto err_alloc_msix;
- 	}
- 
--	err = enetc_of_get_phy(priv);
--	if (err)
--		dev_warn(&pdev->dev, "Fallback to PHY-less operation\n");
--
- 	err = enetc_configure_serdes(priv);
- 	if (err)
- 		dev_warn(&pdev->dev, "Attempted SerDes config but failed\n");
-@@ -1048,7 +1053,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	return 0;
- 
- err_reg_netdev:
--	enetc_of_put_phy(priv);
- 	enetc_free_msix(priv);
- err_alloc_msix:
- 	enetc_free_si_resources(priv);
-@@ -1056,6 +1060,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	si->ndev = NULL;
- 	free_netdev(ndev);
- err_alloc_netdev:
-+	enetc_of_put_phy(pf);
- err_map_pf_space:
- 	enetc_pci_remove(pdev);
- 
-@@ -1076,7 +1081,7 @@ static void enetc_pf_remove(struct pci_dev *pdev)
- 
- 	enetc_imdio_remove(pf);
- 	enetc_mdio_remove(pf);
--	enetc_of_put_phy(priv);
-+	enetc_of_put_phy(pf);
- 
- 	enetc_free_msix(priv);
- 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.h b/drivers/net/ethernet/freescale/enetc/enetc_pf.h
-index 2cb922b59f46..0d0ee91282a5 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.h
-@@ -46,6 +46,9 @@ struct enetc_pf {
- 	struct mii_bus *mdio; /* saved for cleanup */
- 	struct mii_bus *imdio;
- 	struct phy_device *pcs;
-+
-+	struct device_node *phy_node;
-+	phy_interface_t if_mode;
- };
- 
- int enetc_msg_psi_init(struct enetc_pf *pf);
+Thanks for reporting it!
+Antoine
+
+> 
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:41:19: error: redefinition of â€˜get_unaligned_be16â€™
+>    41 | static inline u16 get_unaligned_be16(const void *p)
+>       |                   ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:23:28: note: previous definition of â€˜get_unaligned_be16â€™ was here
+>    23 | static __always_inline u16 get_unaligned_be16(const void *p)
+>       |                            ^~~~~~~~~~~~~~~~~~
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:46:19: error: redefinition of â€˜get_unaligned_be32â€™
+>    46 | static inline u32 get_unaligned_be32(const void *p)
+>       |                   ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:28:28: note: previous definition of â€˜get_unaligned_be32â€™ was here
+>    28 | static __always_inline u32 get_unaligned_be32(const void *p)
+>       |                            ^~~~~~~~~~~~~~~~~~
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:51:19: error: redefinition of â€˜get_unaligned_be64â€™
+>    51 | static inline u64 get_unaligned_be64(const void *p)
+>       |                   ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:33:28: note: previous definition of â€˜get_unaligned_be64â€™ was here
+>    33 | static __always_inline u64 get_unaligned_be64(const void *p)
+>       |                            ^~~~~~~~~~~~~~~~~~
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:56:20: error: redefinition of â€˜put_unaligned_be16â€™
+>    56 | static inline void put_unaligned_be16(u16 val, void *p)
+>       |                    ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:53:29: note: previous definition of â€˜put_unaligned_be16â€™ was here
+>    53 | static __always_inline void put_unaligned_be16(u16 val, void *p)
+>       |                             ^~~~~~~~~~~~~~~~~~
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:61:20: error: redefinition of â€˜put_unaligned_be32â€™
+>    61 | static inline void put_unaligned_be32(u32 val, void *p)
+>       |                    ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:58:29: note: previous definition of â€˜put_unaligned_be32â€™ was here
+>    58 | static __always_inline void put_unaligned_be32(u32 val, void *p)
+>       |                             ^~~~~~~~~~~~~~~~~~
+> In file included from ../drivers/net/phy/mscc/mscc_ptp.c:18:
+> ../include/linux/unaligned/be_byteshift.h:66:20: error: redefinition of â€˜put_unaligned_be64â€™
+>    66 | static inline void put_unaligned_be64(u64 val, void *p)
+>       |                    ^~~~~~~~~~~~~~~~~~
+> In file included from ../arch/x86/include/asm/unaligned.h:9,
+>                  from ../include/linux/etherdevice.h:24,
+>                  from ../include/linux/if_vlan.h:11,
+>                  from ../include/linux/filter.h:22,
+>                  from ../include/net/sock.h:59,
+>                  from ../include/net/inet_sock.h:22,
+>                  from ../include/linux/udp.h:16,
+>                  from ../drivers/net/phy/mscc/mscc_ptp.c:17:
+> ../include/linux/unaligned/access_ok.h:63:29: note: previous definition of â€˜put_unaligned_be64â€™ was here
+>    63 | static __always_inline void put_unaligned_be64(u64 val, void *p)
+>       |                             ^~~~~~~~~~~~~~~~~~
+> ../drivers/net/phy/mscc/mscc_ptp.c:658:12: warning: â€˜vsc85xx_ts_engine_initâ€™ defined but not used [-Wunused-function]
+>   658 | static int vsc85xx_ts_engine_init(struct phy_device *phydev, bool one_step)
+>       |            ^~~~~~~~~~~~~~~~~~~~~~
+> make[5]: *** [drivers/net/phy/mscc/mscc_ptp.o] Error 1
+> make[4]: *** [drivers/net/phy/mscc] Error 2
+> make[3]: *** [drivers/net/phy] Error 2
+> make[3]: *** Waiting for unfinished jobs....
+> make[2]: *** [drivers/net] Error 2
+> make[2]: *** Waiting for unfinished jobs....
+> make[1]: *** [drivers] Error 2
+> make: *** [sub-make] Error 2
+
 -- 
-2.20.1
-
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
