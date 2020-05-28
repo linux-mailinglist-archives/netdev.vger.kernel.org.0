@@ -2,98 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13EED1E5D12
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:24:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 578221E5D1B
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387848AbgE1KVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 06:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387824AbgE1KUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:20:48 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A14CC05BD1E;
-        Thu, 28 May 2020 03:20:48 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fs4so2981649pjb.5;
-        Thu, 28 May 2020 03:20:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=um3Qhq7FPm3pIrTiMtJYWGUD76JNI3D8F0QN7947rKw=;
-        b=HERijm1Aj9kxFWBlKgf+0qEZIKlAMQq8MMmgBPSVHTKA5EA3DkgyN9Wz5B/lxkx0nn
-         fyFb9B3kJ2P2jB2NVgGsHky7T7FykGT0FmRgcgm1at4sEopmk3Y8c+HcC3abaY1+aU/R
-         LPFfsDzvrUIC8GD3xZ6+wLQn4NBuBzc0zwIwFtHThW3CAl910oGrth8AfX7MnwW+D40B
-         1t41FZGGwb3pwnOzx8p0f3wqtAAsa7cLHb5mo5OTx5V0+PgR92TdHXxGCEpZVVOYGQ8G
-         1fGu6JKrxZvHuTpxM3I8zdi8lC533YMwu6lhflGCR34yuzHly3sViS9NLzeERmAYlSiO
-         SeUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=um3Qhq7FPm3pIrTiMtJYWGUD76JNI3D8F0QN7947rKw=;
-        b=kVw8jc+USux0pYqj9lrz0tW1OQzdHd9vMaQbcyMrW8VoFGBrTh9fCTnFhKL3EICNCP
-         X/hgiP9DGOnXsi5yuj08ZXMhP76e2N/+hRDNN1574VpGdA753q6azLx54J2/Boy3EEsz
-         Cb+0DT3YWFnmlk67CkmEQEppPg8bwsD/MOGXcGN86lPmYGIXLw/rMfJW3Y2jUaH2PS9b
-         6JpexoMeQH8hdsZXneVakGwK+8bmB0FYOn+uL8sm9Uu+z3PxXrZTjys8t35gs2fijMh0
-         VnQQ1BYXuzje/tum6lIJvJ0iBt2kcQYO8RiTV07iGxV4g0rBGvrD194MuObtw+9b22hJ
-         bvJg==
-X-Gm-Message-State: AOAM533StG8MTtdmjdvJQNHQy82NwO+mViaOYXs3FBUyg5yX7neqkq2K
-        UL1p54LtOnehZWMORLmFpwg=
-X-Google-Smtp-Source: ABdhPJxBlgwmLNKVsM03ksShfQegKt9EPrGs8huX9dt0ljfQMQ9uXBkCriVD+nbKxtbvHEz3TcuaeQ==
-X-Received: by 2002:a17:90a:dc10:: with SMTP id i16mr2989191pjv.137.1590661247707;
-        Thu, 28 May 2020 03:20:47 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id x6sm4430039pfn.90.2020.05.28.03.20.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 03:20:47 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        Christophe Ricard <christophe.ricard@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] NFC: st21nfca: add missed kfree_skb() in an error path
-Date:   Thu, 28 May 2020 18:20:37 +0800
-Message-Id: <20200528102037.911766-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S2387862AbgE1KZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 06:25:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20615 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2387758AbgE1KZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:25:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590661528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aI7QziAgUyt26FCsnDIdN4IJj/PsFpIVkZEW9K7NmJo=;
+        b=BqL0q9eUwpYAjmCrvaDDpB8pxiJkxc4kaO0xYqeYJKIfDsiGYMjIzqc4F22labk4o6mJ1A
+        XTND2V6k8r1sYaSIH6Af5qiqnjJ45e690WE+ceeAazWSNBqK0SlYUuHc0R0YPpUXe0gIYx
+        U6DVxJAZOuGx82ou6I9r/TAeY0xJjbE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-153-MXOnknFkODSR9r1EhFEeyQ-1; Thu, 28 May 2020 06:25:26 -0400
+X-MC-Unique: MXOnknFkODSR9r1EhFEeyQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2909018FE880;
+        Thu, 28 May 2020 10:25:24 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 096672657D;
+        Thu, 28 May 2020 10:25:12 +0000 (UTC)
+Date:   Thu, 28 May 2020 12:25:10 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        David Ahern <dsahern@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH v2 bpf-next 5/5] selftest: Add tests for XDP programs in
+ devmap entries
+Message-ID: <20200528122510.1c475484@carbon>
+In-Reply-To: <CAEf4BzapqhtWOz666YN1m1wQd0pWJtjYFe4DrUEQpEgPX5UL9g@mail.gmail.com>
+References: <20200528001423.58575-1-dsahern@kernel.org>
+        <20200528001423.58575-6-dsahern@kernel.org>
+        <CAEf4BzapqhtWOz666YN1m1wQd0pWJtjYFe4DrUEQpEgPX5UL9g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-st21nfca_tm_send_atr_res() misses to call kfree_skb() in an error path.
-Add the missed function call to fix it.
+On Thu, 28 May 2020 00:08:34 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/nfc/st21nfca/dep.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> > diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c
+> > new file mode 100644
+> > index 000000000000..815cd59b4866
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c
+> > @@ -0,0 +1,17 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <linux/bpf.h>
+> > +#include <bpf/bpf_helpers.h>
+> > +
+> > +struct bpf_map_def SEC("maps") dm_ports = {
+> > +       .type = BPF_MAP_TYPE_DEVMAP,
+> > +       .key_size = sizeof(__u32),
+> > +       .value_size = sizeof(struct devmap_val),
+> > +       .max_entries = 4,
+> > +};
+> > +  
+> 
+> This is an old syntax for maps, all the selftests were converted to
+> BTF-defined maps. Please update.
 
-diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-index a1d69f9b2d4a..0b9ca6d20ffa 100644
---- a/drivers/nfc/st21nfca/dep.c
-+++ b/drivers/nfc/st21nfca/dep.c
-@@ -173,8 +173,10 @@ static int st21nfca_tm_send_atr_res(struct nfc_hci_dev *hdev,
- 		memcpy(atr_res->gbi, atr_req->gbi, gb_len);
- 		r = nfc_set_remote_general_bytes(hdev->ndev, atr_res->gbi,
- 						  gb_len);
--		if (r < 0)
-+		if (r < 0) {
-+			kfree_skb(skb);
- 			return r;
-+		}
- 	}
- 
- 	info->dep_info.curr_nfc_dep_pni = 0;
+LOL - The map type BPF_MAP_TYPE_DEVMAP does not support BTF for key and
+value, which it what I've been trying to point out... (and yes, I do
+have code that makes it work in my tree.).
+
+That said, you should use the new SEC(".maps") definitions, but you
+need to use some tricks to avoid a BTF-ID getting generated.  Let me
+help you with something that should work:
+
+/* DEVMAP values */
+struct devmap_val {
+	__u32 ifindex;   /* device index */
+};
+
+struct {
+	__uint(type, BPF_MAP_TYPE_DEVMAP);
+	__uint(key_size, sizeof(u32));
+	__uint(value_size, sizeof(struct devmap_val));
+	__uint(max_entries, 4);
+} dm_ports SEC(".maps");
+
+Notice by setting key_size and value_size, instead of the "__type",
+then a BTF-ID will be generated for this map.
+Normally with proper BTF it should look like:
+
+struct {
+	__uint(type, BPF_MAP_TYPE_DEVMAP);
+	__type(key, u32);
+	__type(value, struct devmap_val);
+	__uint(max_entries, 4);
+} dm_ports_with_BTF SEC(".maps");
+
+
 -- 
-2.26.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
