@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951561E580F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD1241E5811
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726006AbgE1HBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 03:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S1726114AbgE1HBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 03:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725308AbgE1HBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 03:01:47 -0400
+        with ESMTP id S1726063AbgE1HBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 03:01:52 -0400
 Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8FFC05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:47 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id s1so2150766qkf.9
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25137C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:52 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 205so2194205qkg.3
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SCpdR/0iQOdkaqJqwHJWaDAorYiGQM1kRLAZVqCqaVk=;
-        b=nxa0qQwCdwYKRDVZHBBKyY1IGmSDaFvbPR7A6uZfabVMPvg03GSdV5RgRng1zc0HDj
-         rvO+s+EAFaQuFhJ4CLsHXAP46N6MHQHLCpMQtDkp13q92WwfXoqHbJN0bGQZotrR/0Y5
-         1MvRpTJGhZ3AozNWYeQPW8jXywcLkKKwDB88jbJMAObWHUuZnb3MtIty/Sx+3nSnIbz9
-         tsBPlAHMp1p000HxN64J9QPhTI4Opg2YsSHzeHZbDv1hE0urpW6tGd/8P9l/QSZBKU8F
-         7eHB53BjwhvrY5MqrzihVJbZbrsB2cp16NVaDu0X6+szCPQEjqZUsKQYdNH3TgkgAnAr
-         m4Vw==
+        bh=JHDw5aL1eTxUzfhSKo+/aoW/O8V/V561gmVbQAV8BH4=;
+        b=nHHPCfX2oQ8O0et+jwcL/8lrmCSquLi4cC8QFrwyQTl2cyT2iK13WXdDNY694UBxGG
+         MTdhf5DTJiDHPx3IVLQDjYRMJniLXzOpcsryVlb/QhmXKzZgXBQhQA4Ekg/H4o/4rHdT
+         h7npUdTGRCrbP/twx7N6vBiUfvXo6i04IZpSyjEUiU3+OTTqbVnte6x45Bzks6Oq2nwB
+         HUIlcDpS6M37uHojYA5+MgOs+o9qWvH+NWm8Itm149c4aHMfrwQh3NQN+v1EZxfNsTVU
+         VkCf+3lCFiJo5FtcOdpb6FK9uYzBxsgPrC41zFhnvSel7ZIGG8z4Jsu6IcgyGNwA+TVK
+         xRbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SCpdR/0iQOdkaqJqwHJWaDAorYiGQM1kRLAZVqCqaVk=;
-        b=mvWp0XZ5Ikm5HQ/Y88bme/JJai2qbdB2zCP1YqM2HhuB+MVoUbE3cl300lbG9FDGot
-         n1NyocKW/gSSZnSD2wd010rBnDjqFevzzCh9/dxP4k6H4gX/oATKqID6eII2Im4uHhKY
-         LK9TALDhm2fSM57sg5JhXqCSHpecwvsh5dtL004Fg6VnRuhmAPjidIElgxaqF7hpkoQl
-         78ofj1uNO3+IluzPP6wq+aiUx966Z5aYPgED/gYvMqOBEjyEKpAgrWzOH3xUEnZ3YrKU
-         NES16WpW/8PCHNJKb3VG3TGleeM+w6f/7PD+KDkhmBYT9vh+L+u2862yjhbsMfokdwlx
-         EcUQ==
-X-Gm-Message-State: AOAM530r/kAX0zK5piuZcQ4BWIUZWRnU7TG/1scXTsmTEJDcm/aVmN8y
-        pPMH2FKh2KhXE9xz/Gs6NQEO8DF6mCCuEBqeQsY=
-X-Google-Smtp-Source: ABdhPJyMFDE9QARLH2VooDyYNL9CL9spQ4P6kO1sBwJRs8caj+pBwzxHBqbX0EKlAvhu8rRASk3RCrYojxq/8WTFnYQ=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr1426940qkb.39.1590649306342;
- Thu, 28 May 2020 00:01:46 -0700 (PDT)
+        bh=JHDw5aL1eTxUzfhSKo+/aoW/O8V/V561gmVbQAV8BH4=;
+        b=rwlmGkdd1Y7EZyDgYPKDwMlG0sEAC92u+IbKuM8LsXfttG08TDmUbTVoDS0tkSjlN2
+         5VGomY8b7d362y2xFtA24jahoTjTLyQbb2dNZt/tl1cM8aQxTiTmYv/DgQ/aylZqzb37
+         U5eBJyI11+E7RUHr8BSvVrl6drqMqZuxr/FsD4mbpC1bpB5L+3DpXhQIwt6vNyqXFbiT
+         l09ZuoDx0+pGtBJL4v2DrgkxhlTCpur5h79CXLTFwp0GApNmP70CYXL6ddwk4bJjRrBk
+         VPK+IsMZT/u/c8uRJ/3K3m2zACzj3Xdx+pHsrlwf1dykbr1C83ucgfENvWNbka3GVIIs
+         69zA==
+X-Gm-Message-State: AOAM530LKscO6Xm9+hSOAVlodAAEfrVdARFx9pb4zTueYFZr7TisB0Yc
+        mnEYNt4tjKUDzTorPLtireU2qPiXLuCghtXdTV8=
+X-Google-Smtp-Source: ABdhPJzUSB+2DpAfEwT5iSQomg67bKLfFhPtKAWKmr7jhC/ZVlpo1LUm3sUfwv5blWucNP23ptOpaSXKYhrRg2I1j3o=
+X-Received: by 2002:a05:620a:247:: with SMTP id q7mr1493119qkn.36.1590649311337;
+ Thu, 28 May 2020 00:01:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200528001423.58575-1-dsahern@kernel.org> <20200528001423.58575-2-dsahern@kernel.org>
-In-Reply-To: <20200528001423.58575-2-dsahern@kernel.org>
+References: <20200528001423.58575-1-dsahern@kernel.org> <20200528001423.58575-3-dsahern@kernel.org>
+In-Reply-To: <20200528001423.58575-3-dsahern@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 28 May 2020 00:01:35 -0700
-Message-ID: <CAEf4BzZPbndT3daoSt_z6cH=CPJSdH5yMhpR2gDbmeQUacWAyg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/5] devmap: Formalize map value as a named struct
+Date:   Thu, 28 May 2020 00:01:40 -0700
+Message-ID: <CAEf4BzYZSPdGH+RXp+kHfWnGGLRuiP=ho9oMsSf7RsYWyeNk0g@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/5] bpf: Add support to attach bpf program to
+ a devmap entry
 To:     David Ahern <dsahern@kernel.org>
 Cc:     Networking <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -68,66 +69,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 5:15 PM David Ahern <dsahern@kernel.org> wrote:
+On Wed, May 27, 2020 at 5:17 PM David Ahern <dsahern@kernel.org> wrote:
 >
 > From: David Ahern <dsahern@gmail.com>
 >
-> Add 'struct devmap_val' to the bpf uapi to formalize the
-> expected values that can be passed in for a DEVMAP.
-> Update devmap code to use the struct.
+> Add BPF_XDP_DEVMAP attach type for use with programs associated with a
+> DEVMAP entry.
+>
+> Allow DEVMAPs to associate a program with a device entry by adding
+> a bpf_prog_fd to 'struct devmap_val'. Values read show the program
+> id, so the fd and id are a union.
+>
+> The program associated with the fd must have type XDP with expected
+> attach type BPF_XDP_DEVMAP. When a program is associated with a device
+> index, the program is run on an XDP_REDIRECT and before the buffer is
+> added to the per-cpu queue. At this point rxq data is still valid; the
+> next patch adds tx device information allowing the prorgam to see both
+> ingress and egress device indices.
+>
+> XDP generic is skb based and XDP programs do not work with skb's. Block
+> the use case by walking maps used by a program that is to be attached
+> via xdpgeneric and fail if any of them are DEVMAP / DEVMAP_HASH with
+>  > 4-byte values.
+>
+> Block attach of BPF_XDP_DEVMAP programs to devices.
 >
 > Signed-off-by: David Ahern <dsahern@gmail.com>
 > ---
->  include/uapi/linux/bpf.h       |  5 ++++
->  kernel/bpf/devmap.c            | 43 ++++++++++++++++++++--------------
->  tools/include/uapi/linux/bpf.h |  5 ++++
->  3 files changed, 35 insertions(+), 18 deletions(-)
+
+Please cc bpf@vger.kernel.org in the future for patches related to BPF
+in general.
+
+>  include/linux/bpf.h            |  5 +++
+>  include/uapi/linux/bpf.h       |  5 +++
+>  kernel/bpf/devmap.c            | 79 +++++++++++++++++++++++++++++++++-
+>  net/core/dev.c                 | 18 ++++++++
+>  tools/include/uapi/linux/bpf.h |  5 +++
+>  5 files changed, 110 insertions(+), 2 deletions(-)
 >
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 54b93f8b49b8..d27302ecaa9c 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3625,6 +3625,11 @@ struct xdp_md {
->         __u32 rx_queue_index;  /* rxq->queue_index  */
->  };
+
+[...]
+
 >
-> +/* DEVMAP values */
-> +struct devmap_val {
-> +       __u32 ifindex;   /* device index */
-> +};
+> +static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+> +                                        struct xdp_buff *xdp,
+> +                                        struct bpf_prog *xdp_prog)
+> +{
+> +       u32 act;
 > +
+> +       act = bpf_prog_run_xdp(xdp_prog, xdp);
+> +       switch (act) {
+> +       case XDP_DROP:
+> +               fallthrough;
 
-can DEVMAP be used outside of BPF ecosystem? If not, shouldn't this be
-`struct bpf_devmap_val`, to be consistent with the rest of the type
-names?
+nit: I don't think fallthrough is necessary for cases like:
 
->  enum sk_action {
->         SK_DROP = 0,
->         SK_PASS,
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index a51d9fb7a359..069a50113e26 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -66,6 +66,7 @@ struct bpf_dtab_netdev {
->         struct bpf_dtab *dtab;
->         struct rcu_head rcu;
->         unsigned int idx;
-> +       struct devmap_val val;
->  };
->
->  struct bpf_dtab {
-> @@ -110,7 +111,8 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
->
->         /* check sanity of attributes */
->         if (attr->max_entries == 0 || attr->key_size != 4 ||
-> -           attr->value_size != 4 || attr->map_flags & ~DEV_CREATE_FLAG_MASK)
-> +           attr->value_size > sizeof(struct devmap_val) ||
+case XDP_DROP:
+case XDP_PASS:
+    /* do something */
 
-So is 0, 1, 2, 3, and after next patch 5, 6, and 7 all allowed as
-well? Isn't that a bit too permissive?
+> +       case XDP_PASS:
+> +               break;
+> +       default:
+> +               bpf_warn_invalid_xdp_action(act);
+> +               fallthrough;
+> +       case XDP_ABORTED:
+> +               trace_xdp_exception(dev, xdp_prog, act);
+> +               act = XDP_DROP;
+> +               break;
+> +       }
+> +
+> +       if (act == XDP_DROP) {
+> +               xdp_return_buff(xdp);
+> +               xdp = NULL;
 
-> +           attr->map_flags & ~DEV_CREATE_FLAG_MASK)
->                 return -EINVAL;
->
+hm.. if you move XDP_DROP case to after XDP_ABORTED and do fallthrough
+from XDP_ABORTED, you won't even need to override act and it will just
+handle all the cases, no?
+
+switch (act) {
+case XDP_PASS:
+    return xdp;
+default:
+    bpf_warn_invalid_xdp_action(act);
+    fallthrough;
+case XDP_ABORTED:
+    trace_xdp_exception(dev, xdp_prog, act);
+    fallthrough;
+case XDP_DROP:
+    xdp_return_buff(xdp);
+    return NULL;
+}
+
+Wouldn't this be simpler?
+
+
+> +       }
+> +
+> +       return xdp;
+> +}
+> +
 
 [...]
