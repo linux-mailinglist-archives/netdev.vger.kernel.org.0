@@ -2,100 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAAE1E5D27
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 982EB1E5D29
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387807AbgE1K2s convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 May 2020 06:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387740AbgE1K2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:28:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2569C05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 03:28:47 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jeFmH-0002fj-KK; Thu, 28 May 2020 12:28:45 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jeFmH-0006JE-8T; Thu, 28 May 2020 12:28:45 +0200
-Date:   Thu, 28 May 2020 12:28:45 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Amit Cohen <amitc@mellanox.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
-        mlxsw <mlxsw@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Link down reasons
-Message-ID: <20200528102845.yvcq4bihqdedc3li@pengutronix.de>
-References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com>
- <20200528084052.n7yeo2nu2vq4eibv@pengutronix.de>
- <87y2pctnvc.fsf@mellanox.com>
+        id S2387859AbgE1K3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 06:29:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36738 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387740AbgE1K3B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 06:29:01 -0400
+Received: from pali.im (pali.im [31.31.79.79])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7AE0A208A7;
+        Thu, 28 May 2020 10:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590661740;
+        bh=lJCv+y3Stmi60RqMCVzfyZuka7AvcVB3eQtCkL3vvxg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rm3chmkmSkSOn7CkNK4xlgDwPHp1fdW1d5tTlE/evovRynijUTTr+GDaNr/G+l6Ne
+         OB61g//Nb+NsNrJXlGT8eNzq+Xg3KtykW0fyno/VyOPyeTWaieG/kMiPPey/ajTmue
+         uIj7pqMQhl+oNqq9mxyvEDhapSNq//Z1w9MsuMaI=
+Received: by pali.im (Postfix)
+        id 27B5A7B2; Thu, 28 May 2020 12:28:58 +0200 (CEST)
+Date:   Thu, 28 May 2020 12:28:58 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mwifiex: Parse all API_VER_ID properties
+Message-ID: <20200528102858.riwsja5utqix6wqo@pali>
+References: <20200521123444.28957-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <87y2pctnvc.fsf@mellanox.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:24:15 up 195 days,  1:42, 196 users,  load average: 0.89, 0.51,
- 0.31
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200521123444.28957-1-pali@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 11:22:47AM +0200, Petr Machata wrote:
+On Thursday 21 May 2020 14:34:44 Pali Rohár wrote:
+> During initialization of SD8997 wifi chip kernel prints warnings:
 > 
-> Oleksij Rempel <o.rempel@pengutronix.de> writes:
+>   mwifiex_sdio mmc0:0001:1: Unknown api_id: 3
+>   mwifiex_sdio mmc0:0001:1: Unknown api_id: 4
 > 
-> > I would add some more reasons:
-> > - master slave resolution issues: both link partners are master or
-> >   slave.
+> This patch adds support for parsing all api ids provided by SD8997
+> firmware.
 > 
-> I guess we should send the RFC, so that we can talk particulars. We
-> currently don't have anything like master/slave mismatch in the API, but
-> that's just because our FW does not report this. The idea is that if MAC
-> and/or PHY driver can't express some fail using the existing codes, it
-> creates a new one.
-
-ok
-
-> > - signal quality drop. In this case driver should be extended to notify
-> >   the system if SQI is under some configurable limit.
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  drivers/net/wireless/marvell/mwifiex/cmdevt.c | 17 +++++++++++++++--
+>  drivers/net/wireless/marvell/mwifiex/fw.h     |  2 ++
+>  2 files changed, 17 insertions(+), 2 deletions(-)
 > 
-> As SQI goes down, will the PHY driver eventually shut down the port?
 
-Not in current implementation. But it is possible at least with
-nxp_tja11xx PHY.
+Hello! Could you please look at this trivial patch?
 
-> Because if yes, that's exactly the situation when it would later report,
-> yeah, the link is down because SQI was rubbish. In the proposed API, we
-> would model this as "signal integrity issue", with a possible subreason
-> of "low SQI", or something along those lines.
+> diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> index 7e4b8cd52..589cc5eb1 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> @@ -1581,8 +1581,21 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
+>  					adapter->fw_api_ver =
+>  							api_rev->major_ver;
+>  					mwifiex_dbg(adapter, INFO,
+> -						    "Firmware api version %d\n",
+> -						    adapter->fw_api_ver);
+> +						    "Firmware api version %d.%d\n",
+> +						    adapter->fw_api_ver,
+> +						    api_rev->minor_ver);
+> +					break;
+> +				case UAP_FW_API_VER_ID:
+> +					mwifiex_dbg(adapter, INFO,
+> +						    "uAP api version %d.%d\n",
+> +						    api_rev->major_ver,
+> +						    api_rev->minor_ver);
+> +					break;
+> +				case CHANRPT_API_VER_ID:
+> +					mwifiex_dbg(adapter, INFO,
+> +						    "channel report api version %d.%d\n",
+> +						    api_rev->major_ver,
+> +						    api_rev->minor_ver);
+>  					break;
+>  				default:
+>  					mwifiex_dbg(adapter, FATAL,
+> diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
+> index a415d73a7..6f86f5b96 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/fw.h
+> +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
+> @@ -1052,6 +1052,8 @@ struct host_cmd_ds_802_11_ps_mode_enh {
+>  enum API_VER_ID {
+>  	KEY_API_VER_ID = 1,
+>  	FW_API_VER_ID = 2,
+> +	UAP_FW_API_VER_ID = 3,
+> +	CHANRPT_API_VER_ID = 4,
+>  };
+>  
+>  struct hw_spec_api_rev {
+> -- 
+> 2.20.1
 > 
-> E.g., mlxsw can report module temperatures. But whether the port goes
-> down is a separate mechanism. So when a port is down, the driver can
-> tell you, yeah, it is down, because it was overheated. And separate from
-> that you can check the module temperatures. SQI might be a similar
-> issue.
-
-nxp_tja11xx can go down or can't go up on under vlotage or over temerature
-error. So, I assume this are two more possible link-down reasons.
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
