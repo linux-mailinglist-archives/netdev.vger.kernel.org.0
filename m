@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F0B1E605B
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B0FE1E6075
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388674AbgE1L4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:56:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48130 "EHLO mail.kernel.org"
+        id S2389182AbgE1MKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:10:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388652AbgE1L4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:16 -0400
+        id S2388659AbgE1L4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 363892089D;
-        Thu, 28 May 2020 11:56:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 37CE820757;
+        Thu, 28 May 2020 11:56:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590666975;
-        bh=EUyRpb3EQAr3VgeyKmxe4l/6m82tQ6ZFBOGR+llSCE0=;
+        s=default; t=1590666977;
+        bh=Z+uy5yhJX/VO1nMXG5zNBbhdtJXhOPuA8ZgWm1w1Ky8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k+QGi3dl2A0bZwOowjTimc1ZQRmi5TT3xEaXiUM3fUVghQ8S1UCPw4CY1x4ZkvlAW
-         GF3qoLSiW5r9St/F96ma6FivHRdfrcTheCI5Pv22ssJkR+7IRSXqhDSYH3rNfaftpZ
-         M55FKLAcVWEnnQQdG1noNIgcp8u766bMYb+BFLlY=
+        b=OYQAU4NBVi7XfvyuTGSidl/JRntlxRUBF613BYeJdpoS2364A5E9qpFoQsp6ybDaB
+         L+dIFOMS6GsMJdf4MIZXCsI7sf133Vwi+sdinvv1cTvpnuO0/r2OGqmWYk8z+X9vUP
+         Dwcrp7x6LQZHP5uZXMAdQHs9eBZbqLHQ3EYAvtXU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
+Cc:     Roman Mashak <mrv@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 13/47] net: phy: propagate an error back to the callers of phy_sfp_probe
-Date:   Thu, 28 May 2020 07:55:26 -0400
-Message-Id: <20200528115600.1405808-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 14/47] net sched: fix reporting the first-time use timestamp
+Date:   Thu, 28 May 2020 07:55:27 -0400
+Message-Id: <20200528115600.1405808-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
@@ -43,49 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+From: Roman Mashak <mrv@mojatatu.com>
 
-[ Upstream commit e3f2d5579c0b8ad9d1fb6a5813cee38a86386e05 ]
+[ Upstream commit b15e62631c5f19fea9895f7632dae9c1b27fe0cd ]
 
-The compilation warning below reveals that the errors returned from
-the sfp_bus_add_upstream() call are not propagated to the callers.
-Fix it by returning "ret".
+When a new action is installed, firstuse field of 'tcf_t' is explicitly set
+to 0. Value of zero means "new action, not yet used"; as a packet hits the
+action, 'firstuse' is stamped with the current jiffies value.
 
-14:37:51 drivers/net/phy/phy_device.c: In function 'phy_sfp_probe':
-14:37:51 drivers/net/phy/phy_device.c:1236:6: warning: variable 'ret'
-   set but not used [-Wunused-but-set-variable]
-14:37:51  1236 |  int ret;
-14:37:51       |      ^~~
+tcf_tm_dump() should return 0 for firstuse if action has not yet been hit.
 
-Fixes: 298e54fa810e ("net: phy: add core phylib sfp support")
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Fixes: 48d8ee1694dd ("net sched actions: aggregate dumping of actions timeinfo")
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/act_api.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 28e3c5c0e3c3..faca0d84f5af 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1239,7 +1239,7 @@ int phy_sfp_probe(struct phy_device *phydev,
- 		  const struct sfp_upstream_ops *ops)
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 71347a90a9d1..050c0246dee8 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -69,7 +69,8 @@ static inline void tcf_tm_dump(struct tcf_t *dtm, const struct tcf_t *stm)
  {
- 	struct sfp_bus *bus;
--	int ret;
-+	int ret = 0;
- 
- 	if (phydev->mdio.dev.fwnode) {
- 		bus = sfp_bus_find_fwnode(phydev->mdio.dev.fwnode);
-@@ -1251,7 +1251,7 @@ int phy_sfp_probe(struct phy_device *phydev,
- 		ret = sfp_bus_add_upstream(bus, phydev, ops);
- 		sfp_bus_put(bus);
- 	}
--	return 0;
-+	return ret;
+ 	dtm->install = jiffies_to_clock_t(jiffies - stm->install);
+ 	dtm->lastuse = jiffies_to_clock_t(jiffies - stm->lastuse);
+-	dtm->firstuse = jiffies_to_clock_t(jiffies - stm->firstuse);
++	dtm->firstuse = stm->firstuse ?
++		jiffies_to_clock_t(jiffies - stm->firstuse) : 0;
+ 	dtm->expires = jiffies_to_clock_t(stm->expires);
  }
- EXPORT_SYMBOL(phy_sfp_probe);
  
 -- 
 2.25.1
