@@ -2,69 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBB01E525F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 02:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878431E52A5
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725891AbgE1Azs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 20:55:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35114 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725267AbgE1Azs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 20:55:48 -0400
-Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A70B8207CB;
-        Thu, 28 May 2020 00:55:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590627348;
-        bh=LVt+v07eAhhKUzT7NqWt/6bOrLAfS45SVvYmNSlojo4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jv37DevlwxDmCOqr9Zb5+P2Xeq5ZWKgzCjORE0J9RBB7bJfqb3n8CvDivIWERcESE
-         VM38R5KdZwFEAuJzap4U8cYrCW2Bkn8bZDTrxsIVze5ZoSzUpmeMIKrR/RqWTuadrt
-         WomSlE/Kd+KPBoOd1wYzuXZRNXU+tR00icpmem+o=
-Date:   Wed, 27 May 2020 17:55:47 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/23] maccess: unify the probe kernel arch hooks
-Message-Id: <20200527175547.0260fb90d76734d4e0f56def@linux-foundation.org>
-In-Reply-To: <20200521152301.2587579-11-hch@lst.de>
-References: <20200521152301.2587579-1-hch@lst.de>
-        <20200521152301.2587579-11-hch@lst.de>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1725969AbgE1BGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 21:06:25 -0400
+Received: from mail-eopbgr60041.outbound.protection.outlook.com ([40.107.6.41]:50746
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725294AbgE1BGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 21:06:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k5+Y1NdXNjf4ZceWTbUs58pArm/fa5dbQ6hXxGjsSvC+F5AiMVka9KUpyXyi6l6UVOaU20xs9+tEQAggykYr7tCSdNIwzva1lKkP8TYJEh8LInvwZW78/kaX3KjJr34YC0e8rwP+OPfyQ+7LHE+S4UQJgIOQZuzeK94VhXbIHVcPvdqPzzhzYblJaL+eSjI4KBHDh70dVBVF/ffZHz7x6nCkDkgP8sAS8f4Lj8m3GsFNvFb3bpkUKlcyisp3bL0sLJqYJ4TGs4ZDsK8tWGQxjt38DF/AdAQnglNtk12AuNInVWMth6i6pJmqM0o9sgmgrdDtxoJMzsB1pP8/VZtw3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5mjjy7B2HI5UsepwjjMh7aYrlYzVcmN+pBpJh26xrCc=;
+ b=N7I9CBoQaCbq8fojRr+dzNxw1ltsxiebxj8+ZUvxm8Gr7jU6UdPGvSRdjC8KmZFhGgOTOGYOjrImM3MydW0MIsarqJ9g6dwZQLaLAIQMK6k1yOjmjjOL0A+0TYCskqM8RyXWrIwjjk8tuJ8pKmU/BsZNRuWF934ZdE80itPBpaplMNskvkWl6iXPWG0uo6m16pNK86yO/PeQZDstZfDxls3y12AkIkHjj8bfMgXWtw+ek8N9PQ9IwjY6VbeAxJWUuP8vwqdv4Bdc08N/nnr3BQ9fc31ywyw0uRsTg9/Jjm9SmdszSDRovYWpwryxDVttD4Dv3NDDEQGI1TvWUocYOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5mjjy7B2HI5UsepwjjMh7aYrlYzVcmN+pBpJh26xrCc=;
+ b=EqAA8LizGfyPFiHk97pPoA2I05EvAaArZa0VtPI86fATMIb9kCMMFtZlkPorPCRXFnkjD/OdzJFaUJ63FDgeqSso7pp0WTatzYgsuKB4s0lyPaxjrE8vRsLeJlMrGn1kPUaQ1W9sN9fd3N9srB224pZCGdXgScL8djuypaVLaCA=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:44::15)
+ by VI1PR05MB6925.eurprd05.prod.outlook.com (2603:10a6:800:188::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Thu, 28 May
+ 2020 01:06:20 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::848b:fcd0:efe3:189e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::848b:fcd0:efe3:189e%7]) with mapi id 15.20.3021.030; Thu, 28 May 2020
+ 01:06:20 +0000
+Date:   Wed, 27 May 2020 22:06:15 -0300
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Max Gurtovoy <maxg@mellanox.com>
+Cc:     dledford@redhat.com, leon@kernel.org, galpress@amazon.com,
+        dennis.dalessandro@intel.com, netdev@vger.kernel.org,
+        sagi@grimberg.me, linux-rdma@vger.kernel.org, bvanassche@acm.org,
+        santosh.shilimkar@oracle.com, tom@talpey.com,
+        aron.silverton@oracle.com, israelr@mellanox.com, oren@mellanox.com,
+        shlomin@mellanox.com, vladimirk@mellanox.com
+Subject: Re: [PATCH 0/9 v2] Remove FMR support from RDMA drivers
+Message-ID: <20200528010615.GD24561@mellanox.com>
+References: <20200527094634.24240-1-maxg@mellanox.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200527094634.24240-1-maxg@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: YQXPR01CA0118.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c00:41::47) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by YQXPR01CA0118.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c00:41::47) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Thu, 28 May 2020 01:06:20 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1je6zw-0006Al-0B; Wed, 27 May 2020 22:06:16 -0300
+X-Originating-IP: [206.223.160.26]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 0f31f9b5-1de5-4508-0f3d-08d802a35513
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6925:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB69257E77495859EF83CBED2BCF8E0@VI1PR05MB6925.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0417A3FFD2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Fb17bjBK62chUxAnDF4HwICiO/I3QkffXnKS5brp5PY7HtIq74l4fsmDhviL3NMThAmF0g94r6hepdjFEPWMPrW5yXHhoZMHaEFOLgKOUWIdAhRJPdcT9I9zmkt3Mo5JOaJpvGfSrZKvJLwLAojmG7uyogac4kO6XlmfFqOdUmbvBVSYcAI/u5L4n4unDQY0qDSfvhQ6hwSN/skDb0/IQ2TGwbgtF5Ivhayk3sMRG8LZIsjxTBAQklYuyB5UPwWWKCTA8SEBAHmYSX6TYLhDIt8ypeDwDk7fYTo6n37gYEVE7ewIdIRGfuLgtIUxjYp1D6MNC/PSUsMGwuvXQ/49aRDuBHoIbVyhtJNStCL3YKUNzWTw1Ls2sc2rplPh4dNY0BcKMAvOa1US/xzP/EsZG6waGZC7rruIggeE2ui0KMnR0hnMi+jP5nRvpup1wRIlJ3ltSmDgxCEDXb+mhl1s0g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4141.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(396003)(346002)(376002)(39860400002)(107886003)(33656002)(316002)(83380400001)(86362001)(37006003)(2616005)(8936002)(36756003)(7416002)(66476007)(9746002)(66946007)(6862004)(26005)(9786002)(2906002)(186003)(5660300002)(8676002)(1076003)(478600001)(66556008)(6636002)(966005)(4326008)(24400500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: CmvyRMi9v21FjCwB3pu7oGBjDBUbxUB/FV0unjXa9qOIXteSidhBmFSyybFNCHdukYSvb+VQHjfzVIqgMdNCAIVldki8rszkR6HbA3T868rPtM+s85qt/efp4AFnPrrQrQyxxBhkGcp73Wv/QFMaK7rtNHtit8aS2l+MQcJ4OmrDzjyYz76sSjVFMtiMZ5m1m/CO1SDtYhfmLSUlU4X/7WAVRMvFT8V5FnPjqJoQfhWawy9j1T9klgppkcZqYE5kifWE+ol5mspxybd5DCaW+IdY2un9llMSfBcLQ3OKvtWSZWl+8zPF3DP/qVWb3bhFCZHdq+mBgzPxy7BqF607lho53OCSvMUFqudPTRQYkKHHPCOJdM2rduXLH99jzRmlrAD1qWG/sWaHm6sO22hIrIaUnD4njKw5UMcCs14D3iKU3pdTaxL7ActymQedntn3cuUJoAOFEx05HkQSuOVIR8XEMiCNXae5dfxjjgcwu4aPEUMtZL/0JZ+9N9Z8ukvT
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f31f9b5-1de5-4508-0f3d-08d802a35513
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 01:06:20.5431
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QaxeQXbFaEHfKlaa751T7GrvADn/OhvPOaobhcmMF0f8Yk3rwVi1Z6DBjiuJtkqWVLnMTzjWQsdW5PD5vAPpjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6925
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 May 2020 17:22:48 +0200 Christoph Hellwig <hch@lst.de> wrote:
+On Wed, May 27, 2020 at 12:46:25PM +0300, Max Gurtovoy wrote:
+> This series removes the support for FMR mode to register memory. This ancient
+> mode is unsafe (rkeys that are usually exposed for caching purposes and the API
+> is limited to page granularity mappings) and not maintained/tested in the last
+> few years. It also doesn't have any reasonable advantage over other memory
+> registration methods such as FRWR (that is implemented in all the recent RDMA
+> adapters). This series should be reviewed and approved by the maintainer of the
+> effected drivers and I suggest to test it as well.
+> 
+> The tests that I made for this series (fio benchmarks and fio verify data):
+> 1. iSER initiator on ConnectX-4
+> 2. iSER initiator on ConnectX-3
+> 3. SRP initiator on ConnectX-4 (loopback to SRP target)
+> 4. SRP initiator on ConnectX-3
 
-> Currently architectures have to override every routine that probes
-> kernel memory, which includes a pure read and strcpy, both in strict
-> and not strict variants.  Just provide a single arch hooks instead to
-> make sure all architectures cover all the cases.
+I looked at this for a bit, and it seems like there is still a fair
+amount more to remove, I came up with this:
 
-Fix a buildo.
+https://github.com/jgunthorpe/linux/commits/for_max
 
---- a/arch/x86/mm/maccess.c~maccess-unify-the-probe-kernel-arch-hooks-fix
-+++ a/arch/x86/mm/maccess.c
-@@ -29,6 +29,6 @@ bool probe_kernel_read_allowed(const voi
- {
- 	if (!strict)
- 		return true;
--	return (unsigned long)vaddr >= TASK_SIZE_MAX;
-+	return (unsigned long)unsafe_src >= TASK_SIZE_MAX;
- }
- #endif
-_
+Can you check?
 
+Thanks
+Jason
