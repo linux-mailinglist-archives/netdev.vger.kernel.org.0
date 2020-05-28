@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4CF1E52DE
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85B01E52CE
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:18:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgE1BVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 21:21:50 -0400
-Received: from mail-am6eur05on2056.outbound.protection.outlook.com ([40.107.22.56]:6231
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S1726563AbgE1BSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 21:18:48 -0400
+Received: from mail-eopbgr150075.outbound.protection.outlook.com ([40.107.15.75]:32229
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725747AbgE1BVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 May 2020 21:21:50 -0400
+        id S1726487AbgE1BSr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 21:18:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PGcCeS6I8NnvILQyMHhWSq2+35ohwY3tJxz1+SJfKYpgWYodncSL/MPOrhKyGHp1/JJC15ddfxWKjOIQbSKfiaNyxJlEN6hGUu8NP5bk46eOep0qNW8wHMz+wSzKCSVIi+MMYWSkr673dHSadob6W1ybWATx652LKPq2lL+uRQQdxaugPMskx+bQW7vhp8z0rUEpiJXptCMqLpwna6iuYOARoQKtxjPWMHh5iRLKvF5JfKrfP9Fggo71bilkvEZn7Z263FkukBqreGsNTNsuQ1PAOrUA2puE+au9aX1Unvqe4QoYX5jIj+2A6V/AdWOir/Q9iWlpPnsbVs6CnHs1vw==
+ b=Mdql2P9l/rGB3RjtP4AWrGoFphZ7BANKmTCkt4uunBfKOVCRvkczbSUhW5eTRd3LVKPi2h1r2Yy4Q0EnjbfDkQtLx3V5HNk6Agj8FfxKFydIzW1cl5zGGGS3FSyqSY+Z9J37M+Rs8ln2xcqHJN5MhNxinkBJfSWsCOD/g28CqfZs0Ow8KghGcvB6qmS2xy3QgvKGOVbYQqLDwh+7DKLEA3wvCpap+fAhz8PwhNbUyZ362+Dsa01yAKa8g4+Mnye4KUei8n/LgDT4fq9JcXxUfcXB+yGcfj6UE1DC4OW9qJSubDai6v+8Ny+T88P9oee2LmENwa0L7wAhAijN6Uuniw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SljShiqwp63r44SQv0GaHhbh9F+hvuHXLxmoNojU9GE=;
- b=A/ELL0K/WJA0sXDcLBIjdWbWckkQsPZhtfh4CEA2FUUBB5Z4l3RQqOe19sPDUxco/lTTMEhkM5fWFuhI87w3S925hv5J32Bh5TahtreEa0yG6QAF3ywFFBAqPTGEzb+BNl+9FQqZc7XpTt4v2LoiP5jScpC/dGxZVkYCT9cyfl7okMTcFqFTzSdBHZJ/IuoruGDAivmKBbo/x5gBE64xFIpq/9cJqQq0HTJet/V8po6tZlvwOfVq6rjwJfkZiEFF4414IYUx2lfUdw3zKotNRuHdm5JDOuE95S1tGg9sFBloGoQCeGEv9oKX5XIuVsQ1h0JljJMS1wXDxjdhoiTbWg==
+ bh=qT/4sfvmI67gLjE83pBKM0Gki2IQnf/se4ytOD11L1c=;
+ b=fkjdh80WkfKGwFvlJDBaTt+OQme4SFejeeyxLIHT91LV11mCX91R+2GAk0w99Xyi1NYF7j8wJpJYJUqNVRyOopvPz8m3JNewQk5F6BInBaI67FNJURf+0OMjQTxDqqFAiKfO5UjDuaIR+sIi0O24MaL2pzyaMLFIaaAMl609fZYQoWBNtRYu8chE+36a3KKuh4L/NzNsCxzeDNp70MDRqJo89t3EsAJkTAjD7sPpDDrw0qKBCJ1RZXWDYHKZDKJ1FhIlYWwb91f+3BhmbnAtRpqffTatcNHgsjIxxE+BpP7fMX9shUBGdH5or+h4d4f7agLykR5LqKNSsO5eTwKDlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SljShiqwp63r44SQv0GaHhbh9F+hvuHXLxmoNojU9GE=;
- b=Uegx3WMQIvTxcYp2UjAsybXgXgsGJJ6lJIp8mFkpxayDZvbs8GYehP/Ovcx8NdIAVjx67bMMbIHHVEWmhQeIpJXa2A8o9pamabTZKAYUv3vOiJHGukZ1fuuCVzq6gA4K8uo/Y3A3Lla+8gL/i2lay/JuKX3NXV2n50qhPJocp0o=
+ bh=qT/4sfvmI67gLjE83pBKM0Gki2IQnf/se4ytOD11L1c=;
+ b=ngOU6OmuFMbEYe0vKEc2FAtMMkN9jQ47nS8gf38t4YUpYKdB4DTo+3jg9Gm6pgtqiDNkCyk79I1NfrFIjL6hWbWFfrcD2Y7V9Cmrlph3afmmSGTzgv5UW/gA1wRR5yzE+v392aEfVALBrszpF0I2HdN7uxOke2cTU5qltfj5Ah0=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB4368.eurprd05.prod.outlook.com (2603:10a6:803:44::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17; Thu, 28 May
- 2020 01:17:46 +0000
+ 2020 01:17:49 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.029; Thu, 28 May 2020
- 01:17:46 +0000
+ 01:17:48 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Vu Pham <vuhuong@mellanox.com>,
         Parav Pandit <parav@mellanox.com>,
         Roi Dayan <roid@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V3 09/15] net/mlx5e: Slave representors sharing unique metadata for match
-Date:   Wed, 27 May 2020 18:16:50 -0700
-Message-Id: <20200528011656.559914-10-saeedm@mellanox.com>
+Subject: [net-next V3 10/15] net/mlx5e: Use change upper event to setup representors' bond_metadata
+Date:   Wed, 27 May 2020 18:16:51 -0700
+Message-Id: <20200528011656.559914-11-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200528011656.559914-1-saeedm@mellanox.com>
 References: <20200528011656.559914-1-saeedm@mellanox.com>
@@ -57,30 +57,30 @@ X-ClientProxiedBy: BY5PR04CA0001.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0001.namprd04.prod.outlook.com (2603:10b6:a03:1d0::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Thu, 28 May 2020 01:17:44 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0001.namprd04.prod.outlook.com (2603:10b6:a03:1d0::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Thu, 28 May 2020 01:17:46 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c42e1ad2-8282-4a44-40ee-08d802a4edfe
+X-MS-Office365-Filtering-Correlation-Id: 2cc06d4a-672a-484d-0079-08d802a4ef66
 X-MS-TrafficTypeDiagnostic: VI1PR05MB4368:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB4368C3FB2087E00CC9677EA3BE8E0@VI1PR05MB4368.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:454;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB4368DAA1AB4B1F31E362CB3EBE8E0@VI1PR05MB4368.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:635;
 X-Forefront-PRVS: 0417A3FFD2
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BP6bVhBgDLzkrkBwi55s5L+u9hXGeQ8EsBK0qjU3CslfkaHgq7isHLIbcICx35oSAxN/CdBiZ8P4EEopSE5V/E8huGLGRRGd4rnFlL25OR1CQoTBUY9Xbpy9D+ieS60LgdBnqypZppDv5SqZg5IuxOoyS3BzCr1YldaDuABVfbyQZ/VIU3erefLu3uclGe/RTaK3tEMEnjl0qY09eypmtndQfCM758tbwgsHSLFuKBqLx+BvgJfls47F4Geeue9aojpFSvv/Q8cxJLk9m0lGus6JH5h69qhFVsECqe7QHtWTmXp1NxjpmqSLtfZaA3aUWsyyRuDe0ADnscM+tPdKWzm9stvXYvirs1Oq8INcwMCLiA7/WIY2xQx0Gz+pfDBz
+X-Microsoft-Antispam-Message-Info: YlmYzWd2gwtEViNmx1+HNM4o0CL+ntBqubGb91Usdf+0pYGSVH2VL0wyfgSriDp0GoGaTW3NEXc8yeuY0AWF6PZta6fL+7Frn75yrMa6iur92rR5Deh9ML3bjniH8IAM9HX99C6qLU0OWcUUhkHkzDk/7hgWDZxe/0+u7Xu5PeWFvbyrrDMis9IR+Q3nyXMKw67paf2Znd6UV+lbjPDgoyx9PW/4aSmMPD7h0niYCI5XJO4+/+e8UKIDZkJrufdFiWSpaMj5bMTCr+CKYcb/DuQPl4+E8OFw+8mxSVHDuLoSeosbjShNi6zKKthLDzEfAH+wbgQTsmiM6zQiXUsAvoln5WVfKHJNK6qqoQPtT+xon2W6dhGemVetq7IHQDLv
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(346002)(136003)(396003)(39860400002)(26005)(54906003)(52116002)(66946007)(66476007)(86362001)(316002)(83380400001)(66556008)(5660300002)(6506007)(956004)(2616005)(1076003)(6666004)(16526019)(36756003)(8676002)(6486002)(478600001)(8936002)(2906002)(4326008)(107886003)(186003)(6512007)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: LqyD28lQ4jsg+cRkGS6Ta9A2zvoXzAiVepPopqZiJJkjoWN551VchwwwWw0iDDJUZCS5V61hZ8LRAblpeQWRNFVhOCfn9FrhIoYMux4EBEeVznh1cdiQZynCfQYPDQHwuStI0IjE+SGX/1Sfg3JtVTL8lry1rbaGIXZ2kyyJ+2uBcvavFqKIc6wKjimprgokVhjJKPdnVGHPa4skJuCLwTpgMoD7FW2vxS67oJqirRf4VTScUH84W5J6vSXnHuwkHkkVjhB4lxNrVPrMPqagS5cqAVc9Ka4aRtt1pO2KdEinaBxQ+zuUaIZFNspEqilFey+a4w1z7E4nx+Bd9xMhRU2taaSzUadXYw2nyPApwKKsAJ9vllVHilu4zerWiUybbDLB5IJpOm55PU6PKRU5B4f9qrZuO20wpay2McRLi1qrtUDz2oOXnNCnLtoD8D/b2ElEWpXG82obTMt4kyUf+TSDoFZjYXD5zMzAp7O29Lo=
+X-MS-Exchange-AntiSpam-MessageData: pEGbbXDJkHU+fGlbwGcuE1aChZ0VLE0lEdodfQyBSd6YUvzH2Cx/c4Bvf1TCLgQNSdQ2pRtp1QoewAkmLDxFvqtCRI5blhyhnN1tCFB1wSZRPSr0AAwYWusp1ij2oM9FBDimLWoArufJb9009rr0yXROgyovgSJB0KSt8XWOv9YJ0kScYh/NaR2BczIrzCxHDs6nMJXb69zNoL9OeMaiqMLpqyKzIRsjYOO6DMzSZ2/mj1trGfdjCopHwmA4V2ZIV7xE/rKmZA+22kRGB2h47LTI0nFlzAXysKQxIIYA83cFuKMLaCLBZ0Q8rTnomjL6O8L9FOz6Jc0+Z3O71GKhY20fQ6fbJ1YJA+4yoHqEClH5vuO9Q2iDrICjfwP9W2gkVN3gjGkJmgvPGdS3zrUvt+zndk1pCNMA6PdBMbaM1tKYFj+ZOBAOYSM+r9fAKAaDmm33jHmd2wdGRmxNkSEJoCY7cPZjRRe5Yoi+oYuoWns=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c42e1ad2-8282-4a44-40ee-08d802a4edfe
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 01:17:46.5589
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cc06d4a-672a-484d-0079-08d802a4ef66
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 01:17:48.9175
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sJufLot8rIszeEN8+jTVUgPYN4eeE3IuBb11D7ktYnovhDGH4RMlwgKoXra8RQX4HA0NmSNLc+ZyRlAeF7yffg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kR1GaR0uTfoaj5OZ4fflwzxfwhpWPEG35sA6sjr5iyxBhg29b9pYaZGdPRBfvQ2KhUKxhHzF6W6SFrdJMSobzg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4368
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -89,216 +89,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vu Pham <vuhuong@mellanox.com>
 
-Bonded slave representors' vports must share a unique metadata
-for match.
+Use change upper event to detect slave representor from
+enslaving/unslaving to/from lag device.
 
-On enslaving event of slave representor to lag device, allocate
-new unique "bond_metadata" for match if this is the first slave.
-The subsequent enslaved representors will share the same unique
-"bond_metadata".
+On enslaving event, call mlx5_enslave_rep() API to create, add
+this slave representor shadow entry to the slaves list of
+bond_metadata structure representing master lag device and use
+its metadata to setup ingress acl metadata header.
 
-On unslaving event of slave representor, reset the slave
-representor's vport to use its own default metadata.
+On unslaving event, resetting the vport of unslaved representor
+to use its default ingress/egress acls and rx rules with its
+default_metadata.
 
-Replace ingress acl and rx rules of the slave representors' vports
-using new vport->bond_metadata.
+The last slave will free the shared bond_metadata and its
+unique metadata.
 
 Signed-off-by: Vu Pham <vuhuong@mellanox.com>
 Reviewed-by: Parav Pandit <parav@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/rep/bond.c | 65 +++++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 22 ++++++-
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |  1 +
- 3 files changed, 80 insertions(+), 8 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/rep/bond.c | 22 ++++++++++++-------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-index 932e94362ceb..13500f60bef6 100644
+index 13500f60bef6..bdb71332cbf2 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-@@ -71,6 +71,7 @@ static void mlx5e_rep_bond_metadata_release(struct mlx5e_rep_bond_metadata *mdat
- 	netdev_dbg(mdata->lag_dev, "destroy rep_bond_metadata(%d)\n",
- 		   mdata->metadata_reg_c_0);
- 	list_del(&mdata->list);
-+	mlx5_esw_match_metadata_free(mdata->esw, mdata->metadata_reg_c_0);
- 	WARN_ON(!list_empty(&mdata->slaves_list));
- 	kfree(mdata);
- }
-@@ -82,6 +83,8 @@ int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
- 	struct mlx5e_rep_bond_slave_entry *s_entry;
- 	struct mlx5e_rep_bond_metadata *mdata;
- 	struct mlx5e_rep_priv *rpriv;
-+	struct mlx5e_priv *priv;
-+	int err;
+@@ -164,8 +164,13 @@ void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
+ 	priv = netdev_priv(netdev);
+ 	rpriv = priv->ppriv;
  
- 	ASSERT_RTNL();
- 
-@@ -96,6 +99,11 @@ int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
- 		mdata->lag_dev = lag_dev;
- 		mdata->esw = esw;
- 		INIT_LIST_HEAD(&mdata->slaves_list);
-+		mdata->metadata_reg_c_0 = mlx5_esw_match_metadata_alloc(esw);
-+		if (!mdata->metadata_reg_c_0) {
-+			kfree(mdata);
-+			return -ENOSPC;
-+		}
- 		list_add(&mdata->list, &rpriv->uplink_priv.bond->metadata_list);
- 
- 		netdev_dbg(lag_dev, "create rep_bond_metadata(%d)\n",
-@@ -103,14 +111,33 @@ int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
- 	}
- 
- 	s_entry = kzalloc(sizeof(*s_entry), GFP_KERNEL);
--	if (!s_entry)
--		return -ENOMEM;
-+	if (!s_entry) {
-+		err = -ENOMEM;
-+		goto entry_alloc_err;
-+	}
- 
- 	s_entry->netdev = netdev;
-+	priv = netdev_priv(netdev);
-+	rpriv = priv->ppriv;
++	/* Reset bond_metadata to zero first then reset all ingress/egress
++	 * acls and rx rules of unslave representor's vport
++	 */
+ 	mlx5_esw_acl_ingress_vport_bond_update(esw, rpriv->rep->vport, 0);
++	mlx5_esw_acl_egress_vport_unbond(esw, rpriv->rep->vport);
+ 	mlx5e_rep_bond_update(priv, false);
 +
-+	err = mlx5_esw_acl_ingress_vport_bond_update(esw, rpriv->rep->vport,
-+						     mdata->metadata_reg_c_0);
-+	if (err)
-+		goto ingress_err;
-+
- 	mdata->slaves++;
- 	list_add_tail(&s_entry->list, &mdata->slaves_list);
-+	netdev_dbg(netdev, "enslave rep vport(%d) lag_dev(%s) metadata(0x%x)\n",
-+		   rpriv->rep->vport, lag_dev->name, mdata->metadata_reg_c_0);
- 
- 	return 0;
-+
-+ingress_err:
-+	kfree(s_entry);
-+entry_alloc_err:
-+	if (!mdata->slaves)
-+		mlx5e_rep_bond_metadata_release(mdata);
-+	return err;
- }
- 
- /* This must be called under rtnl_lock */
-@@ -121,6 +148,7 @@ void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
- 	struct mlx5e_rep_bond_slave_entry *s_entry;
- 	struct mlx5e_rep_bond_metadata *mdata;
- 	struct mlx5e_rep_priv *rpriv;
-+	struct mlx5e_priv *priv;
- 
- 	ASSERT_RTNL();
- 
-@@ -133,7 +161,16 @@ void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
- 	if (!s_entry)
- 		return;
- 
-+	priv = netdev_priv(netdev);
-+	rpriv = priv->ppriv;
-+
-+	mlx5_esw_acl_ingress_vport_bond_update(esw, rpriv->rep->vport, 0);
-+	mlx5e_rep_bond_update(priv, false);
  	list_del(&s_entry->list);
-+
-+	netdev_dbg(netdev, "unslave rep vport(%d) lag_dev(%s) metadata(0x%x)\n",
-+		   rpriv->rep->vport, lag_dev->name, mdata->metadata_reg_c_0);
-+
- 	if (--mdata->slaves == 0)
- 		mlx5e_rep_bond_metadata_release(mdata);
- 	kfree(s_entry);
-@@ -163,6 +200,7 @@ static void mlx5e_rep_changelowerstate_event(struct net_device *netdev, void *pt
- 	struct net_device *dev;
- 	u16 acl_vport_num;
- 	u16 fwd_vport_num;
-+	int err;
+ 
+ 	netdev_dbg(netdev, "unslave rep vport(%d) lag_dev(%s) metadata(0x%x)\n",
+@@ -253,22 +258,23 @@ static void mlx5e_rep_changeupper_event(struct net_device *netdev, void *ptr)
+ {
+ 	struct netdev_notifier_changeupper_info *info = ptr;
+ 	struct mlx5e_rep_priv *rpriv;
++	struct net_device *lag_dev;
+ 	struct mlx5e_priv *priv;
  
  	if (!mlx5e_rep_is_lag_netdev(netdev))
  		return;
-@@ -187,11 +225,28 @@ static void mlx5e_rep_changelowerstate_event(struct net_device *netdev, void *pt
- 		rpriv = priv->ppriv;
- 		acl_vport_num = rpriv->rep->vport;
- 		if (acl_vport_num != fwd_vport_num) {
--			mlx5_esw_acl_egress_vport_bond(priv->mdev->priv.eswitch,
--						       fwd_vport_num,
--						       acl_vport_num);
-+			/* Only single rx_rule for unique bond_metadata should be
-+			 * present, delete it if it's saved as passive vport's
-+			 * rx_rule with destination as passive vport's root_ft
-+			 */
-+			mlx5e_rep_bond_update(priv, true);
-+			err = mlx5_esw_acl_egress_vport_bond(priv->mdev->priv.eswitch,
-+							     fwd_vport_num,
-+							     acl_vport_num);
-+			if (err)
-+				netdev_warn(dev,
-+					    "configure slave vport(%d) egress fwd, err(%d)",
-+					    acl_vport_num, err);
- 		}
- 	}
-+
-+	/* Insert new rx_rule for unique bond_metadata, save it as active vport's
-+	 * rx_rule with new destination as active vport's root_ft
-+	 */
-+	err = mlx5e_rep_bond_update(netdev_priv(netdev), false);
-+	if (err)
-+		netdev_warn(netdev, "configure active slave vport(%d) rx_rule, err(%d)",
-+			    fwd_vport_num, err);
- }
  
- static void mlx5e_rep_changeupper_event(struct net_device *netdev, void *ptr)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 12593d75e885..af89a4803c7d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -854,6 +854,24 @@ static int mlx5e_create_rep_vport_rx_rule(struct mlx5e_priv *priv)
- 	return 0;
- }
- 
-+static void rep_vport_rx_rule_destroy(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_rep_priv *rpriv = priv->ppriv;
-+
-+	if (!rpriv->vport_rx_rule)
-+		return;
-+
-+	mlx5_del_flow_rules(rpriv->vport_rx_rule);
-+	rpriv->vport_rx_rule = NULL;
-+}
-+
-+int mlx5e_rep_bond_update(struct mlx5e_priv *priv, bool cleanup)
-+{
-+	rep_vport_rx_rule_destroy(priv);
-+
-+	return cleanup ? 0 : mlx5e_create_rep_vport_rx_rule(priv);
-+}
-+
- static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
-@@ -918,9 +936,7 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- 
- static void mlx5e_cleanup_rep_rx(struct mlx5e_priv *priv)
- {
--	struct mlx5e_rep_priv *rpriv = priv->ppriv;
+-	/* Nothing to setup for new enslaved representor */
+-	if (info->linking)
+-		return;
 -
--	mlx5_del_flow_rules(rpriv->vport_rx_rule);
-+	rep_vport_rx_rule_destroy(priv);
- 	mlx5e_destroy_rep_root_ft(priv);
- 	mlx5e_destroy_ttc_table(priv, &priv->fs.ttc);
- 	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-index ed741b6e6af2..da9f1686d525 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -222,6 +222,7 @@ int mlx5e_rep_bond_enslave(struct mlx5_eswitch *esw, struct net_device *netdev,
- void mlx5e_rep_bond_unslave(struct mlx5_eswitch *esw,
- 			    const struct net_device *netdev,
- 			    const struct net_device *lag_dev);
-+int mlx5e_rep_bond_update(struct mlx5e_priv *priv, bool cleanup);
+ 	priv = netdev_priv(netdev);
+ 	rpriv = priv->ppriv;
+-	netdev_dbg(netdev, "Unslave, reset vport(%d) egress acl\n", rpriv->rep->vport);
++	lag_dev = info->upper_dev;
  
- bool mlx5e_is_uplink_rep(struct mlx5e_priv *priv);
- int mlx5e_add_sqs_fwd_rules(struct mlx5e_priv *priv);
+-	/* Reset all egress acl rules of unslave representor's vport */
+-	mlx5_esw_acl_egress_vport_unbond(priv->mdev->priv.eswitch,
+-					 rpriv->rep->vport);
++	netdev_dbg(netdev, "%sslave vport(%d) lag(%s)\n",
++		   info->linking ? "en" : "un", rpriv->rep->vport, lag_dev->name);
++
++	if (info->linking)
++		mlx5e_rep_bond_enslave(priv->mdev->priv.eswitch, netdev, lag_dev);
++	else
++		mlx5e_rep_bond_unslave(priv->mdev->priv.eswitch, netdev, lag_dev);
+ }
+ 
+ /* Bond device of representors and netdev events are used here in specific way
 -- 
 2.26.2
 
