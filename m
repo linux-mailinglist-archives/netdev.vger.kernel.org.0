@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A4AE1E62E2
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2741E62C6
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390773AbgE1Nwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:52:47 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5382 "EHLO huawei.com"
+        id S2390674AbgE1NvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:51:25 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5377 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390608AbgE1NvF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 09:51:05 -0400
+        id S2390648AbgE1NvS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 09:51:18 -0400
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 5F3486E316487660269;
+        by Forcepoint Email with ESMTP id 445F2A45B7694D45A70C;
         Thu, 28 May 2020 21:50:59 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 03/12] net: hns3: refactor hclge_config_tso()
-Date:   Thu, 28 May 2020 21:48:10 +0800
-Message-ID: <1590673699-63819-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 04/12] net: hns3: refactor hclge_query_bd_num_cmd_send()
+Date:   Thu, 28 May 2020 21:48:11 +0800
+Message-ID: <1590673699-63819-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590673699-63819-1-git-send-email-tanhuazhong@huawei.com>
 References: <1590673699-63819-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,51 +38,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since parameters 'tso_mss_min' and 'tso_mss_max' only indicate
-the minimum and maximum MSS, the hnae3_set_field() calls are
-meaningless, remove them and change the type of these two
-parameters to u16.
+In order to improve code maintainability and readability, rewrite
+the process of BDs' initialization in hclge_query_bd_num_cmd_send().
 
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 7d5c304..35e5cb8 100644
+index 35e5cb8..e9b0e1c 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1429,26 +1429,17 @@ static int hclge_configure(struct hclge_dev *hdev)
- 	return ret;
- }
+@@ -10723,16 +10723,19 @@ static int hclge_get_64_bit_regs(struct hclge_dev *hdev, u32 regs_num,
  
--static int hclge_config_tso(struct hclge_dev *hdev, unsigned int tso_mss_min,
--			    unsigned int tso_mss_max)
-+static int hclge_config_tso(struct hclge_dev *hdev, u16 tso_mss_min,
-+			    u16 tso_mss_max)
+ int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev, struct hclge_desc *desc)
  {
- 	struct hclge_cfg_tso_status_cmd *req;
- 	struct hclge_desc desc;
--	u16 tso_mss;
+-	/*prepare 4 commands to query DFX BD number*/
+-	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_DFX_BD_NUM, true);
+-	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+-	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_DFX_BD_NUM, true);
+-	desc[1].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+-	hclge_cmd_setup_basic_desc(&desc[2], HCLGE_OPC_DFX_BD_NUM, true);
+-	desc[2].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+-	hclge_cmd_setup_basic_desc(&desc[3], HCLGE_OPC_DFX_BD_NUM, true);
++	int i;
++
++	/* initialize command BD except the last one */
++	for (i = 0; i < HCLGE_GET_DFX_REG_TYPE_CNT - 1; i++) {
++		hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_DFX_BD_NUM,
++					   true);
++		desc[i].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
++	}
++
++	/* initialize the last command BD */
++	hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_DFX_BD_NUM, true);
  
- 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_TSO_GENERIC_CONFIG, false);
- 
- 	req = (struct hclge_cfg_tso_status_cmd *)desc.data;
--
--	tso_mss = 0;
--	hnae3_set_field(tso_mss, HCLGE_TSO_MSS_MIN_M,
--			HCLGE_TSO_MSS_MIN_S, tso_mss_min);
--	req->tso_mss_min = cpu_to_le16(tso_mss);
--
--	tso_mss = 0;
--	hnae3_set_field(tso_mss, HCLGE_TSO_MSS_MIN_M,
--			HCLGE_TSO_MSS_MIN_S, tso_mss_max);
--	req->tso_mss_max = cpu_to_le16(tso_mss);
-+	req->tso_mss_min = cpu_to_le16(tso_mss_min);
-+	req->tso_mss_max = cpu_to_le16(tso_mss_max);
- 
- 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+-	return hclge_cmd_send(&hdev->hw, desc, 4);
++	return hclge_cmd_send(&hdev->hw, desc, HCLGE_GET_DFX_REG_TYPE_CNT);
  }
+ 
+ static int hclge_get_dfx_reg_bd_num(struct hclge_dev *hdev,
 -- 
 2.7.4
 
