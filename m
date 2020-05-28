@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7051E5F0A
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 13:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F0B1E605B
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:12:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389233AbgE1L6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:58:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51318 "EHLO mail.kernel.org"
+        id S2388674AbgE1L4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 07:56:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389220AbgE1L6U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:58:20 -0400
+        id S2388652AbgE1L4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:16 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA21421841;
-        Thu, 28 May 2020 11:58:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 363892089D;
+        Thu, 28 May 2020 11:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590667100;
-        bh=Ixh+I5kU+DvxG8Qgl82jKqK0GAhQjdANO/gyeG14a0U=;
+        s=default; t=1590666975;
+        bh=EUyRpb3EQAr3VgeyKmxe4l/6m82tQ6ZFBOGR+llSCE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t0HLuaKlmzoFOz2V9beXi1HH7OU3x3panrJPqG4Waug0tCibH9vWigL6IDH1U1aFK
-         ncY3ClmtRkA0JWPOJQ97iY4y7FDaA2smboi5Omkb1puT1UI4kIJhcRPvUYQgjU8Q5M
-         wg62M8MelO0+cYvDcPOUPQ0Y4IcYtbpWVbawHCyQ=
+        b=k+QGi3dl2A0bZwOowjTimc1ZQRmi5TT3xEaXiUM3fUVghQ8S1UCPw4CY1x4ZkvlAW
+         GF3qoLSiW5r9St/F96ma6FivHRdfrcTheCI5Pv22ssJkR+7IRSXqhDSYH3rNfaftpZ
+         M55FKLAcVWEnnQQdG1noNIgcp8u766bMYb+BFLlY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qiushi Wu <wu000273@umn.edu>,
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 7/7] net/mlx4_core: fix a memory leak bug.
-Date:   Thu, 28 May 2020 07:58:11 -0400
-Message-Id: <20200528115811.1406810-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 13/47] net: phy: propagate an error back to the callers of phy_sfp_probe
+Date:   Thu, 28 May 2020 07:55:26 -0400
+Message-Id: <20200528115600.1405808-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200528115811.1406810-1-sashal@kernel.org>
-References: <20200528115811.1406810-1-sashal@kernel.org>
+In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
+References: <20200528115600.1405808-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,36 +43,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+From: Leon Romanovsky <leonro@mellanox.com>
 
-[ Upstream commit febfd9d3c7f74063e8e630b15413ca91b567f963 ]
+[ Upstream commit e3f2d5579c0b8ad9d1fb6a5813cee38a86386e05 ]
 
-In function mlx4_opreq_action(), pointer "mailbox" is not released,
-when mlx4_cmd_box() return and error, causing a memory leak bug.
-Fix this issue by going to "out" label, mlx4_free_cmd_mailbox() can
-free this pointer.
+The compilation warning below reveals that the errors returned from
+the sfp_bus_add_upstream() call are not propagated to the callers.
+Fix it by returning "ret".
 
-Fixes: fe6f700d6cbb ("net/mlx4_core: Respond to operation request by firmware")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+14:37:51 drivers/net/phy/phy_device.c: In function 'phy_sfp_probe':
+14:37:51 drivers/net/phy/phy_device.c:1236:6: warning: variable 'ret'
+   set but not used [-Wunused-but-set-variable]
+14:37:51  1236 |  int ret;
+14:37:51       |      ^~~
+
+Fixes: 298e54fa810e ("net: phy: add core phylib sfp support")
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/fw.c b/drivers/net/ethernet/mellanox/mlx4/fw.c
-index 5ac6e62f7dcc..0a4e9731d33b 100644
---- a/drivers/net/ethernet/mellanox/mlx4/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/fw.c
-@@ -2522,7 +2522,7 @@ void mlx4_opreq_action(struct work_struct *work)
- 		if (err) {
- 			mlx4_err(dev, "Failed to retrieve required operation: %d\n",
- 				 err);
--			return;
-+			goto out;
- 		}
- 		MLX4_GET(modifier, outbox, GET_OP_REQ_MODIFIER_OFFSET);
- 		MLX4_GET(token, outbox, GET_OP_REQ_TOKEN_OFFSET);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 28e3c5c0e3c3..faca0d84f5af 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1239,7 +1239,7 @@ int phy_sfp_probe(struct phy_device *phydev,
+ 		  const struct sfp_upstream_ops *ops)
+ {
+ 	struct sfp_bus *bus;
+-	int ret;
++	int ret = 0;
+ 
+ 	if (phydev->mdio.dev.fwnode) {
+ 		bus = sfp_bus_find_fwnode(phydev->mdio.dev.fwnode);
+@@ -1251,7 +1251,7 @@ int phy_sfp_probe(struct phy_device *phydev,
+ 		ret = sfp_bus_add_upstream(bus, phydev, ops);
+ 		sfp_bus_put(bus);
+ 	}
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL(phy_sfp_probe);
+ 
 -- 
 2.25.1
 
