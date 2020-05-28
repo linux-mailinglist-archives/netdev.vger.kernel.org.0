@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D66AD1E6036
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C84FA1E6042
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388768AbgE1L4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:56:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48674 "EHLO mail.kernel.org"
+        id S2388750AbgE1MJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:09:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388746AbgE1L4b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:31 -0400
+        id S2388752AbgE1L4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:32 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A21EF20DD4;
-        Thu, 28 May 2020 11:56:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5BC821534;
+        Thu, 28 May 2020 11:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590666990;
-        bh=2+TLxM3G8QfbMlQcupi4uaoiUaXyEpZ8gudy8Moj2iY=;
+        s=default; t=1590666991;
+        bh=+8PAQumLNMOPEAjYCtJadvmFe6vCUWYN4D2zbv03ne4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=11ZU5ZtYuHUSQlv7qcPbzAlohhYmV3xxq5IzQd+a73VdlEF6QPw3X4J6Y1PUeRn5z
-         kvzRFA3FeqMPXgndUFqvFqbuhFiGRq74526Sie2tfImLQz12ak+xgE5N6qYHFo90IX
-         ieRR8Tev2Klrve3eIo+Upeh4w4UHLQDb/Qc6BOIU=
+        b=aBN/bjSJ1cvIrUJnpBFGev57u3s9ooHV25MPDL4Yp0kan8NuafSGiu2dRIJtwSu65
+         w/jpQAYnV0ggAch2A1j9gK2K9U47m6n8QPH7BlJkoEGdGgn7wtAnCrg52tBgwp1AuA
+         jVTYJdE//J9HcOcSQrk9ReRQA/K/Lt7CAZtdXhQc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
+Cc:     Tang Bin <tangbin@cmss.chinamobile.com>,
+        Zhang Shengju <zhangshengju@cmss.chinamobile.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 26/47] net: ethernet: ti: fix some return value check of cpsw_ale_create()
-Date:   Thu, 28 May 2020 07:55:39 -0400
-Message-Id: <20200528115600.1405808-26-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-mips@linux-mips.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 27/47] net: sgi: ioc3-eth: Fix return value check in ioc3eth_probe()
+Date:   Thu, 28 May 2020 07:55:40 -0400
+Message-Id: <20200528115600.1405808-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
@@ -44,71 +45,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Tang Bin <tangbin@cmss.chinamobile.com>
 
-[ Upstream commit 3469660d1b15ccfdf7b33295c306b6298ca730aa ]
+[ Upstream commit a7654211d0ffeaa8eb0545ea00f8445242cbce05 ]
 
-cpsw_ale_create() can return both NULL and PTR_ERR(), but all of
-the caller only check NULL for error handling. This patch convert
-it to only return PTR_ERR() in all error cases, and the caller using
-IS_ERR() instead of NULL test.
+In the function devm_platform_ioremap_resource(), if get resource
+failed, the return value is ERR_PTR() not NULL. Thus it must be
+replaced by IS_ERR(), or else it may result in crashes if a critical
+error path is encountered.
 
-Fixes: 4b41d3436796 ("net: ethernet: ti: cpsw: allow untagged traffic on host port")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Fixes: 0ce5ebd24d25 ("mfd: ioc3: Add driver for SGI IOC3 chip")
+Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpsw_ale.c    | 2 +-
- drivers/net/ethernet/ti/cpsw_priv.c   | 4 ++--
- drivers/net/ethernet/ti/netcp_ethss.c | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/sgi/ioc3-eth.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-index ecdbde539eb7..4eb14b174c1a 100644
---- a/drivers/net/ethernet/ti/cpsw_ale.c
-+++ b/drivers/net/ethernet/ti/cpsw_ale.c
-@@ -917,7 +917,7 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
- 
- 	ale = devm_kzalloc(params->dev, sizeof(*ale), GFP_KERNEL);
- 	if (!ale)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	ale->p0_untag_vid_mask =
- 		devm_kmalloc_array(params->dev, BITS_TO_LONGS(VLAN_N_VID),
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 97a058ca60ac..d0b6c418a870 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -490,9 +490,9 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
- 	ale_params.ale_ports		= CPSW_ALE_PORTS_NUM;
- 
- 	cpsw->ale = cpsw_ale_create(&ale_params);
--	if (!cpsw->ale) {
-+	if (IS_ERR(cpsw->ale)) {
- 		dev_err(dev, "error initializing ale engine\n");
--		return -ENODEV;
-+		return PTR_ERR(cpsw->ale);
+diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
+index db6b2988e632..f4895777f5e3 100644
+--- a/drivers/net/ethernet/sgi/ioc3-eth.c
++++ b/drivers/net/ethernet/sgi/ioc3-eth.c
+@@ -865,14 +865,14 @@ static int ioc3eth_probe(struct platform_device *pdev)
+ 	ip = netdev_priv(dev);
+ 	ip->dma_dev = pdev->dev.parent;
+ 	ip->regs = devm_platform_ioremap_resource(pdev, 0);
+-	if (!ip->regs) {
+-		err = -ENOMEM;
++	if (IS_ERR(ip->regs)) {
++		err = PTR_ERR(ip->regs);
+ 		goto out_free;
  	}
  
- 	dma_params.dev		= dev;
-diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
-index fb36115e9c51..fdbae734acce 100644
---- a/drivers/net/ethernet/ti/netcp_ethss.c
-+++ b/drivers/net/ethernet/ti/netcp_ethss.c
-@@ -3704,9 +3704,9 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
- 		ale_params.nu_switch_ale = true;
+ 	ip->ssram = devm_platform_ioremap_resource(pdev, 1);
+-	if (!ip->ssram) {
+-		err = -ENOMEM;
++	if (IS_ERR(ip->ssram)) {
++		err = PTR_ERR(ip->ssram);
+ 		goto out_free;
  	}
- 	gbe_dev->ale = cpsw_ale_create(&ale_params);
--	if (!gbe_dev->ale) {
-+	if (IS_ERR(gbe_dev->ale)) {
- 		dev_err(gbe_dev->dev, "error initializing ale engine\n");
--		ret = -ENODEV;
-+		ret = PTR_ERR(gbe_dev->ale);
- 		goto free_sec_ports;
- 	} else {
- 		dev_dbg(gbe_dev->dev, "Created a gbe ale engine\n");
+ 
 -- 
 2.25.1
 
