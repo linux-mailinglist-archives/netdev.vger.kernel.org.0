@@ -2,88 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF2371E52E0
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0E71E5334
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbgE1BXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 21:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgE1BXm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 21:23:42 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1DCC05BD1E
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 18:23:42 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id 17so26068697ilj.3
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 18:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=tJ6UIC/aF0vZ31Q0kdiLPWPQVGsAWr9ApToCpUMojvg=;
-        b=esvsGECFXuxce+Lg+Ml377e8tPUW+xOKSy1ZSTzaEdNIAbdXYDt4k8GcCMWtXUxJd6
-         Bwa2RC8HKjy3P5C94O+a/LOBfbYTP9Rcm0Ww5XRUx+bceuQIv+lbS1GgPhFvW9bRZkl1
-         6IOeDLFo79T+pD+W03O7DhBIpU4izTyA3VxiJlbwEtiOMdicSrqzRIlJV/TRoXp6mPM3
-         0b8RAtcvVR3KU06MK8dgr7gkp8URqonJ2D9GGaTjI5GBMiLY8TM6oo//pxAVzmRuINR0
-         keapS+JfTNjjns7FrQowZu/9v9GbqLrJk8igf0CQWRVHWDQI2s6GIuWKWYoPsU2YAkiI
-         bqVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tJ6UIC/aF0vZ31Q0kdiLPWPQVGsAWr9ApToCpUMojvg=;
-        b=CiVn3/NEZG3VZnOoH+w5+B3QiB+gC2zazYLaQefMgAVXA+mRivp+lXtpP1rbPduvp1
-         Ls8DBTIU9vj6YkXJkpeawV5MrsBlSEVNGn5dpopKOyrqi5Xtbd4jpcSmpB7FDoZQphgp
-         e3CEq9kgqQKmIpb2tshJPZXA+4SgSmNN4vykFCSqs18176nJzkb0whQKi8+ia4kjgcUM
-         f5iW6bLfKb4qSh4aX3loFybflGeMkNlL8P6C2YKDVxdunnBisGfcrXACwzjzpKMvo2nI
-         XP8c3lfVogYwE4U9PdpM0VJJLqmH5w4OrzNr7aqQC6IhbVhptVDICjVKEFfSL0ycg02V
-         YBGg==
-X-Gm-Message-State: AOAM532vP/Ud2I99z3TdXcazcLOTzqYr0BWkIBpO5dBPcWQum/9X1G2u
-        QZpDofVCjy1ThZCRiTyp2gtcdA==
-X-Google-Smtp-Source: ABdhPJyZ6RZkFiel77aIrHCX4AUAyF8ZZbDUu9P4BIHWZ2kDJS1GNjcMLFIUUlfqU0ThGZBpNc8v9A==
-X-Received: by 2002:a92:8f18:: with SMTP id j24mr887216ild.135.1590629021656;
-        Wed, 27 May 2020 18:23:41 -0700 (PDT)
-Received: from mojatatu.com ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id f9sm2037762iow.47.2020.05.27.18.23.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 27 May 2020 18:23:40 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     dsahern@gmail.com
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH v2 iproute2-next 1/1] tc: report time an action was first used
-Date:   Wed, 27 May 2020 21:22:47 -0400
-Message-Id: <1590628967-4158-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        id S1725922AbgE1BkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 21:40:07 -0400
+Received: from mga14.intel.com ([192.55.52.115]:14389 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725747AbgE1BkG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 May 2020 21:40:06 -0400
+IronPort-SDR: a5LBYlLxM55Wt4/IlliqahSIGh9NJL7lRE+4IIXEx4s27xNlnTJG64ooHZVe/SNZ+Lb3Zrvdp4
+ uAumOt8SLQcQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 18:40:06 -0700
+IronPort-SDR: FQgpI/nboUb/M814O4iY+nqbW+g13psdDzvAv/UUkLaM060TDE0IVSJFZI4ZjjF+Qv16Z1BkMR
+ Kv6u4sihA7/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; 
+   d="scan'208";a="442758675"
+Received: from tgarris-mobl.amr.corp.intel.com ([10.255.72.202])
+  by orsmga005.jf.intel.com with ESMTP; 27 May 2020 18:40:05 -0700
+Message-ID: <d44a50f6a8af0162a5ff1a6d483adebf16d11256.camel@linux.intel.com>
+Subject: Re: [net-next v4 11/12] ASoC: SOF: Create client driver for IPC test
+From:   Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, pierre-louis.bossart@linux.intel.com,
+        Fred Oh <fred.oh@linux.intel.com>
+Date:   Wed, 27 May 2020 18:40:05 -0700
+In-Reply-To: <20200528001207.GR744@ziepe.ca>
+References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
+         <20200520070227.3392100-12-jeffrey.t.kirsher@intel.com>
+         <20200520125611.GI31189@ziepe.ca>
+         <b51ee1d61dbfbb8914d29338918ba49bff1b4b75.camel@linux.intel.com>
+         <20200528001207.GR744@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Have print_tm() dump firstuse value along with install, lastuse
-and expires.
+On Wed, 2020-05-27 at 21:12 -0300, Jason Gunthorpe wrote:
+> On Wed, May 27, 2020 at 01:18:35PM -0700, Ranjani Sridharan wrote:
+> > On Wed, 2020-05-20 at 09:56 -0300, Jason Gunthorpe wrote:
+> > > On Wed, May 20, 2020 at 12:02:26AM -0700, Jeff Kirsher wrote:
+> > > > +static const struct virtbus_dev_id sof_ipc_virtbus_id_table[]
+> > > > = {
+> > > > +	{"sof-ipc-test"},
+> > > > +	{},
+> > > > +};
+> > > > +
+> > > > +static struct sof_client_drv sof_ipc_test_client_drv = {
+> > > > +	.name = "sof-ipc-test-client-drv",
+> > > > +	.type = SOF_CLIENT_IPC,
+> > > > +	.virtbus_drv = {
+> > > > +		.driver = {
+> > > > +			.name = "sof-ipc-test-virtbus-drv",
+> > > > +		},
+> > > > +		.id_table = sof_ipc_virtbus_id_table,
+> > > > +		.probe = sof_ipc_test_probe,
+> > > > +		.remove = sof_ipc_test_remove,
+> > > > +		.shutdown = sof_ipc_test_shutdown,
+> > > > +	},
+> > > > +};
+> > > > +
+> > > > +module_sof_client_driver(sof_ipc_test_client_drv);
+> > > > +
+> > > > +MODULE_DESCRIPTION("SOF IPC Test Client Driver");
+> > > > +MODULE_LICENSE("GPL v2");
+> > > > +MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
+> > > > +MODULE_ALIAS("virtbus:sof-ipc-test");
+> > > 
+> > > Usually the MODULE_ALIAS happens automatically rhough the struct
+> > > virtbus_dev_id - is something missing in the enabling patches?
+> > 
+> > Hi Jason,
+> > 
+> > Without the MODULE_ALIAS,  the driver never probes when the virtual
+> > bus
+> > device is registered. The MODULE_ALIAS is not different from the
+> > ones
+> > we typically have in the platform drivers. Could you please give me
+> > some pointers on what you think might be missing?
+> 
+> Look at how the stuff in include/linux/mod_devicetable.h works and do
+> the same for virtbus
+It looks like include/linux/mod_devicetable.h has everything needed for
+virtbus already.
+> 
+> Looks like you push a MODALIAS= uevent when creating the device and
+> the generic machinery does the rest based on the matching table, once
+> mod_devicetable.h and related is updated. But it has been a long time
+> since I looked at this..
 
-v2: Resubmit after 'master' merged into next
+This is also done with uevent callback in the bus_type definition for
+the virtual_bus.
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- tc/tc_util.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Is your expectation that with the above changes, we should not be
+needing the MODULE_ALIAS() in the driver?
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index fd5fcb242b64..b7ff911b63ed 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -758,6 +758,10 @@ void print_tm(FILE *f, const struct tcf_t *tm)
- 		print_uint(PRINT_ANY, "last_used", " used %u sec",
- 			   tm->lastuse / hz);
-
-+	if (tm->firstuse != 0)
-+		print_uint(PRINT_ANY, "first_used", " firstused %u sec",
-+			   tm->firstuse / hz);
-+
- 	if (tm->expires != 0)
- 		print_uint(PRINT_ANY, "expires", " expires %u sec",
- 			   tm->expires / hz);
---
-2.7.4
+Thanks,
+Ranjani
 
