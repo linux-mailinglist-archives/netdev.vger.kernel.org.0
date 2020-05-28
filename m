@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245711E5F87
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C46051E5FA6
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388574AbgE1L52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:57:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49818 "EHLO mail.kernel.org"
+        id S2389568AbgE1MDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:03:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388847AbgE1L5W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:57:22 -0400
+        id S2389001AbgE1L5X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:57:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39C7521548;
-        Thu, 28 May 2020 11:57:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 528A52168B;
+        Thu, 28 May 2020 11:57:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590667041;
-        bh=bP1ZKI71IizBC9SAWIYUwECqsXwwyoX9crqlrmQ7N4o=;
+        s=default; t=1590667043;
+        bh=yU3uM29KX3qFLteU6zpD378KlUSl1Mc08N73Woceycc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/QipGCmXasBMkkDQQjW/jW+xUqALxaKFDL3ERIC8mPeHAlEPQzl6O8tk5nUl/3l4
-         uFjnrTO77qvFJAsFuD15qqcMOuleZCGAJ/OqljpkXPG8o0Nf/3Z4nWacxf+rGSZVvL
-         rvIXH4lvxq5MIMVdz7jwewOj07mAeqWiRYtFwg5s=
+        b=Xg3+sXN72GUsKyca5gg30c5MFyFIr6gF6IQceC/9fQih4XPh3f/W6/nVxQnsPz6z0
+         GycQuqnNQJDfOT/UUGl3BC82zaNJRdAGro+QICRZR0LdGKlRLBcuo+rpVPm/Mw74Pq
+         BxNJbPBsheHhxCo7OoQ3nsSzplZgoSLR+9+8KUnw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+Cc:     Qiushi Wu <wu000273@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 24/26] net: ethernet: ti: cpsw: fix ASSERT_RTNL() warning during suspend
-Date:   Thu, 28 May 2020 07:56:52 -0400
-Message-Id: <20200528115654.1406165-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 25/26] net/mlx4_core: fix a memory leak bug.
+Date:   Thu, 28 May 2020 07:56:53 -0400
+Message-Id: <20200528115654.1406165-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115654.1406165-1-sashal@kernel.org>
 References: <20200528115654.1406165-1-sashal@kernel.org>
@@ -43,50 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+From: Qiushi Wu <wu000273@umn.edu>
 
-[ Upstream commit 4c64b83d03f4aafcdf710caad994cbc855802e74 ]
+[ Upstream commit febfd9d3c7f74063e8e630b15413ca91b567f963 ]
 
-vlan_for_each() are required to be called with rtnl_lock taken, otherwise
-ASSERT_RTNL() warning will be triggered - which happens now during System
-resume from suspend:
-  cpsw_suspend()
-  |- cpsw_ndo_stop()
-    |- __hw_addr_ref_unsync_dev()
-      |- cpsw_purge_all_mc()
-         |- vlan_for_each()
-            |- ASSERT_RTNL();
+In function mlx4_opreq_action(), pointer "mailbox" is not released,
+when mlx4_cmd_box() return and error, causing a memory leak bug.
+Fix this issue by going to "out" label, mlx4_free_cmd_mailbox() can
+free this pointer.
 
-Hence, fix it by surrounding cpsw_ndo_stop() by rtnl_lock/unlock() calls.
-
-Fixes: 15180eca569b ("net: ethernet: ti: cpsw: fix vlan mcast")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Fixes: fe6f700d6cbb ("net/mlx4_core: Respond to operation request by firmware")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpsw.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlx4/fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index d7a953c647b4..39df8c8feb6c 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -2999,11 +2999,15 @@ static int cpsw_suspend(struct device *dev)
- 	struct cpsw_common *cpsw = dev_get_drvdata(dev);
- 	int i;
- 
-+	rtnl_lock();
-+
- 	for (i = 0; i < cpsw->data.slaves; i++)
- 		if (cpsw->slaves[i].ndev)
- 			if (netif_running(cpsw->slaves[i].ndev))
- 				cpsw_ndo_stop(cpsw->slaves[i].ndev);
- 
-+	rtnl_unlock();
-+
- 	/* Select sleep pin state */
- 	pinctrl_pm_select_sleep_state(dev);
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/fw.c b/drivers/net/ethernet/mellanox/mlx4/fw.c
+index 6e501af0e532..f6ff9620a137 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx4/fw.c
+@@ -2734,7 +2734,7 @@ void mlx4_opreq_action(struct work_struct *work)
+ 		if (err) {
+ 			mlx4_err(dev, "Failed to retrieve required operation: %d\n",
+ 				 err);
+-			return;
++			goto out;
+ 		}
+ 		MLX4_GET(modifier, outbox, GET_OP_REQ_MODIFIER_OFFSET);
+ 		MLX4_GET(token, outbox, GET_OP_REQ_TOKEN_OFFSET);
 -- 
 2.25.1
 
