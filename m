@@ -2,90 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F30821E6235
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FFC31E623C
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:29:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390396AbgE1N2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        id S2390325AbgE1N3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390384AbgE1N15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:27:57 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7D3C05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:27:55 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id n5so3194428wmd.0
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:27:55 -0700 (PDT)
+        with ESMTP id S2390305AbgE1N31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:29:27 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB8AC08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:29:13 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id nr22so15707906ejb.6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9cN8WC7B8xH4SW3c0YEgj3hG2uP+gsYVa8Phs/daLJo=;
-        b=XhU9Ag1ZLhT6nRnPcN/QI44p0PvvTskUnXmbN7WZRjd0YK63lIUd2JzL7Ymo5MnHpF
-         CKuiJgYA8GajqzmjbrwTZBPpRm1rdmf9aUTcTr1Ptu7f5DEizfgwzQrBN1yqo1ZynKXM
-         gsHFRlzRGEEKjj4pUGIUil9HKgvMyyc+xTk3o3rxmRZ/WDY2zuuNKPNoGZvDvhFReQPU
-         JmRi9ZP6d6BgpPtIXPvFqOgY2ngEhp0ozEYddVmRNK/q3inC/U8ubvRcTlBaypFAdyte
-         9nV1SyMkXnOZOBNr6wmwBL5sDwijzaWBPwXlRsa4Qmfc7ohCOkuaeKf+EOcAtG2Tvg/2
-         dM+w==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=ZcviNXi4IlM0DZCt4umF+AWkyhGMOdEPtpbXagFQ1ks=;
+        b=wfX/uw6M/g6b/niXu+B/K9cdkggd/kahZZpLzjQqD19btylko4/zkN/qfnex0hiv+7
+         o7VjHm+qS/2YHYvk79vKyaZSG/END5oZVQ5Ieh3Nt/FipKd/A3txxe389uOoMvFYTLgU
+         WODAhzT5qARPR2/h7jhUqyDF/Wya2wIjGOM8k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9cN8WC7B8xH4SW3c0YEgj3hG2uP+gsYVa8Phs/daLJo=;
-        b=BGoun6UErJ/xdqOEIY88v5wBca7rJ12+NIirtuzkqkr8OUTpaZKbePQ9mpc7YH6hTI
-         3wGxbP8RSJOftBAqPS5ojP3CzO+TEa4XtnmIDa/BwoLhLwBSATQ9lhh67l5Yz84U2UN5
-         1jeNAOmaoppQi5/K2o/+tNUnspi7h6opjCBRAERWaDSR8R/y/ntXGjWPwUDISp00Sa1W
-         KhGgq9n23rZF7ndjZRZx++cCszstX+k2qy5UHhNe4P0QIgQ59riy8qv9TR0DQWrzpNcf
-         DAgt63LLbj86iOkLNz5DVGAE/35d+XLliyQ/0LOb+Jlzg+HmZ/eaolPcbUkXln3S7Rrb
-         0ExA==
-X-Gm-Message-State: AOAM533mPxuD0w+sl/9oubPwv6nNABr5ZH5n5/knJAKr6/qUr3RiKnV+
-        FuQp/An5idEuW7FUlsYAbmUWlA==
-X-Google-Smtp-Source: ABdhPJwGxbatIHlP4QiBp7yS7pM9Cy7ihGVx/tvTL9NgArY/12jr4DGk9+/NG/bPpKAD3mawZpovqQ==
-X-Received: by 2002:a1c:a943:: with SMTP id s64mr3345147wme.103.1590672474339;
-        Thu, 28 May 2020 06:27:54 -0700 (PDT)
-Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id q15sm6175408wrf.87.2020.05.28.06.27.53
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=ZcviNXi4IlM0DZCt4umF+AWkyhGMOdEPtpbXagFQ1ks=;
+        b=StyiSvA0QTmJARzwIcVVrhTtwwVltxa6rJBvbiCnqo15GP/qipkDXjbEy0LMOm5MVx
+         Cp29lr3RKu2ZCC7oUm6HXS3xt7BPzbZubGgsaG0VbQO0hQosC0JIZjrGVipAswLDUwoz
+         N9l1PLvRZcRUtOuuwVnYMV2ItX2816alLpU0QIUpdpDTGT3WaZggWQYEGUviAM4lpBeN
+         XoNqa8H9tIiD4gQJgREOaXhQw8UkjMAlrQHYP+2BX0AsdGgoQsvLzW0MzvW4tgKaedfL
+         w8AS0hqWDFu8W7BMVApZX8GmvqwZROU2YWnWX90sldDz/mYXK0IU/Qtj6Y2l98otTuck
+         vPKQ==
+X-Gm-Message-State: AOAM53126o1BJDiu6KvvrEIOdem24fPOR8jaYe42cT6vvksMS4T3Fzym
+        ZZTKop0AuPIN7Z55GewezsK59Q==
+X-Google-Smtp-Source: ABdhPJzE44qW3v/D6QeYBp7AlHo9HNoMaTPEFE94foxLVZYRjkxnkX85O4aZVDydAxdf9mgI4DCl6w==
+X-Received: by 2002:a17:906:8514:: with SMTP id i20mr2858376ejx.298.1590672552173;
+        Thu, 28 May 2020 06:29:12 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id o8sm1336408ejj.121.2020.05.28.06.29.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 06:27:53 -0700 (PDT)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH net-next] dt-bindings: net: rename the bindings document for MediaTek STAR MAC
-Date:   Thu, 28 May 2020 15:27:43 +0200
-Message-Id: <20200528132743.9221-1-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.26.1
+        Thu, 28 May 2020 06:29:11 -0700 (PDT)
+References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-9-jakub@cloudflare.com> <CAEf4BzZEDArh8kL-mredwYb=GAOXEue=rGAjOaM0qGjj5RG6RA@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next 8/8] selftests/bpf: Add tests for attaching bpf_link to netns
+In-reply-to: <CAEf4BzZEDArh8kL-mredwYb=GAOXEue=rGAjOaM0qGjj5RG6RA@mail.gmail.com>
+Date:   Thu, 28 May 2020 15:29:10 +0200
+Message-ID: <87lflc2no9.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On Thu, May 28, 2020 at 08:08 AM CEST, Andrii Nakryiko wrote:
+> On Wed, May 27, 2020 at 12:16 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Extend the existing test case for flow dissector attaching to cover:
+>>
+>>  - link creation,
+>>  - link updates,
+>>  - link info querying,
+>>  - mixing links with direct prog attachment.
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>
+> You are not using bpf_program__attach_netns() at all. Would be nice to
+> actually use higher-level API here...
 
-The driver itself was renamed before getting merged into mainline, but
-the binding document kept the old name. This makes both names consistent.
+That's true. I didn't exercise the high-level API. I can cover that.
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
----
- .../net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml}        | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml} (100%)
+>
+> Also... what's up with people using CHECK_FAIL + perror instead of
+> CHECK? Is CHECK being avoided for some reason or people are just not
+> aware of it (which is strange, because CHECK was there before
+> CHECK_FAIL)?
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-similarity index 100%
-rename from Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml
-rename to Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
--- 
-2.26.1
+I can only speak for myself. Funnily enough I think I've switched from
+CHECK to CHECK_FAIL when I touched on BPF flow dissector last time [0].
 
+CHECK needs and "external" duration variable to be in scope, and so it
+was suggested to me that if I'm not measuring run-time with
+bpf_prog_test_run, CHECK_FAIL might be a better choice.
+
+CHECK is also perhaps too verbose because it emits a log message on
+success (to report duration, I assume).
+
+You have a better overview of all the tests than me, but if I had the
+cycles I'd see if renaming CHECK to something more specific, for those
+test that actually track prog run time, can work.
+
+-jkbs
+
+
+[0] https://lore.kernel.org/bpf/87imov1y5m.fsf@cloudflare.com/
+
+
+
+>
+>>  .../bpf/prog_tests/flow_dissector_reattach.c  | 500 +++++++++++++++++-
+>>  1 file changed, 471 insertions(+), 29 deletions(-)
+>>
+>
+> [...]
