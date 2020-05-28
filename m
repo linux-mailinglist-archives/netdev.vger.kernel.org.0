@@ -2,197 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1AAC1E7044
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8AD31E7045
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:22:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437517AbgE1XVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 19:21:55 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49276 "EHLO mx2.suse.de"
+        id S2437521AbgE1XV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:21:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49300 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437500AbgE1XVe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 19:21:34 -0400
+        id S2437506AbgE1XVj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 19:21:39 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 9EA8BAFEC;
-        Thu, 28 May 2020 23:21:32 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A64D3AFED;
+        Thu, 28 May 2020 23:21:37 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id BF999E32D2; Fri, 29 May 2020 01:21:32 +0200 (CEST)
-Message-Id: <57e02c05c2ccde2113247bf1dccfa82bbb2e3081.1590707335.git.mkubecek@suse.cz>
+        id C6732E32D2; Fri, 29 May 2020 01:21:37 +0200 (CEST)
+Message-Id: <6c672d7a5d3b598cb8c8de5b624db87ab67a0176.1590707335.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1590707335.git.mkubecek@suse.cz>
 References: <cover.1590707335.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 05/21] netlink: add more ethtool netlink message
- format descriptions
+Subject: [PATCH ethtool 06/21] selftest: omit test-features if netlink is
+ enabled
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Fri, 29 May 2020 01:21:32 +0200 (CEST)
+Date:   Fri, 29 May 2020 01:21:37 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add message format descriptions for pretty printing of messages related to
-netdev features, private flags, ring sizes, channel counts, coalescing,
-pause and EEE parameters and timestamping information.
+The test-features selftest is checking data structures passed to ioctl()
+syscall. Therefore a complete rework of the test framework will be needed
+to be able to perform an equivalent selftest for netlink interface. Until
+such framework is implemented, disable test-features when building ethtool
+with netlink support.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- netlink/desc-ethtool.c | 127 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 127 insertions(+)
+ Makefile.am | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index 423479dfc6a9..9d7493307397 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -106,6 +106,102 @@ static const struct pretty_nla_desc __wol_desc[] = {
- 	NLATTR_DESC_BINARY(ETHTOOL_A_WOL_SOPASS),
- };
+diff --git a/Makefile.am b/Makefile.am
+index 0f8465f7ada9..b3ffae52f1e9 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -40,12 +40,16 @@ AM_CPPFLAGS += @MNL_CFLAGS@
+ LDADD += @MNL_LIBS@
+ endif
  
-+static const struct pretty_nla_desc __features_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_FEATURES_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_FEATURES_HEADER, header),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_FEATURES_HW, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_FEATURES_WANTED, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_FEATURES_ACTIVE, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_FEATURES_NOCHANGE, bitset),
-+};
-+
-+static const struct pretty_nla_desc __privflags_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_PRIVFLAGS_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_PRIVFLAGS_HEADER, header),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_PRIVFLAGS_FLAGS, bitset),
-+};
-+
-+static const struct pretty_nla_desc __rings_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_RINGS_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_RINGS_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX_MINI_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX_JUMBO_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_TX_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX_MINI),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_RX_JUMBO),
-+	NLATTR_DESC_U32(ETHTOOL_A_RINGS_TX),
-+};
-+
-+static const struct pretty_nla_desc __channels_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_CHANNELS_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_CHANNELS_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_RX_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_TX_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_OTHER_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_COMBINED_MAX),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_RX_COUNT),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_TX_COUNT),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_OTHER_COUNT),
-+	NLATTR_DESC_U32(ETHTOOL_A_CHANNELS_COMBINED_COUNT),
-+};
-+
-+static const struct pretty_nla_desc __coalesce_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_COALESCE_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_COALESCE_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_USECS),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_MAX_FRAMES),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_USECS_IRQ),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_MAX_FRAMES_IRQ),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_USECS),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_MAX_FRAMES),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_USECS_IRQ),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_MAX_FRAMES_IRQ),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_STATS_BLOCK_USECS),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_PKT_RATE_LOW),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_USECS_LOW),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_MAX_FRAMES_LOW),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_USECS_LOW),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_MAX_FRAMES_LOW),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_PKT_RATE_HIGH),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_USECS_HIGH),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RX_MAX_FRAMES_HIGH),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_USECS_HIGH),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH),
-+	NLATTR_DESC_U32(ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL),
-+};
-+
-+static const struct pretty_nla_desc __pause_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_PAUSE_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_PAUSE_HEADER, header),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_PAUSE_AUTONEG),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_PAUSE_RX),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_PAUSE_TX),
-+};
-+
-+static const struct pretty_nla_desc __eee_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_EEE_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_EEE_HEADER, header),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_EEE_MODES_OURS, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_EEE_MODES_PEER, bitset),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_EEE_ACTIVE),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_EEE_ENABLED),
-+	NLATTR_DESC_BOOL(ETHTOOL_A_EEE_TX_LPI_ENABLED),
-+	NLATTR_DESC_U32(ETHTOOL_A_EEE_TX_LPI_TIMER),
-+};
-+
-+static const struct pretty_nla_desc __tsinfo_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_TSINFO_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_TSINFO_HEADER, header),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_TSINFO_TIMESTAMPING, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_TSINFO_TX_TYPES, bitset),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_TSINFO_RX_FILTERS, bitset),
-+	NLATTR_DESC_U32(ETHTOOL_A_TSINFO_PHC_INDEX),
-+};
-+
- const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
- 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-@@ -118,6 +214,21 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_DEBUG_SET, debug),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_GET, wol),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_SET, wol),
-+	NLMSG_DESC(ETHTOOL_MSG_FEATURES_GET, features),
-+	NLMSG_DESC(ETHTOOL_MSG_FEATURES_SET, features),
-+	NLMSG_DESC(ETHTOOL_MSG_PRIVFLAGS_GET, privflags),
-+	NLMSG_DESC(ETHTOOL_MSG_PRIVFLAGS_SET, privflags),
-+	NLMSG_DESC(ETHTOOL_MSG_RINGS_GET, rings),
-+	NLMSG_DESC(ETHTOOL_MSG_RINGS_SET, rings),
-+	NLMSG_DESC(ETHTOOL_MSG_CHANNELS_GET, channels),
-+	NLMSG_DESC(ETHTOOL_MSG_CHANNELS_SET, channels),
-+	NLMSG_DESC(ETHTOOL_MSG_COALESCE_GET, coalesce),
-+	NLMSG_DESC(ETHTOOL_MSG_COALESCE_SET, coalesce),
-+	NLMSG_DESC(ETHTOOL_MSG_PAUSE_GET, pause),
-+	NLMSG_DESC(ETHTOOL_MSG_PAUSE_SET, pause),
-+	NLMSG_DESC(ETHTOOL_MSG_EEE_GET, eee),
-+	NLMSG_DESC(ETHTOOL_MSG_EEE_SET, eee),
-+	NLMSG_DESC(ETHTOOL_MSG_TSINFO_GET, tsinfo),
- };
+-TESTS = test-cmdline test-features
+-check_PROGRAMS = test-cmdline test-features
++TESTS = test-cmdline
++check_PROGRAMS = test-cmdline
+ test_cmdline_SOURCES = test-cmdline.c test-common.c $(ethtool_SOURCES) 
+ test_cmdline_CFLAGS = -DTEST_ETHTOOL
++if !ETHTOOL_ENABLE_NETLINK
++TESTS += test-features
++check_PROGRAMS += test-features
+ test_features_SOURCES = test-features.c test-common.c $(ethtool_SOURCES) 
+ test_features_CFLAGS = -DTEST_ETHTOOL
++endif
  
- const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-@@ -134,6 +245,22 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_DEBUG_NTF, debug),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_GET_REPLY, wol),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_NTF, wol),
-+	NLMSG_DESC(ETHTOOL_MSG_FEATURES_GET_REPLY, features),
-+	NLMSG_DESC(ETHTOOL_MSG_FEATURES_SET_REPLY, features),
-+	NLMSG_DESC(ETHTOOL_MSG_FEATURES_NTF, features),
-+	NLMSG_DESC(ETHTOOL_MSG_PRIVFLAGS_GET_REPLY, privflags),
-+	NLMSG_DESC(ETHTOOL_MSG_PRIVFLAGS_NTF, privflags),
-+	NLMSG_DESC(ETHTOOL_MSG_RINGS_GET_REPLY, rings),
-+	NLMSG_DESC(ETHTOOL_MSG_RINGS_NTF, rings),
-+	NLMSG_DESC(ETHTOOL_MSG_CHANNELS_GET_REPLY, channels),
-+	NLMSG_DESC(ETHTOOL_MSG_CHANNELS_NTF, channels),
-+	NLMSG_DESC(ETHTOOL_MSG_COALESCE_GET_REPLY, coalesce),
-+	NLMSG_DESC(ETHTOOL_MSG_COALESCE_NTF, coalesce),
-+	NLMSG_DESC(ETHTOOL_MSG_PAUSE_GET_REPLY, pause),
-+	NLMSG_DESC(ETHTOOL_MSG_PAUSE_NTF, pause),
-+	NLMSG_DESC(ETHTOOL_MSG_EEE_GET_REPLY, eee),
-+	NLMSG_DESC(ETHTOOL_MSG_EEE_NTF, eee),
-+	NLMSG_DESC(ETHTOOL_MSG_TSINFO_GET_REPLY, tsinfo),
- };
- 
- const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
+ dist-hook:
+ 	cp $(top_srcdir)/ethtool.spec $(distdir)
 -- 
 2.26.2
 
