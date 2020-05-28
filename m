@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F387F1E614D
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A637F1E615E
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389967AbgE1MsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:48:19 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:59638 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389852AbgE1MsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 08:48:17 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SCbfKr144094;
-        Thu, 28 May 2020 12:48:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=4MhLm3IwlAX0+PMwL8iXWxVwK1DxULSymdapXAO1u2U=;
- b=geURq/j8aOmtLLp/5ebYTnaPSflS7Q4ZZQP10agwdrg+sGBAFkmBidSZpVegN9bVDAnC
- e+binqmqMEDxkU0XZ0jsYgzfgIgFsb+F96JadoXONk8ma5oLw3lLUrQhihLH5Ko+sknD
- d0K73kLVHXyrUYsCInSaTgQnjBYxIwr4N2BVrCdRV3S7b+z90OEk0JVT63y9GrDVgWW0
- QnGLjhd/ffgPL3H3L+D8haetQ2JUU9bHnU84hpY3B0QuaeDVy93tCTSmimwRc9/cmjYq
- ITjH3ysWzIy0E0dhIKIa3M74BA3aZO5oDUcD6knFK3qQiIDvO2PpoLILxQZai6xyKwG9 bw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 316u8r4s80-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 28 May 2020 12:48:12 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SCbcGG191796;
-        Thu, 28 May 2020 12:48:12 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 31a9kse0dj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 May 2020 12:48:12 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04SCmBm9021233;
-        Thu, 28 May 2020 12:48:11 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 28 May 2020 05:48:10 -0700
-Date:   Thu, 28 May 2020 15:48:03 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>, Eli Cohen <eli@mellanox.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5e: Uninitialized variable in
- mlx5e_attach_decap()
-Message-ID: <20200528124803.GC1219412@mwanda>
+        id S2389910AbgE1Mtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:49:45 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5371 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2389878AbgE1Mtk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 08:49:40 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id A12B5E49FDD03BFFA4BD;
+        Thu, 28 May 2020 20:49:28 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 28 May 2020
+ 20:49:22 +0800
+Subject: Re: [PATCH net-next 00/11] net: hns3: misc updates for -next
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>
+References: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <927a292f-baef-2627-0dd9-5d0f7ad47417@huawei.com>
+Date:   Thu, 28 May 2020 20:49:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9634 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 adultscore=0
- mlxlogscore=999 malwarescore=0 spamscore=0 bulkscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005280087
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9634 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
- priorityscore=1501 spamscore=0 cotscore=-2147483648 suspectscore=0
- phishscore=0 clxscore=1011 mlxlogscore=999 bulkscore=0 adultscore=0
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005280087
+In-Reply-To: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "ret" variable isn't initialized on the success path.
+Sorry, please ignore this patchset, will resend it later.
 
-There is an uninitentional behavior in current releases of GCC where
-instead of warning about the uninitialized variable, it instead
-initializes it to zero.  So that means that this bug likely doesn't
-affect testing.
-
-Fixes: 14e6b038afa0 ("net/mlx5e: Add support for hw decapsulation of MPLS over UDP")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 571da14809fec..ae53bf5994215 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3637,7 +3637,7 @@ static int mlx5e_attach_decap(struct mlx5e_priv *priv,
- 	struct mlx5e_decap_entry *d;
- 	struct mlx5e_decap_key key;
- 	uintptr_t hash_key;
--	int err;
-+	int err = 0;
- 
- 	parse_attr = attr->parse_attr;
- 	if (sizeof(parse_attr->eth) > MLX5_CAP_ESW(priv->mdev, max_encap_header_size)) {
--- 
-2.26.2
+On 2020/5/28 20:45, Huazhong Tan wrote:
+> This patchset includes some updates for the HNS3 ethernet driver.
+> 
+> #1 adds a missing mutex destroy.
+> #2&3 refactor two function, make them more readable and maintainable.
+> #4&5 fix unsuitable type of gro enable field both for PF & VF.
+> #6-#10 removes some unused fields, macro and redundant definitions.
+> #11 adds more debug info for parsing speed fails.
+> 
+> Huazhong Tan (11):
+>    net: hns3: add a missing mutex destroy in hclge_init_ad_dev()
+>    net: hns3: refactor hclge_config_tso()
+>    net: hns3: refactor hclge_query_bd_num_cmd_send()
+>    net: hns3: modify an incorrect type in struct hclge_cfg_gro_status_cmd
+>    net: hns3: modify an incorrect type in struct
+>      hclgevf_cfg_gro_status_cmd
+>    net: hns3: remove some unused fields in struct hns3_nic_priv
+>    net: hns3; remove unused HNAE3_RESTORE_CLIENT in enum
+>      hnae3_reset_notify_type
+>    net: hns3: remove unused struct hnae3_unic_private_info
+>    net: hns3: remove two duplicated register macros in hclgevf_main.h
+>    net: hns3: remove some unused fields in struct hclge_dev
+>    net: hns3: print out speed info when parsing speed fails
+> 
+>   drivers/net/ethernet/hisilicon/hns3/hnae3.h        | 12 ------
+>   drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 22 -----------
+>   .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  4 +-
+>   .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 44 ++++++++++------------
+>   .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  6 ---
+>   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  4 +-
+>   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  8 ++--
+>   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  4 +-
+>   8 files changed, 29 insertions(+), 75 deletions(-)
+> 
 
