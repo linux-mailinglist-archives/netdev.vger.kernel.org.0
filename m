@@ -2,184 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8545D1E7056
+	by mail.lfdr.de (Postfix) with ESMTP id F2E621E7057
 	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437587AbgE1XWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 19:22:55 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49900 "EHLO mx2.suse.de"
+        id S2437591AbgE1XW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:22:58 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49920 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437583AbgE1XWu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 19:22:50 -0400
+        id S2437584AbgE1XWz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 19:22:55 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 3F871AFFB;
-        Thu, 28 May 2020 23:22:48 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 1AA41AFEC;
+        Thu, 28 May 2020 23:22:53 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 341C2E32D2; Fri, 29 May 2020 01:22:48 +0200 (CEST)
-Message-Id: <f445a833de612321811326b87e1edf0b0075e71d.1590707335.git.mkubecek@suse.cz>
+        id 3AF5FE32D2; Fri, 29 May 2020 01:22:53 +0200 (CEST)
+Message-Id: <5137404a0498eba7e64038a766cd8a250b2a5bc6.1590707335.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1590707335.git.mkubecek@suse.cz>
 References: <cover.1590707335.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 20/21] netlink: add netlink handler for seee
- (--set-eee)
+Subject: [PATCH ethtool 21/21] netlink: add netlink handler for tsinfo (-T)
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Fri, 29 May 2020 01:22:48 +0200 (CEST)
+Date:   Fri, 29 May 2020 01:22:53 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement "ethtool --set-eee <dev> ..." subcommand to set network device
-EEE settings using ETHTOOL_MSG_EEE_SET netlink message. These are
-traditionally set using ETHTOOL_SEEE ioctl request.
+Implement "ethtool -T <dev>" subcommand using ETHTOOL_MSG_TSINFO_GET
+netlink message. This retrieves and displays device timestamping
+information, traditionally provided by ETHTOOL_GET_TS_INFO ioctl request.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- ethtool.c        |  1 +
- netlink/eee.c    | 83 +++++++++++++++++++++++++++++++++++++++++++++++-
- netlink/extapi.h |  2 ++
- 3 files changed, 85 insertions(+), 1 deletion(-)
+ Makefile.am      |   2 +-
+ ethtool.c        |   1 +
+ netlink/extapi.h |   2 +
+ netlink/tsinfo.c | 124 +++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 128 insertions(+), 1 deletion(-)
+ create mode 100644 netlink/tsinfo.c
 
+diff --git a/Makefile.am b/Makefile.am
+index 95babcdc8eae..63c3fb3ebf90 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -33,7 +33,7 @@ ethtool_SOURCES += \
+ 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
+ 		  netlink/features.c netlink/privflags.c netlink/rings.c \
+ 		  netlink/channels.c netlink/coalesce.c netlink/pause.c \
+-		  netlink/eee.c \
++		  netlink/eee.c netlink/tsinfo.c \
+ 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
+ 		  netlink/desc-rtnl.c \
+ 		  uapi/linux/ethtool_netlink.h \
 diff --git a/ethtool.c b/ethtool.c
-index f4aaab58aa5b..3b81345d7120 100644
+index 3b81345d7120..3646718d5c2a 100644
 --- a/ethtool.c
 +++ b/ethtool.c
-@@ -5413,6 +5413,7 @@ static const struct option args[] = {
+@@ -5324,6 +5324,7 @@ static const struct option args[] = {
  	{
- 		.opts	= "--set-eee",
- 		.func	= do_seee,
-+		.nlfunc	= nl_seee,
- 		.help	= "Set EEE settings",
- 		.xhelp	= "		[ eee on|off ]\n"
- 			  "		[ advertise %x ]\n"
-diff --git a/netlink/eee.c b/netlink/eee.c
-index c9a9fcfba1f5..d3135b2094a4 100644
---- a/netlink/eee.c
-+++ b/netlink/eee.c
-@@ -1,7 +1,8 @@
- /*
-  * eee.c - netlink implementation of eee commands
-  *
-- * Implementation of "ethtool --show-eee <dev>"
-+ * Implementation of "ethtool --show-eee <dev>" and
-+ * "ethtool --set-eee <dev> ..."
-  */
- 
- #include <errno.h>
-@@ -12,6 +13,7 @@
- #include "../common.h"
- #include "netlink.h"
- #include "bitset.h"
-+#include "parser.h"
- 
- /* EEE_GET */
- 
-@@ -106,3 +108,82 @@ int nl_geee(struct cmd_context *ctx)
- 		return ret;
- 	return nlsock_send_get_request(nlsk, eee_reply_cb);
- }
-+
-+/* EEE_SET */
-+
-+static const struct bitset_parser_data advertise_parser_data = {
-+	.no_mask	= false,
-+	.force_hex	= true,
-+};
-+
-+static const struct param_parser seee_params[] = {
-+	{
-+		.arg		= "advertise",
-+		.type		= ETHTOOL_A_EEE_MODES_OURS,
-+		.handler	= nl_parse_bitset,
-+		.handler_data	= &advertise_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "tx-lpi",
-+		.type		= ETHTOOL_A_EEE_TX_LPI_ENABLED,
-+		.handler	= nl_parse_u8bool,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "tx-timer",
-+		.type		= ETHTOOL_A_EEE_TX_LPI_TIMER,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "eee",
-+		.type		= ETHTOOL_A_EEE_ENABLED,
-+		.handler	= nl_parse_u8bool,
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+int nl_seee(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_msg_buff *msgbuff;
-+	struct nl_socket *nlsk;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_EEE_SET, false))
-+		return -EOPNOTSUPP;
-+	if (!ctx->argc) {
-+		fprintf(stderr, "ethtool (--set-eee): parameters missing\n");
-+		return 1;
-+	}
-+
-+	nlctx->cmd = "--set-eee";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+	nlsk = nlctx->ethnl_socket;
-+	msgbuff = &nlsk->msgbuff;
-+
-+	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_EEE_SET,
-+		       NLM_F_REQUEST | NLM_F_ACK);
-+	if (ret < 0)
-+		return 2;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_EEE_HEADER,
-+			       ctx->devname, 0))
-+		return -EMSGSIZE;
-+
-+	ret = nl_parser(nlctx, seee_params, NULL, PARSER_GROUP_NONE);
-+	if (ret < 0)
-+		return 1;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		return 76;
-+	ret = nlsock_process_reply(nlsk, nomsg_reply_cb, nlctx);
-+	if (ret == 0)
-+		return 0;
-+	else
-+		return nlctx->exit_code ?: 76;
-+}
+ 		.opts	= "-T|--show-time-stamping",
+ 		.func	= do_tsinfo,
++		.nlfunc	= nl_tsinfo,
+ 		.help	= "Show time stamping capabilities"
+ 	},
+ 	{
 diff --git a/netlink/extapi.h b/netlink/extapi.h
-index f16dd5ed25b4..387787f61015 100644
+index 387787f61015..1b39ed999f3d 100644
 --- a/netlink/extapi.h
 +++ b/netlink/extapi.h
-@@ -33,6 +33,7 @@ int nl_scoalesce(struct cmd_context *ctx);
- int nl_gpause(struct cmd_context *ctx);
+@@ -34,6 +34,7 @@ int nl_gpause(struct cmd_context *ctx);
  int nl_spause(struct cmd_context *ctx);
  int nl_geee(struct cmd_context *ctx);
-+int nl_seee(struct cmd_context *ctx);
+ int nl_seee(struct cmd_context *ctx);
++int nl_tsinfo(struct cmd_context *ctx);
  int nl_monitor(struct cmd_context *ctx);
  
  void nl_monitor_usage(void);
-@@ -70,6 +71,7 @@ static inline void nl_monitor_usage(void)
- #define nl_gpause		NULL
+@@ -72,6 +73,7 @@ static inline void nl_monitor_usage(void)
  #define nl_spause		NULL
  #define nl_geee			NULL
-+#define nl_seee			NULL
+ #define nl_seee			NULL
++#define nl_tsinfo		NULL
  
  #endif /* ETHTOOL_ENABLE_NETLINK */
  
+diff --git a/netlink/tsinfo.c b/netlink/tsinfo.c
+new file mode 100644
+index 000000000000..03ce91cd4314
+--- /dev/null
++++ b/netlink/tsinfo.c
+@@ -0,0 +1,124 @@
++/*
++ * tsinfo.c - netlink implementation of timestamping commands
++ *
++ * Implementation of "ethtool -T <dev>"
++ */
++
++#include <errno.h>
++#include <string.h>
++#include <stdio.h>
++
++#include "../internal.h"
++#include "../common.h"
++#include "netlink.h"
++#include "bitset.h"
++
++/* TSINFO_GET */
++
++static void tsinfo_dump_cb(unsigned int idx, const char *name, bool val,
++			   void *data)
++{
++	if (!val)
++		return;
++
++	if (name)
++		printf("\t%s\n", name);
++	else
++		printf("\tbit%u\n", idx);
++}
++
++static int tsinfo_dump_list(struct nl_context *nlctx, const struct nlattr *attr,
++			    const char *label, const char *if_empty,
++			    unsigned int stringset_id)
++{
++	const struct stringset *strings = NULL;
++	int ret;
++
++	printf("%s:", label);
++	ret = 0;
++	if (!attr || bitset_is_empty(attr, false, &ret)) {
++		printf("%s\n", if_empty);
++		return ret;
++	}
++	putchar('\n');
++	if (ret < 0)
++		return ret;
++
++	if (bitset_is_compact(attr)) {
++		ret = netlink_init_ethnl2_socket(nlctx);
++		if (ret < 0)
++			return ret;
++		strings = global_stringset(stringset_id, nlctx->ethnl2_socket);
++	}
++	return walk_bitset(attr, strings, tsinfo_dump_cb, NULL);
++}
++
++int tsinfo_reply_cb(const struct nlmsghdr *nlhdr, void *data)
++{
++	const struct nlattr *tb[ETHTOOL_A_TSINFO_MAX + 1] = {};
++	DECLARE_ATTR_TB_INFO(tb);
++	struct nl_context *nlctx = data;
++	bool silent;
++	int err_ret;
++	int ret;
++
++	silent = nlctx->is_dump;
++	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
++	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
++	if (ret < 0)
++		return err_ret;
++	nlctx->devname = get_dev_name(tb[ETHTOOL_A_TSINFO_HEADER]);
++	if (!dev_ok(nlctx))
++		return err_ret;
++
++	if (silent)
++		putchar('\n');
++	printf("Time stamping parameters for %s:\n", nlctx->devname);
++
++	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_TIMESTAMPING],
++			       "Capabilities", "", ETH_SS_SOF_TIMESTAMPING);
++	if (ret < 0)
++		return err_ret;
++
++	printf("PTP Hardware Clock: ");
++	if (tb[ETHTOOL_A_TSINFO_PHC_INDEX])
++		printf("%d\n",
++		       mnl_attr_get_u32(tb[ETHTOOL_A_TSINFO_PHC_INDEX]));
++	else
++		printf("none\n");
++
++	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_TX_TYPES],
++			       "Hardware Transmit Timestamp Modes", " none",
++			       ETH_SS_TS_TX_TYPES);
++	if (ret < 0)
++		return err_ret;
++
++	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_RX_FILTERS],
++			       "Hardware Receive Filter Modes", " none",
++			       ETH_SS_TS_RX_FILTERS);
++	if (ret < 0)
++		return err_ret;
++
++	return MNL_CB_OK;
++}
++
++int nl_tsinfo(struct cmd_context *ctx)
++{
++	struct nl_context *nlctx = ctx->nlctx;
++	struct nl_socket *nlsk = nlctx->ethnl_socket;
++	int ret;
++
++	if (netlink_cmd_check(ctx, ETHTOOL_MSG_TSINFO_GET, true))
++		return -EOPNOTSUPP;
++	if (ctx->argc > 0) {
++		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
++			*ctx->argp);
++		return 1;
++	}
++
++	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_TSINFO_GET,
++				      ETHTOOL_A_TSINFO_HEADER, 0);
++	if (ret < 0)
++		return ret;
++	return nlsock_send_get_request(nlsk, tsinfo_reply_cb);
++}
 -- 
 2.26.2
 
