@@ -2,167 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4811E61AC
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5B91E61B9
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390118AbgE1NF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        id S2390164AbgE1NIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390086AbgE1NF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:05:57 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FE7C08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:05:57 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o15so10619761ejm.12
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=SxOri3O+pFijqd0Okl/7zENBG3JvyHUCefM2glGcSso=;
-        b=xD/tlCktZIgcULOBB+ZWBzsPS0mLTbyHSGf87BIaNX0+2C8+NfXb7tUoHRFPX/tldD
-         XzCTw3t0lgHZ/Pg16UU1MSVdjrs3TGgjDnNYTCMCyQ73/sOYtZ7nanIU+2aOw5iFXV1K
-         kWXmWKCBrK9pdumsQNgMWoaiy00nGWbl31Xtk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=SxOri3O+pFijqd0Okl/7zENBG3JvyHUCefM2glGcSso=;
-        b=fNBH3NCluLDvbtmaykO7Hm45xGABIuokjzyFzJGXbgdtk5T7hnzKM5zWEgqD6c7BnJ
-         hC1ZD8FIAZGqwkJGMd+Y1kx15StDWbbgZReUdG01VW03qoK1T/BRo/h5tYmY6gfH1FsW
-         5NDuN7fF9nJtdfeMNhAT/zE4k66hfldO4oXxOF3Ksj4749tzxiHGeqYill5SjX3upXVo
-         p9xqT0hNcRQurHyEB1yAvs8md+7taGdOoU6whHbOrhLs9wOkKalUZERLXqg+Jr/ZCNES
-         VJ+M/P4n4xRmEbwMUH45IKY/OIWVWvYSNMppwBJzPEMAwj0lppvFrOqsTmRKSvegZtxF
-         QAVQ==
-X-Gm-Message-State: AOAM533CUDgMw+pJx+uX887tjSsPlSBOB4wjZakusICuQbYZL0mW2fSg
-        KZKJ0unZ2Zwal6pzDo94yLuKDw==
-X-Google-Smtp-Source: ABdhPJzAxMFaacW3peB2OUbE+AWkbsb7nGgeD/k/4IAzKdOVGwSweK1MQzkFadlUKvYhH+3clJihKw==
-X-Received: by 2002:a17:906:f85:: with SMTP id q5mr2869436ejj.344.1590671155747;
-        Thu, 28 May 2020 06:05:55 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id qp13sm5499239ejb.8.2020.05.28.06.05.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 06:05:51 -0700 (PDT)
-References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-7-jakub@cloudflare.com> <CAEf4BzZJU-zRXzQU3X3zyBWX4=nxfDTjyqjzJ6NV3HvGUxNd_Q@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 6/8] libbpf: Add support for bpf_link-based netns attachment
-In-reply-to: <CAEf4BzZJU-zRXzQU3X3zyBWX4=nxfDTjyqjzJ6NV3HvGUxNd_Q@mail.gmail.com>
-Date:   Thu, 28 May 2020 15:05:50 +0200
-Message-ID: <87o8q82or5.fsf@cloudflare.com>
+        with ESMTP id S2390031AbgE1NH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:07:57 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2EEC05BD1E;
+        Thu, 28 May 2020 06:07:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AgMZqRxoCy8rqfWHTToRmSRQg8xj5R1Vkp6Ow/licx4=; b=ZyPL7jsaUCBkamHr9S2fjPIhE
+        vSvABh6xa8JkUaP8do07SNACxsHAeVn4RUSEr0VDUKlLRfLJL86JAtARqgyZz6snVBirVZNe301cc
+        icm8k0sPqxQ29+/HwaqAkrVDYE1E1/l3jnrtJEvY5hByHNBMjUZN0izco9Q1JaRzWduqbkgEOawLZ
+        bICmBrFEFIWUQK11KDTMQCPrUlzd5igxilOklClfI8nJwHLbJWQZKk6MWJAptmOvR/ljVZn9HU24w
+        tpVSQCtoAo0OQSvhKO+WNnMMvDbF8BIuUtBYE5Y235A38zOQUL64gW6m+9M9wqspUBJ1TAr6XfQkA
+        IGmlVViAQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:35686)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jeIG6-0005PA-R4; Thu, 28 May 2020 14:07:42 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jeIG2-0007Ud-L2; Thu, 28 May 2020 14:07:38 +0100
+Date:   Thu, 28 May 2020 14:07:38 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
+ 1000BaseX/2500BaseX ports
+Message-ID: <20200528130738.GT1551@shell.armlinux.org.uk>
+References: <20200528121121.125189-1-tbogendoerfer@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200528121121.125189-1-tbogendoerfer@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 07:59 AM CEST, Andrii Nakryiko wrote:
-> On Wed, May 27, 2020 at 12:16 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> Add bpf_program__attach_nets(), which uses LINK_CREATE subcommand to create
->> an FD-based kernel bpf_link, for attach types tied to network namespace,
->> that is BPF_FLOW_DISSECTOR for the moment.
->>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>  tools/lib/bpf/libbpf.c   | 20 ++++++++++++++++----
->>  tools/lib/bpf/libbpf.h   |  2 ++
->>  tools/lib/bpf/libbpf.map |  1 +
->>  3 files changed, 19 insertions(+), 4 deletions(-)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index 5d60de6fd818..a49c1eb5db64 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -7894,8 +7894,8 @@ static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
->>         return bpf_program__attach_iter(prog, NULL);
->>  }
->>
->> -struct bpf_link *
->> -bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
->> +static struct bpf_link *
->> +bpf_program__attach_fd(struct bpf_program *prog, int target_fd)
->>  {
->>         enum bpf_attach_type attach_type;
->>         char errmsg[STRERR_BUFSIZE];
->> @@ -7915,11 +7915,11 @@ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
->>         link->detach = &bpf_link__detach_fd;
->>
->>         attach_type = bpf_program__get_expected_attach_type(prog);
->> -       link_fd = bpf_link_create(prog_fd, cgroup_fd, attach_type, NULL);
->> +       link_fd = bpf_link_create(prog_fd, target_fd, attach_type, NULL);
->>         if (link_fd < 0) {
->>                 link_fd = -errno;
->>                 free(link);
->> -               pr_warn("program '%s': failed to attach to cgroup: %s\n",
->> +               pr_warn("program '%s': failed to attach to cgroup/netns: %s\n",
->
-> I understand the desire to save few lines of code, but it hurts error
-> reporting. Now it's cgroup/netns, tomorrow cgroup/netns/lirc/whatever.
-> If you want to generalize, let's preserve clarity of error message,
-> please.
+On Thu, May 28, 2020 at 02:11:21PM +0200, Thomas Bogendoerfer wrote:
+> Commit d14e078f23cc ("net: marvell: mvpp2: only reprogram what is necessary
+>  on mac_config") disabled auto negotiation bypass completely, which breaks
+> platforms enabling bypass via firmware (not the best option, but it worked).
+> Since 1000BaseX/2500BaseX ports neither negotiate speed nor duplex mode
+> we could enable auto negotiation bypass to get back information about link
+> state.
 
-Ok, that's fair. I could pass the link type bpf_program__attach_fd and
-map it to a string.
+Thanks, but your commit is missing some useful information.
 
->
->>                         bpf_program__title(prog, false),
->>                         libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
->>                 return ERR_PTR(link_fd);
->> @@ -7928,6 +7928,18 @@ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
->>         return link;
->>  }
->>
->> +struct bpf_link *
->> +bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
->> +{
->> +       return bpf_program__attach_fd(prog, cgroup_fd);
->> +}
->> +
->> +struct bpf_link *
->> +bpf_program__attach_netns(struct bpf_program *prog, int netns_fd)
->> +{
->> +       return bpf_program__attach_fd(prog, netns_fd);
->> +}
->> +
->>  struct bpf_link *
->>  bpf_program__attach_iter(struct bpf_program *prog,
->>                          const struct bpf_iter_attach_opts *opts)
->> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
->> index 1e2e399a5f2c..adf6fd9b6fe8 100644
->> --- a/tools/lib/bpf/libbpf.h
->> +++ b/tools/lib/bpf/libbpf.h
->> @@ -253,6 +253,8 @@ LIBBPF_API struct bpf_link *
->>  bpf_program__attach_lsm(struct bpf_program *prog);
->>  LIBBPF_API struct bpf_link *
->>  bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd);
->> +LIBBPF_API struct bpf_link *
->> +bpf_program__attach_netns(struct bpf_program *prog, int netns_fd);
->>
->>  struct bpf_map;
->>
->> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
->> index 381a7342ecfc..7ad21ba1feb6 100644
->> --- a/tools/lib/bpf/libbpf.map
->> +++ b/tools/lib/bpf/libbpf.map
->> @@ -263,4 +263,5 @@ LIBBPF_0.0.9 {
->>                 bpf_link_get_next_id;
->>                 bpf_program__attach_iter;
->>                 perf_buffer__consume;
->> +               bpf_program__attach_netns;
->
-> Please keep it alphabetical.
+Which platforms have broken?
 
-Will do. Not sure how I didn't pick up the convention.
+Can you describe the situation where you require this bit to be set?
 
->
->>  } LIBBPF_0.0.8;
->> --
->> 2.25.4
->>
+We should not be enabling bypass mode as a matter of course, it exists
+to work around broken setups which do not send the control word.
 
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
