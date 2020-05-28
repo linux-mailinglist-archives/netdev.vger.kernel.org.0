@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16AF81E6061
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66AD1E6036
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389561AbgE1MJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:09:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48584 "EHLO mail.kernel.org"
+        id S2388768AbgE1L4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 07:56:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388650AbgE1L43 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:29 -0400
+        id S2388746AbgE1L4b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7E05B21531;
-        Thu, 28 May 2020 11:56:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A21EF20DD4;
+        Thu, 28 May 2020 11:56:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590666988;
-        bh=A4ErLDkg+iKuLu7wJxcdIY1HcKsBkp1TkTpfBywLic0=;
+        s=default; t=1590666990;
+        bh=2+TLxM3G8QfbMlQcupi4uaoiUaXyEpZ8gudy8Moj2iY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=01dNRwsBZ5i1yGch5KcM8AlwBumqDGtAVwOpDBW+Wgwl6EKdNcZRIkeN0qRaYrc5B
-         H8/f68+9IcvWpCHFpBGQ3gEpbh024oXXhKG4+qtd9aYv3iQN/kDN299hnysXLxxqLl
-         HhpOufbqgcyOFh39axpq/KCaTlAwo36Cs74eD7RM=
+        b=11ZU5ZtYuHUSQlv7qcPbzAlohhYmV3xxq5IzQd+a73VdlEF6QPw3X4J6Y1PUeRn5z
+         kvzRFA3FeqMPXgndUFqvFqbuhFiGRq74526Sie2tfImLQz12ak+xgE5N6qYHFo90IX
+         ieRR8Tev2Klrve3eIo+Upeh4w4UHLQDb/Qc6BOIU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 24/47] wireguard: queueing: preserve flow hash across packet scrubbing
-Date:   Thu, 28 May 2020 07:55:37 -0400
-Message-Id: <20200528115600.1405808-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 26/47] net: ethernet: ti: fix some return value check of cpsw_ale_create()
+Date:   Thu, 28 May 2020 07:55:39 -0400
+Message-Id: <20200528115600.1405808-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,123 +44,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit c78a0b4a78839d572d8a80f6a62221c0d7843135 ]
+[ Upstream commit 3469660d1b15ccfdf7b33295c306b6298ca730aa ]
 
-It's important that we clear most header fields during encapsulation and
-decapsulation, because the packet is substantially changed, and we don't
-want any info leak or logic bug due to an accidental correlation. But,
-for encapsulation, it's wrong to clear skb->hash, since it's used by
-fq_codel and flow dissection in general. Without it, classification does
-not proceed as usual. This change might make it easier to estimate the
-number of innerflows by examining clustering of out of order packets,
-but this shouldn't open up anything that can't already be inferred
-otherwise (e.g. syn packet size inference), and fq_codel can be disabled
-anyway.
+cpsw_ale_create() can return both NULL and PTR_ERR(), but all of
+the caller only check NULL for error handling. This patch convert
+it to only return PTR_ERR() in all error cases, and the caller using
+IS_ERR() instead of NULL test.
 
-Furthermore, it might be the case that the hash isn't used or queried at
-all until after wireguard transmits the encrypted UDP packet, which
-means skb->hash might still be zero at this point, and thus no hash
-taken over the inner packet data. In order to address this situation, we
-force a calculation of skb->hash before encrypting packet data.
-
-Of course this means that fq_codel might transmit packets slightly more
-out of order than usual. Toke did some testing on beefy machines with
-high quantities of parallel flows and found that increasing the
-reply-attack counter to 8192 takes care of the most pathological cases
-pretty well.
-
-Reported-by: Dave Taht <dave.taht@gmail.com>
-Reviewed-and-tested-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 4b41d3436796 ("net: ethernet: ti: cpsw: allow untagged traffic on host port")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireguard/messages.h |  2 +-
- drivers/net/wireguard/queueing.h | 10 +++++++++-
- drivers/net/wireguard/receive.c  |  2 +-
- drivers/net/wireguard/send.c     |  7 ++++++-
- 4 files changed, 17 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ti/cpsw_ale.c    | 2 +-
+ drivers/net/ethernet/ti/cpsw_priv.c   | 4 ++--
+ drivers/net/ethernet/ti/netcp_ethss.c | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireguard/messages.h b/drivers/net/wireguard/messages.h
-index b8a7b9ce32ba..208da72673fc 100644
---- a/drivers/net/wireguard/messages.h
-+++ b/drivers/net/wireguard/messages.h
-@@ -32,7 +32,7 @@ enum cookie_values {
- };
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+index ecdbde539eb7..4eb14b174c1a 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.c
++++ b/drivers/net/ethernet/ti/cpsw_ale.c
+@@ -917,7 +917,7 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
  
- enum counter_values {
--	COUNTER_BITS_TOTAL = 2048,
-+	COUNTER_BITS_TOTAL = 8192,
- 	COUNTER_REDUNDANT_BITS = BITS_PER_LONG,
- 	COUNTER_WINDOW_SIZE = COUNTER_BITS_TOTAL - COUNTER_REDUNDANT_BITS
- };
-diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
-index 3432232afe06..c58df439dbbe 100644
---- a/drivers/net/wireguard/queueing.h
-+++ b/drivers/net/wireguard/queueing.h
-@@ -87,12 +87,20 @@ static inline bool wg_check_packet_protocol(struct sk_buff *skb)
- 	return real_protocol && skb->protocol == real_protocol;
- }
+ 	ale = devm_kzalloc(params->dev, sizeof(*ale), GFP_KERNEL);
+ 	if (!ale)
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
--static inline void wg_reset_packet(struct sk_buff *skb)
-+static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating)
- {
-+	u8 l4_hash = skb->l4_hash;
-+	u8 sw_hash = skb->sw_hash;
-+	u32 hash = skb->hash;
- 	skb_scrub_packet(skb, true);
- 	memset(&skb->headers_start, 0,
- 	       offsetof(struct sk_buff, headers_end) -
- 		       offsetof(struct sk_buff, headers_start));
-+	if (encapsulating) {
-+		skb->l4_hash = l4_hash;
-+		skb->sw_hash = sw_hash;
-+		skb->hash = hash;
-+	}
- 	skb->queue_mapping = 0;
- 	skb->nohdr = 0;
- 	skb->peeked = 0;
-diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
-index 2566e13a292d..758d6a019184 100644
---- a/drivers/net/wireguard/receive.c
-+++ b/drivers/net/wireguard/receive.c
-@@ -485,7 +485,7 @@ int wg_packet_rx_poll(struct napi_struct *napi, int budget)
- 		if (unlikely(wg_socket_endpoint_from_skb(&endpoint, skb)))
- 			goto next;
+ 	ale->p0_untag_vid_mask =
+ 		devm_kmalloc_array(params->dev, BITS_TO_LONGS(VLAN_N_VID),
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 97a058ca60ac..d0b6c418a870 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -490,9 +490,9 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
+ 	ale_params.ale_ports		= CPSW_ALE_PORTS_NUM;
  
--		wg_reset_packet(skb);
-+		wg_reset_packet(skb, false);
- 		wg_packet_consume_data_done(peer, skb, &endpoint);
- 		free = false;
+ 	cpsw->ale = cpsw_ale_create(&ale_params);
+-	if (!cpsw->ale) {
++	if (IS_ERR(cpsw->ale)) {
+ 		dev_err(dev, "error initializing ale engine\n");
+-		return -ENODEV;
++		return PTR_ERR(cpsw->ale);
+ 	}
  
-diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
-index e8a7d0a0cb88..0d64a7531f64 100644
---- a/drivers/net/wireguard/send.c
-+++ b/drivers/net/wireguard/send.c
-@@ -170,6 +170,11 @@ static bool encrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
- 	struct sk_buff *trailer;
- 	int num_frags;
- 
-+	/* Force hash calculation before encryption so that flow analysis is
-+	 * consistent over the inner packet.
-+	 */
-+	skb_get_hash(skb);
-+
- 	/* Calculate lengths. */
- 	padding_len = calculate_skb_padding(skb);
- 	trailer_len = padding_len + noise_encrypted_len(0);
-@@ -298,7 +303,7 @@ void wg_packet_encrypt_worker(struct work_struct *work)
- 		skb_list_walk_safe(first, skb, next) {
- 			if (likely(encrypt_packet(skb,
- 					PACKET_CB(first)->keypair))) {
--				wg_reset_packet(skb);
-+				wg_reset_packet(skb, true);
- 			} else {
- 				state = PACKET_STATE_DEAD;
- 				break;
+ 	dma_params.dev		= dev;
+diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
+index fb36115e9c51..fdbae734acce 100644
+--- a/drivers/net/ethernet/ti/netcp_ethss.c
++++ b/drivers/net/ethernet/ti/netcp_ethss.c
+@@ -3704,9 +3704,9 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
+ 		ale_params.nu_switch_ale = true;
+ 	}
+ 	gbe_dev->ale = cpsw_ale_create(&ale_params);
+-	if (!gbe_dev->ale) {
++	if (IS_ERR(gbe_dev->ale)) {
+ 		dev_err(gbe_dev->dev, "error initializing ale engine\n");
+-		ret = -ENODEV;
++		ret = PTR_ERR(gbe_dev->ale);
+ 		goto free_sec_ports;
+ 	} else {
+ 		dev_dbg(gbe_dev->dev, "Created a gbe ale engine\n");
 -- 
 2.25.1
 
