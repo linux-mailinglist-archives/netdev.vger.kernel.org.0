@@ -2,123 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7491E6C32
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:16:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990A81E6C37
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407104AbgE1UPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 16:15:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57390 "EHLO mx2.suse.de"
+        id S2407140AbgE1UPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 16:15:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55302 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407089AbgE1UPE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 16:15:04 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id E585EADD3;
-        Thu, 28 May 2020 20:15:01 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id C7A2A60347; Thu, 28 May 2020 22:15:01 +0200 (CEST)
-Date:   Thu, 28 May 2020 22:15:01 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Ronak Doshi <doshir@vmware.com>,
-        Pv-drivers <Pv-drivers@vmware.com>,
+        id S2407128AbgE1UPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 16:15:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4POkvhyfkxI3mPZrBGf3TYBBAq2iHcysRl6pHV06SV0=; b=FPT4dGlyYustf3rSfQl+csHt7S
+        pozgcKxl0/C57osavR4tKyWA+BCd1vYeg8e5CA7t1UnAQSaYlewmqUFJrWqLyxfQi6uiQnFmm59Jg
+        mNdjIpMy/AaKIGDL4Jv22pYFvUH5nl4xiUzRyihV5uQRKAdsP2cLWKlv+UAshy2eiCY0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jeOvy-003ZfX-1n; Thu, 28 May 2020 22:15:22 +0200
+Date:   Thu, 28 May 2020 22:15:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/4] vmxnet3: add support to get/set rx flow
- hash
-Message-ID: <20200528201501.q4rta6v2xjxn26ti@lion.mk-sys.cz>
-References: <20200528183615.27212-1-doshir@vmware.com>
- <20200528183615.27212-3-doshir@vmware.com>
- <20200528192051.hnqeifcjmfu5vffz@lion.mk-sys.cz>
- <EE27E96B-155D-445E-B205-861B7D516BE1@vmware.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
+ 1000BaseX/2500BaseX ports
+Message-ID: <20200528201522.GD849697@lunn.ch>
+References: <20200528121121.125189-1-tbogendoerfer@suse.de>
+ <20200528130738.GT1551@shell.armlinux.org.uk>
+ <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
+ <20200528135608.GU1551@shell.armlinux.org.uk>
+ <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
+ <20200528144805.GW1551@shell.armlinux.org.uk>
+ <20200528204312.df9089425162a22e89669cf1@suse.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <EE27E96B-155D-445E-B205-861B7D516BE1@vmware.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200528204312.df9089425162a22e89669cf1@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 07:29:34PM +0000, Ronak Doshi wrote:
+On Thu, May 28, 2020 at 08:43:12PM +0200, Thomas Bogendoerfer wrote:
+> On Thu, 28 May 2020 15:48:05 +0100
+> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 > 
-> On 5/28/20, 12:21 PM, "Michal Kubecek" <mkubecek@suse.cz> wrote:
+> > On Thu, May 28, 2020 at 04:33:35PM +0200, Thomas Bogendoerfer wrote:
+> > > below is the dts part for the two network interfaces. The switch to
+> > > the outside has two ports, which correlate to the two internal ports.
+> > > And the switch propagates the link state of the external ports to
+> > > the internal ports.
+> > 
+> > Okay, so this DTS hasn't been reviewed...
 > 
-> >    On Thu, May 28, 2020 at 11:36:13AM -0700, Ronak Doshi wrote:
-> >    > With vmxnet3 version 4, the emulation supports multiqueue(RSS) for
-> >    > UDP and ESP traffic. A guest can enable/disable RSS for UDP/ESP over
-> >    > IPv4/IPv6 by issuing commands introduced in this patch. ESP ipv6 is
-> >    > not yet supported in this patch.
-> >    > 
-> >    > This patch implements get_rss_hash_opts and set_rss_hash_opts
-> >    > methods to allow querying and configuring different Rx flow hash
-> >    > configurations.
-> >    > 
-> >    > Signed-off-by: Ronak Doshi <doshir@vmware.com>
-> >    > ---
-> >
-> >    This still suffers from the inconsistency between get and set handler
-> >   I already pointed out in v1:
-> >   
-> >    - there is no way to change VMXNET3_RSS_FIELDS_TCPIP{4,6} bits
-> >    - get_rxnfc() may return value that set_rxnfc() won't accept
-> >    - get_rxnfc() may return different value than set_rxnfc() set
-> >    
-> >    Above, vmxnet3_get_rss_hash_opts() returns 0 or
-> >    RXH_L4_B_0_1 | RXH_L4_B_2_3 | RXH_IP_SRC | RXH_IP_DST for any of
-> >    {TCP,UDP}_V{4,6}_FLOW, depending on corresponding bit in rss_fields. But
-> >    here you accept only all four bits for TCP (both v4 and v6) and either
-> >    the two RXH_IP_* bits or all four for UDP.
-> >    
-> >    Michal
->  
-> Hi Michal,
+> that's from our partner, I'm just using it. Stripping it down isn't
+> the point for my now.
 > 
-> That is intentional as vmxnet3 device always expects TCP rss to be enabled
-> if rss is supported. If RSS is enabled, by default rss_fields has TCP/IP RSS
-> supported and cannot be disabled. Its only for UDP/ESP flows the config
-> can change. Hence, get_rss always reports TCP/IP RSS enabled, and set_rss
-> does not accept disabling TCP RSS. Hope this answers your concern.
+> > This isn't correct - you are requesting that in-band status is used
+> > (i.o.w. the in-band control word, see commit 4cba5c210365), but your
+> > bug report wants to enable AN bypass because there is no in-band
+> > control word.  This seems to be rather contradictory.
+> > 
+> > May I suggest you use a fixed-link here, which will not have any
+> 
+> afaik fixed-link will always be up, and we want to have the link state
+> from the switch external ports.
+> 
+> > inband status, as there is no in-band control word being sent by
+> > the switch?  That is also the conventional way of handling switch
+> > links.
+> 
+> again, we want to propagte the external link state inside to all
+> the internal nodes. So this will not work anymore with fixed-link.
 
-Maybe it will be easier to understand what I'm talking about if I show
-it in a table. Let's use shortcuts
+Just for my understanding...
 
-  L3 = RXH_IP_SRC | RXH_IP_DST
-  L4 = RXH_L4_B_0_1 | RXH_L4_B_2_3
+https://www.ambedded.com/ARM_Server_platform.html
 
-Then vmxnet3_get_rss_hash_opts() translates rss_fields bits to
-info->data like this:
-                             0        1
----------------------------------------------
-VMXNET3_RSS_FIELDS_TCPIP4    0        L3 | L4
-VMXNET3_RSS_FIELDS_TCPIP6    0        L3 | L4
-VMXNET3_RSS_FIELDS_UDPIP4    0        L3 | L4
-VMXNET3_RSS_FIELDS_UDPIP6    0        L3 | L4
-VMXNET3_RSS_FIELDS_ESPIP4    L3       L3 | L4
-VMXNET3_RSS_FIELDS_ESPIP6    L3       L3
+seems to suggest there are 4 external ports. You want to pass the link
+status of these four external ports to the CPU module?
 
-But the translation from info->data to bits of rss_fields which should
-be the inverse of above, actually works like ("err" means -EINVAL error
-and "noop" that nothing is done):
-
-                             0      L3      L3 | L4 
----------------------------------------------------
-VMXNET3_RSS_FIELDS_TCPIP4    err    err     noop
-VMXNET3_RSS_FIELDS_TCPIP6    err    err     noop
-VMXNET3_RSS_FIELDS_UDPIP4    err    0       1
-VMXNET3_RSS_FIELDS_UDPIP6    err    0       1
-VMXNET3_RSS_FIELDS_ESPIP4    err    0       1
-VMXNET3_RSS_FIELDS_ESPIP6    err    noop    err 
-
-This means that for both TCP and UDP, you have cases where get handler
-will return value which will cause an error if it's fed back to set
-handler. And for UDP, accepted values for set are L3 and L3 | L4 but get
-handler returns 0 or L3 | L4.
-
-So UDP part is wrong and if TCP always hashes by all four fields, it
-would be cleaner to return that information unconditionally, like you do
-e.g. for ESPv6 (with a different value).
-
-Michal
+	Andrew
