@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D54B1E5F7F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:04:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AB2D1E5FB8
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388967AbgE1L5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:57:16 -0400
+        id S2389397AbgE1MEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:04:24 -0400
 Received: from mail.kernel.org ([198.145.29.99]:49672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388953AbgE1L5N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:57:13 -0400
+        id S2388957AbgE1L5P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:57:15 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 000452158C;
-        Thu, 28 May 2020 11:57:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 34E3E2168B;
+        Thu, 28 May 2020 11:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590667032;
-        bh=wa6/VyqRftc183tLN+IpPw5dqH9ERY51scjelX0jqUI=;
+        s=default; t=1590667034;
+        bh=O4fs0ZwoEeFvu6pl2u/lAZOU60WQcSkGw7Wb3mbSYFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IopbP2b/XI+YOg6zQTySNkUvhBJfO4q+v71vhAT+1ExjLA3wq5WaTQWQNm5+JUQiq
-         Kj1tt6Im7cs3yhKJKpmofqhDKDVMfyUvPAnQ8tYRPr4khh3wEkuDc9TO5rRaTnwUa7
-         hfA24gOKGrzCf8sQ4JtIonKEcJrByWICDUDNspL8=
+        b=ZIrrSwh9qzI2V1EAeCZDyCbUY5lzjfpSh4nsOams6O0h0b7O7GImlOTyRSfmQbVVl
+         7Ooec11Ee3lU/PDLhLBtZ+XTwqWI2twqerRRBBzMht/r0VzGqVSA0M1rvNdEyO1BJs
+         1AgzeTf238LhvZdjO2ECnxYls6smLD6Wv4ezDD8Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>,
+Cc:     Qiushi Wu <wu000273@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/26] net: ethernet: stmmac: Enable interface clocks on probe for IPQ806x
-Date:   Thu, 28 May 2020 07:56:44 -0400
-Message-Id: <20200528115654.1406165-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 18/26] net: sun: fix missing release regions in cas_init_one().
+Date:   Thu, 28 May 2020 07:56:46 -0400
+Message-Id: <20200528115654.1406165-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115654.1406165-1-sashal@kernel.org>
 References: <20200528115654.1406165-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,60 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan McDowell <noodles@earth.li>
+From: Qiushi Wu <wu000273@umn.edu>
 
-[ Upstream commit a96ac8a0045e3cbe3e5af6d1b3c78c6c2065dec5 ]
+[ Upstream commit 5a730153984dd13f82ffae93d7170d76eba204e9 ]
 
-The ipq806x_gmac_probe() function enables the PTP clock but not the
-appropriate interface clocks. This means that if the bootloader hasn't
-done so attempting to bring up the interface will fail with an error
-like:
+In cas_init_one(), "pdev" is requested by "pci_request_regions", but it
+was not released after a call of the function “pci_write_config_byte”
+failed. Thus replace the jump target “err_write_cacheline” by
+"err_out_free_res".
 
-[   59.028131] ipq806x-gmac-dwmac 37600000.ethernet: Failed to reset the dma
-[   59.028196] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_hw_setup: DMA engine initialization failed
-[   59.034056] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_open: Hw setup failed
-
-This patch, a slightly cleaned up version of one posted by Sergey
-Sergeev in:
-
-https://forum.openwrt.org/t/support-for-mikrotik-rb3011uias-rm/4064/257
-
-correctly enables the clock; we have already configured the source just
-before this.
-
-Tested on a MikroTik RB3011.
-
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
+Fixes: 1f26dac32057 ("[NET]: Add Sun Cassini driver.")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/sun/cassini.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index 0d21082ceb93..4d75158c64b2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -318,6 +318,19 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 	/* Enable PTP clock */
- 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
- 	val |= NSS_COMMON_CLK_GATE_PTP_EN(gmac->id);
-+	switch (gmac->phy_mode) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+		val |= NSS_COMMON_CLK_GATE_RGMII_RX_EN(gmac->id) |
-+			NSS_COMMON_CLK_GATE_RGMII_TX_EN(gmac->id);
-+		break;
-+	case PHY_INTERFACE_MODE_SGMII:
-+		val |= NSS_COMMON_CLK_GATE_GMII_RX_EN(gmac->id) |
-+				NSS_COMMON_CLK_GATE_GMII_TX_EN(gmac->id);
-+		break;
-+	default:
-+		/* We don't get here; the switch above will have errored out */
-+		unreachable();
-+	}
- 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index c91876f8c536..6e78a33aa5e4 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -4971,7 +4971,7 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 					  cas_cacheline_size)) {
+ 			dev_err(&pdev->dev, "Could not set PCI cache "
+ 			       "line size\n");
+-			goto err_write_cacheline;
++			goto err_out_free_res;
+ 		}
+ 	}
+ #endif
+@@ -5144,7 +5144,6 @@ err_out_iounmap:
+ err_out_free_res:
+ 	pci_release_regions(pdev);
  
- 	if (gmac->phy_mode == PHY_INTERFACE_MODE_SGMII) {
+-err_write_cacheline:
+ 	/* Try to restore it in case the error occurred after we
+ 	 * set it.
+ 	 */
 -- 
 2.25.1
 
