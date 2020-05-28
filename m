@@ -2,437 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 618711E7046
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:22:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A98B1E704B
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437527AbgE1XWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 19:22:00 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49330 "EHLO mx2.suse.de"
+        id S2437536AbgE1XWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:22:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49362 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437494AbgE1XVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 19:21:50 -0400
+        id S2437514AbgE1XV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 19:21:56 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id B231AAFF1;
-        Thu, 28 May 2020 23:21:47 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id B7AA6AFF0;
+        Thu, 28 May 2020 23:21:52 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id D4347E32D2; Fri, 29 May 2020 01:21:47 +0200 (CEST)
-Message-Id: <2fb667862b0922fbff9583ebebc62d6267c20ce6.1590707335.git.mkubecek@suse.cz>
+        id DB0F1E32D2; Fri, 29 May 2020 01:21:52 +0200 (CEST)
+Message-Id: <8666ce6140e5e155ef851c1d46c4df2d09862597.1590707335.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1590707335.git.mkubecek@suse.cz>
 References: <cover.1590707335.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 08/21] netlink: add netlink handler for sfeatures (-K)
+Subject: [PATCH ethtool 09/21] netlink: add netlink handler for gprivflags
+ (--show-priv-flags)
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Fri, 29 May 2020 01:21:47 +0200 (CEST)
+Date:   Fri, 29 May 2020 01:21:52 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement "ethtool -K <dev> ..." subcommand to set netdev feature flags
-using ETHTOOL_MSG_FEATURES_SET netlink message. These are traditionally set
-using ETHTOOL_SFEATURES ioctl request (and some older ones).
+Implement "ethtool --show-priv-flags <dev>" subcommand using
+ETHTOOL_MSG_PRIVFLAGS_GET netlink message. This retrieves and displays
+values of device private flags, traditionally provided by ETHTOOL_GPFLAGS
+ioctl request.
 
-Unlike with ioctl, an attempt to set a value of a "group flag" (e.g. "tso"
-or "txcsum") translates to a request to set all features in that group
-(rather than letting kernel to do that); this can be a different set of
-features than kernel uses (kernel fix is going to be submitted soon).
-
-Output of the command also explicitly marks features with values changed
-without being requested (e.g. because of dependencies).
+Also register the callback with monitor code so that the monitor can
+display ETHTOOL_MSG_PRIVFLAGS_NTF notifications.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- ethtool.c          |   1 +
- netlink/bitset.c   |  23 +++-
- netlink/bitset.h   |   1 +
- netlink/extapi.h   |   2 +
- netlink/features.c | 285 +++++++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 307 insertions(+), 5 deletions(-)
+ Makefile.am         |   2 +-
+ ethtool.c           |   1 +
+ netlink/extapi.h    |   2 +
+ netlink/monitor.c   |   8 ++++
+ netlink/netlink.h   |   1 +
+ netlink/privflags.c | 109 ++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 122 insertions(+), 1 deletion(-)
+ create mode 100644 netlink/privflags.c
 
+diff --git a/Makefile.am b/Makefile.am
+index 36ee50a9dd0c..0a4c4e810c1c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -31,7 +31,7 @@ ethtool_SOURCES += \
+ 		  netlink/monitor.c netlink/bitset.c netlink/bitset.h \
+ 		  netlink/settings.c netlink/parser.c netlink/parser.h \
+ 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
+-		  netlink/features.c \
++		  netlink/features.c netlink/privflags.c \
+ 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
+ 		  netlink/desc-rtnl.c \
+ 		  uapi/linux/ethtool_netlink.h \
 diff --git a/ethtool.c b/ethtool.c
-index 4749f3ae52a5..7fbf159baf69 100644
+index 7fbf159baf69..843c710eb408 100644
 --- a/ethtool.c
 +++ b/ethtool.c
-@@ -5219,6 +5219,7 @@ static const struct option args[] = {
+@@ -5377,6 +5377,7 @@ static const struct option args[] = {
  	{
- 		.opts	= "-K|--features|--offload",
- 		.func	= do_sfeatures,
-+		.nlfunc	= nl_sfeatures,
- 		.help	= "Set protocol offload and other features",
- 		.xhelp	= "		FEATURE on|off ...\n"
+ 		.opts	= "--show-priv-flags",
+ 		.func	= do_gprivflags,
++		.nlfunc	= nl_gprivflags,
+ 		.help	= "Query private flags"
  	},
-diff --git a/netlink/bitset.c b/netlink/bitset.c
-index 291ac7170272..130bcdb5b52c 100644
---- a/netlink/bitset.c
-+++ b/netlink/bitset.c
-@@ -153,7 +153,8 @@ err:
- 	return true;
- }
- 
--uint32_t *get_compact_bitset_value(const struct nlattr *bitset)
-+static uint32_t *get_compact_bitset_attr(const struct nlattr *bitset,
-+					 uint16_t type)
- {
- 	const struct nlattr *tb[ETHTOOL_A_BITSET_MAX + 1] = {};
- 	DECLARE_ATTR_TB_INFO(tb);
-@@ -161,14 +162,26 @@ uint32_t *get_compact_bitset_value(const struct nlattr *bitset)
- 	int ret;
- 
- 	ret = mnl_attr_parse_nested(bitset, attr_cb, &tb_info);
--	if (ret < 0 ||
--	    !tb[ETHTOOL_A_BITSET_SIZE] || !tb[ETHTOOL_A_BITSET_VALUE])
-+	if (ret < 0)
-+		return NULL;
-+	if (!tb[ETHTOOL_A_BITSET_SIZE] || !tb[ETHTOOL_A_BITSET_VALUE] ||
-+	    !tb[type])
- 		return NULL;
- 	count = mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_SIZE]);
--	if (8 * mnl_attr_get_payload_len(tb[ETHTOOL_A_BITSET_VALUE]) < count)
-+	if (8 * mnl_attr_get_payload_len(tb[type]) < count)
- 		return NULL;
- 
--	return mnl_attr_get_payload(tb[ETHTOOL_A_BITSET_VALUE]);
-+	return mnl_attr_get_payload(tb[type]);
-+}
-+
-+uint32_t *get_compact_bitset_value(const struct nlattr *bitset)
-+{
-+	return get_compact_bitset_attr(bitset, ETHTOOL_A_BITSET_VALUE);
-+}
-+
-+uint32_t *get_compact_bitset_mask(const struct nlattr *bitset)
-+{
-+	return get_compact_bitset_attr(bitset, ETHTOOL_A_BITSET_MASK);
- }
- 
- int walk_bitset(const struct nlattr *bitset, const struct stringset *labels,
-diff --git a/netlink/bitset.h b/netlink/bitset.h
-index 9f3230981e40..4c9cdac0e8d8 100644
---- a/netlink/bitset.h
-+++ b/netlink/bitset.h
-@@ -21,6 +21,7 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
- bool bitset_is_compact(const struct nlattr *bitset);
- bool bitset_is_empty(const struct nlattr *bitset, bool mask, int *retptr);
- uint32_t *get_compact_bitset_value(const struct nlattr *bitset);
-+uint32_t *get_compact_bitset_mask(const struct nlattr *bitset);
- int walk_bitset(const struct nlattr *bitset, const struct stringset *labels,
- 		bitset_walk_callback cb, void *data);
- 
+ 	{
 diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 81c1de0df1e6..0dbcc8eb2e7b 100644
+index 0dbcc8eb2e7b..1bbe3fc21271 100644
 --- a/netlink/extapi.h
 +++ b/netlink/extapi.h
-@@ -21,6 +21,7 @@ int nl_gset(struct cmd_context *ctx);
- int nl_sset(struct cmd_context *ctx);
+@@ -22,6 +22,7 @@ int nl_sset(struct cmd_context *ctx);
  int nl_permaddr(struct cmd_context *ctx);
  int nl_gfeatures(struct cmd_context *ctx);
-+int nl_sfeatures(struct cmd_context *ctx);
+ int nl_sfeatures(struct cmd_context *ctx);
++int nl_gprivflags(struct cmd_context *ctx);
  int nl_monitor(struct cmd_context *ctx);
  
  void nl_monitor_usage(void);
-@@ -46,6 +47,7 @@ static inline void nl_monitor_usage(void)
- #define nl_sset			NULL
+@@ -48,6 +49,7 @@ static inline void nl_monitor_usage(void)
  #define nl_permaddr		NULL
  #define nl_gfeatures		NULL
-+#define nl_sfeatures		NULL
+ #define nl_sfeatures		NULL
++#define nl_gprivflags		NULL
  
  #endif /* ETHTOOL_ENABLE_NETLINK */
  
-diff --git a/netlink/features.c b/netlink/features.c
-index 76c16dbf2e13..8b5b8588ca23 100644
---- a/netlink/features.c
-+++ b/netlink/features.c
-@@ -239,3 +239,288 @@ int nl_gfeatures(struct cmd_context *ctx)
- 		return ret;
- 	return nlsock_send_get_request(nlsk, features_reply_cb);
- }
+diff --git a/netlink/monitor.c b/netlink/monitor.c
+index a572e3c38463..ca2654bad71f 100644
+--- a/netlink/monitor.c
++++ b/netlink/monitor.c
+@@ -35,6 +35,10 @@ static struct {
+ 		.cmd	= ETHTOOL_MSG_FEATURES_NTF,
+ 		.cb	= features_reply_cb,
+ 	},
++	{
++		.cmd	= ETHTOOL_MSG_PRIVFLAGS_NTF,
++		.cb	= privflags_reply_cb,
++	},
+ };
+ 
+ static void clear_filter(struct nl_context *nlctx)
+@@ -110,6 +114,10 @@ static struct monitor_option monitor_opts[] = {
+ 		.pattern	= "-k|--show-features|--show-offload|-K|--features|--offload",
+ 		.cmd		= ETHTOOL_MSG_FEATURES_NTF,
+ 	},
++	{
++		.pattern	= "--show-priv-flags|--set-priv-flags",
++		.cmd		= ETHTOOL_MSG_PRIVFLAGS_NTF,
++	},
+ };
+ 
+ static bool pattern_match(const char *s, const char *pattern)
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index 98e38ff2d7b0..2e90dbe095c9 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -63,6 +63,7 @@ int linkinfo_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ int wol_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ int debug_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ int features_reply_cb(const struct nlmsghdr *nlhdr, void *data);
++int privflags_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ 
+ static inline void copy_devname(char *dst, const char *src)
+ {
+diff --git a/netlink/privflags.c b/netlink/privflags.c
+new file mode 100644
+index 000000000000..b552c21ed191
+--- /dev/null
++++ b/netlink/privflags.c
+@@ -0,0 +1,109 @@
++/*
++ * privflags.c - netlink implementation of private flags commands
++ *
++ * Implementation of "ethtool --show-priv-flags <dev>"
++ */
 +
-+/* FEATURES_SET */
++#include <errno.h>
++#include <string.h>
++#include <stdio.h>
 +
-+struct sfeatures_context {
-+	uint32_t		req_mask[0];
-+};
++#include "../internal.h"
++#include "../common.h"
++#include "netlink.h"
++#include "strset.h"
++#include "bitset.h"
 +
-+static int find_feature(const char *name,
-+			const struct stringset *feature_names)
++/* PRIVFLAGS_GET */
++
++static void privflags_maxlen_walk_cb(unsigned int idx, const char *name,
++				     bool val, void *data)
 +{
-+	const unsigned int count = get_count(feature_names);
-+	unsigned int i;
++	unsigned int *maxlen = data;
++	unsigned int len, n;
 +
-+	for (i = 0; i < count; i++)
-+		if (!strcmp(name, get_string(feature_names, i)))
-+			return i;
-+
-+	return -1;
-+}
-+
-+static int fill_feature(struct nl_msg_buff *msgbuff, const char *name, bool val)
-+{
-+	struct nlattr *bit_attr;
-+
-+	bit_attr = ethnla_nest_start(msgbuff, ETHTOOL_A_BITSET_BITS_BIT);
-+	if (!bit_attr)
-+		return -EMSGSIZE;
-+	if (ethnla_put_strz(msgbuff, ETHTOOL_A_BITSET_BIT_NAME, name))
-+		return -EMSGSIZE;
-+	if (ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_BIT_VALUE, val))
-+		return -EMSGSIZE;
-+	mnl_attr_nest_end(msgbuff->nlhdr, bit_attr);
-+
-+	return 0;
-+}
-+
-+static void set_sf_req_mask(struct nl_context *nlctx, unsigned int idx)
-+{
-+	struct sfeatures_context *sfctx = nlctx->cmd_private;
-+
-+	sfctx->req_mask[idx / 32] |= (1 << (idx % 32));
-+}
-+
-+static int fill_legacy_flag(struct nl_context *nlctx, const char *flag_name,
-+			    const struct stringset *feature_names, bool val)
-+{
-+	struct nl_msg_buff *msgbuff = &nlctx->ethnl_socket->msgbuff;
-+	const unsigned int count = get_count(feature_names);
-+	unsigned int i, j;
-+	int ret;
-+
-+	for (i = 0; i < OFF_FLAG_DEF_SIZE; i++) {
-+		const char *pattern;
-+
-+		if (strcmp(flag_name, off_flag_def[i].short_name) &&
-+		    strcmp(flag_name, off_flag_def[i].long_name))
-+			continue;
-+		pattern = off_flag_def[i].kernel_name;
-+
-+		for (j = 0; j < count; j++) {
-+			const char *name = get_string(feature_names, j);
-+
-+			if (flag_pattern_match(name, pattern)) {
-+				ret = fill_feature(msgbuff, name, val);
-+				if (ret < 0)
-+					return ret;
-+				set_sf_req_mask(nlctx, j);
-+			}
-+		}
-+
-+		return 0;
++	if (name)
++		len = strlen(name);
++	else {
++		len = 3; /* strlen("bit") */
++		for (n = idx ?: 1; n; n /= 10)
++			len++; /* plus number of ditigs */
 +	}
-+
-+	return 1;
++	if (len > *maxlen)
++		*maxlen = len;
 +}
 +
-+int fill_sfeatures_bitmap(struct nl_context *nlctx,
-+			  const struct stringset *feature_names)
++static void privflags_dump_walk_cb(unsigned int idx, const char *name, bool val,
++				   void *data)
 +{
-+	struct nl_msg_buff *msgbuff = &nlctx->ethnl_socket->msgbuff;
-+	struct nlattr *bitset_attr;
-+	struct nlattr *bits_attr;
-+	int ret;
++	unsigned int *maxlen = data;
++	char buff[16];
 +
-+	ret = -EMSGSIZE;
-+	bitset_attr = ethnla_nest_start(msgbuff, ETHTOOL_A_FEATURES_WANTED);
-+	if (!bitset_attr)
-+		return ret;
-+	bits_attr = ethnla_nest_start(msgbuff, ETHTOOL_A_BITSET_BITS);
-+	if (!bits_attr)
-+		goto err;
-+
-+	while (nlctx->argc > 0) {
-+		bool val;
-+
-+		if (!strcmp(*nlctx->argp, "--")) {
-+			nlctx->argp++;
-+			nlctx->argc--;
-+			break;
-+		}
-+		ret = -EINVAL;
-+		if (nlctx->argc < 2 ||
-+		    (strcmp(nlctx->argp[1], "on") &&
-+		     strcmp(nlctx->argp[1], "off"))) {
-+			fprintf(stderr,
-+				"ethtool (%s): flag '%s' for parameter '%s' is"
-+				" not followed by 'on' or 'off'\n",
-+				nlctx->cmd, nlctx->argp[1], nlctx->param);
-+			goto err;
-+		}
-+
-+		val = !strcmp(nlctx->argp[1], "on");
-+		ret = fill_legacy_flag(nlctx, nlctx->argp[0], feature_names,
-+				       val);
-+		if (ret > 0) {
-+			ret = fill_feature(msgbuff, nlctx->argp[0], val);
-+			if (ret == 0) {
-+				int idx = find_feature(nlctx->argp[0],
-+						       feature_names);
-+
-+				if (idx >= 0)
-+					set_sf_req_mask(nlctx, idx);
-+			}
-+		}
-+		if (ret < 0)
-+			goto err;
-+
-+		nlctx->argp += 2;
-+		nlctx->argc -= 2;
++	if (!name) {
++		snprintf(buff, sizeof(buff) - 1, "bit%u", idx);
++		name = buff;
 +	}
-+
-+	ethnla_nest_end(msgbuff, bits_attr);
-+	ethnla_nest_end(msgbuff, bitset_attr);
-+	return 0;
-+err:
-+	ethnla_nest_cancel(msgbuff, bitset_attr);
-+	return ret;
++	printf("%-*s: %s\n", *maxlen, name, val ? "on" : "off");
 +}
 +
-+static void show_feature_changes(struct nl_context *nlctx,
-+				 const struct nlattr *const *tb)
++int privflags_reply_cb(const struct nlmsghdr *nlhdr, void *data)
 +{
-+	struct sfeatures_context *sfctx = nlctx->cmd_private;
-+	const struct stringset *feature_names;
-+	const uint32_t *wanted_mask;
-+	const uint32_t *active_mask;
-+	const uint32_t *wanted_val;
-+	const uint32_t *active_val;
-+	unsigned int count, words;
-+	unsigned int i;
-+	bool diff;
-+	int ret;
-+
-+	feature_names = global_stringset(ETH_SS_FEATURES, nlctx->ethnl_socket);
-+	count = get_count(feature_names);
-+	words = DIV_ROUND_UP(count, 32);
-+
-+	if (!tb[ETHTOOL_A_FEATURES_WANTED] || !tb[ETHTOOL_A_FEATURES_ACTIVE])
-+		goto err;
-+	if (bitset_get_count(tb[ETHTOOL_A_FEATURES_WANTED], &ret) != count ||
-+	    ret < 0)
-+		goto err;
-+	if (bitset_get_count(tb[ETHTOOL_A_FEATURES_ACTIVE], &ret) != count ||
-+	    ret < 0)
-+		goto err;
-+	wanted_val = get_compact_bitset_value(tb[ETHTOOL_A_FEATURES_WANTED]);
-+	wanted_mask = get_compact_bitset_mask(tb[ETHTOOL_A_FEATURES_WANTED]);
-+	active_val = get_compact_bitset_value(tb[ETHTOOL_A_FEATURES_ACTIVE]);
-+	active_mask = get_compact_bitset_mask(tb[ETHTOOL_A_FEATURES_ACTIVE]);
-+	if (!wanted_val || !wanted_mask || !active_val || !active_mask)
-+		goto err;
-+
-+	diff = false;
-+	for (i = 0; i < words; i++)
-+		if (wanted_mask[i] || active_mask[i])
-+			diff = true;
-+	if (!diff)
-+		return;
-+
-+	/* result is not exactly as requested, show differences */
-+	printf("Actual changes:\n");
-+	for (i = 0; i < count; i++) {
-+		const char *name = get_string(feature_names, i);
-+
-+		if (!name)
-+			continue;
-+		if (!feature_on(wanted_mask, i) && !feature_on(active_mask, i))
-+			continue;
-+		printf("%s: ", name);
-+		if (feature_on(wanted_mask, i))
-+			/* we requested a value but result is different */
-+			printf("%s [requested %s]",
-+			       feature_on(wanted_val, i) ? "off" : "on",
-+			       feature_on(wanted_val, i) ? "on" : "off");
-+		else if (!feature_on(sfctx->req_mask, i))
-+			/* not requested but changed anyway */
-+			printf("%s [not requested]",
-+			       feature_on(active_val, i) ? "on" : "off");
-+		else
-+			printf("%s", feature_on(active_val, i) ? "on" : "off");
-+		fputc('\n', stdout);
-+	}
-+
-+	return;
-+err:
-+	fprintf(stderr, "malformed diff info from kernel\n");
-+}
-+
-+int sfeatures_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct genlmsghdr *ghdr = (const struct genlmsghdr *)(nlhdr + 1);
-+	const struct nlattr *tb[ETHTOOL_A_FEATURES_MAX + 1] = {};
++	const struct nlattr *tb[ETHTOOL_A_PRIVFLAGS_MAX + 1] = {};
 +	DECLARE_ATTR_TB_INFO(tb);
++	const struct stringset *flag_names = NULL;
 +	struct nl_context *nlctx = data;
-+	const char *devname;
++	unsigned int maxlen = 0;
++	bool silent;
++	int err_ret;
 +	int ret;
 +
-+	if (ghdr->cmd != ETHTOOL_MSG_FEATURES_SET_REPLY) {
-+		fprintf(stderr, "warning: unexpected reply message type %u\n",
-+			ghdr->cmd);
-+		return MNL_CB_OK;
-+	}
++	silent = nlctx->is_dump || nlctx->is_monitor;
++	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
++
 +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+	devname = get_dev_name(tb[ETHTOOL_A_FEATURES_HEADER]);
-+	if (strcmp(devname, nlctx->devname)) {
-+		fprintf(stderr, "warning: unexpected message for device %s\n",
-+			devname);
++	if (ret < 0 || !tb[ETHTOOL_A_PRIVFLAGS_FLAGS])
++		return err_ret;
++	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PRIVFLAGS_HEADER]);
++	if (!dev_ok(nlctx))
 +		return MNL_CB_OK;
++
++	if (bitset_is_compact(tb[ETHTOOL_A_PRIVFLAGS_FLAGS])) {
++		ret = netlink_init_ethnl2_socket(nlctx);
++		if (ret < 0)
++			return err_ret;
++		flag_names = perdev_stringset(nlctx->devname, ETH_SS_PRIV_FLAGS,
++					      nlctx->ethnl2_socket);
 +	}
 +
-+	show_feature_changes(nlctx, tb);
-+	return MNL_CB_OK;
++	ret = walk_bitset(tb[ETHTOOL_A_PRIVFLAGS_FLAGS], flag_names,
++			  privflags_maxlen_walk_cb, &maxlen);
++	if (ret < 0)
++		return err_ret;
++	if (silent)
++		putchar('\n');
++	printf("Private flags for %s:\n", nlctx->devname);
++	ret = walk_bitset(tb[ETHTOOL_A_PRIVFLAGS_FLAGS], flag_names,
++			  privflags_dump_walk_cb, &maxlen);
++	return (ret < 0) ? err_ret : MNL_CB_OK;
 +}
 +
-+int nl_sfeatures(struct cmd_context *ctx)
++int nl_gprivflags(struct cmd_context *ctx)
 +{
-+	const struct stringset *feature_names;
 +	struct nl_context *nlctx = ctx->nlctx;
-+	struct sfeatures_context *sfctx;
-+	struct nl_msg_buff *msgbuff;
-+	struct nl_socket *nlsk;
-+	unsigned int words;
++	struct nl_socket *nlsk = nlctx->ethnl_socket;
 +	int ret;
 +
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_FEATURES_SET, false))
++	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PRIVFLAGS_GET, true))
 +		return -EOPNOTSUPP;
++	if (ctx->argc > 0) {
++		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
++			*ctx->argp);
++		return 1;
++	}
 +
-+	nlctx->cmd = "-K";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->cmd_private = &sfctx;
-+	nlsk = nlctx->ethnl_socket;
-+	msgbuff = &nlsk->msgbuff;
-+
-+	feature_names = global_stringset(ETH_SS_FEATURES, nlctx->ethnl_socket);
-+	words = (get_count(feature_names) + 31) / 32;
-+	sfctx = malloc(sizeof(*sfctx) + words * sizeof(sfctx->req_mask[0]));
-+	if (!sfctx)
-+		return -ENOMEM;
-+	memset(sfctx, '\0',
-+	       sizeof(*sfctx) + words * sizeof(sfctx->req_mask[0]));
-+	nlctx->cmd_private = sfctx;
-+
-+	nlctx->devname = ctx->devname;
-+	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_FEATURES_SET,
-+		       NLM_F_REQUEST | NLM_F_ACK);
-+	if (ret < 0)
-+		return 2;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_FEATURES_HEADER, ctx->devname,
-+			       ETHTOOL_FLAG_COMPACT_BITSETS))
-+		return -EMSGSIZE;
-+	ret = fill_sfeatures_bitmap(nlctx, feature_names);
++	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PRIVFLAGS_GET,
++				      ETHTOOL_A_PRIVFLAGS_HEADER, 0);
 +	if (ret < 0)
 +		return ret;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		return 92;
-+	ret = nlsock_process_reply(nlsk, sfeatures_reply_cb, nlctx);
-+	if (ret == 0)
-+		return 0;
-+	return nlctx->exit_code ?: 92;
++	return nlsock_send_get_request(nlsk, privflags_reply_cb);
 +}
 -- 
 2.26.2
