@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B821E62AC
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C05B51E62DB
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:52:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390581AbgE1NsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:48:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47152 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390486AbgE1NsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 09:48:05 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 900B4207D3;
-        Thu, 28 May 2020 13:48:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590673685;
-        bh=hCc/4WkpOoMnYzAs7vLH2tpFPjfk82hCbKAhbeXkNI0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y4k39ZFaQ41ExRlY1FpyEQJR61aEW8XCAqj3dq0dkZ3PCbvGQ8q/L0EwtUR+BdXqt
-         b+coz6x9QHt1uSD8fvSAyy9Ku/2ke4nRaAGrNDGhCFHwPI7+CSialN6cbAZJ9geC2r
-         dKuhxH11yqWoiaq+GxLW8DRut8Peg/xIRNbM6Fpw=
-Date:   Thu, 28 May 2020 14:48:02 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 1/2] regmap: provide helpers for simple bit operations
-Message-ID: <20200528134802.GE3606@sirena.org.uk>
-References: <20200528123459.21168-1-brgl@bgdev.pl>
- <20200528123459.21168-2-brgl@bgdev.pl>
- <20200528132938.GC3606@sirena.org.uk>
- <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
+        id S2390625AbgE1NvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:51:07 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5304 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2390498AbgE1NvB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 09:51:01 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 22EF75EBCD9D41EEF2B8;
+        Thu, 28 May 2020 21:50:54 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 28 May 2020 21:50:48 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 00/12] net: hns3: misc updates for -next
+Date:   Thu, 28 May 2020 21:48:07 +0800
+Message-ID: <1590673699-63819-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Ns7jmDPpOpCD+GE/"
-Content-Disposition: inline
-In-Reply-To: <CAMRc=MejeXv6vd5iRW_EB3XqBtdCWDcV=4BOCDDFd4D0-y9LUA@mail.gmail.com>
-X-Cookie: Small is beautiful.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset includes some updates for the HNS3 ethernet driver.
 
---Ns7jmDPpOpCD+GE/
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+#1 removes an unnecessary 'goto'.
+#2 adds a missing mutex destroy.
+#3&4 refactor two function, make them more readable and maintainable.
+#5&6 fix unsuitable type of gro enable field both for PF & VF.
+#7-#11 removes some unused fields, macro and redundant definitions.
+#12 adds more debug info for parsing speed fails.
 
-On Thu, May 28, 2020 at 03:32:40PM +0200, Bartosz Golaszewski wrote:
-> czw., 28 maj 2020 o 15:29 Mark Brown <broonie@kernel.org> napisa=C5=82(a):
+Huazhong Tan (12):
+  net: hns3: remove an unnecessary 'goto' in hclge_init_ae_dev()
+  net: hns3: add a missing mutex destroy in hclge_init_ad_dev()
+  net: hns3: refactor hclge_config_tso()
+  net: hns3: refactor hclge_query_bd_num_cmd_send()
+  net: hns3: modify an incorrect type in struct hclge_cfg_gro_status_cmd
+  net: hns3: modify an incorrect type in struct
+    hclgevf_cfg_gro_status_cmd
+  net: hns3: remove some unused fields in struct hns3_nic_priv
+  net: hns3; remove unused HNAE3_RESTORE_CLIENT in enum
+    hnae3_reset_notify_type
+  net: hns3: remove unused struct hnae3_unic_private_info
+  net: hns3: remove two duplicated register macros in hclgevf_main.h
+  net: hns3: remove some unused fields in struct hclge_dev
+  net: hns3: print out speed info when parsing speed fails
 
-> > Why macros and not static inlines?
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        | 12 ------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 22 ----------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  4 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 50 ++++++++++------------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  6 ---
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  4 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  8 ++--
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  4 +-
+ 8 files changed, 31 insertions(+), 79 deletions(-)
 
-> The existing regmap_update_bits_*() helpers are macros too, so I tried
-> to stay consistent. Any reason why they are macros and not static
-> inlines? If there's none, then why not convert them too? Otherwise
-> we'd have a static inline expanding a macro which in turn is calling a
-> function (regmap_update_bits_base()).
+-- 
+2.7.4
 
-Not really, I think it was just that they're argument tables.  It'd be
-good to convert them.
-
---Ns7jmDPpOpCD+GE/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7PwREACgkQJNaLcl1U
-h9BZlQf/Rnk3QvRXUU9UWRrY62o3tOtAkM+YDOn1qkCahCNlR3xn6spu/jZ2xpm8
-wtG0/ml9T9EeXbWZU0n2vWYQowTecwv3zFcQgHRtEaN+Q0F1pZeBoGo7Hazyp47Y
-2UI0x5pTwKgEs6xwxQ9hDWy9KhGgLODt7MWUQv8T8m7XxDRmoCh9MbMAiEm2GPLb
-Vt5FGW0iBTVJh/h0J84HpA1BY1bXPFBwICbqISunBPso9Gj7D5YzmK9iKvz4qW+g
-eCfgV0eYbRbMCcL7UG9jOWOZxuznG+BfLNmzOLl/eydOppXcHVWhah9Q8Q8xsdqG
-+R17K+lbB6MGwp7pU0Fr2sp98g43Cw==
-=Zc21
------END PGP SIGNATURE-----
-
---Ns7jmDPpOpCD+GE/--
