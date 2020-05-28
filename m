@@ -2,111 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 440721E5EBF
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 13:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825061E5ED9
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 13:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388576AbgE1Lyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388563AbgE1Lyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 07:54:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BC4C08C5C5
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 04:54:31 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jeH77-0003bQ-PA; Thu, 28 May 2020 13:54:21 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jeH74-00031C-8Z; Thu, 28 May 2020 13:54:18 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        "John W. Linville" <linville@tuxdriver.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>,
-        Amit Cohen <amitc@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: [PATCH v2 3/3] netlink: add LINKSTATE SQI support
-Date:   Thu, 28 May 2020 13:54:14 +0200
-Message-Id: <20200528115414.11516-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200528115414.11516-1-o.rempel@pengutronix.de>
-References: <20200528115414.11516-1-o.rempel@pengutronix.de>
+        id S2388782AbgE1L4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 07:56:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48612 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388756AbgE1L4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:33 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB84C212CC;
+        Thu, 28 May 2020 11:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590666992;
+        bh=RLNlhemzW4ribfLkBUD1RSYLmBY+YrB9hbsoBuZ4UJA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mNfJl69e34LvZV6rI6Lz2PgrfDqPRztuu9Q35SHFu6oUAR1gFEBBxV24tvLc8fjjj
+         t6lK5/Iin30qCjbHubstPQQRDDLc2SPZ5zonY7Z8rtQN+emPkZj3LZLYLlbD/b6I3u
+         95zZEm8JwZcvtV6UDB5R32YwlAz4OyDaj+iOEdn8=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 28/47] felix: Fix initialization of ioremap resources
+Date:   Thu, 28 May 2020 07:55:41 -0400
+Message-Id: <20200528115600.1405808-28-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
+References: <20200528115600.1405808-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some PHYs provide Signal Quality Index (SQI) if the link is in active
-state. This information can help to diagnose cable and system design
-related issues.
+From: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+[ Upstream commit b4024c9e5c57902155d3b5e7de482e245f492bff ]
+
+The caller of devm_ioremap_resource(), either accidentally
+or by wrong assumption, is writing back derived resource data
+to global static resource initialization tables that should
+have been constant.  Meaning that after it computes the final
+physical start address it saves the address for no reason
+in the static tables.  This doesn't affect the first driver
+probing after reboot, but it breaks consecutive driver reloads
+(i.e. driver unbind & bind) because the initialization tables
+no longer have the correct initial values.  So the next probe()
+will map the device registers to wrong physical addresses,
+causing ARM SError async exceptions.
+This patch fixes all of the above.
+
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- netlink/desc-ethtool.c |  2 ++
- netlink/settings.c     | 16 ++++++++++++++++
- 2 files changed, 18 insertions(+)
+ drivers/net/dsa/ocelot/felix.c         | 23 +++++++++++------------
+ drivers/net/dsa/ocelot/felix.h         |  6 +++---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 22 ++++++++++------------
+ 3 files changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index b0a793c..8f4c36b 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -93,6 +93,8 @@ static const struct pretty_nla_desc __linkstate_desc[] = {
- 	NLATTR_DESC_INVALID(ETHTOOL_A_LINKSTATE_UNSPEC),
- 	NLATTR_DESC_NESTED(ETHTOOL_A_LINKSTATE_HEADER, header),
- 	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
-+	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI),
-+	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI_MAX),
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index a7780c06fa65..b74580e87be8 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -385,6 +385,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	struct ocelot *ocelot = &felix->ocelot;
+ 	phy_interface_t *port_phy_modes;
+ 	resource_size_t switch_base;
++	struct resource res;
+ 	int port, i, err;
+ 
+ 	ocelot->num_phys_ports = num_phys_ports;
+@@ -416,17 +417,16 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 
+ 	for (i = 0; i < TARGET_MAX; i++) {
+ 		struct regmap *target;
+-		struct resource *res;
+ 
+ 		if (!felix->info->target_io_res[i].name)
+ 			continue;
+ 
+-		res = &felix->info->target_io_res[i];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->target_io_res[i], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		target = ocelot_regmap_init(ocelot, res);
++		target = ocelot_regmap_init(ocelot, &res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map device memory space\n");
+@@ -447,7 +447,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	for (port = 0; port < num_phys_ports; port++) {
+ 		struct ocelot_port *ocelot_port;
+ 		void __iomem *port_regs;
+-		struct resource *res;
+ 
+ 		ocelot_port = devm_kzalloc(ocelot->dev,
+ 					   sizeof(struct ocelot_port),
+@@ -459,12 +458,12 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 			return -ENOMEM;
+ 		}
+ 
+-		res = &felix->info->port_io_res[port];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->port_io_res[port], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		port_regs = devm_ioremap_resource(ocelot->dev, res);
++		port_regs = devm_ioremap_resource(ocelot->dev, &res);
+ 		if (IS_ERR(port_regs)) {
+ 			dev_err(ocelot->dev,
+ 				"failed to map registers for port %d\n", port);
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 8771d40324f1..2c024cc901d4 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -8,9 +8,9 @@
+ 
+ /* Platform-specific information */
+ struct felix_info {
+-	struct resource			*target_io_res;
+-	struct resource			*port_io_res;
+-	struct resource			*imdio_res;
++	const struct resource		*target_io_res;
++	const struct resource		*port_io_res;
++	const struct resource		*imdio_res;
+ 	const struct reg_field		*regfields;
+ 	const u32 *const		*map;
+ 	const struct ocelot_ops		*ops;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index edc1a67c002b..50074da3a1a0 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -328,10 +328,8 @@ static const u32 *vsc9959_regmap[] = {
+ 	[GCB]	= vsc9959_gcb_regmap,
  };
  
- static const struct pretty_nla_desc __debug_desc[] = {
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 851de15..cd4b9a7 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -638,6 +638,22 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 		printf("\tLink detected: %s\n", val ? "yes" : "no");
- 	}
+-/* Addresses are relative to the PCI device's base address and
+- * will be fixed up at ioremap time.
+- */
+-static struct resource vsc9959_target_io_res[] = {
++/* Addresses are relative to the PCI device's base address */
++static const struct resource vsc9959_target_io_res[] = {
+ 	[ANA] = {
+ 		.start	= 0x0280000,
+ 		.end	= 0x028ffff,
+@@ -374,7 +372,7 @@ static struct resource vsc9959_target_io_res[] = {
+ 	},
+ };
  
-+	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
-+		uint32_t val = mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI]);
-+
-+		print_banner(nlctx);
-+		printf("\tSQI: %u", val);
-+
-+		if (tb[ETHTOOL_A_LINKSTATE_SQI_MAX]) {
-+			uint32_t max;
-+
-+			max = mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI_MAX]);
-+			printf("/%u\n", max);
-+		} else {
-+			printf("\n");
-+		}
-+	}
-+
- 	return MNL_CB_OK;
- }
+-static struct resource vsc9959_port_io_res[] = {
++static const struct resource vsc9959_port_io_res[] = {
+ 	{
+ 		.start	= 0x0100000,
+ 		.end	= 0x010ffff,
+@@ -410,7 +408,7 @@ static struct resource vsc9959_port_io_res[] = {
+ /* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
+  * SGMII/QSGMII MAC PCS can be found.
+  */
+-static struct resource vsc9959_imdio_res = {
++static const struct resource vsc9959_imdio_res = {
+ 	.start		= 0x8030,
+ 	.end		= 0x8040,
+ 	.name		= "imdio",
+@@ -984,7 +982,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	struct device *dev = ocelot->dev;
+ 	resource_size_t imdio_base;
+ 	void __iomem *imdio_regs;
+-	struct resource *res;
++	struct resource res;
+ 	struct enetc_hw *hw;
+ 	struct mii_bus *bus;
+ 	int port;
+@@ -1001,12 +999,12 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	imdio_base = pci_resource_start(felix->pdev,
+ 					felix->info->imdio_pci_bar);
  
+-	res = felix->info->imdio_res;
+-	res->flags = IORESOURCE_MEM;
+-	res->start += imdio_base;
+-	res->end += imdio_base;
++	memcpy(&res, felix->info->imdio_res, sizeof(res));
++	res.flags = IORESOURCE_MEM;
++	res.start += imdio_base;
++	res.end += imdio_base;
+ 
+-	imdio_regs = devm_ioremap_resource(dev, res);
++	imdio_regs = devm_ioremap_resource(dev, &res);
+ 	if (IS_ERR(imdio_regs)) {
+ 		dev_err(dev, "failed to map internal MDIO registers\n");
+ 		return PTR_ERR(imdio_regs);
 -- 
-2.26.2
+2.25.1
 
