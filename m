@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF451E556F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95181E5571
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727854AbgE1FNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 01:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
+        id S1727882AbgE1FNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 01:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbgE1FNb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:13:31 -0400
+        with ESMTP id S1727844AbgE1FNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:13:33 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED2AC05BD1E;
-        Wed, 27 May 2020 22:13:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192ABC05BD1E;
+        Wed, 27 May 2020 22:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=VdTXGAkw/1nyL6z33X0b7/NfvqZ5AsGTWmUq3QW34Eo=; b=md9DT93wq9CyegwUcnooDejIgt
-        3RVXakTiNA+SzeIrMw6+4DfIoJ+SR34khvtM0G9H02BLqFS+21Oay/fY1xfO/BNAbMX9YX6ZJ9hWO
-        HN4QpnRRtoAeeZ+0mUNkv/Fm517rEA07bFYZwkt3UAEoqX10gicnfzFlWyAvarrWLRO05HZ19ZhN/
-        BffUbssLd+e536sUC0qy2pF1zPh/um59w298wa+F8QGJW9nEcIgT0Sr54+SQbvp8Bwl9dnYD4D11T
-        DVeLSJva7v263FiZgzaUOTOpwSYxmel80Pqk5jurDrQmgIRqgjMIHajvQCh9piHDv9NJeUiWnH9Lg
-        Vz0Do/eg==;
+        bh=OiNHoC++ZJU6Frq2cw0ICACNWwiR/rswekrw6423rd8=; b=rkGGksOhNzB0fjN8MqaowV5Kjp
+        gVC7Y/3rFWBpdFGLzPcDwmemMR1h14UTRr8JmFAhgaC9aTFnNAruNNAtLp0Qy4ugZ+e4o1H9C/ZPq
+        RsuWiPIzBsDw8xLMgOjUQXlkDoYmnJVurcinzDc+bftRIBCI0J2kgImNjB9ourKn3A0pQgKABrwHI
+        Hn8ObVPnBBo9y/UQY32qzssj51jMPReVMrNmW6QzVGJaPN1aWK6SrNIpjQ5YStuYGCGQUb6mqBubf
+        +ojcAw2FhI66B8JNh3OkxuLCdyEV0FvUSLBEIZOjKh5qdSvQv/izNkxDU4U8V7Sb5PVryuZlroikh
+        VYDUbIRg==;
 Received: from p4fdb1ad2.dip0.t-ipconnect.de ([79.219.26.210] helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jeAqc-0001aJ-TK; Thu, 28 May 2020 05:12:55 +0000
+        id 1jeAqg-0001fT-LD; Thu, 28 May 2020 05:13:00 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -42,9 +42,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         netdev@vger.kernel.org, ceph-devel@vger.kernel.org,
         rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net
-Subject: [PATCH 05/28] net: add sock_bindtoindex
-Date:   Thu, 28 May 2020 07:12:13 +0200
-Message-Id: <20200528051236.620353-6-hch@lst.de>
+Subject: [PATCH 06/28] net: add sock_enable_timestamps
+Date:   Thu, 28 May 2020 07:12:14 +0200
+Message-Id: <20200528051236.620353-7-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200528051236.620353-1-hch@lst.de>
 References: <20200528051236.620353-1-hch@lst.de>
@@ -56,112 +56,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper to directly set the SO_BINDTOIFINDEX sockopt from kernel
-space without going through a fake uaccess.
+Add a helper to directly enable timestamps instead of setting the
+SO_TIMESTAMP* sockopts from kernel space and going through a fake
+uaccess.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/net/sock.h        |  1 +
- net/core/sock.c           | 21 +++++++++++++++------
- net/ipv4/udp_tunnel.c     |  4 +---
- net/ipv6/ip6_udp_tunnel.c |  4 +---
- 4 files changed, 18 insertions(+), 12 deletions(-)
+ include/net/sock.h       |  1 +
+ net/core/sock.c          | 47 +++++++++++++++++++++++++---------------
+ net/rxrpc/local_object.c |  8 +------
+ 3 files changed, 31 insertions(+), 25 deletions(-)
 
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 9a7b9e98685ac..cdec7bc055d5b 100644
+index cdec7bc055d5b..99ef43508d2b5 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -2688,6 +2688,7 @@ static inline bool sk_dev_equal_l3scope(struct sock *sk, int dif)
- 
+@@ -2689,6 +2689,7 @@ static inline bool sk_dev_equal_l3scope(struct sock *sk, int dif)
  void sock_def_readable(struct sock *sk);
  
-+int sock_bindtoindex(struct sock *sk, int ifindex);
+ int sock_bindtoindex(struct sock *sk, int ifindex);
++void sock_enable_timestamps(struct sock *sk);
  void sock_no_linger(struct sock *sk);
  void sock_set_priority(struct sock *sk, u32 priority);
  void sock_set_reuseaddr(struct sock *sk);
 diff --git a/net/core/sock.c b/net/core/sock.c
-index d3b1d61e4f768..23f80880fbb2c 100644
+index 23f80880fbb2c..e4a4dd2b3d8b3 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -566,7 +566,7 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie)
+@@ -757,6 +757,28 @@ void sock_set_sndtimeo(struct sock *sk, s64 secs)
  }
- EXPORT_SYMBOL(sk_dst_check);
+ EXPORT_SYMBOL(sock_set_sndtimeo);
  
--static int sock_setbindtodevice_locked(struct sock *sk, int ifindex)
-+static int sock_bindtoindex_locked(struct sock *sk, int ifindex)
- {
- 	int ret = -ENOPROTOOPT;
- #ifdef CONFIG_NETDEVICES
-@@ -594,6 +594,18 @@ static int sock_setbindtodevice_locked(struct sock *sk, int ifindex)
- 	return ret;
- }
- 
-+int sock_bindtoindex(struct sock *sk, int ifindex)
++static void __sock_set_timestamps(struct sock *sk, bool val, bool new, bool ns)
 +{
-+	int ret;
-+
-+	lock_sock(sk);
-+	ret = sock_bindtoindex_locked(sk, ifindex);
-+	release_sock(sk);
-+
-+	return ret;
++	if (val)  {
++		sock_valbool_flag(sk, SOCK_TSTAMP_NEW, new);
++		sock_valbool_flag(sk, SOCK_RCVTSTAMPNS, ns);
++		sock_set_flag(sk, SOCK_RCVTSTAMP);
++		sock_enable_timestamp(sk, SOCK_TIMESTAMP);
++	} else {
++		sock_reset_flag(sk, SOCK_RCVTSTAMP);
++		sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
++		sock_reset_flag(sk, SOCK_TSTAMP_NEW);
++	}
 +}
-+EXPORT_SYMBOL(sock_bindtoindex);
 +
- static int sock_setbindtodevice(struct sock *sk, char __user *optval,
- 				int optlen)
- {
-@@ -634,10 +646,7 @@ static int sock_setbindtodevice(struct sock *sk, char __user *optval,
- 			goto out;
- 	}
- 
--	lock_sock(sk);
--	ret = sock_setbindtodevice_locked(sk, index);
--	release_sock(sk);
--
-+	return sock_bindtoindex(sk, index);
- out:
- #endif
- 
-@@ -1216,7 +1225,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
++void sock_enable_timestamps(struct sock *sk)
++{
++	lock_sock(sk);
++	__sock_set_timestamps(sk, true, false, true);
++	release_sock(sk);
++}
++EXPORT_SYMBOL(sock_enable_timestamps);
++
+ /*
+  *	This is meant for all protocols to use and covers goings on
+  *	at the socket level. Everything here is generic.
+@@ -948,28 +970,17 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
  		break;
  
- 	case SO_BINDTOIFINDEX:
--		ret = sock_setbindtodevice_locked(sk, val);
-+		ret = sock_bindtoindex_locked(sk, val);
+ 	case SO_TIMESTAMP_OLD:
++		__sock_set_timestamps(sk, valbool, false, false);
++		break;
+ 	case SO_TIMESTAMP_NEW:
++		__sock_set_timestamps(sk, valbool, true, false);
++		break;
+ 	case SO_TIMESTAMPNS_OLD:
++		__sock_set_timestamps(sk, valbool, false, true);
++		break;
+ 	case SO_TIMESTAMPNS_NEW:
+-		if (valbool)  {
+-			if (optname == SO_TIMESTAMP_NEW || optname == SO_TIMESTAMPNS_NEW)
+-				sock_set_flag(sk, SOCK_TSTAMP_NEW);
+-			else
+-				sock_reset_flag(sk, SOCK_TSTAMP_NEW);
+-
+-			if (optname == SO_TIMESTAMP_OLD || optname == SO_TIMESTAMP_NEW)
+-				sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
+-			else
+-				sock_set_flag(sk, SOCK_RCVTSTAMPNS);
+-			sock_set_flag(sk, SOCK_RCVTSTAMP);
+-			sock_enable_timestamp(sk, SOCK_TIMESTAMP);
+-		} else {
+-			sock_reset_flag(sk, SOCK_RCVTSTAMP);
+-			sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
+-			sock_reset_flag(sk, SOCK_TSTAMP_NEW);
+-		}
++		__sock_set_timestamps(sk, valbool, true, true);
+ 		break;
+-
+ 	case SO_TIMESTAMPING_NEW:
+ 		sock_set_flag(sk, SOCK_TSTAMP_NEW);
+ 		/* fall through */
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 01135e54d95d2..5ea2bd01fdd59 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -189,13 +189,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 		}
+ 
+ 		/* We want receive timestamps. */
+-		opt = 1;
+-		ret = kernel_setsockopt(local->socket, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
+-					(char *)&opt, sizeof(opt));
+-		if (ret < 0) {
+-			_debug("setsockopt failed");
+-			goto error;
+-		}
++		sock_enable_timestamps(local->socket->sk);
  		break;
  
  	default:
-diff --git a/net/ipv4/udp_tunnel.c b/net/ipv4/udp_tunnel.c
-index 150e6f0fdbf59..2158e8bddf41c 100644
---- a/net/ipv4/udp_tunnel.c
-+++ b/net/ipv4/udp_tunnel.c
-@@ -22,9 +22,7 @@ int udp_sock_create4(struct net *net, struct udp_port_cfg *cfg,
- 		goto error;
- 
- 	if (cfg->bind_ifindex) {
--		err = kernel_setsockopt(sock, SOL_SOCKET, SO_BINDTOIFINDEX,
--					(void *)&cfg->bind_ifindex,
--					sizeof(cfg->bind_ifindex));
-+		err = sock_bindtoindex(sock->sk, cfg->bind_ifindex);
- 		if (err < 0)
- 			goto error;
- 	}
-diff --git a/net/ipv6/ip6_udp_tunnel.c b/net/ipv6/ip6_udp_tunnel.c
-index 58956a6b66a21..6523609516d25 100644
---- a/net/ipv6/ip6_udp_tunnel.c
-+++ b/net/ipv6/ip6_udp_tunnel.c
-@@ -33,9 +33,7 @@ int udp_sock_create6(struct net *net, struct udp_port_cfg *cfg,
- 			goto error;
- 	}
- 	if (cfg->bind_ifindex) {
--		err = kernel_setsockopt(sock, SOL_SOCKET, SO_BINDTOIFINDEX,
--					(void *)&cfg->bind_ifindex,
--					sizeof(cfg->bind_ifindex));
-+		err = sock_bindtoindex(sock->sk, cfg->bind_ifindex);
- 		if (err < 0)
- 			goto error;
- 	}
 -- 
 2.26.2
 
