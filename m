@@ -2,92 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F001E69BC
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 20:48:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5BCF1E6A07
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406010AbgE1Ssj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 14:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405916AbgE1Ssi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 14:48:38 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0120FC08C5C6;
-        Thu, 28 May 2020 11:48:38 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fs4so3659965pjb.5;
-        Thu, 28 May 2020 11:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b4Ape3M747M0VVI6j2FgoN/k0Heli3n06rVQYqA/TNo=;
-        b=nz7c4ojTdsiLZB11V0v0F1ETriDDN/zC/Kg5tTAfDYftiGDVy8L8N2+TwfW8K7pz8q
-         m76Qp5uKBQAxxlr4musP6u0g2tdjJksA+hrbdygAisuP7mUEd2vF3804Echg+ifmKPXd
-         P1M8z+ZRdFc510b2DpBunRikQk6DynSvZ91iDchcOqFiYqitZtjUocX3p1IBeCz5JxKv
-         nMhwpbn8mAEZ/LDfWk1JIO5et4YkIpJiBFC5w0WZ2fkuw0V/+aCZpPwCCyERPBJGuk0x
-         81u43zjy0sET8wMTSrhsUV/CyiYwHhSQR1yft0wWk2AfEYzpJzRDrH/Rbh0lcHtekOng
-         qilg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b4Ape3M747M0VVI6j2FgoN/k0Heli3n06rVQYqA/TNo=;
-        b=uHFmxHRerO5JyirgWY8cwXot7OzB5p+615XRiljjQr6qDJ3Z3rzyT4lm1lS6zoRwg7
-         63loxyqeKpcki/UijBYKVTddXR0Jr2eg6rIXVqic2XIrrMA3QC+pU+zcdb/BIKH8pr+w
-         /TOHa5hUZoARJvMPpLgWiSJj/SsVgbJWIWgnn8rUQ7H1+Q12lA+cAxEj+Ya3yzzcmLLC
-         Khm/IoXAW9bw+4KPbF7Da23rkj663QdgsFhK4gvxbTSHsuynSdBlPweU+ontsky2+7Xe
-         e67eVMeir1SzndBY43KADk7lmBWGbGRLkZA+1snI9Nol/u5YyOCvQ05lDjXjOqL0OPu/
-         yhQQ==
-X-Gm-Message-State: AOAM531UgCqpCHDzmBPo4WUYGsiLrLossmlnRx9NM2DP6eGODmvxFTnX
-        x5ZqSs4N4fHo8afPAegoQIA=
-X-Google-Smtp-Source: ABdhPJx5Zd+3SZhGiDQQj821WuIcJ7M5qYK3umSaUKX0b709jUoqe1s6kO8WHly3M5GbA2cKIsWmcg==
-X-Received: by 2002:a17:902:c281:: with SMTP id i1mr4803445pld.177.1590691717502;
-        Thu, 28 May 2020 11:48:37 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4a1c])
-        by smtp.gmail.com with ESMTPSA id y14sm5513470pjr.31.2020.05.28.11.48.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 11:48:36 -0700 (PDT)
-Date:   Thu, 28 May 2020 11:48:34 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 5/8] bpf: Add link-based BPF program attachment
- to network namespace
-Message-ID: <20200528184834.exstcynjvn3e7dli@ast-mbp.dhcp.thefacebook.com>
-References: <20200527170840.1768178-1-jakub@cloudflare.com>
- <20200527170840.1768178-6-jakub@cloudflare.com>
- <CAEf4BzZQQk8A9nUx2CrVXQqFcetr3PXnAtEm8JE05czHJvA5og@mail.gmail.com>
- <87pnao2qkd.fsf@cloudflare.com>
- <CAEf4Bzb8yy+ntiy2HJqdN2M58dWMNf1Y9_vD1cr3Tze0rZUbWQ@mail.gmail.com>
+        id S2406134AbgE1TFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 15:05:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406029AbgE1TFy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 15:05:54 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5036A206A1;
+        Thu, 28 May 2020 19:05:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590692753;
+        bh=hmvasG3ZDen48P9C9jGsPayN9wwppV+tfA13dzrpO1E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PyJpljNmnSkRf/pwWnd9Bk+nLbmETEHEWLrsItNZFcFsTZJ6rkwXgm4ycT5GQdvzB
+         4TrdVOJbqxlfg2RyMNoAa9WE18FVHPnA4j03WsuikflB6UC6BHfnxYqhVizLoqXhqZ
+         Jdc6JAzVWYVmtWRvn/U/41MJfLSWT0Kbx66ymnc4=
+Date:   Thu, 28 May 2020 12:05:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
+ generic device parameter.
+Message-ID: <20200528120551.689251bf@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAACQVJqs9=PJ5UBrW9R9UmVYX1jqkJvZWj3j6FmVB9S5mOn+mg@mail.gmail.com>
+References: <1590214105-10430-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        <1590214105-10430-2-git-send-email-vasundhara-v.volam@broadcom.com>
+        <20200524045335.GA22938@nanopsycho>
+        <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
+        <20200525172602.GA14161@nanopsycho>
+        <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
+        <20200526044727.GB14161@nanopsycho>
+        <CAACQVJp8SfmP=R=YywDWC8njhA=ntEcs5o_KjBoHafPkHaj-iA@mail.gmail.com>
+        <20200526134032.GD14161@nanopsycho>
+        <CAACQVJrwFB4oHjTAw4DK28grxGGP15x52+NskjDtOYQdOUMbOg@mail.gmail.com>
+        <CAACQVJqTc9s2KwUCEvGLfG3fh7kKj3-KmpeRgZMWM76S-474+w@mail.gmail.com>
+        <20200527131401.2e269ab8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CACKFLi=+Q4CkOvaxQQm5Ya8+Ft=jNMwCAuK+=5SMxAfNGGriBw@mail.gmail.com>
+        <20200527141608.3c96f618@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAACQVJqs9=PJ5UBrW9R9UmVYX1jqkJvZWj3j6FmVB9S5mOn+mg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzb8yy+ntiy2HJqdN2M58dWMNf1Y9_vD1cr3Tze0rZUbWQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 11:09:20AM -0700, Andrii Nakryiko wrote:
-> > >> +       net = rcu_dereference(net_link->net);
-> > >> +       if (!net || !check_net(net)) {
-> > >> +               /* Link auto-detached or netns dying */
-> > >> +               ret = -ENOLINK;
-> > >
-> > > This is an interesting error code. If we are going to adopt this, we
-> > > should change it for similar cgroup link situation as well.
+On Thu, 28 May 2020 07:20:00 +0530 Vasundhara Volam wrote:
+> > > The permanent value should be the NVRAM value.  If the NVRAM value is
+> > > false, the feature is always and unconditionally disabled.  If the
+> > > permanent value is true, the feature will only be available when all
+> > > loaded drivers indicate support for it and set the runtime value to
+> > > true.  If an old driver is loaded afterwards, it wouldn't indicate
+> > > support for this feature and it wouldn't set the runtime value to
+> > > true.  So the feature will not be available until the old driver is
+> > > unloaded or upgraded.  
 > >
-> > Credit goes to Lorenz for suggesting a different error code than EINVAL
-> > for this situation so that user-space has a way to distinguish.
-> >
-> > I'm happy to patch cgroup BPF link, if you support this change.
+> > Setting this permanent value to false makes the FW's life easier?  
 > 
-> Yeah, I guess let's do that. I like "link was severed" message for
-> that errno :) But for me it's way more about consistency, than any
-> specific error code.
+> It just disables the feature.
+> 
+> > Otherwise why not always have it enabled and just depend on hosts
+> > not opting in?  
+> 
+> We are providing permanent value as a flexibility to user. We can
+> remove it, if it makes things easy and clear.
 
-I like ENOLINK idea as well.
-Let's fix it there and patch older kernels via separate patch.
+I'd think less knobs means less to understand for the user and less
+to test for the vendor. If disabling the feature doesn't buy FW
+anything then perhaps it can just serve the purpose of setting the
+default?
 
-Overall the set looks great. Looking forward to v2.
+> > > > > 3. Now enable the capability in the device and reboot for device to
+> > > > > enable the capability. Firmware does not get reset just by setting the
+> > > > > param to true.
+> > > > >
+> > > > > $ devlink dev param set pci/0000:3b:00.1 name allow_fw_live_reset
+> > > > > value true cmode permanent
+> > > > >
+> > > > > 4. After reboot, values of param.  
+> > > >
+> > > > Is the reboot required here?  
+> > >
+> > > In general, our new NVRAM permanent parameters will take effect after
+> > > reset (or reboot).
+> > >  
+> > > > > $ devlink dev param show pci/0000:3b:00.1 name allow_fw_live_reset
+> > > > > pci/0000:3b:00.1:
+> > > > >   name allow_fw_live_reset type generic
+> > > > >     values:
+> > > > >       cmode runtime value true  
+> > > >
+> > > > Why is runtime value true now?
+> > > >  
+> > >
+> > > If the permanent (NVRAM) parameter is true, all loaded new drivers
+> > > will indicate support for this feature and set the runtime value to
+> > > true by default.  The runtime value would not be true if any loaded
+> > > driver is too old or has set the runtime value to false.  
+> >
+> > Okay, the parameter has a bit of a dual role as it controls whether the
+> > feature is available (false -> true transition requiring a reset/reboot)
+> > and the default setting of the runtime parameter. Let's document that
+> > more clearly.  
+> Please look at the 3/4 patch for more documentation in the bnxt.rst
+> file. We can add more documentation, if needed, in the bnxt.rst file.
+
+Ack, I read that, but it wasn't nearly clear enough. The command
+examples helped much more.  I think the doc should be expanded.
