@@ -2,102 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A88011E6C65
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E62171E6CA7
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407043AbgE1UVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 16:21:42 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:57550 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406966AbgE1UVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 16:21:41 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SKBfvb120316;
-        Thu, 28 May 2020 20:21:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=eWfOLK+JWOjw/sInZQyPb6SBSNK+JbSeG6TrByezY/k=;
- b=v7oeBN8rWa8IubPcqVl8LeXQmGsoyWF0mqZqamu3Rn4dsBVkEsfq9b63qTOyHGOi9vFS
- QwKJGHWJJoG5YMxiewd2IwLt3U7d1bWJWf4Vax4bqMyz1mEj9k+AG2XMH+GXEwnvsvk7
- 5qqOaof13r+U9EtTnTPB5wKTMjk6rN/ZKJmJsPJEadpaEgPcvc6JlOUUO5yVVlQ6T94K
- 2u3r5T+ZatcwVy9Uy8GGF1/K6bQOxBmmeBX6lHnbk/mzuVwA9PYm56e3dycTE8XEgbkz
- ruk0lyk/WhyUxIITlCS5LpRgDjBUhykdEBx6c98W/dtCtL4x4IgxY0vHUXZPJOrBZIoV +A== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 316u8r74gt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 28 May 2020 20:21:38 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SK7e1n148116;
-        Thu, 28 May 2020 20:21:37 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 317j5wanwp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 May 2020 20:21:37 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04SKLa7f031371;
-        Thu, 28 May 2020 20:21:36 GMT
-Received: from [10.74.106.237] (/10.74.106.237)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 28 May 2020 13:21:35 -0700
-Subject: Re: [PATCH v3 03/13] RDMA/rds: Remove FMR support for memory
- registration
-To:     Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     aron.silverton@oracle.com, Max Gurtovoy <maxg@mellanox.com>,
-        oren@mellanox.com, shlomin@mellanox.com, vladimirk@mellanox.com
-References: <3-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <27824c0c-06ba-40dd-34c2-2888fe8db5c8@oracle.com>
-Date:   Thu, 28 May 2020 13:21:33 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.1
+        id S2407305AbgE1UfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 16:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407190AbgE1Ue5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 16:34:57 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C721AC08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 13:34:56 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id h7so238041otr.3
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 13:34:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KhxKKjyUN6FLmAJYIfSK0oBD+OdVgqtUi+M5rGq6E0U=;
+        b=mku/u96SpTXBSYI3Dgz5eSk6rm3QVUTx2SqERPq4Bg53yEPX30EETNRqEiBqfqAdu4
+         VfYnVlnbnij9abTdOHq82+uCCS9z/xYu1OFlPIhrh77N+83mJ2a3AMDLXWyo+eAtdT3p
+         2L0zYTh5MWwhcDLWc2i5SGLJA7r9pVo8wYX8u5zsJvJCCtJtSQwOgRgVgdOZEO7Bgv63
+         NAj2bubOKSwja2N4TigLIGPUp0Ph94G18syhpIViTeKzknIdzGzTKAR6EcUde/YoYUKR
+         XpPGmob9r42l/c52yaYg5JfUJiJt2npb8PPvnV9UxjFIxmP2HYciyugoS8IOkGl+pLMH
+         lV7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KhxKKjyUN6FLmAJYIfSK0oBD+OdVgqtUi+M5rGq6E0U=;
+        b=f8PStNkgqEhmzlaEVnH6fOwPubi3dWeJIcsq9uMz7doCgkX2M1QEgzOKXa0cfJiAxz
+         aExYqAyqMQLcyQsISpDJWNJhDUQqhnn6YNYJbBQEoh6J3PooeOHAPO+Kvu8WpVMf24YN
+         IqsIujKvP/FKcwf6Pw5DHiGSTsVnNj//O2o/Vx4DtA39PJFAkMmSN1XeabZinDQ7A6vB
+         ug0DyrMvSfMPK074UIpqO48LAS0usNv9JzWbb+agMO73seiDgz+pgcZKILb0GEvMMNZE
+         w3RE7BFxfm7PBY49su4rMzF7ccIL8QUvEHmLIWJ+02ngLGoufwx0jAgmVTZYU0YWDtAv
+         zC8A==
+X-Gm-Message-State: AOAM532reBfRw+QXrINdtaKSrw6C7UsMs/P/dgm1jjL0YYubE2GZu2XP
+        JCVyAFN5Ey9ZeSecA2tzXDB6aiAFPuqluFOxvIU=
+X-Google-Smtp-Source: ABdhPJyZQzYuRRj5JRdRB87bkZKUVSRH3YNKaY+n4M3V+n8IfOkchsDwOf8d3DJE5/KRLrqMZjeH3LLtJk6wwL/v7KI=
+X-Received: by 2002:a9d:5a5:: with SMTP id 34mr3840946otd.196.1590698096216;
+ Thu, 28 May 2020 13:34:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <3-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9635 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005280132
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9635 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
- priorityscore=1501 spamscore=0 cotscore=-2147483648 suspectscore=0
- phishscore=0 clxscore=1011 mlxlogscore=999 bulkscore=0 adultscore=0
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005280132
+References: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
+From:   Petar Penkov <ppenkov.kernel@gmail.com>
+Date:   Thu, 28 May 2020 13:34:45 -0700
+Message-ID: <CAGdtWsQCyrg3otDtxw62k8xeXp5td8rxxfXydhSzBOAMbH3VzA@mail.gmail.com>
+Subject: Re: [PATCH net] tun: correct header offsets in napi frags mode
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/20 12:45 PM, Jason Gunthorpe wrote:
-> From: Max Gurtovoy <maxg@mellanox.com>
-> 
-> Use FRWR method for memory registration by default and remove the ancient
-> and unsafe FMR method.
-> 
-> Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
-> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+On Thu, May 28, 2020 at 10:07 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> Tun in IFF_NAPI_FRAGS mode calls napi_gro_frags. Unlike netif_rx and
+> netif_gro_receive, this expects skb->data to point to the mac layer.
+>
+> But skb_probe_transport_header, __skb_get_hash_symmetric, and
+> xdp_do_generic in tun_get_user need skb->data to point to the network
+> header. Flow dissection also needs skb->protocol set, so
+> eth_type_trans has to be called.
+>
+> Temporarily pull ETH_HLEN to make control flow the same for frags and
+> not frags. Then push the header just before calling napi_gro_frags.
+>
+> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+
+Acked-by: Petar Penkov <ppenkov@google.com>
 
 > ---
->   net/rds/Makefile  |   2 +-
->   net/rds/ib.c      |  20 ++--
->   net/rds/ib.h      |   2 -
->   net/rds/ib_cm.c   |   4 +-
->   net/rds/ib_fmr.c  | 269 ----------------------------------------------
->   net/rds/ib_frmr.c |   4 +-
->   net/rds/ib_mr.h   |  14 +--
->   net/rds/ib_rdma.c |  28 ++---
->   8 files changed, 21 insertions(+), 322 deletions(-)
->   delete mode 100644 net/rds/ib_fmr.c
-> 
-Patch looks accurate to me Jason/Max. I wanted to get few regression
-tests run with it before providing the ack. Will send a note once
-its tested ok.
-
-Regards,
-Santosh
+>  drivers/net/tun.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 44889eba1dbc..b984733c6c31 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1871,8 +1871,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                 skb->dev = tun->dev;
+>                 break;
+>         case IFF_TAP:
+> -               if (!frags)
+> -                       skb->protocol = eth_type_trans(skb, tun->dev);
+> +               if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
+> +                       err = -ENOMEM;
+> +                       goto drop;
+> +               }
+> +               skb->protocol = eth_type_trans(skb, tun->dev);
+>                 break;
+>         }
+>
+> @@ -1929,9 +1932,12 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>         }
+>
+>         if (frags) {
+> +               u32 headlen;
+> +
+>                 /* Exercise flow dissector code path. */
+> -               u32 headlen = eth_get_headlen(tun->dev, skb->data,
+> -                                             skb_headlen(skb));
+> +               skb_push(skb, ETH_HLEN);
+> +               headlen = eth_get_headlen(tun->dev, skb->data,
+> +                                         skb_headlen(skb));
+>
+>                 if (unlikely(headlen > skb_headlen(skb))) {
+>                         this_cpu_inc(tun->pcpu_stats->rx_dropped);
+> --
+> 2.27.0.rc0.183.gde8f92d652-goog
+>
