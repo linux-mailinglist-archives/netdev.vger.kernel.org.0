@@ -2,378 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C281E61CE
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE4811E61AC
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390208AbgE1NKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 09:10:07 -0400
-Received: from mail.xenproject.org ([104.130.215.37]:42924 "EHLO
-        mail.xenproject.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390012AbgE1NKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:10:05 -0400
-X-Greylist: delayed 2332 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 May 2020 09:10:04 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=xen.org;
-        s=20200302mail; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
-        :Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=yT0YCeVmS31oUgr3kcKp2rb0acVnrFO8fotP62VttFc=; b=AYKcpbquSFiA+Fd7AjYabIdcNc
-        4c2MIIx960LxN3oKeum4woXDrPd63sTz6u9RAt3c7TQ/aIhITEKF4IXMi/5azqQSLBSyOIsbayblx
-        Rr4HoSXPO1rM1AF1bil9f9PjFl8RKeIwRbeNJz/k/np4qPa4pVnpN0eeWuRSLh7XOXmI=;
-Received: from xenbits.xenproject.org ([104.239.192.120])
-        by mail.xenproject.org with esmtp (Exim 4.92)
-        (envelope-from <roger@xen.org>)
-        id 1jeHfy-000317-0c; Thu, 28 May 2020 12:30:22 +0000
-Received: from [93.176.191.173] (helo=localhost)
-        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <roger@xen.org>)
-        id 1jeHfx-0002M2-9k; Thu, 28 May 2020 12:30:21 +0000
-Date:   Thu, 28 May 2020 14:30:12 +0200
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger@xen.org>
-To:     Anchal Agarwal <anchalag@amazon.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com,
-        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
-        sstabellini@kernel.org, konrad.wilk@oracle.com, axboe@kernel.dk,
-        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
-        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
-        sblbir@amazon.com, xen-devel@lists.xenproject.org,
-        vkuznets@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
-        benh@kernel.crashing.org
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
- hibernation
-Message-ID: <20200528122956.GF1195@Air-de-Roger>
-References: <cover.1589926004.git.anchalag@amazon.com>
- <ad580b4d5b76c18fe2fe409704f25622e01af361.1589926004.git.anchalag@amazon.com>
+        id S2390118AbgE1NF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390086AbgE1NF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:05:57 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FE7C08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:05:57 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id o15so10619761ejm.12
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:05:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=SxOri3O+pFijqd0Okl/7zENBG3JvyHUCefM2glGcSso=;
+        b=xD/tlCktZIgcULOBB+ZWBzsPS0mLTbyHSGf87BIaNX0+2C8+NfXb7tUoHRFPX/tldD
+         XzCTw3t0lgHZ/Pg16UU1MSVdjrs3TGgjDnNYTCMCyQ73/sOYtZ7nanIU+2aOw5iFXV1K
+         kWXmWKCBrK9pdumsQNgMWoaiy00nGWbl31Xtk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=SxOri3O+pFijqd0Okl/7zENBG3JvyHUCefM2glGcSso=;
+        b=fNBH3NCluLDvbtmaykO7Hm45xGABIuokjzyFzJGXbgdtk5T7hnzKM5zWEgqD6c7BnJ
+         hC1ZD8FIAZGqwkJGMd+Y1kx15StDWbbgZReUdG01VW03qoK1T/BRo/h5tYmY6gfH1FsW
+         5NDuN7fF9nJtdfeMNhAT/zE4k66hfldO4oXxOF3Ksj4749tzxiHGeqYill5SjX3upXVo
+         p9xqT0hNcRQurHyEB1yAvs8md+7taGdOoU6whHbOrhLs9wOkKalUZERLXqg+Jr/ZCNES
+         VJ+M/P4n4xRmEbwMUH45IKY/OIWVWvYSNMppwBJzPEMAwj0lppvFrOqsTmRKSvegZtxF
+         QAVQ==
+X-Gm-Message-State: AOAM533CUDgMw+pJx+uX887tjSsPlSBOB4wjZakusICuQbYZL0mW2fSg
+        KZKJ0unZ2Zwal6pzDo94yLuKDw==
+X-Google-Smtp-Source: ABdhPJzAxMFaacW3peB2OUbE+AWkbsb7nGgeD/k/4IAzKdOVGwSweK1MQzkFadlUKvYhH+3clJihKw==
+X-Received: by 2002:a17:906:f85:: with SMTP id q5mr2869436ejj.344.1590671155747;
+        Thu, 28 May 2020 06:05:55 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id qp13sm5499239ejb.8.2020.05.28.06.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 06:05:51 -0700 (PDT)
+References: <20200527170840.1768178-1-jakub@cloudflare.com> <20200527170840.1768178-7-jakub@cloudflare.com> <CAEf4BzZJU-zRXzQU3X3zyBWX4=nxfDTjyqjzJ6NV3HvGUxNd_Q@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next 6/8] libbpf: Add support for bpf_link-based netns attachment
+In-reply-to: <CAEf4BzZJU-zRXzQU3X3zyBWX4=nxfDTjyqjzJ6NV3HvGUxNd_Q@mail.gmail.com>
+Date:   Thu, 28 May 2020 15:05:50 +0200
+Message-ID: <87o8q82or5.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ad580b4d5b76c18fe2fe409704f25622e01af361.1589926004.git.anchalag@amazon.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 19, 2020 at 11:27:50PM +0000, Anchal Agarwal wrote:
-> From: Munehisa Kamata <kamatam@amazon.com>
-> 
-> S4 power transition states are much different than xen
-> suspend/resume. Former is visible to the guest and frontend drivers should
-> be aware of the state transitions and should be able to take appropriate
-> actions when needed. In transition to S4 we need to make sure that at least
-> all the in-flight blkif requests get completed, since they probably contain
-> bits of the guest's memory image and that's not going to get saved any
-> other way. Hence, re-issuing of in-flight requests as in case of xen resume
-> will not work here. This is in contrast to xen-suspend where we need to
-> freeze with as little processing as possible to avoid dirtying RAM late in
-> the migration cycle and we know that in-flight data can wait.
-> 
-> Add freeze, thaw and restore callbacks for PM suspend and hibernation
-> support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
-> events, need to implement these xenbus_driver callbacks. The freeze handler
-> stops block-layer queue and disconnect the frontend from the backend while
-> freeing ring_info and associated resources. Before disconnecting from the
-> backend, we need to prevent any new IO from being queued and wait for existing
-> IO to complete. Freeze/unfreeze of the queues will guarantee that there are no
-> requests in use on the shared ring. However, for sanity we should check
-> state of the ring before disconnecting to make sure that there are no
-> outstanding requests to be processed on the ring. The restore handler
-> re-allocates ring_info, unquiesces and unfreezes the queue and re-connect to
-> the backend, so that rest of the kernel can continue to use the block device
-> transparently.
-> 
-> Note:For older backends,if a backend doesn't have commit'12ea729645ace'
-> xen/blkback: unmap all persistent grants when frontend gets disconnected,
-> the frontend may see massive amount of grant table warning when freeing
-> resources.
-> [   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
-> [   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
-> 
-> In this case, persistent grants would need to be disabled.
-> 
-> [Anchal Changelog: Removed timeout/request during blkfront freeze.
-> Reworked the whole patch to work with blk-mq and incorporate upstream's
-> comments]
+On Thu, May 28, 2020 at 07:59 AM CEST, Andrii Nakryiko wrote:
+> On Wed, May 27, 2020 at 12:16 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Add bpf_program__attach_nets(), which uses LINK_CREATE subcommand to create
+>> an FD-based kernel bpf_link, for attach types tied to network namespace,
+>> that is BPF_FLOW_DISSECTOR for the moment.
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  tools/lib/bpf/libbpf.c   | 20 ++++++++++++++++----
+>>  tools/lib/bpf/libbpf.h   |  2 ++
+>>  tools/lib/bpf/libbpf.map |  1 +
+>>  3 files changed, 19 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 5d60de6fd818..a49c1eb5db64 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -7894,8 +7894,8 @@ static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
+>>         return bpf_program__attach_iter(prog, NULL);
+>>  }
+>>
+>> -struct bpf_link *
+>> -bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+>> +static struct bpf_link *
+>> +bpf_program__attach_fd(struct bpf_program *prog, int target_fd)
+>>  {
+>>         enum bpf_attach_type attach_type;
+>>         char errmsg[STRERR_BUFSIZE];
+>> @@ -7915,11 +7915,11 @@ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+>>         link->detach = &bpf_link__detach_fd;
+>>
+>>         attach_type = bpf_program__get_expected_attach_type(prog);
+>> -       link_fd = bpf_link_create(prog_fd, cgroup_fd, attach_type, NULL);
+>> +       link_fd = bpf_link_create(prog_fd, target_fd, attach_type, NULL);
+>>         if (link_fd < 0) {
+>>                 link_fd = -errno;
+>>                 free(link);
+>> -               pr_warn("program '%s': failed to attach to cgroup: %s\n",
+>> +               pr_warn("program '%s': failed to attach to cgroup/netns: %s\n",
+>
+> I understand the desire to save few lines of code, but it hurts error
+> reporting. Now it's cgroup/netns, tomorrow cgroup/netns/lirc/whatever.
+> If you want to generalize, let's preserve clarity of error message,
+> please.
 
-Please tag versions using vX and it would be helpful if you could list
-the specific changes that you performed between versions. There where
-3 RFC versions IIRC, and there's no log of the changes between them.
+Ok, that's fair. I could pass the link type bpf_program__attach_fd and
+map it to a string.
 
-> 
-> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-> Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
-> ---
->  drivers/block/xen-blkfront.c | 122 +++++++++++++++++++++++++++++++++--
->  1 file changed, 115 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-> index 3b889ea950c2..464863ed7093 100644
-> --- a/drivers/block/xen-blkfront.c
-> +++ b/drivers/block/xen-blkfront.c
-> @@ -48,6 +48,8 @@
->  #include <linux/list.h>
->  #include <linux/workqueue.h>
->  #include <linux/sched/mm.h>
-> +#include <linux/completion.h>
-> +#include <linux/delay.h>
->  
->  #include <xen/xen.h>
->  #include <xen/xenbus.h>
-> @@ -80,6 +82,8 @@ enum blkif_state {
->  	BLKIF_STATE_DISCONNECTED,
->  	BLKIF_STATE_CONNECTED,
->  	BLKIF_STATE_SUSPENDED,
-> +	BLKIF_STATE_FREEZING,
-> +	BLKIF_STATE_FROZEN
+>
+>>                         bpf_program__title(prog, false),
+>>                         libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
+>>                 return ERR_PTR(link_fd);
+>> @@ -7928,6 +7928,18 @@ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+>>         return link;
+>>  }
+>>
+>> +struct bpf_link *
+>> +bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+>> +{
+>> +       return bpf_program__attach_fd(prog, cgroup_fd);
+>> +}
+>> +
+>> +struct bpf_link *
+>> +bpf_program__attach_netns(struct bpf_program *prog, int netns_fd)
+>> +{
+>> +       return bpf_program__attach_fd(prog, netns_fd);
+>> +}
+>> +
+>>  struct bpf_link *
+>>  bpf_program__attach_iter(struct bpf_program *prog,
+>>                          const struct bpf_iter_attach_opts *opts)
+>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>> index 1e2e399a5f2c..adf6fd9b6fe8 100644
+>> --- a/tools/lib/bpf/libbpf.h
+>> +++ b/tools/lib/bpf/libbpf.h
+>> @@ -253,6 +253,8 @@ LIBBPF_API struct bpf_link *
+>>  bpf_program__attach_lsm(struct bpf_program *prog);
+>>  LIBBPF_API struct bpf_link *
+>>  bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd);
+>> +LIBBPF_API struct bpf_link *
+>> +bpf_program__attach_netns(struct bpf_program *prog, int netns_fd);
+>>
+>>  struct bpf_map;
+>>
+>> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+>> index 381a7342ecfc..7ad21ba1feb6 100644
+>> --- a/tools/lib/bpf/libbpf.map
+>> +++ b/tools/lib/bpf/libbpf.map
+>> @@ -263,4 +263,5 @@ LIBBPF_0.0.9 {
+>>                 bpf_link_get_next_id;
+>>                 bpf_program__attach_iter;
+>>                 perf_buffer__consume;
+>> +               bpf_program__attach_netns;
+>
+> Please keep it alphabetical.
 
-Nit: adding a terminating ',' would prevent further additions from
-having to modify this line.
+Will do. Not sure how I didn't pick up the convention.
 
->  };
->  
->  struct grant {
-> @@ -219,6 +223,7 @@ struct blkfront_info
->  	struct list_head requests;
->  	struct bio_list bio_list;
->  	struct list_head info_list;
-> +	struct completion wait_backend_disconnected;
->  };
->  
->  static unsigned int nr_minors;
-> @@ -1005,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
->  	info->sector_size = sector_size;
->  	info->physical_sector_size = physical_sector_size;
->  	blkif_set_queue_limits(info);
-> +	init_completion(&info->wait_backend_disconnected);
->  
->  	return 0;
->  }
-> @@ -1057,7 +1063,7 @@ static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
->  		case XEN_SCSI_DISK5_MAJOR:
->  		case XEN_SCSI_DISK6_MAJOR:
->  		case XEN_SCSI_DISK7_MAJOR:
-> -			*offset = (*minor / PARTS_PER_DISK) + 
-> +			*offset = (*minor / PARTS_PER_DISK) +
->  				((major - XEN_SCSI_DISK1_MAJOR + 1) * 16) +
->  				EMULATED_SD_DISK_NAME_OFFSET;
->  			*minor = *minor +
-> @@ -1072,7 +1078,7 @@ static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
->  		case XEN_SCSI_DISK13_MAJOR:
->  		case XEN_SCSI_DISK14_MAJOR:
->  		case XEN_SCSI_DISK15_MAJOR:
-> -			*offset = (*minor / PARTS_PER_DISK) + 
-> +			*offset = (*minor / PARTS_PER_DISK) +
+>
+>>  } LIBBPF_0.0.8;
+>> --
+>> 2.25.4
+>>
 
-Unrelated changes, please split to a pre-patch.
-
->  				((major - XEN_SCSI_DISK8_MAJOR + 8) * 16) +
->  				EMULATED_SD_DISK_NAME_OFFSET;
->  			*minor = *minor +
-> @@ -1353,6 +1359,8 @@ static void blkif_free(struct blkfront_info *info, int suspend)
->  	unsigned int i;
->  	struct blkfront_ring_info *rinfo;
->  
-> +	if (info->connected == BLKIF_STATE_FREEZING)
-> +		goto free_rings;
->  	/* Prevent new requests being issued until we fix things up. */
->  	info->connected = suspend ?
->  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
-> @@ -1360,6 +1368,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
->  	if (info->rq)
->  		blk_mq_stop_hw_queues(info->rq);
->  
-> +free_rings:
->  	for_each_rinfo(info, rinfo, i)
->  		blkif_free_ring(rinfo);
->  
-> @@ -1563,8 +1572,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
->  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
->  	struct blkfront_info *info = rinfo->dev_info;
->  
-> -	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
-> -		return IRQ_HANDLED;
-> +	if (unlikely(info->connected != BLKIF_STATE_CONNECTED
-> +		    && info->connected != BLKIF_STATE_FREEZING)){
-
-Extra tab and missing space between '){'. Also my preference would be
-for the && to go at the end of the previous line, like it's done
-elsewhere in the file.
-
-> +	    return IRQ_HANDLED;
-> +	}
->  
->  	spin_lock_irqsave(&rinfo->ring_lock, flags);
->   again:
-> @@ -2027,6 +2038,7 @@ static int blkif_recover(struct blkfront_info *info)
->  	unsigned int segs;
->  	struct blkfront_ring_info *rinfo;
->  
-> +	bool frozen = info->connected == BLKIF_STATE_FROZEN;
-
-Please put this together with the rest of the variable definitions,
-and leave the empty line as a split between variable definitions and
-code. I've already requested this on RFC v3 but you seem to have
-dropped some of the requests I've made there.
-
->  	blkfront_gather_backend_features(info);
->  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
->  	blkif_set_queue_limits(info);
-> @@ -2048,6 +2060,9 @@ static int blkif_recover(struct blkfront_info *info)
->  		kick_pending_request_queues(rinfo);
->  	}
->  
-> +	if (frozen)
-> +		return 0;
-> +
->  	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
->  		/* Requeue pending requests (flush or discard) */
->  		list_del_init(&req->queuelist);
-> @@ -2364,6 +2379,7 @@ static void blkfront_connect(struct blkfront_info *info)
->  
->  		return;
->  	case BLKIF_STATE_SUSPENDED:
-> +	case BLKIF_STATE_FROZEN:
->  		/*
->  		 * If we are recovering from suspension, we need to wait
->  		 * for the backend to announce it's features before
-> @@ -2481,12 +2497,36 @@ static void blkback_changed(struct xenbus_device *dev,
->  		break;
->  
->  	case XenbusStateClosed:
-> -		if (dev->state == XenbusStateClosed)
-> +		if (dev->state == XenbusStateClosed) {
-> +			if (info->connected == BLKIF_STATE_FREEZING) {
-> +				blkif_free(info, 0);
-> +				info->connected = BLKIF_STATE_FROZEN;
-> +				complete(&info->wait_backend_disconnected);
-> +				break;
-
-There's no need for the break here, you can rely on the break below.
-
-> +			}
-> +
->  			break;
-> +		}
-> +
-> +		/*
-> +		 * We may somehow receive backend's Closed again while thawing
-> +		 * or restoring and it causes thawing or restoring to fail.
-> +		 * Ignore such unexpected state regardless of the backend state.
-> +		 */
-> +		if (info->connected == BLKIF_STATE_FROZEN) {
-
-I think you can join this with the previous dev->state == XenbusStateClosed?
-
-Also, won't the device be in the Closed state already if it's in state
-frozen?
-
-> +			dev_dbg(&dev->dev,
-> +					"ignore the backend's Closed state: %s",
-> +					dev->nodename);
-> +			break;
-> +		}
->  		/* fall through */
->  	case XenbusStateClosing:
-> -		if (info)
-> -			blkfront_closing(info);
-> +		if (info) {
-> +			if (info->connected == BLKIF_STATE_FREEZING)
-> +				xenbus_frontend_closed(dev);
-> +			else
-> +				blkfront_closing(info);
-> +		}
->  		break;
->  	}
->  }
-> @@ -2630,6 +2670,71 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
->  	mutex_unlock(&blkfront_mutex);
->  }
->  
-> +static int blkfront_freeze(struct xenbus_device *dev)
-> +{
-> +	unsigned int i;
-> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-> +	struct blkfront_ring_info *rinfo;
-> +	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
-> +	unsigned int timeout = 5 * HZ;
-> +	unsigned long flags;
-> +	int err = 0;
-> +
-> +	info->connected = BLKIF_STATE_FREEZING;
-> +
-> +	blk_mq_freeze_queue(info->rq);
-> +	blk_mq_quiesce_queue(info->rq);
-> +
-> +	for_each_rinfo(info, rinfo, i) {
-> +	    /* No more gnttab callback work. */
-> +	    gnttab_cancel_free_callback(&rinfo->callback);
-> +	    /* Flush gnttab callback work. Must be done with no locks held. */
-> +	    flush_work(&rinfo->work);
-> +	}
-> +
-> +	for_each_rinfo(info, rinfo, i) {
-> +	    spin_lock_irqsave(&rinfo->ring_lock, flags);
-> +	    if (RING_FULL(&rinfo->ring)
-> +		    || RING_HAS_UNCONSUMED_RESPONSES(&rinfo->ring)) {
-
-'||' should go at the end of the previous line.
-
-> +		xenbus_dev_error(dev, err, "Hibernation Failed.
-> +			The ring is still busy");
-> +		info->connected = BLKIF_STATE_CONNECTED;
-> +		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
-
-You need to unfreeze the queues here, or else the device will be in a
-blocked state AFAICT.
-
-> +		return -EBUSY;
-> +	}
-> +	    spin_unlock_irqrestore(&rinfo->ring_lock, flags);
-> +	}
-
-This block has indentation all messed up.
-
-> +	/* Kick the backend to disconnect */
-> +	xenbus_switch_state(dev, XenbusStateClosing);
-> +
-> +	/*
-> +	 * We don't want to move forward before the frontend is diconnected
-> +	 * from the backend cleanly.
-> +	 */
-> +	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
-> +					      timeout);
-> +	if (!timeout) {
-> +		err = -EBUSY;
-
-Note err is only used here, and I think could just be dropped.
-
-> +		xenbus_dev_error(dev, err, "Freezing timed out;"
-> +				 "the device may become inconsistent state");
-
-Leaving the device in this state is quite bad, as it's in a closed
-state and with the queues frozen. You should make an attempt to
-restore things to a working state.
-
-> +	}
-> +
-> +	return err;
-> +}
-> +
-> +static int blkfront_restore(struct xenbus_device *dev)
-> +{
-> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-> +	int err = 0;
-> +
-> +	err = talk_to_blkback(dev, info);
-> +	blk_mq_unquiesce_queue(info->rq);
-> +	blk_mq_unfreeze_queue(info->rq);
-> +	if (!err)
-> +	    blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
-
-Bad indentation. Also shouldn't you first update the queues and then
-unfreeze them?
-
-Thanks, Roger.
