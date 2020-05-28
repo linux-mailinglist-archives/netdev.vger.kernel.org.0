@@ -2,168 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C52351E5C45
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 11:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43B41E5C5C
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 11:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387397AbgE1JoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 05:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728300AbgE1JoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 05:44:19 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D9DC05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 02:44:18 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id e2so31317702eje.13
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 02:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CVQLXSPqYu2wNoD1AB9EsNddWvJ6zowsmDUL6fEcjE=;
-        b=laiBHvsGXgXup7Jgo2b44c8i9y/1Pgg7YVvhp4o13U3S625t7ZSm7MNi++l8Tvwqqp
-         wihJIf/MVKT34f/dmS3KRZdNlYnL9HuEE7X5a3oeE31X2lsEYdqXT7+8QMseUgujBPLu
-         at2hLDDtNqA8Px16RO+e11Py/QS0a0I48Tzf/T98TEgNq7z43k9zAQrLsJr6IUqrv1TL
-         MdI20Z3w5ESzVmEmvqeVT80Jx09e+63HPJK2qqf0WQdMt8vX1xu3fKvOPxpqVaKZgA2u
-         tYcvpZz7ZPef60//2ryCjpPKZYVxPb2m4yUtfzkrCDqUL/yTFVAtusFSg9FokzOSTxad
-         LNeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CVQLXSPqYu2wNoD1AB9EsNddWvJ6zowsmDUL6fEcjE=;
-        b=c7+bvmilUNeJAalPnLj7TeilCV0hFUHbdhvwZrI2KrsshhvHb/ArsAHoitRo1tPNfA
-         mwVpcnYJBw0EGdMWBImVqfGasFgkqic0in+0wvsG2x74AqBCynncvDQKM0M5eWghQGzj
-         khNDLRKTNgGFjg4MJxsPZ3P1+xNPqAk+SrAurtkeK8xduhScVUMybvwekhddv3bflO7w
-         9UD94kg+cM3NL1k0IPFiKg8wfNsSdDK7UVPIl1iMFeywWMnuqUmrquTdrf3PAoKoUyB3
-         V5KAfzQVzli0O80XYFjjuqSqx9Lpol3ZNWEsuwooykzyPQ5lgfUq7p3cb/JcIrz5hZiV
-         DwDw==
-X-Gm-Message-State: AOAM533FzhzysDlV6uPP3yheQB16RB0cCegtVk6qoKyzNDMWxZzLNZ30
-        UsnF+imOA9N2uZMKE5VMILg=
-X-Google-Smtp-Source: ABdhPJzQCqb5ebjP+Dn7u1zUcmrmjedFERIq0Lp0m0KK1y1+oukQ9j5m3019YC+VK8JVBHde+dTRCA==
-X-Received: by 2002:a17:906:b2c6:: with SMTP id cf6mr2180077ejb.210.1590659057571;
-        Thu, 28 May 2020 02:44:17 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id qt19sm676793ejb.14.2020.05.28.02.44.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 02:44:17 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: felix: support half-duplex link modes
-Date:   Thu, 28 May 2020 12:44:10 +0300
-Message-Id: <20200528094410.2658306-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1728445AbgE1Js5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 05:48:57 -0400
+Received: from mail-eopbgr40053.outbound.protection.outlook.com ([40.107.4.53]:14646
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728300AbgE1Js5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 05:48:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MxoQUJzxhBL5jrbskz0cx4k5Wh8FozLJSzee0NQBlcJEHbkH54IGXGUibfIezFkwl9SW4nPVX8pVjLM5xGkJkjXPQjCsZt1utHmxUYalswlEakZNzAp06sV/qj8Zzm/Oy9Gke99w3bnqDXoBfjGq6uVaIAaHUuqgXRtaIxgOtmG3f6lRyiMqx4Qh2fGUn9IBTihbuXGlck3616ErTq5YjobHXEAUe30j95R01mjqLQaBh5gfHQqXh9FXQ4Nwgyu7zCeNbNAjZfzlQi0MuCXQGFdFdUTjr+ptsp805gncs+JQjST4n2ZJJbSDlSpQnqmquuy4g6KxR9/BFILn5dMTaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FX/bwpjy5etvILCDJ7qfdc+++Ms40nN04lHykwkwfc4=;
+ b=OHBOGvLvGDuFUZN0l8yInUwLc+kP8an6PvIP4ppAk1DJ1zwBmga7ew1faVG0TIH/h1KYFOE06yMdbChrA+h92YbiQ5/zh1tZR3o+NzehbMF5dCMA1rNPSMuF024xmPK7pl6mCeC43yFIf9iWRvC9gYUYW+LuHfpj8g9pcG2hm1cW091BL7FWSRHC9Y0fFIFhdJu0dG1qknFvswg+11U8PotEaMEkgvgk9hiB+fCo4k1WrHAm9MB2gIA1q2Incu2gT5eZN470Vcm+ECpl/mqkcJsXXCDtEeDUeateMxN1L7IohC1rT6WYAo+KDOzZL16QBDWw+RHZCZOx236COJQlgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FX/bwpjy5etvILCDJ7qfdc+++Ms40nN04lHykwkwfc4=;
+ b=fdhgbmPFsdaGPexxJcMQPXtm+COWsNjPjNVPVubprCJwjqZ8gWDyNeHR9iqlScYKPx92Gcgrz1cqT1Fw1lYuJQFUmQBlShBulR33aJKtUbzBqPo5E6j7Xum84y8qRGowlfBh+Mh+XvB+h2xSSEVTrNj7jUsvNVj0oF2MR20uGkY=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR05MB4540.eurprd05.prod.outlook.com (2603:10a6:7:98::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3021.24; Thu, 28 May 2020 09:48:52 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3045.018; Thu, 28 May 2020
+ 09:48:52 +0000
+References: <cover.1590512901.git.petrm@mellanox.com> <CAM_iQpW8NcZy=ayJ49iY-pCix+HFusTfoOpoD_oMOR6+LeGy1g@mail.gmail.com> <877dwxvgzk.fsf@mellanox.com> <CAM_iQpX2LMkuWw3xY==LgqpcFs8G01BKz=f4LimN4wmQW55GMQ@mail.gmail.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 0/3] TC: Introduce qevents
+In-reply-to: <CAM_iQpX2LMkuWw3xY==LgqpcFs8G01BKz=f4LimN4wmQW55GMQ@mail.gmail.com>
+Date:   Thu, 28 May 2020 11:48:50 +0200
+Message-ID: <87wo4wtmnx.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR04CA0016.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::29) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM0PR04CA0016.eurprd04.prod.outlook.com (2603:10a6:208:122::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18 via Frontend Transport; Thu, 28 May 2020 09:48:51 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 565724fb-9b65-41cc-d1cc-08d802ec53f8
+X-MS-TrafficTypeDiagnostic: HE1PR05MB4540:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB4540D5CBE2BBD71BCC22330ADB8E0@HE1PR05MB4540.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0417A3FFD2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s/0ML7gfAXVE8TnCGKVfWgHplLgaluG8xD7SnYCpDoTB3NYmESeQM4zAL6NXQVjtjLN9FkuzN3yeh+UzSqFuS9Hsd7GOzxGxtkXkY+8AN6wp9MoowB9P9cwNQtI2Y+K+uyQCO6nUUcww26e18tgki64pDZf8gXsHm6R94pOplVOHh4g5IeBaewTJ+XlL7Vuo+XmJGFOt6Yx/WMCdG2psosNBbvZBRLJc/Ia67TMmD1BDxpJsfDe4n3inV1PkLh0M4tc3oNTV2ZIqiXcsQeQGxhLjsFnAUPHbZlrSm/4faI+9vMonM1vyefYiqgJMnKda7PMfGODZUJ0OXHcHFPNviw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(6486002)(4326008)(36756003)(16526019)(86362001)(26005)(107886003)(186003)(53546011)(956004)(83380400001)(66476007)(66946007)(66556008)(2616005)(478600001)(6916009)(6496006)(52116002)(8936002)(2906002)(5660300002)(8676002)(316002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: oUqRG2DhbuN7TvkVkenXVlz30eXFzuoCc8yLO6dvG4PqutDG6Vp1EJTh66TB0tJA87qqGQl0DUl4XzMj8Xe0AEfY3VoQ0VHAzNWYzDQ0riDKCAynkGUV2CQBrDwwmIZwYBzoMLp1K2o/zqMg23roPE9DHFZd+ddDPGsKq9Ciy8DPj1lHA6433BBufD631Q0qEFEgx6MLg7PnZcLMNnA/MOmOzSzo0hfG0/XKmhBewDYgV6T71ziRPhVEh4uNXtgPALvD7LpZJotJVaM/ujgnl7x4kAJ1L5ox/QdhYjQ8y1DscLY0pjpV/qVsrC6aoXgDPSKKiDybnq4PA6fflCGFyYRgTZO+S1L8P/HyzQCpeMT36KvqlQYY8Ts8oKvRKK74pKsUatL7aItP0o3PKeL3W92cH1kHbiTceEeHomzfsE+BBfR7AIOtcqvbXLWloldi1kfVETLku2IbmDxkBK7G+l9E1bXaflgHtvQI2WzbZO+o9axdLazSCeOtnf92nkwL
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 565724fb-9b65-41cc-d1cc-08d802ec53f8
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 09:48:51.9336
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +ymjFIzOwdo+YVoOZvd88fHqgZRWwYlzeqhQ2H2zhbt+rJRZSy5Kca+NxSOtCCMJcswHpV1F85JGtFTLkBsfKQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4540
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Ping tested:
+Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-[   11.808455] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control rx/tx
-[   11.816497] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
+> On Wed, May 27, 2020 at 2:56 AM Petr Machata <petrm@mellanox.com> wrote:
+>>
+>>
+>> Cong Wang <xiyou.wangcong@gmail.com> writes:
+>>
+>> > On Tue, May 26, 2020 at 10:11 AM Petr Machata <petrm@mellanox.com> wrote:
+>> >>
+>> >> The Spectrum hardware allows execution of one of several actions as a
+>> >> result of queue management events: tail-dropping, early-dropping, marking a
+>> >> packet, or passing a configured latency threshold or buffer size. Such
+>> >> packets can be mirrored, trapped, or sampled.
+>> >>
+>> >> Modeling the action to be taken as simply a TC action is very attractive,
+>> >> but it is not obvious where to put these actions. At least with ECN marking
+>> >> one could imagine a tree of qdiscs and classifiers that effectively
+>> >> accomplishes this task, albeit in an impractically complex manner. But
+>> >> there is just no way to match on dropped-ness of a packet, let alone
+>> >> dropped-ness due to a particular reason.
+>> >>
+>> >> To allow configuring user-defined actions as a result of inner workings of
+>> >> a qdisc, this patch set introduces a concept of qevents. Those are attach
+>> >> points for TC blocks, where filters can be put that are executed as the
+>> >> packet hits well-defined points in the qdisc algorithms. The attached
+>> >> blocks can be shared, in a manner similar to clsact ingress and egress
+>> >> blocks, arbitrary classifiers with arbitrary actions can be put on them,
+>> >> etc.
+>> >
+>> > This concept does not fit well into qdisc, essentially you still want to
+>> > install filters (and actions) somewhere on qdisc, but currently all filters
+>> > are executed at enqueue, basically you want to execute them at other
+>> > pre-defined locations too, for example early drop.
+>> >
+>> > So, perhaps adding a "position" in tc filter is better? Something like:
+>> >
+>> > tc qdisc add dev x root handle 1: ... # same as before
+>> > tc filter add dev x parent 1:0 position early_drop matchall action....
+>>
+>> Position would just be a chain index.
+>
+> Why? By position, I mean a place where we _execute_ tc filters on
+> a qdisc, currently there is only "enqueue". I don't see how this is
+> close to a chain which is basically a group of filters.
 
-[root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x4
-[   18.844591] mscc_felix 0000:00:00.5 swp0: Link is Down
-[   22.048337] mscc_felix 0000:00:00.5 swp0: Link is Up - 100Mbps/Half - flow control off
+OK, I misunderstood what you mean.
 
-[root@LS1028ARDB ~] # ip addr add 192.168.1.1/24 dev swp0
+So you propose to have further division within the block? To have sort
+of namespaces within blocks or chains, where depending on the context,
+only filters in the corresponding namespace are executed?
 
-[root@LS1028ARDB ~] # ping 192.168.1.2
-PING 192.168.1.2 (192.168.1.2): 56 data bytes
-(...)
-^C--- 192.168.1.2 ping statistics ---
-3 packets transmitted, 3 packets received, 0% packet loss
-round-trip min/avg/max = 0.383/0.611/1.051 ms
+>>
+>> > And obviously default position must be "enqueue". Makes sense?
+>>
+>> Chain 0.
+>>
+>> So if I understand the proposal correctly: a qdisc has a classification
+>> block (cl_ops->tcf_block). Qevents then reference a chain on that
+>> classification block.
+>
+> No, I am suggesting to replace your qevents with position, because
+> as I said it does not fit well there.
+>
+>>
+>> If the above is correct, I disagree that this is a better model. RED
+>> does not need to classify anything, modelling this as a classification
+>> block is wrong. It should be another block. (Also shareable, because as
+>> an operator you likely want to treat all, say, early drops the same, and
+>> therefore to add just one rule for all 128 or so of your qdiscs.)
+>
+> You can still choose not to classify anything by using matchall. No
+> one is saying you have to do classification.
 
-[root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x10
-[  355.637747] mscc_felix 0000:00:00.5 swp0: Link is Down
-[  358.788034] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Half - flow control off
+The point here is filter reuse, not classification.
 
-[root@LS1028ARDB ~] # ping 192.168.1.2
-PING 192.168.1.2 (192.168.1.2): 56 data bytes
-(...)
-^C
---- 192.168.1.2 ping statistics ---
-16 packets transmitted, 16 packets received, 0% packet loss
-round-trip min/avg/max = 0.301/0.384/1.138 ms
+> If you want to jump to a block, you can just use a goto action like
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c         |  4 +++-
- drivers/net/dsa/ocelot/felix_vsc9959.c | 13 ++++++++-----
- 2 files changed, 11 insertions(+), 6 deletions(-)
+I don't think you can jump to a block. You can jump to a chain within
+the same block.
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 66648986e6e3..e5ec1bf90eb0 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -171,14 +171,16 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
- 		return;
- 	}
- 
--	/* No half-duplex. */
- 	phylink_set_port_modes(mask);
- 	phylink_set(mask, Autoneg);
- 	phylink_set(mask, Pause);
- 	phylink_set(mask, Asym_Pause);
- 	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 10baseT_Half);
- 	phylink_set(mask, 100baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
- 	phylink_set(mask, 1000baseT_Full);
-+	phylink_set(mask, 1000baseT_Half);
- 
- 	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
- 	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 1dd9e348152d..e706677bcb01 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -817,12 +817,12 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 
- 		phy_write(pcs, MII_BMCR, BMCR_ANRESTART | BMCR_ANENABLE);
- 	} else {
-+		u16 duplex = 0;
- 		int speed;
- 
--		if (state->duplex == DUPLEX_HALF) {
--			phydev_err(pcs, "Half duplex not supported\n");
--			return;
--		}
-+		if (state->duplex == DUPLEX_FULL)
-+			duplex = BMCR_FULLDPLX;
-+
- 		switch (state->speed) {
- 		case SPEED_1000:
- 			speed = ENETC_PCS_SPEED_1000;
-@@ -848,7 +848,7 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 		/* Yes, not a mistake: speed is given by IF_MODE. */
- 		phy_write(pcs, MII_BMCR, BMCR_RESET |
- 					 BMCR_SPEED1000 |
--					 BMCR_FULLDPLX);
-+					 duplex);
- 	}
- }
- 
-@@ -925,8 +925,11 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
- 			       ARRAY_SIZE(phy_basic_ports_array),
- 			       pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, pcs->supported);
- 	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
- 	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
--- 
-2.25.1
-
+> normal. So your above example can be replaced with:
+>
+> # tc qdisc add dev eth0 root handle 1: \
+>         red limit 500K avpkt 1K
+>
+> # tc filter add dev eth0 parent 1:0 position early_drop matchall \
+>    action goto chain 10
+>
+> # tc chain add dev eth0 index 10 ...
+>
+> See the difference?
