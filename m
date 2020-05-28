@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B7B1E5683
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:33:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C4C1E5686
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgE1Fdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 01:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
+        id S1727779AbgE1Fdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 01:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725764AbgE1Fdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:33:41 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D472C05BD1E;
-        Wed, 27 May 2020 22:33:41 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id p21so12872405pgm.13;
-        Wed, 27 May 2020 22:33:41 -0700 (PDT)
+        with ESMTP id S1727114AbgE1Fdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:33:43 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DECEC05BD1E;
+        Wed, 27 May 2020 22:33:43 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id n15so12940679pfd.0;
+        Wed, 27 May 2020 22:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=U2Q9gUnZRFVmHKvj84PmwBmM/7agqbUryktJrVPtTsI=;
-        b=L9AkCBWB0zyNWtidhVO6qKQPNEB0R7cHgVYqlOg/XnNbmuW4yMnP+W/08c8VVCMzTb
-         kx9nlMxUR262RiJygGx0pId8Yn2cfXKrkmYHE4cZ4k8zWfsx9kjYPpDi0jfA5U9nuJ9J
-         +InCl4FyKnJVawvXuJSHxF6NEqoou0MkkjhhXrLG9AGfxOh834UhicPz3Lov/Yzb8yxx
-         uU9Ys/SBjvcJnvD2BbjDD9VM/v/NwIN3HH3kv+E8EZipsmUWdXCoKhGol4OrjribjZy5
-         YtCmNn7ss6cO9xG2zwwAGeP78xHiZpQToTs1ZZlpTZTeTgjVLuOlJ5iUfj23rMBTMxtF
-         sWNw==
+        bh=7hFJuPMNtudThI0czwAIJAAON6LfgRQdn+lraE8LviE=;
+        b=r17lm26ywgN+gn70OxuAXrIKWwuwYgokfcgdE4rmi1NTnXH61iHMIFsZCrNmltsI3x
+         Lsk2fmn1oqws7ihby+86SS0IJva08dKvM4ZisNGTAIbkFtWn70jYJq/WqzGnlK5DAlaN
+         s44RD1Prwy8KE029cPB3ZEBFvlvKps/OE+DVykTgzWLHWOq6sryF4CNVTkUrIt45ykx+
+         Vx8AIg9bng0C7FAQ0yAShNctv9HZ4sZzvbrk9XHw+9QkBmVIgF5z+TKg/DLbJ2PbA5lH
+         Ixr2QzMEYkRRGVjw87XulCBgdqc8A/CYaRGtYltc3lXCY0Ny3gSiyTQijpwlxNTi9x0V
+         57uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=U2Q9gUnZRFVmHKvj84PmwBmM/7agqbUryktJrVPtTsI=;
-        b=TtqcrBAgWT8+VkIoOECktDSgr5aVYv0NXbFzbRn2PfrRZt9WydrMh1Sv4f1GpNqtVg
-         Jxq5fitsPOW1LW+3b5R8LyG8rX6WfjZpIICwE8rVMhJJ4uHDPdkga2yTLLorEU7h4gV4
-         BF5y/4f5+pgHG+ZNRNCmsG1XXmXpnGm7fN0WOmZ1JtqxnOhEFbgzCvP+tjeaLZp4x+gn
-         PRoI+ysxardHLpJidS/6dg59PqqJJ9g5/s6zMnotmbKtffC5A6gQNpVBANY0/5SCMf8m
-         VCZPHCro2XNw5ErhgM7cbEC42jVsihafPdozDqs23LNr6Ih+G95LfkFp3PtMNXJx1TOv
-         gddw==
-X-Gm-Message-State: AOAM533gY5ah6ufRPgSGk9VSG+O8yPkxt4I9IDhknAlXs6mzf+Q+1zXj
-        azObDTPq6ZnvQ3Oz/eSOhePG1QrY
-X-Google-Smtp-Source: ABdhPJzbxyvTVfXuBvE7MTeha5mQCPybjxbolz8LYygyzbiKwZKUf3qdVFn/uUJ0vJe4B4XMV2OlnQ==
-X-Received: by 2002:a62:79c2:: with SMTP id u185mr1370971pfc.159.1590644021092;
-        Wed, 27 May 2020 22:33:41 -0700 (PDT)
+        bh=7hFJuPMNtudThI0czwAIJAAON6LfgRQdn+lraE8LviE=;
+        b=skA1ck5qBYBOCswHQY4u7DTjD9e3OhOeXIMzdfPHZJIpLFYgDv8cSXnDpIuCKLNTGv
+         3rR66Vv9VXznBx9oQV4sdGyqvrt365SKlvu5rYuOuKdBQeuLk7LZ/FIMm90uxJ03z1zv
+         TTTIs8vSz8sFi8GLv3LTYNzwizfbhkggXIyc9y8umO60pFcw4klqRlAomeabkhd64ylP
+         8YnQdZpGsza0vB89kNeP1Xv6/Ul8V/Q4OU6J8Dgx+nRV5dcNev5daKSDmBUXwXMRkT97
+         WwUd1KKL2dbkt8ozQJLuN/a6d2/DjQ+9zlRuV6dG2jvAbfai3gr/bXNcAKtcDm7thZhm
+         pIUg==
+X-Gm-Message-State: AOAM530AS+yXYTfkYIItt2ObJ35uJktr+Jtkckz5F5Ddl5AX3KerCvbx
+        2OQG2gBB8JPruRaCwlZFIRc=
+X-Google-Smtp-Source: ABdhPJyEeDLqQzsKrFb8TNXexsQsstNjgCeScX8/nhxUaoTnHWSKKS3RmwGOMposTRKMY0Y9dLWMng==
+X-Received: by 2002:a63:1d02:: with SMTP id d2mr1320231pgd.206.1590644022853;
+        Wed, 27 May 2020 22:33:42 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id o27sm3502461pgd.18.2020.05.27.22.33.39
+        by smtp.gmail.com with ESMTPSA id o27sm3502461pgd.18.2020.05.27.22.33.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 27 May 2020 22:33:40 -0700 (PDT)
+        Wed, 27 May 2020 22:33:42 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH bpf-next 2/3] libbpf: support sleepable progs
-Date:   Wed, 27 May 2020 22:33:33 -0700
-Message-Id: <20200528053334.89293-3-alexei.starovoitov@gmail.com>
+Subject: [PATCH bpf-next 3/3] selftests/bpf: basic sleepable tests
+Date:   Wed, 27 May 2020 22:33:34 -0700
+Message-Id: <20200528053334.89293-4-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20200528053334.89293-1-alexei.starovoitov@gmail.com>
 References: <20200528053334.89293-1-alexei.starovoitov@gmail.com>
@@ -63,83 +63,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Pass request to load program as sleepable via ".s" suffix in the section name.
-If it happens in the future that all map types and helpers are allowed with
-BPF_F_SLEEPABLE flag "fmod_ret/" and "lsm/" can be aliased to "fmod_ret.s/" and
-"lsm.s/" to make all lsm and fmod_ret programs sleepable by default. The fentry
-and fexit programs would always need to have sleepable vs non-sleepable
-distinction, since not all fentry/fexit progs will be attached to sleepable
-kernel functions.
+Modify few tests to sanity test sleepable bpf functionality.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/bench.c             |  2 ++
+ .../selftests/bpf/benchs/bench_trigger.c        | 17 +++++++++++++++++
+ tools/testing/selftests/bpf/progs/lsm.c         |  4 ++--
+ .../testing/selftests/bpf/progs/trigger_bench.c |  7 +++++++
+ 4 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 5d60de6fd818..d5dc9a1abea3 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -209,6 +209,7 @@ struct bpf_sec_def {
- 	bool is_exp_attach_type_optional;
- 	bool is_attachable;
- 	bool is_attach_btf;
-+	bool is_sleepable;
- 	attach_fn_t attach_fn;
+diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
+index 14390689ef90..f6a75cd47f01 100644
+--- a/tools/testing/selftests/bpf/bench.c
++++ b/tools/testing/selftests/bpf/bench.c
+@@ -309,6 +309,7 @@ extern const struct bench bench_trig_tp;
+ extern const struct bench bench_trig_rawtp;
+ extern const struct bench bench_trig_kprobe;
+ extern const struct bench bench_trig_fentry;
++extern const struct bench bench_trig_fentry_sleep;
+ extern const struct bench bench_trig_fmodret;
+ 
+ static const struct bench *benchs[] = {
+@@ -326,6 +327,7 @@ static const struct bench *benchs[] = {
+ 	&bench_trig_rawtp,
+ 	&bench_trig_kprobe,
+ 	&bench_trig_fentry,
++	&bench_trig_fentry_sleep,
+ 	&bench_trig_fmodret,
  };
  
-@@ -5451,6 +5452,8 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 			/* couldn't guess, but user might manually specify */
- 			continue;
+diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+index 49c22832f216..2a0b6c9885a4 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
++++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+@@ -90,6 +90,12 @@ static void trigger_fentry_setup()
+ 	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
+ }
  
-+		if (prog->sec_def->is_sleepable)
-+			prog->prog_flags |= BPF_F_SLEEPABLE;
- 		bpf_program__set_type(prog, prog->sec_def->prog_type);
- 		bpf_program__set_expected_attach_type(prog,
- 				prog->sec_def->expected_attach_type);
-@@ -6646,6 +6649,21 @@ static const struct bpf_sec_def section_defs[] = {
- 		.expected_attach_type = BPF_TRACE_FEXIT,
- 		.is_attach_btf = true,
- 		.attach_fn = attach_trace),
-+	SEC_DEF("fentry.s/", TRACING,
-+		.expected_attach_type = BPF_TRACE_FENTRY,
-+		.is_attach_btf = true,
-+		.is_sleepable = true,
-+		.attach_fn = attach_trace),
-+	SEC_DEF("fmod_ret.s/", TRACING,
-+		.expected_attach_type = BPF_MODIFY_RETURN,
-+		.is_attach_btf = true,
-+		.is_sleepable = true,
-+		.attach_fn = attach_trace),
-+	SEC_DEF("fexit.s/", TRACING,
-+		.expected_attach_type = BPF_TRACE_FEXIT,
-+		.is_attach_btf = true,
-+		.is_sleepable = true,
-+		.attach_fn = attach_trace),
- 	SEC_DEF("freplace/", EXT,
- 		.is_attach_btf = true,
- 		.attach_fn = attach_trace),
-@@ -6653,6 +6671,11 @@ static const struct bpf_sec_def section_defs[] = {
- 		.is_attach_btf = true,
- 		.expected_attach_type = BPF_LSM_MAC,
- 		.attach_fn = attach_lsm),
-+	SEC_DEF("lsm.s/", LSM,
-+		.is_attach_btf = true,
-+		.is_sleepable = true,
-+		.expected_attach_type = BPF_LSM_MAC,
-+		.attach_fn = attach_lsm),
- 	SEC_DEF("iter/", TRACING,
- 		.expected_attach_type = BPF_TRACE_ITER,
- 		.is_attach_btf = true,
-@@ -7292,7 +7315,7 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
++static void trigger_fentry_sleep_setup()
++{
++	setup_ctx();
++	attach_bpf(ctx.skel->progs.bench_trigger_fentry_sleep);
++}
++
+ static void trigger_fmodret_setup()
+ {
+ 	setup_ctx();
+@@ -155,6 +161,17 @@ const struct bench bench_trig_fentry = {
+ 	.report_final = hits_drops_report_final,
+ };
  
- 		prog->prog_ifindex = attr->ifindex;
- 		prog->log_level = attr->log_level;
--		prog->prog_flags = attr->prog_flags;
-+		prog->prog_flags |= attr->prog_flags;
- 		if (!first_prog)
- 			first_prog = prog;
- 	}
++const struct bench bench_trig_fentry_sleep = {
++	.name = "trig-fentry-sleep",
++	.validate = trigger_validate,
++	.setup = trigger_fentry_sleep_setup,
++	.producer_thread = trigger_producer,
++	.consumer_thread = trigger_consumer,
++	.measure = trigger_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
+ const struct bench bench_trig_fmodret = {
+ 	.name = "trig-fmodret",
+ 	.validate = trigger_validate,
+diff --git a/tools/testing/selftests/bpf/progs/lsm.c b/tools/testing/selftests/bpf/progs/lsm.c
+index b4598d4bc4f7..55815d0cc5fb 100644
+--- a/tools/testing/selftests/bpf/progs/lsm.c
++++ b/tools/testing/selftests/bpf/progs/lsm.c
+@@ -15,7 +15,7 @@ int monitored_pid = 0;
+ int mprotect_count = 0;
+ int bprm_count = 0;
+ 
+-SEC("lsm/file_mprotect")
++SEC("lsm.s/file_mprotect")
+ int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
+ 	     unsigned long reqprot, unsigned long prot, int ret)
+ {
+@@ -36,7 +36,7 @@ int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
+ 	return ret;
+ }
+ 
+-SEC("lsm/bprm_committed_creds")
++SEC("lsm.s/bprm_committed_creds")
+ int BPF_PROG(test_void_hook, struct linux_binprm *bprm)
+ {
+ 	__u32 pid = bpf_get_current_pid_tgid() >> 32;
+diff --git a/tools/testing/selftests/bpf/progs/trigger_bench.c b/tools/testing/selftests/bpf/progs/trigger_bench.c
+index 8b36b6640e7e..9a4d09590b3d 100644
+--- a/tools/testing/selftests/bpf/progs/trigger_bench.c
++++ b/tools/testing/selftests/bpf/progs/trigger_bench.c
+@@ -39,6 +39,13 @@ int bench_trigger_fentry(void *ctx)
+ 	return 0;
+ }
+ 
++SEC("fentry.s/__x64_sys_getpgid")
++int bench_trigger_fentry_sleep(void *ctx)
++{
++	__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
+ SEC("fmod_ret/__x64_sys_getpgid")
+ int bench_trigger_fmodret(void *ctx)
+ {
 -- 
 2.23.0
 
