@@ -2,90 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A66A1E6DB5
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 23:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA6C1E6DF1
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 23:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436668AbgE1Vco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 17:32:44 -0400
-Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:18879 "EHLO
-        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2436629AbgE1VcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 17:32:19 -0400
-Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
- EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
- 15.0.1156.6; Thu, 28 May 2020 14:32:13 -0700
-Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
-        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id D12E8B220D;
-        Thu, 28 May 2020 17:32:16 -0400 (EDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        "VMware, Inc." <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 4/4] vmxnet3: update to version 4
-Date:   Thu, 28 May 2020 14:32:03 -0700
-Message-ID: <20200528213204.29803-5-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200528213204.29803-1-doshir@vmware.com>
-References: <20200528213204.29803-1-doshir@vmware.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+        id S2436691AbgE1Vn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 17:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436581AbgE1VnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 17:43:24 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8118C08C5C6;
+        Thu, 28 May 2020 14:43:24 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 38986129654F1;
+        Thu, 28 May 2020 14:43:22 -0700 (PDT)
+Date:   Thu, 28 May 2020 14:43:19 -0700 (PDT)
+Message-Id: <20200528.144319.2125126279324542556.davem@davemloft.net>
+To:     doshir@vmware.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, Pv-drivers@vmware.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 3/4] vmxnet3: add geneve and vxlan tunnel
+ offload support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <C3E924AA-41B4-437E-BC7A-181028E5CFE9@vmware.com>
+References: <20200528183615.27212-4-doshir@vmware.com>
+        <20200528123505.25baf888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <C3E924AA-41B4-437E-BC7A-181028E5CFE9@vmware.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=utf-8
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 28 May 2020 14:43:22 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all vmxnet3 version 4 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 4, provided
-the emulation advertises support for version 4.
-
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index b764f24b646b..ceafa3619858 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3492,7 +3492,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
- 
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_3)) {
-+	if (ver & (1 << VMXNET3_REV_4)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_4);
-+		adapter->version = VMXNET3_REV_4 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_3)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_3);
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index 86db809c7592..5d2b062215a2 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.4.17.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.5.0.0-k"
- 
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01041100
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01050000
- 
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
--- 
-2.11.0
-
+RnJvbTogUm9uYWsgRG9zaGkgPGRvc2hpckB2bXdhcmUuY29tPg0KRGF0ZTogVGh1LCAyOCBNYXkg
+MjAyMCAyMToxODozNCArMDAwMA0KDQo+IA0KPiDvu79PbiA1LzI4LzIwLCAxMjozNSBQTSwgIkph
+a3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwub3JnPiB3cm90ZToNCj4+ICAgIE9uIFRodSwgMjgg
+TWF5IDIwMjAgMTE6MzY6MTQgLTA3MDAgUm9uYWsgRG9zaGkgd3JvdGU6DQo+PiAgICA+IEBAIC0x
+MTY4LDEzICsxMjIwLDIxIEBAIHZteG5ldDNfcnhfY3N1bShzdHJ1Y3Qgdm14bmV0M19hZGFwdGVy
+ICphZGFwdGVyLA0KPj4gICAgPiAgCQkgICAgKGxlMzJfdG9fY3B1KGdkZXNjLT5kd29yZFszXSkg
+Jg0KPj4gICAgPiAgCQkgICAgIFZNWE5FVDNfUkNEX0NTVU1fT0spID09IFZNWE5FVDNfUkNEX0NT
+VU1fT0spIHsNCj4+ICAgID4gIAkJCXNrYi0+aXBfc3VtbWVkID0gQ0hFQ0tTVU1fVU5ORUNFU1NB
+Ulk7DQo+PiAgICA+IC0JCQlCVUdfT04oIShnZGVzYy0+cmNkLnRjcCB8fCBnZGVzYy0+cmNkLnVk
+cCkpOw0KPj4gICAgPiAtCQkJQlVHX09OKGdkZXNjLT5yY2QuZnJnKTsNCj4+ICAgID4gKwkJCUJV
+R19PTighKGdkZXNjLT5yY2QudGNwIHx8IGdkZXNjLT5yY2QudWRwKSAmJg0KPj4gICAgPiArCQkJ
+ICAgICAgICEobGUzMl90b19jcHUoZ2Rlc2MtPmR3b3JkWzBdKSAmDQo+PiAgICA+ICsJCQkJICgx
+VUwgPDwgVk1YTkVUM19SQ0RfSERSX0lOTkVSX1NISUZUKSkpOw0KPj4gICAgPiArCQkJQlVHX09O
+KGdkZXNjLT5yY2QuZnJnICYmDQo+PiAgICA+ICsJCQkgICAgICAgIShsZTMyX3RvX2NwdShnZGVz
+Yy0+ZHdvcmRbMF0pICYNCj4+ICAgID4gKwkJCQkgKDFVTCA8PCBWTVhORVQzX1JDRF9IRFJfSU5O
+RVJfU0hJRlQpKSk7DQo+PiAgICANCj4+ICAgIFNlZW1zIGZhaXJseSBleHRyZW1lIHRvIHRyaWdn
+ZXIgQlVHX09OcyBpZiByeCBkZXNjcmlwdG9yIGRvZXNuJ3QNCj4+ICAgIGNvbnRhaW4gdmFsaWQg
+Y2hlY2tzdW0gb2ZmbG9hZCBmbGFncyA6UyBXQVJOX09OX09OQ0UoKSBhbmQgaWdub3JlIA0KPj4g
+ICAgY2hlY3N1bSBvciBkcm9wIHBhY2tldCB3b3VsZCBiZSBtb3JlIHRoYW4gc3VmZmljaWVudC4N
+Cj4gICAgIA0KPiBIZWxsbyBKYWt1YiwNCj4gDQo+IEdvb2QgcG9pbnQuIEhvd2V2ZXIsIEkgZGlk
+IG5vdCB3YW50IHRvIGNoYW5nZSB0aGUgYmVoYXZpb3IgaW4gdGhpcyBwYXRjaCwNCj4gc28ga2Vw
+dCBpdCBhcyBpcy4gSWYgcmVxdWlyZWQsIHRoaXMgY2FuIGJlIGRvbmUgaW4gZnV0dXJlIHNlcGFy
+YXRlIHBhdGNoLg0KDQpJdCdzIHJlYWxseSBhd2Z1bCB0byBraWxsIHNvIG11Y2ggb2YgdGhlIHN5
+c3RlbSBiZWNhdXNlIG9mIGEgZmxpcHBlZCBiaXQNCmluIGEgZGVzY3JpcHRvci4NCg0KUGxlYXNl
+IGZpeCB0aGlzIGFzIHdlbGwgYXMgYWRkcmVzcyBNaWNoYWwncyBmZWVkYmFjay4NCg0KVGhhbmtz
+Lg0K
