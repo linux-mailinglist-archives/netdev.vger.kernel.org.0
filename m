@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 578221E5D1B
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCAAE1E5D27
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:28:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387862AbgE1KZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 06:25:52 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20615 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2387758AbgE1KZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:25:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590661528;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aI7QziAgUyt26FCsnDIdN4IJj/PsFpIVkZEW9K7NmJo=;
-        b=BqL0q9eUwpYAjmCrvaDDpB8pxiJkxc4kaO0xYqeYJKIfDsiGYMjIzqc4F22labk4o6mJ1A
-        XTND2V6k8r1sYaSIH6Af5qiqnjJ45e690WE+ceeAazWSNBqK0SlYUuHc0R0YPpUXe0gIYx
-        U6DVxJAZOuGx82ou6I9r/TAeY0xJjbE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-153-MXOnknFkODSR9r1EhFEeyQ-1; Thu, 28 May 2020 06:25:26 -0400
-X-MC-Unique: MXOnknFkODSR9r1EhFEeyQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2909018FE880;
-        Thu, 28 May 2020 10:25:24 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 096672657D;
-        Thu, 28 May 2020 10:25:12 +0000 (UTC)
-Date:   Thu, 28 May 2020 12:25:10 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        David Ahern <dsahern@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCH v2 bpf-next 5/5] selftest: Add tests for XDP programs in
- devmap entries
-Message-ID: <20200528122510.1c475484@carbon>
-In-Reply-To: <CAEf4BzapqhtWOz666YN1m1wQd0pWJtjYFe4DrUEQpEgPX5UL9g@mail.gmail.com>
-References: <20200528001423.58575-1-dsahern@kernel.org>
-        <20200528001423.58575-6-dsahern@kernel.org>
-        <CAEf4BzapqhtWOz666YN1m1wQd0pWJtjYFe4DrUEQpEgPX5UL9g@mail.gmail.com>
+        id S2387807AbgE1K2s convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 28 May 2020 06:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387740AbgE1K2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:28:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2569C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 03:28:47 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jeFmH-0002fj-KK; Thu, 28 May 2020 12:28:45 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jeFmH-0006JE-8T; Thu, 28 May 2020 12:28:45 +0200
+Date:   Thu, 28 May 2020 12:28:45 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Amit Cohen <amitc@mellanox.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
+        mlxsw <mlxsw@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Link down reasons
+Message-ID: <20200528102845.yvcq4bihqdedc3li@pengutronix.de>
+References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com>
+ <20200528084052.n7yeo2nu2vq4eibv@pengutronix.de>
+ <87y2pctnvc.fsf@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <87y2pctnvc.fsf@mellanox.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:24:15 up 195 days,  1:42, 196 users,  load average: 0.89, 0.51,
+ 0.31
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 May 2020 00:08:34 -0700
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-
-> > diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c
-> > new file mode 100644
-> > index 000000000000..815cd59b4866
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap.c
-> > @@ -0,0 +1,17 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +
-> > +struct bpf_map_def SEC("maps") dm_ports = {
-> > +       .type = BPF_MAP_TYPE_DEVMAP,
-> > +       .key_size = sizeof(__u32),
-> > +       .value_size = sizeof(struct devmap_val),
-> > +       .max_entries = 4,
-> > +};
-> > +  
+On Thu, May 28, 2020 at 11:22:47AM +0200, Petr Machata wrote:
 > 
-> This is an old syntax for maps, all the selftests were converted to
-> BTF-defined maps. Please update.
+> Oleksij Rempel <o.rempel@pengutronix.de> writes:
+> 
+> > I would add some more reasons:
+> > - master slave resolution issues: both link partners are master or
+> >   slave.
+> 
+> I guess we should send the RFC, so that we can talk particulars. We
+> currently don't have anything like master/slave mismatch in the API, but
+> that's just because our FW does not report this. The idea is that if MAC
+> and/or PHY driver can't express some fail using the existing codes, it
+> creates a new one.
 
-LOL - The map type BPF_MAP_TYPE_DEVMAP does not support BTF for key and
-value, which it what I've been trying to point out... (and yes, I do
-have code that makes it work in my tree.).
+ok
 
-That said, you should use the new SEC(".maps") definitions, but you
-need to use some tricks to avoid a BTF-ID getting generated.  Let me
-help you with something that should work:
+> > - signal quality drop. In this case driver should be extended to notify
+> >   the system if SQI is under some configurable limit.
+> 
+> As SQI goes down, will the PHY driver eventually shut down the port?
 
-/* DEVMAP values */
-struct devmap_val {
-	__u32 ifindex;   /* device index */
-};
+Not in current implementation. But it is possible at least with
+nxp_tja11xx PHY.
 
-struct {
-	__uint(type, BPF_MAP_TYPE_DEVMAP);
-	__uint(key_size, sizeof(u32));
-	__uint(value_size, sizeof(struct devmap_val));
-	__uint(max_entries, 4);
-} dm_ports SEC(".maps");
+> Because if yes, that's exactly the situation when it would later report,
+> yeah, the link is down because SQI was rubbish. In the proposed API, we
+> would model this as "signal integrity issue", with a possible subreason
+> of "low SQI", or something along those lines.
+> 
+> E.g., mlxsw can report module temperatures. But whether the port goes
+> down is a separate mechanism. So when a port is down, the driver can
+> tell you, yeah, it is down, because it was overheated. And separate from
+> that you can check the module temperatures. SQI might be a similar
+> issue.
 
-Notice by setting key_size and value_size, instead of the "__type",
-then a BTF-ID will be generated for this map.
-Normally with proper BTF it should look like:
-
-struct {
-	__uint(type, BPF_MAP_TYPE_DEVMAP);
-	__type(key, u32);
-	__type(value, struct devmap_val);
-	__uint(max_entries, 4);
-} dm_ports_with_BTF SEC(".maps");
+nxp_tja11xx can go down or can't go up on under vlotage or over temerature
+error. So, I assume this are two more possible link-down reasons.
 
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
