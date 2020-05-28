@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125141E6B7F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0671E6B9A
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728753AbgE1Tqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 15:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        id S2406747AbgE1TsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 15:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728697AbgE1TqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:46:04 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5703DC008633
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:03 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id c12so32664qkk.13
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:03 -0700 (PDT)
+        with ESMTP id S1728683AbgE1Tp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:45:58 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCAFC08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:45:58 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id y9so3859723qvs.4
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:45:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Hb7QPOe9VklozFYqluGVzNYQfgM81Xuirk7FDTv6Sys=;
-        b=SxDZBO7qGmWXhov29E9+kCcCzPoQ2hfz0ruA2/4W1gZz9z6nvBLM+nUt5cEVO3sYjt
-         1jKNHLgJNLo/7ekOWyCqjOXLuPSkvTk56Hw7j7h/BA+OoJUoea2mA2+nGIHgizLu9C1z
-         /39OEu2bDKPDW1w4XIGuHO7mU3fruvHzDl6NTF6rwf0op7nr6bv58UFib9zmwuaqunPP
-         /ADZimlrph2r+V3gXBN7vRx4jMCLCuiho3XeyhMB+mK+5mKkg8q4xnaeEOowxCE56HV8
-         m6Y5DZBS/yPL3pjOisTlyjDBDa9Fhi4IHsbuI52jVDevEVJdDwxFpN8Mz/ykuWuflPl1
-         pCeA==
+        bh=mIpeJkQ1ft32l/mRk3zB4nnSLeqmBHNFN+VC9uQ9wwA=;
+        b=aIcq6xlzXRx4AnqIstSUvCjy+kGnoObTjzt8JlWcif+bx3b5iNaRlGaQgjqf6Fz5xI
+         aCHVwUsVM2xR97NybIqtGhNMEeHoN6ySSxNJtO2FT9Iut3BZezH0PmcRfO33kNuly67s
+         wBdyU0OFetnHQbsaXzGSXHFA08Dgx9u+wSNXft6KGwH4jaWKwJHSFkdXiS19oFhBk2B3
+         q+aBGGMZfyF9soIy0fRBQxvKZL3nAoYSMWCtuJ2jBrbs0y+robukIsEPbCSEboVKa55z
+         Wzjd8YzSEWXRWkpXT2X8qAPkwZ/sAmT1QU22I6sIjhTlZlNhSy21iH3GC4ZkTNBnP8CM
+         pSbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Hb7QPOe9VklozFYqluGVzNYQfgM81Xuirk7FDTv6Sys=;
-        b=C9rWoxKb4A4cBeGlPw2vFWZYytxd2P2RTE8H0TdMCflfUWHUWTFI1yoiDKMYKzgI2X
-         aWOZPja8MjNwglaH3TLWbXPadSze54Td2bvIwIVgP8BHjKsjP+VChu26p+Pa1y7Ae2Wg
-         rNeI2lV2ozeCu77XSgrKomkxTBveGICz+NBfxVsoGQfHhl1WingxEFpqm2BEdYL7qOKG
-         QqTNSPZgqbhCeMiNug8BqeKsjym+qBAFbr3Pr4VALZZDwVFd61vUw3NXYMCRij9q7nrG
-         WhVbdGo20LSsOx4ZaBzJTsl8W/unULZ328PtXQj8qYQ4LFAzwaqhzRV/v9on8Q6mk4Mo
-         JWCQ==
-X-Gm-Message-State: AOAM530aWxXF46/kO8PNMFpOgZxe0DxuBxz2Gm/Tm2P9Po/HI650Z/gc
-        lXupcbupAegfz8AvLYbwCsfER2HtCX0=
-X-Google-Smtp-Source: ABdhPJyvWMX7bkZBFYgFovuxHyG98us9gd+nO9xX1ERv3gPHzSE0vBZPk4wjHBvR5RnnpB8YZookIg==
-X-Received: by 2002:a05:620a:108e:: with SMTP id g14mr4405931qkk.337.1590695162436;
-        Thu, 28 May 2020 12:46:02 -0700 (PDT)
+        bh=mIpeJkQ1ft32l/mRk3zB4nnSLeqmBHNFN+VC9uQ9wwA=;
+        b=G07qFd2gHfgi6Tb//Uw4dbTQj6BWLW5w5/CDmJocfkx3AW6RDV0Vk4lFIL4J6ZMfL1
+         ehG7DpPuNb5emipW9+lOnR8z9UH9aDmjlMVVxTeYWl+PPSy2QLXgmGQ1EekKnY7PiQ9C
+         rts7yn+qJelFuyrMOT3ERD14uWxY6tB9iY/fv8jcLVLnIscpcvSnYwDS7hKnJ3CiF2t2
+         Y2JxIdZQ6a81NCkbnb5wCROPQMI7HwhZ78QOt6wTQaTrpA8Bq5aZewxazVYJDqJ8foQE
+         2g/VZl98yioLUuO2ufPcueZajyFn0uUlgHl8zb3tIoFQdJKniz8Olj9Tr2fYHuFkQvQ4
+         9XUg==
+X-Gm-Message-State: AOAM531vRou66iudZi0w7lxZYD+yHz8P4wiLc3YqqOZc50Pvzak5R1D0
+        hEqWqfK+faI0U9hZlXS6WKeiwg==
+X-Google-Smtp-Source: ABdhPJx/wiVYwSPXHSdzxNEa+92Zq2i1Nvog9kY7h969o1YJ9uO0ISWvlapdD60Bo8cJgencTgFQIA==
+X-Received: by 2002:ad4:5843:: with SMTP id de3mr4970293qvb.195.1590695157831;
+        Thu, 28 May 2020 12:45:57 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id s70sm4176592qke.80.2020.05.28.12.45.56
+        by smtp.gmail.com with ESMTPSA id m82sm5614947qke.3.2020.05.28.12.45.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
         Thu, 28 May 2020 12:45:57 -0700 (PDT)
 Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
         (envelope-from <jgg@ziepe.ca>)
-        id 1jeOTU-0006gq-1p; Thu, 28 May 2020 16:45:56 -0300
+        id 1jeOTU-0006gy-3O; Thu, 28 May 2020 16:45:56 -0300
 From:   Jason Gunthorpe <jgg@ziepe.ca>
 To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Israel Rukshin <israelr@mellanox.com>,
-        Max Gurtovoy <maxg@mellanox.com>, oren@mellanox.com,
+Cc:     aron.silverton@oracle.com, Max Gurtovoy <maxg@mellanox.com>,
+        oren@mellanox.com, santosh.shilimkar@oracle.com,
         shlomin@mellanox.com, vladimirk@mellanox.com
-Subject: [PATCH v3 02/13] RDMA/srp: Remove support for FMR memory registration
-Date:   Thu, 28 May 2020 16:45:44 -0300
-Message-Id: <2-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
+Subject: [PATCH v3 03/13] RDMA/rds: Remove FMR support for memory registration
+Date:   Thu, 28 May 2020 16:45:45 -0300
+Message-Id: <3-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 In-Reply-To: <0-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 References: 
 MIME-Version: 1.0
@@ -70,468 +69,560 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Max Gurtovoy <maxg@mellanox.com>
 
-FMR is not supported on most recent RDMA devices (that use fast memory
-registration mechanism). Also, FMR was recently removed from NFS/RDMA
-ULP.
+Use FRWR method for memory registration by default and remove the ancient
+and unsafe FMR method.
 
 Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
-Reviewed-by: Israel Rukshin <israelr@mellanox.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
 Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Cc: aron.silverton@oracle.com
+Cc: santosh.shilimkar@oracle.com
 ---
- drivers/infiniband/ulp/srp/ib_srp.c | 222 ++--------------------------
- drivers/infiniband/ulp/srp/ib_srp.h |  27 +---
- 2 files changed, 22 insertions(+), 227 deletions(-)
+ net/rds/Makefile  |   2 +-
+ net/rds/ib.c      |  20 ++--
+ net/rds/ib.h      |   2 -
+ net/rds/ib_cm.c   |   4 +-
+ net/rds/ib_fmr.c  | 269 ----------------------------------------------
+ net/rds/ib_frmr.c |   4 +-
+ net/rds/ib_mr.h   |  14 +--
+ net/rds/ib_rdma.c |  28 ++---
+ 8 files changed, 21 insertions(+), 322 deletions(-)
+ delete mode 100644 net/rds/ib_fmr.c
 
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-index 00b4f88b113e62..27bea483d8c6e1 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -71,7 +71,6 @@ static unsigned int srp_sg_tablesize;
- static unsigned int cmd_sg_entries;
- static unsigned int indirect_sg_entries;
- static bool allow_ext_sg;
--static bool prefer_fr = true;
- static bool register_always = true;
- static bool never_register;
- static int topspin_workarounds = 1;
-@@ -95,10 +94,6 @@ module_param(topspin_workarounds, int, 0444);
- MODULE_PARM_DESC(topspin_workarounds,
- 		 "Enable workarounds for Topspin/Cisco SRP target bugs if != 0");
+diff --git a/net/rds/Makefile b/net/rds/Makefile
+index e647f9de104a67..8fdc118e292756 100644
+--- a/net/rds/Makefile
++++ b/net/rds/Makefile
+@@ -7,7 +7,7 @@ rds-y :=	af_rds.o bind.o cong.o connection.o info.o message.o   \
+ obj-$(CONFIG_RDS_RDMA) += rds_rdma.o
+ rds_rdma-y :=	rdma_transport.o \
+ 			ib.o ib_cm.o ib_recv.o ib_ring.o ib_send.o ib_stats.o \
+-			ib_sysctl.o ib_rdma.o ib_fmr.o ib_frmr.o
++			ib_sysctl.o ib_rdma.o ib_frmr.o
  
--module_param(prefer_fr, bool, 0444);
--MODULE_PARM_DESC(prefer_fr,
--"Whether to use fast registration if both FMR and fast registration are supported");
+ 
+ obj-$(CONFIG_RDS_TCP) += rds_tcp.o
+diff --git a/net/rds/ib.c b/net/rds/ib.c
+index 90212ed3edf1c9..6c43b3e4c73618 100644
+--- a/net/rds/ib.c
++++ b/net/rds/ib.c
+@@ -130,13 +130,16 @@ void rds_ib_dev_put(struct rds_ib_device *rds_ibdev)
+ static int rds_ib_add_one(struct ib_device *device)
+ {
+ 	struct rds_ib_device *rds_ibdev;
+-	bool has_fr, has_fmr;
+ 	int ret;
+ 
+ 	/* Only handle IB (no iWARP) devices */
+ 	if (device->node_type != RDMA_NODE_IB_CA)
+ 		return -EOPNOTSUPP;
+ 
++	/* Device must support FRWR */
++	if (!(device->attrs.device_cap_flags & IB_DEVICE_MEM_MGT_EXTENSIONS))
++		return -EOPNOTSUPP;
++
+ 	rds_ibdev = kzalloc_node(sizeof(struct rds_ib_device), GFP_KERNEL,
+ 				 ibdev_to_node(device));
+ 	if (!rds_ibdev)
+@@ -152,11 +155,6 @@ static int rds_ib_add_one(struct ib_device *device)
+ 	rds_ibdev->max_wrs = device->attrs.max_qp_wr;
+ 	rds_ibdev->max_sge = min(device->attrs.max_send_sge, RDS_IB_MAX_SGE);
+ 
+-	has_fr = (device->attrs.device_cap_flags &
+-		  IB_DEVICE_MEM_MGT_EXTENSIONS);
+-	has_fmr = (device->ops.alloc_fmr && device->ops.dealloc_fmr &&
+-		   device->ops.map_phys_fmr && device->ops.unmap_fmr);
+-	rds_ibdev->use_fastreg = (has_fr && !has_fmr);
+ 	rds_ibdev->odp_capable =
+ 		!!(device->attrs.device_cap_flags &
+ 		   IB_DEVICE_ON_DEMAND_PAGING) &&
+@@ -165,7 +163,6 @@ static int rds_ib_add_one(struct ib_device *device)
+ 		!!(device->attrs.odp_caps.per_transport_caps.rc_odp_caps &
+ 		   IB_ODP_SUPPORT_READ);
+ 
+-	rds_ibdev->fmr_max_remaps = device->attrs.max_map_per_fmr?: 32;
+ 	rds_ibdev->max_1m_mrs = device->attrs.max_mr ?
+ 		min_t(unsigned int, (device->attrs.max_mr / 2),
+ 		      rds_ib_mr_1m_pool_size) : rds_ib_mr_1m_pool_size;
+@@ -219,14 +216,11 @@ static int rds_ib_add_one(struct ib_device *device)
+ 		goto put_dev;
+ 	}
+ 
+-	rdsdebug("RDS/IB: max_mr = %d, max_wrs = %d, max_sge = %d, fmr_max_remaps = %d, max_1m_mrs = %d, max_8k_mrs = %d\n",
++	rdsdebug("RDS/IB: max_mr = %d, max_wrs = %d, max_sge = %d, max_1m_mrs = %d, max_8k_mrs = %d\n",
+ 		 device->attrs.max_fmr, rds_ibdev->max_wrs, rds_ibdev->max_sge,
+-		 rds_ibdev->fmr_max_remaps, rds_ibdev->max_1m_mrs,
+-		 rds_ibdev->max_8k_mrs);
++		 rds_ibdev->max_1m_mrs, rds_ibdev->max_8k_mrs);
+ 
+-	pr_info("RDS/IB: %s: %s supported and preferred\n",
+-		device->name,
+-		rds_ibdev->use_fastreg ? "FRMR" : "FMR");
++	pr_info("RDS/IB: %s: added\n", device->name);
+ 
+ 	down_write(&rds_ib_devices_lock);
+ 	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
+diff --git a/net/rds/ib.h b/net/rds/ib.h
+index 0296f1f7acda34..5ae069d39eab74 100644
+--- a/net/rds/ib.h
++++ b/net/rds/ib.h
+@@ -247,13 +247,11 @@ struct rds_ib_device {
+ 	struct ib_device	*dev;
+ 	struct ib_pd		*pd;
+ 	struct dma_pool		*rid_hdrs_pool; /* RDS headers DMA pool */
+-	u8			use_fastreg:1;
+ 	u8			odp_capable:1;
+ 
+ 	unsigned int		max_mrs;
+ 	struct rds_ib_mr_pool	*mr_1m_pool;
+ 	struct rds_ib_mr_pool   *mr_8k_pool;
+-	unsigned int		fmr_max_remaps;
+ 	unsigned int		max_8k_mrs;
+ 	unsigned int		max_1m_mrs;
+ 	int			max_sge;
+diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
+index 0fec4171564e25..c3319ff3ee11cd 100644
+--- a/net/rds/ib_cm.c
++++ b/net/rds/ib_cm.c
+@@ -527,10 +527,10 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
+ 		return -EOPNOTSUPP;
+ 
+ 	/* The fr_queue_space is currently set to 512, to add extra space on
+-	 * completion queue and send queue. This extra space is used for FRMR
++	 * completion queue and send queue. This extra space is used for FRWR
+ 	 * registration and invalidation work requests
+ 	 */
+-	fr_queue_space = (rds_ibdev->use_fastreg ? RDS_IB_DEFAULT_FR_WR : 0);
++	fr_queue_space = RDS_IB_DEFAULT_FR_WR;
+ 
+ 	/* add the conn now so that connection establishment has the dev */
+ 	rds_ib_add_conn(rds_ibdev, conn);
+diff --git a/net/rds/ib_fmr.c b/net/rds/ib_fmr.c
+deleted file mode 100644
+index 93c0437e6a5fd2..00000000000000
+--- a/net/rds/ib_fmr.c
++++ /dev/null
+@@ -1,269 +0,0 @@
+-/*
+- * Copyright (c) 2016 Oracle.  All rights reserved.
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and/or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+- */
 -
- module_param(register_always, bool, 0444);
- MODULE_PARM_DESC(register_always,
- 		 "Use memory registration even for contiguous memory regions");
-@@ -388,24 +383,6 @@ static int srp_new_cm_id(struct srp_rdma_ch *ch)
- 		srp_new_ib_cm_id(ch);
- }
- 
--static struct ib_fmr_pool *srp_alloc_fmr_pool(struct srp_target_port *target)
+-#include "ib_mr.h"
+-
+-struct rds_ib_mr *rds_ib_alloc_fmr(struct rds_ib_device *rds_ibdev, int npages)
 -{
--	struct srp_device *dev = target->srp_host->srp_dev;
--	struct ib_fmr_pool_param fmr_param;
+-	struct rds_ib_mr_pool *pool;
+-	struct rds_ib_mr *ibmr = NULL;
+-	struct rds_ib_fmr *fmr;
+-	int err = 0;
 -
--	memset(&fmr_param, 0, sizeof(fmr_param));
--	fmr_param.pool_size	    = target->mr_pool_size;
--	fmr_param.dirty_watermark   = fmr_param.pool_size / 4;
--	fmr_param.cache		    = 1;
--	fmr_param.max_pages_per_fmr = dev->max_pages_per_mr;
--	fmr_param.page_shift	    = ilog2(dev->mr_page_size);
--	fmr_param.access	    = (IB_ACCESS_LOCAL_WRITE |
--				       IB_ACCESS_REMOTE_WRITE |
--				       IB_ACCESS_REMOTE_READ);
+-	if (npages <= RDS_MR_8K_MSG_SIZE)
+-		pool = rds_ibdev->mr_8k_pool;
+-	else
+-		pool = rds_ibdev->mr_1m_pool;
 -
--	return ib_create_fmr_pool(dev->pd, &fmr_param);
+-	if (atomic_read(&pool->dirty_count) >= pool->max_items / 10)
+-		queue_delayed_work(rds_ib_mr_wq, &pool->flush_worker, 10);
+-
+-	/* Switch pools if one of the pool is reaching upper limit */
+-	if (atomic_read(&pool->dirty_count) >=  pool->max_items * 9 / 10) {
+-		if (pool->pool_type == RDS_IB_MR_8K_POOL)
+-			pool = rds_ibdev->mr_1m_pool;
+-		else
+-			pool = rds_ibdev->mr_8k_pool;
+-	}
+-
+-	ibmr = rds_ib_try_reuse_ibmr(pool);
+-	if (ibmr)
+-		return ibmr;
+-
+-	ibmr = kzalloc_node(sizeof(*ibmr), GFP_KERNEL,
+-			    rdsibdev_to_node(rds_ibdev));
+-	if (!ibmr) {
+-		err = -ENOMEM;
+-		goto out_no_cigar;
+-	}
+-
+-	fmr = &ibmr->u.fmr;
+-	fmr->fmr = ib_alloc_fmr(rds_ibdev->pd,
+-			(IB_ACCESS_LOCAL_WRITE |
+-			 IB_ACCESS_REMOTE_READ |
+-			 IB_ACCESS_REMOTE_WRITE |
+-			 IB_ACCESS_REMOTE_ATOMIC),
+-			&pool->fmr_attr);
+-	if (IS_ERR(fmr->fmr)) {
+-		err = PTR_ERR(fmr->fmr);
+-		fmr->fmr = NULL;
+-		pr_warn("RDS/IB: %s failed (err=%d)\n", __func__, err);
+-		goto out_no_cigar;
+-	}
+-
+-	ibmr->pool = pool;
+-	if (pool->pool_type == RDS_IB_MR_8K_POOL)
+-		rds_ib_stats_inc(s_ib_rdma_mr_8k_alloc);
+-	else
+-		rds_ib_stats_inc(s_ib_rdma_mr_1m_alloc);
+-
+-	return ibmr;
+-
+-out_no_cigar:
+-	kfree(ibmr);
+-	atomic_dec(&pool->item_count);
+-
+-	return ERR_PTR(err);
 -}
 -
- /**
-  * srp_destroy_fr_pool() - free the resources owned by a pool
-  * @pool: Fast registration pool to be destroyed.
-@@ -556,7 +533,6 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
- 	struct ib_qp_init_attr *init_attr;
- 	struct ib_cq *recv_cq, *send_cq;
- 	struct ib_qp *qp;
--	struct ib_fmr_pool *fmr_pool = NULL;
- 	struct srp_fr_pool *fr_pool = NULL;
- 	const int m = 1 + dev->use_fast_reg * target->mr_per_cmd * 2;
- 	int ret;
-@@ -619,14 +595,6 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
- 				     "FR pool allocation failed (%d)\n", ret);
- 			goto err_qp;
- 		}
--	} else if (dev->use_fmr) {
--		fmr_pool = srp_alloc_fmr_pool(target);
--		if (IS_ERR(fmr_pool)) {
--			ret = PTR_ERR(fmr_pool);
--			shost_printk(KERN_WARNING, target->scsi_host, PFX
--				     "FMR pool allocation failed (%d)\n", ret);
--			goto err_qp;
--		}
- 	}
- 
- 	if (ch->qp)
-@@ -644,10 +612,6 @@ static int srp_create_ch_ib(struct srp_rdma_ch *ch)
- 		if (ch->fr_pool)
- 			srp_destroy_fr_pool(ch->fr_pool);
- 		ch->fr_pool = fr_pool;
--	} else if (dev->use_fmr) {
--		if (ch->fmr_pool)
--			ib_destroy_fmr_pool(ch->fmr_pool);
--		ch->fmr_pool = fmr_pool;
- 	}
- 
- 	kfree(init_attr);
-@@ -702,9 +666,6 @@ static void srp_free_ch_ib(struct srp_target_port *target,
- 	if (dev->use_fast_reg) {
- 		if (ch->fr_pool)
- 			srp_destroy_fr_pool(ch->fr_pool);
--	} else if (dev->use_fmr) {
--		if (ch->fmr_pool)
--			ib_destroy_fmr_pool(ch->fmr_pool);
- 	}
- 
- 	srp_destroy_qp(ch);
-@@ -1017,12 +978,8 @@ static void srp_free_req_data(struct srp_target_port *target,
- 
- 	for (i = 0; i < target->req_ring_size; ++i) {
- 		req = &ch->req_ring[i];
--		if (dev->use_fast_reg) {
-+		if (dev->use_fast_reg)
- 			kfree(req->fr_list);
--		} else {
--			kfree(req->fmr_list);
--			kfree(req->map_page);
--		}
- 		if (req->indirect_dma_addr) {
- 			ib_dma_unmap_single(ibdev, req->indirect_dma_addr,
- 					    target->indirect_size,
-@@ -1056,16 +1013,8 @@ static int srp_alloc_req_data(struct srp_rdma_ch *ch)
- 					GFP_KERNEL);
- 		if (!mr_list)
- 			goto out;
--		if (srp_dev->use_fast_reg) {
-+		if (srp_dev->use_fast_reg)
- 			req->fr_list = mr_list;
--		} else {
--			req->fmr_list = mr_list;
--			req->map_page = kmalloc_array(srp_dev->max_pages_per_mr,
--						      sizeof(void *),
--						      GFP_KERNEL);
--			if (!req->map_page)
--				goto out;
--		}
- 		req->indirect_desc = kmalloc(target->indirect_size, GFP_KERNEL);
- 		if (!req->indirect_desc)
- 			goto out;
-@@ -1272,11 +1221,6 @@ static void srp_unmap_data(struct scsi_cmnd *scmnd,
- 		if (req->nmdesc)
- 			srp_fr_pool_put(ch->fr_pool, req->fr_list,
- 					req->nmdesc);
--	} else if (dev->use_fmr) {
--		struct ib_pool_fmr **pfmr;
--
--		for (i = req->nmdesc, pfmr = req->fmr_list; i > 0; i--, pfmr++)
--			ib_fmr_pool_unmap(*pfmr);
- 	}
- 
- 	ib_dma_unmap_sg(ibdev, scsi_sglist(scmnd), scsi_sg_count(scmnd),
-@@ -1472,50 +1416,6 @@ static void srp_map_desc(struct srp_map_state *state, dma_addr_t dma_addr,
- 	state->ndesc++;
- }
- 
--static int srp_map_finish_fmr(struct srp_map_state *state,
--			      struct srp_rdma_ch *ch)
+-static int rds_ib_map_fmr(struct rds_ib_device *rds_ibdev,
+-			  struct rds_ib_mr *ibmr, struct scatterlist *sg,
+-			  unsigned int nents)
 -{
--	struct srp_target_port *target = ch->target;
--	struct srp_device *dev = target->srp_host->srp_dev;
--	struct ib_pool_fmr *fmr;
+-	struct ib_device *dev = rds_ibdev->dev;
+-	struct rds_ib_fmr *fmr = &ibmr->u.fmr;
+-	struct scatterlist *scat = sg;
 -	u64 io_addr = 0;
+-	u64 *dma_pages;
+-	u32 len;
+-	int page_cnt, sg_dma_len;
+-	int i, j;
+-	int ret;
 -
--	if (state->fmr.next >= state->fmr.end) {
--		shost_printk(KERN_ERR, ch->target->scsi_host,
--			     PFX "Out of MRs (mr_per_cmd = %d)\n",
--			     ch->target->mr_per_cmd);
+-	sg_dma_len = ib_dma_map_sg(dev, sg, nents, DMA_BIDIRECTIONAL);
+-	if (unlikely(!sg_dma_len)) {
+-		pr_warn("RDS/IB: %s failed!\n", __func__);
+-		return -EBUSY;
+-	}
+-
+-	len = 0;
+-	page_cnt = 0;
+-
+-	for (i = 0; i < sg_dma_len; ++i) {
+-		unsigned int dma_len = sg_dma_len(&scat[i]);
+-		u64 dma_addr = sg_dma_address(&scat[i]);
+-
+-		if (dma_addr & ~PAGE_MASK) {
+-			if (i > 0) {
+-				ib_dma_unmap_sg(dev, sg, nents,
+-						DMA_BIDIRECTIONAL);
+-				return -EINVAL;
+-			} else {
+-				++page_cnt;
+-			}
+-		}
+-		if ((dma_addr + dma_len) & ~PAGE_MASK) {
+-			if (i < sg_dma_len - 1) {
+-				ib_dma_unmap_sg(dev, sg, nents,
+-						DMA_BIDIRECTIONAL);
+-				return -EINVAL;
+-			} else {
+-				++page_cnt;
+-			}
+-		}
+-
+-		len += dma_len;
+-	}
+-
+-	page_cnt += len >> PAGE_SHIFT;
+-	if (page_cnt > ibmr->pool->fmr_attr.max_pages) {
+-		ib_dma_unmap_sg(dev, sg, nents, DMA_BIDIRECTIONAL);
+-		return -EINVAL;
+-	}
+-
+-	dma_pages = kmalloc_array_node(sizeof(u64), page_cnt, GFP_ATOMIC,
+-				       rdsibdev_to_node(rds_ibdev));
+-	if (!dma_pages) {
+-		ib_dma_unmap_sg(dev, sg, nents, DMA_BIDIRECTIONAL);
 -		return -ENOMEM;
 -	}
 -
--	WARN_ON_ONCE(!dev->use_fmr);
+-	page_cnt = 0;
+-	for (i = 0; i < sg_dma_len; ++i) {
+-		unsigned int dma_len = sg_dma_len(&scat[i]);
+-		u64 dma_addr = sg_dma_address(&scat[i]);
 -
--	if (state->npages == 0)
--		return 0;
--
--	if (state->npages == 1 && target->global_rkey) {
--		srp_map_desc(state, state->base_dma_addr, state->dma_len,
--			     target->global_rkey);
--		goto reset_state;
+-		for (j = 0; j < dma_len; j += PAGE_SIZE)
+-			dma_pages[page_cnt++] =
+-				(dma_addr & PAGE_MASK) + j;
 -	}
 -
--	fmr = ib_fmr_pool_map_phys(ch->fmr_pool, state->pages,
--				   state->npages, io_addr);
--	if (IS_ERR(fmr))
--		return PTR_ERR(fmr);
--
--	*state->fmr.next++ = fmr;
--	state->nmdesc++;
--
--	srp_map_desc(state, state->base_dma_addr & ~dev->mr_page_mask,
--		     state->dma_len, fmr->fmr->rkey);
--
--reset_state:
--	state->npages = 0;
--	state->dma_len = 0;
--
--	return 0;
--}
--
- static void srp_reg_mr_err_done(struct ib_cq *cq, struct ib_wc *wc)
- {
- 	srp_handle_qp_err(cq, wc, "FAST REG");
-@@ -1606,74 +1506,6 @@ static int srp_map_finish_fr(struct srp_map_state *state,
- 	return n;
- }
- 
--static int srp_map_sg_entry(struct srp_map_state *state,
--			    struct srp_rdma_ch *ch,
--			    struct scatterlist *sg)
--{
--	struct srp_target_port *target = ch->target;
--	struct srp_device *dev = target->srp_host->srp_dev;
--	dma_addr_t dma_addr = sg_dma_address(sg);
--	unsigned int dma_len = sg_dma_len(sg);
--	unsigned int len = 0;
--	int ret;
--
--	WARN_ON_ONCE(!dma_len);
--
--	while (dma_len) {
--		unsigned offset = dma_addr & ~dev->mr_page_mask;
--
--		if (state->npages == dev->max_pages_per_mr ||
--		    (state->npages > 0 && offset != 0)) {
--			ret = srp_map_finish_fmr(state, ch);
--			if (ret)
--				return ret;
--		}
--
--		len = min_t(unsigned int, dma_len, dev->mr_page_size - offset);
--
--		if (!state->npages)
--			state->base_dma_addr = dma_addr;
--		state->pages[state->npages++] = dma_addr & dev->mr_page_mask;
--		state->dma_len += len;
--		dma_addr += len;
--		dma_len -= len;
+-	ret = ib_map_phys_fmr(fmr->fmr, dma_pages, page_cnt, io_addr);
+-	if (ret) {
+-		ib_dma_unmap_sg(dev, sg, nents, DMA_BIDIRECTIONAL);
+-		goto out;
 -	}
 -
--	/*
--	 * If the end of the MR is not on a page boundary then we need to
--	 * close it out and start a new one -- we can only merge at page
--	 * boundaries.
+-	/* Success - we successfully remapped the MR, so we can
+-	 * safely tear down the old mapping.
 -	 */
+-	rds_ib_teardown_mr(ibmr);
+-
+-	ibmr->sg = scat;
+-	ibmr->sg_len = nents;
+-	ibmr->sg_dma_len = sg_dma_len;
+-	ibmr->remap_count++;
+-
+-	if (ibmr->pool->pool_type == RDS_IB_MR_8K_POOL)
+-		rds_ib_stats_inc(s_ib_rdma_mr_8k_used);
+-	else
+-		rds_ib_stats_inc(s_ib_rdma_mr_1m_used);
 -	ret = 0;
--	if ((dma_addr & ~dev->mr_page_mask) != 0)
--		ret = srp_map_finish_fmr(state, ch);
+-
+-out:
+-	kfree(dma_pages);
+-
 -	return ret;
 -}
 -
--static int srp_map_sg_fmr(struct srp_map_state *state, struct srp_rdma_ch *ch,
--			  struct srp_request *req, struct scatterlist *scat,
--			  int count)
+-struct rds_ib_mr *rds_ib_reg_fmr(struct rds_ib_device *rds_ibdev,
+-				 struct scatterlist *sg,
+-				 unsigned long nents,
+-				 u32 *key)
 -{
--	struct scatterlist *sg;
--	int i, ret;
+-	struct rds_ib_mr *ibmr = NULL;
+-	struct rds_ib_fmr *fmr;
+-	int ret;
 -
--	state->pages = req->map_page;
--	state->fmr.next = req->fmr_list;
--	state->fmr.end = req->fmr_list + ch->target->mr_per_cmd;
+-	ibmr = rds_ib_alloc_fmr(rds_ibdev, nents);
+-	if (IS_ERR(ibmr))
+-		return ibmr;
 -
--	for_each_sg(scat, sg, count, i) {
--		ret = srp_map_sg_entry(state, ch, sg);
--		if (ret)
--			return ret;
--	}
+-	ibmr->device = rds_ibdev;
+-	fmr = &ibmr->u.fmr;
+-	ret = rds_ib_map_fmr(rds_ibdev, ibmr, sg, nents);
+-	if (ret == 0)
+-		*key = fmr->fmr->rkey;
+-	else
+-		rds_ib_free_mr(ibmr, 0);
 -
--	ret = srp_map_finish_fmr(state, ch);
--	if (ret)
--		return ret;
--
--	return 0;
+-	return ibmr;
 -}
 -
- static int srp_map_sg_fr(struct srp_map_state *state, struct srp_rdma_ch *ch,
- 			 struct srp_request *req, struct scatterlist *scat,
- 			 int count)
-@@ -1733,7 +1565,6 @@ static int srp_map_idb(struct srp_rdma_ch *ch, struct srp_request *req,
- 	struct srp_device *dev = target->srp_host->srp_dev;
- 	struct srp_map_state state;
- 	struct srp_direct_buf idb_desc;
--	u64 idb_pages[1];
- 	struct scatterlist idb_sg[1];
- 	int ret;
+-void rds_ib_unreg_fmr(struct list_head *list, unsigned int *nfreed,
+-		      unsigned long *unpinned, unsigned int goal)
+-{
+-	struct rds_ib_mr *ibmr, *next;
+-	struct rds_ib_fmr *fmr;
+-	LIST_HEAD(fmr_list);
+-	int ret = 0;
+-	unsigned int freed = *nfreed;
+-
+-	/* String all ib_mr's onto one list and hand them to  ib_unmap_fmr */
+-	list_for_each_entry(ibmr, list, unmap_list) {
+-		fmr = &ibmr->u.fmr;
+-		list_add(&fmr->fmr->list, &fmr_list);
+-	}
+-
+-	ret = ib_unmap_fmr(&fmr_list);
+-	if (ret)
+-		pr_warn("RDS/IB: FMR invalidation failed (err=%d)\n", ret);
+-
+-	/* Now we can destroy the DMA mapping and unpin any pages */
+-	list_for_each_entry_safe(ibmr, next, list, unmap_list) {
+-		fmr = &ibmr->u.fmr;
+-		*unpinned += ibmr->sg_len;
+-		__rds_ib_teardown_mr(ibmr);
+-		if (freed < goal ||
+-		    ibmr->remap_count >= ibmr->pool->fmr_attr.max_maps) {
+-			if (ibmr->pool->pool_type == RDS_IB_MR_8K_POOL)
+-				rds_ib_stats_inc(s_ib_rdma_mr_8k_free);
+-			else
+-				rds_ib_stats_inc(s_ib_rdma_mr_1m_free);
+-			list_del(&ibmr->unmap_list);
+-			ib_dealloc_fmr(fmr->fmr);
+-			kfree(ibmr);
+-			freed++;
+-		}
+-	}
+-	*nfreed = freed;
+-}
+-
+-void rds_ib_free_fmr_list(struct rds_ib_mr *ibmr)
+-{
+-	struct rds_ib_mr_pool *pool = ibmr->pool;
+-
+-	if (ibmr->remap_count >= pool->fmr_attr.max_maps)
+-		llist_add(&ibmr->llnode, &pool->drop_list);
+-	else
+-		llist_add(&ibmr->llnode, &pool->free_list);
+-}
+diff --git a/net/rds/ib_frmr.c b/net/rds/ib_frmr.c
+index 06ecf9d2d4bf1b..9b6ffff72f2d11 100644
+--- a/net/rds/ib_frmr.c
++++ b/net/rds/ib_frmr.c
+@@ -76,7 +76,7 @@ static struct rds_ib_mr *rds_ib_alloc_frmr(struct rds_ib_device *rds_ibdev,
  
-@@ -1756,14 +1587,6 @@ static int srp_map_idb(struct srp_rdma_ch *ch, struct srp_request *req,
- 		if (ret < 0)
- 			return ret;
- 		WARN_ON_ONCE(ret < 1);
--	} else if (dev->use_fmr) {
--		state.pages = idb_pages;
--		state.pages[0] = (req->indirect_dma_addr &
--				  dev->mr_page_mask);
--		state.npages = 1;
--		ret = srp_map_finish_fmr(&state, ch);
--		if (ret < 0)
--			return ret;
- 	} else {
- 		return -EINVAL;
+ 	frmr = &ibmr->u.frmr;
+ 	frmr->mr = ib_alloc_mr(rds_ibdev->pd, IB_MR_TYPE_MEM_REG,
+-			 pool->fmr_attr.max_pages);
++			 pool->max_pages);
+ 	if (IS_ERR(frmr->mr)) {
+ 		pr_warn("RDS/IB: %s failed to allocate MR", __func__);
+ 		err = PTR_ERR(frmr->mr);
+@@ -240,7 +240,7 @@ static int rds_ib_map_frmr(struct rds_ib_device *rds_ibdev,
  	}
-@@ -1787,9 +1610,6 @@ static void srp_check_mapping(struct srp_map_state *state,
- 	if (dev->use_fast_reg)
- 		for (i = 0, pfr = req->fr_list; i < state->nmdesc; i++, pfr++)
- 			mr_len += (*pfr)->mr->length;
--	else if (dev->use_fmr)
--		for (i = 0; i < state->nmdesc; i++)
--			mr_len += be32_to_cpu(req->indirect_desc[i].len);
- 	if (desc_len != scsi_bufflen(req->scmnd) ||
- 	    mr_len > scsi_bufflen(req->scmnd))
- 		pr_err("Inconsistent: scsi len %d <> desc len %lld <> mr len %lld; ndesc %d; nmdesc = %d\n",
-@@ -1904,8 +1724,6 @@ static int srp_map_data(struct scsi_cmnd *scmnd, struct srp_rdma_ch *ch,
- 	state.desc = req->indirect_desc;
- 	if (dev->use_fast_reg)
- 		ret = srp_map_sg_fr(&state, ch, req, scat, count);
--	else if (dev->use_fmr)
--		ret = srp_map_sg_fmr(&state, ch, req, scat, count);
- 	else
- 		ret = srp_map_sg_dma(&state, ch, req, scat, count);
- 	req->nmdesc = state.nmdesc;
-@@ -3864,13 +3682,13 @@ static ssize_t srp_create_target(struct device *dev,
+ 	frmr->dma_npages += len >> PAGE_SHIFT;
+ 
+-	if (frmr->dma_npages > ibmr->pool->fmr_attr.max_pages) {
++	if (frmr->dma_npages > ibmr->pool->max_pages) {
+ 		ret = -EMSGSIZE;
+ 		goto out_unmap;
+ 	}
+diff --git a/net/rds/ib_mr.h b/net/rds/ib_mr.h
+index 0c8252d7fe2b76..ea5e9aee4959e2 100644
+--- a/net/rds/ib_mr.h
++++ b/net/rds/ib_mr.h
+@@ -43,10 +43,6 @@
+ #define RDS_MR_8K_SCALE			(256 / (RDS_MR_8K_MSG_SIZE + 1))
+ #define RDS_MR_8K_POOL_SIZE		(RDS_MR_8K_SCALE * (8192 / 2))
+ 
+-struct rds_ib_fmr {
+-	struct ib_fmr		*fmr;
+-};
+-
+ enum rds_ib_fr_state {
+ 	FRMR_IS_FREE,	/* mr invalidated & ready for use */
+ 	FRMR_IS_INUSE,	/* mr is in use or used & can be invalidated */
+@@ -84,7 +80,6 @@ struct rds_ib_mr {
+ 
+ 	u8				odp:1;
+ 	union {
+-		struct rds_ib_fmr	fmr;
+ 		struct rds_ib_frmr	frmr;
+ 		struct ib_mr		*mr;
+ 	} u;
+@@ -109,8 +104,7 @@ struct rds_ib_mr_pool {
+ 	unsigned long		max_items;
+ 	unsigned long		max_items_soft;
+ 	unsigned long		max_free_pinned;
+-	struct ib_fmr_attr	fmr_attr;
+-	bool			use_fastreg;
++	unsigned int		max_pages;
+ };
+ 
+ extern struct workqueue_struct *rds_ib_mr_wq;
+@@ -136,15 +130,9 @@ u32 rds_ib_get_lkey(void *trans_private);
+ 
+ void __rds_ib_teardown_mr(struct rds_ib_mr *);
+ void rds_ib_teardown_mr(struct rds_ib_mr *);
+-struct rds_ib_mr *rds_ib_alloc_fmr(struct rds_ib_device *, int);
+ struct rds_ib_mr *rds_ib_reuse_mr(struct rds_ib_mr_pool *);
+ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *, int, struct rds_ib_mr **);
+-struct rds_ib_mr *rds_ib_reg_fmr(struct rds_ib_device *, struct scatterlist *,
+-				 unsigned long, u32 *);
+ struct rds_ib_mr *rds_ib_try_reuse_ibmr(struct rds_ib_mr_pool *);
+-void rds_ib_unreg_fmr(struct list_head *, unsigned int *,
+-		      unsigned long *, unsigned int);
+-void rds_ib_free_fmr_list(struct rds_ib_mr *);
+ struct rds_ib_mr *rds_ib_reg_frmr(struct rds_ib_device *rds_ibdev,
+ 				  struct rds_ib_connection *ic,
+ 				  struct scatterlist *sg,
+diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
+index b34b24e237f81b..8f070ee7e74268 100644
+--- a/net/rds/ib_rdma.c
++++ b/net/rds/ib_rdma.c
+@@ -181,7 +181,7 @@ void rds_ib_get_mr_info(struct rds_ib_device *rds_ibdev, struct rds_info_rdma_co
+ 	struct rds_ib_mr_pool *pool_1m = rds_ibdev->mr_1m_pool;
+ 
+ 	iinfo->rdma_mr_max = pool_1m->max_items;
+-	iinfo->rdma_mr_size = pool_1m->fmr_attr.max_pages;
++	iinfo->rdma_mr_size = pool_1m->max_pages;
+ }
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+@@ -191,7 +191,7 @@ void rds6_ib_get_mr_info(struct rds_ib_device *rds_ibdev,
+ 	struct rds_ib_mr_pool *pool_1m = rds_ibdev->mr_1m_pool;
+ 
+ 	iinfo6->rdma_mr_max = pool_1m->max_items;
+-	iinfo6->rdma_mr_size = pool_1m->fmr_attr.max_pages;
++	iinfo6->rdma_mr_size = pool_1m->max_pages;
+ }
+ #endif
+ 
+@@ -406,10 +406,7 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+ 	if (list_empty(&unmap_list))
+ 		goto out;
+ 
+-	if (pool->use_fastreg)
+-		rds_ib_unreg_frmr(&unmap_list, &nfreed, &unpinned, free_goal);
+-	else
+-		rds_ib_unreg_fmr(&unmap_list, &nfreed, &unpinned, free_goal);
++	rds_ib_unreg_frmr(&unmap_list, &nfreed, &unpinned, free_goal);
+ 
+ 	if (!list_empty(&unmap_list)) {
+ 		unsigned long flags;
+@@ -503,10 +500,7 @@ void rds_ib_free_mr(void *trans_private, int invalidate)
+ 	}
+ 
+ 	/* Return it to the pool's free list */
+-	if (rds_ibdev->use_fastreg)
+-		rds_ib_free_frmr_list(ibmr);
+-	else
+-		rds_ib_free_fmr_list(ibmr);
++	rds_ib_free_frmr_list(ibmr);
+ 
+ 	atomic_add(ibmr->sg_len, &pool->free_pinned);
+ 	atomic_inc(&pool->dirty_count);
+@@ -622,10 +616,7 @@ void *rds_ib_get_mr(struct scatterlist *sg, unsigned long nents,
  		goto out;
  	}
  
--	if (!srp_dev->has_fmr && !srp_dev->has_fr && !target->allow_ext_sg &&
-+	if (!srp_dev->has_fr && !target->allow_ext_sg &&
- 	    target->cmd_sg_cnt < target->sg_tablesize) {
- 		pr_warn("No MR pool and no external indirect descriptors, limiting sg_tablesize to cmd_sg_cnt\n");
- 		target->sg_tablesize = target->cmd_sg_cnt;
+-	if (rds_ibdev->use_fastreg)
+-		ibmr = rds_ib_reg_frmr(rds_ibdev, ic, sg, nents, key_ret);
+-	else
+-		ibmr = rds_ib_reg_fmr(rds_ibdev, sg, nents, key_ret);
++	ibmr = rds_ib_reg_frmr(rds_ibdev, ic, sg, nents, key_ret);
+ 	if (IS_ERR(ibmr)) {
+ 		ret = PTR_ERR(ibmr);
+ 		pr_warn("RDS/IB: rds_ib_get_mr failed (errno=%d)\n", ret);
+@@ -669,19 +660,16 @@ struct rds_ib_mr_pool *rds_ib_create_mr_pool(struct rds_ib_device *rds_ibdev,
+ 
+ 	if (pool_type == RDS_IB_MR_1M_POOL) {
+ 		/* +1 allows for unaligned MRs */
+-		pool->fmr_attr.max_pages = RDS_MR_1M_MSG_SIZE + 1;
++		pool->max_pages = RDS_MR_1M_MSG_SIZE + 1;
+ 		pool->max_items = rds_ibdev->max_1m_mrs;
+ 	} else {
+ 		/* pool_type == RDS_IB_MR_8K_POOL */
+-		pool->fmr_attr.max_pages = RDS_MR_8K_MSG_SIZE + 1;
++		pool->max_pages = RDS_MR_8K_MSG_SIZE + 1;
+ 		pool->max_items = rds_ibdev->max_8k_mrs;
  	}
  
--	if (srp_dev->use_fast_reg || srp_dev->use_fmr) {
-+	if (srp_dev->use_fast_reg) {
- 		bool gaps_reg = (ibdev->attrs.device_cap_flags &
- 				 IB_DEVICE_SG_GAPS_REG);
+-	pool->max_free_pinned = pool->max_items * pool->fmr_attr.max_pages / 4;
+-	pool->fmr_attr.max_maps = rds_ibdev->fmr_max_remaps;
+-	pool->fmr_attr.page_shift = PAGE_SHIFT;
++	pool->max_free_pinned = pool->max_items * pool->max_pages / 4;
+ 	pool->max_items_soft = rds_ibdev->max_mrs * 3 / 4;
+-	pool->use_fastreg = rds_ibdev->use_fastreg;
  
-@@ -3878,12 +3696,12 @@ static ssize_t srp_create_target(struct device *dev,
- 				  (ilog2(srp_dev->mr_page_size) - 9);
- 		if (!gaps_reg) {
- 			/*
--			 * FR and FMR can only map one HCA page per entry. If
--			 * the start address is not aligned on a HCA page
--			 * boundary two entries will be used for the head and
--			 * the tail although these two entries combined
--			 * contain at most one HCA page of data. Hence the "+
--			 * 1" in the calculation below.
-+			 * FR can only map one HCA page per entry. If the start
-+			 * address is not aligned on a HCA page boundary two
-+			 * entries will be used for the head and the tail
-+			 * although these two entries combined contain at most
-+			 * one HCA page of data. Hence the "+ 1" in the
-+			 * calculation below.
- 			 *
- 			 * The indirect data buffer descriptor is contiguous
- 			 * so the memory for that buffer will only be
-@@ -4162,23 +3980,15 @@ static int srp_add_one(struct ib_device *device)
- 	srp_dev->max_pages_per_mr = min_t(u64, SRP_MAX_PAGES_PER_MR,
- 					  max_pages_per_mr);
- 
--	srp_dev->has_fmr = (device->ops.alloc_fmr &&
--			    device->ops.dealloc_fmr &&
--			    device->ops.map_phys_fmr &&
--			    device->ops.unmap_fmr);
- 	srp_dev->has_fr = (attr->device_cap_flags &
- 			   IB_DEVICE_MEM_MGT_EXTENSIONS);
--	if (!never_register && !srp_dev->has_fmr && !srp_dev->has_fr) {
--		dev_warn(&device->dev, "neither FMR nor FR is supported\n");
--	} else if (!never_register &&
--		   attr->max_mr_size >= 2 * srp_dev->mr_page_size) {
--		srp_dev->use_fast_reg = (srp_dev->has_fr &&
--					 (!srp_dev->has_fmr || prefer_fr));
--		srp_dev->use_fmr = !srp_dev->use_fast_reg && srp_dev->has_fmr;
--	}
-+	if (!never_register && !srp_dev->has_fr)
-+		dev_warn(&device->dev, "FR is not supported\n");
-+	else if (!never_register &&
-+		 attr->max_mr_size >= 2 * srp_dev->mr_page_size)
-+		srp_dev->use_fast_reg = srp_dev->has_fr;
- 
--	if (never_register || !register_always ||
--	    (!srp_dev->has_fmr && !srp_dev->has_fr))
-+	if (never_register || !register_always || !srp_dev->has_fr)
- 		flags |= IB_PD_UNSAFE_GLOBAL_RKEY;
- 
- 	if (srp_dev->use_fast_reg) {
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.h b/drivers/infiniband/ulp/srp/ib_srp.h
-index 6fabcc2faf1f08..6818cac0a3b789 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.h
-+++ b/drivers/infiniband/ulp/srp/ib_srp.h
-@@ -44,7 +44,6 @@
- #include <rdma/ib_verbs.h>
- #include <rdma/ib_sa.h>
- #include <rdma/ib_cm.h>
--#include <rdma/ib_fmr_pool.h>
- #include <rdma/rdma_cm.h>
- 
- enum {
-@@ -95,8 +94,7 @@ enum srp_iu_type {
- /*
-  * @mr_page_mask: HCA memory registration page mask.
-  * @mr_page_size: HCA memory registration page size.
-- * @mr_max_size: Maximum size in bytes of a single FMR / FR registration
-- *   request.
-+ * @mr_max_size: Maximum size in bytes of a single FR registration request.
-  */
- struct srp_device {
- 	struct list_head	dev_list;
-@@ -107,9 +105,7 @@ struct srp_device {
- 	int			mr_page_size;
- 	int			mr_max_size;
- 	int			max_pages_per_mr;
--	bool			has_fmr;
- 	bool			has_fr;
--	bool			use_fmr;
- 	bool			use_fast_reg;
- };
- 
-@@ -127,11 +123,7 @@ struct srp_host {
- struct srp_request {
- 	struct scsi_cmnd       *scmnd;
- 	struct srp_iu	       *cmd;
--	union {
--		struct ib_pool_fmr **fmr_list;
--		struct srp_fr_desc **fr_list;
--	};
--	u64		       *map_page;
-+	struct srp_fr_desc     **fr_list;
- 	struct srp_direct_buf  *indirect_desc;
- 	dma_addr_t		indirect_dma_addr;
- 	short			nmdesc;
-@@ -155,10 +147,7 @@ struct srp_rdma_ch {
- 	struct ib_cq	       *send_cq;
- 	struct ib_cq	       *recv_cq;
- 	struct ib_qp	       *qp;
--	union {
--		struct ib_fmr_pool     *fmr_pool;
--		struct srp_fr_pool     *fr_pool;
--	};
-+	struct srp_fr_pool     *fr_pool;
- 	uint32_t		max_it_iu_len;
- 	uint32_t		max_ti_iu_len;
- 	u8			max_imm_sge;
-@@ -319,19 +308,15 @@ struct srp_fr_pool {
-  * @pages:	    Array with DMA addresses of pages being considered for
-  *		    memory registration.
-  * @base_dma_addr:  DMA address of the first page that has not yet been mapped.
-- * @dma_len:	    Number of bytes that will be registered with the next
-- *		    FMR or FR memory registration call.
-+ * @dma_len:	    Number of bytes that will be registered with the next FR
-+ *                  memory registration call.
-  * @total_len:	    Total number of bytes in the sg-list being mapped.
-  * @npages:	    Number of page addresses in the pages[] array.
-- * @nmdesc:	    Number of FMR or FR memory descriptors used for mapping.
-+ * @nmdesc:	    Number of FR memory descriptors used for mapping.
-  * @ndesc:	    Number of SRP buffer descriptors that have been filled in.
-  */
- struct srp_map_state {
- 	union {
--		struct {
--			struct ib_pool_fmr **next;
--			struct ib_pool_fmr **end;
--		} fmr;
- 		struct {
- 			struct srp_fr_desc **next;
- 			struct srp_fr_desc **end;
+ 	return pool;
+ }
 -- 
 2.26.2
 
