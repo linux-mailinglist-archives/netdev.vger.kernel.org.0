@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FB81E6145
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D87801E614F
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:48:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389874AbgE1Mqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:46:47 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5364 "EHLO huawei.com"
+        id S2389997AbgE1Msb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:48:31 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5367 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389865AbgE1Mqq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 08:46:46 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 3E072D9CC113CEA01371;
-        Thu, 28 May 2020 20:46:43 +0800 (CST)
+        id S2389852AbgE1MsX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 08:48:23 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 3DCB9CEF700E7D0C8469;
+        Thu, 28 May 2020 20:46:48 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
  14.3.487.0; Thu, 28 May 2020 20:46:37 +0800
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 06/11] net: hns3: remove some unused fields in struct hns3_nic_priv
-Date:   Thu, 28 May 2020 20:45:07 +0800
-Message-ID: <1590669912-21867-7-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 07/11] net: hns3; remove unused HNAE3_RESTORE_CLIENT in enum hnae3_reset_notify_type
+Date:   Thu, 28 May 2020 20:45:08 +0800
+Message-ID: <1590669912-21867-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
 References: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,61 +38,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove some fileds which defined in struct hns3_nic_priv,
-but not used, and remove the related definition of struct
-hns3_udp_tunnel and enum hns3_udp_tnl_type.
+Remove HNAE3_RESTORE_CLIENT which is not needed now.
 
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h | 22 ----------------------
- 1 file changed, 22 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 60f82ad..66cd439 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -469,21 +469,8 @@ struct hns3_enet_tqp_vector {
- 	unsigned long last_jiffies;
- } ____cacheline_internodealigned_in_smp;
- 
--enum hns3_udp_tnl_type {
--	HNS3_UDP_TNL_VXLAN,
--	HNS3_UDP_TNL_GENEVE,
--	HNS3_UDP_TNL_MAX,
--};
--
--struct hns3_udp_tunnel {
--	u16 dst_port;
--	int used;
--};
--
- struct hns3_nic_priv {
- 	struct hnae3_handle *ae_handle;
--	u32 enet_ver;
--	u32 port_id;
- 	struct net_device *netdev;
- 	struct device *dev;
- 
-@@ -495,19 +482,10 @@ struct hns3_nic_priv {
- 	struct hns3_enet_tqp_vector *tqp_vector;
- 	u16 vector_num;
- 
--	/* The most recently read link state */
--	int link;
- 	u64 tx_timeout_count;
- 
- 	unsigned long state;
- 
--	struct timer_list service_timer;
--
--	struct work_struct service_task;
--
--	struct notifier_block notifier_block;
--	/* Vxlan/Geneve information */
--	struct hns3_udp_tunnel udp_tnl[HNS3_UDP_TNL_MAX];
- 	struct hns3_enet_coalesce tx_coal;
- 	struct hns3_enet_coalesce rx_coal;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 7506cab..0a4aac4 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -145,7 +145,6 @@ enum hnae3_reset_notify_type {
+ 	HNAE3_DOWN_CLIENT,
+ 	HNAE3_INIT_CLIENT,
+ 	HNAE3_UNINIT_CLIENT,
+-	HNAE3_RESTORE_CLIENT,
  };
+ 
+ enum hnae3_hw_error_type {
 -- 
 2.7.4
 
