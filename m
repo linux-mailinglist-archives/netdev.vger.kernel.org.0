@@ -2,301 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D38411E6CCE
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:47:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FAF1E6CEF
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 22:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407371AbgE1Ury (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 16:47:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407361AbgE1Urt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 16:47:49 -0400
-Received: from lore-desk.lan (unknown [151.48.140.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 09F16208A7;
-        Thu, 28 May 2020 20:47:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590698868;
-        bh=vgJrR6hW1YCUyPNPAX535hp1C3q2ppzLzhfPxNuNclg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dJjmLh8d2dzsRI7Su/Gcu79SpXv4aFXZiP/eCX2U6jpyN+BeDmW3Kzq0jTJXxPgJW
-         9OM41HSamlGKlWpjOl6bCUN6rX9Y8qCEYPdjjIJytxZjI5xD6YlyjEYrvZOAhk+ex0
-         OQCc+rZQSyMgEIehk84AiT7/y7jGpN2uv1/fLVTM=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     ast@kernel.org, davem@davemloft.net, brouer@redhat.com,
-        daniel@iogearbox.net, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org
-Subject: [PATCH v3 bpf-next 2/2] xdp: rename convert_to_xdp_frame in xdp_convert_buff_to_frame
-Date:   Thu, 28 May 2020 22:47:29 +0200
-Message-Id: <6344f739be0d1a08ab2b9607584c4d5478c8c083.1590698295.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <cover.1590698295.git.lorenzo@kernel.org>
-References: <cover.1590698295.git.lorenzo@kernel.org>
+        id S2407428AbgE1U4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 16:56:12 -0400
+Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:34255
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2406652AbgE1U4K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 16:56:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HJzmu10+x97oIGJa4Gdh7fhHTxCpnyPJp9jYOMqcCtdCZZADJEl2syGBZ0f79eHEVZE0SJi0Ih63IR0BIFhHTh+Yea1ZDT44QuTmuQFn61qGPVhs+X1GX9P+pN9lkqKRwDggkCjBM6DL31EB1udz6UVGdc/guL6XQnkU78UH67Nv0MdGE24ZTY6W+X36i+lmhEBJYkWybM/79ZJZUmnnGbnhkCLt5UEizOnDc1a9NAPtPu8WfF2nLcrFOSscPbBbTSfR+t98AzaTmp/3vshR3GkidVrN4dQK7MW1PUJgn3EYj8MR2hqn5zjqWyThqEPE3Ai/YIcW64VmlYtZbmBmMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y2ZfdSVQgL3VwYU7/u1QoEmSmk9AGSF1Mt1hZqRxpIg=;
+ b=Jm3gme6QOsbwtP4ovYBTayjVPQubMnQKyxamapOYpdxfa2jNRbp6rMLAYYCcOvyUCBYS3j6gcDjnGGiUQK7OPae2VSlF5lOO2rt7WUkgyYjhpBAAaqb9WtGKGG7u2OD0ombfw1hftml9tfYHMv8OAJs2BT9x2tlA+nIw8TDDYuOcslWR3ZE/ePdPOY45SILIwBtn31E6TkC77mPe61UO9YtY8PYFkm5rNq1Q5iRzQxNxZLJbaMD56JMe6rcRQZFfIC7kOfTwnEh3E2i2Ho4jfNnvJIdclaQhqcQKeHCCfftjqRwdDk+aOsuO/81S3BLl3YbWEDWImUTHo/L/S4OIQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y2ZfdSVQgL3VwYU7/u1QoEmSmk9AGSF1Mt1hZqRxpIg=;
+ b=piEv1FezTzsKWjjsBRANRDYhbs/Pl2wKLW+z/OvM5Ahog9fuuOYK8ctgYi/Z/2CPvykWuwvqR7dK+CJs5V5muCJBS1Fvy9saT1ohu0WaTQbds7cB/mzgusocsuxxpPCyoboCUrmsBl0gwD+wSYQNU2Izzlr6fj3VSO6onQdZFGw=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5423.eurprd05.prod.outlook.com (2603:10a6:803:9b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Thu, 28 May
+ 2020 20:56:06 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3021.030; Thu, 28 May 2020
+ 20:56:06 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>, Eli Cohen <eli@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH net-next] net/mlx5e: Uninitialized variable in
+ mlx5e_attach_decap()
+Thread-Topic: [PATCH net-next] net/mlx5e: Uninitialized variable in
+ mlx5e_attach_decap()
+Thread-Index: AQHWNO5DwrX+rPTcSECQ1OrLUIYM0Ki9+vAA
+Date:   Thu, 28 May 2020 20:56:06 +0000
+Message-ID: <49b098dad758ba232c1e41a00421daafedc1fda0.camel@mellanox.com>
+References: <20200528124803.GC1219412@mwanda>
+In-Reply-To: <20200528124803.GC1219412@mwanda>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.2 (3.36.2-1.fc32) 
+authentication-results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c309b716-65cd-4c44-e5e2-08d803498ab5
+x-ms-traffictypediagnostic: VI1PR05MB5423:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB542344F08CAB55BA2566E2C5BE8E0@VI1PR05MB5423.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0417A3FFD2
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mNJT+UXRBMys1AxBSb3hVjP/7uef5BgRnLKE86OY/Z4cuaJ+X2I9nH5W1rrKaWz2rsQ87EqiwE8CwEmkg//AtEI/xBQkVdgYGBBdQ+1FocCFUgV5F8OACcYqXXItAYjyT8Rr4acM2cLynUgFNVcSkdlqOUuShXhJum2bhppWr7LnyDYTDArEcbsFCO6SCjjQcJVFIAH/lovDUplE6EzQhw+RYKdvkFRXAeL/FmED/q7I/HPX6/tJSa2x6ZBzp4hqkljDo2/tNASj7SsEMFZR5v/xb+iQZ4AbdXRKnVJCFdPMkFatxwW46Mpkaqbawx+K
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(39860400002)(396003)(346002)(136003)(8676002)(6506007)(6486002)(4326008)(478600001)(54906003)(2616005)(186003)(26005)(71200400001)(6916009)(316002)(8936002)(6512007)(83380400001)(36756003)(91956017)(66476007)(66556008)(66946007)(4744005)(66446008)(64756008)(76116006)(86362001)(107886003)(5660300002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: +cORoJh66yQotqd7OROXca1oslnLbyfLjeEIUP1hC/AedHyLBOQGlLUFw5Dv4f+DvvcWAMRMtT56IHyhPZg+bjBoCPGOyE35ElQuPTjuaRiSCqq+xHjwoEXpNrrp9WJxvA2Z754Gdakz6Ma9BQbXHNseuh/Ho6Erm+gUAAvJq2a/nB4/RCQMzYqVJp6Bacn69ZS1LSRNq8U3ZVfsWUdy3ji7IzgVBiD32l/gfIqfnvVaP1DQ5wi/gJPr/6j9B9WxlzfUcSs6ykDTTAP+suUgwmksE4+q05qSUu5EBM3Zv/rJV00nZiQo41evRzHtXjwepRuV2EOP3T6jbANSHlgq3b7k2/WQaDP2gWIENeJvzMGIzggAdp5f9ZMUi9QRq5v/eopr/6sm7G7495cU0c4Zy5syyv9Uzs66n6KVlbu6PuCjchTAl/ZKw+BwQH8fjbEtugvNVxkrAOT1uLdaACIODrpY5cWuGSuXIBwBOLXRvho=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4A414E5E58DF2044B8D4D5743C4E5B30@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c309b716-65cd-4c44-e5e2-08d803498ab5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2020 20:56:06.6888
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Q7o9uKXY3brE5Wutb7SrOhzvgARSK9Qzim2E6jlQFKCn+qdURpM8cn7N/sKysCi3lX9PBeVBYmPCy3s9gDnYmg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5423
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to use standard 'xdp' prefix, rename convert_to_xdp_frame
-utility routine in xdp_convert_buff_to_frame and replace all the
-occurrences
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c     |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c      |  2 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c    |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c     |  2 +-
- drivers/net/ethernet/marvell/mvneta.c            |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 10 +++++-----
- drivers/net/ethernet/sfc/rx.c                    |  2 +-
- drivers/net/ethernet/socionext/netsec.c          |  2 +-
- drivers/net/ethernet/ti/cpsw_priv.c              |  2 +-
- drivers/net/tun.c                                |  2 +-
- drivers/net/veth.c                               |  2 +-
- drivers/net/virtio_net.c                         |  4 ++--
- include/net/xdp.h                                |  2 +-
- kernel/bpf/cpumap.c                              |  2 +-
- kernel/bpf/devmap.c                              |  2 +-
- 16 files changed, 21 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 46865d5bd7e7..a0af74c93971 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -263,7 +263,7 @@ static int ena_xdp_tx_map_buff(struct ena_ring *xdp_ring,
- 	dma_addr_t dma = 0;
- 	u32 size;
- 
--	tx_info->xdpf = convert_to_xdp_frame(xdp);
-+	tx_info->xdpf = xdp_convert_buff_to_frame(xdp);
- 	size = tx_info->xdpf->len;
- 	ena_buf = tx_info->bufs;
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index f613782f2f56..f9555c847f73 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2167,7 +2167,7 @@ static int i40e_xmit_xdp_ring(struct xdp_frame *xdpf,
- 
- int i40e_xmit_xdp_tx_ring(struct xdp_buff *xdp, struct i40e_ring *xdp_ring)
- {
--	struct xdp_frame *xdpf = convert_to_xdp_frame(xdp);
-+	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
- 
- 	if (unlikely(!xdpf))
- 		return I40E_XDP_CONSUMED;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 1ba97172d8d0..b56aa46efa13 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -259,7 +259,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_ring *xdp_ring)
-  */
- int ice_xmit_xdp_buff(struct xdp_buff *xdp, struct ice_ring *xdp_ring)
- {
--	struct xdp_frame *xdpf = convert_to_xdp_frame(xdp);
-+	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
- 
- 	if (unlikely(!xdpf))
- 		return ICE_XDP_CONSUMED;
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 45fc7ce1a543..c878667ab581 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2215,7 +2215,7 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 	case XDP_PASS:
- 		break;
- 	case XDP_TX:
--		xdpf = convert_to_xdp_frame(xdp);
-+		xdpf = xdp_convert_buff_to_frame(xdp);
- 		if (unlikely(!xdpf)) {
- 			result = IXGBE_XDP_CONSUMED;
- 			break;
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 86add9fbd36c..be9d2a8da515 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -107,7 +107,7 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 	case XDP_PASS:
- 		break;
- 	case XDP_TX:
--		xdpf = convert_to_xdp_frame(xdp);
-+		xdpf = xdp_convert_buff_to_frame(xdp);
- 		if (unlikely(!xdpf)) {
- 			result = IXGBE_XDP_CONSUMED;
- 			break;
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 37947949345c..bcd9ac444085 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2072,7 +2072,7 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	int cpu;
- 	u32 ret;
- 
--	xdpf = convert_to_xdp_frame(xdp);
-+	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return MVNETA_XDP_DROPPED;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 3bea1d4be53b..c9d308e91965 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -64,7 +64,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 	struct xdp_frame *xdpf;
- 	dma_addr_t dma_addr;
- 
--	xdpf = convert_to_xdp_frame(xdp);
-+	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return false;
- 
-@@ -97,10 +97,10 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 		xdpi.frame.xdpf     = xdpf;
- 		xdpi.frame.dma_addr = dma_addr;
- 	} else {
--		/* Driver assumes that convert_to_xdp_frame returns an xdp_frame
--		 * that points to the same memory region as the original
--		 * xdp_buff. It allows to map the memory only once and to use
--		 * the DMA_BIDIRECTIONAL mode.
-+		/* Driver assumes that xdp_convert_buff_to_frame returns
-+		 * an xdp_frame that points to the same memory region as
-+		 * the original xdp_buff. It allows to map the memory only
-+		 * once and to use the DMA_BIDIRECTIONAL mode.
- 		 */
- 
- 		xdpi.mode = MLX5E_XDP_XMIT_MODE_PAGE;
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index 68c47a8c71df..c01916cff507 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -329,7 +329,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 
- 	case XDP_TX:
- 		/* Buffer ownership passes to tx on success. */
--		xdpf = convert_to_xdp_frame(&xdp);
-+		xdpf = xdp_convert_buff_to_frame(&xdp);
- 		err = efx_xdp_tx_buffers(efx, 1, &xdpf, true);
- 		if (unlikely(err != 1)) {
- 			efx_free_rx_buffers(rx_queue, rx_buf, 1);
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index e1f4be4b3d69..328bc38848bb 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -867,7 +867,7 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
- static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
- {
- 	struct netsec_desc_ring *tx_ring = &priv->desc_ring[NETSEC_RING_TX];
--	struct xdp_frame *xdpf = convert_to_xdp_frame(xdp);
-+	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
- 	u32 ret;
- 
- 	if (unlikely(!xdpf))
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index d940628bff8d..a399f3659346 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1355,7 +1355,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 		ret = CPSW_XDP_PASS;
- 		break;
- 	case XDP_TX:
--		xdpf = convert_to_xdp_frame(xdp);
-+		xdpf = xdp_convert_buff_to_frame(xdp);
- 		if (unlikely(!xdpf))
- 			goto drop;
- 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index c54f967e2c66..f616e6a64a27 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1295,7 +1295,7 @@ static int tun_xdp_xmit(struct net_device *dev, int n,
- 
- static int tun_xdp_tx(struct net_device *dev, struct xdp_buff *xdp)
- {
--	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
-+	struct xdp_frame *frame = xdp_convert_buff_to_frame(xdp);
- 
- 	if (unlikely(!frame))
- 		return -EOVERFLOW;
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index fb5c17361f64..b594f03eeddb 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -541,7 +541,7 @@ static void veth_xdp_flush(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
- static int veth_xdp_tx(struct veth_rq *rq, struct xdp_buff *xdp,
- 		       struct veth_xdp_tx_bq *bq)
- {
--	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
-+	struct xdp_frame *frame = xdp_convert_buff_to_frame(xdp);
- 
- 	if (unlikely(!frame))
- 		return -EOVERFLOW;
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index b6951aa76295..ba38765dc490 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -703,7 +703,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
--			xdpf = convert_to_xdp_frame(&xdp);
-+			xdpf = xdp_convert_buff_to_frame(&xdp);
- 			if (unlikely(!xdpf))
- 				goto err_xdp;
- 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-@@ -892,7 +892,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
--			xdpf = convert_to_xdp_frame(&xdp);
-+			xdpf = xdp_convert_buff_to_frame(&xdp);
- 			if (unlikely(!xdpf))
- 				goto err_xdp;
- 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 96d4d4a9d27b..b31a81735d28 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -118,7 +118,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
- 
- /* Convert xdp_buff to xdp_frame */
- static inline
--struct xdp_frame *convert_to_xdp_frame(struct xdp_buff *xdp)
-+struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
- {
- 	struct xdp_frame *xdp_frame;
- 	int metasize;
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 8b85bfddfac7..27595fc6da56 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -621,7 +621,7 @@ int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
- {
- 	struct xdp_frame *xdpf;
- 
--	xdpf = convert_to_xdp_frame(xdp);
-+	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return -EOVERFLOW;
- 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index a51d9fb7a359..f558b6ed0688 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -434,7 +434,7 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
- 	if (unlikely(err))
- 		return err;
- 
--	xdpf = convert_to_xdp_frame(xdp);
-+	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return -EOVERFLOW;
- 
--- 
-2.26.2
-
+T24gVGh1LCAyMDIwLTA1LTI4IGF0IDE1OjQ4ICswMzAwLCBEYW4gQ2FycGVudGVyIHdyb3RlOg0K
+PiBUaGUgInJldCIgdmFyaWFibGUgaXNuJ3QgaW5pdGlhbGl6ZWQgb24gdGhlIHN1Y2Nlc3MgcGF0
+aC4NCj4gDQo+IFRoZXJlIGlzIGFuIHVuaW5pdGVudGlvbmFsIGJlaGF2aW9yIGluIGN1cnJlbnQg
+cmVsZWFzZXMgb2YgR0NDIHdoZXJlDQo+IGluc3RlYWQgb2Ygd2FybmluZyBhYm91dCB0aGUgdW5p
+bml0aWFsaXplZCB2YXJpYWJsZSwgaXQgaW5zdGVhZA0KPiBpbml0aWFsaXplcyBpdCB0byB6ZXJv
+LiAgU28gdGhhdCBtZWFucyB0aGF0IHRoaXMgYnVnIGxpa2VseSBkb2Vzbid0DQo+IGFmZmVjdCB0
+ZXN0aW5nLg0KPiANCj4gRml4ZXM6IDE0ZTZiMDM4YWZhMCAoIm5ldC9tbHg1ZTogQWRkIHN1cHBv
+cnQgZm9yIGh3IGRlY2Fwc3VsYXRpb24gb2YNCj4gTVBMUyBvdmVyIFVEUCIpDQo+IFNpZ25lZC1v
+ZmYtYnk6IERhbiBDYXJwZW50ZXIgPGRhbi5jYXJwZW50ZXJAb3JhY2xlLmNvbT4NCg0KSGkgRGFu
+LA0KDQp0aGFua3MgZm9yIHRoZSBmaXgsICBhIHNpbWlsYXIgZml4IHdhcyBhbHJlYWR5IHN1Ym1p
+dHRlZCB5ZXN0ZXJkYXkgYW5kDQppIGFscmVhZHkgcHVsbGVkIGl0IGludG8gbXkgdHJlZSwgSSB3
+aWxsIHNlbmQgYSBwdWxsIHJlcXVlc3QgdG8gbmV0LQ0KbmV4dCBzb29uLg0KDQpUaGFua3MsDQpT
+YWVlZC4NCg0K
