@@ -2,112 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 982EB1E5D29
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809821E5D2F
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 12:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387859AbgE1K3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 06:29:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36738 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387740AbgE1K3B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 06:29:01 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7AE0A208A7;
-        Thu, 28 May 2020 10:29:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590661740;
-        bh=lJCv+y3Stmi60RqMCVzfyZuka7AvcVB3eQtCkL3vvxg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rm3chmkmSkSOn7CkNK4xlgDwPHp1fdW1d5tTlE/evovRynijUTTr+GDaNr/G+l6Ne
-         OB61g//Nb+NsNrJXlGT8eNzq+Xg3KtykW0fyno/VyOPyeTWaieG/kMiPPey/ajTmue
-         uIj7pqMQhl+oNqq9mxyvEDhapSNq//Z1w9MsuMaI=
-Received: by pali.im (Postfix)
-        id 27B5A7B2; Thu, 28 May 2020 12:28:58 +0200 (CEST)
-Date:   Thu, 28 May 2020 12:28:58 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        id S2387908AbgE1K3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 06:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387904AbgE1K3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 06:29:45 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED0FC05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 03:29:45 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id q11so15167503wrp.3
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 03:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=diFXK+hIZoJR92YPM4oXaRS6M4r7y2B9XFsqDNpzCGI=;
+        b=jvEL9krziHh56HwmVBAJZbdMP+gN5SmhrU8/ZRU3xtlgEa4qzdSGfccdOLYUbmtGmT
+         ATzce9XmxKr+W7402rxsk8EhIFUEZPxBR0WI0foSY6h0L5vXqE4VnQQBCe4Wk1o9oSn4
+         tMO4fFSuka7rCdoiCvUNM5DvOo8rJsGF7326VCF/UNFN9yLDkobV1BL4Br32LDoTaszp
+         uEK6Oe0rHjC8qSga4FjH/M5SNu2jpEd2sr6zJ6ASeYvPXaXiUrvpY0v/AQlZe/YYu0vL
+         LBp6w5pd12iBsNQ3aefIBtjKRDyIn7rbCvIfL8RnMKosfV+sEa45wobkk5wnI9ZPKwNQ
+         y5lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=diFXK+hIZoJR92YPM4oXaRS6M4r7y2B9XFsqDNpzCGI=;
+        b=Dzmlvd/7Ii7UAndABhJCLgOZH9xHc19WKe42sZDwiwqoWyreEclx3xNGQyd8n2Cmew
+         0MwvZD4umdV8/+aD1CtfC99LThbbxt/3FzSRXzcaHi3hiTtr5PJJ8Lae/fYeGwAWOzj5
+         dzRPmxdZaJlX4zVYqPF1R/gP4hL2m3Awi61tr+xuh7+9ENUczK1WsBrHCFydTlFVCkpl
+         UMoNedvKtx+4fT9p6IBWqF28XpAcNXBPF5svrFGRxkAG4A38zVWtOF6LYHIJIWTgsETW
+         Wfhw9QhfXgTk2yj1CwVcCGSIpu4Oetnvnbyi4iuIAFir7vt4S0xD6KAOnNGF2yO0cBZr
+         0vPw==
+X-Gm-Message-State: AOAM531uv6bkbYqGg5bg2rGXXAa/4AGBu7z8YdD0MRhALQMNHQF9qtaE
+        PV/LfdIBt86YCcNiX1Yj+RPtXg==
+X-Google-Smtp-Source: ABdhPJy3vjBd8cPPh9U09SSp76/t0qtS83BhlAtaiZ5Ymt0xFd+Pu4YT6dBwPjOpWaS9ml0vUahfPg==
+X-Received: by 2002:adf:eb08:: with SMTP id s8mr2874371wrn.361.1590661784038;
+        Thu, 28 May 2020 03:29:44 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id t129sm1274960wmf.41.2020.05.28.03.29.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 03:29:43 -0700 (PDT)
+Date:   Thu, 28 May 2020 12:29:42 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Mickey Rachamim <mickeyr@marvell.com>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mwifiex: Parse all API_VER_ID properties
-Message-ID: <20200528102858.riwsja5utqix6wqo@pali>
-References: <20200521123444.28957-1-pali@kernel.org>
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
+ support
+Message-ID: <20200528102942.GG14161@nanopsycho>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-3-vadym.kochan@plvision.eu>
+ <20200511112346.GG2245@nanopsycho>
+ <20200526162644.GA32356@plvision.eu>
+ <20200527055305.GF14161@nanopsycho>
+ <20200527085538.GA18716@plvision.eu>
+ <BY5PR18MB3091C6B195F58EC597BE5925BAB10@BY5PR18MB3091.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200521123444.28957-1-pali@kernel.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <BY5PR18MB3091C6B195F58EC597BE5925BAB10@BY5PR18MB3091.namprd18.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 21 May 2020 14:34:44 Pali Rohár wrote:
-> During initialization of SD8997 wifi chip kernel prints warnings:
-> 
->   mwifiex_sdio mmc0:0001:1: Unknown api_id: 3
->   mwifiex_sdio mmc0:0001:1: Unknown api_id: 4
-> 
-> This patch adds support for parsing all api ids provided by SD8997
-> firmware.
-> 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> ---
->  drivers/net/wireless/marvell/mwifiex/cmdevt.c | 17 +++++++++++++++--
->  drivers/net/wireless/marvell/mwifiex/fw.h     |  2 ++
->  2 files changed, 17 insertions(+), 2 deletions(-)
-> 
+Wed, May 27, 2020 at 02:01:39PM CEST, mickeyr@marvell.com wrote:
+>Hi Vadym, Jiri,
+>
+>> 
+>> Hi Jiri,
+>> 
+>> On Wed, May 27, 2020 at 07:53:05AM +0200, Jiri Pirko wrote:
+>> > Tue, May 26, 2020 at 06:26:44PM CEST, vadym.kochan@plvision.eu wrote:
+>> > >On Mon, May 11, 2020 at 01:23:46PM +0200, Jiri Pirko wrote:
+>> > >> Fri, May 01, 2020 at 01:20:49AM CEST, vadym.kochan@plvision.eu wrote:
+>> > >> >Add PCI interface driver for Prestera Switch ASICs family devices, 
+>> > >> >which
+>> > >> >provides:
+>> > >
+>> > >[...]
+>> > >> 
+>> > >> This looks very specific. Is is related to 0xC804?
+>> > >> 
+>> > >Sorry, I missed this question. But I am not sure I got it.
+>> > 
+>> > Is 0xC804 pci id of "Prestera AC3x 98DX326x"? If so and in future you 
+>> > add support for another chip/revision to this driver, the name 
+>> > "Prestera AC3x 98DX326x" would be incorrect. I suggest to use some 
+>> > more generic name, like "Prestera".
+>> 
+>> We are planning to support addition devices within the same family of 'Prestera AC3x' and therefore "Prestera AC3x 98DX32xx" is mentioned.
+>> Additional families also up-coming: "Prestera ALD2 98DX84xx"
+>> 
+>
+>Vadym, Please attention we changed 98DX326x --> 98DX32xx
+>
+>Jiri, the 'Prestera" family includes several sub device families. 
+>we think we need to be more accurate with the actual devices that are supported.
 
-Hello! Could you please look at this trivial patch?
+Sure, that is why I think that the name should be probably more generic
+as prestera_pci_devices is eventually going to contain more pci ids for
+more chips of the same family
 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-> index 7e4b8cd52..589cc5eb1 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-> @@ -1581,8 +1581,21 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
->  					adapter->fw_api_ver =
->  							api_rev->major_ver;
->  					mwifiex_dbg(adapter, INFO,
-> -						    "Firmware api version %d\n",
-> -						    adapter->fw_api_ver);
-> +						    "Firmware api version %d.%d\n",
-> +						    adapter->fw_api_ver,
-> +						    api_rev->minor_ver);
-> +					break;
-> +				case UAP_FW_API_VER_ID:
-> +					mwifiex_dbg(adapter, INFO,
-> +						    "uAP api version %d.%d\n",
-> +						    api_rev->major_ver,
-> +						    api_rev->minor_ver);
-> +					break;
-> +				case CHANRPT_API_VER_ID:
-> +					mwifiex_dbg(adapter, INFO,
-> +						    "channel report api version %d.%d\n",
-> +						    api_rev->major_ver,
-> +						    api_rev->minor_ver);
->  					break;
->  				default:
->  					mwifiex_dbg(adapter, FATAL,
-> diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-> index a415d73a7..6f86f5b96 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/fw.h
-> +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
-> @@ -1052,6 +1052,8 @@ struct host_cmd_ds_802_11_ps_mode_enh {
->  enum API_VER_ID {
->  	KEY_API_VER_ID = 1,
->  	FW_API_VER_ID = 2,
-> +	UAP_FW_API_VER_ID = 3,
-> +	CHANRPT_API_VER_ID = 4,
->  };
->  
->  struct hw_spec_api_rev {
-> -- 
-> 2.20.1
+
 > 
+>> > 
+>> > 
+>> > 
+>> > >
+>> > >> 
+>> > >> >+	.id_table = prestera_pci_devices,
+>> > >> >+	.probe    = prestera_pci_probe,
+>> > >> >+	.remove   = prestera_pci_remove,
+>> > >> >+};
+>> > >> >+
+>> > >> >+static int __init prestera_pci_init(void) {
+>> > >> >+	return pci_register_driver(&prestera_pci_driver);
+>> > >> >+}
+>> > >> >+
+>> > >> >+static void __exit prestera_pci_exit(void) {
+>> > >> >+	pci_unregister_driver(&prestera_pci_driver);
+>> > >> >+}
+>> > >> >+
+>> > >> >+module_init(prestera_pci_init);
+>> > >> >+module_exit(prestera_pci_exit);
+>> > >> >+
+>> > >> >+MODULE_AUTHOR("Marvell Semi.");
+>> > >> 
+>> > >> Author is you, not a company.
+>> > >> 
+>> > >> 
+>> > >> >+MODULE_LICENSE("Dual BSD/GPL");
+>> > >> >+MODULE_DESCRIPTION("Marvell Prestera switch PCI interface");
+>> > >> >--
+>> > >> >2.17.1
+>> > >> >
+>>
