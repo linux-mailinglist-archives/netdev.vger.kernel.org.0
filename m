@@ -2,223 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E621E7057
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9B321E706A
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437591AbgE1XW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 19:22:58 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49920 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437584AbgE1XWz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 19:22:55 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 1AA41AFEC;
-        Thu, 28 May 2020 23:22:53 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 3AF5FE32D2; Fri, 29 May 2020 01:22:53 +0200 (CEST)
-Message-Id: <5137404a0498eba7e64038a766cd8a250b2a5bc6.1590707335.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1590707335.git.mkubecek@suse.cz>
-References: <cover.1590707335.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 21/21] netlink: add netlink handler for tsinfo (-T)
-To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Fri, 29 May 2020 01:22:53 +0200 (CEST)
+        id S2437542AbgE1X1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437484AbgE1X1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 19:27:13 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B0EC08C5C6;
+        Thu, 28 May 2020 16:27:13 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5DFCE1296CF84;
+        Thu, 28 May 2020 16:27:11 -0700 (PDT)
+Date:   Thu, 28 May 2020 16:27:08 -0700 (PDT)
+Message-Id: <20200528.162708.2161599947641716831.davem@davemloft.net>
+To:     doshir@vmware.com
+Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 0/4] vmxnet3: upgrade to version 4
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200528215322.31682-1-doshir@vmware.com>
+References: <20200528215322.31682-1-doshir@vmware.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 28 May 2020 16:27:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement "ethtool -T <dev>" subcommand using ETHTOOL_MSG_TSINFO_GET
-netlink message. This retrieves and displays device timestamping
-information, traditionally provided by ETHTOOL_GET_TS_INFO ioctl request.
+From: Ronak Doshi <doshir@vmware.com>
+Date: Thu, 28 May 2020 14:53:18 -0700
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- Makefile.am      |   2 +-
- ethtool.c        |   1 +
- netlink/extapi.h |   2 +
- netlink/tsinfo.c | 124 +++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 128 insertions(+), 1 deletion(-)
- create mode 100644 netlink/tsinfo.c
+> vmxnet3 emulation has recently added several new features which includes
+> offload support for tunnel packets, support for new commands the driver
+> can issue to emulation, change in descriptor fields, etc. This patch
+> series extends the vmxnet3 driver to leverage these new features.
+> 
+> Compatibility is maintained using existing vmxnet3 versioning mechanism as
+> follows:
+>  - new features added to vmxnet3 emulation are associated with new vmxnet3
+>    version viz. vmxnet3 version 4.
+>  - emulation advertises all the versions it supports to the driver.
+>  - during initialization, vmxnet3 driver picks the highest version number
+>  supported by both the emulation and the driver and configures emulation
+>  to run at that version.
+> 
+> In particular, following changes are introduced:
+> 
+> Patch 1:
+>   This patch introduces utility macros for vmxnet3 version 4 comparison
+>   and updates Copyright information.
+> 
+> Patch 2:
+>   This patch implements get_rss_hash_opts and set_rss_hash_opts methods
+>   to allow querying and configuring different Rx flow hash configurations
+>   which can be used to support UDP/ESP RSS.
+> 
+> Patch 3:
+>   This patch introduces segmentation and checksum offload support for
+>   encapsulated packets. This avoids segmenting and calculating checksum
+>   for each segment and hence gives performance boost.
+> 
+> Patch 4:
+>   With all vmxnet3 version 4 changes incorporated in the vmxnet3 driver,
+>   with this patch, the driver can configure emulation to run at vmxnet3
+>   version 4.
+> 
+> Changes in v3 -> v4:
+>    - Replaced BUG_ON() with WARN_ON_ONCE()
+ ...
 
-diff --git a/Makefile.am b/Makefile.am
-index 95babcdc8eae..63c3fb3ebf90 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -33,7 +33,7 @@ ethtool_SOURCES += \
- 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
- 		  netlink/features.c netlink/privflags.c netlink/rings.c \
- 		  netlink/channels.c netlink/coalesce.c netlink/pause.c \
--		  netlink/eee.c \
-+		  netlink/eee.c netlink/tsinfo.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
- 		  netlink/desc-rtnl.c \
- 		  uapi/linux/ethtool_netlink.h \
-diff --git a/ethtool.c b/ethtool.c
-index 3b81345d7120..3646718d5c2a 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5324,6 +5324,7 @@ static const struct option args[] = {
- 	{
- 		.opts	= "-T|--show-time-stamping",
- 		.func	= do_tsinfo,
-+		.nlfunc	= nl_tsinfo,
- 		.help	= "Show time stamping capabilities"
- 	},
- 	{
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 387787f61015..1b39ed999f3d 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -34,6 +34,7 @@ int nl_gpause(struct cmd_context *ctx);
- int nl_spause(struct cmd_context *ctx);
- int nl_geee(struct cmd_context *ctx);
- int nl_seee(struct cmd_context *ctx);
-+int nl_tsinfo(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
-@@ -72,6 +73,7 @@ static inline void nl_monitor_usage(void)
- #define nl_spause		NULL
- #define nl_geee			NULL
- #define nl_seee			NULL
-+#define nl_tsinfo		NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/tsinfo.c b/netlink/tsinfo.c
-new file mode 100644
-index 000000000000..03ce91cd4314
---- /dev/null
-+++ b/netlink/tsinfo.c
-@@ -0,0 +1,124 @@
-+/*
-+ * tsinfo.c - netlink implementation of timestamping commands
-+ *
-+ * Implementation of "ethtool -T <dev>"
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "bitset.h"
-+
-+/* TSINFO_GET */
-+
-+static void tsinfo_dump_cb(unsigned int idx, const char *name, bool val,
-+			   void *data)
-+{
-+	if (!val)
-+		return;
-+
-+	if (name)
-+		printf("\t%s\n", name);
-+	else
-+		printf("\tbit%u\n", idx);
-+}
-+
-+static int tsinfo_dump_list(struct nl_context *nlctx, const struct nlattr *attr,
-+			    const char *label, const char *if_empty,
-+			    unsigned int stringset_id)
-+{
-+	const struct stringset *strings = NULL;
-+	int ret;
-+
-+	printf("%s:", label);
-+	ret = 0;
-+	if (!attr || bitset_is_empty(attr, false, &ret)) {
-+		printf("%s\n", if_empty);
-+		return ret;
-+	}
-+	putchar('\n');
-+	if (ret < 0)
-+		return ret;
-+
-+	if (bitset_is_compact(attr)) {
-+		ret = netlink_init_ethnl2_socket(nlctx);
-+		if (ret < 0)
-+			return ret;
-+		strings = global_stringset(stringset_id, nlctx->ethnl2_socket);
-+	}
-+	return walk_bitset(attr, strings, tsinfo_dump_cb, NULL);
-+}
-+
-+int tsinfo_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_TSINFO_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_TSINFO_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	if (silent)
-+		putchar('\n');
-+	printf("Time stamping parameters for %s:\n", nlctx->devname);
-+
-+	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_TIMESTAMPING],
-+			       "Capabilities", "", ETH_SS_SOF_TIMESTAMPING);
-+	if (ret < 0)
-+		return err_ret;
-+
-+	printf("PTP Hardware Clock: ");
-+	if (tb[ETHTOOL_A_TSINFO_PHC_INDEX])
-+		printf("%d\n",
-+		       mnl_attr_get_u32(tb[ETHTOOL_A_TSINFO_PHC_INDEX]));
-+	else
-+		printf("none\n");
-+
-+	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_TX_TYPES],
-+			       "Hardware Transmit Timestamp Modes", " none",
-+			       ETH_SS_TS_TX_TYPES);
-+	if (ret < 0)
-+		return err_ret;
-+
-+	ret = tsinfo_dump_list(nlctx, tb[ETHTOOL_A_TSINFO_RX_FILTERS],
-+			       "Hardware Receive Filter Modes", " none",
-+			       ETH_SS_TS_RX_FILTERS);
-+	if (ret < 0)
-+		return err_ret;
-+
-+	return MNL_CB_OK;
-+}
-+
-+int nl_tsinfo(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_TSINFO_GET, true))
-+		return -EOPNOTSUPP;
-+	if (ctx->argc > 0) {
-+		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
-+			*ctx->argp);
-+		return 1;
-+	}
-+
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_TSINFO_GET,
-+				      ETHTOOL_A_TSINFO_HEADER, 0);
-+	if (ret < 0)
-+		return ret;
-+	return nlsock_send_get_request(nlsk, tsinfo_reply_cb);
-+}
--- 
-2.26.2
-
+Series applied, thanks.
