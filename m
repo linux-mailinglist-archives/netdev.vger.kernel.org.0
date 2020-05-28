@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A96351E6E64
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BC91E6E63
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436856AbgE1WJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 18:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
+        id S2436846AbgE1WJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 18:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436803AbgE1WJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:09:39 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDC5C08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:39 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id dh1so130841qvb.13
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:39 -0700 (PDT)
+        with ESMTP id S2436828AbgE1WJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:09:28 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7CDC08C5C6
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:28 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id p18so144647eds.7
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KJKb/M34Z+Aa55czRmNarkEg1Uq6lvf2FAHq7smEFXA=;
-        b=d5InZUlebErwoEtoF1U40IOhzJlE+lpKjvb0nnizfR5hIGLLFUEbffhjBi93/jlkZV
-         PY1Lxz6kSaCQlLvMp4lRrDI5hDJBTsQWq8VSnKtdpUXqclYk3pOuAVACIYsuv7jClnE2
-         xC3W5mDT1VDu631oHBuQjAF2eVbLbF+YzpkeYy5ASp5BqoPA13pc5JtQaE0o4XiP84ya
-         n+IT/Jly7a2fJGPA/6yTu7csC3rYiEAJR/LFfGWqaOfLQ3WpXrvOPfradAXrOG2luijN
-         RInZ22uVXvc0Ed25kMf9Z+V8CpnrrM8KmnSl9iqBHoZRn+BqSefL2geGOWECPdtxP2O4
-         vPkg==
+        bh=IZH8xO2bNTUfc6Ggzpl8ejhUhNMqJqxoQu8e0NmITWs=;
+        b=A9RdZDs2Gov0UizhpRfuutPqAnolJ3F3GTqhyfUTHCVlM82kLMrjmy2VaOnRRSKQDY
+         iwWfaq7x2dU+UzChYpRvtiXM/vbX8YXffaquQM/lkaVXmAifrB9E7v4pv8gW3RX7nYrL
+         6Zt2EWH7wuwqwr230VQEP8XHZBu1QGWupLvXI25b2TO0W+IO8lV7WltDAniaYS06lMbV
+         1tw7Rvku5K0OtYmMybSnaqNX/8KgKeIC70u2j59W+JFz50ZqTyJD/mxbEq3YB2cJ4jP1
+         zW/L/VqsPRwiaIkuW7l54pKlVLTF6CHRPoHFU2wrEsgkdvBjLHojXd7FDfBO6jxezfEA
+         ycYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KJKb/M34Z+Aa55czRmNarkEg1Uq6lvf2FAHq7smEFXA=;
-        b=rG15WhSetbpM+IeeVY6w1wGNRX1Uvk656oAyh1WmNtTlyo+QCtajXp11B1US8IL30E
-         SnL7FkTh0RzV1fX/50w54TK2kYFpWXGPvegCPAf8vLIv9iGnypSbPRQ2FwVb7ShxeJDe
-         qkK+KcsOBPWv8hwoEgImoD3g3ClpSgQsma/itRbTqknXmlzSkN2IbIJ4otB0z92lcmBI
-         uPnOTVEvIZoh527jYNY48YA8G6okyfOWTEanF/6RYzW45qKIAG0ExhAXRYPzRdyG27sz
-         s6V27m1jo6FETE6Gwnw8HRMDoxes+qp/APpXq/vSz3tN8CdDreBeqU2/jviFFKB5yaXE
-         BXQw==
-X-Gm-Message-State: AOAM530z6QFu/E8dsoKRsTpwzzgbEXuL+0orNxR9AsKwqCjhcTE6VPKt
-        fHOHuCU1JUZBzs+Oshg8vnfV4PCp
-X-Google-Smtp-Source: ABdhPJxV0IiuyzO5XTnCMpKLe83R/oBzUnRJWzvG7bOaiRyswgmyFrF5cVJSkEQHzi6uSsafSk6uNA==
-X-Received: by 2002:a0c:ee25:: with SMTP id l5mr5270586qvs.5.1590703778218;
-        Thu, 28 May 2020 15:09:38 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id u13sm5802911qtv.72.2020.05.28.15.09.37
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 May 2020 15:09:37 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id r23so134333ybd.10
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:09:37 -0700 (PDT)
-X-Received: by 2002:a25:aa2a:: with SMTP id s39mr8608564ybi.492.1590703776735;
- Thu, 28 May 2020 15:09:36 -0700 (PDT)
+        bh=IZH8xO2bNTUfc6Ggzpl8ejhUhNMqJqxoQu8e0NmITWs=;
+        b=ongo0J3PHt75G6sycq8LiOq4v8Wlk5uLpcwpOj4W2dtiIXDBR4t7sp5OebgskxnuWR
+         +uZDzui2NW1ds80Yi0MiXMkVL/HdPE5czfN2MhE/HUumvhro76IvTVgfWw+zzc75zhdr
+         ueNwiVXoRYkTbJGQ1F3IN7H7Uu+xP594BsIaC1Yg5xNBJgbFdLlBuXU9jwEy17715VS5
+         u9/4SsTEdzCiwr0qSzOM7usGUIcQBu/wtdg35UWPm3iz1H9kYAUSh2Gdz5Tfxqnu/bYR
+         L5PQMoj58cNbeeoCZR5tXAnEav3sIKIy5rFzOl4+hV26ZZ3lW5Uo18/GTP/pLm+njpR7
+         ei4Q==
+X-Gm-Message-State: AOAM530D4KJJoo56oaTt9YMc1Et5zGJOEbMvF+yjb46bIZu0Ell+Oj5K
+        fJgb0GxxLFu6mN74ipqvGe51sDj9z2if/pNDsYg=
+X-Google-Smtp-Source: ABdhPJwgMyjjHIDuet/cEjdv4bTSjCh+wSSdtr/ObcU7TfneYuckwsdUAf0XLopK6o2HJvte0SmyCr+eCt9NN4R7mNc=
+X-Received: by 2002:aa7:d8c2:: with SMTP id k2mr5450683eds.145.1590703767054;
+ Thu, 28 May 2020 15:09:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200528215747.45306-1-edumazet@google.com>
-In-Reply-To: <20200528215747.45306-1-edumazet@google.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 28 May 2020 18:08:59 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfrOwrN0N2OF8ykOMqX+N=p_+ib4R1nyTZ0R-Bw40mr-A@mail.gmail.com>
-Message-ID: <CA+FuTSfrOwrN0N2OF8ykOMqX+N=p_+ib4R1nyTZ0R-Bw40mr-A@mail.gmail.com>
-Subject: Re: [PATCH net] net: be more gentle about silly gso requests coming
- from user
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+References: <20200527234113.2491988-1-olteanv@gmail.com> <20200527234113.2491988-12-olteanv@gmail.com>
+ <20200528215618.GA853774@lunn.ch>
+In-Reply-To: <20200528215618.GA853774@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 29 May 2020 01:09:16 +0300
+Message-ID: <CA+h21hoVQPVJiYDQV7j+d7Vt8o5rK+Z8APO2Hp85Dt8cOU7e4w@mail.gmail.com>
+Subject: Re: [PATCH net-next 11/11] net: dsa: ocelot: introduce driver for
+ Seville VSC9953 switch
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 5:57 PM Eric Dumazet <edumazet@google.com> wrote:
+On Fri, 29 May 2020 at 00:56, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Recent change in virtio_net_hdr_to_skb() broke some packetdrill tests.
+> > Extending the Felix driver to probe a PCI as well as a platform device
+> > would have introduced unnecessary complexity. The 'meat' of both drivers
+> > is in drivers/net/ethernet/mscc/ocelot*.c anyway, so let's just
+> > duplicate the Felix driver, s/Felix/Seville/, and define the low-level
+> > bits in seville_vsc9953.c.
 >
-> When --mss=XXX option is set, packetdrill always provide gso_type & gso_size
-> for its inbound packets, regardless of packet size.
+> Hi Vladimir
 >
->         if (packet->tcp && packet->mss) {
->                 if (packet->ipv4)
->                         gso.gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
->                 else
->                         gso.gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
->                 gso.gso_size = packet->mss;
->         }
+> That has resulted in a lot of duplicated code.
 >
-> Since many other programs could do the same, relax virtio_net_hdr_to_skb()
-> to no longer return an error, but instead ignore gso settings.
+> Is there an overall family name for these switch?
 >
-> This keeps Willem intent to make sure no malicious packet could
-> reach gso stack.
+> Could you add foo_set_ageing_time() with both felix and saville share?
 >
-> Note that TCP stack has a special logic in tcp_set_skb_tso_segs()
-> to clear gso_size for small packets.
->
-> Fixes: 6dd912f82680 ("net: check untrusted gso_size at kernel entry")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Willem de Bruijn <willemb@google.com>
+>       Andrew
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Yes, it looks like I can. I can move Felix PCI probing to
+felix_vsc9959.c, Seville platform device probing to seville_vsc9953.c,
+and remove seville.c.
+I would not be in a position to know whether there's any larger family
+name which should be used here. According to
+https://media.digikey.com/pdf/Data%20Sheets/Microsemi%20PDFs/Ocelot_Family_of_Ethernet_Switches_Dec2016.pdf,
+"Ocelot is a low port count, small form factor Ethernet switch family
+for the Industrial IoT market". Seville would not qualify as part of
+the Ocelot family (high port count, no 1588) but that doesn't mean it
+can't use the Ocelot driver. As confusing as it might be for the
+people at Microchip, I would tend to call anything that probes as pure
+switchdev "ocelot" and anything that probes as DSA "felix", since
+these were the first 2 drivers that entered mainline. Under this
+working model, Seville would reuse the struct dsa_switch_ops
+felix_switch_ops, while having its own low-level seville_vsc9953.c
+that deals with platform integration specific stuff (probing, internal
+MDIO, register map, etc), and the felix_switch_ops would call into
+ocelot for the common functionalities.
+What do you think?
 
-Thanks a lot for fixing this immediately, Eric.
+-Vladimir
