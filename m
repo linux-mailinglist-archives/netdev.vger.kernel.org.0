@@ -2,172 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C4C1E5686
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34EE61E5706
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbgE1Fdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 01:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727114AbgE1Fdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:33:43 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DECEC05BD1E;
-        Wed, 27 May 2020 22:33:43 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id n15so12940679pfd.0;
-        Wed, 27 May 2020 22:33:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7hFJuPMNtudThI0czwAIJAAON6LfgRQdn+lraE8LviE=;
-        b=r17lm26ywgN+gn70OxuAXrIKWwuwYgokfcgdE4rmi1NTnXH61iHMIFsZCrNmltsI3x
-         Lsk2fmn1oqws7ihby+86SS0IJva08dKvM4ZisNGTAIbkFtWn70jYJq/WqzGnlK5DAlaN
-         s44RD1Prwy8KE029cPB3ZEBFvlvKps/OE+DVykTgzWLHWOq6sryF4CNVTkUrIt45ykx+
-         Vx8AIg9bng0C7FAQ0yAShNctv9HZ4sZzvbrk9XHw+9QkBmVIgF5z+TKg/DLbJ2PbA5lH
-         Ixr2QzMEYkRRGVjw87XulCBgdqc8A/CYaRGtYltc3lXCY0Ny3gSiyTQijpwlxNTi9x0V
-         57uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7hFJuPMNtudThI0czwAIJAAON6LfgRQdn+lraE8LviE=;
-        b=skA1ck5qBYBOCswHQY4u7DTjD9e3OhOeXIMzdfPHZJIpLFYgDv8cSXnDpIuCKLNTGv
-         3rR66Vv9VXznBx9oQV4sdGyqvrt365SKlvu5rYuOuKdBQeuLk7LZ/FIMm90uxJ03z1zv
-         TTTIs8vSz8sFi8GLv3LTYNzwizfbhkggXIyc9y8umO60pFcw4klqRlAomeabkhd64ylP
-         8YnQdZpGsza0vB89kNeP1Xv6/Ul8V/Q4OU6J8Dgx+nRV5dcNev5daKSDmBUXwXMRkT97
-         WwUd1KKL2dbkt8ozQJLuN/a6d2/DjQ+9zlRuV6dG2jvAbfai3gr/bXNcAKtcDm7thZhm
-         pIUg==
-X-Gm-Message-State: AOAM530AS+yXYTfkYIItt2ObJ35uJktr+Jtkckz5F5Ddl5AX3KerCvbx
-        2OQG2gBB8JPruRaCwlZFIRc=
-X-Google-Smtp-Source: ABdhPJyEeDLqQzsKrFb8TNXexsQsstNjgCeScX8/nhxUaoTnHWSKKS3RmwGOMposTRKMY0Y9dLWMng==
-X-Received: by 2002:a63:1d02:: with SMTP id d2mr1320231pgd.206.1590644022853;
-        Wed, 27 May 2020 22:33:42 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id o27sm3502461pgd.18.2020.05.27.22.33.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 27 May 2020 22:33:42 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [PATCH bpf-next 3/3] selftests/bpf: basic sleepable tests
-Date:   Wed, 27 May 2020 22:33:34 -0700
-Message-Id: <20200528053334.89293-4-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20200528053334.89293-1-alexei.starovoitov@gmail.com>
-References: <20200528053334.89293-1-alexei.starovoitov@gmail.com>
+        id S1727771AbgE1Fuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 01:50:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60170 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725789AbgE1Fub (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 01:50:31 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 3A63DAF92;
+        Thu, 28 May 2020 05:50:32 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 9E91D60489; Thu, 28 May 2020 07:50:28 +0200 (CEST)
+Date:   Thu, 28 May 2020 07:50:28 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/4] vmxnet3: add support to get/set rx flow hash
+Message-ID: <20200528055028.yagr6r3rrjb3qrlc@lion.mk-sys.cz>
+References: <20200528020707.10036-1-doshir@vmware.com>
+ <20200528020707.10036-3-doshir@vmware.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200528020707.10036-3-doshir@vmware.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Wed, May 27, 2020 at 07:07:04PM -0700, Ronak Doshi wrote:
+> With vmxnet3 version 4, the emulation supports multiqueue(RSS) for
+> UDP and ESP traffic. A guest can enable/disable RSS for UDP/ESP over
+> IPv4/IPv6 by issuing commands introduced in this patch. ESP ipv6 is
+> not yet supported in this patch.
+> 
+> This patch implements get_rss_hash_opts and set_rss_hash_opts
+> methods to allow querying and configuring different Rx flow hash
+> configurations.
+> 
+> Signed-off-by: Ronak Doshi <doshir@vmware.com>
+> ---
+[...]
+> diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+> index 1163eca7aba5..ceedf63020cb 100644
+> --- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
+> +++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+> @@ -665,18 +665,236 @@ vmxnet3_set_ringparam(struct net_device *netdev,
+>  	return err;
+>  }
+>  
+> +static int
+> +vmxnet3_get_rss_hash_opts(struct vmxnet3_adapter *adapter,
+> +			  struct ethtool_rxnfc *info)
+> +{
+> +	enum Vmxnet3_RSSField rss_fields;
+> +
+> +	if (netif_running(adapter->netdev)) {
+> +		unsigned long flags;
+> +
+> +		spin_lock_irqsave(&adapter->cmd_lock, flags);
+> +
+> +		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+> +				       VMXNET3_CMD_GET_RSS_FIELDS);
+> +		rss_fields = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+> +		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+> +	} else {
+> +		rss_fields = adapter->rss_fields;
+> +	}
+> +
+> +	info->data = 0;
+> +
+> +	/* Report default options for RSS on vmxnet3 */
+> +	switch (info->flow_type) {
+> +	case TCP_V4_FLOW:
+> +		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP4)
+> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+> +				      RXH_IP_SRC | RXH_IP_DST;
+> +		break;
+> +	case UDP_V4_FLOW:
+> +		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP4)
+> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+> +				      RXH_IP_SRC | RXH_IP_DST;
+> +		break;
 
-Modify few tests to sanity test sleepable bpf functionality.
+In both cases above (and also in the two for IPv6 below) you set
+info->data to either 0 or all four bits, depending on the value of
+corresponding flag in rss_fields. But in vmxnet3_set_rss_hash_opt()
+you have different mapping:
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/bench.c             |  2 ++
- .../selftests/bpf/benchs/bench_trigger.c        | 17 +++++++++++++++++
- tools/testing/selftests/bpf/progs/lsm.c         |  4 ++--
- .../testing/selftests/bpf/progs/trigger_bench.c |  7 +++++++
- 4 files changed, 28 insertions(+), 2 deletions(-)
+  - for TCP, you only accept all four bits (no other value) and don't
+    touch rss_fields at all
+  - for UDP, you allow either all four bits (and set the flag) or the
+    two IP related bits (and clear the flag)
 
-diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index 14390689ef90..f6a75cd47f01 100644
---- a/tools/testing/selftests/bpf/bench.c
-+++ b/tools/testing/selftests/bpf/bench.c
-@@ -309,6 +309,7 @@ extern const struct bench bench_trig_tp;
- extern const struct bench bench_trig_rawtp;
- extern const struct bench bench_trig_kprobe;
- extern const struct bench bench_trig_fentry;
-+extern const struct bench bench_trig_fentry_sleep;
- extern const struct bench bench_trig_fmodret;
- 
- static const struct bench *benchs[] = {
-@@ -326,6 +327,7 @@ static const struct bench *benchs[] = {
- 	&bench_trig_rawtp,
- 	&bench_trig_kprobe,
- 	&bench_trig_fentry,
-+	&bench_trig_fentry_sleep,
- 	&bench_trig_fmodret,
- };
- 
-diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-index 49c22832f216..2a0b6c9885a4 100644
---- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-@@ -90,6 +90,12 @@ static void trigger_fentry_setup()
- 	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
- }
- 
-+static void trigger_fentry_sleep_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_fentry_sleep);
-+}
-+
- static void trigger_fmodret_setup()
- {
- 	setup_ctx();
-@@ -155,6 +161,17 @@ const struct bench bench_trig_fentry = {
- 	.report_final = hits_drops_report_final,
- };
- 
-+const struct bench bench_trig_fentry_sleep = {
-+	.name = "trig-fentry-sleep",
-+	.validate = trigger_validate,
-+	.setup = trigger_fentry_sleep_setup,
-+	.producer_thread = trigger_producer,
-+	.consumer_thread = trigger_consumer,
-+	.measure = trigger_measure,
-+	.report_progress = hits_drops_report_progress,
-+	.report_final = hits_drops_report_final,
-+};
-+
- const struct bench bench_trig_fmodret = {
- 	.name = "trig-fmodret",
- 	.validate = trigger_validate,
-diff --git a/tools/testing/selftests/bpf/progs/lsm.c b/tools/testing/selftests/bpf/progs/lsm.c
-index b4598d4bc4f7..55815d0cc5fb 100644
---- a/tools/testing/selftests/bpf/progs/lsm.c
-+++ b/tools/testing/selftests/bpf/progs/lsm.c
-@@ -15,7 +15,7 @@ int monitored_pid = 0;
- int mprotect_count = 0;
- int bprm_count = 0;
- 
--SEC("lsm/file_mprotect")
-+SEC("lsm.s/file_mprotect")
- int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
- 	     unsigned long reqprot, unsigned long prot, int ret)
- {
-@@ -36,7 +36,7 @@ int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
- 	return ret;
- }
- 
--SEC("lsm/bprm_committed_creds")
-+SEC("lsm.s/bprm_committed_creds")
- int BPF_PROG(test_void_hook, struct linux_binprm *bprm)
- {
- 	__u32 pid = bpf_get_current_pid_tgid() >> 32;
-diff --git a/tools/testing/selftests/bpf/progs/trigger_bench.c b/tools/testing/selftests/bpf/progs/trigger_bench.c
-index 8b36b6640e7e..9a4d09590b3d 100644
---- a/tools/testing/selftests/bpf/progs/trigger_bench.c
-+++ b/tools/testing/selftests/bpf/progs/trigger_bench.c
-@@ -39,6 +39,13 @@ int bench_trigger_fentry(void *ctx)
- 	return 0;
- }
- 
-+SEC("fentry.s/__x64_sys_getpgid")
-+int bench_trigger_fentry_sleep(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
- SEC("fmod_ret/__x64_sys_getpgid")
- int bench_trigger_fmodret(void *ctx)
- {
--- 
-2.23.0
+The UDPv4/UDPv6 behaviour of vmxnet3_set_rss_hash_opt() seems to be the
+correct one but you should be consistent between get and set handlers.
 
+> +	case AH_ESP_V4_FLOW:
+> +	case AH_V4_FLOW:
+> +	case ESP_V4_FLOW:
+> +		if (rss_fields & VMXNET3_RSS_FIELDS_ESPIP4)
+> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
+
+If this fallthrough is intentional (it seems to be), it should be
+marked.
+
+Michal
+
+> +	case SCTP_V4_FLOW:
+> +	case IPV4_FLOW:
+> +		info->data |= RXH_IP_SRC | RXH_IP_DST;
+> +		break;
+> +	case TCP_V6_FLOW:
+> +		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP6)
+> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+> +				      RXH_IP_SRC | RXH_IP_DST;
+> +		break;
+> +	case UDP_V6_FLOW:
+> +		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP6)
+> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+> +				      RXH_IP_SRC | RXH_IP_DST;
+> +		break;
+> +	case AH_ESP_V6_FLOW:
+> +	case AH_V6_FLOW:
+> +	case ESP_V6_FLOW:
+> +	case SCTP_V6_FLOW:
+> +	case IPV6_FLOW:
+> +		info->data |= RXH_IP_SRC | RXH_IP_DST;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +vmxnet3_set_rss_hash_opt(struct net_device *netdev,
+> +			 struct vmxnet3_adapter *adapter,
+> +			 struct ethtool_rxnfc *nfc)
+> +{
+> +	enum Vmxnet3_RSSField rss_fields = adapter->rss_fields;
+> +
+> +	/* RSS does not support anything other than hashing
+> +	 * to queues on src and dst IPs and ports
+> +	 */
+> +	if (nfc->data & ~(RXH_IP_SRC | RXH_IP_DST |
+> +			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
+> +		return -EINVAL;
+> +
+> +	switch (nfc->flow_type) {
+> +	case TCP_V4_FLOW:
+> +	case TCP_V6_FLOW:
+> +		if (!(nfc->data & RXH_IP_SRC) ||
+> +		    !(nfc->data & RXH_IP_DST) ||
+> +		    !(nfc->data & RXH_L4_B_0_1) ||
+> +		    !(nfc->data & RXH_L4_B_2_3))
+> +			return -EINVAL;
+> +		break;
+> +	case UDP_V4_FLOW:
+> +		if (!(nfc->data & RXH_IP_SRC) ||
+> +		    !(nfc->data & RXH_IP_DST))
+> +			return -EINVAL;
+> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
+> +		case 0:
+> +			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP4;
+> +			break;
+> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
+> +			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP4;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		break;
+> +	case UDP_V6_FLOW:
+> +		if (!(nfc->data & RXH_IP_SRC) ||
+> +		    !(nfc->data & RXH_IP_DST))
+> +			return -EINVAL;
+> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
+> +		case 0:
+> +			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP6;
+> +			break;
+> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
+> +			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP6;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		break;
+> +	case ESP_V4_FLOW:
+> +	case AH_V4_FLOW:
+> +	case AH_ESP_V4_FLOW:
+> +		if (!(nfc->data & RXH_IP_SRC) ||
+> +		    !(nfc->data & RXH_IP_DST))
+> +			return -EINVAL;
+> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
+> +		case 0:
+> +			rss_fields &= ~VMXNET3_RSS_FIELDS_ESPIP4;
+> +			break;
+> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
+> +			rss_fields |= VMXNET3_RSS_FIELDS_ESPIP4;
+> +		break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		break;
+> +	case ESP_V6_FLOW:
+> +	case AH_V6_FLOW:
+> +	case AH_ESP_V6_FLOW:
+> +	case SCTP_V4_FLOW:
+> +	case SCTP_V6_FLOW:
+> +		if (!(nfc->data & RXH_IP_SRC) ||
+> +		    !(nfc->data & RXH_IP_DST) ||
+> +		    (nfc->data & RXH_L4_B_0_1) ||
+> +		    (nfc->data & RXH_L4_B_2_3))
+> +			return -EINVAL;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* if we changed something we need to update flags */
+> +	if (rss_fields != adapter->rss_fields) {
+> +		adapter->default_rss_fields = false;
+> +		if (netif_running(netdev)) {
+> +			struct Vmxnet3_DriverShared *shared = adapter->shared;
+> +			union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
+> +			unsigned long flags;
+> +
+> +			spin_lock_irqsave(&adapter->cmd_lock, flags);
+> +			cmdInfo->setRssFields = rss_fields;
+> +			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+> +					       VMXNET3_CMD_SET_RSS_FIELDS);
+> +
+> +			/* Not all requested RSS may get applied, so get and
+> +			 * cache what was actually applied.
+> +			 */
+> +			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+> +					       VMXNET3_CMD_GET_RSS_FIELDS);
+> +			adapter->rss_fields =
+> +				VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+> +			spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+> +		} else {
+> +			/* When the device is activated, we will try to apply
+> +			 * these rules and cache the applied value later.
+> +			 */
+> +			adapter->rss_fields = rss_fields;
+> +		}
+> +	}
+> +	return 0;
+> +}
+>  
+>  static int
+>  vmxnet3_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info,
+>  		  u32 *rules)
+>  {
+>  	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+> +	int err = 0;
+> +
+>  	switch (info->cmd) {
+>  	case ETHTOOL_GRXRINGS:
+>  		info->data = adapter->num_rx_queues;
+> -		return 0;
+> +		break;
+> +	case ETHTOOL_GRXFH:
+> +		if (!VMXNET3_VERSION_GE_4(adapter)) {
+> +			err = -EOPNOTSUPP;
+> +			break;
+> +		}
+> +		err = vmxnet3_get_rss_hash_opts(adapter, info);
+> +		break;
+> +	default:
+> +		err = -EOPNOTSUPP;
+> +		break;
+>  	}
+> -	return -EOPNOTSUPP;
+> +
+> +	return err;
+> +}
+> +
+> +static int
+> +vmxnet3_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info)
+> +{
+> +	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+> +	int err = 0;
+> +
+> +	if (!VMXNET3_VERSION_GE_4(adapter)) {
+> +		err = -EOPNOTSUPP;
+> +		goto done;
+> +	}
+> +
+> +	switch (info->cmd) {
+> +	case ETHTOOL_SRXFH:
+> +		err = vmxnet3_set_rss_hash_opt(netdev, adapter, info);
+> +		break;
+> +	default:
+> +		err = -EOPNOTSUPP;
+> +		break;
+> +	}
+> +
+> +done:
+> +	return err;
+>  }
+>  
+>  #ifdef VMXNET3_RSS
+> @@ -887,6 +1105,7 @@ static const struct ethtool_ops vmxnet3_ethtool_ops = {
+>  	.get_ringparam     = vmxnet3_get_ringparam,
+>  	.set_ringparam     = vmxnet3_set_ringparam,
+>  	.get_rxnfc         = vmxnet3_get_rxnfc,
+> +	.set_rxnfc         = vmxnet3_set_rxnfc,
+>  #ifdef VMXNET3_RSS
+>  	.get_rxfh_indir_size = vmxnet3_get_rss_indir_size,
+>  	.get_rxfh          = vmxnet3_get_rss,
+> diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+> index e803ffad75d6..d52ccc3eeba2 100644
+> --- a/drivers/net/vmxnet3/vmxnet3_int.h
+> +++ b/drivers/net/vmxnet3/vmxnet3_int.h
+> @@ -377,6 +377,8 @@ struct vmxnet3_adapter {
+>  	u16 rxdata_desc_size;
+>  
+>  	bool rxdataring_enabled;
+> +	bool default_rss_fields;
+> +	enum Vmxnet3_RSSField rss_fields;
+>  
+>  	struct work_struct work;
+>  
+> @@ -438,6 +440,8 @@ struct vmxnet3_adapter {
+>  
+>  #define VMXNET3_COAL_RBC_RATE(usecs) (1000000 / usecs)
+>  #define VMXNET3_COAL_RBC_USECS(rbc_rate) (1000000 / rbc_rate)
+> +#define VMXNET3_RSS_FIELDS_DEFAULT (VMXNET3_RSS_FIELDS_TCPIP4 | \
+> +				    VMXNET3_RSS_FIELDS_TCPIP6)
+>  
+>  int
+>  vmxnet3_quiesce_dev(struct vmxnet3_adapter *adapter);
+> -- 
+> 2.11.0
+> 
