@@ -2,508 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A671E6E66
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:11:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 839EB1E6E6C
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436884AbgE1WLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 18:11:44 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49796 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436844AbgE1WLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:11:42 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jeQkT-0006fq-7p; Fri, 29 May 2020 00:11:37 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jeQkS-000CJf-To; Fri, 29 May 2020 00:11:36 +0200
-Subject: Re: [PATCH v3 bpf-next 1/5] bpf: implement BPF ring buffer and
- verifier support for it
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20200526063255.1675186-1-andriin@fb.com>
- <20200526063255.1675186-2-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <15c1dd7f-b24b-6482-bdf0-f80b79280e91@iogearbox.net>
-Date:   Fri, 29 May 2020 00:11:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2436903AbgE1WMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 18:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436899AbgE1WMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:12:32 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF5C08C5C7
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:12:31 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id l26so843408wme.3
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:12:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/wx6Jr8JL0gjucup2F5R2t29CbUsCxkdTrMH+In/lVg=;
+        b=i2OaulLoxqzSBTeQrs7Ir5LgR9BZnR32sFnZcpEd6RGRuev/1eS1R6SICn8Cn49r0E
+         Jer6QKI/BWhMjykAx1eiVFZpO0NasdAKJC62n1DneXyFOe4hj/OdYKVOGJvaCTuqwo9t
+         rFini5WQwdNK43iai6s3Rneyz3mfuadirssoA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/wx6Jr8JL0gjucup2F5R2t29CbUsCxkdTrMH+In/lVg=;
+        b=fTdeVFzxNEozFITcgr7qM3vcP3fC0dGkW6Z4PmEavX2s/IgSA7LPAtZKo3oO6uy0dI
+         CmqmsLGCTi+dYayKB5TqTLUw7aGCR4SmrTzpKyMrDtME2y7tqblIzH279ipvR68ehvC8
+         20iMops0YsI6q5pcLtIyWu8dWciYFpy6J+X0wPhSxVqdKhkJsHUTCwv8eL8L0KulvfQV
+         6uTBDwy2/MKFRZOOnYKohPVibe/B/jmRjg2TmZvo9QW7oAhGvfqGsv0mkIyozexIutLP
+         fb6nbZJOBy9jcWX71zITanHmzxvxSTtFM8E4UlCZ/XsgnUcJIxtScv/7nFNxETRzWLYy
+         A3eA==
+X-Gm-Message-State: AOAM533w1vF9JDWlprYa8iU4MxLj3VYCh9olfa7vpNHW4QQERzofiOmQ
+        wUYTuB6wL15I8QkefhUtwMMw6g==
+X-Google-Smtp-Source: ABdhPJy95sMf662ilUIoea35z9/O+cvgqCY8Ikc/+BSqd8vuRPM/J7etm/QEyrbvMzCunfPIStqWiw==
+X-Received: by 2002:a1c:65c2:: with SMTP id z185mr5139937wmb.125.1590703949695;
+        Thu, 28 May 2020 15:12:29 -0700 (PDT)
+Received: from google.com ([81.6.44.51])
+        by smtp.gmail.com with ESMTPSA id q13sm7342354wrn.84.2020.05.28.15.12.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 15:12:29 -0700 (PDT)
+From:   KP Singh <kpsingh@chromium.org>
+X-Google-Original-From: KP Singh <kpsingh>
+Date:   Fri, 29 May 2020 00:12:27 +0200
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce sleepable BPF programs
+Message-ID: <20200528221227.GA217782@google.com>
+References: <20200528053334.89293-1-alexei.starovoitov@gmail.com>
+ <20200528053334.89293-2-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200526063255.1675186-2-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25826/Thu May 28 14:33:30 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200528053334.89293-2-alexei.starovoitov@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Andrii,
+On 27-May 22:33, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> Introduce sleepable BPF programs that can request such property for themselves
+> via BPF_F_SLEEPABLE flag at program load time. In such case they will be able
+> to use helpers like bpf_copy_from_user() that might sleep. At present only
+> fentry/fexit/fmod_ret and lsm programs can request to be sleepable and only
+> when they are attached to kernel functions that are known to allow sleeping.
+> 
+> The non-sleepable programs are relying on implicit rcu_read_lock() and
+> migrate_disable() to protect life time of programs, maps that they use and
+> per-cpu kernel structures used to pass info between bpf programs and the
+> kernel. The sleepable programs cannot be enclosed into rcu_read_lock().
+> migrate_disable() maps to preempt_disable() in non-RT kernels, so the progs
+> should not be enclosed in migrate_disable() as well. Therefore bpf_srcu is used
+> to protect the life time of sleepable progs.
+> 
+> There are many networking and tracing program types. In many cases the
+> 'struct bpf_prog *' pointer itself is rcu protected within some other kernel
+> data structure and the kernel code is using rcu_dereference() to load that
+> program pointer and call BPF_PROG_RUN() on it. All these cases are not touched.
+> Instead sleepable bpf programs are allowed with bpf trampoline only. The
+> program pointers are hard-coded into generated assembly of bpf trampoline and
+> synchronize_srcu(&bpf_srcu) is used to protect the life time of the program.
+> The same trampoline can hold both sleepable and non-sleepable progs.
+> 
+> When bpf_srcu lock is held it means that some sleepable bpf program is running
+> from bpf trampoline. Those programs can use bpf arrays and preallocated hash/lru
+> maps. These map types are waiting on programs to complete via
+> synchronize_srcu(&bpf_srcu);
+> 
+> Updates to trampoline now has to do synchronize_srcu + synchronize_rcu_tasks
+> to wait for sleepable progs to finish and for trampoline assembly to finish.
+> 
+> In the future srcu will be replaced with upcoming rcu_trace.
+> That will complete the first step of introducing sleepable progs.
+> 
+> After that dynamically allocated hash maps can be allowed. All map elements
+> would have to be srcu protected instead of normal rcu.
+> per-cpu maps will be allowed. Either via the following pattern:
+> void *elem = bpf_map_lookup_elem(map, key);
+> if (elem) {
+>    // access elem
+>    bpf_map_release_elem(map, elem);
+> }
+> where modified lookup() helper will do migrate_disable() and
+> new bpf_map_release_elem() will do corresponding migrate_enable().
+> Or explicit bpf_migrate_disable/enable() helpers will be introduced.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-On 5/26/20 8:32 AM, Andrii Nakryiko wrote:
+Thanks! This will be really helpful for LSM programs.
+
+Acked-by: KP Singh <kpsingh@google.com>
+
+> ---
+>  arch/x86/net/bpf_jit_comp.c    | 36 +++++++++++++++-------
+>  include/linux/bpf.h            |  4 +++
+>  include/uapi/linux/bpf.h       |  8 +++++
+>  kernel/bpf/arraymap.c          |  5 +++
+>  kernel/bpf/hashtab.c           | 19 ++++++++----
+>  kernel/bpf/syscall.c           | 12 ++++++--
+>  kernel/bpf/trampoline.c        | 33 +++++++++++++++++++-
+>  kernel/bpf/verifier.c          | 56 ++++++++++++++++++++++++++--------
+>  tools/include/uapi/linux/bpf.h |  8 +++++
+>  9 files changed, 147 insertions(+), 34 deletions(-)
+
 [...]
-> +static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
-> +{
-> +	const gfp_t flags = GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_NOWARN |
-> +			    __GFP_ZERO;
-> +	int nr_meta_pages = RINGBUF_PGOFF + RINGBUF_POS_PAGES;
-> +	int nr_data_pages = data_sz >> PAGE_SHIFT;
-> +	int nr_pages = nr_meta_pages + nr_data_pages;
-> +	struct page **pages, *page;
-> +	size_t array_size;
-> +	void *addr;
-> +	int i;
-> +
-> +	/* Each data page is mapped twice to allow "virtual"
-> +	 * continuous read of samples wrapping around the end of ring
-> +	 * buffer area:
-> +	 * ------------------------------------------------------
-> +	 * | meta pages |  real data pages  |  same data pages  |
-> +	 * ------------------------------------------------------
-> +	 * |            | 1 2 3 4 5 6 7 8 9 | 1 2 3 4 5 6 7 8 9 |
-> +	 * ------------------------------------------------------
-> +	 * |            | TA             DA | TA             DA |
-> +	 * ------------------------------------------------------
-> +	 *                               ^^^^^^^
-> +	 *                                  |
-> +	 * Here, no need to worry about special handling of wrapped-around
-> +	 * data due to double-mapped data pages. This works both in kernel and
-> +	 * when mmap()'ed in user-space, simplifying both kernel and
-> +	 * user-space implementations significantly.
-> +	 */
-> +	array_size = (nr_meta_pages + 2 * nr_data_pages) * sizeof(*pages);
-> +	if (array_size > PAGE_SIZE)
-> +		pages = vmalloc_node(array_size, numa_node);
-> +	else
-> +		pages = kmalloc_node(array_size, flags, numa_node);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	for (i = 0; i < nr_pages; i++) {
-> +		page = alloc_pages_node(numa_node, flags, 0);
-> +		if (!page) {
-> +			nr_pages = i;
-> +			goto err_free_pages;
-> +		}
-> +		pages[i] = page;
-> +		if (i >= nr_meta_pages)
-> +			pages[nr_data_pages + i] = page;
-> +	}
-> +
-> +	addr = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
-> +		    VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
-> +	if (addr)
-> +		return addr;
 
-Does this need an explicit vunmap() as well in bpf_ringbuf_free()? I can see that the
-__vfree() calls __vunmap(addr, 1) which does the deallocation, but how does this stand
-with the case of kmalloc_node()? (And does it even make sense to support < PAGE_SIZE
-array size here?)
+> +			if (ret)
+> +				verbose(env, "%s() is not modifiable\n",
+> +					prog->aux->attach_func_name);
+> +		} else if (prog->aux->sleepable && prog->type == BPF_PROG_TYPE_TRACING) {
+> +			/* fentry/fexit progs can be sleepable only if they are
+> +			 * attached to ALLOW_ERROR_INJECTION or security_*() funcs.
+> +			 * LSM progs check that they are attached to bpf_lsm_*() funcs
+> +			 * which are sleepable too.
 
-> +err_free_pages:
-> +	for (i = 0; i < nr_pages; i++)
-> +		free_page((unsigned long)pages[i]);
-> +	kvfree(pages);
-> +	return NULL;
-> +}
-> +
-> +static void bpf_ringbuf_notify(struct irq_work *work)
-> +{
-> +	struct bpf_ringbuf *rb = container_of(work, struct bpf_ringbuf, work);
-> +
-> +	wake_up_all(&rb->waitq);
-> +}
-> +
-> +static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
-> +{
-> +	struct bpf_ringbuf *rb;
-> +
-> +	if (!data_sz || !PAGE_ALIGNED(data_sz))
-> +		return ERR_PTR(-EINVAL);
-> +
-> +#ifdef CONFIG_64BIT
-> +	/* on 32-bit arch, it's impossible to overflow record's hdr->pgoff */
-> +	if (data_sz > RINGBUF_MAX_DATA_SZ)
-> +		return ERR_PTR(-E2BIG);
-> +#endif
-> +
-> +	rb = bpf_ringbuf_area_alloc(data_sz, numa_node);
-> +	if (!rb)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	spin_lock_init(&rb->spinlock);
-> +	init_waitqueue_head(&rb->waitq);
-> +	init_irq_work(&rb->work, bpf_ringbuf_notify);
-> +
-> +	rb->mask = data_sz - 1;
-> +	rb->consumer_pos = 0;
-> +	rb->producer_pos = 0;
-> +
-> +	return rb;
-> +}
-> +
-> +static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +	u64 cost;
-> +	int err;
-> +
-> +	if (attr->map_flags & ~RINGBUF_CREATE_FLAG_MASK)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	if (attr->key_size || attr->value_size ||
-> +	    attr->max_entries == 0 || !PAGE_ALIGNED(attr->max_entries))
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	rb_map = kzalloc(sizeof(*rb_map), GFP_USER);
-> +	if (!rb_map)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	bpf_map_init_from_attr(&rb_map->map, attr);
-> +
-> +	cost = sizeof(struct bpf_ringbuf_map) +
-> +	       sizeof(struct bpf_ringbuf) +
-> +	       attr->max_entries;
-> +	err = bpf_map_charge_init(&rb_map->map.memory, cost);
-> +	if (err)
-> +		goto err_free_map;
-> +
-> +	rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
-> +	if (IS_ERR(rb_map->rb)) {
-> +		err = PTR_ERR(rb_map->rb);
-> +		goto err_uncharge;
-> +	}
-> +
-> +	return &rb_map->map;
-> +
-> +err_uncharge:
-> +	bpf_map_charge_finish(&rb_map->map.memory);
-> +err_free_map:
-> +	kfree(rb_map);
-> +	return ERR_PTR(err);
-> +}
-> +
-> +static void bpf_ringbuf_free(struct bpf_ringbuf *ringbuf)
-> +{
-> +	kvfree(ringbuf);
+I know of one LSM hook which is not sleepable and is executed in an
+RCU callback i.e. task_free. I don't think t's a problem to run under
+SRCU for that (I tried it and it does not cause any issues).
 
-... here.
+We can add a blacklisting mechanism later for the sleepable flags or
+just the sleeping helpers (based on some of the work going on to
+whitelist functions for helper usage).
 
-> +}
-> +
-> +static void ringbuf_map_free(struct bpf_map *map)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +
-> +	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
-> +	 * so the programs (can be more than one that used this map) were
-> +	 * disconnected from events. Wait for outstanding critical sections in
-> +	 * these programs to complete
-> +	 */
-> +	synchronize_rcu();
-> +
-> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
-> +	bpf_ringbuf_free(rb_map->rb);
-> +	kfree(rb_map);
-> +}
-> +
-> +static void *ringbuf_map_lookup_elem(struct bpf_map *map, void *key)
-> +{
-> +	return ERR_PTR(-ENOTSUPP);
-> +}
-> +
-> +static int ringbuf_map_update_elem(struct bpf_map *map, void *key, void *value,
-> +				   u64 flags)
-> +{
-> +	return -ENOTSUPP;
-> +}
-> +
-> +static int ringbuf_map_delete_elem(struct bpf_map *map, void *key)
-> +{
-> +	return -ENOTSUPP;
-> +}
-> +
-> +static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
-> +				    void *next_key)
-> +{
-> +	return -ENOTSUPP;
-> +}
+- KP
 
-One use-case we'd have that would be quite interesting to resolve as well is
-to implement ->map_push_elem() callback from here and have a bpf_ringbuf_output()
-like way to feed also data from user space into the same ring buffer that BPF
-programs do. In our case we use perf RB for all sort of event messages from BPF
-side and we also have trace events from our golang agent, both get "merged" into
-an event stream together and then exported. I think it might be really useful to
-allow this here natively.
+> +			 */
+> +			ret = check_attach_modify_return(prog, addr);
+> +			if (ret)
+> +				verbose(env, "%s is not sleepable\n",
 
-> +static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
-> +{
-> +	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
-> +
-> +	/* consumer page + producer page + 2 x data pages */
-> +	return RINGBUF_POS_PAGES + 2 * data_pages;
-> +}
-> +
-> +static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +	size_t mmap_sz;
-> +
-> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
-> +	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
-> +
-> +	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
-> +		return -EINVAL;
-> +
-> +	return remap_vmalloc_range(vma, rb_map->rb,
-> +				   vma->vm_pgoff + RINGBUF_PGOFF);
-> +}
-> +
-> +static unsigned long ringbuf_avail_data_sz(struct bpf_ringbuf *rb)
-> +{
-> +	unsigned long cons_pos, prod_pos;
-> +
-> +	cons_pos = smp_load_acquire(&rb->consumer_pos);
-> +	prod_pos = smp_load_acquire(&rb->producer_pos);
-> +	return prod_pos - cons_pos;
-> +}
-> +
-> +static __poll_t ringbuf_map_poll(struct bpf_map *map, struct file *filp,
-> +				 struct poll_table_struct *pts)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +
-> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
-> +	poll_wait(filp, &rb_map->rb->waitq, pts);
-> +
-> +	if (ringbuf_avail_data_sz(rb_map->rb))
-> +		return EPOLLIN | EPOLLRDNORM;
-> +	return 0;
-> +}
-> +
-> +const struct bpf_map_ops ringbuf_map_ops = {
-> +	.map_alloc = ringbuf_map_alloc,
-> +	.map_free = ringbuf_map_free,
-> +	.map_mmap = ringbuf_map_mmap,
-> +	.map_poll = ringbuf_map_poll,
-> +	.map_lookup_elem = ringbuf_map_lookup_elem,
-> +	.map_update_elem = ringbuf_map_update_elem,
-> +	.map_delete_elem = ringbuf_map_delete_elem,
-> +	.map_get_next_key = ringbuf_map_get_next_key,
-> +};
-> +
-> +/* Given pointer to ring buffer record metadata and struct bpf_ringbuf itself,
-> + * calculate offset from record metadata to ring buffer in pages, rounded
-> + * down. This page offset is stored as part of record metadata and allows to
-> + * restore struct bpf_ringbuf * from record pointer. This page offset is
-> + * stored at offset 4 of record metadata header.
-> + */
-> +static size_t bpf_ringbuf_rec_pg_off(struct bpf_ringbuf *rb,
-> +				     struct bpf_ringbuf_hdr *hdr)
-> +{
-> +	return ((void *)hdr - (void *)rb) >> PAGE_SHIFT;
-> +}
-> +
-> +/* Given pointer to ring buffer record header, restore pointer to struct
-> + * bpf_ringbuf itself by using page offset stored at offset 4
-> + */
-> +static struct bpf_ringbuf *
-> +bpf_ringbuf_restore_from_rec(struct bpf_ringbuf_hdr *hdr)
-> +{
-> +	unsigned long addr = (unsigned long)(void *)hdr;
-> +	unsigned long off = (unsigned long)hdr->pg_off << PAGE_SHIFT;
-> +
-> +	return (void*)((addr & PAGE_MASK) - off);
-> +}
-> +
-> +static void *__bpf_ringbuf_reserve(struct bpf_ringbuf *rb, u64 size)
-> +{
-> +	unsigned long cons_pos, prod_pos, new_prod_pos, flags;
-> +	u32 len, pg_off;
-> +	struct bpf_ringbuf_hdr *hdr;
-> +
-> +	if (unlikely(size > RINGBUF_MAX_RECORD_SZ))
-> +		return NULL;
-> +
-> +	len = round_up(size + BPF_RINGBUF_HDR_SZ, 8);
-> +	cons_pos = smp_load_acquire(&rb->consumer_pos);
-> +
-> +	if (in_nmi()) {
-> +		if (!spin_trylock_irqsave(&rb->spinlock, flags))
-> +			return NULL;
-> +	} else {
-> +		spin_lock_irqsave(&rb->spinlock, flags);
+[...]
 
-Should this side probe with trylock as well to avoid potential blockage?
-
-> +	}
-> +
-> +	prod_pos = rb->producer_pos;
-> +	new_prod_pos = prod_pos + len;
-> +
-> +	/* check for out of ringbuf space by ensuring producer position
-> +	 * doesn't advance more than (ringbuf_size - 1) ahead
-> +	 */
-> +	if (new_prod_pos - cons_pos > rb->mask) {
-> +		spin_unlock_irqrestore(&rb->spinlock, flags);
-> +		return NULL;
-> +	}
-> +
-> +	hdr = (void *)rb->data + (prod_pos & rb->mask);
-> +	pg_off = bpf_ringbuf_rec_pg_off(rb, hdr);
-> +	hdr->len = size | BPF_RINGBUF_BUSY_BIT;
-> +	hdr->pg_off = pg_off;
-> +
-> +	/* pairs with consumer's smp_load_acquire() */
-> +	smp_store_release(&rb->producer_pos, new_prod_pos);
-> +
-> +	spin_unlock_irqrestore(&rb->spinlock, flags);
-> +
-> +	return (void *)hdr + BPF_RINGBUF_HDR_SZ;
-> +}
-> +
-> +BPF_CALL_3(bpf_ringbuf_reserve, struct bpf_map *, map, u64, size, u64, flags)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +
-> +	if (unlikely(flags))
-> +		return 0;
-> +
-> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
-> +	return (unsigned long)__bpf_ringbuf_reserve(rb_map->rb, size);
-> +}
-> +
-> +const struct bpf_func_proto bpf_ringbuf_reserve_proto = {
-> +	.func		= bpf_ringbuf_reserve,
-> +	.ret_type	= RET_PTR_TO_ALLOC_MEM_OR_NULL,
-> +	.arg1_type	= ARG_CONST_MAP_PTR,
-> +	.arg2_type	= ARG_CONST_ALLOC_SIZE_OR_ZERO,
-> +	.arg3_type	= ARG_ANYTHING,
-> +};
-> +
-> +static void bpf_ringbuf_commit(void *sample, u64 flags, bool discard)
-> +{
-> +	unsigned long rec_pos, cons_pos;
-> +	struct bpf_ringbuf_hdr *hdr;
-> +	struct bpf_ringbuf *rb;
-> +	u32 new_len;
-> +
-> +	hdr = sample - BPF_RINGBUF_HDR_SZ;
-> +	rb = bpf_ringbuf_restore_from_rec(hdr);
-> +	new_len = hdr->len ^ BPF_RINGBUF_BUSY_BIT;
-> +	if (discard)
-> +		new_len |= BPF_RINGBUF_DISCARD_BIT;
-> +
-> +	/* update record header with correct final size prefix */
-> +	xchg(&hdr->len, new_len);
-> +
-> +	/* if consumer caught up and is waiting for our record, notify about
-> +	 * new data availability
-> +	 */
-> +	rec_pos = (void *)hdr - (void *)rb->data;
-> +	cons_pos = smp_load_acquire(&rb->consumer_pos) & rb->mask;
-> +
-> +	if (flags & BPF_RB_FORCE_WAKEUP)
-> +		irq_work_queue(&rb->work);
-> +	else if (cons_pos == rec_pos && !(flags & BPF_RB_NO_WAKEUP))
-> +		irq_work_queue(&rb->work);
-> +}
-> +
-> +BPF_CALL_2(bpf_ringbuf_submit, void *, sample, u64, flags)
-> +{
-> +	bpf_ringbuf_commit(sample, flags, false /* discard */);
-> +	return 0;
-> +}
-> +
-> +const struct bpf_func_proto bpf_ringbuf_submit_proto = {
-> +	.func		= bpf_ringbuf_submit,
-> +	.ret_type	= RET_VOID,
-> +	.arg1_type	= ARG_PTR_TO_ALLOC_MEM,
-> +	.arg2_type	= ARG_ANYTHING,
-> +};
-> +
-> +BPF_CALL_2(bpf_ringbuf_discard, void *, sample, u64, flags)
-> +{
-> +	bpf_ringbuf_commit(sample, flags, true /* discard */);
-> +	return 0;
-> +}
-> +
-> +const struct bpf_func_proto bpf_ringbuf_discard_proto = {
-> +	.func		= bpf_ringbuf_discard,
-> +	.ret_type	= RET_VOID,
-> +	.arg1_type	= ARG_PTR_TO_ALLOC_MEM,
-> +	.arg2_type	= ARG_ANYTHING,
-> +};
-> +
-> +BPF_CALL_4(bpf_ringbuf_output, struct bpf_map *, map, void *, data, u64, size,
-> +	   u64, flags)
-> +{
-> +	struct bpf_ringbuf_map *rb_map;
-> +	void *rec;
-> +
-> +	if (unlikely(flags & ~(BPF_RB_NO_WAKEUP | BPF_RB_FORCE_WAKEUP)))
-> +		return -EINVAL;
-> +
-> +	rb_map = container_of(map, struct bpf_ringbuf_map, map);
-> +	rec = __bpf_ringbuf_reserve(rb_map->rb, size);
-> +	if (!rec)
-> +		return -EAGAIN;
-> +
-> +	memcpy(rec, data, size);
-
-As discussed, (non-linear) skb capture would be needed as well. Is the plan to
-integrate this here into the same record (data + skb capture as one)?
-
-> +	bpf_ringbuf_commit(rec, flags, false /* discard */);
-> +	return 0;
-> +}
-> +
-> +const struct bpf_func_proto bpf_ringbuf_output_proto = {
-> +	.func		= bpf_ringbuf_output,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_CONST_MAP_PTR,
-> +	.arg2_type	= ARG_PTR_TO_MEM,
-> +	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
-> +	.arg4_type	= ARG_ANYTHING,
-> +};
-> +
-> +BPF_CALL_2(bpf_ringbuf_query, struct bpf_map *, map, u64, flags)
-> +{
-> +	struct bpf_ringbuf *rb;
-> +
-> +	rb = container_of(map, struct bpf_ringbuf_map, map)->rb;
-> +
-> +	switch (flags) {
-> +	case BPF_RB_AVAIL_DATA:
-> +		return ringbuf_avail_data_sz(rb);
-> +	case BPF_RB_RING_SIZE:
-> +		return rb->mask + 1;
-> +	case BPF_RB_CONS_POS:
-> +		return smp_load_acquire(&rb->consumer_pos);
-> +	case BPF_RB_PROD_POS:
-> +		return smp_load_acquire(&rb->producer_pos);
-
-Do you have an example where the latter two are needed/useful for non-debugging?
-Maybe leave out for now if only used for debugging?
-
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +const struct bpf_func_proto bpf_ringbuf_query_proto = {
-> +	.func		= bpf_ringbuf_query,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_CONST_MAP_PTR,
-> +	.arg2_type	= ARG_ANYTHING,
-> +};
+>   * two extensions:
+>   *
+> -- 
+> 2.23.0
+> 
