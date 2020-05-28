@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1241E5811
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 455EF1E582A
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726114AbgE1HBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 03:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        id S1725941AbgE1HFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 03:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbgE1HBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 03:01:52 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25137C05BD1E
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:52 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id 205so2194205qkg.3
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:01:52 -0700 (PDT)
+        with ESMTP id S1725601AbgE1HFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 03:05:08 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB00C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:05:08 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id f89so12468971qva.3
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 00:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JHDw5aL1eTxUzfhSKo+/aoW/O8V/V561gmVbQAV8BH4=;
-        b=nHHPCfX2oQ8O0et+jwcL/8lrmCSquLi4cC8QFrwyQTl2cyT2iK13WXdDNY694UBxGG
-         MTdhf5DTJiDHPx3IVLQDjYRMJniLXzOpcsryVlb/QhmXKzZgXBQhQA4Ekg/H4o/4rHdT
-         h7npUdTGRCrbP/twx7N6vBiUfvXo6i04IZpSyjEUiU3+OTTqbVnte6x45Bzks6Oq2nwB
-         HUIlcDpS6M37uHojYA5+MgOs+o9qWvH+NWm8Itm149c4aHMfrwQh3NQN+v1EZxfNsTVU
-         VkCf+3lCFiJo5FtcOdpb6FK9uYzBxsgPrC41zFhnvSel7ZIGG8z4Jsu6IcgyGNwA+TVK
-         xRbQ==
+        bh=Jx3eCqpG4Pu6gctCp+szOACaY4NZReUOmLL5Rewaq08=;
+        b=k6/H4FnC2PReiDg1B7eylvsG7E33CXHsIDTyKf5vK3okQOv2fsdi8DF2iVIrN0pGAK
+         YFbNKmn325LWPcUWF0yBI4lnQc2Ru2TPlJOP5kvVxEjlcw0p4VRT33ooFEdH/xtnhQxy
+         OUeRQAgcgnrWzoKEv260lSW8Wapp0wqmmlR1DYYGPhYKBEjblfDS14sfXUohrF/wDloG
+         uHonprXrk+4cs/m6/KjGg3l4/nKDxcB8lqKX4q7LUlycTA//UR7R/XFuVQEX0OuBvFB2
+         cGtVUWtDj65mSWkajW6GS0AdhkIPerMSkONshiGtPesXuQs18HfU/TsSd+0fQeBjkncC
+         s+cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JHDw5aL1eTxUzfhSKo+/aoW/O8V/V561gmVbQAV8BH4=;
-        b=rwlmGkdd1Y7EZyDgYPKDwMlG0sEAC92u+IbKuM8LsXfttG08TDmUbTVoDS0tkSjlN2
-         5VGomY8b7d362y2xFtA24jahoTjTLyQbb2dNZt/tl1cM8aQxTiTmYv/DgQ/aylZqzb37
-         U5eBJyI11+E7RUHr8BSvVrl6drqMqZuxr/FsD4mbpC1bpB5L+3DpXhQIwt6vNyqXFbiT
-         l09ZuoDx0+pGtBJL4v2DrgkxhlTCpur5h79CXLTFwp0GApNmP70CYXL6ddwk4bJjRrBk
-         VPK+IsMZT/u/c8uRJ/3K3m2zACzj3Xdx+pHsrlwf1dykbr1C83ucgfENvWNbka3GVIIs
-         69zA==
-X-Gm-Message-State: AOAM530LKscO6Xm9+hSOAVlodAAEfrVdARFx9pb4zTueYFZr7TisB0Yc
-        mnEYNt4tjKUDzTorPLtireU2qPiXLuCghtXdTV8=
-X-Google-Smtp-Source: ABdhPJzUSB+2DpAfEwT5iSQomg67bKLfFhPtKAWKmr7jhC/ZVlpo1LUm3sUfwv5blWucNP23ptOpaSXKYhrRg2I1j3o=
-X-Received: by 2002:a05:620a:247:: with SMTP id q7mr1493119qkn.36.1590649311337;
- Thu, 28 May 2020 00:01:51 -0700 (PDT)
+        bh=Jx3eCqpG4Pu6gctCp+szOACaY4NZReUOmLL5Rewaq08=;
+        b=t31JhsGMb0cf5Wsh7Qk5BRMhB+KBWe7EqY1ExjD+8G3yscoRaFPB1znScSsb5tk5Eu
+         jVipDX/FxzDPBXqp/pwNWUzZ0Iq9aqPw42ETiihoFaMx5tztHcu+2PknsIQjY6kF1j1Z
+         d2VkyowEbdgGyzX0ZmuglmcEc+XfjIBxMqFqROJfsE3/UrAUXAAxtRusGPpks2U62leX
+         aQtSzmWhw2LNaGB+vGYZe8eCMcgt9oC5zTRzSa8vFhNmnbAvF/PwPW30XxrxvD+Z+m2R
+         nikCAKuxAmuwVoxBT7+HTp/sQZ4R0+bFqvtFPZaYZ3ElSfsBOwWX/7booiIcKXuPVY24
+         bypQ==
+X-Gm-Message-State: AOAM531218dtHKpHGGSua6CTzy7LpTAXHP5CObSorAKNLEpvc98rsKM6
+        RzyGl+sfyZLxT9k4iqTWdXul2LAKEPXC+pVU5fY=
+X-Google-Smtp-Source: ABdhPJwm/lDs/9ABOoknWOATTPRitiTwsUZGZcZucvAMPH5dXE4rdK20gTjNiD4g3QKK2IS/MDhsun46sQCqRNRz1/o=
+X-Received: by 2002:a0c:a9c6:: with SMTP id c6mr1718743qvb.224.1590649507269;
+ Thu, 28 May 2020 00:05:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200528001423.58575-1-dsahern@kernel.org> <20200528001423.58575-3-dsahern@kernel.org>
-In-Reply-To: <20200528001423.58575-3-dsahern@kernel.org>
+References: <20200528001423.58575-1-dsahern@kernel.org> <20200528001423.58575-5-dsahern@kernel.org>
+In-Reply-To: <20200528001423.58575-5-dsahern@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 28 May 2020 00:01:40 -0700
-Message-ID: <CAEf4BzYZSPdGH+RXp+kHfWnGGLRuiP=ho9oMsSf7RsYWyeNk0g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/5] bpf: Add support to attach bpf program to
- a devmap entry
+Date:   Thu, 28 May 2020 00:04:56 -0700
+Message-ID: <CAEf4BzbwB+ON56HmRqhPD=iyiviYF9EwBvf-n5tPKn0qhzHjgA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 4/5] libbpf: Add SEC name for xdp programs
+ attached to device map
 To:     David Ahern <dsahern@kernel.org>
 Cc:     Networking <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -71,103 +71,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, May 27, 2020 at 5:17 PM David Ahern <dsahern@kernel.org> wrote:
 >
-> From: David Ahern <dsahern@gmail.com>
+> Support SEC("xdp_dm*") as a short cut for loading the program with
+> type BPF_PROG_TYPE_XDP and expected attach type BPF_XDP_DEVMAP.
 >
-> Add BPF_XDP_DEVMAP attach type for use with programs associated with a
-> DEVMAP entry.
->
-> Allow DEVMAPs to associate a program with a device entry by adding
-> a bpf_prog_fd to 'struct devmap_val'. Values read show the program
-> id, so the fd and id are a union.
->
-> The program associated with the fd must have type XDP with expected
-> attach type BPF_XDP_DEVMAP. When a program is associated with a device
-> index, the program is run on an XDP_REDIRECT and before the buffer is
-> added to the per-cpu queue. At this point rxq data is still valid; the
-> next patch adds tx device information allowing the prorgam to see both
-> ingress and egress device indices.
->
-> XDP generic is skb based and XDP programs do not work with skb's. Block
-> the use case by walking maps used by a program that is to be attached
-> via xdpgeneric and fail if any of them are DEVMAP / DEVMAP_HASH with
->  > 4-byte values.
->
-> Block attach of BPF_XDP_DEVMAP programs to devices.
->
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: David Ahern <dsahern@kernel.org>
 > ---
-
-Please cc bpf@vger.kernel.org in the future for patches related to BPF
-in general.
-
->  include/linux/bpf.h            |  5 +++
->  include/uapi/linux/bpf.h       |  5 +++
->  kernel/bpf/devmap.c            | 79 +++++++++++++++++++++++++++++++++-
->  net/core/dev.c                 | 18 ++++++++
->  tools/include/uapi/linux/bpf.h |  5 +++
->  5 files changed, 110 insertions(+), 2 deletions(-)
+>  tools/lib/bpf/libbpf.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 5d60de6fd818..493909d5d3d3 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -6657,6 +6657,8 @@ static const struct bpf_sec_def section_defs[] = {
+>                 .expected_attach_type = BPF_TRACE_ITER,
+>                 .is_attach_btf = true,
+>                 .attach_fn = attach_iter),
+> +       BPF_EAPROG_SEC("xdp_dm",                BPF_PROG_TYPE_XDP,
+> +                                               BPF_XDP_DEVMAP),
 
-[...]
+naming is hard and subjective, but does "dm" really associate with
+DEVMAP to you, rather than "direct message" or "direct memory" or
+something along those line? Is there any harm to call this
+"xdp_devmap"? It's still short enough, IMO.
 
+>         BPF_PROG_SEC("xdp",                     BPF_PROG_TYPE_XDP),
+>         BPF_PROG_SEC("perf_event",              BPF_PROG_TYPE_PERF_EVENT),
+>         BPF_PROG_SEC("lwt_in",                  BPF_PROG_TYPE_LWT_IN),
+> --
+> 2.21.1 (Apple Git-122.3)
 >
-> +static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
-> +                                        struct xdp_buff *xdp,
-> +                                        struct bpf_prog *xdp_prog)
-> +{
-> +       u32 act;
-> +
-> +       act = bpf_prog_run_xdp(xdp_prog, xdp);
-> +       switch (act) {
-> +       case XDP_DROP:
-> +               fallthrough;
-
-nit: I don't think fallthrough is necessary for cases like:
-
-case XDP_DROP:
-case XDP_PASS:
-    /* do something */
-
-> +       case XDP_PASS:
-> +               break;
-> +       default:
-> +               bpf_warn_invalid_xdp_action(act);
-> +               fallthrough;
-> +       case XDP_ABORTED:
-> +               trace_xdp_exception(dev, xdp_prog, act);
-> +               act = XDP_DROP;
-> +               break;
-> +       }
-> +
-> +       if (act == XDP_DROP) {
-> +               xdp_return_buff(xdp);
-> +               xdp = NULL;
-
-hm.. if you move XDP_DROP case to after XDP_ABORTED and do fallthrough
-from XDP_ABORTED, you won't even need to override act and it will just
-handle all the cases, no?
-
-switch (act) {
-case XDP_PASS:
-    return xdp;
-default:
-    bpf_warn_invalid_xdp_action(act);
-    fallthrough;
-case XDP_ABORTED:
-    trace_xdp_exception(dev, xdp_prog, act);
-    fallthrough;
-case XDP_DROP:
-    xdp_return_buff(xdp);
-    return NULL;
-}
-
-Wouldn't this be simpler?
-
-
-> +       }
-> +
-> +       return xdp;
-> +}
-> +
-
-[...]
