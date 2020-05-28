@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C274F1E602D
+	by mail.lfdr.de (Postfix) with ESMTP id 54F481E602C
 	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389663AbgE1MIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:08:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48674 "EHLO mail.kernel.org"
+        id S2388896AbgE1MIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:08:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388776AbgE1L4g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:56:36 -0400
+        id S2388755AbgE1L4h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:56:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49C75212CC;
-        Thu, 28 May 2020 11:56:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4845721532;
+        Thu, 28 May 2020 11:56:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590666995;
-        bh=O5JZywhz7iAfb7m4Z4WcOq4q0ejSwcFYHqTjUmqM/h8=;
+        s=default; t=1590666997;
+        bh=t3/DUnZ7Va7LfUYt2PknXD6yTzNvyjCApmOw95O2kAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4YoPlj55F+YcfFnDMJ3o8f+l4TNk36tCQ/z6wbRbVvSd3P5KkZjmaCXj5l0Ochvu
-         d15byqVHLsm3F8YTtIpyodTGMhLOuTMtWfe2CMkBl3zq47VPikn5uN2APDZ+Je57xJ
-         XbScbusjhZOQwtPzZVQufevPwqyFod5g8J7mZA3Q=
+        b=tsGlU3An/C895GRREflbRkXT1/0mwHYwqESDHife5OKSe9aPosK+5jqc/v9LvW2XP
+         Ji1IZGtCOpC/ghrBZem2VAjhD4535EAkZCpnjhkrgoYC0hi8mIw6DjkilOKbkumTZ7
+         G98yCWqQc2Ow9rRefgNt0tAal7HcVmLlmRbla5ls=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>,
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 31/47] net: ethernet: stmmac: Enable interface clocks on probe for IPQ806x
-Date:   Thu, 28 May 2020 07:55:44 -0400
-Message-Id: <20200528115600.1405808-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 32/47] mlxsw: spectrum: Fix use-after-free of split/unsplit/type_set in case reload fails
+Date:   Thu, 28 May 2020 07:55:45 -0400
+Message-Id: <20200528115600.1405808-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200528115600.1405808-1-sashal@kernel.org>
 References: <20200528115600.1405808-1-sashal@kernel.org>
@@ -43,60 +45,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan McDowell <noodles@earth.li>
+From: Jiri Pirko <jiri@mellanox.com>
 
-[ Upstream commit a96ac8a0045e3cbe3e5af6d1b3c78c6c2065dec5 ]
+[ Upstream commit 4340f42f207eacb81e7a6b6bb1e3b6afad9a2e26 ]
 
-The ipq806x_gmac_probe() function enables the PTP clock but not the
-appropriate interface clocks. This means that if the bootloader hasn't
-done so attempting to bring up the interface will fail with an error
-like:
+In case of reload fail, the mlxsw_sp->ports contains a pointer to a
+freed memory (either by reload_down() or reload_up() error path).
+Fix this by initializing the pointer to NULL and checking it before
+dereferencing in split/unsplit/type_set callpaths.
 
-[   59.028131] ipq806x-gmac-dwmac 37600000.ethernet: Failed to reset the dma
-[   59.028196] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_hw_setup: DMA engine initialization failed
-[   59.034056] ipq806x-gmac-dwmac 37600000.ethernet eth1: stmmac_open: Hw setup failed
-
-This patch, a slightly cleaned up version of one posted by Sergey
-Sergeev in:
-
-https://forum.openwrt.org/t/support-for-mikrotik-rb3011uias-rm/4064/257
-
-correctly enables the clock; we have already configured the source just
-before this.
-
-Tested on a MikroTik RB3011.
-
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
+Fixes: 24cc68ad6c46 ("mlxsw: core: Add support for reload")
+Reported-by: Danielle Ratson <danieller@mellanox.com>
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 14 ++++++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/switchx2.c |  8 ++++++++
+ 2 files changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index 6ae13dc19510..02102c781a8c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -319,6 +319,19 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 	/* Enable PTP clock */
- 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
- 	val |= NSS_COMMON_CLK_GATE_PTP_EN(gmac->id);
-+	switch (gmac->phy_mode) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+		val |= NSS_COMMON_CLK_GATE_RGMII_RX_EN(gmac->id) |
-+			NSS_COMMON_CLK_GATE_RGMII_TX_EN(gmac->id);
-+		break;
-+	case PHY_INTERFACE_MODE_SGMII:
-+		val |= NSS_COMMON_CLK_GATE_GMII_RX_EN(gmac->id) |
-+				NSS_COMMON_CLK_GATE_GMII_TX_EN(gmac->id);
-+		break;
-+	default:
-+		/* We don't get here; the switch above will have errored out */
-+		unreachable();
-+	}
- 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 7358b5bc7eb6..58ebabe99876 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4043,6 +4043,7 @@ static void mlxsw_sp_ports_remove(struct mlxsw_sp *mlxsw_sp)
+ 			mlxsw_sp_port_remove(mlxsw_sp, i);
+ 	mlxsw_sp_cpu_port_remove(mlxsw_sp);
+ 	kfree(mlxsw_sp->ports);
++	mlxsw_sp->ports = NULL;
+ }
  
- 	if (gmac->phy_mode == PHY_INTERFACE_MODE_SGMII) {
+ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
+@@ -4079,6 +4080,7 @@ err_port_create:
+ 	mlxsw_sp_cpu_port_remove(mlxsw_sp);
+ err_cpu_port_create:
+ 	kfree(mlxsw_sp->ports);
++	mlxsw_sp->ports = NULL;
+ 	return err;
+ }
+ 
+@@ -4200,6 +4202,14 @@ static int mlxsw_sp_local_ports_offset(struct mlxsw_core *mlxsw_core,
+ 	return mlxsw_core_res_get(mlxsw_core, local_ports_in_x_res_id);
+ }
+ 
++static struct mlxsw_sp_port *
++mlxsw_sp_port_get_by_local_port(struct mlxsw_sp *mlxsw_sp, u8 local_port)
++{
++	if (mlxsw_sp->ports && mlxsw_sp->ports[local_port])
++		return mlxsw_sp->ports[local_port];
++	return NULL;
++}
++
+ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 			       unsigned int count,
+ 			       struct netlink_ext_ack *extack)
+@@ -4213,7 +4223,7 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 	int i;
+ 	int err;
+ 
+-	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++	mlxsw_sp_port = mlxsw_sp_port_get_by_local_port(mlxsw_sp, local_port);
+ 	if (!mlxsw_sp_port) {
+ 		dev_err(mlxsw_sp->bus_info->dev, "Port number \"%d\" does not exist\n",
+ 			local_port);
+@@ -4308,7 +4318,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 	int offset;
+ 	int i;
+ 
+-	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++	mlxsw_sp_port = mlxsw_sp_port_get_by_local_port(mlxsw_sp, local_port);
+ 	if (!mlxsw_sp_port) {
+ 		dev_err(mlxsw_sp->bus_info->dev, "Port number \"%d\" does not exist\n",
+ 			local_port);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index f0e98ec8f1ee..c69232445ab7 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -1259,6 +1259,7 @@ static void mlxsw_sx_ports_remove(struct mlxsw_sx *mlxsw_sx)
+ 		if (mlxsw_sx_port_created(mlxsw_sx, i))
+ 			mlxsw_sx_port_remove(mlxsw_sx, i);
+ 	kfree(mlxsw_sx->ports);
++	mlxsw_sx->ports = NULL;
+ }
+ 
+ static int mlxsw_sx_ports_create(struct mlxsw_sx *mlxsw_sx)
+@@ -1293,6 +1294,7 @@ err_port_module_info_get:
+ 		if (mlxsw_sx_port_created(mlxsw_sx, i))
+ 			mlxsw_sx_port_remove(mlxsw_sx, i);
+ 	kfree(mlxsw_sx->ports);
++	mlxsw_sx->ports = NULL;
+ 	return err;
+ }
+ 
+@@ -1376,6 +1378,12 @@ static int mlxsw_sx_port_type_set(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 	u8 module, width;
+ 	int err;
+ 
++	if (!mlxsw_sx->ports || !mlxsw_sx->ports[local_port]) {
++		dev_err(mlxsw_sx->bus_info->dev, "Port number \"%d\" does not exist\n",
++			local_port);
++		return -EINVAL;
++	}
++
+ 	if (new_type == DEVLINK_PORT_TYPE_AUTO)
+ 		return -EOPNOTSUPP;
+ 
 -- 
 2.25.1
 
