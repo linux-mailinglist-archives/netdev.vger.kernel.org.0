@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4501E68AB
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 19:30:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F1F1E68D4
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 19:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405571AbgE1R35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 13:29:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405041AbgE1R34 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 13:29:56 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D9742073B;
-        Thu, 28 May 2020 17:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590686995;
-        bh=CXGpNEW5zE3Al8xsCyEhdbNGUXVwRX8C/yXsqP0L2Bc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SaZYjijDoEclJCwQoa/5q8y2wGxmT0QO2rPFS7RkM0qNyZfYHwz0/t+p3JgljoJHQ
-         xT6fHpRkslJLEWNtOwKEz/o7+dbos3MEurF8gmBSNq4yZWKI5bhvP8udiXrpDO63Lu
-         LyITDeTBxvYlr5JHhWPmPmJOKWwY4Y/RcQgKwEhk=
-Date:   Thu, 28 May 2020 10:29:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Boris Pismenny <borisp@mellanox.com>
-Cc:     Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net] net/tls: Fix driver request resync
-Message-ID: <20200528102953.4bfc424f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <6d488bcb-48ac-f084-069e-1b29d0088c07@mellanox.com>
-References: <20200520151408.8080-1-tariqt@mellanox.com>
-        <20200520133428.786bd4ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <6d488bcb-48ac-f084-069e-1b29d0088c07@mellanox.com>
+        id S2405643AbgE1Rsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 13:48:39 -0400
+Received: from mail-il1-f193.google.com ([209.85.166.193]:43475 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405580AbgE1Rsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 13:48:38 -0400
+Received: by mail-il1-f193.google.com with SMTP id l20so1045594ilj.10;
+        Thu, 28 May 2020 10:48:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xA+8ZtZwDMfjZ7DO84uhGqtfaAhbDdUqKkUCy7pUj1U=;
+        b=o+w1UfduJs4do4KLMy2/g5AVIuhSXOK4cAOa15yjsKwBZ6gXzX5ymR1x3XRfcKQeDk
+         TAeQuKDdbm3LNzC7YRnSxoXUtaL2heRpuK0bK9U4abmNtX/fo4WSNViENyR9oOVg6r6e
+         C5IeUi2S0+qG0N13H/FWu2SK/HHR1h72uoXaseXvPB+wgvUxdaMgImXKNQ+TNqQLTAH8
+         4MOQtuDXcT2cDshJmIFKllsWvPacndCYGKIpOsjKoSOm2IIe0/uMvFVKcabBcJwYoPoW
+         txx9tgJbLp6/Yl++p+OZcAvUP8rcqewksppxw1cxnB8uaptyKRoshswa3qNXZswflmwv
+         E7xQ==
+X-Gm-Message-State: AOAM532SC8b9xve2eQ31R4wLptZt7Wg8kUBG+eZMAqQnLlI2gUP0f/g+
+        nsZXCfZY7f7guP4gzBXNrImNaYM=
+X-Google-Smtp-Source: ABdhPJwzEtC0+3YsXMxFaCJjXuihCzBokX+wvcFWsqh4QHEzCQNWPg5pzbjV9o2mQN+7xsl1C7j/7w==
+X-Received: by 2002:a92:b111:: with SMTP id t17mr3992506ilh.241.1590688117320;
+        Thu, 28 May 2020 10:48:37 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id r20sm3682147ilk.44.2020.05.28.10.48.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 10:48:36 -0700 (PDT)
+Received: (nullmailer pid 386101 invoked by uid 1000);
+        Thu, 28 May 2020 17:48:35 -0000
+Date:   Thu, 28 May 2020 11:48:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dp83822: Add TI dp83822
+ phy
+Message-ID: <20200528174835.GA362519@bogus>
+References: <20200514173055.15013-1-dmurphy@ti.com>
+ <20200514173055.15013-2-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200514173055.15013-2-dmurphy@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 May 2020 09:03:07 +0300 Boris Pismenny wrote:
-> On 20/05/2020 23:34, Jakub Kicinski wrote:
-> > On Wed, 20 May 2020 18:14:08 +0300 Tariq Toukan wrote:  
-> >> From: Boris Pismenny <borisp@mellanox.com>
-> >>
-> >> In driver request resync, the hardware requests a resynchronization
-> >> request at some TCP sequence number. If that TCP sequence number does
-> >> not point to a TLS record header, then the resync attempt has failed.
-> >>
-> >> Failed resync should reset the resync request to avoid spurious resyncs
-> >> after the TCP sequence number has wrapped around.
-> >>
-> >> Fix this by resetting the resync request when the TLS record header
-> >> sequence number is not before the requested sequence number.
-> >> As a result, drivers may be called with a sequence number that is not
-> >> equal to the requested sequence number.
-> >>
-> >> Fixes: f953d33ba122 ("net/tls: add kernel-driven TLS RX resync")
-> >> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> >> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-> >> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
-> >> ---
-> >>  net/tls/tls_device.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> >> index a562ebaaa33c..cbb13001b4a9 100644
-> >> --- a/net/tls/tls_device.c
-> >> +++ b/net/tls/tls_device.c
-> >> @@ -714,7 +714,7 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq)
-> >>  		seq += TLS_HEADER_SIZE - 1;
-> >>  		is_req_pending = resync_req;
-> >>  
-> >> -		if (likely(!is_req_pending) || req_seq != seq ||
-> >> +		if (likely(!is_req_pending) || before(seq, req_seq) ||  
-> > So the kernel is going to send the sync message to the device with at
-> > sequence number the device never asked about?   
+On Thu, May 14, 2020 at 12:30:54PM -0500, Dan Murphy wrote:
+> Add a dt binding for the TI dp83822 ethernet phy device.
 > 
-> Yes, although I would phrase it differently: the kernel would indicate to the driver,
-> that the resync request is wrong, and that it can go back to searching for a header.
-> If there are any drivers that need an extra check, then we can add it in the driver itself.
-
-I'd rather make the API clear and use a different op to indicate this is
-a reset rather than a valid sync response. sync callback already has
-the enum for sync type.
-
-> > Kernel usually can't guarantee that the notification will happen,
-> > (memory allocation errors, etc.) so the device needs to do the
-> > restarting itself. The notification should not be necessary.
-> >  
+> CC: Rob Herring <robh+dt@kernel.org>
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  .../devicetree/bindings/net/ti,dp83822.yaml   | 49 +++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83822.yaml
 > 
-> Usually, all is best effort, but in principle, reliability should be guaranteed by higher layers to simplify the design.
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83822.yaml b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
+> new file mode 100644
+> index 000000000000..60afd43ad3b6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause)
+> +# Copyright (C) 2020 Texas Instruments Incorporated
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/net/ti,dp83822.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: TI DP83822 ethernet PHY
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
 
-Since we're talking high level design perspectives here - IMO when you
-talk to FW on a device - it's a distributed system. The days when you
-could say driver on the host is higher layer ended when people started
-putting fat firmwares on the NICs. So no, restart has to be handled by
-the system making the request. In this case the NIC.
+Not an ethernet controller. Drop. (The ethernet-phy.yaml schema will be 
+applied based on node name).
 
-> On the one hand, resync depends on packet arrival, which may take a while, and implementing different heuristics in each driver to timeout is complex.
-> On the other hand, assuming the user reads the record data eventually, ktls will be able to deliver the resync request, so implementing this in the tls layer is simple.
+> +
+> +maintainers:
+> +  - Dan Murphy <dmurphy@ti.com>
+> +
+> +description: |
+> +  The DP83822 is a low-power, single-port, 10/100 Mbps Ethernet PHY. It
+> +  provides all of the physical layer functions needed to transmit and receive
+> +  data over standard, twisted-pair cables or to connect to an external,
+> +  fiber-optic transceiver. Additionally, the DP83822 provides flexibility to
+> +  connect to a MAC through a standard MII, RMII, or RGMII interface
+> +
+> +  Specifications about the charger can be found at:
+> +    http://www.ti.com/lit/ds/symlink/dp83822i.pdf
+> +
+> +properties:
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ti,signal-polarity-low:
 
-We definitely not want any driver logic here - the resync restart logic
-has to be implemented on the device.
+What signal? 
 
-> In this case, I see no reason for the tls layer to fail --- did you have a specific flow in mind?
-> AFAICT, there are no memory allocation/error flows that will prevent the driver to receive a resync without an error on the socket (bad tls header).
-> If tls received the header, then the driver will receive the resync call, and it will take responsibility for reliably delivering it to HW.
+> +    type: boolean
+> +    description: |
+> +       DP83822 PHY in Fiber mode only.
+> +       Sets the DP83822 to detect a link drop condition when the signal goes
+> +       high.  If not set then link drop will occur when the signal goes low.
 
-So you're saying the request path and the response path for resync are
-both 100% lossless both on the NIC and the host? There is no scenario
-in which queue overflows, PCIe gets congested, etc.?
+The naming is not clear that low is for link drop. So maybe:
+
+ti,link-loss-low
+
+Rob
