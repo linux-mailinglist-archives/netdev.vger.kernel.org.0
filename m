@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C8B1E54EA
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 06:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 891971E54E0
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 06:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726006AbgE1EME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 00:12:04 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:21348 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725833AbgE1EME (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 00:12:04 -0400
-X-Greylist: delayed 553 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 May 2020 00:12:03 EDT
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DE7EE41EFD;
-        Thu, 28 May 2020 12:02:48 +0800 (CST)
-Subject: The size of ct offoad mlx5_flow_table in mlx5e driver
-From:   wenxu <wenxu@ucloud.cn>
-To:     Paul Blakey <paulb@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1585464960-6204-1-git-send-email-wenxu@ucloud.cn>
- <fd36f18360b2800b37fe6b7466b7361afd43718b.camel@mellanox.com>
- <d3e0a559-3a7b-0fd4-5d1f-ccb0aea1dffd@ucloud.cn>
-Message-ID: <9f388f0a-d6fe-7abf-2413-255f9ae32d68@ucloud.cn>
-Date:   Thu, 28 May 2020 12:02:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1725779AbgE1EGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 00:06:51 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:48755 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbgE1EGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 00:06:51 -0400
+Received: from [10.193.177.210] (komali.asicdesigners.com [10.193.177.210] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 04S46hnw004208;
+        Wed, 27 May 2020 21:06:43 -0700
+Subject: Re: [PATCH net v2] cxgb4/chcr: Enable ktls settings at run time
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
+References: <20200526140634.21043-1-rohitm@chelsio.com>
+ <20200526154241.24447b41@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <00b63ada-06d0-5298-e676-1c02e8676d61@chelsio.com>
+ <20200527140406.420ed7fd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   rohit maheshwari <rohitm@chelsio.com>
+Message-ID: <475fb577-a8cc-d1dc-e522-13333c7975a2@chelsio.com>
+Date:   Thu, 28 May 2020 09:36:43 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-In-Reply-To: <d3e0a559-3a7b-0fd4-5d1f-ccb0aea1dffd@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200527140406.420ed7fd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEhJS0tLSkhNSExOT0hZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXIjULOBw4MxhDGRQ1Q0IeDhUQFjocVlZVSkxKKElZV1kJDh
-        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nwg6LTo4Sjg*NzhKUTMfCFZL
-        FRwwCxhVSlVKTkJLTUhDTk1CSkpCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFJTENLNwY+
-X-HM-Tid: 0a725972664a2086kuqyde7ee41efd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi  Paul,
 
-
-I have a question about the size of ct and ct nat flow table.
-
-
-There are two global mlx5_flow_table tables ct and ct_nat for act_ct offload.
-
-
-The ct and ct_nat flow table create through mlx5_esw_chains_create_global_table
-
-and get the size through mlx5_esw_chains_get_avail_sz_from_pool(esw, POOL_NEXT_SIZE);
-
-
-Firmware currently has 4 pool of 4 sizes that it supports (ESW_POOLS),
-
-and a virtual memory region of 16M (ESW_SIZE).  It allocates up to 16M of each pool.
-
-
-ESW_POOLS[] = { 4 * 1024 * 1024,
-                             1 * 1024 * 1024,
-                             64 * 1024,
-                             128 };
-
-So it means the biggest flow table size is 4M. The ct and ct_nat flowtable create in advance,
-
-The size of ct and ct_nat is 4M.
-
-It means there are almost 4M conntrack entry offload to the hardware?
-
-The flow table map is fixed in the FW? And the size can be changed to 8M through the following？
-
-ESW_POOLS[] = { 8 * 1024 * 1024,
-                             1 * 1024 * 1024,
-                             64 * 1024,
-                             128 };
-
-
-BR
-
-wenxu
-
-
-
-
-
-
-
-
-
+On 28/05/20 2:34 AM, Jakub Kicinski wrote:
+> On Wed, 27 May 2020 10:02:42 +0530 rohit maheshwari wrote:
+>> On 27/05/20 4:12 AM, Jakub Kicinski wrote:
+>>> On Tue, 26 May 2020 19:36:34 +0530 Rohit Maheshwari wrote:
+>>>> Current design enables ktls setting from start, which is not
+>>>> efficient. Now the feature will be enabled when user demands
+>>>> TLS offload on any interface.
+>>>>
+>>>> v1->v2:
+>>>> - taking ULD module refcount till any single connection exists.
+>>>> - taking rtnl_lock() before clearing tls_devops.
+>>> Callers of tls_devops don't hold the rtnl_lock.
+>> I think I should correct the statement here, " taking rtnl_lock()
+>> before clearing tls_devops and device flags". There won't be any
+>> synchronization issue while clearing tls_devops now, because I
+>> am incrementing module refcount of CRYPTO ULD, so this will
+>> never be called if there is any connection (new connection
+>> request) exists.
+> Please take a look at tls_set_device_offload():
+>
+> 	if (!(netdev->features & NETIF_F_HW_TLS_TX)) {
+> 		rc = -EOPNOTSUPP;
+> 		goto release_netdev;
+> 	}
+>
+> 	/* Avoid offloading if the device is down
+> 	 * We don't want to offload new flows after
+> 	 * the NETDEV_DOWN event
+> 	 *
+> 	 * device_offload_lock is taken in tls_devices's NETDEV_DOWN
+> 	 * handler thus protecting from the device going down before
+> 	 * ctx was added to tls_device_list.
+> 	 */
+> 	down_read(&device_offload_lock);
+> 	if (!(netdev->flags & IFF_UP)) {
+> 		rc = -EINVAL;
+> 		goto release_lock;
+> 	}
+>
+> 	ctx->priv_ctx_tx = offload_ctx;
+> 	rc = netdev->tlsdev_ops->tls_dev_add(netdev, sk, TLS_OFFLOAD_CTX_DIR_TX,
+> 					     &ctx->crypto_send.info,
+> 					     tcp_sk(sk)->write_seq);
+>
+> This does not hold rtnl_lock. If you clear the ops between the feature
+> check and the call - there will be a crash. Never clear tls ops on a
+> registered netdev.
+>
+> Why do you clear the ops in the first place? It shouldn't be necessary.
+CHCR driver is a ULD driver, and if user requests to remove chcr alone,
+this cleanup will be done. This is why I am taking module refcount until
+tls offload flag is set, or any single tls offload connection exists.  
+So, now,
+when this cleanup will be triggered, TLS offload won't be enabled, and
+this crash situation can never occur.
