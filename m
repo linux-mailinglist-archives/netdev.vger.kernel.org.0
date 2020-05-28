@@ -2,111 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477631E545E
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 05:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D0BE1E5491
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 05:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726917AbgE1DKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 23:10:38 -0400
-Received: from mta-p5.oit.umn.edu ([134.84.196.205]:60374 "EHLO
-        mta-p5.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbgE1DKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 23:10:38 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p5.oit.umn.edu (Postfix) with ESMTP id 49XXl12vbwz9vYBT
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 03:10:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p5.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 69pQVCrq01Y2 for <netdev@vger.kernel.org>;
-        Wed, 27 May 2020 22:10:37 -0500 (CDT)
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 49XXl11D9Fz9vKln
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 22:10:37 -0500 (CDT)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p5.oit.umn.edu 49XXl11D9Fz9vKln
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p5.oit.umn.edu 49XXl11D9Fz9vKln
-Received: by mail-io1-f71.google.com with SMTP id h65so4709360ioa.7
-        for <netdev@vger.kernel.org>; Wed, 27 May 2020 20:10:37 -0700 (PDT)
+        id S1726856AbgE1DWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 23:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbgE1DWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 23:22:05 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D149AC05BD1E;
+        Wed, 27 May 2020 20:22:05 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id m7so10960107plt.5;
+        Wed, 27 May 2020 20:22:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=IHcaKYQFAiNpjDs/H7x5QNmUSskJMpHECApqwdRwTWM=;
-        b=gvbMCp6GIqQTfK/GiPhRiAmCDTkrNDaCfn8BnA/o0LRY3Wn260v7b4F4sHZ0kCKO34
-         6LAjdtdpWJWEIsivJtWDXm9raSVKWLKACHfTjZSdRb8IfZmUob9sQmmgYumjSTDiA8NL
-         zrrYP5xb8+HnxfZo/N8a3JaYeJb9NhH94CZqSMTovLyI+RoNae3riAFD7b+0hGJzvoYU
-         ndUvLIhQ5wi+jm6yiqzbdUxjEUFIgj779zul63p1GprJu6KwxlP85Lyq+5g2R6K8EiG4
-         ZuypldLfEQxx+2KfTBvGP+IakUO+HYeNXIdOmFVYXgb8LRZZfblBbSpk9lo5/8wP5+Af
-         IGGA==
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=21+Me/VGImYZvAALwMW/TlRDNY64Ktic0W6oplj176U=;
+        b=YNIu/9N/tfoskQHsmB6WR4tDg5++XkGIeYn4LMAecJ/UC5uGv5AvM/7rJdUJ7H1uC5
+         Q19eZsve1FzpA9wXXj/d5HRhd3Ef1vFZNlhC622wH/MEz6Ym3P0/Fh+UC6j/omD3j8XJ
+         TUeefHsuAy7chQWpldHLWvS9v5BCRjDDxVyzKxcMjNFfhymNekcKx9AytuY1okxNOMP5
+         HjLMKU2lEtVEHYtQHRU4/8g7KcMoiCuKZWoPPoMFsAuWAEnPsT2MqV/utLGf3Y6vgEgD
+         9rHbp2IK+vwKaOb2PhzTK4P0cnEmgG8Sc0kZzohnso8wf0uuS0BgPLOuhPTZ8Pof41sL
+         q9tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IHcaKYQFAiNpjDs/H7x5QNmUSskJMpHECApqwdRwTWM=;
-        b=eJJLzRhQ2Frl4f/8VfpgC0dmLqEdsQa2ZsjuTvXIkJQQAj9NCevIFGnn3J4bN1rrlD
-         k9ZSHYt4wtBNyJ+nWdiqYB9YkObR4f/l4bGmTmbhG1aLKSF6POSktYnERi/olufe9F9v
-         uFHLK2cFvR8MZx2KfleqXCYhDBijELh6k/BG1Sgl9YTpFN3ZahYZRpSzcUr0XwMshYIf
-         WQPNJ2I3xI4OTKimPAwfxDhufN/CVjy43E0ODr5H0GqkNF+qT3kfzp20B7eGVcXk8qie
-         /Y2iL+6L2sG+hCd8WNtzEA9mkqZI/6IX4dBl18vyzoD5EOqG17vZPGC65CSG4wyGtT7T
-         D0jg==
-X-Gm-Message-State: AOAM532eRi1uLJHyOZJfQCHhMhIbZJFZI+ATDOPADHFSF+iBo98g+nZp
-        TQxgxQJzIaC18zKWXmNUtTf0TSx7WFSJJa/6D43v8RU5XURpvAXPe5smdx2z6bhIi406GQzZh7V
-        ohlOYjH5R6NZodXD+3nzg
-X-Received: by 2002:a05:6602:13c6:: with SMTP id o6mr748538iov.84.1590635436649;
-        Wed, 27 May 2020 20:10:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPEPAGkAoZSYNeSa2XOy08F0GoMu7kvQ4ldrnc4xVMjlUt3rARcZ1w4aU3Bhyak/8uYIsdHw==
-X-Received: by 2002:a05:6602:13c6:: with SMTP id o6mr748526iov.84.1590635436342;
-        Wed, 27 May 2020 20:10:36 -0700 (PDT)
-Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
-        by smtp.gmail.com with ESMTPSA id n8sm2008029ioo.2.2020.05.27.20.10.35
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=21+Me/VGImYZvAALwMW/TlRDNY64Ktic0W6oplj176U=;
+        b=RTSRxNu8ELgx7NhV5FS81+6prEEP515ziA8WTOsju1p/qXU/5Y5I2Z62sdhT4BKkWD
+         9A+jNw3OdlPZMOvao1N8clfnvzhGHU5UmFrc0PchMgVMwv8hito2kenjy4HoVQuv5CQm
+         uMquqBqI/oy7fCrlZ77U0JvqRBYU/B1tAC+MTSHlDGq3zMRjkNnnWSELAkYjq8UWkZr5
+         NOHMvaEx7pAzJBw2hairu62+S+kr0tgRvf5EK8bQFx18e7bkCBlkrApibpEx2toLGmVz
+         RNZT8V01eFQYuR9OHp9S1qZgEGzltraQSo2pGzij8XkloS1Q39FWS+wx/Ka48lZZWKPH
+         O7Dw==
+X-Gm-Message-State: AOAM530qTNVhF/mbREvJ0BCOlbFE3Sp2BNOopl4Ul1Dykq6PlfhZHfob
+        Xy57BDJE7+4T2bJTTd6EKes=
+X-Google-Smtp-Source: ABdhPJzSq8wA/wENY7gATNyGJeWD59l0emfQGvVUCt7z4OeY+1ktUSoeybW9LN+GtPDL2trZe1rjhw==
+X-Received: by 2002:a17:90a:1c81:: with SMTP id t1mr1560327pjt.177.1590636125124;
+        Wed, 27 May 2020 20:22:05 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:48f8:e8e6:91bb:bdaa])
+        by smtp.gmail.com with ESMTPSA id k3sm4050287pjc.38.2020.05.27.20.22.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 20:10:35 -0700 (PDT)
-From:   wu000273@umn.edu
-To:     kjlu@umn.edu
-Cc:     wu000273@umn.edu, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 27 May 2020 20:22:04 -0700 (PDT)
+From:   Xie He <hexie3605@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "sfeldma@cumulusnetworks.com" <sfeldma@cumulusnetworks.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bonding: Fix reference count leak in bond_sysfs_slave_add.
-Date:   Wed, 27 May 2020 22:10:29 -0500
-Message-Id: <20200528031029.11078-1-wu000273@umn.edu>
-X-Mailer: git-send-email 2.17.1
+        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
+        Xie He <hexie3605@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers/net/wan/lapbether.c: Fixed kernel panic when used with AF_PACKET sockets
+Date:   Wed, 27 May 2020 20:21:33 -0700
+Message-Id: <20200528032134.13752-1-hexie3605@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+When we use "AF_PACKET" sockets to send data directly over LAPB over
+Ethernet using this driver, the kernel will panic because of
+insufficient header space allocated in the "sk_buff" struct.
 
-kobject_init_and_add() takes reference even when it fails.
-If this function returns an error, kobject_put() must be called to
-properly clean up the memory associated with the object. Previous
-commit "b8eb718348b8" fixed a similar problem.
+The header space needs 18 bytes because:
+  the lapbether driver will remove a pseudo header of 1 byte;
+  the lapb module will prepend the LAPB header of 2 or 3 bytes;
+  the lapbether driver will prepend a length field of 2 bytes and the
+Ethernet header of 14 bytes.
 
-Fixes: 07699f9a7c8d ("bonding: add sysfs /slave dir for bond slave devices.")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+So -1 + 3 + 16 = 18.
+
+Signed-off-by: Xie He <hexie3605@gmail.com>
 ---
- drivers/net/bonding/bond_sysfs_slave.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wan/lapbether.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding/bond_sysfs_slave.c
-index 007481557191..9b8346638f69 100644
---- a/drivers/net/bonding/bond_sysfs_slave.c
-+++ b/drivers/net/bonding/bond_sysfs_slave.c
-@@ -149,8 +149,10 @@ int bond_sysfs_slave_add(struct slave *slave)
- 
- 	err = kobject_init_and_add(&slave->kobj, &slave_ktype,
- 				   &(slave->dev->dev.kobj), "bonding_slave");
--	if (err)
-+	if (err) {
-+		kobject_put(&slave->kobj);
- 		return err;
-+	}
- 
- 	for (a = slave_attrs; *a; ++a) {
- 		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index e30d91a38cfb..619413f5d432 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -303,7 +303,8 @@ static void lapbeth_setup(struct net_device *dev)
+ 	dev->netdev_ops	     = &lapbeth_netdev_ops;
+ 	dev->needs_free_netdev = true;
+ 	dev->type            = ARPHRD_X25;
+-	dev->hard_header_len = 3;
++	/* 18 = -1 (lapbether) + 3 (lapb) + 16 (lapbether) */
++	dev->hard_header_len = 18;
+ 	dev->mtu             = 1000;
+ 	dev->addr_len        = 0;
+ }
 -- 
-2.17.1
+2.25.1
 
