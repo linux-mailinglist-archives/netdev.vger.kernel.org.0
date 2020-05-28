@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A26C1E5640
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C3801E561F
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 07:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbgE1FQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 01:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
+        id S1727812AbgE1FQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 01:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727847AbgE1FNd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:13:33 -0400
+        with ESMTP id S1727890AbgE1FNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 01:13:36 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231C6C08C5C2;
-        Wed, 27 May 2020 22:13:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6ED7C05BD1E;
+        Wed, 27 May 2020 22:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=KWtmUFFXDmBJ1PAkcN6qNnV5j5bzLzPB7qg+a7KP/Tg=; b=riDn6GaoP175fqC5BEaVGx3/Eu
-        ieRxyXZV/r7I0urgMZPGzPnqMtWy2ViiDs6y7VAmA7c9MH/EYhRrrIMczOZg7n766q9G2g8mYFMUn
-        +XYfu3LMFBVkK99QOpHa97Icgss/c8BGqbetrW9j33Jtnhhxpjk/l+AjaiV4eL9bd9LH83XdBqk2w
-        4kVuxlG0YEEpAWvrFfvuYWFCTHunJ2FNSTAyhn8B7tQ7S22/vi2L23XtXTpaMeM5baQepwBmPmZil
-        swCgxDyTKrtRhLYwldVcKhsQdsU8qrWF466R+AfiZkhxhuz76QXmAJ6cGkNPQZjqGVMLAvZ2SKRNL
-        iCgQuXZQ==;
+        bh=lR78mSGloKOw4Rm59o11Y3p0CvdJlgBCc0uACk8cE6g=; b=QPEZGWIlFdzkmtrM0IoDKMLNol
+        JPCziw5iBlWGCJFzMs05+0F/2knZ+OOeuVVlubew5fJjZrLiQw6rbNVwCGwhVaonbMlf5C6ZTNtA5
+        Jcry3c4fMDaGzEItff+X1hiRfyBcSZGD++fz8gQJ48vx27+FzR9jxR4iA+zn2/YoCG89X9UUi39Ns
+        oo46Q9sr2itZVGufaznYwVr+zPBGpvsH9TCKHw+uL6PJA7Romon6vVxccFocqonCRoJEkxXHRSEQP
+        XJmyhgIjPB6AA2bOl/MsgFn3oMV4hsN6Y77l8tpQsU//z/S2L5aFq5HlTWsyfrZ/V0JmZyuCck8Qc
+        oMiDenDQ==;
 Received: from p4fdb1ad2.dip0.t-ipconnect.de ([79.219.26.210] helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jeAqn-0001m6-SE; Thu, 28 May 2020 05:13:06 +0000
+        id 1jeAqr-0001oS-Dz; Thu, 28 May 2020 05:13:10 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -42,9 +42,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         netdev@vger.kernel.org, ceph-devel@vger.kernel.org,
         rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net
-Subject: [PATCH 08/28] net: add sock_set_rcvbuf
-Date:   Thu, 28 May 2020 07:12:16 +0200
-Message-Id: <20200528051236.620353-9-hch@lst.de>
+Subject: [PATCH 09/28] net: add sock_set_reuseport
+Date:   Thu, 28 May 2020 07:12:17 +0200
+Message-Id: <20200528051236.620353-10-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200528051236.620353-1-hch@lst.de>
 References: <20200528051236.620353-1-hch@lst.de>
@@ -56,137 +56,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper to directly set the SO_RCVBUFFORCE sockopt from kernel space
+Add a helper to directly set the SO_REUSEPORT sockopt from kernel space
 without going through a fake uaccess.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- fs/dlm/lowcomms.c  |  7 +-----
- include/net/sock.h |  1 +
- net/core/sock.c    | 59 +++++++++++++++++++++++++---------------------
- 3 files changed, 34 insertions(+), 33 deletions(-)
+ include/net/sock.h    |  1 +
+ net/core/sock.c       |  8 ++++++++
+ net/sunrpc/xprtsock.c | 17 +----------------
+ 3 files changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-index 138009c6a2ee1..45c37f572c9d2 100644
---- a/fs/dlm/lowcomms.c
-+++ b/fs/dlm/lowcomms.c
-@@ -1297,7 +1297,6 @@ static int sctp_listen_for_all(void)
- 	struct socket *sock = NULL;
- 	int result = -EINVAL;
- 	struct connection *con = nodeid2con(0, GFP_NOFS);
--	int bufsize = NEEDED_RMEM;
- 	int one = 1;
- 
- 	if (!con)
-@@ -1312,11 +1311,7 @@ static int sctp_listen_for_all(void)
- 		goto out;
- 	}
- 
--	result = kernel_setsockopt(sock, SOL_SOCKET, SO_RCVBUFFORCE,
--				 (char *)&bufsize, sizeof(bufsize));
--	if (result)
--		log_print("Error increasing buffer space on socket %d", result);
--
-+	sock_set_rcvbuf(sock->sk, NEEDED_RMEM);
- 	result = kernel_setsockopt(sock, SOL_SCTP, SCTP_NODELAY, (char *)&one,
- 				   sizeof(one));
- 	if (result < 0)
 diff --git a/include/net/sock.h b/include/net/sock.h
-index dc08c176238fd..c997289aabbf9 100644
+index c997289aabbf9..d994daa418ec2 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -2693,6 +2693,7 @@ void sock_enable_timestamps(struct sock *sk);
- void sock_no_linger(struct sock *sk);
- void sock_set_keepalive(struct sock *sk);
+@@ -2695,6 +2695,7 @@ void sock_set_keepalive(struct sock *sk);
  void sock_set_priority(struct sock *sk, u32 priority);
-+void sock_set_rcvbuf(struct sock *sk, int val);
+ void sock_set_rcvbuf(struct sock *sk, int val);
  void sock_set_reuseaddr(struct sock *sk);
++void sock_set_reuseport(struct sock *sk);
  void sock_set_sndtimeo(struct sock *sk, s64 secs);
  
+ #endif	/* _SOCK_H */
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 728f5fb156a0c..3c6ebf952e9ad 100644
+index 3c6ebf952e9ad..2ca3425b519c0 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -789,6 +789,35 @@ void sock_set_keepalive(struct sock *sk)
+@@ -729,6 +729,14 @@ void sock_set_reuseaddr(struct sock *sk)
  }
- EXPORT_SYMBOL(sock_set_keepalive);
+ EXPORT_SYMBOL(sock_set_reuseaddr);
  
-+static void __sock_set_rcvbuf(struct sock *sk, int val)
-+{
-+	/* Ensure val * 2 fits into an int, to prevent max_t() from treating it
-+	 * as a negative value.
-+	 */
-+	val = min_t(int, val, INT_MAX / 2);
-+	sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-+
-+	/* We double it on the way in to account for "struct sk_buff" etc.
-+	 * overhead.   Applications assume that the SO_RCVBUF setting they make
-+	 * will allow that much actual data to be received on that socket.
-+	 *
-+	 * Applications are unaware that "struct sk_buff" and other overheads
-+	 * allocate from the receive buffer during socket buffer allocation.
-+	 *
-+	 * And after considering the possible alternatives, returning the value
-+	 * we actually used in getsockopt is the most desirable behavior.
-+	 */
-+	WRITE_ONCE(sk->sk_rcvbuf, max_t(int, val * 2, SOCK_MIN_RCVBUF));
-+}
-+
-+void sock_set_rcvbuf(struct sock *sk, int val)
++void sock_set_reuseport(struct sock *sk)
 +{
 +	lock_sock(sk);
-+	__sock_set_rcvbuf(sk, val);
++	sk->sk_reuseport = true;
 +	release_sock(sk);
 +}
-+EXPORT_SYMBOL(sock_set_rcvbuf);
++EXPORT_SYMBOL(sock_set_reuseport);
 +
- /*
-  *	This is meant for all protocols to use and covers goings on
-  *	at the socket level. Everything here is generic.
-@@ -885,30 +914,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
- 		 * are treated in BSD as hints
- 		 */
--		val = min_t(u32, val, sysctl_rmem_max);
--set_rcvbuf:
--		/* Ensure val * 2 fits into an int, to prevent max_t()
--		 * from treating it as a negative value.
--		 */
--		val = min_t(int, val, INT_MAX / 2);
--		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
--		/*
--		 * We double it on the way in to account for
--		 * "struct sk_buff" etc. overhead.   Applications
--		 * assume that the SO_RCVBUF setting they make will
--		 * allow that much actual data to be received on that
--		 * socket.
--		 *
--		 * Applications are unaware that "struct sk_buff" and
--		 * other overheads allocate from the receive buffer
--		 * during socket buffer allocation.
--		 *
--		 * And after considering the possible alternatives,
--		 * returning the value we actually used in getsockopt
--		 * is the most desirable behavior.
--		 */
--		WRITE_ONCE(sk->sk_rcvbuf,
--			   max_t(int, val * 2, SOCK_MIN_RCVBUF));
-+		__sock_set_rcvbuf(sk, min_t(u32, val, sysctl_rmem_max));
- 		break;
+ void sock_no_linger(struct sock *sk)
+ {
+ 	lock_sock(sk);
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 30082cd039960..399848c2bcb29 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -1594,21 +1594,6 @@ static int xs_get_random_port(void)
+ 	return rand + min;
+ }
  
- 	case SO_RCVBUFFORCE:
-@@ -920,9 +926,8 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		/* No negative values (to prevent underflow, as val will be
- 		 * multiplied by 2).
- 		 */
--		if (val < 0)
--			val = 0;
--		goto set_rcvbuf;
-+		__sock_set_rcvbuf(sk, max(val, 0));
-+		break;
+-/**
+- * xs_set_reuseaddr_port - set the socket's port and address reuse options
+- * @sock: socket
+- *
+- * Note that this function has to be called on all sockets that share the
+- * same port, and it must be called before binding.
+- */
+-static void xs_sock_set_reuseport(struct socket *sock)
+-{
+-	int opt = 1;
+-
+-	kernel_setsockopt(sock, SOL_SOCKET, SO_REUSEPORT,
+-			(char *)&opt, sizeof(opt));
+-}
+-
+ static unsigned short xs_sock_getport(struct socket *sock)
+ {
+ 	struct sockaddr_storage buf;
+@@ -1801,7 +1786,7 @@ static struct socket *xs_create_sock(struct rpc_xprt *xprt,
+ 	xs_reclassify_socket(family, sock);
  
- 	case SO_KEEPALIVE:
- 		if (sk->sk_prot->keepalive)
+ 	if (reuseport)
+-		xs_sock_set_reuseport(sock);
++		sock_set_reuseport(sock->sk);
+ 
+ 	err = xs_bind(transport, sock);
+ 	if (err) {
 -- 
 2.26.2
 
