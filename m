@@ -2,98 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD20D1E5B1B
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 10:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C50A1E5B37
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 10:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbgE1Iny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 04:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
+        id S1728007AbgE1IyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 04:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727088AbgE1Inx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 04:43:53 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0445C05BD1E;
-        Thu, 28 May 2020 01:43:51 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id a2so31135273ejb.10;
-        Thu, 28 May 2020 01:43:51 -0700 (PDT)
+        with ESMTP id S1727814AbgE1Ix5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 04:53:57 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC3EC05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 01:53:57 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e1so27033561wrt.5
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 01:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PtBZpwuldR+k4cdnKzw6Vd49Klpt/z28rh2z7h84a+4=;
-        b=uM0P162VPGLvSJtPFiUc6pd7hKj5ZaNd24yJBxvQm2aQVFNvjMo8YRuKNwgndu9AeM
-         K7U4KFvzL6JMLhluXDFd0kqTF338Peqp+2gj4V0pFqYYmTXbrqroPSkutGz2DKf59qdG
-         Wqhp8IlvYX7L+sQLRsFOIS/g9M8wpH9BNN3DaL+kJw8Pk6l8+GXpcYzQf9LocKAYM3gj
-         INAEhmfhwMMEACU+6l2rfptCaNfOTcrYsHFUJF7RI+ZOWjVv8Qc7TKTvctAP8D98YhSm
-         d6ns+UPbU1C6scLS/dREHD5ekaONVack1tR46IULAvKZcMmLgQECIY4VGZrqBK+6F8UE
-         6abw==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Zch1nyFtoNx2wH+Li6mNyEXJF1Uhf40x1M1UJtfkBoc=;
+        b=VeXliFXieKMYXF0hINR7khXgxTcNF4Z4MGbHeO6Uee4YEV5Mr/rrWQzqpQM72g4rmT
+         N+7/U7ePTQSqiv18QuwSr5T4ZtkbHt2si4mVKwMrx7AuWCQsO7SzVH6IDv0dGd3Xg0In
+         mAzMTgM9Qs2Y4xEcmMNL3UL2fIsS9T91s/RwY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PtBZpwuldR+k4cdnKzw6Vd49Klpt/z28rh2z7h84a+4=;
-        b=uhW/JJ1vjeMVGquwIbZtTl0Gv8L7QXH068lyww2wS6D9YyM89kF3mf8oIrDFgxq8JU
-         /soaUiAg5IGx8Z/ib4ZzItsXFdZwcpff2zNcFfJDIbVEiFznxVf/uN2QJeiW4DSWZkeD
-         I7gfjbjc0VWNtJrKOYY823sYp+kZoeFpx/Yl1Aw4b1YdC5+fazElfTWvR3UWgZgnrpaG
-         0scdcnD9h6PyM2Cm74j9yuNNzgiKzUhPJNFawLxcIqI9xRHfWaLlN2+NPX2z/m+rE/3I
-         WoL/qmG3+LM73i0fHQgaDiPG9aJGUZWb6DKB7kxFaUn0APCNHNLA7Qx5IidqAUWY9OK3
-         y85Q==
-X-Gm-Message-State: AOAM530DN3xP79RL4Q8hx50E2QE5LtFCFVOmt3T3OjIUeedlPwKchzGN
-        N6AFwihrZyHW2/rfjHEw0kL8UAxMZyaahQglO+4=
-X-Google-Smtp-Source: ABdhPJzaEtx1o1zuA9p5VXIM4nIave3Ck+4OQ/jrMTG+JJHNevru8KE7qZ/M44WqpvxWIlyKh0cDq7J5KzlCFRddunM=
-X-Received: by 2002:a17:906:2e50:: with SMTP id r16mr1930902eji.305.1590655430447;
- Thu, 28 May 2020 01:43:50 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Zch1nyFtoNx2wH+Li6mNyEXJF1Uhf40x1M1UJtfkBoc=;
+        b=L18tzCLdPj78jD3KO+yBFVCp0LKj8ICv5EuRbB/aPknzMUQNT9G4Jvg+jaG4gyZtKE
+         A1qaIIMv1SGYGy1ObMAMV6SYZD8zNONuqmPVMPbe0AmQhIyMjSw+8t/xTbaDIPg0Cm7L
+         0ODnRbFqAB7yDQpDlh4Zj8ol9vryR9/zLMWbZfk7osegmrKcSt22a9+gKTLFRPXcvLZh
+         xGTqVoe3I/mgYw2ZIrMVCXVItQTVPNaRKXyFzNAi2aUIyqC2n0I7F0YNEhG/cHfLoeMe
+         IcmrjcpF+d/RGk4PZSiOCe9c5gKlqILThF1Uwx90vsNe/8PGKRV6vONDF19V/H5tIxJh
+         ArXA==
+X-Gm-Message-State: AOAM531/qrkQ3PTmG/KhqgFkaPajeGfeqY7GqacJn4UBT99MapL46IgF
+        u+s2deHMCp5axnwISDd2UcHs/g==
+X-Google-Smtp-Source: ABdhPJztaDM21/9Lu+TIlTWqECIjCRIL/qZTfP60p4+g/8RT82CX98zJ7c4q56I+wl/Nq6ZDrGiKiw==
+X-Received: by 2002:adf:c385:: with SMTP id p5mr2531344wrf.409.1590656036319;
+        Thu, 28 May 2020 01:53:56 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id 128sm5640040wme.39.2020.05.28.01.53.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 May 2020 01:53:55 -0700 (PDT)
+Subject: Re: [PATCH net-next] selftests: Add torture tests to nexthop tests
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net
+References: <20200528000344.57809-1-dsahern@kernel.org>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <62bc95f3-8d8c-6dd3-2064-18c1a931cec6@cumulusnetworks.com>
+Date:   Thu, 28 May 2020 11:53:54 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200528063847.27704-1-michael@walle.cc> <0130cb1878a47efc23f23cf239d0380f@walle.cc>
-In-Reply-To: <0130cb1878a47efc23f23cf239d0380f@walle.cc>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 28 May 2020 11:43:39 +0300
-Message-ID: <CA+h21hruQkYEYatnOSSc6r2EPR+SY-NbcKCRF6sX2oNLy84itg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] net: enetc: remove bootloader dependency
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200528000344.57809-1-dsahern@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 May 2020 at 11:18, Michael Walle <michael@walle.cc> wrote:
->
-> Am 2020-05-28 08:38, schrieb Michael Walle:
-> > These patches were picked from the following series:
-> > https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
-> > They have never been resent. I've picked them up, addressed Andrews
-> > comments, fixed some more bugs and asked Claudiu if I can keep their
-> > SOB
-> > tags; he agreed. I've tested this on our board which happens to have a
-> > bootloader which doesn't do the enetc setup in all cases. Though, only
-> > SGMII mode was tested.
-> >
-> > changes since v2:
-> >  - removed SOBs from "net: enetc: Initialize SerDes for SGMII and
-> > USXGMII
-> >    protocols" because almost everything has changed.
-> >  - get a phy_device for the internal PCS PHY so we can use the phy_
-> >    functions instead of raw mdiobus writes
->
-> mhh after reading,
-> https://lore.kernel.org/netdev/CA+h21hoq2qkmxDFEb2QgLfrbC0PYRBHsca=0cDcGOr3txy9hsg@mail.gmail.com/
-> this seems to be the wrong way of doing it.
->
-> -michael
+On 28/05/2020 03:03, David Ahern wrote:
+> Add Nik's torture tests as a new set to stress the replace and cleanup
+> paths.
+> 
+> Torture test created by Nikolay Aleksandrov and then I adapted to
+> selftest and added IPv6 version.
+> 
+> Signed-off-by: David Ahern <dsahern@kernel.org>
+> ---
+>  tools/testing/selftests/net/fib_nexthops.sh | 115 +++++++++++++++++++-
+>  1 file changed, 113 insertions(+), 2 deletions(-)
+> 
 
-FWIW, some time after the merge window closes, I plan to convert the
-felix and seville drivers to mdio_device. It wouldn't be such a big
-deal to also convert enetc to phylink then, and also do this
-phy_device -> mdio_device for it too.
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-Thanks,
--Vladimir
+> diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+> index 1e2f61262e4e..dee567f7576a 100755
+> --- a/tools/testing/selftests/net/fib_nexthops.sh
+> +++ b/tools/testing/selftests/net/fib_nexthops.sh
+> @@ -19,8 +19,8 @@ ret=0
+>  ksft_skip=4
+>  
+>  # all tests in this script. Can be overridden with -t option
+> -IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal"
+> -IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal"
+> +IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal ipv4_torture"
+> +IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal ipv6_torture"
+>  
+>  ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
+>  TESTS="${ALL_TESTS}"
+> @@ -767,6 +767,62 @@ ipv6_large_grp()
+>  	$IP nexthop flush >/dev/null 2>&1
+>  }
+>  
+> +ipv6_del_add_loop1()
+> +{
+> +	while :; do
+> +		$IP nexthop del id 100
+> +		$IP nexthop add id 100 via 2001:db8:91::2 dev veth1
+> +	done >/dev/null 2>&1
+> +}
+> +
+> +ipv6_grp_replace_loop()
+> +{
+> +	while :; do
+> +		$IP nexthop replace id 102 group 100/101
+> +	done >/dev/null 2>&1
+> +}
+> +
+> +ipv6_torture()
+> +{
+> +	local pid1
+> +	local pid2
+> +	local pid3
+> +	local pid4
+> +	local pid5
+> +
+> +	echo
+> +	echo "IPv6 runtime torture"
+> +	echo "--------------------"
+> +	if [ ! -x "$(command -v mausezahn)" ]; then
+> +		echo "SKIP: Could not run test; need mausezahn tool"
+> +		return
+> +	fi
+> +
+> +	run_cmd "$IP nexthop add id 100 via 2001:db8:91::2 dev veth1"
+> +	run_cmd "$IP nexthop add id 101 via 2001:db8:92::2 dev veth3"
+> +	run_cmd "$IP nexthop add id 102 group 100/101"
+> +	run_cmd "$IP route add 2001:db8:101::1 nhid 102"
+> +	run_cmd "$IP route add 2001:db8:101::2 nhid 102"
+> +
+> +	ipv6_del_add_loop1 &
+> +	pid1=$!
+> +	ipv6_grp_replace_loop &
+> +	pid2=$!
+> +	ip netns exec me ping -f 2001:db8:101::1 >/dev/null 2>&1 &
+> +	pid3=$!
+> +	ip netns exec me ping -f 2001:db8:101::2 >/dev/null 2>&1 &
+> +	pid4=$!
+> +	ip netns exec me mausezahn veth1 -B 2001:db8:101::2 -A 2001:db8:91::1 -c 0 -t tcp "dp=1-1023, flags=syn" >/dev/null 2>&1 &
+> +	pid5=$!
+> +
+> +	sleep 300
+> +	kill -9 $pid1 $pid2 $pid3 $pid4 $pid5
+> +
+> +	# if we did not crash, success
+> +	log_test 0 0 "IPv6 torture test"
+> +}
+> +
+> +
+>  ipv4_fcnal()
+>  {
+>  	local rc
+> @@ -1313,6 +1369,61 @@ ipv4_compat_mode()
+>  	sysctl_nexthop_compat_mode_set 1 "IPv4"
+>  }
+>  
+> +ipv4_del_add_loop1()
+> +{
+> +	while :; do
+> +		$IP nexthop del id 100
+> +		$IP nexthop add id 100 via 172.16.1.2 dev veth1
+> +	done >/dev/null 2>&1
+> +}
+> +
+> +ipv4_grp_replace_loop()
+> +{
+> +	while :; do
+> +		$IP nexthop replace id 102 group 100/101
+> +	done >/dev/null 2>&1
+> +}
+> +
+> +ipv4_torture()
+> +{
+> +	local pid1
+> +	local pid2
+> +	local pid3
+> +	local pid4
+> +	local pid5
+> +
+> +	echo
+> +	echo "IPv4 runtime torture"
+> +	echo "--------------------"
+> +	if [ ! -x "$(command -v mausezahn)" ]; then
+> +		echo "SKIP: Could not run test; need mausezahn tool"
+> +		return
+> +	fi
+> +
+> +	run_cmd "$IP nexthop add id 100 via 172.16.1.2 dev veth1"
+> +	run_cmd "$IP nexthop add id 101 via 172.16.2.2 dev veth3"
+> +	run_cmd "$IP nexthop add id 102 group 100/101"
+> +	run_cmd "$IP route add 172.16.101.1 nhid 102"
+> +	run_cmd "$IP route add 172.16.101.2 nhid 102"
+> +
+> +	ipv4_del_add_loop1 &
+> +	pid1=$!
+> +	ipv4_grp_replace_loop &
+> +	pid2=$!
+> +	ip netns exec me ping -f 172.16.101.1 >/dev/null 2>&1 &
+> +	pid3=$!
+> +	ip netns exec me ping -f 172.16.101.2 >/dev/null 2>&1 &
+> +	pid4=$!
+> +	ip netns exec me mausezahn veth1 -B 172.16.101.2 -A 172.16.1.1 -c 0 -t tcp "dp=1-1023, flags=syn" >/dev/null 2>&1 &
+> +	pid5=$!
+> +
+> +	sleep 300
+> +	kill -9 $pid1 $pid2 $pid3 $pid4 $pid5
+> +
+> +	# if we did not crash, success
+> +	log_test 0 0 "IPv4 torture test"
+> +}
+> +
+>  basic()
+>  {
+>  	echo
+> 
+
