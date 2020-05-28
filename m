@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D721E6B7D
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7EA01E6B8F
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbgE1Tq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 15:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        id S2406709AbgE1TrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 15:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728693AbgE1TqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:46:04 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842B7C014D07
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:01 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id h9so17264qtj.7
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:01 -0700 (PDT)
+        with ESMTP id S1728706AbgE1TqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:46:06 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D7DC08C5C7
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:04 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id v79so52947qkb.10
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 12:46:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f6D506IClEtnX+bRERYjtoHYo/Um+QSp6vqv6/9e84w=;
-        b=fW0uki/k8HtV2CtH7YQVaLjLFslLDS1F3KUcGmAAL/UUQzL/hwT1AYCNlv9iIGgHK8
-         zIuvIN+mXxjt5sEf+zK7j8A2RbIy0JFkgki49HTpYNGIfvM0ttnoPuNI3CMAvxVO+vJN
-         Fk1r/cMaiSQd+xckFSk+Ryvd2u5OZYtqlNQbdVgwy4NDk0+VhqIYsT7ce09k233MCnWL
-         HQWj0Ltc9zwfRUBF4h5fOw2RDpwbFPPJrmRJXzsyngvHHQ6ewglfE0CZAFGf/ryYnNrv
-         9PnpXfxJNU5DuUkC1iR7GtiAgy43bBTfP20EvcRcUoy29yQZL4TbBPu/5KzAX7pUj7ox
-         dxXA==
+        bh=nEoxBguK4qNWi3uR8EUH/hHTH5lHRdvmMpiHkRl66JU=;
+        b=ezC+9NyOm57x6hRLyuz81sHZ8Hi59+1YbGn62g/+KOjos3x9/wM4U6KoRjnT8MRxPe
+         jzYOFieR7z/3rsMnB6lRm2xcWo8MLMCOQnXO44Cg0tGMZm3KLzz2dRZXP0hyTgPVtgYN
+         DsdcHcx7t0eL6EUSfQgp4/aMkCviuLKl+N7cLfGkaPL6R4MfRb95PrOY1QikcgASzwu2
+         PxYWTIBkwg0hXFHNrNJiydz1vmfRW2dg53uvg5QBuwmUCRJjZYzowfV1mKpvRhd1ftf5
+         ul0Vt5T779W34IfoY85fs9285C1ak80Ipq8+HYeogeBoO1Lb3dTx0sP5mAdPuZdF/tDw
+         OaaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f6D506IClEtnX+bRERYjtoHYo/Um+QSp6vqv6/9e84w=;
-        b=K6Wi/7Ms3tSg+UxCJMcLul4APUvwCArybY/GLCh77qE4C4+6CepATQ3ZRw8ygctF0x
-         deQ16SmvPstCdPBWiR0MvixHWu98X5iEo/k2sNy6UxvWE/clOaReoSsgkBicuD/MxmUF
-         Fijdz3NIdjQMUR47QJXj04sfEo5yoQvGdSmJGiYjmDbiPgD3Oxj0SSwvLgJs9831WNtE
-         N7EZqUILQ1qM/zsYAUv7aaS5+8nBETfSGTxswd8I2HWIeclX0ExOXkisoJik/OpXgqlW
-         IyCXeimKuSiYRUwVhc2sS/iSUH4Q9Hgp8NeRl2v70MkLomHN1auLVHp1mXnWEplbnInG
-         T/sw==
-X-Gm-Message-State: AOAM53289CJYxi+8SU43yLIFWttRogsy/sogMvyR1aqephtL6qAbev5H
-        00YXd6PxuI0rmoLKSSfyTpGh2w==
-X-Google-Smtp-Source: ABdhPJx1gIplGPQZu5SmsC0uibwb8hkn+ONBEZ6HzOvN6oagPO6XJo8cQ9JLHDhGAEB/plk1kyK0Tg==
-X-Received: by 2002:ac8:7313:: with SMTP id x19mr4904786qto.383.1590695160807;
-        Thu, 28 May 2020 12:46:00 -0700 (PDT)
+        bh=nEoxBguK4qNWi3uR8EUH/hHTH5lHRdvmMpiHkRl66JU=;
+        b=rTr/YhQ9FUVG53soVt2ItJs4BymrNDzFlRX0oF6kOgf0taxSX1EXJP155EXnooydJf
+         X4w5DjOicUb8bJjLUIejSSjRdEB7zSfQdtx8c9c6MtMrQOuGJ4A6tiPtdWD4AZIN3+ci
+         Ey73OOKj96qkB3wEFmoOAgAy73Mfrj6o+46HeLBn2GgkUueaV+x1LBKPYleiH/DWCgfS
+         jv9I1eW9lvKNxAC6vErX0O8ma7lyNu7nrAxm2lz5k9yaPMBqu+2DwuhsAesgmsVba974
+         J9tzYzgsRpFX8Fx4ez8K/YS94Kp4fBwqkBbUJ1MY2az+HqjxwjjSSZDGrr9gFGC7qreb
+         LVyA==
+X-Gm-Message-State: AOAM530i8iXRxYMh091kKwL7esG3Sd0hn2R9WLusVgHan+KHTmMUR1MJ
+        AcAkO/Tg9GL5L4wwoBVX6oAW8A==
+X-Google-Smtp-Source: ABdhPJxIcrPBFZci5pqH5pwoLSR3ryLDmVGLZYq9WZXmkY6uYTuQZLxQ2l3BpuWMlZyc43CjrawIQw==
+X-Received: by 2002:a37:a18d:: with SMTP id k135mr4446009qke.155.1590695164173;
+        Thu, 28 May 2020 12:46:04 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id h3sm5265538qkl.28.2020.05.28.12.45.56
+        by smtp.gmail.com with ESMTPSA id x205sm6071875qka.12.2020.05.28.12.45.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
         Thu, 28 May 2020 12:45:57 -0700 (PDT)
 Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
         (envelope-from <jgg@ziepe.ca>)
-        id 1jeOTU-0006hC-6u; Thu, 28 May 2020 16:45:56 -0300
+        id 1jeOTU-0006hJ-87; Thu, 28 May 2020 16:45:56 -0300
 From:   Jason Gunthorpe <jgg@ziepe.ca>
 To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Gal Pressman <galpress@amazon.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
+Cc:     Devesh Sharma <devesh.sharma@broadcom.com>,
         Max Gurtovoy <maxg@mellanox.com>, oren@mellanox.com,
-        shlomin@mellanox.com, vladimirk@mellanox.com
-Subject: [PATCH v3 05/13] RDMA/mlx5: Remove FMR leftovers
-Date:   Thu, 28 May 2020 16:45:47 -0300
-Message-Id: <5-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        shlomin@mellanox.com, Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        vladimirk@mellanox.com
+Subject: [PATCH v3 06/13] RDMA/bnxt_re: Remove FMR leftovers
+Date:   Thu, 28 May 2020 16:45:48 -0300
+Message-Id: <6-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 In-Reply-To: <0-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
 References: 
 MIME-Version: 1.0
@@ -68,44 +70,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <galpress@amazon.com>
+From: Jason Gunthorpe <jgg@mellanox.com>
 
-Remove a few leftovers from FMR functionality which are no longer used.
+The bnxt_re_fmr struct is never referenced and the max_fmr items
+in bnxt_qplib_dev_attr are never read.
 
-Signed-off-by: Gal Pressman <galpress@amazon.com>
-Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
-Acked-by: Leon Romanovsky <leonro@mellanox.com>
+Reviewed-by: Max Gurtovoy <maxg@mellanox.com>
 Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Cc: Selvin Xavier <selvin.xavier@broadcom.com>
+Cc: Devesh Sharma <devesh.sharma@broadcom.com>
+Cc: Somnath Kotur <somnath.kotur@broadcom.com>
+Cc: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 ---
- drivers/infiniband/hw/mlx5/mlx5_ib.h | 8 --------
- 1 file changed, 8 deletions(-)
+ drivers/infiniband/hw/bnxt_re/ib_verbs.c | 3 ---
+ drivers/infiniband/hw/bnxt_re/ib_verbs.h | 6 ------
+ drivers/infiniband/hw/bnxt_re/qplib_sp.c | 3 ---
+ drivers/infiniband/hw/bnxt_re/qplib_sp.h | 2 --
+ 4 files changed, 14 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index 482b54eb9764eb..40c4610177631a 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -675,12 +675,6 @@ struct umr_common {
- 	struct semaphore	sem;
+diff --git a/drivers/infiniband/hw/bnxt_re/ib_verbs.c b/drivers/infiniband/hw/bnxt_re/ib_verbs.c
+index 5a7c090204c537..8b6ad5cddfce99 100644
+--- a/drivers/infiniband/hw/bnxt_re/ib_verbs.c
++++ b/drivers/infiniband/hw/bnxt_re/ib_verbs.c
+@@ -177,9 +177,6 @@ int bnxt_re_query_device(struct ib_device *ibdev,
+ 	ib_attr->max_total_mcast_qp_attach = 0;
+ 	ib_attr->max_ah = dev_attr->max_ah;
+ 
+-	ib_attr->max_fmr = 0;
+-	ib_attr->max_map_per_fmr = 0;
+-
+ 	ib_attr->max_srq = dev_attr->max_srq;
+ 	ib_attr->max_srq_wr = dev_attr->max_srq_wqes;
+ 	ib_attr->max_srq_sge = dev_attr->max_srq_sges;
+diff --git a/drivers/infiniband/hw/bnxt_re/ib_verbs.h b/drivers/infiniband/hw/bnxt_re/ib_verbs.h
+index 204c0849ba2847..e5fbbeba6d28d3 100644
+--- a/drivers/infiniband/hw/bnxt_re/ib_verbs.h
++++ b/drivers/infiniband/hw/bnxt_re/ib_verbs.h
+@@ -122,12 +122,6 @@ struct bnxt_re_frpl {
+ 	u64				*page_list;
  };
  
--enum {
--	MLX5_FMR_INVALID,
--	MLX5_FMR_VALID,
--	MLX5_FMR_BUSY,
+-struct bnxt_re_fmr {
+-	struct bnxt_re_dev	*rdev;
+-	struct ib_fmr		ib_fmr;
+-	struct bnxt_qplib_mrw	qplib_fmr;
 -};
 -
- struct mlx5_cache_ent {
- 	struct list_head	head;
- 	/* sync access to the cahce entry
-@@ -1253,8 +1247,6 @@ int mlx5_query_mad_ifc_port(struct ib_device *ibdev, u8 port,
- 			    struct ib_port_attr *props);
- int mlx5_ib_query_port(struct ib_device *ibdev, u8 port,
- 		       struct ib_port_attr *props);
--int mlx5_ib_init_fmr(struct mlx5_ib_dev *dev);
--void mlx5_ib_cleanup_fmr(struct mlx5_ib_dev *dev);
- void mlx5_ib_cont_pages(struct ib_umem *umem, u64 addr,
- 			unsigned long max_page_shift,
- 			int *count, int *shift,
+ struct bnxt_re_mw {
+ 	struct bnxt_re_dev	*rdev;
+ 	struct ib_mw		ib_mw;
+diff --git a/drivers/infiniband/hw/bnxt_re/qplib_sp.c b/drivers/infiniband/hw/bnxt_re/qplib_sp.c
+index 66954ff6a2f275..4cd475ea97a24e 100644
+--- a/drivers/infiniband/hw/bnxt_re/qplib_sp.c
++++ b/drivers/infiniband/hw/bnxt_re/qplib_sp.c
+@@ -132,9 +132,6 @@ int bnxt_qplib_get_dev_attr(struct bnxt_qplib_rcfw *rcfw,
+ 	attr->max_raw_ethy_qp = le32_to_cpu(sb->max_raw_eth_qp);
+ 	attr->max_ah = le32_to_cpu(sb->max_ah);
+ 
+-	attr->max_fmr = le32_to_cpu(sb->max_fmr);
+-	attr->max_map_per_fmr = sb->max_map_per_fmr;
+-
+ 	attr->max_srq = le16_to_cpu(sb->max_srq);
+ 	attr->max_srq_wqes = le32_to_cpu(sb->max_srq_wr) - 1;
+ 	attr->max_srq_sges = sb->max_srq_sge;
+diff --git a/drivers/infiniband/hw/bnxt_re/qplib_sp.h b/drivers/infiniband/hw/bnxt_re/qplib_sp.h
+index 13d9432d5ce222..6404f0da10517a 100644
+--- a/drivers/infiniband/hw/bnxt_re/qplib_sp.h
++++ b/drivers/infiniband/hw/bnxt_re/qplib_sp.h
+@@ -64,8 +64,6 @@ struct bnxt_qplib_dev_attr {
+ 	u32				max_mw;
+ 	u32				max_raw_ethy_qp;
+ 	u32				max_ah;
+-	u32				max_fmr;
+-	u32				max_map_per_fmr;
+ 	u32				max_srq;
+ 	u32				max_srq_wqes;
+ 	u32				max_srq_sges;
 -- 
 2.26.2
 
