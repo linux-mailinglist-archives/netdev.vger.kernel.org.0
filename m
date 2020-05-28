@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4A91E5F88
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 424B01E5F9C
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:05:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389033AbgE1L5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 07:57:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49882 "EHLO mail.kernel.org"
+        id S2389547AbgE1MDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:03:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50046 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389008AbgE1L5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 07:57:24 -0400
+        id S2389029AbgE1L5b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 07:57:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 560E921582;
-        Thu, 28 May 2020 11:57:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 80A6621775;
+        Thu, 28 May 2020 11:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590667044;
-        bh=8bC9I4a/4Z40qQbMuok38AUGb7l9vCZ1XVVilCGKiE8=;
+        s=default; t=1590667051;
+        bh=Ilb8ASHpcXiU5PhVWvIrDDUIWrz3HYM4gDRRrZQ3H3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y8BqOMOXMs0A1Z8OUe1QoLOL4BeUtCNnAs74PGrilYAZlDDYfJ6HAntEMSzXZ186i
-         wiEu8MdZ8WmeZ0DqfjQdV3wrpgKvY+V+7PDSj84IDN60fyRCMUXrEbroiP5V+kejtg
-         BvoKOb9YAprLnI0OcW+lY1QajWxWwmsSVt/G1UGc=
+        b=dQYb/q2ztO7q/aF++sjrjOqYKlWqDYTWAIzQWQh/5uVI7uQUtD05YtMb7DmYPNIcW
+         ZwDG/BMzc3xnU2KuuezqBucgQdyKyhf3laOY4ZgHvX26sUgnzoystSbjfKLxkleKTf
+         3D5dgthsMGzrerYt+lwb4LgxXFWpwthPli8ft+1w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>,
+Cc:     Roman Mashak <mrv@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 26/26] net: smsc911x: Fix runtime PM imbalance on error
-Date:   Thu, 28 May 2020 07:56:54 -0400
-Message-Id: <20200528115654.1406165-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 05/17] net sched: fix reporting the first-time use timestamp
+Date:   Thu, 28 May 2020 07:57:12 -0400
+Message-Id: <20200528115724.1406376-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200528115654.1406165-1-sashal@kernel.org>
-References: <20200528115654.1406165-1-sashal@kernel.org>
+In-Reply-To: <20200528115724.1406376-1-sashal@kernel.org>
+References: <20200528115724.1406376-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,61 +44,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
+From: Roman Mashak <mrv@mojatatu.com>
 
-[ Upstream commit 539d39ad0c61b35f69565a037d7586deaf6d6166 ]
+[ Upstream commit b15e62631c5f19fea9895f7632dae9c1b27fe0cd ]
 
-Remove runtime PM usage counter decrement when the
-increment function has not been called to keep the
-counter balanced.
+When a new action is installed, firstuse field of 'tcf_t' is explicitly set
+to 0. Value of zero means "new action, not yet used"; as a packet hits the
+action, 'firstuse' is stamped with the current jiffies value.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+tcf_tm_dump() should return 0 for firstuse if action has not yet been hit.
+
+Fixes: 48d8ee1694dd ("net sched actions: aggregate dumping of actions timeinfo")
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/smsc/smsc911x.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ include/net/act_api.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
-index 38068fc34141..c7bdada4d1b9 100644
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -2502,20 +2502,20 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 0c82d7ea6ee1..c48b750de2fc 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -67,7 +67,8 @@ static inline void tcf_tm_dump(struct tcf_t *dtm, const struct tcf_t *stm)
+ {
+ 	dtm->install = jiffies_to_clock_t(jiffies - stm->install);
+ 	dtm->lastuse = jiffies_to_clock_t(jiffies - stm->lastuse);
+-	dtm->firstuse = jiffies_to_clock_t(jiffies - stm->firstuse);
++	dtm->firstuse = stm->firstuse ?
++		jiffies_to_clock_t(jiffies - stm->firstuse) : 0;
+ 	dtm->expires = jiffies_to_clock_t(stm->expires);
+ }
  
- 	retval = smsc911x_init(dev);
- 	if (retval < 0)
--		goto out_disable_resources;
-+		goto out_init_fail;
- 
- 	netif_carrier_off(dev);
- 
- 	retval = smsc911x_mii_init(pdev, dev);
- 	if (retval) {
- 		SMSC_WARN(pdata, probe, "Error %i initialising mii", retval);
--		goto out_disable_resources;
-+		goto out_init_fail;
- 	}
- 
- 	retval = register_netdev(dev);
- 	if (retval) {
- 		SMSC_WARN(pdata, probe, "Error %i registering device", retval);
--		goto out_disable_resources;
-+		goto out_init_fail;
- 	} else {
- 		SMSC_TRACE(pdata, probe,
- 			   "Network interface: \"%s\"", dev->name);
-@@ -2556,9 +2556,10 @@ static int smsc911x_drv_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--out_disable_resources:
-+out_init_fail:
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+out_disable_resources:
- 	(void)smsc911x_disable_resources(pdev);
- out_enable_resources_fail:
- 	smsc911x_free_resources(pdev);
 -- 
 2.25.1
 
