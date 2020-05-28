@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1AFB1E7002
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 658AC1E703A
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391545AbgE1XGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 19:06:06 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:62596 "EHLO m43-7.mailgun.net"
+        id S2437486AbgE1XVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:21:11 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48980 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391508AbgE1XGE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 19:06:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590707164; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=OFnRFdGdwOdlT6++yGr8Uhb6YcmrXqckJ/J0OHf9bY4=; b=gdtOTQfRUc8F+CfCGu2BiX5eYSb2VF2GAAJyxg2oIPajZ4yqP2JNLTIeT9F+mL5qx1sLeds2
- rKIDq0Lt2P680gRT9Qaf4mnaIaERXAR+AjB6BXJMHVgfzMX4rO5cpfeTKN3XgxdhIrHrq5V/
- GW6CzBTn4yPtX4qdEHPn4zSCgo8=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 5ed043d150867324810c4e4d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 28 May 2020 23:05:53
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 261DEC433C6; Thu, 28 May 2020 23:05:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from clew-linux.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: clew)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4D20DC433C9;
-        Thu, 28 May 2020 23:05:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4D20DC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=clew@codeaurora.org
-From:   Chris Lew <clew@codeaurora.org>
-To:     davem@davemloft.net, bjorn.andersson@linaro.org
-Cc:     manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        clew@codeaurora.org
-Subject: [PATCH] net: qrtr: Allocate workqueue before kernel_bind
-Date:   Thu, 28 May 2020 16:05:26 -0700
-Message-Id: <1590707126-16957-1-git-send-email-clew@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        id S2437469AbgE1XVK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 19:21:10 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 7E257AFDC;
+        Thu, 28 May 2020 23:21:07 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 9E392E32D2; Fri, 29 May 2020 01:21:07 +0200 (CEST)
+Message-Id: <cover.1590707335.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ethtool 00/21] netlink interface update for 5.7 release
+To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Date:   Fri, 29 May 2020 01:21:07 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A null pointer dereference in qrtr_ns_data_ready() is seen if a client
-opens a qrtr socket before qrtr_ns_init() can bind to the control port.
-When the control port is bound, the ENETRESET error will be broadcasted
-and clients will close their sockets. This results in DEL_CLIENT
-packets being sent to the ns and qrtr_ns_data_ready() being called
-without the workqueue being allocated.
+This series adds supports for netlink interface features supported in
+kernel 5.7:
 
-Allocate the workqueue before setting sk_data_ready and binding to the
-control port. This ensures that the work and workqueue structs are
-allocated and initialized before qrtr_ns_data_ready can be called.
+  - get/set netdev features (-k / -K)
+  - get/set device private flags (--show-priv-flags / --set-priv-flags)
+  - get/set ring sizes (-g / -G)
+  - get/set channel counts (-l / -L)
+  - get/set coalescing parameters (-c / -C)
+  - get/set pause parameters (-a / -A)
+  - get/set EEE settings (--show-eee / --set-eee)
+  - get timestamping information (-T)
+ 
+First three patches fix bugs found in existing code.
 
-Fixes: 0c2204a4ad71 ("net: qrtr: Migrate nameservice to kernel from userspace")
-Signed-off-by: Chris Lew <clew@codeaurora.org>
----
- net/qrtr/ns.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Michal Kubecek (21):
+  netlink: fix build warnings
+  netlink: fix nest type grouping in parser
+  netlink: fix msgbuff_append() helper
+  update UAPI header copies
+  netlink: add more ethtool netlink message format descriptions
+  selftest: omit test-features if netlink is enabled
+  netlink: add netlink handler for gfeatures (-k)
+  netlink: add netlink handler for sfeatures (-K)
+  netlink: add netlink handler for gprivflags (--show-priv-flags)
+  netlink: add netlink handler for sprivflags (--set-priv-flags)
+  netlink: add netlink handler for gring (-g)
+  netlink: add netlink handler for sring (-G)
+  netlink: add netlink handler for gchannels (-l)
+  netlink: add netlink handler for schannels (-L)
+  netlink: add netlink handler for gcoalesce (-c)
+  netlink: add netlink handler for scoalesce (-C)
+  netlink: add netlink handler for gpause (-a)
+  netlink: add netlink handler for spause (-A)
+  netlink: add netlink handler for geee (--show-eee)
+  netlink: add netlink handler for seee (--set-eee)
+  netlink: add netlink handler for tsinfo (-T)
 
-diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-index e7d0fe3f4330..c5b3202a14ca 100644
---- a/net/qrtr/ns.c
-+++ b/net/qrtr/ns.c
-@@ -712,6 +712,10 @@ void qrtr_ns_init(void)
- 		goto err_sock;
- 	}
- 
-+	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
-+	if (!qrtr_ns.workqueue)
-+		goto err_sock;
-+
- 	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns_data_ready;
- 
- 	sq.sq_port = QRTR_PORT_CTRL;
-@@ -720,17 +724,13 @@ void qrtr_ns_init(void)
- 	ret = kernel_bind(qrtr_ns.sock, (struct sockaddr *)&sq, sizeof(sq));
- 	if (ret < 0) {
- 		pr_err("failed to bind to socket\n");
--		goto err_sock;
-+		goto err_wq;
- 	}
- 
- 	qrtr_ns.bcast_sq.sq_family = AF_QIPCRTR;
- 	qrtr_ns.bcast_sq.sq_node = QRTR_NODE_BCAST;
- 	qrtr_ns.bcast_sq.sq_port = QRTR_PORT_CTRL;
- 
--	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
--	if (!qrtr_ns.workqueue)
--		goto err_sock;
--
- 	ret = say_hello(&qrtr_ns.bcast_sq);
- 	if (ret < 0)
- 		goto err_wq;
+ Makefile.am                  |  11 +-
+ common.c                     |  30 ++
+ common.h                     |  19 ++
+ ethtool.c                    |  79 ++----
+ netlink/bitset.c             |  31 +++
+ netlink/bitset.h             |   2 +
+ netlink/channels.c           | 141 ++++++++++
+ netlink/coalesce.c           | 269 ++++++++++++++++++
+ netlink/desc-ethtool.c       | 129 ++++++++-
+ netlink/eee.c                | 189 +++++++++++++
+ netlink/extapi.h             |  30 ++
+ netlink/features.c           | 526 +++++++++++++++++++++++++++++++++++
+ netlink/monitor.c            |  56 ++++
+ netlink/msgbuff.c            |   1 +
+ netlink/netlink.h            |  46 +++
+ netlink/parser.c             |  10 +-
+ netlink/pause.c              | 222 +++++++++++++++
+ netlink/privflags.c          | 158 +++++++++++
+ netlink/rings.c              | 141 ++++++++++
+ netlink/settings.c           |  17 +-
+ netlink/tsinfo.c             | 124 +++++++++
+ uapi/linux/ethtool.h         |   9 +-
+ uapi/linux/ethtool_netlink.h | 175 ++++++++++++
+ uapi/linux/if_link.h         |   6 +-
+ uapi/linux/net_tstamp.h      |   6 +
+ 25 files changed, 2347 insertions(+), 80 deletions(-)
+ create mode 100644 netlink/channels.c
+ create mode 100644 netlink/coalesce.c
+ create mode 100644 netlink/eee.c
+ create mode 100644 netlink/features.c
+ create mode 100644 netlink/pause.c
+ create mode 100644 netlink/privflags.c
+ create mode 100644 netlink/rings.c
+ create mode 100644 netlink/tsinfo.c
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.26.2
 
