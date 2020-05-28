@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68AB61E6FC5
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 00:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AFB1E7002
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 01:06:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437351AbgE1W40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 18:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437266AbgE1W4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 18:56:22 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2ABC08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:56:21 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id v15so199694qvr.8
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 15:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JNUrJnDB9JB89P+K5Rt00Idq1ajTR4TMl/O+a69zNew=;
-        b=ar0GKJZqeENl3nQo81/14pARyJcB/kmUBAYHxIOIf2I16Dm3A26TY3BM0xKhviycLU
-         vYuKlTIBt4CsgmyGaS2yd1gzwC9cY0ICrmu3eXtw+bcpTzGDgAyetFT9jZMEBwBIQdOS
-         hAtguy15dlH6tKKET/hBQgfUX37x1YjnmwxY5Rtkf8YIBxLpa7KDtnN4Xsh8VmwD91MW
-         e+nfa670+XtJ02ioCS9y5kcjBPqiv0cdDw5K+15i3o6I0zj6ASB7p0mWpFIKMiwsgVQV
-         K1wljHxNGnpgdMe9QSdUAP0NG5vldrNyBBo7EyHZfjf5/b+vH4o9UaBqyQ0EREV9yuXj
-         lUpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JNUrJnDB9JB89P+K5Rt00Idq1ajTR4TMl/O+a69zNew=;
-        b=W0WIceMU1wvXmDfWuvV2RMWiPUuEJk3rLAAo3lF99nmW8RfsZVswbKLj160DybMeuk
-         v2nlM8KMXLqdiE/sXe7Np8VlRHL2KwiODcCC6ecofAZWMKAYKRXqv6vlNg1Pt1pKJbGn
-         0czE69JKvuilFk+mCEVA8D9X96fnZsBORVG2/l0o2ztMLjhnjMXJNyF5c/F1aLeMTuZv
-         z97c9ls/cKQ6XYPZkAKRzPPb9MMYUMU9MLqQuTMvITvDXM/D4IrvN3DjkUVskHYGdwim
-         W1khlMAyJJpGFrP0fUVHmxyBPDpr5+nfVIiJMxqhl8oJW5mOwz+Rnb7K2CEDLfqlRdEq
-         ZoQQ==
-X-Gm-Message-State: AOAM533+/SG3mWdD6Jpqy5NvCPoxiQdK9JZi2k4Qq0x0KBwtxUsSjaOY
-        pFSqSYiwild1wBfadjoNieSk5C1VOGA=
-X-Google-Smtp-Source: ABdhPJza+kU8p33ohAn1v1b6J8zP4Gi68+jR0brwJD+zc5HmvbtEVeJ1/tzStZQRj2m5uITWEBT7VA==
-X-Received: by 2002:ad4:4a81:: with SMTP id h1mr5575162qvx.71.1590706581098;
-        Thu, 28 May 2020 15:56:21 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:2840:9137:669d:d1e7? ([2601:282:803:7700:2840:9137:669d:d1e7])
-        by smtp.googlemail.com with ESMTPSA id 66sm6483206qtg.84.2020.05.28.15.56.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 May 2020 15:56:20 -0700 (PDT)
-Subject: Re: [PATCH v2 bpf-next 5/5] selftest: Add tests for XDP programs in
- devmap entries
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-References: <20200528001423.58575-1-dsahern@kernel.org>
- <20200528001423.58575-6-dsahern@kernel.org>
- <CAEf4BzapqhtWOz666YN1m1wQd0pWJtjYFe4DrUEQpEgPX5UL9g@mail.gmail.com>
- <20200528122510.1c475484@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7046644a-165b-19f6-a339-8023544ccada@gmail.com>
-Date:   Thu, 28 May 2020 16:56:19 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <20200528122510.1c475484@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S2391545AbgE1XGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 19:06:06 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:62596 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391508AbgE1XGE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 19:06:04 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1590707164; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=OFnRFdGdwOdlT6++yGr8Uhb6YcmrXqckJ/J0OHf9bY4=; b=gdtOTQfRUc8F+CfCGu2BiX5eYSb2VF2GAAJyxg2oIPajZ4yqP2JNLTIeT9F+mL5qx1sLeds2
+ rKIDq0Lt2P680gRT9Qaf4mnaIaERXAR+AjB6BXJMHVgfzMX4rO5cpfeTKN3XgxdhIrHrq5V/
+ GW6CzBTn4yPtX4qdEHPn4zSCgo8=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 5ed043d150867324810c4e4d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 28 May 2020 23:05:53
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 261DEC433C6; Thu, 28 May 2020 23:05:53 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from clew-linux.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: clew)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4D20DC433C9;
+        Thu, 28 May 2020 23:05:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4D20DC433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=clew@codeaurora.org
+From:   Chris Lew <clew@codeaurora.org>
+To:     davem@davemloft.net, bjorn.andersson@linaro.org
+Cc:     manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        clew@codeaurora.org
+Subject: [PATCH] net: qrtr: Allocate workqueue before kernel_bind
+Date:   Thu, 28 May 2020 16:05:26 -0700
+Message-Id: <1590707126-16957-1-git-send-email-clew@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/20 4:25 AM, Jesper Dangaard Brouer wrote:
-> That said, you should use the new SEC(".maps") definitions, but you
-> need to use some tricks to avoid a BTF-ID getting generated.  Let me
-> help you with something that should work:
-> 
-> /* DEVMAP values */
-> struct devmap_val {
-> 	__u32 ifindex;   /* device index */
-> };
-> 
-> struct {
-> 	__uint(type, BPF_MAP_TYPE_DEVMAP);
-> 	__uint(key_size, sizeof(u32));
-> 	__uint(value_size, sizeof(struct devmap_val));
-> 	__uint(max_entries, 4);
-> } dm_ports SEC(".maps");
-> 
-> Notice by setting key_size and value_size, instead of the "__type",
-> then a BTF-ID will be generated for this map.
-> Normally with proper BTF it should look like:
-> 
-> struct {
-> 	__uint(type, BPF_MAP_TYPE_DEVMAP);
-> 	__type(key, u32);
-> 	__type(value, struct devmap_val);
-> 	__uint(max_entries, 4);
-> } dm_ports_with_BTF SEC(".maps");
-> 
-> 
+A null pointer dereference in qrtr_ns_data_ready() is seen if a client
+opens a qrtr socket before qrtr_ns_init() can bind to the control port.
+When the control port is bound, the ENETRESET error will be broadcasted
+and clients will close their sockets. This results in DEL_CLIENT
+packets being sent to the ns and qrtr_ns_data_ready() being called
+without the workqueue being allocated.
 
-Thanks for the tip.
+Allocate the workqueue before setting sk_data_ready and binding to the
+control port. This ensures that the work and workqueue structs are
+allocated and initialized before qrtr_ns_data_ready can be called.
+
+Fixes: 0c2204a4ad71 ("net: qrtr: Migrate nameservice to kernel from userspace")
+Signed-off-by: Chris Lew <clew@codeaurora.org>
+---
+ net/qrtr/ns.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
+index e7d0fe3f4330..c5b3202a14ca 100644
+--- a/net/qrtr/ns.c
++++ b/net/qrtr/ns.c
+@@ -712,6 +712,10 @@ void qrtr_ns_init(void)
+ 		goto err_sock;
+ 	}
+ 
++	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
++	if (!qrtr_ns.workqueue)
++		goto err_sock;
++
+ 	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns_data_ready;
+ 
+ 	sq.sq_port = QRTR_PORT_CTRL;
+@@ -720,17 +724,13 @@ void qrtr_ns_init(void)
+ 	ret = kernel_bind(qrtr_ns.sock, (struct sockaddr *)&sq, sizeof(sq));
+ 	if (ret < 0) {
+ 		pr_err("failed to bind to socket\n");
+-		goto err_sock;
++		goto err_wq;
+ 	}
+ 
+ 	qrtr_ns.bcast_sq.sq_family = AF_QIPCRTR;
+ 	qrtr_ns.bcast_sq.sq_node = QRTR_NODE_BCAST;
+ 	qrtr_ns.bcast_sq.sq_port = QRTR_PORT_CTRL;
+ 
+-	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
+-	if (!qrtr_ns.workqueue)
+-		goto err_sock;
+-
+ 	ret = say_hello(&qrtr_ns.bcast_sq);
+ 	if (ret < 0)
+ 		goto err_wq;
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
