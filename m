@@ -2,260 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8781E6A4D
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B521E6A89
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 21:23:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406315AbgE1TVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 15:21:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41388 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406306AbgE1TU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 15:20:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 179D8AF6D;
-        Thu, 28 May 2020 19:20:51 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 14A6560347; Thu, 28 May 2020 21:20:51 +0200 (CEST)
+        id S2406489AbgE1TWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 15:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406450AbgE1TWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 15:22:17 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CCCC08C5C7;
+        Thu, 28 May 2020 12:22:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id 7D42C2A41D7
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCH v4 11/11] thermal: Rename set_mode() to change_mode()
 Date:   Thu, 28 May 2020 21:20:51 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Ronak Doshi <doshir@vmware.com>,
-        "VMware, Inc." <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/4] vmxnet3: add support to get/set rx flow
- hash
-Message-ID: <20200528192051.hnqeifcjmfu5vffz@lion.mk-sys.cz>
-References: <20200528183615.27212-1-doshir@vmware.com>
- <20200528183615.27212-3-doshir@vmware.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200528183615.27212-3-doshir@vmware.com>
+Message-Id: <20200528192051.28034-12-andrzej.p@collabora.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200528192051.28034-1-andrzej.p@collabora.com>
+References: <Message-ID: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
+ <20200528192051.28034-1-andrzej.p@collabora.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 11:36:13AM -0700, Ronak Doshi wrote:
-> With vmxnet3 version 4, the emulation supports multiqueue(RSS) for
-> UDP and ESP traffic. A guest can enable/disable RSS for UDP/ESP over
-> IPv4/IPv6 by issuing commands introduced in this patch. ESP ipv6 is
-> not yet supported in this patch.
-> 
-> This patch implements get_rss_hash_opts and set_rss_hash_opts
-> methods to allow querying and configuring different Rx flow hash
-> configurations.
-> 
-> Signed-off-by: Ronak Doshi <doshir@vmware.com>
-> ---
-[...]
-> diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-> index 1163eca7aba5..83cec9946466 100644
-> --- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-> +++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-> @@ -665,18 +665,237 @@ vmxnet3_set_ringparam(struct net_device *netdev,
->  	return err;
->  }
->  
-> +static int
-> +vmxnet3_get_rss_hash_opts(struct vmxnet3_adapter *adapter,
-> +			  struct ethtool_rxnfc *info)
-> +{
-> +	enum Vmxnet3_RSSField rss_fields;
-> +
-> +	if (netif_running(adapter->netdev)) {
-> +		unsigned long flags;
-> +
-> +		spin_lock_irqsave(&adapter->cmd_lock, flags);
-> +
-> +		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-> +				       VMXNET3_CMD_GET_RSS_FIELDS);
-> +		rss_fields = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
-> +		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-> +	} else {
-> +		rss_fields = adapter->rss_fields;
-> +	}
-> +
-> +	info->data = 0;
-> +
-> +	/* Report default options for RSS on vmxnet3 */
-> +	switch (info->flow_type) {
-> +	case TCP_V4_FLOW:
-> +		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP4)
-> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-> +				      RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	case UDP_V4_FLOW:
-> +		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP4)
-> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-> +				      RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	case AH_ESP_V4_FLOW:
-> +	case AH_V4_FLOW:
-> +	case ESP_V4_FLOW:
-> +		if (rss_fields & VMXNET3_RSS_FIELDS_ESPIP4)
-> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
-> +			/* fallthrough */
-> +	case SCTP_V4_FLOW:
-> +	case IPV4_FLOW:
-> +		info->data |= RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	case TCP_V6_FLOW:
-> +		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP6)
-> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-> +				      RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	case UDP_V6_FLOW:
-> +		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP6)
-> +			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-> +				      RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	case AH_ESP_V6_FLOW:
-> +	case AH_V6_FLOW:
-> +	case ESP_V6_FLOW:
-> +	case SCTP_V6_FLOW:
-> +	case IPV6_FLOW:
-> +		info->data |= RXH_IP_SRC | RXH_IP_DST;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int
-> +vmxnet3_set_rss_hash_opt(struct net_device *netdev,
-> +			 struct vmxnet3_adapter *adapter,
-> +			 struct ethtool_rxnfc *nfc)
-> +{
-> +	enum Vmxnet3_RSSField rss_fields = adapter->rss_fields;
-> +
-> +	/* RSS does not support anything other than hashing
-> +	 * to queues on src and dst IPs and ports
-> +	 */
-> +	if (nfc->data & ~(RXH_IP_SRC | RXH_IP_DST |
-> +			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
-> +		return -EINVAL;
-> +
-> +	switch (nfc->flow_type) {
-> +	case TCP_V4_FLOW:
-> +	case TCP_V6_FLOW:
-> +		if (!(nfc->data & RXH_IP_SRC) ||
-> +		    !(nfc->data & RXH_IP_DST) ||
-> +		    !(nfc->data & RXH_L4_B_0_1) ||
-> +		    !(nfc->data & RXH_L4_B_2_3))
-> +			return -EINVAL;
-> +		break;
+set_mode() is only called when tzd's mode is about to change. Actual
+setting is performed in thermal_core, in thermal_zone_device_set_mode().
+The meaning of set_mode() callback is actually to notify the driver about
+the mode being changed and giving the driver a chance to oppose such
+change.
 
-This still suffers from the inconsistency between get and set handler
-I already pointed out in v1:
+To better reflect the purpose of the method rename it to change_mode()
 
-- there is no way to change VMXNET3_RSS_FIELDS_TCPIP{4,6} bits
-- get_rxnfc() may return value that set_rxnfc() won't accept
-- get_rxnfc() may return different value than set_rxnfc() set
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+---
+ drivers/platform/x86/acerhdf.c                          | 6 +++---
+ drivers/thermal/imx_thermal.c                           | 8 ++++----
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 6 +++---
+ drivers/thermal/intel/intel_quark_dts_thermal.c         | 6 +++---
+ drivers/thermal/thermal_core.c                          | 4 ++--
+ include/linux/thermal.h                                 | 2 +-
+ 6 files changed, 16 insertions(+), 16 deletions(-)
 
-Above, vmxnet3_get_rss_hash_opts() returns 0 or
-RXH_L4_B_0_1 | RXH_L4_B_2_3 | RXH_IP_SRC | RXH_IP_DST for any of
-{TCP,UDP}_V{4,6}_FLOW, depending on corresponding bit in rss_fields. But
-here you accept only all four bits for TCP (both v4 and v6) and either
-the two RXH_IP_* bits or all four for UDP.
+diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
+index d33a70af0869..63b562e06d5c 100644
+--- a/drivers/platform/x86/acerhdf.c
++++ b/drivers/platform/x86/acerhdf.c
+@@ -413,8 +413,8 @@ static inline void acerhdf_enable_kernelmode(void)
+  *          the temperature and the fan.
+  * disabled: the BIOS takes control of the fan.
+  */
+-static int acerhdf_set_mode(struct thermal_zone_device *thermal,
+-			    enum thermal_device_mode mode)
++static int acerhdf_change_mode(struct thermal_zone_device *thermal,
++			       enum thermal_device_mode mode)
+ {
+ 	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
+ 		acerhdf_revert_to_bios_mode();
+@@ -473,7 +473,7 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
+ 	.bind = acerhdf_bind,
+ 	.unbind = acerhdf_unbind,
+ 	.get_temp = acerhdf_get_ec_temp,
+-	.set_mode = acerhdf_set_mode,
++	.change_mode = acerhdf_change_mode,
+ 	.get_trip_type = acerhdf_get_trip_type,
+ 	.get_trip_hyst = acerhdf_get_trip_hyst,
+ 	.get_trip_temp = acerhdf_get_trip_temp,
+diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
+index a02398118d88..9700ae39feb7 100644
+--- a/drivers/thermal/imx_thermal.c
++++ b/drivers/thermal/imx_thermal.c
+@@ -330,8 +330,8 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
+ 	return 0;
+ }
+ 
+-static int imx_set_mode(struct thermal_zone_device *tz,
+-			enum thermal_device_mode mode)
++static int imx_change_mode(struct thermal_zone_device *tz,
++			   enum thermal_device_mode mode)
+ {
+ 	struct imx_thermal_data *data = tz->devdata;
+ 	struct regmap *map = data->tempmon;
+@@ -447,7 +447,7 @@ static struct thermal_zone_device_ops imx_tz_ops = {
+ 	.bind = imx_bind,
+ 	.unbind = imx_unbind,
+ 	.get_temp = imx_get_temp,
+-	.set_mode = imx_set_mode,
++	.change_mode = imx_change_mode,
+ 	.get_trip_type = imx_get_trip_type,
+ 	.get_trip_temp = imx_get_trip_temp,
+ 	.get_crit_temp = imx_get_crit_temp,
+@@ -860,7 +860,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
+ 	 * Need to disable thermal sensor, otherwise, when thermal core
+ 	 * try to get temperature before thermal sensor resume, a wrong
+ 	 * temperature will be read as the thermal sensor is powered
+-	 * down. This is done in set_mode() operation called from
++	 * down. This is done in change_mode() operation called from
+ 	 * thermal_zone_device_disable()
+ 	 */
+ 	ret = thermal_zone_device_disable(data->tz);
+diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+index 9af862ab9f65..58870d215471 100644
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -377,8 +377,8 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
+ 	return 0;
+ }
+ 
+-static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
+-				enum thermal_device_mode mode)
++static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
++				       enum thermal_device_mode mode)
+ {
+ 	struct int3400_thermal_priv *priv = thermal->devdata;
+ 	int result = 0;
+@@ -399,7 +399,7 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
+ 
+ static struct thermal_zone_device_ops int3400_thermal_ops = {
+ 	.get_temp = int3400_thermal_get_temp,
+-	.set_mode = int3400_thermal_set_mode,
++	.change_mode = int3400_thermal_change_mode,
+ };
+ 
+ static struct thermal_zone_params int3400_thermal_params = {
+diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
+index e29c3e330b17..3eafc6b0e6c3 100644
+--- a/drivers/thermal/intel/intel_quark_dts_thermal.c
++++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
+@@ -298,8 +298,8 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
+ 	return 0;
+ }
+ 
+-static int sys_set_mode(struct thermal_zone_device *tzd,
+-				enum thermal_device_mode mode)
++static int sys_change_mode(struct thermal_zone_device *tzd,
++			   enum thermal_device_mode mode)
+ {
+ 	int ret;
+ 
+@@ -319,7 +319,7 @@ static struct thermal_zone_device_ops tzone_ops = {
+ 	.get_trip_type = sys_get_trip_type,
+ 	.set_trip_temp = sys_set_trip_temp,
+ 	.get_crit_temp = sys_get_crit_temp,
+-	.set_mode = sys_set_mode,
++	.change_mode = sys_change_mode,
+ };
+ 
+ static void free_soc_dts(struct soc_sensor_entry *aux_entry)
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index e9c0b990e4a9..c00edae7839e 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -482,8 +482,8 @@ int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+ 		return ret;
+ 	}
+ 
+-	if (tz->ops->set_mode)
+-		ret = tz->ops->set_mode(tz, mode);
++	if (tz->ops->change_mode)
++		ret = tz->ops->change_mode(tz, mode);
+ 
+ 	if (!ret)
+ 		tz->mode = mode;
+diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+index df013c39ba9b..b9efaa780d88 100644
+--- a/include/linux/thermal.h
++++ b/include/linux/thermal.h
+@@ -76,7 +76,7 @@ struct thermal_zone_device_ops {
+ 		       struct thermal_cooling_device *);
+ 	int (*get_temp) (struct thermal_zone_device *, int *);
+ 	int (*set_trips) (struct thermal_zone_device *, int, int);
+-	int (*set_mode) (struct thermal_zone_device *,
++	int (*change_mode) (struct thermal_zone_device *,
+ 		enum thermal_device_mode);
+ 	int (*get_trip_type) (struct thermal_zone_device *, int,
+ 		enum thermal_trip_type *);
+-- 
+2.17.1
 
-Michal
-
-> +	case UDP_V4_FLOW:
-> +		if (!(nfc->data & RXH_IP_SRC) ||
-> +		    !(nfc->data & RXH_IP_DST))
-> +			return -EINVAL;
-> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-> +		case 0:
-> +			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP4;
-> +			break;
-> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-> +			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP4;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case UDP_V6_FLOW:
-> +		if (!(nfc->data & RXH_IP_SRC) ||
-> +		    !(nfc->data & RXH_IP_DST))
-> +			return -EINVAL;
-> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-> +		case 0:
-> +			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP6;
-> +			break;
-> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-> +			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP6;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case ESP_V4_FLOW:
-> +	case AH_V4_FLOW:
-> +	case AH_ESP_V4_FLOW:
-> +		if (!(nfc->data & RXH_IP_SRC) ||
-> +		    !(nfc->data & RXH_IP_DST))
-> +			return -EINVAL;
-> +		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-> +		case 0:
-> +			rss_fields &= ~VMXNET3_RSS_FIELDS_ESPIP4;
-> +			break;
-> +		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-> +			rss_fields |= VMXNET3_RSS_FIELDS_ESPIP4;
-> +		break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case ESP_V6_FLOW:
-> +	case AH_V6_FLOW:
-> +	case AH_ESP_V6_FLOW:
-> +	case SCTP_V4_FLOW:
-> +	case SCTP_V6_FLOW:
-> +		if (!(nfc->data & RXH_IP_SRC) ||
-> +		    !(nfc->data & RXH_IP_DST) ||
-> +		    (nfc->data & RXH_L4_B_0_1) ||
-> +		    (nfc->data & RXH_L4_B_2_3))
-> +			return -EINVAL;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* if we changed something we need to update flags */
-> +	if (rss_fields != adapter->rss_fields) {
-> +		adapter->default_rss_fields = false;
-> +		if (netif_running(netdev)) {
-> +			struct Vmxnet3_DriverShared *shared = adapter->shared;
-> +			union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
-> +			unsigned long flags;
-> +
-> +			spin_lock_irqsave(&adapter->cmd_lock, flags);
-> +			cmdInfo->setRssFields = rss_fields;
-> +			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-> +					       VMXNET3_CMD_SET_RSS_FIELDS);
-> +
-> +			/* Not all requested RSS may get applied, so get and
-> +			 * cache what was actually applied.
-> +			 */
-> +			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-> +					       VMXNET3_CMD_GET_RSS_FIELDS);
-> +			adapter->rss_fields =
-> +				VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
-> +			spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-> +		} else {
-> +			/* When the device is activated, we will try to apply
-> +			 * these rules and cache the applied value later.
-> +			 */
-> +			adapter->rss_fields = rss_fields;
-> +		}
-> +	}
-> +	return 0;
-> +}
-[...]
