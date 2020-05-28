@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318331E5384
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BCD1E5386
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 03:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbgE1B5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 May 2020 21:57:41 -0400
+        id S1726942AbgE1B5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 May 2020 21:57:44 -0400
 Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:9113 "EHLO
         EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726883AbgE1B5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 21:57:39 -0400
+        by vger.kernel.org with ESMTP id S1725849AbgE1B5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 May 2020 21:57:43 -0400
 Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
  EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
- 15.0.1156.6; Wed, 27 May 2020 18:54:44 -0700
+ 15.0.1156.6; Wed, 27 May 2020 18:54:47 -0700
 Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 5CF44402C2;
-        Wed, 27 May 2020 18:54:47 -0700 (PDT)
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 88361402C2;
+        Wed, 27 May 2020 18:54:50 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -24,9 +24,9 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 2/4] vmxnet3: add support to get/set rx flow hash
-Date:   Wed, 27 May 2020 18:54:24 -0700
-Message-ID: <20200528015426.8285-3-doshir@vmware.com>
+Subject: [PATCH net-next 3/4] vmxnet3: add geneve and vxlan tunnel offload support
+Date:   Wed, 27 May 2020 18:54:25 -0700
+Message-ID: <20200528015426.8285-4-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20200528015426.8285-1-doshir@vmware.com>
 References: <20200528015426.8285-1-doshir@vmware.com>
@@ -39,403 +39,408 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With vmxnet3 version 4, the emulation supports multiqueue(RSS) for
-UDP and ESP traffic. A guest can enable/disable RSS for UDP/ESP over
-IPv4/IPv6 by issuing commands introduced in this patch. ESP ipv6 is
-not yet supported in this patch.
+Vmxnet3 version 3 device supports checksum/TSO offload. Thus, vNIC to
+pNIC traffic can leverage hardware checksum/TSO offloads. However,
+vmxnet3 does not support checksum/TSO offload for Geneve/VXLAN
+encapsulated packets. Thus, for a vNIC configured with an overlay, the
+guest stack must first segment the inner packet, compute the inner
+checksum for each segment and encapsulate each segment before
+transmitting the packet via the vNIC. This results in significant
+performance penalty.
 
-This patch implements get_rss_hash_opts and set_rss_hash_opts
-methods to allow querying and configuring different Rx flow hash
-configurations.
+This patch will enhance vmxnet3 to support Geneve/VXLAN TSO as well as
+checksum offload.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_defs.h    |  12 ++
- drivers/net/vmxnet3/vmxnet3_drv.c     |  39 ++++++
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 223 +++++++++++++++++++++++++++++++++-
- drivers/net/vmxnet3/vmxnet3_int.h     |   4 +
- 4 files changed, 276 insertions(+), 2 deletions(-)
+ drivers/net/vmxnet3/upt1_defs.h       |   3 +
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  17 +++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 120 +++++++++++++++++++++++++++-------
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  42 +++++++++++-
+ drivers/net/vmxnet3/vmxnet3_int.h     |  12 +++-
+ 5 files changed, 161 insertions(+), 33 deletions(-)
 
+diff --git a/drivers/net/vmxnet3/upt1_defs.h b/drivers/net/vmxnet3/upt1_defs.h
+index 65a203c842b2..8c014c98471c 100644
+--- a/drivers/net/vmxnet3/upt1_defs.h
++++ b/drivers/net/vmxnet3/upt1_defs.h
+@@ -92,5 +92,8 @@ enum {
+ 	UPT1_F_RSS		= cpu_to_le64(0x0002),
+ 	UPT1_F_RXVLAN		= cpu_to_le64(0x0004),   /* VLAN tag stripping */
+ 	UPT1_F_LRO		= cpu_to_le64(0x0008),
++	UPT1_F_RXINNEROFLD      = cpu_to_le64(0x00010),  /* Geneve/Vxlan rx csum
++							  * offloading
++							  */
+ };
+ #endif
 diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index c77274228a3e..aac97fac1186 100644
+index aac97fac1186..a8d5ebd47c71 100644
 --- a/drivers/net/vmxnet3/vmxnet3_defs.h
 +++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -82,6 +82,7 @@ enum {
- 	VMXNET3_CMD_RESERVED3,
- 	VMXNET3_CMD_SET_COALESCE,
- 	VMXNET3_CMD_REGISTER_MEMREGS,
-+	VMXNET3_CMD_SET_RSS_FIELDS,
- 
- 	VMXNET3_CMD_FIRST_GET = 0xF00D0000,
- 	VMXNET3_CMD_GET_QUEUE_STATUS = VMXNET3_CMD_FIRST_GET,
-@@ -96,6 +97,7 @@ enum {
- 	VMXNET3_CMD_GET_RESERVED1,
- 	VMXNET3_CMD_GET_TXDATA_DESC_SIZE,
- 	VMXNET3_CMD_GET_COALESCE,
-+	VMXNET3_CMD_GET_RSS_FIELDS,
- };
- 
+@@ -103,14 +103,14 @@ enum {
  /*
-@@ -685,12 +687,22 @@ struct Vmxnet3_MemRegs {
- 	struct Vmxnet3_MemoryRegion		memRegs[1];
+  *	Little Endian layout of bitfields -
+  *	Byte 0 :	7.....len.....0
+- *	Byte 1 :	rsvd gen 13.len.8
++ *	Byte 1 :	oco gen 13.len.8
+  *	Byte 2 : 	5.msscof.0 ext1  dtype
+  *	Byte 3 : 	13...msscof...6
+  *
+  *	Big Endian layout of bitfields -
+  *	Byte 0:		13...msscof...6
+  *	Byte 1 : 	5.msscof.0 ext1  dtype
+- *	Byte 2 :	rsvd gen 13.len.8
++ *	Byte 2 :	oco gen 13.len.8
+  *	Byte 3 :	7.....len.....0
+  *
+  *	Thus, le32_to_cpu on the dword will allow the big endian driver to read
+@@ -125,13 +125,13 @@ struct Vmxnet3_TxDesc {
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+ 	u32 ext1:1;
+ 	u32 dtype:1;    /* descriptor type */
+-	u32 rsvd:1;
++	u32 oco:1;
+ 	u32 gen:1;      /* generation bit */
+ 	u32 len:14;
+ #else
+ 	u32 len:14;
+ 	u32 gen:1;      /* generation bit */
+-	u32 rsvd:1;
++	u32 oco:1;
+ 	u32 dtype:1;    /* descriptor type */
+ 	u32 ext1:1;
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+@@ -157,9 +157,10 @@ struct Vmxnet3_TxDesc {
  };
  
-+enum Vmxnet3_RSSField {
-+	VMXNET3_RSS_FIELDS_TCPIP4 = 0x0001,
-+	VMXNET3_RSS_FIELDS_TCPIP6 = 0x0002,
-+	VMXNET3_RSS_FIELDS_UDPIP4 = 0x0004,
-+	VMXNET3_RSS_FIELDS_UDPIP6 = 0x0008,
-+	VMXNET3_RSS_FIELDS_ESPIP4 = 0x0010,
-+	VMXNET3_RSS_FIELDS_ESPIP6 = 0x0020,
-+};
+ /* TxDesc.OM values */
+-#define VMXNET3_OM_NONE		0
+-#define VMXNET3_OM_CSUM		2
+-#define VMXNET3_OM_TSO		3
++#define VMXNET3_OM_NONE         0
++#define VMXNET3_OM_ENCAP        1
++#define VMXNET3_OM_CSUM         2
++#define VMXNET3_OM_TSO          3
+ 
+ /* fields in TxDesc we access w/o using bit fields */
+ #define VMXNET3_TXD_EOP_SHIFT	12
+@@ -226,6 +227,8 @@ struct Vmxnet3_RxDesc {
+ #define VMXNET3_RXD_BTYPE_SHIFT  14
+ #define VMXNET3_RXD_GEN_SHIFT    31
+ 
++#define VMXNET3_RCD_HDR_INNER_SHIFT  13
 +
- /* If the command data <= 16 bytes, use the shared memory directly.
-  * otherwise, use variable length configuration descriptor.
-  */
- union Vmxnet3_CmdInfo {
- 	struct Vmxnet3_VariableLenConfDesc	varConf;
- 	struct Vmxnet3_SetPolling		setPolling;
-+	enum   Vmxnet3_RSSField                 setRssFields;
- 	__le64					data[2];
- };
- 
+ struct Vmxnet3_RxCompDesc {
+ #ifdef __BIG_ENDIAN_BITFIELD
+ 	u32		ext2:1;
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index ec2878f8c1f6..4ea7a40ada88 100644
+index 4ea7a40ada88..8930717bdcf1 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -2554,6 +2554,39 @@ vmxnet3_init_coalesce(struct vmxnet3_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
- }
+@@ -842,12 +842,22 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	u8 protocol = 0;
  
-+static void
-+vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
+ 	if (ctx->mss) {	/* TSO */
+-		ctx->eth_ip_hdr_size = skb_transport_offset(skb);
+-		ctx->l4_hdr_size = tcp_hdrlen(skb);
+-		ctx->copy_size = ctx->eth_ip_hdr_size + ctx->l4_hdr_size;
++		if (VMXNET3_VERSION_GE_4(adapter) && skb->encapsulation) {
++			ctx->l4_offset = skb_inner_transport_offset(skb);
++			ctx->l4_hdr_size = inner_tcp_hdrlen(skb);
++			ctx->copy_size = ctx->l4_offset + ctx->l4_hdr_size;
++		} else {
++			ctx->l4_offset = skb_transport_offset(skb);
++			ctx->l4_hdr_size = tcp_hdrlen(skb);
++			ctx->copy_size = ctx->l4_offset + ctx->l4_hdr_size;
++		}
+ 	} else {
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-			ctx->eth_ip_hdr_size = skb_checksum_start_offset(skb);
++			/* For encap packets, skb_checksum_start_offset refers
++			 * to inner L4 offset. Thus, below works for encap as
++			 * well as non-encap case
++			 */
++			ctx->l4_offset = skb_checksum_start_offset(skb);
+ 
+ 			if (ctx->ipv4) {
+ 				const struct iphdr *iph = ip_hdr(skb);
+@@ -871,10 +881,10 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 				break;
+ 			}
+ 
+-			ctx->copy_size = min(ctx->eth_ip_hdr_size +
++			ctx->copy_size = min(ctx->l4_offset +
+ 					 ctx->l4_hdr_size, skb->len);
+ 		} else {
+-			ctx->eth_ip_hdr_size = 0;
++			ctx->l4_offset = 0;
+ 			ctx->l4_hdr_size = 0;
+ 			/* copy as much as allowed */
+ 			ctx->copy_size = min_t(unsigned int,
+@@ -930,6 +940,25 @@ vmxnet3_copy_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 
+ 
+ static void
++vmxnet3_prepare_inner_tso(struct sk_buff *skb,
++			  struct vmxnet3_tx_ctx *ctx)
 +{
-+	struct Vmxnet3_DriverShared *shared = adapter->shared;
-+	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
-+	unsigned long flags;
++	struct tcphdr *tcph = inner_tcp_hdr(skb);
++	struct iphdr *iph = inner_ip_hdr(skb);
 +
-+		if (!VMXNET3_VERSION_GE_4(adapter))
-+			return;
++	if (ctx->ipv4) {
++		iph->check = 0;
++		tcph->check = ~csum_tcpudp_magic(iph->saddr, iph->daddr, 0,
++						 IPPROTO_TCP, 0);
++	} else if (ctx->ipv6) {
++		struct ipv6hdr *iph = inner_ipv6_hdr(skb);
 +
-+	spin_lock_irqsave(&adapter->cmd_lock, flags);
-+
-+	if (adapter->default_rss_fields) {
-+		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+				       VMXNET3_CMD_GET_RSS_FIELDS);
-+		adapter->rss_fields =
-+			VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
-+	} else {
-+		cmdInfo->setRssFields = adapter->rss_fields;
-+		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+				       VMXNET3_CMD_SET_RSS_FIELDS);
-+		/* Not all requested RSS may get applied, so get and
-+		 * cache what was actually applied.
-+		 */
-+		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+				       VMXNET3_CMD_GET_RSS_FIELDS);
-+		adapter->rss_fields =
-+			VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		tcph->check = ~csum_ipv6_magic(&iph->saddr, &iph->daddr, 0,
++					       IPPROTO_TCP, 0);
 +	}
-+
-+	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
 +}
 +
- int
- vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
++static void
+ vmxnet3_prepare_tso(struct sk_buff *skb,
+ 		    struct vmxnet3_tx_ctx *ctx)
  {
-@@ -2603,6 +2636,7 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
- 	}
+@@ -987,6 +1016,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	/* Use temporary descriptor to avoid touching bits multiple times */
+ 	union Vmxnet3_GenericDesc tempTxDesc;
+ #endif
++	struct udphdr *udph;
  
- 	vmxnet3_init_coalesce(adapter);
-+	vmxnet3_init_rssfields(adapter);
+ 	count = txd_estimate(skb);
  
- 	for (i = 0; i < adapter->num_rx_queues; i++) {
- 		VMXNET3_WRITE_BAR0_REG(adapter,
-@@ -3430,6 +3464,11 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		adapter->default_coal_mode = true;
- 	}
+@@ -1003,7 +1033,11 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			}
+ 			tq->stats.copy_skb_header++;
+ 		}
+-		vmxnet3_prepare_tso(skb, &ctx);
++		if (skb->encapsulation) {
++			vmxnet3_prepare_inner_tso(skb, &ctx);
++		} else {
++			vmxnet3_prepare_tso(skb, &ctx);
++		}
+ 	} else {
+ 		if (unlikely(count > VMXNET3_MAX_TXD_PER_PKT)) {
  
+@@ -1026,14 +1060,14 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 		BUG_ON(ret <= 0 && ctx.copy_size != 0);
+ 		/* hdrs parsed, check against other limits */
+ 		if (ctx.mss) {
+-			if (unlikely(ctx.eth_ip_hdr_size + ctx.l4_hdr_size >
++			if (unlikely(ctx.l4_offset + ctx.l4_hdr_size >
+ 				     VMXNET3_MAX_TX_BUF_SIZE)) {
+ 				tq->stats.drop_oversized_hdr++;
+ 				goto drop_pkt;
+ 			}
+ 		} else {
+ 			if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-				if (unlikely(ctx.eth_ip_hdr_size +
++				if (unlikely(ctx.l4_offset +
+ 					     skb->csum_offset >
+ 					     VMXNET3_MAX_CSUM_OFFSET)) {
+ 					tq->stats.drop_oversized_hdr++;
+@@ -1080,16 +1114,34 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ #endif
+ 	tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
+ 	if (ctx.mss) {
+-		gdesc->txd.hlen = ctx.eth_ip_hdr_size + ctx.l4_hdr_size;
+-		gdesc->txd.om = VMXNET3_OM_TSO;
+-		gdesc->txd.msscof = ctx.mss;
++		if (VMXNET3_VERSION_GE_4(adapter) && skb->encapsulation) {
++			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
++			gdesc->txd.om = VMXNET3_OM_ENCAP;
++			gdesc->txd.msscof = ctx.mss;
++
++			udph = udp_hdr(skb);
++			if (udph->check)
++				gdesc->txd.oco = 1;
++		} else {
++			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
++			gdesc->txd.om = VMXNET3_OM_TSO;
++			gdesc->txd.msscof = ctx.mss;
++		}
+ 		num_pkts = (skb->len - gdesc->txd.hlen + ctx.mss - 1) / ctx.mss;
+ 	} else {
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-			gdesc->txd.hlen = ctx.eth_ip_hdr_size;
+-			gdesc->txd.om = VMXNET3_OM_CSUM;
+-			gdesc->txd.msscof = ctx.eth_ip_hdr_size +
+-					    skb->csum_offset;
++			if (VMXNET3_VERSION_GE_4(adapter) &&
++			    skb->encapsulation) {
++				gdesc->txd.hlen = ctx.l4_offset +
++						  ctx.l4_hdr_size;
++				gdesc->txd.om = VMXNET3_OM_ENCAP;
++				gdesc->txd.msscof = 0;		/* Reserved */
++			} else {
++				gdesc->txd.hlen = ctx.l4_offset;
++				gdesc->txd.om = VMXNET3_OM_CSUM;
++				gdesc->txd.msscof = ctx.l4_offset +
++						    skb->csum_offset;
++
+ 		} else {
+ 			gdesc->txd.om = 0;
+ 			gdesc->txd.msscof = 0;
+@@ -1168,13 +1220,21 @@ vmxnet3_rx_csum(struct vmxnet3_adapter *adapter,
+ 		    (le32_to_cpu(gdesc->dword[3]) &
+ 		     VMXNET3_RCD_CSUM_OK) == VMXNET3_RCD_CSUM_OK) {
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+-			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp));
+-			BUG_ON(gdesc->rcd.frg);
++			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp) &&
++			       !(le32_to_cpu(gdesc->dword[0]) &
++				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
++			BUG_ON(gdesc->rcd.frg &&
++			       !(le32_to_cpu(gdesc->dword[0]) &
++				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
+ 		} else if (gdesc->rcd.v6 && (le32_to_cpu(gdesc->dword[3]) &
+ 					     (1 << VMXNET3_RCD_TUC_SHIFT))) {
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+-			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp));
+-			BUG_ON(gdesc->rcd.frg);
++			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp) &&
++			       !(le32_to_cpu(gdesc->dword[0]) &
++				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
++			BUG_ON(gdesc->rcd.frg &&
++			       !(le32_to_cpu(gdesc->dword[0]) &
++				 (1UL << VMXNET3_RCD_HDR_INNER_SHIFT)));
+ 		} else {
+ 			if (gdesc->rcd.csum) {
+ 				skb->csum = htons(gdesc->rcd.csum);
+@@ -2429,6 +2489,10 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 	if (adapter->netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
+ 		devRead->misc.uptFeatures |= UPT1_F_RXVLAN;
+ 
++	if (adapter->netdev->features & (NETIF_F_GSO_UDP_TUNNEL |
++					 NETIF_F_GSO_UDP_TUNNEL_CSUM))
++		devRead->misc.uptFeatures |= UPT1_F_RXINNEROFLD;
++
+ 	devRead->misc.mtu = cpu_to_le32(adapter->netdev->mtu);
+ 	devRead->misc.queueDescPA = cpu_to_le64(adapter->queue_desc_pa);
+ 	devRead->misc.queueDescLen = cpu_to_le32(
+@@ -2561,8 +2625,8 @@ vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
+ 	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
+ 	unsigned long flags;
+ 
+-		if (!VMXNET3_VERSION_GE_4(adapter))
+-			return;
++	if (!VMXNET3_VERSION_GE_4(adapter))
++		return;
+ 
+ 	spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 
+@@ -3073,6 +3137,18 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter, bool dma64)
+ 		NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
+ 		NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
+ 		NETIF_F_LRO;
++
 +	if (VMXNET3_VERSION_GE_4(adapter)) {
-+		adapter->default_rss_fields = true;
-+		adapter->rss_fields = VMXNET3_RSS_FIELDS_DEFAULT;
++		netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
++				NETIF_F_GSO_UDP_TUNNEL_CSUM;
++
++		netdev->hw_enc_features = NETIF_F_SG | NETIF_F_RXCSUM |
++			NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
++			NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
++			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
++			NETIF_F_GSO_UDP_TUNNEL_CSUM;
 +	}
 +
- 	SET_NETDEV_DEV(netdev, &pdev->dev);
- 	vmxnet3_declare_features(adapter, dma64);
- 
+ 	if (dma64)
+ 		netdev->hw_features |= NETIF_F_HIGHDMA;
+ 	netdev->vlan_features = netdev->hw_features &
 diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 1163eca7aba5..ceedf63020cb 100644
+index ceedf63020cb..146e2a6c606b 100644
 --- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
 +++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -665,18 +665,236 @@ vmxnet3_set_ringparam(struct net_device *netdev,
- 	return err;
+@@ -267,14 +267,43 @@ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
+ 	return features;
  }
  
-+static int
-+vmxnet3_get_rss_hash_opts(struct vmxnet3_adapter *adapter,
-+			  struct ethtool_rxnfc *info)
-+{
-+	enum Vmxnet3_RSSField rss_fields;
-+
-+	if (netif_running(adapter->netdev)) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&adapter->cmd_lock, flags);
-+
-+		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+				       VMXNET3_CMD_GET_RSS_FIELDS);
-+		rss_fields = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
-+		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-+	} else {
-+		rss_fields = adapter->rss_fields;
-+	}
-+
-+	info->data = 0;
-+
-+	/* Report default options for RSS on vmxnet3 */
-+	switch (info->flow_type) {
-+	case TCP_V4_FLOW:
-+		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP4)
-+			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-+				      RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	case UDP_V4_FLOW:
-+		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP4)
-+			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-+				      RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	case AH_ESP_V4_FLOW:
-+	case AH_V4_FLOW:
-+	case ESP_V4_FLOW:
-+		if (rss_fields & VMXNET3_RSS_FIELDS_ESPIP4)
-+			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+	case SCTP_V4_FLOW:
-+	case IPV4_FLOW:
-+		info->data |= RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	case TCP_V6_FLOW:
-+		if (rss_fields & VMXNET3_RSS_FIELDS_TCPIP6)
-+			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-+				      RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	case UDP_V6_FLOW:
-+		if (rss_fields & VMXNET3_RSS_FIELDS_UDPIP6)
-+			info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3 |
-+				      RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	case AH_ESP_V6_FLOW:
-+	case AH_V6_FLOW:
-+	case ESP_V6_FLOW:
-+	case SCTP_V6_FLOW:
-+	case IPV6_FLOW:
-+		info->data |= RXH_IP_SRC | RXH_IP_DST;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+vmxnet3_set_rss_hash_opt(struct net_device *netdev,
-+			 struct vmxnet3_adapter *adapter,
-+			 struct ethtool_rxnfc *nfc)
-+{
-+	enum Vmxnet3_RSSField rss_fields = adapter->rss_fields;
-+
-+	/* RSS does not support anything other than hashing
-+	 * to queues on src and dst IPs and ports
-+	 */
-+	if (nfc->data & ~(RXH_IP_SRC | RXH_IP_DST |
-+			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
-+		return -EINVAL;
-+
-+	switch (nfc->flow_type) {
-+	case TCP_V4_FLOW:
-+	case TCP_V6_FLOW:
-+		if (!(nfc->data & RXH_IP_SRC) ||
-+		    !(nfc->data & RXH_IP_DST) ||
-+		    !(nfc->data & RXH_L4_B_0_1) ||
-+		    !(nfc->data & RXH_L4_B_2_3))
-+			return -EINVAL;
-+		break;
-+	case UDP_V4_FLOW:
-+		if (!(nfc->data & RXH_IP_SRC) ||
-+		    !(nfc->data & RXH_IP_DST))
-+			return -EINVAL;
-+		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-+		case 0:
-+			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP4;
-+			break;
-+		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-+			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP4;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case UDP_V6_FLOW:
-+		if (!(nfc->data & RXH_IP_SRC) ||
-+		    !(nfc->data & RXH_IP_DST))
-+			return -EINVAL;
-+		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-+		case 0:
-+			rss_fields &= ~VMXNET3_RSS_FIELDS_UDPIP6;
-+			break;
-+		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-+			rss_fields |= VMXNET3_RSS_FIELDS_UDPIP6;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case ESP_V4_FLOW:
-+	case AH_V4_FLOW:
-+	case AH_ESP_V4_FLOW:
-+		if (!(nfc->data & RXH_IP_SRC) ||
-+		    !(nfc->data & RXH_IP_DST))
-+			return -EINVAL;
-+		switch (nfc->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3)) {
-+		case 0:
-+			rss_fields &= ~VMXNET3_RSS_FIELDS_ESPIP4;
-+			break;
-+		case (RXH_L4_B_0_1 | RXH_L4_B_2_3):
-+			rss_fields |= VMXNET3_RSS_FIELDS_ESPIP4;
-+		break;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case ESP_V6_FLOW:
-+	case AH_V6_FLOW:
-+	case AH_ESP_V6_FLOW:
-+	case SCTP_V4_FLOW:
-+	case SCTP_V6_FLOW:
-+		if (!(nfc->data & RXH_IP_SRC) ||
-+		    !(nfc->data & RXH_IP_DST) ||
-+		    (nfc->data & RXH_L4_B_0_1) ||
-+		    (nfc->data & RXH_L4_B_2_3))
-+			return -EINVAL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* if we changed something we need to update flags */
-+	if (rss_fields != adapter->rss_fields) {
-+		adapter->default_rss_fields = false;
-+		if (netif_running(netdev)) {
-+			struct Vmxnet3_DriverShared *shared = adapter->shared;
-+			union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
-+			unsigned long flags;
-+
-+			spin_lock_irqsave(&adapter->cmd_lock, flags);
-+			cmdInfo->setRssFields = rss_fields;
-+			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+					       VMXNET3_CMD_SET_RSS_FIELDS);
-+
-+			/* Not all requested RSS may get applied, so get and
-+			 * cache what was actually applied.
-+			 */
-+			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+					       VMXNET3_CMD_GET_RSS_FIELDS);
-+			adapter->rss_fields =
-+				VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
-+			spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-+		} else {
-+			/* When the device is activated, we will try to apply
-+			 * these rules and cache the applied value later.
-+			 */
-+			adapter->rss_fields = rss_fields;
-+		}
-+	}
-+	return 0;
-+}
- 
- static int
- vmxnet3_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info,
- 		  u32 *rules)
- {
- 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-+	int err = 0;
-+
- 	switch (info->cmd) {
- 	case ETHTOOL_GRXRINGS:
- 		info->data = adapter->num_rx_queues;
--		return 0;
-+		break;
-+	case ETHTOOL_GRXFH:
-+		if (!VMXNET3_VERSION_GE_4(adapter)) {
-+			err = -EOPNOTSUPP;
-+			break;
-+		}
-+		err = vmxnet3_get_rss_hash_opts(adapter, info);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
- 	}
--	return -EOPNOTSUPP;
-+
-+	return err;
-+}
-+
-+static int
-+vmxnet3_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info)
++static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
 +{
 +	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-+	int err = 0;
 +
-+	if (!VMXNET3_VERSION_GE_4(adapter)) {
-+		err = -EOPNOTSUPP;
-+		goto done;
++	if (VMXNET3_VERSION_GE_4(adapter)) {
++		netdev->hw_enc_features |= NETIF_F_SG | NETIF_F_RXCSUM |
++			NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
++			NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
++			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
++			NETIF_F_GSO_UDP_TUNNEL_CSUM;
 +	}
++}
 +
-+	switch (info->cmd) {
-+	case ETHTOOL_SRXFH:
-+		err = vmxnet3_set_rss_hash_opt(netdev, adapter, info);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
++static void vmxnet3_disable_encap_offloads(struct net_device *netdev)
++{
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++
++	if (VMXNET3_VERSION_GE_4(adapter)) {
++		netdev->hw_enc_features &= ~(NETIF_F_SG | NETIF_F_RXCSUM |
++			NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
++			NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
++			NETIF_F_LRO | NETIF_F_GSO_UDP_TUNNEL |
++			NETIF_F_GSO_UDP_TUNNEL_CSUM);
 +	}
++}
 +
-+done:
-+	return err;
- }
+ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+ 	unsigned long flags;
+ 	netdev_features_t changed = features ^ netdev->features;
++	netdev_features_t tun_offload_mask = NETIF_F_GSO_UDP_TUNNEL |
++					     NETIF_F_GSO_UDP_TUNNEL_CSUM;
++	u8 udp_tun_enabled = (netdev->features & tun_offload_mask) != 0;
  
- #ifdef VMXNET3_RSS
-@@ -887,6 +1105,7 @@ static const struct ethtool_ops vmxnet3_ethtool_ops = {
- 	.get_ringparam     = vmxnet3_get_ringparam,
- 	.set_ringparam     = vmxnet3_set_ringparam,
- 	.get_rxnfc         = vmxnet3_get_rxnfc,
-+	.set_rxnfc         = vmxnet3_set_rxnfc,
- #ifdef VMXNET3_RSS
- 	.get_rxfh_indir_size = vmxnet3_get_rss_indir_size,
- 	.get_rxfh          = vmxnet3_get_rss,
+ 	if (changed & (NETIF_F_RXCSUM | NETIF_F_LRO |
+-		       NETIF_F_HW_VLAN_CTAG_RX)) {
++		       NETIF_F_HW_VLAN_CTAG_RX | tun_offload_mask)) {
+ 		if (features & NETIF_F_RXCSUM)
+ 			adapter->shared->devRead.misc.uptFeatures |=
+ 			UPT1_F_RXCSUM;
+@@ -297,6 +326,17 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+ 			adapter->shared->devRead.misc.uptFeatures &=
+ 			~UPT1_F_RXVLAN;
+ 
++		if ((features & tun_offload_mask) != 0 && !udp_tun_enabled) {
++			vmxnet3_enable_encap_offloads(netdev);
++			adapter->shared->devRead.misc.uptFeatures |=
++			UPT1_F_RXINNEROFLD;
++		} else if ((features & tun_offload_mask) == 0 &&
++			   udp_tun_enabled) {
++			vmxnet3_disable_encap_offloads(netdev);
++			adapter->shared->devRead.misc.uptFeatures &=
++			~UPT1_F_RXINNEROFLD;
++		}
++
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+ 				       VMXNET3_CMD_UPDATE_FEATURE);
 diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index e803ffad75d6..d52ccc3eeba2 100644
+index d52ccc3eeba2..86db809c7592 100644
 --- a/drivers/net/vmxnet3/vmxnet3_int.h
 +++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -377,6 +377,8 @@ struct vmxnet3_adapter {
- 	u16 rxdata_desc_size;
- 
- 	bool rxdataring_enabled;
-+	bool default_rss_fields;
-+	enum Vmxnet3_RSSField rss_fields;
- 
- 	struct work_struct work;
- 
-@@ -438,6 +440,8 @@ struct vmxnet3_adapter {
- 
- #define VMXNET3_COAL_RBC_RATE(usecs) (1000000 / usecs)
- #define VMXNET3_COAL_RBC_USECS(rbc_rate) (1000000 / rbc_rate)
-+#define VMXNET3_RSS_FIELDS_DEFAULT (VMXNET3_RSS_FIELDS_TCPIP4 | \
-+				    VMXNET3_RSS_FIELDS_TCPIP6)
- 
- int
- vmxnet3_quiesce_dev(struct vmxnet3_adapter *adapter);
+@@ -219,10 +219,16 @@ struct vmxnet3_tx_ctx {
+ 	bool   ipv4;
+ 	bool   ipv6;
+ 	u16 mss;
+-	u32 eth_ip_hdr_size; /* only valid for pkts requesting tso or csum
+-				 * offloading
++	u32    l4_offset;	/* only valid for pkts requesting tso or csum
++				 * offloading. For encap offload, it refers to
++				 * inner L4 offset i.e. it includes outer header
++				 * encap header and inner eth and ip header size
++				 */
++
++	u32	l4_hdr_size;	/* only valid if mss != 0
++				 * Refers to inner L4 hdr size for encap
++				 * offload
+ 				 */
+-	u32 l4_hdr_size;     /* only valid if mss != 0 */
+ 	u32 copy_size;       /* # of bytes copied into the data ring */
+ 	union Vmxnet3_GenericDesc *sop_txd;
+ 	union Vmxnet3_GenericDesc *eop_txd;
 -- 
 2.11.0
 
