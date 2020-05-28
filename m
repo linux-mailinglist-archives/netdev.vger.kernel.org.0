@@ -2,117 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76EFB1E6834
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 19:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7D31E684D
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 19:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405354AbgE1RFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 13:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405407AbgE1RFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 13:05:39 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2361C08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 10:05:37 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id w3so3779109qkb.6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 10:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tGkDf6mJcTrsNOnlJbD+viQnRh8tORh0UNParL/Vk5U=;
-        b=lxXV/z/G/u1epdJi38cmDZQtoT9Qn2lUpCu7bG5AMGSGu0usr955VJ6TPUI6l8PVF+
-         g3Hz5Tk4B25omEBuiQ1ldO0xYvgp6c8FtyE4Oz4NA61zN/5p+D5gEgOeaskIpcs9sTwy
-         zhkL5k9tTSHPp9MZoWiqgJUe9IQb9ipPmrZOWq9F0zem7hGh/AsVGirwalRU+7Cj/Zba
-         forM+LBgrwD4Bq4/w6ipCT/5UoyRPUAAaMROF5gYsQbu3lmHanW4GHK2tK+mM4iz2dQI
-         30BMyDdApiO8nr4iXpuK04MhUGy1D023kxCFOnUFnkjgNJfM2yLoWWkSPvfo4BT7AqHu
-         hF4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tGkDf6mJcTrsNOnlJbD+viQnRh8tORh0UNParL/Vk5U=;
-        b=GNt32WG8DAMrbFnu9vqPkuSLshYVZ2C39tDzeSO51v6DHof6VEghfa+X6jhMcVO5W+
-         DF7N0m4d8MsKUwRXxO7UWcZ4L+DrVMs/JXHo/1G5JC86Z+hdCzVMp3IBBj3m9eJ7AU0S
-         /2vFREHlj+BBQRIEVHc8ru3Mpvl+M6Zj2iFcLrkKLHwGtB1SG9DffDuqgK6Bu1330Dnn
-         mQ+OuPaFX4JjkUQiyCmG0i9DtCAI/FqK1WDSVX4rNN65IecEaEjXodRZLJsmWuVDSxcx
-         Z7DWX1i+FoRyfUQ2SkUyhulYFp1gncKRsnUuTGFxAaonhUezTlFKxm4NukPeEAflbHiv
-         0vcQ==
-X-Gm-Message-State: AOAM533cWwP679ZqATAcbMWSrOmakEZway6GYmWLCYX5HTmNBuiUf6xe
-        C2ovUwTit4tuMYDrsfZANJfWxB2R
-X-Google-Smtp-Source: ABdhPJx8hVQNaJ6r4unZReOfHqYa6WDE7JtamH/9gvw27W24PB8LrEwXRvsMj9ML3uAZd+N5E44fmQ==
-X-Received: by 2002:a37:79c5:: with SMTP id u188mr3691862qkc.300.1590685536444;
-        Thu, 28 May 2020 10:05:36 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:8798:f98:652b:63f1])
-        by smtp.gmail.com with ESMTPSA id g66sm5151783qkb.122.2020.05.28.10.05.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 10:05:35 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] tun: correct header offsets in napi frags mode
-Date:   Thu, 28 May 2020 13:05:32 -0400
-Message-Id: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.rc0.183.gde8f92d652-goog
+        id S2405545AbgE1RHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 13:07:33 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15882 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405353AbgE1RHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 13:07:31 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04SH5VfE010223;
+        Thu, 28 May 2020 10:07:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=ttpklS1jCjfldmKIMBzGwqeDTHTIzeohYbM/31d+z+g=;
+ b=QbD1JXduP0r4nMGPWf8zwmXRu8aBrgeZW7uldKNmq7oy/M3jXRmpQD92Go5kdrbaqxXE
+ 8yyHFsWpQ3iRWN763uI9Zj9dVep+8EjyC9jsOHbQG0dP+R1qi9r3N4ZNxh0MzN0pScK2
+ It+mkrOxS/vbDyM9YH3afv8LGXo2pqbNoSU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 319bqcuysr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 28 May 2020 10:07:08 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 28 May 2020 10:06:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ULHtXmn1HonriYbs4H6yqquPDEp+b+R0K+64dlsEjil+mt+pQflAnRw3cgzlFBtrzGDTNcA1p6P94vREsKDW0Sq19+DzztWhWPp7yYOtLC82Dl1fbN07bYHXkGcDTyi0palsRVgfqclxLIcA3D9fAUZbv+HYE5tI88zMocS8OnDJNbWztlFt9kC9+Iw20JFnyFfFVHzZFb63VNMsJQtJftAaSDbNVd6VzzZ3Iym1C3AxPk+pUO/HhZ4bc5nYmGYkTQ6fEgaQEoe2Pnzdwxl3sDYnocwjRL60x3qNwIMcthD/B/ZK7roVA2MpqB8TSc9EE2j4rN17yDjEAuSB/U1+zQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ttpklS1jCjfldmKIMBzGwqeDTHTIzeohYbM/31d+z+g=;
+ b=B1G+DUNq9r7tDrZKBsdH9BlIXfBIeRbyFvHkLT6Uf9wgHcMu4d+FGncHynzMhSnWfOHp6Xx+RpXK0ENF6Ozpl+pIgc2ctMA55WIs8+5/aG6FrwQ/idDISlcwrEw+GbCGKtorODdOTSnm0u5EICegCBY1j4lmfBQ682dv2gnDlQZRmUn5U+gkou7YLHeicBUt29pQHAApRqUTC9jq0/JCSxx9gLRNPDQV8l1IF+mQN8IPIfFtCdpKLJhAf75T8QORzkwUI8aL0TK0pdc0uQHTZBNDW+JlqIseeMszWY16t21xHjDIrZ8+zDVm3JAYZloJ2zpW1YcUgCi3zQt2XAwjzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ttpklS1jCjfldmKIMBzGwqeDTHTIzeohYbM/31d+z+g=;
+ b=C2ieEJbYcf4YukfpLWYfoPd8zdL8qdsnp2k7DbSGBhaC1mGIEIyanvB4EvWnQqDsU17IxVaHLQCCH1DFvzHjJ3BzQGOXPejN1Qc/hDsmHlT4WZvMP1vbolxa8w6hdCK5x71/Vsk8CeR9sf9rRpmQxaLvprQVZEMqAJ7SdMi26h8=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2901.namprd15.prod.outlook.com (2603:10b6:a03:b5::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Thu, 28 May
+ 2020 17:06:20 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3021.030; Thu, 28 May 2020
+ 17:06:20 +0000
+Subject: Re: [PATCH 12/23] bpf: handle the compat string in
+ bpf_trace_copy_string better
+To:     Christoph Hellwig <hch@lst.de>
+CC:     Andrew Morton <akpm@linux-foundation.org>, <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        <linux-parisc@vger.kernel.org>, <linux-um@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20200521152301.2587579-1-hch@lst.de>
+ <20200521152301.2587579-13-hch@lst.de>
+ <20200527190432.e4af1fba00c13cb1421f5a37@linux-foundation.org>
+ <2b64fae6-394c-c1e5-8963-c256f4284065@fb.com> <20200528043957.GA28494@lst.de>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <a1aa26f4-8c0a-5f8a-8460-6d61f167702d@fb.com>
+Date:   Thu, 28 May 2020 10:06:17 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.1
+In-Reply-To: <20200528043957.GA28494@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY3PR04CA0020.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::25) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:454a) by BY3PR04CA0020.namprd04.prod.outlook.com (2603:10b6:a03:217::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Thu, 28 May 2020 17:06:19 +0000
+X-Originating-IP: [2620:10d:c090:400::5:454a]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 278fbe6b-98ee-444c-8673-08d80329716f
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2901:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2901B71907B4435B8A2226D8D38E0@BYAPR15MB2901.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0417A3FFD2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: j+dC+D5XnjWBEwmX69PNibEbzdzeS//UupfgsW5iCfA/4BzJjnuRqUkGNa5HHwHohkAoXBoMLYcE1YPW0rtXDlvbcTLUzGRW5/Y6WfRvV5yDmCOT5p2jN1YVg2HIs7QtrGDWpcO97bvsjaPcsaXotfRBCscT1o5W54kYrpfeNT4/62ZU3jSNOClbPCPHUt26nU1qsjmzT3lArBxk/StGoBKsYoDYy3Xp74W9AT7mc9arwuf6rBGZ+crZbz+VZDK949fixOH/kxt5JMAwel5g1kFscLIQ1d+XfmO7kNuj0+Jp07verDvZU8qz+5cMl7iXAHmHSyPiXArsOY3YxoRdid9Uk7NRr+yqqB0PTs2Bsje1+b8+MM4TG3OfmmGFfLiSBWTZxZT8wqEpQjccyQe2m5iCXlJ7oL2k/masGX0UYg7IJgpN96gfcLdDJLZN3H5Bdpu5MKliakpXCaRMqirWFy1A0YjhKrBVT7PBBMac368=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(136003)(376002)(346002)(396003)(366004)(316002)(66946007)(8936002)(31686004)(6486002)(8676002)(478600001)(966005)(2906002)(16526019)(7416002)(6512007)(52116002)(2616005)(186003)(6916009)(86362001)(6506007)(36756003)(31696002)(53546011)(5660300002)(66556008)(54906003)(66476007)(4326008)(21314003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: G6TOGe79IZkCyKy+ZwRwltpLTkOoyiefOFATjdDt9FZ7qIKHS9nqr+S1nrVwldUmPloX4mp+HBXj2hgI3J/xbhqUtwKoSkvT05CNbxfUpOL74OGtKVAxQ88OSoMmbAt4K9NqBjoyu7WpTA5wIEcoWR7322cnrLoNY/qE4kHuHJfZZ4oB5AgdYW2QNQAOchYxGU8wz0EkSABXiFBN6XNS4vqIdT/yr/FtTcEkbsibQagPBgBlECWhw1zmM1mJb6zdUBm1ej2FCVkzu/rVlO9Rgu9jgulsD5qiytEa4UZ7XmqY+5dnfE5Fmh+L1nF8k4G8fHN5qM5TStZVta50kCz9BISbkmYifg2vh95yYW+cdQgb1PvqBoYygIzlhIef1CEdRzLZLuk6WTBK3WXy6rO/RIrHiM8KLFbcPMmqOn8ceTJ/f0waHhLetmujm8Y8Vl8/7iTJVgEOG5g5eqxN3xjXG564TSArKA/vMNHastVVWThWNg+FTRMW3V9o31Pjuek/Pf5gK5I6FVtyiYvZLp+ydQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 278fbe6b-98ee-444c-8673-08d80329716f
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 17:06:20.7410
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bXZ/iBHo8JZOLnK0G2nipYyS7Q8UyWtDTAA/ELwEGBVm+PqR0S3DrFNOzm9Tmka5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2901
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-28_03:2020-05-28,2020-05-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=742 spamscore=0 mlxscore=0 malwarescore=0
+ bulkscore=0 adultscore=0 phishscore=0 clxscore=1015 priorityscore=1501
+ impostorscore=0 cotscore=-2147483648 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005280119
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
 
-Tun in IFF_NAPI_FRAGS mode calls napi_gro_frags. Unlike netif_rx and
-netif_gro_receive, this expects skb->data to point to the mac layer.
 
-But skb_probe_transport_header, __skb_get_hash_symmetric, and
-xdp_do_generic in tun_get_user need skb->data to point to the network
-header. Flow dissection also needs skb->protocol set, so
-eth_type_trans has to be called.
+On 5/27/20 9:39 PM, Christoph Hellwig wrote:
+> On Wed, May 27, 2020 at 07:26:30PM -0700, Yonghong Song wrote:
+>>> --- a/kernel/trace/bpf_trace.c~xxx
+>>> +++ a/kernel/trace/bpf_trace.c
+>>> @@ -588,15 +588,22 @@ BPF_CALL_5(bpf_seq_printf, struct seq_fi
+>>>    		}
+>>>      		if (fmt[i] == 's') {
+>>> +			void *unsafe_ptr;
+>>> +
+>>>    			/* try our best to copy */
+>>>    			if (memcpy_cnt >= MAX_SEQ_PRINTF_MAX_MEMCPY) {
+>>>    				err = -E2BIG;
+>>>    				goto out;
+>>>    			}
+>>>    -			err = strncpy_from_unsafe(bufs->buf[memcpy_cnt],
+>>> -						  (void *) (long) args[fmt_cnt],
+>>> -						  MAX_SEQ_PRINTF_STR_LEN);
+>>> +			unsafe_ptr = (void *)(long)args[fmt_cnt];
+>>> +			if ((unsigned long)unsafe_ptr < TASK_SIZE) {
+>>> +				err = strncpy_from_user_nofault(
+>>> +					bufs->buf[memcpy_cnt], unsafe_ptr,
+>>> +					MAX_SEQ_PRINTF_STR_LEN);
+>>> +			} else {
+>>> +				err = -EFAULT;
+>>> +			}
+>>
+>> This probably not right.
+>> The pointer stored at args[fmt_cnt] is a kernel pointer,
+>> but it could be an invalid address and we do not want to fault.
+>> Not sure whether it exists or not, we should use
+>> strncpy_from_kernel_nofault()?
+> 
+> If you know it is a kernel pointer with this series it should be
+> strncpy_from_kernel_nofault.  But even before the series it should have
+> been strncpy_from_unsafe_strict.
 
-Temporarily pull ETH_HLEN to make control flow the same for frags and
-not frags. Then push the header just before calling napi_gro_frags.
+The use of strncpy_from_unsafe() mimics old bpf_trace_printk() 
+implementation which just changed to _strict version:
+https://lkml.org/lkml/2020/5/18/1309
 
-Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- drivers/net/tun.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+Agreed that we should change to strncpy_from_unsafe_strict().
+I can submit a patch for this.
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 44889eba1dbc..b984733c6c31 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1871,8 +1871,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		skb->dev = tun->dev;
- 		break;
- 	case IFF_TAP:
--		if (!frags)
--			skb->protocol = eth_type_trans(skb, tun->dev);
-+		if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
-+			err = -ENOMEM;
-+			goto drop;
-+		}
-+		skb->protocol = eth_type_trans(skb, tun->dev);
- 		break;
- 	}
- 
-@@ -1929,9 +1932,12 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	}
- 
- 	if (frags) {
-+		u32 headlen;
-+
- 		/* Exercise flow dissector code path. */
--		u32 headlen = eth_get_headlen(tun->dev, skb->data,
--					      skb_headlen(skb));
-+		skb_push(skb, ETH_HLEN);
-+		headlen = eth_get_headlen(tun->dev, skb->data,
-+					  skb_headlen(skb));
- 
- 		if (unlikely(headlen > skb_headlen(skb))) {
- 			this_cpu_inc(tun->pcpu_stats->rx_dropped);
--- 
-2.27.0.rc0.183.gde8f92d652-goog
-
+Thanks!
