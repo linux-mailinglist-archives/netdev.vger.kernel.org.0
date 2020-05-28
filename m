@@ -2,78 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A637F1E615E
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955EB1E6160
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 14:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389910AbgE1Mtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 08:49:45 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5371 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389878AbgE1Mtk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 08:49:40 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A12B5E49FDD03BFFA4BD;
-        Thu, 28 May 2020 20:49:28 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 28 May 2020
- 20:49:22 +0800
-Subject: Re: [PATCH net-next 00/11] net: hns3: misc updates for -next
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <kuba@kernel.org>
-References: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <927a292f-baef-2627-0dd9-5d0f7ad47417@huawei.com>
-Date:   Thu, 28 May 2020 20:49:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S2389969AbgE1MuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 08:50:16 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:54890 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389851AbgE1MuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 08:50:12 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SCcB6f077838;
+        Thu, 28 May 2020 12:50:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=42pW05J+XGKKbj5116SvnJ6S67bu8Mxa49NL4WicG40=;
+ b=EaK3zKf/TUl6Wd7VsummzrwfJVG5Y93Xh6hhruHbf7oaNJ+851oyypQG8hPMz4+cU9/o
+ ywLqMW1IoorIjhRYxbboKP0+uB57Cmdj14BYoXBXeHUFWNqCPf+EoONAgDN+IhTTzQJz
+ jTEcr8qfZvr7Lfbq2s/OUKgDyFE0R+LqtmxlEyNGE08+JNT9d3CxflVjg4BzZkfvNHAL
+ UzksfDCkH25/i2my3bcakBNxNoccEV+phHXxDfO3Lhh8A/d7YnriiZOTauqdD9zkxTVF
+ jC0LHCygtdEmhR3VqjAB9LIiypaFApkk6Z0VBmmheI0rowt6h+kGx6/r3LSasPQZpkDG GA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 318xe1msbj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 28 May 2020 12:50:05 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04SCbcum004032;
+        Thu, 28 May 2020 12:50:05 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 317j5v71bg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 May 2020 12:50:05 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 04SCo3Ur002534;
+        Thu, 28 May 2020 12:50:03 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 28 May 2020 05:50:02 -0700
+Date:   Thu, 28 May 2020 15:49:57 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vishal Kulkarni <vishal@chelsio.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] cxgb4: cleanup error code in setup_sge_queues_uld()
+Message-ID: <20200528124957.GD1219412@mwanda>
 MIME-Version: 1.0
-In-Reply-To: <1590669912-21867-1-git-send-email-tanhuazhong@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9634 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005280087
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9634 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ adultscore=0 cotscore=-2147483648 mlxscore=0 bulkscore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 malwarescore=0
+ clxscore=1011 impostorscore=0 suspectscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005280087
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, please ignore this patchset, will resend it later.
+The caller doesn't care about the error codes, they only check for zero
+vs non-zero.  Still, it's better to preserve the negative error codes
+from alloc_uld_rxqs() instead of changing it to 1.  We can also return
+directly if there is a failure.
 
-On 2020/5/28 20:45, Huazhong Tan wrote:
-> This patchset includes some updates for the HNS3 ethernet driver.
-> 
-> #1 adds a missing mutex destroy.
-> #2&3 refactor two function, make them more readable and maintainable.
-> #4&5 fix unsuitable type of gro enable field both for PF & VF.
-> #6-#10 removes some unused fields, macro and redundant definitions.
-> #11 adds more debug info for parsing speed fails.
-> 
-> Huazhong Tan (11):
->    net: hns3: add a missing mutex destroy in hclge_init_ad_dev()
->    net: hns3: refactor hclge_config_tso()
->    net: hns3: refactor hclge_query_bd_num_cmd_send()
->    net: hns3: modify an incorrect type in struct hclge_cfg_gro_status_cmd
->    net: hns3: modify an incorrect type in struct
->      hclgevf_cfg_gro_status_cmd
->    net: hns3: remove some unused fields in struct hns3_nic_priv
->    net: hns3; remove unused HNAE3_RESTORE_CLIENT in enum
->      hnae3_reset_notify_type
->    net: hns3: remove unused struct hnae3_unic_private_info
->    net: hns3: remove two duplicated register macros in hclgevf_main.h
->    net: hns3: remove some unused fields in struct hclge_dev
->    net: hns3: print out speed info when parsing speed fails
-> 
->   drivers/net/ethernet/hisilicon/hns3/hnae3.h        | 12 ------
->   drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 22 -----------
->   .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  4 +-
->   .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 44 ++++++++++------------
->   .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  6 ---
->   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  4 +-
->   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  8 ++--
->   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  4 +-
->   8 files changed, 29 insertions(+), 75 deletions(-)
-> 
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+This isn't a bugfix so it should probably go to net-next, but the code
+is pretty old.
+
+The other error handling only checks the last iteration in the
+for_each_port() loop.  I didn't change that because it's slightly
+riskier and I can't test the code.
+
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+index 6b1d3df4b9bae..9e3c6b36cde89 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+@@ -174,13 +174,14 @@ static int
+ setup_sge_queues_uld(struct adapter *adap, unsigned int uld_type, bool lro)
+ {
+ 	struct sge_uld_rxq_info *rxq_info = adap->sge.uld_rxq_info[uld_type];
+-	int i, ret = 0;
++	int i, ret;
+ 
+-	ret = !(!alloc_uld_rxqs(adap, rxq_info, lro));
++	ret = alloc_uld_rxqs(adap, rxq_info, lro);
++	if (ret)
++		return ret;
+ 
+ 	/* Tell uP to route control queue completions to rdma rspq */
+-	if (adap->flags & CXGB4_FULL_INIT_DONE &&
+-	    !ret && uld_type == CXGB4_ULD_RDMA) {
++	if (adap->flags & CXGB4_FULL_INIT_DONE && uld_type == CXGB4_ULD_RDMA) {
+ 		struct sge *s = &adap->sge;
+ 		unsigned int cmplqid;
+ 		u32 param, cmdop;
+-- 
+2.26.2
 
