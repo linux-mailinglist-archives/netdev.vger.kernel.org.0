@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ADF91E588F
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6C01E5884
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 09:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgE1H0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 03:26:06 -0400
-Received: from mga02.intel.com ([134.134.136.20]:14688 "EHLO mga02.intel.com"
+        id S1726712AbgE1HZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 03:25:45 -0400
+Received: from mga02.intel.com ([134.134.136.20]:14695 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbgE1HZn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726593AbgE1HZn (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 28 May 2020 03:25:43 -0400
-IronPort-SDR: H0SDbIBveDA0bjSW4egTnSqJjwjkG/b1mj+dI2Bm8MQ244nd8ODdSIcp3fWNEyRk6PHdiOW443
- C9QdilDK6FhQ==
+IronPort-SDR: 2O2Rp7GHp3R/BpoKU9O/klzCSrQnud7/aHyKOPcDgC6UpXnbR5Nn1gxM3xfhH810ykgEXNh7g3
+ ghpp7cNcbfpg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 00:25:42 -0700
-IronPort-SDR: rDQuV0S8KmpbjhV4KzDOEgsrIUs2sf6Nsf3cSEG2uwqI4SnLtV8XC5a4fk6RMKLEcjuCoDPG0a
- jifCcK5RFT2A==
+IronPort-SDR: ZJ0VYW9lFOS//Ia69CUu79B1M97RoKTml7GLGhhNrXG/gzEzKBdVw7VXBPyMGXRUM+jjQMGm+T
+ c9AOXqbqgozg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; 
-   d="scan'208";a="310831119"
+   d="scan'208";a="310831122"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by FMSMGA003.fm.intel.com with ESMTP; 28 May 2020 00:25:42 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Surabhi Boob <surabhi.boob@intel.com>, netdev@vger.kernel.org,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 06/15] ice: Fix for memory leaks and modify ICE_FREE_CQ_BUFS
-Date:   Thu, 28 May 2020 00:25:29 -0700
-Message-Id: <20200528072538.1621790-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 07/15] ice: Add more Rx errors to netdev's rx_error counter
+Date:   Thu, 28 May 2020 00:25:30 -0700
+Message-Id: <20200528072538.1621790-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200528072538.1621790-1-jeffrey.t.kirsher@intel.com>
 References: <20200528072538.1621790-1-jeffrey.t.kirsher@intel.com>
@@ -44,116 +43,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Surabhi Boob <surabhi.boob@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-Handle memory leaks during control queue initialization and
-buffer allocation failures. The macro ICE_FREE_CQ_BUFS is modified to
-re-use for this fix.
+Currently we are only including illegal_bytes and rx_crc_errors in the
+PF netdev's rx_error counter. There are many more causes of Rx errors
+that the device supports and reports via Ethtool. Accumulate all Rx
+errors in the PF netdev's rx_error counter.
 
-Signed-off-by: Surabhi Boob <surabhi.boob@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_controlq.c | 49 +++++++++++--------
- 1 file changed, 28 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
-index 9a865962296d..62c2c1e621d2 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.c
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
-@@ -199,7 +199,9 @@ ice_alloc_rq_bufs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- 		cq->rq.r.rq_bi[i].pa = 0;
- 		cq->rq.r.rq_bi[i].size = 0;
- 	}
-+	cq->rq.r.rq_bi = NULL;
- 	devm_kfree(ice_hw_to_dev(hw), cq->rq.dma_head);
-+	cq->rq.dma_head = NULL;
- 
- 	return ICE_ERR_NO_MEMORY;
- }
-@@ -245,7 +247,9 @@ ice_alloc_sq_bufs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- 		cq->sq.r.sq_bi[i].pa = 0;
- 		cq->sq.r.sq_bi[i].size = 0;
- 	}
-+	cq->sq.r.sq_bi = NULL;
- 	devm_kfree(ice_hw_to_dev(hw), cq->sq.dma_head);
-+	cq->sq.dma_head = NULL;
- 
- 	return ICE_ERR_NO_MEMORY;
- }
-@@ -304,6 +308,28 @@ ice_cfg_rq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- 	return 0;
- }
- 
-+#define ICE_FREE_CQ_BUFS(hw, qi, ring)					\
-+do {									\
-+	int i;								\
-+	/* free descriptors */						\
-+	if ((qi)->ring.r.ring##_bi)					\
-+		for (i = 0; i < (qi)->num_##ring##_entries; i++)	\
-+			if ((qi)->ring.r.ring##_bi[i].pa) {		\
-+				dmam_free_coherent(ice_hw_to_dev(hw),	\
-+					(qi)->ring.r.ring##_bi[i].size,	\
-+					(qi)->ring.r.ring##_bi[i].va,	\
-+					(qi)->ring.r.ring##_bi[i].pa);	\
-+					(qi)->ring.r.ring##_bi[i].va = NULL;\
-+					(qi)->ring.r.ring##_bi[i].pa = 0;\
-+					(qi)->ring.r.ring##_bi[i].size = 0;\
-+		}							\
-+	/* free the buffer info list */					\
-+	if ((qi)->ring.cmd_buf)						\
-+		devm_kfree(ice_hw_to_dev(hw), (qi)->ring.cmd_buf);	\
-+	/* free DMA head */						\
-+	devm_kfree(ice_hw_to_dev(hw), (qi)->ring.dma_head);		\
-+} while (0)
-+
- /**
-  * ice_init_sq - main initialization routine for Control ATQ
-  * @hw: pointer to the hardware structure
-@@ -357,6 +383,7 @@ static enum ice_status ice_init_sq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- 	goto init_ctrlq_exit;
- 
- init_ctrlq_free_rings:
-+	ICE_FREE_CQ_BUFS(hw, cq, sq);
- 	ice_free_cq_ring(hw, &cq->sq);
- 
- init_ctrlq_exit:
-@@ -416,33 +443,13 @@ static enum ice_status ice_init_rq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- 	goto init_ctrlq_exit;
- 
- init_ctrlq_free_rings:
-+	ICE_FREE_CQ_BUFS(hw, cq, rq);
- 	ice_free_cq_ring(hw, &cq->rq);
- 
- init_ctrlq_exit:
- 	return ret_code;
- }
- 
--#define ICE_FREE_CQ_BUFS(hw, qi, ring)					\
--do {									\
--	int i;								\
--	/* free descriptors */						\
--	for (i = 0; i < (qi)->num_##ring##_entries; i++)		\
--		if ((qi)->ring.r.ring##_bi[i].pa) {			\
--			dmam_free_coherent(ice_hw_to_dev(hw),		\
--					   (qi)->ring.r.ring##_bi[i].size,\
--					   (qi)->ring.r.ring##_bi[i].va,\
--					   (qi)->ring.r.ring##_bi[i].pa);\
--			(qi)->ring.r.ring##_bi[i].va = NULL;		\
--			(qi)->ring.r.ring##_bi[i].pa = 0;		\
--			(qi)->ring.r.ring##_bi[i].size = 0;		\
--		}							\
--	/* free the buffer info list */					\
--	if ((qi)->ring.cmd_buf)						\
--		devm_kfree(ice_hw_to_dev(hw), (qi)->ring.cmd_buf);	\
--	/* free DMA head */						\
--	devm_kfree(ice_hw_to_dev(hw), (qi)->ring.dma_head);		\
--} while (0)
--
- /**
-  * ice_shutdown_sq - shutdown the Control ATQ
-  * @hw: pointer to the hardware structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index c2da3e1a2e17..93a42ff7496b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4295,7 +4295,13 @@ void ice_update_vsi_stats(struct ice_vsi *vsi)
+ 	if (vsi->type == ICE_VSI_PF) {
+ 		cur_ns->rx_crc_errors = pf->stats.crc_errors;
+ 		cur_ns->rx_errors = pf->stats.crc_errors +
+-				    pf->stats.illegal_bytes;
++				    pf->stats.illegal_bytes +
++				    pf->stats.rx_len_errors +
++				    pf->stats.rx_undersize +
++				    pf->hw_csum_rx_error +
++				    pf->stats.rx_jabber +
++				    pf->stats.rx_fragments +
++				    pf->stats.rx_oversize;
+ 		cur_ns->rx_length_errors = pf->stats.rx_len_errors;
+ 		/* record drops from the port level */
+ 		cur_ns->rx_missed_errors = pf->stats.eth.rx_discards;
 -- 
 2.26.2
 
