@@ -2,74 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0811E61FB
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30821E6235
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 15:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390284AbgE1NRj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 May 2020 09:17:39 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45422 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390140AbgE1NRh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 09:17:37 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id B4519ADD3;
-        Thu, 28 May 2020 13:17:34 +0000 (UTC)
-Date:   Thu, 28 May 2020 15:17:33 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-Id: <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
-In-Reply-To: <20200528130738.GT1551@shell.armlinux.org.uk>
-References: <20200528121121.125189-1-tbogendoerfer@suse.de>
-        <20200528130738.GT1551@shell.armlinux.org.uk>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        id S2390396AbgE1N2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 09:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390384AbgE1N15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 09:27:57 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7D3C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:27:55 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id n5so3194428wmd.0
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 06:27:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9cN8WC7B8xH4SW3c0YEgj3hG2uP+gsYVa8Phs/daLJo=;
+        b=XhU9Ag1ZLhT6nRnPcN/QI44p0PvvTskUnXmbN7WZRjd0YK63lIUd2JzL7Ymo5MnHpF
+         CKuiJgYA8GajqzmjbrwTZBPpRm1rdmf9aUTcTr1Ptu7f5DEizfgwzQrBN1yqo1ZynKXM
+         gsHFRlzRGEEKjj4pUGIUil9HKgvMyyc+xTk3o3rxmRZ/WDY2zuuNKPNoGZvDvhFReQPU
+         JmRi9ZP6d6BgpPtIXPvFqOgY2ngEhp0ozEYddVmRNK/q3inC/U8ubvRcTlBaypFAdyte
+         9nV1SyMkXnOZOBNr6wmwBL5sDwijzaWBPwXlRsa4Qmfc7ohCOkuaeKf+EOcAtG2Tvg/2
+         dM+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9cN8WC7B8xH4SW3c0YEgj3hG2uP+gsYVa8Phs/daLJo=;
+        b=BGoun6UErJ/xdqOEIY88v5wBca7rJ12+NIirtuzkqkr8OUTpaZKbePQ9mpc7YH6hTI
+         3wGxbP8RSJOftBAqPS5ojP3CzO+TEa4XtnmIDa/BwoLhLwBSATQ9lhh67l5Yz84U2UN5
+         1jeNAOmaoppQi5/K2o/+tNUnspi7h6opjCBRAERWaDSR8R/y/ntXGjWPwUDISp00Sa1W
+         KhGgq9n23rZF7ndjZRZx++cCszstX+k2qy5UHhNe4P0QIgQ59riy8qv9TR0DQWrzpNcf
+         DAgt63LLbj86iOkLNz5DVGAE/35d+XLliyQ/0LOb+Jlzg+HmZ/eaolPcbUkXln3S7Rrb
+         0ExA==
+X-Gm-Message-State: AOAM533mPxuD0w+sl/9oubPwv6nNABr5ZH5n5/knJAKr6/qUr3RiKnV+
+        FuQp/An5idEuW7FUlsYAbmUWlA==
+X-Google-Smtp-Source: ABdhPJwGxbatIHlP4QiBp7yS7pM9Cy7ihGVx/tvTL9NgArY/12jr4DGk9+/NG/bPpKAD3mawZpovqQ==
+X-Received: by 2002:a1c:a943:: with SMTP id s64mr3345147wme.103.1590672474339;
+        Thu, 28 May 2020 06:27:54 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id q15sm6175408wrf.87.2020.05.28.06.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 06:27:53 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH net-next] dt-bindings: net: rename the bindings document for MediaTek STAR MAC
+Date:   Thu, 28 May 2020 15:27:43 +0200
+Message-Id: <20200528132743.9221-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.26.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 May 2020 14:07:38 +0100
-Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-> On Thu, May 28, 2020 at 02:11:21PM +0200, Thomas Bogendoerfer wrote:
-> > Commit d14e078f23cc ("net: marvell: mvpp2: only reprogram what is necessary
-> >  on mac_config") disabled auto negotiation bypass completely, which breaks
-> > platforms enabling bypass via firmware (not the best option, but it worked).
-> > Since 1000BaseX/2500BaseX ports neither negotiate speed nor duplex mode
-> > we could enable auto negotiation bypass to get back information about link
-> > state.
-> 
-> Thanks, but your commit is missing some useful information.
-> 
-> Which platforms have broken?
+The driver itself was renamed before getting merged into mainline, but
+the binding document kept the old name. This makes both names consistent.
 
-it's an Ambedded MARS-400
- 
-> Can you describe the situation where you require this bit to be set?
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ .../net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml}        | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename Documentation/devicetree/bindings/net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml} (100%)
 
-as I have no exact design details I'm just talking about what I can see
-on that platform. It looks like the switch connecting the internal nodes
-doesn't run autoneg on the internal links. So the link to the internal
-nodes will never come up. These links are running 2500BaseX so speed/duplex
-is clean and by enabling bypass I'll get a proper link state, too.
-
-> We should not be enabling bypass mode as a matter of course, it exists
-> to work around broken setups which do not send the control word.
-
-if you call it a broken setup I'm fine, but this doesn't solve the problem,
-which exists now. What would be your solution ?
-
-Thomas.
-
+diff --git a/Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
+similarity index 100%
+rename from Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml
+rename to Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
 -- 
-SUSE Software Solutions Germany GmbH
-HRB 36809 (AG Nürnberg)
-Geschäftsführer: Felix Imendörffer
+2.26.1
+
