@@ -2,113 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0297A1E5BBF
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 11:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6231E5BD9
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 11:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbgE1JWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 05:22:55 -0400
-Received: from mail-eopbgr80079.outbound.protection.outlook.com ([40.107.8.79]:13434
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728161AbgE1JWy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 May 2020 05:22:54 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JcxrkGEnbcFqIBQAAEMcv3solf9nsZ0eeELmnuFFEu8leIPwXs+pjPF7l2mwjTmrpJBMJiZri9vv7basD3Ac+a6ebZnxFpTlJkaRNhyDDrlncLEMrHhQIax4kz20PEhAInVjLnW5QM+9BgeD63+h37Ge5BatxoEFy6Y8fXC3yXUL5iiW0G263+Qlb5E9da4e3NQjJUbF+TqPP+diHVEpnhGXcWwMSYYkfb5u75jnaI8zx3MqHM5T7alJzt+oCjiXzeqzIOLAC6yElWer0COp/KfNEq6pGbV042ruVPryy+/xoo89948SbpF407gzq8u4u06DJx90MNclzLDZD4R2NQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C8hi750IbBEYUwKp1d/bC+LLqwxq2WOcCx5xFqfg+QY=;
- b=jIIdm8NHTdDqORLG704cUj5ZCkHM3C/e07kt0M+y3AaOlwPFe4xhoYbUy6gYRNbGKtqAikuH/HKmNSuRlY1qFtDk2iVUuToYmUxORze0Vm8qO0or/NigrmpeQ1c54UcECV2jSyK6bWLWXojhCjkH14KBhZcOB6VI2vyXiufdmYfb620yfVCSi9OJcXc9JBQAWsPtKVV6RNFuDLc6ffktaeJ0lSwyd+pwYVKXR9HTmkmrefbQPechim+z0iWxav5KFffOYek680rEbV4cuDln0gKgYA/UQEvLOZcZyn79lCct54L6DByuJBfePb8HKGQM9vbJ2vSbWO1LErik1egcFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C8hi750IbBEYUwKp1d/bC+LLqwxq2WOcCx5xFqfg+QY=;
- b=m1Ampq4KFD3DQ3nRUYIbtqnPEoy+glLA2VHQltd4YggpLv+o85nLEGa3m2CthKGTdt4PKbusZE8yQrx102Xh36B0s1Sfizkp7Vh+7JDl6B5gYZ/3QiflDUupjtjLGTSnAbrWptHr+hyX+zZcv+HOjDL1sAGRb7cwP9/B/qlpeuk=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB4793.eurprd05.prod.outlook.com (2603:10a6:7:a2::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3021.27; Thu, 28 May 2020 09:22:49 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3045.018; Thu, 28 May 2020
- 09:22:49 +0000
-References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com> <20200528084052.n7yeo2nu2vq4eibv@pengutronix.de>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Amit Cohen <amitc@mellanox.com>,
-        "andrew\@lunn.ch" <andrew@lunn.ch>, mlxsw <mlxsw@mellanox.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Link down reasons
-In-reply-to: <20200528084052.n7yeo2nu2vq4eibv@pengutronix.de>
-Date:   Thu, 28 May 2020 11:22:47 +0200
-Message-ID: <87y2pctnvc.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0140.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::45) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1728310AbgE1J2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 05:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728199AbgE1J2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 05:28:38 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E319C05BD1E
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 02:28:38 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id s8so27062604wrt.9
+        for <netdev@vger.kernel.org>; Thu, 28 May 2020 02:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=172udTlm8IWHiuigsnIJMwLagLWL5Ooey4uLMzOO7Zo=;
+        b=RnskyQ8C1Xeq57i4wEE3ROwD2TxUTVU39RZqFK9L2I+8rMojgwwkqACfxXU/YHpVPN
+         mRTpXYhl7mBJy7XAkyUWzgsOvZ8fW+BZrDAa0SnilrcZz/i87bZAi5dBY9qG/QBQYFbi
+         JqTjYc80FfyXvyBTRoEhTTtmgLJg9/3xjdRyVS5Og+LxoFwnWlcaM+FaOmWPwYJ0SvvB
+         bD+bbn4yfvUG3xm9P1Ry4z9zw+mJKvuFniPegbtcG1UZK9lLw8cyP/4A2ye9Mij2Uwsm
+         axnwXsZ0eq6sNi7ScNrp38zZLvH0rnSr6rSFjrFJzQ/xdx5Z/vpuKzQntjOm1lhgPE2T
+         Ylbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=172udTlm8IWHiuigsnIJMwLagLWL5Ooey4uLMzOO7Zo=;
+        b=QH97UKvoj2e08tK3UuPY2G/HqzNBep5EcdlY0O/ruvyJUx1CbWhLiuQcZkovo1n19v
+         5LF0Gwx9O5tW2bwDqtFfs0asEkT/3oC7QJBPJgAA41zqsAwsgFD+ZXEWDAG80GDZWV9k
+         SzeNrIwNaQLS6xP6lWKIPMluP+QknWuRXkq+gugPOyr2gWkt0eEvDYqm8suwLxDj1vQc
+         QvCBFMOquWLbpv+qgBnAVE4UdUCdAVLI1UZsBWoij+VUGPy1VclCGKIos3XcJ3EQ1iZK
+         Rex5az0pl+ZtsKYZ7umkJ043edh+Ap5KLnvefLgJyoixvB/9IQn7A+7903K+NUlryQZ/
+         S+yQ==
+X-Gm-Message-State: AOAM530gjSTe7wd9DxCRe75LbYC55xNB/AMPevulrt3CLl+ryOcd/PEK
+        hVKNNIJgcmgBa5XKzejb8WeldXIs
+X-Google-Smtp-Source: ABdhPJwlRKDwGYTPaotm9+fke5ISZFZ/HDkkrqTlijbRlGbAwRJ+RK0E6TYRuvkaPrC5wPTfkti9Nw==
+X-Received: by 2002:adf:df91:: with SMTP id z17mr2582035wrl.273.1590658116681;
+        Thu, 28 May 2020 02:28:36 -0700 (PDT)
+Received: from ?IPv6:2a00:23c5:e10f:4100:bea8:a6ff:fe72:e4df? ([2a00:23c5:e10f:4100:bea8:a6ff:fe72:e4df])
+        by smtp.gmail.com with ESMTPSA id u74sm5584676wmu.13.2020.05.28.02.28.35
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 May 2020 02:28:36 -0700 (PDT)
+From:   Kai Wohlfahrt <kai.wohlfahrt@gmail.com>
+Subject: Packets to own IP are sent via IPSec tunnel with IPv6
+To:     netdev@vger.kernel.org
+Message-ID: <fb957019-d1d7-959b-6366-ef27f7aa8e82@gmail.com>
+Date:   Thu, 28 May 2020 10:28:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM0PR01CA0140.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Thu, 28 May 2020 09:22:48 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 381a1a49-8e56-45c8-d301-08d802e8b06f
-X-MS-TrafficTypeDiagnostic: HE1PR05MB4793:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB4793F1C6BDEE883E9F2A6360DB8E0@HE1PR05MB4793.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0417A3FFD2
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /KoQzHF7E5Q59+4FXCM1fY/a7OyS1SzOXuCHWZrI03usu6Y4gTLUkDdjH+TtqgxCQ4Y3qf9+l6XJuqT/LrZ6Q59P0nWH0Wb7uFclBc0imVmn0JHtqc3YGt9b0pRrVBfW/oyY33VLHQsQ+uzBNU1CrXl3cXw803NJi74NdCHSbc1vOtoahssQ62pwlywCe9PQQtONLInHPUsQYgitRKKEgHtVFmTx89Zz8fGaFgYcLY4cjfFwiYoas375HlursDq9gxrAD7YpmieyTSXy8VQA7LzBJx2uUPrKrNiCS0dL3TTBnil2Jee5Tm1CCEJAqfCrjhhXYlqyDJDj7fJo7c7jog==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(52116002)(186003)(6916009)(83380400001)(6496006)(16526019)(3480700007)(5660300002)(66556008)(4326008)(66476007)(26005)(86362001)(54906003)(36756003)(956004)(2616005)(66946007)(8936002)(316002)(6486002)(7116003)(478600001)(8676002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: rKu/GiWTERRKAY5oDhYMerRtFFeH+wAYxsj3niRvuck5hRbqW0XtQfSq3+2208NY/dkX6tmGbe8ptyBRfUNUirEydEY3Ir4hW8yddDKn9ZMrCbIGhb18+dO1OwO/5ZYa+uxfxx8USCEzS11YlMcaBzxUVgbfHfNUtCi/SxlATsyi4ZmC5AVvwHZQ/WgYYDxGK+zFlEyHVeTZ+38vbBsedswGVFsf0zn8bFZxdxBP5wWnp7W3dtp5n0n3YDaxoPy7WnVagWIIeFc+jJy2NpEBnqV6eAE8Yhl0Nq/MKHUhIAN3QN5OAXxaw9D8TCxJM0MGkcm38xX+2yT7i7jxVP8n4XTIRxsEhJNU3VAglOJdpSzSwxe7V6hH09mGnMlkSyNp5IQnA07dc7M6Qjwa7kV/iapCNQsLuKyetJkc73MR07ymd1fqb7UT0vpvb7NJhZRNHOQYOyhVkF3cxiCz/v1WQL+t8/HO5qHvit4ialg5d/rmSL+Qd4yZahHhezIDpM8c
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 381a1a49-8e56-45c8-d301-08d802e8b06f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2020 09:22:48.9731
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gV9CqLmtI10eExsT7LvOtAyC7PbJmY1vOBLAC6OLV8lqqEPXim48FRceExytGqdMj4P/OSigs+A/kr9DcGnT2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4793
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
-Oleksij Rempel <o.rempel@pengutronix.de> writes:
+I noticed strange behaviour with an IPSec tunnel set up with strongswan.
+Discussing the issue on IRC, a strongswan developer suggested the issue
+is due to a kernel bug and I should ask here.
 
-> I would add some more reasons:
-> - master slave resolution issues: both link partners are master or
->   slave.
+The client connects to the server and is assigned an IPv6 address
+from a pool. The remote traffic selector of the tunnel includes this
+virtual IP so that multiple clients can communicate. However, when the
+client tries to ping its own virtual IP, traffic goes over the tunnel
+instead of via the loopback adapter (this shows in the TTL of the
+packet, latency > 1ms and strongswan's traffic counters). If the virtual
+IP addresses are IPv4, this issue does not occur. I'm running kernel
+5.4.41 and strongswan 5.8.1. The output of relevant commands is included
+below (IPs snipped), with more information including strongswan and
+kernel config at [1].
 
-I guess we should send the RFC, so that we can talk particulars. We
-currently don't have anything like master/slave mismatch in the API, but
-that's just because our FW does not report this. The idea is that if MAC
-and/or PHY driver can't express some fail using the existing codes, it
-creates a new one.
+On suggestion of strongswan developers, I tried to set
+`net.ipv6.conf.lo.disable_policy=1`, this made no visible difference. Is
+this a kernel bug, or other issue? I'm happy to help debug or test other
+configurations.
 
-> - signal quality drop. In this case driver should be extended to notify
->   the system if SQI is under some configurable limit.
+Many thanks,
+Kai
 
-As SQI goes down, will the PHY driver eventually shut down the port?
+[1]: https://gist.github.com/kwohlfahrt/6db96db25e44ae208178335b2cdb9523/0d14b393d659c9adce6a8c925656dd6b90dc65e0
 
-Because if yes, that's exactly the situation when it would later report,
-yeah, the link is down because SQI was rubbish. In the proposed API, we
-would model this as "signal integrity issue", with a possible subreason
-of "low SQI", or something along those lines.
+$ ip -6 addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN qlen 1000
+     inet6 ::1/128 scope host
+        valid_lft forever preferred_lft forever
+3: wlp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000
+     inet6 fd01::3/128 scope global nodad
+        valid_lft forever preferred_lft forever
+     inet6 2a00::e4df/64 scope global dynamic mngtmpaddr noprefixroute
+        valid_lft 315359984sec preferred_lft 315359984sec
+     inet6 fdaa::e4df/64 scope global mngtmpaddr noprefixroute
+        valid_lft forever preferred_lft forever
+     inet6 fe80::e4df/64 scope link
+        valid_lft forever preferred_lft forever
 
-E.g., mlxsw can report module temperatures. But whether the port goes
-down is a separate mechanism. So when a port is down, the driver can
-tell you, yeah, it is down, because it was overheated. And separate from
-that you can check the module temperatures. SQI might be a similar
-issue.
+$ ping -c3 fd01::3
+PING fd01::3(fd01::3) 56 data bytes
+64 bytes from fd01:: icmp_seq=1 ttl=63 time=306 ms
+64 bytes from fd01:: icmp_seq=2 ttl=63 time=6.64 ms
+64 bytes from fd01:: icmp_seq=3 ttl=63 time=8.02 ms
+
+--- fd01::3 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 6.636/106.842/305.875/140.738 ms
+
+$ ip -6 route show table all
+fd01::/64 via 2a00::280e dev wlp3s0 table 220 proto static src fd01::3 metric 1024 pref medium
+fdaa:::/64 via 2a00::280e dev wlp3s0 table 220 proto static src fd01::3 metric 1024 pref medium
+::1 dev lo proto kernel metric 256 pref medium
+2a00:::/64 dev wlp3s0 proto ra metric 303 mtu 1488 pref medium
+fd01::3 dev wlp3s0 proto kernel metric 256 pref medium
+fdaa:::/64 dev wlp3s0 proto ra metric 303 mtu 1488 pref medium
+fe80::/64 dev wlp3s0 proto kernel metric 256 pref medium
+default via fe80::44af dev wlp3s0 proto ra metric 303 mtu 1488 pref medium
+local ::1 dev lo table local proto kernel metric 0 pref medium
+local 2a00::e4df dev wlp3s0 table local proto kernel metric 0 pref medium
+local fd01::3 dev wlp3s0 table local proto kernel metric 0 pref medium
+local fdaa::e4df dev wlp3s0 table local proto kernel metric 0 pref medium
+local fe80::e4df dev wlp3s0 table local proto kernel metric 0 pref medium
+ff00::/8 dev wlp3s0 table local metric 256 pref medium
+ff00::/8 dev enp4s0 table local metric 256 linkdown pref medium
+
+$ ip -6 xfrm policy
+src fd01::3/128 dst fdaa:::/64
+	dir out priority 301695
+	tmpl src 2a00::e4df dst 2a00::280e
+		proto esp spi 0xc0a4e6ee reqid 3 mode tunnel
+src fd01::3/128 dst fd01::/64
+	dir out priority 301695
+	tmpl src 2a00::e4df dst 2a00::280e
+		proto esp spi 0xc0a4e6ee reqid 3 mode tunnel
+src fdaa:::/64 dst fd01::3/128
+	dir fwd priority 301695
+	tmpl src 2a00::280e dst 2a00::e4df
+		proto esp reqid 3 mode tunnel
+src fdaa:::/64 dst fd01::3/128
+	dir in priority 301695
+	tmpl src 2a00::280e dst 2a00::e4df
+		proto esp reqid 3 mode tunnel
+src fd01::/64 dst fd01::3/128
+	dir fwd priority 301695
+	tmpl src 2a00::280e dst 2a00::e4df
+		proto esp reqid 3 mode tunnel
+src fd01::/64 dst fd01::3/128
+	dir in priority 301695
+	tmpl src 2a00::280e dst 2a00::e4df
+		proto esp reqid 3 mode tunnel
+src ::/0 dst ::/0
+	socket in priority 0
+src ::/0 dst ::/0
+	socket out priority 0
+src ::/0 dst ::/0
+	socket in priority 0
+src ::/0 dst ::/0
+	socket out priority 0
