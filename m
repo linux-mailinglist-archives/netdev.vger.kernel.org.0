@@ -2,195 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 688F11E5B3C
-	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 10:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B761E5B80
+	for <lists+netdev@lfdr.de>; Thu, 28 May 2020 11:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728018AbgE1IyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 04:54:24 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28396 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727814AbgE1IyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 04:54:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590656061;
+        id S1728137AbgE1JLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 05:11:48 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:51921 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728080AbgE1JLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 05:11:48 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 9311A23E44;
+        Thu, 28 May 2020 11:11:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1590657106;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1lxwyCGxtxN9osgtnb8nkliEMVBjDWU5uxjafeU9/jk=;
-        b=NYGSbp9Tg8W6uZxQntFwqm9yHOYpYC6O49ZVIAx8Q9DyXPhS6mLW6+mh1J+B0iE4ebXp3i
-        PGAhxgEe1t+wxKj1WfN5zrkL+91Ax2MJxyQjyAZ/SsLQbSyFYBVZ+U9SlQIpFZYqicuU4r
-        7BpV09VD8tEcm85ZQZAjR+/N0groNpQ=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-496-sz0S-S1NOie8Q7tTfAQa9A-1; Thu, 28 May 2020 04:54:20 -0400
-X-MC-Unique: sz0S-S1NOie8Q7tTfAQa9A-1
-Received: by mail-ej1-f71.google.com with SMTP id t24so722582ejr.18
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 01:54:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=1lxwyCGxtxN9osgtnb8nkliEMVBjDWU5uxjafeU9/jk=;
-        b=JU2SGVRJM3dVEB9DuJ126MmvQW4oZ7XmQxX9hV8Fq7YVWsVnNxqmDHZy3vSgGcsHQg
-         hhImaWrzLB6R7KZTSI4U0Px06kw71jKrsByV4aBo3hQmDD44BEud2/OPMSROJ7XDGv9B
-         yZ7mlgMmHc67zTBARN5mtxR5F+dK0aLt0k4PuVjMqUTZ6MdevuUIp7W62WiwDzesFMA2
-         azgRkUOGAWQIXnXYSGtSsfMgjbc9IhC6sYw9tnXZHepDW8WCJtKmyqVIM2TVNY6x0pL9
-         /VmTb7+spjPN+eZd8Qz29PiKnFHSTLn+5DRm9Ws1B9+/ZRvX4okonq8/xdTDrTqO2Uuc
-         iHiA==
-X-Gm-Message-State: AOAM531o4/Jh50IAqJlrQ083zT8+9uxVwFJfKzSAJzAysIdnOeRZX8AJ
-        t0lqNQVw2D+y3ygDNrk1AQ+OSR79oFsgKTt6AdJBcZjAKnHhJcH/EaBc4kaeD/iIX9J7YwiulcV
-        HdSXN+3Y3VZlKXgxQ
-X-Received: by 2002:a17:906:3604:: with SMTP id q4mr2061468ejb.69.1590656058837;
-        Thu, 28 May 2020 01:54:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgrBGbo91q3XVOx83h18peGBrxYXFDyk5kdyTbbwMeDxGoJ04YNFCZFJkjHDM2PqgqQy8Mlg==
-X-Received: by 2002:a17:906:3604:: with SMTP id q4mr2061452ejb.69.1590656058545;
-        Thu, 28 May 2020 01:54:18 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id af15sm4891973ejc.89.2020.05.28.01.54.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 01:54:17 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 656671804EB; Thu, 28 May 2020 10:54:17 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH v2 bpf-next 2/5] bpf: Add support to attach bpf program to a devmap entry
-In-Reply-To: <20200528001423.58575-3-dsahern@kernel.org>
-References: <20200528001423.58575-1-dsahern@kernel.org> <20200528001423.58575-3-dsahern@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 28 May 2020 10:54:17 +0200
-Message-ID: <87imgg1lty.fsf@toke.dk>
+        bh=jQI9eKxgFwwqo7lAirfupMY1mvgzDKPVoZMhXExfpR4=;
+        b=o7d+xvIP36ic7ee5Au56p89Syr1PsUkuGH0H9KfGwIoShD9J7AVOlJyvHtEXbAk+6y4zSU
+        bmiqcn43mXeu70kr2lIoJZy9k9RMfXdG5b6P58hhpD6jmJ+W0dWmfBu87eMQgEJZIp41Di
+        W4AbgruL8QsTe+L5hTUdjLyOo+3TP5k=
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 28 May 2020 11:11:45 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v3 0/3] net: enetc: remove bootloader dependency
+In-Reply-To: <CA+h21hruQkYEYatnOSSc6r2EPR+SY-NbcKCRF6sX2oNLy84itg@mail.gmail.com>
+References: <20200528063847.27704-1-michael@walle.cc>
+ <0130cb1878a47efc23f23cf239d0380f@walle.cc>
+ <CA+h21hruQkYEYatnOSSc6r2EPR+SY-NbcKCRF6sX2oNLy84itg@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <043ef77349823caa9e2b058f44a11a06@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> writes:
+Am 2020-05-28 10:43, schrieb Vladimir Oltean:
+> On Thu, 28 May 2020 at 11:18, Michael Walle <michael@walle.cc> wrote:
+>> 
+>> Am 2020-05-28 08:38, schrieb Michael Walle:
+>> > These patches were picked from the following series:
+>> > https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
+>> > They have never been resent. I've picked them up, addressed Andrews
+>> > comments, fixed some more bugs and asked Claudiu if I can keep their
+>> > SOB
+>> > tags; he agreed. I've tested this on our board which happens to have a
+>> > bootloader which doesn't do the enetc setup in all cases. Though, only
+>> > SGMII mode was tested.
+>> >
+>> > changes since v2:
+>> >  - removed SOBs from "net: enetc: Initialize SerDes for SGMII and
+>> > USXGMII
+>> >    protocols" because almost everything has changed.
+>> >  - get a phy_device for the internal PCS PHY so we can use the phy_
+>> >    functions instead of raw mdiobus writes
+>> 
+>> mhh after reading,
+>> https://lore.kernel.org/netdev/CA+h21hoq2qkmxDFEb2QgLfrbC0PYRBHsca=0cDcGOr3txy9hsg@mail.gmail.com/
+>> this seems to be the wrong way of doing it.
+>> 
+>> -michael
+> 
+> FWIW, some time after the merge window closes, I plan to convert the
+> felix and seville drivers to mdio_device. It wouldn't be such a big
+> deal to also convert enetc to phylink then, and also do this
+> phy_device -> mdio_device for it too.
 
-> From: David Ahern <dsahern@gmail.com>
->
-> Add BPF_XDP_DEVMAP attach type for use with programs associated with a
-> DEVMAP entry.
->
-> Allow DEVMAPs to associate a program with a device entry by adding
-> a bpf_prog_fd to 'struct devmap_val'. Values read show the program
-> id, so the fd and id are a union.
->
-> The program associated with the fd must have type XDP with expected
-> attach type BPF_XDP_DEVMAP. When a program is associated with a device
-> index, the program is run on an XDP_REDIRECT and before the buffer is
-> added to the per-cpu queue. At this point rxq data is still valid; the
-> next patch adds tx device information allowing the prorgam to see both
-> ingress and egress device indices.
->
-> XDP generic is skb based and XDP programs do not work with skb's. Block
-> the use case by walking maps used by a program that is to be attached
-> via xdpgeneric and fail if any of them are DEVMAP / DEVMAP_HASH with
->  > 4-byte values.
->
-> Block attach of BPF_XDP_DEVMAP programs to devices.
->
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  include/linux/bpf.h            |  5 +++
->  include/uapi/linux/bpf.h       |  5 +++
->  kernel/bpf/devmap.c            | 79 +++++++++++++++++++++++++++++++++-
->  net/core/dev.c                 | 18 ++++++++
->  tools/include/uapi/linux/bpf.h |  5 +++
->  5 files changed, 110 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index efe8836b5c48..088751bc09aa 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1242,6 +1242,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->  		    struct net_device *dev_rx);
->  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
->  			     struct bpf_prog *xdp_prog);
-> +bool dev_map_can_have_prog(struct bpf_map *map);
->  
->  struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32 key);
->  void __cpu_map_flush(void);
-> @@ -1355,6 +1356,10 @@ static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_map *map
->  {
->  	return NULL;
->  }
-> +static inline bool dev_map_can_have_prog(struct bpf_map *map)
-> +{
-> +	return false;
-> +}
->  
->  static inline void __dev_flush(void)
->  {
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index d27302ecaa9c..2d9927b7a922 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -224,6 +224,7 @@ enum bpf_attach_type {
->  	BPF_CGROUP_INET6_GETPEERNAME,
->  	BPF_CGROUP_INET4_GETSOCKNAME,
->  	BPF_CGROUP_INET6_GETSOCKNAME,
-> +	BPF_XDP_DEVMAP,
->  	__MAX_BPF_ATTACH_TYPE
->  };
->  
-> @@ -3628,6 +3629,10 @@ struct xdp_md {
->  /* DEVMAP values */
->  struct devmap_val {
->  	__u32 ifindex;   /* device index */
-> +	union {
-> +		int   bpf_prog_fd;  /* prog fd on map write */
-> +		__u32 bpf_prog_id;  /* prog id on map read */
-> +	};
->  };
->  
->  enum sk_action {
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index 069a50113e26..a628585a31e1 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -64,6 +64,7 @@ struct bpf_dtab_netdev {
->  	struct net_device *dev; /* must be first member, due to tracepoint */
->  	struct hlist_node index_hlist;
->  	struct bpf_dtab *dtab;
-> +	struct bpf_prog *xdp_prog;
->  	struct rcu_head rcu;
->  	unsigned int idx;
->  	struct devmap_val val;
-> @@ -219,6 +220,8 @@ static void dev_map_free(struct bpf_map *map)
->  
->  			hlist_for_each_entry_safe(dev, next, head, index_hlist) {
->  				hlist_del_rcu(&dev->index_hlist);
-> +				if (dev->xdp_prog)
-> +					bpf_prog_put(dev->xdp_prog);
->  				dev_put(dev->dev);
->  				kfree(dev);
->  			}
-> @@ -233,6 +236,8 @@ static void dev_map_free(struct bpf_map *map)
->  			if (!dev)
->  				continue;
->  
-> +			if (dev->xdp_prog)
-> +				bpf_prog_put(dev->xdp_prog);
->  			dev_put(dev->dev);
->  			kfree(dev);
->  		}
-> @@ -319,6 +324,16 @@ static int dev_map_hash_get_next_key(struct bpf_map *map, void *key,
->  	return -ENOENT;
->  }
->  
-> +bool dev_map_can_have_prog(struct bpf_map *map)
-> +{
-> +	if ((map->map_type == BPF_MAP_TYPE_DEVMAP ||
-> +	     map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) &&
-> +	    map->value_size != 4)
 
-nit (since you've gotten rid of the magic sizes everywhere else) how about:
+Btw. you/we can also remove that magic SGMII link timer numbers:
 
-map->value_size != sizeof_field(struct devmap_val, ifindex)
+#define ENETC_PCS_LINK_TIMER_VAL(ms) \
+    ((u32)(125000000 * (ms) / 1000))
 
+Then for SGMII its ENETC_PCS_LINK_TIMER_VAL(1.6) and for 1000BaseX
+(and 2500BaseX?) its ENETC_PCS_LINK_TIMER_VAL(10) (which also match
+to the default value in the registers).
+
+Please note, that the current hardcoded values doesn't match the
+calculated ones precisely. I don't know where these are coming from,
+but the 1.6ms matches the SGMII spec.
+
+-michael
