@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B50F1E8581
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:45:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F1C1E8583
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:45:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbgE2Roz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:44:55 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:50818 "EHLO inva020.nxp.com"
+        id S1728111AbgE2Ro7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:44:59 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:44480 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726974AbgE2Roy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728033AbgE2Roy (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 29 May 2020 13:44:54 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A563E1A11E6;
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F17722000E1;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 993851A11D9;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E4E0E2000DE;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5C1D92039E;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id A7A602039E;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v3 3/7] dpaa2-eth: Add helper functions
-Date:   Fri, 29 May 2020 20:43:41 +0300
-Message-Id: <20200529174345.27537-4-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v3 4/7] dpaa2-eth: Add congestion group taildrop
+Date:   Fri, 29 May 2020 20:43:42 +0300
+Message-Id: <20200529174345.27537-5-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200529174345.27537-1-ioana.ciornei@nxp.com>
 References: <20200529174345.27537-1-ioana.ciornei@nxp.com>
@@ -40,8 +40,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 
-Add convenient helper functions that determines whether Rx/Tx pause
-frames are enabled based on link state flags received from firmware.
+The increase in number of ingress frame queues means we now risk
+depleting the buffer pool before the FQ taildrop kicks in.
+
+Congestion group taildrop allows us to control the number of frames that
+can accumulate on a group of Rx frame queues belonging to the same
+traffic class.  This setting coexists with the frame queue based
+taildrop: whichever limit gets hit first triggers the frame drop.
 
 Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
@@ -49,63 +54,115 @@ Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Changes in v3:
  - none
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c     |  3 +--
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h     | 11 +++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c |  5 ++---
- 3 files changed, 14 insertions(+), 5 deletions(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 35 ++++++++++++++-----
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 13 +++++--
+ 2 files changed, 38 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index b3722ad60fae..c521f4afba8e 100644
+index c521f4afba8e..8cbbebefdcfd 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1333,8 +1333,7 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
- 	 * Rx FQ taildrop configuration as well. We configure taildrop
- 	 * only when pause frame generation is disabled.
- 	 */
--	tx_pause = !!(state.options & DPNI_LINK_OPT_PAUSE) ^
--		   !!(state.options & DPNI_LINK_OPT_ASYM_PAUSE);
-+	tx_pause = dpaa2_eth_tx_pause_enabled(state.options);
- 	dpaa2_eth_set_rx_taildrop(priv, !tx_pause);
- 
- 	/* When we manage the MAC/PHY using phylink there is no need
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 7856f69bcf36..6384f6a23349 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -510,6 +510,17 @@ enum dpaa2_eth_rx_dist {
- 	(dpaa2_eth_cmp_dpni_ver((priv), DPNI_PAUSE_VER_MAJOR,	\
- 				DPNI_PAUSE_VER_MINOR) >= 0)
- 
-+static inline bool dpaa2_eth_tx_pause_enabled(u64 link_options)
-+{
-+	return !!(link_options & DPNI_LINK_OPT_PAUSE) ^
-+	       !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
-+}
-+
-+static inline bool dpaa2_eth_rx_pause_enabled(u64 link_options)
-+{
-+	return !!(link_options & DPNI_LINK_OPT_PAUSE);
-+}
-+
- static inline
- unsigned int dpaa2_eth_needed_headroom(struct dpaa2_eth_priv *priv,
- 				       struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-index 8bf169783bea..e88269fe3de7 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-@@ -130,9 +130,8 @@ static void dpaa2_eth_get_pauseparam(struct net_device *net_dev,
- 		return;
+@@ -1287,17 +1287,20 @@ static void disable_ch_napi(struct dpaa2_eth_priv *priv)
  	}
- 
--	pause->rx_pause = !!(link_options & DPNI_LINK_OPT_PAUSE);
--	pause->tx_pause = pause->rx_pause ^
--			  !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
-+	pause->rx_pause = dpaa2_eth_rx_pause_enabled(link_options);
-+	pause->tx_pause = dpaa2_eth_tx_pause_enabled(link_options);
- 	pause->autoneg = AUTONEG_DISABLE;
  }
  
+-static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv, bool enable)
++static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv,
++				      bool tx_pause)
+ {
+ 	struct dpni_taildrop td = {0};
+ 	struct dpaa2_eth_fq *fq;
+ 	int i, err;
+ 
+-	if (priv->rx_td_enabled == enable)
++	td.enable = !tx_pause;
++	if (priv->rx_td_enabled == td.enable)
+ 		return;
+ 
+-	td.enable = enable;
+-	td.threshold = DPAA2_ETH_TAILDROP_THRESH;
++	/* FQ taildrop: threshold is in bytes, per frame queue */
++	td.threshold = DPAA2_ETH_FQ_TAILDROP_THRESH;
++	td.units = DPNI_CONGESTION_UNIT_BYTES;
+ 
+ 	for (i = 0; i < priv->num_fqs; i++) {
+ 		fq = &priv->fq[i];
+@@ -1308,12 +1311,28 @@ static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv, bool enable)
+ 					fq->tc, fq->flowid, &td);
+ 		if (err) {
+ 			netdev_err(priv->net_dev,
+-				   "dpni_set_taildrop() failed\n");
+-			break;
++				   "dpni_set_taildrop(FQ) failed\n");
++			return;
++		}
++	}
++
++	/* Congestion group taildrop: threshold is in frames, per group
++	 * of FQs belonging to the same traffic class
++	 */
++	td.threshold = DPAA2_ETH_CG_TAILDROP_THRESH(priv);
++	td.units = DPNI_CONGESTION_UNIT_FRAMES;
++	for (i = 0; i < dpaa2_eth_tc_count(priv); i++) {
++		err = dpni_set_taildrop(priv->mc_io, 0, priv->mc_token,
++					DPNI_CP_GROUP, DPNI_QUEUE_RX,
++					i, 0, &td);
++		if (err) {
++			netdev_err(priv->net_dev,
++				   "dpni_set_taildrop(CG) failed\n");
++			return;
+ 		}
+ 	}
+ 
+-	priv->rx_td_enabled = enable;
++	priv->rx_td_enabled = td.enable;
+ }
+ 
+ static int link_state_update(struct dpaa2_eth_priv *priv)
+@@ -1334,7 +1353,7 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
+ 	 * only when pause frame generation is disabled.
+ 	 */
+ 	tx_pause = dpaa2_eth_tx_pause_enabled(state.options);
+-	dpaa2_eth_set_rx_taildrop(priv, !tx_pause);
++	dpaa2_eth_set_rx_taildrop(priv, tx_pause);
+ 
+ 	/* When we manage the MAC/PHY using phylink there is no need
+ 	 * to manually update the netif_carrier.
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 6384f6a23349..184d5d83e497 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -40,7 +40,7 @@
+  * frames in the Rx queues (length of the current frame is not
+  * taken into account when making the taildrop decision)
+  */
+-#define DPAA2_ETH_TAILDROP_THRESH	(64 * 1024)
++#define DPAA2_ETH_FQ_TAILDROP_THRESH	(64 * 1024)
+ 
+ /* Maximum number of Tx confirmation frames to be processed
+  * in a single NAPI call
+@@ -52,11 +52,20 @@
+  * how many 64B frames fit inside the taildrop threshold and add a margin
+  * to accommodate the buffer refill delay.
+  */
+-#define DPAA2_ETH_MAX_FRAMES_PER_QUEUE	(DPAA2_ETH_TAILDROP_THRESH / 64)
++#define DPAA2_ETH_MAX_FRAMES_PER_QUEUE	(DPAA2_ETH_FQ_TAILDROP_THRESH / 64)
+ #define DPAA2_ETH_NUM_BUFS		(DPAA2_ETH_MAX_FRAMES_PER_QUEUE + 256)
+ #define DPAA2_ETH_REFILL_THRESH \
+ 	(DPAA2_ETH_NUM_BUFS - DPAA2_ETH_BUFS_PER_CMD)
+ 
++/* Congestion group taildrop threshold: number of frames allowed to accumulate
++ * at any moment in a group of Rx queues belonging to the same traffic class.
++ * Choose value such that we don't risk depleting the buffer pool before the
++ * taildrop kicks in
++ */
++#define DPAA2_ETH_CG_TAILDROP_THRESH(priv)				\
++	(DPAA2_ETH_MAX_FRAMES_PER_QUEUE * dpaa2_eth_queue_count(priv) /	\
++	 dpaa2_eth_tc_count(priv))
++
+ /* Maximum number of buffers that can be acquired/released through a single
+  * QBMan command
+  */
 -- 
 2.17.1
 
