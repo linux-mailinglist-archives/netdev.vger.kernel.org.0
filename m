@@ -2,297 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E36511E87D3
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389211E87D6
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728123AbgE2Tag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 15:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59402 "EHLO
+        id S1727816AbgE2TbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 15:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726487AbgE2Taf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:30:35 -0400
-Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06050C03E969;
-        Fri, 29 May 2020 12:30:35 -0700 (PDT)
-Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=pengu.fritz.box); authenticated
-        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1jeki5-0003hF-O9; Fri, 29 May 2020 21:30:29 +0200
-From:   Roelof Berg <rberg@berg-solutions.de>
-To:     rberg@berg-solutions.de
-Cc:     andrew@lunn.ch, Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] lan743x: Added fixed link and RGMII support
-Date:   Fri, 29 May 2020 21:30:02 +0200
-Message-Id: <20200529193003.3717-1-rberg@berg-solutions.de>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1726866AbgE2TbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:31:22 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A14AC03E969
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 12:31:22 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id c35so2589181edf.5
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 12:31:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uhuxW8lRHGejGy34+laSiwOWnN8MuzwhQglsvWQi0tY=;
+        b=akLN/BHymf1n/nShUsk9yzERKnrcb2K765mqiUrHFwsAHoU1WJVajHQJE3WBSbOP2U
+         UdnSOAtMFPCdHcozafHJAGwVaSAlNbcZG2ofidFUhhr3YPq7iasZ8UXfwRXV8g10P9Ey
+         NCIQhReADEVh4EgWt4zFWD3LfenCYNt2XPLfyJVfgrRuHyVEl9FTtP4+jgSp50x+qkUe
+         7katu/AWJ8cV/BHi9LVRMW5XekQ7hyM8DdxhmfWYgfu/9l2gCzs+1C8tLmONZy0FkA5e
+         fjSvRbE2B4QgUiDaoeB1azQB54wU8zzbT16871h1/spexgylux4z3PGb/o4WMlNKwida
+         Bb1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uhuxW8lRHGejGy34+laSiwOWnN8MuzwhQglsvWQi0tY=;
+        b=mtHcUF8rNm+v9lvuZWup6YnOqfuxeopq8YnnBoy3e8vm+f3xIwTCGxeta1mgISIaEs
+         kVy93aTarhoz5kQhrQ4Lw4PF5TQXTCudg1AcQIk2qq5x1tZiFVTwG83gdkJhgpx/SCzk
+         5cPRwEmheDTmYuFMKGAibQVsfSoi5rLiIGp7fodMEp05A+OeLqkTq2xmGb5PuyYAJ4AE
+         k9yDOYl1bqfQcMgAdaHFozN2r5AhJxCCuy6S4yo44z6G3ZQ8AiO8KjT4Bj5soj7BUgyU
+         khF8yjtMCvSRjfdRefB/Z+8GA2n3cT9RHFOxSEp7/DSJWjtAvgCtpKEhefNBa7NaSfSt
+         5lRA==
+X-Gm-Message-State: AOAM530vnymEAXogGp41kEsxQhShdySJQvGgveSD9VMeq21FNiXL0ltC
+        o9qZA4Mr8IhC0Mh6I1Zqi3KnDwDbgmIhc91Tp/c=
+X-Google-Smtp-Source: ABdhPJy478Kti5Gd0YO27mN/ae3+kRr8ilJGq4PP7/qhwkwHenFGtsmWiUPH3IC3xfq3Nn66tA9bCHv2sr/lfreRR3s=
+X-Received: by 2002:a50:bf03:: with SMTP id f3mr10199296edk.368.1590780681060;
+ Fri, 29 May 2020 12:31:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1590780635;1d319076;
-X-HE-SMSGID: 1jeki5-0003hF-O9
+References: <20200527234113.2491988-1-olteanv@gmail.com> <20200527234113.2491988-7-olteanv@gmail.com>
+ <20200528145058.GA840827@lunn.ch>
+In-Reply-To: <20200528145058.GA840827@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 29 May 2020 22:31:09 +0300
+Message-ID: <CA+h21hqpiV1sp3+tXVuQoy95bXQ5DD6nvEKK1Mw72TutdoX-Bg@mail.gmail.com>
+Subject: Re: [PATCH net-next 06/11] net: dsa: ocelot: create a template for
+ the DSA tags on xmit
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Microchip lan7431 is frequently connected to a phy. However, it
-can also be directly connected to a MII remote peer without
-any phy in between. For supporting such a phyless hardware setup
-in Linux we utilized phylib, which supports a fixed-link
-configuration via the device tree. And we added support for
-defining the connection type R/GMII in the device tree.
+Hi Andrew,
 
-New behavior:
--------------
-. The automatic speed and duplex detection of the lan743x silicon
-  between mac and phy is disabled. Instead phylib is used like in
-  other typical Linux drivers. The usage of phylib allows to
-  specify fixed-link parameters in the device tree.
+On Thu, 28 May 2020 at 17:51, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, May 28, 2020 at 02:41:08AM +0300, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > With this patch we try to kill 2 birds with 1 stone.
+> >
+> > First of all, some switches that use tag_ocelot.c don't have the exact
+> > same bitfield layout for the DSA tags. The destination ports field is
+> > different for Seville VSC9953 for example. So the choices are to either
+> > duplicate tag_ocelot.c into a new tag_seville.c (sub-optimal) or somehow
+> > take into account a supposed ocelot->dest_ports_offset when packing this
+> > field into the DSA injection header (again not ideal).
+> >
+> > Secondly, tag_ocelot.c already needs to memset a 128-bit area to zero
+> > and call some packing() functions of dubious performance in the
+> > fastpath. And most of the values it needs to pack are pretty much
+> > constant (BYPASS=1, SRC_PORT=CPU, DEST=port index). So it would be good
+> > if we could improve that.
+> >
+> > The proposed solution is to allocate a memory area per port at probe
+> > time, initialize that with the statically defined bits as per chip
+> > hardware revision, and just perform a simpler memcpy in the fastpath.
+>
+> Hi Vladimir
+>
+> We try to keep the taggers independent of the DSA drivers. I think
+> tag_ocelot.c is the only one that breaks this.
+>
+> tag drivers are kernel modules. They have all the options of a kernel
+> module, such as init and exit functions. You could create these
+> templates in the module init function, and clean them up in the exit
+> function. You can also register multiple taggers in one
+> driver. tag_brcm.c does this as an example. So you can have a Seville
+> tagger which uses different templates to ocelot.
+>
+>        Andrew
 
-. The device tree entry phy-connection-type is supported now with
-  the modes RGMII or (G)MII (default).
+I don't particularly like that tag_brcm.c is riddled with #if /
+#endif, they make it difficult to follow.
 
-Development state:
-------------------
-. Tested with fixed-phy configurations. Not yet tested in normal
-  configurations with phy. Microchip kindly offered testing
-  as soon as the Corona measures allow this.
+And if I allocate/free the xmit template in the
+dsa_tag_driver_module_init / dsa_tag_driver_module_exit, how can I
+reach the pointer to the correct per-switch-per-port template in the
+ocelot_xmit function?
 
-. All review findings of Andrew Lunn are included
+Please note that ocelot_xmit is already stateful, and it _needs_ to be
+stateful: for 1588, it saves and increments the TX timestamp ID which
+will be matched to the data that is received in felix_irq_handler.
 
-Example:
---------
-&pcie {
-	status = "okay";
+And sja1105 also breaks the tagger/driver separation, and in even
+"worse" ways - see sja1105_xmit_tpid which transmits a different frame
+depending on which state the driver is in; also sja1105_decode_subvlan
+which on RX looks up a table populated by the driver.
 
-	host@0 {
-		reg = <0 0 0 0 0>;
+Generally speaking, I don't see any good reason why keeping the tagger
+and the driver separated should be a design goal, especially when the
+hotpath depends on stateful information (and the tagging driver can't
+do anything at all without a backing switch driver anyway). Separation
+could be done only in the simplest of cases, but as more advanced
+features are necessary (not arguing that the template I'm adding here
+is "advanced" stuff), this becomes practically impossible. Please also
+see this tag_ocelot.c patch which needs to take the classified VLAN
+from the DSA tag, or not, depending on the VLAN awareness state of the
+port:
+https://patchwork.ozlabs.org/project/netdev/patch/20200506074900.28529-7-xiaoliang.yang_1@nxp.com/
 
-		#address-cells = <3>;
-		#size-cells = <2>;
-
-		ethernet@0 {
-			compatible = "weyland-yutani,noscom1", "microchip,lan743x";
-			status = "okay";
-			reg = <0 0 0 0 0>;
-			phy-connection-type = "rgmii";
-
-			fixed-link {
-				speed = <100>;
-				full-duplex;
-			};
-		};
-	};
-};
-
-Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
----
- .../net/ethernet/microchip/lan743x_ethtool.c  |  4 +-
- drivers/net/ethernet/microchip/lan743x_main.c | 81 ++++++++++++++++---
- drivers/net/ethernet/microchip/lan743x_main.h |  6 ++
- drivers/net/ethernet/microchip/lan743x_ptp.c  |  2 +-
- 4 files changed, 80 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index 3a0b289d9771..c533d06fbe3a 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -2,11 +2,11 @@
- /* Copyright (C) 2018 Microchip Technology Inc. */
- 
- #include <linux/netdevice.h>
--#include "lan743x_main.h"
--#include "lan743x_ethtool.h"
- #include <linux/net_tstamp.h>
- #include <linux/pci.h>
- #include <linux/phy.h>
-+#include "lan743x_main.h"
-+#include "lan743x_ethtool.h"
- 
- /* eeprom */
- #define LAN743X_EEPROM_MAGIC		    (0x74A5)
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index a43140f7b5eb..36624e3c633b 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -8,7 +8,10 @@
- #include <linux/crc32.h>
- #include <linux/microchipphy.h>
- #include <linux/net_tstamp.h>
-+#include <linux/of_mdio.h>
-+#include <linux/of_net.h>
- #include <linux/phy.h>
-+#include <linux/phy_fixed.h>
- #include <linux/rtnetlink.h>
- #include <linux/iopoll.h>
- #include <linux/crc16.h>
-@@ -798,9 +801,9 @@ static int lan743x_mac_init(struct lan743x_adapter *adapter)
- 
- 	netdev = adapter->netdev;
- 
--	/* setup auto duplex, and speed detection */
-+	/* disable auto duplex, and speed detection. Phylib does that */
- 	data = lan743x_csr_read(adapter, MAC_CR);
--	data |= MAC_CR_ADD_ | MAC_CR_ASD_;
-+	data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
- 	data |= MAC_CR_CNTR_RST_;
- 	lan743x_csr_write(adapter, MAC_CR, data);
- 
-@@ -946,6 +949,7 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- {
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
- 	struct phy_device *phydev = netdev->phydev;
-+	u32 data;
- 
- 	phy_print_status(phydev);
- 	if (phydev->state == PHY_RUNNING) {
-@@ -953,6 +957,39 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- 		int remote_advertisement = 0;
- 		int local_advertisement = 0;
- 
-+		data = lan743x_csr_read(adapter, MAC_CR);
-+
-+		/* set interface mode */
-+		if (phy_interface_mode_is_rgmii(adapter->phy_mode))
-+			/* RGMII */
-+			data &= ~MAC_CR_MII_EN_;
-+		else
-+			/* GMII */
-+			data |= MAC_CR_MII_EN_;
-+
-+		/* set duplex mode */
-+		if (phydev->duplex)
-+			data |= MAC_CR_DPX_;
-+		else
-+			data &= ~MAC_CR_DPX_;
-+
-+		/* set bus speed */
-+		switch (phydev->speed) {
-+		case SPEED_10:
-+			data &= ~MAC_CR_CFG_H_;
-+			data &= ~MAC_CR_CFG_L_;
-+		break;
-+		case SPEED_100:
-+			data &= ~MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+		break;
-+		case SPEED_1000:
-+			data |= MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+		break;
-+		}
-+		lan743x_csr_write(adapter, MAC_CR, data);
-+
- 		memset(&ksettings, 0, sizeof(ksettings));
- 		phy_ethtool_get_link_ksettings(netdev, &ksettings);
- 		local_advertisement =
-@@ -980,20 +1017,44 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
- static int lan743x_phy_open(struct lan743x_adapter *adapter)
- {
- 	struct lan743x_phy *phy = &adapter->phy;
-+	struct device_node *phynode;
- 	struct phy_device *phydev;
- 	struct net_device *netdev;
- 	int ret = -EIO;
- 
- 	netdev = adapter->netdev;
--	phydev = phy_find_first(adapter->mdiobus);
--	if (!phydev)
--		goto return_error;
-+	phynode = of_node_get(adapter->pdev->dev.of_node);
-+	adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
-+
-+	if (phynode) {
-+		of_get_phy_mode(phynode, &adapter->phy_mode);
-+
-+		if (of_phy_is_fixed_link(phynode)) {
-+			ret = of_phy_register_fixed_link(phynode);
-+			if (ret) {
-+				netdev_err(netdev,
-+					   "cannot register fixed PHY\n");
-+				of_node_put(phynode);
-+				goto return_error;
-+			}
-+		}
-+		phydev = of_phy_connect(netdev, phynode,
-+					lan743x_phy_link_status_change, 0,
-+					adapter->phy_mode);
-+		of_node_put(phynode);
-+		if (!phydev)
-+			goto return_error;
-+	} else {
-+		phydev = phy_find_first(adapter->mdiobus);
-+		if (!phydev)
-+			goto return_error;
- 
--	ret = phy_connect_direct(netdev, phydev,
--				 lan743x_phy_link_status_change,
--				 PHY_INTERFACE_MODE_GMII);
--	if (ret)
--		goto return_error;
-+		ret = phy_connect_direct(netdev, phydev,
-+					 lan743x_phy_link_status_change,
-+					 adapter->phy_mode);
-+		if (ret)
-+			goto return_error;
-+	}
- 
- 	/* MAC doesn't support 1000T Half */
- 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 3b02eeae5f45..c61a40411317 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -4,6 +4,7 @@
- #ifndef _LAN743X_H
- #define _LAN743X_H
- 
-+#include <linux/phy.h>
- #include "lan743x_ptp.h"
- 
- #define DRIVER_AUTHOR   "Bryan Whitehead <Bryan.Whitehead@microchip.com>"
-@@ -104,10 +105,14 @@
- 	((value << 0) & FCT_FLOW_CTL_ON_THRESHOLD_)
- 
- #define MAC_CR				(0x100)
-+#define MAC_CR_MII_EN_			BIT(19)
- #define MAC_CR_EEE_EN_			BIT(17)
- #define MAC_CR_ADD_			BIT(12)
- #define MAC_CR_ASD_			BIT(11)
- #define MAC_CR_CNTR_RST_		BIT(5)
-+#define MAC_CR_DPX_			BIT(3)
-+#define MAC_CR_CFG_H_			BIT(2)
-+#define MAC_CR_CFG_L_			BIT(1)
- #define MAC_CR_RST_			BIT(0)
- 
- #define MAC_RX				(0x104)
-@@ -698,6 +703,7 @@ struct lan743x_rx {
- struct lan743x_adapter {
- 	struct net_device       *netdev;
- 	struct mii_bus		*mdiobus;
-+	phy_interface_t		phy_mode;
- 	int                     msg_enable;
- #ifdef CONFIG_PM
- 	u32			wolopts;
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 9399f6a98748..ab6d719d40f0 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -2,12 +2,12 @@
- /* Copyright (C) 2018 Microchip Technology Inc. */
- 
- #include <linux/netdevice.h>
--#include "lan743x_main.h"
- 
- #include <linux/ptp_clock_kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
- #include <linux/net_tstamp.h>
-+#include "lan743x_main.h"
- 
- #include "lan743x_ptp.h"
- 
--- 
-2.25.1
-
+Thanks,
+-Vladimir
