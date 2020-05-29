@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8280E1E8586
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:45:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B50F1E8581
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728125AbgE2RpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:45:04 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:44464 "EHLO inva021.nxp.com"
+        id S1728103AbgE2Roz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:44:55 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:50818 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728029AbgE2Ro4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 13:44:56 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5AD932010CF;
+        id S1726974AbgE2Roy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 13:44:54 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A563E1A11E6;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4DCC92010CA;
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 993851A11D9;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 10A322039E;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5C1D92039E;
         Fri, 29 May 2020 19:44:52 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v3 2/7] dpaa2-eth: Distribute ingress frames based on VLAN prio
-Date:   Fri, 29 May 2020 20:43:40 +0300
-Message-Id: <20200529174345.27537-3-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v3 3/7] dpaa2-eth: Add helper functions
+Date:   Fri, 29 May 2020 20:43:41 +0300
+Message-Id: <20200529174345.27537-4-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200529174345.27537-1-ioana.ciornei@nxp.com>
 References: <20200529174345.27537-1-ioana.ciornei@nxp.com>
@@ -40,414 +40,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 
-Configure static ingress classification based on VLAN PCP field.
-If the DPNI doesn't have enough traffic classes to accommodate all
-priority levels, the lowest ones end up on TC 0 (default on miss).
+Add convenient helper functions that determines whether Rx/Tx pause
+frames are enabled based on link state flags received from firmware.
 
 Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v3:
- - revert to explicitly cast mask to u16 * to not get into
-   sparse warnings
+ - none
 
-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 116 ++++++++++++++++
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |   1 +
- .../net/ethernet/freescale/dpaa2/dpni-cmd.h   |  34 +++++
- drivers/net/ethernet/freescale/dpaa2/dpni.c   | 131 ++++++++++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpni.h   |  36 +++++
- 5 files changed, 318 insertions(+)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c     |  3 +--
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h     | 11 +++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c |  5 ++---
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 01263e247d39..b3722ad60fae 100644
+index b3722ad60fae..c521f4afba8e 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2696,6 +2696,118 @@ static void update_tx_fqids(struct dpaa2_eth_priv *priv)
- 	priv->enqueue = dpaa2_eth_enqueue_qd;
- }
+@@ -1333,8 +1333,7 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
+ 	 * Rx FQ taildrop configuration as well. We configure taildrop
+ 	 * only when pause frame generation is disabled.
+ 	 */
+-	tx_pause = !!(state.options & DPNI_LINK_OPT_PAUSE) ^
+-		   !!(state.options & DPNI_LINK_OPT_ASYM_PAUSE);
++	tx_pause = dpaa2_eth_tx_pause_enabled(state.options);
+ 	dpaa2_eth_set_rx_taildrop(priv, !tx_pause);
  
-+/* Configure ingress classification based on VLAN PCP */
-+static int set_vlan_qos(struct dpaa2_eth_priv *priv)
-+{
-+	struct device *dev = priv->net_dev->dev.parent;
-+	struct dpkg_profile_cfg kg_cfg = {0};
-+	struct dpni_qos_tbl_cfg qos_cfg = {0};
-+	struct dpni_rule_cfg key_params;
-+	void *dma_mem, *key, *mask;
-+	u8 key_size = 2;	/* VLAN TCI field */
-+	int i, pcp, err;
-+
-+	/* VLAN-based classification only makes sense if we have multiple
-+	 * traffic classes.
-+	 * Also, we need to extract just the 3-bit PCP field from the VLAN
-+	 * header and we can only do that by using a mask
-+	 */
-+	if (dpaa2_eth_tc_count(priv) == 1 || !dpaa2_eth_fs_mask_enabled(priv)) {
-+		dev_dbg(dev, "VLAN-based QoS classification not supported\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	dma_mem = kzalloc(DPAA2_CLASSIFIER_DMA_SIZE, GFP_KERNEL);
-+	if (!dma_mem)
-+		return -ENOMEM;
-+
-+	kg_cfg.num_extracts = 1;
-+	kg_cfg.extracts[0].type = DPKG_EXTRACT_FROM_HDR;
-+	kg_cfg.extracts[0].extract.from_hdr.prot = NET_PROT_VLAN;
-+	kg_cfg.extracts[0].extract.from_hdr.type = DPKG_FULL_FIELD;
-+	kg_cfg.extracts[0].extract.from_hdr.field = NH_FLD_VLAN_TCI;
-+
-+	err = dpni_prepare_key_cfg(&kg_cfg, dma_mem);
-+	if (err) {
-+		dev_err(dev, "dpni_prepare_key_cfg failed\n");
-+		goto out_free_tbl;
-+	}
-+
-+	/* set QoS table */
-+	qos_cfg.default_tc = 0;
-+	qos_cfg.discard_on_miss = 0;
-+	qos_cfg.key_cfg_iova = dma_map_single(dev, dma_mem,
-+					      DPAA2_CLASSIFIER_DMA_SIZE,
-+					      DMA_TO_DEVICE);
-+	if (dma_mapping_error(dev, qos_cfg.key_cfg_iova)) {
-+		dev_err(dev, "QoS table DMA mapping failed\n");
-+		err = -ENOMEM;
-+		goto out_free_tbl;
-+	}
-+
-+	err = dpni_set_qos_table(priv->mc_io, 0, priv->mc_token, &qos_cfg);
-+	if (err) {
-+		dev_err(dev, "dpni_set_qos_table failed\n");
-+		goto out_unmap_tbl;
-+	}
-+
-+	/* Add QoS table entries */
-+	key = kzalloc(key_size * 2, GFP_KERNEL);
-+	if (!key) {
-+		err = -ENOMEM;
-+		goto out_unmap_tbl;
-+	}
-+	mask = key + key_size;
-+	*(u16 *)mask = cpu_to_be16(VLAN_PRIO_MASK);
-+
-+	key_params.key_iova = dma_map_single(dev, key, key_size * 2,
-+					     DMA_TO_DEVICE);
-+	if (dma_mapping_error(dev, key_params.key_iova)) {
-+		dev_err(dev, "Qos table entry DMA mapping failed\n");
-+		err = -ENOMEM;
-+		goto out_free_key;
-+	}
-+
-+	key_params.mask_iova = key_params.key_iova + key_size;
-+	key_params.key_size = key_size;
-+
-+	/* We add rules for PCP-based distribution starting with highest
-+	 * priority (VLAN PCP = 7). If this DPNI doesn't have enough traffic
-+	 * classes to accommodate all priority levels, the lowest ones end up
-+	 * on TC 0 which was configured as default
-+	 */
-+	for (i = dpaa2_eth_tc_count(priv) - 1, pcp = 7; i >= 0; i--, pcp--) {
-+		*(u16 *)key = cpu_to_be16(pcp << VLAN_PRIO_SHIFT);
-+		dma_sync_single_for_device(dev, key_params.key_iova,
-+					   key_size * 2, DMA_TO_DEVICE);
-+
-+		err = dpni_add_qos_entry(priv->mc_io, 0, priv->mc_token,
-+					 &key_params, i, i);
-+		if (err) {
-+			dev_err(dev, "dpni_add_qos_entry failed\n");
-+			dpni_clear_qos_table(priv->mc_io, 0, priv->mc_token);
-+			goto out_unmap_key;
-+		}
-+	}
-+
-+	priv->vlan_cls_enabled = true;
-+
-+	/* Table and key memory is not persistent, clean everything up after
-+	 * configuration is finished
-+	 */
-+out_unmap_key:
-+	dma_unmap_single(dev, key_params.key_iova, key_size * 2, DMA_TO_DEVICE);
-+out_free_key:
-+	kfree(key);
-+out_unmap_tbl:
-+	dma_unmap_single(dev, qos_cfg.key_cfg_iova, DPAA2_CLASSIFIER_DMA_SIZE,
-+			 DMA_TO_DEVICE);
-+out_free_tbl:
-+	kfree(dma_mem);
-+
-+	return err;
-+}
-+
- /* Configure the DPNI object this interface is associated with */
- static int setup_dpni(struct fsl_mc_device *ls_dev)
- {
-@@ -2758,6 +2870,10 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
- 			goto close;
- 	}
- 
-+	err = set_vlan_qos(priv);
-+	if (err && err != -EOPNOTSUPP)
-+		goto close;
-+
- 	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
- 				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
- 	if (!priv->cls_rules) {
+ 	/* When we manage the MAC/PHY using phylink there is no need
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 580ad5fd7bd8..7856f69bcf36 100644
+index 7856f69bcf36..6384f6a23349 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -427,6 +427,7 @@ struct dpaa2_eth_priv {
- 	u64 rx_cls_fields;
- 	struct dpaa2_eth_cls_rule *cls_rules;
- 	u8 rx_cls_enabled;
-+	u8 vlan_cls_enabled;
- 	struct bpf_prog *xdp_prog;
- #ifdef CONFIG_DEBUG_FS
- 	struct dpaa2_debugfs dbg;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-index d9b6918807af..0048e856f85e 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-@@ -59,6 +59,10 @@
+@@ -510,6 +510,17 @@ enum dpaa2_eth_rx_dist {
+ 	(dpaa2_eth_cmp_dpni_ver((priv), DPNI_PAUSE_VER_MAJOR,	\
+ 				DPNI_PAUSE_VER_MINOR) >= 0)
  
- #define DPNI_CMDID_SET_RX_TC_DIST			DPNI_CMD(0x235)
++static inline bool dpaa2_eth_tx_pause_enabled(u64 link_options)
++{
++	return !!(link_options & DPNI_LINK_OPT_PAUSE) ^
++	       !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
++}
++
++static inline bool dpaa2_eth_rx_pause_enabled(u64 link_options)
++{
++	return !!(link_options & DPNI_LINK_OPT_PAUSE);
++}
++
+ static inline
+ unsigned int dpaa2_eth_needed_headroom(struct dpaa2_eth_priv *priv,
+ 				       struct sk_buff *skb)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index 8bf169783bea..e88269fe3de7 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -130,9 +130,8 @@ static void dpaa2_eth_get_pauseparam(struct net_device *net_dev,
+ 		return;
+ 	}
  
-+#define DPNI_CMDID_SET_QOS_TBL				DPNI_CMD(0x240)
-+#define DPNI_CMDID_ADD_QOS_ENT				DPNI_CMD(0x241)
-+#define DPNI_CMDID_REMOVE_QOS_ENT			DPNI_CMD(0x242)
-+#define DPNI_CMDID_CLR_QOS_TBL				DPNI_CMD(0x243)
- #define DPNI_CMDID_ADD_FS_ENT				DPNI_CMD(0x244)
- #define DPNI_CMDID_REMOVE_FS_ENT			DPNI_CMD(0x245)
- #define DPNI_CMDID_CLR_FS_ENT				DPNI_CMD(0x246)
-@@ -567,4 +571,34 @@ struct dpni_cmd_remove_fs_entry {
- 	__le64 mask_iova;
- };
- 
-+#define DPNI_DISCARD_ON_MISS_SHIFT	0
-+#define DPNI_DISCARD_ON_MISS_SIZE	1
-+
-+struct dpni_cmd_set_qos_table {
-+	__le32 pad;
-+	u8 default_tc;
-+	/* only the LSB */
-+	u8 discard_on_miss;
-+	__le16 pad1[21];
-+	__le64 key_cfg_iova;
-+};
-+
-+struct dpni_cmd_add_qos_entry {
-+	__le16 pad;
-+	u8 tc_id;
-+	u8 key_size;
-+	__le16 index;
-+	__le16 pad1;
-+	__le64 key_iova;
-+	__le64 mask_iova;
-+};
-+
-+struct dpni_cmd_remove_qos_entry {
-+	u8 pad[3];
-+	u8 key_size;
-+	__le32 pad1;
-+	__le64 key_iova;
-+	__le64 mask_iova;
-+};
-+
- #endif /* _FSL_DPNI_CMD_H */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.c b/drivers/net/ethernet/freescale/dpaa2/dpni.c
-index dd54e6953aeb..78fa325407ca 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.c
-@@ -1786,3 +1786,134 @@ int dpni_remove_fs_entry(struct fsl_mc_io *mc_io,
- 	/* send command to mc*/
- 	return mc_send_command(mc_io, &cmd);
+-	pause->rx_pause = !!(link_options & DPNI_LINK_OPT_PAUSE);
+-	pause->tx_pause = pause->rx_pause ^
+-			  !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
++	pause->rx_pause = dpaa2_eth_rx_pause_enabled(link_options);
++	pause->tx_pause = dpaa2_eth_tx_pause_enabled(link_options);
+ 	pause->autoneg = AUTONEG_DISABLE;
  }
-+
-+/**
-+ * dpni_set_qos_table() - Set QoS mapping table
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ * @cfg:	QoS table configuration
-+ *
-+ * This function and all QoS-related functions require that
-+ *'max_tcs > 1' was set at DPNI creation.
-+ *
-+ * warning: Before calling this function, call dpkg_prepare_key_cfg() to
-+ *			prepare the key_cfg_iova parameter
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ */
-+int dpni_set_qos_table(struct fsl_mc_io *mc_io,
-+		       u32 cmd_flags,
-+		       u16 token,
-+		       const struct dpni_qos_tbl_cfg *cfg)
-+{
-+	struct dpni_cmd_set_qos_table *cmd_params;
-+	struct fsl_mc_command cmd = { 0 };
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_SET_QOS_TBL,
-+					  cmd_flags,
-+					  token);
-+	cmd_params = (struct dpni_cmd_set_qos_table *)cmd.params;
-+	cmd_params->default_tc = cfg->default_tc;
-+	cmd_params->key_cfg_iova = cpu_to_le64(cfg->key_cfg_iova);
-+	dpni_set_field(cmd_params->discard_on_miss, DISCARD_ON_MISS,
-+		       cfg->discard_on_miss);
-+
-+	/* send command to mc*/
-+	return mc_send_command(mc_io, &cmd);
-+}
-+
-+/**
-+ * dpni_add_qos_entry() - Add QoS mapping entry (to select a traffic class)
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ * @cfg:	QoS rule to add
-+ * @tc_id:	Traffic class selection (0-7)
-+ * @index:	Location in the QoS table where to insert the entry.
-+ *		Only relevant if MASKING is enabled for QoS classification on
-+ *		this DPNI, it is ignored for exact match.
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ */
-+int dpni_add_qos_entry(struct fsl_mc_io *mc_io,
-+		       u32 cmd_flags,
-+		       u16 token,
-+		       const struct dpni_rule_cfg *cfg,
-+		       u8 tc_id,
-+		       u16 index)
-+{
-+	struct dpni_cmd_add_qos_entry *cmd_params;
-+	struct fsl_mc_command cmd = { 0 };
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_ADD_QOS_ENT,
-+					  cmd_flags,
-+					  token);
-+	cmd_params = (struct dpni_cmd_add_qos_entry *)cmd.params;
-+	cmd_params->tc_id = tc_id;
-+	cmd_params->key_size = cfg->key_size;
-+	cmd_params->index = cpu_to_le16(index);
-+	cmd_params->key_iova = cpu_to_le64(cfg->key_iova);
-+	cmd_params->mask_iova = cpu_to_le64(cfg->mask_iova);
-+
-+	/* send command to mc*/
-+	return mc_send_command(mc_io, &cmd);
-+}
-+
-+/**
-+ * dpni_remove_qos_entry() - Remove QoS mapping entry
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ * @cfg:	QoS rule to remove
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ */
-+int dpni_remove_qos_entry(struct fsl_mc_io *mc_io,
-+			  u32 cmd_flags,
-+			  u16 token,
-+			  const struct dpni_rule_cfg *cfg)
-+{
-+	struct dpni_cmd_remove_qos_entry *cmd_params;
-+	struct fsl_mc_command cmd = { 0 };
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_REMOVE_QOS_ENT,
-+					  cmd_flags,
-+					  token);
-+	cmd_params = (struct dpni_cmd_remove_qos_entry *)cmd.params;
-+	cmd_params->key_size = cfg->key_size;
-+	cmd_params->key_iova = cpu_to_le64(cfg->key_iova);
-+	cmd_params->mask_iova = cpu_to_le64(cfg->mask_iova);
-+
-+	/* send command to mc*/
-+	return mc_send_command(mc_io, &cmd);
-+}
-+
-+/**
-+ * dpni_clear_qos_table() - Clear all QoS mapping entries
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ *
-+ * Following this function call, all frames are directed to
-+ * the default traffic class (0)
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ */
-+int dpni_clear_qos_table(struct fsl_mc_io *mc_io,
-+			 u32 cmd_flags,
-+			 u16 token)
-+{
-+	struct fsl_mc_command cmd = { 0 };
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_CLR_QOS_TBL,
-+					  cmd_flags,
-+					  token);
-+
-+	/* send command to mc*/
-+	return mc_send_command(mc_io, &cmd);
-+}
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-index ee0711d06b3a..8c7ac20bf1a7 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-@@ -715,6 +715,26 @@ int dpni_set_rx_hash_dist(struct fsl_mc_io *mc_io,
- 			  u16 token,
- 			  const struct dpni_rx_dist_cfg *cfg);
  
-+/**
-+ * struct dpni_qos_tbl_cfg - Structure representing QOS table configuration
-+ * @key_cfg_iova: I/O virtual address of 256 bytes DMA-able memory filled with
-+ *		key extractions to be used as the QoS criteria by calling
-+ *		dpkg_prepare_key_cfg()
-+ * @discard_on_miss: Set to '1' to discard frames in case of no match (miss);
-+ *		'0' to use the 'default_tc' in such cases
-+ * @default_tc: Used in case of no-match and 'discard_on_miss'= 0
-+ */
-+struct dpni_qos_tbl_cfg {
-+	u64 key_cfg_iova;
-+	int discard_on_miss;
-+	u8 default_tc;
-+};
-+
-+int dpni_set_qos_table(struct fsl_mc_io *mc_io,
-+		       u32 cmd_flags,
-+		       u16 token,
-+		       const struct dpni_qos_tbl_cfg *cfg);
-+
- /**
-  * enum dpni_dest - DPNI destination types
-  * @DPNI_DEST_NONE: Unassigned destination; The queue is set in parked mode and
-@@ -961,6 +981,22 @@ int dpni_remove_fs_entry(struct fsl_mc_io *mc_io,
- 			 u8 tc_id,
- 			 const struct dpni_rule_cfg *cfg);
- 
-+int dpni_add_qos_entry(struct fsl_mc_io *mc_io,
-+		       u32 cmd_flags,
-+		       u16 token,
-+		       const struct dpni_rule_cfg *cfg,
-+		       u8 tc_id,
-+		       u16 index);
-+
-+int dpni_remove_qos_entry(struct fsl_mc_io *mc_io,
-+			  u32 cmd_flags,
-+			  u16 token,
-+			  const struct dpni_rule_cfg *cfg);
-+
-+int dpni_clear_qos_table(struct fsl_mc_io *mc_io,
-+			 u32 cmd_flags,
-+			 u16 token);
-+
- int dpni_get_api_version(struct fsl_mc_io *mc_io,
- 			 u32 cmd_flags,
- 			 u16 *major_ver,
 -- 
 2.17.1
 
