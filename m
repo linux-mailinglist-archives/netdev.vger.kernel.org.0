@@ -2,96 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB0B11E8656
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC2771E865C
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbgE2SJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 14:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
+        id S1727098AbgE2SMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 14:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbgE2SJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:09:58 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F155C03E969;
-        Fri, 29 May 2020 11:09:58 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id d10so243221pgn.4;
-        Fri, 29 May 2020 11:09:58 -0700 (PDT)
+        with ESMTP id S1727039AbgE2SMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:12:23 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCDBC08C5C8
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 11:12:23 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id v15so1587413ybk.2
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 11:12:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=80vBavyDrtgkerq51SzM+QtqxhSCU7Go2pUSAaWO15M=;
-        b=QCvzld6VvUsBMgKQk0LAhOxI8cd484PIDwr1VSe/D6VcAFbaJctQmwvzPM1QsuCiEG
-         mxnEnP8HQ9hl50f0zlImq4xCli8HQ/1oU9fG7PdCx+wtYdTe8LyTijodfelKPLiiInJ5
-         LemgEd82KY5cAAykEwERcAhd2967MGMvkuUguVJRbU+Sea9JS6KFPGNxN0OfX4GrKI50
-         aUIRFL1FSPQaHh5rIXCkimVbxTHfEV1aJuUi5vsRZUKX7vWEwwIsEEDo5CctW0v52LtR
-         ok/6BX5zH4QYc8ebzQ9gr3xJsNrc0yoXt49R17g4yAS4ECag3oRXHAEekXGTs5wo60ui
-         dTrA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p+untXdd8Q1TgRfqMW/LzrLvpYV7DIbqKdDLpBWZwtU=;
+        b=svd+wbCVclpGzH16gM8M65x4qFSc/IBHfD//GF0SDTR0Haqe6wRlyv5d1mGYJ3gAgP
+         1K/RuBL3bmQaSBkOcKX1+vrXEn7+qFSCcHxWlcH3ICl40hnk5tQuDRiS/xd3zelQWe74
+         vzfVKdwN+IdEoDYDL9lhtYj8bWUK7/6yDND+7H2irBjmBsKKAi6eC1oaegSrQ3bHsi9q
+         L3bXbRcGTHOEp4QDLaLvpyMFBBpsaVT2xQ0iZl2u8NlzphJxoB5V5WCr5N37RdDQvsYu
+         w+uOZL2/o8dkzJKP6rzFykSCJHit7GNJssATXtNvEzifUFsYnQtDbZ48S3aJPe46NySM
+         4Jbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=80vBavyDrtgkerq51SzM+QtqxhSCU7Go2pUSAaWO15M=;
-        b=ME7cjoOgakNqTOxDddjYpNx0x7Py9moxVhRDBbM1pXnjtxRu31GsiYwgO0wyYw8ipq
-         SNlwapt/j7lWwWWwv9rltb6cvyhvHLsOpl6UkEGbtHTutfLA1nJVLGw/51OolI1ajrF/
-         zcjHY1z8QCt53yUNdJlvhhdsun5M/2/r76Zmz00Y0NbpJkHChJndXYX0P2etKXmc7lAP
-         69FPi2O/OShkunQby5lIJqd0cJbiv8ru+wt7xk6GUo3V8xnZDP8CsRYiOpkZrCOVjqJo
-         ZK798hRAKTyX0REBXROMsNavgWVDviJq4u2ObsMMo6zneqgTyvwtMOjoW7m6x39jwzIu
-         vFOA==
-X-Gm-Message-State: AOAM530Go2h1IEMqBQqLqjzwVKIKEjkO2ak+i+drZ2nOr1eUGBQsJ0ho
-        jgkTVbyqFw5m1FkGQO9NKfg=
-X-Google-Smtp-Source: ABdhPJzilrt8uz48UOWrWGKLIL4BLSvkKVi0dp722LpfkftUoh+VRjdt1TrHzd1hKCwR2cKr1pJEoA==
-X-Received: by 2002:aa7:9d92:: with SMTP id f18mr10064301pfq.266.1590775798042;
-        Fri, 29 May 2020 11:09:58 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id b15sm120523pjb.18.2020.05.29.11.09.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 May 2020 11:09:57 -0700 (PDT)
-Subject: Re: general protection fault in inet_unhash
-To:     Andrii Nakryiko <andriin@fb.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, guro@fb.com,
-        kuba@kernel.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-References: <00000000000018e1d305a6b80a73@google.com>
- <d65c8424-e78c-63f9-3711-532494619dc6@fb.com>
- <CACT4Y+aNBkhxuMOk4_eqEmLjHkjbw4wt0nBvtFCw2ssn3m2NTA@mail.gmail.com>
- <da6dd6d1-8ed9-605c-887f-a956780fc48d@fb.com>
- <b1b315b5-4b1f-efa1-b137-90732fa3f606@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0d25f022-e68d-6a46-e0ad-813b56c66a88@gmail.com>
-Date:   Fri, 29 May 2020 11:09:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p+untXdd8Q1TgRfqMW/LzrLvpYV7DIbqKdDLpBWZwtU=;
+        b=GA/7Ep5GkdpcWnkJTYpuZxHfRpN8TFGqm273YWJwQ6LgJtrEsigmRMef8wZxTUZRPD
+         nxThQVl+TxxGpjjBnN74MNvwt1yYVzDQrrYtNWLfSMaRPX/Igo9dRJpPlePNeET54pvG
+         Rv1hPg8c4kfXyaQxcgNxlGdaz1QmjW/LohLa83XcZDl2KPWqiPxlCLF//rlRAaHqVPoj
+         lnPRA54W13YPPIIHYl8vc0W5Ncm0WI0NST/JuyCPT6foM+t4GQ2vL7hHzD2a1+Q2tkpd
+         LsGnlSaiEQKk2hHts8AthoE34gHzY3rBwdzDjXIcykhzwz9URSzlGU93PIxa6kQFw4Qb
+         4ixQ==
+X-Gm-Message-State: AOAM5303blj6aDl1o03DARh+K4LP4JS0ZDsTGPl1hkKQWbYAuyM26V31
+        aSAhlFJjlYoPMlL69WT8gHD/e6sz/AaMA+re9VknVA==
+X-Google-Smtp-Source: ABdhPJw3Za46WBQoDBh8gtmYUeDg3rtUPLxpth6ELpvhetb5GOwQtZwnDBhn5RpoaFo/X5yCr5IHDUV1AIzWSMcKpGU=
+X-Received: by 2002:a25:6f86:: with SMTP id k128mr15065186ybc.520.1590775942601;
+ Fri, 29 May 2020 11:12:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <b1b315b5-4b1f-efa1-b137-90732fa3f606@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200529180838.107255-1-edumazet@google.com>
+In-Reply-To: <20200529180838.107255-1-edumazet@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 29 May 2020 11:12:11 -0700
+Message-ID: <CANn89iL1C7UmobyS-kohNE9mEnVdG_SrQEvjZr+oRcN=77UbtQ@mail.gmail.com>
+Subject: Re: [PATCH net] l2tp: do not use inet_hash()/inet_unhash()
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        James Chapman <jchapman@katalix.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/29/20 10:32 AM, Eric Dumazet wrote:
-
-> L2TP seems to use sk->sk_node to insert sockets into l2tp_ip_table, _and_ uses l2tp_ip_prot.unhash == inet_unhash
-> 
-> So if/when BPF_CGROUP_RUN_PROG_INET_SOCK(sk) returns an error and inet_create() calls sk_common_release()
-> bad things happen, because inet_unhash() expects a valid hashinfo pointer.
-> 
-> I guess the following patch should fix this.
-> 
-> Bug has been there forever, but only BPF_CGROUP_RUN_PROG_INET_SOCK(sk) could trigger it.
+On Fri, May 29, 2020 at 11:08 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> syzbot recently found a way to crash the kernel [1]
+>
+> Issue here is that inet_hash() & inet_unhash() are currently
+> only meant to be used by TCP & DCCP, since only these protocols
+> provide the needed hashinfo pointer.
+>
+> L2TP uses a single list (instead of a hash table)
+>
+> This old bug became an issue after commit 610236587600
+> ("bpf: Add new cgroup attach type to enable sock modifications")
+> since after this commit, sk_common_release() can be called
+> while the L2TP socket is still considered 'hashed'.
 >
 
-Official submission : https://patchwork.ozlabs.org/project/netdev/patch/20200529180838.107255-1-edumazet@google.com/
+> Fixes: 0d76751fad77 ("l2tp: Add L2TPv3 IP encapsulation (no UDP) support")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: James Chapman <jchapman@katalix.com>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Reported-by: syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com
+> ---
+>
 
+Will send a V2, I missed that ip and ipv6 modules were using a different rwlock.
