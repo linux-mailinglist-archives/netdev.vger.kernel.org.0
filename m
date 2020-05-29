@@ -2,87 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C153B1E8326
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E3E1E8331
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727966AbgE2QHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgE2QG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:06:59 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F94C03E969;
-        Fri, 29 May 2020 09:06:59 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id n141so2685432qke.2;
-        Fri, 29 May 2020 09:06:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2QkBQ1hsW65ifs+T38dQCXySbtszUd8Dh1ih5qIb6ac=;
-        b=bxj9ZN1HcOCP6sltQ7S8XSau8mdagaprLbERl96zHDDXcYVD9iMUrHjldPjTzJOlhA
-         RRnVvuZtp309QRcnWQFx3y+wHHslWBAIEVSvp/qwyUgpRbnDaWpRUzDIT0n4bx/iEPxt
-         Zx589SWGzTS2fNsyfvphf0IxRCJvpaEDbsnSrhqu6aJcgS9nTj5lYGgzb50GJK9yECiS
-         1SzWuhYSZXeoYfzw53kDrnjgfLO3sxjfB9B/K8nP3gjAE28ZelhdFh71/JwrTtUUANWn
-         4eOhU+hifZj+1N+tjI3/cIBgfSfOY/DgCzoqg0H2VPp1x0wyxOKRI0BGeKQKlkGh7bHO
-         CuKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2QkBQ1hsW65ifs+T38dQCXySbtszUd8Dh1ih5qIb6ac=;
-        b=h+xhuVf/kGh5gQXavtrc/zXjpw98pSjWRwyz7nd8s6Ff4v8vmX3iEan6lB30bASvJC
-         zG2SraO/qLKyzGLzWKaUurqg+R0Y7co+ilM6d/mPHDfTjP89Oc5H8O63weRn+dhhbvx0
-         Dueav9lczCcpCCIrBI2zPe81vLnhEkKmO8nchq7ictCEMwEo6dP4+hoU2YiOUt9hvbsj
-         7qhMffE1u5OFLWNh3IJ0C9bGMHbSLQng/BJehmurVVGTIaDzpOcv28cBQkaha73vImpe
-         637As8iG+kJaElgYiOLlHl+p+yczkCi3ZGzYfwuD07673gz+3g6v0jbSmzvKR/n/nNRJ
-         XLOg==
-X-Gm-Message-State: AOAM53297C7Z1TsXpEVpq3oHwmtfHlIeAVS4iJr3o9YxhDBLuq2ywraV
-        v3wzO7vMIfSUtuhL7BA7b1E=
-X-Google-Smtp-Source: ABdhPJwMyl4MP7h2HUGz7QIi8xuwkpyEvWtq9gcbO4jTClNrEKWMsNO9bid5iODsnfpoxy8FDRo4NQ==
-X-Received: by 2002:ae9:e10f:: with SMTP id g15mr8822930qkm.285.1590768418954;
-        Fri, 29 May 2020 09:06:58 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:516d:2604:bfa5:7157:afa1])
-        by smtp.gmail.com with ESMTPSA id j90sm8034447qte.33.2020.05.29.09.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:06:58 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id C434AC1B84; Fri, 29 May 2020 13:06:55 -0300 (-03)
-Date:   Fri, 29 May 2020 13:06:55 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cluster-devel@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 3/4] net: add a new bind_add method
-Message-ID: <20200529160655.GJ2491@localhost.localdomain>
-References: <20200529120943.101454-1-hch@lst.de>
- <20200529120943.101454-4-hch@lst.de>
+        id S1726927AbgE2QJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:09:01 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:41062 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgE2QJA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:09:00 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id E130E2A2DFE
+Subject: Re: [PATCH v4 04/11] thermal: Store device mode in struct
+ thermal_zone_device
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        kernel@collabora.com, Fabio Estevam <festevam@gmail.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Allison Randal <allison@lohutok.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Darren Hart <dvhart@infradead.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Enrico Weigelt <info@metux.net>,
+        Peter Kaestle <peter@piie.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andy@infradead.org>
+References: <20200529154205.GA157653@roeck-us.net>
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Message-ID: <5010f7df-59d6-92ef-c99a-0dbd715f0ad2@collabora.com>
+Date:   Fri, 29 May 2020 18:08:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200529120943.101454-4-hch@lst.de>
+In-Reply-To: <20200529154205.GA157653@roeck-us.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 02:09:42PM +0200, Christoph Hellwig wrote:
-> The SCTP protocol allows to bind multiple address to a socket.  That
-> feature is currently only exposed as a socket option.  Add a bind_add
-> method struct proto that allows to bind additional addresses, and
-> switch the dlm code to use the method instead of going through the
-> socket option from kernel space.
+Hi Guenter,
+
+W dniu 29.05.2020 o 17:42, Guenter Roeck pisze:
+> On Thu, May 28, 2020 at 09:20:44PM +0200, Andrzej Pietrasiewicz wrote:
+>> Prepare for eliminating get_mode().
+>>
+> Might be worthwhile to explain (not only in the subject) what you are
+> doing here.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+>> ---
+>>   drivers/acpi/thermal.c                        | 18 ++++++----------
+>>   .../ethernet/mellanox/mlxsw/core_thermal.c    | 21 +++++++------------
+>>   drivers/platform/x86/acerhdf.c                | 15 ++++++-------
+>>   drivers/thermal/da9062-thermal.c              |  6 ++----
+>>   drivers/thermal/imx_thermal.c                 | 17 +++++++--------
+>>   .../intel/int340x_thermal/int3400_thermal.c   | 12 +++--------
+>>   .../thermal/intel/intel_quark_dts_thermal.c   | 16 +++++++-------
+>>   drivers/thermal/thermal_of.c                  | 10 +++------
+> 
+> After this patch is applied on top of the thermal 'testing' branch,
+> there are still local instances of thermal_device_mode in
+> 	drivers/thermal/st/stm_thermal.c
+> 	drivers/thermal/ti-soc-thermal/ti-thermal-common.c
+> 
+> If there is a reason not to replace those, it might make sense to explain
+> it here.
+> 
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+My understanding is that these two are sensor devices which are "plugged"
+into their "parent" thermal zone device. The latter is the "proper" tzd.
+They both use thermal_zone_of_device_ops instead of thermal_zone_device_ops.
+The former doesn't even have get_mode(). The thermal core, when it calls
+get_mode(), operates on the "parent" thermal zone devices.
 
-Even though checkpatch complained about bad alignment here:
-> +static int sctp_bind_add(struct sock *sk, struct sockaddr *addrs,
-> +		int addrlen)
+Consequently, the drivers you mention use their "mode" members for
+their private purpose, not for the purpose of storing the "parent"
+thermal zone device mode.
+
+Andrzej
+
+
+
