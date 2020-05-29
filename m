@@ -2,211 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC4D1E8904
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B281E8906
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:41:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728202AbgE2Uiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 16:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        id S1727964AbgE2UlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 16:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbgE2Uiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:38:52 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E2BC03E969;
-        Fri, 29 May 2020 13:38:51 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id q8so3473512qkm.12;
-        Fri, 29 May 2020 13:38:51 -0700 (PDT)
+        with ESMTP id S1726975AbgE2Uk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:40:59 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6902EC03E969;
+        Fri, 29 May 2020 13:40:58 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id j32so3058007qte.10;
+        Fri, 29 May 2020 13:40:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/2NpPMvxa1lPQ5BaGs7xYWYN2ckerFZ7HMypI+K/BRA=;
-        b=uiHTM4oC/suL9B7x5+eawCUCqXq+UdH+vR8qgK+l5x7595H6TvAuOjzWV/czmSa+tm
-         DuhVwTxh1Euki9NREGLanUYj5ACCuy3EWsIbyQkIABJiepmBQJt0/wVYTnkPYtNkKwaF
-         lAVXBm5kqJqgN1L9HSr+U3z+E/ZyaaYyMQ3ts9E2UpgZLi39zQhaZeT/f+xOKw4v8Ce3
-         NGjrL3L/T8lxffzQRaEQkhboB50gUURQ0K1A5eBzqGYiSiiJPfh7euKOML6YUNt36Iqw
-         E50QZC01Wl9semCGflmch/J3WRRWmfCNPY707ql2c4/j94/IajY/CmTP21hJDiJaiQHb
-         fD1g==
+        bh=YXkNvGIjvhtl1zJvkrCHCb9Rfn4fNhDMflNxOWodfvg=;
+        b=KYnDTv94Nn4hSZ/ju6jtpSsfnesA2SVvk+4jNMv4P0JWqt9yLCxuztmPrYEuh4hzrS
+         lpmPhn07QXkRuSrpy4ksWzqD91AhXZ1Kn5GrPqVeo/5azESTJTEHisSAvWPYaaRn6cTo
+         tjF9aWNmPVuv/HRYsiwkUZPbz8p3eF5MgLvzwrJn2tJQMySrftF0geMITy9bLkolQEP0
+         nbMeQZ03uv2ip+YIJyYSV5M2bY8le0mzykAknH8Wf6wjeRKx/sGhyPGu2O+i3lWw33hs
+         2M0GDtJiWHloSTLPhhc2VClW2HoKOchETK3QU6S0Hj7/mKghlsnXG4ghamPdwjG1+6Og
+         M6cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/2NpPMvxa1lPQ5BaGs7xYWYN2ckerFZ7HMypI+K/BRA=;
-        b=DhBRP4c+KuaVdcE12fpOhSixvTeaVc+LZukyLZ0u+x74+UoGPaLRh8ON0FmN5pH0yg
-         vyU6zO99hjwsXnwG3jtJIY2apkuE/7p0KsWggWyN4ji68KUI5g+H66bjOomlQWCSMJBr
-         vkHUqDOMD4sC63YQ47nCui7sMVodQibnyhviWmjCBIMHLAnGk016p/xQ7/1UdOr1V8Gt
-         MCwi0W/SFJj0swwEckFEplsjqkBW/TgaGkomBEdb10YSudpAWUgSQd77MbsaSVC5Ttg8
-         ObN71rT3hGKBuuAuBIeULYW+7XOJiP6VEVCGRpzkKsuHZtTsxRya/vVb1lGXV3IZl153
-         L+IA==
-X-Gm-Message-State: AOAM530JIL+0aGpXYlDFPkuM5zDNsPDp1Uh/nvDlPh1i4LkGHxqCDQ4l
-        6GXR+jJAl6cISYJ8Xvd3z1xUzMxE42zozgkPXB8=
-X-Google-Smtp-Source: ABdhPJzBHrnB7JAC+YiMpcFQIp5ENtfg8IuIfCTj6hayUHz8o8p9M/7cMrzziIQu97W7GMfXi3aVk0biYRBrprJnGgc=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr9665440qkb.39.1590784731078;
- Fri, 29 May 2020 13:38:51 -0700 (PDT)
+        bh=YXkNvGIjvhtl1zJvkrCHCb9Rfn4fNhDMflNxOWodfvg=;
+        b=aFK0xUpJIxodj0D0nZsSK4+Z0JIUflvWtS58UaNwoJLdyOsbiN+Y8CL1AXz8PZBwQX
+         s2/zSI2iFg4mDMB8hzeihAVoqvlo3eSc99MRBupqvFpoTXvJI2xI50SEyHhrcwf8tnZK
+         Fz8IR4tLQQ4IlDF4awHSpBwBgvcvnuYpZE/8uFabDvNvgXvFzL9Q50AX2r1L1nzaXtiY
+         h+MS27OlSaD7erYzx5MExfDwRUjKrzeXYTHMgwDZZjrXp7QjLjctRgfnJPg8HqSvNf1I
+         Iun8FCsvjLr5q5//3GHEXo+q/o2Tx6ckLcVlZ3TkCfgkiYrQ/hTG/KtwFUaiIqBtldSo
+         ObYQ==
+X-Gm-Message-State: AOAM5336Wnjs5H7aYMajrlsaKQs3PezlWX66xXqfyiJ7ktRFcWT7s24o
+        jrhpDI8GSKev7TXHbb016MrJz4uEkGDKVuCWq6U=
+X-Google-Smtp-Source: ABdhPJxy8XOGr60jC8pyD/7Mc1YaCm8dDHvdq6Zke732oHVgjfT6bZgh8yqOi3LAtpZV1iNyGsMGeDQ1+l+uqozSnxY=
+X-Received: by 2002:aed:3f3b:: with SMTP id p56mr10434675qtf.93.1590784857482;
+ Fri, 29 May 2020 13:40:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200529043839.15824-1-alexei.starovoitov@gmail.com>
- <20200529043839.15824-3-alexei.starovoitov@gmail.com> <CAEf4BzZXnqLwhJaUVKX0ExVa+Sw5mnhg5FLJN-VKPX59f6EAoQ@mail.gmail.com>
- <20200529201228.oixjsibn6uwktkgh@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200529201228.oixjsibn6uwktkgh@ast-mbp.dhcp.thefacebook.com>
+References: <20200522022336.899416-1-kafai@fb.com> <20200522022342.899756-1-kafai@fb.com>
+ <9c00ced2-983f-ad59-d805-777ebd1f1cab@iogearbox.net> <20200523010003.6iyavqny3aruv6u2@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4Bza===GwERi_x0Evf_Wjm+8=wBHnG4VHPNtZ=GPPZ+twiQ@mail.gmail.com> <20200529063054.edz7qfiqgfgjzj43@kafai-mbp>
+In-Reply-To: <20200529063054.edz7qfiqgfgjzj43@kafai-mbp>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 29 May 2020 13:38:40 -0700
-Message-ID: <CAEf4BzaVHD7HyRDQGRCUKBDOZq-LcZpHrBoOjuOP+443Xc+Vaw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/4] bpf: Introduce sleepable BPF programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+Date:   Fri, 29 May 2020 13:40:46 -0700
+Message-ID: <CAEf4BzbpwfFPUruwdbcarTeT_7pcxNw5PPO0RE81QLvJxkXOBw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Consolidate inner-map-compatible
+ properties into bpf_types.h
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 1:12 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, May 28, 2020 at 11:31 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Fri, May 29, 2020 at 01:25:06AM -0700, Andrii Nakryiko wrote:
-> > > index 11584618e861..26b18b6a3dbc 100644
-> > > --- a/kernel/bpf/arraymap.c
-> > > +++ b/kernel/bpf/arraymap.c
-> > > @@ -393,6 +393,11 @@ static void array_map_free(struct bpf_map *map)
-> > >          */
-> > >         synchronize_rcu();
+> On Tue, May 26, 2020 at 10:54:26AM -0700, Andrii Nakryiko wrote:
+> > On Fri, May 22, 2020 at 6:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
 > > >
-> > > +       /* arrays could have been used by both sleepable and non-sleepable bpf
-> > > +        * progs. Make sure to wait for both prog types to finish executing.
-> > > +        */
-> > > +       synchronize_srcu(&bpf_srcu);
-> > > +
-> >
-> > to minimize churn later on when you switch to rcu_trace, maybe extract
-> > synchronize_rcu() + synchronize_srcu(&bpf_srcu) into a function (e.g.,
-> > something like synchronize_sleepable_bpf?), exposed as an internal
-> > API? That way you also wouldn't need to add bpf_srcu to linux/bpf.h?
->
-> I think the opposite is must have actually. I think rcu operations should never
-> be hidden in helpers. All rcu/srcu/rcu_trace ops should always be open coded.
+> > > On Sat, May 23, 2020 at 12:22:48AM +0200, Daniel Borkmann wrote:
+> > > > On 5/22/20 4:23 AM, Martin KaFai Lau wrote:
+> > > > [...]
+> > > > >   };
 
-Ok, that's fair.
+[...]
 
->
-> > > @@ -577,8 +577,8 @@ static void *__htab_map_lookup_elem(struct bpf_map *map, void *key)
-> > >         struct htab_elem *l;
-> > >         u32 hash, key_size;
+
 > > >
-> > > -       /* Must be called with rcu_read_lock. */
-> > > -       WARN_ON_ONCE(!rcu_read_lock_held());
-> > > +       /* Must be called with s?rcu_read_lock. */
-> > > +       WARN_ON_ONCE(!rcu_read_lock_held() && !srcu_read_lock_held(&bpf_srcu));
+> > > >
+> > > > Like explicit annotating via struct bpf_map_ops where everything is visible in one
+> > > > single place where the map is defined:
+> > > >
+> > > > const struct bpf_map_ops array_map_ops = {
+> > > >         .map_alloc_check = array_map_alloc_check,
+> > > >         [...]
+> > > >         .map_flags_fixed = BPF_MAP_IN_MAP_OK,
+> > > > };
+> > > I am not sure about adding it to bpf_map_ops instead of bpf_types.h.
+> > > It will be easier to figure out what map types do not support MAP_IN_MAP (and
+> > > other future map's fixed properties) in one place "bpf_types.h" instead of
+> > > having to dig into each map src file.
+> >
+> > I'm 100% with Daniel here. If we are consolidating such things, I'd
+> > rather have them in one place where differences between maps are
+> > defined, which is ops. Despite an "ops" name, this seems like a
+> > perfect place for specifying all those per-map-type properties and
+> > behaviors. Adding flags into bpf_types.h just splits everything into
+> > two places: bpf_types.h specifies some differences, while ops specify
+> > all the other ones.
+> >
+> > Figuring out map-in-map support is just one of many questions one
+> > might ask about differences between map types, I don't think that
+> > justifies adding them to bpf_types.h. Grepping for struct bpf_map_ops
+> > with search context (i.e., -A15 or something like that) should be
+> > enough to get a quick glance at all possible maps and what they
+> > define/override.
+> >
+> > It also feels like adding this as bool field for each aspect instead
+> > of a collection of bits is cleaner and a bit more scalable. If we need
+> > to add another property with some parameter/constant, or just enum,
+> > defining one of few possible behaviors, it would be easier to just add
+> > another field, instead of trying to cram that into u32. It also solves
+> > your problem of "at the glance" view of map-in-map support features.
+> > Just name that field unique enough to grep by it :)
+> How about another way.  What patch 2 want is each map could have its own
+> bpf_map_meta_equal().  Instead of adding 2 flags, add the bpf_map_meta_equal()
+> as a ops to bpf_map_ops.  Each map supports to be used as an inner_map
+> needs to set this ops.  Then it will be an opt-in.
+> A default implementation can be provided for most maps' use.
+> The maps (e.g. arraymap and other future maps) that has different requirement
+> can implement its own.  For the existing maps, when we address those
+> limitations (e.g. arraymap's gen_lookup) later,  we can then change its
+> bpf_map_meta_equal.
+>
+> Thoughts?
+>
+
+I think that would work as well, I don't mind.
+
+> >
 > > >
-> >
-> > Similar to above, might be worthwhile extracting into a function?
->
-> This one I'm 50/50, since this pattern will be in many places.
-> But what kind of helper that would be?
-> Clear name is very hard.
-> WARN_ON_ONCE(!bpf_specific_rcu_lock_held()) ?
-> Moving WARN into the helper would be even worse.
-
-yeah, naming is hard, it's fine to leave as is, I think
-
->
-> When rcu_trace is available the churn of patches to convert srcu to rcu_trace
-> will be a good thing. The patches will convey the difference.
-> Like bpf_srcu will disappear. They will give a way to do benchmarking before/after
-> and will help to go back to srcu in unlikely case there is some obscure bug
-> in rcu_trace. Hiding srcu vs rcu_trace details behind helpers is not how
-> the code should read. The trade off with one and another will be different
-> case by case. Like synchronize_srcu() is ok, but synchronize_rcu_trace()
-> may be too heavy in the trampoline update code and extra counter would be needed.
-> Also there will be synchronize_multi() that I plan to use as well.
-
-yeah, makes sense
-
->
+> > > If the objective is to have the future map "consciously" opt-in, how about
+> > > keeping the "BPF_MAP_TYPE" name as is but add a fixed_flags param as the
+> > > earlier v1 and flip it from NO to OK flag.  It will be clear that,
+> > > it is a decision that the new map needs to make instead of a quiet 0
+> > > in "struct bpf_map_ops".
 > > >
-> > > +       if (prog->aux->sleepable && prog->type != BPF_PROG_TYPE_TRACING &&
-> > > +           prog->type != BPF_PROG_TYPE_LSM) {
-> > > +               verbose(env, "Only fentry/fexit/fmod_ret and lsm programs can be sleepable\n");
-> > > +               return -EINVAL;
-> > > +       }
-> >
-> >
-> > BPF_PROG_TYPE_TRACING also includes iterator and raw tracepoint
-> > programs. You mention only fentry/fexit/fmod_ret are allowed. What
-> > about those two? I don't see any explicit checks for iterator and
-> > raw_tracepoint attach types in a switch below, so just checking if
-> > they should be allowed to be sleepable?
->
-> good point. tp_btf and iter don't use trampoline, so sleepable flag
-> is ignored. which is wrong. I'll add a check to get the prog rejected.
->
-> > Also seems like freplace ones are also sleeepable, if they replace
-> > sleepable programs, right?
->
-> freplace is a different program type. So it's rejected by this code already.
-> Eventually I'll add support to allow sleepable freplace prog that extend
-> sleepable target. But that's future.
-
-Yeah, I know they are rejected (because they are EXT, not
-LSM/TRACING). But they do use trampoline and they run in the same
-context as replaced programs, so they are effectively same type as
-replaced programs, which is why I asked. And yes, it's ok to do it in
-the future, was mostly curious whether freplace have anything specific
-precluding them to be sleepable.
-
->
-> > > +
-> > >         if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
-> > >                 return check_struct_ops_btf_id(env);
+> > > For example,
+> > > BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops, BPF_MAP_IN_MAP_OK)
+> > > BPF_MAP_TYPE(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops, 0)
+> > > BPF_MAP_TYPE(BPF_MAP_TYPE_HASH, htab_map_ops, BPF_MAP_IN_MAP_OK | BPF_MAP_IN_MAP_DYNAMIC_SIZE_OK)
 > > >
-> > > @@ -10762,8 +10801,29 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
-> > >                         if (ret)
-> > >                                 verbose(env, "%s() is not modifiable\n",
-> > >                                         prog->aux->attach_func_name);
-> > > +               } else if (prog->aux->sleepable) {
-> > > +                       switch (prog->type) {
-> > > +                       case BPF_PROG_TYPE_TRACING:
-> > > +                               /* fentry/fexit progs can be sleepable only if they are
-> > > +                                * attached to ALLOW_ERROR_INJECTION or security_*() funcs.
-> > > +                                */
-> > > +                               ret = check_attach_modify_return(prog, addr);
-> >
-> > I was so confused about this piece... check_attach_modify_return()
-> > should probably be renamed to something else, it's not for fmod_ret
-> > only anymore.
->
-> why? I think the name is correct. The helper checks whether target
-> allows modifying its return value. It's a first while list.
-
-check_attach_modify_return() name implies to me that it's strictly for
-fmod_ret-specific attachment checks, that's all. It's minor, if you
-feel like name is appropriate I'm fine with it.
-
-
-> When that passes the black list applies via check_sleepable_blacklist() function.
->
-> I was considering using whitelist for sleepable as well, but that's overkill.
-> Too much overlap with mod_ret.
-> Imo check whitelist + check blacklist for white list exceptions is clean enough.
-
-I agree about whitelist+blacklist, my only point was that
-check_attach_modify_return() is not communicating that it's a
-whitelist. check_sleepable_blacklist() is clear as day,
-check_sleepable_whitelist() would be as clear, even if internally it
-(for now) just calls into check_attach_modify_return(). Eventually it
-might be evolved beyond what's in check_attach_modify_return(). Not a
-big deal and can be changed later, if necessary.
-
->
-> >
-> > > +                               if (!ret)
-> > > +                                       ret = check_sleepable_blacklist(addr);
-> > > +                               break;
-> > > +                       case BPF_PROG_TYPE_LSM:
-> > > +                               /* LSM progs check that they are attached to bpf_lsm_*() funcs
-> > > +                                * which are sleepable too.
-> > > +                                */
-> > > +                               ret = check_sleepable_blacklist(addr);
-> > > +                               break;
+> > > >
+> > > > That way, if someone forgets to add .map_flags_fixed to a new map type, it's okay since
+> > > > it's _safe_ to forget to add these flags (and okay to add in future uapi-wise) as opposed
+> > > > to the other way round where one can easily miss the opt-out case and potentially crash
+> > > > the machine worst case.
