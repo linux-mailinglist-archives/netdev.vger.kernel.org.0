@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF2AF1E7A9F
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 12:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6DE1E7AA4
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 12:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbgE2Kai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 06:30:38 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37606 "EHLO a.mx.secunet.com"
+        id S1726890AbgE2Kau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 06:30:50 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37632 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726616AbgE2KaX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 06:30:23 -0400
+        id S1726767AbgE2Ka2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 06:30:28 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 2EB11205CB;
-        Fri, 29 May 2020 12:30:22 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 749EC201E5;
+        Fri, 29 May 2020 12:30:23 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id V0gocSZNAlPQ; Fri, 29 May 2020 12:30:21 +0200 (CEST)
+        with ESMTP id ZyPfJRCYE6ad; Fri, 29 May 2020 12:30:22 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 1E3B1201E5;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 50455205A4;
         Fri, 29 May 2020 12:30:20 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 29 May 2020 12:30:19 +0200
+ 14.3.487.0; Fri, 29 May 2020 12:30:20 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 29 May
  2020 12:30:18 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 091B4318032D;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 11D3C31804B1;
  Fri, 29 May 2020 12:30:18 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 06/11] xfrm: move xfrm4_extract_header to common helper
-Date:   Fri, 29 May 2020 12:30:06 +0200
-Message-ID: <20200529103011.30127-7-steffen.klassert@secunet.com>
+Subject: [PATCH 08/11] xfrm: place xfrm6_local_dontfrag in xfrm.h
+Date:   Fri, 29 May 2020 12:30:08 +0200
+Message-ID: <20200529103011.30127-9-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200529103011.30127-1-steffen.klassert@secunet.com>
 References: <20200529103011.30127-1-steffen.klassert@secunet.com>
@@ -55,95 +55,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-The function only initializes the XFRM CB in the skb.
-
-After previous patch xfrm4_extract_header is only called from
-net/xfrm/xfrm_{input,output}.c.
-
-Because of IPV6=m linker errors the ipv6 equivalent
-(xfrm6_extract_header) was already placed in xfrm_inout.h because
-we can't call functions residing in a module from the core.
-
-So do the same for the ipv4 helper and place it next to the ipv6 one.
+so next patch can re-use it from net/xfrm/xfrm_output.c without
+causing a linker error when IPV6 is a module.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/xfrm.h     |  1 -
- net/ipv4/xfrm4_state.c | 21 ---------------------
- net/xfrm/xfrm_inout.h  | 14 ++++++++++++++
- 3 files changed, 14 insertions(+), 22 deletions(-)
+ include/net/xfrm.h      | 16 ++++++++++++++++
+ net/ipv6/xfrm6_output.c | 21 ++-------------------
+ 2 files changed, 18 insertions(+), 19 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index a21c1dea5340..8b956528b6e6 100644
+index 10295ab4cdfb..8f7fb033d557 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -1562,7 +1562,6 @@ int pktgen_xfrm_outer_mode_output(struct xfrm_state *x, struct sk_buff *skb);
- #endif
+@@ -1993,4 +1993,20 @@ static inline int xfrm_tunnel_check(struct sk_buff *skb, struct xfrm_state *x,
  
- void xfrm_local_error(struct sk_buff *skb, int mtu);
--int xfrm4_extract_header(struct sk_buff *skb);
- int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
- 		    int encap_type);
-diff --git a/net/ipv4/xfrm4_state.c b/net/ipv4/xfrm4_state.c
-index 521fc1bc069c..b23a1711297b 100644
---- a/net/ipv4/xfrm4_state.c
-+++ b/net/ipv4/xfrm4_state.c
-@@ -8,28 +8,7 @@
-  *
-  */
+ 	return 0;
+ }
++
++#if IS_ENABLED(CONFIG_IPV6)
++static inline bool xfrm6_local_dontfrag(const struct sock *sk)
++{
++	int proto;
++
++	if (!sk || sk->sk_family != AF_INET6)
++		return false;
++
++	proto = sk->sk_protocol;
++	if (proto == IPPROTO_UDP || proto == IPPROTO_RAW)
++		return inet6_sk(sk)->dontfrag;
++
++	return false;
++}
++#endif
+ #endif	/* _NET_XFRM_H */
+diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
+index 23e2b52cfba6..be64f280510c 100644
+--- a/net/ipv6/xfrm6_output.c
++++ b/net/ipv6/xfrm6_output.c
+@@ -23,23 +23,6 @@ int xfrm6_find_1stfragopt(struct xfrm_state *x, struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(xfrm6_find_1stfragopt);
  
--#include <net/ip.h>
- #include <net/xfrm.h>
--#include <linux/pfkeyv2.h>
--#include <linux/ipsec.h>
--#include <linux/netfilter_ipv4.h>
--#include <linux/export.h>
--
--int xfrm4_extract_header(struct sk_buff *skb)
+-static int xfrm6_local_dontfrag(struct sk_buff *skb)
 -{
--	const struct iphdr *iph = ip_hdr(skb);
+-	int proto;
+-	struct sock *sk = skb->sk;
 -
--	XFRM_MODE_SKB_CB(skb)->ihl = sizeof(*iph);
--	XFRM_MODE_SKB_CB(skb)->id = iph->id;
--	XFRM_MODE_SKB_CB(skb)->frag_off = iph->frag_off;
--	XFRM_MODE_SKB_CB(skb)->tos = iph->tos;
--	XFRM_MODE_SKB_CB(skb)->ttl = iph->ttl;
--	XFRM_MODE_SKB_CB(skb)->optlen = iph->ihl * 4 - sizeof(*iph);
--	memset(XFRM_MODE_SKB_CB(skb)->flow_lbl, 0,
--	       sizeof(XFRM_MODE_SKB_CB(skb)->flow_lbl));
+-	if (sk) {
+-		if (sk->sk_family != AF_INET6)
+-			return 0;
+-
+-		proto = sk->sk_protocol;
+-		if (proto == IPPROTO_UDP || proto == IPPROTO_RAW)
+-			return inet6_sk(sk)->dontfrag;
+-	}
 -
 -	return 0;
 -}
- 
- static struct xfrm_state_afinfo xfrm4_state_afinfo = {
- 	.family			= AF_INET,
-diff --git a/net/xfrm/xfrm_inout.h b/net/xfrm/xfrm_inout.h
-index e24abac92dc2..efc5e6b2e87b 100644
---- a/net/xfrm/xfrm_inout.h
-+++ b/net/xfrm/xfrm_inout.h
-@@ -6,6 +6,20 @@
- #ifndef XFRM_INOUT_H
- #define XFRM_INOUT_H 1
- 
-+static inline void xfrm4_extract_header(struct sk_buff *skb)
-+{
-+	const struct iphdr *iph = ip_hdr(skb);
-+
-+	XFRM_MODE_SKB_CB(skb)->ihl = sizeof(*iph);
-+	XFRM_MODE_SKB_CB(skb)->id = iph->id;
-+	XFRM_MODE_SKB_CB(skb)->frag_off = iph->frag_off;
-+	XFRM_MODE_SKB_CB(skb)->tos = iph->tos;
-+	XFRM_MODE_SKB_CB(skb)->ttl = iph->ttl;
-+	XFRM_MODE_SKB_CB(skb)->optlen = iph->ihl * 4 - sizeof(*iph);
-+	memset(XFRM_MODE_SKB_CB(skb)->flow_lbl, 0,
-+	       sizeof(XFRM_MODE_SKB_CB(skb)->flow_lbl));
-+}
-+
- static inline void xfrm6_extract_header(struct sk_buff *skb)
+-
+ void xfrm6_local_rxpmtu(struct sk_buff *skb, u32 mtu)
  {
- #if IS_ENABLED(CONFIG_IPV6)
+ 	struct flowi6 fl6;
+@@ -82,7 +65,7 @@ static int xfrm6_tunnel_check_size(struct sk_buff *skb)
+ 		skb->dev = dst->dev;
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 
+-		if (xfrm6_local_dontfrag(skb))
++		if (xfrm6_local_dontfrag(skb->sk))
+ 			xfrm6_local_rxpmtu(skb, mtu);
+ 		else if (skb->sk)
+ 			xfrm_local_error(skb, mtu);
+@@ -181,7 +164,7 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 
+ 	toobig = skb->len > mtu && !skb_is_gso(skb);
+ 
+-	if (toobig && xfrm6_local_dontfrag(skb)) {
++	if (toobig && xfrm6_local_dontfrag(skb->sk)) {
+ 		xfrm6_local_rxpmtu(skb, mtu);
+ 		kfree_skb(skb);
+ 		return -EMSGSIZE;
 -- 
 2.17.1
 
