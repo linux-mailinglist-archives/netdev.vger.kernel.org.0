@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E76901E8429
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C28A1E8437
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgE2Q5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:57:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48200 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgE2Q5k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 12:57:40 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8BDFD2075A;
-        Fri, 29 May 2020 16:57:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590771460;
-        bh=HWaJ8knx8jrtX7vWoPGCCZuj0FJ8BoiCzWy4GdgYnO0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BCbzduRgjSFdejSVXTKyb4aBGbgxLCd3Zu5BI/JY6FwKuB36l0/z0zq0mmYi3rqT/
-         Lb+edgaa5BiCvyMhhB0TfzqinNJ1U0wHVILwbpMBlYrsfua9zE7rZehF/YRotogZb5
-         RFAmWgO1nSn3av8C6YbepQw1oVnNsKgErWaOSO0A=
-Date:   Fri, 29 May 2020 17:57:36 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>
-Subject: Re: [PATCH v3 0/2] regmap: provide simple bitops and use them in a
- driver
-Message-ID: <20200529165736.GO4610@sirena.org.uk>
-References: <20200528154503.26304-1-brgl@bgdev.pl>
- <159077110913.28779.5053923375043778782.b4-ty@kernel.org>
+        id S1727071AbgE2Q6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:58:55 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52249 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725601AbgE2Q6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:58:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590771532;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3tGbByuZRXmFAd1dhTbS4zQ9lQJnPiWlv2z/6LTD3Nc=;
+        b=Mf7pEGjX+Ynhnc/HBdBdqGb6wIvAa71A9uJC8h3BTjyhLPswL5rYhuOMIzI0CNMRLu5ci3
+        rXbUji3kVeP5WT4BKuiWqTaMpKepjCiBKzOGVKEHqUtUXGyfqRmFVx3R6XvlnKV2v3B8+U
+        vOBPMzDJKHSvsY802AO7A9NlhQS0jFM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-502-x9aZN-tNPzaumoV-Qn-e-A-1; Fri, 29 May 2020 12:58:49 -0400
+X-MC-Unique: x9aZN-tNPzaumoV-Qn-e-A-1
+Received: by mail-ed1-f72.google.com with SMTP id t23so482700edq.5
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 09:58:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=3tGbByuZRXmFAd1dhTbS4zQ9lQJnPiWlv2z/6LTD3Nc=;
+        b=CTyakhJSepI2E/3+9p1Wff/pf9u0znvoDmOqZQHpr/9kD1gZoMsbSi/RbdslgGXXl3
+         7VvHF4m07l5/CIIEmlLpv1KOUhGDTZAc4Uns+aBIiPHL7RayO3KwTAgT/r/8XqA4dcUE
+         bDRazFKxP4g0h3nwTAQNMm4KmNm8l2LOYF/l96opfEW7eFrKZ6FSXyOdv9B5s8RA70Kw
+         VcqAtC+529JlMlx2MWKgXwNXOP9mgOoGlEJuTT1zyMaIcBwqNdpRaloZjHjHmDgCDaf9
+         qy8RuE1/y0T4SqwQUN8DOfgLW3ezdDJBWM4AuMmwKGgq+BSRZuH2G4vWHDSRTpj+lCtI
+         XhMg==
+X-Gm-Message-State: AOAM530HdhuvCHMocUzcU3+VqGoe4H63Oq4QiEqv7k1cppgy1qF5begg
+        8wYjVoclA82V7tuZzmmTidMpyPC+Uebmu+hlUc4LK5nRWrxCKsb4yJHZblj4d5i91+k+OuBvf9F
+        249HP0GqMSLvm6Ewz
+X-Received: by 2002:a17:906:a402:: with SMTP id l2mr9054159ejz.14.1590771527867;
+        Fri, 29 May 2020 09:58:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyoWj0+rD5MVx5oFzuR+OBuCd+njf3lM2FmatSR0r39pJxoz4nqQBEhHHIeZZnLhbUlr1oHDQ==
+X-Received: by 2002:a17:906:a402:: with SMTP id l2mr9054143ejz.14.1590771527699;
+        Fri, 29 May 2020 09:58:47 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id dj28sm7334529edb.69.2020.05.29.09.58.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2020 09:58:47 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AAD59182019; Fri, 29 May 2020 18:58:46 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        brouer@redhat.com, lorenzo@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+Subject: Re: [PATCH v3 bpf-next 5/5] selftest: Add tests for XDP programs in devmap entries
+In-Reply-To: <a8fd8937-25d7-0822-67a7-e01b856261be@gmail.com>
+References: <20200529052057.69378-1-dsahern@kernel.org> <20200529052057.69378-6-dsahern@kernel.org> <87r1v2zo3y.fsf@toke.dk> <a8fd8937-25d7-0822-67a7-e01b856261be@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 29 May 2020 18:58:46 +0200
+Message-ID: <87lflazni1.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gqEssfNGWsEa4HfM"
-Content-Disposition: inline
-In-Reply-To: <159077110913.28779.5053923375043778782.b4-ty@kernel.org>
-X-Cookie: The Killer Ducks are coming!!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+David Ahern <dsahern@gmail.com> writes:
 
---gqEssfNGWsEa4HfM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On 5/29/20 10:45 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.=
+c b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
+>>> new file mode 100644
+>>> index 000000000000..b360ba2bd441
+>>> --- /dev/null
+>>> +++ b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
+>>> @@ -0,0 +1,22 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +/* fails to load without expected_attach_type =3D BPF_XDP_DEVMAP
+>>> + * because of access to egress_ifindex
+>>> + */
+>>> +#include <linux/bpf.h>
+>>> +#include <bpf/bpf_helpers.h>
+>>> +
+>>> +SEC("xdp_dm_log")
+>> Guess this should be xdp_devmap_log now?
+>>=20
+> no. this program is for negative testing - it should load as an XDP
+> program without the expected_attach_type set. See the comment at the top
+> of the file.
 
-On Fri, May 29, 2020 at 05:52:00PM +0100, Mark Brown wrote:
+Ah, right, sorry - missed that (obviously) :)
 
-> [1/1] regmap: provide helpers for simple bit operations
->       commit: aa2ff9dbaeddabb5ad166db5f9f1a0580a8bbba8
+-Toke
 
-Let me know if you need a pull request for this, given the merge window
-is likely to open over the weekend I figured it's likely too late to
-apply the second patch before then.
-
---gqEssfNGWsEa4HfM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7RPv8ACgkQJNaLcl1U
-h9Csowf/Yd4cPlSB5f6vZznQyt6ZA4E9LGl+xUJ0HP+QooGqUbPwRV29fAMfSDUY
-rWXfSQzj8EtTBt9ukCNQLMrmsHZ8EYqD+YC2E3j7yxXtdYknq9rg4vUPXaie/X1S
-D40fyHEDaMDKwk469zZbJJavMooYstd6PEkPTFSiOy6jN5X/asm1bYUH3JEJCXp+
-l3b6FlrXH+RChM75PPhzNZD8GpMdXUzBUIbWwvFErM3I8OcVoLJKHHhSX7hW9fDu
-Zb+jZtjHDBCfVzauWnwt1drGsDCHCAD+QXLAaMty1KJMa9+00P2fMv++2JICI0Qe
-IhTFLfPiVmMkifKoF1wf6TFbu8jN1A==
-=2xIa
------END PGP SIGNATURE-----
-
---gqEssfNGWsEa4HfM--
