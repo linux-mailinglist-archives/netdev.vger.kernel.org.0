@@ -2,159 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5726E1E7130
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 02:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E061E715E
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 02:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437986AbgE2ARW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 20:17:22 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:36658 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437963AbgE2ART (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 May 2020 20:17:19 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3C4A960092;
-        Fri, 29 May 2020 00:17:17 +0000 (UTC)
-Received: from us4-mdac16-21.ut7.mdlocal (unknown [10.7.65.245])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 399D72009A;
-        Fri, 29 May 2020 00:17:17 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.38])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9A8C21C0054;
-        Fri, 29 May 2020 00:17:16 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 006C7800059;
-        Fri, 29 May 2020 00:17:15 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 29 May
- 2020 01:17:06 +0100
-Subject: Re: Self-XORing BPF registers is undefined behavior
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexander Potapenko <glider@google.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Dmitriy Vyukov <dvyukov@google.com>,
-        Networking <netdev@vger.kernel.org>
-References: <CAG_fn=W55uuPbpvjzCphgiMbmhnFmmWY=KcOGvmUv14_JOGc5g@mail.gmail.com>
- <20181213115936.GG21324@unicorn.suse.cz>
- <20181213122004.GH21324@unicorn.suse.cz>
- <CAG_fn=VSEw2NvrE=GE4f4H6CAD-6BjUQvz3W06nLmF8tg7CfBA@mail.gmail.com>
- <def5d586-3a8c-01b7-c6dd-bc284336b76e@iogearbox.net>
- <7bf9e46f-93a1-b6ff-7e75-53ace009c77c@iogearbox.net>
- <CAG_fn=WrWLC7v8btiZfRSSj1Oj6WymLmwWq4x1Ss3rQ4P0cOOA@mail.gmail.com>
- <CAG_fn=W_BCW5OvP2tayQLcrTuiXCXDBYDYSJ7U6xHftDFyLu3A@mail.gmail.com>
- <CAADnVQ+GFuDkx+xW42wL60=W4bz5C8Q-pNNP+f2txy_hY-TeUA@mail.gmail.com>
- <CAG_fn=WfQ4KG5FCwYQPbHX6PJ1f8wvJYq+Q9fBugyCbMBdiB6Q@mail.gmail.com>
- <CAADnVQLxnjrnxFhXEKDaXBgVZeRauAr8F4N+ZwuKdTnONUkt7A@mail.gmail.com>
- <CAG_fn=Uvp2HmqHUZqEHtAWj8dG4j5ifqbGFQ2A3Jzv10bf-b9Q@mail.gmail.com>
- <CAADnVQ+2eLKh-s34ciNue-Jt5yL1MrS=LL8Zjfo0gkUkk8dDug@mail.gmail.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <984adc13-568e-8195-da1a-05135dbf954f@solarflare.com>
-Date:   Fri, 29 May 2020 01:17:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S2438115AbgE2A0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 20:26:02 -0400
+Received: from correo.us.es ([193.147.175.20]:44218 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2438088AbgE2AZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 May 2020 20:25:55 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B9F97CF67F
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 02:25:51 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A8032DA721
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 02:25:51 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 99EABDA715; Fri, 29 May 2020 02:25:51 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1AB5CDA709;
+        Fri, 29 May 2020 02:25:49 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 29 May 2020 02:25:49 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id A63EA426CCB9;
+        Fri, 29 May 2020 02:25:48 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, paulb@mellanox.com,
+        ozsh@mellanox.com, vladbu@mellanox.com, jiri@resnulli.us,
+        kuba@kernel.org, saeedm@mellanox.com, michael.chan@broadcom.com,
+        sriharsha.basavapatna@broadcom.com
+Subject: [PATCH net-next 0/8] the indirect flow_block infrastructure, revisited
+Date:   Fri, 29 May 2020 02:25:33 +0200
+Message-Id: <20200529002541.19743-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQ+2eLKh-s34ciNue-Jt5yL1MrS=LL8Zjfo0gkUkk8dDug@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25448.003
-X-TM-AS-Result: No-8.353700-8.000000-10
-X-TMASE-MatchedRID: 0+daXaNUWRWi6/VcDv9f0PZvT2zYoYOwC/ExpXrHizxudVAdMeGPApGP
-        Ti55UqEjSnuSB1sxZWzdpTkdfBwtt+/wE1BfYSjC5y1fRAwHJ4elAfiiC1VA/Xrjo3X9e+DHdvc
-        uwUbHanknn0lSSZsa6JNlqmLdV1OFHYnnQdbx7N6jGOtqnkAZC6a83Mq89i9duM5RdaZDc5ZKBk
-        HjBCgWt+fG7MmyoVqeU6WsjEEjHBHsAvc290pcYFSzRMNv1fRD9vodwxeGN6b/MiRbve4ADj2j/
-        N8mMgrkNZ3UG53E2nhtrQLvnvZ+IABLiso5jLwzzfqlpbtmcWg4eGohd7gjNnc925yOJXmFsGNm
-        tgd0rQLLMu+rJ+RXuno0/mi7Koa4v+jlkdqQeLaAO0kpgKezRCjjDAcGqVG+e8KwkFl1M+rhzOD
-        Wjt9CFUS2i19a/fP2Pm6U9f6G6shkihO6QdpZxRSZHx/gc9XO+ahnrHhmAJQiQEhKTzbeclbTtJ
-        pG9MBBJVehNbRd6yejkUEa+7Udavy/UcUhKtWiGUlF/M3Dxp9wJ5RNZmULo2PjNemES45Q0Nwi7
-        z6Ud807OmRl4GvoS6v/WS1F162CjD7sSxTYb+MJuplsyNNdxxfbPFE2GHrV+S5C/08hWc10LF/2
-        Oo5TiZwDOBhOnctrLb6XLHjqIvS+G6+qk5Nchp4CIKY/Hg3AtOt1ofVlaoLWRN8STJpl3PoLR4+
-        zsDTthUfR2rvBju5pqcPCgG9H+q3Sa2eNXdbV4Rl82vBfK3NFAUqhkvwcz082HPyFp/WzwL6SxP
-        pr1/I=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.353700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25448.003
-X-MDID: 1590711437-FMo2h5rUNqC7
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/05/2020 17:00, Alexei Starovoitov wrote:
-> xoring of two identical values is undefined in standard?
-I believe it is in this case, yes; even without the complication
- of array references that happen to alias, Alexander's foo1() is
- undefined behaviour under C89 (and also C99 which handles the
- case differently).
+Hi,
 
-From the definitions section (1.6) of the C89 draft [1]:
-> * Undefined behavior --- behavior, upon use of a nonportable or
-> erroneous program construct, of erroneous data, or of
-> indeterminately-valued objects, for which the Standard imposes
-> no requirements.
-And from 3.5.7 'Initialization':
-> If an object that has automatic storage duration is not
-> initialized explicitly, its value is indeterminate.
-Since the standard doesn't say anything about self-XORing that
- could make it 'special' in this regard, the compiler isn't
- required to notice that it's a self-XOR, and (in the tradition
- of compiler-writers the world over) is entitled to optimise the
- program based on the assumption that the programmer has not
- committed UB, so in the foo1() example would be strictly within
- its rights to generate a binary that contained no XOR
- instruction at all.  UB, as you surely know, isn't guaranteed to
- do something 'sensible'.
-And in the BPF example, if the compiler at some point manages to
- statically figure out that regs[insn->dst_reg] is uninitialised,
- it might say "hey, I can just grab any old free register and
- declare that that's now regs[insn->dst_reg] without filling it.
- And then it can do the same for regs[insn->src_reg], or heck,
- even choose to fill that one (this is now legal even though the
- pointers alias, because you already committed UB), and do a xor
- with different regs and produce garbage results.
+This series fixes b5140a36da78 ("netfilter: flowtable: add indr block
+setup support") that adds support for the indirect block for the
+flowtable. This patch crashes the kernel with the TC CT action.
 
-(In C99 it gets subtler because an 'indeterminate value' is
- defined to be 'either a valid value or a trap representation',
- so arguably the compiler can only do this stuff if it _has_
- trap representations for the type in question.)
+[  630.908086] BUG: kernel NULL pointer dereference, address: 00000000000000f0
+[  630.908233] #PF: error_code(0x0000) - not-present page
+[  630.908304] PGD 800000104addd067 P4D 800000104addd067 PUD 104311d067 PMD 0
+[  630.908380] Oops: 0000 [#1] SMP PTI [  630.908615] RIP: 0010:nf_flow_table_indr_block_cb+0xc0/0x190 [nf_flow_table]
+[  630.908690] Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 4c 89 75 a0 4c 89 65 a8 4d 89 ee 49 89 dd 4c 89 fe 48 c7 c7 b7 64 36 a0 31 c0 e8 ce ed d8 e0 <49> 8b b7 f0 00 00 00 48 c7 c7 c8 64      36 a0 31 c0 e8 b9 ed d8 e0 49[  630.908790] RSP: 0018:ffffc9000895f8c0 EFLAGS: 00010246
+[...]
+[  630.910774] Call Trace:
+[  630.911192]  ? mlx5e_rep_indr_setup_block+0x270/0x270 [mlx5_core]
+[  630.911621]  ? mlx5e_rep_indr_setup_block+0x270/0x270 [mlx5_core]
+[  630.912040]  ? mlx5e_rep_indr_setup_block+0x270/0x270 [mlx5_core]
+[  630.912443]  flow_block_cmd+0x51/0x80
+[  630.912844]  __flow_indr_block_cb_register+0x26c/0x510
+[  630.913265]  mlx5e_nic_rep_netdevice_event+0x9e/0x110 [mlx5_core]
+[  630.913665]  notifier_call_chain+0x53/0xa0
+[  630.914063]  raw_notifier_call_chain+0x16/0x20
+[  630.914466]  call_netdevice_notifiers_info+0x39/0x90
+[  630.914859]  register_netdevice+0x484/0x550
+[  630.915256]  __ip_tunnel_create+0x12b/0x1f0 [ip_tunnel]
+[  630.915661]  ip_tunnel_init_net+0x116/0x180 [ip_tunnel]
+[  630.916062]  ipgre_tap_init_net+0x22/0x30 [ip_gre]
+[  630.916458]  ops_init+0x44/0x110
+[  630.916851]  register_pernet_operations+0x112/0x200
 
-> If that's really true such standard worth nothing.
-You may be right, but plenty of compiler writers will take that
- as a reason to ignore you, and if (say) a gcc upgrade breaks
- filter.c, they will merrily close any bugs you file as NOTABUG
- or INVALID or GOAWAYWEDONTCARE.
-Is this annoying?  Extremely; the XOR-clearing _would_ be fine
- if the standard had chosen to define things differently (e.g.
- it's fine under a hypothetical 'C99 but uninitialised auto
- variables have unspecified rather than indeterminate values').
-I can't see a way to work around it that doesn't have a possible
- performance cost (alternatives to Alexander's MOV_IMM 0 include
- initialising regs[BPF_REG_A] and regs[BPF_REG_X] in PROG_NAME
- and PROG_NAME_ARGS), although there is the question of whether
- anyone who cares about performance (or security) will be using
- BPF without the JIT anyway.
-But I don't think "Alexandar has to do the data-flow analysis in
- KMSAN" is the right answer; KMSAN's diagnostic here is _correct_
- in that ___bpf_prog_run() invokes UB on this XOR.
-Now, since it would be rather difficult and pointless for the
- compiler to statically prove that the reg is uninitialised (it
- would need to generate a special code-path just for this one
- case), maybe the best thing to do is to get GCC folks to bless
- this usage (perhaps defining uninitialised variables to have
- what C99 would call an unspecified value), at which point it
- becomes defined under the "gnu89" pseudo-standard which is what
- we compile the kernel with.  At which point KMSAN can be taught
- that this is OK, and can figure out "hey, you're self-XORing an
- unspecified value, the result is determinate" and clear the
- shadow bits appropriately.
+A workaround patch to cure this crash has been proposed. However, there
+is another problem: The indirect flow_block still does not work for the
+new TC CT action. The problem is that the existing flow_indr_block_entry
+callback assumes you can look up for the flowtable from the netdevice to
+get the flow_block. This flow_block allows you to offload the flows via
+TC_SETUP_CLSFLOWER. Unfortunately, it is not possible to get the
+flow_block from the TC CT flowtables because they are _not_ bound to any
+specific netdevice.
 
--ed
+= What is the indirect flow_block infrastructure?
 
-[1]: https://port70.net/~nsz/c/c89/c89-draft.html
+The indirect flow_block infrastructure allows drivers to offload
+tc/netfilter rules that belong to software tunnel netdevices, e.g.
+vxlan.
+
+This indirect flow_block infrastructure relates tunnel netdevices with
+drivers because there is no obvious way to relate these two things
+from the control plane.
+
+= How does the indirect flow_block work before this patchset?
+
+Front-ends register the indirect block callback through
+flow_indr_add_block_cb() if they support for offloading tunnel
+netdevices.
+
+== Setting up an indirect block
+
+1) Drivers track tunnel netdevices via NETDEV_{REGISTER,UNREGISTER} events.
+   If there is a new tunnel netdevice that the driver can offload, then the
+   driver invokes __flow_indr_block_cb_register() with the new tunnel
+   netdevice and the driver callback. The __flow_indr_block_cb_register()
+   call iterates over the list of the front-end callbacks.
+
+2) The front-end callback sets up the flow_block_offload structure and it
+   invokes the driver callback to set up the flow_block.
+
+3) The driver callback now registers the flow_block structure and it
+   returns the flow_block back to the front-end.
+
+4) The front-end gets the flow_block object and it is now ready to
+   offload rules for this tunnel netdevice.
+
+A simplified callgraph is represented below.
+
+        Front-end                      Driver
+
+                                   NETDEV_REGISTER
+                                         |
+                     __flow_indr_block_cb_register(netdev, cb_priv, driver_cb)
+                                         | [1]
+            .--------------frontend_indr_block_cb(cb_priv, driver_cb)
+            |
+            .
+   setup_flow_block_offload(bo)
+            | [2]
+       driver_cb(bo, cb_priv) -----------.
+                                         |
+                                         \/
+                                  set up flow_blocks [3]
+                                         |
+      add rules to flow_block <----------
+      TC_SETUP_CLSFLOWER [4]
+
+== Releasing the indirect flow_block
+
+There are two possibilities, either tunnel netdevice is removed or
+a netdevice (port representor) is removed.
+
+=== Tunnel netdevice is removed
+
+Driver waits for the NETDEV_UNREGISTER event that announces the tunnel
+netdevice removal. Then, it calls __flow_indr_block_cb_unregister() to
+remove the flow_block and rules.  Callgraph is very similar to the one
+described above.
+
+=== Netdevice is removed (port representor)
+
+Driver calls __flow_indr_block_cb_unregister() to remove the existing
+netfilter/tc rule that belong to the tunnel netdevice.
+
+= How does the indirect flow_block work after this patchset?
+
+Drivers register the indirect flow_block setup callback through
+flow_indr_dev_register() if they support for offloading tunnel
+netdevices.
+
+== Setting up an indirect flow_block
+
+1) Frontends check if dev->netdev_ops->ndo_setup_tc is unset. If so,
+   frontends call flow_indr_dev_setup_offload(). This call invokes
+   the drivers' indirect flow_block setup callback.
+
+2) The indirect flow_block setup callback sets up a flow_block structure
+   which relates the tunnel netdevice and the driver.
+
+3) The front-end uses flow_block and offload the rules.
+
+Note that the operational to set up (non-indirect) flow_block is very
+similar.
+
+== Releasing the indirect flow_block
+
+=== Tunnel netdevice is removed
+
+This calls flow_indr_dev_setup_offload() to set down the flow_block and
+remove the offloaded rules. This alternate path is exercised if
+dev->netdev_ops->ndo_setup_tc is unset.
+
+=== Netdevice is removed (port representor)
+
+If a netdevice is removed, then it might need to to clean up the
+offloaded tc/netfilter rules that belongs to the tunnel netdevice:
+
+1) The driver invokes flow_indr_dev_unregister() when a netdevice is
+   removed.
+
+2) This call iterates over the existing indirect flow_blocks
+   and it invokes the cleanup callback to let the front-end remove the
+   tc/netfilter rules. The cleanup callback already provides the
+   flow_block that the front-end needs to clean up.
+
+        Front-end                      Driver
+
+                                         |
+                            flow_indr_dev_unregister(...)
+                                         |
+                         iterate over list of indirect flow_block
+                               and invoke cleanup callback
+                                         |
+            .-----------------------------
+            |
+            .
+   frontend_flow_block_cleanup(flow_block)
+            .
+            |
+           \/
+   remove rules to flow_block
+      TC_SETUP_CLSFLOWER
+
+= About this patchset
+
+This patchset aims to address the existing TC CT problem while
+simplifying the indirect flow_block infrastructure. Saving 300 LoC in
+the flow_offload core and the drivers. The operational gets aligned with
+the (non-indirect) flow_blocks logic. Patchset is composed of:
+
+Patch #1 add nf_flow_table_gc_cleanup() which is required by the
+         netfilter's flowtable new indirect flow_block approach.
+
+Patch #2 adds the flow_block_indr object which is actually part of
+         of the flow_block object. This stores the indirect flow_block
+         metadata such as the tunnel netdevice owner and the cleanup
+         callback (in case the tunnel netdevice goes away).
+
+         This patch adds flow_indr_dev_{un}register() to allow drivers
+         to offer netdevice tunnel hardware offload to the front-ends.
+         Then, front-ends call flow_indr_dev_setup_offload() to invoke
+         the drivers to set up the (indirect) flow_block.
+
+Patch #3 add the tcf_block_offload_init() helper function, this is
+         a preparation patch to adapt the tc front-end to use this
+         new indirect flow_block infrastructure.
+
+Patch #4 updates the tc and netfilter front-ends to use the new
+         indirect flow_block infrastructure.
+
+Patch #5 updates the mlx5 driver to use the new indirect flow_block
+         infrastructure.
+
+Patch #6 updates the nfp driver to use the new indirect flow_block
+         infrastructure.
+
+Patch #7 updates the bnxt driver to use the new indirect flow_block
+         infrastructure.
+
+Patch #8 removes the indirect flow_block infrastructure version 1,
+         now that frontends and drivers have been translated to
+         version 2 (coming in this patchset).
+
+Please, apply.
+
+Pablo Neira Ayuso (8):
+  netfilter: nf_flowtable: expose nf_flow_table_gc_cleanup()
+  net: flow_offload: consolidate indirect flow_block infrastructure
+  net: cls_api: add tcf_block_offload_init()
+  net: use flow_indr_dev_setup_offload()
+  mlx5: update indirect block support
+  nfp: update indirect block support
+  bnxt_tc: update indirect block support
+  net: remove indirect block netdev event registration
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |  51 +--
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |  81 +----
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.h   |   4 -
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   1 -
+ .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   5 -
+ .../net/ethernet/netronome/nfp/flower/main.c  |  11 +-
+ .../net/ethernet/netronome/nfp/flower/main.h  |   7 +-
+ .../ethernet/netronome/nfp/flower/offload.c   |  35 +-
+ include/net/flow_offload.h                    |  28 +-
+ include/net/netfilter/nf_flow_table.h         |   2 +
+ net/core/flow_offload.c                       | 301 +++++++-----------
+ net/netfilter/nf_flow_table_core.c            |   6 +-
+ net/netfilter/nf_flow_table_offload.c         |  85 +----
+ net/netfilter/nf_tables_offload.c             |  69 ++--
+ net/sched/cls_api.c                           | 157 +++------
+ 16 files changed, 249 insertions(+), 595 deletions(-)
+
+--
+2.20.1
+
