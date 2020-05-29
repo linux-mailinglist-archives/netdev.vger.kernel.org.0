@@ -2,46 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EDFF1E8791
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0138B1E8794
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728147AbgE2TSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 15:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbgE2TSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:18:01 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51529C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 12:18:01 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 78CAA1281F7CD;
-        Fri, 29 May 2020 12:18:00 -0700 (PDT)
-Date:   Fri, 29 May 2020 12:17:59 -0700 (PDT)
-Message-Id: <20200529.121759.481912945404729757.davem@davemloft.net>
-To:     jeffrey.t.kirsher@intel.com
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
-Subject: Re: [net-next 00/17][pull request] Intel Wired LAN Driver Updates
- 2020-05-28
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200529044004.3725307-1-jeffrey.t.kirsher@intel.com>
-References: <20200529044004.3725307-1-jeffrey.t.kirsher@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728156AbgE2TSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 15:18:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726549AbgE2TSO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 15:18:14 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 861D5207D4;
+        Fri, 29 May 2020 19:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590779893;
+        bh=vgDSnI+7ypiz1z9yX8VrOTh1GkbhLJZZTXgp3PCi0UI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YNPdyVh2Rx2tMjeDs1WK7/snMQoVXCURWHb8cV872kD8ltBKQUnSNAxdNc1BUn/u7
+         W3b2JRZ4+HCLkA+9PiVV1Fhy7VNz2Jd8vQJ94A8N/cbhPGZDeun1sjI0zEo8skGaMz
+         yjzqX95r3intpixgnk5qydDy+Q1ttwO2e7UekyhY=
+Date:   Fri, 29 May 2020 12:18:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 2/2] bridge: mrp: Add support for role MRA
+Message-ID: <20200529121811.583003cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200529100514.920537-3-horatiu.vultur@microchip.com>
+References: <20200529100514.920537-1-horatiu.vultur@microchip.com>
+        <20200529100514.920537-3-horatiu.vultur@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 29 May 2020 12:18:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Date: Thu, 28 May 2020 21:39:47 -0700
+On Fri, 29 May 2020 10:05:14 +0000 Horatiu Vultur wrote:
+> A node that has the MRA role, it can behave as MRM or MRC.
+> 
+> Initially it starts as MRM and sends MRP_Test frames on both ring ports.
+> If it detects that there are MRP_Test send by another MRM, then it
+> checks if these frames have a lower priority than itself. In this case
+> it would send MRP_Nack frames to notify the other node that it needs to
+> stop sending MRP_Test frames.
+> If it receives a MRP_Nack frame then it stops sending MRP_Test frames
+> and starts to behave as a MRC but it would continue to monitor the
+> MRP_Test frames send by MRM. If at a point the MRM stops to send
+> MRP_Test frames it would get the MRM role and start to send MRP_Test
+> frames.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-> This series contains updates to e1000, e1000e, igc, igb, ixgbe and i40e.
-
-Pulled, thanks Jeff.
+net/bridge/br_mrp.c:542:20: warning: cast to restricted __be16
+net/bridge/br_mrp.c:542:20: warning: cast to restricted __be16
+net/bridge/br_mrp.c:542:20: warning: cast to restricted __be16
+net/bridge/br_mrp.c:542:20: warning: cast to restricted __be16
