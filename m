@@ -2,83 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACED1E7BAB
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 13:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 609141E7BE2
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 13:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgE2LXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 07:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgE2LXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 07:23:33 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617F6C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 04:23:33 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id n15so1271059pfd.0
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 04:23:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0qbFgn8ADftWrZz2rF9sjxFYt47afDQAIrSpN+uMsvc=;
-        b=ryUMUPBvQqYwD5nfhn/YYVZMqqfKYC5iNA8l9kUAxM/zT1PvFk0VqZjVZMHxZ6eAwG
-         fBb47kGpK4WFThRRK6jDHHSoTxqJnFW9/+kncGy8TbvJlw8T955uX86SQibkeBpWpguN
-         GdI7CwxMFp+FUIDiXEv/eBOcnjupqQzAZgLD9Js4Xkk31h14enyd04F757lcXBcwxQqC
-         pnDBIg8SXN6OvQfGzE4+ZsJmmY2p9/QSwVSQ0DUvmUEfXQYpGyd4l5toPABt5BV7jnrl
-         mUH0zBdlfqcA6fLt+KslJLLyz21KGw1zUZF7wt9UE7Sc9ukUPN7BUKBSkcSTQcRbJlk3
-         X44A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0qbFgn8ADftWrZz2rF9sjxFYt47afDQAIrSpN+uMsvc=;
-        b=RfWZ3VLw6OHjOqYzO6buyFgI55vOv+T+UvcK6i7F2RpidbMW8z4okyaPa/37Zr+/e7
-         ExscUhZic+fvO17yfturtR/Z31IK1e+t2hkz4U65AxiELXa3bTxQoBNuXVPYr68vo1FF
-         2QG5Gs0VOUcrqAVpMvk/whZMWCkmVJ7VcqIBJax9B4A3zOO0BN9/kbhy9c+4OVsPPhtA
-         3LVroyQJh13TS6JxgJfqYgUf//nQDnjBXiABf4MlYY2JIIZ9Qq6pdJyQIc2YuAPXGKs0
-         XWYAKTiwH2WIqhtRj5OZ59JeExIoMnjzucso8NWEC5GMFUhUp76jJK2mZMyqmZsh829T
-         sLVQ==
-X-Gm-Message-State: AOAM532bbDm+7Eet/QT8QTGjMdZatBuaY09p4/BQKBk1JMIMNksCOjCB
-        +iM5L7spdtW1jAhMIEQSvgRNrLK/
-X-Google-Smtp-Source: ABdhPJy01D0CYwV8A7cStPnMp1T201yuLOEL5wLARFmK6i6BgudSz3sN+d/4GZmqFdq9we2F4+03CA==
-X-Received: by 2002:a62:ed10:: with SMTP id u16mr8337705pfh.0.1590751412751;
-        Fri, 29 May 2020 04:23:32 -0700 (PDT)
-Received: from localhost.localdomain ([45.192.173.250])
-        by smtp.gmail.com with ESMTPSA id 65sm7195151pfy.219.2020.05.29.04.23.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 May 2020 04:23:32 -0700 (PDT)
-From:   Wang Li <wangli8850@gmail.com>
-X-Google-Original-From: Wang Li <wangli09@kuaishou.com>
-To:     netdev@vger.kernel.org
+        id S1726459AbgE2Lcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 07:32:52 -0400
+Received: from smtprelay0025.hostedemail.com ([216.40.44.25]:45190 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725306AbgE2Lcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 07:32:52 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id E1972100E7B43;
+        Fri, 29 May 2020 11:32:50 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1568:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3871:3873:3876:4321:5007:6119:8531:10004:10400:10848:11026:11658:11914:12296:12297:12740:12760:12895:13019:13069:13311:13357:13439:14659:14721:21080:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: cow08_5c1822326d63
+X-Filterd-Recvd-Size: 1308
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf06.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 29 May 2020 11:32:50 +0000 (UTC)
+Message-ID: <f88a32fd6bdc9e4279cf673966be203bae4652e1.camel@perches.com>
+Subject: Re: [PATCH] net: udp: remove the redundant assignment
+From:   Joe Perches <joe@perches.com>
+To:     Wang Li <wangli8850@gmail.com>, netdev@vger.kernel.org
 Cc:     Wang Li <wangli09@kuaishou.com>
-Subject: [PATCH] net: udp: remove the redundant assignment
-Date:   Fri, 29 May 2020 19:23:21 +0800
-Message-Id: <20200529112321.18606-1-wangli09@kuaishou.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+Date:   Fri, 29 May 2020 04:32:49 -0700
+In-Reply-To: <20200529112321.18606-1-wangli09@kuaishou.com>
+References: <20200529112321.18606-1-wangli09@kuaishou.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.2-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Wang Li <wangli09@kuaishou.com>
----
- net/ipv4/udp.c | 1 -
- 1 file changed, 1 deletion(-)
+On Fri, 2020-05-29 at 19:23 +0800, Wang Li wrote:
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+[]
+> @@ -798,7 +798,6 @@ void udp_set_csum(bool nocheck, struct sk_buff *skb,
+>  	} else if (skb_is_gso(skb)) {
+>  		uh->check = ~udp_v4_check(len, saddr, daddr, 0);
+>  	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
+> -		uh->check = 0;
+>  		uh->check = udp_v4_check(len, saddr, daddr, lco_csum(skb));
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 32564b350823..54db5182c884 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -798,7 +798,6 @@ void udp_set_csum(bool nocheck, struct sk_buff *skb,
- 	} else if (skb_is_gso(skb)) {
- 		uh->check = ~udp_v4_check(len, saddr, daddr, 0);
- 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
--		uh->check = 0;
- 		uh->check = udp_v4_check(len, saddr, daddr, lco_csum(skb));
- 		if (uh->check == 0)
- 			uh->check = CSUM_MANGLED_0;
--- 
-2.20.1 (Apple Git-117)
+Why do you think this is redundant?
+
+Where does uh point? (struct udphdr *uh = udp_hdr(skb);)
+What is lco_csum(skb) doing?
+
+
 
