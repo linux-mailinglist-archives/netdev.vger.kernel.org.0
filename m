@@ -2,91 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545C31E8256
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9AC71E825E
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbgE2PoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 11:44:14 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:56409 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726940AbgE2PoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:44:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590767051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5AD3HnP3A68DFj5y3YNpEEwK2K02DYm/1aEunRukBJ4=;
-        b=D2t5xL1J6bRPTpG4Pe+pYnwr84qDRNYCMAIIAZRRNvGQA4rWr1vvSQjKZmDLPi6jzrQQe7
-        ljd7Hj6fNRVmy6++8ZP7WNnVFskKhb8zeFFiM1dLO2nbZvs/aUmYbAbuI6xb9l4ZuUPWWR
-        hkf1QQ6abK3mEHPOpiSbr3phwDVrqLA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-168-sxFHK8I_MwWO1rF_wr2qTw-1; Fri, 29 May 2020 11:44:09 -0400
-X-MC-Unique: sxFHK8I_MwWO1rF_wr2qTw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9A3F19057A9;
-        Fri, 29 May 2020 15:44:08 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-94.ams2.redhat.com [10.36.114.94])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9836C7A8BA;
-        Fri, 29 May 2020 15:44:07 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 3/3] mptcp: remove msk from the token container at destruction time.
-Date:   Fri, 29 May 2020 17:43:31 +0200
-Message-Id: <73105e38dc7e9153dc3b58a3c4ccc59de3a10947.1590766645.git.pabeni@redhat.com>
-In-Reply-To: <cover.1590766645.git.pabeni@redhat.com>
-References: <cover.1590766645.git.pabeni@redhat.com>
+        id S1727881AbgE2PpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726970AbgE2PpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:45:10 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEDBC03E969;
+        Fri, 29 May 2020 08:45:10 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id x14so4245977wrp.2;
+        Fri, 29 May 2020 08:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5RslimxnNmh0r71SLnEnRv0yda4yBo03pB6i0RDHhDA=;
+        b=B2nszOsdY1d+EVCNyYyeQLXoUdQKtkIwIBDpnY3TuQuTWEmosdUDgl5ojrBtpzssgh
+         e/rr8jPGoMJdvjbTLQJfucNtHiurwL315Jo9fdIlAvgXbeaGuvwItamUzBvxTZsDUwXn
+         +3anwv0lZS4s/LO6Oh22Ft7B2Ov+q2hGpb+JUTFPkJr1kJoIpDSRtYc1br1E6vk7xyAw
+         OHTW31cNw5bQGZm7wSuTlTdRi6s0Slwc601E/O9EaXxCVARxWurCfBNkD8JotbswPBpY
+         w1WO9E9zzOc/sxbel9LVLw4QHfeMU0HiYJrPJEJ5GwFhYTjfVuMYYJy4ePZ4RynYj1Rh
+         bDKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5RslimxnNmh0r71SLnEnRv0yda4yBo03pB6i0RDHhDA=;
+        b=WP93ElqUNFQMjYG1h6Z2gsKJTZb5CrB7rm2wHTVPEZTTL8NdHHhi8x9gbFbNF/m7a2
+         di356uDIoy9Q6WzxrSZ/cyKsH8BWDsH4Rlpob6IFN14UZ1iuHTN51lqqFGsFalEdyL1a
+         20H8fGmn06l5O5piPYjtKsq+OPo+uKdv95qmjksrqo57YXjglgnz/FlV+/MOQEU+Pavm
+         yS+illMcexbAAvT7GurAGewu9mwteUDyUR1vj7gx57F5Sxgn+JCCrYzFQscshpRvMcc2
+         YXMem2GuJPQLuojIUfbWgLznYNDO7/7x4p6pGRXWt1iNYd8qH0r4Br88a8JH3ICSNemT
+         BBbA==
+X-Gm-Message-State: AOAM531dQY/548c8G5Q8UACRD+XiwKwlHvSeVJZlWG0rK/N3TRa/asdg
+        d80PgI4PE1oCOpOSHGTGpTfseVk6
+X-Google-Smtp-Source: ABdhPJx3qrfb59v2e+jBBUQ/HdeGOFhHqUWEy/K21mtA8NJfHKvQCr9MdY5uUO31Ws2q2lyvScL/ug==
+X-Received: by 2002:adf:df03:: with SMTP id y3mr8877459wrl.376.1590767108555;
+        Fri, 29 May 2020 08:45:08 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id t13sm10589690wrn.64.2020.05.29.08.45.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 May 2020 08:45:08 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: mscc: fix PHYs using the vsc8574_probe
+To:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
+        andrew@lunn.ch, hkallweit1@gmail.com
+Cc:     michael@walle.cc, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200529094909.1254629-1-antoine.tenart@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c7b30c5a-a7b4-cd13-8c7a-f74b8d5a1c90@gmail.com>
+Date:   Fri, 29 May 2020 08:45:05 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20200529094909.1254629-1-antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we remote the msk from the token container only
-via mptcp_close(). The MPTCP master socket can be destroyed
-also via other paths (e.g. if not yet accepted, when shutting
-down the listener socket). When we hit the latter scenario,
-dangling msk references are left into the token container,
-leading to memory corruption and/or UaF.
 
-This change addresses the issue by moving the token removal
-into the msk destructor.
 
-Fixes: 79c0949e9a09 ("mptcp: Add key generation and token tree")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 5/29/2020 2:49 AM, Antoine Tenart wrote:
+> PHYs using the vsc8574_probe fail to be initialized and their
+> config_init return -EIO leading to errors like:
+> "could not attach PHY: -5".
+> 
+> This is because when the conversion of the MSCC PHY driver to use the
+> shared PHY package helpers was done, the base address retrieval and the
+> base PHY read and write helpers in the driver were modified. In
+> particular, the base address retrieval logic was moved from the
+> config_init to the probe. But the vsc8574_probe was forgotten. This
+> patch fixes it.
+> 
+> Fixes: deb04e9c0ff2 ("net: phy: mscc: use phy_package_shared")
+> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 35bdfb4f3eae..34dd0e278a82 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1263,7 +1263,6 @@ static void mptcp_close(struct sock *sk, long timeout)
- 
- 	lock_sock(sk);
- 
--	mptcp_token_destroy(msk->token);
- 	inet_sk_state_store(sk, TCP_CLOSE);
- 
- 	/* be sure to always acquire the join list lock, to sync vs
-@@ -1461,6 +1460,7 @@ static void mptcp_destroy(struct sock *sk)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 
-+	mptcp_token_destroy(msk->token);
- 	if (msk->cached_ext)
- 		__skb_ext_put(msk->cached_ext);
- 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.21.3
-
+Florian
