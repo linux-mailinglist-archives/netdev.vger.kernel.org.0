@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30BE61E81D3
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 334FE1E81E0
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgE2PaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 11:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
+        id S1726971AbgE2PeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbgE2PaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:30:14 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F83C03E969;
-        Fri, 29 May 2020 08:30:13 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id j21so1629068pgb.7;
-        Fri, 29 May 2020 08:30:13 -0700 (PDT)
+        with ESMTP id S1725901AbgE2PeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:34:12 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3A2C03E969;
+        Fri, 29 May 2020 08:34:11 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 185so1621836pgb.10;
+        Fri, 29 May 2020 08:34:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:subject:to:cc:references:from:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=h4LYGRTCdkONYTthoB/xV4lWkufHrpLWiYXD7sNiEEA=;
-        b=TuQ0O71cA5XJdG36wB//uomRy7ErZefO+QytH0Gx5BPftzMAC5/rudxSI1c3r6s4il
-         6MI5ZlvKvKmghVIosRj4dG9OFZN3FRq9pL3umPby7RsTEnbAIThf5VzTOwHJsnZb646+
-         Dv+dLIaLtonNlxL+nCM1WApsXbIckKNOy0s4wbc7nc6X3y56LB3ycq8Nat7MPjWkDe9J
-         Wcc3f/q4hl+eJJDhfxf1L6C/C+hClLyHUOx01m5zgi/UZMXfP+3ER/tRbxbL1ohkuDtY
-         b4kY7fzgQ6Lg7wzDGDnV776nvGuNWg8D+k9QQvBzLJPc6bHHup2GbC2TkwcP/QjNzyVA
-         n6qA==
+        bh=H12DLSbS5ql+4QCoW6qfISlZ28ObJ3TH8l0yh2YWIWM=;
+        b=tzy3SELPr1cm4n5Ya2wYvTRQgcfZFaRhhRp/md75vN0DI57BtSczskPPOxJV1fdum3
+         +xMLQIVsnYQXQ3bAyRDGgaw+0DOsfJbn1Szu8qvipYeGp6U5p9C+YaJFYmWQMo4D+Ybk
+         fP9aSU8ZlOx1+7mz5EphtU/kGJq5BEEj29sdaSaEoDqp5RXDIJ40Y1yx3eG5bES0f34V
+         MjgAGOLfvOWk7fkfiXIoSQxpfcM+57HqxMP+V9Jo+YH1b1ub1tSJYQLP5reY5jRiFWf0
+         G+2KCRA8JMyowoiNbAc6BEETX2FkFZU3bJrs5za9l+7JhQnzQjD9QHI+xVZeKxLMa+mC
+         cnMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=h4LYGRTCdkONYTthoB/xV4lWkufHrpLWiYXD7sNiEEA=;
-        b=jxfi+lcTUWacfm6qwSOAR5aXcoSOJl8Al02h1YZBc0N7DkAEmFgBpjyVtoEtXJ8ANh
-         NX9+EfGZUZJaPf1oVPHXTqTYN/I8Tn+4ld5D/6+UceEJqDctcRRue/L5nCW7WBvv2KAa
-         dNOzrfmfSllxwum2KnqTl+adoXCRxfT20g7MOJngaH1nDlc8sxj/ZaE011yfvOblCJke
-         ahURbSxmckI0LVQSF1cOAY/S6ASeKqVrnVfGfF5zZfFZdEZIpu1dzKKMfsdhHzAgC7uM
-         ukNl1Tkttqkqtc9luG8ZVNIOCw+Wc6lNdm3rtSwYuR6/PcAD3qHbuhhDEej1zSjCfyyM
-         Fxyw==
-X-Gm-Message-State: AOAM5329CJ5AL7kpc33VRchFEDSrOV/veLVSIVz2GTELY4tEcVSiJEST
-        BogVK9CD3nlR3ejoeU1uFbM=
-X-Google-Smtp-Source: ABdhPJxqIZrmx/NNIMVQu48yCnwWJ6JL+nNn5lFYf8te8F7+GATMbO7pQ1WrI+i4NH652DssqPFuvA==
-X-Received: by 2002:a65:6686:: with SMTP id b6mr9050642pgw.427.1590766212858;
-        Fri, 29 May 2020 08:30:12 -0700 (PDT)
+        bh=H12DLSbS5ql+4QCoW6qfISlZ28ObJ3TH8l0yh2YWIWM=;
+        b=oAw939HVxQgcZda+yRZhHuDwkcgcf47FRIrgt9zkqDXOfRwpGWHTkgR8l0AfukEaux
+         5qUN4OimVUc5CATE+BnSqqeh+t4y6Jm8KaHpbBmRDQqO2TTTwIEedddcEOldj3WHmlr3
+         mhTteRmr1Ua6uBuxob5c7GS8iIzKWHDEymDJfCVA07F5qTnqiRNrGe9gK3CaUlEyHcKB
+         YRf1UOIvEikeTQ4XfbExkVggjJLxhGKwem5Wm12voiqOA0AkSX4EobiehxMCkyicEODk
+         mQU5wbVlDBMyScR9Q5Z5kbln6hwqkvf/LauzOkwOOdANyoMHmAhkVzR0kN8LfK4pHFfx
+         97cg==
+X-Gm-Message-State: AOAM5332GsDGYm9930giQpxZ+VaKTOXzhF7YVSBYCg7GftSdF5oCnPUR
+        yL2LjNJMDz7mHuYogZattD4=
+X-Google-Smtp-Source: ABdhPJw6lOp4QHcm5FYLCaSESSZlPknkQhgWREoJNkCQwDbS+Wi5aoqT6fNYG2yjG1WKE9tNCZZ+ZA==
+X-Received: by 2002:a05:6a00:843:: with SMTP id q3mr8874190pfk.107.1590766451548;
+        Fri, 29 May 2020 08:34:11 -0700 (PDT)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k194sm1264044pfd.26.2020.05.29.08.30.10
+        by smtp.gmail.com with ESMTPSA id co16sm8487408pjb.55.2020.05.29.08.34.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 May 2020 08:30:12 -0700 (PDT)
+        Fri, 29 May 2020 08:34:11 -0700 (PDT)
 Subject: Re: [PATCH v4 02/11] thermal: Store thermal mode in a dedicated enum
 To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
@@ -92,8 +92,11 @@ Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
         Shawn Guo <shawnguo@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Andy Shevchenko <andy@infradead.org>
-References: <20200529150549.GA154196@roeck-us.net>
- <b9aa246f-4534-db23-aea1-07aae2edbdd5@collabora.com>
+References: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
+ <20200528192051.28034-1-andrzej.p@collabora.com>
+ <20200528192051.28034-3-andrzej.p@collabora.com>
+ <20200529144821.GA93994@roeck-us.net>
+ <e48e5948-51f0-7ce7-265b-d432ea058b7e@collabora.com>
 From:   Guenter Roeck <linux@roeck-us.net>
 Autocrypt: addr=linux@roeck-us.net; keydata=
  xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
@@ -138,12 +141,12 @@ Autocrypt: addr=linux@roeck-us.net; keydata=
  WkRwrSuCn7UG+qVWZeKEsFKFOkynOs3pVbcbq1pxbhk3TRWCGRU5JolI4ohy/7JV1TVbjiDI
  HP/aVnm6NC8of26P40Pg8EdAhajZnHHjA7FrJXsy3cyIGqvg9os4rNkUWmrCfLLsZDHD8FnU
  mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <ae02a0b8-4187-d571-0d93-4697b587f351@roeck-us.net>
-Date:   Fri, 29 May 2020 08:30:09 -0700
+Message-ID: <6829f088-d816-fa7c-da97-cb5fd082d69d@roeck-us.net>
+Date:   Fri, 29 May 2020 08:34:08 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <b9aa246f-4534-db23-aea1-07aae2edbdd5@collabora.com>
+In-Reply-To: <e48e5948-51f0-7ce7-265b-d432ea058b7e@collabora.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -152,25 +155,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/20 8:08 AM, Andrzej Pietrasiewicz wrote:
-> W dniu 29.05.2020 o 17:05, Guenter Roeck pisze:
+On 5/29/20 8:13 AM, Andrzej Pietrasiewicz wrote:
+> Hi Guenter,
+> 
+> W dniu 29.05.2020 o 16:48, Guenter Roeck pisze:
 >> On Thu, May 28, 2020 at 09:20:42PM +0200, Andrzej Pietrasiewicz wrote:
 >>> Prepare for storing mode in struct thermal_zone_device.
 >>>
 >>> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
->>
->> What is the baseline for this series ? I can't get this patch to apply
->> on top of current mainline, nor on v5.6, nor on top of linux-next.
->>
->> Thanks,
->> Guenter
->>
+>>> ---
+>>>   drivers/acpi/thermal.c                        | 27 +++++++++----------
+>>>   drivers/platform/x86/acerhdf.c                |  8 ++++--
+>>>   .../intel/int340x_thermal/int3400_thermal.c   | 18 +++++--------
+>>>   3 files changed, 25 insertions(+), 28 deletions(-)
 > 
-> git://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git, branch "testing".
+> <snip>
 > 
-> base-commit: 351f4911a477ae01239c42f771f621d85b06ea10
+>>> @@ -544,27 +543,25 @@ static int thermal_set_mode(struct thermal_zone_device *thermal,
+>>>                   enum thermal_device_mode mode)
+>>>   {
+>>>       struct acpi_thermal *tz = thermal->devdata;
+>>> -    int enable;
+>>>         if (!tz)
+>>>           return -EINVAL;
+>>>   +    if (mode != THERMAL_DEVICE_DISABLED &&
+>>> +        mode != THERMAL_DEVICE_ENABLED)
+>>> +        return -EINVAL;
+>>
+>> Personally I find this check unnecessary: The enum has no other values,
+>> and it is verifyable that the callers provide the enum and not some other
+>> value.
 > 
-Thanks!
+> It is getting removed in PATCH 10/11.
+> 
+> 
+>>> +    if (mode != THERMAL_DEVICE_ENABLED &&
+>>> +        mode != THERMAL_DEVICE_DISABLED)
+>>>           return -EINVAL;
+>>
+>> Same as above.
+> 
+> ditto.
+
+Hmm, I think that would be better done with this patch. But I guess
+that is a bit of PoV, so
+
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+since I don't have any other objections/observations.
 
 Guenter
-
