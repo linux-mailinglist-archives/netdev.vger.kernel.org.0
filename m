@@ -2,111 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A241E78F6
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 11:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3BF1E78FF
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 11:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbgE2JDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 05:03:35 -0400
-Received: from mail-db8eur05on2045.outbound.protection.outlook.com ([40.107.20.45]:6129
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725790AbgE2JDe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 05:03:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mW1nXJjirTyUvU3PaSkMA1sOiZgaT3UoxZT+r5k3tksKOJF5xP8EmXI/4Ti0DE/0bisnhV824MZnO9rRdQ9OZUO9TKBDzIuLRYMWtMQWZ5jlfC9sDexxlqREp6Hk3vO9WNeG3ASxZH1aOpF2a0dY9N5cY8aE82tw4Fp6Fq8EVCgyZ5e+8pdKHqfCzARztIkI63ymn9vzaYcimZ4xt6W+JXvRc43MyFmI51uaaNMP/wDqD+2BIP6E99VHlrlQrbTEAFE4CCClcM/x2BENPQ+o1KDcbv6D4PDcUYnCey3rqHAS0RNS07VgblMkjwD5s/j5X77CtwlIxUhJDTLwy1MJcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3/CcqY2wSyqs49Q2mIJPiZwPjqlcpp60Xu75vq/uyEQ=;
- b=Saw3UcZaG7iWLzx0D2KG6V7V8GSp4hJMM95Qjg3mVeozFC2jb++GayHktgOcWmAR5eh5a0MQJYhCL5cDk2WyKj8TQKZAwmAtlDfCCqX6uNWt3dtwBbj2J8SvV2O5FwmW6LhBmafLlLljuFlftcP2WLErZL0loq7ODQgpokEO8AppT+V5RJ3QNsOGdKAmCDCQGKXp8iY7Zk1vtEH3ROu5c6TBUhOZfiSbT2b01CLnuuCuURz5JM0g0V7yRJSreHgwxyJnAHn1UuZk9y9T9/VOmE7gAsUuToDq1QXh6F/nMC1+Rjv7/JPRDuOFv7824xMKby98eA5E1SeVwbHYbMQzww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3/CcqY2wSyqs49Q2mIJPiZwPjqlcpp60Xu75vq/uyEQ=;
- b=Fwlsch+zY/KzM+xJVZ69RXIswdqDjOx2lZP+U/6G3FfN7ZBhR6I3Kz8W6O6OqiKddSW0uWOLake3MWbWL3zV721Mvnff7hgz41+6Zwh8D4rqbiNFGyyFXKTQng6i4A+AlaB6Q/gk3nCqkQ4RVQQd5Efe5Rep85fGAOIc6A+edsU=
-Authentication-Results: suse.cz; dkim=none (message not signed)
- header.d=none;suse.cz; dmarc=none action=none header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3484.eurprd05.prod.outlook.com (2603:10a6:7:2f::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3045.19; Fri, 29 May 2020 09:03:31 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3045.018; Fri, 29 May 2020
- 09:03:30 +0000
-References: <AM0PR0502MB38261D4F4F7A3BB5E0FDCD10D7B10@AM0PR0502MB3826.eurprd05.prod.outlook.com> <20200527213843.GC818296@lunn.ch> <AM0PR0502MB38267B345D7829A00790285DD78E0@AM0PR0502MB3826.eurprd05.prod.outlook.com> <87zh9stocb.fsf@mellanox.com> <20200528154010.GD840827@lunn.ch> <87r1v4t2yn.fsf@mellanox.com> <20200528183703.GB849697@lunn.ch>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Amit Cohen <amitc@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "o.rempel\@pengutronix.de" <o.rempel@pengutronix.de>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: Link down reasons
-In-reply-to: <20200528183703.GB849697@lunn.ch>
-Date:   Fri, 29 May 2020 11:03:28 +0200
-Message-ID: <87pnant8nz.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR06CA0089.eurprd06.prod.outlook.com
- (2603:10a6:208:fa::30) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1726167AbgE2JFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 05:05:19 -0400
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:53928 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725775AbgE2JFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 05:05:18 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=anny.hu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0TzyLLYT_1590743112;
+Received: from 30.25.84.75(mailfrom:anny.hu@linux.alibaba.com fp:SMTPD_---0TzyLLYT_1590743112)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 29 May 2020 17:05:13 +0800
+Subject: Re: [PATCH] bpf/sockmap: fix kernel panic at __tcp_bpf_recvmsg
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <db5393a3-d4b3-45c1-8219-f23b43a8d2ab.anny.hu@linux.alibaba.com>
+ <5ecd85c7a21fd_35792ad4115a05b8a9@john-XPS-13-9370.notmuch>
+From:   dihu <anny.hu@linux.alibaba.com>
+Message-ID: <c2f19152-efd0-530f-8b59-74e2393cee0e@linux.alibaba.com>
+Date:   Fri, 29 May 2020 17:05:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM0PR06CA0089.eurprd06.prod.outlook.com (2603:10a6:208:fa::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Fri, 29 May 2020 09:03:30 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 61fd9bb2-7e1a-4402-526c-08d803af2866
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3484:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3484046FCD5CD4FA677D8F4CDB8F0@HE1PR05MB3484.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 04180B6720
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i5pCzbdWuMh4zZC1HDrdeqpRk4qTecFLHNDk0evwdA6BpReJkIkUuZLn0ddlMeauy5xwL+NE6qTzHw86rx/JfkE5vKhwmsHvIbBLmYQ+eg7oVmFPQhW7vU2Bizob7SzTc/vW2Lib2OE7TsQiypLVXWoVjVUBwB0PrGDHem4+ASvoSKxaVDfhW3VCpYda1bKGD+YUqnJxEPLTbsBo0yL5W40LajhEBsKJBthkAmTSuw9+7CXNqgX+J3xaJCWpV6AcTr/AgzLqmDg8F4WgvOkvmfouTF3se9wSz44hp6DR5qpUoU8oFSEy8PNBjgmrKfxK1ZiO6U+8yw9uTjh0Az++bnGnXir93Clhyihs0dpISt1xUdO5mLYGBcMNzNfFeCr+haTstFIfZcUaW2OwGaLIfQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(376002)(396003)(346002)(136003)(478600001)(6496006)(52116002)(966005)(4326008)(54906003)(86362001)(36756003)(316002)(6916009)(5660300002)(2906002)(66946007)(3480700007)(26005)(7116003)(66476007)(66556008)(8936002)(16526019)(8676002)(956004)(186003)(4744005)(6486002)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: GLcHX8c3zRkmv04u/h5htMajgjUXqo7Ntx6UahmegEq+gUNZPQweK6OP6VJhUD9JYXI6FoQTPjwjHBvL6BZfBxi+4fWHJfYMjxnFWsWLcJCSMTBZd2uov8SiFNSY6hsUF6XfRJXzgyvvjqN1iluk5806sxJ/pqzEUTE7FS3d02PYgMqQjpWbbZNjlgCXWOQ3oyGeV1UM2efjOqzkDtlJJdGxvtd9yENrF83vib2bZa5QYSitJBQl9lzxDSY+Eg1q5f7K+1KkFvl39Jk9x4vKM0jbkQCi2ZzKJ9whMMQue0caaqfOmDYGH8iEhsdoTtV7i0KaAnTyCal/nSc8QUWYdKAgdpfQQ8vNmmwUqoOLeJguUdYCdNhGi6MmVbEY/RewQghFIg8eaZF5448QgZgCGBaiW+5z+HBVGduGW+aBHj1EqVygK8pMPCDGIWGg17Wd1LJjKSRyF9azi45mWIBe98Td5vbMgrXLXkHvnTMUGcE=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61fd9bb2-7e1a-4402-526c-08d803af2866
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 09:03:30.7578
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xK8dTM183WzadZ/4GeM+uObvhhpa1f6t/crduNR22KyFnBi/LrHpP79sS3jsSfv1nNXwYA8F4rdLNTrUV8k7QQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3484
+In-Reply-To: <5ecd85c7a21fd_35792ad4115a05b8a9@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Andrew Lunn <andrew@lunn.ch> writes:
-
-> It is called downshift. And we have support for it in the phylib core,
-> if the PHY has the needed vendor register.
+On 2020/5/27 5:10, John Fastabend wrote:
+> dihu wrote:
+>>  From 865a45747de6b68fd02a0ff128a69a5c8feb73c3 Mon Sep 17 00:00:00 2001
+>> From: dihu <anny.hu@linux.alibaba.com>
+>> Date: Mon, 25 May 2020 17:23:16 +0800
+>> Subject: [PATCH] bpf/sockmap: fix kernel panic at __tcp_bpf_recvmsg
+>>
+>> When user application calls read() with MSG_PEEK flag to read data
+>> of bpf sockmap socket, kernel panic happens at
+>> __tcp_bpf_recvmsg+0x12c/0x350. sk_msg is not removed from ingress_msg
+>> queue after read out under MSG_PEEK flag is set. Because it's not
+>> judged whether sk_msg is the last msg of ingress_msg queue, the next
+>> sk_msg may be the head of ingress_msg queue, whose memory address of
+>> sg page is invalid. So it's necessary to add check codes to prevent
+>> this problem.
+>>
+>> [20759.125457] BUG: kernel NULL pointer dereference, address:
+>> 0000000000000008
+>> [20759.132118] CPU: 53 PID: 51378 Comm: envoy Tainted: G            E
+>> 5.4.32 #1
+>> [20759.140890] Hardware name: Inspur SA5212M4/YZMB-00370-109, BIOS
+>> 4.1.12 06/18/2017
+>> [20759.149734] RIP: 0010:copy_page_to_iter+0xad/0x300
+>> [20759.270877] __tcp_bpf_recvmsg+0x12c/0x350
+>> [20759.276099] tcp_bpf_recvmsg+0x113/0x370
+>> [20759.281137] inet_recvmsg+0x55/0xc0
+>> [20759.285734] __sys_recvfrom+0xc8/0x130
+>> [20759.290566] ? __audit_syscall_entry+0x103/0x130
+>> [20759.296227] ? syscall_trace_enter+0x1d2/0x2d0
+>> [20759.301700] ? __audit_syscall_exit+0x1e4/0x290
+>> [20759.307235] __x64_sys_recvfrom+0x24/0x30
+>> [20759.312226] do_syscall_64+0x55/0x1b0
+>> [20759.316852] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>
+>> Signed-off-by: dihu <anny.hu@linux.alibaba.com>
+>> ---
+>>   net/ipv4/tcp_bpf.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+>> index 5a05327..c0d4624 100644
+>> --- a/net/ipv4/tcp_bpf.c
+>> +++ b/net/ipv4/tcp_bpf.c
+>> @@ -64,6 +64,9 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>>     } while (i != msg_rx->sg.end);
+>>
+>>     if (unlikely(peek)) {
+>> +   if (msg_rx == list_last_entry(&psock->ingress_msg,
+>> +       struct sk_msg, list))
+>> +    break;
 >
-> https://elixir.bootlin.com/linux/v5.7-rc7/source/drivers/net/phy/phy-core.c#L341
-> https://elixir.bootlin.com/linux/v5.7-rc7/source/drivers/net/phy/phy.c#L95
-
-Thanks for the references.
-
-> So in theory we could report:
+> Thanks. Change looks good but spacing is a bit off . Can we
+> turn those spaces into tabs? Otherwise adding fixes tag and
+> my ack would be great.
 >
-> Link detected: yes (downshifted)
->
-> Assuming your proposed API support a reason why it is up, not just a
-> reason why it is down?
+> Fixes: 02c558b2d5d67 ("bpf: sockmap, support for msg_peek in sk_msg with redirect ingress")
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-Michal Kubecek <mkubecek@suse.cz> writes:
 
-> Perhaps we could use more general name than "link down reason", e.g.
-> "extended state", and it could be reported even if the link is still up
+ From 127a334fa5e5d029353ceb1a0414886c527f4be5 Mon Sep 17 00:00:00 2001
+From: dihu <anny.hu@linux.alibaba.com>
+Date: Fri, 29 May 2020 16:38:50 +0800
+Subject: [PATCH] bpf/sockmap: fix kernel panic at __tcp_bpf_recvmsg
 
-All right, that makes sense to me. Let's make it extended state.
+When user application calls read() with MSG_PEEK flag to read data
+of bpf sockmap socket, kernel panic happens at
+__tcp_bpf_recvmsg+0x12c/0x350. sk_msg is not removed from ingress_msg
+queue after read out under MSG_PEEK flag is set. Because it's not
+judged whether sk_msg is the last msg of ingress_msg queue, the next
+sk_msg may be the head of ingress_msg queue, whose memory address of
+sg page is invalid. So it's necessary to add check codes to prevent
+this problem.
 
-Thanks!
+[20759.125457] BUG: kernel NULL pointer dereference, address:
+0000000000000008
+[20759.132118] CPU: 53 PID: 51378 Comm: envoy Tainted: G            E
+5.4.32 #1
+[20759.140890] Hardware name: Inspur SA5212M4/YZMB-00370-109, BIOS
+4.1.12 06/18/2017
+[20759.149734] RIP: 0010:copy_page_to_iter+0xad/0x300
+[20759.270877] __tcp_bpf_recvmsg+0x12c/0x350
+[20759.276099] tcp_bpf_recvmsg+0x113/0x370
+[20759.281137] inet_recvmsg+0x55/0xc0
+[20759.285734] __sys_recvfrom+0xc8/0x130
+[20759.290566] ? __audit_syscall_entry+0x103/0x130
+[20759.296227] ? syscall_trace_enter+0x1d2/0x2d0
+[20759.301700] ? __audit_syscall_exit+0x1e4/0x290
+[20759.307235] __x64_sys_recvfrom+0x24/0x30
+[20759.312226] do_syscall_64+0x55/0x1b0
+[20759.316852] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Signed-off-by: dihu <anny.hu@linux.alibaba.com>
+---
+  net/ipv4/tcp_bpf.c | 3 +++
+  1 file changed, 3 insertions(+)
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 5a05327..b82e4c3 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -64,6 +64,9 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock 
+*psock,
+          } while (i != msg_rx->sg.end);
+
+          if (unlikely(peek)) {
++            if (msg_rx == list_last_entry(&psock->ingress_msg,
++                              struct sk_msg, list))
++                break;
+              msg_rx = list_next_entry(msg_rx, list);
+              continue;
+          }
+-- 
+1.8.3.1
+
