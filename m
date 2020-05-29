@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A51281E8521
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA621E8543
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgE2Rht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727053AbgE2Rhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 13:37:42 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE09FC08C5CA
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 10:28:13 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id a2so2805882ejb.10
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 10:28:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IqhVANWqTF1tKLepsZzg2buXvG+oBQ2acWqfeEztq+0=;
-        b=WUdOZqeV4hnuGjtc9wq+5AD7CMwLk1uD3dXHQsE6tjat66XFVyaZx6sI8MIliEiSEA
-         kZqS81wtm/vlMq25TTtP88N4y/wqblUSJlT8sAlGd2FJ9WQOG/vLx9lfHWza6nnvu2fK
-         KcY+EVkb9SaPiARwQOc443emuapj/wWwRNMVIj0qg0grpZWO8gVHPINihWApTEU3Dd1l
-         9FL9r+rpsE9mMnWkmniS3QesETG0U/tLo21UI/JB0AfXOVrYTmTwIae/I7S2oAhFpVY8
-         8hfUIe7JgWJnT+VlYimOXBsAH9I01Nz59iclL6WgIau4siKnYTX1xjWJCYzuIUoR898o
-         qX1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IqhVANWqTF1tKLepsZzg2buXvG+oBQ2acWqfeEztq+0=;
-        b=rqkRf+Qxhr3cSFxJHrbG3uObYPIR7rXQl1IgJsvVmLX6iDU2zBm/acH+bw5c4D8L7X
-         iQBnTt0+lj+nVkopb2PGaSjVfFfMhyUC9x3aJETHqcf7dYqpuspJV5Ysdm0Mi+8L8vYF
-         KSScowf/I1dPhJXmQ/kMXJ6cH1T8np3LcMMX8C9YTFS60VhUWs/rpThVM5Dv28BaiyYN
-         kYTJiu2Y39DUND71yRcYNu/7HmxyR/2ckXPM/6Edat7ooJLmP/uqF5VQHuybq7tI9Oxf
-         KImCo/3P1csGTXYNLFjxNjJ6ysOZy0pwslAlkgcW3QvvMMQazUQ3pHLAZt1QjmLCPLX5
-         E7EA==
-X-Gm-Message-State: AOAM533/z5ZsqfxZVQRd3SN6NK1d03Ltftl0BCKYHr4op863ow90CIv3
-        H90C5yRtXYvCVnl9FoUqQ9YJ7oa/V/h5n5cxbrQ=
-X-Google-Smtp-Source: ABdhPJwYuQmPsHAvafdwjWgxw/xegcyWstSIT8gMIYdJRvK2+PabGUPKRRwGVFDXsAZ+tkLKryfGLcHrekuzxDQ4VBY=
-X-Received: by 2002:a17:906:4a8c:: with SMTP id x12mr8580791eju.279.1590773292500;
- Fri, 29 May 2020 10:28:12 -0700 (PDT)
+        id S1727930AbgE2RkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:40:23 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:52948 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727004AbgE2RkW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 13:40:22 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1590774021; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=kTdSjBnmUHE6a+/LCLe8XhWTibwfO24CX+6sF3cHX9U=; b=RpSpJ63K+IbyRxXrktWQOb+qiX6z5ECUd2Q5MxQya1BM7chzijuLNcBpTCWZ/qgk1roLxYsw
+ QNNDRCuXw5kwZ12c5DmYEPy4KhQZIpKddX076CjbojVZCkSBgOTEGiDFwwgGwhczJTty9OBS
+ 69Qhr1D6su6xTNHoBjcGGO6pytU=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5ed146594776d1da6d03d724 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 29 May 2020 17:28:57
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 8389DC43395; Fri, 29 May 2020 17:28:57 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C47CAC433C9;
+        Fri, 29 May 2020 17:28:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C47CAC433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marek =?utf-8?Q?Beh=C3=BAn?= <marek.behun@nic.cz>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mwifiex: Add support for NL80211_ATTR_MAX_AP_ASSOC_STA
+References: <20200521123559.29028-1-pali@kernel.org>
+        <20200529171902.wwikyr4mmqin7ce2@pali>
+Date:   Fri, 29 May 2020 20:28:52 +0300
+In-Reply-To: <20200529171902.wwikyr4mmqin7ce2@pali> ("Pali \=\?utf-8\?Q\?Roh\?\=
+ \=\?utf-8\?Q\?\=C3\=A1r\=22's\?\= message of
+        "Fri, 29 May 2020 19:19:02 +0200")
+Message-ID: <87blm6sl9n.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20200527234113.2491988-1-olteanv@gmail.com> <159077110912.28779.6447184623286195668.b4-ty@kernel.org>
- <20200529165952.GQ4610@sirena.org.uk>
-In-Reply-To: <20200529165952.GQ4610@sirena.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 29 May 2020 20:28:01 +0300
-Message-ID: <CA+h21hqV5Mm=oBQ49zZFiMbg6FcopudCxowQcTwF-_O_Onj81w@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/11] New DSA driver for VSC9953 Seville switch
-To:     Mark Brown <broonie@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev <netdev@vger.kernel.org>, fido_max@inbox.ru,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        radu-andrei.bulie@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mark,
+Pali Roh=C3=A1r <pali@kernel.org> writes:
 
-On Fri, 29 May 2020 at 19:59, Mark Brown <broonie@kernel.org> wrote:
+> On Thursday 21 May 2020 14:35:59 Pali Roh=C3=A1r wrote:
+>> SD8997 firmware sends TLV_TYPE_MAX_CONN with struct hw_spec_max_conn to
+>> inform kernel about maximum number of p2p connections and stations in AP
+>> mode.
+>>=20
+>> During initialization of SD8997 wifi chip kernel prints warning:
+>>=20
+>>   mwifiex_sdio mmc0:0001:1: Unknown GET_HW_SPEC TLV type: 0x217
+>>=20
+>> This patch adds support for parsing TLV_TYPE_MAX_CONN (0x217) and sets
+>> appropriate cfg80211 member 'max_ap_assoc_sta' from retrieved structure.
+>>=20
+>> It allows userspace to retrieve NL80211_ATTR_MAX_AP_ASSOC_STA attribute.
+>>=20
+>> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
 >
-> On Fri, May 29, 2020 at 05:51:52PM +0100, Mark Brown wrote:
->
-> > [1/1] regmap: add helper for per-port regfield initialization
-> >       commit: 8baebfc2aca26e3fa67ab28343671b82be42b22c
->
-> Let me know if you need a pull request for this, I figured it was too
-> late to deal with the cross tree issues for the merge window.
+> Hello Kalle and Ganapathi, could you please review this patch?
 
-Thanks a lot for merging this. I plan to resend this series again (on
-the last mile!) during the weekend, with the feedback collected so
-far, so I'm not sure what is the best path to make sure Dave also has
-this patch in his tree so I don't break net-next.
+To reduce email please first check the status from patchwork:
 
--Vladimir
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes#checking_state_of_patches_from_patchwork
+
+--=20
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
