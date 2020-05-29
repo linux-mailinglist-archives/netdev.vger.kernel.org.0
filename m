@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E3F1E828C
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D441E82AF
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbgE2Pw2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 29 May 2020 11:52:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51454 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727076AbgE2Pw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 11:52:28 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 1532AACB8;
-        Fri, 29 May 2020 15:52:26 +0000 (UTC)
-Date:   Fri, 29 May 2020 17:52:25 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-Id: <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
-In-Reply-To: <20200529145928.GF869823@lunn.ch>
-References: <20200528121121.125189-1-tbogendoerfer@suse.de>
-        <20200528130738.GT1551@shell.armlinux.org.uk>
-        <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
-        <20200528135608.GU1551@shell.armlinux.org.uk>
-        <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
-        <20200528144805.GW1551@shell.armlinux.org.uk>
-        <20200528204312.df9089425162a22e89669cf1@suse.de>
-        <20200528220420.GY1551@shell.armlinux.org.uk>
-        <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
-        <20200529145928.GF869823@lunn.ch>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        id S1727969AbgE2P7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:59:46 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23000 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727062AbgE2P7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:59:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590767985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VntPpR9u98L+N1ionzHID7bD1Jl6O7zFn7tkv1DNgkg=;
+        b=Q227M0eynTMyzyZvuUpvTljthS7+5ZHaC550/PuPf3VqO1/zr1H1qhnF62YAjsL5tfxMuR
+        0fm+cXVpTWf/kI+IhLNLZjiMMd4/wCPW/TQC2Vt+gXWv/9yzKjl8CDm6+LUdPYkzrofR+Q
+        43bl6UnWfloJlKNfD1rJqfQm/Ujv1V4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-RLG4ksL5Ps6bBoIUCXZlAg-1; Fri, 29 May 2020 11:59:41 -0400
+X-MC-Unique: RLG4ksL5Ps6bBoIUCXZlAg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6AA7464;
+        Fri, 29 May 2020 15:59:39 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B876D5D9F3;
+        Fri, 29 May 2020 15:59:36 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 8B6D9300003E9;
+        Fri, 29 May 2020 17:59:35 +0200 (CEST)
+Subject: [PATCH bpf-next RFC 0/3] bpf: dynamic map-value config layout via BTF
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 29 May 2020 17:59:35 +0200
+Message-ID: <159076794319.1387573.8722376887638960093.stgit@firesoul>
+User-Agent: StGit/0.19
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 May 2020 16:59:28 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+This patchset is based on top of David Ahern's work V3: "bpf: Add support
+for XDP programs in DEVMAP entries"[1]. The purpose is to address the kABI
+interfaces that is introduced in that patchset, before it is released.
 
-> On Fri, May 29, 2020 at 01:05:39PM +0200, Thomas Bogendoerfer wrote:
-> > On Thu, 28 May 2020 23:04:20 +0100
-> > Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> > 
-> > > Can you explain this please?  Just as we think we understand what's
-> > > going on here, you throw in a new comment that makes us confused.
-> > 
-> > sorry about that.
-> > 
-> > > You said previously that the mvpp2 was connected to a switch, which
-> > > makes us think that you've got some DSA-like setup going on here.
-> > > Does your switch drop its serdes link when all the external links
-> > > (presumably the 10G SFP+ cages) fail?
-> > > 
-> > > Both Andrew and myself wish to have a complete picture before we
-> > > move forward with this.
-> > 
-> > full understandable, I'll try by a small picture, which just
-> > covers one switch:
-> > 
-> >         external ports
-> >       |  |          |  |
-> > *-----------------------------*
-> > |     1  1          2  2      |
-> > |                             |
-> > |           switch            |
-> > |                             |
-> > |   1   2            1   2    |
-> > *-----------------------------*
-> >     |   |            |   |
-> >     |   |            |   |
-> > *----------*     *----------*
-> > |   1   2  |     |   1   2  |
-> > |          |     |          |
-> > |  node 1  | ... |  node 8  |
-> > |          |     |          |
-> > *----------*     *----------*
-> > 
-> > External ports a grouped in ports to network 1 and network 2. If one of the
-> > external ports has an established link, this link state will be propagated
-> > to the internal ports. Same when both external ports of a network are down.
-> 
-> By propagated, you mean if the external link is down, the link between
-> the switch and node 1 will also be forced down, at the SERDES level?
+[1] https://lore.kernel.org/netdev/20200529052057.69378-1-dsahern@kernel.org
 
-yes
+The map-value of these special maps are evolving into configuration
+interface between userspace and kernel. The approach in[1] is to expose a
+binary struct layout that can only be grown in the end of the struct.
 
-> And if external ports are down, the nodes cannot talk to each other?
+With the BTF technology it is possible to create an interface that is much
+more dynamic and flexible.
 
-correct
+---
 
-> External link down causes the whole in box network to fall apart? That
-> seems a rather odd design.
+Jesper Dangaard Brouer (3):
+      bpf: move struct bpf_devmap_val out of UAPI
+      bpf: devmap dynamic map-value storage area based on BTF
+      samples/bpf: change xdp_fwd to use new BTF config interface
 
-as I'm not an expert in ceph, I can't judge. But I'll bring it up.
 
-> > I have no control over the software running on the switch, therefore I can't
-> > enable autoneg on the internal links.
-> 
-> O.K. So that means using in-band signalling in DT is clearly
-> wrong. There is no signalling....
-> 
-> What you are actually interested in is the sync state of the SERDES?
-> The link is up if the SERDES has sync.
+ include/uapi/linux/bpf.h                           |    9 -
+ kernel/bpf/devmap.c                                |  227 +++++++++++++++++---
+ samples/bpf/xdp_fwd.h                              |   24 ++
+ samples/bpf/xdp_fwd_kern.c                         |    5 
+ samples/bpf/xdp_fwd_user.c                         |    9 +
+ tools/include/uapi/linux/bpf.h                     |    9 -
+ .../selftests/bpf/prog_tests/xdp_devmap_attach.c   |   18 +-
+ .../bpf/progs/test_xdp_with_devmap_helpers.c       |   10 +
+ 8 files changed, 252 insertions(+), 59 deletions(-)
+ create mode 100644 samples/bpf/xdp_fwd.h
 
-yes, that's what I need. How can I do that ?
+--
 
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 36809 (AG Nürnberg)
-Geschäftsführer: Felix Imendörffer
