@@ -2,109 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0FB1E87B2
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:25:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7761F1E87C0
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgE2TZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 15:25:02 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:57916 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726487AbgE2TZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:25:02 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04TJOrLQ115731;
-        Fri, 29 May 2020 14:24:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590780293;
-        bh=e18OPFFxMK0w4LxsBnOJXJYjvGft3xX9i3/iKCwz9oQ=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=jnpfiDkkW9fLsC3es7GNc3rYpdCBqLo7Ep5VmrI0Ve2uCXFREa3Y43L/w1r0zhWPk
-         OvpP6bts38CfpFLAsZYp5d/DAhutF2HjjZsTTnpVHMorooJ4WEyjX1VIusq+DvphGN
-         AoDZCmBiH4AJrk2ZFoaCD3Y+5hIq5inKujYqMPJI=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04TJOrTr103207
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 29 May 2020 14:24:53 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 29
- May 2020 14:24:53 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 29 May 2020 14:24:53 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04TJOqLf031009;
-        Fri, 29 May 2020 14:24:52 -0500
-Subject: Re: [PATCH net-next v4 1/4] dt-bindings: net: Add tx and rx internal
- delays
-To:     Rob Herring <robh@kernel.org>
-CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200527164934.28651-1-dmurphy@ti.com>
- <20200527164934.28651-2-dmurphy@ti.com> <20200529182544.GA2691697@bogus>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <b8a0b1e8-c7fb-d38b-5c43-c6c4116a3349@ti.com>
-Date:   Fri, 29 May 2020 14:24:52 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728001AbgE2T1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 15:27:20 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:40086 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbgE2T1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:27:19 -0400
+Received: by mail-io1-f67.google.com with SMTP id q8so543999iow.7;
+        Fri, 29 May 2020 12:27:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/aw5rjkKZ1aNLtzNBPRgdXUzA/GNRGygjmxINK2X5fA=;
+        b=eV/Mi4WwwWa3DWlq519I98Q3928vrnTRASTCn849XMHBKmAXmumMefZvMbmQ/c39J2
+         mf15nHjRuncP+U/dafc0XBoFcS+sA6WTfVWFqdmrJoLKjsC80+1/fv/d4aCW6vat1P2h
+         6PsMwmR0M/xEri9+CfvHlmp/C4eJsbAsYDVNe81nNSjhp/Lnk9CHyGz9/8E9q6UWZ2wu
+         IEZx6DstJbcZkrgMZ4GBu/+KB6G9Yud7y6srdniKgsUgh/15Tdt/qFNnoDC1cqBfMQh5
+         +ZXHfkw2eqG/8OSsxx7SjKLn5iImW42VvUlWe6ef4NchAsQc+srkhgLKYALbMy3uRNz0
+         misA==
+X-Gm-Message-State: AOAM531ElIaDi2EQtygdQiKcgBwmU9LaQ9yfACV5r4ho6Jg+glTbercb
+        lDEWp9KgWYGNGSVaQ2zGlw==
+X-Google-Smtp-Source: ABdhPJzI+XOVZoeOXsD31yjOKfbl4d6VkVa2jbPtpd2RLN5CANUU/Kj27igKjwRkwCJ3YG/2Z4DjRQ==
+X-Received: by 2002:a02:90cd:: with SMTP id c13mr8587847jag.83.1590780437502;
+        Fri, 29 May 2020 12:27:17 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id v76sm5436198ill.73.2020.05.29.12.27.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2020 12:27:16 -0700 (PDT)
+Received: (nullmailer pid 2799831 invoked by uid 1000);
+        Fri, 29 May 2020 19:27:15 -0000
+Date:   Fri, 29 May 2020 13:27:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Pedro Tsai <pedro.tsai@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2] dt-bindings: net: rename the bindings
+ document for MediaTek STAR EMAC
+Message-ID: <20200529192715.GA2799386@bogus>
+References: <20200528135902.14041-1-brgl@bgdev.pl>
 MIME-Version: 1.0
-In-Reply-To: <20200529182544.GA2691697@bogus>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200528135902.14041-1-brgl@bgdev.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rob
+On Thu, 28 May 2020 15:59:02 +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> The driver itself was renamed before getting merged into mainline, but
+> the binding document kept the old name. This makes both names consistent.
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> ---
+> v1 -> v2:
+> - update the id field as well
+> 
+>  .../net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml}      | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>  rename Documentation/devicetree/bindings/net/{mediatek,eth-mac.yaml => mediatek,star-emac.yaml} (96%)
+> 
 
-On 5/29/20 1:25 PM, Rob Herring wrote:
-> On Wed, May 27, 2020 at 11:49:31AM -0500, Dan Murphy wrote:
->> tx-internal-delays and rx-internal-delays are a common setting for RGMII
->> capable devices.
->>
->> These properties are used when the phy-mode or phy-controller is set to
->> rgmii-id, rgmii-rxid or rgmii-txid.  These modes indicate to the
->> controller that the PHY will add the internal delay for the connection.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>   .../bindings/net/ethernet-controller.yaml          | 14 ++++++++++++++
->>   1 file changed, 14 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
->> index ac471b60ed6a..70702a4ef5e8 100644
->> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
->> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
->> @@ -143,6 +143,20 @@ properties:
->>         Specifies the PHY management type. If auto is set and fixed-link
->>         is not specified, it uses MDIO for management.
->>   
->> +  rx-internal-delay-ps:
->> +    $ref: /schemas/types.yaml#definitions/uint32
->> +    description: |
->> +      RGMII Receive PHY Clock Delay defined in pico seconds.  This is used for
->> +      PHY's that have configurable RX internal delays.  This property is only
->> +      used when the phy-mode or phy-connection-type is rgmii-id or rgmii-rxid.
-> Isn't this a property of the phy (this is the controller schema)? Looks
-> like we have similar properties already and they go in phy nodes. Would
-> be good to have a standard property, but let's be clear where it goes.
->
-> We need to add '-ps' as a standard unit suffix (in dt-schema) and then a
-> type is not needed here.
-
-This is a PHY specific property.
-
-I will move them.
-
-Dumb question but you can just point me to the manual about how and 
-where to add the '-ps' to the dt-schema
-
-Dan
-
-
-> Rob
+Acked-by: Rob Herring <robh@kernel.org>
