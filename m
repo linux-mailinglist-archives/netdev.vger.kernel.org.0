@@ -2,83 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68AD11E83C6
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46EF51E83CA
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbgE2Qdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:33:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57136 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725821AbgE2Qdp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 12:33:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=kj8QWZuKpt6K2mv0dyf3jA1S8ZK8klAJXGcqBjNLHFw=; b=3nF+HtN70czA2ZUrlO8RvfT7ZY
-        LM1+wj23jWGpb9yCNquZLmigo7UjP5/D7lTURFkKIZmSwwcoCA+oK3N4zrH1+McODCf3I8nhVWg+e
-        WzHm5DGc616VMuWnQOmFuisu/RI9NUUunCizXF4ehZHT/EyHrPCVKfGzSE9UhBLjWURU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jehwy-003f86-S4; Fri, 29 May 2020 18:33:40 +0200
-Date:   Fri, 29 May 2020 18:33:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        id S1727882AbgE2QeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:34:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28786 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725913AbgE2QeU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:34:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590770059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dZ3Au5FaNGsFuALhZak+xDg1jZacBxkv5pzIdzHUfKU=;
+        b=MAZPTIqdjBx4qOWxqDv23mK3HIx51kGXPrn5QLyM/s265yb/PFKzYB0egx9+kXia1+UDQ0
+        lIRrCAbJIxoCEaFfExHKslnO2aX6awMu5X8n7a691cGynI/gRbA77cmHgtSuqNnxTm3iL9
+        E2Uip4Br2SMtUCnMELP4q4h0fUob0aE=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-28-0FEWkay6MhiSyyvofp0-8w-1; Fri, 29 May 2020 12:34:17 -0400
+X-MC-Unique: 0FEWkay6MhiSyyvofp0-8w-1
+Received: by mail-wr1-f72.google.com with SMTP id f4so1245748wrp.21
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 09:34:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dZ3Au5FaNGsFuALhZak+xDg1jZacBxkv5pzIdzHUfKU=;
+        b=W+ZvW6r76PWCdEzDvI3QD6SrjCm77AFo7Z+IoD+aBZ5yLvv5k/HUlj7LvLXH1dBfrj
+         3fi00ieZNxjBpmcW9FjCrBB8ZtCpI28tc+XFqIa22hPhccS1q7o8xUpHAt/4+GvNS+p6
+         Lp9ObHfDDHBx+Fh5Uumu896mhwJvh6jDbzK3T089wkJ6jJqxlLErJgNakgJSJtd8ibai
+         u9kMBnN2SZsgsV2rICy451I26jakujqqSKXcdDBJ4gShgA1ZBjxb1ACUC0cpyI5DAgPi
+         JmGuwgYALrFcYlklTp4yErF6g+6T6q7RnYJEgJ2Ej+3PVO/+t3q6uUct9g+exjpCxDkH
+         MHAA==
+X-Gm-Message-State: AOAM5326NsqpFlcxKI++twM9yJncE9jwWSlIOrdRfLbZOQxJp8XPt3CZ
+        mF7242naEciBwxS0sSaHLMMUFgC4AC3Sfri45LYLcUx+7D6cq3MuJSAppHreq1wffJZya9EUPtN
+        ++O1b5BwEfyCZhKUe
+X-Received: by 2002:adf:dbc1:: with SMTP id e1mr2275428wrj.339.1590770055854;
+        Fri, 29 May 2020 09:34:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzZ889WcL2gc5cE15AzE4PQixcL+wfygpza9dr3frPSqYQSWVW6QADK+d89yCcehEvnie2qnA==
+X-Received: by 2002:adf:dbc1:: with SMTP id e1mr2275400wrj.339.1590770055587;
+        Fri, 29 May 2020 09:34:15 -0700 (PDT)
+Received: from steredhat (host108-207-dynamic.49-79-r.retail.telecomitalia.it. [79.49.207.108])
+        by smtp.gmail.com with ESMTPSA id r6sm323841wmh.1.2020.05.29.09.34.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2020 09:34:15 -0700 (PDT)
+Date:   Fri, 29 May 2020 18:34:12 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jia He <justin.he@arm.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-ID: <20200529163340.GI869823@lunn.ch>
-References: <20200528130738.GT1551@shell.armlinux.org.uk>
- <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
- <20200528135608.GU1551@shell.armlinux.org.uk>
- <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
- <20200528144805.GW1551@shell.armlinux.org.uk>
- <20200528204312.df9089425162a22e89669cf1@suse.de>
- <20200528220420.GY1551@shell.armlinux.org.uk>
- <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
- <20200529145928.GF869823@lunn.ch>
- <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kaly Xin <Kaly.Xin@arm.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] virtio_vsock: Fix race condition in
+ virtio_transport_recv_pkt
+Message-ID: <20200529163412.fqswshs65f53qgez@steredhat>
+References: <20200529152102.58397-1-justin.he@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
+In-Reply-To: <20200529152102.58397-1-justin.he@arm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > By propagated, you mean if the external link is down, the link between
-> > the switch and node 1 will also be forced down, at the SERDES level?
-> 
-> yes
-> 
-> > And if external ports are down, the nodes cannot talk to each other?
-> 
-> correct
-> 
-> > External link down causes the whole in box network to fall apart? That
-> > seems a rather odd design.
-> 
-> as I'm not an expert in ceph, I can't judge. But I'll bring it up.
+On Fri, May 29, 2020 at 11:21:02PM +0800, Jia He wrote:
+> When client tries to connect(SOCK_STREAM) the server in the guest with
+> NONBLOCK mode, there will be a panic on a ThunderX2 (armv8a server):
+> [  463.718844][ T5040] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+> [  463.718848][ T5040] Mem abort info:
+> [  463.718849][ T5040]   ESR = 0x96000044
+> [  463.718852][ T5040]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [  463.718853][ T5040]   SET = 0, FnV = 0
+> [  463.718854][ T5040]   EA = 0, S1PTW = 0
+> [  463.718855][ T5040] Data abort info:
+> [  463.718856][ T5040]   ISV = 0, ISS = 0x00000044
+> [  463.718857][ T5040]   CM = 0, WnR = 1
+> [  463.718859][ T5040] user pgtable: 4k pages, 48-bit VAs, pgdp=0000008f6f6e9000
+> [  463.718861][ T5040] [0000000000000000] pgd=0000000000000000
+> [  463.718866][ T5040] Internal error: Oops: 96000044 [#1] SMP
+> [...]
+> [  463.718977][ T5040] CPU: 213 PID: 5040 Comm: vhost-5032 Tainted: G           O      5.7.0-rc7+ #139
+> [  463.718980][ T5040] Hardware name: GIGABYTE R281-T91-00/MT91-FS1-00, BIOS F06 09/25/2018
+> [  463.718982][ T5040] pstate: 60400009 (nZCv daif +PAN -UAO)
+> [  463.718995][ T5040] pc : virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
+> [  463.718999][ T5040] lr : virtio_transport_recv_pkt+0x1fc/0xd40 [vmw_vsock_virtio_transport_common]
+> [  463.719000][ T5040] sp : ffff80002dbe3c40
+> [...]
+> [  463.719025][ T5040] Call trace:
+> [  463.719030][ T5040]  virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
+> [  463.719034][ T5040]  vhost_vsock_handle_tx_kick+0x360/0x408 [vhost_vsock]
+> [  463.719041][ T5040]  vhost_worker+0x100/0x1a0 [vhost]
+> [  463.719048][ T5040]  kthread+0x128/0x130
+> [  463.719052][ T5040]  ret_from_fork+0x10/0x18
+         ^         ^
+Maybe we can remove these two columns from the commit message.
 
-I guess for a single use appliance this is O.K. But it makes the
-hardware unusable as a general purpose server.
-
-Is there a variant of the hardware to be used as a general purpose
-server, rather than as a Ceph appliance? If so, does it share the same
-DT files?
-
-> > What you are actually interested in is the sync state of the SERDES?
-> > The link is up if the SERDES has sync.
 > 
-> yes, that's what I need. How can I do that ?
+> The race condition as follows:
+> Task1                            Task2
+> =====                            =====
+> __sock_release                   virtio_transport_recv_pkt
+>   __vsock_release                  vsock_find_bound_socket (found)
+>     lock_sock_nested
+>     vsock_remove_sock
+>     sock_orphan
+>       sk_set_socket(sk, NULL)
 
-Given the current code, you cannot. Now we understand the
-requirements, we can come up with some ideas how to do this properly.
+Here we can add:
+      sk->sk_shutdown = SHUTDOWN_MASK;
 
-      Andrew
+>     ...
+>     release_sock
+>                                 lock_sock
+>                                    virtio_transport_recv_connecting
+>                                      sk->sk_socket->state (panic)
+> 
+> The root cause is that vsock_find_bound_socket can't hold the lock_sock,
+> so there is a small race window between vsock_find_bound_socket() and
+> lock_sock(). If there is __vsock_release() in another task, sk->sk_socket
+> will be set to NULL inadvertently.
+> 
+> This fixes it by checking sk->sk_shutdown.
+> 
+> Signed-off-by: Jia He <justin.he@arm.com>
+> Cc: stable@vger.kernel.org
+> Cc: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+> v2: use lightweight checking suggested by Stefano Garzarella
+> 
+>  net/vmw_vsock/virtio_transport_common.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> index 69efc891885f..0edda1edf988 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -1132,6 +1132,14 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+>  
+>  	lock_sock(sk);
+>  
+> +	/* Check if sk has been released before lock_sock */
+> +	if (sk->sk_shutdown == SHUTDOWN_MASK) {
+> +		(void)virtio_transport_reset_no_sock(t, pkt);
+> +		release_sock(sk);
+> +		sock_put(sk);
+> +		goto free_pkt;
+> +	}
+> +
+>  	/* Update CID in case it has changed after a transport reset event */
+>  	vsk->local_addr.svm_cid = dst.svm_cid;
+>  
+> -- 
+> 2.17.1
+> 
+
+Anyway, the patch LGTM, let see what David and other say.
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Thanks,
+Stefano
+
