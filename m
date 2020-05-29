@@ -2,141 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2B31E8282
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 526BD1E8285
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727826AbgE2Pvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 11:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
+        id S1727882AbgE2PwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726838AbgE2Pvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:51:38 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD83C03E969;
-        Fri, 29 May 2020 08:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Qwf1Oga74KLnmz4Cm9wol7+EzSDL+0sA3Q9FJM19WOs=; b=b4fjaANCE4eYTTiT6/qFihwwI
-        CAqdeEXO+U4gxZ69XncoyAlkseDYab19h6ZbcJpfJuX2bmyJ/UShrsmKFhjoItoQgKpSDLrxeEOfr
-        VccXwy5sXZqq5tfCihRAAwm/UPSQjdzDEolYyngb0SMeYVNGLdPtK9FluEqowizgjXqW3PabNWzVW
-        CAtdRKM+rJi0lCdFLXdErogyiarPPeLnRPuixcNacd9sv33MA/z65I3sJH1EjG1m4yse7HosWJwp5
-        8jLsLf5lcQsiUO2oAswkpATaBp25XNHCwf42/heYf3efOqy8KoLdq4kZd/+eDwx2GpoDSyIRnnS/2
-        cdVv9kpeA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:36150)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jehI5-0000DN-JQ; Fri, 29 May 2020 16:51:25 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jehI2-00009T-3L; Fri, 29 May 2020 16:51:22 +0100
-Date:   Fri, 29 May 2020 16:51:22 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-ID: <20200529155121.GA1551@shell.armlinux.org.uk>
-References: <20200528121121.125189-1-tbogendoerfer@suse.de>
- <20200528130738.GT1551@shell.armlinux.org.uk>
- <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
- <20200528135608.GU1551@shell.armlinux.org.uk>
- <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
- <20200528144805.GW1551@shell.armlinux.org.uk>
- <20200528204312.df9089425162a22e89669cf1@suse.de>
- <20200528220420.GY1551@shell.armlinux.org.uk>
- <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
- <20200529145928.GF869823@lunn.ch>
+        with ESMTP id S1726838AbgE2PwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:52:08 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6D4C03E969;
+        Fri, 29 May 2020 08:52:08 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id f3so1515752pfd.11;
+        Fri, 29 May 2020 08:52:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=Kr2DFnvRW9808DjObzViZreH2QLKCskc9zy5dtQmZdI=;
+        b=calztOD7MAQYZJLZ6WlEsjCp2RnV/0HiXuizF4nZHL9DybyCEERhbozciRw3D78NKL
+         vUQ00WTLbGwfhAjfdRq/0M+cyXi0zgLtB9PsEBoWv36Cvdw2VgDG3GX7xMtarrSpSUIH
+         8nX0SsqLpX2eqT2Qy1dRy9csYEEyXxgxRS1QMnQYfq7MIKgm63Q4D4nHxBn2S3/LE7PW
+         tnahKzvdEKXyg5oWiu8DmsR+hq6Jf7EQ72D23nX24ZZFNHnhyHRpTzEQsThwtuQWyOmZ
+         ZMn8vWEGY7fOkBpsj5HCmAGHZ2ASS0GfXqG6JHl+vHiFca5CCJdTFUOg+bL3MMY8wTnk
+         NmCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition:user-agent;
+        bh=Kr2DFnvRW9808DjObzViZreH2QLKCskc9zy5dtQmZdI=;
+        b=mBQ6qOIQMPtb9I7rmy8xNkZUzr6pazYZ2dBy3I5ubHVJUABGswXBDdGtTr/HoC/5DF
+         /jFUvf5DYT9Qhgp8BN68UUviyH3rvfNyyBv4uJ7OY/Z8pa1oLa61E+QPmc1nMtx9/MnI
+         h5elsbVkvrRG4y9Jjt6ep1zUMejcoUfIJsz+sG2fwI+xDFpGdDfJMnC9ikyYgUItoJmC
+         y95xAeAgDGaMi99GyRBgxEm0QvDsTL4PDXNx4f8nD/NcLD2CWSPxT7ZQKPVIV0uKByx8
+         4h6pVE9AJaR6axs+FtyLCIr/KgDb/g0EPiXfRaE0nV0F6AaYjAlrYHAQWk6bGifIScs1
+         GkqA==
+X-Gm-Message-State: AOAM531VDNfVM5G7uN7lu05UeRAajeIJ6ENYCHmbeu1pNetNGIVTVwB5
+        RmuWwzxYjcygZVDGEQp8Q54=
+X-Google-Smtp-Source: ABdhPJxB71OKpoh+MwI4lnPVWPMWtTaTiNLX8800beLrNOo1twtsI/3nlAS7CbCEk6IwxGp4GEUUUg==
+X-Received: by 2002:a62:174c:: with SMTP id 73mr9027078pfx.71.1590767527890;
+        Fri, 29 May 2020 08:52:07 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z23sm7074614pga.86.2020.05.29.08.52.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 29 May 2020 08:52:07 -0700 (PDT)
+Date:   Fri, 29 May 2020 08:52:06 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        kernel@collabora.com, Fabio Estevam <festevam@gmail.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Allison Randal <allison@lohutok.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Darren Hart <dvhart@infradead.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Enrico Weigelt <info@metux.net>,
+        Peter Kaestle <peter@piie.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>, Shawn Guo <shawnguo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andy@infradead.org>
+Subject: Re: [PATCH v4 06/11] thermal: Add mode helpers
+Message-ID: <20200529155206.GA158553@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200529145928.GF869823@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 04:59:28PM +0200, Andrew Lunn wrote:
-> On Fri, May 29, 2020 at 01:05:39PM +0200, Thomas Bogendoerfer wrote:
-> > On Thu, 28 May 2020 23:04:20 +0100
-> > Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> > 
-> > > Can you explain this please?  Just as we think we understand what's
-> > > going on here, you throw in a new comment that makes us confused.
-> > 
-> > sorry about that.
-> > 
-> > > You said previously that the mvpp2 was connected to a switch, which
-> > > makes us think that you've got some DSA-like setup going on here.
-> > > Does your switch drop its serdes link when all the external links
-> > > (presumably the 10G SFP+ cages) fail?
-> > > 
-> > > Both Andrew and myself wish to have a complete picture before we
-> > > move forward with this.
-> > 
-> > full understandable, I'll try by a small picture, which just
-> > covers one switch:
-> > 
-> >         external ports
-> >       |  |          |  |
-> > *-----------------------------*
-> > |     1  1          2  2      |
-> > |                             |
-> > |           switch            |
-> > |                             |
-> > |   1   2            1   2    |
-> > *-----------------------------*
-> >     |   |            |   |
-> >     |   |            |   |
-> > *----------*     *----------*
-> > |   1   2  |     |   1   2  |
-> > |          |     |          |
-> > |  node 1  | ... |  node 8  |
-> > |          |     |          |
-> > *----------*     *----------*
-> > 
-> > External ports a grouped in ports to network 1 and network 2. If one of the
-> > external ports has an established link, this link state will be propagated
-> > to the internal ports. Same when both external ports of a network are down.
+On Thu, May 28, 2020 at 09:20:46PM +0200, Andrzej Pietrasiewicz wrote:
+> Prepare for making the drivers not access tzd's private members.
 > 
-> By propagated, you mean if the external link is down, the link between
-> the switch and node 1 will also be forced down, at the SERDES level?
-> And if external ports are down, the nodes cannot talk to each other?
-> External link down causes the whole in box network to fall apart? That
-> seems a rather odd design.
+> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+> ---
+>  drivers/thermal/thermal_core.c | 53 ++++++++++++++++++++++++++++++++++
+>  include/linux/thermal.h        | 13 +++++++++
+>  2 files changed, 66 insertions(+)
 > 
-> > I have no control over the software running on the switch, therefore I can't
-> > enable autoneg on the internal links.
-> 
-> O.K. So that means using in-band signalling in DT is clearly
-> wrong. There is no signalling....
-> 
-> What you are actually interested in is the sync state of the SERDES?
-> The link is up if the SERDES has sync.
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 14d3b1b94c4f..f2a5c5ee3455 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -459,6 +459,59 @@ static void thermal_zone_device_reset(struct thermal_zone_device *tz)
+>  	thermal_zone_device_init(tz);
+>  }
+>  
+> +int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+> +				 enum thermal_device_mode mode)
+> +{
+> +	int ret = 0;
+> +
+> +	mutex_lock(&tz->lock);
+> +
+> +	/* do nothing if mode isn't changing */
+> +	if (mode == tz->mode) {
+> +		mutex_unlock(&tz->lock);
+> +
+Nit: unnecessary empty line.
 
-Right now we force the link up/down for fixed-link mode, depending on
-the state that phylink is given (either via the callback, or the gpio,
-or in the absence of either of those, we assume link up.)
+> +		return ret;
+> +	}
+> +
+> +	if (tz->ops->set_mode)
+> +		ret = tz->ops->set_mode(tz, mode);
+> +
+> +	if (!ret)
+> +		tz->mode = mode;
+> +
+> +	mutex_unlock(&tz->lock);
+> +
+> +	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+> +
+> +	return ret;
+> +}
+> +
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{
+> +	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_ENABLED);
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_enable);
 
-In the case of a serdes link, where we also have the sync state to
-consider, that doesn't sound sane - if in fixed link mode, phylink is
-told that the link is up, yet we can clearly see that the serdes we
-are attached to is not, we aren't going to receive anything and
-anything we try to transmit isn't going to go anywhere.
+Other exports in thermal/ use EXPORT_SYMBOL_GPL.
 
-I wonder how much risk there is to changing that, so we force the link
-down if phylink says the link should be down, otherwise we force the
-speed/duplex, disable AN, and allow the link to come up depending on
-the serdes status.  It /sounds/ like something sane to do.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+> +
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{
+> +	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_DISABLED);
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_disable);
+> +
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{
+> +	enum thermal_device_mode mode;
+> +
+> +	mutex_lock(&tz->lock);
+> +
+> +	mode = tz->mode;
+> +
+> +	mutex_unlock(&tz->lock);
+> +
+> +	return mode == THERMAL_DEVICE_ENABLED;
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_is_enabled);
+> +
+>  void thermal_zone_device_update(struct thermal_zone_device *tz,
+>  				enum thermal_notify_event event)
+>  {
+> diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+> index a808f6fa2777..df013c39ba9b 100644
+> --- a/include/linux/thermal.h
+> +++ b/include/linux/thermal.h
+> @@ -416,6 +416,9 @@ int thermal_zone_get_offset(struct thermal_zone_device *tz);
+>  
+>  void thermal_cdev_update(struct thermal_cooling_device *);
+>  void thermal_notify_framework(struct thermal_zone_device *, int);
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
+>  #else
+>  static inline struct thermal_zone_device *thermal_zone_device_register(
+>  	const char *type, int trips, int mask, void *devdata,
+> @@ -463,6 +466,16 @@ static inline void thermal_cdev_update(struct thermal_cooling_device *cdev)
+>  static inline void thermal_notify_framework(struct thermal_zone_device *tz,
+>  	int trip)
+>  { }
+> +
+> +static inline int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int
+> +thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+>  #endif /* CONFIG_THERMAL */
+>  
+>  #endif /* __THERMAL_H__ */
