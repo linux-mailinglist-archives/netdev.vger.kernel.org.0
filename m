@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5F51E830B
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C49BD1E8315
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:05:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgE2QFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S1728086AbgE2QFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726616AbgE2QFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:05:18 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46262C03E969;
-        Fri, 29 May 2020 09:05:18 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id v79so2624431qkb.10;
-        Fri, 29 May 2020 09:05:18 -0700 (PDT)
+        with ESMTP id S1726803AbgE2QFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:05:49 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7D7C03E969;
+        Fri, 29 May 2020 09:05:48 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id c185so2649769qke.7;
+        Fri, 29 May 2020 09:05:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=W/5acxUy0tPXC4WQ+gK2CfotTHafKGLmUlvwhNajW8E=;
-        b=NoWmA8MpSBLdahAUVezrWHVrEaFOpI4cMtvhXAkBFnFv4FZumx7AzTsVXWu+vIYdmx
-         BME+jyFSi2nggmmXadWablN+IRxyBf5eqmtqv0jen20DQR0bsujwyawiCLm587DeEyNW
-         jd1G16dwhhWiqyRohMcAN0qEZYY9fzSDG2GbsxC2/vDY5sqylO7zp5JnvEFNhsCNIZNT
-         Co0DtsJqykub1AfxSf1RqCeha78HQT9rWyXXynedy7uDePReadYXYhX7UwI4dg5i/SsL
-         SRA703n/u9W1j8VR9H0gT1xT+ZnsEOL2Dya/OClnLY1zcKZsYHKPs9c79aw2XO6lmmOU
-         d6Ig==
+        bh=pd5lAZmWnGQEg9my+K8yqiGBxQw7BvJ1dx+ybceAc+M=;
+        b=flf93cj1reYDcbDT3u7JD+/ZI2FqlzB/yXOhGH80n/apv8aSl4OmFJJYYXdFEgD2iP
+         7EDNqFo8yTsMG9L7vdQ/rgGVpF+nl6s1/jB+Ye3IwclwAtYW+efliy5blg2NQPOeXljc
+         UFdv1WagT/12zf29orcGmGvr97Z3xAgsNSVcI3xi7RseAW6/IHd/fwGS8R0/Qnr/I1Hw
+         KfsWN+hAQ7386ilUbrRmqYB9RSZzyB5+iwXW8PQaO6tCeWdtIJ1Ra4cCrZe10YliKu0t
+         NcvjNT1sa/ciBXimf9ujpxK0OlH0tu/U1IpW/YI8eUcgoe8uuGfCvddDgim9cJ0yqv/n
+         JXUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=W/5acxUy0tPXC4WQ+gK2CfotTHafKGLmUlvwhNajW8E=;
-        b=dtK2Yr0lzp9okOe1FYdtx37/DynIp254DXEXdwXt21f1sIDUm5AqcKCPebuImLaCPb
-         jL35CBfpoOuSkDbq9ix/WICgbCzz8RghynNL2cz0wM0SGZ4CHRxUncsVeFrFRtsLYVJn
-         9612iUJDJ2DUWyGPmyRadIISWqQmxRrpTNfbLWOkb601CXNCVa9IxPYITvU1G/wZy69l
-         HN9v8IsE3BmLcHHT1+F+ZMcMTL92ACbclm213TvHYRzLH3sKfSQTKQsA92oBKuZMRYor
-         YRg7D3ItqTF3ru4/VKehmGe9rSoVQQJsddxKzfpu5m+of0/Er9Gxz/gRpYJN5w7CP1Jg
-         tTyw==
-X-Gm-Message-State: AOAM530bSNs3dKKhfYk24Ui/Jq4JptYZfdEtW2cFpyURK9ax+82GxWqY
-        l5yOvKevRxa53Ibnp7HsOfo=
-X-Google-Smtp-Source: ABdhPJzdt/kXXfrBEfw95zber/esL31JmnLdUMJ2Vt2cDTVx9+/hBSM8jSEdo9tYgm9y29NG5QXSTw==
-X-Received: by 2002:ae9:f40b:: with SMTP id y11mr8491950qkl.107.1590768317293;
-        Fri, 29 May 2020 09:05:17 -0700 (PDT)
+        bh=pd5lAZmWnGQEg9my+K8yqiGBxQw7BvJ1dx+ybceAc+M=;
+        b=SZJkDmGx47xBvgoUZ4aQidMUMpJF3iv/yhz8Es2yHB1JpM2v3eCdzDh5TGhS6txngI
+         AFNqoao0GqhDKgY5CXxBnMF0QnT0aAA2yhbkFfjblmmNrrbdFY63r2fG7UfwqyBXCutO
+         q8b0e+Kj7T+9vmh1cIDEhpbh0DUzwpAHge3pKcB4Ngdn4QXpYUB6D/tkfsQXruZGA0Ft
+         1Koqwywbhyxc9fAisN+n+tUFLAuCgvsTIk+NtYJGGxHHZfn97qYoN6O+pf5B7YsOAhBP
+         YGQ/wT/HY2rRCqkb7BpgZ23pFSMoogaQv7t/lQMsIOYZHHQ8fQNLEzTeabanm/I8ZAZW
+         IWfQ==
+X-Gm-Message-State: AOAM5336Pl7EIc5rx23WjYUNksltT0vCfyPcSmdw0lG4YI/YFqNoPyST
+        hSqE3aF22cTM05/d4C+u8/E=
+X-Google-Smtp-Source: ABdhPJzmHd7SDMPI2q+JYngCQ2RfZPvDlFDGRklGnRQrYU+7mGWuhiht9GIratK6mbSYxK77dID42g==
+X-Received: by 2002:a37:b446:: with SMTP id d67mr1200068qkf.136.1590768347949;
+        Fri, 29 May 2020 09:05:47 -0700 (PDT)
 Received: from localhost.localdomain ([2001:1284:f013:516d:2604:bfa5:7157:afa1])
-        by smtp.gmail.com with ESMTPSA id i94sm8009525qtd.2.2020.05.29.09.05.16
+        by smtp.gmail.com with ESMTPSA id p10sm6755496qkm.121.2020.05.29.09.05.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:05:16 -0700 (PDT)
+        Fri, 29 May 2020 09:05:47 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 33AE8C1B84; Fri, 29 May 2020 13:05:14 -0300 (-03)
-Date:   Fri, 29 May 2020 13:05:14 -0300
+        id D94A7C1B84; Fri, 29 May 2020 13:05:44 -0300 (-03)
+Date:   Fri, 29 May 2020 13:05:44 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 To:     Christoph Hellwig <hch@lst.de>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -59,93 +59,149 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         David Laight <David.Laight@aculab.com>,
         linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org,
         cluster-devel@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/4] sctp: add sctp_sock_set_nodelay
-Message-ID: <20200529160514.GH2491@localhost.localdomain>
+Subject: Re: [PATCH 2/4] sctp: refactor sctp_setsockopt_bindx
+Message-ID: <20200529160544.GI2491@localhost.localdomain>
 References: <20200529120943.101454-1-hch@lst.de>
- <20200529120943.101454-2-hch@lst.de>
+ <20200529120943.101454-3-hch@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200529120943.101454-2-hch@lst.de>
+In-Reply-To: <20200529120943.101454-3-hch@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 02:09:40PM +0200, Christoph Hellwig wrote:
-> Add a helper to directly set the SCTP_NODELAY sockopt from kernel space
-> without going through a fake uaccess.
+On Fri, May 29, 2020 at 02:09:41PM +0200, Christoph Hellwig wrote:
+> Split out a sctp_setsockopt_bindx_kernel that takes a kernel pointer
+> to the sockaddr and make sctp_setsockopt_bindx a small wrapper around
+> it.  This prepares for adding a new bind_add proto op.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 
 Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-I'm taking the action item to make sctp_setsockopt_nodelay() use the
-new helper. Will likely create a __ variant of it, due to sock lock.
-
 > ---
->  fs/dlm/lowcomms.c       | 10 ++--------
->  include/net/sctp/sctp.h |  7 +++++++
->  2 files changed, 9 insertions(+), 8 deletions(-)
+>  net/sctp/socket.c | 61 ++++++++++++++++++++++-------------------------
+>  1 file changed, 28 insertions(+), 33 deletions(-)
 > 
-> diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-> index 69333728d871b..9f1c3cdc9d653 100644
-> --- a/fs/dlm/lowcomms.c
-> +++ b/fs/dlm/lowcomms.c
-> @@ -914,7 +914,6 @@ static int sctp_bind_addrs(struct connection *con, uint16_t port)
->  static void sctp_connect_to_sock(struct connection *con)
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 827a9903ee288..6e745ac3c4a59 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -972,23 +972,22 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
+>   * it.
+>   *
+>   * sk        The sk of the socket
+> - * addrs     The pointer to the addresses in user land
+> + * addrs     The pointer to the addresses
+>   * addrssize Size of the addrs buffer
+>   * op        Operation to perform (add or remove, see the flags of
+>   *           sctp_bindx)
+>   *
+>   * Returns 0 if ok, <0 errno code on error.
+>   */
+> -static int sctp_setsockopt_bindx(struct sock *sk,
+> -				 struct sockaddr __user *addrs,
+> -				 int addrs_size, int op)
+> +static int sctp_setsockopt_bindx_kernel(struct sock *sk,
+> +					struct sockaddr *addrs, int addrs_size,
+> +					int op)
 >  {
->  	struct sockaddr_storage daddr;
-> -	int one = 1;
->  	int result;
->  	int addr_len;
->  	struct socket *sock;
-> @@ -961,8 +960,7 @@ static void sctp_connect_to_sock(struct connection *con)
->  	log_print("connecting to %d", con->nodeid);
+> -	struct sockaddr *kaddrs;
+>  	int err;
+>  	int addrcnt = 0;
+>  	int walk_size = 0;
+>  	struct sockaddr *sa_addr;
+> -	void *addr_buf;
+> +	void *addr_buf = addrs;
+>  	struct sctp_af *af;
 >  
->  	/* Turn off Nagle's algorithm */
-> -	kernel_setsockopt(sock, SOL_SCTP, SCTP_NODELAY, (char *)&one,
-> -			  sizeof(one));
-> +	sctp_sock_set_nodelay(sock->sk);
+>  	pr_debug("%s: sk:%p addrs:%p addrs_size:%d opt:%d\n",
+> @@ -997,17 +996,10 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>  	if (unlikely(addrs_size <= 0))
+>  		return -EINVAL;
 >  
->  	/*
->  	 * Make sock->ops->connect() function return in specified time,
-> @@ -1176,7 +1174,6 @@ static int sctp_listen_for_all(void)
->  	struct socket *sock = NULL;
->  	int result = -EINVAL;
->  	struct connection *con = nodeid2con(0, GFP_NOFS);
-> -	int one = 1;
+> -	kaddrs = memdup_user(addrs, addrs_size);
+> -	if (IS_ERR(kaddrs))
+> -		return PTR_ERR(kaddrs);
+> -
+>  	/* Walk through the addrs buffer and count the number of addresses. */
+> -	addr_buf = kaddrs;
+>  	while (walk_size < addrs_size) {
+> -		if (walk_size + sizeof(sa_family_t) > addrs_size) {
+> -			kfree(kaddrs);
+> +		if (walk_size + sizeof(sa_family_t) > addrs_size)
+>  			return -EINVAL;
+> -		}
 >  
->  	if (!con)
->  		return -ENOMEM;
-> @@ -1191,10 +1188,7 @@ static int sctp_listen_for_all(void)
+>  		sa_addr = addr_buf;
+>  		af = sctp_get_af_specific(sa_addr->sa_family);
+> @@ -1015,10 +1007,8 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>  		/* If the address family is not supported or if this address
+>  		 * causes the address buffer to overflow return EINVAL.
+>  		 */
+> -		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
+> -			kfree(kaddrs);
+> +		if (!af || (walk_size + af->sockaddr_len) > addrs_size)
+>  			return -EINVAL;
+> -		}
+>  		addrcnt++;
+>  		addr_buf += af->sockaddr_len;
+>  		walk_size += af->sockaddr_len;
+> @@ -1029,31 +1019,36 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+>  	case SCTP_BINDX_ADD_ADDR:
+>  		/* Allow security module to validate bindx addresses. */
+>  		err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD,
+> -						 (struct sockaddr *)kaddrs,
+> -						 addrs_size);
+> +						 addrs, addrs_size);
+>  		if (err)
+> -			goto out;
+> -		err = sctp_bindx_add(sk, kaddrs, addrcnt);
+> +			return err;
+> +		err = sctp_bindx_add(sk, addrs, addrcnt);
+>  		if (err)
+> -			goto out;
+> -		err = sctp_send_asconf_add_ip(sk, kaddrs, addrcnt);
+> -		break;
+> -
+> +			return err;
+> +		return sctp_send_asconf_add_ip(sk, addrs, addrcnt);
+>  	case SCTP_BINDX_REM_ADDR:
+> -		err = sctp_bindx_rem(sk, kaddrs, addrcnt);
+> +		err = sctp_bindx_rem(sk, addrs, addrcnt);
+>  		if (err)
+> -			goto out;
+> -		err = sctp_send_asconf_del_ip(sk, kaddrs, addrcnt);
+> -		break;
+> +			return err;
+> +		return sctp_send_asconf_del_ip(sk, addrs, addrcnt);
+>  
+>  	default:
+> -		err = -EINVAL;
+> -		break;
+> +		return -EINVAL;
 >  	}
+> +}
 >  
->  	sock_set_rcvbuf(sock->sk, NEEDED_RMEM);
-> -	result = kernel_setsockopt(sock, SOL_SCTP, SCTP_NODELAY, (char *)&one,
-> -				   sizeof(one));
-> -	if (result < 0)
-> -		log_print("Could not set SCTP NODELAY error %d\n", result);
-> +	sctp_sock_set_nodelay(sock->sk);
+> -out:
+> -	kfree(kaddrs);
+> +static int sctp_setsockopt_bindx(struct sock *sk,
+> +				 struct sockaddr __user *addrs,
+> +				 int addrs_size, int op)
+> +{
+> +	struct sockaddr *kaddrs;
+> +	int err;
 >  
->  	write_lock_bh(&sock->sk->sk_callback_lock);
->  	/* Init con struct */
-> diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-> index 3ab5c6bbb90bd..f8bcb75bb0448 100644
-> --- a/include/net/sctp/sctp.h
-> +++ b/include/net/sctp/sctp.h
-> @@ -615,4 +615,11 @@ static inline bool sctp_newsk_ready(const struct sock *sk)
->  	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
+> +	kaddrs = memdup_user(addrs, addrs_size);
+> +	if (IS_ERR(kaddrs))
+> +		return PTR_ERR(kaddrs);
+> +	err = sctp_setsockopt_bindx_kernel(sk, kaddrs, addrs_size, op);
+> +	kfree(kaddrs);
+>  	return err;
 >  }
 >  
-> +static inline void sctp_sock_set_nodelay(struct sock *sk)
-> +{
-> +	lock_sock(sk);
-> +	sctp_sk(sk)->nodelay = true;
-> +	release_sock(sk);
-> +}
-> +
->  #endif /* __net_sctp_h__ */
 > -- 
 > 2.26.2
 > 
