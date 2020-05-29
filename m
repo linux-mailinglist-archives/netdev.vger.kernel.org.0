@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E05741E86C9
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D42191E86CB
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbgE2Shc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 14:37:32 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53541 "EHLO
+        id S1727960AbgE2Shg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 14:37:36 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:39885 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727911AbgE2Sh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:37:28 -0400
+        by vger.kernel.org with ESMTP id S1727915AbgE2Sha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:37:30 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 48EE55C00AE;
-        Fri, 29 May 2020 14:37:28 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id A21585C00B6;
+        Fri, 29 May 2020 14:37:29 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 29 May 2020 14:37:28 -0400
+  by compute4.internal (MEProxy); Fri, 29 May 2020 14:37:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=n6Kej2/GNBT5ODNyUtOMZJ38Wt8SnTGEmsjoWMXkekY=; b=EBsWGUKN
-        i6rrpFOgUOIqzXJAl4ILp/xD2/SB2BXnu8KmMe1HbyI1euAo75vWxGtnuzQJEq30
-        0y948Xwse4ALDyOaVyGHL5A3nHVW6uckiqMrkRU8E4aGWDXgJHs+pu1GS0lKO9ay
-        AHsTvpBv4yn/bezRryKnnaQRmQ4Xo81h8Ph7loVKkUBj1bmcs2ESUfOnSFIA7EwW
-        5WcuTyiXCKbSJ8phkXx0MbW/5/LC9up7zQfwe7uvEG3VvW7XI3em4UItF132xiKu
-        4VxtymKmuGKfzuUbwTrBYmX40bxTFZNykYzsdm1xKmVu0Jj+n8IXKWT0PqICOO81
-        5KISqSJ8fMMTww==
-X-ME-Sender: <xms:aFbRXnXdAGBjIAlSgAo6pMqLF-Fd_TRZ6ZDnWB17VCQfMy-X78kBow>
+        fm2; bh=3a0epmfkuU0jXkBZlAbZqDR71DYji47cWPRHtQJacXs=; b=KXjwI6hp
+        C1Euq7OACWzq9gTkUNpuz5i4CcjEVmtD2ayKO/ySpV/z3O5CTnIdkFpK+nTnNR8l
+        jc3ihOquoqKV9psiqHM2yKssPZoe4I9blp489TpMt5RDLcZntuL9dWEp2xr+iVYr
+        8l3wVaTHm2TlePCFz28Qk+hWgv2drcLVxgVMCBQ3bFYp1drIhtmOEKmBGGEiz+F9
+        0635F+QngFPGSmoojY9Fw4+qGdY0fM95Hm6ahpOVCwt8IJlyei0hZIPro3iopSgU
+        ++U+VZnHgvf1aDFmAaui2RpPrCmSHOXg+luw/5oohqqjRH7ZTMAJdGov9VVQxZ1o
+        dSx0l7WyteAftg==
+X-ME-Sender: <xms:aVbRXqOpsGlnPX-BUNXJkK3aHa9CKkD1movC5U4XccZEuR-3NeHxRg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvkedguddtfecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -36,20 +36,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvkedguddtfecutefuodetgg
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepjeelrddujeeirddvgedruddt
     jeenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:aFbRXvmEJ43kMza28WvmsWr3wWgPnYK9IeGfw3aLF_sYWcew-J3l2w>
-    <xmx:aFbRXjasNxZWXt5ad0aDTh2MvfG1-QkLY2WikR-XxwT53JvwcLKrfQ>
-    <xmx:aFbRXiVDGFUMtqP6pqs78HJILNmFqeXVn_SJRc8FpMoXop9J4bncRw>
-    <xmx:aFbRXhuuhNQLP1-8SIU0ig4TIA0j7CG8siHsxMp_g3RxNqSUWdRQ4w>
+X-ME-Proxy: <xmx:aVbRXo_I2rxhJAIexIaQ1J9ojipdQC41WMeqBTxk-hT73zVfNVpdTQ>
+    <xmx:aVbRXhQ3jNZAeS48Gj9kEp84E7BjxdoSkH6yWzLSOtePFxBs3zIV4g>
+    <xmx:aVbRXqvXgrZOBqdfpTjeNit4iipsTA8w6Lu3fYhQRx6I22kC04KdeQ>
+    <xmx:aVbRXmEN30bgv2L29VJvUZ6mNVeAqErPBhFtD-q-MGGooUx_RsXNCA>
 Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0B45330614FA;
-        Fri, 29 May 2020 14:37:26 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5E1B73060F09;
+        Fri, 29 May 2020 14:37:28 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 05/14] devlink: Add 'control' trap type
-Date:   Fri, 29 May 2020 21:36:40 +0300
-Message-Id: <20200529183649.1602091-6-idosch@idosch.org>
+Subject: [PATCH net-next 06/14] devlink: Add layer 2 control packet traps
+Date:   Fri, 29 May 2020 21:36:41 +0300
+Message-Id: <20200529183649.1602091-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200529183649.1602091-1-idosch@idosch.org>
 References: <20200529183649.1602091-1-idosch@idosch.org>
@@ -62,85 +62,195 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-This type is used for traps that trap control packets such as ARP
-request and IGMP query to the CPU.
-
-Do not report such packets to the kernel's drop monitor as they were not
-dropped by the device no encountered an exception during forwarding.
+Add layer 2 control packet traps such as STP and IGMP query, so that
+capable device drivers could register them with devlink. Add
+documentation for every added packet trap and packet trap group.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- Documentation/networking/devlink/devlink-trap.rst | 8 +++++++-
- include/uapi/linux/devlink.h                      | 6 ++++++
- net/core/devlink.c                                | 7 +++++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
+ .../networking/devlink/devlink-trap.rst       | 45 +++++++++++++++++
+ include/net/devlink.h                         | 48 +++++++++++++++++++
+ net/core/devlink.c                            | 16 +++++++
+ 3 files changed, 109 insertions(+)
 
 diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
-index 5b97327caefc..6c293cfa23ee 100644
+index 6c293cfa23ee..e9fc3c9d7d7a 100644
 --- a/Documentation/networking/devlink/devlink-trap.rst
 +++ b/Documentation/networking/devlink/devlink-trap.rst
-@@ -55,7 +55,7 @@ The following diagram provides a general overview of ``devlink-trap``::
-                           |                |
-                           +-------^--------+
-                                   |
--                                  |
-+                                  | Non-control traps
-                                   |
-                              +----+----+
-                              |         |      Kernel's Rx path
-@@ -97,6 +97,12 @@ The ``devlink-trap`` mechanism supports the following packet trap types:
-     processed by ``devlink`` and injected to the kernel's Rx path. Changing the
-     action of such traps is not allowed, as it can easily break the control
-     plane.
-+  * ``control``: Trapped packets were trapped by the device because these are
-+    control packets required for the correct functioning of the control plane.
-+    For example, ARP request and IGMP query packets. Packets are injected to
-+    the kernel's Rx path, but not reported to the kernel's drop monitor.
-+    Changing the action of such traps is not allowed, as it can easily break
-+    the control plane.
+@@ -252,6 +252,42 @@ be added to the following table:
+    * - ``egress_flow_action_drop``
+      - ``drop``
+      - Traps packets dropped during processing of egress flow action drop
++   * - ``stp``
++     - ``control``
++     - Traps STP packets
++   * - ``lacp``
++     - ``control``
++     - Traps LACP packets
++   * - ``lldp``
++     - ``control``
++     - Traps LLDP packets
++   * - ``igmp_query``
++     - ``control``
++     - Traps IGMP Membership Query packets
++   * - ``igmp_v1_report``
++     - ``control``
++     - Traps IGMP Version 1 Membership Report packets
++   * - ``igmp_v2_report``
++     - ``control``
++     - Traps IGMP Version 2 Membership Report packets
++   * - ``igmp_v3_report``
++     - ``control``
++     - Traps IGMP Version 3 Membership Report packets
++   * - ``igmp_v2_leave``
++     - ``control``
++     - Traps IGMP Version 2 Leave Group packets
++   * - ``mld_query``
++     - ``control``
++     - Traps MLD Multicast Listener Query packets
++   * - ``mld_v1_report``
++     - ``control``
++     - Traps MLD Version 1 Multicast Listener Report packets
++   * - ``mld_v2_report``
++     - ``control``
++     - Traps MLD Version 2 Multicast Listener Report packets
++   * - ``mld_v1_done``
++     - ``control``
++     - Traps MLD Version 1 Multicast Listener Done packets
  
- .. _Trap-Actions:
+ Driver-specific Packet Traps
+ ============================
+@@ -299,6 +335,15 @@ narrow. The description of these groups must be added to the following table:
+    * - ``acl_drops``
+      - Contains packet traps for packets that were dropped by the device during
+        ACL processing
++   * - ``stp``
++     - Contains packet traps for STP packets
++   * - ``lacp``
++     - Contains packet traps for LACP packets
++   * - ``lldp``
++     - Contains packet traps for LLDP packets
++   * - ``mc_snooping``
++     - Contains packet traps for IGMP and MLD packets required for multicast
++       snooping
  
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 16305932a950..08563e6a424d 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -253,10 +253,16 @@ enum devlink_trap_action {
-  *                               control plane for resolution. Trapped packets
-  *                               are processed by devlink and injected to
-  *                               the kernel's Rx path.
-+ * @DEVLINK_TRAP_TYPE_CONTROL: Packet was trapped because it is required for
-+ *                             the correct functioning of the control plane.
-+ *                             For example, an ARP request packet. Trapped
-+ *                             packets are injected to the kernel's Rx path,
-+ *                             but not reported to drop monitor.
-  */
- enum devlink_trap_type {
- 	DEVLINK_TRAP_TYPE_DROP,
- 	DEVLINK_TRAP_TYPE_EXCEPTION,
-+	DEVLINK_TRAP_TYPE_CONTROL,
- };
+ Packet Trap Policers
+ ====================
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 851388c9d795..c0061542ad65 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -645,6 +645,18 @@ enum devlink_trap_generic_id {
+ 	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
+ 	DEVLINK_TRAP_GENERIC_ID_INGRESS_FLOW_ACTION_DROP,
+ 	DEVLINK_TRAP_GENERIC_ID_EGRESS_FLOW_ACTION_DROP,
++	DEVLINK_TRAP_GENERIC_ID_STP,
++	DEVLINK_TRAP_GENERIC_ID_LACP,
++	DEVLINK_TRAP_GENERIC_ID_LLDP,
++	DEVLINK_TRAP_GENERIC_ID_IGMP_QUERY,
++	DEVLINK_TRAP_GENERIC_ID_IGMP_V1_REPORT,
++	DEVLINK_TRAP_GENERIC_ID_IGMP_V2_REPORT,
++	DEVLINK_TRAP_GENERIC_ID_IGMP_V3_REPORT,
++	DEVLINK_TRAP_GENERIC_ID_IGMP_V2_LEAVE,
++	DEVLINK_TRAP_GENERIC_ID_MLD_QUERY,
++	DEVLINK_TRAP_GENERIC_ID_MLD_V1_REPORT,
++	DEVLINK_TRAP_GENERIC_ID_MLD_V2_REPORT,
++	DEVLINK_TRAP_GENERIC_ID_MLD_V1_DONE,
  
- enum {
+ 	/* Add new generic trap IDs above */
+ 	__DEVLINK_TRAP_GENERIC_ID_MAX,
+@@ -661,6 +673,10 @@ enum devlink_trap_group_generic_id {
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_BUFFER_DROPS,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_TUNNEL_DROPS,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_ACL_DROPS,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_STP,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_LACP,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_LLDP,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_MC_SNOOPING,
+ 
+ 	/* Add new generic trap group IDs above */
+ 	__DEVLINK_TRAP_GROUP_GENERIC_ID_MAX,
+@@ -726,6 +742,30 @@ enum devlink_trap_group_generic_id {
+ 	"ingress_flow_action_drop"
+ #define DEVLINK_TRAP_GENERIC_NAME_EGRESS_FLOW_ACTION_DROP \
+ 	"egress_flow_action_drop"
++#define DEVLINK_TRAP_GENERIC_NAME_STP \
++	"stp"
++#define DEVLINK_TRAP_GENERIC_NAME_LACP \
++	"lacp"
++#define DEVLINK_TRAP_GENERIC_NAME_LLDP \
++	"lldp"
++#define DEVLINK_TRAP_GENERIC_NAME_IGMP_QUERY \
++	"igmp_query"
++#define DEVLINK_TRAP_GENERIC_NAME_IGMP_V1_REPORT \
++	"igmp_v1_report"
++#define DEVLINK_TRAP_GENERIC_NAME_IGMP_V2_REPORT \
++	"igmp_v2_report"
++#define DEVLINK_TRAP_GENERIC_NAME_IGMP_V3_REPORT \
++	"igmp_v3_report"
++#define DEVLINK_TRAP_GENERIC_NAME_IGMP_V2_LEAVE \
++	"igmp_v2_leave"
++#define DEVLINK_TRAP_GENERIC_NAME_MLD_QUERY \
++	"mld_query"
++#define DEVLINK_TRAP_GENERIC_NAME_MLD_V1_REPORT \
++	"mld_v1_report"
++#define DEVLINK_TRAP_GENERIC_NAME_MLD_V2_REPORT \
++	"mld_v2_report"
++#define DEVLINK_TRAP_GENERIC_NAME_MLD_V1_DONE \
++	"mld_v1_done"
+ 
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_L2_DROPS \
+ 	"l2_drops"
+@@ -739,6 +779,14 @@ enum devlink_trap_group_generic_id {
+ 	"tunnel_drops"
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_ACL_DROPS \
+ 	"acl_drops"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_STP \
++	"stp"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_LACP \
++	"lacp"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_LLDP \
++	"lldp"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_MC_SNOOPING  \
++	"mc_snooping"
+ 
+ #define DEVLINK_TRAP_GENERIC(_type, _init_action, _id, _group_id,	      \
+ 			     _metadata_cap)				      \
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d6298917b077..47c28e0f848f 100644
+index 47c28e0f848f..c91ef1b5f738 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -8847,6 +8847,13 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
- 	devlink_trap_stats_update(trap_item->stats, skb->len);
- 	devlink_trap_stats_update(trap_item->group_item->stats, skb->len);
+@@ -8495,6 +8495,18 @@ static const struct devlink_trap devlink_trap_generic[] = {
+ 	DEVLINK_TRAP(OVERLAY_SMAC_MC, DROP),
+ 	DEVLINK_TRAP(INGRESS_FLOW_ACTION_DROP, DROP),
+ 	DEVLINK_TRAP(EGRESS_FLOW_ACTION_DROP, DROP),
++	DEVLINK_TRAP(STP, CONTROL),
++	DEVLINK_TRAP(LACP, CONTROL),
++	DEVLINK_TRAP(LLDP, CONTROL),
++	DEVLINK_TRAP(IGMP_QUERY, CONTROL),
++	DEVLINK_TRAP(IGMP_V1_REPORT, CONTROL),
++	DEVLINK_TRAP(IGMP_V2_REPORT, CONTROL),
++	DEVLINK_TRAP(IGMP_V3_REPORT, CONTROL),
++	DEVLINK_TRAP(IGMP_V2_LEAVE, CONTROL),
++	DEVLINK_TRAP(MLD_QUERY, CONTROL),
++	DEVLINK_TRAP(MLD_V1_REPORT, CONTROL),
++	DEVLINK_TRAP(MLD_V2_REPORT, CONTROL),
++	DEVLINK_TRAP(MLD_V1_DONE, CONTROL),
+ };
  
-+	/* Control packets were not dropped by the device or encountered an
-+	 * exception during forwarding and therefore should not be reported to
-+	 * the kernel's drop monitor.
-+	 */
-+	if (trap_item->trap->type == DEVLINK_TRAP_TYPE_CONTROL)
-+		return;
-+
- 	devlink_trap_report_metadata_fill(&hw_metadata, trap_item,
- 					  in_devlink_port, fa_cookie);
- 	net_dm_hw_report(skb, &hw_metadata);
+ #define DEVLINK_TRAP_GROUP(_id)						      \
+@@ -8510,6 +8522,10 @@ static const struct devlink_trap_group devlink_trap_group_generic[] = {
+ 	DEVLINK_TRAP_GROUP(BUFFER_DROPS),
+ 	DEVLINK_TRAP_GROUP(TUNNEL_DROPS),
+ 	DEVLINK_TRAP_GROUP(ACL_DROPS),
++	DEVLINK_TRAP_GROUP(STP),
++	DEVLINK_TRAP_GROUP(LACP),
++	DEVLINK_TRAP_GROUP(LLDP),
++	DEVLINK_TRAP_GROUP(MC_SNOOPING),
+ };
+ 
+ static int devlink_trap_generic_verify(const struct devlink_trap *trap)
 -- 
 2.26.2
 
