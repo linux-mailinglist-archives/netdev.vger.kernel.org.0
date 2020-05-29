@@ -2,206 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334FE1E81E0
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A281E81ED
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbgE2PeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 11:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
+        id S1727078AbgE2PgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbgE2PeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:34:12 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3A2C03E969;
-        Fri, 29 May 2020 08:34:11 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 185so1621836pgb.10;
-        Fri, 29 May 2020 08:34:11 -0700 (PDT)
+        with ESMTP id S1726962AbgE2PgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:36:19 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E71FC03E969;
+        Fri, 29 May 2020 08:36:19 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id y1so2203064qtv.12;
+        Fri, 29 May 2020 08:36:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=H12DLSbS5ql+4QCoW6qfISlZ28ObJ3TH8l0yh2YWIWM=;
-        b=tzy3SELPr1cm4n5Ya2wYvTRQgcfZFaRhhRp/md75vN0DI57BtSczskPPOxJV1fdum3
-         +xMLQIVsnYQXQ3bAyRDGgaw+0DOsfJbn1Szu8qvipYeGp6U5p9C+YaJFYmWQMo4D+Ybk
-         fP9aSU8ZlOx1+7mz5EphtU/kGJq5BEEj29sdaSaEoDqp5RXDIJ40Y1yx3eG5bES0f34V
-         MjgAGOLfvOWk7fkfiXIoSQxpfcM+57HqxMP+V9Jo+YH1b1ub1tSJYQLP5reY5jRiFWf0
-         G+2KCRA8JMyowoiNbAc6BEETX2FkFZU3bJrs5za9l+7JhQnzQjD9QHI+xVZeKxLMa+mC
-         cnMg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c+MMdeVxRZeoQGBWcJz8mkMsH1Gvo3n6WkWpW9us2ZE=;
+        b=IZqgJwWgF8fJuC0MrftA1lZ75spdnAIvnhcXFABTcbKXU3wRCbDxGSx+HQxpi9NqM1
+         c/rMH8b0VfrwwZ3g8TS3ZoC2ED9ooh8EaVZlqK4bA9qB+BUSb+vDE5PfAGHwBh00T2YX
+         pcKl4G1Zeu8VbRwgJYgVrjfdaI2rGQlafO0qvjfOK7/mVyZ5gFO+7L0Jsokf4SFR3iLh
+         MmQ5bEgIR1Ss90zdJLTPZDnnF7VbBOtO3uAVXQ5nelSNcugZ5yoWI58fmyh+a3tq/2CJ
+         UtC/wUHBBk9E1RxlpeKHWhqER7ucka5S0J6qIDaFmlM224VQXnBxEAjyi1M5xqAF/Msz
+         wBTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=H12DLSbS5ql+4QCoW6qfISlZ28ObJ3TH8l0yh2YWIWM=;
-        b=oAw939HVxQgcZda+yRZhHuDwkcgcf47FRIrgt9zkqDXOfRwpGWHTkgR8l0AfukEaux
-         5qUN4OimVUc5CATE+BnSqqeh+t4y6Jm8KaHpbBmRDQqO2TTTwIEedddcEOldj3WHmlr3
-         mhTteRmr1Ua6uBuxob5c7GS8iIzKWHDEymDJfCVA07F5qTnqiRNrGe9gK3CaUlEyHcKB
-         YRf1UOIvEikeTQ4XfbExkVggjJLxhGKwem5Wm12voiqOA0AkSX4EobiehxMCkyicEODk
-         mQU5wbVlDBMyScR9Q5Z5kbln6hwqkvf/LauzOkwOOdANyoMHmAhkVzR0kN8LfK4pHFfx
-         97cg==
-X-Gm-Message-State: AOAM5332GsDGYm9930giQpxZ+VaKTOXzhF7YVSBYCg7GftSdF5oCnPUR
-        yL2LjNJMDz7mHuYogZattD4=
-X-Google-Smtp-Source: ABdhPJw6lOp4QHcm5FYLCaSESSZlPknkQhgWREoJNkCQwDbS+Wi5aoqT6fNYG2yjG1WKE9tNCZZ+ZA==
-X-Received: by 2002:a05:6a00:843:: with SMTP id q3mr8874190pfk.107.1590766451548;
-        Fri, 29 May 2020 08:34:11 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id co16sm8487408pjb.55.2020.05.29.08.34.08
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c+MMdeVxRZeoQGBWcJz8mkMsH1Gvo3n6WkWpW9us2ZE=;
+        b=hGLSGqabSJ0GMvDVDcBJQJ3mvqx+M7KuTBHsJTFAZPnI8jAEhDmbztMiNRUv17EcjT
+         iwEOAdQcgFCmlbTwpHLC4Ic+mm+KXVjmbF2rgwkpzq0Xd7UrURhHFs/ulyPJ2GCnBsJS
+         DVaLXamQJziEsgZAlMzGTP8dufxKb2h3CxDdB2B8GvcdtX4XoMZllhY+WcUuZDEVKYSs
+         8NiP2f/u4cKtO9cQOztG5YgUclFW85Tm9AMV0sZ2iaDH4Dzih56uL76OdvC4WPQ6+bT0
+         1YTq8noqucd4+TMowi3TvAbA3zrVF1SDu2BwgRSTvofbWajyRM5VfdRpLq3fSNt7jNMH
+         H4Gg==
+X-Gm-Message-State: AOAM533hLqBhXcpRBn4mHHZqkjT/aRuBm/V2+8RrLmw/Vy+Uc2FdvZEE
+        y0Z6okH5zdah08Ft6WtscHg=
+X-Google-Smtp-Source: ABdhPJw4vHoX3KGzV7ayHVSDIVNT4rGOKKSPk3aMjUknrdGg6XXceYdmBj27dmlSTvfr/pkx7y/rUA==
+X-Received: by 2002:ac8:2492:: with SMTP id s18mr9267013qts.81.1590766578416;
+        Fri, 29 May 2020 08:36:18 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:9452:75de:4860:c1e3? ([2601:282:803:7700:9452:75de:4860:c1e3])
+        by smtp.googlemail.com with ESMTPSA id w10sm8773648qtc.15.2020.05.29.08.36.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 May 2020 08:34:11 -0700 (PDT)
-Subject: Re: [PATCH v4 02/11] thermal: Store thermal mode in a dedicated enum
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        kernel@collabora.com, Fabio Estevam <festevam@gmail.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Allison Randal <allison@lohutok.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Enrico Weigelt <info@metux.net>,
-        Peter Kaestle <peter@piie.net>,
-        Sebastian Reichel <sre@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andy@infradead.org>
-References: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
- <20200528192051.28034-1-andrzej.p@collabora.com>
- <20200528192051.28034-3-andrzej.p@collabora.com>
- <20200529144821.GA93994@roeck-us.net>
- <e48e5948-51f0-7ce7-265b-d432ea058b7e@collabora.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <6829f088-d816-fa7c-da97-cb5fd082d69d@roeck-us.net>
-Date:   Fri, 29 May 2020 08:34:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Fri, 29 May 2020 08:36:17 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 1/5] devmap: Formalize map value as a named
+ struct
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, toke@redhat.com, lorenzo@kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+References: <20200529052057.69378-1-dsahern@kernel.org>
+ <20200529052057.69378-2-dsahern@kernel.org> <20200529102256.22dd50da@carbon>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2a121938-fe50-694c-40c6-0f4b8edbefb5@gmail.com>
+Date:   Fri, 29 May 2020 09:36:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <e48e5948-51f0-7ce7-265b-d432ea058b7e@collabora.com>
+In-Reply-To: <20200529102256.22dd50da@carbon>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/20 8:13 AM, Andrzej Pietrasiewicz wrote:
-> Hi Guenter,
+On 5/29/20 2:22 AM, Jesper Dangaard Brouer wrote:
+> We do need this struct bpf_devmap_val, but I think it is wrong to make this UAPI.
 > 
-> W dniu 29.05.2020 o 16:48, Guenter Roeck pisze:
->> On Thu, May 28, 2020 at 09:20:42PM +0200, Andrzej Pietrasiewicz wrote:
->>> Prepare for storing mode in struct thermal_zone_device.
->>>
->>> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
->>> ---
->>>   drivers/acpi/thermal.c                        | 27 +++++++++----------
->>>   drivers/platform/x86/acerhdf.c                |  8 ++++--
->>>   .../intel/int340x_thermal/int3400_thermal.c   | 18 +++++--------
->>>   3 files changed, 25 insertions(+), 28 deletions(-)
-> 
-> <snip>
-> 
->>> @@ -544,27 +543,25 @@ static int thermal_set_mode(struct thermal_zone_device *thermal,
->>>                   enum thermal_device_mode mode)
->>>   {
->>>       struct acpi_thermal *tz = thermal->devdata;
->>> -    int enable;
->>>         if (!tz)
->>>           return -EINVAL;
->>>   +    if (mode != THERMAL_DEVICE_DISABLED &&
->>> +        mode != THERMAL_DEVICE_ENABLED)
->>> +        return -EINVAL;
->>
->> Personally I find this check unnecessary: The enum has no other values,
->> and it is verifyable that the callers provide the enum and not some other
->> value.
-> 
-> It is getting removed in PATCH 10/11.
-> 
-> 
->>> +    if (mode != THERMAL_DEVICE_ENABLED &&
->>> +        mode != THERMAL_DEVICE_DISABLED)
->>>           return -EINVAL;
->>
->> Same as above.
-> 
-> ditto.
+> A BPF-prog can get this via:  #include "vmlinux.h"
 
-Hmm, I think that would be better done with this patch. But I guess
-that is a bit of PoV, so
+sure. I see that now.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-since I don't have any other objections/observations.
-
-Guenter
+I forgot to fold in a small update to the selftests, so I need to send a
+v4 anyways. I will wait until later in the day in case there are other
+comments.
