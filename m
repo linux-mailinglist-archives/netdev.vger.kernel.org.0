@@ -2,120 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7551E7854
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 10:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EAF61E77D0
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 10:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbgE2I2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 04:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbgE2I17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 04:27:59 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B82C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 01:27:58 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id s18so1479281ioe.2
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 01:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3d129KIQl0F/HD1hAf9TNqbvJlvdS5cc8KsVfjCHT5Q=;
-        b=wmyW81JabzxHJmyCKMgZjhesXeaxlHAgtiSlQtfNNLqtFcCrytSXj05vrtsugNI+4e
-         cfEaRb4P/p456XvH6fTzAvynFbm1j8iN/KG5+cIDq8dpjbfm1pMTjOf60KV8RWik3/de
-         1eaGl0ZLxmBp0eYX6Oh3hGpLro16xeOKrrUwZLm/j4wIIVouEbL6btDd3cWH6rTNnWWM
-         yItf/W3AGeYP32m8aYT1kn81XaPibh0YxX9TkvEfkjFoKK/hOH21th+HLU9QeZvS7qMP
-         wxJZLuvTclR/UhJOiystbHeZen80bdCUIz+slilZhz2xIv7VNwGFp8WcxCZcr7rDbe87
-         TR6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3d129KIQl0F/HD1hAf9TNqbvJlvdS5cc8KsVfjCHT5Q=;
-        b=M3/EJriECK//VJYhlfpiY5tN4Tgke7QMusLQZUKrw0WsI8Qp4r3ysc2OeyXFpU8YPs
-         yx9ghvqzcEdJIGnyquxcquvPH6rewmuPn7cPRmYhFEKiu3JSyVkIVWuPQ1bbe+Wll7ac
-         uDcyQ+KGtxY70n85lR0WME7j8iv/NNBDq3707gzUsJYzciQ96TfqoqaPSZNsUjodeztZ
-         TDRfdhSfMzQskx+9u0iH9a1kXi/yWLF4bPm/QDlRDuVNsaogUcm0GIPSaxPpP4Snriln
-         DO3r61gRHBi21L8yutEW2IEMLmswiUxbyvs9foZnoAvN8OJ9Bt6Hs/vXMNQ5+0Rk8Pr9
-         VMFQ==
-X-Gm-Message-State: AOAM533V27TUI1LPfOuTuFTng0HKVqwWxGmbPBBOwCqAQgOe3gMWhWHU
-        dlnjyqryaYq+D9r75sYBFTYybEwB/nUg3k+L1rdZdg==
-X-Google-Smtp-Source: ABdhPJwA8vRDCN9N0HPnWhWtdnh8yznfwlfh5vLhi00vaN8ZbQ3tavDm+I4SrAQgg7Tnm8hKYE5T5eYY2+qznSroVnY=
-X-Received: by 2002:a5d:9e55:: with SMTP id i21mr5656308ioi.130.1590740878066;
- Fri, 29 May 2020 01:27:58 -0700 (PDT)
+        id S1726928AbgE2IFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 04:05:51 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:12007 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbgE2IFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 04:05:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1590739548; x=1622275548;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1j8r2lwJHp5ulvUar/6tSATkidOUKeT/fSsRUakAa/4=;
+  b=IWOirYC1ZP6uVmw+pD5UCR8Hgy8hYGvJ1U84yJkL1LZ2QyFrnAfTMi5f
+   hpwChKmtiq85BukhCqTkxVYBUWzHFTJY6IbRHQHPN78DLmDAb2uO5qFef
+   noANQUcsADLmfcSKnGmIEWQI9/acVpy3/zpUmnJ04IIARyJSv7iQLIiAv
+   IXWpV6gIs4SNloh+lIyq5oUOafIkbahlOAaaBJvv169yR598fejgymu8z
+   odhcaJD49Y0jjphNJtK3OD98HVlnX0+LQa9XDG1NjjqFMSigqdTiWPBiJ
+   FPp0TUdrkel0HjHuv+aJZguH4cJc0YS/MRcyX9XrUrBbkMxRwwNXF2U0l
+   g==;
+IronPort-SDR: e5l2prvpyvdvJ/xf0M93avS/ZfurjyADByBkLuA0Mx9ni0bU/lkv0KvnDmHTh3eZ7mi8BItQh4
+ vGPgUhs77NHVpWa5+F2hikK+akbM7J5gJVbHgCfLPQdwiLjWFRyOdCGbTSfb97nzfBIqNp2g5g
+ z7O+/kNa3RDnMQ1nBLhAMVmc5UQsN3r/xuze0+6Wl5w+Zh1xVYwIxWJVupaR+hvwBuan/6y4PZ
+ 001d0Be3A2n/T5EsixXT8/nzWu2q/dpjMKObb/Igp31Xh4DPbxeAIrxZlrNvGIGkml5zorTpn+
+ 9iY=
+X-IronPort-AV: E=Sophos;i="5.73,447,1583218800"; 
+   d="scan'208";a="81492430"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 May 2020 01:05:48 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 29 May 2020 01:05:48 -0700
+Received: from soft-dev3.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Fri, 29 May 2020 01:05:45 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 0/2] bridge: mrp: Add support for MRA role
+Date:   Fri, 29 May 2020 10:05:12 +0000
+Message-ID: <20200529100514.920537-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200529082648.19677-1-brgl@bgdev.pl>
-In-Reply-To: <20200529082648.19677-1-brgl@bgdev.pl>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Fri, 29 May 2020 10:27:47 +0200
-Message-ID: <CAMRc=Md+KMpa-6f2rpd=fbR-xmCzaR3QypAk3FvMHpeyNzUX=g@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: mtk-star-emac: remove unused variable
-To:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pt., 29 maj 2020 o 10:26 Bartosz Golaszewski <brgl@bgdev.pl> napisa=C5=82(a=
-):
->
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->
-> The desc pointer is set but not used. Remove it.
->
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Fixes: 8c7bd5a454ff ("net: ethernet: mtk-star-emac: new driver")
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_star_emac.c | 3 ---
->  1 file changed, 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/=
-ethernet/mediatek/mtk_star_emac.c
-> index 8596ca0e60eb..7df35872c107 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -746,15 +746,12 @@ mtk_star_ring_free_skbs(struct mtk_star_priv *priv,=
- struct mtk_star_ring *ring,
->                                            struct mtk_star_ring_desc_data=
- *))
->  {
->         struct mtk_star_ring_desc_data desc_data;
-> -       struct mtk_star_ring_desc *desc;
->         int i;
->
->         for (i =3D 0; i < MTK_STAR_RING_NUM_DESCS; i++) {
->                 if (!ring->dma_addrs[i])
->                         continue;
->
-> -               desc =3D &ring->descs[i];
-> -
->                 desc_data.dma_addr =3D ring->dma_addrs[i];
->                 desc_data.skb =3D ring->skbs[i];
->
-> --
-> 2.26.1
->
+This patch series extends the MRP with the MRA role.
+A node that has the MRA role can behave as a MRM or as a MRC. In case there are
+multiple nodes in the topology that has the MRA role then only one node can
+behave as MRM and all the others need to be have as MRC. The node that has the
+higher priority(lower value) will behave as MRM.
+A node that has the MRA role and behaves as MRC, it just needs to forward the
+MRP_Test frames between the ring ports but also it needs to detect in case it
+stops receiving MRP_Test frames. In that case it would try to behave as MRM.
 
-Cr*p I forgot to tag it for net-next. David let me know if you want me
-to resend it.
+Horatiu Vultur (2):
+  bridge: mrp: Set the priority of MRP instance
+  bridge: mrp: Add support for role MRA
 
-Bartosz
+ include/net/switchdev.h         |   2 +
+ include/uapi/linux/if_bridge.h  |   4 +
+ include/uapi/linux/mrp_bridge.h |  38 ++++++++++
+ net/bridge/br_mrp.c             | 128 +++++++++++++++++++++++++++-----
+ net/bridge/br_mrp_netlink.c     |  11 +++
+ net/bridge/br_mrp_switchdev.c   |   5 +-
+ net/bridge/br_private_mrp.h     |   5 +-
+ 7 files changed, 171 insertions(+), 22 deletions(-)
+
+-- 
+2.26.2
+
