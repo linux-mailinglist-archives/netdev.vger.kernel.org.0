@@ -2,126 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1721E1E892A
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5301E8931
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728352AbgE2UrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 16:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
+        id S1728119AbgE2UtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 16:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727106AbgE2UrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:47:21 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5523C03E969;
-        Fri, 29 May 2020 13:47:19 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id 5so1967103pjd.0;
-        Fri, 29 May 2020 13:47:19 -0700 (PDT)
+        with ESMTP id S1727106AbgE2UtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:49:10 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1640AC03E969;
+        Fri, 29 May 2020 13:49:10 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id g18so3067547qtu.13;
+        Fri, 29 May 2020 13:49:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UfBjq9NVVBXNQcLvC21xkTDtN251+GrKOe/Yhp2Ygbc=;
-        b=Y0fsjJAMS/WsaQcnabrx0jq0ZP/8J0Ms8Zxe5bGChCZOurbtM1pRSxydmgohI3GPh2
-         V8bvutq3T5OjFXEl10Rx9gTxNFLFfSsrz0gH7II1y4pbnrDr+L5xS8exQh1riTsYuouk
-         YhDITX5fedqCzXsA1sfY+1WvqBa/z279vfY4r2Qp2z2f96xtMubAHzDWCBHrKkyD8MFO
-         C98moVpA7wDqw9/zNLMcuDpoyASfoA0sZTFyYzRzCDrcV725p3AOnwDWmqdnqhWbW2qC
-         tMeVueJNr0J1yYRQXVC2zPeZxy76RXTnqw8fWNkafoLE8G5dWF6LqjOTO41bPwynKGrx
-         W7MQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p8UZRFo1z34KrLoC62TOTt80KaaOP+ZuhCtxwxBkafc=;
+        b=nXWK75vRApAM5CxVlL799lYSW4iQUPbCjNsIe4ByHRKcloNaR6Kva7ak4eaSSttX5S
+         ORsUhR72WtCrZjvk0ZdZcRc8Ir8NBvURjdn7F7SBgF6/dmukcalDHK9DYxxi5DDVUiTB
+         w+qLzWY5nNUMN1n56+mUG3oMEsMvpe3Cws1I4RFGpsETzZ04m78WOP500+CbmZ4KNTsg
+         ibw9MM8rceuEg71NctZnyjnApwD717wBZkwpxHG6nl4yvzxyfN1W3AWcg8fNRntE6WUL
+         69m4bM7KMzHSurCKyEEcahC/NxpRnIqHAGZ6RUnBMr1Nbces6EOl6wK8rbQV3pLuaNZI
+         HWNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UfBjq9NVVBXNQcLvC21xkTDtN251+GrKOe/Yhp2Ygbc=;
-        b=cdAJIXXGvwzXoBuad5tRd8MDwDK5snFoaXqLPIrLAd/jLtwQtwaglJROwwq0pQfDDe
-         /cQ+pXEJaYowWs/yaaAbMKzQkzJC1MzZbOiNkKT2xIGMGlgn3AcH8bCJy3ZAG/3auHfp
-         shcusNpVsigiYUCs2ILaCArd3hhNqHJ75uBp5708ekZ8mCWueYMJ33SLX5NFJcpnKaSe
-         RCdZqpSehf5vMM4SfQZK1t88KmdwoE8GHyQVFQGGuHCuUle1mX8sV3mXEFUMgc1vVWaq
-         3ZDZzw+BlnBkFYTk5FU6jSEqNsoEVny5WEVXufw6qfLlcTNpfsRWQvLbBp9gWz0BHO7P
-         BtnA==
-X-Gm-Message-State: AOAM530s9lCMZ8gta+1RLFuq6XloQL3mPBjQnzdJXFz9nvtfg/S1X8Ha
-        Da5a7HapDJv82ZZA8FTlIn0vGZ8d
-X-Google-Smtp-Source: ABdhPJzHf39EqrkSQt+0DerGkGcRlQqRFSiek7jXMiXsGM5SdYf0OPt7Ho2TQHaKdgE7U64wkBO0jg==
-X-Received: by 2002:a17:90a:f292:: with SMTP id fs18mr10935319pjb.37.1590785239354;
-        Fri, 29 May 2020 13:47:19 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id n205sm8287687pfd.50.2020.05.29.13.47.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 May 2020 13:47:18 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: pull-request: bpf 2020-05-29
-Date:   Fri, 29 May 2020 13:47:16 -0700
-Message-Id: <20200529204716.32393-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p8UZRFo1z34KrLoC62TOTt80KaaOP+ZuhCtxwxBkafc=;
+        b=nqRVrHXEJF1YZUKywQvIdIn9kOM1m1rPHq4fF8sJJZFtxD5PwmSUXeIm1TwhF/T2MO
+         pyeFtrfsSz7iDISqLeeyer99eletHtWXuHX3lD6LF8RRmfkRuwW0VCwWyYe4EUM+JB7X
+         kUzu5wnl9O6YFsxuE6TYgtgxCI7b0QTnpLq7oCcVNj8tMXwrglvX8BP1kBtvMjmJhjO1
+         Sq2MTwGVumnf6xu4q7HNbv3M9fLlnKydgwlDAXEHWQvynGpyutDUQ3TApxiZ49uO8kxs
+         ThBF0AvtE6Ny4MckefXKh4u9mm59kkB9O98VuxTPOF7JmFQ/9vKpj4FXkCb7A3GOa3q1
+         Dw1A==
+X-Gm-Message-State: AOAM530eQ7WEU+H5KKD4pGEd9+WC+Vg/IMPwVIVcTINeAPB6/j+RudsL
+        Q8wEtTTTSI/eJOn8EJ1dgWOWMlnPajkoTvebF4A=
+X-Google-Smtp-Source: ABdhPJwg+2dVZU3srKV2eAqYn7zc1K3b6wP2BQkLCH50zkkeRp4I1Y7Aws1HiAUcecBqqKVNlzia5qsKrKXnD83h5ZI=
+X-Received: by 2002:aed:3f3b:: with SMTP id p56mr10463872qtf.93.1590785348974;
+ Fri, 29 May 2020 13:49:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20200506132946.2164578-1-jolsa@kernel.org> <20200506132946.2164578-8-jolsa@kernel.org>
+ <20200513182940.gil7v5vkthhwck3t@ast-mbp.dhcp.thefacebook.com>
+ <20200514080515.GH3343750@krava> <CAEf4BzbZ6TYxVTJx3ij1WXy5AvVQio9Ht=tePO+xQf=JLigoog@mail.gmail.com>
+ <20200528172349.GA506785@krava>
+In-Reply-To: <20200528172349.GA506785@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 29 May 2020 13:48:58 -0700
+Message-ID: <CAEf4BzbM-5-_QzDhrJDFJefo-m0OWDhvjsK_F1vA-ja4URVE9Q@mail.gmail.com>
+Subject: Re: [PATCH 7/9] bpf: Compile the BTF id whitelist data in vmlinux
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Thu, May 28, 2020 at 10:24 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Thu, May 14, 2020 at 03:46:26PM -0700, Andrii Nakryiko wrote:
+>
+> SNIP
+>
+> > > I was thinking of putting the names in __init section and generate the BTF
+> > > ids on kernel start, but the build time generation seemed more convenient..
+> > > let's see the linking times with 'real size' whitelist and we can reconsider
+> > >
+> >
+> > Being able to record such places where to put BTF ID in code would be
+> > really nice, as Alexei mentioned. There are many potential use cases
+> > where it would be good to have BTF IDs just put into arbitrary
+> > variables/arrays. This would trigger compilation error, if someone
+> > screws up the name, or function is renamed, or if function can be
+> > compiled out under some configuration. E.g., assuming some reasonable
+> > implementation of the macro
+>
+> hi,
+> I'm struggling with this part.. to get some reasonable reference
+> to function/name into 32 bits? any idea? ;-)
+>
 
-The following pull-request contains BPF updates for your *net* tree.
+Well, you don't have to store actual pointer, right? E.g, emitting
+something like this in assembly:
 
-We've added 6 non-merge commits during the last 7 day(s) which contain
-a total of 4 files changed, 55 insertions(+), 34 deletions(-).
+.global __BTF_ID___some_function
+.type __BTF_ID___some_function, @object
+.size __BTF_ID___some_function, 4
+__BTF_ID___some_function:
+.zero  4
 
-The main changes are:
+Would reserve 4 bytes and emit __BTF_ID___some_function symbol. If we
+can then post-process vmlinux image and for all symbols starting with
+__BTF_ID___ find some_function BTF type id and put it into those 4
+bytes, that should work, no?
 
-1) minor verifier fix for fmod_ret progs, from Alexei.
+Maybe generalize it to __BTF_ID__{func,struct,typedef}__some_function,
+whatever, not sure. Just an idea.
 
-2) af_xdp overflow check, from Bjorn.
 
-3) minor verifier fix for 32bit assignment, from John.
-
-4) powerpc has non-overlapping addr space, from Petr.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Jonathan Lemon, KP Singh, Michael Ellerman, "Minh Bùi Quang", Yonghong 
-Song
-
-----------------------------------------------------------------
-
-The following changes since commit d04322a0da1e86aedaa322ce933cfb8c0191d1eb:
-
-  Merge tag 'rxrpc-fixes-20200523-v2' of git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs (2020-05-22 16:43:58 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to cf66c29bd7534813d2e1971fab71e25fe87c7e0a:
-
-  bpf, selftests: Add a verifier test for assigning 32bit reg states to 64bit ones (2020-05-29 13:34:06 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      bpf: Fix use-after-free in fmod_ret check
-
-Björn Töpel (1):
-      xsk: Add overflow check for u64 division, stored into u32
-
-John Fastabend (3):
-      bpf: Fix a verifier issue when assigning 32bit reg states to 64bit ones
-      bpf, selftests: Verifier bounds tests need to be updated
-      bpf, selftests: Add a verifier test for assigning 32bit reg states to 64bit ones
-
-Petr Mladek (1):
-      powerpc/bpf: Enable bpf_probe_read{, str}() on powerpc again
-
- arch/powerpc/Kconfig                          |  1 +
- kernel/bpf/verifier.c                         | 34 ++++++++++----------
- net/xdp/xdp_umem.c                            |  8 +++--
- tools/testing/selftests/bpf/verifier/bounds.c | 46 +++++++++++++++++++--------
- 4 files changed, 55 insertions(+), 34 deletions(-)
+> jirka
+>
+> >
+> > static const u32 d_path_whitelist[] = {
+> >     BTF_ID_FUNC(vfs_fallocate),
+> > #ifdef CONFIG_WHATEVER
+> >     BTF_ID_FUNC(do_truncate),
+> > #endif
+> > };
+> >
+> > Would be nice and very explicit. Given this is not going to be sorted,
+> > you won't be able to use binary search, but if whitelists are
+> > generally small, it should be fine as is. If not, hashmap could be
+> > built in runtime and would be, probably, faster than binary search for
+> > longer sets of BTF IDs.
+> >
+> > I wonder if we can do some assembly magic with generating extra
+> > symbols and/or relocations to achieve this? What do you think? Is it
+> > doable/desirable/better?
+> >
+> >
+> > > thanks,
+> > > jirka
+> > >
+> >
+>
