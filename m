@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E676D1E7CB6
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 14:10:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6460A1E7CCA
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 14:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725901AbgE2MKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 08:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S1727024AbgE2MKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 08:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726459AbgE2MKJ (ORCPT
+        with ESMTP id S1726477AbgE2MKJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 08:10:09 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCD6C08C5C6;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CA6C08C5C8;
         Fri, 29 May 2020 05:10:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=hQ5xlf3eDEluCGjsxj+C4BI+ynMqXY9lrfFEhRpm7gQ=; b=TUEKHBNZ2qr3hut8EMnKVvBmG/
-        +C83DhRROhn0MhMwCbeQsJiEjb3FKPgx3qeSYP0YnNnGBpmj8HTP8Qx0V4uWJFg1tD9c3C24FqDsx
-        /coO+EYXCpjFe6z25mbXMIMD00GFp3vyHW2+3fFzlV2bhaYgpPXlykBGFYYQL1DGhvnV7vQo27skd
-        fEM6Mqf25e3sgiBAMC0/TvC1jzggpSXBOHiP/A/v13di4OyG8aZO9Ic+vx8Ob1BwBw5blRx2WKiWz
-        WfVumrOdzvwI3LtRN94V4AzBluQBZo9DA1fCJbe/v/g40OReUyhUMNBkV4jHWTw5pam1tdPNQIJFR
-        kf8f19eA==;
+        bh=cWUTtlFm6rduEFgMkQS8bZjX0MpfbR8IuxRNGH3yJJc=; b=UiTm5TXo3XhgmygPM/PMI0rR1l
+        3yCIF0cohJnlB1P55KtB7hwAFF49699wcL4qaZGU0X11Ut65chg1ryEhI/MynDN1eTDWO/ESIksHY
+        PhUzpbdYGKja0twp5uJi0wgCVVRSlfntPLHnvCao3xXV/1rPHr2cERLnF/5xWQDsNQNrgyHsSGcaj
+        ud1Z/QfOSgXXhDIz13gK0yRKMUWhsUiRiYRA04dFU6RneahfgolKYaTQlpyc6bxJNX6RnRKpcvxSJ
+        Ucn1DRv5JQcMUhRh6NMx1PZteSDfSZ6b8wrqQXAnaZW4QDeU3qsIsi1U8FJfDquuvl4KwpF9cWwFc
+        gGXlKlng==;
 Received: from p4fdb1ad2.dip0.t-ipconnect.de ([79.219.26.210] helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jedpi-0006KY-DR; Fri, 29 May 2020 12:09:54 +0000
+        id 1jedpk-0006Ko-Pu; Fri, 29 May 2020 12:09:57 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -36,9 +36,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     David Laight <David.Laight@ACULAB.COM>, linux-sctp@vger.kernel.org,
         linux-kernel@vger.kernel.org, cluster-devel@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH 1/4] sctp: add sctp_sock_set_nodelay
-Date:   Fri, 29 May 2020 14:09:40 +0200
-Message-Id: <20200529120943.101454-2-hch@lst.de>
+Subject: [PATCH 2/4] sctp: refactor sctp_setsockopt_bindx
+Date:   Fri, 29 May 2020 14:09:41 +0200
+Message-Id: <20200529120943.101454-3-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200529120943.101454-1-hch@lst.de>
 References: <20200529120943.101454-1-hch@lst.de>
@@ -50,73 +50,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper to directly set the SCTP_NODELAY sockopt from kernel space
-without going through a fake uaccess.
+Split out a sctp_setsockopt_bindx_kernel that takes a kernel pointer
+to the sockaddr and make sctp_setsockopt_bindx a small wrapper around
+it.  This prepares for adding a new bind_add proto op.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- fs/dlm/lowcomms.c       | 10 ++--------
- include/net/sctp/sctp.h |  7 +++++++
- 2 files changed, 9 insertions(+), 8 deletions(-)
+ net/sctp/socket.c | 61 ++++++++++++++++++++++-------------------------
+ 1 file changed, 28 insertions(+), 33 deletions(-)
 
-diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-index 69333728d871b..9f1c3cdc9d653 100644
---- a/fs/dlm/lowcomms.c
-+++ b/fs/dlm/lowcomms.c
-@@ -914,7 +914,6 @@ static int sctp_bind_addrs(struct connection *con, uint16_t port)
- static void sctp_connect_to_sock(struct connection *con)
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 827a9903ee288..6e745ac3c4a59 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -972,23 +972,22 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
+  * it.
+  *
+  * sk        The sk of the socket
+- * addrs     The pointer to the addresses in user land
++ * addrs     The pointer to the addresses
+  * addrssize Size of the addrs buffer
+  * op        Operation to perform (add or remove, see the flags of
+  *           sctp_bindx)
+  *
+  * Returns 0 if ok, <0 errno code on error.
+  */
+-static int sctp_setsockopt_bindx(struct sock *sk,
+-				 struct sockaddr __user *addrs,
+-				 int addrs_size, int op)
++static int sctp_setsockopt_bindx_kernel(struct sock *sk,
++					struct sockaddr *addrs, int addrs_size,
++					int op)
  {
- 	struct sockaddr_storage daddr;
--	int one = 1;
- 	int result;
- 	int addr_len;
- 	struct socket *sock;
-@@ -961,8 +960,7 @@ static void sctp_connect_to_sock(struct connection *con)
- 	log_print("connecting to %d", con->nodeid);
+-	struct sockaddr *kaddrs;
+ 	int err;
+ 	int addrcnt = 0;
+ 	int walk_size = 0;
+ 	struct sockaddr *sa_addr;
+-	void *addr_buf;
++	void *addr_buf = addrs;
+ 	struct sctp_af *af;
  
- 	/* Turn off Nagle's algorithm */
--	kernel_setsockopt(sock, SOL_SCTP, SCTP_NODELAY, (char *)&one,
--			  sizeof(one));
-+	sctp_sock_set_nodelay(sock->sk);
+ 	pr_debug("%s: sk:%p addrs:%p addrs_size:%d opt:%d\n",
+@@ -997,17 +996,10 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+ 	if (unlikely(addrs_size <= 0))
+ 		return -EINVAL;
  
- 	/*
- 	 * Make sock->ops->connect() function return in specified time,
-@@ -1176,7 +1174,6 @@ static int sctp_listen_for_all(void)
- 	struct socket *sock = NULL;
- 	int result = -EINVAL;
- 	struct connection *con = nodeid2con(0, GFP_NOFS);
--	int one = 1;
+-	kaddrs = memdup_user(addrs, addrs_size);
+-	if (IS_ERR(kaddrs))
+-		return PTR_ERR(kaddrs);
+-
+ 	/* Walk through the addrs buffer and count the number of addresses. */
+-	addr_buf = kaddrs;
+ 	while (walk_size < addrs_size) {
+-		if (walk_size + sizeof(sa_family_t) > addrs_size) {
+-			kfree(kaddrs);
++		if (walk_size + sizeof(sa_family_t) > addrs_size)
+ 			return -EINVAL;
+-		}
  
- 	if (!con)
- 		return -ENOMEM;
-@@ -1191,10 +1188,7 @@ static int sctp_listen_for_all(void)
+ 		sa_addr = addr_buf;
+ 		af = sctp_get_af_specific(sa_addr->sa_family);
+@@ -1015,10 +1007,8 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+ 		/* If the address family is not supported or if this address
+ 		 * causes the address buffer to overflow return EINVAL.
+ 		 */
+-		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
+-			kfree(kaddrs);
++		if (!af || (walk_size + af->sockaddr_len) > addrs_size)
+ 			return -EINVAL;
+-		}
+ 		addrcnt++;
+ 		addr_buf += af->sockaddr_len;
+ 		walk_size += af->sockaddr_len;
+@@ -1029,31 +1019,36 @@ static int sctp_setsockopt_bindx(struct sock *sk,
+ 	case SCTP_BINDX_ADD_ADDR:
+ 		/* Allow security module to validate bindx addresses. */
+ 		err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD,
+-						 (struct sockaddr *)kaddrs,
+-						 addrs_size);
++						 addrs, addrs_size);
+ 		if (err)
+-			goto out;
+-		err = sctp_bindx_add(sk, kaddrs, addrcnt);
++			return err;
++		err = sctp_bindx_add(sk, addrs, addrcnt);
+ 		if (err)
+-			goto out;
+-		err = sctp_send_asconf_add_ip(sk, kaddrs, addrcnt);
+-		break;
+-
++			return err;
++		return sctp_send_asconf_add_ip(sk, addrs, addrcnt);
+ 	case SCTP_BINDX_REM_ADDR:
+-		err = sctp_bindx_rem(sk, kaddrs, addrcnt);
++		err = sctp_bindx_rem(sk, addrs, addrcnt);
+ 		if (err)
+-			goto out;
+-		err = sctp_send_asconf_del_ip(sk, kaddrs, addrcnt);
+-		break;
++			return err;
++		return sctp_send_asconf_del_ip(sk, addrs, addrcnt);
+ 
+ 	default:
+-		err = -EINVAL;
+-		break;
++		return -EINVAL;
  	}
++}
  
- 	sock_set_rcvbuf(sock->sk, NEEDED_RMEM);
--	result = kernel_setsockopt(sock, SOL_SCTP, SCTP_NODELAY, (char *)&one,
--				   sizeof(one));
--	if (result < 0)
--		log_print("Could not set SCTP NODELAY error %d\n", result);
-+	sctp_sock_set_nodelay(sock->sk);
+-out:
+-	kfree(kaddrs);
++static int sctp_setsockopt_bindx(struct sock *sk,
++				 struct sockaddr __user *addrs,
++				 int addrs_size, int op)
++{
++	struct sockaddr *kaddrs;
++	int err;
  
- 	write_lock_bh(&sock->sk->sk_callback_lock);
- 	/* Init con struct */
-diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-index 3ab5c6bbb90bd..f8bcb75bb0448 100644
---- a/include/net/sctp/sctp.h
-+++ b/include/net/sctp/sctp.h
-@@ -615,4 +615,11 @@ static inline bool sctp_newsk_ready(const struct sock *sk)
- 	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
++	kaddrs = memdup_user(addrs, addrs_size);
++	if (IS_ERR(kaddrs))
++		return PTR_ERR(kaddrs);
++	err = sctp_setsockopt_bindx_kernel(sk, kaddrs, addrs_size, op);
++	kfree(kaddrs);
+ 	return err;
  }
  
-+static inline void sctp_sock_set_nodelay(struct sock *sk)
-+{
-+	lock_sock(sk);
-+	sctp_sk(sk)->nodelay = true;
-+	release_sock(sk);
-+}
-+
- #endif /* __net_sctp_h__ */
 -- 
 2.26.2
 
