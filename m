@@ -2,145 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168921E8344
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 203371E8351
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727056AbgE2QKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
+        id S1726866AbgE2QMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgE2QKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:10:22 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415C7C03E969;
-        Fri, 29 May 2020 09:10:22 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id c12so2303364qtq.11;
-        Fri, 29 May 2020 09:10:22 -0700 (PDT)
+        with ESMTP id S1725601AbgE2QMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:12:07 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E144C03E969;
+        Fri, 29 May 2020 09:12:07 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id g18so2309389qtu.13;
+        Fri, 29 May 2020 09:12:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=y+4rgbyVFdpWdnFfPGEMNo5bmNIxGC5yE0lzC9sLPDI=;
-        b=He6U0kOOqDx77apNaftx5iqXRCDUN/Q0QfmkJGZh0UUkTo6DoVWVYfdVm0xV7GhS54
-         paGRE7yOH2nkcx/QmMeoozsSehWhqDWlsRZb7upJbRD2cnjdkR9XOJoGQVTTT1m4r+Q6
-         Vsqx5aoEd8LY0sZIGDHtWZfkZ9noCBXKEiz7DH1TB6ZhNPu+FXVwRoD3bvnMZJc9GXp7
-         +puTBeFtuw54e8+uXT2kZoD+EuuH3SXs/o2Vgb2aSrBWuEaM21t6EV35fFvTAeX8P9Fy
-         hoR0YPt+cG5imBcraVSGgle5EhazdJSU4n6jKIpG53l/0qetDLvQ2VVPXbE05oh29DK2
-         DY9Q==
+        bh=5Hm4Y+BJ4D4CDaqRSBoPJgH15jAjD9VDDckblAz9nbU=;
+        b=Rqj+JqwnLWRZO0jBT2Kjr4dplZYMLkOst8UiABhnGmWh5cFT+cuWfa87C78/NL7zyL
+         GB8mZ+lZqJG+wZYrMkI6q/k27fjzfBG9b1HPi0y8yx0pcrFDH262UFXb8U7LYYOMM1ht
+         Edjq47HSSFd9icFSKm3M9DTiLwyu4Xv7wCPfTYe8Gks00dxqAN4QuLy/mW2BZpUMN1c6
+         5Nj7rAocFphIuUAvPOK3WrlQiAYb0rAblxnKKbJzuOdZWGOyH+CCXPMzbR/a7vyQorvN
+         RN7pmlalI8p6bb5PFbX/ipk/AHXToMKexyY9/bk/wUisBXWzyk+58l1WOX0iyy1CAHrf
+         TKHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=y+4rgbyVFdpWdnFfPGEMNo5bmNIxGC5yE0lzC9sLPDI=;
-        b=U1QRvmu44BDyXhHZnZnszlMbf702tC5y2lDECFCrrFuIG8QdKvmXijGudQN6pZ+Ze8
-         ZCRbsuwoE1QuwlPWVe8sRggukNwwd8Pg+tmlHmtrG+3n5Qx3cT6hF9BrUYkN+HwB7fdV
-         TyrXGSqoupPIoUEcKDuYVLd/gBuP4A2DwhogU8iNNgwrKM2l273jMAspwJpjvpXAERQq
-         9geGkzw0ZivrRD8o8ljP7kK8W66KMmgv5KfD9Fk26uvplo2tIvI2lwlvVzydYzQncfrR
-         ISy7xI85CZFX0PT5wRcQh+6wT3NGQM7NyQP5W/nQkU4y2RLJgE38sGD5+eCdyvKc1IqJ
-         vtxA==
-X-Gm-Message-State: AOAM531pIFVPIZLyoqyU/w8cyxTNvyjIUxZIVuDBmcAjLEcEGksHx9ih
-        3ap5zF7VqwPC60i/YI846DQ=
-X-Google-Smtp-Source: ABdhPJwymhddx06bqmGhYsTfxrNsNdKqxYLST86rY0HaDO5CDiSL28xMj8JFIw+ygnudI/qKx7P/NQ==
-X-Received: by 2002:ac8:7ca1:: with SMTP id z1mr8885022qtv.334.1590768621466;
-        Fri, 29 May 2020 09:10:21 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:516d:2604:bfa5:7157:afa1])
-        by smtp.gmail.com with ESMTPSA id c83sm7579257qkb.103.2020.05.29.09.10.20
+        bh=5Hm4Y+BJ4D4CDaqRSBoPJgH15jAjD9VDDckblAz9nbU=;
+        b=f58zMCIYGOTLD36B+vXjwXG/2YiUUhxHoteKNB5xNiFnZrLxcmSbZG8UObqmMv7zbq
+         HGZJi4pjo1GZj/v2vEUMjjdjQHoyukGxk6uXZ0k7XjoOUsNmhC4uAqWFW5dtLJSVKe5c
+         Yh4AwTuKBYTwRGkdAVF8Vau72R9pF4lAE/3NGEsu+InACERoMW43T0HzaJoc+V9IgdFE
+         4Px1HORNF1ii1jjL8+IJzmz4Xr9LSXhCFI1Gk7zzeJ2yuDLUrcX+6j4Ce0vBmIU5QE7R
+         zYPoAKtM0JRTDYCk/SErX++NPp7Vglwco9ZuXWHHOJElzTT+LWoHmtPwD2BZz1KIIMyL
+         polQ==
+X-Gm-Message-State: AOAM531cLaL6q0k7zGldl33vQpb51KeJrrbAL2fADWBKN9VIARdUNPGr
+        S1jyZoW/kUm62JIuH9ikYN4=
+X-Google-Smtp-Source: ABdhPJxJ9vHZyhS/fIlONrPd0OT9YzlS6kVi1Vtvqh7UtUjOkglBDKPjjROOo7MQ34l79/0YBwscWw==
+X-Received: by 2002:ac8:7007:: with SMTP id x7mr9451446qtm.238.1590768726505;
+        Fri, 29 May 2020 09:12:06 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.225])
+        by smtp.gmail.com with ESMTPSA id m10sm8195646qtg.94.2020.05.29.09.12.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:10:20 -0700 (PDT)
+        Fri, 29 May 2020 09:12:05 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 6C60EC1B84; Fri, 29 May 2020 13:10:18 -0300 (-03)
-Date:   Fri, 29 May 2020 13:10:18 -0300
+        id 4060FC1B84; Fri, 29 May 2020 13:12:03 -0300 (-03)
+Date:   Fri, 29 May 2020 13:12:03 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cluster-devel@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 4/4] net: remove kernel_setsockopt
-Message-ID: <20200529161018.GK2491@localhost.localdomain>
-References: <20200529120943.101454-1-hch@lst.de>
- <20200529120943.101454-5-hch@lst.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     David.Laight@aculab.com, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, kuba@kernel.org, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, hch@lst.de
+Subject: Re: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
+Message-ID: <20200529161203.GL2491@localhost.localdomain>
+References: <bab9a624ee2d4e05b1198c3f7344a200@AcuMS.aculab.com>
+ <8bb56a30edfb4ff696d44cf9af909d82@AcuMS.aculab.com>
+ <20200526.153631.1486651154492951372.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200529120943.101454-5-hch@lst.de>
+In-Reply-To: <20200526.153631.1486651154492951372.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 02:09:43PM +0200, Christoph Hellwig wrote:
-> No users left.
+On Tue, May 26, 2020 at 03:36:31PM -0700, David Miller wrote:
+> From: David Laight <David.Laight@ACULAB.COM>
+> Date: Tue, 26 May 2020 16:44:07 +0000
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
-Thanks.
-
-> ---
->  include/linux/net.h |  2 --
->  net/socket.c        | 31 -------------------------------
->  2 files changed, 33 deletions(-)
+> > This should be 3/8.
 > 
-> diff --git a/include/linux/net.h b/include/linux/net.h
-> index 74ef5d7315f70..e10f378194a59 100644
-> --- a/include/linux/net.h
-> +++ b/include/linux/net.h
-> @@ -303,8 +303,6 @@ int kernel_connect(struct socket *sock, struct sockaddr *addr, int addrlen,
->  		   int flags);
->  int kernel_getsockname(struct socket *sock, struct sockaddr *addr);
->  int kernel_getpeername(struct socket *sock, struct sockaddr *addr);
-> -int kernel_setsockopt(struct socket *sock, int level, int optname, char *optval,
-> -		      unsigned int optlen);
->  int kernel_sendpage(struct socket *sock, struct page *page, int offset,
->  		    size_t size, int flags);
->  int kernel_sendpage_locked(struct sock *sk, struct page *page, int offset,
-> diff --git a/net/socket.c b/net/socket.c
-> index 81a98b6cbd087..976426d03f099 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -3624,37 +3624,6 @@ int kernel_getpeername(struct socket *sock, struct sockaddr *addr)
->  }
->  EXPORT_SYMBOL(kernel_getpeername);
->  
-> -/**
-> - *	kernel_setsockopt - set a socket option (kernel space)
-> - *	@sock: socket
-> - *	@level: API level (SOL_SOCKET, ...)
-> - *	@optname: option tag
-> - *	@optval: option value
-> - *	@optlen: option length
-> - *
-> - *	Returns 0 or an error.
-> - */
-> -
-> -int kernel_setsockopt(struct socket *sock, int level, int optname,
-> -			char *optval, unsigned int optlen)
-> -{
-> -	mm_segment_t oldfs = get_fs();
-> -	char __user *uoptval;
-> -	int err;
-> -
-> -	uoptval = (char __user __force *) optval;
-> -
-> -	set_fs(KERNEL_DS);
-> -	if (level == SOL_SOCKET)
-> -		err = sock_setsockopt(sock, level, optname, uoptval, optlen);
-> -	else
-> -		err = sock->ops->setsockopt(sock, level, optname, uoptval,
-> -					    optlen);
-> -	set_fs(oldfs);
-> -	return err;
-> -}
-> -EXPORT_SYMBOL(kernel_setsockopt);
-> -
->  /**
->   *	kernel_sendpage - send a &page through a socket (kernel space)
->   *	@sock: socket
-> -- 
-> 2.26.2
+> David just respin this at some point and with this fixed and also the
+> header posting saying "0/8" properly instead of "0/1", this is really
+> messy.
 > 
+> Thanks.
+
+I don't know why David's workflow is that cumbersome. I'll try to
+respin this myself, on top of Christoph's latest changes.
