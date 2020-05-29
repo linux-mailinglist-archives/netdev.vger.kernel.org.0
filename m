@@ -2,88 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D04C1E82BC
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 134C71E82E0
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727105AbgE2QA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726927AbgE2QA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:00:58 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D58C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 09:00:57 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id d128so4204474wmc.1
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 09:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=jPExNZM3mmX+1Ih8VVxmCh7AFIrM8pkRXK2ZyryZhKI=;
-        b=Vrz0koRyGGYL2AJ0G1wCIiNuCQT7jIT7CPBv50XCXvEpmsft+09i03KFDbBkbtMoE/
-         w9tf+EMg1b+Akm9sJi8K0BrQAHAeoqWVWoQ9ErhHv0grn5Pf2ZfGXIhszw7+yGRdTSMa
-         Jku3xof6S0weJyhsNOvEJGJjJH7DGJg8s6M5dZC2mEUXPEUqSnaXO5w0SUkxMw0nP3yu
-         IZmWAeom35CsoGDivbnG/u7KTpBZBMMP8zkfW2rcW0CrxpanMqc6K/q6UDKgyvC5QhQe
-         1n/BFkb5NpZZcquiG/6aqX21UyvMA5OqoRztGxzV3gYsGJlbQrwjxcSx6xodrLb5XxyA
-         9bBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=jPExNZM3mmX+1Ih8VVxmCh7AFIrM8pkRXK2ZyryZhKI=;
-        b=XqCJERZpJNyX7w2nJSV2806fVcFDUukUB0asKZ025ZiOAvunlayLOlAmFUNsIYCAGk
-         Tr6A4c9E2/xR+GOflppmqSjGXprL6RjciJ5kHN9skGji/f8ctRodNcKjHh22+NcSQMXi
-         pUvYwYfDaYuSKJfbFZbbJvOPfhxCkMY+HaLtcB5Z4eTeSAkFdESQg7rSDkeWfHvkS4Pq
-         eBA8TG3uuMOhK/hlGkAey4xcWHUBwG9y+4i23V3HHeL8dwli6GB5X5GynrGIo6ktxrPB
-         G84bilBefTQE4T0bdtqfF4MIl8xfDRRUJkZBs5VrccrPL99SGSmkDh48rpj2/fFfR4VW
-         W45Q==
-X-Gm-Message-State: AOAM5330Q3EA9f3OiSrIL/6W3jG0Itg1P77KzaR0wbilcKvZ3UXZqDEw
-        rOGa/SRBcLd4QjO8DN+BOeIa+04/vwHQfC/J4Ck=
-X-Google-Smtp-Source: ABdhPJwTZCNqBPJPy10nRkNlAvwRQcopUEGwV0loWP3wq2neV36N9dvNMvu6mOV+nTmE0x4s2wR98L7ZtLwOISy+BX4=
-X-Received: by 2002:a1c:6a0d:: with SMTP id f13mr9426033wmc.180.1590768056657;
- Fri, 29 May 2020 09:00:56 -0700 (PDT)
+        id S1726729AbgE2QDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:03:15 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21310 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725795AbgE2QDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:03:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590768194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JQJBuKxibYAvW+zZiY/Y9en7xdW7sDWElJX/eOrT0u8=;
+        b=CLLgeOaNnDndo+Eij9yQM/WZOUoNYF5PVirMqW67rJqPCavBtp+1bWYBzuR/ymmHrljmM6
+        6B/Pm7rd5rFm5XVeUt30xLXj0KJls5BfhwRPtREli0883PCLSRrHGhtjjOHGDRMzWVZa7w
+        2VMrLkzKHIEsT7OW8a1UWhHMk8YoSUA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-20-zP8Og08BPN-Dpgg_zOU6EQ-1; Fri, 29 May 2020 12:03:10 -0400
+X-MC-Unique: zP8Og08BPN-Dpgg_zOU6EQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A54B107AD74;
+        Fri, 29 May 2020 16:03:08 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DF1A75D9EF;
+        Fri, 29 May 2020 16:02:57 +0000 (UTC)
+Date:   Fri, 29 May 2020 18:02:56 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        toke@redhat.com, lorenzo@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        brouer@redhat.com
+Subject: Re: [PATCH v3 bpf-next 1/5] devmap: Formalize map value as a named
+ struct
+Message-ID: <20200529180256.2e4d3940@carbon>
+In-Reply-To: <2a121938-fe50-694c-40c6-0f4b8edbefb5@gmail.com>
+References: <20200529052057.69378-1-dsahern@kernel.org>
+        <20200529052057.69378-2-dsahern@kernel.org>
+        <20200529102256.22dd50da@carbon>
+        <2a121938-fe50-694c-40c6-0f4b8edbefb5@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:adf:f3c7:0:0:0:0:0 with HTTP; Fri, 29 May 2020 09:00:56
- -0700 (PDT)
-From:   baco uche <bankbankb38@gmail.com>
-Date:   Fri, 29 May 2020 17:00:56 +0100
-Message-ID: <CAHJX93Z7F-kEVTNMe+OgmdTZTFTL6Cy9fTS6sUyaOR9aLQ28-g@mail.gmail.com>
-Subject: Eid Mubarak,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assalam alaikum,
+On Fri, 29 May 2020 09:36:14 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-I am an active banker,  I saw your email address while browsing
-through the bank DTC Screen in my office yesterday. now  I am in a
-better position to transfer about $8.3 million US Dollars into a
-foreign account. If you are willing and capable to work with me to
-receive this fund into a personal or company's account, I will give
-you the full detailed information. No risk is involved as it will pass
-through normal banking procedures.
+> On 5/29/20 2:22 AM, Jesper Dangaard Brouer wrote:
+> > We do need this struct bpf_devmap_val, but I think it is wrong to make this UAPI.
+> > 
+> > A BPF-prog can get this via:  #include "vmlinux.h"  
+> 
+> sure. I see that now.
+> 
+> I forgot to fold in a small update to the selftests, so I need to send a
+> v4 anyways. I will wait until later in the day in case there are other
+> comments.
 
-Hence, I am inviting you for a business deal where this money can be
-transfer to your account which we will shared between us in the ratio
-of 50% for me,50% for you and both of us will share any expenses that
-will come during the release/transfer from our bank, if you agree to
-my business proposal. Further details of this Fund release and
-transfer will be forwarded to you as soon as I receive your detail
-Mail.
+I've just posted a patchset on top of this V3, that moves struct
+bpf_devmap_val, and that demonstrate via code that I mean by
+leveraging BTF for dynamic config API.
 
-1)Your Full Names. (2)Your country. (3)Your Telephone
-(4)Your Occupation .(5)Your Age. (6) Your full Address.
-I will use these detail information=E2=80=99s to fill a release/transfer an=
-d
-arrange some documents on your behalf in our bank here as the
-beneficiary owner of this fund abandoned in our bank
+https://lore.kernel.org/netdev/159076794319.1387573.8722376887638960093.stgit@firesoul/
 
-Please contact me through my private Email:alhouttta@gmail.com
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Thanks
-Alh Idriss Akim Outta
