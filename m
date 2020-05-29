@@ -2,181 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6D11E88AB
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00F771E88B4
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728040AbgE2UMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 16:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbgE2UMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:12:33 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FBBC03E969;
-        Fri, 29 May 2020 13:12:31 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id z64so389381pfb.1;
-        Fri, 29 May 2020 13:12:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gUocMtpwdaWAZ7apW76UnYvJQVntYbYjDQYSBzcs1Yo=;
-        b=KRHZXIHgK5lSYK8fl8l2EdAEuxToMG2nYz96YF9odBvToMi+KHVX1yxpy91pG+wNu5
-         427jiCI1XW02fz2EJqz9xOsXMHQDJC1FcLSv/Fx1ff6vCaNjtq4zuyy+odzwchNQF+I5
-         VbCpWLYv5s9eE34eKD9mfJJUzxHSdrObemXxbr9TzaMEo1rfXsaCKnDOs74MFqYF+Coj
-         nxSv0+Q2ioCjy+ONHqPwGf58WOBKZlrSC71txNf9xeMsr9UVITt4QL9DZ1d7SwVwm6sD
-         vMaB+tK5rJAljZhWn0NBNhvxUWSzNVrJ093wtwqSuNGagL4lKm3S55g2MEO1L71qexeN
-         /T9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gUocMtpwdaWAZ7apW76UnYvJQVntYbYjDQYSBzcs1Yo=;
-        b=TMkgHLhlP6e+rCEczRmeQa1GkJu9/mj96yC+TOn47jDbFY0mKRojh69ZhZf7gS/67Y
-         ze4U4RzWvaCRyCXjpQVLP4Z9x1ytwk6LM9oKpno+D4gsiwTJQqZzmEPZJQpC9olAdAHN
-         KOL2oKh0ScYjh+go44Rx1MkZc9zsQ0AOprd0kP0L3tyiFbPqnj8VFk3iiL24uk7TBFQj
-         jH9npS8ZzVEAB0OXrS3iXCulrT2pOzuVfCkwv/iqEz0zF5Bolsz7na/j30maqJuvisgN
-         3QkGot+vNlXFfMgfXO/RTsL80LmgK+RT3ycRvClXQ+n9M623CYd4kQXHKmjG+pQQuqK1
-         K1wA==
-X-Gm-Message-State: AOAM533D28DTudYHTjUs6l6yny+u56n4By9Zx0f9hsNYLVpI8aer688K
-        HoYjhKcgtyLLcKGCSzYf5XM=
-X-Google-Smtp-Source: ABdhPJyoBiAcX4B8h9eZvd7zqegfwCNH6eWnC7Lb4GCDcasEz2nOycz9LMi49tUuhLSNGbGBF4mnng==
-X-Received: by 2002:a62:7b0b:: with SMTP id w11mr10740579pfc.7.1590783151331;
-        Fri, 29 May 2020 13:12:31 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:6ddc])
-        by smtp.gmail.com with ESMTPSA id m2sm7876197pfe.41.2020.05.29.13.12.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 13:12:30 -0700 (PDT)
-Date:   Fri, 29 May 2020 13:12:28 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 2/4] bpf: Introduce sleepable BPF programs
-Message-ID: <20200529201228.oixjsibn6uwktkgh@ast-mbp.dhcp.thefacebook.com>
-References: <20200529043839.15824-1-alexei.starovoitov@gmail.com>
- <20200529043839.15824-3-alexei.starovoitov@gmail.com>
- <CAEf4BzZXnqLwhJaUVKX0ExVa+Sw5mnhg5FLJN-VKPX59f6EAoQ@mail.gmail.com>
+        id S1728129AbgE2UOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 16:14:36 -0400
+Received: from mout.kundenserver.de ([212.227.126.134]:54705 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbgE2UOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:14:35 -0400
+Received: from threadripper.lan ([149.172.98.151]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MfpjF-1j3Ei81kC1-00gKp9; Fri, 29 May 2020 22:14:17 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Vlad Buslov <vladbu@mellanox.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] flow_dissector: work around stack frame size warning
+Date:   Fri, 29 May 2020 22:13:58 +0200
+Message-Id: <20200529201413.397679-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZXnqLwhJaUVKX0ExVa+Sw5mnhg5FLJN-VKPX59f6EAoQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:fGBRSFc62pbGaKvFVZs4AVLojvSZQNlGc8I5lGZQRmsePAgcFc9
+ 7x+/VNVskyailO/6h/qwZ3W4rL06Z2LcT+YlGDz+xe1++pxK7vFVbRKElSFHtBGxA28mGQm
+ 6lm3dkvChwSsHSjw1eGMgVWTKjdVClTWk+Hk8+0iyDux2yX1TmsFq5LB2RbF0j+8SVvAThs
+ B59D5FY5hb0aq8nnrGivg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EqM824uKsLc=:oYFD6qhd1oF/0lJdhdLWbM
+ nDF8D5MD6g3AtDmHJKefxqyZ+M3NhPDVCfL1FmJc7Rrj8L4HDuVbHjTRj1bh7JdWBpaDuINQ6
+ qm1cihm58iCfivLR5cmo5B/JhvSBNxhummWCZbVH86EJI+a3PhctCbjt0B6iv9fVcxErE8xp1
+ xRkjwwRGaRBok5Ckd04bw6OLYqaPiWy/xelDn21K3dOVvi7NKocRf0Z9eTWjUNOx7Jp6lDzEE
+ aGgrOfWEbHVe7frqk8qZyLqr5Gk23mScEX6FryArUs6pVtsY6lzTj5tjJPbynQuN+vrChCRi5
+ 7MIRFAWGQWq2GPf03N5XLfcxPYJhRJC4r0asjE6oKXfLanZkZ9J2n/BXyIz9bXez3IzjFCTFp
+ ZAKmuc1CZN4yXRdU++eSO0IGw/0M5yZDP8CtPvVZdJhzsch3ZKBts/tmFCkSsfV89jWZhD8zc
+ rXcPhAsEuBBZ2gZhTuFntm237LZBebC3bYxAmuoA7YBmfjb3s0XTp8oOP1CnHfz9WnJtLfBBi
+ 0pBjIXDkVkrgXuQPgYapoP7vyhamBWwZPls9hDzi3/6apIyivl4+8h7jaJ/FutCwP78XEhsT0
+ +7ARfdoEEQPBpGY/sdbhhOVNABPlXTEmoE8Oe9s8Tiy1t0SviQeoLnlw1O8Jo06TOnpTDVyEj
+ EM8DigCN0RIIbfrglhVVaPy7fxkmryvnI8A2LU5jN0811DGopzgcM2QOQLJGdvEmFrKcKfxvW
+ 1XGqNdA7p9wyEliv737GZ+32v9AvKb2RInaQ9qzv4lYd+f4XD0nOMc6Kikd+JuQfebA2yAI2a
+ AVJ4CFK9DRPt91NdKmOjhFc26pvVnki1y9W19wWGM4SQJweZ8Y=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 01:25:06AM -0700, Andrii Nakryiko wrote:
-> > index 11584618e861..26b18b6a3dbc 100644
-> > --- a/kernel/bpf/arraymap.c
-> > +++ b/kernel/bpf/arraymap.c
-> > @@ -393,6 +393,11 @@ static void array_map_free(struct bpf_map *map)
-> >          */
-> >         synchronize_rcu();
-> >
-> > +       /* arrays could have been used by both sleepable and non-sleepable bpf
-> > +        * progs. Make sure to wait for both prog types to finish executing.
-> > +        */
-> > +       synchronize_srcu(&bpf_srcu);
-> > +
-> 
-> to minimize churn later on when you switch to rcu_trace, maybe extract
-> synchronize_rcu() + synchronize_srcu(&bpf_srcu) into a function (e.g.,
-> something like synchronize_sleepable_bpf?), exposed as an internal
-> API? That way you also wouldn't need to add bpf_srcu to linux/bpf.h?
+The fl_flow_key structure is around 500 bytes, so having two of them
+on the stack in one function now exceeds the warning limit after an
+otherwise correct change:
 
-I think the opposite is must have actually. I think rcu operations should never
-be hidden in helpers. All rcu/srcu/rcu_trace ops should always be open coded.
+net/sched/cls_flower.c:298:12: error: stack frame size of 1056 bytes in function 'fl_classify' [-Werror,-Wframe-larger-than=]
 
-> > @@ -577,8 +577,8 @@ static void *__htab_map_lookup_elem(struct bpf_map *map, void *key)
-> >         struct htab_elem *l;
-> >         u32 hash, key_size;
-> >
-> > -       /* Must be called with rcu_read_lock. */
-> > -       WARN_ON_ONCE(!rcu_read_lock_held());
-> > +       /* Must be called with s?rcu_read_lock. */
-> > +       WARN_ON_ONCE(!rcu_read_lock_held() && !srcu_read_lock_held(&bpf_srcu));
-> >
-> 
-> Similar to above, might be worthwhile extracting into a function?
+I suspect the fl_classify function could be reworked to only have one
+of them on the stack and modify it in place, but I could not work out
+how to do that.
 
-This one I'm 50/50, since this pattern will be in many places.
-But what kind of helper that would be?
-Clear name is very hard.
-WARN_ON_ONCE(!bpf_specific_rcu_lock_held()) ?
-Moving WARN into the helper would be even worse.
+As a somewhat hacky workaround, move one of them into an out-of-line
+function to reduce its scope. This does not necessarily reduce the stack
+usage of the outer function, but at least the second copy is removed
+from the stack during most of it and does not add up to whatever is
+called from there.
 
-When rcu_trace is available the churn of patches to convert srcu to rcu_trace
-will be a good thing. The patches will convey the difference.
-Like bpf_srcu will disappear. They will give a way to do benchmarking before/after
-and will help to go back to srcu in unlikely case there is some obscure bug
-in rcu_trace. Hiding srcu vs rcu_trace details behind helpers is not how
-the code should read. The trade off with one and another will be different
-case by case. Like synchronize_srcu() is ok, but synchronize_rcu_trace()
-may be too heavy in the trampoline update code and extra counter would be needed.
-Also there will be synchronize_multi() that I plan to use as well.
+I now see 552 bytes of stack usage for fl_classify(), plus 528 bytes
+for fl_mask_lookup().
 
-> >
-> > +       if (prog->aux->sleepable && prog->type != BPF_PROG_TYPE_TRACING &&
-> > +           prog->type != BPF_PROG_TYPE_LSM) {
-> > +               verbose(env, "Only fentry/fexit/fmod_ret and lsm programs can be sleepable\n");
-> > +               return -EINVAL;
-> > +       }
-> 
-> 
-> BPF_PROG_TYPE_TRACING also includes iterator and raw tracepoint
-> programs. You mention only fentry/fexit/fmod_ret are allowed. What
-> about those two? I don't see any explicit checks for iterator and
-> raw_tracepoint attach types in a switch below, so just checking if
-> they should be allowed to be sleepable?
+Fixes: 58cff782cc55 ("flow_dissector: Parse multiple MPLS Label Stack Entries")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ net/sched/cls_flower.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-good point. tp_btf and iter don't use trampoline, so sleepable flag
-is ignored. which is wrong. I'll add a check to get the prog rejected.
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 96f5999281e0..030896eadd11 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -272,14 +272,16 @@ static struct cls_fl_filter *fl_lookup_range(struct fl_flow_mask *mask,
+ 	return NULL;
+ }
+ 
+-static struct cls_fl_filter *fl_lookup(struct fl_flow_mask *mask,
+-				       struct fl_flow_key *mkey,
+-				       struct fl_flow_key *key)
++static noinline_for_stack
++struct cls_fl_filter *fl_mask_lookup(struct fl_flow_mask *mask, struct fl_flow_key *key)
+ {
++	struct fl_flow_key mkey;
++
++	fl_set_masked_key(&mkey, key, mask);
+ 	if ((mask->flags & TCA_FLOWER_MASK_FLAGS_RANGE))
+-		return fl_lookup_range(mask, mkey, key);
++		return fl_lookup_range(mask, &mkey, key);
+ 
+-	return __fl_lookup(mask, mkey);
++	return __fl_lookup(mask, &mkey);
+ }
+ 
+ static u16 fl_ct_info_to_flower_map[] = {
+@@ -299,7 +301,6 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 		       struct tcf_result *res)
+ {
+ 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
+-	struct fl_flow_key skb_mkey;
+ 	struct fl_flow_key skb_key;
+ 	struct fl_flow_mask *mask;
+ 	struct cls_fl_filter *f;
+@@ -319,9 +320,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 				    ARRAY_SIZE(fl_ct_info_to_flower_map));
+ 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
+ 
+-		fl_set_masked_key(&skb_mkey, &skb_key, mask);
+-
+-		f = fl_lookup(mask, &skb_mkey, &skb_key);
++		f = fl_mask_lookup(mask, &skb_key);
+ 		if (f && !tc_skip_sw(f->flags)) {
+ 			*res = f->res;
+ 			return tcf_exts_exec(skb, &f->exts, res);
+-- 
+2.26.2
 
-> Also seems like freplace ones are also sleeepable, if they replace
-> sleepable programs, right?
-
-freplace is a different program type. So it's rejected by this code already.
-Eventually I'll add support to allow sleepable freplace prog that extend
-sleepable target. But that's future.
-
-> > +
-> >         if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
-> >                 return check_struct_ops_btf_id(env);
-> >
-> > @@ -10762,8 +10801,29 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
-> >                         if (ret)
-> >                                 verbose(env, "%s() is not modifiable\n",
-> >                                         prog->aux->attach_func_name);
-> > +               } else if (prog->aux->sleepable) {
-> > +                       switch (prog->type) {
-> > +                       case BPF_PROG_TYPE_TRACING:
-> > +                               /* fentry/fexit progs can be sleepable only if they are
-> > +                                * attached to ALLOW_ERROR_INJECTION or security_*() funcs.
-> > +                                */
-> > +                               ret = check_attach_modify_return(prog, addr);
-> 
-> I was so confused about this piece... check_attach_modify_return()
-> should probably be renamed to something else, it's not for fmod_ret
-> only anymore.
-
-why? I think the name is correct. The helper checks whether target
-allows modifying its return value. It's a first while list.
-When that passes the black list applies via check_sleepable_blacklist() function.
-
-I was considering using whitelist for sleepable as well, but that's overkill.
-Too much overlap with mod_ret.
-Imo check whitelist + check blacklist for white list exceptions is clean enough.
-
-> 
-> > +                               if (!ret)
-> > +                                       ret = check_sleepable_blacklist(addr);
-> > +                               break;
-> > +                       case BPF_PROG_TYPE_LSM:
-> > +                               /* LSM progs check that they are attached to bpf_lsm_*() funcs
-> > +                                * which are sleepable too.
-> > +                                */
-> > +                               ret = check_sleepable_blacklist(addr);
-> > +                               break;
