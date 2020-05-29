@@ -2,84 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 203371E8351
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D854A1E8395
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726866AbgE2QMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgE2QMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:12:07 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E144C03E969;
-        Fri, 29 May 2020 09:12:07 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id g18so2309389qtu.13;
-        Fri, 29 May 2020 09:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5Hm4Y+BJ4D4CDaqRSBoPJgH15jAjD9VDDckblAz9nbU=;
-        b=Rqj+JqwnLWRZO0jBT2Kjr4dplZYMLkOst8UiABhnGmWh5cFT+cuWfa87C78/NL7zyL
-         GB8mZ+lZqJG+wZYrMkI6q/k27fjzfBG9b1HPi0y8yx0pcrFDH262UFXb8U7LYYOMM1ht
-         Edjq47HSSFd9icFSKm3M9DTiLwyu4Xv7wCPfTYe8Gks00dxqAN4QuLy/mW2BZpUMN1c6
-         5Nj7rAocFphIuUAvPOK3WrlQiAYb0rAblxnKKbJzuOdZWGOyH+CCXPMzbR/a7vyQorvN
-         RN7pmlalI8p6bb5PFbX/ipk/AHXToMKexyY9/bk/wUisBXWzyk+58l1WOX0iyy1CAHrf
-         TKHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5Hm4Y+BJ4D4CDaqRSBoPJgH15jAjD9VDDckblAz9nbU=;
-        b=f58zMCIYGOTLD36B+vXjwXG/2YiUUhxHoteKNB5xNiFnZrLxcmSbZG8UObqmMv7zbq
-         HGZJi4pjo1GZj/v2vEUMjjdjQHoyukGxk6uXZ0k7XjoOUsNmhC4uAqWFW5dtLJSVKe5c
-         Yh4AwTuKBYTwRGkdAVF8Vau72R9pF4lAE/3NGEsu+InACERoMW43T0HzaJoc+V9IgdFE
-         4Px1HORNF1ii1jjL8+IJzmz4Xr9LSXhCFI1Gk7zzeJ2yuDLUrcX+6j4Ce0vBmIU5QE7R
-         zYPoAKtM0JRTDYCk/SErX++NPp7Vglwco9ZuXWHHOJElzTT+LWoHmtPwD2BZz1KIIMyL
-         polQ==
-X-Gm-Message-State: AOAM531cLaL6q0k7zGldl33vQpb51KeJrrbAL2fADWBKN9VIARdUNPGr
-        S1jyZoW/kUm62JIuH9ikYN4=
-X-Google-Smtp-Source: ABdhPJxJ9vHZyhS/fIlONrPd0OT9YzlS6kVi1Vtvqh7UtUjOkglBDKPjjROOo7MQ34l79/0YBwscWw==
-X-Received: by 2002:ac8:7007:: with SMTP id x7mr9451446qtm.238.1590768726505;
-        Fri, 29 May 2020 09:12:06 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.48.225])
-        by smtp.gmail.com with ESMTPSA id m10sm8195646qtg.94.2020.05.29.09.12.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:12:05 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 4060FC1B84; Fri, 29 May 2020 13:12:03 -0300 (-03)
-Date:   Fri, 29 May 2020 13:12:03 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     David.Laight@aculab.com, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, kuba@kernel.org, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, hch@lst.de
-Subject: Re: [PATCH v3 net-next 1/8] sctp: setsockopt, expand some #defines
-Message-ID: <20200529161203.GL2491@localhost.localdomain>
-References: <bab9a624ee2d4e05b1198c3f7344a200@AcuMS.aculab.com>
- <8bb56a30edfb4ff696d44cf9af909d82@AcuMS.aculab.com>
- <20200526.153631.1486651154492951372.davem@davemloft.net>
+        id S1726924AbgE2QZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:25:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57112 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbgE2QZM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 12:25:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=fX4ye2k9RYANOwm67tZmZltszM+deAdWBJgcwkaw/vc=; b=24h4frs6Q/LunU3cuN09TvdBHG
+        GnrQUnBgspWP9pcqx5r2wiUuKoiYuEhcwY1kgUJiy1Uy21gjXEWzifiHfDasOOmLxYw0wtl0kyeYJ
+        F53hIUQO7j3Gk/IUBuhOWUdYAfk47Sh/AlJnQdUauIMtqhDMszL1ncE0YU9/LI0IEMHA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jehoe-003f55-CF; Fri, 29 May 2020 18:25:04 +0200
+Date:   Fri, 29 May 2020 18:25:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
+ 1000BaseX/2500BaseX ports
+Message-ID: <20200529162504.GH869823@lunn.ch>
+References: <20200528130738.GT1551@shell.armlinux.org.uk>
+ <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
+ <20200528135608.GU1551@shell.armlinux.org.uk>
+ <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
+ <20200528144805.GW1551@shell.armlinux.org.uk>
+ <20200528204312.df9089425162a22e89669cf1@suse.de>
+ <20200528220420.GY1551@shell.armlinux.org.uk>
+ <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
+ <20200529145928.GF869823@lunn.ch>
+ <20200529155121.GA1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200526.153631.1486651154492951372.davem@davemloft.net>
+In-Reply-To: <20200529155121.GA1551@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 03:36:31PM -0700, David Miller wrote:
-> From: David Laight <David.Laight@ACULAB.COM>
-> Date: Tue, 26 May 2020 16:44:07 +0000
-> 
-> > This should be 3/8.
-> 
-> David just respin this at some point and with this fixed and also the
-> header posting saying "0/8" properly instead of "0/1", this is really
-> messy.
-> 
-> Thanks.
+> I wonder how much risk there is to changing that, so we force the link
+> down if phylink says the link should be down, otherwise we force the
+> speed/duplex, disable AN, and allow the link to come up depending on
+> the serdes status.  It /sounds/ like something sane to do.
 
-I don't know why David's workflow is that cumbersome. I'll try to
-respin this myself, on top of Christoph's latest changes.
+Hi Russell
+
+I actually did this for mv88e6xxx in a patchset for ZII devel B. It
+was determining link based on SFP LOS, which we know is unreliable. It
+said there was link even when the SERDES had lost link.
+
+I did it by making use of the fixed-link state call back, since it was
+a quick and dirty patch. But it might make more sense for the MAC to
+call phylink_mac_change() for change in PCS state? Or add a PCS
+specific.
+
+	Andrew
