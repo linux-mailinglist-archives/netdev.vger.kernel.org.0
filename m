@@ -2,286 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 310D61E88C7
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50021E88F8
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbgE2US0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 16:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726878AbgE2US0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:18:26 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD13C03E969;
-        Fri, 29 May 2020 13:18:25 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id b27so3461447qka.4;
-        Fri, 29 May 2020 13:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IMNWvVI/SkfWrtqMWKu4366zhGU0Aa7OUZDeF0NtTRU=;
-        b=K8GCaJza/RAOi2tUOJ22ztmoK7ObfKpAKSkCVdc7JnqPXlxyrMOdjgjTFWcn+hPk2q
-         JuB4o4XZnK68jbUFdGC6Sx7sn/b2/3iUshPxRXxen5ZCmkeUTM469krXTPMdGU2lJHvn
-         qcN52uQrg1x6rqPGwFGtusfBd7s04LU8K5L34l/lZ9t3L68j6YykcwYC47AvGBsL6y8u
-         q/bc7faFPVacdibp6Ptuob9MR9up7o/jU5pGnCoBm9XffGsL08pzdGpYefi+pZEyEPUX
-         iVceom9ARpSMRfF3An3ziYD3wanHKOZ/f8KHMKINE7c2FFoFbkuW8NuStyarPyg02bx7
-         LGbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IMNWvVI/SkfWrtqMWKu4366zhGU0Aa7OUZDeF0NtTRU=;
-        b=eLuIuVE/x4VEhcSqjMq4u4mEl6jgOF6O5/1n8Dt6o4sK0PdkbiSuPPruoZB6SeEd39
-         Jx5lSac9is5SjmDkiHoNhrTWdn/mgLelGBgNY2bnv+j1nOUXgVCO2wIDxvdVhr3PW6lZ
-         SbKq4BRAacZbjEaPvWHaOVnuh5qSscG4mPSJZoyRHla+uUi0u+cjTssZtJo95r9ImL8m
-         Aruu03yhIX3qXTUl/pdHBXAU8SxSq7L1sfptlH0Lu58/7U5piVGZ93OegGNqBo1+THrx
-         nu84H+pcHtcqB0cU/krb/H4/DNVP21iUFmjEsvJ/M5je2/1W2pf/68qhFiCyYlCxlFpY
-         SYeg==
-X-Gm-Message-State: AOAM533UOnzgZisonH682+SJdFL4zkKpzsin4xhO/ThH4EWLmvYWrsyP
-        25MPrOcQo+wbvKTkYGAqS0vxfDCw3WKZNgVxrgE=
-X-Google-Smtp-Source: ABdhPJx27L/41HrHytn1rgWbhJdyXTCbPclzXuW4JKss+uDZOgFdyjGqQaiodREB4NWbAWLmW3xiOa001/hXuCXbT7k=
-X-Received: by 2002:a37:a89:: with SMTP id 131mr9317994qkk.92.1590783504644;
- Fri, 29 May 2020 13:18:24 -0700 (PDT)
+        id S1728289AbgE2UeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 16:34:04 -0400
+Received: from mail-db8eur05on2056.outbound.protection.outlook.com ([40.107.20.56]:23839
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727964AbgE2UeC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 16:34:02 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZAOAFRqRMWa1d7aRDL6UiFFT7CL+CbDQgelVO1straxNtYLh7+vQYmNMRQPakuEVne/tBlNRF8AttrZDqurJFF3VAdI8Xhae77Bt1EQeQU8C9VqxuMRwqqJxDLFF3N7Kesy4eJLFpgF5gMaKQrj0X79Rgsr3UizDHTRlHm8d7SKJpTYHydE5cH0VRfULXYMUpW21396ySkETqjaJXsYHETANEyfMRMWiYIGAKtoRdKK5wLeZW67s6vCq6gVKUb6K3e2PeHHGzloBhykP8nKAUoNAK+/IAjZHmKuSOHVl3mEUpgPYafET0kGtoYJI8Rw92EiuKX9RJm+ysUkvJpe5Mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C3ksfSMSermAOaMkuSZMMGLaLBHb+yvkhllTNDDz0zw=;
+ b=BXNQVpkucUhkJHy0zeLJCFRQV0orL4PK+5Uo20RJDxN2gAsNjuf2gRtD0ZFn9W2FEcjoqtJ7ANiw4H5aHJk+ofgvKdyz9bPCHt4gQZ1Rd63TxoV6tOBBzTNCLm66VNdGIB9VHcQ+KnEM5vgCxmv11RJ1C31r50Nh8fIrtVsh992f+uVRQTEhHpGDiIwrOcottVcxIjSQdiOq4kipGxe43TEqIxRMGmEiDCK7DODiwm2cM6xtAyiZGGKTzcNwL8e0Spb7qLJbnFMDZVEoVN/VbtnbjPXeEQ23p3/EIVcr66GT0BtUHDq87IgB5D2Jq8X4V5UZGJhug1LKoZSUZAdeVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C3ksfSMSermAOaMkuSZMMGLaLBHb+yvkhllTNDDz0zw=;
+ b=iZ6oy9DO90sxUeFn9axabVo1W5OKhueSZi3za9+1FQy3lGxeGf7jVhNz85RcSRa+BPv7Xhed4QetlQ2OxdfcjO9ElFD4c20ttwL4wezDqRVmtN3/zosV3UMhZ/c1xIeuLtynSLE9x/kGmncKvFLch+t3DCNQ3NrWuIwu6WGYH2Y=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB4447.eurprd05.prod.outlook.com (2603:10a6:803:4d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Fri, 29 May
+ 2020 20:33:57 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3045.018; Fri, 29 May 2020
+ 20:33:57 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net-next 09/11] net/mlx5e: kTLS, Add kTLS RX stats
+Thread-Topic: [net-next 09/11] net/mlx5e: kTLS, Add kTLS RX stats
+Thread-Index: AQHWNfH4eZWmtINa2Uufjfpn2Xh10Ki/fiUAgAAG6IA=
+Date:   Fri, 29 May 2020 20:33:57 +0000
+Message-ID: <df2f8dfa2deaa3fea5436f3b39fc215666988c6b.camel@mellanox.com>
+References: <20200529194641.243989-1-saeedm@mellanox.com>
+         <20200529194641.243989-10-saeedm@mellanox.com>
+         <20200529130912.4da4f596@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200529130912.4da4f596@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.2 (3.36.2-1.fc32) 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: ba338761-f4bb-4497-f571-08d8040f9ce2
+x-ms-traffictypediagnostic: VI1PR05MB4447:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB44477BFAC88F2920DF2654B0BE8F0@VI1PR05MB4447.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04180B6720
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rPzOKr9O/j64g2i0Vt7oou1DgilT6EJIB+EN2yr5q4iERT7ezoe68QpkgsdFelj2w4+dO8dmlV2uFqQ5OPDlyqVlw2rBoRdDoaullkdAWFrC7isfM66g46XKWqV4jMHA+smRu+MNH6Z8wI8crx1mP9hs4tf+a9JomLztPAC5PwVFlBnRTz0bTIBqlNrs6zwNG98UFjU4joJu13nO+LNN4iVAjZDaOvEFuxxXk8QHf7tJPjd+3Bs7LtmX9OHRKFaUNsoV3yDeIyKRrp0sKErqyHoJyNuysSIY8usbSMTZd9OqvhrHAKE0UyJWq6AqhEYtMwyGcLnzAcxtuYnqGvSY1g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(39860400002)(366004)(136003)(396003)(346002)(66946007)(66476007)(186003)(86362001)(5660300002)(71200400001)(478600001)(2906002)(6486002)(26005)(36756003)(66446008)(6506007)(8936002)(54906003)(66556008)(91956017)(4326008)(76116006)(316002)(8676002)(107886003)(64756008)(6916009)(2616005)(83380400001)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ODQ/wsBka+IZFzLyxNm9YmD9gbgeGZFtQ+l2RqMgUx47W9olPYXe3SUaA4UFgA3I7xtCjLcchjyc5EBnKjPis0NDklzvynBxTBCiNnu9BQjQi31kMHJZ+51wTV43ljVjMDdzXbj8Ym3OIgkKK3YLsUsPnq9aYDk7JGjD2rIYnV27mQUY1ewFAJEJTuM6zo9FgPkZd7SstXas2jKWOsAFwF0Ap356m7f9QRihPof75gqwgrti4EikZiuhiNIqLNIKWUe3z9I/brmGimU1m/KqoYdmKyhvSsR9Lv59uZD5lsBQ3vFDQGdfbUlBGycpTavfmGYOhlt2irdSI/LmMDpindF0HRQ8tWj9lHrbU94o7wizHqkwNsDT825Gh9oJnteT5HgAr60Xx5FA7l8tfoUtTyAt/ZhCVKcmvffZZzgmrc1qcBn1lbDpQ39wNnQXtH+sK8XfWHlo5Ff+zMmqIIpSjtqZhiuol9OD67mqyR+WKts=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <11F682B7D4DF5F49B58DCE41DE34C258@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200528062408.547149-1-andriin@fb.com> <20200528225427.GA225299@google.com>
- <CAEf4BzZ_g2RwOgaRL1Qa9yo-8dH4kpgNaBOWZznNxqxhJUM1aA@mail.gmail.com> <20200529173432.GC196085@google.com>
-In-Reply-To: <20200529173432.GC196085@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 29 May 2020 13:18:13 -0700
-Message-ID: <CAEf4BzaPoG1LhE3oi+eQ1_8wa4=V7gEc-Fk5-tRyeLRfCAu3Dg@mail.gmail.com>
-Subject: Re: [PATCH linux-rcu] docs/litmus-tests: add BPF ringbuf MPSC litmus tests
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>, parri.andrea@gmail.com,
-        will@kernel.org, Peter Ziljstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>, npiggin@gmail.com,
-        dhowells@redhat.com, j.alglave@ucl.ac.uk, luc.maranget@inria.fr,
-        Akira Yokosawa <akiyks@gmail.com>, dlustig@nvidia.com,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-arch@vger.kernel.org, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba338761-f4bb-4497-f571-08d8040f9ce2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2020 20:33:57.4126
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xtBB75vNgjIKC2yYVaDdlHLtLIZ3s2YPh2Vylvmx7a1y6wuI7pJea8WmCzvlW6LSCBpbrZ5sYVwNFdXfIioL5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4447
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 10:34 AM Joel Fernandes <joel@joelfernandes.org> wrote:
->
-> Hi Andrii,
->
-> On Thu, May 28, 2020 at 10:50:30PM -0700, Andrii Nakryiko wrote:
-> > > [...]
-> > > > diff --git a/Documentation/litmus-tests/bpf-rb/bpf-rb+1p1c+bounded.litmus b/Documentation/litmus-tests/bpf-rb/bpf-rb+1p1c+bounded.litmus
-> > > > new file mode 100644
-> > > > index 000000000000..558f054fb0b4
-> > > > --- /dev/null
-> > > > +++ b/Documentation/litmus-tests/bpf-rb/bpf-rb+1p1c+bounded.litmus
-> > > > @@ -0,0 +1,91 @@
-> > > > +C bpf-rb+1p1c+bounded
-> > > > +
-> > > > +(*
-> > > > + * Result: Always
-> > > > + *
-> > > > + * This litmus test validates BPF ring buffer implementation under the
-> > > > + * following assumptions:
-> > > > + * - 1 producer;
-> > > > + * - 1 consumer;
-> > > > + * - ring buffer has capacity for only 1 record.
-> > > > + *
-> > > > + * Expectations:
-> > > > + * - 1 record pushed into ring buffer;
-> > > > + * - 0 or 1 element is consumed.
-> > > > + * - no failures.
-> > > > + *)
-> > > > +
-> > > > +{
-> > > > +     atomic_t dropped;
-> > > > +}
-> > > > +
-> > > > +P0(int *lenFail, int *len1, int *cx, int *px)
-> > > > +{
-> > > > +     int *rLenPtr;
-> > > > +     int rLen;
-> > > > +     int rPx;
-> > > > +     int rCx;
-> > > > +     int rFail;
-> > > > +
-> > > > +     rFail = 0;
-> > > > +
-> > > > +     rCx = smp_load_acquire(cx);
-> > > > +     rPx = smp_load_acquire(px);
-> > >
-> > > Is it possible for you to put some more comments around which ACQUIRE is
-> > > paired with which RELEASE? And, in general more comments around the reason
-> > > for a certain memory barrier and what pairs with what. In the kernel sources,
-> > > the barriers needs a comment anyway.
->
-> This was the comment earlier that was missed.
-
-Right, I'll follow up extending kernel implementation comments, and
-will add some more to litmus tests.
-
->
-> > > > +     if (rCx < rPx) {
-> > > > +             if (rCx == 0) {
-> > > > +                     rLenPtr = len1;
-> > > > +             } else {
-> > > > +                     rLenPtr = lenFail;
-> > > > +                     rFail = 1;
-> > > > +             }
-> > > > +
-> > > > +             rLen = smp_load_acquire(rLenPtr);
-> > > > +             if (rLen == 0) {
-> > > > +                     rFail = 1;
-> > > > +             } else if (rLen == 1) {
-> > > > +                     rCx = rCx + 1;
-> > > > +                     smp_store_release(cx, rCx);
-> > > > +             }
-> > > > +     }
-> > > > +}
-> > > > +
-> > > > +P1(int *lenFail, int *len1, spinlock_t *rb_lock, int *px, int *cx, atomic_t *dropped)
-> > > > +{
-> > > > +     int rPx;
-> > > > +     int rCx;
-> > > > +     int rFail;
-> > > > +     int *rLenPtr;
-> > > > +
-> > > > +     rFail = 0;
-> > > > +
-> > > > +     rCx = smp_load_acquire(cx);
-> > > > +     spin_lock(rb_lock);
-> > > > +
-> > > > +     rPx = *px;
-> > > > +     if (rPx - rCx >= 1) {
-> > > > +             atomic_inc(dropped);
-> > >
-> > > Why does 'dropped' need to be atomic if you are always incrementing under a
-> > > lock?
-> >
-> > It doesn't, strictly speaking, but making it atomic in litmus test was
-> > just more convenient, especially that I initially also had a lock-less
-> > variant of this algorithm.
->
-> Ok, that's fine.
->
-> > >
-> > > > +             spin_unlock(rb_lock);
-> > > > +     } else {
-> > > > +             if (rPx == 0) {
-> > > > +                     rLenPtr = len1;
-> > > > +             } else {
-> > > > +                     rLenPtr = lenFail;
-> > > > +                     rFail = 1;
-> > > > +             }
-> > > > +
-> > > > +             *rLenPtr = -1;
-> > >
-> > > Clarify please the need to set the length intermittently to -1. Thanks.
-> >
-> > This corresponds to setting a "busy bit" in kernel implementation.
-> > These litmus tests are supposed to be correlated with in-kernel
-> > implementation, I'm not sure I want to maintain extra 4 copies of
-> > comments here and in kernel code. Especially for 2-producer cases,
-> > there are 2 identical P1 and P2, which is unfortunate, but I haven't
-> > figured out how to have a re-usable pieces of code with litmus tests
-> > :)
->
-> I disagree that comments related to memory ordering are optional. IMHO, the
-> documentation should be clear from a memory ordering standpoint. After all,
-> good Documentation/ always clarifies something / some concept to the reader
-> right? :-) Please have mercy on me, I am just trying to learn *your*
-> Documentation ;-)
-
-My point was that reading litmus test without also reading ringbuf
-implementation is pointless and is harder than necessary. I'll add few
-comments to litmus tests, but ultimately I view kernel implementation
-as the source of truth and litmus test as a simplified model of it. So
-having extensive comments in litmus test is just a maintenance burden
-and more chance to get confusing, out-of-sync documentation.
-
->
-> > > > diff --git a/Documentation/litmus-tests/bpf-rb/bpf-rb+2p1c+bounded.litmus b/Documentation/litmus-tests/bpf-rb/bpf-rb+2p1c+bounded.litmus
-> [...]
-> > > > +P1(int *lenFail, int *len1, spinlock_t *rb_lock, int *px, int *cx, atomic_t *dropped)
-> > > > +{
-> > > > +     int rPx;
-> > > > +     int rCx;
-> > > > +     int rFail;
-> > > > +     int *rLenPtr;
-> > > > +
-> > > > +     rFail = 0;
-> > > > +     rLenPtr = lenFail;
-> > > > +
-> > > > +     rCx = smp_load_acquire(cx);
-> > > > +     spin_lock(rb_lock);
-> > > > +
-> > > > +     rPx = *px;
-> > > > +     if (rPx - rCx >= 1) {
-> > > > +             atomic_inc(dropped);
-> > > > +             spin_unlock(rb_lock);
-> > > > +     } else {
-> > > > +             if (rPx == 0) {
-> > > > +                     rLenPtr = len1;
-> > > > +             } else if (rPx == 1) {
-> > > > +                     rLenPtr = len1;
-> > > > +             } else {
-> > > > +                     rLenPtr = lenFail;
-> > > > +                     rFail = 1;
-> > > > +             }
-> > > > +
-> > > > +             *rLenPtr = -1;
-> > > > +             smp_store_release(px, rPx + 1);
-> > > > +
-> > > > +             spin_unlock(rb_lock);
-> > > > +
-> > > > +             smp_store_release(rLenPtr, 1);
-> > >
-> > > I ran a test replacing the last 2 statements above with the following and it
-> > > still works:
-> > >
-> > >                 spin_unlock(rb_lock);
-> > >                 WRITE_ONCE(*rLenPtr, 1);
-> > >
-> > > Wouldn't you expect the test to catch an issue? The spin_unlock is already a
-> > > RELEASE barrier.
-> >
-> > Well, apparently it's not an issue and WRITE_ONCE would work as well
-> > :) My original version actually used WRITE_ONCE here. See [0] and
-> > discussion in [1] after which I removed all the WRITE_ONCE/READ_ONCE
-> > in favor of store_release/load_acquire for consistency.
-> >
-> >   [0] https://patchwork.ozlabs.org/project/netdev/patch/20200513192532.4058934-3-andriin@fb.com/
-> >   [1] https://patchwork.ozlabs.org/project/netdev/patch/20200513192532.4058934-2-andriin@fb.com/
->
-> Huh. So you are replacing the test to use WRITE_ONCE instead? Why did you
-> favor the acquire/release memory barriers over the _ONCE annotations, if that
-> was not really needed then?
-
-I replaced WRITE_ONCE with store_release. There was a request on
-initial version to keep it simple and use store_release/load_acquire
-pairings consistently and not mix up WRITE_ONCE and load_acquire, so
-that's what I did. As I mentioned elsewhere, this might not be the
-weakest possible set of orderings and we might improve that, but it
-seems to work well.
-
->
-> > > Suggestion: It is hard to review the patch because it is huge, it would be
-> > > good to split this up into 4 patches for each of the tests. But upto you :)
-> >
-> > Those 4 files are partial copies of each other, not sure splitting
-> > them actually would be easier. If anyone else thinks the same, though,
-> > I'll happily split.
->
-> I personally disagree. It would be much easier IMHO to review 4 different
-> files since some of them are also quite dissimilar. I frequently keep jumping
-> between diffs to find a different file and it makes the review that much
-> harder. But anything the LKMM experts decide in this regard is acceptable to me :)
->
-> thanks,
->
->  - Joel
->
+T24gRnJpLCAyMDIwLTA1LTI5IGF0IDEzOjA5IC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gT24gRnJpLCAyOSBNYXkgMjAyMCAxMjo0NjozOSAtMDcwMCBTYWVlZCBNYWhhbWVlZCB3cm90
+ZToNCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL3Rscy1vZmZsb2Fk
+LnJzdA0KPiA+IGIvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL3Rscy1vZmZsb2FkLnJzdA0KPiA+
+IGluZGV4IGY5MTRlODFmZDNhNjQuLjQ0YzRiMTk2NDc3NDYgMTAwNjQ0DQo+ID4gLS0tIGEvRG9j
+dW1lbnRhdGlvbi9uZXR3b3JraW5nL3Rscy1vZmZsb2FkLnJzdA0KPiA+ICsrKyBiL0RvY3VtZW50
+YXRpb24vbmV0d29ya2luZy90bHMtb2ZmbG9hZC5yc3QNCj4gPiBAQCAtNDI4LDYgKzQyOCwxNCBA
+QCBieSB0aGUgZHJpdmVyOg0KPiA+ICAgICB3aGljaCB3ZXJlIHBhcnQgb2YgYSBUTFMgc3RyZWFt
+Lg0KPiA+ICAgKiBgYHJ4X3Rsc19kZWNyeXB0ZWRfYnl0ZXNgYCAtIG51bWJlciBvZiBUTFMgcGF5
+bG9hZCBieXRlcyBpbiBSWA0KPiA+IHBhY2tldHMNCj4gPiAgICAgd2hpY2ggd2VyZSBzdWNjZXNz
+ZnVsbHkgZGVjcnlwdGVkLg0KPiA+ICsgKiBgYHJ4X3Rsc19jdHhgYCAtIG51bWJlciBvZiBUTFMg
+UlggSFcgb2ZmbG9hZCBjb250ZXh0cyBhZGRlZCB0bw0KPiA+IGRldmljZSBmb3INCj4gPiArICAg
+ZGVjcnlwdGlvbi4NCj4gPiArICogYGByeF90bHNfb29vYGAgLSBudW1iZXIgb2YgUlggcGFja2V0
+cyB3aGljaCB3ZXJlIHBhcnQgb2YgYSBUTFMNCj4gPiBzdHJlYW0NCj4gPiArICAgYnV0IGRpZCBu
+b3QgYXJyaXZlIGluIHRoZSBleHBlY3RlZCBvcmRlciBhbmQgdHJpZ2dlcmVkIHRoZQ0KPiA+IHJl
+c3luYyBwcm9jZWR1cmUuDQo+ID4gKyAqIGBgcnhfdGxzX2RlbGBgIC0gbnVtYmVyIG9mIFRMUyBS
+WCBIVyBvZmZsb2FkIGNvbnRleHRzIGRlbGV0ZWQNCj4gPiBmcm9tIGRldmljZQ0KPiA+ICsgICAo
+Y29ubmVjdGlvbiBoYXMgZmluaXNoZWQpLg0KPiA+ICsgKiBgYHJ4X3Rsc19lcnJgYCAtIG51bWJl
+ciBvZiBSWCBwYWNrZXRzIHdoaWNoIHdlcmUgcGFydCBvZiBhIFRMUw0KPiA+IHN0cmVhbQ0KPiA+
+ICsgICBidXQgd2VyZSBub3QgZGVjcnlwdGVkIGR1ZSB0byB1bmV4cGVjdGVkIGVycm9yIGluIHRo
+ZSBzdGF0ZQ0KPiA+IG1hY2hpbmUuDQo+ID4gICAqIGBgdHhfdGxzX2VuY3J5cHRlZF9wYWNrZXRz
+YGAgLSBudW1iZXIgb2YgVFggcGFja2V0cyBwYXNzZWQgdG8NCj4gPiB0aGUgZGV2aWNlDQo+ID4g
+ICAgIGZvciBlbmNyeXB0aW9uIG9mIHRoZWlyIFRMUyBwYXlsb2FkLg0KPiA+ICAgKiBgYHR4X3Rs
+c19lbmNyeXB0ZWRfYnl0ZXNgYCAtIG51bWJlciBvZiBUTFMgcGF5bG9hZCBieXRlcyBpbiBUWA0K
+PiA+IHBhY2tldHMNCj4gDQo+IFN0YWNrIGFscmVhZHkgaGFzIHN0YXRzIGZvciBzb21lIG9mIHRo
+ZXNlIGluIC9wcm9jL25ldC90bHNfc3RhdC4gDQo+IERvZXMgdGhpcyByZWFsbHkgbmVlZCB0byBi
+ZSBwZXIgZGV2aWNlPw0KDQp0aGVzZSBhcmUgZ3JlYXQgZm9yIGRlYnVnLi4gSU1ITyBzdGF0cyBm
+b3Igb2ZmbG9hZGVkIGZsb3dzIHBlciBkZXZpY2UNCmFyZSBuaWNlIHRoaW5nIHRvIGhhdmUgLi4g
+IA0K
