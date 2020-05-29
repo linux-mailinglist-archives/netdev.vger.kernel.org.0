@@ -2,118 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE201E7642
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 08:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72331E7779
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 09:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbgE2G5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 02:57:39 -0400
-Received: from mail-eopbgr70044.outbound.protection.outlook.com ([40.107.7.44]:29351
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725790AbgE2G5h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 02:57:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vyev2Kwa7VMZNRCLKXxwnKM4FxDLAZxlIOb+XzrzLJVdisB00czO+iL/pJT0lxZnqHGVTsw+RpGAAoEo3nUbVBlJpRE9ta64VmemUNOFpw1NIxtgGlcE4lMpWNfegzX7X+NwtI5bZn9038I092wnoZOM0ixeXs8RQG/mjPcIVmvcy1+4CHpajXbdtN1acGEIf89lMGqn32kovO4/F0QBl0fdRvxMEaKMuCBbkdeLGy8OhDZSUFn7XnGieIXcJQjwxJPdyYFl518D2eo9x1YHL2xADueLMNol42ynBz8CY2rdz4cTbk09w8yTF8QIS9XWzZvD2rnqoN71tT3kuRMSpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BQlWUT61fbhYKqM6r+Haofk/+fdl5bDfZSmt9Y8fXh0=;
- b=FPm4DV3bnha6KY2tvgWIP9QbGouTqA/7CkDYVoLOctPQg0261jnJ0S+g1Nrc5EsPrR/UdJpc8riUIJTsS4MbbePOIf0wN4IqQrAflbAA0CrHLrL0yrLasAYGlSBztX/Vnz6ubIQoz1ZjqpaL1jVRgWACeXpKFsQVOFR604fMVdW8Rs/1j/eE1J+GvJQS+qEo2CFExig7ZubjqPEhjKi0obWRrYXMyjB69Sns61sko5Rj3c8rNHt14oxUNaV3BITpLFUjxBHCnSJysrXa1tU7RMMc+ApxnnAND0QXBNXZ7d/M9i68iHH/H9YitIua5NQLndNyPaJv08fZd4W6DxMBEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BQlWUT61fbhYKqM6r+Haofk/+fdl5bDfZSmt9Y8fXh0=;
- b=M1UsRHhnaqXojDG+HO/mPWifWxyvIgzVFZfNB3qzFtRtrH23BHXxGo2IcXqZ/hRojEnbkFrZ/qSfIEXsyc+4TSRfILXHdTFUT7h8KRhzCLgD/6xvUJYj9pVQiGGQgMuc0GZRsFSEVOtyNHkM6NU8Oy5h5kVMMLBiBT8S4Jg3/R8=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB4189.eurprd05.prod.outlook.com (2603:10a6:803:45::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Fri, 29 May
- 2020 06:57:28 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3045.018; Fri, 29 May 2020
- 06:57:28 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>, jakub@kernel.org
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 6/6] net/mlx5e: Fix MLX5_TC_CT dependencies
-Date:   Thu, 28 May 2020 23:56:45 -0700
-Message-Id: <20200529065645.118386-7-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200529065645.118386-1-saeedm@mellanox.com>
-References: <20200529065645.118386-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR03CA0027.namprd03.prod.outlook.com
- (2603:10b6:a03:1e0::37) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1725768AbgE2Hyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 03:54:47 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7464 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725355AbgE2Hyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 03:54:46 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04T7oqd5009279
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 00:54:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=facebook;
+ bh=50VC0B8LeA2ntIfCcJ6QrFPLpJZw7hHFVsX7VYW2LTY=;
+ b=ShjcekY3ul5HpTuvmbbcuIPU4Ns+0eic7y0PJqjNfQtKpoZx5kwTa2QY3d48DbkqhN3t
+ W7PqOetckTIup6bP6+fOYJKssrsjoa72mRQ7C5G6K1Q3VQ+oIpXccGWX4Tmegdz5MHV0
+ W/zqsGQNOZTFddp0JdjmY4w9PZRBbYYNPow= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31ajbjp50y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 00:54:45 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 29 May 2020 00:54:44 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 7AC6B2EC3747; Fri, 29 May 2020 00:54:36 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v4 bpf-next 0/5] BPF ring buffer
+Date:   Fri, 29 May 2020 00:54:19 -0700
+Message-ID: <20200529075424.3139988-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0027.namprd03.prod.outlook.com (2603:10b6:a03:1e0::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Fri, 29 May 2020 06:57:25 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [73.15.39.150]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: be18cc37-bb6d-433a-0796-08d8039d8c9c
-X-MS-TrafficTypeDiagnostic: VI1PR05MB4189:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB4189B4390A2341A20187711CBE8F0@VI1PR05MB4189.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:397;
-X-Forefront-PRVS: 04180B6720
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4do6D6VhCl1CYaDHZqQvXuERLq3rDTOTB1mzoTQWsYonWTqOvkNc+zLNNPG3VdHPIqlS21rHd7t0BEaAetdYYstjGK/1z+akdwwN5E7v8KeVE5o0LqG8i1si7WLsNv5d7zzjGqnp3yPByRYSPjBsOulubRHuQF4yGyLEVSoFnyDj1mq9GvC5TMlsAFTlVdDsGYJfzJMRxhP+2edPdFoLQXAmYyRVReCzXIqjOiPtGYEJ3AiKwmn68f8Utwh6L+jju3HEJwgogwY0Mz5xMNb/d8KMDubIqxw6GTjRwlVtSFLIMmxtKWyav1J9VM6Pu6vvAqnFQw2r/MBdDI/fq3adnTCeDy48R0ofVbWhZSTejoFJv21Eie8Aqv9Dp+5MkpgR
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(26005)(1076003)(66476007)(8676002)(54906003)(8936002)(66946007)(66556008)(2616005)(107886003)(5660300002)(956004)(83380400001)(6486002)(6512007)(186003)(16526019)(52116002)(4326008)(36756003)(6506007)(2906002)(86362001)(6666004)(478600001)(316002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 04EuRmXZFmBXAlu2DkPySoEoSmCHvWHpLynCWgWpEU7nVtR4SXJnzb33Q1omenpzPCEwrLHCKNyPqrQSgaOT4mfYHI3vU2Y57EhJvupXiozJlw0biDmDci4bcFmGMj7v6E+qyECC6tjPCPdSpLPbFtchgkgpoLyjr90V1Cpu93Z1wCMMhUz9DcLdfzI4pr6f0IyBlpghOO8a/j9en4sl3WPQj6xH+u5XH9CxlGGeHsHQTZVKSq1408XavbjEmJLZPDtZ7uJ4/e8GQ4G7rHFZvZBbANa2UIr5L9us0wZPX6AhQrCRIV9lNAi/9hERQTSklSufMQTnc8I+/+yzNdL9qK3VMioxY4NfdpupqrTOMzDWtUnIMzSrZqS0OTzH1QDN+xV4FgPaytPV53R4MSmR4WnU8pOvYo3IqBfKrweWG93wA5c/+A/TBd6EWvockPEBMVAc7oQN9T9D0HQgmkr+3ZbAZOeBvWIQ7gm97SaGIZw=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be18cc37-bb6d-433a-0796-08d8039d8c9c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 06:57:27.9678
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pj2D7vMyscBdMwYfyew4HH4vktQ0VCKXXBVEUhxxVqa3XXXC2Fg1k1HpQfab93YrEKoJdP5xIPWd/7j0wp+ANA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4189
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-29_02:2020-05-28,2020-05-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ cotscore=-2147483648 bulkscore=0 impostorscore=0 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=2 phishscore=0 priorityscore=1501
+ malwarescore=0 mlxscore=0 clxscore=1015 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005290062
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+Implement a new BPF ring buffer, as presented at BPF virtual conference (=
+[0]).
+It presents an alternative to perf buffer, following its semantics closel=
+y,
+but allowing sharing same instance of ring buffer across multiple CPUs
+efficiently.
 
-Change MLX5_TC_CT config dependencies to include MLX5_ESWITCH instead of
-MLX5_CORE_EN && NET_SWITCHDEV, which are already required by MLX5_ESWITCH.
-Without this change mlx5 fails to compile if user disables MLX5_ESWITCH
-without also manually disabling MLX5_TC_CT.
+Most patches have extensive commentary explaining various aspects, so I'l=
+l
+keep cover letter short. Overall structure of the patch set:
+- patch #1 adds BPF ring buffer implementation to kernel and necessary
+  verifier support;
+- patch #2 adds libbpf consumer implementation for BPF ringbuf;
+- patch #3 adds selftest, both for single BPF ring buf use case, as well =
+as
+  using it with array/hash of maps;
+- patch #4 adds extensive benchmarks and provide some analysis in commit
+  message, it builds upon selftests/bpf's bench runner.
+- patch #5 adds most of patch #1 commit message as a doc under
+  Documentation/bpf/ringbuf.rst.
 
-Fixes: 4c3844d9e97e ("net/mlx5e: CT: Introduce connection tracking")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Litmus tests, validating consumer/producer protocols and memory orderings=
+,
+were moved out as discussed in [1] and are going to be posted against -rc=
+u
+tree and put under Documentation/litmus-tests/bpf-rb.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index 7d69a3061f178..fd375cbe586e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -80,7 +80,7 @@ config MLX5_ESWITCH
- 
- config MLX5_TC_CT
- 	bool "MLX5 TC connection tracking offload support"
--	depends on MLX5_CORE_EN && NET_SWITCHDEV && NF_FLOW_TABLE && NET_ACT_CT && NET_TC_SKB_EXT
-+	depends on MLX5_ESWITCH && NF_FLOW_TABLE && NET_ACT_CT && NET_TC_SKB_EXT
- 	default y
- 	help
- 	  Say Y here if you want to support offloading connection tracking rules
--- 
-2.26.2
+  [0] https://docs.google.com/presentation/d/18ITdg77Bj6YDOH2LghxrnFxiPWe=
+0fAqcmJY95t_qr0w
+  [1] https://lkml.org/lkml/2020/5/22/1011
+
+v3->v4:
+- fix ringbuf freeing (vunmap, __free_page); verified with a trivial loop
+  creating and closing ringbuf map endlessly (Daniel);
+
+v2->v3:
+- dropped unnecessary smp_wmb() (Paul);
+- verifier reference type enhancement patch was dropped (Alexei);
+- better verifier message for various memory access checks (Alexei);
+- clarified a bit roundup_len() bit shifting (Alexei);
+- converted doc to .rst (Alexei);
+- fixed warning on 32-bit arches regarding tautological ring area size ch=
+eck.
+
+v1->v2:
+- commit()/discard()/output() accept flags (NO_WAKEUP/FORCE_WAKEUP) (Stan=
+islav);
+- bpf_ringbuf_query() added, returning available data size, ringbuf size,
+  consumer/producer positions, needed to implement smarter notification p=
+olicy
+  (Stanislav);
+- added ringbuf UAPI constants to include/uapi/linux/bpf.h (Jonathan);
+- fixed sample size check, added proper ringbuf size check (Jonathan, Ale=
+xei);
+- wake_up_all() is done through irq_work (Alexei);
+- consistent use of smp_load_acquire/smp_store_release, no
+  READ_ONCE/WRITE_ONCE (Alexei);
+- added Documentation/bpf/ringbuf.txt (Stanislav);
+- updated litmus test with smp_load_acquire/smp_store_release changes;
+- added ring_buffer__consume() API to libbpf for busy-polling;
+- ring_buffer__poll() on success returns number of records consumed;
+- fixed EPOLL notifications, don't assume available data, done similarly =
+to
+  perfbuf's implementation;
+- both ringbuf and perfbuf now have --rb-sampled mode, instead of
+  pb-raw/pb-custom mode, updated benchmark results;
+- extended ringbuf selftests to validate epoll logic/manual notification
+  logic, as well as bpf_ringbuf_query().
+
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+
+Andrii Nakryiko (5):
+  bpf: implement BPF ring buffer and verifier support for it
+  libbpf: add BPF ring buffer support
+  selftests/bpf: add BPF ringbuf selftests
+  bpf: add BPF ringbuf and perf buffer benchmarks
+  docs/bpf: add BPF ring buffer design notes
+
+ Documentation/bpf/ringbuf.rst                 | 209 +++++++
+ include/linux/bpf.h                           |  13 +
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/bpf_verifier.h                  |   4 +
+ include/uapi/linux/bpf.h                      |  84 ++-
+ kernel/bpf/Makefile                           |   2 +-
+ kernel/bpf/helpers.c                          |  10 +
+ kernel/bpf/ringbuf.c                          | 501 ++++++++++++++++
+ kernel/bpf/syscall.c                          |  12 +
+ kernel/bpf/verifier.c                         | 195 ++++--
+ kernel/trace/bpf_trace.c                      |  10 +
+ tools/include/uapi/linux/bpf.h                |  84 ++-
+ tools/lib/bpf/Build                           |   2 +-
+ tools/lib/bpf/libbpf.h                        |  21 +
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/lib/bpf/libbpf_probes.c                 |   5 +
+ tools/lib/bpf/ringbuf.c                       | 285 +++++++++
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ tools/testing/selftests/bpf/bench.c           |  16 +
+ .../selftests/bpf/benchs/bench_ringbufs.c     | 566 ++++++++++++++++++
+ .../bpf/benchs/run_bench_ringbufs.sh          |  75 +++
+ .../selftests/bpf/prog_tests/ringbuf.c        | 211 +++++++
+ .../selftests/bpf/prog_tests/ringbuf_multi.c  | 102 ++++
+ .../selftests/bpf/progs/perfbuf_bench.c       |  33 +
+ .../selftests/bpf/progs/ringbuf_bench.c       |  60 ++
+ .../selftests/bpf/progs/test_ringbuf.c        |  78 +++
+ .../selftests/bpf/progs/test_ringbuf_multi.c  |  77 +++
+ tools/testing/selftests/bpf/verifier/and.c    |   4 +-
+ .../selftests/bpf/verifier/array_access.c     |   4 +-
+ tools/testing/selftests/bpf/verifier/bounds.c |   6 +-
+ tools/testing/selftests/bpf/verifier/calls.c  |   2 +-
+ .../bpf/verifier/direct_value_access.c        |   4 +-
+ .../bpf/verifier/helper_access_var_len.c      |   2 +-
+ .../bpf/verifier/helper_value_access.c        |   6 +-
+ .../selftests/bpf/verifier/value_ptr_arith.c  |   8 +-
+ 35 files changed, 2630 insertions(+), 72 deletions(-)
+ create mode 100644 Documentation/bpf/ringbuf.rst
+ create mode 100644 kernel/bpf/ringbuf.c
+ create mode 100644 tools/lib/bpf/ringbuf.c
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_ringbufs=
+.sh
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ringbuf.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ringbuf_multi.=
+c
+ create mode 100644 tools/testing/selftests/bpf/progs/perfbuf_bench.c
+ create mode 100644 tools/testing/selftests/bpf/progs/ringbuf_bench.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ringbuf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ringbuf_multi.=
+c
+
+--=20
+2.24.1
 
