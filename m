@@ -2,128 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F771E88B4
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDF31E88BE
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 22:16:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbgE2UOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 16:14:36 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:54705 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbgE2UOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 16:14:35 -0400
-Received: from threadripper.lan ([149.172.98.151]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MfpjF-1j3Ei81kC1-00gKp9; Fri, 29 May 2020 22:14:17 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Guillaume Nault <gnault@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Vlad Buslov <vladbu@mellanox.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] flow_dissector: work around stack frame size warning
-Date:   Fri, 29 May 2020 22:13:58 +0200
-Message-Id: <20200529201413.397679-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.2
+        id S1728249AbgE2UQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 16:16:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47960 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726878AbgE2UQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 16:16:34 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6B109207D4;
+        Fri, 29 May 2020 20:16:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590783393;
+        bh=h/SPP3tlq7Ykd/eiqiZIsmADe3PICAVWjTmiC+bN6Yo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IlhRHWFJpJlt7nfv9X0OvVNB2aYo+JpTSawsD/df6ogoGfcM+AFyLpqy+c6Kin8je
+         Ilm/ie83CyJiNdiZVOlKq3Q81JYu/iP31ryELkgdp7jvdQ3DL1KO88PBwkXJA5DTXD
+         hKx6tWtJjVUR6IYAVuoUOl0CaKvOOzCS2QVWzkOI=
+Date:   Fri, 29 May 2020 13:16:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net-next 10/11] net/mlx5e: kTLS, Add kTLS RX resync support
+Message-ID: <20200529131631.285351a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200529194641.243989-11-saeedm@mellanox.com>
+References: <20200529194641.243989-1-saeedm@mellanox.com>
+        <20200529194641.243989-11-saeedm@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:fGBRSFc62pbGaKvFVZs4AVLojvSZQNlGc8I5lGZQRmsePAgcFc9
- 7x+/VNVskyailO/6h/qwZ3W4rL06Z2LcT+YlGDz+xe1++pxK7vFVbRKElSFHtBGxA28mGQm
- 6lm3dkvChwSsHSjw1eGMgVWTKjdVClTWk+Hk8+0iyDux2yX1TmsFq5LB2RbF0j+8SVvAThs
- B59D5FY5hb0aq8nnrGivg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EqM824uKsLc=:oYFD6qhd1oF/0lJdhdLWbM
- nDF8D5MD6g3AtDmHJKefxqyZ+M3NhPDVCfL1FmJc7Rrj8L4HDuVbHjTRj1bh7JdWBpaDuINQ6
- qm1cihm58iCfivLR5cmo5B/JhvSBNxhummWCZbVH86EJI+a3PhctCbjt0B6iv9fVcxErE8xp1
- xRkjwwRGaRBok5Ckd04bw6OLYqaPiWy/xelDn21K3dOVvi7NKocRf0Z9eTWjUNOx7Jp6lDzEE
- aGgrOfWEbHVe7frqk8qZyLqr5Gk23mScEX6FryArUs6pVtsY6lzTj5tjJPbynQuN+vrChCRi5
- 7MIRFAWGQWq2GPf03N5XLfcxPYJhRJC4r0asjE6oKXfLanZkZ9J2n/BXyIz9bXez3IzjFCTFp
- ZAKmuc1CZN4yXRdU++eSO0IGw/0M5yZDP8CtPvVZdJhzsch3ZKBts/tmFCkSsfV89jWZhD8zc
- rXcPhAsEuBBZ2gZhTuFntm237LZBebC3bYxAmuoA7YBmfjb3s0XTp8oOP1CnHfz9WnJtLfBBi
- 0pBjIXDkVkrgXuQPgYapoP7vyhamBWwZPls9hDzi3/6apIyivl4+8h7jaJ/FutCwP78XEhsT0
- +7ARfdoEEQPBpGY/sdbhhOVNABPlXTEmoE8Oe9s8Tiy1t0SviQeoLnlw1O8Jo06TOnpTDVyEj
- EM8DigCN0RIIbfrglhVVaPy7fxkmryvnI8A2LU5jN0811DGopzgcM2QOQLJGdvEmFrKcKfxvW
- 1XGqNdA7p9wyEliv737GZ+32v9AvKb2RInaQ9qzv4lYd+f4XD0nOMc6Kikd+JuQfebA2yAI2a
- AVJ4CFK9DRPt91NdKmOjhFc26pvVnki1y9W19wWGM4SQJweZ8Y=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fl_flow_key structure is around 500 bytes, so having two of them
-on the stack in one function now exceeds the warning limit after an
-otherwise correct change:
+On Fri, 29 May 2020 12:46:40 -0700 Saeed Mahameed wrote:
+>  /* Re-sync */
+> +static struct mlx5_wqe_ctrl_seg *
+> +resync_post_get_progress_params(struct mlx5e_icosq *sq,
+> +				struct mlx5e_ktls_offload_context_rx *priv_rx)
+> +{
+> +	struct mlx5e_ktls_rx_resync_ctx *resync = &priv_rx->resync;
+> +	struct mlx5e_get_tls_progress_params_wqe *wqe;
+> +	struct mlx5_wqe_ctrl_seg *cseg;
+> +	struct mlx5_seg_get_psv *psv;
+> +	u16 pi;
+> +
+> +	dma_sync_single_for_device(resync->priv->mdev->device,
+> +				   resync->dma_addr,
+> +				   PROGRESS_PARAMS_PADDED_SIZE,
+> +				   DMA_FROM_DEVICE);
+> +	BUILD_BUG_ON(MLX5E_KTLS_GET_PROGRESS_WQEBBS != 1);
+> +	if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, 1)))
+> +		return ERR_PTR(-ENOSPC);
 
-net/sched/cls_flower.c:298:12: error: stack frame size of 1056 bytes in function 'fl_classify' [-Werror,-Wframe-larger-than=]
+I thought you said that resync requests are guaranteed to never fail?
 
-I suspect the fl_classify function could be reworked to only have one
-of them on the stack and modify it in place, but I could not work out
-how to do that.
-
-As a somewhat hacky workaround, move one of them into an out-of-line
-function to reduce its scope. This does not necessarily reduce the stack
-usage of the outer function, but at least the second copy is removed
-from the stack during most of it and does not add up to whatever is
-called from there.
-
-I now see 552 bytes of stack usage for fl_classify(), plus 528 bytes
-for fl_mask_lookup().
-
-Fixes: 58cff782cc55 ("flow_dissector: Parse multiple MPLS Label Stack Entries")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/sched/cls_flower.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
-
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 96f5999281e0..030896eadd11 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -272,14 +272,16 @@ static struct cls_fl_filter *fl_lookup_range(struct fl_flow_mask *mask,
- 	return NULL;
- }
- 
--static struct cls_fl_filter *fl_lookup(struct fl_flow_mask *mask,
--				       struct fl_flow_key *mkey,
--				       struct fl_flow_key *key)
-+static noinline_for_stack
-+struct cls_fl_filter *fl_mask_lookup(struct fl_flow_mask *mask, struct fl_flow_key *key)
- {
-+	struct fl_flow_key mkey;
-+
-+	fl_set_masked_key(&mkey, key, mask);
- 	if ((mask->flags & TCA_FLOWER_MASK_FLAGS_RANGE))
--		return fl_lookup_range(mask, mkey, key);
-+		return fl_lookup_range(mask, &mkey, key);
- 
--	return __fl_lookup(mask, mkey);
-+	return __fl_lookup(mask, &mkey);
- }
- 
- static u16 fl_ct_info_to_flower_map[] = {
-@@ -299,7 +301,6 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		       struct tcf_result *res)
- {
- 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
--	struct fl_flow_key skb_mkey;
- 	struct fl_flow_key skb_key;
- 	struct fl_flow_mask *mask;
- 	struct cls_fl_filter *f;
-@@ -319,9 +320,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 				    ARRAY_SIZE(fl_ct_info_to_flower_map));
- 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
- 
--		fl_set_masked_key(&skb_mkey, &skb_key, mask);
--
--		f = fl_lookup(mask, &skb_mkey, &skb_key);
-+		f = fl_mask_lookup(mask, &skb_key);
- 		if (f && !tc_skip_sw(f->flags)) {
- 			*res = f->res;
- 			return tcf_exts_exec(skb, &f->exts, res);
--- 
-2.26.2
-
+> +	pi = mlx5e_icosq_get_next_pi(sq, 1);
+> +	wqe = MLX5E_TLS_FETCH_GET_PROGRESS_PARAMS_WQE(sq, pi);
+> +
+> +#define GET_PSV_DS_CNT (DIV_ROUND_UP(sizeof(*wqe), MLX5_SEND_WQE_DS))
+> +
+> +	cseg = &wqe->ctrl;
+> +	cseg->opmod_idx_opcode =
+> +		cpu_to_be32((sq->pc << 8) | MLX5_OPCODE_GET_PSV |
+> +			    (MLX5_OPC_MOD_TLS_TIR_PROGRESS_PARAMS << 24));
+> +	cseg->qpn_ds =
+> +		cpu_to_be32((sq->sqn << MLX5_WQE_CTRL_QPN_SHIFT) | GET_PSV_DS_CNT);
+> +
+> +	psv = &wqe->psv;
+> +	psv->num_psv      = 1 << 4;
+> +	psv->l_key        = sq->channel->mkey_be;
+> +	psv->psv_index[0] = cpu_to_be32(priv_rx->tirn);
+> +	psv->va           = cpu_to_be64(priv_rx->resync.dma_addr);
+> +
+> +	icosq_fill_wi(sq, pi, MLX5E_ICOSQ_WQE_GET_PSV_TLS, 1, priv_rx);
+> +	sq->pc++;
+> +
+> +	return cseg;
+> +}
