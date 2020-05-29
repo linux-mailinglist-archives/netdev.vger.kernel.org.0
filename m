@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 130C51E83A5
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AD11E83C6
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgE2Q2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:28:18 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55092 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725681AbgE2Q2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:28:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590769696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QOocdEe8JcHWozlDHA2H1VhP1cNSV3Qek6Z4dV8TZIg=;
-        b=KEuNiIOtB3hP9R7oVWOSDvRnGQDdWEn4qrl+t53zC4fFvAM/3UDqr/HP+9kGwg/pB9GQxY
-        JhInqU0kut2ihQkYM4Cm2ALsKqa+ZQze0ag1JUYwtDrDrpRBiYdJqmgqVfDNXR98a8IL4s
-        stMH8DjyofIX79eE2GPf8Nnn9m31te4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-TrjcmuouNH6DG4JTYjvPbQ-1; Fri, 29 May 2020 12:28:11 -0400
-X-MC-Unique: TrjcmuouNH6DG4JTYjvPbQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 308081855A1D;
-        Fri, 29 May 2020 16:28:10 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 393A27A8CC;
-        Fri, 29 May 2020 16:28:04 +0000 (UTC)
-Date:   Fri, 29 May 2020 18:28:03 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next RFC 1/3] bpf: move struct bpf_devmap_val out of
- UAPI
-Message-ID: <20200529182803.526832ed@carbon>
-In-Reply-To: <a0cadc6b-ceb4-c40b-8a02-67b99a665d74@gmail.com>
-References: <159076794319.1387573.8722376887638960093.stgit@firesoul>
-        <159076798058.1387573.3077178618799401182.stgit@firesoul>
-        <a0cadc6b-ceb4-c40b-8a02-67b99a665d74@gmail.com>
+        id S1727068AbgE2Qdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:33:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57136 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725821AbgE2Qdp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 12:33:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=kj8QWZuKpt6K2mv0dyf3jA1S8ZK8klAJXGcqBjNLHFw=; b=3nF+HtN70czA2ZUrlO8RvfT7ZY
+        LM1+wj23jWGpb9yCNquZLmigo7UjP5/D7lTURFkKIZmSwwcoCA+oK3N4zrH1+McODCf3I8nhVWg+e
+        WzHm5DGc616VMuWnQOmFuisu/RI9NUUunCizXF4ehZHT/EyHrPCVKfGzSE9UhBLjWURU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jehwy-003f86-S4; Fri, 29 May 2020 18:33:40 +0200
+Date:   Fri, 29 May 2020 18:33:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
+ 1000BaseX/2500BaseX ports
+Message-ID: <20200529163340.GI869823@lunn.ch>
+References: <20200528130738.GT1551@shell.armlinux.org.uk>
+ <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
+ <20200528135608.GU1551@shell.armlinux.org.uk>
+ <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
+ <20200528144805.GW1551@shell.armlinux.org.uk>
+ <20200528204312.df9089425162a22e89669cf1@suse.de>
+ <20200528220420.GY1551@shell.armlinux.org.uk>
+ <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
+ <20200529145928.GF869823@lunn.ch>
+ <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 May 2020 10:06:25 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 5/29/20 9:59 AM, Jesper Dangaard Brouer wrote:
-> > @@ -60,6 +60,15 @@ struct xdp_dev_bulk_queue {
-> >  	unsigned int count;
-> >  };
-> >  
-> > +/* DEVMAP values */
-> > +struct bpf_devmap_val {
-> > +	__u32 ifindex;   /* device index */
-> > +	union {
-> > +		int   fd;  /* prog fd on map write */
-> > +		__u32 id;  /* prog id on map read */
-> > +	} bpf_prog;
-> > +};
-> > +  
+> > By propagated, you mean if the external link is down, the link between
+> > the switch and node 1 will also be forced down, at the SERDES level?
 > 
-> I can pick up this name change for v4.
+> yes
+> 
+> > And if external ports are down, the nodes cannot talk to each other?
+> 
+> correct
+> 
+> > External link down causes the whole in box network to fall apart? That
+> > seems a rather odd design.
+> 
+> as I'm not an expert in ceph, I can't judge. But I'll bring it up.
 
-Great - I will appreciate, as this will make my patchset compatible
-with yours :-)
+I guess for a single use appliance this is O.K. But it makes the
+hardware unusable as a general purpose server.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Is there a variant of the hardware to be used as a general purpose
+server, rather than as a Ceph appliance? If so, does it share the same
+DT files?
 
+> > What you are actually interested in is the sync state of the SERDES?
+> > The link is up if the SERDES has sync.
+> 
+> yes, that's what I need. How can I do that ?
+
+Given the current code, you cannot. Now we understand the
+requirements, we can come up with some ideas how to do this properly.
+
+      Andrew
