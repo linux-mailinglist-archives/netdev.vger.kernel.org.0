@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48F7E1E8BBA
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 01:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD9D1E8BBB
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 01:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728525AbgE2XGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 19:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
+        id S1728472AbgE2XGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 19:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbgE2XGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 19:06:35 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54A5C03E969;
-        Fri, 29 May 2020 16:06:34 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id 64so536140pfg.8;
-        Fri, 29 May 2020 16:06:34 -0700 (PDT)
+        with ESMTP id S1726943AbgE2XGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 19:06:54 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3A2C03E969;
+        Fri, 29 May 2020 16:06:54 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id h95so1178402pje.4;
+        Fri, 29 May 2020 16:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=Dv99wc4oneeV++Xt/D6Qz05PNabmk1yN+6Cw9gD7T7I=;
-        b=c1rcg1D8viKOREBKo2W/dRoAnXyRSpAYJ7nnuASBtAD3EITve6uEaKl7G4j1zEajq6
-         +l71M49a4Gdeoh8/aSqIph1J6CID9lOtD4M6TKdiWLLu4g6/9q2U3WKaQrnGDpWiuqW4
-         aVcKX5LwczwG6e8LvHLUSYKvD44yVrFOcmr8z4sJ96hRQNTlYFiYucXwyl4W7uWiBhVG
-         06YNy1WLngcWxZK5yY3IBaKPdS/oB74FrqAI9uwOYrnmS5lS7KmNKrMF0UOYPjRX9iKV
-         ygFsV640vJcNnMw4PGA9Q3m4vSwYiuEiTcQXBg3+tHJch8lB06I/6pudKsfd19sc9okN
-         SAkQ==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=iQ1lRxlZ9KNjv16emKtDeGuGiS7CUMwKq9co9/Ovmo4=;
+        b=pLiRAnFfkFbZ/shVTggEYyxAllMc/r5weRtLhD50sRufttvmO0nkt2nRqo8MpVSXIK
+         0swZcecoMvkXAXdYAf8yCSxO9/IAn5PKTnPh5DCEjF8bKZbzJY8QEtI4xyboOOyO/3kX
+         bSjzpDUvCQOqCARxPJ6BPQyoxS8AmU7Ef6P8uFEETMLD0cxFs6M93K9iRTLfVY7VrS8N
+         9X9oSeJwnXPOja7/1V1Xs2DjndWB0B/rMRe/yjimiWQlDQAF7/neejXVLwE2AIRDxjFz
+         B+5b7JfIQ21DSStKg7vtWGppeMMLlZYEQkxraEWpXLLuWIZ08yC7JnHAmwyL7kUGGVaH
+         ajTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=Dv99wc4oneeV++Xt/D6Qz05PNabmk1yN+6Cw9gD7T7I=;
-        b=QkCcv1PzCdLukS2S/iGr3THrPAcW4RvPYGMCM8nzampg4n2ep2rDD6HICt+RkUJOjH
-         1JreslSGNuihCDdRaXKfhqOo4cJWhhJNzMfes3omDYQ6jhPucyarwcOynZl3GiNYbBiE
-         7YjAz8erNEPQL5ZjHGvKos83XlFcmA8ISXXRfvZXOTRNLMJDlqzY9Knb54j+ZyxIvQpd
-         Cvba8piSgM14h71CdCfvX+LnZwknEDsLrg70OJto6mp2GRjz5wxsYlrAjrx0WGkuDwfj
-         gUeFHqswy12sa6+Iru0ooOLF59M1nYdFnmBx1IltnN762MQ1mas5NKwI9DELdxcNQIro
-         egUg==
-X-Gm-Message-State: AOAM5333bxr+vnvDtbyasSCHfy6n9b5+F++wur6C3NP/3mXfRCHbIxDQ
-        +wHit5mkK7hbBqMjt6YUrOR7WftZL64=
-X-Google-Smtp-Source: ABdhPJwNU64b2VrDzs8l9YwhIzpYt74zJ48y7VhHJXAQqJd6ppVaTp5fC1qN4u8aaYjK6uhJ1/e56g==
-X-Received: by 2002:a62:780c:: with SMTP id t12mr10588621pfc.235.1590793594156;
-        Fri, 29 May 2020 16:06:34 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=iQ1lRxlZ9KNjv16emKtDeGuGiS7CUMwKq9co9/Ovmo4=;
+        b=nWzpA9A5dY5aRFCWoOBoJsrhwQu936QEd5PrujqV3Hj3M//Nv8nEo0hkrLhvVvyDCp
+         EtnfXrV1nf814uDRLBf7fmoCqmDjh6DubuthGErV1/AGjiZg+g1Km6cCoO78yINVozP0
+         D8xASkvOFN7InZ+oy+o0EyhzofL5ee3SW9QE7jgqer0JG42PFnYYJa0g5GHszCpxc4jo
+         dJM/ub3W8k2aCx0Y2qgdeYrCYdylD3xndzpNkizcQmI1JZ8P4k8IYAriqoKXAi1b4rkZ
+         rtJExtuOwDDeM76PgyJDx2/gGGJj1BxvEMtrdPNW6vzk0dmRlc+HorVBEDTg33Ll5duy
+         Pf5Q==
+X-Gm-Message-State: AOAM531JEkoPTiS/J2mNxqERCyYackUXV/luiZm39aAVYgCEYxCl7/dS
+        MryVaS8pIVjT223z2tt37sbYCu0rWHs=
+X-Google-Smtp-Source: ABdhPJxjZZBAH5P2jNaw6nQwLSxNUxfUQHo5Lan85zQ2f0a50AWgK82WFfgu74UeW6f9wxpeGaNl1g==
+X-Received: by 2002:a17:90b:3d4:: with SMTP id go20mr12620996pjb.208.1590793613318;
+        Fri, 29 May 2020 16:06:53 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id j16sm7871133pfa.179.2020.05.29.16.06.26
+        by smtp.gmail.com with ESMTPSA id gz19sm410829pjb.33.2020.05.29.16.06.47
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 May 2020 16:06:32 -0700 (PDT)
-Subject: [bpf-next PATCH 0/3] fix ktls with sk_skb_verdict programs
+        Fri, 29 May 2020 16:06:52 -0700 (PDT)
+Subject: [bpf-next PATCH 1/3] bpf: refactor sockmap redirect code so its
+ easy to reuse
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Fri, 29 May 2020 16:06:20 -0700
-Message-ID: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
+Date:   Fri, 29 May 2020 16:06:41 -0700
+Message-ID: <159079360110.5745.7024009076049029819.stgit@john-Precision-5820-Tower>
+In-Reply-To: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
+References: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -63,31 +66,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a socket is running a BPF_SK_SKB_SREAM_VERDICT program and KTLS is
-enabled the data stream may be broken if both TLS stream parser and
-BPF stream parser try to handle data. Fix this here by making KTLS
-stream parser run first to ensure TLS messages are received correctly
-and then calling the verdict program. This analogous to how we handle
-a similar conflict on the TX side.
+We will need this block of code called from tls context shortly
+lets refactor the redirect logic so its easy to use. This also
+cleans up the switch stmt so we have fewer fallthrough cases.
 
-Note, this is a fix but it doesn't make sense to push this late to
-bpf tree so targeting bpf-next and keeping fixes tags.
+No logic changes are intended.
 
+Fixes: d829e9c4112b5 ("tls: convert to generic sk_msg interface")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ net/core/skmsg.c |   55 +++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 34 insertions(+), 21 deletions(-)
 
-John Fastabend (3):
-      bpf: refactor sockmap redirect code so its easy to reuse
-      bpf: fix running sk_skb program types with ktls
-      bpf, selftests: add test for ktls with skb bpf ingress policy
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index c479372..9d72f71 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -682,13 +682,43 @@ static struct sk_psock *sk_psock_from_strp(struct strparser *strp)
+ 	return container_of(parser, struct sk_psock, parser);
+ }
+ 
+-static void sk_psock_verdict_apply(struct sk_psock *psock,
+-				   struct sk_buff *skb, int verdict)
++static void sk_psock_skb_redirect(struct sk_psock *psock, struct sk_buff *skb)
+ {
+ 	struct sk_psock *psock_other;
+ 	struct sock *sk_other;
+ 	bool ingress;
+ 
++	sk_other = tcp_skb_bpf_redirect_fetch(skb);
++	if (unlikely(!sk_other)) {
++		kfree_skb(skb);
++		return;
++	}
++	psock_other = sk_psock(sk_other);
++	if (!psock_other || sock_flag(sk_other, SOCK_DEAD) ||
++	    !sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
++		kfree_skb(skb);
++		return;
++	}
++
++	ingress = tcp_skb_bpf_ingress(skb);
++	if ((!ingress && sock_writeable(sk_other)) ||
++	    (ingress &&
++	     atomic_read(&sk_other->sk_rmem_alloc) <=
++	     sk_other->sk_rcvbuf)) {
++		if (!ingress)
++			skb_set_owner_w(skb, sk_other);
++		skb_queue_tail(&psock_other->ingress_skb, skb);
++		schedule_work(&psock_other->work);
++	} else {
++		kfree_skb(skb);
++	}
++}
++
++static void sk_psock_verdict_apply(struct sk_psock *psock,
++				   struct sk_buff *skb, int verdict)
++{
++	struct sock *sk_other;
++
+ 	switch (verdict) {
+ 	case __SK_PASS:
+ 		sk_other = psock->sk;
+@@ -707,25 +737,8 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+ 		}
+ 		goto out_free;
+ 	case __SK_REDIRECT:
+-		sk_other = tcp_skb_bpf_redirect_fetch(skb);
+-		if (unlikely(!sk_other))
+-			goto out_free;
+-		psock_other = sk_psock(sk_other);
+-		if (!psock_other || sock_flag(sk_other, SOCK_DEAD) ||
+-		    !sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED))
+-			goto out_free;
+-		ingress = tcp_skb_bpf_ingress(skb);
+-		if ((!ingress && sock_writeable(sk_other)) ||
+-		    (ingress &&
+-		     atomic_read(&sk_other->sk_rmem_alloc) <=
+-		     sk_other->sk_rcvbuf)) {
+-			if (!ingress)
+-				skb_set_owner_w(skb, sk_other);
+-			skb_queue_tail(&psock_other->ingress_skb, skb);
+-			schedule_work(&psock_other->work);
+-			break;
+-		}
+-		/* fall-through */
++		sk_psock_skb_redirect(psock, skb);
++		break;
+ 	case __SK_DROP:
+ 		/* fall-through */
+ 	default:
 
-
- include/linux/skmsg.h                              |    8 +
- include/net/tls.h                                  |    9 +
- net/core/skmsg.c                                   |   98 +++++++++---
- net/tls/tls_sw.c                                   |   20 ++
- .../selftests/bpf/progs/test_sockmap_kern.h        |   46 ++++++
- tools/testing/selftests/bpf/test_sockmap.c         |  163 +++++++++++++++++---
- 6 files changed, 296 insertions(+), 48 deletions(-)
-
---
-Signature
