@@ -2,206 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C49BD1E8315
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:05:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F0F1E8320
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728086AbgE2QFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S1728115AbgE2QGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgE2QFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:05:49 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7D7C03E969;
-        Fri, 29 May 2020 09:05:48 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id c185so2649769qke.7;
-        Fri, 29 May 2020 09:05:48 -0700 (PDT)
+        with ESMTP id S1725795AbgE2QG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:06:28 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84786C03E969;
+        Fri, 29 May 2020 09:06:28 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id h9so2324147qtj.7;
+        Fri, 29 May 2020 09:06:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pd5lAZmWnGQEg9my+K8yqiGBxQw7BvJ1dx+ybceAc+M=;
-        b=flf93cj1reYDcbDT3u7JD+/ZI2FqlzB/yXOhGH80n/apv8aSl4OmFJJYYXdFEgD2iP
-         7EDNqFo8yTsMG9L7vdQ/rgGVpF+nl6s1/jB+Ye3IwclwAtYW+efliy5blg2NQPOeXljc
-         UFdv1WagT/12zf29orcGmGvr97Z3xAgsNSVcI3xi7RseAW6/IHd/fwGS8R0/Qnr/I1Hw
-         KfsWN+hAQ7386ilUbrRmqYB9RSZzyB5+iwXW8PQaO6tCeWdtIJ1Ra4cCrZe10YliKu0t
-         NcvjNT1sa/ciBXimf9ujpxK0OlH0tu/U1IpW/YI8eUcgoe8uuGfCvddDgim9cJ0yqv/n
-         JXUQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lqTsyzjRehJUOH405LBW4wTGdQ2N6UIDHlWNnbs0wQw=;
+        b=DgU2WmpxqUFLQ+4O4a2LwXWDXk1KgxaX+xNMUUQ/HtvQ0+NO3TPRP7NcpG/1oNMDBb
+         VYLsi7BuudNO0qEyLzbKMaNuMVGwpQ5akkwxkS8zjNwT27AkwlrR5B58logDJ4VEfXQY
+         6WOiqz4KzenhsujPS941u5eSadiokp0Pyn/nxfwnxlITVKVe5KCvpjKTbiKcTMijuzjc
+         5qc0M2wM6QOwdqSg+6R6GKpfXzD/mujKDY9xgec3zMBT88rj38i26nMDRTaGGZiPHaQ9
+         ApRm+G2O3dV5gDumTPB2cPUBwn0U7MWbJqhjV6JalsuIE/crJ5/YoQgNpT9hXGI0eqx2
+         mYkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pd5lAZmWnGQEg9my+K8yqiGBxQw7BvJ1dx+ybceAc+M=;
-        b=SZJkDmGx47xBvgoUZ4aQidMUMpJF3iv/yhz8Es2yHB1JpM2v3eCdzDh5TGhS6txngI
-         AFNqoao0GqhDKgY5CXxBnMF0QnT0aAA2yhbkFfjblmmNrrbdFY63r2fG7UfwqyBXCutO
-         q8b0e+Kj7T+9vmh1cIDEhpbh0DUzwpAHge3pKcB4Ngdn4QXpYUB6D/tkfsQXruZGA0Ft
-         1Koqwywbhyxc9fAisN+n+tUFLAuCgvsTIk+NtYJGGxHHZfn97qYoN6O+pf5B7YsOAhBP
-         YGQ/wT/HY2rRCqkb7BpgZ23pFSMoogaQv7t/lQMsIOYZHHQ8fQNLEzTeabanm/I8ZAZW
-         IWfQ==
-X-Gm-Message-State: AOAM5336Pl7EIc5rx23WjYUNksltT0vCfyPcSmdw0lG4YI/YFqNoPyST
-        hSqE3aF22cTM05/d4C+u8/E=
-X-Google-Smtp-Source: ABdhPJzmHd7SDMPI2q+JYngCQ2RfZPvDlFDGRklGnRQrYU+7mGWuhiht9GIratK6mbSYxK77dID42g==
-X-Received: by 2002:a37:b446:: with SMTP id d67mr1200068qkf.136.1590768347949;
-        Fri, 29 May 2020 09:05:47 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:516d:2604:bfa5:7157:afa1])
-        by smtp.gmail.com with ESMTPSA id p10sm6755496qkm.121.2020.05.29.09.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:05:47 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id D94A7C1B84; Fri, 29 May 2020 13:05:44 -0300 (-03)
-Date:   Fri, 29 May 2020 13:05:44 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-sctp@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cluster-devel@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] sctp: refactor sctp_setsockopt_bindx
-Message-ID: <20200529160544.GI2491@localhost.localdomain>
-References: <20200529120943.101454-1-hch@lst.de>
- <20200529120943.101454-3-hch@lst.de>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lqTsyzjRehJUOH405LBW4wTGdQ2N6UIDHlWNnbs0wQw=;
+        b=qbVGZZuBKnCd7RQu9VW+XEY8WpnOh/8+WiwbPjQazp7Q1rvbxanrW3aSbu6D6TfBwP
+         LqHHkrQtghEiYh1iJ1i6S8lRM31b9+PtHZLt1LCEAXjMS1R53P0SRM2oc6cAVV6c8YEw
+         BECLfN/5FuO1LnSw18uN3DnjlIXGS+wPIPhI7ipxi/WYYzRmTJ213cBA/5OrkTXmQVMG
+         2s1eBQHFWH9daT2dYixi1MQdu0mo+IRwMhQc0m4IiI0m8Tdl2RyvBN1pyt4y2R5/s/rg
+         vk1pR5Dd6werW++42YE+FnoKX067Bv13FEqplp8/i3ZvniSUHKTy6GZS9h8b/rsSxIkU
+         UsVg==
+X-Gm-Message-State: AOAM533w3vVJDTRO+kDh2zahzBVfSqhdh7860RuwAq+i2BhV+qZuctVM
+        CoekrpZ3P+VWpBdNcq8B9B8=
+X-Google-Smtp-Source: ABdhPJwXvWOjITxD1BzHdHiBH+kJMAfmlqQtckkVGFDu1kRKUccRxxJwItrlNrQuqa2PGzC7wYeq8Q==
+X-Received: by 2002:aed:3b54:: with SMTP id q20mr9805140qte.362.1590768387836;
+        Fri, 29 May 2020 09:06:27 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:9452:75de:4860:c1e3? ([2601:282:803:7700:9452:75de:4860:c1e3])
+        by smtp.googlemail.com with ESMTPSA id 10sm7802275qkv.136.2020.05.29.09.06.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 May 2020 09:06:27 -0700 (PDT)
+Subject: Re: [PATCH bpf-next RFC 1/3] bpf: move struct bpf_devmap_val out of
+ UAPI
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+References: <159076794319.1387573.8722376887638960093.stgit@firesoul>
+ <159076798058.1387573.3077178618799401182.stgit@firesoul>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a0cadc6b-ceb4-c40b-8a02-67b99a665d74@gmail.com>
+Date:   Fri, 29 May 2020 10:06:25 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200529120943.101454-3-hch@lst.de>
+In-Reply-To: <159076798058.1387573.3077178618799401182.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 02:09:41PM +0200, Christoph Hellwig wrote:
-> Split out a sctp_setsockopt_bindx_kernel that takes a kernel pointer
-> to the sockaddr and make sctp_setsockopt_bindx a small wrapper around
-> it.  This prepares for adding a new bind_add proto op.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On 5/29/20 9:59 AM, Jesper Dangaard Brouer wrote:
+> @@ -60,6 +60,15 @@ struct xdp_dev_bulk_queue {
+>  	unsigned int count;
+>  };
+>  
+> +/* DEVMAP values */
+> +struct bpf_devmap_val {
+> +	__u32 ifindex;   /* device index */
+> +	union {
+> +		int   fd;  /* prog fd on map write */
+> +		__u32 id;  /* prog id on map read */
+> +	} bpf_prog;
+> +};
+> +
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
-> ---
->  net/sctp/socket.c | 61 ++++++++++++++++++++++-------------------------
->  1 file changed, 28 insertions(+), 33 deletions(-)
-> 
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index 827a9903ee288..6e745ac3c4a59 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -972,23 +972,22 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
->   * it.
->   *
->   * sk        The sk of the socket
-> - * addrs     The pointer to the addresses in user land
-> + * addrs     The pointer to the addresses
->   * addrssize Size of the addrs buffer
->   * op        Operation to perform (add or remove, see the flags of
->   *           sctp_bindx)
->   *
->   * Returns 0 if ok, <0 errno code on error.
->   */
-> -static int sctp_setsockopt_bindx(struct sock *sk,
-> -				 struct sockaddr __user *addrs,
-> -				 int addrs_size, int op)
-> +static int sctp_setsockopt_bindx_kernel(struct sock *sk,
-> +					struct sockaddr *addrs, int addrs_size,
-> +					int op)
->  {
-> -	struct sockaddr *kaddrs;
->  	int err;
->  	int addrcnt = 0;
->  	int walk_size = 0;
->  	struct sockaddr *sa_addr;
-> -	void *addr_buf;
-> +	void *addr_buf = addrs;
->  	struct sctp_af *af;
->  
->  	pr_debug("%s: sk:%p addrs:%p addrs_size:%d opt:%d\n",
-> @@ -997,17 +996,10 @@ static int sctp_setsockopt_bindx(struct sock *sk,
->  	if (unlikely(addrs_size <= 0))
->  		return -EINVAL;
->  
-> -	kaddrs = memdup_user(addrs, addrs_size);
-> -	if (IS_ERR(kaddrs))
-> -		return PTR_ERR(kaddrs);
-> -
->  	/* Walk through the addrs buffer and count the number of addresses. */
-> -	addr_buf = kaddrs;
->  	while (walk_size < addrs_size) {
-> -		if (walk_size + sizeof(sa_family_t) > addrs_size) {
-> -			kfree(kaddrs);
-> +		if (walk_size + sizeof(sa_family_t) > addrs_size)
->  			return -EINVAL;
-> -		}
->  
->  		sa_addr = addr_buf;
->  		af = sctp_get_af_specific(sa_addr->sa_family);
-> @@ -1015,10 +1007,8 @@ static int sctp_setsockopt_bindx(struct sock *sk,
->  		/* If the address family is not supported or if this address
->  		 * causes the address buffer to overflow return EINVAL.
->  		 */
-> -		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
-> -			kfree(kaddrs);
-> +		if (!af || (walk_size + af->sockaddr_len) > addrs_size)
->  			return -EINVAL;
-> -		}
->  		addrcnt++;
->  		addr_buf += af->sockaddr_len;
->  		walk_size += af->sockaddr_len;
-> @@ -1029,31 +1019,36 @@ static int sctp_setsockopt_bindx(struct sock *sk,
->  	case SCTP_BINDX_ADD_ADDR:
->  		/* Allow security module to validate bindx addresses. */
->  		err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD,
-> -						 (struct sockaddr *)kaddrs,
-> -						 addrs_size);
-> +						 addrs, addrs_size);
->  		if (err)
-> -			goto out;
-> -		err = sctp_bindx_add(sk, kaddrs, addrcnt);
-> +			return err;
-> +		err = sctp_bindx_add(sk, addrs, addrcnt);
->  		if (err)
-> -			goto out;
-> -		err = sctp_send_asconf_add_ip(sk, kaddrs, addrcnt);
-> -		break;
-> -
-> +			return err;
-> +		return sctp_send_asconf_add_ip(sk, addrs, addrcnt);
->  	case SCTP_BINDX_REM_ADDR:
-> -		err = sctp_bindx_rem(sk, kaddrs, addrcnt);
-> +		err = sctp_bindx_rem(sk, addrs, addrcnt);
->  		if (err)
-> -			goto out;
-> -		err = sctp_send_asconf_del_ip(sk, kaddrs, addrcnt);
-> -		break;
-> +			return err;
-> +		return sctp_send_asconf_del_ip(sk, addrs, addrcnt);
->  
->  	default:
-> -		err = -EINVAL;
-> -		break;
-> +		return -EINVAL;
->  	}
-> +}
->  
-> -out:
-> -	kfree(kaddrs);
-> +static int sctp_setsockopt_bindx(struct sock *sk,
-> +				 struct sockaddr __user *addrs,
-> +				 int addrs_size, int op)
-> +{
-> +	struct sockaddr *kaddrs;
-> +	int err;
->  
-> +	kaddrs = memdup_user(addrs, addrs_size);
-> +	if (IS_ERR(kaddrs))
-> +		return PTR_ERR(kaddrs);
-> +	err = sctp_setsockopt_bindx_kernel(sk, kaddrs, addrs_size, op);
-> +	kfree(kaddrs);
->  	return err;
->  }
->  
-> -- 
-> 2.26.2
-> 
+I can pick up this name change for v4.
