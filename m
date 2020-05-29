@@ -2,263 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E415C1E7606
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 08:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C13B1E763C
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 08:57:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726167AbgE2Gik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 02:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbgE2Gij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 02:38:39 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11984C08C5C6
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 23:38:39 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id h9so1117470qtj.7
-        for <netdev@vger.kernel.org>; Thu, 28 May 2020 23:38:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yk848id7vtNolPLD3KEG4NqJWrDi66P+M/7SE2ysDzc=;
-        b=iPuPVA4DElW2U2r8uxNFBqf//3GZLfttCNSoOtAKLGol9xZigNPBpuVynoPyPUh43y
-         lCeyNtdW6bqPdgXi608OJerLmBAsvBQJCPqBGcQcne4KKDDS1vtaUNrngpBOHgBqQKSQ
-         lo4Ca4YYvwx/5d87xaT3BxLOzN+pDeZevlr9yK2Jc+TmPKG0Dw7fRunAg1TTtQ+bRj4z
-         VPnBcY0FahbWm2pEa1Pi6LF6cFo/hgvDSu8dpt16zvRSmBdl+JAdtO+eQicK97N+1PFW
-         HInCNoBSpEUCcffAEAZMOa4oz5VPFbv1X3lGkJQoGO/6OC2mJWzy/Jfn/ElUhNL5yd6I
-         d6uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yk848id7vtNolPLD3KEG4NqJWrDi66P+M/7SE2ysDzc=;
-        b=UWcU8MhcQWYyx7SZPCypT+4RA1sY8WXCh+hiFf3Kc1VpYoomQ5G+tG1PNcNq1/K0ci
-         kMneozSmFxQ5YAMrI4UGTAzx4Y5AO2PRqfRMPBg8cf+FH3YjMR+e5IMFL2L4nxR8Wj78
-         KYdwOG8gHyNIRcDtsDAfOL+AY3msFruUMWfRmLZaqUyU8IUi5JPYJ4ghg0rvIeCDQzay
-         n6S/Cgu6mVxWkL+WedHXLWxbOCUZ3i/3rp/gtWY3ooXCfpQvB7dKSN+3C0rCH3G3zUae
-         vVIGborLTA7xsbPEQ411YK7wknhdGGST9zK4s1iFppoml+C50shqfU3Sjxpoa9nd7Wph
-         Geow==
-X-Gm-Message-State: AOAM533nr3xOxnSOpD7AGp/ri49dZi5PBcniqhA3qmM3RpYW99wx14gI
-        QzX9lIGs26vSnd0QtC1MacvFpdmnAl+0HVYpAwiF7w==
-X-Google-Smtp-Source: ABdhPJy0tK1MiG8OHjzxdXFMiR0Bzo5gP0KB126IBs9wAXI8Fk7NxetoLNfc0FE7UEM3WRMxU1sDnYHxbF2MDJ42c1g=
-X-Received: by 2002:aed:37e7:: with SMTP id j94mr7190211qtb.57.1590734317859;
- Thu, 28 May 2020 23:38:37 -0700 (PDT)
+        id S1726052AbgE2G5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 02:57:19 -0400
+Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:44867
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725988AbgE2G5S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 02:57:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eskTo45UEdKIsEUSg/p99D6mIKgzkhngK7bd6m8iCw1X6I0Und9vuTTWJw+B/+d1f7tiYeUIgSsJQtdYoGTBXVkoxKabgLCW9Vi+9FUFXRX1ttsTrzl0v8uSWFQAIY6SJHZxdlp2jjh4zz2tlW86WmcTki9AYGxfzqrdxxnateYg+cVt9A2OmdC9ebs8Nv14csBK9kfBaUzNOfPdFFKd+Sp9q7Zyph0OmzMgc+Kf3pBDEeXoMge+1/hdFVrzDEXeJiAcwUZlY1zPmodregV8zcGHggA3FXdyqO5+zZFyoDdYBLUKrvVAi8UrGksAB6/EIO0OczTsddXYzoB9UVCDaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F2FclwByQB/K15mDmC57MUT+XLk2t26s6uCHkb1mlqQ=;
+ b=JrGe9fFPovCSiTk/HnZUzsga6SCzmSZB6tyHWhyLnvaltnCuV94gFR/vZrR6ESelt5VDzRiSzGp5e/5RPiz4P7sllfxcuMkGRfIGMa2HOwCuP2MUiDkmXgADVkrZwCsgY7mOD7n3uieRB3PEmw8OupGzgNa/m7wxECN1L/x23nMC4BJAHc3cglEGC8Ysi9TTB/2omXueo1n7IqoOagpdurAp6fzKb+DE01b5NE5GypkgVbrYmVaAVQP36jjq0ZWBjs78b3Y4RFozzYn+0p2BD8pCi+LJenD9W62UC3W5itDRbTeqZLhKltfkQEpzYaRSHO8SN0y0rZXAQvbM/yPueA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F2FclwByQB/K15mDmC57MUT+XLk2t26s6uCHkb1mlqQ=;
+ b=gYNmWjgun+Vo9Xhmq9umO2WQifPT3ZPP4ej1WYDAMTLPOMYpzZDkJxW0t0lp6zgLtzEIzrNB+9D2dl+GH3fa6mJ8xUvxjDi1PW54ovw6GCCthGfN7QqUYpQCYUXLzb9S5JfWRXuC+/mNEJrDy/76QduftbU5tsyYJ6uHh7zCJgc=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB6640.eurprd05.prod.outlook.com (2603:10a6:800:132::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.21; Fri, 29 May
+ 2020 06:57:14 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3045.018; Fri, 29 May 2020
+ 06:57:14 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, jakub@kernel.org
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/6] mlx5 fixes 2020-05-28
+Date:   Thu, 28 May 2020 23:56:39 -0700
+Message-Id: <20200529065645.118386-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:a03:1e0::37) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-References: <00000000000018e1d305a6b80a73@google.com> <d65c8424-e78c-63f9-3711-532494619dc6@fb.com>
- <CACT4Y+aNBkhxuMOk4_eqEmLjHkjbw4wt0nBvtFCw2ssn3m2NTA@mail.gmail.com> <da6dd6d1-8ed9-605c-887f-a956780fc48d@fb.com>
-In-Reply-To: <da6dd6d1-8ed9-605c-887f-a956780fc48d@fb.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 29 May 2020 08:38:26 +0200
-Message-ID: <CACT4Y+YwB=hbVjp9i8z1hib015QSurpLu9nX9815TJ-t4e6WVQ@mail.gmail.com>
-Subject: Re: general protection fault in inet_unhash
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     syzbot <syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, guro@fb.com,
-        kuba@kernel.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0027.namprd03.prod.outlook.com (2603:10b6:a03:1e0::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Fri, 29 May 2020 06:57:12 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 2778e6f0-363c-456e-5843-08d8039d845e
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6640:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6640D0C637DCA769EC5E1C82BE8F0@VI1PR05MB6640.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 04180B6720
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XE4Vj42yhvZbxzTXUWQerNnVfZPfuf0H/nPfX3vNBXXaVTMbGhIQqHbEiRk6mYbV8TRCtcTernxjnu7y2lDOEBjngBAzWLV2G2AknZAfC0ehuRbKiwanRhCK7/4aOT4NRB3nPhgv6emJ41glMejG2CN24oVyrTpU6JXsx4noMsTaIavNmfeL+zLyTOEE0UDuQF5aRPR1vzy87x2yYbfoD6tqnIwRYABLlQfkPx4BgqEsCBvBOSOU60PEHDJ6MQzjjL/ZcdW4E0PsnqFQZI7ePX2QK+Is3I6Ugv1v7ZbN+EcYmV7uc/efS8jcLntcteDy91003xMZPdZ3LmnfhOJBSPX4q2yxfyg5QlaNW4ssW4WJMR0yO9fCjiZPEZCfu1eG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(396003)(136003)(39860400002)(366004)(83380400001)(107886003)(2906002)(5660300002)(6486002)(6512007)(86362001)(66946007)(4326008)(1076003)(66556008)(66476007)(6666004)(52116002)(8676002)(36756003)(316002)(8936002)(956004)(2616005)(186003)(478600001)(16526019)(6506007)(26005)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: l8nweRk68peZUEk9jJgyGPdykMg9pUV1Jt2RL2XIcvXbyc6i6bjSWd8xRlYwZ7Dyon7jBAzQ6Iv1/SB2cLeHpzl2ItgNpZ1vk4Pilxh3J0ecV0/5Ol1AkGdUcxC/YN2ViG9TeFWqNcq2QyOkUTw/8g9VCy+FL/cl9Y/W3xifLrmK/J4C6xYGPBhP2CQUqgBPMhrqWJAX86tXjWOqqq5+rKOeP9Gklxrkraxxbs6fTEoA9lKQGeBaZWxlZzWyWuitf37//TbfempbKlB35kslpjjDZlANbPqaiNnG1jMgDQqzsR23v3gHT4nCFyBRdwX6ddJwKYZoDd02nbFnpmKO/nG2w5hDbGqvwrxGiQq/HX7MoiMaNSwwZwwYKp2JVEYpRcofpr2qEZ7W6gTl4G2BgJ97KUIK/7JXCGMOCX/jNfOP9mPqjoPKCjlzZXa4VkJYUmC9pLUlZi/G2C2V/nPx5vT39LM5BiyPuIlp+U/e6Ds=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2778e6f0-363c-456e-5843-08d8039d845e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 06:57:13.9788
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QUz6yIYmnSm13SXCo06sMTX22ekIJGa5NC9F8lLmrEsWqRQimaKS4TziLx9uAsGayT0ElDU9oPkHbsdn/xdnkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6640
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 8:33 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> On 5/28/20 11:23 PM, Dmitry Vyukov wrote:
-> > On Thu, May 28, 2020 at 11:01 PM 'Andrii Nakryiko' via syzkaller-bugs
-> > <syzkaller-bugs@googlegroups.com> wrote:
-> >>
-> >> On 5/28/20 9:44 AM, syzbot wrote:
-> >>> Hello,
-> >>>
-> >>> syzbot found the following crash on:
-> >>>
-> >>> HEAD commit:    dc0f3ed1 net: phy: at803x: add cable diagnostics supp=
-ort f..
-> >>> git tree:       net-next
-> >>> console output: https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_log.txt-3Fx-3D17289cd2100000&d=3DDwIBaQ&c=3D5VD0R=
-TtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8cu=
-2M9da3ZozO5Lc8do0&s=3Dt1v5ZakZM9Aw_9u_I6FbFZ28U0GFs0e9dMMUOyiDxO4&e=3D
-> >>> kernel config:  https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_.config-3Fx-3D7e1bc97341edbea6&d=3DDwIBaQ&c=3D5VD=
-0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8=
-cu2M9da3ZozO5Lc8do0&s=3DyeXCTODuJF6ExmCJ-ppqMHsfvMCbCQ9zkmZi3W6NGHo&e=3D
-> >>> dashboard link: https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_bug-3Fextid-3D3610d489778b57cc8031&d=3DDwIBaQ&c=3D5=
-VD0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6Fc=
-H8cu2M9da3ZozO5Lc8do0&s=3D8fAJHh81yojiinnGJzTw6hN4w4A6XRZST4463CWL9Y8&e=3D
-> >>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >>> syz repro:      https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_repro.syz-3Fx-3D15f237aa100000&d=3DDwIBaQ&c=3D5VD=
-0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8=
-cu2M9da3ZozO5Lc8do0&s=3DcPv-hQsGYs0CVz3I26BmauS0hQ8_YTWHeH5p-U5ElWY&e=3D
-> >>> C reproducer:   https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_repro.c-3Fx-3D1553834a100000&d=3DDwIBaQ&c=3D5VD0R=
-TtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8cu=
-2M9da3ZozO5Lc8do0&s=3Dr6sGJDOgosZDE9sRxqFnVibDNJFt_6IteSWeqEQLbNE&e=3D
-> >>>
-> >>> The bug was bisected to:
-> >>>
-> >>> commit af6eea57437a830293eab56246b6025cc7d46ee7
-> >>> Author: Andrii Nakryiko <andriin@fb.com>
-> >>> Date:   Mon Mar 30 02:59:58 2020 +0000
-> >>>
-> >>>       bpf: Implement bpf_link-based cgroup BPF program attachment
-> >>>
-> >>> bisection log:  https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_bisect.txt-3Fx-3D1173cd7e100000&d=3DDwIBaQ&c=3D5V=
-D0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH=
-8cu2M9da3ZozO5Lc8do0&s=3DrJIpYFSAMRfea3349dd7PhmLD_hriVwq8ZtTHcSagBA&e=3D
-> >>> final crash:    https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_report.txt-3Fx-3D1373cd7e100000&d=3DDwIBaQ&c=3D5V=
-D0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH=
-8cu2M9da3ZozO5Lc8do0&s=3DTWpx5JNdxKiKPABUScn8WB7u3fXueCp7BXwQHg4Unz0&e=3D
-> >>> console output: https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A=
-__syzkaller.appspot.com_x_log.txt-3Fx-3D1573cd7e100000&d=3DDwIBaQ&c=3D5VD0R=
-TtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8cu=
-2M9da3ZozO5Lc8do0&s=3D-SMhn-dVZI4W51EZQ8Im0sdThgwt9M6fxUt3_bcYvk8&e=3D
-> >>>
-> >>> IMPORTANT: if you fix the bug, please add the following tag to the co=
-mmit:
-> >>> Reported-by: syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com
-> >>> Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF progra=
-m attachment")
-> >>>
-> >>> general protection fault, probably for non-canonical address 0xdffffc=
-0000000001: 0000 [#1] PREEMPT SMP KASAN
-> >>> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f=
-]
-> >>> CPU: 0 PID: 7063 Comm: syz-executor654 Not tainted 5.7.0-rc6-syzkalle=
-r #0
-> >>> Hardware name: Google Google Compute Engine/Google Compute Engine, BI=
-OS Google 01/01/2011
-> >>> RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
-> >>
-> >> No idea why it was bisected to bpf_link change. It seems completely
-> >> struct sock-related. Seems like
-> >
-> > Hi Andrii,
-> >
-> > You can always find a detailed explanation of syzbot bisections under
-> > the "bisection log" link.
->
-> Right. Sorry, I didn't mean that bisect went wrong or anything like
-> that. I just don't see how my change has anything to do with invalid
-> socket state. As I just replied in another email, this particular repro
-> is using bpf_link_create() for cgroup attachment, which was added in my
-> patch. So running repro before my patch would always fail to attach BPF
-> program, and thus won't be able to repro the issue (because the bug is
-> somewhere in the interaction between BPF program attachment and socket
-> itself). So it will always bisect to my patch :)
+Hi Dave,
 
-This happens sometimes. Sometimes bugs are bisected to the addition of
-the debug check/tool. Which is... kinda working as intended. There is
-only that much we can ask from the robot.
+This series introduces some fixes to mlx5 driver.
 
-> >> struct inet_hashinfo *hashinfo =3D sk->sk_prot->h.hashinfo;
-> >>
-> >> ends up being NULL.
-> >>
-> >> Can some more networking-savvy people help with investigating this, pl=
-ease?
-> >>
-> >>> Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 =
-44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 0=
-0 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
-> >>> RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
-> >>> RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
-> >>> RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
-> >>> RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
-> >>> R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
-> >>> R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
-> >>> FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:000000000=
-0000000
-> >>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >>> CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
-> >>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >>> Call Trace:
-> >>>    sk_common_release+0xba/0x370 net/core/sock.c:3210
-> >>>    inet_create net/ipv4/af_inet.c:390 [inline]
-> >>>    inet_create+0x966/0xe00 net/ipv4/af_inet.c:248
-> >>>    __sock_create+0x3cb/0x730 net/socket.c:1428
-> >>>    sock_create net/socket.c:1479 [inline]
-> >>>    __sys_socket+0xef/0x200 net/socket.c:1521
-> >>>    __do_sys_socket net/socket.c:1530 [inline]
-> >>>    __se_sys_socket net/socket.c:1528 [inline]
-> >>>    __x64_sys_socket+0x6f/0xb0 net/socket.c:1528
-> >>>    do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-> >>>    entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> >>> RIP: 0033:0x441e29
-> >>> Code: e8 fc b3 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 =
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f=
-0 ff ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> >>> RSP: 002b:00007ffdce184148 EFLAGS: 00000246 ORIG_RAX: 000000000000002=
-9
-> >>> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441e29
-> >>> RDX: 0000000000000073 RSI: 0000000000000002 RDI: 0000000000000002
-> >>> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> >>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> >>> R13: 0000000000402c30 R14: 0000000000000000 R15: 0000000000000000
-> >>> Modules linked in:
-> >>> ---[ end trace 23b6578228ce553e ]---
-> >>> RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
-> >>> Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 =
-44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 0=
-0 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
-> >>> RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
-> >>> RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
-> >>> RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
-> >>> RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
-> >>> R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
-> >>> R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
-> >>> FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:000000000=
-0000000
-> >>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >>> CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
-> >>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >>>
-> >>>
-> >>> ---
-> >>> This bug is generated by a bot. It may contain errors.
-> >>> See https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__goo.gl_tps=
-mEJ&d=3DDwIBaQ&c=3D5VD0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsM=
-AtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=3DNELwknC4AyuWSJIHbwt_O_c0jfPc_=
-6D9RuKHh_adQ_Y&e=3D  for more information about syzbot.
-> >>> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >>>
-> >>> syzbot will keep track of this bug report. See:
-> >>> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__goo.gl_tpsmEJ-=
-23status&d=3DDwIBaQ&c=3D5VD0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=
-=3DsMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=3DYfV-e6A04EIqHwezxYop7CpJ=
-yhXD8DVzwTPUT0xckaM&e=3D  for how to communicate with syzbot.
-> >>> For information about bisection process see: https://urldefense.proof=
-point.com/v2/url?u=3Dhttps-3A__goo.gl_tpsmEJ-23bisection&d=3DDwIBaQ&c=3D5VD=
-0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8=
-cu2M9da3ZozO5Lc8do0&s=3DxOFzqI48uvECf4XFjlhNl4LBOT02lz1HlCL6MT1uMrI&e=3D
-> >>> syzbot can test patches for this bug, for details see:
-> >>> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__goo.gl_tpsmEJ-=
-23testing-2Dpatches&d=3DDwIBaQ&c=3D5VD0RTtNlTh3ycd41b3MUw&r=3Dvxqvl81C2rT6G=
-OGdPyz8iQ&m=3DsMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=3D_cj6MOAz3yNlX=
-gjMuyRu6ZOEjRvYWEvtTd7kE46wVfo&e=3D
-> >>>
-> >>
-> >> --
-> >> You received this message because you are subscribed to the Google Gro=
-ups "syzkaller-bugs" group.
-> >> To unsubscribe from this group and stop receiving emails from it, send=
- an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> >> To view this discussion on the web visit https://urldefense.proofpoint=
-.com/v2/url?u=3Dhttps-3A__groups.google.com_d_msgid_syzkaller-2Dbugs_d65c84=
-24-2De78c-2D63f9-2D3711-2D532494619dc6-2540fb.com&d=3DDwIFaQ&c=3D5VD0RTtNlT=
-h3ycd41b3MUw&r=3Dvxqvl81C2rT6GOGdPyz8iQ&m=3Db2VQiGg0nrxk96tqrmflMQ24DJk-MOx=
-x4uyOs7wSUJ0&s=3DTYFus0Dh0-ZHiL510kJIyPOWCyX34UzLWR4QvS3r_iY&e=3D .
->
+Nothing major, the only patch worth mentioning is the suspend/resume crash
+fix by adding the missing pci device handlers, the fix is very straight
+forward and as Dexuan already expressed, the patch is important for Azure
+users to avoid crash on VM hibernation, patch is marked for -stable v4.6
+below.
+
+Conflict note:
+('net/mlx5e: Fix MLX5_TC_CT dependencies') has a trivial one line conflict
+with current net-next, which can be resolved by simply using the line from
+net-next.
+
+Please pull and let me know if there is any problem.
+
+For -stable v4.6
+   ('net/mlx5: Fix crash upon suspend/resume')
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 7c6d2ecbda83150b2036a2b36b21381ad4667762:
+
+  net: be more gentle about silly gso requests coming from user (2020-05-28 16:31:30 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-05-28
+
+for you to fetch changes up to 4d5e5c2bf43f1ef2d9e51b89f95e871120bca84f:
+
+  net/mlx5e: Fix MLX5_TC_CT dependencies (2020-05-28 23:42:44 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-05-28
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5e: Fix arch depending casting issue in FEC
+
+Maor Dickman (1):
+      net/mlx5e: Remove warning "devices are not on same switch HW"
+
+Mark Bloch (1):
+      net/mlx5: Fix crash upon suspend/resume
+
+Roi Dayan (1):
+      net/mlx5e: Fix stats update for matchall classifier
+
+Tal Gilboa (1):
+      net/mlx5e: Properly set default values when disabling adaptive moderation
+
+Vlad Buslov (1):
+      net/mlx5e: Fix MLX5_TC_CT dependencies
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       | 10 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  | 24 +++++++------
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 41 +++++++++++++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 20 +++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  6 +---
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 18 ++++++++++
+ 7 files changed, 81 insertions(+), 40 deletions(-)
