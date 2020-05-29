@@ -2,102 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C28A1E8437
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BD7F1E8439
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 18:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbgE2Q6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 12:58:55 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52249 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725601AbgE2Q6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 12:58:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590771532;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3tGbByuZRXmFAd1dhTbS4zQ9lQJnPiWlv2z/6LTD3Nc=;
-        b=Mf7pEGjX+Ynhnc/HBdBdqGb6wIvAa71A9uJC8h3BTjyhLPswL5rYhuOMIzI0CNMRLu5ci3
-        rXbUji3kVeP5WT4BKuiWqTaMpKepjCiBKzOGVKEHqUtUXGyfqRmFVx3R6XvlnKV2v3B8+U
-        vOBPMzDJKHSvsY802AO7A9NlhQS0jFM=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-502-x9aZN-tNPzaumoV-Qn-e-A-1; Fri, 29 May 2020 12:58:49 -0400
-X-MC-Unique: x9aZN-tNPzaumoV-Qn-e-A-1
-Received: by mail-ed1-f72.google.com with SMTP id t23so482700edq.5
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 09:58:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3tGbByuZRXmFAd1dhTbS4zQ9lQJnPiWlv2z/6LTD3Nc=;
-        b=CTyakhJSepI2E/3+9p1Wff/pf9u0znvoDmOqZQHpr/9kD1gZoMsbSi/RbdslgGXXl3
-         7VvHF4m07l5/CIIEmlLpv1KOUhGDTZAc4Uns+aBIiPHL7RayO3KwTAgT/r/8XqA4dcUE
-         bDRazFKxP4g0h3nwTAQNMm4KmNm8l2LOYF/l96opfEW7eFrKZ6FSXyOdv9B5s8RA70Kw
-         VcqAtC+529JlMlx2MWKgXwNXOP9mgOoGlEJuTT1zyMaIcBwqNdpRaloZjHjHmDgCDaf9
-         qy8RuE1/y0T4SqwQUN8DOfgLW3ezdDJBWM4AuMmwKGgq+BSRZuH2G4vWHDSRTpj+lCtI
-         XhMg==
-X-Gm-Message-State: AOAM530HdhuvCHMocUzcU3+VqGoe4H63Oq4QiEqv7k1cppgy1qF5begg
-        8wYjVoclA82V7tuZzmmTidMpyPC+Uebmu+hlUc4LK5nRWrxCKsb4yJHZblj4d5i91+k+OuBvf9F
-        249HP0GqMSLvm6Ewz
-X-Received: by 2002:a17:906:a402:: with SMTP id l2mr9054159ejz.14.1590771527867;
-        Fri, 29 May 2020 09:58:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyoWj0+rD5MVx5oFzuR+OBuCd+njf3lM2FmatSR0r39pJxoz4nqQBEhHHIeZZnLhbUlr1oHDQ==
-X-Received: by 2002:a17:906:a402:: with SMTP id l2mr9054143ejz.14.1590771527699;
-        Fri, 29 May 2020 09:58:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id dj28sm7334529edb.69.2020.05.29.09.58.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 09:58:47 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AAD59182019; Fri, 29 May 2020 18:58:46 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        brouer@redhat.com, lorenzo@kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com
-Subject: Re: [PATCH v3 bpf-next 5/5] selftest: Add tests for XDP programs in devmap entries
-In-Reply-To: <a8fd8937-25d7-0822-67a7-e01b856261be@gmail.com>
-References: <20200529052057.69378-1-dsahern@kernel.org> <20200529052057.69378-6-dsahern@kernel.org> <87r1v2zo3y.fsf@toke.dk> <a8fd8937-25d7-0822-67a7-e01b856261be@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 29 May 2020 18:58:46 +0200
-Message-ID: <87lflazni1.fsf@toke.dk>
+        id S1726487AbgE2Q7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 12:59:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50074 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725839AbgE2Q7z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 12:59:55 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 028DB2077D;
+        Fri, 29 May 2020 16:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590771594;
+        bh=SgCTW71aJiZP9m3FKPSpV5GzwDGTraBIw7v6AEea32s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E9lOjE5obdmia7otNj4UI41jeTSNtXtPsZc8Cqo6Uu2grGXTJN91nDIiaPk62Hgc4
+         P3Qb4Siq6Nhhbf5BGNhUo1rhnYNROxtCGxZjQ2jcXMGvcVPERntYsP5sgSnHlEvTC7
+         vfvGZPXy7rl8EWtUQ5kIDany8SBkYN7rJtoQPvoo=
+Date:   Fri, 29 May 2020 17:59:52 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
+Cc:     linux@armlinux.org.uk, claudiu.manoil@nxp.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        allan.nielsen@microchip.com, antoine.tenart@bootlin.com,
+        netdev@vger.kernel.org, fido_max@inbox.ru,
+        alexandre.belloni@bootlin.com, radu-andrei.bulie@nxp.com,
+        horatiu.vultur@microchip.com, alexandru.marginean@nxp.com,
+        UNGLinuxDriver@microchip.com, madalin.bucur@oss.nxp.com
+Subject: Re: [PATCH net-next 00/11] New DSA driver for VSC9953 Seville switch
+Message-ID: <20200529165952.GQ4610@sirena.org.uk>
+References: <20200527234113.2491988-1-olteanv@gmail.com>
+ <159077110912.28779.6447184623286195668.b4-ty@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5AmtYbcgdBTTPS58"
+Content-Disposition: inline
+In-Reply-To: <159077110912.28779.6447184623286195668.b4-ty@kernel.org>
+X-Cookie: The Killer Ducks are coming!!!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
 
-> On 5/29/20 10:45 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.=
-c b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
->>> new file mode 100644
->>> index 000000000000..b360ba2bd441
->>> --- /dev/null
->>> +++ b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
->>> @@ -0,0 +1,22 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +/* fails to load without expected_attach_type =3D BPF_XDP_DEVMAP
->>> + * because of access to egress_ifindex
->>> + */
->>> +#include <linux/bpf.h>
->>> +#include <bpf/bpf_helpers.h>
->>> +
->>> +SEC("xdp_dm_log")
->> Guess this should be xdp_devmap_log now?
->>=20
-> no. this program is for negative testing - it should load as an XDP
-> program without the expected_attach_type set. See the comment at the top
-> of the file.
+--5AmtYbcgdBTTPS58
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Ah, right, sorry - missed that (obviously) :)
+On Fri, May 29, 2020 at 05:51:52PM +0100, Mark Brown wrote:
 
--Toke
+> [1/1] regmap: add helper for per-port regfield initialization
+>       commit: 8baebfc2aca26e3fa67ab28343671b82be42b22c
 
+Let me know if you need a pull request for this, I figured it was too
+late to deal with the cross tree issues for the merge window.
+
+--5AmtYbcgdBTTPS58
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7RP4cACgkQJNaLcl1U
+h9A+nQf/Smy5iBPsXtHhDQ3oVrP4+AgVMbi+yKzT3cO2wJ2+ovNyGSPZ9QGSnKLq
+T/Ls95nPibi3p3Bjlbuo4PqS7FaQ4PFtF4w37mxUurGJYhfVti/Rd0A6xti4HqW3
+aUK/AlhwXCaHbIH/yWd8jf5j7eT6Er/QqrUC6KaH7ZFfx+E9rwM8pcOrTZvrnWJt
+6W4qAuR4ZpA0mmsRFA950D7sS6AGg7uAoqR/rGZSCXWAEV4uro+eSxfJTZ2KDN1Z
+nIRGJ6M3TIUlNUZaHuubLAmqZCAjy6GBBSDDmrO3nIOgGJWaei98utqww5boC3w3
+sIVDluT4gfuOhoV1ir9451AS7VXB5w==
+=NKvw
+-----END PGP SIGNATURE-----
+
+--5AmtYbcgdBTTPS58--
