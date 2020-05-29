@@ -2,182 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2631E74F6
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 06:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D10031E74FF
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 06:41:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726086AbgE2Eiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 00:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbgE2Eiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 00:38:51 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E165C08C5C8;
-        Thu, 28 May 2020 21:38:50 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id p30so760596pgl.11;
-        Thu, 28 May 2020 21:38:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=plPcOGJkngUHvZULyPr9+E00356bjfIfQWtyn5pM3iU=;
-        b=oFoHjG4Nx5pHh+tFBgaX601DZrDZUiiRHLEpb4RRSnj6D4sDXuFryf3+yxkcbawtWj
-         /w2qJMBZpIsIeWMXhGGJxrLai4BPz/wd+3A3cyS0F2/9o6fubvJNo8bc5t8grMc/whq9
-         Md5Vd1VAvUntyVGsyEKf19q0dIK5Hng1QMQ6XxI9x0Vd+pOGcTP6mQx1UiNYhO4YTXzN
-         RzSIN7uqesiEfsVQXpq6X2W27C9zEup+X0N0sJJnS7I9nwdX3pjLGiAJon8VyamWorh2
-         e8B/6LMvR8naNKm5CX8E4faM0s9PjmG156GQnV2uxMyo7aYqLaBWolqJE2SRR0n3zp/8
-         +2vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=plPcOGJkngUHvZULyPr9+E00356bjfIfQWtyn5pM3iU=;
-        b=VV8XTK9Lnk4nXEz00mkiVCFsWRLtbEdVrKNCe3M1E7gcoADO26FXBVvE5KRbDiIC8a
-         bbNxVRLtDgzemP+19gvEHwE+BwXwCOZjfE/VyqbtgTFeanD66q36OIEGTraZ1pu+EE7O
-         YLE4iwtjG2ohfUQ82ZbZtpFcADLaWcaRG7BJmNTIBdH/1JGVsDHPkyL7/NfIhXf7/fpe
-         7X/UkHaYTAvbplA0XbZLIE47PPIKydcAUdyXnks9y4ctd3hO/O/JX69mXA4ZwJVI9zOp
-         v30z7n/ir+e9ASGt3slM9R0LLHk5Cx7abV3qMgKyScAj9RaIy1Ptm4aJKGqYsXHwTdck
-         n/Vw==
-X-Gm-Message-State: AOAM530QLADI+kGxtqUE9yIxM+czyTBdbavDWTR8pPU9CwRQhC6IXlTq
-        06b1YJag9aWuSCXztq5h7FUbNPpP
-X-Google-Smtp-Source: ABdhPJw5CP1k8d/s5ZCzF+u7ssqAxEYFuPcqRtSiNJ320PucaPKiEpxqzVgq1dLpNnrHYHJJ5wMSFw==
-X-Received: by 2002:a63:af5c:: with SMTP id s28mr6459185pgo.380.1590727129654;
-        Thu, 28 May 2020 21:38:49 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id w73sm6288777pfd.113.2020.05.28.21.38.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 28 May 2020 21:38:48 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        id S1725883AbgE2EkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 00:40:06 -0400
+Received: from mga03.intel.com ([134.134.136.65]:40323 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbgE2EkF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 00:40:05 -0400
+IronPort-SDR: Rf74eTW9sc+x/tzD7SvDk9FdOC6bfHcodNorGzwMjjVhbGbpqMdjXetdPQRuqXDowZeC7kga1g
+ en1doV7z2HXg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 21:40:05 -0700
+IronPort-SDR: lhIlSsI1a3ySA2/TAOmWu6ZZZT7QL94LdDHAsFm36U/715kdDrXm1BwnjR0D2Xg9U+6b6Sn+ai
+ CNIShdN8JKlA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,447,1583222400"; 
+   d="scan'208";a="414850892"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga004.jf.intel.com with ESMTP; 28 May 2020 21:40:05 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: basic sleepable tests
-Date:   Thu, 28 May 2020 21:38:39 -0700
-Message-Id: <20200529043839.15824-5-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20200529043839.15824-1-alexei.starovoitov@gmail.com>
-References: <20200529043839.15824-1-alexei.starovoitov@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/17][pull request] Intel Wired LAN Driver Updates 2020-05-28
+Date:   Thu, 28 May 2020 21:39:47 -0700
+Message-Id: <20200529044004.3725307-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+This series contains updates to e1000, e1000e, igc, igb, ixgbe and i40e.
 
-Modify few tests to sanity test sleepable bpf functionality.
+Takashi Iwai, from SUSE, replaces some uses of snprintf() with
+scnprintf() since the succeeding calls may go beyond the given buffer
+limit in i40e.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: KP Singh <kpsingh@google.com>
----
- tools/testing/selftests/bpf/bench.c             |  2 ++
- .../selftests/bpf/benchs/bench_trigger.c        | 17 +++++++++++++++++
- tools/testing/selftests/bpf/progs/lsm.c         |  9 +++++++--
- .../testing/selftests/bpf/progs/trigger_bench.c |  7 +++++++
- 4 files changed, 33 insertions(+), 2 deletions(-)
+Jesper Dangaard Brouer fixes up code comments in i40e_xsk.c
 
-diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index 14390689ef90..f6a75cd47f01 100644
---- a/tools/testing/selftests/bpf/bench.c
-+++ b/tools/testing/selftests/bpf/bench.c
-@@ -309,6 +309,7 @@ extern const struct bench bench_trig_tp;
- extern const struct bench bench_trig_rawtp;
- extern const struct bench bench_trig_kprobe;
- extern const struct bench bench_trig_fentry;
-+extern const struct bench bench_trig_fentry_sleep;
- extern const struct bench bench_trig_fmodret;
- 
- static const struct bench *benchs[] = {
-@@ -326,6 +327,7 @@ static const struct bench *benchs[] = {
- 	&bench_trig_rawtp,
- 	&bench_trig_kprobe,
- 	&bench_trig_fentry,
-+	&bench_trig_fentry_sleep,
- 	&bench_trig_fmodret,
- };
- 
-diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-index 49c22832f216..2a0b6c9885a4 100644
---- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-@@ -90,6 +90,12 @@ static void trigger_fentry_setup()
- 	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
- }
- 
-+static void trigger_fentry_sleep_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_fentry_sleep);
-+}
-+
- static void trigger_fmodret_setup()
- {
- 	setup_ctx();
-@@ -155,6 +161,17 @@ const struct bench bench_trig_fentry = {
- 	.report_final = hits_drops_report_final,
- };
- 
-+const struct bench bench_trig_fentry_sleep = {
-+	.name = "trig-fentry-sleep",
-+	.validate = trigger_validate,
-+	.setup = trigger_fentry_sleep_setup,
-+	.producer_thread = trigger_producer,
-+	.consumer_thread = trigger_consumer,
-+	.measure = trigger_measure,
-+	.report_progress = hits_drops_report_progress,
-+	.report_final = hits_drops_report_final,
-+};
-+
- const struct bench bench_trig_fmodret = {
- 	.name = "trig-fmodret",
- 	.validate = trigger_validate,
-diff --git a/tools/testing/selftests/bpf/progs/lsm.c b/tools/testing/selftests/bpf/progs/lsm.c
-index b4598d4bc4f7..de03ac37d5ee 100644
---- a/tools/testing/selftests/bpf/progs/lsm.c
-+++ b/tools/testing/selftests/bpf/progs/lsm.c
-@@ -15,7 +15,7 @@ int monitored_pid = 0;
- int mprotect_count = 0;
- int bprm_count = 0;
- 
--SEC("lsm/file_mprotect")
-+SEC("lsm.s/file_mprotect")
- int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
- 	     unsigned long reqprot, unsigned long prot, int ret)
- {
-@@ -36,7 +36,7 @@ int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
- 	return ret;
- }
- 
--SEC("lsm/bprm_committed_creds")
-+SEC("lsm.s/bprm_committed_creds")
- int BPF_PROG(test_void_hook, struct linux_binprm *bprm)
- {
- 	__u32 pid = bpf_get_current_pid_tgid() >> 32;
-@@ -46,3 +46,8 @@ int BPF_PROG(test_void_hook, struct linux_binprm *bprm)
- 
- 	return 0;
- }
-+SEC("lsm/task_free") /* lsm/ is ok, lsm.s/ fails */
-+int BPF_PROG(test_task_free, struct task_struct *task)
-+{
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/trigger_bench.c b/tools/testing/selftests/bpf/progs/trigger_bench.c
-index 8b36b6640e7e..9a4d09590b3d 100644
---- a/tools/testing/selftests/bpf/progs/trigger_bench.c
-+++ b/tools/testing/selftests/bpf/progs/trigger_bench.c
-@@ -39,6 +39,13 @@ int bench_trigger_fentry(void *ctx)
- 	return 0;
- }
- 
-+SEC("fentry.s/__x64_sys_getpgid")
-+int bench_trigger_fentry_sleep(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
- SEC("fmod_ret/__x64_sys_getpgid")
- int bench_trigger_fmodret(void *ctx)
- {
+Xie XiuQi, from Huawei, fixes a signed-integer-overflow warning ixgbe
+driver.
+
+Jason Yan, from Huawei, converts '==' expression to bool to resolve
+warnings, also fixed a warning for assigning 0/1 to a bool variable in
+the ixgbe driver.  Converts functions that always return 0 to void in the
+igb and i40e drivers.
+
+YueHaibing, from Hauwei, cleans up dead code in ixgbe driver.
+
+Sasha cleans up more dead code which is not used in the igc driver.
+Added receive error counter to reflect the total number of non-filtered
+packets received with errors.  Fixed a register define name to properly
+reflect the register address being used.
+
+Andre updates the igc driver to reject NFC rules that have multiple
+matches, which is not supported in i225 devices.  Updates the total
+number of NFC rules supported and added a code comment to explain what
+is supported.
+
+Punit Agrawal, from Toshiba, relaxes the condition to trigger a reset
+for ME, which was leading to inconsistency between the state of the
+hardware as expected by the driver in e1000e.
+
+Hari, from the Linux community, cleaned up a code comment in the e1000
+driver.
+
+The following are changes since commit 394f9ebf92c899b42207d4e71465869656981ba1:
+  Merge branch 'hns3-next'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 10GbE
+
+Andre Guedes (2):
+  igc: Reject NFC rules with multiple matches
+  igc: Fix IGC_MAX_RXNFC_RULES
+
+Hari (1):
+  e1000: Fix typo in the comment
+
+Jason Yan (4):
+  ixgbe: Remove conversion to bool in ixgbe_device_supports_autoneg_fc()
+  ixgbe: Use true, false for bool variable in __ixgbe_enable_sriov()
+  igb: make igb_set_fc_watermarks() return void
+  i40e: Make i40e_shutdown_adminq() return void
+
+Jesper Dangaard Brouer (1):
+  i40e: trivial fixup of comments in i40e_xsk.c
+
+Punit Agrawal (1):
+  e1000e: Relax condition to trigger reset for ME workaround
+
+Sasha Neftin (5):
+  igc: Remove unused flags
+  igc: Remove symbol error counter
+  igc: Add Receive Error Counter
+  igc: Remove Sequence Error Counter
+  igc: Fix wrong register name
+
+Takashi Iwai (1):
+  i40e: Use scnprintf() for avoiding potential buffer overflow
+
+Xie XiuQi (1):
+  ixgbe: fix signed-integer-overflow warning
+
+YueHaibing (1):
+  ixgbe: Remove unused inline function ixgbe_irq_disable_queues
+
+ drivers/net/ethernet/intel/e1000/e1000_hw.c   |  2 +-
+ drivers/net/ethernet/intel/e1000e/e1000.h     |  1 -
+ drivers/net/ethernet/intel/e1000e/netdev.c    | 12 ++++----
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  6 +---
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 24 +++++++--------
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |  2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  4 +--
+ drivers/net/ethernet/intel/igb/e1000_mac.c    |  9 ++----
+ drivers/net/ethernet/intel/igc/igc.h          |  5 +++-
+ drivers/net/ethernet/intel/igc/igc_defines.h  |  4 ---
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  |  9 +++---
+ drivers/net/ethernet/intel/igc/igc_mac.c      |  5 ++--
+ drivers/net/ethernet/intel/igc/igc_main.c     |  3 +-
+ drivers/net/ethernet/intel/igc/igc_regs.h     |  5 ++--
+ .../net/ethernet/intel/ixgbe/ixgbe_common.c   |  5 ++--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 29 -------------------
+ .../net/ethernet/intel/ixgbe/ixgbe_sriov.c    |  2 +-
+ 17 files changed, 40 insertions(+), 87 deletions(-)
+
 -- 
-2.23.0
+2.26.2
 
