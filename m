@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB7F1E7AC0
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 12:40:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 872F11E7AC2
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 12:40:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725836AbgE2KkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 06:40:02 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:38178 "EHLO a.mx.secunet.com"
+        id S1725865AbgE2Kk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 06:40:56 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:38234 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgE2KkB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 06:40:01 -0400
+        id S1725601AbgE2Kk4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 06:40:56 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 2D75E205AA;
-        Fri, 29 May 2020 12:40:00 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 6D887205E7;
+        Fri, 29 May 2020 12:40:54 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id EilCenNX-wzo; Fri, 29 May 2020 12:39:59 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        with ESMTP id PbzSejo37VpX; Fri, 29 May 2020 12:40:54 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id AE25720519;
-        Fri, 29 May 2020 12:39:59 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0443C205B4;
+        Fri, 29 May 2020 12:40:54 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 29 May 2020 12:39:59 +0200
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 29 May 2020 12:40:53 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 29 May
- 2020 12:39:59 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id C8252318012D;
- Fri, 29 May 2020 12:39:58 +0200 (CEST)
-Date:   Fri, 29 May 2020 12:39:58 +0200
+ 2020 12:40:53 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 316D6318012D; Fri, 29 May 2020 12:40:53 +0200 (CEST)
+Date:   Fri, 29 May 2020 12:40:53 +0200
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     Xin Long <lucien.xin@gmail.com>
 CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>, <yuehaibing@huawei.com>
-Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
-Message-ID: <20200529103958.GG13121@gauss3.secunet.de>
-References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: Re: [PATCH ipsec] xfrm: fix a NULL-ptr deref in xfrm_local_error
+Message-ID: <20200529104053.GH13121@gauss3.secunet.de>
+References: <690acd84dbe4f2e3955f54a1d6bfe71548a481cf.1590486106.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
+In-Reply-To: <690acd84dbe4f2e3955f54a1d6bfe71548a481cf.1590486106.git.lucien.xin@gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
  mbx-essen-01.secunet.de (10.53.40.197)
@@ -54,50 +55,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 25, 2020 at 01:53:37PM +0800, Xin Long wrote:
-> This waring can be triggered simply by:
+On Tue, May 26, 2020 at 05:41:46PM +0800, Xin Long wrote:
+> This patch is to fix a crash:
 > 
->   # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
->     priority 1 mark 0 mask 0x10  #[1]
->   # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
->     priority 2 mark 0 mask 0x1   #[2]
->   # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
->     priority 2 mark 0 mask 0x10  #[3]
-> 
-> Then dmesg shows:
-> 
->   [ ] WARNING: CPU: 1 PID: 7265 at net/xfrm/xfrm_policy.c:1548
->   [ ] RIP: 0010:xfrm_policy_insert_list+0x2f2/0x1030
+>   [ ] kasan: GPF could be caused by NULL-ptr deref or user memory access
+>   [ ] general protection fault: 0000 [#1] SMP KASAN PTI
+>   [ ] RIP: 0010:ipv6_local_error+0xac/0x7a0
 >   [ ] Call Trace:
->   [ ]  xfrm_policy_inexact_insert+0x85/0xe50
->   [ ]  xfrm_policy_insert+0x4ba/0x680
->   [ ]  xfrm_add_policy+0x246/0x4d0
->   [ ]  xfrm_user_rcv_msg+0x331/0x5c0
->   [ ]  netlink_rcv_skb+0x121/0x350
->   [ ]  xfrm_netlink_rcv+0x66/0x80
->   [ ]  netlink_unicast+0x439/0x630
->   [ ]  netlink_sendmsg+0x714/0xbf0
->   [ ]  sock_sendmsg+0xe2/0x110
+>   [ ]  xfrm6_local_error+0x1eb/0x300
+>   [ ]  xfrm_local_error+0x95/0x130
+>   [ ]  __xfrm6_output+0x65f/0xb50
+>   [ ]  xfrm6_output+0x106/0x46f
+>   [ ]  udp_tunnel6_xmit_skb+0x618/0xbf0 [ip6_udp_tunnel]
+>   [ ]  vxlan_xmit_one+0xbc6/0x2c60 [vxlan]
+>   [ ]  vxlan_xmit+0x6a0/0x4276 [vxlan]
+>   [ ]  dev_hard_start_xmit+0x165/0x820
+>   [ ]  __dev_queue_xmit+0x1ff0/0x2b90
+>   [ ]  ip_finish_output2+0xd3e/0x1480
+>   [ ]  ip_do_fragment+0x182d/0x2210
+>   [ ]  ip_output+0x1d0/0x510
+>   [ ]  ip_send_skb+0x37/0xa0
+>   [ ]  raw_sendmsg+0x1b4c/0x2b80
+>   [ ]  sock_sendmsg+0xc0/0x110
 > 
-> The issue was introduced by Commit 7cb8a93968e3 ("xfrm: Allow inserting
-> policies with matching mark and different priorities"). After that, the
-> policies [1] and [2] would be able to be added with different priorities.
+> This occurred when sending a v4 skb over vxlan6 over ipsec, in which case
+> skb->protocol == htons(ETH_P_IPV6) while skb->sk->sk_family == AF_INET in
+> xfrm_local_error(). Then it will go to xfrm6_local_error() where it tries
+> to get ipv6 info from a ipv4 sk.
 > 
-> However, policy [3] will actually match both [1] and [2]. Policy [1]
-> was matched due to the 1st 'return true' in xfrm_policy_mark_match(),
-> and policy [2] was matched due to the 2nd 'return true' in there. It
-> caused WARN_ON() in xfrm_policy_insert_list().
+> This issue was actually fixed by Commit 628e341f319f ("xfrm: make local
+> error reporting more robust"), but brought back by Commit 844d48746e4b
+> ("xfrm: choose protocol family by skb protocol").
 > 
-> This patch is to fix it by only (the same value and priority) as the
-> same policy in xfrm_policy_mark_match().
+> So to fix it, we should call xfrm6_local_error() only when skb->protocol
+> is htons(ETH_P_IPV6) and skb->sk->sk_family is AF_INET6.
 > 
-> Thanks to Yuehaibing, we could make this fix better.
-> 
-> v1->v2:
->   - check policy->mark.v == pol->mark.v only without mask.
-> 
-> Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+> Fixes: 844d48746e4b ("xfrm: choose protocol family by skb protocol")
 > Reported-by: Xiumei Mu <xmu@redhat.com>
 > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Applied, thanks everyone!
+Patch applied, thanks Xin!
