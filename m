@@ -2,127 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068691E84A8
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1621E84B3
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgE2RUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:20:46 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:49875 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbgE2RUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 13:20:45 -0400
-X-Originating-IP: 86.202.110.81
-Received: from localhost (lfbn-lyo-1-15-81.w86-202.abo.wanadoo.fr [86.202.110.81])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 6F481FF809;
-        Fri, 29 May 2020 17:20:41 +0000 (UTC)
-Date:   Fri, 29 May 2020 19:20:41 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Subject: Re: [PATCH net-next 11/11] net: dsa: ocelot: introduce driver for
- Seville VSC9953 switch
-Message-ID: <20200529172041.GG3972@piout.net>
-References: <20200527234113.2491988-1-olteanv@gmail.com>
- <20200527234113.2491988-12-olteanv@gmail.com>
- <20200528215618.GA853774@lunn.ch>
- <CA+h21hoVQPVJiYDQV7j+d7Vt8o5rK+Z8APO2Hp85Dt8cOU7e4w@mail.gmail.com>
- <20200529081441.GW3972@piout.net>
- <CA+h21hpqf720YO84QJ6vBbF7chZkgnv_ow2-mRmP9OaOC_Ho1g@mail.gmail.com>
- <20200529090312.GA3972@piout.net>
- <CA+h21hqQmGTrhybFAvqN2A14ZU5KRvS8h2cgGYh185HevtfwWA@mail.gmail.com>
+        id S1727109AbgE2RWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725839AbgE2RV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 13:21:58 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDF4C03E969;
+        Fri, 29 May 2020 10:21:58 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id F17622A194B
+Subject: Re: [PATCH v4 04/11] thermal: Store device mode in struct
+ thermal_zone_device
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        kernel@collabora.com, Fabio Estevam <festevam@gmail.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Allison Randal <allison@lohutok.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Darren Hart <dvhart@infradead.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Enrico Weigelt <info@metux.net>,
+        Peter Kaestle <peter@piie.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andy@infradead.org>
+References: <20200529154205.GA157653@roeck-us.net>
+ <5010f7df-59d6-92ef-c99a-0dbd715f0ad2@collabora.com>
+Message-ID: <a0c0310f-9870-47be-4ca3-c07e41c380fc@collabora.com>
+Date:   Fri, 29 May 2020 19:21:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hqQmGTrhybFAvqN2A14ZU5KRvS8h2cgGYh185HevtfwWA@mail.gmail.com>
+In-Reply-To: <5010f7df-59d6-92ef-c99a-0dbd715f0ad2@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/05/2020 18:42:47+0300, Vladimir Oltean wrote:
-> On Fri, 29 May 2020 at 12:03, Alexandre Belloni
-> <alexandre.belloni@bootlin.com> wrote:
-> >
-> > On 29/05/2020 11:30:43+0300, Vladimir Oltean wrote:
-> > > > As ocelot can be used in a DSA configuration (even if it is not
-> > > > implemented yet), I don't think this would be correct. From my point of
-> > > > view, felix and seville are part of the ocelot family.
-> > > >
-> > >
-> > > In this case, there would be a third driver in
-> > > drivers/net/dsa/ocelot/ocelot_vsc7511.c which uses the intermediate
-> > > felix_switch_ops from felix.c to access the ocelot core
-> > > implementation. Unless you have better naming suggestions?
-> > >
-> >
-> > I don't. Maybe felix.c should have been ocelot.c from the beginning but
-> > honestly, it doesn't matter that much.
-> >
+Hi again,
+
+W dniu 29.05.2020 o 18:08, Andrzej Pietrasiewicz pisze:
+> Hi Guenter,
 > 
-> Technically Seville is not part of the Ocelot family but part of
-> Serval, but then again, it's just a marketing name, so it doesn't
-> really mean anything..
-
-When I submitted ocelot, I was thinking we would have different drivers
-for jaguar, luton, ocelot, serval and serval-t. IIRC, ocelot is a subset
-of serval or at least, it is similar enough to share the same driver.
-
-> I am a bit reluctant to rename the DSA driver ops to "ocelot", since
-> it would be even more confusing for everyone to have a function
-> ocelot_dsa_set_ageing_time that calls ocelot_set_ageing_time. At least
-> this way, there's going to be some learning curve figuring out that
-> felix is an umbrella term for DSA ops, but there will be more naming
-> predictability. (at least that's how I see it)
+> W dniu 29.05.2020 o 17:42, Guenter Roeck pisze:
+>> On Thu, May 28, 2020 at 09:20:44PM +0200, Andrzej Pietrasiewicz wrote:
+>>> Prepare for eliminating get_mode().
+>>>
+>> Might be worthwhile to explain (not only in the subject) what you are
+>> doing here.
+>>
+>>> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+>>> ---
+>>>   drivers/acpi/thermal.c                        | 18 ++++++----------
+>>>   .../ethernet/mellanox/mlxsw/core_thermal.c    | 21 +++++++------------
+>>>   drivers/platform/x86/acerhdf.c                | 15 ++++++-------
+>>>   drivers/thermal/da9062-thermal.c              |  6 ++----
+>>>   drivers/thermal/imx_thermal.c                 | 17 +++++++--------
+>>>   .../intel/int340x_thermal/int3400_thermal.c   | 12 +++--------
+>>>   .../thermal/intel/intel_quark_dts_thermal.c   | 16 +++++++-------
+>>>   drivers/thermal/thermal_of.c                  | 10 +++------
+>>
+>> After this patch is applied on top of the thermal 'testing' branch,
+>> there are still local instances of thermal_device_mode in
+>>     drivers/thermal/st/stm_thermal.c
+>>     drivers/thermal/ti-soc-thermal/ti-thermal-common.c
+>>
+>> If there is a reason not to replace those, it might make sense to explain
+>> it here.
+>>
+> 
+> My understanding is that these two are sensor devices which are "plugged"
+> into their "parent" thermal zone device. The latter is the "proper" tzd.
+> They both use thermal_zone_of_device_ops instead of thermal_zone_device_ops.
+> The former doesn't even have get_mode(). The thermal core, when it calls
+> get_mode(), operates on the "parent" thermal zone devices.
+> 
+> Consequently, the drivers you mention use their "mode" members for
+> their private purpose, not for the purpose of storing the "parent"
+> thermal zone device mode.
 > 
 
-I'm fine with the current naming, I was certainly not suggesting to
-change it.
+Let me also say it differently.
 
-> > BTW, maybe we should merge the VITESSE FELIX ETHERNET SWITCH DRIVER and
-> > MICROSEMI ETHERNET SWITCH DRIVER entries in MAINTAINERS. You do much
-> > more work in drivers/net/ethernet/mscc/ than I currently do.
-> >
-> 
-> How would you see the merged MAINTAINERS entry? Something like this?
-> 
-> MICROSEMI ETHERNET SWITCH DRIVER
-> M:    Alexandre Belloni <alexandre.belloni@bootlin.com>
-> M:    Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-> M:    Vladimir Oltean <vladimir.oltean@nxp.com>
+Both drivers which you mention use devm_thermal_zone_of_sensor_register().
+It calls thermal_zone_of_sensor_register(), which "will search the list of
+thermal zones described in device tree and look for the zone that refer to
+the sensor device pointed by @dev->of_node as temperature providers. For
+the zone pointing to the sensor node, the sensor will be added to the DT
+thermal zone device." When a match is found thermal_zone_of_add_sensor()
+is invoked, which (using thermal_zone_get_zone_by_name()) iterates over
+all registered thermal_zone_devices. The one eventually found will be
+returned and propagated to the original caller of
+devm_thermal_zone_of_sensor_register(). The state of this returned
+device is managed elsewhere (in that device's struct tzd). The "mode"
+member you are referring to is thus unrelated.
 
-You should probably be in the top position.
+Regards,
 
-> M:    Claudiu Manoil <claudiu.manoil@nxp.com>
-> L:    netdev@vger.kernel.org
-> S:    Maintained
-
-I guess this could stay Supported unless you are not paid to work on
-that.
-
-> F:    include/soc/mscc/ocelot*
-> F:    drivers/net/ethernet/mscc/
-> F:    drivers/net/dsa/ocelot/*
-> F:    net/dsa/tag_ocelot.c
-> 
-> Any takers from Microchip, or is the internal mailing list enough?
-
-It seems ok for now, we can always add/replace people later on.
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Andrzej
