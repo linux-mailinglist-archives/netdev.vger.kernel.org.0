@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 824E01E7509
+	by mail.lfdr.de (Postfix) with ESMTP id EF4AF1E750A
 	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 06:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgE2EkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 00:40:22 -0400
-Received: from mga03.intel.com ([134.134.136.65]:40323 "EHLO mga03.intel.com"
+        id S1726687AbgE2EkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 00:40:23 -0400
+Received: from mga03.intel.com ([134.134.136.65]:40325 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726459AbgE2EkS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726476AbgE2EkS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 29 May 2020 00:40:18 -0400
-IronPort-SDR: x/Oc9K6dLFc5Pp9XXJChvn4A3xYUATJxWwaEucCrbuTjeNB8G0I4xVYtdmHw6SexBAc8OxX9R5
- HxAT5fiUv6nQ==
+IronPort-SDR: e8EI46urv7pmmW2rxn1hukUOG6lmrmeUC+zqWN0Rm602RbUknQnKwWkLv/1SobxZtvAGWcLmz4
+ u+ld5DvyDaqQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 21:40:06 -0700
-IronPort-SDR: xRGFCXXUH+48zfLvdtmIImOtcgIjtrGpzwT8eiypSVovYv8GbPnmuyem1TC4yjal5fYutoBYVa
- 4M6hDc83y2Cw==
+IronPort-SDR: /cX27tjvyhBYV4yb8nJAWOo8EvRtsoYalKiijMnjPSs1qKBe/W/KKv5nYA93w0Zx92fdT0TqGl
+ VJHK7CWu0wtg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,447,1583222400"; 
-   d="scan'208";a="414850932"
+   d="scan'208";a="414850934"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga004.jf.intel.com with ESMTP; 28 May 2020 21:40:05 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jason Yan <yanaijie@huawei.com>, netdev@vger.kernel.org,
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 12/17] i40e: Make i40e_shutdown_adminq() return void
-Date:   Thu, 28 May 2020 21:39:59 -0700
-Message-Id: <20200529044004.3725307-13-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 13/17] igc: Remove symbol error counter
+Date:   Thu, 28 May 2020 21:40:00 -0700
+Message-Id: <20200529044004.3725307-14-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200529044004.3725307-1-jeffrey.t.kirsher@intel.com>
 References: <20200529044004.3725307-1-jeffrey.t.kirsher@intel.com>
@@ -43,59 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Yan <yanaijie@huawei.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Fix the following coccicheck warning:
+Accordance to the i225 datasheet symbol error counter does not
+applicable to the i225 device.
+This patch comes to clean up this counter.
 
-drivers/net/ethernet/intel/i40e/i40e_adminq.c:699:13-21: Unneeded
-variable: "ret_code". Return "0" on line 710
-
-Signed-off-by: Jason Yan <yanaijie@huawei.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_adminq.c    | 6 +-----
- drivers/net/ethernet/intel/i40e/i40e_prototype.h | 2 +-
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_mac.c  | 1 -
+ drivers/net/ethernet/intel/igc/igc_main.c | 1 -
+ drivers/net/ethernet/intel/igc/igc_regs.h | 1 -
+ 3 files changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq.c b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-index 37514a75f928..6a089848c857 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-@@ -694,10 +694,8 @@ i40e_status i40e_init_adminq(struct i40e_hw *hw)
-  *  i40e_shutdown_adminq - shutdown routine for the Admin Queue
-  *  @hw: pointer to the hardware structure
-  **/
--i40e_status i40e_shutdown_adminq(struct i40e_hw *hw)
-+void i40e_shutdown_adminq(struct i40e_hw *hw)
+diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
+index 89445ab02a98..9de70a24cb9e 100644
+--- a/drivers/net/ethernet/intel/igc/igc_mac.c
++++ b/drivers/net/ethernet/intel/igc/igc_mac.c
+@@ -235,7 +235,6 @@ s32 igc_force_mac_fc(struct igc_hw *hw)
+ void igc_clear_hw_cntrs_base(struct igc_hw *hw)
  {
--	i40e_status ret_code = 0;
--
- 	if (i40e_check_asq_alive(hw))
- 		i40e_aq_queue_shutdown(hw, true);
+ 	rd32(IGC_CRCERRS);
+-	rd32(IGC_SYMERRS);
+ 	rd32(IGC_MPC);
+ 	rd32(IGC_SCC);
+ 	rd32(IGC_ECOL);
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 97d26991c87e..662f06a647e6 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3701,7 +3701,6 @@ void igc_update_stats(struct igc_adapter *adapter)
+ 	adapter->stats.prc511 += rd32(IGC_PRC511);
+ 	adapter->stats.prc1023 += rd32(IGC_PRC1023);
+ 	adapter->stats.prc1522 += rd32(IGC_PRC1522);
+-	adapter->stats.symerrs += rd32(IGC_SYMERRS);
+ 	adapter->stats.sec += rd32(IGC_SEC);
  
-@@ -706,8 +704,6 @@ i40e_status i40e_shutdown_adminq(struct i40e_hw *hw)
- 
- 	if (hw->nvm_buff.va)
- 		i40e_free_virt_mem(hw, &hw->nvm_buff);
--
--	return ret_code;
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_prototype.h b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
-index bbb478f09093..5c1378641b3b 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_prototype.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
-@@ -17,7 +17,7 @@
- 
- /* adminq functions */
- i40e_status i40e_init_adminq(struct i40e_hw *hw);
--i40e_status i40e_shutdown_adminq(struct i40e_hw *hw);
-+void i40e_shutdown_adminq(struct i40e_hw *hw);
- void i40e_adminq_init_ring_data(struct i40e_hw *hw);
- i40e_status i40e_clean_arq_element(struct i40e_hw *hw,
- 					     struct i40e_arq_event_info *e,
+ 	mpc = rd32(IGC_MPC);
+diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
+index 7f999cfc9b39..a3e4ec922948 100644
+--- a/drivers/net/ethernet/intel/igc/igc_regs.h
++++ b/drivers/net/ethernet/intel/igc/igc_regs.h
+@@ -127,7 +127,6 @@
+ /* Statistics Register Descriptions */
+ #define IGC_CRCERRS	0x04000  /* CRC Error Count - R/clr */
+ #define IGC_ALGNERRC	0x04004  /* Alignment Error Count - R/clr */
+-#define IGC_SYMERRS	0x04008  /* Symbol Error Count - R/clr */
+ #define IGC_RXERRC	0x0400C  /* Receive Error Count - R/clr */
+ #define IGC_MPC		0x04010  /* Missed Packet Count - R/clr */
+ #define IGC_SCC		0x04014  /* Single Collision Count - R/clr */
 -- 
 2.26.2
 
