@@ -2,805 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284CC1E86D2
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A00501E8726
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 21:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728040AbgE2Shq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 14:37:46 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:37785 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728000AbgE2Shm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:37:42 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id A00B65C00B3;
-        Fri, 29 May 2020 14:37:40 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 29 May 2020 14:37:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=VUW/fnnvc8ZOXynVz1kcdnrrUWbEDZNQVVMEm959Iz0=; b=CWxX++V/
-        WAIjzCoqz9A60WSaPEGXHMqstys29Mxkdrmb+y71qo+4tIzHB4mWuWbCp7Rznlei
-        rUwDPNYI0fHMWkrDwGyKQMdstjs8CkX7mep8xURewSJ3Ce8RUz6wvXmoFEt6Bkx/
-        j2OSyTmQ0Jep8b4c1tHMEChVmdrcMrjzaJhsO1KmQub9S+bJcww1JGWo0oiDulQy
-        DwbbbVilG/nNLKHhQC+cMBHmo5AqUlCNb13iRDL1e0G2VtzXu+eowqhFBh+dk6YK
-        VGrjNKcmPbPZ+DOG55xfodLRtpOA0BS63+abl9hauSAW9g8ylbjViV7qokGgSsu9
-        Z5kdXR65y0loBg==
-X-ME-Sender: <xms:dFbRXm8diHdKSBFKKC5w9MCtfqVaJuRheyz3_Sz5sJE3zsKrmd7d6Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvkedguddtfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeffueffkeekleevieefvddvtdffve
-    duhfejhfeklefhueetgfdttdeltddutdetleenucffohhmrghinhepfihikhhiphgvughi
-    rgdrohhrghdpihgvthhfrdhorhhgnecukfhppeejledrudejiedrvdegrddutdejnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:dFbRXmtesNuzbPlFdIubeZrUW9QuAVsVnSKpVwKOt23MKLW3Q6WTBw>
-    <xmx:dFbRXsCt8MrwXWUA_5oxkXdfCvHPjRKy1MFvuwZozkxP8Trwb_CSfw>
-    <xmx:dFbRXufmd5Z24laxwnjg_j4-PznyCdV-MhmQnqDMEKllnctYiJSgwA>
-    <xmx:dFbRXh1ImNHeigxXK18grzKQOKEV5fCS9KveefDlHW3Yg1iWGj1Z7w>
-Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3CA013060F09;
-        Fri, 29 May 2020 14:37:39 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 14/14] selftests: mlxsw: Add test for control packets
-Date:   Fri, 29 May 2020 21:36:49 +0300
-Message-Id: <20200529183649.1602091-15-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200529183649.1602091-1-idosch@idosch.org>
-References: <20200529183649.1602091-1-idosch@idosch.org>
+        id S1728014AbgE2TEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 15:04:00 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:32888 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbgE2TD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 15:03:59 -0400
+Received: by mail-io1-f66.google.com with SMTP id k18so525692ion.0;
+        Fri, 29 May 2020 12:03:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=l2RZz+6GuxvNjpeyZJkWBZVVO4iGwz6tayj5VLgfgkc=;
+        b=AqjnYwwioMG5/MW4ABOBzh6Cb6lBmtD2X6AD6py+rutG6hjbMjIFERRGkfl3FJgiTs
+         kfdQrbJVKAI/1C5iW9VSkVyDDO2zDPjEl44Pk2xDuAcGhadA+3TNAg5X7gU2wX85INRR
+         CUiXHFq9tauFB1G1ttKmE0qEsaq/N5LGzGnpls/ALKa0uZc3N3kcLkjJGb+4d4ThVQBR
+         r3sNWrAo604ipDjJ04OO0C9sxpORF6pZXitlaOg8ua/tF/wO0O1CAGdS6L6gmKr+MP+1
+         gyEyRaftJflMSEimzsKzqBLiM7qeLgrY0jiCUslIDOF3d95tdptRmap+3AtOaOM01AXX
+         OKtQ==
+X-Gm-Message-State: AOAM533ZO45h+mdM3Z6FZVT6bQQhnnntiCVa8EMQFS/xigViwFcWa+gx
+        +KApInTB8HmmLEevObzZWQ==
+X-Google-Smtp-Source: ABdhPJynGVuna3BmTmeIk8V4t9AUMe7nA4T9Yip/KLyNpLizPAvXuuYAwJAxSTUTz4tbKORQVK+8+A==
+X-Received: by 2002:a02:908b:: with SMTP id x11mr8217368jaf.41.1590779038686;
+        Fri, 29 May 2020 12:03:58 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id n25sm4137090ioa.29.2020.05.29.12.03.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2020 12:03:57 -0700 (PDT)
+Received: (nullmailer pid 2762082 invoked by uid 1000);
+        Fri, 29 May 2020 19:03:56 -0000
+Date:   Fri, 29 May 2020 13:03:56 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v4 3/4] dt-bindings: net: Add RGMII internal
+ delay for DP83869
+Message-ID: <20200529190356.GA2758033@bogus>
+References: <20200527164934.28651-1-dmurphy@ti.com>
+ <20200527164934.28651-4-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200527164934.28651-4-dmurphy@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Wed, May 27, 2020 at 11:49:33AM -0500, Dan Murphy wrote:
+> Add the internal delay values into the header and update the binding
+> with the internal delay properties.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  .../devicetree/bindings/net/ti,dp83869.yaml      | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> index 5b69ef03bbf7..2971dd3fc039 100644
+> --- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> @@ -64,6 +64,20 @@ properties:
+>         Operational mode for the PHY.  If this is not set then the operational
+>         mode is set by the straps. see dt-bindings/net/ti-dp83869.h for values
+>  
+> +  rx-internal-delay-ps:
+> +    $ref: "#/properties/rx-internal-delay-ps"
 
-Generate packets matching the various control traps and check that the
-traps' stats increase accordingly.
+This just creates a circular reference which probably blows up.
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/devlink_trap_control.sh | 688 ++++++++++++++++++
- .../selftests/net/forwarding/devlink_lib.sh   |  23 +
- 2 files changed, 711 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_control.sh
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_control.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_control.sh
-new file mode 100755
-index 000000000000..a37273473c1b
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_control.sh
-@@ -0,0 +1,688 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test devlink-trap control trap functionality over mlxsw. Each registered
-+# control packet trap is tested to make sure it is triggered under the right
-+# conditions.
-+#
-+# +---------------------------------+
-+# | H1 (vrf)                        |
-+# |    + $h1                        |
-+# |    | 192.0.2.1/24               |
-+# |    | 2001:db8:1::1/64           |
-+# |    |                            |
-+# |    |  default via 192.0.2.2     |
-+# |    |  default via 2001:db8:1::2 |
-+# +----|----------------------------+
-+#      |
-+# +----|----------------------------------------------------------------------+
-+# | SW |                                                                      |
-+# |    + $rp1                                                                 |
-+# |        192.0.2.2/24                                                       |
-+# |        2001:db8:1::2/64                                                   |
-+# |                                                                           |
-+# |        2001:db8:2::2/64                                                   |
-+# |        198.51.100.2/24                                                    |
-+# |    + $rp2                                                                 |
-+# |    |                                                                      |
-+# +----|----------------------------------------------------------------------+
-+#      |
-+# +----|----------------------------+
-+# |    |  default via 198.51.100.2  |
-+# |    |  default via 2001:db8:2::2 |
-+# |    |                            |
-+# |    | 2001:db8:2::1/64           |
-+# |    | 198.51.100.1/24            |
-+# |    + $h2                        |
-+# | H2 (vrf)                        |
-+# +---------------------------------+
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	stp_test
-+	lacp_test
-+	lldp_test
-+	igmp_query_test
-+	igmp_v1_report_test
-+	igmp_v2_report_test
-+	igmp_v3_report_test
-+	igmp_v2_leave_test
-+	mld_query_test
-+	mld_v1_report_test
-+	mld_v2_report_test
-+	mld_v1_done_test
-+	ipv4_dhcp_test
-+	ipv6_dhcp_test
-+	arp_request_test
-+	arp_response_test
-+	ipv6_neigh_solicit_test
-+	ipv6_neigh_advert_test
-+	ipv4_bfd_test
-+	ipv6_bfd_test
-+	ipv4_ospf_test
-+	ipv6_ospf_test
-+	ipv4_bgp_test
-+	ipv6_bgp_test
-+	ipv4_vrrp_test
-+	ipv6_vrrp_test
-+	ipv4_pim_test
-+	ipv6_pim_test
-+	uc_loopback_test
-+	local_route_test
-+	external_route_test
-+	ipv6_uc_dip_link_local_scope_test
-+	ipv4_router_alert_test
-+	ipv6_router_alert_test
-+	ipv6_dip_all_nodes_test
-+	ipv6_dip_all_routers_test
-+	ipv6_router_solicit_test
-+	ipv6_router_advert_test
-+	ipv6_redirect_test
-+	ptp_event_test
-+	ptp_general_test
-+	flow_action_sample_test
-+	flow_action_trap_test
-+"
-+NUM_NETIFS=4
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
-+
-+	ip -4 route add default vrf v$h1 nexthop via 192.0.2.2
-+	ip -6 route add default vrf v$h1 nexthop via 2001:db8:1::2
-+}
-+
-+h1_destroy()
-+{
-+	ip -6 route del default vrf v$h1 nexthop via 2001:db8:1::2
-+	ip -4 route del default vrf v$h1 nexthop via 192.0.2.2
-+
-+	simple_if_fini $h1 192.0.2.1/24 2001:db8:1::1/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 198.51.100.1/24 2001:db8:2::1/64
-+
-+	ip -4 route add default vrf v$h2 nexthop via 198.51.100.2
-+	ip -6 route add default vrf v$h2 nexthop via 2001:db8:2::2
-+}
-+
-+h2_destroy()
-+{
-+	ip -6 route del default vrf v$h2 nexthop via 2001:db8:2::2
-+	ip -4 route del default vrf v$h2 nexthop via 198.51.100.2
-+
-+	simple_if_fini $h2 198.51.100.1/24 2001:db8:2::1/64
-+}
-+
-+router_create()
-+{
-+	ip link set dev $rp1 up
-+	ip link set dev $rp2 up
-+
-+	__addr_add_del $rp1 add 192.0.2.2/24 2001:db8:1::2/64
-+	__addr_add_del $rp2 add 198.51.100.2/24 2001:db8:2::2/64
-+}
-+
-+router_destroy()
-+{
-+	__addr_add_del $rp2 del 198.51.100.2/24 2001:db8:2::2/64
-+	__addr_add_del $rp1 del 192.0.2.2/24 2001:db8:1::2/64
-+
-+	ip link set dev $rp2 down
-+	ip link set dev $rp1 down
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	rp1=${NETIFS[p2]}
-+
-+	rp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	vrf_prepare
-+	forwarding_enable
-+
-+	h1_create
-+	h2_create
-+	router_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	router_destroy
-+	h2_destroy
-+	h1_destroy
-+
-+	forwarding_restore
-+	vrf_cleanup
-+}
-+
-+stp_test()
-+{
-+	devlink_trap_stats_test "STP" "stp" $MZ $h1 -c 1 -t bpdu -q
-+}
-+
-+lacp_payload_get()
-+{
-+	local source_mac=$1; shift
-+	local p
-+
-+	p=$(:
-+		)"01:80:C2:00:00:02:"$(       : ETH daddr
-+		)"$source_mac:"$(             : ETH saddr
-+		)"88:09:"$(                   : ETH type
-+		)
-+	echo $p
-+}
-+
-+lacp_test()
-+{
-+	local h1mac=$(mac_get $h1)
-+
-+	devlink_trap_stats_test "LACP" "lacp" $MZ $h1 -c 1 \
-+		$(lacp_payload_get $h1mac) -p 100 -q
-+}
-+
-+lldp_payload_get()
-+{
-+	local source_mac=$1; shift
-+	local p
-+
-+	p=$(:
-+		)"01:80:C2:00:00:0E:"$(       : ETH daddr
-+		)"$source_mac:"$(             : ETH saddr
-+		)"88:CC:"$(                   : ETH type
-+		)
-+	echo $p
-+}
-+
-+lldp_test()
-+{
-+	local h1mac=$(mac_get $h1)
-+
-+	devlink_trap_stats_test "LLDP" "lldp" $MZ $h1 -c 1 \
-+		$(lldp_payload_get $h1mac) -p 100 -q
-+}
-+
-+igmp_query_test()
-+{
-+	# IGMP (IP Protocol 2) Membership Query (Type 0x11)
-+	devlink_trap_stats_test "IGMP Membership Query" "igmp_query" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5E:00:00:01 \
-+		-A 192.0.2.1 -B 224.0.0.1 -t ip proto=2,p=11 -p 100 -q
-+}
-+
-+igmp_v1_report_test()
-+{
-+	# IGMP (IP Protocol 2) Version 1 Membership Report (Type 0x12)
-+	devlink_trap_stats_test "IGMP Version 1 Membership Report" \
-+		"igmp_v1_report" $MZ $h1 -c 1 -a own -b 01:00:5E:00:00:01 \
-+		-A 192.0.2.1 -B 244.0.0.1 -t ip proto=2,p=12 -p 100 -q
-+}
-+
-+igmp_v2_report_test()
-+{
-+	# IGMP (IP Protocol 2) Version 2 Membership Report (Type 0x16)
-+	devlink_trap_stats_test "IGMP Version 2 Membership Report" \
-+		"igmp_v2_report" $MZ $h1 -c 1 -a own -b 01:00:5E:00:00:01 \
-+		-A 192.0.2.1 -B 244.0.0.1 -t ip proto=2,p=16 -p 100 -q
-+}
-+
-+igmp_v3_report_test()
-+{
-+	# IGMP (IP Protocol 2) Version 3 Membership Report (Type 0x22)
-+	devlink_trap_stats_test "IGMP Version 3 Membership Report" \
-+		"igmp_v3_report" $MZ $h1 -c 1 -a own -b 01:00:5E:00:00:01 \
-+		-A 192.0.2.1 -B 244.0.0.1 -t ip proto=2,p=22 -p 100 -q
-+}
-+
-+igmp_v2_leave_test()
-+{
-+	# IGMP (IP Protocol 2) Version 2 Leave Group (Type 0x17)
-+	devlink_trap_stats_test "IGMP Version 2 Leave Group" \
-+		"igmp_v2_leave" $MZ $h1 -c 1 -a own -b 01:00:5E:00:00:02 \
-+		-A 192.0.2.1 -B 224.0.0.2 -t ip proto=2,p=17 -p 100 -q
-+}
-+
-+mld_payload_get()
-+{
-+	local type=$1; shift
-+	local p
-+
-+	type=$(printf "%x" $type)
-+	p=$(:
-+		)"3A:"$(			: Next Header - ICMPv6
-+		)"00:"$(			: Hdr Ext Len
-+		)"00:00:00:00:00:00:"$(		: Options and Padding
-+		)"$type:"$(			: ICMPv6.type
-+		)"00:"$(			: ICMPv6.code
-+		)"00:"$(			: ICMPv6.checksum
-+		)
-+	echo $p
-+}
-+
-+mld_query_test()
-+{
-+	# MLD Multicast Listener Query (Type 130)
-+	devlink_trap_stats_test "MLD Multicast Listener Query" "mld_query" \
-+		$MZ $h1 -6 -c 1 -A fe80::1 -B ff02::1 \
-+		-t ip hop=1,next=0,payload=$(mld_payload_get 130) -p 100 -q
-+}
-+
-+mld_v1_report_test()
-+{
-+	# MLD Version 1 Multicast Listener Report (Type 131)
-+	devlink_trap_stats_test "MLD Version 1 Multicast Listener Report" \
-+		"mld_v1_report" $MZ $h1 -6 -c 1 -A fe80::1 -B ff02::16 \
-+		-t ip hop=1,next=0,payload=$(mld_payload_get 131) -p 100 -q
-+}
-+
-+mld_v2_report_test()
-+{
-+	# MLD Version 2 Multicast Listener Report (Type 143)
-+	devlink_trap_stats_test "MLD Version 2 Multicast Listener Report" \
-+		"mld_v2_report" $MZ $h1 -6 -c 1 -A fe80::1 -B ff02::16 \
-+		-t ip hop=1,next=0,payload=$(mld_payload_get 143) -p 100 -q
-+}
-+
-+mld_v1_done_test()
-+{
-+	# MLD Version 1 Multicast Listener Done (Type 132)
-+	devlink_trap_stats_test "MLD Version 1 Multicast Listener Done" \
-+		"mld_v1_done" $MZ $h1 -6 -c 1 -A fe80::1 -B ff02::16 \
-+		-t ip hop=1,next=0,payload=$(mld_payload_get 132) -p 100 -q
-+}
-+
-+ipv4_dhcp_test()
-+{
-+	devlink_trap_stats_test "IPv4 DHCP Port 67" "ipv4_dhcp" \
-+		$MZ $h1 -c 1 -a own -b bcast -A 0.0.0.0 -B 255.255.255.255 \
-+		-t udp sp=68,dp=67 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv4 DHCP Port 68" "ipv4_dhcp" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) -A 192.0.2.1 \
-+		-B 255.255.255.255 -t udp sp=67,dp=68 -p 100 -q
-+}
-+
-+ipv6_dhcp_test()
-+{
-+	devlink_trap_stats_test "IPv6 DHCP Port 547" "ipv6_dhcp" \
-+		$MZ $h1 -6 -c 1 -A fe80::1 -B ff02::1:2 -t udp sp=546,dp=547 \
-+		-p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 DHCP Port 546" "ipv6_dhcp" \
-+		$MZ $h1 -6 -c 1 -A fe80::1 -B ff02::1:2 -t udp sp=547,dp=546 \
-+		-p 100 -q
-+}
-+
-+arp_request_test()
-+{
-+	devlink_trap_stats_test "ARP Request" "arp_request" \
-+		$MZ $h1 -c 1 -a own -b bcast -t arp request -p 100 -q
-+}
-+
-+arp_response_test()
-+{
-+	devlink_trap_stats_test "ARP Response" "arp_response" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) -t arp reply -p 100 -q
-+}
-+
-+icmpv6_header_get()
-+{
-+	local type=$1; shift
-+	local p
-+
-+	type=$(printf "%x" $type)
-+	p=$(:
-+		)"$type:"$(			: ICMPv6.type
-+		)"00:"$(			: ICMPv6.code
-+		)"00:"$(			: ICMPv6.checksum
-+		)
-+	echo $p
-+}
-+
-+ipv6_neigh_solicit_test()
-+{
-+	devlink_trap_stats_test "IPv6 Neighbour Solicitation" \
-+		"ipv6_neigh_solicit" $MZ $h1 -6 -c 1 \
-+		-A fe80::1 -B ff02::1:ff00:02 \
-+		-t ip hop=1,next=58,payload=$(icmpv6_header_get 135) -p 100 -q
-+}
-+
-+ipv6_neigh_advert_test()
-+{
-+	devlink_trap_stats_test "IPv6 Neighbour Advertisement" \
-+		"ipv6_neigh_advert" $MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A fe80::1 -B 2001:db8:1::2 \
-+		-t ip hop=1,next=58,payload=$(icmpv6_header_get 136) -p 100 -q
-+}
-+
-+ipv4_bfd_test()
-+{
-+	devlink_trap_stats_test "IPv4 BFD Control - Port 3784" "ipv4_bfd" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.2 -t udp sp=49153,dp=3784 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv4 BFD Echo - Port 3785" "ipv4_bfd" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.2 -t udp sp=49153,dp=3785 -p 100 -q
-+}
-+
-+ipv6_bfd_test()
-+{
-+	devlink_trap_stats_test "IPv6 BFD Control - Port 3784" "ipv6_bfd" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::2 \
-+		-t udp sp=49153,dp=3784 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 BFD Echo - Port 3785" "ipv6_bfd" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::2 \
-+		-t udp sp=49153,dp=3785 -p 100 -q
-+}
-+
-+ipv4_ospf_test()
-+{
-+	devlink_trap_stats_test "IPv4 OSPF - Multicast" "ipv4_ospf" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5e:00:00:05 \
-+		-A 192.0.2.1 -B 224.0.0.5 -t ip proto=89 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv4 OSPF - Unicast" "ipv4_ospf" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.2 -t ip proto=89 -p 100 -q
-+}
-+
-+ipv6_ospf_test()
-+{
-+	devlink_trap_stats_test "IPv6 OSPF - Multicast" "ipv6_ospf" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:05 \
-+		-A fe80::1 -B ff02::5 -t ip next=89 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 OSPF - Unicast" "ipv6_ospf" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::2 -t ip next=89 -p 100 -q
-+}
-+
-+ipv4_bgp_test()
-+{
-+	devlink_trap_stats_test "IPv4 BGP" "ipv4_bgp" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.2 -t tcp sp=54321,dp=179,flags=rst \
-+		-p 100 -q
-+}
-+
-+ipv6_bgp_test()
-+{
-+	devlink_trap_stats_test "IPv6 BGP" "ipv6_bgp" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::2 \
-+		-t tcp sp=54321,dp=179,flags=rst -p 100 -q
-+}
-+
-+ipv4_vrrp_test()
-+{
-+	devlink_trap_stats_test "IPv4 VRRP" "ipv4_vrrp" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5e:00:00:12 \
-+		-A 192.0.2.1 -B 224.0.0.18 -t ip proto=112 -p 100 -q
-+}
-+
-+ipv6_vrrp_test()
-+{
-+	devlink_trap_stats_test "IPv6 VRRP" "ipv6_vrrp" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:12 \
-+		-A fe80::1 -B ff02::12 -t ip next=112 -p 100 -q
-+}
-+
-+ipv4_pim_test()
-+{
-+	devlink_trap_stats_test "IPv4 PIM - Multicast" "ipv4_pim" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5e:00:00:0d \
-+		-A 192.0.2.1 -B 224.0.0.13 -t ip proto=103 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv4 PIM - Unicast" "ipv4_pim" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.2 -t ip proto=103 -p 100 -q
-+}
-+
-+ipv6_pim_test()
-+{
-+	devlink_trap_stats_test "IPv6 PIM - Multicast" "ipv6_pim" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:0d \
-+		-A fe80::1 -B ff02::d -t ip next=103 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 PIM - Unicast" "ipv6_pim" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A fe80::1 -B 2001:db8:1::2 -t ip next=103 -p 100 -q
-+}
-+
-+uc_loopback_test()
-+{
-+	# Add neighbours to the fake destination IPs, so that the packets are
-+	# routed in the device and not trapped due to an unresolved neighbour
-+	# exception.
-+	ip -4 neigh add 192.0.2.3 lladdr 00:11:22:33:44:55 nud permanent \
-+		dev $rp1
-+	ip -6 neigh add 2001:db8:1::3 lladdr 00:11:22:33:44:55 nud permanent \
-+		dev $rp1
-+
-+	devlink_trap_stats_test "IPv4 Unicast Loopback" "uc_loopback" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 192.0.2.3 -t udp sp=54321,dp=12345 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 Unicast Loopback" "uc_loopback" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::3 -t udp sp=54321,dp=12345 \
-+		-p 100 -q
-+
-+	ip -6 neigh del 2001:db8:1::3 dev $rp1
-+	ip -4 neigh del 192.0.2.3 dev $rp1
-+}
-+
-+local_route_test()
-+{
-+	# Use a fake source IP to prevent the trap from being triggered twice
-+	# when the router sends back a port unreachable message.
-+	devlink_trap_stats_test "IPv4 Local Route" "local_route" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.3 -B 192.0.2.2 -t udp sp=54321,dp=12345 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 Local Route" "local_route" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::3 -B 2001:db8:1::2 -t udp sp=54321,sp=12345 \
-+		-p 100 -q
-+}
-+
-+external_route_test()
-+{
-+	# Add a dummy device through which the incoming packets should be
-+	# routed.
-+	ip link add name dummy10 up type dummy
-+	ip address add 203.0.113.1/24 dev dummy10
-+	ip -6 address add 2001:db8:10::1/64 dev dummy10
-+
-+	devlink_trap_stats_test "IPv4 External Route" "external_route" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 203.0.113.2 -t udp sp=54321,dp=12345 -p 100 -q
-+
-+	devlink_trap_stats_test "IPv6 External Route" "external_route" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:10::2 -t udp sp=54321,sp=12345 \
-+		-p 100 -q
-+
-+	ip -6 address del 2001:db8:10::1/64 dev dummy10
-+	ip address del 203.0.113.1/24 dev dummy10
-+	ip link del dev dummy10
-+}
-+
-+ipv6_uc_dip_link_local_scope_test()
-+{
-+	# Add a dummy link-local prefix route to allow the packet to be routed.
-+	ip -6 route add fe80:1::/64 dev $rp2
-+
-+	devlink_trap_stats_test \
-+		"IPv6 Unicast Destination IP With Link-Local Scope" \
-+		"ipv6_uc_dip_link_local_scope" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A fe80::1 -B fe80:1::2 -t udp sp=54321,sp=12345 \
-+		-p 100 -q
-+
-+	ip -6 route del fe80:1::/64 dev $rp2
-+}
-+
-+ipv4_router_alert_get()
-+{
-+	local p
-+
-+	# https://en.wikipedia.org/wiki/IPv4#Options
-+	p=$(:
-+		)"94:"$(			: Option Number
-+		)"04:"$(			: Option Length
-+		)"00:00:"$(			: Option Data
-+		)
-+	echo $p
-+}
-+
-+ipv4_router_alert_test()
-+{
-+	devlink_trap_stats_test "IPv4 Router Alert" "ipv4_router_alert" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 198.51.100.3 \
-+		-t ip option=$(ipv4_router_alert_get) -p 100 -q
-+}
-+
-+ipv6_router_alert_get()
-+{
-+	local p
-+
-+	# https://en.wikipedia.org/wiki/IPv6_packet#Hop-by-hop_options_and_destination_options
-+	# https://tools.ietf.org/html/rfc2711#section-2.1
-+	p=$(:
-+		)"11:"$(			: Next Header - UDP
-+		)"00:"$(			: Hdr Ext Len
-+		)"05:02:00:00:00:00:"$(		: Option Data
-+		)
-+	echo $p
-+}
-+
-+ipv6_router_alert_test()
-+{
-+	devlink_trap_stats_test "IPv6 Router Alert" "ipv6_router_alert" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 2001:db8:1::1 -B 2001:db8:1::3 \
-+		-t ip next=0,payload=$(ipv6_router_alert_get) -p 100 -q
-+}
-+
-+ipv6_dip_all_nodes_test()
-+{
-+	devlink_trap_stats_test "IPv6 Destination IP \"All Nodes Address\"" \
-+		"ipv6_dip_all_nodes" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:01 \
-+		-A 2001:db8:1::1 -B ff02::1 -t udp sp=12345,dp=54321 -p 100 -q
-+}
-+
-+ipv6_dip_all_routers_test()
-+{
-+	devlink_trap_stats_test "IPv6 Destination IP \"All Routers Address\"" \
-+		"ipv6_dip_all_routers" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:02 \
-+		-A 2001:db8:1::1 -B ff02::2 -t udp sp=12345,dp=54321 -p 100 -q
-+}
-+
-+ipv6_router_solicit_test()
-+{
-+	devlink_trap_stats_test "IPv6 Router Solicitation" \
-+		"ipv6_router_solicit" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:02 \
-+		-A fe80::1 -B ff02::2 \
-+		-t ip hop=1,next=58,payload=$(icmpv6_header_get 133) -p 100 -q
-+}
-+
-+ipv6_router_advert_test()
-+{
-+	devlink_trap_stats_test "IPv6 Router Advertisement" \
-+		"ipv6_router_advert" \
-+		$MZ $h1 -6 -c 1 -a own -b 33:33:00:00:00:01 \
-+		-A fe80::1 -B ff02::1 \
-+		-t ip hop=1,next=58,payload=$(icmpv6_header_get 134) -p 100 -q
-+}
-+
-+ipv6_redirect_test()
-+{
-+	devlink_trap_stats_test "IPv6 Redirect Message" \
-+		"ipv6_redirect" \
-+		$MZ $h1 -6 -c 1 -a own -b $(mac_get $rp1) \
-+		-A fe80::1 -B 2001:db8:1::2 \
-+		-t ip hop=1,next=58,payload=$(icmpv6_header_get 137) -p 100 -q
-+}
-+
-+ptp_event_test()
-+{
-+	# PTP is only supported on Spectrum-1, for now.
-+	[[ "$DEVLINK_VIDDID" != "15b3:cb84" ]] && return
-+
-+	# PTP Sync (0)
-+	devlink_trap_stats_test "PTP Time-Critical Event Message" "ptp_event" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5e:00:01:81 \
-+		-A 192.0.2.1 -B 224.0.1.129 \
-+		-t udp sp=12345,dp=319,payload=10 -p 100 -q
-+}
-+
-+ptp_general_test()
-+{
-+	# PTP is only supported on Spectrum-1, for now.
-+	[[ "$DEVLINK_VIDDID" != "15b3:cb84" ]] && return
-+
-+	# PTP Announce (b)
-+	devlink_trap_stats_test "PTP General Message" "ptp_general" \
-+		$MZ $h1 -c 1 -a own -b 01:00:5e:00:01:81 \
-+		-A 192.0.2.1 -B 224.0.1.129 \
-+		-t udp sp=12345,dp=320,payload=1b -p 100 -q
-+}
-+
-+flow_action_sample_test()
-+{
-+	# Install a filter that samples every incoming packet.
-+	tc qdisc add dev $rp1 clsact
-+	tc filter add dev $rp1 ingress proto all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 1 group 1
-+
-+	devlink_trap_stats_test "Flow Sampling" "flow_action_sample" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 198.51.100.1 -t udp sp=12345,dp=54321 -p 100 -q
-+
-+	tc filter del dev $rp1 ingress proto all pref 1 handle 101 matchall
-+	tc qdisc del dev $rp1 clsact
-+}
-+
-+flow_action_trap_test()
-+{
-+	# Install a filter that traps a specific flow.
-+	tc qdisc add dev $rp1 clsact
-+	tc filter add dev $rp1 ingress proto ip pref 1 handle 101 flower \
-+		skip_sw ip_proto udp src_port 12345 dst_port 54321 action trap
-+
-+	devlink_trap_stats_test "Flow Trapping (Logging)" "flow_action_trap" \
-+		$MZ $h1 -c 1 -a own -b $(mac_get $rp1) \
-+		-A 192.0.2.1 -B 198.51.100.1 -t udp sp=12345,dp=54321 -p 100 -q
-+
-+	tc filter del dev $rp1 ingress proto ip pref 1 handle 101 flower
-+	tc qdisc del dev $rp1 clsact
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/devlink_lib.sh b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-index e27236109235..f0e6be4c09e9 100644
---- a/tools/testing/selftests/net/forwarding/devlink_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-@@ -423,6 +423,29 @@ devlink_trap_drop_cleanup()
- 	tc filter del dev $dev egress protocol $proto pref $pref handle $handle flower
- }
- 
-+devlink_trap_stats_test()
-+{
-+	local test_name=$1; shift
-+	local trap_name=$1; shift
-+	local send_one="$@"
-+	local t0_packets
-+	local t1_packets
-+
-+	RET=0
-+
-+	t0_packets=$(devlink_trap_rx_packets_get $trap_name)
-+
-+	$send_one && sleep 1
-+
-+	t1_packets=$(devlink_trap_rx_packets_get $trap_name)
-+
-+	if [[ $t1_packets -eq $t0_packets ]]; then
-+		check_err 1 "Trap stats did not increase"
-+	fi
-+
-+	log_test "$test_name"
-+}
-+
- devlink_trap_policers_num_get()
- {
- 	devlink -j -p trap policer show | jq '.[]["'$DEVLINK_DEV'"] | length'
--- 
-2.26.2
-
+> +    description: Delay is in pico seconds
+> +    enum: [ 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
+> +            3250, 3500, 3750, 4000 ]
+> +    default: 2000
+> +
+> +  tx-internal-delay-ps:
+> +    $ref: "#/properties/tx-internal-delay-ps"
+> +    description: Delay is in pico seconds
+> +    enum: [ 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
+> +            3250, 3500, 3750, 4000 ]
+> +    default: 2000
+> +
+>  required:
+>    - reg
+>  
+> @@ -80,5 +94,7 @@ examples:
+>          ti,op-mode = <DP83869_RGMII_COPPER_ETHERNET>;
+>          ti,max-output-impedance = "true";
+>          ti,clk-output-sel = <DP83869_CLK_O_SEL_CHN_A_RCLK>;
+> +        rx-internal-delay-ps = <2000>;
+> +        tx-internal-delay-ps = <2000>;
+>        };
+>      };
+> -- 
+> 2.26.2
+> 
