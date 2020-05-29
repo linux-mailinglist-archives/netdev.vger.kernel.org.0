@@ -2,54 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F2F1E812A
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E1E1E813F
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 17:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgE2PFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 11:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        id S1727039AbgE2PI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 11:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgE2PFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:05:53 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA35C03E969;
-        Fri, 29 May 2020 08:05:52 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id m7so1262786plt.5;
-        Fri, 29 May 2020 08:05:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=/9QtcEbKXfSNd6feJXtVNBLkm/HB/zDagS27p6rwHqQ=;
-        b=qSTu3FS1pH6rTOhpEl7mQBPlB0nfj8DPoBnNJBjGJle0vPvr7h+0pzEf46FzYRp27K
-         oupOOhVj00G0SWyvIa6wOWeRbcm+9+COI14yoWHxJWpJIoSDx+AP36Ox4QWShXTGNZxN
-         TxNkEiXdQQ9kY1huboUiQ+2kC/e6Aih6vjiUX3CQoEa6CwMQKX7IQKpJU0v4jYKtZPm2
-         HNIdojbfSui/yD8HKZq1d++WtYy8Q4W5cZ4e7l9/vgFWt0U4KHS2ubxYSBOAYDZ89Unj
-         LhG/A5ZUkMuhAVUk0XM9tRPDxwR/WS+7DJuWESvgkRbh3eMDTFArLl4L0Zmo4oKgR8u3
-         0EEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition:user-agent;
-        bh=/9QtcEbKXfSNd6feJXtVNBLkm/HB/zDagS27p6rwHqQ=;
-        b=QO8f2KsprAJmBA40jLRKUdhf+j0h51jk8ib57jGQnQwLwdE9p7wV8uJJH9IYorj1+S
-         kdTs8pkVdMR1m4bvz5lieW7VF8MC0Gnx3OEtw+HKDcVAw/deHjhkglB6njkBpsworE6c
-         v6nplP1hIFuG+elWHNickegkexNSGGlfxb7mTniPm/mjwdXLs/QH7owvbPXahUzgL2h4
-         U42DOkE+Et0SRiBjl0IcC+NndJpvka+iSNo8okkvZG03sEU3YxmVqpv/sOLPXuIMXxB7
-         7Od955gQItLtCHZiAPx3WxTK1/LywE+BRdEklgCgyXdr38v3d1kowDl2lEjfxaDEGMYk
-         +RTA==
-X-Gm-Message-State: AOAM531rYDczjoIE1wsvBbN0A8DQgNINiuA17J0mJ0itpPLf/azUSbGU
-        FL6gBWqtYhzfshKid8ArSqY=
-X-Google-Smtp-Source: ABdhPJx1brJDIFAXFe0nbUSyhXFeAV3BsFWLNPpVKbWXwwZAgQOrMCreap/a2uy/VNLw/df7eQUMbg==
-X-Received: by 2002:a17:90a:f40a:: with SMTP id ch10mr9777692pjb.161.1590764751884;
-        Fri, 29 May 2020 08:05:51 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id w19sm7592452pfq.43.2020.05.29.08.05.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 29 May 2020 08:05:50 -0700 (PDT)
-Date:   Fri, 29 May 2020 08:05:49 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+        with ESMTP id S1725901AbgE2PI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 11:08:28 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03708C03E969;
+        Fri, 29 May 2020 08:08:27 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id B4BEF2A46A5
+Subject: Re: [PATCH v4 02/11] thermal: Store thermal mode in a dedicated enum
+To:     Guenter Roeck <linux@roeck-us.net>
 Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
         netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         platform-driver-x86@vger.kernel.org,
@@ -87,28 +56,41 @@ Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
         Sebastian Reichel <sre@kernel.org>,
         Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>, Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Shawn Guo <shawnguo@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Andy Shevchenko <andy@infradead.org>
-Subject: Re: [PATCH v4 02/11] thermal: Store thermal mode in a dedicated enum
-Message-ID: <20200529150549.GA154196@roeck-us.net>
+References: <20200529150549.GA154196@roeck-us.net>
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Message-ID: <b9aa246f-4534-db23-aea1-07aae2edbdd5@collabora.com>
+Date:   Fri, 29 May 2020 17:08:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200529150549.GA154196@roeck-us.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 09:20:42PM +0200, Andrzej Pietrasiewicz wrote:
-> Prepare for storing mode in struct thermal_zone_device.
+W dniu 29.05.2020 o 17:05, Guenter Roeck pisze:
+> On Thu, May 28, 2020 at 09:20:42PM +0200, Andrzej Pietrasiewicz wrote:
+>> Prepare for storing mode in struct thermal_zone_device.
+>>
+>> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 > 
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+> What is the baseline for this series ? I can't get this patch to apply
+> on top of current mainline, nor on v5.6, nor on top of linux-next.
+> 
+> Thanks,
+> Guenter
+> 
 
-What is the baseline for this series ? I can't get this patch to apply
-on top of current mainline, nor on v5.6, nor on top of linux-next.
+git://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git, branch "testing".
 
-Thanks,
-Guenter
+base-commit: 351f4911a477ae01239c42f771f621d85b06ea10
+
+Andrzej
