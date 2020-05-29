@@ -2,310 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 882EE1E75ED
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 08:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3C61E75F7
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 08:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726013AbgE2GbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 02:31:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23622 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725308AbgE2GbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 02:31:14 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04T6PpGM013391;
-        Thu, 28 May 2020 23:31:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=8cv9qcVSR6C6dKbQd//C91aa408AVAiKNu98eUGt8Gc=;
- b=VX+pUpNmubnAE4+7ntXCv/t2MtR1fNLHufMOTRYb9ugxjOa9olSJ048RFRnhIk13r/e8
- WpIMzs6Z22DU4qfLFBSwmRVqRt571QSmIBSbUkHnA+PP+gOnA6+fEIqGPhfdoYALuJMP
- UI3OX0l43PvitOt6FHFk+hk0H2DMv3BW+dE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 319yh5ypdc-2
+        id S1725863AbgE2Gde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 02:33:34 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6630 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725308AbgE2Gdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 02:33:33 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 04T6OS0d010883;
+        Thu, 28 May 2020 23:33:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=azp09Dmpx3NFSnRd/MC+jfocHB5TLwPnF4Cq5XtSI70=;
+ b=X/xg+1mLaRvFiBpzNkBm68Sbc0Vul9GyreKvm37l5SHKLEgHAZ9kcqE2MUs+j8qXPdBS
+ Nghi7VZ9LUOIz2YqPQJmS4ZuTdopMzqfsK70dWCvD4cojCeTEK9ROc334ZqTAZl6obwZ
+ gWwyU4yek/7fw2BUO3t6/i/X6al7Js9bIYs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 31a24ueb42-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 May 2020 23:30:59 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+        Thu, 28 May 2020 23:33:02 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 28 May 2020 23:30:59 -0700
+ 15.1.1979.3; Thu, 28 May 2020 23:33:00 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UfLvCy/M+uJ1ZOf5h606C3qFqDh6DijzflyHpT8OhL0Ldp4Yp9Gg2oXWKDR9DUlR8YX9WeOj0qJMMEZWcRkbMUVbClXRJubbebYahoIWWHRQv1snESrKDr57cpRj2t9MZ7I51qauP1f5LpW8p4m4N47MgoDlChnfbpk1/TjLwdr6eQAmbamlGuGjTFi8CY0GkYX2IQ8U4Klh24ptMnG7F75rlzc+Yycvlt46qFKqC/alZbVi9gnke1Z1woW+GB3NQ/4EFKH8g5jKuMukBoGDVNvfgMbdA5h6zuVBzxzV4zDRbE0lgVMeHsfuYrGUhN3ADGmZgWIeohw/yMcgPLtwrQ==
+ b=MgOu4CZubEIBsPl09lJjaY6iisArE4fZ8D1m0COIFNYGvxLOlBVQRUcWaD3pQE1CBhpOxPC/zjcPliMYw7jjgPExJOJxnfnRv0CSeo7h4zgxv+tc7vlTSOENvDfaVlj5WV8YTXKi1Jz1JQpJeLUz3WDtfQpB4LIF3aRwgnnX4ERu7uCnHgURvxYwqlFprKXggdRz2zHNVCCk+alsTpseSweKsGjphMh9ifoAll1NZ6fAKgLVW+omKaNTS9uryCPxncDBbjVLcIP42Cz18n+bBs8ZMi9zDUQ8sPBKVSTSwkSwT3Sfi9cy5wRE4sbye/6VRux/ihZoYXp6nuyiPVCZ3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8cv9qcVSR6C6dKbQd//C91aa408AVAiKNu98eUGt8Gc=;
- b=Mx35SkmkDbhgUxt2WqP7GPScB4aF8CsKvXvhwPyo4RZ9N3UHWxOOH1snOFrrHg48zR+nGhfJZAmTpE/Yfvi1eJ1C69mIY0Y6pk6lfhgJmQ5+gSb0rUoVeWG7I0XeDs2w1w+ksrakWu1MxTjRTiAofPXMRJ2ju9bH6+LX/x8uCwAkdt7UiRAo7ZJZKBsfGOaNZyEn93DMFIvgIa72DNeXEyoUhYGJ6BLhBgPmbSUmGNWLf3uEzM++bmB5wkO+m8KqwQFDqed0u7k+prraIuti/z9H8qLIo+Yd3OBwvIKZlF9tNHdQeNbVOvEUyUPP0+/6kbm8L3RDjw7zPRvod6yaLQ==
+ bh=azp09Dmpx3NFSnRd/MC+jfocHB5TLwPnF4Cq5XtSI70=;
+ b=nmMmJsD4iMy/DeMTFgMQiL/sD3TCYBoiMft5CQ1TsafKP4j/2KUsUr3mGmX4oGop2eskLjnKAHIV+BifUBca4EV8JNpTDLti9Msi4kT3KcGOYf2BYnAApiFUNf1uN7NQen8q3op7EPSQtbKHRZrHg8HVFoLrh7cNHFKArLhzPFxf2Od0oAgPux693Et1onCI17+0zSJ+DL2Eb1lcGIMOGWe4XKSv0/cXpo6Rm/jPjEDHQ/6fv/XvsIApfYUeJBQ1zJIy3hNBWTKasNoPum0zYjgA3bPjecudaD5hZ4Plm/93HDg3NVAEMSWPz/A27dzlybTdFhXPV83w0la/9awSqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8cv9qcVSR6C6dKbQd//C91aa408AVAiKNu98eUGt8Gc=;
- b=D3cLqLQImaftWJh8tHzRYj7lfUlAdzZesQm2U+MRzmcDrNJUSD1Wb4gI/w4hA/OP4CLTJF48GkwEHNtpE/Lt++WG5dBsD/peVLteFRubrybV1YCT0yikpRI3eePmYasJPt38iUc9wXdut//GP32/8JhwPg9glH9/g81wiO4GRyY=
+ bh=azp09Dmpx3NFSnRd/MC+jfocHB5TLwPnF4Cq5XtSI70=;
+ b=KTj0VQSwfcwzv76ux69hfLWHK3XFRdgxbg96PPglETMibnlahro9HoMV71BCdimyoDtQNuGJMo6s21MV7NgO4dmz1Ob2RGjZXZCgcP9xobvdpQN/1i4EKuGaqnadm7+xqSbTYR4EUDSsccHjCW6oE9IqHxv+C1K4OGCp49jxPOg=
 Authentication-Results: gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BY5PR15MB3699.namprd15.prod.outlook.com (2603:10b6:a03:1b6::16) with
+Received: from MW3PR15MB3980.namprd15.prod.outlook.com (2603:10b6:303:48::23)
+ by MW3PR15MB3996.namprd15.prod.outlook.com (2603:10b6:303:41::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Fri, 29 May
- 2020 06:30:56 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6%7]) with mapi id 15.20.3045.018; Fri, 29 May 2020
- 06:30:56 +0000
-Date:   Thu, 28 May 2020 23:30:54 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Consolidate inner-map-compatible
- properties into bpf_types.h
-Message-ID: <20200529063054.edz7qfiqgfgjzj43@kafai-mbp>
-References: <20200522022336.899416-1-kafai@fb.com>
- <20200522022342.899756-1-kafai@fb.com>
- <9c00ced2-983f-ad59-d805-777ebd1f1cab@iogearbox.net>
- <20200523010003.6iyavqny3aruv6u2@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4Bza===GwERi_x0Evf_Wjm+8=wBHnG4VHPNtZ=GPPZ+twiQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bza===GwERi_x0Evf_Wjm+8=wBHnG4VHPNtZ=GPPZ+twiQ@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BY3PR05CA0009.namprd05.prod.outlook.com
- (2603:10b6:a03:254::14) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+ 2020 06:32:59 +0000
+Received: from MW3PR15MB3980.namprd15.prod.outlook.com
+ ([fe80::998d:1003:4c7c:2219]) by MW3PR15MB3980.namprd15.prod.outlook.com
+ ([fe80::998d:1003:4c7c:2219%9]) with mapi id 15.20.3045.018; Fri, 29 May 2020
+ 06:32:59 +0000
+Subject: Re: general protection fault in inet_unhash
+To:     Dmitry Vyukov <dvyukov@google.com>
+CC:     syzbot <syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, <guro@fb.com>,
+        <kuba@kernel.org>, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <00000000000018e1d305a6b80a73@google.com>
+ <d65c8424-e78c-63f9-3711-532494619dc6@fb.com>
+ <CACT4Y+aNBkhxuMOk4_eqEmLjHkjbw4wt0nBvtFCw2ssn3m2NTA@mail.gmail.com>
+From:   Andrii Nakryiko <andriin@fb.com>
+Message-ID: <da6dd6d1-8ed9-605c-887f-a956780fc48d@fb.com>
+Date:   Thu, 28 May 2020 23:32:56 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+In-Reply-To: <CACT4Y+aNBkhxuMOk4_eqEmLjHkjbw4wt0nBvtFCw2ssn3m2NTA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR01CA0071.prod.exchangelabs.com (2603:10b6:a03:94::48)
+ To MW3PR15MB3980.namprd15.prod.outlook.com (2603:10b6:303:48::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:d1b5) by BY3PR05CA0009.namprd05.prod.outlook.com (2603:10b6:a03:254::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.7 via Frontend Transport; Fri, 29 May 2020 06:30:55 +0000
-X-Originating-IP: [2620:10d:c090:400::5:d1b5]
+Received: from [IPv6:2620:10d:c085:2103:51:fde8:f2bb:1332] (2620:10d:c090:400::5:657d) by BYAPR01CA0071.prod.exchangelabs.com (2603:10b6:a03:94::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Fri, 29 May 2020 06:32:58 +0000
+X-Originating-IP: [2620:10d:c090:400::5:657d]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a964c186-287d-4aa5-f986-08d80399d7d8
-X-MS-TrafficTypeDiagnostic: BY5PR15MB3699:
+X-MS-Office365-Filtering-Correlation-Id: 0b76e114-7cdd-4bb1-5a58-08d8039a217d
+X-MS-TrafficTypeDiagnostic: MW3PR15MB3996:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BY5PR15MB36990BE4040F6D28E4114719D58F0@BY5PR15MB3699.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MW3PR15MB3996B3F7340CD49C99D9ED04C68F0@MW3PR15MB3996.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Oob-TLC-OOBClassifiers: OLM:366;
 X-Forefront-PRVS: 04180B6720
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HQLzwhna6+xzzI6iTer3cmDp93h8ZlXv9fQ8rMhywjmBcMvku22S3Hi9fFm2Knj3o5IR10g/dCDUc7EJga2KtbqI62rwY2PFSPrX07ZHa390vDw6NLjTvoQZb2IkLo148kV5zxIvf6I5C++yM6juzGT3oFVTG37yRxPIiktP26+PDzefuqHk0r/NMOwddWjIO4KzmeF1IJITW2QHfwI1FfVwni19vzqxFHhik7/9NUNjB63M9Ht1gvyyLEFNLjuBB5UE/zK9UyDCPm71zYUUVeNCPWBBbTS14khLa7F4FBki5VLnHX1cfrb5QKFEfj5Z6PazDdmhzRCH/3y6ctYr3A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(1076003)(66476007)(66556008)(33716001)(2906002)(86362001)(66946007)(83380400001)(110136005)(4326008)(55016002)(9686003)(498600001)(186003)(8936002)(16526019)(52116002)(8676002)(53546011)(6496006)(54906003)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: M2YXi2AHX4Cm5mMmnbaeMP/KxzDcfIrN+4IXnyyigJ/+dEV2mG5BvNGqIuGKt9FxC5oPGFxkN/72AlQSFWaylgtU8IzzANLQKf1YWxJyUxhoQ3Nb6D7m2uaBU6wO7ZEbSWc2t4CrrOgFvnvEOEL+vp9W46x6M/vD1hhjW89PpNpHlC3BdjFHUv+09Fw+OA4rstEha3whU37lkCtoq7m9tqiLZas633+p4qflJ3Ytj0jC9MuEJ5XBdEIw0OcWBQ82NuJ0Y06g4N0GoBIht5xImrvXha8JpTJPpdy9+bHPiQQvCs3gonTd7Z+NITd8exDy8To0zKXrtjL2538LoImzH3Rs8IZQGL7Dzt8i0uvGpwy1qvJlvSg/GikTSOGntXgbuWNShOaO0cCtRbG4hJFOe3oH2HRMSdy6fb7RhcIz9eJ8RZXBfEt18q4njcryXfLZ5oOmlIQhXAwv32hx6Q/YC6EwXeHatUAaCzsqI2+1LhhJKMyOdHUsh3NfhNzEY7b3BeL4/Yd9QVUzjJFlPDPHag==
-X-MS-Exchange-CrossTenant-Network-Message-Id: a964c186-287d-4aa5-f986-08d80399d7d8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 06:30:56.3743
+X-Microsoft-Antispam-Message-Info: Hy+F8GMta+Ma1XLAzwNam4rFogEW//OkRKgPIt101SAaC5IP/3ktAWX2mPiZjZbvvcRw+FFuEHSzDmTz2jlDQOB9LZFOQLgcYCigW0Nh/POm3t3WwGjdGjvX2b5mXQ8yFZbNuH5/R4pOu2xCZ2LepjaoWlAtUJ3SDg/19I5m40z8V4/QOgP6X8wA337nGkskXuxsfAUg/9E2TScKohIwDpBECQktiyf6VwT0EQ6rBf34gVHCi7scIuiZnvd5vhxF0iiSNsnJByl2cy9LYCv8Cz2waK8c0y+huXRtqlQcB7Xvkj8wencVeqCTme7P0OcZaKbS9/+yGTXo3yazKaE4A4wdsr92KN2JjrXLKdtHUlfgQ/S9yQtKlnr/PQHjzPqfLtvmYz5DsnUDJswnw0brWZ3yBuxH6FNjVKVTtlVmrJ0lnF8pVgqkvkJtlfEuKFQ3ycyE2i2nRKuFpLp5DXvz2H2sAQ7lyQkpqOpJiW8IGyg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3980.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(396003)(366004)(136003)(39860400002)(5660300002)(36756003)(66556008)(66946007)(8676002)(4326008)(53546011)(6916009)(316002)(7416002)(31696002)(31686004)(966005)(66476007)(54906003)(6486002)(45080400002)(478600001)(2616005)(52116002)(2906002)(8936002)(186003)(83080400001)(86362001)(16526019)(83380400001)(99710200001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 9EbGM3jePVLLdSfwoNvtskToJm4ueQnX9Fgze5FwrT8EPwMIXeRxW+RxDYDDkQVrv5pTzW0MRAbM4/nnq/uXvgqzXZhpPBEXILcOWR9x+OzROsXWoehA45UPXRwRlxSlfVzQLS4GL0/0Pd9YCC8H3In+bJU4C23qEco0MsI/PVUmsKbLVcNn74dZaEBTCNV60qg/yRuWKQJTZnrmgmN8aidO255/bl75MMWqjHrqL9yJiRft/qvKJme1tSRIWhKxMB+O830d7/GOOdvNpfz1Vr3PGbaIl8EqWc4bF2eGDyLBEOMog8xp7Id/LGVHZpxvj5M7cCFo0c+QCQLyxGMMrEhFPk6yGgADK5CFjyiBqIssNjOrUyFoPbxxnQSpt2DyHpsLm4WYKkCkgUJAYhGvRs+RyASwv68p+N0mZmZMfN2W6DoVDLk0nNQMR1CF0IaDAluPi41poS22GfSjS7Czr63+6Gh9Ps1FLW03m31xkgAi3jLiJOPbzawOUjBqMmbstZ6j/eCWHBigkSX5XfxuxQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b76e114-7cdd-4bb1-5a58-08d8039a217d
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 06:32:59.6218
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AeOJ99e9/Y3X0dr3LBx1qQsiRwArp3SVtajY1bkipxsgi5NpWxR3/TqfUeL+xxe4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3699
+X-MS-Exchange-CrossTenant-UserPrincipalName: iMvYQIGuRLFKERSbvvFDT+hKfuu6E0lTYpKfsZJJaWiLB9OYHeoWBojbVjBp/5GJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3996
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
  definitions=2020-05-29_02:2020-05-28,2020-05-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 bulkscore=0
- mlxlogscore=999 impostorscore=0 spamscore=0 phishscore=0 mlxscore=0
- malwarescore=0 adultscore=0 priorityscore=1501 suspectscore=0
- lowpriorityscore=0 cotscore=-2147483648 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005290050
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ bulkscore=0 phishscore=0 spamscore=0 clxscore=1011 suspectscore=0
+ priorityscore=1501 mlxlogscore=999 lowpriorityscore=0 cotscore=-2147483648
+ adultscore=0 mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005290050
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 10:54:26AM -0700, Andrii Nakryiko wrote:
-> On Fri, May 22, 2020 at 6:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > On Sat, May 23, 2020 at 12:22:48AM +0200, Daniel Borkmann wrote:
-> > > On 5/22/20 4:23 AM, Martin KaFai Lau wrote:
-> > > [...]
-> > > >   };
-> > > > +/* Cannot be used as an inner map */
-> > > > +#define BPF_MAP_NO_INNER_MAP (1 << 0)
-> > > > +
-> > > >   struct bpf_map {
-> > > >     /* The first two cachelines with read-mostly members of which some
-> > > >      * are also accessed in fast-path (e.g. ops, max_entries).
-> > > > @@ -120,6 +123,7 @@ struct bpf_map {
-> > > >     struct bpf_map_memory memory;
-> > > >     char name[BPF_OBJ_NAME_LEN];
-> > > >     u32 btf_vmlinux_value_type_id;
-> > > > +   u32 properties;
-> > > >     bool bypass_spec_v1;
-> > > >     bool frozen; /* write-once; write-protected by freeze_mutex */
-> > > >     /* 22 bytes hole */
-> > > > @@ -1037,12 +1041,12 @@ extern const struct file_operations bpf_iter_fops;
-> > > >   #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
-> > > >     extern const struct bpf_prog_ops _name ## _prog_ops; \
-> > > >     extern const struct bpf_verifier_ops _name ## _verifier_ops;
-> > > > -#define BPF_MAP_TYPE(_id, _ops) \
-> > > > +#define BPF_MAP_TYPE_FL(_id, _ops, properties) \
-> > > >     extern const struct bpf_map_ops _ops;
-> > > >   #define BPF_LINK_TYPE(_id, _name)
-> > > >   #include <linux/bpf_types.h>
-> > > >   #undef BPF_PROG_TYPE
-> > > > -#undef BPF_MAP_TYPE
-> > > > +#undef BPF_MAP_TYPE_FL
-> > > >   #undef BPF_LINK_TYPE
-> > > >   extern const struct bpf_prog_ops bpf_offload_prog_ops;
-> > > > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> > > > index 29d22752fc87..3f32702c9bf4 100644
-> > > > --- a/include/linux/bpf_types.h
-> > > > +++ b/include/linux/bpf_types.h
-> > > > @@ -76,16 +76,25 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
-> > > >   #endif /* CONFIG_BPF_LSM */
-> > > >   #endif
-> > > > +#define BPF_MAP_TYPE(x, y) BPF_MAP_TYPE_FL(x, y, 0)
-> > > > +
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
-> > > > -BPF_MAP_TYPE(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops)
-> > > > +/* prog_array->aux->{type,jited} is a runtime binding.
-> > > > + * Doing static check alone in the verifier is not enough,
-> > > > + * so BPF_MAP_NO_INNTER_MAP is needed.
-> > >
-> > > typo: INNTER
-> > Good catch.
-> >
-> > >
-> > > > + */
-> > > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops,
-> > > > +           BPF_MAP_NO_INNER_MAP)
-> > >
-> > > Probably nit, but what is "FL"? flags? We do have map_flags already, but here the
-> > > BPF_MAP_NO_INNER_MAP ends up in 'properties' instead. To avoid confusion, it would
-> > > probably be better to name it 'map_flags_fixed' since this is what it really means;
-> > > fixed flags that cannot be changed/controlled when creating a map.
-> > ok. may be BPF_MAP_TYPE_FIXED_FL?
-> >
-> > >
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERF_EVENT_ARRAY, perf_event_array_map_ops)
-> > > >   #ifdef CONFIG_CGROUPS
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_CGROUP_ARRAY, cgroup_array_map_ops)
-> > > >   #endif
-> > > >   #ifdef CONFIG_CGROUP_BPF
-> > > > -BPF_MAP_TYPE(BPF_MAP_TYPE_CGROUP_STORAGE, cgroup_storage_map_ops)
-> > > > -BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE, cgroup_storage_map_ops)
-> > > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_CGROUP_STORAGE, cgroup_storage_map_ops,
-> > > > +           BPF_MAP_NO_INNER_MAP)
-> > > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE, cgroup_storage_map_ops,
-> > > > +           BPF_MAP_NO_INNER_MAP)
-> > > >   #endif
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_HASH, htab_map_ops)
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_HASH, htab_percpu_map_ops)
-> > > > @@ -116,8 +125,10 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_REUSEPORT_SOCKARRAY, reuseport_array_ops)
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_QUEUE, queue_map_ops)
-> > > >   BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
-> > > >   #if defined(CONFIG_BPF_JIT)
-> > > > -BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
-> > > > +BPF_MAP_TYPE_FL(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops,
-> > > > +           BPF_MAP_NO_INNER_MAP)
-> > > >   #endif
-> > > > +#undef BPF_MAP_TYPE
-> > > >   BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
-> > > >   BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
-> > > [...]
-> > > > diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-> > > > index 17738c93bec8..d965a1d328a9 100644
-> > > > --- a/kernel/bpf/map_in_map.c
-> > > > +++ b/kernel/bpf/map_in_map.c
-> > > > @@ -17,13 +17,7 @@ struct bpf_map *bpf_map_meta_alloc(int inner_map_ufd)
-> > > >     if (IS_ERR(inner_map))
-> > > >             return inner_map;
-> > > > -   /* prog_array->aux->{type,jited} is a runtime binding.
-> > > > -    * Doing static check alone in the verifier is not enough.
-> > > > -    */
-> > > > -   if (inner_map->map_type == BPF_MAP_TYPE_PROG_ARRAY ||
-> > > > -       inner_map->map_type == BPF_MAP_TYPE_CGROUP_STORAGE ||
-> > > > -       inner_map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE ||
-> > > > -       inner_map->map_type == BPF_MAP_TYPE_STRUCT_OPS) {
-> > > > +   if (inner_map->properties & BPF_MAP_NO_INNER_MAP) {
-> > > >             fdput(f);
-> > > >             return ERR_PTR(-ENOTSUPP);
-> > > >     }
-> > >
-> > > This whole check here is currently very fragile. For example, given we forbid cgroup
-> > > local storage here, why do we not forbid socket local storage? What about other maps
-> > > like stackmap? It's quite unclear if it even works as expected and if there's also a
-> > > use-case we are aware of. Why not making this an explicit opt-in?
-> > Re: "cgroup-local-storage", my understanding is,
-> > cgroup-local-storage is local to the bpf's cgroup that it is running under,
-> > so it is not ok for a cgroup's bpf to be able to access other cgroup's local
-> > storage through map-in-map, so they are excluded here.
-> >
-> > sk-local-storage does not have this restriction.  For other maps, if there is
-> > no known safety issue, why restricting it and create unnecessary API
-> > discrepancy?
-> >
-> > I think we cannot restrict the existing map either unless there is a
-> > known safety issue.
-> >
-> > >
-> > > Like explicit annotating via struct bpf_map_ops where everything is visible in one
-> > > single place where the map is defined:
-> > >
-> > > const struct bpf_map_ops array_map_ops = {
-> > >         .map_alloc_check = array_map_alloc_check,
-> > >         [...]
-> > >         .map_flags_fixed = BPF_MAP_IN_MAP_OK,
-> > > };
-> > I am not sure about adding it to bpf_map_ops instead of bpf_types.h.
-> > It will be easier to figure out what map types do not support MAP_IN_MAP (and
-> > other future map's fixed properties) in one place "bpf_types.h" instead of
-> > having to dig into each map src file.
+On 5/28/20 11:23 PM, Dmitry Vyukov wrote:
+> On Thu, May 28, 2020 at 11:01 PM 'Andrii Nakryiko' via syzkaller-bugs
+> <syzkaller-bugs@googlegroups.com> wrote:
+>>
+>> On 5/28/20 9:44 AM, syzbot wrote:
+>>> Hello,
+>>>
+>>> syzbot found the following crash on:
+>>>
+>>> HEAD commit:    dc0f3ed1 net: phy: at803x: add cable diagnostics support f..
+>>> git tree:       net-next
+>>> console output: https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_log.txt-3Fx-3D17289cd2100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=t1v5ZakZM9Aw_9u_I6FbFZ28U0GFs0e9dMMUOyiDxO4&e=
+>>> kernel config:  https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_.config-3Fx-3D7e1bc97341edbea6&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=yeXCTODuJF6ExmCJ-ppqMHsfvMCbCQ9zkmZi3W6NGHo&e=
+>>> dashboard link: https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_bug-3Fextid-3D3610d489778b57cc8031&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=8fAJHh81yojiinnGJzTw6hN4w4A6XRZST4463CWL9Y8&e=
+>>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>>> syz repro:      https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_repro.syz-3Fx-3D15f237aa100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=cPv-hQsGYs0CVz3I26BmauS0hQ8_YTWHeH5p-U5ElWY&e=
+>>> C reproducer:   https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_repro.c-3Fx-3D1553834a100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=r6sGJDOgosZDE9sRxqFnVibDNJFt_6IteSWeqEQLbNE&e=
+>>>
+>>> The bug was bisected to:
+>>>
+>>> commit af6eea57437a830293eab56246b6025cc7d46ee7
+>>> Author: Andrii Nakryiko <andriin@fb.com>
+>>> Date:   Mon Mar 30 02:59:58 2020 +0000
+>>>
+>>>       bpf: Implement bpf_link-based cgroup BPF program attachment
+>>>
+>>> bisection log:  https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_bisect.txt-3Fx-3D1173cd7e100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=rJIpYFSAMRfea3349dd7PhmLD_hriVwq8ZtTHcSagBA&e=
+>>> final crash:    https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_report.txt-3Fx-3D1373cd7e100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=TWpx5JNdxKiKPABUScn8WB7u3fXueCp7BXwQHg4Unz0&e=
+>>> console output: https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspot.com_x_log.txt-3Fx-3D1573cd7e100000&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=-SMhn-dVZI4W51EZQ8Im0sdThgwt9M6fxUt3_bcYvk8&e=
+>>>
+>>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+>>> Reported-by: syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com
+>>> Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+>>>
+>>> general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+>>> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+>>> CPU: 0 PID: 7063 Comm: syz-executor654 Not tainted 5.7.0-rc6-syzkaller #0
+>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>> RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
+>>
+>> No idea why it was bisected to bpf_link change. It seems completely
+>> struct sock-related. Seems like
 > 
-> I'm 100% with Daniel here. If we are consolidating such things, I'd
-> rather have them in one place where differences between maps are
-> defined, which is ops. Despite an "ops" name, this seems like a
-> perfect place for specifying all those per-map-type properties and
-> behaviors. Adding flags into bpf_types.h just splits everything into
-> two places: bpf_types.h specifies some differences, while ops specify
-> all the other ones.
+> Hi Andrii,
 > 
-> Figuring out map-in-map support is just one of many questions one
-> might ask about differences between map types, I don't think that
-> justifies adding them to bpf_types.h. Grepping for struct bpf_map_ops
-> with search context (i.e., -A15 or something like that) should be
-> enough to get a quick glance at all possible maps and what they
-> define/override.
-> 
-> It also feels like adding this as bool field for each aspect instead
-> of a collection of bits is cleaner and a bit more scalable. If we need
-> to add another property with some parameter/constant, or just enum,
-> defining one of few possible behaviors, it would be easier to just add
-> another field, instead of trying to cram that into u32. It also solves
-> your problem of "at the glance" view of map-in-map support features.
-> Just name that field unique enough to grep by it :)
-How about another way.  What patch 2 want is each map could have its own
-bpf_map_meta_equal().  Instead of adding 2 flags, add the bpf_map_meta_equal()
-as a ops to bpf_map_ops.  Each map supports to be used as an inner_map
-needs to set this ops.  Then it will be an opt-in.
-A default implementation can be provided for most maps' use.
-The maps (e.g. arraymap and other future maps) that has different requirement
-can implement its own.  For the existing maps, when we address those
-limitations (e.g. arraymap's gen_lookup) later,  we can then change its
-bpf_map_meta_equal.
+> You can always find a detailed explanation of syzbot bisections under
+> the "bisection log" link.
 
-Thoughts?
+Right. Sorry, I didn't mean that bisect went wrong or anything like 
+that. I just don't see how my change has anything to do with invalid 
+socket state. As I just replied in another email, this particular repro 
+is using bpf_link_create() for cgroup attachment, which was added in my 
+patch. So running repro before my patch would always fail to attach BPF 
+program, and thus won't be able to repro the issue (because the bug is 
+somewhere in the interaction between BPF program attachment and socket 
+itself). So it will always bisect to my patch :)
 
 > 
-> >
-> > If the objective is to have the future map "consciously" opt-in, how about
-> > keeping the "BPF_MAP_TYPE" name as is but add a fixed_flags param as the
-> > earlier v1 and flip it from NO to OK flag.  It will be clear that,
-> > it is a decision that the new map needs to make instead of a quiet 0
-> > in "struct bpf_map_ops".
-> >
-> > For example,
-> > BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops, BPF_MAP_IN_MAP_OK)
-> > BPF_MAP_TYPE(BPF_MAP_TYPE_PROG_ARRAY, prog_array_map_ops, 0)
-> > BPF_MAP_TYPE(BPF_MAP_TYPE_HASH, htab_map_ops, BPF_MAP_IN_MAP_OK | BPF_MAP_IN_MAP_DYNAMIC_SIZE_OK)
-> >
-> > >
-> > > That way, if someone forgets to add .map_flags_fixed to a new map type, it's okay since
-> > > it's _safe_ to forget to add these flags (and okay to add in future uapi-wise) as opposed
-> > > to the other way round where one can easily miss the opt-out case and potentially crash
-> > > the machine worst case.
+>> struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+>>
+>> ends up being NULL.
+>>
+>> Can some more networking-savvy people help with investigating this, please?
+>>
+>>> Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
+>>> RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
+>>> RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
+>>> RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
+>>> RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
+>>> R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
+>>> R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
+>>> FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>> Call Trace:
+>>>    sk_common_release+0xba/0x370 net/core/sock.c:3210
+>>>    inet_create net/ipv4/af_inet.c:390 [inline]
+>>>    inet_create+0x966/0xe00 net/ipv4/af_inet.c:248
+>>>    __sock_create+0x3cb/0x730 net/socket.c:1428
+>>>    sock_create net/socket.c:1479 [inline]
+>>>    __sys_socket+0xef/0x200 net/socket.c:1521
+>>>    __do_sys_socket net/socket.c:1530 [inline]
+>>>    __se_sys_socket net/socket.c:1528 [inline]
+>>>    __x64_sys_socket+0x6f/0xb0 net/socket.c:1528
+>>>    do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>>>    entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>>> RIP: 0033:0x441e29
+>>> Code: e8 fc b3 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+>>> RSP: 002b:00007ffdce184148 EFLAGS: 00000246 ORIG_RAX: 0000000000000029
+>>> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441e29
+>>> RDX: 0000000000000073 RSI: 0000000000000002 RDI: 0000000000000002
+>>> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+>>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+>>> R13: 0000000000402c30 R14: 0000000000000000 R15: 0000000000000000
+>>> Modules linked in:
+>>> ---[ end trace 23b6578228ce553e ]---
+>>> RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
+>>> Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
+>>> RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
+>>> RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
+>>> RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
+>>> RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
+>>> R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
+>>> R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
+>>> FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>>
+>>>
+>>> ---
+>>> This bug is generated by a bot. It may contain errors.
+>>> See https://urldefense.proofpoint.com/v2/url?u=https-3A__goo.gl_tpsmEJ&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=NELwknC4AyuWSJIHbwt_O_c0jfPc_6D9RuKHh_adQ_Y&e=  for more information about syzbot.
+>>> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>>>
+>>> syzbot will keep track of this bug report. See:
+>>> https://urldefense.proofpoint.com/v2/url?u=https-3A__goo.gl_tpsmEJ-23status&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=YfV-e6A04EIqHwezxYop7CpJyhXD8DVzwTPUT0xckaM&e=  for how to communicate with syzbot.
+>>> For information about bisection process see: https://urldefense.proofpoint.com/v2/url?u=https-3A__goo.gl_tpsmEJ-23bisection&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=xOFzqI48uvECf4XFjlhNl4LBOT02lz1HlCL6MT1uMrI&e=
+>>> syzbot can test patches for this bug, for details see:
+>>> https://urldefense.proofpoint.com/v2/url?u=https-3A__goo.gl_tpsmEJ-23testing-2Dpatches&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=sMAtpavBBjBzFzT0V8c6FcH8cu2M9da3ZozO5Lc8do0&s=_cj6MOAz3yNlXgjMuyRu6ZOEjRvYWEvtTd7kE46wVfo&e=
+>>>
+>>
+>> --
+>> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+>> To view this discussion on the web visit https://urldefense.proofpoint.com/v2/url?u=https-3A__groups.google.com_d_msgid_syzkaller-2Dbugs_d65c8424-2De78c-2D63f9-2D3711-2D532494619dc6-2540fb.com&d=DwIFaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=vxqvl81C2rT6GOGdPyz8iQ&m=b2VQiGg0nrxk96tqrmflMQ24DJk-MOxx4uyOs7wSUJ0&s=TYFus0Dh0-ZHiL510kJIyPOWCyX34UzLWR4QvS3r_iY&e= .
+
