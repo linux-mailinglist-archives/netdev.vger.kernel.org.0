@@ -2,192 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F041E77F5
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 10:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E5CC1E77FC
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 10:14:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgE2IMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 04:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725681AbgE2IML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 04:12:11 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B1FC03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 01:12:11 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id n5so2315584wmd.0
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 01:12:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=5+fxliSeoLCLlOvZdamHCOkQy99HBngARsCHQl3OrwI=;
-        b=DFlPCHv3OERcdYRzt8Y0QvSIMTMYTjAXEHa5Pk4ML1hZ57oA1ree/pZLBRLmF4mXSA
-         tD8I/ABrbVa/F0/5qlkXi2+5QploJYrK2lgA6k1jhy+QE50BKDOHdjcYNPfyExCbFJvn
-         EY2zGaqoYgLAQX5xuvR6gPRAwKC+IairWrNWs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5+fxliSeoLCLlOvZdamHCOkQy99HBngARsCHQl3OrwI=;
-        b=neetU5K6vm6MBIZkEVgpAKo3D3ymxu2q02dXFAkn3fY7TD4d2FMfpz8+r8Cf4rHqAr
-         8VkqpyBtE+HxCGOaM9fdiV9htYDQWnFJ0v7pAbgz1VfGzP/zUr/PNIn0/eVfGrhszUSU
-         KisiKGmPjSVhPnZGdrDzcf3QnTrc+aJBfdgFMKCe9HY5IeBwfMOBB4XfPhZmcqOJYtqg
-         LZAKIH7LMl4gQqnAoGbWNBHa+dsFAJGceSVgLL0LwvCXpRiDi7O4jxHT/QLwW3u1WHDV
-         ZEUADEG0niJCV6xzED6gErY7GzjA///QY66VyMoQ1D5D4MV5KuIuMYOxIy6GOuFM3nMP
-         bZ7g==
-X-Gm-Message-State: AOAM532IUq3NETFIRiIHbBJJbZmm7nXBrb0RnqofuF7eBNUzhKWVCxhO
-        UMyNkdWnE2yGKPv3ez5Krk8Fsw==
-X-Google-Smtp-Source: ABdhPJwUuvTjfMdWczk9cZjFBRn0F9Epnf3aYuTApUytcC5KC0FSQvQGiVHyGTn05ocQl5zr4I7jfw==
-X-Received: by 2002:a1c:3c89:: with SMTP id j131mr7150208wma.59.1590739929838;
-        Fri, 29 May 2020 01:12:09 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id v2sm9053462wrn.21.2020.05.29.01.12.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 May 2020 01:12:09 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] bridge: mrp: Set the priority of MRP
- instance
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, jiri@resnulli.us, ivecera@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <20200529100514.920537-1-horatiu.vultur@microchip.com>
- <20200529100514.920537-2-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <fc47aca8-a188-5e57-fe76-8e57c2910920@cumulusnetworks.com>
-Date:   Fri, 29 May 2020 11:12:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1725833AbgE2IOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 04:14:48 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:51707 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725681AbgE2IOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 04:14:47 -0400
+X-Originating-IP: 86.202.110.81
+Received: from localhost (lfbn-lyo-1-15-81.w86-202.abo.wanadoo.fr [86.202.110.81])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 225082000D;
+        Fri, 29 May 2020 08:14:42 +0000 (UTC)
+Date:   Fri, 29 May 2020 10:14:41 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
+Subject: Re: [PATCH net-next 11/11] net: dsa: ocelot: introduce driver for
+ Seville VSC9953 switch
+Message-ID: <20200529081441.GW3972@piout.net>
+References: <20200527234113.2491988-1-olteanv@gmail.com>
+ <20200527234113.2491988-12-olteanv@gmail.com>
+ <20200528215618.GA853774@lunn.ch>
+ <CA+h21hoVQPVJiYDQV7j+d7Vt8o5rK+Z8APO2Hp85Dt8cOU7e4w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200529100514.920537-2-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hoVQPVJiYDQV7j+d7Vt8o5rK+Z8APO2Hp85Dt8cOU7e4w@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/05/2020 13:05, Horatiu Vultur wrote:
-> Each MRP instance has a priority, a lower value means a higher priority.
-> The priority of MRP instance is stored in MRP_Test frame in this way
-> all the MRP nodes in the ring can see other nodes priority.
+On 29/05/2020 01:09:16+0300, Vladimir Oltean wrote:
+> On Fri, 29 May 2020 at 00:56, Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > Extending the Felix driver to probe a PCI as well as a platform device
+> > > would have introduced unnecessary complexity. The 'meat' of both drivers
+> > > is in drivers/net/ethernet/mscc/ocelot*.c anyway, so let's just
+> > > duplicate the Felix driver, s/Felix/Seville/, and define the low-level
+> > > bits in seville_vsc9953.c.
+> >
+> > Hi Vladimir
+> >
+> > That has resulted in a lot of duplicated code.
+> >
+> > Is there an overall family name for these switch?
+> >
+> > Could you add foo_set_ageing_time() with both felix and saville share?
+> >
+> >       Andrew
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  include/net/switchdev.h        | 1 +
->  include/uapi/linux/if_bridge.h | 2 ++
->  net/bridge/br_mrp.c            | 3 ++-
->  net/bridge/br_mrp_netlink.c    | 5 +++++
->  net/bridge/br_mrp_switchdev.c  | 1 +
->  net/bridge/br_private_mrp.h    | 1 +
->  6 files changed, 12 insertions(+), 1 deletion(-)
+> Yes, it looks like I can. I can move Felix PCI probing to
+> felix_vsc9959.c, Seville platform device probing to seville_vsc9953.c,
+> and remove seville.c.
+> I would not be in a position to know whether there's any larger family
+> name which should be used here. According to
+> https://media.digikey.com/pdf/Data%20Sheets/Microsemi%20PDFs/Ocelot_Family_of_Ethernet_Switches_Dec2016.pdf,
+> "Ocelot is a low port count, small form factor Ethernet switch family
+> for the Industrial IoT market". Seville would not qualify as part of
+> the Ocelot family (high port count, no 1588) but that doesn't mean it
+> can't use the Ocelot driver. As confusing as it might be for the
+> people at Microchip, I would tend to call anything that probes as pure
+> switchdev "ocelot" and anything that probes as DSA "felix", since
+
+As ocelot can be used in a DSA configuration (even if it is not
+implemented yet), I don't think this would be correct. From my point of
+view, felix and seville are part of the ocelot family.
+
+> these were the first 2 drivers that entered mainline. Under this
+> working model, Seville would reuse the struct dsa_switch_ops
+> felix_switch_ops, while having its own low-level seville_vsc9953.c
+> that deals with platform integration specific stuff (probing, internal
+> MDIO, register map, etc), and the felix_switch_ops would call into
+> ocelot for the common functionalities.
+> What do you think?
 > 
-> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> index db519957e134b..f82ef4c45f5ed 100644
-> --- a/include/net/switchdev.h
-> +++ b/include/net/switchdev.h
-> @@ -116,6 +116,7 @@ struct switchdev_obj_mrp {
->  	struct net_device *p_port;
->  	struct net_device *s_port;
->  	u32 ring_id;
-> +	u16 prio;
->  };
->  
->  #define SWITCHDEV_OBJ_MRP(OBJ) \
-> diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-> index 5a43eb86c93bf..0162c1370ecb6 100644
-> --- a/include/uapi/linux/if_bridge.h
-> +++ b/include/uapi/linux/if_bridge.h
-> @@ -176,6 +176,7 @@ enum {
->  	IFLA_BRIDGE_MRP_INSTANCE_RING_ID,
->  	IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX,
->  	IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX,
-> +	IFLA_BRIDGE_MRP_INSTANCE_PRIO,
->  	__IFLA_BRIDGE_MRP_INSTANCE_MAX,
->  };
->  
-> @@ -230,6 +231,7 @@ struct br_mrp_instance {
->  	__u32 ring_id;
->  	__u32 p_ifindex;
->  	__u32 s_ifindex;
-> +	__u16 prio;
->  };
->  
->  struct br_mrp_ring_state {
-> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> index 8ea59504ef47a..f8fd037219fe9 100644
-> --- a/net/bridge/br_mrp.c
-> +++ b/net/bridge/br_mrp.c
-> @@ -147,7 +147,7 @@ static struct sk_buff *br_mrp_alloc_test_skb(struct br_mrp *mrp,
->  	br_mrp_skb_tlv(skb, BR_MRP_TLV_HEADER_RING_TEST, sizeof(*hdr));
->  	hdr = skb_put(skb, sizeof(*hdr));
->  
-> -	hdr->prio = cpu_to_be16(MRP_DEFAULT_PRIO);
-> +	hdr->prio = cpu_to_be16(mrp->prio);
->  	ether_addr_copy(hdr->sa, p->br->dev->dev_addr);
->  	hdr->port_role = cpu_to_be16(port_role);
->  	hdr->state = cpu_to_be16(mrp->ring_state);
-> @@ -290,6 +290,7 @@ int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
->  		return -ENOMEM;
->  
->  	mrp->ring_id = instance->ring_id;
-> +	mrp->prio = instance->prio;
->  
->  	p = br_mrp_get_port(br, instance->p_ifindex);
->  	spin_lock_bh(&br->lock);
-> diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
-> index d9de780d2ce06..332d9894a9485 100644
-> --- a/net/bridge/br_mrp_netlink.c
-> +++ b/net/bridge/br_mrp_netlink.c
-> @@ -22,6 +22,7 @@ br_mrp_instance_policy[IFLA_BRIDGE_MRP_INSTANCE_MAX + 1] = {
->  	[IFLA_BRIDGE_MRP_INSTANCE_RING_ID]	= { .type = NLA_U32 },
->  	[IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]	= { .type = NLA_U32 },
->  	[IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]	= { .type = NLA_U32 },
-> +	[IFLA_BRIDGE_MRP_INSTANCE_PRIO]		= { .type = NLA_U16 },
->  };
->  
->  static int br_mrp_instance_parse(struct net_bridge *br, struct nlattr *attr,
-> @@ -49,6 +50,10 @@ static int br_mrp_instance_parse(struct net_bridge *br, struct nlattr *attr,
->  	inst.ring_id = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_RING_ID]);
->  	inst.p_ifindex = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_P_IFINDEX]);
->  	inst.s_ifindex = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_S_IFINDEX]);
-> +	inst.prio = MRP_DEFAULT_PRIO;
-> +
-> +	if (tb[IFLA_BRIDGE_MRP_INSTANCE_PRIO])
-> +		inst.prio = nla_get_u32(tb[IFLA_BRIDGE_MRP_INSTANCE_PRIO]);
+> -Vladimir
 
-	[IFLA_BRIDGE_MRP_INSTANCE_PRIO]		= { .type = NLA_U16 },
-
-it seems you should be using nla_get_u16 above
-
->  
->  	if (cmd == RTM_SETLINK)
->  		return br_mrp_add(br, &inst);
-> diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.c
-> index 51cb1d5a24b4f..3a776043bf80d 100644
-> --- a/net/bridge/br_mrp_switchdev.c
-> +++ b/net/bridge/br_mrp_switchdev.c
-> @@ -12,6 +12,7 @@ int br_mrp_switchdev_add(struct net_bridge *br, struct br_mrp *mrp)
->  		.p_port = rtnl_dereference(mrp->p_port)->dev,
->  		.s_port = rtnl_dereference(mrp->s_port)->dev,
->  		.ring_id = mrp->ring_id,
-> +		.prio = mrp->prio,
->  	};
->  	int err;
->  
-> diff --git a/net/bridge/br_private_mrp.h b/net/bridge/br_private_mrp.h
-> index a0f53cc3ab85c..558941ce23669 100644
-> --- a/net/bridge/br_private_mrp.h
-> +++ b/net/bridge/br_private_mrp.h
-> @@ -14,6 +14,7 @@ struct br_mrp {
->  	struct net_bridge_port __rcu	*s_port;
->  
->  	u32				ring_id;
-> +	u16				prio;
->  
->  	enum br_mrp_ring_role_type	ring_role;
->  	u8				ring_role_offloaded;
-> 
-
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
