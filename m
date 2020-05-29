@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F531E7B2B
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 13:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 399DA1E7B27
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 13:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgE2LE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 07:04:27 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:39494 "EHLO a.mx.secunet.com"
+        id S1726687AbgE2LEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 07:04:21 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:39492 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726555AbgE2LEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 07:04:16 -0400
+        id S1726549AbgE2LEP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 07:04:15 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 21B5720539;
-        Fri, 29 May 2020 13:04:15 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id A7F9F205B4;
+        Fri, 29 May 2020 13:04:14 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YCOIDQTFmzM4; Fri, 29 May 2020 13:04:14 +0200 (CEST)
+        with ESMTP id QMxQJiLi6AbS; Fri, 29 May 2020 13:04:14 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 03E8B205B5;
-        Fri, 29 May 2020 13:04:14 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id D991220539;
+        Fri, 29 May 2020 13:04:13 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
  14.3.487.0; Fri, 29 May 2020 13:04:13 +0200
@@ -30,16 +30,16 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 29 May
  2020 13:04:12 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 2EB4631804B1;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 32BE03180607;
  Fri, 29 May 2020 13:04:12 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 08/15] esp4: support ipv6 nexthdrs process for beet gso segment
-Date:   Fri, 29 May 2020 13:04:01 +0200
-Message-ID: <20200529110408.6349-9-steffen.klassert@secunet.com>
+Subject: [PATCH 09/15] xfrm: call xfrm_output_gso when inner_protocol is set in xfrm_output
+Date:   Fri, 29 May 2020 13:04:02 +0200
+Message-ID: <20200529110408.6349-10-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200529110408.6349-1-steffen.klassert@secunet.com>
 References: <20200529110408.6349-1-steffen.klassert@secunet.com>
@@ -55,61 +55,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xin Long <lucien.xin@gmail.com>
 
-For beet mode, when it's ipv6 inner address with nexthdrs set,
-the packet format might be:
+An use-after-free crash can be triggered when sending big packets over
+vxlan over esp with esp offload enabled:
 
-    ----------------------------------------------------
-    | outer  |     | dest |     |      |  ESP    | ESP |
-    | IP hdr | ESP | opts.| TCP | Data | Trailer | ICV |
-    ----------------------------------------------------
+  [] BUG: KASAN: use-after-free in ipv6_gso_pull_exthdrs.part.8+0x32c/0x4e0
+  [] Call Trace:
+  []  dump_stack+0x75/0xa0
+  []  kasan_report+0x37/0x50
+  []  ipv6_gso_pull_exthdrs.part.8+0x32c/0x4e0
+  []  ipv6_gso_segment+0x2c8/0x13c0
+  []  skb_mac_gso_segment+0x1cb/0x420
+  []  skb_udp_tunnel_segment+0x6b5/0x1c90
+  []  inet_gso_segment+0x440/0x1380
+  []  skb_mac_gso_segment+0x1cb/0x420
+  []  esp4_gso_segment+0xae8/0x1709 [esp4_offload]
+  []  inet_gso_segment+0x440/0x1380
+  []  skb_mac_gso_segment+0x1cb/0x420
+  []  __skb_gso_segment+0x2d7/0x5f0
+  []  validate_xmit_skb+0x527/0xb10
+  []  __dev_queue_xmit+0x10f8/0x2320 <---
+  []  ip_finish_output2+0xa2e/0x1b50
+  []  ip_output+0x1a8/0x2f0
+  []  xfrm_output_resume+0x110e/0x15f0
+  []  __xfrm4_output+0xe1/0x1b0
+  []  xfrm4_output+0xa0/0x200
+  []  iptunnel_xmit+0x5a7/0x920
+  []  vxlan_xmit_one+0x1658/0x37a0 [vxlan]
+  []  vxlan_xmit+0x5e4/0x3ec8 [vxlan]
+  []  dev_hard_start_xmit+0x125/0x540
+  []  __dev_queue_xmit+0x17bd/0x2320  <---
+  []  ip6_finish_output2+0xb20/0x1b80
+  []  ip6_output+0x1b3/0x390
+  []  ip6_xmit+0xb82/0x17e0
+  []  inet6_csk_xmit+0x225/0x3d0
+  []  __tcp_transmit_skb+0x1763/0x3520
+  []  tcp_write_xmit+0xd64/0x5fe0
+  []  __tcp_push_pending_frames+0x8c/0x320
+  []  tcp_sendmsg_locked+0x2245/0x3500
+  []  tcp_sendmsg+0x27/0x40
 
-Before doing gso segment in xfrm4_beet_gso_segment(), the same
-thing is needed as it does in xfrm6_beet_gso_segment() in last
-patch 'esp6: support ipv6 nexthdrs process for beet gso segment'.
+As on the tx path of vxlan over esp, skb->inner_network_header would be
+set on vxlan_xmit() and xfrm4_tunnel_encap_add(), and the later one can
+overwrite the former one. It causes skb_udp_tunnel_segment() to use a
+wrong skb->inner_network_header, then the issue occurs.
 
-v1->v2:
-  - remove skb_transport_offset(), as it will always return 0
-    in xfrm6_beet_gso_segment(), thank Sabrina's check.
+This patch is to fix it by calling xfrm_output_gso() instead when the
+inner_protocol is set, in which gso_segment of inner_protocol will be
+done first.
 
-Fixes: 384a46ea7bdc ("esp4: add gso_segment for esp4 beet mode")
+While at it, also improve some code around.
+
+Fixes: 7862b4058b9f ("esp: Add gso handlers for esp4 and esp6")
+Reported-by: Xiumei Mu <xmu@redhat.com>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/ipv4/esp4_offload.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_output.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 231edcb84c08..9b1d451edae0 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -137,7 +137,7 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
- 	struct xfrm_offload *xo = xfrm_offload(skb);
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	const struct net_offload *ops;
--	int proto = xo->proto;
-+	u8 proto = xo->proto;
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 2fd3d990d992..69c33cab8f49 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -583,18 +583,20 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+ 		xfrm_state_hold(x);
  
- 	skb->transport_header += x->props.header_len;
+ 		if (skb_is_gso(skb)) {
+-			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
++			if (skb->inner_protocol)
++				return xfrm_output_gso(net, sk, skb);
  
-@@ -146,10 +146,15 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
+-			return xfrm_output2(net, sk, skb);
++			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
++			goto out;
+ 		}
  
- 		skb->transport_header += ph->hdrlen * 8;
- 		proto = ph->nexthdr;
--	} else if (x->sel.family != AF_INET6) {
-+	} else if (x->sel.family == AF_INET6) {
-+		__be16 frag;
-+
-+		skb->transport_header +=
-+			ipv6_skip_exthdr(skb, 0, &proto, &frag);
-+		if (proto == IPPROTO_TCP)
-+			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
+ 		if (x->xso.dev && x->xso.dev->features & NETIF_F_HW_ESP_TX_CSUM)
+ 			goto out;
 +	} else {
- 		skb->transport_header -= IPV4_BEET_PHMAXLEN;
--	} else if (proto == IPPROTO_TCP) {
--		skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
++		if (skb_is_gso(skb))
++			return xfrm_output_gso(net, sk, skb);
  	}
  
- 	__skb_pull(skb, skb_transport_offset(skb));
+-	if (skb_is_gso(skb))
+-		return xfrm_output_gso(net, sk, skb);
+-
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
+ 		err = skb_checksum_help(skb);
+ 		if (err) {
 -- 
 2.17.1
 
