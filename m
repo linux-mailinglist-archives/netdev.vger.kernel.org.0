@@ -2,247 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB91C1E8AFE
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 00:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FB31E8B30
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 00:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgE2WHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 18:07:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728356AbgE2WH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 18:07:27 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBE312145D;
-        Fri, 29 May 2020 22:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590790046;
-        bh=wkiI9f8oimnx01hAfmXraa6dLlJ6mIXy8rBl03y0oEg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAyr6b6qg/NiNJbpOpcD6+OsAChxcpEGCAsrc0kmL7m0i5XjAvf9cMRitTseqUupo
-         F1YbLKmp6rFVWuouyniW2SLgJRjHqsFeC9M2Jb/ZRZ2enHfnVMztz9EONidgFjLzRD
-         wZbJ5bj2RUg+y77GNFaD2dmmM2C1gvC5BAoaWnkg=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        brouer@redhat.com, toke@redhat.com, lorenzo@kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dsahern@kernel.org>
-Subject: [PATCH v4 bpf-next 5/5] selftest: Add tests for XDP programs in devmap entries
-Date:   Fri, 29 May 2020 16:07:16 -0600
-Message-Id: <20200529220716.75383-6-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200529220716.75383-1-dsahern@kernel.org>
-References: <20200529220716.75383-1-dsahern@kernel.org>
+        id S1728294AbgE2WUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 18:20:52 -0400
+Received: from mail-eopbgr00074.outbound.protection.outlook.com ([40.107.0.74]:8322
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725913AbgE2WUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 18:20:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iXrWPr1mHScRFzI++0JpG3aJpo5XpE6CKnCogZsNdtOG+jZtFCl2U6PKrFGj49PDJNDXuniT6zaSWUQ4urTifCOupuzeBZMeOBamzo7PB8KDczrWA3V2koZitIykXzHXmUUeJQERGH4CN6rupeoRI9Cd8D1cWWG11LYWa3+Wa69O8KWjzIPfA0y18FJqo0vFzwYikAJrN9Un4o1ey1OhNmkBrXVj8GLrkIXHiekjAjijADaGbzA/Z195FZCDcLzKyskCQ3KhKC7VCj4IeN0e83IBcLtWqxz8ZpTYFx4bxd/9Wn5O3y+xbHsgrvYh6MOfw5YkCuPuefARutKAd78e1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sDx7I1tX7R0oexTB9y5TXJn8aBKPWYsj695+Q1nt9Vg=;
+ b=BoVAnR+t6q3TvXLp8LotjBSJFYTwDVENVVfsb10PSAqUDN0gdbUaxlEcRJOaSg5Srg0BTWv4CS1IxnhMYq/8y4NhzQdbC3koEjpcxcoY6RMcVWf0WIaJ32W1DIJ/pw/xJSBVbTi2PJXNAtvXfSCqEzMOdCx8s2Fa+VlM0iBdT1mstbQRNNc2cxQQJQQRi8RGTk+Zz0vaEAVWQySBjc4KbwIUcxWSLBTScYAM+I+UEv3Stdg99gQ+ufyxAI5t68XPmfLB2hN/rin+y2o32IKlhIYFQGHSyY4tajBCzYyFNw7vxGefJ+QYHZgbNkoXVxKePKxuOUiUe3G2knSpaai7BQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sDx7I1tX7R0oexTB9y5TXJn8aBKPWYsj695+Q1nt9Vg=;
+ b=oGKLqclM/rcXZ9pgkXnfZYuL73C+c3NWojZBOJyHbZEC66UydKRBZcduKK9BRa+tcH2c3w4dhY2JjBX+Es/iwlHVL5T0yu1l9dqVifvVX6E1sdH4qUqMLt5+v5ibaBkzl84uS4TmeweLoyaRtBt4x0WeyC9vw1Y/L5HDLXeURrs=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3326.eurprd04.prod.outlook.com
+ (2603:10a6:803:8::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Fri, 29 May
+ 2020 22:20:47 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3021.030; Fri, 29 May 2020
+ 22:20:47 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH net-next v3 2/7] dpaa2-eth: Distribute ingress frames
+ based on VLAN prio
+Thread-Topic: [PATCH net-next v3 2/7] dpaa2-eth: Distribute ingress frames
+ based on VLAN prio
+Thread-Index: AQHWNeDcv8exh059skO/bWrzCNqeMqi/kCcAgAAFHJCAAAbLAIAABjnQ
+Date:   Fri, 29 May 2020 22:20:47 +0000
+Message-ID: <VI1PR0402MB38715BFD2DAB1A70B1F0F6B8E08F0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200529174345.27537-1-ioana.ciornei@nxp.com>
+        <20200529174345.27537-3-ioana.ciornei@nxp.com>
+        <20200529141310.55facd7e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <VI1PR0402MB38715651664B9BF2D002DBDDE08F0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <20200529145546.0afa3471@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200529145546.0afa3471@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.147.193]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 7326fc44-b85c-48f8-ec85-08d8041e8986
+x-ms-traffictypediagnostic: VI1PR0402MB3326:
+x-microsoft-antispam-prvs: <VI1PR0402MB3326F287CF49FFF1DAD6EC54E08F0@VI1PR0402MB3326.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04180B6720
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0peF+gqP8dnqF94GfnGfRa+YlWH0iZPXMCcglLy+/YDbIiIyrposLGbyKNCT1b0P6H5ttx9qHN0rVWTehMIJ0cJTBbd99iGNbd2SAZiW00wIQSUs/LX1ZUoZ+J+74JiCGPqEvMrpRWLASpLmXOcyYLcRUXygJd7VAaiwz4u5bvlajIxpWXKEI4fzX+CNAz2J3k0N4z3QzEUjc0NeLKpqN90z/T1NlaHGFS2eI0W2xhzXxPqRJcjEvIUjwnZbaeoMiKbvwZamuc1aT2/aEO2Nyzy2O8GmoJolfNQb3AULvAEL+1X2KwQZuSNxkW//IDDc
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(376002)(39860400002)(346002)(136003)(26005)(52536014)(54906003)(86362001)(2906002)(33656002)(76116006)(66556008)(66446008)(66946007)(6916009)(7696005)(83380400001)(6506007)(4326008)(64756008)(66476007)(186003)(8936002)(8676002)(71200400001)(478600001)(9686003)(55016002)(5660300002)(44832011)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Z6+dFOx2+CdkiK/b2AgdrAyuHJZWOn2N4XekjppszZ5kmsLfqRX9l87a+VAGxtFKqbcWHf6tLMtcRUZxk6sOGzxio5N+IGp401TvdSMQPD7YqUg1ddUK9288kvg0TtCw7hmLic1U7kbP23eRPS+xDevu9gIaE2rBYRzElu9ITp+u5TF3G67mXqkDK6/isqWwORjfEYDZtKKx6qUhtXmU6zFeVAVOTAJqYnQlA1tUgalB07gVmeP9PRaW0S/bH/f1UT0YMnoA5vN2f/6UmTO3agxk89M1K8RpSdH7VG8h1PFd1A0gLnKhrySce9pLu3DwwpVp2S33MKqyU7vXT92OHCKCVIq4YQEUv6umSr0zob0awPOtUQTaat7nsOp7qR2R5KkCcMDRmVEbccxm973MtWCVmMJ5WJYk0a1Mi3stPBduXAN6RtiWCjGevi6lWI2edAUFaX/eWxpe+PkwdRRShhTSecr5M1YSVsO6dVY58hbDMY8D/ym18qWicYzD/oRF
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7326fc44-b85c-48f8-ec85-08d8041e8986
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2020 22:20:47.3947
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AZg99ghj/meZc5XN3HW7szXGNbEEclTr4Gus9+fJam+qzYwQNKLjUSbbTSbapFe8OxXQeHvWPqzjF6CXOqBaMw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3326
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests to verify ability to add an XDP program to a
-entry in a DEVMAP.
+> Subject: Re: [PATCH net-next v3 2/7] dpaa2-eth: Distribute ingress frames=
+ based
+> on VLAN prio
+>=20
+> On Fri, 29 May 2020 21:41:38 +0000 Ioana Ciornei wrote:
+> > > Subject: Re: [PATCH net-next v3 2/7] dpaa2-eth: Distribute ingress
+> > > frames based on VLAN prio
+> > >
+> > > On Fri, 29 May 2020 20:43:40 +0300 Ioana Ciornei wrote:
+> > > > From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> > > >
+> > > > Configure static ingress classification based on VLAN PCP field.
+> > > > If the DPNI doesn't have enough traffic classes to accommodate all
+> > > > priority levels, the lowest ones end up on TC 0 (default on miss).
+> > > >
+> > > > Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> > > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > > > ---
+> > > > Changes in v3:
+> > > >  - revert to explicitly cast mask to u16 * to not get into
+> > > >    sparse warnings
+> > >
+> > > Doesn't seem to have worked:
+> > >
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2761:22: warning:
+> > > incorrect type in assignment (different base types)
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2761:22:    expec=
+ted
+> > > unsigned short [usertype]
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2761:22:    got
+> restricted
+> > > __be16 [usertype]
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2780:29: warning:
+> > > incorrect type in assignment (different base types)
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2780:29:    expec=
+ted
+> > > unsigned short [usertype]
+> > > ../drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2780:29:    got
+> restricted
+> > > __be16 [usertype]
+> >
+> > I don't' know what I am missing but I am not seeing these.
+>=20
+> $ sparse --version
+> 0.6.1
+> $ gcc --version
+> gcc (GCC) 10.0.1 20200504 (prerelease)
+>=20
+> Build with W=3D1 C=3D1
 
-Add negative tests to show DEVMAP programs can not be
-attached to devices as a normal XDP program, and accesses
-to egress_ifindex require BPF_XDP_DEVMAP attach type.
+Thanks, after an update of sparse I got these.
 
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../bpf/prog_tests/xdp_devmap_attach.c        | 97 +++++++++++++++++++
- .../bpf/progs/test_xdp_devmap_helpers.c       | 22 +++++
- .../bpf/progs/test_xdp_with_devmap_helpers.c  | 44 +++++++++
- 3 files changed, 163 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
+Fixed locally but I think it's better to wait maybe until my next morning t=
+o send a new version.. maybe there is any other feedback that's needs to be=
+ addressed.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-new file mode 100644
-index 000000000000..8454d5b96058
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <uapi/linux/bpf.h>
-+#include <linux/if_link.h>
-+#include <test_progs.h>
-+
-+#include "test_xdp_devmap_helpers.skel.h"
-+#include "test_xdp_with_devmap_helpers.skel.h"
-+
-+#define IFINDEX_LO 1
-+
-+struct bpf_devmap_val {
-+	u32 ifindex;   /* device index */
-+	union {
-+		int fd;  /* prog fd on map write */
-+		u32 id;  /* prog id on map read */
-+	} bpf_prog;
-+};
-+
-+void test_xdp_with_devmap_helpers(void)
-+{
-+	struct test_xdp_with_devmap_helpers *skel;
-+	struct bpf_prog_info info = {};
-+	struct bpf_devmap_val val = {
-+		.ifindex = IFINDEX_LO,
-+	};
-+	__u32 len = sizeof(info);
-+	__u32 duration, idx = 0;
-+	int err, dm_fd, map_fd;
-+
-+
-+	skel = test_xdp_with_devmap_helpers__open_and_load();
-+	if (CHECK_FAIL(!skel)) {
-+		perror("test_xdp_with_devmap_helpers__open_and_load");
-+		return;
-+	}
-+
-+	/* can not attach program with DEVMAPs that allow programs
-+	 * as xdp generic
-+	 */
-+	dm_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
-+	CHECK(err == 0, "Generic attach of program with 8-byte devmap",
-+	      "should have failed\n");
-+
-+	dm_fd = bpf_program__fd(skel->progs.xdp_dummy_dm);
-+	map_fd = bpf_map__fd(skel->maps.dm_ports);
-+	err = bpf_obj_get_info_by_fd(dm_fd, &info, &len);
-+	if (CHECK_FAIL(err))
-+		goto out_close;
-+
-+	val.bpf_prog.fd = dm_fd;
-+	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
-+	CHECK(err, "Add program to devmap entry",
-+	      "err %d errno %d\n", err, errno);
-+
-+	err = bpf_map_lookup_elem(map_fd, &idx, &val);
-+	CHECK(err, "Read devmap entry", "err %d errno %d\n", err, errno);
-+	CHECK(info.id != val.bpf_prog.id, "Expected program id in devmap entry",
-+	      "expected %u read %u\n", info.id, val.bpf_prog.id);
-+
-+	/* can not attach BPF_XDP_DEVMAP program to a device */
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
-+	CHECK(err == 0, "Attach of BPF_XDP_DEVMAP program",
-+	      "should have failed\n");
-+
-+	val.ifindex = 1;
-+	val.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_dummy_prog);
-+	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
-+	CHECK(err == 0, "Add non-BPF_XDP_DEVMAP program to devmap entry",
-+	      "should have failed\n");
-+
-+out_close:
-+	test_xdp_with_devmap_helpers__destroy(skel);
-+}
-+
-+void test_neg_xdp_devmap_helpers(void)
-+{
-+	struct test_xdp_devmap_helpers *skel;
-+	__u32 duration;
-+
-+	skel = test_xdp_devmap_helpers__open_and_load();
-+	if (CHECK(skel,
-+		  "Load of XDP program accessing egress ifindex without attach type",
-+		  "should have failed\n")) {
-+		test_xdp_devmap_helpers__destroy(skel);
-+	}
-+}
-+
-+
-+void test_xdp_devmap_attach(void)
-+{
-+	if (test__start_subtest("DEVMAP with programs in entries"))
-+		test_xdp_with_devmap_helpers();
-+
-+	if (test__start_subtest("Verifier check of DEVMAP programs"))
-+		test_neg_xdp_devmap_helpers();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
-new file mode 100644
-index 000000000000..e5c0f131c8a7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* fails to load without expected_attach_type = BPF_XDP_DEVMAP
-+ * because of access to egress_ifindex
-+ */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("xdp_dm_log")
-+int xdpdm_devlog(struct xdp_md *ctx)
-+{
-+	char fmt[] = "devmap redirect: dev %u -> dev %u len %u\n";
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	unsigned int len = data_end - data;
-+
-+	bpf_trace_printk(fmt, sizeof(fmt),
-+			 ctx->ingress_ifindex, ctx->egress_ifindex, len);
-+
-+	return XDP_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
-new file mode 100644
-index 000000000000..deef0e050863
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(struct bpf_devmap_val));
-+	__uint(max_entries, 4);
-+} dm_ports SEC(".maps");
-+
-+SEC("xdp_redir")
-+int xdp_redir_prog(struct xdp_md *ctx)
-+{
-+	return bpf_redirect_map(&dm_ports, 1, 0);
-+}
-+
-+/* invalid program on DEVMAP entry;
-+ * SEC name means expected attach type not set
-+ */
-+SEC("xdp_dummy")
-+int xdp_dummy_prog(struct xdp_md *ctx)
-+{
-+	return XDP_PASS;
-+}
-+
-+/* valid program on DEVMAP entry via SEC name;
-+ * has access to egress and ingress ifindex
-+ */
-+SEC("xdp_devmap")
-+int xdp_dummy_dm(struct xdp_md *ctx)
-+{
-+	char fmt[] = "devmap redirect: dev %u -> dev %u len %u\n";
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	unsigned int len = data_end - data;
-+
-+	bpf_trace_printk(fmt, sizeof(fmt),
-+			 ctx->ingress_ifindex, ctx->egress_ifindex, len);
-+
-+	return XDP_PASS;
-+}
-+char _license[] SEC("license") = "GPL";
--- 
-2.21.1 (Apple Git-122.3)
-
+Ioana=20
