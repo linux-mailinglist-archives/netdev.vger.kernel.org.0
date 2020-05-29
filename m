@@ -2,79 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8DE1E8483
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812621E8498
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727799AbgE2RQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:16:46 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:32922 "EHLO m43-7.mailgun.net"
+        id S1727869AbgE2RTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:19:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726954AbgE2RQp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 13:16:45 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590772605; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=mJKUz4CIZUqI98CIevAKDZtR27eFLL8hGZq/6XQOjX0=;
- b=XMcvWgZt5863NntMtTthbctB4BcaDKTfz1tlD0tbT6lGlMeUrDBYmdDiONRHeIBratL/9ZHb
- vzikaEn5UVofAVbWSZ29bbUcZRbrQ9/jWYk6DlF7+FSuYHPpVMYznYdcG0halSakBGY4bbIk
- 4sd2WRQv0flcrOjidbZ+xPjwTOQ=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 5ed1437844a25e00521de032 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 29 May 2020 17:16:40
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 82EF1C4339C; Fri, 29 May 2020 17:16:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        id S1725821AbgE2RTF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 13:19:05 -0400
+Received: from pali.im (pali.im [31.31.79.79])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 64A4CC433C6;
-        Fri, 29 May 2020 17:16:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 64A4CC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] atmel: Use shared constant for rfc1042 header
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200523212735.32364-1-pterjan@google.com>
-References: <20200523212735.32364-1-pterjan@google.com>
-To:     Pascal Terjan <pterjan@google.com>
-Cc:     Simon Kelley <simon@thekelleys.org.uk>,
+        by mail.kernel.org (Postfix) with ESMTPSA id AFE1D2145D;
+        Fri, 29 May 2020 17:19:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590772744;
+        bh=JyK8zUQyhk5A6m+R7pxMSSOuhOQcJkBXJi/vF3eLeqw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LIGCslZ6DHQYECGxzdXBJDNNT6BCI65ftzjHieuKGrKwVGIXvm4pTRoNz/sbyM9E3
+         GGahvYPHgn7aJi2b3Tv0Pypx6N/NJ1LLTe3szHT1QYLU49xuCqe/8AKP5TQ42CLqYq
+         wq5SdzwLLok19m6l0ok26NE+yZVv5ERj7ToUkrKU=
+Received: by pali.im (Postfix)
+        id 7B9BBEB1; Fri, 29 May 2020 19:19:02 +0200 (CEST)
+Date:   Fri, 29 May 2020 19:19:02 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pascal Terjan <pterjan@google.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200529171639.82EF1C4339C@smtp.codeaurora.org>
-Date:   Fri, 29 May 2020 17:16:39 +0000 (UTC)
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mwifiex: Add support for NL80211_ATTR_MAX_AP_ASSOC_STA
+Message-ID: <20200529171902.wwikyr4mmqin7ce2@pali>
+References: <20200521123559.29028-1-pali@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200521123559.29028-1-pali@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pascal Terjan <pterjan@google.com> wrote:
-
-> This is one of the 9 drivers redefining rfc1042_header.
+On Thursday 21 May 2020 14:35:59 Pali Rohár wrote:
+> SD8997 firmware sends TLV_TYPE_MAX_CONN with struct hw_spec_max_conn to
+> inform kernel about maximum number of p2p connections and stations in AP
+> mode.
 > 
-> Signed-off-by: Pascal Terjan <pterjan@google.com>
+> During initialization of SD8997 wifi chip kernel prints warning:
+> 
+>   mwifiex_sdio mmc0:0001:1: Unknown GET_HW_SPEC TLV type: 0x217
+> 
+> This patch adds support for parsing TLV_TYPE_MAX_CONN (0x217) and sets
+> appropriate cfg80211 member 'max_ap_assoc_sta' from retrieved structure.
+> 
+> It allows userspace to retrieve NL80211_ATTR_MAX_AP_ASSOC_STA attribute.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-Patch applied to wireless-drivers-next.git, thanks.
+Hello Kalle and Ganapathi, could you please review this patch?
 
-e78e5d18c653 atmel: Use shared constant for rfc1042 header
-
--- 
-https://patchwork.kernel.org/patch/11567013/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+> ---
+>  drivers/net/wireless/marvell/mwifiex/cfg80211.c |  5 +++++
+>  drivers/net/wireless/marvell/mwifiex/cmdevt.c   | 12 ++++++++++++
+>  drivers/net/wireless/marvell/mwifiex/fw.h       |  8 ++++++++
+>  drivers/net/wireless/marvell/mwifiex/main.h     |  1 +
+>  4 files changed, 26 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+> index 12bfd653a..7998e91c9 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+> @@ -4339,6 +4339,11 @@ int mwifiex_register_cfg80211(struct mwifiex_adapter *adapter)
+>  		wiphy->iface_combinations = &mwifiex_iface_comb_ap_sta;
+>  	wiphy->n_iface_combinations = 1;
+>  
+> +	if (adapter->max_sta_conn > adapter->max_p2p_conn)
+> +		wiphy->max_ap_assoc_sta = adapter->max_sta_conn;
+> +	else
+> +		wiphy->max_ap_assoc_sta = adapter->max_p2p_conn;
+> +
+>  	/* Initialize cipher suits */
+>  	wiphy->cipher_suites = mwifiex_cipher_suites;
+>  	wiphy->n_cipher_suites = ARRAY_SIZE(mwifiex_cipher_suites);
+> diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> index 589cc5eb1..d068b9075 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
+> @@ -1495,6 +1495,7 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
+>  	struct mwifiex_adapter *adapter = priv->adapter;
+>  	struct mwifiex_ie_types_header *tlv;
+>  	struct hw_spec_api_rev *api_rev;
+> +	struct hw_spec_max_conn *max_conn;
+>  	u16 resp_size, api_id;
+>  	int i, left_len, parsed_len = 0;
+>  
+> @@ -1604,6 +1605,17 @@ int mwifiex_ret_get_hw_spec(struct mwifiex_private *priv,
+>  					break;
+>  				}
+>  				break;
+> +			case TLV_TYPE_MAX_CONN:
+> +				max_conn = (struct hw_spec_max_conn *)tlv;
+> +				adapter->max_p2p_conn = max_conn->max_p2p_conn;
+> +				adapter->max_sta_conn = max_conn->max_sta_conn;
+> +				mwifiex_dbg(adapter, INFO,
+> +					    "max p2p connections: %u\n",
+> +					    adapter->max_p2p_conn);
+> +				mwifiex_dbg(adapter, INFO,
+> +					    "max sta connections: %u\n",
+> +					    adapter->max_sta_conn);
+> +				break;
+>  			default:
+>  				mwifiex_dbg(adapter, FATAL,
+>  					    "Unknown GET_HW_SPEC TLV type: %#x\n",
+> diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
+> index 6f86f5b96..8047e3078 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/fw.h
+> +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
+> @@ -220,6 +220,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
+>  #define TLV_TYPE_BSS_MODE           (PROPRIETARY_TLV_BASE_ID + 206)
+>  #define TLV_TYPE_RANDOM_MAC         (PROPRIETARY_TLV_BASE_ID + 236)
+>  #define TLV_TYPE_CHAN_ATTR_CFG      (PROPRIETARY_TLV_BASE_ID + 237)
+> +#define TLV_TYPE_MAX_CONN           (PROPRIETARY_TLV_BASE_ID + 279)
+>  
+>  #define MWIFIEX_TX_DATA_BUF_SIZE_2K        2048
+>  
+> @@ -2388,4 +2389,11 @@ struct mwifiex_opt_sleep_confirm {
+>  	__le16 action;
+>  	__le16 resp_ctrl;
+>  } __packed;
+> +
+> +struct hw_spec_max_conn {
+> +	struct mwifiex_ie_types_header header;
+> +	u8 max_p2p_conn;
+> +	u8 max_sta_conn;
+> +} __packed;
+> +
+>  #endif /* !_MWIFIEX_FW_H_ */
+> diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
+> index afaffc325..5923c5c14 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/main.h
+> +++ b/drivers/net/wireless/marvell/mwifiex/main.h
+> @@ -1022,6 +1022,7 @@ struct mwifiex_adapter {
+>  	bool ext_scan;
+>  	u8 fw_api_ver;
+>  	u8 key_api_major_ver, key_api_minor_ver;
+> +	u8 max_p2p_conn, max_sta_conn;
+>  	struct memory_type_mapping *mem_type_mapping_tbl;
+>  	u8 num_mem_types;
+>  	bool scan_chan_gap_enabled;
+> -- 
+> 2.20.1
+> 
