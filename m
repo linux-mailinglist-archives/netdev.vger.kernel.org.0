@@ -2,192 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 992F01E863A
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D991E8647
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 20:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727809AbgE2SGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 14:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725808AbgE2SGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:06:42 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA78C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 11:06:42 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id p123so1565320yba.6
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 11:06:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KZK+8UJPDvoWxLT1ls7FV08vAkICvPhNOZ41LMQ196g=;
-        b=chJtAfry35Q2oD16l2AjPX6HqRlPNb0/ez0r3C9G0r/kOI3lYIGFsT1AoDdpr+FQ3r
-         quJ3fjB4Mc60gbRvnNx0kbYPF5sL3KjmnBaAm3sa5CH6XVscrItXTk7XmGN9Dn66CHMu
-         MhtJVWC94Z/AcXGWzVh7+GCd4G0eCy8QDS7Cfiw7BpEpuMcpATlspDYG2z4BwkZNxvL4
-         CDpNB/9p7QuUO+e7eCxFzkhIdn4p++upzRKL5KLZ+UzZQVuLnq1tADlqcHJqnZicnfSj
-         Ne73UTe9rFKd9aaiSAOznJRMiV0dwtfvcCwMIZMvdBJ+JYSqm8NJQhf9mLzCR9O8sFgq
-         /Iww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KZK+8UJPDvoWxLT1ls7FV08vAkICvPhNOZ41LMQ196g=;
-        b=lKwJleshCZpXdQSNIRx5tbp/RdLmCFMBP9UvBOoDXd6OX4CRH5G4QHsMVOLorm47lB
-         jTI2OMKuT0jr7cJjU9gL9Nsz1GuEq3IECtFKecgDFfNn8xAS7wmF8ZV94UozzcGRK6fX
-         qfv/CsbdAPo+FhRLYNa+MqJzJm0tlkyLYw+2iNBHYsZ1FDtupCmhKQWjPnznEsU+kgTZ
-         GnHzR7XQp4TrdLilBETaVPl+Qlkg7rTdq/rAc//Lmll/2xIuLFUEfQKt77joY5V5QE2p
-         5oZcI8f3MvAukryD7Bws0Z0kkepIyr5tnxVt3OW7wzwAVr44N1Cxfnn/xJjOiogzwmJW
-         lktg==
-X-Gm-Message-State: AOAM532bq2MCPwKU06PGJGtNFyRLkzqV7tRyuBYPp9L6NLw38Hn1FFss
-        dfRWkA7WTYGpQvRZRytv8emXzfxqdttKQG3aWdHNnQ==
-X-Google-Smtp-Source: ABdhPJxh25r7yWeJw77p1Ajo+tQM0emJtz5ylrx7H0oiWwQmIvx3M0l6vcxUOKJe5LRJ4r0O/jjBgdXd6mno0LOQwlY=
-X-Received: by 2002:a25:790e:: with SMTP id u14mr14907935ybc.324.1590775601615;
- Fri, 29 May 2020 11:06:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200505182943.218248-1-irogers@google.com> <20200505182943.218248-2-irogers@google.com>
- <CAP-5=fWn1=DtZyfGtYEFd=-zDY1O+9A1fcG_3bDKsuoQDZ4i=Q@mail.gmail.com>
- <20200529172310.GE537@kernel.org> <20200529173608.GA31795@kernel.org>
-In-Reply-To: <20200529173608.GA31795@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 29 May 2020 11:06:28 -0700
-Message-ID: <CAP-5=fX5rqFiEiDcWVOdzY68AX=-ZjDL1WgeUC+7TdvT6Yi+hA@mail.gmail.com>
-Subject: Re: [PATCH v14 1/1] perf tools: add support for libpfm4
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        yuzhoujian <yuzhoujian@didichuxing.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
+        id S1726975AbgE2SIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 14:08:34 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28468 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725839AbgE2SId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 14:08:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590775712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ebn289xAAJGa4Oezihz1tcD9GNVoKIUezZ+dvb31Na0=;
+        b=aZfQzNIiP7iex89qVHrJbyZPrm2kRQFFg/KnrLAKOI0IHj6glJQfp/PLOmSkgt40OQPMdf
+        Y45faz/9pHoX3FaiVkjqdgQsLKB5uFf5T+QCDvE9d40nDb4VhBBu6BlkpAetCmTVc/jII+
+        4fLtcjJGEL4vxIi9mgohBiweJLGPIU4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-402-hx9AwhsCM1au_ShzK3znVw-1; Fri, 29 May 2020 14:08:30 -0400
+X-MC-Unique: hx9AwhsCM1au_ShzK3znVw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37AF0107ACCA;
+        Fri, 29 May 2020 18:08:29 +0000 (UTC)
+Received: from new-host-5 (unknown [10.40.193.14])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ADE9D5D9EF;
+        Fri, 29 May 2020 18:08:27 +0000 (UTC)
+Message-ID: <696c630f8c72f2a6a0674b69921fd500f1d5d4d1.camel@redhat.com>
+Subject: Re: [PATCH net-next] net/sched: fix a couple of splats in the
+ error path of tfc_gate_init()
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Po Liu <po.liu@nxp.com>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Ivan Vecera <ivecera@redhat.com>
+In-Reply-To: <VE1PR04MB6496BA8407706123819B9D31928F0@VE1PR04MB6496.eurprd04.prod.outlook.com>
+References: <VE1PR04MB6496BA8407706123819B9D31928F0@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Organization: red hat
 Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 29 May 2020 20:08:26 +0200
+MIME-Version: 1.0
+User-Agent: Evolution 3.36.1 (3.36.1-1.fc32) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 10:36 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> Em Fri, May 29, 2020 at 02:23:10PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > Em Fri, May 29, 2020 at 10:03:51AM -0700, Ian Rogers escreveu:
-> > > On Tue, May 5, 2020 at 11:29 AM Ian Rogers <irogers@google.com> wrote:
-> > > >
-> > > > From: Stephane Eranian <eranian@google.com>
-> > > >
-> > > > This patch links perf with the libpfm4 library if it is available
-> > > > and LIBPFM4 is passed to the build. The libpfm4 library
-> > > > contains hardware event tables for all processors supported by
-> > > > perf_events. It is a helper library that helps convert from a
-> > > > symbolic event name to the event encoding required by the
-> > > > underlying kernel interface. This library is open-source and
-> > > > available from: http://perfmon2.sf.net.
-> > > >
-> > > > With this patch, it is possible to specify full hardware events
-> > > > by name. Hardware filters are also supported. Events must be
-> > > > specified via the --pfm-events and not -e option. Both options
-> > > > are active at the same time and it is possible to mix and match:
-> > > >
-> > > > $ perf stat --pfm-events inst_retired:any_p:c=1:i -e cycles ....
-> > > >
-> > > > Signed-off-by: Stephane Eranian <eranian@google.com>
-> > > > Reviewed-by: Ian Rogers <irogers@google.com>
-> > >
-> > > Ping.
-> >
-> > Check my tmp.perf/core branch, I had to make some adjustments, mostly in
-> > the 'perf test' entries as I merged a java demangle test that touched
-> > the same files,
-> >
-> > I'm now doing the build tests.
->
-> Talking about build  tests, you forgot to add it there, like I did
-> below, I'll eventually do it, as it is opt-in, no biggie at this point.
->
-> I'll install libpfm-devel that is in fedora and do further tests, later
-> today.
+hi Po Liu,
 
-Sorry for that, tbh I wasn't sure what to do. When I test locally I
-make sure the build is and isn't adding libpfm into the man pages, the
-libpfm tests pass, some command line uses. It'd be great to automate
-this as it is not something you'd want to do for every patch and there
-is some build sensitivity that potentially could break it.
+On Fri, 2020-05-29 at 02:43 +0000, Po Liu wrote:
+> Can you share the test step? 
 
-Thanks,
-Ian
+sure, an invalid value of the control action is sufficient:
 
-> - Arnaldo
->
-> commit a01c205e3c4cd6d134317413f2dc3129c4ab7a5a
-> Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-> Date:   Fri May 29 11:31:23 2020 -0300
->
->     perf build: Add NO_SYSCALL_TABLE=1 to the build tests
->
->     So that we make sure that even on x86-64 and other architectures where
->     that is the default method we test build the fallback to libaudit that
->     other architectures use.
->
->     I.e. now this line got added to:
->
->       $ make -C tools/perf build-test
->       <SNIP>
->            make_no_syscall_tbl_O: cd . && make NO_SYSCALL_TABLE=1 FEATURES_DUMP=/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j12 O=/tmp/tmp.W0HtKR1mfr DESTDIR=/tmp/tmp.lNezgCVPzW
->       <SNIP>
->       $
->
->     Cc: Adrian Hunter <adrian.hunter@intel.com>
->     Cc: Ingo Molnar <mingo@kernel.org>
->     Cc: Jiri Olsa <jolsa@kernel.org>
->     Cc: Namhyung Kim <namhyung@kernel.org>
->     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
->
-> diff --git a/tools/perf/tests/make b/tools/perf/tests/make
-> index 29ce0da7fca6..a4ffa3c7fcb6 100644
-> --- a/tools/perf/tests/make
-> +++ b/tools/perf/tests/make
-> @@ -88,6 +88,7 @@ make_no_libbpf_DEBUG := NO_LIBBPF=1 DEBUG=1
->  make_no_libcrypto   := NO_LIBCRYPTO=1
->  make_with_babeltrace:= LIBBABELTRACE=1
->  make_no_sdt        := NO_SDT=1
-> +make_no_syscall_tbl := NO_SYSCALL_TABLE=1
->  make_with_clangllvm := LIBCLANGLLVM=1
->  make_tags           := tags
->  make_cscope         := cscope
-> @@ -113,7 +114,7 @@ make_minimal        += NO_DEMANGLE=1 NO_LIBELF=1 NO_LIBUNWIND=1 NO_BACKTRACE=1
->  make_minimal        += NO_LIBNUMA=1 NO_LIBAUDIT=1 NO_LIBBIONIC=1
->  make_minimal        += NO_LIBDW_DWARF_UNWIND=1 NO_AUXTRACE=1 NO_LIBBPF=1
->  make_minimal        += NO_LIBCRYPTO=1 NO_SDT=1 NO_JVMTI=1 NO_LIBZSTD=1
-> -make_minimal        += NO_LIBCAP=1
-> +make_minimal        += NO_LIBCAP=1 NO_SYSCALL_TABLE=1
->
->  # $(run) contains all available tests
->  run := make_pure
-> @@ -146,6 +147,7 @@ run += make_no_libbionic
->  run += make_no_auxtrace
->  run += make_no_libbpf
->  run += make_no_libbpf_DEBUG
-> +run += make_no_syscall_tbl
->  run += make_with_babeltrace
->  run += make_with_clangllvm
->  run += make_help
+# tc action add action gate index 2 clockid CLOCK_TAI goto chain 42
+
+> Clockid by default is set with CLOCK_TAI.
+
+not in the error path of tcf_gate_init(), see below:
+
+> And INIT_LIST_HEAD() also called in the init.
+
+...ditto. In the error path of tcf_gate_init(), these two initializations
+are not done. Looking at the call trace, validation of the control action
+fails here:
+
+365         err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
+366         if (err < 0)
+367                 goto release_idr;
+
+then, the execution jumps to 'release_idr' thus skipping INIT_LIST_HEAD()
+and hrtimer_init():
+
+442 release_idr:
+443         tcf_idr_release(*a, bind);
+444         return err;
+
+because of this, tcf_gate_cleanup() is invoked with
+
+	'to_gate(*a)->param.entries'
+
+all filled with zeros, and the same applies to
+
+	'to_gate(*a)->hitimer'
+
+and 
+
+	'to_gate(*a)->param.tfcg_clockid'
+
+> So I think maybe there is better method to avoid the duplicated code.
+
+I'm not sure of what duplication you are referring to, but I suspect it's
+those to_gate(*a) inside the if (ret == ACT_P_CREATED) { ... } statement:
+I'm sending right now a v2 where I moved the assignment of 'gact' earlier.
+
+Looking again at the error path of tcf_gate_init(), I suspect there is
+another bug: the validation of 'tcfg_cycletime' and 'TCA_GATE_ENTRY_LIST'
+is suspicious, because it overwrites the action's configuration with wrong
+ones, thus causing semi-configured rules.
+But it's unrelated to this kernel panic, so probably it deserves a
+separate patch (and moreover, I don't have yet scripts that to verify it).
+But I can follow-up on this in the next days, if you want.
+
+thanks for looking at this,
+-- 
+davide
+
