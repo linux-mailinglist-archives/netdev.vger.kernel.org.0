@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B57F21E711C
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 02:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7451E711D
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 02:09:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438019AbgE2AI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 May 2020 20:08:57 -0400
-Received: from mga03.intel.com ([134.134.136.65]:2084 "EHLO mga03.intel.com"
+        id S2438023AbgE2AJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 May 2020 20:09:00 -0400
+Received: from mga03.intel.com ([134.134.136.65]:2081 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437979AbgE2AIg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2437981AbgE2AIg (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 28 May 2020 20:08:36 -0400
-IronPort-SDR: uIsmjudtvn3FUkiDTijrF8wowhMYRjKRlTNUzu+FedKzrKMrotOl0vKmSr+plT2UeWixRejoIU
- aZVT2UhpI6kA==
+IronPort-SDR: nzSu0tsrovb1qNXOSqrA/4GJuSGdzO6thMEXKuF/9V9xPkildg67iFItqCSoP+KMlQrhJkkN+A
+ QdX9kozI9M1A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2020 17:08:34 -0700
-IronPort-SDR: IoNHsagQAAHs+ppd2dwlatUCiI/4aLdiobJ+9/oOvUoks2TgP2fHP9CK78gr1QAiwANfRwdYue
- yXKyISlJ000g==
+IronPort-SDR: LpXgrYq+jFpf15w63AMUgQLGf5p4u5Jig41kWlanhPWxnIeHnhNX7vtiwXaL6C78tkbj1aafi1
+ WAIkbloJ7wFg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,446,1583222400"; 
-   d="scan'208";a="302651634"
+   d="scan'208";a="302651637"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga002.fm.intel.com with ESMTP; 28 May 2020 17:08:33 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 28 May 2020 17:08:34 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 07/15] ice: Simplify ice_sriov_configure
-Date:   Thu, 28 May 2020 17:08:23 -0700
-Message-Id: <20200529000831.2803870-8-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 08/15] ice: Add helper function for clearing VPGEN_VFRTRIG
+Date:   Thu, 28 May 2020 17:08:24 -0700
+Message-Id: <20200529000831.2803870-9-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200529000831.2803870-1-jeffrey.t.kirsher@intel.com>
 References: <20200529000831.2803870-1-jeffrey.t.kirsher@intel.com>
@@ -46,136 +45,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Brett Creeley <brett.creeley@intel.com>
 
-Add a new function for checking if SR-IOV can be configured based on
-the PF and/or device's state/capabilities. Also, simplify the flow in
-ice_sriov_configure().
+Create a helper function for clearing VPGEN_VFRTRIG as this needs to be
+done on reset to notify the VF that we are done resetting it. Also, it
+needs to be done on SR-IOV initialization/creation in case it was left
+in a bad state after SR-IOV tear down.
 
 Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 72 ++++++++++++-------
- 1 file changed, 48 insertions(+), 24 deletions(-)
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 31 ++++++++++++-------
+ 1 file changed, 20 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 621ec0cc6fff..b699ca81d8c4 100644
+index b699ca81d8c4..039f0b057603 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1460,6 +1460,8 @@ static bool ice_pf_state_is_nominal(struct ice_pf *pf)
-  * ice_pci_sriov_ena - Enable or change number of VFs
-  * @pf: pointer to the PF structure
-  * @num_vfs: number of VFs to allocate
-+ *
-+ * Returns 0 on success and negative on failure
-  */
- static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
- {
-@@ -1467,20 +1469,10 @@ static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
- 	struct device *dev = ice_pf_to_dev(pf);
- 	int err;
+@@ -961,6 +961,21 @@ static int ice_set_per_vf_res(struct ice_pf *pf)
+ 	return 0;
+ }
  
--	if (!ice_pf_state_is_nominal(pf)) {
--		dev_err(dev, "Cannot enable SR-IOV, device not ready\n");
--		return -EBUSY;
--	}
--
--	if (!test_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags)) {
--		dev_err(dev, "This device is not capable of SR-IOV\n");
--		return -EOPNOTSUPP;
--	}
--
- 	if (pre_existing_vfs && pre_existing_vfs != num_vfs)
- 		ice_free_vfs(pf);
- 	else if (pre_existing_vfs && pre_existing_vfs == num_vfs)
--		return num_vfs;
-+		return 0;
- 
- 	if (num_vfs > pf->num_vfs_supported) {
- 		dev_err(dev, "Can't enable %d VFs, max VFs supported is %d\n",
-@@ -1496,37 +1488,69 @@ static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
- 	}
- 
- 	set_bit(ICE_FLAG_SRIOV_ENA, pf->flags);
--	return num_vfs;
-+	return 0;
++/**
++ * ice_clear_vf_reset_trigger - enable VF to access hardware
++ * @vf: VF to enabled hardware access for
++ */
++static void ice_clear_vf_reset_trigger(struct ice_vf *vf)
++{
++	struct ice_hw *hw = &vf->pf->hw;
++	u32 reg;
++
++	reg = rd32(hw, VPGEN_VFRTRIG(vf->vf_id));
++	reg &= ~VPGEN_VFRTRIG_VFSWR_M;
++	wr32(hw, VPGEN_VFRTRIG(vf->vf_id), reg);
++	ice_flush(hw);
 +}
 +
-+/**
-+ * ice_check_sriov_allowed - check if SR-IOV is allowed based on various checks
-+ * @pf: PF to enabled SR-IOV on
-+ */
-+static int ice_check_sriov_allowed(struct ice_pf *pf)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+
-+	if (!test_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags)) {
-+		dev_err(dev, "This device is not capable of SR-IOV\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (ice_is_safe_mode(pf)) {
-+		dev_err(dev, "SR-IOV cannot be configured - Device is in Safe Mode\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (!ice_pf_state_is_nominal(pf)) {
-+		dev_err(dev, "Cannot enable SR-IOV, device not ready\n");
-+		return -EBUSY;
-+	}
-+
-+	return 0;
- }
- 
  /**
-  * ice_sriov_configure - Enable or change number of VFs via sysfs
-  * @pdev: pointer to a pci_dev structure
-- * @num_vfs: number of VFs to allocate
-+ * @num_vfs: number of VFs to allocate or 0 to free VFs
-  *
-- * This function is called when the user updates the number of VFs in sysfs.
-+ * This function is called when the user updates the number of VFs in sysfs. On
-+ * success return whatever num_vfs was set to by the caller. Return negative on
-+ * failure.
-  */
- int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
+  * ice_cleanup_and_realloc_vf - Clean up VF and reallocate resources after reset
+  * @vf: pointer to the VF structure
+@@ -974,26 +989,20 @@ static void ice_cleanup_and_realloc_vf(struct ice_vf *vf)
  {
- 	struct ice_pf *pf = pci_get_drvdata(pdev);
- 	struct device *dev = ice_pf_to_dev(pf);
-+	int err;
+ 	struct ice_pf *pf = vf->pf;
+ 	struct ice_hw *hw;
+-	u32 reg;
  
--	if (ice_is_safe_mode(pf)) {
--		dev_err(dev, "SR-IOV cannot be configured - Device is in Safe Mode\n");
--		return -EOPNOTSUPP;
--	}
-+	err = ice_check_sriov_allowed(pf);
-+	if (err)
-+		return err;
+ 	hw = &pf->hw;
  
--	if (num_vfs)
--		return ice_pci_sriov_ena(pf, num_vfs);
-+	if (!num_vfs) {
-+		if (!pci_vfs_assigned(pdev)) {
-+			ice_free_vfs(pf);
-+			return 0;
-+		}
+-	/* PF software completes the flow by notifying VF that reset flow is
+-	 * completed. This is done by enabling hardware by clearing the reset
+-	 * bit in the VPGEN_VFRTRIG reg and setting VFR_STATE in the VFGEN_RSTAT
+-	 * register to VFR completed (done at the end of this function)
+-	 * By doing this we allow HW to access VF memory at any point. If we
+-	 * did it any sooner, HW could access memory while it was being freed
+-	 * in ice_free_vf_res(), causing an IOMMU fault.
++	/* Allow HW to access VF memory after calling
++	 * ice_clear_vf_reset_trigger(). If we did it any sooner, HW could
++	 * access memory while it was being freed in ice_free_vf_res(), causing
++	 * an IOMMU fault.
+ 	 *
+ 	 * On the other hand, this needs to be done ASAP, because the VF driver
+ 	 * is waiting for this to happen and may report a timeout. It's
+ 	 * harmless, but it gets logged into Guest OS kernel log, so best avoid
+ 	 * it.
+ 	 */
+-	reg = rd32(hw, VPGEN_VFRTRIG(vf->vf_id));
+-	reg &= ~VPGEN_VFRTRIG_VFSWR_M;
+-	wr32(hw, VPGEN_VFRTRIG(vf->vf_id), reg);
++	ice_clear_vf_reset_trigger(vf);
  
--	if (!pci_vfs_assigned(pdev)) {
--		ice_free_vfs(pf);
--	} else {
- 		dev_err(dev, "can't free VFs because some are assigned to VMs.\n");
- 		return -EBUSY;
- 	}
- 
--	return 0;
-+	err = ice_pci_sriov_ena(pf, num_vfs);
-+	if (err)
-+		return err;
-+
-+	return num_vfs;
- }
- 
- /**
+ 	/* reallocate VF resources to finish resetting the VSI state */
+ 	if (!ice_alloc_vf_res(vf)) {
 -- 
 2.26.2
 
