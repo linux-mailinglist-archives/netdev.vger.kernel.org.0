@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8791E85AE
-	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD451E85B0
+	for <lists+netdev@lfdr.de>; Fri, 29 May 2020 19:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgE2RtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 13:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgE2RtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 13:49:14 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49748C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 10:49:14 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id i16so2388938edv.1
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 10:49:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wCOWrHcdOm5IBqguKtSTQSCNhvtFRt/Z8+SDXKWvck0=;
-        b=nYZ6GDMDyIFE7ICVZtqsSFOVgq/3PMPP75JPQDAeTMoOvD4LOKcfbx/LjqWtFTXQTR
-         Rss88VSeZ3YNupSWhIOF8LhJfw2QLV83Bkrwjxg71sDrQOfhmoTQmi6KgC4RsDVHCu98
-         8Mx07StSgG5cCH+iHKTGyrqEcr9VJRVmiTjkfRwqA2zoV1atSh1SHzwhTg2YscldOchI
-         Xip6LDhNzrMuKUjAMTkOpsKz1jslVTS1tWYxgGp1wQXzubUDOXHKWajam5qdZb8fEqZP
-         BnB+7axnkNdnBVh5HofzBVYFeGdK/i/dtsWK0qutNBRkOwa/d0XKpKwUKSukuI+JGxbC
-         x2XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wCOWrHcdOm5IBqguKtSTQSCNhvtFRt/Z8+SDXKWvck0=;
-        b=Ltm/37yIoqe4vLqM2jQMqu9TffPqKDbvlldyOeg99FrAPvHY4u26iRUVPMfo36iEXP
-         o7UrXm0Xw1aBCuCmKd6dx56qjnCEKpl8n6VAlZihkA2Eu/RqtCc5/liuXX9XoI9KMcLw
-         qbdnAvzelsyfk725FpPo5K21KS21/RsAGvCrKuEWnUoCX37Zsxk8Vvd0Ar5qWtn+oetG
-         uzWlNsU39YJtRLRhmstAXxC4BBwsQPw7FHeGb8iwOZ8cH2cIlPcXDsCQ+FIgjDiVX6NV
-         b/jG44xqEIROG9XVl+l/l9QDSB7713y3EkH8tMHAYBBneHKJOkHs/uAVojZ9bekC3piv
-         J+iw==
-X-Gm-Message-State: AOAM533dvvUxs8oeSY28U3TcZSXC/4eE034/+kgxoOGClfK/21cxR28p
-        1VNOBxK0hDqRYN7d8a2qUS8XAmQOzNGyFqUeaRo=
-X-Google-Smtp-Source: ABdhPJz1RILSMBljACmghrsjWEIBqolVcy/hzmBYkEl+wYD38koG91ZtnnGo+cSNjJgOGnWtSOPV1hUWKMqxwjmhLzk=
-X-Received: by 2002:a05:6402:417:: with SMTP id q23mr9587721edv.139.1590774553057;
- Fri, 29 May 2020 10:49:13 -0700 (PDT)
+        id S1726936AbgE2Rue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 13:50:34 -0400
+Received: from correo.us.es ([193.147.175.20]:58770 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbgE2Rue (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 13:50:34 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id C96D281407
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 19:50:31 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BB071DA720
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 19:50:31 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AF6E4DA713; Fri, 29 May 2020 19:50:31 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6B0D8DA71A;
+        Fri, 29 May 2020 19:50:29 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 29 May 2020 19:50:29 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 3F14C42EE38E;
+        Fri, 29 May 2020 19:50:29 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 0/9] Netfilter updates for net-next
+Date:   Fri, 29 May 2020 19:50:17 +0200
+Message-Id: <20200529175026.30541-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200527234113.2491988-1-olteanv@gmail.com> <159077110912.28779.6447184623286195668.b4-ty@kernel.org>
- <20200529165952.GQ4610@sirena.org.uk> <CA+h21hqV5Mm=oBQ49zZFiMbg6FcopudCxowQcTwF-_O_Onj81w@mail.gmail.com>
- <20200529173442.GS4610@sirena.org.uk>
-In-Reply-To: <20200529173442.GS4610@sirena.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 29 May 2020 20:49:02 +0300
-Message-ID: <CA+h21hr_c4Fp83Y59QK6U7x4Tcan3Vua2mhkJk6R=G7ieXq7sg@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/11] New DSA driver for VSC9953 Seville switch
-To:     Mark Brown <broonie@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev <netdev@vger.kernel.org>, fido_max@inbox.ru,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        radu-andrei.bulie@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 May 2020 at 20:34, Mark Brown <broonie@kernel.org> wrote:
->
-> On Fri, May 29, 2020 at 08:28:01PM +0300, Vladimir Oltean wrote:
->
-> > Thanks a lot for merging this. I plan to resend this series again (on
-> > the last mile!) during the weekend, with the feedback collected so
-> > far, so I'm not sure what is the best path to make sure Dave also has
-> > this patch in his tree so I don't break net-next.
->
-> That was what the pull request would be for, though if you need to
-> resend the chances are it'll be after the merge window before it gets
-> applied in which case he'll get the patch through Linus' tree which
-> makes things easier (that was part of the reason I just went ahead and
-> applied).
+Hi,
 
-Yeah, well, I was hoping I could get this in for 5.8, since the
-changes requested so far aren't radical (and neither are the patches
-themselves). If it's too much of a hassle I can wait for the merge
-window to close, sure.
+The following patchset contains Netfilter updates for net-next
+to extend ctnetlink and the flowtable infrastructure:
 
-Thanks,
--Vladimir
+1) Extend ctnetlink kernel side netlink dump filtering capabilities,
+   from Romain Bellan.
+
+2) Generalise the flowtable hook parser to take a hook list.
+
+3) Pass a hook list to the flowtable hook registration/unregistration.
+
+4) Add a helper function to release the flowtable hook list.
+
+5) Update the flowtable event notifier to pass a flowtable hook list.
+
+6) Allow users to add new devices to an existing flowtables.
+
+7) Allow users to remove devices to an existing flowtables.
+
+8) Allow for registering a flowtable with no initial devices.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you!
+
+----------------------------------------------------------------
+
+The following changes since commit 626a83238e6a63d88a5b5291febe797b244b5f18:
+
+  net: dsa: felix: accept VLAN config regardless of bridge VLAN awareness state (2020-05-27 11:39:58 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 5b6743fb2c2a1fcb31c8b227558f537095dbece4:
+
+  netfilter: nf_tables: skip flowtable hooknum and priority on device updates (2020-05-27 22:20:35 +0200)
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (8):
+      netfilter: nf_tables: generalise flowtable hook parsing
+      netfilter: nf_tables: pass hook list to nft_{un,}register_flowtable_net_hooks()
+      netfilter: nf_tables: add nft_flowtable_hooks_destroy()
+      netfilter: nf_tables: pass hook list to flowtable event notifier
+      netfilter: nf_tables: add devices to existing flowtable
+      netfilter: nf_tables: delete devices from flowtable
+      netfilter: nf_tables: allow to register flowtable with no devices
+      netfilter: nf_tables: skip flowtable hooknum and priority on device updates
+
+Romain Bellan (1):
+      netfilter: ctnetlink: add kernel side filtering for dump
+
+ include/net/netfilter/nf_conntrack_l4proto.h       |   6 +-
+ include/net/netfilter/nf_tables.h                  |   7 +
+ include/uapi/linux/netfilter/nfnetlink_conntrack.h |   9 +
+ net/netfilter/nf_conntrack_core.c                  |  19 +-
+ net/netfilter/nf_conntrack_netlink.c               | 334 ++++++++++++++++++---
+ net/netfilter/nf_conntrack_proto_icmp.c            |  40 ++-
+ net/netfilter/nf_conntrack_proto_icmpv6.c          |  42 ++-
+ net/netfilter/nf_internals.h                       |  17 ++
+ net/netfilter/nf_tables_api.c                      | 333 ++++++++++++++++----
+ 9 files changed, 670 insertions(+), 137 deletions(-)
