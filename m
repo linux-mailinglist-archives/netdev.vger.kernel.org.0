@@ -2,128 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC631E937E
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 21:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A061E9386
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 22:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729098AbgE3Tro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 15:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
+        id S1729306AbgE3UGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 16:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgE3Tro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 15:47:44 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D01C03E969
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 12:47:44 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id g28so4787769qkl.0
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 12:47:44 -0700 (PDT)
+        with ESMTP id S1726898AbgE3UGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 16:06:46 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15270C03E969;
+        Sat, 30 May 2020 13:06:46 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id be9so4344045edb.2;
+        Sat, 30 May 2020 13:06:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U6hRICItJRMEn7ocO4ao+94oFk1oNiI22gcGdaZMmpg=;
-        b=lJHZJruOVRbOQv1H0WtUMT96Jv0PkUA2MIYdj6IGEmNBkGKbM5mUffiz/XbvALidDH
-         9ZovXJqUYXQeMiAJeAYMhW0IvTYQae5KmDPcmrTrlVZXZDc3ijpZ1dX41RTuDuDoYsNH
-         M1tdU/WW5N+5txcvPQ8Kqg5dIAjbBWasfJjPPZhUE+tipAeeDE6MiiYJ0UIljpmCT8CV
-         ILmjWwYRFJOQMR8cydx6/5obscFEawjDBORFNckuCv2Wv2knCKRKIG8dLFosfmAkGTc6
-         PpXLbrbP8D+FLmahMVkb7tMaDDmgwzUxydMkOpwXao7dwXRfsbsiP08csHgEd0Z4z4cV
-         stEQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2qMYm4gCDy0jA8FhDmI0VM/+E4QUpwC9SeAQPLfubsM=;
+        b=SxMZF+XVe9FbMkdimvUhjH04ZO9i6emI1hJ9KfIfsaaq6iR3ddqbeoAcJ8OxbyxLqM
+         J1lIXEx3ebgt4ifT0vQB+yo7gZbo1MRsn1N/e6XNLwHQMXIn/Hj9W6eDMZOeYBnDhiQc
+         R71F3rJePssjbyb+y6x4oxNJcOw51WbKzs/S5i9TUF2gYIFhsnb3mPA3PQmINYhQLVtZ
+         KyBvchMd0rS8Aeth834j0/3pjesFcwN6/VHhKnbTx4jG5zwuQ04e1Yk8LHZ+KmCNOs3G
+         9fZay1rZTG2v6NGJCTMVCuvEZAeU/2i22UF6pr5z1N0wc/Pg24ltxu4+n9ClwUvwozHK
+         qv/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U6hRICItJRMEn7ocO4ao+94oFk1oNiI22gcGdaZMmpg=;
-        b=s2Vb33MvRB8JNM4ZTDioawULsjzMCdVXq3C7tlz3niXpyhoDWrmTX9APCNLfDQdMrG
-         RkfQWx2sjBy/UmdDiYS5Amv9oqSUipnydlJOvtTvlzt/ZFSx9GUScupW4DRftjoKapB0
-         5pWuMMzv8bv+VumU0sLngOltIdsmNPbPlnsdjKFHV+edX158m890aoBvDiwa3tnH8Xdj
-         uvDU/BgSwnsVGiFvjeJ+aXsPTx6ZvWntSO9m3L8bLeVhGzNEYcqeY4F9Cz2beaTzqlK4
-         ByR6C7hmWvm2yWZ+v+sLLg2KjWO7W9oM37TLLtm4XV/8QFY9s9p5vOpLXFdMoTM6hL+7
-         lpZw==
-X-Gm-Message-State: AOAM533fpikHO1QDD+bz23tqvqEE+c+NeapWaDQ1LdwOXMi8jcPDf42t
-        i30CM7y2h/gUAn6rryWV20e3ZnND
-X-Google-Smtp-Source: ABdhPJx4qrQIv5HN3T4qKx/X+m0b9nZcvh0XJXhVeQq8MNQWosIUKCVk49g4S3QK4B+K0MPG/2EPSA==
-X-Received: by 2002:a05:620a:15e8:: with SMTP id p8mr3080188qkm.333.1590868063162;
-        Sat, 30 May 2020 12:47:43 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id f7sm9125639qkk.88.2020.05.30.12.47.42
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 May 2020 12:47:42 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id b62so2990333ybh.8
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 12:47:42 -0700 (PDT)
-X-Received: by 2002:a25:3187:: with SMTP id x129mr23703667ybx.428.1590868061820;
- Sat, 30 May 2020 12:47:41 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2qMYm4gCDy0jA8FhDmI0VM/+E4QUpwC9SeAQPLfubsM=;
+        b=gjyxKSYYul7F63qR/IBnCS+Cn+IZHh5m7W+1iK0dXj6DnyvfQMmLe3O+xToy09uUcY
+         SnEPxV7vWcZdwdRtiJ1E9KtXrAZLDVDW6rnZWm35o/hn6qJpGsZ2GDf8aY0EyClMcV9U
+         A4xU9V1FBB+SAr3s1ceVAW9Z6eeGyxghfv8RAZsVP8DPQJlHhZMP9tHsQh4ex/JkGUVw
+         5OniT7+kzSaD5a6xQpG4IDiU+Ibtlw7ihmRgzWE5DUjbHx74SKy/oXhG0o/S9p7mAy63
+         S8o9FMV9Q5lDdOuivpPfMoga2CphRAf5sIfLqevVR1QSf85KXnVztoBMb66yPAAQJPiF
+         ntnw==
+X-Gm-Message-State: AOAM5317VWtcDAQddeX/6RbzdzsWf3uvikJPFOaUWptncFHa6JZHr91O
+        6pLFZDoG8MFwcCMyyWOvsZ0=
+X-Google-Smtp-Source: ABdhPJyNp3mgVMzPaId5AbBQumweBorBHp8AIQI088ruzJ+/2boJUn0WsRWvg+3wSEhapgHTcMVzDg==
+X-Received: by 2002:aa7:c418:: with SMTP id j24mr14717628edq.313.1590869204648;
+        Sat, 30 May 2020 13:06:44 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.147.193])
+        by smtp.gmail.com with ESMTPSA id d5sm10767255edu.5.2020.05.30.13.06.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 May 2020 13:06:44 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     gregkh@linuxfoundation.org, arnd@arndb.de,
+        akpm@linux-foundation.org
+Cc:     sergei.shtylyov@cogentembedded.com, bgolaszewski@baylibre.com,
+        mika.westerberg@linux.intel.com, efremov@linux.com,
+        ztuowen@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] devres: keep both device name and resource name in pretty name
+Date:   Sat, 30 May 2020 23:06:30 +0300
+Message-Id: <20200530200630.1029139-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
- <20200529.172719.1001521060083156258.davem@davemloft.net> <CA+FuTSdmRQem9d8amUdYg=pdZCDHiMVHjCCmKh-3dxoKk3th9g@mail.gmail.com>
-In-Reply-To: <CA+FuTSdmRQem9d8amUdYg=pdZCDHiMVHjCCmKh-3dxoKk3th9g@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 30 May 2020 15:47:04 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScnmJ3aSA06+FndrLvCFSNN_JwPxvtUqPh0xx_+aGd+8A@mail.gmail.com>
-Message-ID: <CA+FuTScnmJ3aSA06+FndrLvCFSNN_JwPxvtUqPh0xx_+aGd+8A@mail.gmail.com>
-Subject: Re: [PATCH net] tun: correct header offsets in napi frags mode
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 11:14 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Fri, May 29, 2020 at 8:27 PM David Miller <davem@davemloft.net> wrote:
-> >
-> > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > Date: Thu, 28 May 2020 13:05:32 -0400
-> >
-> > > Temporarily pull ETH_HLEN to make control flow the same for frags and
-> > > not frags. Then push the header just before calling napi_gro_frags.
-> >  ...
-> > >       case IFF_TAP:
-> > > -             if (!frags)
-> > > -                     skb->protocol = eth_type_trans(skb, tun->dev);
-> > > +             if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
-> > > +                     err = -ENOMEM;
-> > > +                     goto drop;
-> > > +             }
-> > > +             skb->protocol = eth_type_trans(skb, tun->dev);
-> >  ...
-> > >               /* Exercise flow dissector code path. */
-> > > -             u32 headlen = eth_get_headlen(tun->dev, skb->data,
-> > > -                                           skb_headlen(skb));
-> > > +             skb_push(skb, ETH_HLEN);
-> > > +             headlen = eth_get_headlen(tun->dev, skb->data,
-> > > +                                       skb_headlen(skb));
-> >
-> > I hate to be a stickler on wording in the commit message, but the
-> > change is not really "pulling" the ethernet header from the SKB.
-> >
-> > Instead it is invoking pskb_may_pull() which just makes sure the
-> > header is there in the linear SKB data area.
-> >
-> > Can you please refine this description and resubmit?
->
-> Of course. How is this
->
-> "
->     Ensure the link layer header lies in linear as eth_type_trans pulls
->     ETH_HLEN. Then take the same code paths for frags as for not frags.
->     Push the link layer header back just before calling napi_gro_frags.
->
->     By pulling up to ETH_HLEN from frag0 into linear, this disables the
->     frag0 optimization in the special case when IFF_NAPI_FRAGS is
->     called with zero length iov[0] (and thus empty skb->linear).
-> "
->
-> Seemed good to add the extra clarification. I don't see a reasonable way
-> to avoid that consequence, especially as I cannot restore the first skb frag
-> (iov[1]) if it was exactly ETH_HLEN bytes and thus freed by __skb_pull_tail.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Sent. Probably faster that way. Do let me know if still too fast and
-loose with wording. I can always do a v3.
+Some device drivers have many memory regions, and sometimes debugging is
+easiest using devmem on its register map. Take for example a networking
+switch. Its memory map used to look like this in /proc/iomem:
 
-Or to add some frags gymnastics to try to maintain the frag0 optimization
-when iov[1] > ETH_LEN and frag0 thus can be restored. That just makes
-for a more complicated fix.
+1fc000000-1fc3fffff : pcie@1f0000000
+  1fc000000-1fc3fffff : 0000:00:00.5
+    1fc010000-1fc01ffff : sys
+    1fc030000-1fc03ffff : rew
+    1fc060000-1fc0603ff : s2
+    1fc070000-1fc0701ff : devcpu_gcb
+    1fc080000-1fc0800ff : qs
+    1fc090000-1fc0900cb : ptp
+    1fc100000-1fc10ffff : port0
+    1fc110000-1fc11ffff : port1
+    1fc120000-1fc12ffff : port2
+    1fc130000-1fc13ffff : port3
+    1fc140000-1fc14ffff : port4
+    1fc150000-1fc15ffff : port5
+    1fc200000-1fc21ffff : qsys
+    1fc280000-1fc28ffff : ana
+
+But after said patch, the information is now presented in a much more
+opaque way:
+
+1fc000000-1fc3fffff : pcie@1f0000000
+  1fc000000-1fc3fffff : 0000:00:00.5
+    1fc010000-1fc01ffff : 0000:00:00.5
+    1fc030000-1fc03ffff : 0000:00:00.5
+    1fc060000-1fc0603ff : 0000:00:00.5
+    1fc070000-1fc0701ff : 0000:00:00.5
+    1fc080000-1fc0800ff : 0000:00:00.5
+    1fc090000-1fc0900cb : 0000:00:00.5
+    1fc100000-1fc10ffff : 0000:00:00.5
+    1fc110000-1fc11ffff : 0000:00:00.5
+    1fc120000-1fc12ffff : 0000:00:00.5
+    1fc130000-1fc13ffff : 0000:00:00.5
+    1fc140000-1fc14ffff : 0000:00:00.5
+    1fc150000-1fc15ffff : 0000:00:00.5
+    1fc200000-1fc21ffff : 0000:00:00.5
+    1fc280000-1fc28ffff : 0000:00:00.5
+
+It is a fair comment that /proc/iomem might be confusing when it shows
+resources without an associated device, but we can do better than just
+hide the resource name altogether. Namely, we can print the device
+name _and_ the resource name. Like this:
+
+1fc000000-1fc3fffff : pcie@1f0000000
+  1fc000000-1fc3fffff : 0000:00:00.5
+    1fc010000-1fc01ffff : 0000:00:00.5 sys
+    1fc030000-1fc03ffff : 0000:00:00.5 rew
+    1fc060000-1fc0603ff : 0000:00:00.5 s2
+    1fc070000-1fc0701ff : 0000:00:00.5 devcpu_gcb
+    1fc080000-1fc0800ff : 0000:00:00.5 qs
+    1fc090000-1fc0900cb : 0000:00:00.5 ptp
+    1fc100000-1fc10ffff : 0000:00:00.5 port0
+    1fc110000-1fc11ffff : 0000:00:00.5 port1
+    1fc120000-1fc12ffff : 0000:00:00.5 port2
+    1fc130000-1fc13ffff : 0000:00:00.5 port3
+    1fc140000-1fc14ffff : 0000:00:00.5 port4
+    1fc150000-1fc15ffff : 0000:00:00.5 port5
+    1fc200000-1fc21ffff : 0000:00:00.5 qsys
+    1fc280000-1fc28ffff : 0000:00:00.5 ana
+
+Fixes: 8d84b18f5678 ("devres: always use dev_name() in devm_ioremap_resource()")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ lib/devres.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/lib/devres.c b/lib/devres.c
+index 6ef51f159c54..25b78b0cb5cc 100644
+--- a/lib/devres.c
++++ b/lib/devres.c
+@@ -119,6 +119,7 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+ {
+ 	resource_size_t size;
+ 	void __iomem *dest_ptr;
++	char *pretty_name;
+ 
+ 	BUG_ON(!dev);
+ 
+@@ -129,7 +130,16 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+ 
+ 	size = resource_size(res);
+ 
+-	if (!devm_request_mem_region(dev, res->start, size, dev_name(dev))) {
++	if (res->name) {
++		int len = strlen(dev_name(dev)) + strlen(res->name) + 2;
++
++		pretty_name = devm_kzalloc(dev, len, GFP_KERNEL);
++		sprintf(pretty_name, "%s %s", dev_name(dev), res->name);
++	} else {
++		pretty_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
++	}
++
++	if (!devm_request_mem_region(dev, res->start, size, pretty_name)) {
+ 		dev_err(dev, "can't request region for resource %pR\n", res);
+ 		return IOMEM_ERR_PTR(-EBUSY);
+ 	}
+-- 
+2.25.1
+
