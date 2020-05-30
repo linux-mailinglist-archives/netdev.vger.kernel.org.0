@@ -2,156 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1F81E9409
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DD91E9413
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbgE3Vnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 17:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49742 "EHLO
+        id S1729387AbgE3Vwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 17:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729083AbgE3Vna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:43:30 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49988C03E969;
-        Sat, 30 May 2020 14:43:30 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id e2so5551458eje.13;
-        Sat, 30 May 2020 14:43:30 -0700 (PDT)
+        with ESMTP id S1728741AbgE3Vwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:52:39 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A764C03E969
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:52:39 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id r9so7167359wmh.2
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:52:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0r/Hz3aB3/pi6f4PZFpZnSaaYmY5eVDrheC4RHLktY0=;
-        b=R6tdZPvhIUfDnAwFPZKnziKhI/J5TX1xg6OW+A5l40wZgKLAQz/dKDBsmM7PGVCdgm
-         bwJEelF0HOLj/d7CIB2q8WM4pIwviLGKcSmuowfw65OgWo1J8sAcM4FZTo+CRk7YMmsl
-         Aui/wxjgxTXTAKeQDYebie0NHTb4geTPN2OfkDjuj4QDUpIEbOBlwH19Ms4jqAtt1VdG
-         roKw3CAWlR5Gc2wB9KY33aO17ITtvma+tPkepg7hJDFmgHlDTZKBnkCAH6Us2TM7rjhw
-         pTJPClRcfWbOjzT5ofbwQWmyfdzFmPysGriW/FuXq+vr5V0WIMxkIIZ7psTX9XGZsxQU
-         SfeQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=EgcGYW46G8m5It3IOHPx1TouGcF+iBFwxJsBjFlvFhk=;
+        b=Pr1f62lO2NM5CGaoSzdFxhlvwAPg6YFyiDg6e4QXdi+5VFRF4hNlWDEcu3lc0bGQ0k
+         B06e7TcFjTJqj21ZGycS1a5l5V7/d2mWMDMzSvbU1h+f71kXUHhC5vu6dQRgClgY16BK
+         vvxxMexjuYnPEWtcQPTHSvQGU4GnkIzTvz3Squ8WAdg4jm+1anJWZWikxtcIgZRFtgoH
+         IOID2W+7xHoZQhXrmlnLjpsC0dwiW6apduWoYHZhciO7KgiOZ+2GgW48HOk7p0BHSaGP
+         r6HgnieuwryfdaS9qg+4slN29eu3tC4Fwzyh6UJiMeT+6+R3sSjUM1SYGWj0XtTlh31r
+         k/Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0r/Hz3aB3/pi6f4PZFpZnSaaYmY5eVDrheC4RHLktY0=;
-        b=tfCSM9xIQ85oKrHbnjQBKiwrkr1W3lIl8Q3F1Ru7GC7YuDa0jLWpCvyapbC3UdsacI
-         9g3SB6QYBFi491184/B/NBE4dlNw6/K0OLj4cGd8YppvDcKbpjEceDDmCMKK8Wt/MUYM
-         99SHBMt5WK9K1UROAmE6mH+EFfQ3KjTcVsoqmNm5pBsHCPtkaqGUfdc1DAb4n1rjOObk
-         w/Te8yHw1WW2OZpMXb7El5RrmkTLPIDBddv4m8O8hd21Ry8WCnXXot4bl130EMHrKAPP
-         5wdUmAFVke7hqq1RUnb9egACPrX66eOzYaVq8gE3owrqB0l522nV2eMJ1PUYMepp5Jcy
-         b30g==
-X-Gm-Message-State: AOAM530vce6pq3tBnc33pHeWWcn71GzPc6fnXHLMOy6WSljyffUxFOFK
-        t8JFlcPLjKWta2+dka72lKFxV3DJ
-X-Google-Smtp-Source: ABdhPJwBce6Sb8uM1LR/1+B0DatoobuOfjxtsOJfvUXMlwF2TFDrB4WrSMk6cxI2tUh4qiDuJwwyng==
-X-Received: by 2002:a17:906:9404:: with SMTP id q4mr13133406ejx.138.1590875008672;
-        Sat, 30 May 2020 14:43:28 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id cq27sm9979207edb.41.2020.05.30.14.43.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2020 14:43:28 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     stable@vger.kernel.org, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH stable-4.19.y] net: phy: reschedule state machine if AN has not completed in PHY_AN state
-Date:   Sun, 31 May 2020 00:43:15 +0300
-Message-Id: <20200530214315.1051358-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=EgcGYW46G8m5It3IOHPx1TouGcF+iBFwxJsBjFlvFhk=;
+        b=U3NUWRtL/aGgEM7ssm3O0iNcUC90Dcz87IIvuD0lb+px2Lf/ek62BSI3PSV+yY7rsH
+         A4G1ePnHlKEUa+5xuuNSYB9Z66T0T+hm2tV9WO/xC9XhKUFWu0ubW5Y0jRIRZ3Q/1tRS
+         YnYayhFaBl2EgmgSdFjHnZqr+E0FotaXPJcX9lBN7w9LXsC9kYOcMAuU1FM6UyoTHKiC
+         3+U7g58JteL5L2g4zsGRxqCdPgHG+c1DkhbBzKygCPrnDyg+jQ2qeHSdpfaEW/+cxgcP
+         UoIrRL+s2rH6FT+jrR4omrckQhVXjDEbYzCBheSMsKKHOOtlcCXC8AOeR54xCfQjjWiL
+         rc/Q==
+X-Gm-Message-State: AOAM530dgtKOu/XpPyRiyTsA4DnFte2s+U6j1y2sdkGhXxjFD0KwIh0a
+        ZUiebWc92sSgYEBQ3n4scdG2acqv
+X-Google-Smtp-Source: ABdhPJwdV01mddDeVwZN4GgXbS+u5yA7R9QVHg1So5B4uzU7AzUs0H4odR5OQc5P7xSMDRGtfaw6tA==
+X-Received: by 2002:a1c:5683:: with SMTP id k125mr15332809wmb.55.1590875557608;
+        Sat, 30 May 2020 14:52:37 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:8c73:80e5:b6ba:d8b0? (p200300ea8f2357008c7380e5b6bad8b0.dip0.t-ipconnect.de. [2003:ea:8f23:5700:8c73:80e5:b6ba:d8b0])
+        by smtp.googlemail.com with ESMTPSA id r5sm15984466wrq.0.2020.05.30.14.52.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 May 2020 14:52:36 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/6] r8169: again few improvements
+Message-ID: <443c14ac-24b8-58ba-05aa-3803f1e5f4ab@gmail.com>
+Date:   Sat, 30 May 2020 23:52:26 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Again a series with few r8169 improvements.
 
-In kernel 4.19 (and probably earlier too) there are issues surrounding
-the PHY_AN state.
+Heiner Kallweit (6):
+  r8169: change driver data type
+  r8169: enable WAKE_PHY as only WoL source when runtime-suspending
+  r8169: don't reset tx ring indexes in rtl8169_tx_clear
+  r8169: move some calls to rtl8169_hw_reset
+  r8169: make rtl8169_down central chip quiesce function
+  r8169: improve handling power management ops
 
-For example, if a PHY is in PHY_AN state and AN has not finished, then
-what is supposed to happen is that the state machine gets rescheduled
-until it is, or until the link_timeout reaches zero which triggers an
-autoneg restart process.
+ drivers/net/ethernet/realtek/r8169_main.c | 199 +++++++++-------------
+ 1 file changed, 82 insertions(+), 117 deletions(-)
 
-But actually the rescheduling never works if the PHY uses interrupts,
-because the condition under which rescheduling occurs is just if
-phy_polling_mode() is true. So basically, this whole rescheduling
-functionality works for AN-not-yet-complete just by mistake. Let me
-explain.
-
-Most of the time the AN process manages to finish by the time the
-interrupt has triggered. One might say "that should always be the case,
-otherwise the PHY wouldn't raise the interrupt, right?".
-Well, some PHYs implement an .aneg_done method which allows them to tell
-the state machine when the AN is really complete.
-The AR8031/AR8033 driver (at803x.c) is one such example. Even when
-copper autoneg completes, the driver still keeps the "aneg_done"
-variable unset until in-band SGMII autoneg finishes too (there is no
-interrupt for that). So we have the premises of a race condition.
-
-In practice, what really happens depends on the log level of the serial
-console. If the log level is verbose enough that kernel messages related
-to the Ethernet link state are printed to the console, then this gives
-in-band AN enough time to complete, which means the link will come up
-and everyone will be happy. But if the console is not that verbose, the
-link will sometimes come up, and sometimes will be forced down by the
-.aneg_done of the PHY driver (forever, since we are not rescheduling).
-
-The conclusion is that an extra condition needs to be explicitly added,
-so that the state machine can be rescheduled properly. Otherwise PHY
-devices in interrupt mode will never work properly if they have an
-.aneg_done callback.
-
-In more recent kernels, the whole PHY_AN state was removed by Heiner
-Kallweit in the "[net-next,0/5] net: phy: improve and simplify phylib
-state machine" series here:
-
-https://patchwork.ozlabs.org/cover/994464/
-
-and the problem was just masked away instead of being addressed with a
-punctual patch.
-
-Fixes: 76a423a3f8f1 ("net: phy: allow driver to implement their own aneg_done")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-I'm not sure the procedure I'm following is correct, sending this
-directly to Greg. The patch doesn't apply on net.
-
- drivers/net/phy/phy.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index cc454b8c032c..ca4fd74fd2c8 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -934,7 +934,7 @@ void phy_state_machine(struct work_struct *work)
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct phy_device *phydev =
- 			container_of(dwork, struct phy_device, state_queue);
--	bool needs_aneg = false, do_suspend = false;
-+	bool recheck = false, needs_aneg = false, do_suspend = false;
- 	enum phy_state old_state;
- 	int err = 0;
- 	int old_link;
-@@ -981,6 +981,8 @@ void phy_state_machine(struct work_struct *work)
- 			phy_link_up(phydev);
- 		} else if (0 == phydev->link_timeout--)
- 			needs_aneg = true;
-+		else
-+			recheck = true;
- 		break;
- 	case PHY_NOLINK:
- 		if (!phy_polling_mode(phydev))
-@@ -1123,7 +1125,7 @@ void phy_state_machine(struct work_struct *work)
- 	 * PHY, if PHY_IGNORE_INTERRUPT is set, then we will be moving
- 	 * between states from phy_mac_interrupt()
- 	 */
--	if (phy_polling_mode(phydev))
-+	if (phy_polling_mode(phydev) || recheck)
- 		queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
- 				   PHY_STATE_TIME * HZ);
- }
 -- 
-2.25.1
+2.26.2
 
