@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F6121E9459
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 00:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50ECC1E9462
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 01:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729531AbgE3W5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 18:57:31 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:57096 "EHLO
+        id S1729543AbgE3XEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 19:04:44 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:60946 "EHLO
         aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729520AbgE3W5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 18:57:30 -0400
+        with ESMTP id S1729365AbgE3XEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 19:04:44 -0400
 Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UMr5Bx162406;
-        Sat, 30 May 2020 22:56:38 GMT
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UN2U8h167944;
+        Sat, 30 May 2020 23:04:06 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=nRI8/WGqU10HxUBdfywB8qJJ+zkivb2UYjEAwimayWg=;
- b=j9RAE4QJDyU5mkZtmHGy9KeRSad5ty+NbS47nrwkSZqhsxge3YTaJtMzPDdR/5IPG3wf
- rnO7jFpNK3ZBwx3S+3EnZEwhJdtVcJ9bOEAj1aZG1Rf/NwALS2bDwYskk8MtvmcRUrNm
- 6wE01JzWk5OmP+lrQnNRzCeXGaQf/Bxj4gGoSU5ORhwHs6VjQTRPUVHmgA3KTNpf5/4D
- W6JgqISSuyVK5E380RpU7mTPzlmzLESU37iMiq1rzxuSP7AH5Hq0/3mE7RfazgSLqJX5
- p5TBnPP2FTpyeUWEzAqyAdjFdFLmowD1GyTFHbqwjxhjzRPeBItITt0e95/S8JnaHxH2 sg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 31bfeksw3v-1
+ bh=ArGbxdMf43nV2+Q8KO87k8kj/lIFrSIB63prdwdnqAk=;
+ b=FcJ2lbEDjniowfATo3EvNy7aLk0eja41UWKv4Eb9R19t6yFA6Y2Hr67cdYIWkH0r8nq1
+ vX0hhi9GQyXDyCaiBIeLEOF/cXWAhw6prOHTbrzHenWpkIZZoGhNGiGx7SeBBGfau8fh
+ Mr10uXg+FCjLYilgRkCi2MVpIvMYmbmcefaz5aA0DtrkWDLymK+aWg3UkmXzSmegZQyr
+ mbVgy4wcIg0/pAbwviwegoW20zUTXZq6iK3xG6M/rB/x3RmgUtPmF39RSYIZbt/tAUXD
+ 0P0Qs3926RZp542b9pvfvYCrU9nExcBjOQJPnmgbtIZ7azvONHMPVbJhWwjKDWSXtuyW 6w== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 31bfekswe0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 30 May 2020 22:56:38 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UMr5er060838;
-        Sat, 30 May 2020 22:56:37 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 31bckr8f4r-1
+        Sat, 30 May 2020 23:04:06 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UMrm1I189140;
+        Sat, 30 May 2020 23:02:06 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 31bethp7bq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 30 May 2020 22:56:37 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UMuXtw014919;
-        Sat, 30 May 2020 22:56:33 GMT
+        Sat, 30 May 2020 23:02:05 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 04UN232l015388;
+        Sat, 30 May 2020 23:02:03 GMT
 Received: from [10.39.241.21] (/10.39.241.21)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 30 May 2020 15:56:32 -0700
-Subject: Re: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
+        with ESMTP ; Sat, 30 May 2020 16:02:03 -0700
+Subject: Re: [PATCH 03/12] x86/xen: Introduce new function to map
+ HYPERVISOR_shared_info on Resume
 To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
         jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
@@ -52,7 +53,7 @@ To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         dwmw@amazon.co.uk, benh@kernel.crashing.org
 References: <cover.1589926004.git.anchalag@amazon.com>
- <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
+ <529f544a64bb93b920bf86b1d3f86d93b0a4219b.1589926004.git.anchalag@amazon.com>
 From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  xsFNBFH8CgsBEAC0KiOi9siOvlXatK2xX99e/J3OvApoYWjieVQ9232Eb7GzCWrItCzP8FUV
@@ -97,82 +98,68 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
  19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
  Jg6OxFYd01z+a+oL
-Message-ID: <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
-Date:   Sat, 30 May 2020 18:56:30 -0400
+Message-ID: <72989b50-0c13-7a2b-19e2-de4a3646c83f@oracle.com>
+Date:   Sat, 30 May 2020 19:02:01 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
+In-Reply-To: <529f544a64bb93b920bf86b1d3f86d93b0a4219b.1589926004.git.anchalag@amazon.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- suspectscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005300178
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999
+ bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005300178
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
  mlxlogscore=999 priorityscore=1501 bulkscore=0 phishscore=0 clxscore=1015
  impostorscore=0 adultscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
  cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2005300178
+ engine=8.12.0-2004280000 definitions=main-2005300179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 5/19/20 7:25 PM, Anchal Agarwal wrote:
-> =20
->  int xenbus_dev_resume(struct device *dev)
->  {
-> -	int err;
-> +	int err =3D 0;
+> Introduce a small function which re-uses shared page's PA allocated
+> during guest initialization time in reserve_shared_info() and not
+> allocate new page during resume flow.
+> It also  does the mapping of shared_info_page by calling
+> xen_hvm_init_shared_info() to use the function.
+>
+> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> ---
+>  arch/x86/xen/enlighten_hvm.c | 7 +++++++
+>  arch/x86/xen/xen-ops.h       | 1 +
+>  2 files changed, 8 insertions(+)
+>
+> diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
+> index e138f7de52d2..75b1ec7a0fcd 100644
+> --- a/arch/x86/xen/enlighten_hvm.c
+> +++ b/arch/x86/xen/enlighten_hvm.c
+> @@ -27,6 +27,13 @@
+>  
+>  static unsigned long shared_info_pfn;
+>  
+> +void xen_hvm_map_shared_info(void)
+> +{
+> +	xen_hvm_init_shared_info();
+> +	if (shared_info_pfn)
+> +		HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
+> +}
+> +
 
 
-That's not necessary.
+AFAICT it is only called once so I don't see a need for new routine.
 
 
->  	struct xenbus_driver *drv;
->  	struct xenbus_device *xdev
->  		=3D container_of(dev, struct xenbus_device, dev);
-> -
-> +	bool xen_suspend =3D xen_suspend_mode_is_xen_suspend();
->  	DPRINTK("%s", xdev->nodename);
-> =20
->  	if (dev->driver =3D=3D NULL)
-> @@ -627,24 +645,32 @@ int xenbus_dev_resume(struct device *dev)
->  	drv =3D to_xenbus_driver(dev->driver);
->  	err =3D talk_to_otherend(xdev);
->  	if (err) {
-> -		pr_warn("resume (talk_to_otherend) %s failed: %i\n",
-> +		pr_warn("%s (talk_to_otherend) %s failed: %i\n",
-
-
-Please use dev_warn() everywhere, we just had a bunch of patches that
-replaced pr_warn(). In fact,=C2=A0 this is one of the lines that got chan=
-ged.
-
-
-> =20
->  int xenbus_dev_cancel(struct device *dev)
->  {
-> -	/* Do nothing */
-> -	DPRINTK("cancel");
-> +	int err =3D 0;
-
-
-Again, no need to initialize.
-
-
-> +	struct xenbus_driver *drv;
-> +	struct xenbus_device *xdev
-> +		=3D container_of(dev, struct xenbus_device, dev);
-
-
-xendev please to be consistent with other code. And use to_xenbus_device(=
-).
+And is it possible for shared_info_pfn to be NULL in resume path (which
+is where this is called)?
 
 
 -boris
+
 
