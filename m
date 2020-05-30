@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7077F1E8DE0
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 06:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3741E8DF8
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 07:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbgE3Etz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 00:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
+        id S1726173AbgE3FR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 01:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbgE3Ety (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 00:49:54 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13BEC08C5C9;
-        Fri, 29 May 2020 21:49:53 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id d7so1591069ioq.5;
-        Fri, 29 May 2020 21:49:53 -0700 (PDT)
+        with ESMTP id S1725813AbgE3FR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 01:17:27 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A983C08C5C9
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 22:17:27 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id h3so4531750ilh.13
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 22:17:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HFOR/RijELuUtw6za5Yk5rxfLgJ7l4/sChLeCcGwqMU=;
-        b=GjOgESc6gghXhC3dT/OUuxPzmJfhu4TmN2rq8Nm1FIDZGXqTwEtcqo4Yupf7DmjbPi
-         tLcv56dhLFClty7Q0pI5zYzxZSNvegz2ApkxqDyxykttPsDtXCjK/7+oR4SGEwF8YeQb
-         VrNHl5Qzdro9wMLVMkFJU3vH4+q8HrjbAd1wWB1JCzGrvXy3IFvTkFIKNlOU9rnutNK0
-         oTVdT76kXKCz9wlxmxrHS9q9BuYmNEW+CDds+ShtSz8N87pOZHoOCzowkeKh1NVl8XXb
-         yInJ2dTjUWgZBAQiTWDM1nQGJO/6MNRRvaHggvqhl0Dh5qD8z4jehlKmTEPaPnXYz0Q3
-         kUiQ==
+        bh=3dbGwSV8YE4xtENP3jLs4r2lGOKg13QVXY8/aySxMQI=;
+        b=CQqG+HGy05FFpZbSeH3Oz3XX3AiIEyYtO+6kv8FKxfzMiuWeoGENkPn9wg2/4Zbl1P
+         kJAkY1l+NRi0ygVIMfsnTgetkvGjAPd0kOXdtMlrCIJEmkchnpUcPtkEcJWzs2JAzvQm
+         gBrjMKGlYUlFl41Pxys9NecC7A9MnkkMmed1MOsKoFkQUNw7Dy8Ac1CGakNpH9dD+t1z
+         ott1WcHTtmsslO9AEpXIL/dfy5u5gvC0JVPp72BQyhP/y+HiO88Qe9DcRmUqOPdSQJqe
+         kaMRHQj4pRlB5s5HBF+nnASOsNEL7xqPc4aMnQ+qe8baD1CtebArkjfRd9+wZuyjgqCz
+         g+Xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HFOR/RijELuUtw6za5Yk5rxfLgJ7l4/sChLeCcGwqMU=;
-        b=pL1/fM9JZPi2k1nQ3vBcZi7qy9AcLoIkP+t+iTja4YH3tUvqiNzU+/gDnXKL1A20oq
-         BKIzE2DJMCCn9d1r+TvebkDBNDHMZ5ky5Ful9j3QOc5eUyl99hKdjQ7tCpXWuL1td28W
-         5G+JF4K00FESlGk4cfje+9WbOVeIHnn2aFzrcyAWpzPgtAnrYS9Hdd98+592qX2UZn7y
-         LITglBtdDae9J1FEfJAAPgZqhk7HVxnZvcvYFLpl+tqv1DOIX4vz7HrRKNXhWrH7JbjH
-         p59OCxk/StYoAdggyl+UvOeSDFYCP2AkGV0Ze2KCCQ86ombapDNNqV0lwI7ADQTtvWcV
-         wI9g==
-X-Gm-Message-State: AOAM533qh+FJY9EyRvB6ieNqM2DRLI0FM+hpuxPk9LliXdT0j+/SuKsY
-        +GNCeKwcej3EW4xjpokwK21bDd+iISESAx0lwNU=
-X-Google-Smtp-Source: ABdhPJx10VafEVlXNqwH5P6nufV34sjcQcu1/3cT223kzsOOXogss5J3YtxZ+BGxegWaZOiIgKi+qYRTYBNAcbFK/Uw=
-X-Received: by 2002:a02:3b4b:: with SMTP id i11mr10731659jaf.16.1590814193121;
- Fri, 29 May 2020 21:49:53 -0700 (PDT)
+        bh=3dbGwSV8YE4xtENP3jLs4r2lGOKg13QVXY8/aySxMQI=;
+        b=ojb0ZtabAJAH3r8Xa343l3DNozuV0IS63ZfasUnZ8SAj9iDGByIpsTMfCyw8eUo3kx
+         lFnpNq0W8ve14bN7zLGSmv85aGQqho7Si2ZTETN2JLS0+abVW+jCLTMyrJS+l9JiPJUX
+         VAGE9WotGOPUv/wWrALeoA5P74tnm2poD+DuuxPFywwZJ8gtLvG2yrz5X3jOUKQt9UfS
+         wFUTq+0bblL1oM93XYullxm3CVLtfvVbI1wDubwlKpv7SZKuA0zjvCBP++e3K6NidGuz
+         XHrwqN3fQ20mW+Q9gP21byG0s+vLuoGgUDTL/ri/1sFyvFTlaeGJQWrLNDkuxljfVfhO
+         dJ0g==
+X-Gm-Message-State: AOAM5337sT466tvYUQw3N6ja4sVDwvYemTeTYwvUwBloE4YAWF3HUgzT
+        hBUFZgyc8TyukLepAjXlmQ9hIHb2M19p6L0TpgA=
+X-Google-Smtp-Source: ABdhPJxDKc4phtF2kAS7W4p8Xg0Fx9osF30V7h6muTcSh4kLM4vwSW1p2d2pSkbqSxfYSfDSIX16tbP/8B2bdmHsLhk=
+X-Received: by 2002:a92:5b15:: with SMTP id p21mr9569854ilb.22.1590815846688;
+ Fri, 29 May 2020 22:17:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200529201413.397679-1-arnd@arndb.de>
-In-Reply-To: <20200529201413.397679-1-arnd@arndb.de>
+References: <419fed9287c2b9abbb71cc96ac3253ef0074d63e.1590775205.git.dcaratti@redhat.com>
+In-Reply-To: <419fed9287c2b9abbb71cc96ac3253ef0074d63e.1590775205.git.dcaratti@redhat.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 29 May 2020 21:49:42 -0700
-Message-ID: <CAM_iQpWp7_CytqF9U4b7i7TYNytVPztpm-P+=9dBBdiy_nScLA@mail.gmail.com>
-Subject: Re: [PATCH] flow_dissector: work around stack frame size warning
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Guillaume Nault <gnault@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+Date:   Fri, 29 May 2020 22:17:15 -0700
+Message-ID: <CAM_iQpVesOZ0kQ2OWHss1kG3O5tvYUYETK4A3LW9doH5ZFQjmw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net/sched: fix a couple of splats in the
+ error path of tcf_gate_init()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, Po Liu <po.liu@nxp.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ivan Vecera <ivecera@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 1:14 PM Arnd Bergmann <arnd@arndb.de> wrote:
+On Fri, May 29, 2020 at 11:10 AM Davide Caratti <dcaratti@redhat.com> wrote:
 >
-> The fl_flow_key structure is around 500 bytes, so having two of them
-> on the stack in one function now exceeds the warning limit after an
-> otherwise correct change:
->
-> net/sched/cls_flower.c:298:12: error: stack frame size of 1056 bytes in function 'fl_classify' [-Werror,-Wframe-larger-than=]
->
-> I suspect the fl_classify function could be reworked to only have one
-> of them on the stack and modify it in place, but I could not work out
-> how to do that.
->
-> As a somewhat hacky workaround, move one of them into an out-of-line
-> function to reduce its scope. This does not necessarily reduce the stack
-> usage of the outer function, but at least the second copy is removed
-> from the stack during most of it and does not add up to whatever is
-> called from there.
->
-> I now see 552 bytes of stack usage for fl_classify(), plus 528 bytes
-> for fl_mask_lookup().
->
-> Fixes: 58cff782cc55 ("flow_dissector: Parse multiple MPLS Label Stack Entries")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> this is caused by hrtimer_cancel(), running before hrtimer_init(). Fix it
+> ensuring to call hrtimer_cancel() only if clockid is valid, and the timer
+> has been initialized. After fixing this splat, the same error path causes
+> another problem:
 
-I think this is probably the quickest way to amend this warning,
-so:
-
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Hmm, but hrtimer_init() should not be called for an existing action
+either, right? If so, we need to move it under ACT_P_CREATED too,
+and you do not need to touch tcf_gate_cleanup() any more.
 
 Thanks.
