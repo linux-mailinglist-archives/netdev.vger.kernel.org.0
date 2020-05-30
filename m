@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1530D1E93F4
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E9F1E9404
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729350AbgE3Ve5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 17:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        id S1729425AbgE3Vjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 17:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729083AbgE3Ve5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:34:57 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59C4C03E969
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:34:55 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id t18so7660171wru.6
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:34:55 -0700 (PDT)
+        with ESMTP id S1729083AbgE3Vjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:39:36 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76885C03E969
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:39:36 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id n24so5604248ejd.0
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:39:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E/9l0YuQtAKyfeMoM9rSoXjbGJSt0Tzhx7PAOO4y/zI=;
-        b=SFzmFOM3gVCpRcfg1eWpKCp2LDwQbYQ6mR+NaTgANAz3FqFsGVbHzo9OxEjpfAbmSb
-         Al85F+FdXv5mUETYDjvUROWkk3CVvyac4lY9/57y408ysuZIXQjrQVU4hTR8QRbJ23/e
-         ENgL28qp//kFOjGCS3vV3eCxMCOHyk7lnwXbSmQnt5rKBFQQiDXH7HuK2WD31iWRRp5c
-         iAAxf/wbsNIfm+6KLryP0B33+5ZRibI93+DlvLMwzMM/5rMCZ2NK/5lnhXk9eSvqvsiw
-         DL5UkvqfXeT82Y+JwUkM4g/iqPDZMxFDG4BnqieK6NfFtE6QNZdJyAWYWJe+iLNyiafm
-         ii5A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=my7oLzM0GjZjt6u+Tl+bU1sfyvzLczH1U6Kx/1OWc38=;
+        b=YZJJcLUTjFdvWCTMD57XqA4vazK4fTdCOuCr1XblAajT94o+iw9pKhQxQmw2U3sjVN
+         yH9hNvfe0FXsjV9AAvo1u+q7+AHT8NDtmr40Y4Le2doqfbVcAa0fm6W2MpNFDmtRtRNq
+         jBLPrLjpY5kXE2Whwg24qtMpHUR1H8VSfjLB9mRSGaymzw98OrQkY4sjyRjbCUYnkdL4
+         rdPBBaJRcXmsOLhUG6MmB2HASK7IZiKocqd0OtQTEr99e8viFRwoZ2guONAW4orptLoV
+         yyAlMOiVTC94OurdgWZHAaSwMiKdZZSclKyeJivg1txS6iRwA6ALMFhKPylvEiewFDpS
+         tVxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E/9l0YuQtAKyfeMoM9rSoXjbGJSt0Tzhx7PAOO4y/zI=;
-        b=sPLjlkd5e7Y1pFVRcv9LwkHyKGRXqjg0kV6gvU8LFFt5aiRLMcERGRGDCi9c3MpN2K
-         y3JH7NRKmiVTNLPmuLVURFZNTAO+4hPo9qWKXrFbEmtVTdGKNokbN1cVWoYWH02Nj67T
-         W+Ci3VmwKr8leTUhdRVnVJ9Oola5vpJQxQrLwJuJUkiQWzVSKGg4AMGRy2coKIwdITlw
-         ibcncrd2rojG+Isp09Pu/2bsH/ulLGGeMg6evhLFDKCzd7iZPeiDlfyHe/cfeqXCPPJ9
-         L2VJNcY5WxpOgElwLAbF1kqUXTQTWu0db06wKwVkHQpvFao1hMwA8isrjEKnaSeXeq46
-         Vw0w==
-X-Gm-Message-State: AOAM5305Nq5vB3i8DeBZyPJq4c7UL09j9fs5T7qciLJDzR3pn/UVcCEB
-        k1UT7qwAsMaeke9vyfloS6E=
-X-Google-Smtp-Source: ABdhPJy36laB+Ve6t9RuhxyW5YZmtZRmEeGRsIWmdO0zfYTCuHnxfe4r0G0502O5QDguGqOHm/HD5Q==
-X-Received: by 2002:adf:fd48:: with SMTP id h8mr15769116wrs.226.1590874494474;
-        Sat, 30 May 2020 14:34:54 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id i3sm15227496wrm.83.2020.05.30.14.34.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 May 2020 14:34:53 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 05/13] net: mscc: ocelot: convert
- QSYS_SWITCH_PORT_MODE and SYS_PORT_MODE to regfields
-To:     Vladimir Oltean <olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=my7oLzM0GjZjt6u+Tl+bU1sfyvzLczH1U6Kx/1OWc38=;
+        b=GNjgnBxDl4XHUzVHyDl7F4vdZHg8vazUSGnhIaltmsYDsQTNXjfRxnOf0oSUOPHGwp
+         kR9+E0sGCR3cvxuk6qrC0Y0NYCKWZ54380/Bi3UQ9P+v9jQm+ddfjUn5+bBB3LetmzNK
+         TcnP0t0+a483cTNRXPqYkH1lW1sX3g/hnfTIGGlBMIpMbKTgOs2DrdPxaTVGAReF7yay
+         OFzwoKBi5G8bqOE1x+23RgnXX2Ipqj7qOIywvrMzMdIS/JyeKzBRDTWjpPqK8PQuNM9g
+         FBOZe2IkSz678tvhFWLP8l5SwSQeWhVNNAZC+FXK2MEpfO6IQ81fhjxh7yM53/uJxq3f
+         nnCA==
+X-Gm-Message-State: AOAM531i5QPD6oZV7ljipppeAmI/4xqo7W7Ad7K/7+n0cSYml9Mj0p8t
+        iG8oKnrNBI/7XuxBejCy7LlZkFEiGmiMpJPp0r4=
+X-Google-Smtp-Source: ABdhPJyGV5m5nxNYrKVKr8B0c83mBakz5TOWwELaLtfB1RHJzoxl1Umcen0rr34PnEKeNUQWDfoLLmRSPwgk6ZuJir4=
+X-Received: by 2002:a17:906:1d56:: with SMTP id o22mr7464052ejh.406.1590874775204;
+ Sat, 30 May 2020 14:39:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200530115142.707415-1-olteanv@gmail.com> <20200530115142.707415-7-olteanv@gmail.com>
+ <3ecbfe12-e4da-238e-b999-36fd91a2de5b@gmail.com>
+In-Reply-To: <3ecbfe12-e4da-238e-b999-36fd91a2de5b@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 31 May 2020 00:39:24 +0300
+Message-ID: <CA+h21hrHuc+RfS8ud5Fc+Yf-4--yZ7dYcBaCOnX3Tgh5sZ2iEQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 06/13] net: dsa: felix: create a template for
+ the DSA tags on xmit
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,81 +64,60 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
         radu-andrei.bulie@nxp.com, fido_max@inbox.ru,
         Mark Brown <broonie@kernel.org>
-References: <20200530115142.707415-1-olteanv@gmail.com>
- <20200530115142.707415-6-olteanv@gmail.com>
- <88be2af0-b68d-4eea-bfb4-9a7dd5276df8@gmail.com>
- <CA+h21hpEZchbE_weA_tZm-XW9o9uHU=7TvKhD2ZAYX7e5GootA@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <af464691-cf9c-130b-c565-620c0e2ab3fe@gmail.com>
-Date:   Sat, 30 May 2020 14:34:49 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <CA+h21hpEZchbE_weA_tZm-XW9o9uHU=7TvKhD2ZAYX7e5GootA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Florian,
 
+On Sun, 31 May 2020 at 00:31, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 5/30/2020 4:51 AM, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > With this patch we try to kill 2 birds with 1 stone.
+> >
+> > First of all, some switches that use tag_ocelot.c don't have the exact
+> > same bitfield layout for the DSA tags. The destination ports field is
+> > different for Seville VSC9953 for example. So the choices are to either
+> > duplicate tag_ocelot.c into a new tag_seville.c (sub-optimal) or somehow
+> > take into account a supposed ocelot->dest_ports_offset when packing this
+> > field into the DSA injection header (again not ideal).
+> >
+> > Secondly, tag_ocelot.c already needs to memset a 128-bit area to zero
+> > and call some packing() functions of dubious performance in the
+> > fastpath. And most of the values it needs to pack are pretty much
+> > constant (BYPASS=1, SRC_PORT=CPU, DEST=port index). So it would be good
+> > if we could improve that.
+> >
+> > The proposed solution is to allocate a memory area per port at probe
+> > time, initialize that with the statically defined bits as per chip
+> > hardware revision, and just perform a simpler memcpy in the fastpath.
+> >
+> > Other alternatives have been analyzed, such as:
+> > - Create a separate tag_seville.c: too much code duplication for just 1
+> >   bit field difference.
+>
+> If this is really the only difference, we could have added a device ID
+> or something that would allow tag_ocelot.c to differentiate Seville from
+> Felix and just have a conditional for using the right definition.
+>
+> The solution proposed here is okay and scales beyond a single bit field
+> difference. Maybe this will open up the door for consolidating the
+> various Microchip KSZ tag implementations at some point.
+>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> --
+> Florian
 
-On 5/30/2020 2:25 PM, Vladimir Oltean wrote:
-> Hi Florian,
-> 
-> On Sun, 31 May 2020 at 00:18, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->>
->>
->> On 5/30/2020 4:51 AM, Vladimir Oltean wrote:
->>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->>>
->>> Currently Felix and Ocelot share the same bit layout in these per-port
->>> registers, but Seville does not. So we need reg_fields for that.
->>>
->>> Actually since these are per-port registers, we need to also specify the
->>> number of ports, and register size per port, and use the regmap API for
->>> multiple ports.
->>>
->>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->>> ---
->>> Changes in v2:
->>> None.
->>
->> [snip]
->>
->>
->>>       /* Core: Enable port for frame transfer */
->>> -     ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
->>> -                      QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
->>> -                      QSYS_SWITCH_PORT_MODE_PORT_ENA,
->>> -                      QSYS_SWITCH_PORT_MODE, port);
->>> +     ocelot_fields_write(ocelot, port,
->>> +                         QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE, 1);
->>> +     ocelot_fields_write(ocelot, port,
->>> +                         QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
->>
->> I am a bit confused throughout this patch sometimes SCH_NEXT_CFG is set
->> to 1, sometimes not, this makes it a bit harder to review the
->> conversion, assuming this is fine:
->>
->> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
->> --
->> Florian
-> 
-> Yes, this is a subtle point, but it's correct the way it is, and I
-> didn't want to insist on the details of it, but now that you mentioned
-> it, let's go.
-> Seville does not have the QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG register
-> field at all. And using the previous API (ocelot_write_rix), we were
-> only writing 1 for Felix and Ocelot, which was their hardware-default
-> value, so we weren't changing its value in practice. So the equivalent
-> with ocelot_fields_write would be to simply not do anything at all for
-> the SCH_NEXT_CFG field, which is actually something that is required
-> if we want to support Seville too.
+Yes, but with a check for device id in the fast path, the xmit
+performance would have been slightly worse, and this way it is
+slightly better. Again, not the magnitude is important here (which is
+marginal either way), but the sign :)
 
-OK, thank you for providing these details.
--- 
-Florian
+Thanks,
+-Vladimir
