@@ -2,415 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576171E922A
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 16:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2EEF1E9230
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 16:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729069AbgE3Ord (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 10:47:33 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:35745 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729029AbgE3Orc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 May 2020 10:47:32 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590850050; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=/JgjKi6Q8l2P9JxSxayv+hLybp2PDvTvazxLpoUOcs4=; b=OtDrX6a9yGgfZGlnutxnolXC6OwBcfOgfRsFBRj23t4tpneyAAF0dw//QK98rsjlGabj2eUX
- 7TQESm49OWj5OGXpXzsF78V/Wi86Qg07HadXF6rCF6YcKl3lCskrrQVF3ZTCH0ET18oaqcMx
- hBdbVtKD/EN5f9UH2RjLO+7x0Tk=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5ed272022c549984750807a2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 30 May 2020 14:47:30
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 3755FC433C9; Sat, 30 May 2020 14:47:29 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BD22FC433C6;
-        Sat, 30 May 2020 14:47:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BD22FC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729107AbgE3Own (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 10:52:43 -0400
+Received: from mail-eopbgr80130.outbound.protection.outlook.com ([40.107.8.130]:43524
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728927AbgE3Owm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 May 2020 10:52:42 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Eq3OsXt1rjhViz7N00Mqd+2y65ZHKc4tokTAsCFDnv0ag+o9NTBMb7eV5U4NcajixN6ItZSb/a6dTclEHYti/TirDulEhVUrkT0H4wt+iZ9O2uoZladplvydQhbMRhGWZKeQwOxZfAH5sGQKEmkl/5hZFPom0OeZ5xU2meq388slOtyHktQ2ujyEW6GokUoS1MnHrY7uc0KdUHwLJ8ypytwo4C+wYanSgKrmrNlKIr6Y/MkQODf1VT4IHRT3EV/J9zEIPWMQIJbvErFHfXQSJgoKFEbrwP2IJ6oyK8qy4sikOY1b3wAzUUO68ahutuRL2tYx5U6/VIY/qol/Q7tRDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vext0lOY5nFFotFjBfgvchkJnrvXtkYqDroysfgpM8U=;
+ b=T6MRebYUMxHZvuSW5dDq64aMFA1Dc53JnwRkYeCNVqwRli4vBr47P1Vo4u2SNnYPYLSMPk9EnEi8TtXnMqEx7bOeS8T05HNhn/kHNH+pcFpvzBpHZXVlvSL1VaJU+Y20jd01j8mW68p41I+qMrk/OqhuXvsXT9ZR1J3ZkXRRdt0Uc55Wp1fCIT8pLo5PobPwWN2EgSPaOwLhOjkCXV7Q+4i8HRNfSd3qepr1eFeOTjlGs2c2y1/DAgi6mguMkQSgOGE8F2kpv2z/OEVzYZvp17ncRV7Cn3ivzqhNY8wW+FuZa8E7kK9RCXP+15hLQoHE7xd9VCv+GOFsqeZt9dgoWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vext0lOY5nFFotFjBfgvchkJnrvXtkYqDroysfgpM8U=;
+ b=Zehs4if1nvu96RkvHXmLqjquQE04BxJ5LzjQiI2fKK/PYa4gZP+VuNdUOUSW4drKMBB3BZJBRtOEkX4gN8hgP976IbDYuKHJAm43/o2k8sxRNszZLYV38QLQqoQJafmM/ZAAWicJr/jwgZ7Kv1lbq27qcl0IzO0SHz4K5KMEu+0=
+Authentication-Results: idosch.org; dkim=none (message not signed)
+ header.d=none;idosch.org; dmarc=none action=none header.from=plvision.eu;
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
+ by VI1P190MB0382.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:2d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.22; Sat, 30 May
+ 2020 14:52:35 +0000
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::8149:8652:3746:574f]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::8149:8652:3746:574f%7]) with mapi id 15.20.3045.022; Sat, 30 May 2020
+ 14:52:35 +0000
+Date:   Sat, 30 May 2020 17:52:31 +0300
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [net-next 0/6] net: marvell: prestera: Add Switchdev driver for
+ Prestera family ASIC device 98DX326x (AC3x)
+Message-ID: <20200530145231.GB19411@plvision.eu>
+References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
+ <20200530142928.GA1624759@splinter>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200530142928.GA1624759@splinter>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: AM6P192CA0013.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:209:83::26) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:802:35::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-next-2020-05-30
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20200530144729.3755FC433C9@smtp.codeaurora.org>
-Date:   Sat, 30 May 2020 14:47:29 +0000 (UTC)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plvision.eu (217.20.186.93) by AM6P192CA0013.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:83::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Sat, 30 May 2020 14:52:33 +0000
+X-Originating-IP: [217.20.186.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 455f59c7-0216-4987-3a6b-08d804a91679
+X-MS-TrafficTypeDiagnostic: VI1P190MB0382:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1P190MB0382FB290DE09CA6CF27E79C958C0@VI1P190MB0382.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 041963B986
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4Fgv1fk6+gcIrWOfrpPzfsoRBexs4+ydK0IMTjKGncwZzQNCYJU1PVmo8bMpeYYagjDmzhsU0Ispdu1VU1xjdmCJzrt/uI3x36e2nvCRilDoY3THFiLjMAYpTcoA8EPr1kBzqVW2wOmRqb3CGw+ufzO8CmyB4M9vCY0JbjEN2ZlGv505XHW6XNuCKHMjzJAgW+3/P6YiO7nw6lV+h049a/+fpdlXkMDLZnmaqKVsx2d3KIU7qTIZgXK91jT8qEfeFde8v5aRL/GiXcCL3xvQ+Huis/ZWmHLN9y7AjrDhA+Mgi/KZoYIrP55In4L9lXkc2YzbOlBrcSCLMEet6scbHA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(136003)(366004)(376002)(396003)(346002)(39830400003)(83380400001)(1076003)(8936002)(508600001)(52116002)(86362001)(36756003)(7696005)(8676002)(2906002)(33656002)(6916009)(66476007)(55016002)(66946007)(8886007)(316002)(4326008)(54906003)(44832011)(26005)(66556008)(5660300002)(16526019)(186003)(956004)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: VUpozSds/leyPfBPMWU6pLpyzoU1HFIQbFyN+/Y5yL9PIqh5QdMpFh6aHdoEiXIfJaxLTO1YjtPUE4DX8cF37lqbnliL47ToqtrlzUFuOlGuwPAbtni1UHkSy4TYuDGrxKAfFSNaWYyTdSulPJexY4MdkTigTMCH5mAR/nbJg+tISsc6KsbCP2kSwRv+C6Hftkjwc9q2pMKqoGAD8Yhhqve2JZfV7Ndw3tAmr30dDYPiAGuqKxuxignFKd0m28WcB3QQA/Ozl9r5VRIl9CKppIbPSFVuvX7iuHkzVFLLLakqh3Q0+NkyGZUHq+GnJZnF88CdCPVTf6IJMZs8e7bREmWKPXNSdklNOwtZgzUgbMF8dhR5EDwsBBr+un9SZIrPzvygZ1e+dYxxabCO1wEZeqBF3WRHHnhX65NmFBenbmJqRXHqbuMME4Y5qpnPi8ollFiADFjmO6VJqfxzg+UtYkXQNxsShbF7rYtRU8BYuqI=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 455f59c7-0216-4987-3a6b-08d804a91679
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2020 14:52:34.9420
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Uhna6/Gv1WRIiIsOj2miyh6HXwZFXJEw89onElnAUpEdAAA8961fsOMPACs4KN2rhi8k/wdfqyNzCgM8WtBqG+aoCSiX1pg/tWI7fCQ9B7c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0382
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
-
-Kalle
-
-The following changes since commit 50ce4c099bebf56be86c9448f7f4bcd34f33663c:
-
-  sctp: fix typo sctp_ulpevent_nofity_peer_addr_change (2020-05-27 15:08:02 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git tags/wireless-drivers-next-2020-05-30
-
-for you to fetch changes up to e948ed0427991d197c861fcac4961e699b978d5d:
-
-  Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git (2020-05-30 17:31:27 +0300)
-
-----------------------------------------------------------------
-wireless-drivers-next patches for v5.8
-
-Third set of patches for v5.8. Final new features before the merge
-window (most likely) opens, noteworthy here is adding WPA3 support to
-old drivers rt2800, b43 and b43_legacy.
-
-Major changes:
-
-ath10k
-
-* SDIO and SNOC busses are not experimental anymore
-
-ath9k
-
-* allow receive of broadcast Action frames
-
-ath9k_htc
-
-* allow receive of broadcast Action frames
-
-rt2800
-
-* enable WPA3 support out of box
-
-b43
-
-* enable WPA3 support
-
-b43_legacy
-
-* enable WPA3 support
-
-mwifiex
-
-* advertise max number of clients to user space
-
-mt76
-
-* mt7663: add remain-on-channel support
-
-* mt7915: add spatial reuse support
-
-* add support for mt7611n hardware
-
-iwlwifi
-
-* add ACPI DSM support
-
-* support enabling 5.2GHz bands in Indonesia via ACPI
-
-* bump FW API version to 56
-
-----------------------------------------------------------------
-Arnd Bergmann (3):
-      wil6210: avoid gcc-10 zero-length-bounds warning
-      ath10k: fix gcc-10 zero-length-bounds warnings
-      ath10k: fix ath10k_pci struct layout
-
-Avraham Stern (1):
-      iwlwifi: mvm: add support for range request version 10
-
-Chien-Hsun Liao (1):
-      rtw88: 8822c: remove CCK TX setting when switch channel
-
-Christophe JAILLET (2):
-      wcn36xx: Fix error handling path in 'wcn36xx_probe()'
-      ath11k: Fix some resource leaks in error path in 'ath11k_thermal_register()'
-
-Colin Ian King (2):
-      ath11k: remove redundant initialization of pointer info
-      mt76: mt7915: fix a handful of spelling mistakes
-
-DENG Qingfang (1):
-      mt76: mt7615: add support for MT7611N
-
-Dan Carpenter (1):
-      airo: Fix read overflows sending packets
-
-Dinghao Liu (5):
-      wlcore: fix runtime pm imbalance in wl1271_tx_work
-      wlcore: fix runtime pm imbalance in wlcore_regdomain_config
-      wlcore: fix runtime pm imbalance in wl1271_op_suspend
-      wlcore: fix runtime pm imbalance in __wl1271_op_remove_interface
-      wlcore: fix runtime pm imbalance in wlcore_irq_locked
-
-Double Lo (2):
-      brcmfmac: fix 4339 CRC error under SDIO 3.0 SDR104 mode
-      brcmfmac: 43012 Update MES Watermark
-
-Douglas Anderson (1):
-      ath10k: Remove ath10k_qmi_register_service_notifier() declaration
-
-Felix Fietkau (3):
-      mt76: fix per-driver wcid range checks after wcid array size bump
-      mt76: fix wcid allocation issues
-      mt76: only iterate over initialized rx queues
-
-Frank Kao (1):
-      brcmfmac: set F2 blocksize and watermark for 4354/4356 SDIO
-
-Gil Adam (2):
-      iwlwifi: acpi: support device specific method (DSM)
-      iwlwifi: acpi: evaluate dsm to enable 5.2 bands in Indonesia
-
-Govind Singh (4):
-      ath11k: Add support for multibus support
-      ath11k: Add drv private for bus opaque struct
-      ath11k: Remove bus layer includes from upper layer
-      ath10k: remove experimental tag from SDIO and SNOC busses in Kconfig
-
-Gustavo A. R. Silva (4):
-      ath10k: Replace zero-length array with flexible-array
-      carl9170: Replace zero-length array with flexible-array
-      wil6210: Replace zero-length array with flexible-array
-      wcn36xx: Replace zero-length array with flexible-array
-
-Haim Dreyfuss (2):
-      iwlwifi: set NO_HE if the regulatory domain forbids it
-      iwlwifi: pcie: don't count on the FW to set persistence mode
-
-Johannes Berg (1):
-      iwlwifi: pcie: gen3: indicate 8k/12k RB size to device
-
-Jouni Malinen (2):
-      ath9k: Set RX filter based to allow broadcast Action frame RX
-      ath9k_htc: Set RX filter based to allow broadcast Action frame RX
-
-Kalle Valo (4):
-      Merge ath-next from git://git.kernel.org/.../kvalo/ath.git
-      Merge tag 'mt76-for-kvalo-2020-05-28' of https://github.com/nbd168/wireless
-      Merge tag 'iwlwifi-next-for-kalle-2020-05-29' of git://git.kernel.org/.../iwlwifi/iwlwifi-next
-      Merge ath-next from git://git.kernel.org/.../kvalo/ath.git
-
-Larry Finger (2):
-      b43: Fix connection problem with WPA3
-      b43_legacy: Fix connection problem with WPA3
-
-Lorenzo Bianconi (5):
-      mt76: mt7615: introduce remain_on_channel support
-      mt76: mt76x02: remove check in mt76x02_mcu_msg_send
-      mt76: mt7615: fix NULL pointer deref in mt7615_register_ext_phy
-      mt76: mt7615: switch to per-vif power_save support
-      mt76: mt7915: fix possible NULL pointer dereference in mt7915_register_ext_phy
-
-Luca Coelho (1):
-      iwlwifi: bump FW API to 56 for AX devices
-
-Miles Hu (1):
-      ath11k: remove stale monitor status descriptor
-
-Mordechay Goodstein (3):
-      iwlwifi: pcie: keep trans instead of trans_pcie in iwl_txq
-      iwlwifi: move iwl_txq and substructures to a common trans header
-      iwlwifi: move txq-specific from trans_pcie to common trans
-
-Muna Sinada (2):
-      ath11k: reset trigger frame MAC padding duration
-      ath11k: clear DCM max constellation tx value
-
-Pali Rohár (3):
-      cw1200: Remove local sdio VENDOR and DEVICE id definitions
-      mwifiex: Parse all API_VER_ID properties
-      mwifiex: Add support for NL80211_ATTR_MAX_AP_ASSOC_STA
-
-Pascal Terjan (2):
-      libertas: Use shared constant for rfc1042 header
-      atmel: Use shared constant for rfc1042 header
-
-Ping-Ke Shih (3):
-      rtw88: coex: 8723d: set antanna control owner
-      rtw88: coex: 8723d: handle BT inquiry cases
-      rtw88: fix EAPOL 4-way failure by finish IQK earlier
-
-Pradeep Kumar Chitrapu (1):
-      ath11k: fix htt stats module not handle multiple skbs
-
-Rakesh Pillai (2):
-      ath10k: Skip handling del_server during driver exit
-      ath10k: Remove msdu from idr when management pkt send fails
-
-Rui Salvaterra (1):
-      rt2800: enable MFP support unconditionally
-
-Ryder Lee (5):
-      mt76: mt7915: add spatial reuse support
-      mt76: mt7915: fix some sparse warnings
-      mt76: mt7915: fix sparse warnings: incorrect type initializer
-      mt76: mt7915: fix decoded radiotap HE flags
-      mt76: mt7915: fix some sparse warnings
-
-Sean Wang (1):
-      mt76: mt7615: fix hw_scan with ssid_type for specified SSID only
-
-Sergey Matyukevich (1):
-      MAINTAINERS: update qtnfmac maintainers
-
-Sharon (1):
-      iwlwifi: mvm: fix aux station leak
-
-Wei Yongjun (1):
-      ath11k: convert to devm_platform_get_and_ioremap_resource
-
-Wen Gong (1):
-      ath10k: fix __le32 warning in ath10k_wmi_tlv_op_gen_request_peer_stats_info()
-
-Wright Feng (2):
-      brcmfmac: set F2 blocksize for 4373
-      brcmfmac: fix 43455 CRC error under SDIO 3.0 SDR104 mode
-
-Yan-Hsuan Chuang (2):
-      Revert "rtw88: no need to set registers for SDIO"
-      rtw88: 8822c: fix missing brace warning for old compilers
-
-YueHaibing (2):
-      mt76: mt7615: Use kmemdup in mt7615_queue_key_update()
-      mt76: mt7915: remove set but not used variable 'msta'
-
- MAINTAINERS                                        |   2 +-
- drivers/net/wireless/ath/ath10k/Kconfig            |   7 +-
- drivers/net/wireless/ath/ath10k/ce.h               |   2 +-
- drivers/net/wireless/ath/ath10k/core.h             |   2 +-
- drivers/net/wireless/ath/ath10k/coredump.h         |   4 +-
- drivers/net/wireless/ath/ath10k/debug.h            |   2 +-
- drivers/net/wireless/ath/ath10k/htt.h              |  42 +++----
- drivers/net/wireless/ath/ath10k/hw.h               |   2 +-
- drivers/net/wireless/ath/ath10k/mac.c              |   3 +
- drivers/net/wireless/ath/ath10k/pci.h              |   9 +-
- drivers/net/wireless/ath/ath10k/qmi.c              |  13 ++-
- drivers/net/wireless/ath/ath10k/qmi.h              |   7 +-
- drivers/net/wireless/ath/ath10k/wmi-ops.h          |  10 ++
- drivers/net/wireless/ath/ath10k/wmi-tlv.c          |  17 ++-
- drivers/net/wireless/ath/ath10k/wmi-tlv.h          |   6 +-
- drivers/net/wireless/ath/ath10k/wmi.h              |  42 +++----
- drivers/net/wireless/ath/ath11k/ahb.c              |  59 +++++++---
- drivers/net/wireless/ath/ath11k/ahb.h              |  22 ----
- drivers/net/wireless/ath/ath11k/core.c             |  47 +++-----
- drivers/net/wireless/ath/ath11k/core.h             |  10 +-
- drivers/net/wireless/ath/ath11k/debug_htt_stats.c  |  48 ++++++--
- drivers/net/wireless/ath/ath11k/dp.c               |   1 +
- drivers/net/wireless/ath/ath11k/dp.h               |   1 +
- drivers/net/wireless/ath/ath11k/dp_rx.c            |  11 +-
- drivers/net/wireless/ath/ath11k/hal.c              |  87 +++++++-------
- drivers/net/wireless/ath/ath11k/hal_desc.h         |   2 +
- drivers/net/wireless/ath/ath11k/hal_rx.c           |  22 ++--
- drivers/net/wireless/ath/ath11k/hal_tx.c           |  13 ++-
- drivers/net/wireless/ath/ath11k/hal_tx.h           |   1 +
- drivers/net/wireless/ath/ath11k/hif.h              |  65 +++++++++++
- drivers/net/wireless/ath/ath11k/htc.c              |   4 +-
- drivers/net/wireless/ath/ath11k/hw.h               |   5 +
- drivers/net/wireless/ath/ath11k/mac.c              |   6 +-
- drivers/net/wireless/ath/ath11k/thermal.c          |   6 +-
- drivers/net/wireless/ath/ath9k/htc_drv_init.c      |   2 +
- drivers/net/wireless/ath/ath9k/htc_drv_main.c      |   1 +
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c      |   3 +-
- drivers/net/wireless/ath/ath9k/init.c              |   2 +
- drivers/net/wireless/ath/ath9k/main.c              |   1 +
- drivers/net/wireless/ath/ath9k/recv.c              |   3 +-
- drivers/net/wireless/ath/carl9170/fwcmd.h          |   2 +-
- drivers/net/wireless/ath/carl9170/hw.h             |   2 +-
- drivers/net/wireless/ath/wcn36xx/hal.h             |   4 +-
- drivers/net/wireless/ath/wcn36xx/main.c            |   6 +-
- drivers/net/wireless/ath/wcn36xx/testmode.h        |   2 +-
- drivers/net/wireless/ath/wil6210/fw.h              |  16 +--
- drivers/net/wireless/ath/wil6210/wmi.c             |   2 +-
- drivers/net/wireless/ath/wil6210/wmi.h             |  58 +++++-----
- drivers/net/wireless/atmel/atmel.c                 |   3 +-
- drivers/net/wireless/broadcom/b43/main.c           |   2 +-
- drivers/net/wireless/broadcom/b43legacy/main.c     |   1 +
- .../wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c  |  22 +++-
- .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  58 ++++++++--
- drivers/net/wireless/cisco/airo.c                  |  12 ++
- drivers/net/wireless/intel/iwlwifi/cfg/22000.c     |   2 +-
- drivers/net/wireless/intel/iwlwifi/fw/acpi.c       |  99 ++++++++++++++--
- drivers/net/wireless/intel/iwlwifi/fw/acpi.h       |  22 ++++
- .../net/wireless/intel/iwlwifi/fw/api/location.h   |  14 +--
- .../net/wireless/intel/iwlwifi/fw/api/nvm-reg.h    |  34 +++++-
- .../wireless/intel/iwlwifi/iwl-context-info-gen3.h |  12 +-
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |   5 +
- drivers/net/wireless/intel/iwlwifi/iwl-trans.h     | 128 +++++++++++++++++++++
- .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |  42 ++++++-
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |  43 +++++++
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   5 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  18 ++-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.h       |   6 +-
- .../wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c   |  10 +-
- .../net/wireless/intel/iwlwifi/pcie/ctxt-info.c    |   6 +-
- drivers/net/wireless/intel/iwlwifi/pcie/internal.h | 121 +------------------
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c       |   6 +-
- .../net/wireless/intel/iwlwifi/pcie/trans-gen2.c   |  11 +-
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c    |  47 +++-----
- drivers/net/wireless/intel/iwlwifi/pcie/tx-gen2.c  |  70 ++++++-----
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c       | 120 ++++++++++---------
- drivers/net/wireless/marvell/libertas/rx.c         |   5 +-
- drivers/net/wireless/marvell/mwifiex/cfg80211.c    |   5 +
- drivers/net/wireless/marvell/mwifiex/cmdevt.c      |  29 ++++-
- drivers/net/wireless/marvell/mwifiex/fw.h          |  10 ++
- drivers/net/wireless/marvell/mwifiex/main.h        |   1 +
- drivers/net/wireless/mediatek/mt76/debugfs.c       |   2 +-
- drivers/net/wireless/mediatek/mt76/dma.c           |   4 +-
- drivers/net/wireless/mediatek/mt76/mt76.h          |  10 +-
- drivers/net/wireless/mediatek/mt76/mt7603/mac.c    |   7 +-
- drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c |   7 ++
- drivers/net/wireless/mediatek/mt76/mt7615/init.c   |  22 ++--
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c    |  17 ++-
- drivers/net/wireless/mediatek/mt76/mt7615/main.c   | 108 +++++++++++++----
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c    |  66 +++++++++--
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.h    |  25 +++-
- drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h |  19 ++-
- drivers/net/wireless/mediatek/mt76/mt7615/pci.c    |   9 +-
- drivers/net/wireless/mediatek/mt76/mt7615/usb.c    |   3 +-
- drivers/net/wireless/mediatek/mt76/mt76x02.h       |   3 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_mac.c   |   2 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_mcu.c   |   2 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c  |   5 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c  |   2 +-
- .../net/wireless/mediatek/mt76/mt7915/debugfs.c    |   6 +-
- drivers/net/wireless/mediatek/mt76/mt7915/init.c   |   3 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c    |  58 +++++-----
- drivers/net/wireless/mediatek/mt76/mt7915/main.c   |   9 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c    |  41 +++++--
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.h    |   1 +
- drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h |   2 +
- drivers/net/wireless/mediatek/mt76/util.c          |  12 +-
- drivers/net/wireless/mediatek/mt76/util.h          |  14 +--
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c     |   4 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00mac.c     |   3 +-
- drivers/net/wireless/realtek/rtw88/coex.c          |  21 +++-
- drivers/net/wireless/realtek/rtw88/mac80211.c      |   3 +-
- drivers/net/wireless/realtek/rtw88/main.c          |  17 +++
- drivers/net/wireless/realtek/rtw88/main.h          |   4 +
- drivers/net/wireless/realtek/rtw88/rtw8723d.c      |  50 +++++++-
- drivers/net/wireless/realtek/rtw88/rtw8723d.h      |   1 +
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |  95 +++++++++++++++
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |  24 +++-
- drivers/net/wireless/st/cw1200/cw1200_sdio.c       |   9 +-
- drivers/net/wireless/ti/wlcore/main.c              |  33 +++---
- drivers/net/wireless/ti/wlcore/tx.c                |   1 +
- 120 files changed, 1634 insertions(+), 743 deletions(-)
- create mode 100644 drivers/net/wireless/ath/ath11k/hif.h
+Hi Ido,
+
+On Sat, May 30, 2020 at 05:29:28PM +0300, Ido Schimmel wrote:
+> On Thu, May 28, 2020 at 06:12:39PM +0300, Vadym Kochan wrote:
+> > Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
+> > ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
+> > wireless SMB deployment.
+> > 
+> > Prestera Switchdev is a firmware based driver that operates via PCI bus.  The
+> > current implementation supports only boards designed for the Marvell Switchdev
+> > solution and requires special firmware.
+> > 
+> > This driver implementation includes only L1, basic L2 support, and RX/TX.
+> > 
+> > The core Prestera switching logic is implemented in prestera_main.c, there is
+> > an intermediate hw layer between core logic and firmware. It is
+> > implemented in prestera_hw.c, the purpose of it is to encapsulate hw
+> > related logic, in future there is a plan to support more devices with
+> > different HW related configurations.
+> > 
+> > The following Switchdev features are supported:
+> > 
+> >     - VLAN-aware bridge offloading
+> >     - VLAN-unaware bridge offloading
+> >     - FDB offloading (learning, ageing)
+> >     - Switchport configuration
+> > 
+> > The firmware image will be uploaded soon to the linux-firmware repository.
+> > 
+> > PATCH:
+> >     1) Fixed W=1 warnings
+> 
+> Hi,
+> 
+> I just applied the patches for review and checkpatch had a lot of
+> complaints. Some are even ERRORs. For example:
+> 
+> WARNING: do not add new typedefs
+> #1064: FILE: drivers/net/ethernet/marvell/prestera/prestera_hw.h:32:
+> +typedef void (*prestera_event_cb_t)
+I may be wrong, as I remember Jiri suggested it and looks like
+it makes sense. I really don't have strong opinion about this.
+
+> 
+> WARNING: line over 80 characters
+> #2007: FILE: drivers/net/ethernet/marvell/prestera/prestera_rxtx.c:321:
+> +                       __skb_trim(buf->skb, PRESTERA_SDMA_RX_DESC_PKT_LEN(desc));
+> 
+> WARNING: line over 80 characters
+> #2007: FILE: drivers/net/ethernet/marvell/prestera/prestera_rxtx.c:321:
+> +                       __skb_trim(buf->skb, PRESTERA_SDMA_RX_DESC_PKT_LEN(desc));
+> 
+> ERROR: Macros with complex values should be enclosed in parentheses
+> #196: FILE: drivers/net/ethernet/marvell/prestera/prestera_pci.c:161:
+> +#define PRESTERA_FW_REG_ADDR(fw, reg)  PRESTERA_FW_REG_BASE(fw) + (reg)
+This one makes sense.
+> 
+> WARNING: prefer 'help' over '---help---' for new help texts
+> #52: FILE: drivers/net/ethernet/marvell/prestera/Kconfig:15:
+> +config PRESTERA_PCI
+I will fix it.
+> 
+> ...
+
+The most are about using ethtool types which are in camel style.
+Regarding > 80 chars is is a required rule ? I saw some discussion
+on LKML that 80+ are acceptable sometimes.
+
+> 
+> Also, smatch complaints about:
+> 
+> drivers/net/ethernet/marvell/prestera//prestera_ethtool.c:713
+> prestera_ethtool_get_strings() error: memcpy() '*prestera_cnt_name' too
+> small (32 vs 960)
+> 
+> And coccicheck about:
+> 
+> drivers/net/ethernet/marvell/prestera/prestera_hw.c:681:2-3: Unneeded
+> semicolon
+These looks interesting, I did not use smatch and coccicheck, will look
+on these.
+
+> 
+> > 
+> >     2) Renamed PCI driver name to be more generic "Prestera DX" because
+> >        there will be more devices supported.
+> > 
+> >     3) Changed firmware image dir path: marvell/ -> mrvl/prestera/
+> >        to be aligned with location in linux-firmware.git (if such
+> >        will be accepted).
+> > 
+> > RFC v3:
+> >     1) Fix prestera prefix in prestera_rxtx.c
+> > 
+> >     2) Protect concurrent access from multiple ports on multiple CPU system
+> >        on tx path by spinlock in prestera_rxtx.c
+> > 
+> >     3) Try to get base mac address from device-tree, otherwise use a random generated one.
+> > 
+> >     4) Move ethtool interface support into separate prestera_ethtool.c file.
+> > 
+> >     5) Add basic devlink support and get rid of physical port naming ops.
+> > 
+> >     6) Add STP support in Switchdev driver.
+> > 
+> >     7) Removed MODULE_AUTHOR
+> > 
+> >     8) Renamed prestera.c -> prestera_main.c, and kernel module to
+> >        prestera.ko
+> > 
+> > RFC v2:
+> >     1) Use "pestera_" prefix in struct's and functions instead of mvsw_pr_
+> > 
+> >     2) Original series split into additional patches for Switchdev ethtool support.
+> > 
+> >     3) Use major and minor firmware version numbers in the firmware image filename.
+> > 
+> >     4) Removed not needed prints.
+> > 
+> >     5) Use iopoll API for waiting on register's value in prestera_pci.c
+> > 
+> >     6) Use standart approach for describing PCI ID matching section instead of using
+> >        custom wrappers in prestera_pci.c
+> > 
+> >     7) Add RX/TX support in prestera_rxtx.c.
+> > 
+> >     8) Rewritten prestera_switchdev.c with following changes:
+> >        - handle netdev events from prestera.c
+> > 
+> >        - use struct prestera_bridge for bridge objects, and get rid of
+> >          struct prestera_bridge_device which may confuse.
+> > 
+> >        - use refcount_t
+> > 
+> >     9) Get rid of macro usage for sending fw requests in prestera_hw.c
+> > 
+> >     10) Add base_mac setting as module parameter. base_mac is required for
+> >         generation default port's mac.
+> > 
+> > Vadym Kochan (6):
+> >   net: marvell: prestera: Add driver for Prestera family ASIC devices
+> >   net: marvell: prestera: Add PCI interface support
+> >   net: marvell: prestera: Add basic devlink support
+> >   net: marvell: prestera: Add ethtool interface support
+> >   net: marvell: prestera: Add Switchdev driver implementation
+> >   dt-bindings: marvell,prestera: Add description for device-tree
+> >     bindings
+> > 
+> >  .../bindings/net/marvell,prestera.txt         |   34 +
+> >  drivers/net/ethernet/marvell/Kconfig          |    1 +
+> >  drivers/net/ethernet/marvell/Makefile         |    1 +
+> >  drivers/net/ethernet/marvell/prestera/Kconfig |   25 +
+> >  .../net/ethernet/marvell/prestera/Makefile    |    7 +
+> >  .../net/ethernet/marvell/prestera/prestera.h  |  208 +++
+> >  .../marvell/prestera/prestera_devlink.c       |  111 ++
+> >  .../marvell/prestera/prestera_devlink.h       |   25 +
+> >  .../ethernet/marvell/prestera/prestera_dsa.c  |  134 ++
+> >  .../ethernet/marvell/prestera/prestera_dsa.h  |   37 +
+> >  .../marvell/prestera/prestera_ethtool.c       |  737 ++++++++++
+> >  .../marvell/prestera/prestera_ethtool.h       |   37 +
+> >  .../ethernet/marvell/prestera/prestera_hw.c   | 1225 ++++++++++++++++
+> >  .../ethernet/marvell/prestera/prestera_hw.h   |  180 +++
+> >  .../ethernet/marvell/prestera/prestera_main.c |  663 +++++++++
+> >  .../ethernet/marvell/prestera/prestera_pci.c  |  825 +++++++++++
+> >  .../ethernet/marvell/prestera/prestera_rxtx.c |  860 +++++++++++
+> >  .../ethernet/marvell/prestera/prestera_rxtx.h |   21 +
+> >  .../marvell/prestera/prestera_switchdev.c     | 1286 +++++++++++++++++
+> >  .../marvell/prestera/prestera_switchdev.h     |   16 +
+> >  20 files changed, 6433 insertions(+)
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/Kconfig
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/Makefile
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_main.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_pci.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
+> > 
+> > -- 
+> > 2.17.1
+> > 
