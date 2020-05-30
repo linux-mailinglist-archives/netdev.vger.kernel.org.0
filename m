@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF0D1E947A
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 01:21:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3376A1E9488
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 01:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729603AbgE3XUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 19:20:50 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:40268 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729568AbgE3XUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 19:20:36 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNIZJf035939;
-        Sat, 30 May 2020 23:19:48 GMT
+        id S1729538AbgE3Xd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 19:33:56 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:48080 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729083AbgE3Xdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 19:33:55 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNTgG4017275;
+        Sat, 30 May 2020 23:33:12 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=liZOA+vop5L29J/phx2L4dwqfJSr8s8lhrbmTKn/6zI=;
- b=Lr6kWN0FzjHh2vnwnxF+y/BTx3Hdl9Z1CPp2OYuad+vBvfziMd3hy4d87xiV9UoWcIcD
- l3o4iQKkjoDxZz44IxZ5hKwaCTBHkfbYl0H52bC2oPwVmuYWsKUkB2Vfr/njvOgqtwsN
- Vvd5tqoWrFBp699ukuYQhotwc9DLJ7dQXyYZ4gUFhzYYl2fS/UB99r9qiy/rm7tS4s/a
- d4cZZFYTk7eSM18GkhIkWtbvdNrbdeTNocAiUavihSqQOExWZRizb+JlJWVQEpTxxdLT
- CE3DS8qDu9ipz4zsisgm0EZdbT1YvF+8nbM+WnQS0uQ878U49HUMK0WDwrcjtljY28Oc VA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 31bewqj048-1
+ bh=bpnxv8YRoYnV/V0HR0U2Kr/99s99vonN/fiLRTXTQ2I=;
+ b=MWV7EaS35dIKUubQlgdn44K13sB4+JJQ6rbNEUh5Jy9ovQ3KIwFXER8tDnKH5b4AvcfU
+ oReAOc1makkqLQsL+ijNEoqyvvwPsO0Xge6Qz/a8ozkFAK634sY2l8AHbmsQ5Ms2RvVI
+ mWE3Wvr8vfNN8EE4w4smFR478Feq4zSkcU+myC6IpUwL7CwFsYfwsF14JSkFhymeqiK+
+ L+BMVkE9NRXeS3usVPv3GV89Akjm7flg0URYIewj2h9k50tSANnAjFqfABdn3tK6WJjF
+ jJ5llmed44VYBQ3sFXEkqqhZ+LmtgLyLr0PQbQmlZ8GE5Q9j5vIje2gGZNMmafxb9Dih ZQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 31bfeksxem-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 30 May 2020 23:19:48 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNDoh1171381;
-        Sat, 30 May 2020 23:17:47 GMT
+        Sat, 30 May 2020 23:33:12 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNX5Ic150405;
+        Sat, 30 May 2020 23:33:11 GMT
 Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 31bfa1hqy5-1
+        by userp3030.oracle.com with ESMTP id 31bckr95xa-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 30 May 2020 23:17:47 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UNHiJI022532;
-        Sat, 30 May 2020 23:17:44 GMT
+        Sat, 30 May 2020 23:33:11 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UNX2Sg027376;
+        Sat, 30 May 2020 23:33:03 GMT
 Received: from [10.39.241.21] (/10.39.241.21)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 30 May 2020 16:17:44 -0700
-Subject: Re: [PATCH 05/12] genirq: Shutdown irq chips in suspend/resume during
- hibernation
+        with ESMTP ; Sat, 30 May 2020 16:33:02 -0700
+Subject: Re: [PATCH 08/12] xen/time: introduce xen_{save,restore}_steal_clock
 To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
         jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
@@ -53,7 +52,7 @@ To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         dwmw@amazon.co.uk, benh@kernel.crashing.org
 References: <cover.1589926004.git.anchalag@amazon.com>
- <fce013fc1348f02b8e4ec61e7a631093c72f993c.1589926004.git.anchalag@amazon.com>
+ <ae90ece495d29f54fc9986a07f45ab6659136573.1589926004.git.anchalag@amazon.com>
 From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  xsFNBFH8CgsBEAC0KiOi9siOvlXatK2xX99e/J3OvApoYWjieVQ9232Eb7GzCWrItCzP8FUV
@@ -98,75 +97,87 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
  19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
  Jg6OxFYd01z+a+oL
-Message-ID: <0471e6e3-b6ed-d2c6-db41-1688a0af9abd@oracle.com>
-Date:   Sat, 30 May 2020 19:17:41 -0400
+Message-ID: <5e1094c5-f6c3-c83d-d86f-0bbeaa9f2086@oracle.com>
+Date:   Sat, 30 May 2020 19:32:59 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <fce013fc1348f02b8e4ec61e7a631093c72f993c.1589926004.git.anchalag@amazon.com>
+In-Reply-To: <ae90ece495d29f54fc9986a07f45ab6659136573.1589926004.git.anchalag@amazon.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
- suspectscore=0 mlxlogscore=999 phishscore=0 spamscore=0 bulkscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
+ suspectscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 phishscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005300181
+ definitions=main-2005300184
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 bulkscore=0
- phishscore=0 suspectscore=0 impostorscore=0 cotscore=-2147483648
- lowpriorityscore=0 mlxscore=0 adultscore=0 spamscore=0 mlxlogscore=999
- malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005300181
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 priorityscore=1501 bulkscore=0 phishscore=0 clxscore=1015
+ impostorscore=0 adultscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005300183
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/19/20 7:26 PM, Anchal Agarwal wrote:
-> Many legacy device drivers do not implement power management (PM)
-> functions which means that interrupts requested by these drivers stay
-> in active state when the kernel is hibernated.
+On 5/19/20 7:28 PM, Anchal Agarwal wrote:
+> From: Munehisa Kamata <kamatam@amazon.com>
 >
-> This does not matter on bare metal and on most hypervisors because the
-> interrupt is restored on resume without any noticable side effects as
-> it stays connected to the same physical or virtual interrupt line.
+> Currently, steal time accounting code in scheduler expects steal clock
+> callback to provide monotonically increasing value. If the accounting
+> code receives a smaller value than previous one, it uses a negative
+> value to calculate steal time and results in incorrectly updated idle
+> and steal time accounting. This breaks userspace tools which read
+> /proc/stat.
 >
-> The XEN interrupt mechanism is different as it maintains a mapping
-> between the Linux interrupt number and a XEN event channel. If the
-> interrupt stays active on hibernation this mapping is preserved but
-> there is unfortunately no guarantee that on resume the same event
-> channels are reassigned to these devices. This can result in event
-> channel conflicts which prevent the affected devices from being
-> restored correctly.
+> top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
+> Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
+> Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,=
+-1253874204672.0%st
 >
-> One way to solve this would be to add the necessary power management
-> functions to all affected legacy device drivers, but that's a
-> questionable effort which does not provide any benefits on non-XEN
-> environments.
+> This can actually happen when a Xen PVHVM guest gets restored from
+> hibernation, because such a restored guest is just a fresh domain from
+> Xen perspective and the time information in runstate info starts over
+> from scratch.
 >
-> The least intrusive and most efficient solution is to provide a
-> mechanism which allows the core interrupt code to tear down these
-> interrupts on hibernation and bring them back up again on resume. This
-> allows the XEN event channel mechanism to assign an arbitrary event
-> channel on resume without affecting the functionality of these
-> devices.
+> This patch introduces xen_save_steal_clock() which saves current values=
+
+> in runstate info into per-cpu variables. Its couterpart,
+> xen_restore_steal_clock(), sets offset if it found the current values i=
+n
+> runstate info are smaller than previous ones. xen_steal_clock() is also=
+
+> modified to use the offset to ensure that scheduler only sees
+> monotonically increasing number.
 >
-> Fortunately all these device interrupts are handled by a dedicated XEN
-> interrupt chip so the chip can be marked that all interrupts connected
-> to it are handled this way. This is pretty much in line with the other
-> interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
->
-> Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
-> it the core interrupt suspend/resume paths.
->
+> Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 > Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-> Signed-off--by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  drivers/xen/time.c    | 29 ++++++++++++++++++++++++++++-
+>  include/xen/xen-ops.h |  2 ++
+>  2 files changed, 30 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/xen/time.c b/drivers/xen/time.c
+> index 0968859c29d0..3560222cc0dd 100644
+> --- a/drivers/xen/time.c
+> +++ b/drivers/xen/time.c
+> @@ -23,6 +23,9 @@ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_=
+runstate);
+> =20
+>  static DEFINE_PER_CPU(u64[4], old_runstate_time);
+> =20
+> +static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
+> +static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
 
 
-Since Thomas wrote this patch I think it should also have "From: " him.
+Can you use old_runstate_time here? It is used to solve a similar
+problem for pv suspend, isn't it?
 
 
 -boris
+
+
 
 
