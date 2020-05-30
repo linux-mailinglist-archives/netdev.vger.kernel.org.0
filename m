@@ -2,100 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE291E8CDE
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 03:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1321E8CEB
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 03:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728653AbgE3Bai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 21:30:38 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2511 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727876AbgE3Bai (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 21:30:38 -0400
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id B2EB6D981CBA66B8CAD9;
-        Sat, 30 May 2020 09:30:36 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Sat, 30 May 2020 09:30:36 +0800
-Received: from [10.173.219.71] (10.173.219.71) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 30 May 2020 09:30:35 +0800
-Subject: Re: [PATCH net-next v2] hinic: add set_channels ethtool_ops support
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-References: <20200528183633.6689-1-luobin9@huawei.com>
- <20200529104424.58dd665a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <e316f3e4-fdc7-ebba-e6d8-ae74ba257b08@huawei.com>
-Date:   Sat, 30 May 2020 09:30:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <20200529104424.58dd665a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.173.219.71]
-X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+        id S1728653AbgE3Bik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 21:38:40 -0400
+Received: from foss.arm.com ([217.140.110.172]:43206 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728297AbgE3Bij (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 21:38:39 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DABC55D;
+        Fri, 29 May 2020 18:38:39 -0700 (PDT)
+Received: from localhost.localdomain (entos-thunderx2-02.shanghai.arm.com [10.169.138.74])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B55723F6C4;
+        Fri, 29 May 2020 18:38:35 -0700 (PDT)
+From:   Jia He <justin.he@arm.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kaly Xin <Kaly.Xin@arm.com>,
+        Jia He <justin.he@arm.com>, stable@vger.kernel.org
+Subject: [PATCH v3] virtio_vsock: Fix race condition in virtio_transport_recv_pkt
+Date:   Sat, 30 May 2020 09:38:28 +0800
+Message-Id: <20200530013828.59668-1-justin.he@arm.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/5/30 1:44, Jakub Kicinski wrote:
+When client on the host tries to connect(SOCK_STREAM, O_NONBLOCK) to the
+server on the guest, there will be a panic on a ThunderX2 (armv8a server):
 
-> On Thu, 28 May 2020 18:36:33 +0000 Luo bin wrote:
->> add support to change TX/RX queue number with ethtool -L
->>
->> Signed-off-by: Luo bin <luobin9@huawei.com>
-> Luo bin, your patches continue to come with Date: header being in the
-> past. Also suspiciously no time zone offset. Can you address this?
->
->> +static int hinic_set_channels(struct net_device *netdev,
->> +			      struct ethtool_channels *channels)
->> +{
->> +	struct hinic_dev *nic_dev = netdev_priv(netdev);
->> +	unsigned int count = channels->combined_count;
->> +	int err;
->> +
->> +	if (!count) {
->> +		netif_err(nic_dev, drv, netdev,
->> +			  "Unsupported combined_count: 0\n");
->> +		return -EINVAL;
->> +	}
-> This check has been added to the core since the last version of you
-> patch:
->
-> 	/* ensure there is at least one RX and one TX channel */
-> 	if (!channels.combined_count &&
-> 	    (!channels.rx_count || !channels.tx_count))
-> 		return -EINVAL;
->
->> +	netif_info(nic_dev, drv, netdev, "Set max combined queue number from %d to %d\n",
->> +		   hinic_hwdev_num_qps(nic_dev->hwdev), count);
->> +
->> +	if (netif_running(netdev)) {
->> +		netif_info(nic_dev, drv, netdev, "Restarting netdev\n");
->> +		hinic_close(netdev);
->> +
->> +		nic_dev->hwdev->nic_cap.num_qps = count;
->> +
->> +		err = hinic_open(netdev);
->> +		if (err) {
->> +			netif_err(nic_dev, drv, netdev,
->> +				  "Failed to open netdev\n");
->> +			return -EFAULT;
->> +		}
->> +	} else {
->> +		nic_dev->hwdev->nic_cap.num_qps = count;
->> +	}
->> +
->> +	return 0;
->>   }
-> Will fix. Thanks.
-> .
+[  463.718844] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+[  463.718848] Mem abort info:
+[  463.718849]   ESR = 0x96000044
+[  463.718852]   EC = 0x25: DABT (current EL), IL = 32 bits
+[  463.718853]   SET = 0, FnV = 0
+[  463.718854]   EA = 0, S1PTW = 0
+[  463.718855] Data abort info:
+[  463.718856]   ISV = 0, ISS = 0x00000044
+[  463.718857]   CM = 0, WnR = 1
+[  463.718859] user pgtable: 4k pages, 48-bit VAs, pgdp=0000008f6f6e9000
+[  463.718861] [0000000000000000] pgd=0000000000000000
+[  463.718866] Internal error: Oops: 96000044 [#1] SMP
+[...]
+[  463.718977] CPU: 213 PID: 5040 Comm: vhost-5032 Tainted: G           O      5.7.0-rc7+ #139
+[  463.718980] Hardware name: GIGABYTE R281-T91-00/MT91-FS1-00, BIOS F06 09/25/2018
+[  463.718982] pstate: 60400009 (nZCv daif +PAN -UAO)
+[  463.718995] pc : virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
+[  463.718999] lr : virtio_transport_recv_pkt+0x1fc/0xd40 [vmw_vsock_virtio_transport_common]
+[  463.719000] sp : ffff80002dbe3c40
+[...]
+[  463.719025] Call trace:
+[  463.719030]  virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
+[  463.719034]  vhost_vsock_handle_tx_kick+0x360/0x408 [vhost_vsock]
+[  463.719041]  vhost_worker+0x100/0x1a0 [vhost]
+[  463.719048]  kthread+0x128/0x130
+[  463.719052]  ret_from_fork+0x10/0x18
+
+The race condition is as follows:
+Task1                                Task2
+=====                                =====
+__sock_release                       virtio_transport_recv_pkt
+  __vsock_release                      vsock_find_bound_socket (found sk)
+    lock_sock_nested
+    vsock_remove_sock
+    sock_orphan
+      sk_set_socket(sk, NULL)
+    sk->sk_shutdown = SHUTDOWN_MASK
+    ...
+    release_sock
+                                    lock_sock
+                                       virtio_transport_recv_connecting
+                                         sk->sk_socket->state (panic!)
+
+The root cause is that vsock_find_bound_socket can't hold the lock_sock,
+so there is a small race window between vsock_find_bound_socket() and
+lock_sock(). If __vsock_release() is running in another task,
+sk->sk_socket will be set to NULL inadvertently.
+
+This fixes it by checking sk->sk_shutdown(suggested by Stefano) after
+lock_sock since sk->sk_shutdown is set to SHUTDOWN_MASK under the
+protection of lock_sock_nested.
+
+Signed-off-by: Jia He <justin.he@arm.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+v3: - describe the fix of race condition more clearly
+    - refine the commit log
+
+ net/vmw_vsock/virtio_transport_common.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 69efc891885f..0edda1edf988 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -1132,6 +1132,14 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+ 
+ 	lock_sock(sk);
+ 
++	/* Check if sk has been released before lock_sock */
++	if (sk->sk_shutdown == SHUTDOWN_MASK) {
++		(void)virtio_transport_reset_no_sock(t, pkt);
++		release_sock(sk);
++		sock_put(sk);
++		goto free_pkt;
++	}
++
+ 	/* Update CID in case it has changed after a transport reset event */
+ 	vsk->local_addr.svm_cid = dst.svm_cid;
+ 
+-- 
+2.17.1
+
