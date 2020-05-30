@@ -2,187 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 844D21E8E2A
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 08:30:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 462631E8EDC
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 09:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgE3G2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 02:28:02 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:56858 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgE3G2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 02:28:01 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 6824E5C15EB;
-        Sat, 30 May 2020 14:27:55 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     paulb@mellanox.com, saeedm@mellanox.com, ecree@solarflare.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next v2] net/mlx5e: add conntrack offload rules only in ct or ct_nat flow table
-Date:   Sat, 30 May 2020 14:27:55 +0800
-Message-Id: <1590820075-4005-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVMQkxCQkJDTkNDTk1JWVdZKFlBSU
-        I3V1ktWUFJV1kPCRoVCBIfWUFZHSI1CzgcORUxUAEJJDU9Hg5KEEs6HFZWVUJITkIoSVlXWQkOFx
-        4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pkk6Kxw6Tjg2HT8aTxU0PEpO
-        CxoaFDlVSlVKTkJLQ0lLS0xOTklPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU5JSk83Bg++
-X-HM-Tid: 0a726443f7b42087kuqy6824e5c15eb
+        id S1728783AbgE3HUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 03:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726843AbgE3HUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 03:20:02 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E01C03E969;
+        Sat, 30 May 2020 00:20:02 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id g18so3869363qtu.13;
+        Sat, 30 May 2020 00:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+GY3oCb8k4ZoxDmYR0zizW+h7H+4Er+voGLPiRHg8M8=;
+        b=hJQE1SgHlmzaVnCtS1DWmA8sQMIcVIXy2N7dht8Sjpyh/FF85sdPAtlsbgMEIkmrgt
+         rLOCw0gvdMHB1JV2ES3yOJwLBfWlPbkB7yxBL5/6EskjH0clE2Tjxlkj/RI8VJBVNfBd
+         2EY0N3nrsB7ycr//5+UkpRqQN2Z/rtzy5HnA9ILJm4/9/rvTl7/BUZqFN7eYJK8/jvCG
+         gkmPNFLJPhKZiOsTSgak2INqfWKIN/eU9Ij+xwq46NCqNfTPxH5nUTZ3e4iSG7w0WQIz
+         veS5sFCGdxWA66eo6bodZMV3XEvGhz8jD2iQia/XIRka1DZphlkYkhPfhdQ0S0OW6UNR
+         cZ1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+GY3oCb8k4ZoxDmYR0zizW+h7H+4Er+voGLPiRHg8M8=;
+        b=CpIrMURYKz7Zmeqaw3a6gjWx3iD6VMIRzc+zfh//F5QkwPeN0/W/uMZCXHSEAgX3X4
+         lldVSdeQ72/QinT+3jjOEPf0evG5WZjbAKAufysV3yWzfLal818oPw0MtB+gptlm3/Nx
+         KLH+NIHCSG/oROzmKPxLEgDWRnMQ77tjUqLvZ48iJkIo5xuu/cJFvc/AZRKnxXB5pInl
+         usMO3XUeDGiI3uwMJXF6HjX4+2xudqqTX+A5qYiMLKQ73K5uIaRmBkE8lATKPDheCRT+
+         G/JJ2mOR74FOYs+9UJjWhC3Adf/cgLrpKYDTI8/362b/8Xl2KdiXWMbXH39f0+HniI1H
+         zODg==
+X-Gm-Message-State: AOAM533EQFhPu4q7RMpihUTJ9V7kPq1x+Shwo2IpB5UN4J+XXH3uTCY5
+        DQ8FlgJ2pnseeXW1pv0mT4liRBrk4OGmGL8z8NI=
+X-Google-Smtp-Source: ABdhPJzRapl46s0lFpw2Nt19ca5Rav7hgzuMh0a2e39z81FiHo9a5+iizMErLv3laisFfPSWpXKDA+tJ+Wqdm+Ow3go=
+X-Received: by 2002:ac8:4b63:: with SMTP id g3mr4424717qts.171.1590823201227;
+ Sat, 30 May 2020 00:20:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <159076794319.1387573.8722376887638960093.stgit@firesoul> <159076798566.1387573.8417040652693679408.stgit@firesoul>
+In-Reply-To: <159076798566.1387573.8417040652693679408.stgit@firesoul>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 30 May 2020 00:19:50 -0700
+Message-ID: <CAEf4BzbL1ftGZ9x0hvFDc-PGNexTuMv67VxT=q2NF0y6im6+cg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next RFC 2/3] bpf: devmap dynamic map-value storage
+ area based on BTF
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On Fri, May 29, 2020 at 8:59 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> The devmap map-value can be read from BPF-prog side, and could be used for a
+> storage area per device. This could e.g. contain info on headers that need
 
-In the ct offload all the conntrack entry offload rules
-will be add to both ct ft and ct_nat ft twice. It is not
-make sense.
-The driver can distinguish NAT from non-NAT conntrack
-through the FLOW_ACTION_MANGLE action.
+If BPF program needs a storage area per device, why can't it just use
+a separate map or just plain array (both keyed by ifindex) to store
+whatever it needs per-device? It's not clear why this flexibility and
+complexity is needed from the description above.
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 52 ++++++++++++----------
- 1 file changed, 28 insertions(+), 24 deletions(-)
+> to be added when packet egress this device.
+>
+> This patchset adds a dynamic storage member to struct bpf_devmap_val. More
+> importantly the struct bpf_devmap_val is made dynamic via leveraging and
+> requiring BTF for struct sizes above 4. The only mandatory struct member is
+> 'ifindex' with a fixed offset of zero.
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  kernel/bpf/devmap.c |  216 ++++++++++++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 185 insertions(+), 31 deletions(-)
+>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 995b2ef..2281549 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -59,7 +59,6 @@ struct mlx5_ct_zone_rule {
- 	struct mlx5_flow_handle *rule;
- 	struct mlx5_esw_flow_attr attr;
- 	int tupleid;
--	bool nat;
- };
- 
- struct mlx5_tc_ct_pre {
-@@ -88,7 +87,7 @@ struct mlx5_ct_entry {
- 	struct mlx5_fc *counter;
- 	unsigned long cookie;
- 	unsigned long restore_cookie;
--	struct mlx5_ct_zone_rule zone_rules[2];
-+	struct mlx5_ct_zone_rule zone_rule;
- };
- 
- static const struct rhashtable_params cts_ht_params = {
-@@ -238,10 +237,9 @@ struct mlx5_ct_entry {
- 
- static void
- mlx5_tc_ct_entry_del_rule(struct mlx5_tc_ct_priv *ct_priv,
--			  struct mlx5_ct_entry *entry,
--			  bool nat)
-+			  struct mlx5_ct_entry *entry)
- {
--	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
-+	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rule;
- 	struct mlx5_esw_flow_attr *attr = &zone_rule->attr;
- 	struct mlx5_eswitch *esw = ct_priv->esw;
- 
-@@ -256,8 +254,7 @@ struct mlx5_ct_entry {
- mlx5_tc_ct_entry_del_rules(struct mlx5_tc_ct_priv *ct_priv,
- 			   struct mlx5_ct_entry *entry)
- {
--	mlx5_tc_ct_entry_del_rule(ct_priv, entry, true);
--	mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
-+	mlx5_tc_ct_entry_del_rule(ct_priv, entry);
- 
- 	mlx5_fc_destroy(ct_priv->esw->dev, entry->counter);
- }
-@@ -493,15 +490,13 @@ struct mlx5_ct_entry {
- 			  struct mlx5_ct_entry *entry,
- 			  bool nat)
- {
--	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
-+	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rule;
- 	struct mlx5_esw_flow_attr *attr = &zone_rule->attr;
- 	struct mlx5_eswitch *esw = ct_priv->esw;
- 	struct mlx5_flow_spec *spec = NULL;
- 	u32 tupleid;
- 	int err;
- 
--	zone_rule->nat = nat;
--
- 	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
- 	if (!spec)
- 		return -ENOMEM;
-@@ -562,7 +557,8 @@ struct mlx5_ct_entry {
- static int
- mlx5_tc_ct_entry_add_rules(struct mlx5_tc_ct_priv *ct_priv,
- 			   struct flow_rule *flow_rule,
--			   struct mlx5_ct_entry *entry)
-+			   struct mlx5_ct_entry *entry,
-+			   bool nat)
- {
- 	struct mlx5_eswitch *esw = ct_priv->esw;
- 	int err;
-@@ -574,21 +570,26 @@ struct mlx5_ct_entry {
- 		return err;
- 	}
- 
--	err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, false);
-+	err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, nat);
- 	if (err)
--		goto err_orig;
-+		mlx5_fc_destroy(esw->dev, entry->counter);
- 
--	err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, true);
--	if (err)
--		goto err_nat;
-+	return err;
-+}
- 
--	return 0;
-+static bool
-+mlx5_tc_ct_has_mangle_action(struct flow_rule *flow_rule)
-+{
-+	struct flow_action *flow_action = &flow_rule->action;
-+	struct flow_action_entry *act;
-+	int i;
- 
--err_nat:
--	mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
--err_orig:
--	mlx5_fc_destroy(esw->dev, entry->counter);
--	return err;
-+	flow_action_for_each(i, act, flow_action) {
-+		if (act->id == FLOW_ACTION_MANGLE)
-+			return true;
-+	}
-+
-+	return false;
- }
- 
- static int
-@@ -600,6 +601,7 @@ struct mlx5_ct_entry {
- 	struct flow_action_entry *meta_action;
- 	unsigned long cookie = flow->cookie;
- 	struct mlx5_ct_entry *entry;
-+	bool nat;
- 	int err;
- 
- 	meta_action = mlx5_tc_ct_get_ct_metadata_action(flow_rule);
-@@ -619,7 +621,9 @@ struct mlx5_ct_entry {
- 	entry->cookie = flow->cookie;
- 	entry->restore_cookie = meta_action->ct_metadata.cookie;
- 
--	err = mlx5_tc_ct_entry_add_rules(ct_priv, flow_rule, entry);
-+	nat = mlx5_tc_ct_has_mangle_action(flow_rule);
-+
-+	err = mlx5_tc_ct_entry_add_rules(ct_priv, flow_rule, entry, nat);
- 	if (err)
- 		goto err_rules;
- 
-@@ -1620,7 +1624,7 @@ struct mlx5_flow_handle *
- 		return false;
- 
- 	entry = container_of(zone_rule, struct mlx5_ct_entry,
--			     zone_rules[zone_rule->nat]);
-+			     zone_rule);
- 	tcf_ct_flow_table_restore_skb(skb, entry->restore_cookie);
- 
- 	return true;
--- 
-1.8.3.1
-
+[...]
