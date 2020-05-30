@@ -2,70 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F2691E8C87
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 02:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79901E8C8E
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 02:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728449AbgE3A1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 20:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        id S1728551AbgE3Aar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 20:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgE3A1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 20:27:22 -0400
+        with ESMTP id S1728142AbgE3Aar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 20:30:47 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D65C03E969
-        for <netdev@vger.kernel.org>; Fri, 29 May 2020 17:27:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3B1C03E969
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 17:30:47 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 91FF81287B396;
-        Fri, 29 May 2020 17:27:20 -0700 (PDT)
-Date:   Fri, 29 May 2020 17:27:19 -0700 (PDT)
-Message-Id: <20200529.172719.1001521060083156258.davem@davemloft.net>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     netdev@vger.kernel.org, willemb@google.com
-Subject: Re: [PATCH net] tun: correct header offsets in napi frags mode
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9A88B1287B52E;
+        Fri, 29 May 2020 17:30:46 -0700 (PDT)
+Date:   Fri, 29 May 2020 17:30:45 -0700 (PDT)
+Message-Id: <20200529.173045.1832051198504656316.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, lkp@intel.com
+Subject: Re: [PATCH] net: ethtool: cabletest: Make
+ ethnl_act_cable_test_tdr_cfg static
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
-References: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200528214324.853699-1-andrew@lunn.ch>
+References: <20200528214324.853699-1-andrew@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 29 May 2020 17:27:20 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 29 May 2020 17:30:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Thu, 28 May 2020 13:05:32 -0400
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Thu, 28 May 2020 23:43:24 +0200
 
-> Temporarily pull ETH_HLEN to make control flow the same for frags and
-> not frags. Then push the header just before calling napi_gro_frags.
- ...
->  	case IFF_TAP:
-> -		if (!frags)
-> -			skb->protocol = eth_type_trans(skb, tun->dev);
-> +		if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
-> +			err = -ENOMEM;
-> +			goto drop;
-> +		}
-> +		skb->protocol = eth_type_trans(skb, tun->dev);
- ...
->  		/* Exercise flow dissector code path. */
-> -		u32 headlen = eth_get_headlen(tun->dev, skb->data,
-> -					      skb_headlen(skb));
-> +		skb_push(skb, ETH_HLEN);
-> +		headlen = eth_get_headlen(tun->dev, skb->data,
-> +					  skb_headlen(skb));
+> kbuild test robot is reporting:
+> net/ethtool/cabletest.c:230:5: warning: no previous prototype for
+> 
+> Mark the function as static.
+> 
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-I hate to be a stickler on wording in the commit message, but the
-change is not really "pulling" the ethernet header from the SKB.
+Applied, thanks Andrew.  Please put "net-next" or similar next time.
 
-Instead it is invoking pskb_may_pull() which just makes sure the
-header is there in the linear SKB data area.
+Also, a Fixes: tag would have been nice but I won't require it for
+something like this.
 
-Can you please refine this description and resubmit?
-
-Thank you.
+Hmmm, I also just noticed how onerous that PHYLINK=y/n requirement
+is for the ethtool netlink stuff :-/
