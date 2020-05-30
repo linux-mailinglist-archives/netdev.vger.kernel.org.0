@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45EE21E9465
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 01:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF0D1E947A
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 01:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729530AbgE3XMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 19:12:47 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:36968 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729361AbgE3XMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 19:12:47 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UN8oUM185958;
-        Sat, 30 May 2020 23:12:13 GMT
+        id S1729603AbgE3XUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 19:20:50 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:40268 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729568AbgE3XUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 19:20:36 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNIZJf035939;
+        Sat, 30 May 2020 23:19:48 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=EpkuvONv+FBwjQWXgmZJk+12q7HwpXh2vQ1RirksenM=;
- b=NfizBJMdiSk3R34bt2ybXF87ImDOmHRAgiaEh9FL4ikBrs81MAO+bua7IPPlUVMPCZlu
- jheJT5kHc0+9vsG3W1pRaEgp4n0juvT1/OGZm2OG0rBHdz+FgGhjtSctD0TzMF9A8kEb
- krcmaJcok72Q77EzcEnZGiReNWRuavr0hmxsum0SLdtQgHUzeW/1ImIQrglnBqK8VQVL
- QeOro44u9DetD4rrYqjSqE6tnBZKFlq4ibsBniWCI7FzqSgrAnYLMOFse3zJDfOdD58g
- v59S1YAbKsMsh6kupKHD7L7+bQKkP+3EvxhqxRaRJhmfE4OpyFAw0opFcctVjRtfhy3z cQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 31bfekswr1-1
+ bh=liZOA+vop5L29J/phx2L4dwqfJSr8s8lhrbmTKn/6zI=;
+ b=Lr6kWN0FzjHh2vnwnxF+y/BTx3Hdl9Z1CPp2OYuad+vBvfziMd3hy4d87xiV9UoWcIcD
+ l3o4iQKkjoDxZz44IxZ5hKwaCTBHkfbYl0H52bC2oPwVmuYWsKUkB2Vfr/njvOgqtwsN
+ Vvd5tqoWrFBp699ukuYQhotwc9DLJ7dQXyYZ4gUFhzYYl2fS/UB99r9qiy/rm7tS4s/a
+ d4cZZFYTk7eSM18GkhIkWtbvdNrbdeTNocAiUavihSqQOExWZRizb+JlJWVQEpTxxdLT
+ CE3DS8qDu9ipz4zsisgm0EZdbT1YvF+8nbM+WnQS0uQ878U49HUMK0WDwrcjtljY28Oc VA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 31bewqj048-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 30 May 2020 23:12:13 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UN9DOq139971;
-        Sat, 30 May 2020 23:10:12 GMT
+        Sat, 30 May 2020 23:19:48 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UNDoh1171381;
+        Sat, 30 May 2020 23:17:47 GMT
 Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 31bdh9y86e-1
+        by aserp3020.oracle.com with ESMTP id 31bfa1hqy5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 30 May 2020 23:10:12 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UNA9rb020405;
-        Sat, 30 May 2020 23:10:09 GMT
+        Sat, 30 May 2020 23:17:47 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UNHiJI022532;
+        Sat, 30 May 2020 23:17:44 GMT
 Received: from [10.39.241.21] (/10.39.241.21)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 30 May 2020 16:10:08 -0700
-Subject: Re: [PATCH 04/12] x86/xen: add system core suspend and resume
- callbacks
+        with ESMTP ; Sat, 30 May 2020 16:17:44 -0700
+Subject: Re: [PATCH 05/12] genirq: Shutdown irq chips in suspend/resume during
+ hibernation
 To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
         jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
@@ -53,7 +53,7 @@ To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         dwmw@amazon.co.uk, benh@kernel.crashing.org
 References: <cover.1589926004.git.anchalag@amazon.com>
- <79cf02631dc00e62ebf90410bfbbdb52fe7024cb.1589926004.git.anchalag@amazon.com>
+ <fce013fc1348f02b8e4ec61e7a631093c72f993c.1589926004.git.anchalag@amazon.com>
 From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  xsFNBFH8CgsBEAC0KiOi9siOvlXatK2xX99e/J3OvApoYWjieVQ9232Eb7GzCWrItCzP8FUV
@@ -98,112 +98,75 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
  Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
  19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
  Jg6OxFYd01z+a+oL
-Message-ID: <4b577564-e4c3-0182-2b9e-5f79004f32a1@oracle.com>
-Date:   Sat, 30 May 2020 19:10:04 -0400
+Message-ID: <0471e6e3-b6ed-d2c6-db41-1688a0af9abd@oracle.com>
+Date:   Sat, 30 May 2020 19:17:41 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <79cf02631dc00e62ebf90410bfbbdb52fe7024cb.1589926004.git.anchalag@amazon.com>
+In-Reply-To: <fce013fc1348f02b8e4ec61e7a631093c72f993c.1589926004.git.anchalag@amazon.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 phishscore=0 malwarescore=0 bulkscore=0 spamscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 phishscore=0 spamscore=0 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005300180
+ definitions=main-2005300181
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
- mlxlogscore=999 priorityscore=1501 bulkscore=0 phishscore=0 clxscore=1015
- impostorscore=0 adultscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
- cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2005300180
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 bulkscore=0
+ phishscore=0 suspectscore=0 impostorscore=0 cotscore=-2147483648
+ lowpriorityscore=0 mlxscore=0 adultscore=0 spamscore=0 mlxlogscore=999
+ malwarescore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005300181
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 5/19/20 7:26 PM, Anchal Agarwal wrote:
-> From: Munehisa Kamata <kamatam@amazon.com>
+> Many legacy device drivers do not implement power management (PM)
+> functions which means that interrupts requested by these drivers stay
+> in active state when the kernel is hibernated.
 >
-> Add Xen PVHVM specific system core callbacks for PM suspend and
-> hibernation support. The callbacks suspend and resume Xen
-> primitives,like shared_info, pvclock and grant table. Note that
-> Xen suspend can handle them in a different manner, but system
-> core callbacks are called from the context.
-
-
-I don't think I understand that last sentence.
-
-
->  So if the callbacks
-> are called from Xen suspend context, return immediately.
+> This does not matter on bare metal and on most hypervisors because the
+> interrupt is restored on resume without any noticable side effects as
+> it stays connected to the same physical or virtual interrupt line.
 >
+> The XEN interrupt mechanism is different as it maintains a mapping
+> between the Linux interrupt number and a XEN event channel. If the
+> interrupt stays active on hibernation this mapping is preserved but
+> there is unfortunately no guarantee that on resume the same event
+> channels are reassigned to these devices. This can result in event
+> channel conflicts which prevent the affected devices from being
+> restored correctly.
+>
+> One way to solve this would be to add the necessary power management
+> functions to all affected legacy device drivers, but that's a
+> questionable effort which does not provide any benefits on non-XEN
+> environments.
+>
+> The least intrusive and most efficient solution is to provide a
+> mechanism which allows the core interrupt code to tear down these
+> interrupts on hibernation and bring them back up again on resume. This
+> allows the XEN event channel mechanism to assign an arbitrary event
+> channel on resume without affecting the functionality of these
+> devices.
+>
+> Fortunately all these device interrupts are handled by a dedicated XEN
+> interrupt chip so the chip can be marked that all interrupts connected
+> to it are handled this way. This is pretty much in line with the other
+> interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
+>
+> Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
+> it the core interrupt suspend/resume paths.
+>
+> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> Signed-off--by: Thomas Gleixner <tglx@linutronix.de>
 
 
-> +
-> +static int xen_syscore_suspend(void)
-> +{
-> +	struct xen_remove_from_physmap xrfp;
-> +	int ret;
-> +
-> +	/* Xen suspend does similar stuffs in its own logic */
-> +	if (xen_suspend_mode_is_xen_suspend())
-> +		return 0;
-> +
-> +	xrfp.domid =3D DOMID_SELF;
-> +	xrfp.gpfn =3D __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
-> +
-> +	ret =3D HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
-> +	if (!ret)
-> +		HYPERVISOR_shared_info =3D &xen_dummy_shared_info;
-> +
-> +	return ret;
-> +}
-> +
-> +static void xen_syscore_resume(void)
-> +{
-> +	/* Xen suspend does similar stuffs in its own logic */
-> +	if (xen_suspend_mode_is_xen_suspend())
-> +		return;
-> +
-> +	/* No need to setup vcpu_info as it's already moved off */
-> +	xen_hvm_map_shared_info();
-> +
-> +	pvclock_resume();
-> +
-> +	gnttab_resume();
-
-
-Do you call gnttab_suspend() in pm suspend path?
-
-
-> +}
-> +
-> +/*
-> + * These callbacks will be called with interrupts disabled and when ha=
-ving only
-> + * one CPU online.
-> + */
-> +static struct syscore_ops xen_hvm_syscore_ops =3D {
-> +	.suspend =3D xen_syscore_suspend,
-> +	.resume =3D xen_syscore_resume
-> +};
-> +
-> +void __init xen_setup_syscore_ops(void)
-> +{
-> +	if (xen_hvm_domain())
-
-
-Have you tested this (the whole feature, not just this patch) with PVH
-guest BTW? And PVH dom0 for that matter?
+Since Thomas wrote this patch I think it should also have "From: " him.
 
 
 -boris
-
-
-> +		register_syscore_ops(&xen_hvm_syscore_ops);
-> +}
-
 
 
