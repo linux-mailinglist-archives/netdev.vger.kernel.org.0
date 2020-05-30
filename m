@@ -2,89 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 059421E8D37
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 04:42:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C8C1E8D79
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 05:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728723AbgE3CmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 22:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+        id S1728642AbgE3DPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 23:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728349AbgE3CmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 22:42:02 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F6FC03E969;
-        Fri, 29 May 2020 19:42:01 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id n15so721836pfd.0;
-        Fri, 29 May 2020 19:42:01 -0700 (PDT)
+        with ESMTP id S1728297AbgE3DPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 23:15:40 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4CEC03E969
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 20:15:40 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id c14so3151787qka.11
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 20:15:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=fGrrWjcEntb5vKbrRUSp/FxAelb8+WaMzkd+FIBilnQ=;
-        b=RuqGs6ZvSIz8rrZMxPc5kzHpPZgS1zAwqs5crioiQHe7rJvPcO5cFH2kWptgmbAvTX
-         hbwK+8SaxhuIDWYnyAikNW8lPWxDo6e1NKaikOuO83JZtrz1amL4xLgG+BxcOb6PbtyA
-         hMEMuP1Z1QYoWycNZiUwSUvwC7jrae0asf4y+ed+VlD9JxnK1lp3xGImo0kHk/pL6Fgv
-         fHczYpEt7foV/KvG62jjmtx4MX8dddUW5IRciqfbTxWJUzVcxJoqw+AkYypaQ0Is3Jbr
-         +s2oxqzlsjvQMVCPZuCwqmK/00kdV53X9Z9V0J+vPCpS06nEEnYz0kEUCKmY3PkhVQ0l
-         Fcug==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TDeQuUgZpcwemOSefbr/9OponauChrQDmM372H20z9k=;
+        b=u4+rPgIruKX+OIm9gdxKY/yhla5AuxE+DN/NqeRdsOHxIDR2/2HF4Z9vbU5X9KGv2e
+         ZeTozkJ5iA56WgtbBOCDKGXL2iDa+nnGDS1rNcOB02xnLbgUV+WIo57s748EqlkRqJfP
+         Z2szSX3MYj9q/301jjK9toEZbNj9Vjg07VHZ+AY7loRgd9FPNfD6wXWnQJV7Zvq3/peT
+         jRYUkUD75V2s2TJl/EtswkYsY2qbrCGCMbhPeZ/54HRXYxpXbWf5+CLFpVoOo+mess8F
+         aXHQ7e3zgmHbKxD0BTEHI1nkKKD/7ue5S1aXPuNo2parJ3nc8GRm9mJtebdprEsEDZg7
+         HRQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=fGrrWjcEntb5vKbrRUSp/FxAelb8+WaMzkd+FIBilnQ=;
-        b=hru6+uEJHpCB/s6Cob5nl511IaCifpl535d4yzGPCKIn+EglGMTgLgdlNe5Rl/fRLZ
-         Wts/fawHTyQC+3ianYGxFujp8T/fkagk04YZdqEiStfdC6AnjwlsdkSXlCXnjXmRrV8N
-         89ocusFZZAmLMKF/eikkxN00oCdcJxy0y46/GVv1xt/SsYOoBEsUEie/+xa5tPdkK/Di
-         nTQAYYl8yG7WVg4CZ/mZ0EyoK20qThb9vPc8zVEn0ZAlBzPvmaP2D5Dmun0oarXHCvJj
-         hnmdCJ1F+6tNboaJL6ymYoG4WKA5vmTUKGBrTOh5icRxvWD9iypZyveVa8U6G/CaofUD
-         t5Vw==
-X-Gm-Message-State: AOAM531cdDTRvX9zkDXxhqh4QeGQsL8wX87TMTR23tb/3R1uGTMGpWCd
-        v454ATVwIh1oho6T+J5rd8g=
-X-Google-Smtp-Source: ABdhPJyXCP9+QXCV55ssSejQI/Q2GACI+ixL7ro7XhDFEHCmln2tW1VOO7gqpD/yHTYot8n6o4aDdA==
-X-Received: by 2002:a63:5d62:: with SMTP id o34mr10724012pgm.420.1590806521211;
-        Fri, 29 May 2020 19:42:01 -0700 (PDT)
-Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
-        by smtp.gmail.com with ESMTPSA id e19sm8316474pfn.17.2020.05.29.19.41.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2020 19:42:00 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: vmxnet3: fix possible buffer overflow caused by bad DMA value in vmxnet3_get_rss()
-Date:   Sat, 30 May 2020 10:41:50 +0800
-Message-Id: <20200530024150.27308-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TDeQuUgZpcwemOSefbr/9OponauChrQDmM372H20z9k=;
+        b=pSp1CIq1wRflO1pqKFN5qm/Yx4+G7pxYZWeMsilJHx7ThCv84MTYDBisYAgRpElzkd
+         dUOByn3SpndKyBjr7QaSFLu8DOI6e2v7iZFQcsYMrDMKmHuBsZDlAbIGFt8m4dQqOX2L
+         UofkYa4KfSrSzOJ2pW6jtZ9Fjp9Cn69HUEv6SQr7AFcA4ov9tN9fscaS/OUuuVDC0fiC
+         D0/iQoi+aNdnJNJ1jnj0msAVeT6jT1hU3cNIT2yt71dJ9m0tKbOHD+EPLvFrVMXJqkfe
+         F4k0Jq2UE3HVRXBnCX3qiJ4yUU2w+pZLX0PlJLPsymdwkVrz6SgukkrK6Tu9rmYg3kNR
+         0XdA==
+X-Gm-Message-State: AOAM532s0QCXjN0hrFA9XtdUBJKVcrJfcXzjC2wQ0fPxqW4L8YFIJsvg
+        DzRqpB2AU0Ya+lPx1s5F33wfwXfs
+X-Google-Smtp-Source: ABdhPJwxUMaY2ndhFXI9ohYTIbI1YKWAQvAkp9EKrToMWil2+aNGNBQuFkVufTA+xg18a01LfAC8kw==
+X-Received: by 2002:a05:620a:1029:: with SMTP id a9mr11316865qkk.65.1590808537999;
+        Fri, 29 May 2020 20:15:37 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id h50sm6136636qte.25.2020.05.29.20.15.36
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 May 2020 20:15:37 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id m16so1829751ybf.4
+        for <netdev@vger.kernel.org>; Fri, 29 May 2020 20:15:36 -0700 (PDT)
+X-Received: by 2002:a25:3187:: with SMTP id x129mr19017820ybx.428.1590808536380;
+ Fri, 29 May 2020 20:15:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200528170532.215352-1-willemdebruijn.kernel@gmail.com> <20200529.172719.1001521060083156258.davem@davemloft.net>
+In-Reply-To: <20200529.172719.1001521060083156258.davem@davemloft.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 29 May 2020 23:14:56 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdmRQem9d8amUdYg=pdZCDHiMVHjCCmKh-3dxoKk3th9g@mail.gmail.com>
+Message-ID: <CA+FuTSdmRQem9d8amUdYg=pdZCDHiMVHjCCmKh-3dxoKk3th9g@mail.gmail.com>
+Subject: Re: [PATCH net] tun: correct header offsets in napi frags mode
+To:     David Miller <davem@davemloft.net>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value adapter->rss_conf is stored in DMA memory, and it is assigned
-to rssConf, so rssConf->indTableSize can be modified at anytime by
-malicious hardware. Because rssConf->indTableSize is assigned to n,
-buffer overflow may occur when the code "rssConf->indTable[n]" is
-executed.
+On Fri, May 29, 2020 at 8:27 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Date: Thu, 28 May 2020 13:05:32 -0400
+>
+> > Temporarily pull ETH_HLEN to make control flow the same for frags and
+> > not frags. Then push the header just before calling napi_gro_frags.
+>  ...
+> >       case IFF_TAP:
+> > -             if (!frags)
+> > -                     skb->protocol = eth_type_trans(skb, tun->dev);
+> > +             if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
+> > +                     err = -ENOMEM;
+> > +                     goto drop;
+> > +             }
+> > +             skb->protocol = eth_type_trans(skb, tun->dev);
+>  ...
+> >               /* Exercise flow dissector code path. */
+> > -             u32 headlen = eth_get_headlen(tun->dev, skb->data,
+> > -                                           skb_headlen(skb));
+> > +             skb_push(skb, ETH_HLEN);
+> > +             headlen = eth_get_headlen(tun->dev, skb->data,
+> > +                                       skb_headlen(skb));
+>
+> I hate to be a stickler on wording in the commit message, but the
+> change is not really "pulling" the ethernet header from the SKB.
+>
+> Instead it is invoking pskb_may_pull() which just makes sure the
+> header is there in the linear SKB data area.
+>
+> Can you please refine this description and resubmit?
 
-To fix this possible bug, n is checked after being used.
+Of course. How is this
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 2 ++
- 1 file changed, 2 insertions(+)
+"
+    Ensure the link layer header lies in linear as eth_type_trans pulls
+    ETH_HLEN. Then take the same code paths for frags as for not frags.
+    Push the link layer header back just before calling napi_gro_frags.
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 6528940ce5f3..b53bb8bcd47f 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -700,6 +700,8 @@ vmxnet3_get_rss(struct net_device *netdev, u32 *p, u8 *key, u8 *hfunc)
- 		*hfunc = ETH_RSS_HASH_TOP;
- 	if (!p)
- 		return 0;
-+	if (n > UPT1_RSS_MAX_IND_TABLE_SIZE)
-+		return 0;
- 	while (n--)
- 		p[n] = rssConf->indTable[n];
- 	return 0;
--- 
-2.17.1
+    By pulling up to ETH_HLEN from frag0 into linear, this disables the
+    frag0 optimization in the special case when IFF_NAPI_FRAGS is
+    called with zero length iov[0] (and thus empty skb->linear).
+"
 
+Seemed good to add the extra clarification. I don't see a reasonable way
+to avoid that consequence, especially as I cannot restore the first skb frag
+(iov[1]) if it was exactly ETH_HLEN bytes and thus freed by __skb_pull_tail.
