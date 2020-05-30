@@ -2,102 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 722561E92AC
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 18:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B02581E9323
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 20:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729151AbgE3QnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 12:43:23 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:20385 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728927AbgE3QnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 12:43:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590857001;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wZf4AcQfH0ropKMoOlCZU3Elgy9S461kQFfCXa24wvE=;
-        b=R6WvX68fKvWgFpRT5FVJ3cOMc8Us+Nc82oRqKQazFfwWE0w8thhURgDLHu2GlWMn2sEcLQ
-        AZfWLQPe5NBpvEURdjkeQiB6yNURhdJdAFp1OAvDGl4wZJs/WLUBlwygR1N/JPvbCllAr/
-        xgAsXw1ueSd4whFdxSC5Bw3xCuTnUbY=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-222-vyCZ4tD6O6iQy_8gxhfciQ-1; Sat, 30 May 2020 12:43:18 -0400
-X-MC-Unique: vyCZ4tD6O6iQy_8gxhfciQ-1
-Received: by mail-wr1-f71.google.com with SMTP id h6so2414895wrx.4
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 09:43:18 -0700 (PDT)
+        id S1729231AbgE3SkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 14:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729044AbgE3SkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 14:40:07 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CF1C03E969
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 11:40:06 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id x14so7475718wrp.2
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 11:40:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tVbK1Yv/7xTlpE0Uy8ooAV+vrAX7MZIQ0KAnxm2fVpI=;
+        b=rA140PRRUooqUQrBNLP+p8JEKHfOWeP+3XTuupR4kJ/e6yv/Mx3eHEEgt8XTncNaW1
+         b/OnUjlGSN7OaGwLMMHTeQpMxJuunoapeEkIXtvbSA6BJFFqe5tT3i4v4a6TM6q0pOHW
+         FrGuSdxi2jMDxs+Y7UQ3jMhKal2k72Q6v6x7FaNJWhIoL1ypfls6yuFrtkWokYqya9yx
+         QEMe6lRvzipoSYY1Q5DV+FKUwPieaSI4oFUYFaaZICqLFaSY+3hAOgUnrHfdq2n4w5RA
+         Mv0Hw3JgFm2UYj3vCwBcnl4mH3QijkTBfL2kRW44d2nSsYbBOkFVVUXr83Eb8uevKj9h
+         yCJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wZf4AcQfH0ropKMoOlCZU3Elgy9S461kQFfCXa24wvE=;
-        b=H6rs2njlarnSgtWyq9Flkoa6SirfGUwQ1z5V8zX8z+z97rBusul51xZrbWftGKqlnN
-         oWUS+v7WM/gyIWXsibkAnCxqHM6BrDBCqhT59lFlnI7izsjvALC3M+sv2s8NSnAMtIFc
-         khpU45I+Y0cFiXD0jRLWGp3lpKe5YrLCp8y/MRBR+KrF66T/DOmW+PkoqzqFyw4OypJW
-         CNeVv7VwlvpsHe1sV/Gr0L30JTm0CQcL7KD9urwk9tBnD/quf+p2Y3Q6AxIIE3alAn8i
-         UnqHqVdmuJSR+kQOJ8K9U2iteNBxghtbrjOrzlwxDOtxdDhPw95+1o3Ae70JaqHn+yDx
-         bNhQ==
-X-Gm-Message-State: AOAM533i1+zRNkoV6Ywihvb+RryOxEQ89HRSiq/aJ2gD3T1GYqdYQBsQ
-        nkFDf8H6SlLaeXOl/IqbE8TmB4GRokJgFDlOfAw4JKUWk0g0RixplJ2xGduAEl+hsXoDr52w+sr
-        Dt4+BpfaeLv8oBnww
-X-Received: by 2002:a1c:7903:: with SMTP id l3mr6749829wme.50.1590856997712;
-        Sat, 30 May 2020 09:43:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8w3ZNctiQFmF5ZSRztquGP+y9cNvFSewUVTCPhNv0kpqsXEoYgjFdjybNCjr1Odx9xbgdjA==
-X-Received: by 2002:a1c:7903:: with SMTP id l3mr6749808wme.50.1590856997496;
-        Sat, 30 May 2020 09:43:17 -0700 (PDT)
-Received: from pc-3.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id s8sm11446368wrm.96.2020.05.30.09.43.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2020 09:43:16 -0700 (PDT)
-Date:   Sat, 30 May 2020 18:43:14 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] flow_dissector: work around stack frame size warning
-Message-ID: <20200530164314.GA31920@pc-3.home>
-References: <20200529201413.397679-1-arnd@arndb.de>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tVbK1Yv/7xTlpE0Uy8ooAV+vrAX7MZIQ0KAnxm2fVpI=;
+        b=Z0uyGl3QVkfBmbb/dW54KZ74bR1R5FU3TRAjoo6FLdIZAxak5ivazuAEdNhDOZ/a33
+         OXseZPdKPN1YBy84BDO8iFtKrA8H9cFIrS4ee3Jq7Baj3F7fnRham0KAK7opPI4QrKHc
+         bA7FmEZeiIayudfTFkUkQw/G85TJnSDzQ6FDRNkiNyhtfugT8HdFR38Pb1JPKelQbA8w
+         1SQeI5wdLMYwtt9YdTBP0Mo7j086E01Jy8sEXHUznGhg7d1VD5oyDjla1WOP5Sji4Wwp
+         g2XTI2MsABRsvUOeenbv1LAD2ow2QtE8XOpAC5UmR+2EG4Ct6oM6Kw+B7Kcm6zYk9VH3
+         bY6A==
+X-Gm-Message-State: AOAM5325Wy/dcSFZu08hovudeh76PBxJdXvZDViezpTQ/QTBzDEOx38Y
+        ylZ981/HzUJzSzgBUd2Nm2k2GR2b
+X-Google-Smtp-Source: ABdhPJwCsE0maTCY6HO8CytjqhdhZP2wTq8Qr9kbWlOiajp4SwCGkVnHJX9JAs8dfL9vFYuUT+l7WQ==
+X-Received: by 2002:adf:df03:: with SMTP id y3mr13697074wrl.376.1590864004871;
+        Sat, 30 May 2020 11:40:04 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id h1sm5291134wme.42.2020.05.30.11.40.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 May 2020 11:40:04 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: sja1105: suppress -Wmissing-prototypes
+ in sja1105_vl.c
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20200530140322.803136-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <0d961904-601a-dd4f-1cf3-088349a6e999@gmail.com>
+Date:   Sat, 30 May 2020 11:40:02 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200529201413.397679-1-arnd@arndb.de>
+In-Reply-To: <20200530140322.803136-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 10:13:58PM +0200, Arnd Bergmann wrote:
-> The fl_flow_key structure is around 500 bytes, so having two of them
-> on the stack in one function now exceeds the warning limit after an
-> otherwise correct change:
-> 
-> net/sched/cls_flower.c:298:12: error: stack frame size of 1056 bytes in function 'fl_classify' [-Werror,-Wframe-larger-than=]
-> 
-> I suspect the fl_classify function could be reworked to only have one
-> of them on the stack and modify it in place, but I could not work out
-> how to do that.
-> 
-> As a somewhat hacky workaround, move one of them into an out-of-line
-> function to reduce its scope. This does not necessarily reduce the stack
-> usage of the outer function, but at least the second copy is removed
-> from the stack during most of it and does not add up to whatever is
-> called from there.
-> 
-> I now see 552 bytes of stack usage for fl_classify(), plus 528 bytes
-> for fl_mask_lookup().
-> 
-> Fixes: 58cff782cc55 ("flow_dissector: Parse multiple MPLS Label Stack Entries")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-Sorry, I didn't see that, as my .config has CONFIG_FRAME_WARN=2048,
-which seems to be the default for x86_64.
 
-Acked-by: Guillaume Nault <gnault@redhat.com>
 
+On 5/30/2020 7:03 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Newer C compilers are complaining about the fact that there are no
+> function prototypes in sja1105_vl.c for the non-static functions.
+> Give them what they want.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
