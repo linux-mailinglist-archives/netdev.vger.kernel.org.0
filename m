@@ -2,122 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1321E8CEB
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 03:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 043C31E8D2C
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 04:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728653AbgE3Bik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 21:38:40 -0400
-Received: from foss.arm.com ([217.140.110.172]:43206 "EHLO foss.arm.com"
+        id S1728638AbgE3CUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 22:20:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57978 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728297AbgE3Bij (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 May 2020 21:38:39 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1DABC55D;
-        Fri, 29 May 2020 18:38:39 -0700 (PDT)
-Received: from localhost.localdomain (entos-thunderx2-02.shanghai.arm.com [10.169.138.74])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B55723F6C4;
-        Fri, 29 May 2020 18:38:35 -0700 (PDT)
-From:   Jia He <justin.he@arm.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kaly Xin <Kaly.Xin@arm.com>,
-        Jia He <justin.he@arm.com>, stable@vger.kernel.org
-Subject: [PATCH v3] virtio_vsock: Fix race condition in virtio_transport_recv_pkt
-Date:   Sat, 30 May 2020 09:38:28 +0800
-Message-Id: <20200530013828.59668-1-justin.he@arm.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727876AbgE3CUa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 May 2020 22:20:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=X9bkI2ilvEQW0erLexn/O2fz3158c1t2uQMV+b5J/gA=; b=FnWPc7sDhhjEGbZYaNBWQ0dcf9
+        /qowvyuJLOKGKdoyCmJ6HR8/tKxolRV/c9v4rrRMwD9Xi0LTcxq0qeHlxs/jKU0Xn0bHmfDxyG07H
+        BY/SS8sflVtlPY4XFCM1FdaQ9WkCbcC06eJSddaVWg6eOt40E459Dx1XkinQ85KmUFBI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jer6k-003hnC-Ff; Sat, 30 May 2020 04:20:22 +0200
+Date:   Sat, 30 May 2020 04:20:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com,
+        oleksandr.mazur@plvision.eu, serhiy.boiko@plvision.eu,
+        serhiy.pshyk@plvision.eu, volodymyr.mytnyk@plvision.eu,
+        taras.chornyi@plvision.eu, andrii.savka@plvision.eu,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mickeyr@marvell.com
+Subject: Re: [net-next 1/6] net: marvell: prestera: Add driver for Prestera
+ family ASIC devices
+Message-ID: <20200530022022.GI877847@lunn.ch>
+References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
+ <20200528151245.7592-2-vadym.kochan@plvision.eu>
+ <20200529.171839.213046818110655879.davem@davemloft.net>
+ <20200530004622.GA19411@plvision.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200530004622.GA19411@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When client on the host tries to connect(SOCK_STREAM, O_NONBLOCK) to the
-server on the guest, there will be a panic on a ThunderX2 (armv8a server):
+On Sat, May 30, 2020 at 03:46:22AM +0300, Vadym Kochan wrote:
+> Hi David,
+> 
+> On Fri, May 29, 2020 at 05:18:39PM -0700, David Miller wrote:
+> > 
+> > Please remove all of the __packed attributes.
+> > 
+> > I looked at your data structures and all of them use fixed sized types
+> > and are multiples of 4 so the __packed attribute is completely
+> > unnecessary.
+> > 
+> > The alignment attribute is also unnecessary so please remove that too.
+> 
+> Some of the fields are u8, so I assume there might be holes added by
+> the compiler ? Also these attributes guarantee some ABI compatibility
+> with FW side, I will try to remove them and check but it sounds for me a bit
+> risky.
 
-[  463.718844] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-[  463.718848] Mem abort info:
-[  463.718849]   ESR = 0x96000044
-[  463.718852]   EC = 0x25: DABT (current EL), IL = 32 bits
-[  463.718853]   SET = 0, FnV = 0
-[  463.718854]   EA = 0, S1PTW = 0
-[  463.718855] Data abort info:
-[  463.718856]   ISV = 0, ISS = 0x00000044
-[  463.718857]   CM = 0, WnR = 1
-[  463.718859] user pgtable: 4k pages, 48-bit VAs, pgdp=0000008f6f6e9000
-[  463.718861] [0000000000000000] pgd=0000000000000000
-[  463.718866] Internal error: Oops: 96000044 [#1] SMP
-[...]
-[  463.718977] CPU: 213 PID: 5040 Comm: vhost-5032 Tainted: G           O      5.7.0-rc7+ #139
-[  463.718980] Hardware name: GIGABYTE R281-T91-00/MT91-FS1-00, BIOS F06 09/25/2018
-[  463.718982] pstate: 60400009 (nZCv daif +PAN -UAO)
-[  463.718995] pc : virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
-[  463.718999] lr : virtio_transport_recv_pkt+0x1fc/0xd40 [vmw_vsock_virtio_transport_common]
-[  463.719000] sp : ffff80002dbe3c40
-[...]
-[  463.719025] Call trace:
-[  463.719030]  virtio_transport_recv_pkt+0x4c8/0xd40 [vmw_vsock_virtio_transport_common]
-[  463.719034]  vhost_vsock_handle_tx_kick+0x360/0x408 [vhost_vsock]
-[  463.719041]  vhost_worker+0x100/0x1a0 [vhost]
-[  463.719048]  kthread+0x128/0x130
-[  463.719052]  ret_from_fork+0x10/0x18
+Hi Vadym
 
-The race condition is as follows:
-Task1                                Task2
-=====                                =====
-__sock_release                       virtio_transport_recv_pkt
-  __vsock_release                      vsock_find_bound_socket (found sk)
-    lock_sock_nested
-    vsock_remove_sock
-    sock_orphan
-      sk_set_socket(sk, NULL)
-    sk->sk_shutdown = SHUTDOWN_MASK
-    ...
-    release_sock
-                                    lock_sock
-                                       virtio_transport_recv_connecting
-                                         sk->sk_socket->state (panic!)
+You might want to play with pahole(1).
 
-The root cause is that vsock_find_bound_socket can't hold the lock_sock,
-so there is a small race window between vsock_find_bound_socket() and
-lock_sock(). If __vsock_release() is running in another task,
-sk->sk_socket will be set to NULL inadvertently.
-
-This fixes it by checking sk->sk_shutdown(suggested by Stefano) after
-lock_sock since sk->sk_shutdown is set to SHUTDOWN_MASK under the
-protection of lock_sock_nested.
-
-Signed-off-by: Jia He <justin.he@arm.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
----
-v3: - describe the fix of race condition more clearly
-    - refine the commit log
-
- net/vmw_vsock/virtio_transport_common.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 69efc891885f..0edda1edf988 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -1132,6 +1132,14 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
- 
- 	lock_sock(sk);
- 
-+	/* Check if sk has been released before lock_sock */
-+	if (sk->sk_shutdown == SHUTDOWN_MASK) {
-+		(void)virtio_transport_reset_no_sock(t, pkt);
-+		release_sock(sk);
-+		sock_put(sk);
-+		goto free_pkt;
-+	}
-+
- 	/* Update CID in case it has changed after a transport reset event */
- 	vsk->local_addr.svm_cid = dst.svm_cid;
- 
--- 
-2.17.1
-
+    Andrew
