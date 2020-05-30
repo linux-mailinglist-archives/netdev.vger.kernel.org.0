@@ -2,122 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E9F1E9404
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D1F81E9409
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 23:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729425AbgE3Vjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 17:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
+        id S1729360AbgE3Vnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 17:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729083AbgE3Vjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:39:36 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76885C03E969
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:39:36 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id n24so5604248ejd.0
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 14:39:36 -0700 (PDT)
+        with ESMTP id S1729083AbgE3Vna (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 17:43:30 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49988C03E969;
+        Sat, 30 May 2020 14:43:30 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id e2so5551458eje.13;
+        Sat, 30 May 2020 14:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=my7oLzM0GjZjt6u+Tl+bU1sfyvzLczH1U6Kx/1OWc38=;
-        b=YZJJcLUTjFdvWCTMD57XqA4vazK4fTdCOuCr1XblAajT94o+iw9pKhQxQmw2U3sjVN
-         yH9hNvfe0FXsjV9AAvo1u+q7+AHT8NDtmr40Y4Le2doqfbVcAa0fm6W2MpNFDmtRtRNq
-         jBLPrLjpY5kXE2Whwg24qtMpHUR1H8VSfjLB9mRSGaymzw98OrQkY4sjyRjbCUYnkdL4
-         rdPBBaJRcXmsOLhUG6MmB2HASK7IZiKocqd0OtQTEr99e8viFRwoZ2guONAW4orptLoV
-         yyAlMOiVTC94OurdgWZHAaSwMiKdZZSclKyeJivg1txS6iRwA6ALMFhKPylvEiewFDpS
-         tVxA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0r/Hz3aB3/pi6f4PZFpZnSaaYmY5eVDrheC4RHLktY0=;
+        b=R6tdZPvhIUfDnAwFPZKnziKhI/J5TX1xg6OW+A5l40wZgKLAQz/dKDBsmM7PGVCdgm
+         bwJEelF0HOLj/d7CIB2q8WM4pIwviLGKcSmuowfw65OgWo1J8sAcM4FZTo+CRk7YMmsl
+         Aui/wxjgxTXTAKeQDYebie0NHTb4geTPN2OfkDjuj4QDUpIEbOBlwH19Ms4jqAtt1VdG
+         roKw3CAWlR5Gc2wB9KY33aO17ITtvma+tPkepg7hJDFmgHlDTZKBnkCAH6Us2TM7rjhw
+         pTJPClRcfWbOjzT5ofbwQWmyfdzFmPysGriW/FuXq+vr5V0WIMxkIIZ7psTX9XGZsxQU
+         SfeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=my7oLzM0GjZjt6u+Tl+bU1sfyvzLczH1U6Kx/1OWc38=;
-        b=GNjgnBxDl4XHUzVHyDl7F4vdZHg8vazUSGnhIaltmsYDsQTNXjfRxnOf0oSUOPHGwp
-         kR9+E0sGCR3cvxuk6qrC0Y0NYCKWZ54380/Bi3UQ9P+v9jQm+ddfjUn5+bBB3LetmzNK
-         TcnP0t0+a483cTNRXPqYkH1lW1sX3g/hnfTIGGlBMIpMbKTgOs2DrdPxaTVGAReF7yay
-         OFzwoKBi5G8bqOE1x+23RgnXX2Ipqj7qOIywvrMzMdIS/JyeKzBRDTWjpPqK8PQuNM9g
-         FBOZe2IkSz678tvhFWLP8l5SwSQeWhVNNAZC+FXK2MEpfO6IQ81fhjxh7yM53/uJxq3f
-         nnCA==
-X-Gm-Message-State: AOAM531i5QPD6oZV7ljipppeAmI/4xqo7W7Ad7K/7+n0cSYml9Mj0p8t
-        iG8oKnrNBI/7XuxBejCy7LlZkFEiGmiMpJPp0r4=
-X-Google-Smtp-Source: ABdhPJyGV5m5nxNYrKVKr8B0c83mBakz5TOWwELaLtfB1RHJzoxl1Umcen0rr34PnEKeNUQWDfoLLmRSPwgk6ZuJir4=
-X-Received: by 2002:a17:906:1d56:: with SMTP id o22mr7464052ejh.406.1590874775204;
- Sat, 30 May 2020 14:39:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200530115142.707415-1-olteanv@gmail.com> <20200530115142.707415-7-olteanv@gmail.com>
- <3ecbfe12-e4da-238e-b999-36fd91a2de5b@gmail.com>
-In-Reply-To: <3ecbfe12-e4da-238e-b999-36fd91a2de5b@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0r/Hz3aB3/pi6f4PZFpZnSaaYmY5eVDrheC4RHLktY0=;
+        b=tfCSM9xIQ85oKrHbnjQBKiwrkr1W3lIl8Q3F1Ru7GC7YuDa0jLWpCvyapbC3UdsacI
+         9g3SB6QYBFi491184/B/NBE4dlNw6/K0OLj4cGd8YppvDcKbpjEceDDmCMKK8Wt/MUYM
+         99SHBMt5WK9K1UROAmE6mH+EFfQ3KjTcVsoqmNm5pBsHCPtkaqGUfdc1DAb4n1rjOObk
+         w/Te8yHw1WW2OZpMXb7El5RrmkTLPIDBddv4m8O8hd21Ry8WCnXXot4bl130EMHrKAPP
+         5wdUmAFVke7hqq1RUnb9egACPrX66eOzYaVq8gE3owrqB0l522nV2eMJ1PUYMepp5Jcy
+         b30g==
+X-Gm-Message-State: AOAM530vce6pq3tBnc33pHeWWcn71GzPc6fnXHLMOy6WSljyffUxFOFK
+        t8JFlcPLjKWta2+dka72lKFxV3DJ
+X-Google-Smtp-Source: ABdhPJwBce6Sb8uM1LR/1+B0DatoobuOfjxtsOJfvUXMlwF2TFDrB4WrSMk6cxI2tUh4qiDuJwwyng==
+X-Received: by 2002:a17:906:9404:: with SMTP id q4mr13133406ejx.138.1590875008672;
+        Sat, 30 May 2020 14:43:28 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.147.193])
+        by smtp.gmail.com with ESMTPSA id cq27sm9979207edb.41.2020.05.30.14.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 May 2020 14:43:28 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 31 May 2020 00:39:24 +0300
-Message-ID: <CA+h21hrHuc+RfS8ud5Fc+Yf-4--yZ7dYcBaCOnX3Tgh5sZ2iEQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 06/13] net: dsa: felix: create a template for
- the DSA tags on xmit
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        radu-andrei.bulie@nxp.com, fido_max@inbox.ru,
-        Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     stable@vger.kernel.org, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH stable-4.19.y] net: phy: reschedule state machine if AN has not completed in PHY_AN state
+Date:   Sun, 31 May 2020 00:43:15 +0300
+Message-Id: <20200530214315.1051358-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On Sun, 31 May 2020 at 00:31, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 5/30/2020 4:51 AM, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > With this patch we try to kill 2 birds with 1 stone.
-> >
-> > First of all, some switches that use tag_ocelot.c don't have the exact
-> > same bitfield layout for the DSA tags. The destination ports field is
-> > different for Seville VSC9953 for example. So the choices are to either
-> > duplicate tag_ocelot.c into a new tag_seville.c (sub-optimal) or somehow
-> > take into account a supposed ocelot->dest_ports_offset when packing this
-> > field into the DSA injection header (again not ideal).
-> >
-> > Secondly, tag_ocelot.c already needs to memset a 128-bit area to zero
-> > and call some packing() functions of dubious performance in the
-> > fastpath. And most of the values it needs to pack are pretty much
-> > constant (BYPASS=1, SRC_PORT=CPU, DEST=port index). So it would be good
-> > if we could improve that.
-> >
-> > The proposed solution is to allocate a memory area per port at probe
-> > time, initialize that with the statically defined bits as per chip
-> > hardware revision, and just perform a simpler memcpy in the fastpath.
-> >
-> > Other alternatives have been analyzed, such as:
-> > - Create a separate tag_seville.c: too much code duplication for just 1
-> >   bit field difference.
->
-> If this is really the only difference, we could have added a device ID
-> or something that would allow tag_ocelot.c to differentiate Seville from
-> Felix and just have a conditional for using the right definition.
->
-> The solution proposed here is okay and scales beyond a single bit field
-> difference. Maybe this will open up the door for consolidating the
-> various Microchip KSZ tag implementations at some point.
->
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> --
-> Florian
+In kernel 4.19 (and probably earlier too) there are issues surrounding
+the PHY_AN state.
 
-Yes, but with a check for device id in the fast path, the xmit
-performance would have been slightly worse, and this way it is
-slightly better. Again, not the magnitude is important here (which is
-marginal either way), but the sign :)
+For example, if a PHY is in PHY_AN state and AN has not finished, then
+what is supposed to happen is that the state machine gets rescheduled
+until it is, or until the link_timeout reaches zero which triggers an
+autoneg restart process.
 
-Thanks,
--Vladimir
+But actually the rescheduling never works if the PHY uses interrupts,
+because the condition under which rescheduling occurs is just if
+phy_polling_mode() is true. So basically, this whole rescheduling
+functionality works for AN-not-yet-complete just by mistake. Let me
+explain.
+
+Most of the time the AN process manages to finish by the time the
+interrupt has triggered. One might say "that should always be the case,
+otherwise the PHY wouldn't raise the interrupt, right?".
+Well, some PHYs implement an .aneg_done method which allows them to tell
+the state machine when the AN is really complete.
+The AR8031/AR8033 driver (at803x.c) is one such example. Even when
+copper autoneg completes, the driver still keeps the "aneg_done"
+variable unset until in-band SGMII autoneg finishes too (there is no
+interrupt for that). So we have the premises of a race condition.
+
+In practice, what really happens depends on the log level of the serial
+console. If the log level is verbose enough that kernel messages related
+to the Ethernet link state are printed to the console, then this gives
+in-band AN enough time to complete, which means the link will come up
+and everyone will be happy. But if the console is not that verbose, the
+link will sometimes come up, and sometimes will be forced down by the
+.aneg_done of the PHY driver (forever, since we are not rescheduling).
+
+The conclusion is that an extra condition needs to be explicitly added,
+so that the state machine can be rescheduled properly. Otherwise PHY
+devices in interrupt mode will never work properly if they have an
+.aneg_done callback.
+
+In more recent kernels, the whole PHY_AN state was removed by Heiner
+Kallweit in the "[net-next,0/5] net: phy: improve and simplify phylib
+state machine" series here:
+
+https://patchwork.ozlabs.org/cover/994464/
+
+and the problem was just masked away instead of being addressed with a
+punctual patch.
+
+Fixes: 76a423a3f8f1 ("net: phy: allow driver to implement their own aneg_done")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+I'm not sure the procedure I'm following is correct, sending this
+directly to Greg. The patch doesn't apply on net.
+
+ drivers/net/phy/phy.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index cc454b8c032c..ca4fd74fd2c8 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -934,7 +934,7 @@ void phy_state_machine(struct work_struct *work)
+ 	struct delayed_work *dwork = to_delayed_work(work);
+ 	struct phy_device *phydev =
+ 			container_of(dwork, struct phy_device, state_queue);
+-	bool needs_aneg = false, do_suspend = false;
++	bool recheck = false, needs_aneg = false, do_suspend = false;
+ 	enum phy_state old_state;
+ 	int err = 0;
+ 	int old_link;
+@@ -981,6 +981,8 @@ void phy_state_machine(struct work_struct *work)
+ 			phy_link_up(phydev);
+ 		} else if (0 == phydev->link_timeout--)
+ 			needs_aneg = true;
++		else
++			recheck = true;
+ 		break;
+ 	case PHY_NOLINK:
+ 		if (!phy_polling_mode(phydev))
+@@ -1123,7 +1125,7 @@ void phy_state_machine(struct work_struct *work)
+ 	 * PHY, if PHY_IGNORE_INTERRUPT is set, then we will be moving
+ 	 * between states from phy_mac_interrupt()
+ 	 */
+-	if (phy_polling_mode(phydev))
++	if (phy_polling_mode(phydev) || recheck)
+ 		queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
+ 				   PHY_STATE_TIME * HZ);
+ }
+-- 
+2.25.1
+
