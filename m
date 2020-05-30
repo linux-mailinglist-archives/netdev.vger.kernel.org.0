@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6031E90EF
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 13:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682051E90F0
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 13:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbgE3LwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 07:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
+        id S1728957AbgE3LwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 07:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728433AbgE3LwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 07:52:18 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF32C03E969
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 04:52:18 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id m21so3705415eds.13
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 04:52:18 -0700 (PDT)
+        with ESMTP id S1728922AbgE3LwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 07:52:19 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC26C08C5C9
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 04:52:19 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id f7so4681122ejq.6
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 04:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AiNGarBZtu/82wT45Q+33O8Cd48rBTG3T6gYv5coMEg=;
-        b=cXRWGyJ6uH9mjOVaKVtKvELb4gEYjQUnMq2kejS9xy1eHu+6UoPrt0tQLRhkW2df9I
-         BU6uHTk/alK07Y95Hmebaod7gRBkeaD29D2RKyUxnNRvPsLhR2T7oddj0Lj27/ToUmo8
-         rdsW3XQ0kxOVxEtA9WksdnfJ+i2gIaVn2aGfAb8yp0Lt1rWwDDgoUbBr/UIzzaBF6Btd
-         J8u6zf6afiJ2R21qU+9JZg8t1rN5tjNXmy2UwEY8cBthReP1gYBbrf2Mm8S5wvCfI5US
-         odEC3XstrWW+s4o/F+bteXulQoNgfgBU51nH7CnCy5jN9l1C77/X/pFcliJCmpg4Xu+d
-         MD/w==
+        bh=9FrCbTNiAzR9lsB4okxTeW2QU8RNrm7AfpXzRjT4UDk=;
+        b=ImAu62XaTIanpD59d88fFFhN2FL2u07jIqJ6m5udF/efeNsyhgyI+qWnHLx+XeksDE
+         I20IkBZMV58p9mRipkM6wGabS6Vdxjt83NWm/bKLbCnLdIyqqCj15bjCoH4NDqAaS4I2
+         GZQcR85kcfZRVwJb9ZQfmMYAeyNgN9eyn6dYRjXsniEBHIFQbCqjkwBJfjFewIMjMJ1a
+         9vTR245rQIdwNbTY1MF4pmQABvE5Se0w6/iOxY9U2/Tc5PyNvkXGK1aTNkB0y7EpvROL
+         0P6YcYcu5xLJGQi+D8k9Lu2X/IqCWkKIiiRgswU6u/AV2csTqMM/oBkpykiGz7Q5kCE/
+         cUnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AiNGarBZtu/82wT45Q+33O8Cd48rBTG3T6gYv5coMEg=;
-        b=t+tIebVc4W+VMdq9uVyR/KGoTu0YVOi9m7hwtI+9bZo/ZWpABqwJqEPV29VwaFP+82
-         J3h8rOAri12CMcrqZdKTWhZK8NaEmhSPFbWgAvERnVCvWhULdef803jL69XyQUimkxxo
-         djWVsQR8yDLppFx+PuTZcmyrfRMVkr7CM98CBuNoF6G+WTfywauZLUN1h0miwtGDe8FW
-         2Fp/I8Kgu+UW1q9zrms1DFkpJPZyUsW2NvG41SlH3B3rCjmG7Q/NdfWDggcCqkYWHadK
-         3YZ9BdOxkgfMCXe7SsOTZUFz06K7lGVHUkdQib9zhvuR+eyG77kHqjoH7tRKBXFeyZzm
-         2b5Q==
-X-Gm-Message-State: AOAM531T38Vtp9MAGfIimjoSQI4WRyhIZPsGU/A8bq20LnZj0z3iP73M
-        JR4E/OY8f2xv2uWhHY3P7OM=
-X-Google-Smtp-Source: ABdhPJxSol15FHrlVY3uKaW43a1Kq3IBl20jK0Ga0taKElXXzGpRb9p8RmVKNpHMt2EKGE8dOzNCgA==
-X-Received: by 2002:a05:6402:c09:: with SMTP id co9mr583958edb.238.1590839537037;
-        Sat, 30 May 2020 04:52:17 -0700 (PDT)
+        bh=9FrCbTNiAzR9lsB4okxTeW2QU8RNrm7AfpXzRjT4UDk=;
+        b=jzQ5V7fTfo8OtpKehAPlDjrhhgpL9HdPfLGItvnK9Li+BCkZeu7aQQYgefAI/P2dKU
+         DxSfvxz7m8aNRzdAkn+Z63WPJ9RmMa6cSF1dcEb3uc6iBmGoG55gpqhDjR+hmND0RsRz
+         PVdxueSdCrJpgui0xoix2zUg8GpbaH5d/pL4hvmgkYVBmSf48ONQDfq3ti/aZtiC1NQH
+         gDnbPO6OmZQtH7DfU4SOk7WRzMZ+YbAvJ79ajN0bdlkY3t7h0gxSGA/GYzPYXRIYG8T9
+         sr4i2Mlwfzqwg3c3oNlrGeMtzyI494vonC3PAOsCs88SpxJA4V5W31CXNzeY26JhNi06
+         mvoA==
+X-Gm-Message-State: AOAM532v92wSIdR4jWw9t+NpqaRp8EBvSt4k6/anS1q6R01SvLOREU8P
+        LCgCS6JCWvLkIsoraJswwxg=
+X-Google-Smtp-Source: ABdhPJwRhmuMSPzPno0siGhMNHk92zw8OgwGMcCidxyZkrxufW2DFhdK3E6obGEt5775DmVOv52ezw==
+X-Received: by 2002:a17:906:dbef:: with SMTP id yd15mr11487060ejb.5.1590839538306;
+        Sat, 30 May 2020 04:52:18 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id z14sm9625203ejd.37.2020.05.30.04.52.15
+        by smtp.gmail.com with ESMTPSA id z14sm9625203ejd.37.2020.05.30.04.52.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2020 04:52:16 -0700 (PDT)
+        Sat, 30 May 2020 04:52:17 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
         fido_max@inbox.ru, broonie@kernel.org
-Subject: [PATCH v2 net-next 01/13] regmap: add helper for per-port regfield initialization
-Date:   Sat, 30 May 2020 14:51:30 +0300
-Message-Id: <20200530115142.707415-2-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 02/13] net: dsa: felix: set proper link speed in felix_phylink_mac_config
+Date:   Sat, 30 May 2020 14:51:31 +0300
+Message-Id: <20200530115142.707415-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200530115142.707415-1-olteanv@gmail.com>
 References: <20200530115142.707415-1-olteanv@gmail.com>
@@ -70,36 +70,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Similar to the standalone regfields, add an initializer for the users
-who need to set .id_size and .id_offset in order to use the
-regmap_fields_update_bits_base API.
+state->speed holds a value of 10, 100, 1000 or 2500, but
+SYS_MAC_FC_CFG_FC_LINK_SPEE and DEV_CLOCK_CFG_LINK_SPEED expect a value
+in the range 0, 1, 2 or 3.
+
+Even truncated to 2 bits, we are still writing incorrect values to the
+registers, but for some reason Felix still works.
+
+On Seville (which we're introducing now), however, we need to set
+correct values for the link speed into the MAC registers. Do that now.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20200527234113.2491988-2-olteanv@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- include/linux/regmap.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Changes in v2:
+Patch is new.
 
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index 40b07168fd8e..87703d105191 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -1134,6 +1134,14 @@ struct reg_field {
- 				.msb = _msb,	\
- 				}
- 
-+#define REG_FIELD_ID(_reg, _lsb, _msb, _size, _offset) {	\
-+				.reg = _reg,			\
-+				.lsb = _lsb,			\
-+				.msb = _msb,			\
-+				.id_size = _size,		\
-+				.id_offset = _offset,		\
-+				}
+ drivers/net/dsa/ocelot/felix.c | 40 +++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index a6e272d2110d..6ba0d2c3c2fa 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -208,18 +208,39 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	u32 mac_fc_cfg;
++	u32 clock_cfg, mac_fc_cfg;
 +
- struct regmap_field *regmap_field_alloc(struct regmap *regmap,
- 		struct reg_field reg_field);
- void regmap_field_free(struct regmap_field *field);
++	switch (state->speed) {
++	case SPEED_10:
++		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
++		clock_cfg = DEV_CLOCK_CFG_LINK_SPEED(3);
++		break;
++	case SPEED_100:
++		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(2);
++		clock_cfg = DEV_CLOCK_CFG_LINK_SPEED(2);
++		break;
++	case SPEED_1000:
++		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
++		clock_cfg = DEV_CLOCK_CFG_LINK_SPEED(1);
++		break;
++	case SPEED_2500:
++		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
++		clock_cfg = DEV_CLOCK_CFG_LINK_SPEED(0);
++		break;
++	case SPEED_UNKNOWN:
++		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
++		clock_cfg = DEV_CLOCK_CFG_LINK_SPEED(0);
++		break;
++	default:
++		dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
++			port, state->speed);
++		return;
++	}
+ 
+ 	/* Take port out of reset by clearing the MAC_TX_RST, MAC_RX_RST and
+ 	 * PORT_RST bits in CLOCK_CFG
+ 	 */
+-	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(state->speed),
+-			   DEV_CLOCK_CFG);
+-
+-	/* Flow control. Link speed is only used here to evaluate the time
+-	 * specification in incoming pause frames.
+-	 */
+-	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
++	ocelot_port_writel(ocelot_port, clock_cfg, DEV_CLOCK_CFG);
+ 
+ 	/* handle Rx pause in all cases, with 2500base-X this is used for rate
+ 	 * adaptation.
+@@ -231,6 +252,9 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
+ 			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
+ 			      SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
++	/* Flow control. Link speed is only used here to evaluate the time
++	 * specification in incoming pause frames.
++	 */
+ 	ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
+ 
+ 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
 -- 
 2.25.1
 
