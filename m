@@ -2,124 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A34A1E8C6C
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 02:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4A41E8C6E
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 02:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728349AbgE3AEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 May 2020 20:04:10 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:62714 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgE3AEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 20:04:09 -0400
-Received: from [192.168.1.7] (unknown [101.81.68.199])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id C3EE641796;
-        Sat, 30 May 2020 08:04:06 +0800 (CST)
-Subject: Re: [PATCH] net/sched: act_ct: add nat mangle action only for
- NAT-conntrack
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     paulb@mellanox.com, netdev@vger.kernel.org, davem@davemloft.net
-References: <1590725265-17136-1-git-send-email-wenxu@ucloud.cn>
- <20200529175650.GF74252@localhost.localdomain>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <09b6cd0b-5477-0e84-2a95-12eee55845d0@ucloud.cn>
-Date:   Sat, 30 May 2020 08:04:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200529175650.GF74252@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVTENKS0tLS0pDSkpCQ0pZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXMjULOBw6IyMBDUkUDz0eTTwQDDocVlZVTkpNT0MoSVlXWQ
-        kOFx4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OSo6LQw4Hjg6DT8rIiEPE0hP
-        IjYKCT5VSlVKTkJLTEJMS09MSkpNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLSlVD
-        SlVNQ1VKQkJZV1kIAVlBSENCTjcG
-X-HM-Tid: 0a7262e494cd2086kuqyc3ee641796
+        id S1728542AbgE3AFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 May 2020 20:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726898AbgE3AFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 May 2020 20:05:02 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E71C03E969;
+        Fri, 29 May 2020 17:05:02 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 587CA12873741;
+        Fri, 29 May 2020 17:05:01 -0700 (PDT)
+Date:   Fri, 29 May 2020 17:05:00 -0700 (PDT)
+Message-Id: <20200529.170500.2188388468757794688.davem@davemloft.net>
+To:     hslester96@gmail.com
+Cc:     gustavo@embeddedor.com, kstewart@linuxfoundation.org,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        sameo@linux.intel.com, christophe.ricard@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] NFC: st21nfca: add missed kfree_skb() in an error path
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200528102037.911766-1-hslester96@gmail.com>
+References: <20200528102037.911766-1-hslester96@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 29 May 2020 17:05:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Chuhong Yuan <hslester96@gmail.com>
+Date: Thu, 28 May 2020 18:20:37 +0800
 
-在 2020/5/30 1:56, Marcelo Ricardo Leitner 写道:
-> On Fri, May 29, 2020 at 12:07:45PM +0800, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> Currently add nat mangle action with comparing invert and ori tuple.
->> It is better to check IPS_NAT_MASK flags first to avoid non necessary
->> memcmp for non-NAT conntrack.
->>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>  net/sched/act_ct.c | 19 +++++++++++++------
->>  1 file changed, 13 insertions(+), 6 deletions(-)
->>
->> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
->> index c50a86a..d621152 100644
->> --- a/net/sched/act_ct.c
->> +++ b/net/sched/act_ct.c
->> @@ -198,18 +198,21 @@ static int tcf_ct_flow_table_add_action_nat(struct net *net,
->>  					    struct flow_action *action)
->>  {
->>  	const struct nf_conntrack_tuple *tuple = &ct->tuplehash[dir].tuple;
->> +	bool nat = ct->status & IPS_NAT_MASK;
->>  	struct nf_conntrack_tuple target;
-> [A]
->
->>  
->>  	nf_ct_invert_tuple(&target, &ct->tuplehash[!dir].tuple);
->>  
->>  	switch (tuple->src.l3num) {
->>  	case NFPROTO_IPV4:
->> -		tcf_ct_flow_table_add_action_nat_ipv4(tuple, target,
->> -						      action);
->> +		if (nat)
-> Why do the same check multiple times, on all actions? As no other
-> action is performed if not doing a nat, seems at [A] above, it could
-> just:
->
-> if (!nat)
-> 	return 0;
+> st21nfca_tm_send_atr_res() misses to call kfree_skb() in an error path.
+> Add the missed function call to fix it.
+> 
+> Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 
-This function is not always return 0.  It is the same for non-nat conntrack.
-
-If the ether proto is not ipv4 or ipv6 and the ip_proto is not tcp and udp,
-
-this function should return -EOPNOTSUPP. Check the nat for each type
-
-is just to following the rule.
-
->
->> +			tcf_ct_flow_table_add_action_nat_ipv4(tuple, target,
->> +							      action);
->>  		break;
->>  	case NFPROTO_IPV6:
->> -		tcf_ct_flow_table_add_action_nat_ipv6(tuple, target,
->> -						      action);
->> +		if (nat)
->> +			tcf_ct_flow_table_add_action_nat_ipv6(tuple, target,
->> +							      action);
->>  		break;
->>  	default:
->>  		return -EOPNOTSUPP;
->> @@ -217,10 +220,14 @@ static int tcf_ct_flow_table_add_action_nat(struct net *net,
->>  
->>  	switch (nf_ct_protonum(ct)) {
->>  	case IPPROTO_TCP:
->> -		tcf_ct_flow_table_add_action_nat_tcp(tuple, target, action);
->> +		if (nat)
->> +			tcf_ct_flow_table_add_action_nat_tcp(tuple, target,
->> +							     action);
->>  		break;
->>  	case IPPROTO_UDP:
->> -		tcf_ct_flow_table_add_action_nat_udp(tuple, target, action);
->> +		if (nat)
->> +			tcf_ct_flow_table_add_action_nat_udp(tuple, target,
->> +							     action);
->>  		break;
->>  	default:
->>  		return -EOPNOTSUPP;
->> -- 
->> 1.8.3.1
->>
+Applied and queued up for -stable, thank you.
