@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9CC1E8DCB
-	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 06:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012961E8DCC
+	for <lists+netdev@lfdr.de>; Sat, 30 May 2020 06:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgE3E1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 00:27:05 -0400
+        id S1727783AbgE3E1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 00:27:08 -0400
 Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:61765
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725889AbgE3E1D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 May 2020 00:27:03 -0400
+        id S1726193AbgE3E1G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 May 2020 00:27:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YzRfggD/QvcIHnNAuD1ef6KHx6yHdgC70QAuN2P9NlAWBJhjXCafnxlzzBwyCeJakJVNKXOERVU7JPoGKWapJcyMNC70sAHgtOvv8OW45eTYCd0Ie6mHK5y3uFbZ5LBMR+znmhziDco5McHBKRIt0WGGrqKRK/c4fnSchWKdWG4ZVuaGLGAb4x5UEuNg9ph7vsxDQD3L/LaU1fG0GUF8nsX5EuLW2w32BPfOfQDWO6tPiaazJsdj31pWBgxIuzWZ2gDVaDjPmGlIIx69XwbcPsrFAALNLzaLyttqFiLo+gOOIxgaACSg17F6Ii6nbI8V10obYCqD3CScOqCnSL3Sig==
+ b=N2pLI3xbtjcYxjndQDVCKvpzgLGc602VJUdYtTacNNbM0D0dKs7B21va7TWxuY/k+8Wd8ebXEECY44z0vVlTYV/38Ev878/haLviFeU1lqg+MIrRIp4ZxHciSqRaYjo78jKixFvb7V0+7dkh71p06abt4EWTqa0xkEYN1fwSxekkGf/F8qUu0LTSkcF1CkmtXSlkq2m7yEt+qn9zW280vxJR4wTQJ3LDXLSytPYAPTNWvZDc9oNbCx3nXriVzONAekxMP/+nimTRW2DxPkcPjjzLGBsUBft+nFPTQP3XTWnX/yZ8x39tlsQwXHVnAmto7zwuJyyGCuv+ovOsmUQ2yQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ads9VMVEcu7tbt70RXyZzdRQliUlklhQOk7OEP1jV1g=;
- b=TZuWfGBE/er6bJ+zJYWBAL4p4veyskq6JnMAnIh0oiDgW2GjSp49gbaUHKtPLP5TBSaTNsVbqNukeynbKEcxCW0FxkkQa6Y5sa9c+ZPPJhDPOd1N2Sq+uKs+iwEWio/s37HRq3sCWvfQRJa6AyrEFmgF7IfJ3Atbp2EE54fZSVjIdpGey8siO3JvxInX82gVljTk5zaOXJnS2SRIohbb9jVkrs4olM2ZOHZA/FBTkPfyr88ZGYBOmTitGBDPGNFgsx4Z9tq12NWrLp6XFO4h8NseKWJ/dNWuLzXQErrPQpR90f+HtSGcSyZPAVwnBNJMSLJcKdE4t/Xf87/XzrV4Vg==
+ bh=5nCzvAleViq4OoMfg11dzbMyV0VV941Pc7rK/1Y7guw=;
+ b=jjHP0H7rqFfol+2cGJrqZai06qdZBut4w8bjni+p63MjRVzj3+hsgEf+Ozf1oGJygRZm6+co3dFvRjM+oNs0uNynMW3ByCxSZFlPjORK4z+K/fSOzcbVwNnasdqFkJ8fQ2Q3f+E6/Y9lfKHOkWGNENqOK8EMCgAWeGssCrCZ1pExH3DDm2gqG6MgH1oHzlOwT8Lsf/wWfeJmwJzasHeYejuPuobNs9Q3dTlEOWu28yHwJs4N0YcVM+fDt28jkbjcvAGwgL3J4ZvFIcSCw7SFQ5fZ4VgcbvFVJ7kNZZjghJiVusEXKoo/Yk17jK2XmJSESvEdoqdyNdO5Dgj7B5CC1A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ads9VMVEcu7tbt70RXyZzdRQliUlklhQOk7OEP1jV1g=;
- b=pgF+MLTfm7RtZnda1HweEtVRZQHzaUjxvKJJ7RvMzE+JaLwfW5trNBde/AV0kSpzesz19YbwUlJhsVrZ5J3eUbpoHALVuLk8gzr7XXuS2BaOFnBMZPstDp53OV4SawxNYet2BnJ8ZGlWUL8DnhslFtTAY6IykG9Ffya3fVtFnoo=
+ bh=5nCzvAleViq4OoMfg11dzbMyV0VV941Pc7rK/1Y7guw=;
+ b=eHiHa7FiT02WJ99Kvr4YDdmCzlRfMn8j/seGrvFvjJi70vasSHW4VuhNxuBhvwT6uolSVhCkieB0q1RHaJO+EzARiFPw+qkDwWyi0hXHSkmbzWhDHBOb/UaCPL/KI9BVZVqQqyd3Mz4O8Y7+Ak/bpqo8HaFyeXo7/JPD6jL4YRg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB3408.eurprd05.prod.outlook.com (2603:10a6:802:1e::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18; Sat, 30 May
- 2020 04:26:56 +0000
+ 2020 04:26:58 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3045.018; Sat, 30 May 2020
- 04:26:56 +0000
+ 04:26:58 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+Cc:     netdev@vger.kernel.org, Eli Cohen <eli@mellanox.com>,
+        David Ahern <dsahern@gmail.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 04/15] net/mlx5: reduce stack usage in qp_read_field
-Date:   Fri, 29 May 2020 21:26:15 -0700
-Message-Id: <20200530042626.15837-5-saeedm@mellanox.com>
+Subject: [net-next 05/15] net: Make mpls_entry_encode() available for generic users
+Date:   Fri, 29 May 2020 21:26:16 -0700
+Message-Id: <20200530042626.15837-6-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200530042626.15837-1-saeedm@mellanox.com>
 References: <20200530042626.15837-1-saeedm@mellanox.com>
@@ -55,96 +56,106 @@ X-ClientProxiedBy: BYAPR05CA0004.namprd05.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0004.namprd05.prod.outlook.com (2603:10b6:a03:c0::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.7 via Frontend Transport; Sat, 30 May 2020 04:26:54 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0004.namprd05.prod.outlook.com (2603:10b6:a03:c0::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.7 via Frontend Transport; Sat, 30 May 2020 04:26:56 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 609e21cc-254c-44cb-7885-08d80451af9e
+X-MS-Office365-Filtering-Correlation-Id: 14bd5d52-5ddd-4757-b4f2-08d80451b114
 X-MS-TrafficTypeDiagnostic: VI1PR05MB3408:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB340802DB0B0E349B6813D314BE8C0@VI1PR05MB3408.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB3408207A0DED6EB4AC1E04B5BE8C0@VI1PR05MB3408.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-Forefront-PRVS: 041963B986
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NUHYug+x3NbFm5j9etivbY8WCOTOL2h4OZ3tPZfmnX6fwdDko0GrSC0UON5DPTWKfmIq2oNwCEd0bG+RDnT3YMgoXTe0LTgwFKLQPfUYJE7hXbKCuhEcsnitA8sqmt7Bawfqi6zQ5e1A22vuWXQRgqj5doEPgTl5yXIq7qBfFvxL52koucxmjf4UF6BLth0G3w3BDs6PgqH+97yL4gqSNUhYXCzoaCNfaCc69yAhDNrTP5McTXo+n973mfSPgcl9XvpyJNhULu3c0c8JaA+54jiF/jWKps7cV+qlki96ZU/y0uHbP7B4r7RVg2H/pnWKyyBZP3m2kV2Hr7dPMpCSNfaWMjiaIsgq6CBcuv3/nw/GsRiteTeS9OeHz6QN8i3S
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(396003)(136003)(346002)(366004)(52116002)(5660300002)(6666004)(107886003)(186003)(66476007)(26005)(16526019)(66946007)(478600001)(1076003)(8676002)(4326008)(6486002)(66556008)(2906002)(956004)(86362001)(6512007)(83380400001)(316002)(6506007)(36756003)(2616005)(8936002)(54906003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 96kvuvrGWGijlB5OsJvmvZd/f6pdjU0oPxGgKvRmEQ82powGr7LdZVwRtCh/lTrcLHNQAMc2YiBD7J1b7FIfMazrAAeFk/R7sUDKNlh4WT1sJhz6qt+nEU6OR8MaByhaSo+/5e7TUBOCs1vireR5yoYnCPZUWOLbXmoWW4SlpEPPWsZs7nTJDOq2e9yIYTyqXLV0utBTG0I3N+4GhF28snxyrH6T7vBnajnuQS4T7feqGHq2NQkrzGWX09GQ5Y9NT+OFCFhw/3jWPe/YOTYTsFq0nXvplpNSURcZn96t6W7C+noEKUht8vrHlv/KrQD68Siv/7e7+6IYCE/fw8JisSMpXwL5he2ALNIf9GcoeuiqZyvU/u69VOO/HJvEWtDBUjPFHnrmFoV7XzNEU951Y2YcmfFTmqdSazYLzmzsfyFDVg459tMEN3csx3N3NSh1kaF52ryhwWAecNMkiCk4U4yINPDhRu/KFUAlXlg9LmE=
+X-Microsoft-Antispam-Message-Info: 8MiKIG2p8vMtqQgaaZ6fxbTFW+Y2W02d/dvtv8d5dglzb8EHi/ywZVs1hEatamEwtzj38UHLzpQxf1fOcgR1eiY8i4X1t7JbzkX5ByjPfTxpygbR/xxtd2I6gMomIyQFmOGmlfP3OilYOIRagpSv0ITnuxpucpU6Pf8VmQFhhpjzboRNN7tL5s5KKP3IIn0J6vZvGracwexh1QcVhdUdyFZt6r2u5O/n3ELjhPxsIbkonJ/zmmhIArjbE3mz1uDg9yT1gA+c92EoIbOrLaFJuMspjsnB1gd9OZYHfct1QAx1qEmXDNlraepJQ2V0OLe+8wLi9lHhf6/DOHsjnm99L7GFkq3x1UpQn5eg/J4E2Vn2olUjoVFpXG7DgiesBdIdOMq/OUMvHLmd7YnjI+ddAYu8HCGFeMeFyiHIz/efqukPcEO3SzMMGB60cApBO8ITRMlKR67iKXEeDTHRWk3+jGR7p3DXJzG0Mmw6WKpMN3I=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(396003)(136003)(346002)(366004)(52116002)(5660300002)(6666004)(107886003)(186003)(66476007)(26005)(16526019)(66946007)(478600001)(1076003)(8676002)(4326008)(6486002)(66556008)(2906002)(956004)(86362001)(6512007)(83380400001)(316002)(6506007)(36756003)(2616005)(8936002)(54906003)(26730200005)(41533002)(54420400002)(19860200003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: LBwEWhPwtHUl8DBhXn3oyxUfaQd6Pdb7jaqad90se4jxsgjjfFFQj4uRwx42o/Xyo50uJOzbibaNNQbQtqGZ2NBaaxpStvJuQH96IDIipCX9Fm9WK/qZsYGehfH1v38BXIZrpxzLmBdvYgbuJjFrhNPccxPEylth3LAd+N35kowGt2sX7cznWhVQ0xbJZDsOr09BQlyheLMPENUl4dWBJeswJ8aEWHbmFkJzGeNRh1mjp3KNf/D4ewi+4XU1plJbDBLCSi2p1qod4rS8fADoLfBTCtaYLv9NZmz4pas1KNhspD0oD7E+M451TXTfYG/Vekr2Fe9uOUtw134MDU7kiJx74qO9ROZNj0Q2B8nhw5mbNcptFsY79y5sOmtRSKGf2RS7sM8Y8VvgUX4lD7jnXanWpyS3ntWHQFQUotdVMxf8mYDth6A77jC4xCayLfz/YzmQ7wTwsmFyKxXfdhUgEo0OUxy0lDkDehcUWNk+c3w=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 609e21cc-254c-44cb-7885-08d80451af9e
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2020 04:26:56.1773
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14bd5d52-5ddd-4757-b4f2-08d80451b114
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2020 04:26:58.4970
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ew0v3ZC0GDiGlpTt3Gcwll25iuD5HriYFXgXS2TdYWW6xPZcxquRV6LSCHdLS7uTYH7y/siPWwGIEz7uppf7Og==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Pqhz7ngqumtKZ21iC6ZI/Dwk0Mqkg2dS4Rd7e977Knj5D3jmZUOaTsUSGBIu5iqGLaqp+ZPqWtv7zfKjtQ8Bsg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3408
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Eli Cohen <eli@mellanox.com>
 
-Moving the mlx5_ifc_query_qp_out_bits structure on the stack was a bit
-excessive and now causes the compiler to complain on 32-bit architectures:
+Move mpls_entry_encode() from net/mpls/internal.h to include/net/mpls.h
+and make it available for other users. Specifically, hardware driver that
+offload MPLS can benefit from that.
 
-drivers/net/ethernet/mellanox/mlx5/core/debugfs.c: In function 'qp_read_field':
-drivers/net/ethernet/mellanox/mlx5/core/debugfs.c:274:1: error: the frame size of 1104 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
-
-Revert the previous patch partially to use dynamically allocation as
-the code did before. Unfortunately there is no good error handling
-in case the allocation fails.
-
-Fixes: 57a6c5e992f5 ("net/mlx5: Replace hand written QP context struct with automatic getters")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Eli Cohen <eli@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/debugfs.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ include/net/mpls.h  | 17 +++++++++++++++++
+ net/mpls/internal.h | 11 -----------
+ 2 files changed, 17 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-index 6409090b3ec52..d2d57213511be 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-@@ -202,18 +202,23 @@ void mlx5_cq_debugfs_cleanup(struct mlx5_core_dev *dev)
- static u64 qp_read_field(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
- 			 int index, int *is_str)
+diff --git a/include/net/mpls.h b/include/net/mpls.h
+index ccaf238e8ea70..0bb7944e7b083 100644
+--- a/include/net/mpls.h
++++ b/include/net/mpls.h
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/if_ether.h>
+ #include <linux/netdevice.h>
++#include <linux/mpls.h>
+ 
+ #define MPLS_HLEN 4
+ 
+@@ -25,4 +26,20 @@ static inline struct mpls_shim_hdr *mpls_hdr(const struct sk_buff *skb)
  {
--	u32 out[MLX5_ST_SZ_BYTES(query_qp_out)] = {};
-+	int outlen = MLX5_ST_SZ_BYTES(query_qp_out);
- 	u32 in[MLX5_ST_SZ_DW(query_qp_in)] = {};
- 	u64 param = 0;
-+	u32 *out;
- 	int state;
- 	u32 *qpc;
- 	int err;
- 
-+	out = kzalloc(outlen, GFP_KERNEL);
-+	if (!out)
-+		return 0;
-+
- 	MLX5_SET(query_qp_in, in, opcode, MLX5_CMD_OP_QUERY_QP);
- 	MLX5_SET(query_qp_in, in, qpn, qp->qpn);
- 	err = mlx5_cmd_exec_inout(dev, query_qp, in, out);
- 	if (err)
--		return 0;
-+		goto out;
- 
- 	*is_str = 0;
- 
-@@ -269,7 +274,8 @@ static u64 qp_read_field(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
- 		param = MLX5_GET(qpc, qpc, remote_qpn);
- 		break;
- 	}
--
-+out:
-+	kfree(out);
- 	return param;
+ 	return (struct mpls_shim_hdr *)skb_network_header(skb);
  }
++
++static inline struct mpls_shim_hdr mpls_entry_encode(u32 label,
++						     unsigned int ttl,
++						     unsigned int tc,
++						     bool bos)
++{
++	struct mpls_shim_hdr result;
++
++	result.label_stack_entry =
++		cpu_to_be32((label << MPLS_LS_LABEL_SHIFT) |
++			    (tc << MPLS_LS_TC_SHIFT) |
++			    (bos ? (1 << MPLS_LS_S_SHIFT) : 0) |
++			    (ttl << MPLS_LS_TTL_SHIFT));
++	return result;
++}
++
+ #endif
+diff --git a/net/mpls/internal.h b/net/mpls/internal.h
+index 0e9aa94adc07f..838cdfc10e47d 100644
+--- a/net/mpls/internal.h
++++ b/net/mpls/internal.h
+@@ -172,17 +172,6 @@ struct mpls_route { /* next hop label forwarding entry */
  
+ #define endfor_nexthops(rt) }
+ 
+-static inline struct mpls_shim_hdr mpls_entry_encode(u32 label, unsigned ttl, unsigned tc, bool bos)
+-{
+-	struct mpls_shim_hdr result;
+-	result.label_stack_entry =
+-		cpu_to_be32((label << MPLS_LS_LABEL_SHIFT) |
+-			    (tc << MPLS_LS_TC_SHIFT) |
+-			    (bos ? (1 << MPLS_LS_S_SHIFT) : 0) |
+-			    (ttl << MPLS_LS_TTL_SHIFT));
+-	return result;
+-}
+-
+ static inline struct mpls_entry_decoded mpls_entry_decode(struct mpls_shim_hdr *hdr)
+ {
+ 	struct mpls_entry_decoded result;
 -- 
 2.26.2
 
