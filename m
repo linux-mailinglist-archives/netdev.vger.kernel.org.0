@@ -2,224 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53BD81E9455
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 00:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F6121E9459
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 00:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729534AbgE3Wma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 18:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729183AbgE3Wm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 18:42:29 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2089C03E969;
-        Sat, 30 May 2020 15:42:28 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id mb16so5663996ejb.4;
-        Sat, 30 May 2020 15:42:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CTkyMZJJ9ZyYPOlvh7OgoZfw2ynpN+TDHzhAtl+pZxs=;
-        b=Pk5DvWPgOKgwZ64FLIczDw7CV7HPhkirGIaT2l/FTQzvUDiMsb3w4IQeibeWd/sb+J
-         QP68Pb0urVLjvhRc45MXg4QAzBtwq2AnOmxWLJ2jy1oncZjXadW9Hi6pDXEafKtZj4tT
-         pb+7BbAMeJWTKuJRJcHo4HTmWrIbGFlAcTlaZ++DeY6oZU/EKbznj9D/4Mmycyz5DSjK
-         mZlbMK/f9N1JBVhohom2Dsg7yOSCzh0fxfBsImXJ19j/HwbdLvqItzd6652Yoxnsu0/Q
-         mZA69VB8s9vmCbzBBexnJG5RW22foYsROUNgj8XrbJRIg406VcdArPPwXHnBHPHQEOUV
-         MkRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CTkyMZJJ9ZyYPOlvh7OgoZfw2ynpN+TDHzhAtl+pZxs=;
-        b=lj7+obssALYhm/uKxaAEwa2Muct3EvXWaGyu82zBZImZoddIIHivlEx/4yO8eLDagA
-         NMsGLhItxmbMlss469y/6Notwrt0cM+kooF/Q7QXHpa9fg3BPgHHuN3+5iIWBAjxwRw3
-         t/BeO12feCn0z1uU2YdfVvx0E7xW3kEDZbJ2v8avGARbxzmPWg0YHCsd2rddRNX/w0Px
-         SuNhzcLG9va7eNHpDoha/j15s24d9N4QaIwyTFGE0T+KnKeQyQ8NyMUAU/hx2BfE0tdS
-         W6MVXl6OMjEyXZxWFZqkJ2jqoEpy2eF74FmXZ3pBUYYShfwD/SVMK6w4ydhmhjwSgGiE
-         UYVg==
-X-Gm-Message-State: AOAM530OpFZIdQ+B0yMUcExhUQaGg9QM9YGtmFnndKdldaYefL0IDA16
-        +sZqphZCvTIvUYhBNhr9t4vpw/r7CsHH8QlHmFE=
-X-Google-Smtp-Source: ABdhPJx/ebUfQEsaZRpbpsdXvtiuMU/Kl9dl9RM92aKAAz+M29lpYur6ozVWvsiHw2uQ3ZI5E8SYeOCOxjS2QmCi1yw=
-X-Received: by 2002:a17:906:e47:: with SMTP id q7mr173598eji.279.1590878547522;
- Sat, 30 May 2020 15:42:27 -0700 (PDT)
+        id S1729531AbgE3W5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 18:57:31 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:57096 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729520AbgE3W5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 18:57:30 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UMr5Bx162406;
+        Sat, 30 May 2020 22:56:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=nRI8/WGqU10HxUBdfywB8qJJ+zkivb2UYjEAwimayWg=;
+ b=j9RAE4QJDyU5mkZtmHGy9KeRSad5ty+NbS47nrwkSZqhsxge3YTaJtMzPDdR/5IPG3wf
+ rnO7jFpNK3ZBwx3S+3EnZEwhJdtVcJ9bOEAj1aZG1Rf/NwALS2bDwYskk8MtvmcRUrNm
+ 6wE01JzWk5OmP+lrQnNRzCeXGaQf/Bxj4gGoSU5ORhwHs6VjQTRPUVHmgA3KTNpf5/4D
+ W6JgqISSuyVK5E380RpU7mTPzlmzLESU37iMiq1rzxuSP7AH5Hq0/3mE7RfazgSLqJX5
+ p5TBnPP2FTpyeUWEzAqyAdjFdFLmowD1GyTFHbqwjxhjzRPeBItITt0e95/S8JnaHxH2 sg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 31bfeksw3v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 30 May 2020 22:56:38 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04UMr5er060838;
+        Sat, 30 May 2020 22:56:37 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 31bckr8f4r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 30 May 2020 22:56:37 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04UMuXtw014919;
+        Sat, 30 May 2020 22:56:33 GMT
+Received: from [10.39.241.21] (/10.39.241.21)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 30 May 2020 15:56:32 -0700
+Subject: Re: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
+To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
+        jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
+        kamatam@amazon.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
+        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
+        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
+        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
+        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dwmw@amazon.co.uk, benh@kernel.crashing.org
+References: <cover.1589926004.git.anchalag@amazon.com>
+ <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
+From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
+ 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
+ Jg6OxFYd01z+a+oL
+Message-ID: <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
+Date:   Sat, 30 May 2020 18:56:30 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200530214315.1051358-1-olteanv@gmail.com> <fdf0074a-2572-5914-6f3e-77202cbf96de@gmail.com>
-In-Reply-To: <fdf0074a-2572-5914-6f3e-77202cbf96de@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 31 May 2020 01:42:16 +0300
-Message-ID: <CA+h21hr+GLbuN4MxPbj=d_VcR1LQ=8Pd75H932KybHNcWPhGfA@mail.gmail.com>
-Subject: Re: [PATCH stable-4.19.y] net: phy: reschedule state machine if AN
- has not completed in PHY_AN state
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
+ suspectscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005300178
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9637 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 priorityscore=1501 bulkscore=0 phishscore=0 clxscore=1015
+ impostorscore=0 adultscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005300178
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
+On 5/19/20 7:25 PM, Anchal Agarwal wrote:
+> =20
+>  int xenbus_dev_resume(struct device *dev)
+>  {
+> -	int err;
+> +	int err =3D 0;
 
-On Sun, 31 May 2020 at 01:36, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 30.05.2020 23:43, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > In kernel 4.19 (and probably earlier too) there are issues surrounding
-> > the PHY_AN state.
-> >
-> > For example, if a PHY is in PHY_AN state and AN has not finished, then
-> > what is supposed to happen is that the state machine gets rescheduled
-> > until it is, or until the link_timeout reaches zero which triggers an
-> > autoneg restart process.
-> >
-> > But actually the rescheduling never works if the PHY uses interrupts,
-> > because the condition under which rescheduling occurs is just if
-> > phy_polling_mode() is true. So basically, this whole rescheduling
-> > functionality works for AN-not-yet-complete just by mistake. Let me
-> > explain.
-> >
-> > Most of the time the AN process manages to finish by the time the
-> > interrupt has triggered. One might say "that should always be the case,
-> > otherwise the PHY wouldn't raise the interrupt, right?".
-> > Well, some PHYs implement an .aneg_done method which allows them to tell
-> > the state machine when the AN is really complete.
-> > The AR8031/AR8033 driver (at803x.c) is one such example. Even when
-> > copper autoneg completes, the driver still keeps the "aneg_done"
-> > variable unset until in-band SGMII autoneg finishes too (there is no
-> > interrupt for that). So we have the premises of a race condition.
-> >
-> That's not nice from the PHY:
-> It signals "link up", and if the system asks the PHY for link details,
-> then it sheepishly says "well, link is *almost* up".
->
 
-The copper-side link is 100% up. In my opinion this is actually abuse
-of the .aneg_done API. Here's what the guy who added it had to say:
+That's not necessary.
 
-commit f62265b53ef34a372b657c99e23d32e95b464316
-Author: Zefir Kurtisi <zefir.kurtisi@neratec.com>
-Date:   Mon Oct 24 12:40:54 2016 +0200
 
-    at803x: double check SGMII side autoneg
+>  	struct xenbus_driver *drv;
+>  	struct xenbus_device *xdev
+>  		=3D container_of(dev, struct xenbus_device, dev);
+> -
+> +	bool xen_suspend =3D xen_suspend_mode_is_xen_suspend();
+>  	DPRINTK("%s", xdev->nodename);
+> =20
+>  	if (dev->driver =3D=3D NULL)
+> @@ -627,24 +645,32 @@ int xenbus_dev_resume(struct device *dev)
+>  	drv =3D to_xenbus_driver(dev->driver);
+>  	err =3D talk_to_otherend(xdev);
+>  	if (err) {
+> -		pr_warn("resume (talk_to_otherend) %s failed: %i\n",
+> +		pr_warn("%s (talk_to_otherend) %s failed: %i\n",
 
-    In SGMII mode, we observed an autonegotiation issue
-    after power-down-up cycles where the copper side
-    reports successful link establishment but the
-    SGMII side's link is down.
 
-    This happened in a setup where the at8031 is
-    connected over SGMII to a eTSEC (fsl gianfar),
-    but so far could not be reproduced with other
-    Ethernet device / driver combinations.
+Please use dev_warn() everywhere, we just had a bunch of patches that
+replaced pr_warn(). In fact,=C2=A0 this is one of the lines that got chan=
+ged.
 
-    This commit adds a wrapper function for at8031
-    that in case of operating in SGMII mode double
-    checks SGMII link state when generic aneg_done()
-    succeeds. It prints a warning on failure but
-    intentionally does not try to recover from this
-    state. As a result, if you ever see a warning
-    '803x_aneg_done: SGMII link is not ok' you will
-    end up having an Ethernet link up but won't get
-    any data through. This should not happen, if it
-    does, please contact the module maintainer.
 
-    Signed-off-by: Zefir Kurtisi <zefir.kurtisi@neratec.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+> =20
+>  int xenbus_dev_cancel(struct device *dev)
+>  {
+> -	/* Do nothing */
+> -	DPRINTK("cancel");
+> +	int err =3D 0;
 
-> Question would be whether the same happens with other SGMII-capable
-> PHY's so that we need to cater for this scenario in phylib.
-> Or whether we consider it a chip quirk. In the latter case a custom
-> read_status() handler might do the trick too: if link is reported
-> as up then wait until aneg is signaled as done too before reading
-> further link details.
->
-> And it's interesting that nobody else stumbled across this problem
-> before. I mean the PHY we talk about isn't really new. Or is your
-> use case so special?
->
 
-No, my use case isn't special at all. Just using it in interrupt mode :)
-Today we have the pcs_poll option in phylink (checking the in-band AN
-status at PCS side and not at PHY side). But not all Ethernet drivers
-have phylink. Actually I think there's no good place in phylib to do
-this in-band AN status checking.
+Again, no need to initialize.
 
-But my patch is rather minimal and makes things work in the way there
-were intended at that time.
 
-> > In practice, what really happens depends on the log level of the serial
-> > console. If the log level is verbose enough that kernel messages related
-> > to the Ethernet link state are printed to the console, then this gives
-> > in-band AN enough time to complete, which means the link will come up
-> > and everyone will be happy. But if the console is not that verbose, the
-> > link will sometimes come up, and sometimes will be forced down by the
-> > .aneg_done of the PHY driver (forever, since we are not rescheduling).
-> >
-> > The conclusion is that an extra condition needs to be explicitly added,
-> > so that the state machine can be rescheduled properly. Otherwise PHY
-> > devices in interrupt mode will never work properly if they have an
-> > .aneg_done callback.
-> >
-> > In more recent kernels, the whole PHY_AN state was removed by Heiner
-> > Kallweit in the "[net-next,0/5] net: phy: improve and simplify phylib
-> > state machine" series here:
-> >
-> > https://patchwork.ozlabs.org/cover/994464/
-> >
-> > and the problem was just masked away instead of being addressed with a
-> > punctual patch.
-> >
-> > Fixes: 76a423a3f8f1 ("net: phy: allow driver to implement their own aneg_done")
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> > I'm not sure the procedure I'm following is correct, sending this
-> > directly to Greg. The patch doesn't apply on net.
-> >
-> >  drivers/net/phy/phy.c | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> > index cc454b8c032c..ca4fd74fd2c8 100644
-> > --- a/drivers/net/phy/phy.c
-> > +++ b/drivers/net/phy/phy.c
-> > @@ -934,7 +934,7 @@ void phy_state_machine(struct work_struct *work)
-> >       struct delayed_work *dwork = to_delayed_work(work);
-> >       struct phy_device *phydev =
-> >                       container_of(dwork, struct phy_device, state_queue);
-> > -     bool needs_aneg = false, do_suspend = false;
-> > +     bool recheck = false, needs_aneg = false, do_suspend = false;
-> >       enum phy_state old_state;
-> >       int err = 0;
-> >       int old_link;
-> > @@ -981,6 +981,8 @@ void phy_state_machine(struct work_struct *work)
-> >                       phy_link_up(phydev);
-> >               } else if (0 == phydev->link_timeout--)
-> >                       needs_aneg = true;
-> > +             else
-> > +                     recheck = true;
-> >               break;
-> >       case PHY_NOLINK:
-> >               if (!phy_polling_mode(phydev))
-> > @@ -1123,7 +1125,7 @@ void phy_state_machine(struct work_struct *work)
-> >        * PHY, if PHY_IGNORE_INTERRUPT is set, then we will be moving
-> >        * between states from phy_mac_interrupt()
-> >        */
-> > -     if (phy_polling_mode(phydev))
-> > +     if (phy_polling_mode(phydev) || recheck)
-> >               queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
-> >                                  PHY_STATE_TIME * HZ);
-> >  }
-> >
->
+> +	struct xenbus_driver *drv;
+> +	struct xenbus_device *xdev
+> +		=3D container_of(dev, struct xenbus_device, dev);
 
-Thanks,
--Vladimir
+
+xendev please to be consistent with other code. And use to_xenbus_device(=
+).
+
+
+-boris
+
