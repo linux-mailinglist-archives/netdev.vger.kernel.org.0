@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3731E9602
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7831E9603
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387412AbgEaHGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 03:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        id S2387422AbgEaHGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 03:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387407AbgEaHGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:06:47 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0637EC05BD43
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:47 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id r7so8301130wro.1
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:46 -0700 (PDT)
+        with ESMTP id S2387407AbgEaHGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:06:53 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12740C05BD43
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:53 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id y17so8189282wrn.11
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=28iXEgTxZGiycTdVsy4Tz/mI6Y6DSr8IpzNq47taE6U=;
-        b=QqKi83xeAVIB3Rk4gVswD+kmoCTWZRuU7Lu6+j07fwz2M28nBhd6Hc3QTTOOonKGCT
-         1VqlWuHexs8AwTWIwnKXeQQYTyhpQgalQD+5YXjuZy8LwlfJgZgTPVCf1LzAJNEVhhPI
-         yvFaqJN0jt8yrhNhzfXzR0TJX1ULzmARbY1UA=
+        bh=lPMutBkJju6wyauV5k7LNnHuIgh2OD++KVtMrRBIPHQ=;
+        b=JhhZpmLvZBUWgR40VS/139ETOgxSQa6asVF8ZtsrvxIptVjcXW08sF39c0buh6MViu
+         fYEzMioD9dwE4JRWth0w0VBntvADmWFcyEp3wnivMe1wd00lVhpnpiGo9I1K162prOQS
+         VsabitljIDac9wGpvuCc1IOwXLslQbaaFxPNg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=28iXEgTxZGiycTdVsy4Tz/mI6Y6DSr8IpzNq47taE6U=;
-        b=St2cisqtfmjzEMz29p2RkuukRetzuGkQEQ6IA6YTs+m06JDdLF8YZSl1plbhrPENF/
-         SppCKkHm2C2JqI3lixhZYcO87wWI7Y6siV7YEsgmKAXsHm6aWoPiQ7YO5zC8kJdxr8JK
-         ZgKCkQV93BNBQ0xbDQ3jSWQFAFIQuXILLAgAI3rjWWCre2NN2uROgQ9M4bUp0/Y0IXW3
-         BP4HH+Usfp1+Vq4pwzjuHiO7YdpmZcSWihKhHKuwKCvyGb2WNtTt7g1WLl7FR3HENIeE
-         1iq29ZxW9uKt3AW0Db6cRHjhAInru1CVksaxg+OIEBui8e1LNhBobBDGqs+mXm7Kxzzc
-         y1hg==
-X-Gm-Message-State: AOAM5302l1gzgTl1554Za8lf8ItOX4Jqc07P9cxujcfxnI1iTjF6Nqt/
-        VPmSPmQgzPFnsKg976YvPcCEVNSqBoo=
-X-Google-Smtp-Source: ABdhPJwhlRVmuv0eGYBQFMy9+EyETPpK00ik/ueqcyTpRWYPuVBifVtW7eXqsTj+KG2D/6vXvwUFTQ==
-X-Received: by 2002:a05:6000:1c8:: with SMTP id t8mr16214736wrx.200.1590908805631;
-        Sun, 31 May 2020 00:06:45 -0700 (PDT)
+        bh=lPMutBkJju6wyauV5k7LNnHuIgh2OD++KVtMrRBIPHQ=;
+        b=Ec+MeB/nSyixVcu2TX4zbMip81R8fZ6T1up2XQBtPtH0xFL9JtJwjggsjBIID2Q2RT
+         GxZHHk/JzgRI+NW3lvsJ4Xps25fw7pPMT/14gJnND1F8vK9O5t+W7RFPeZxnfcLZXPKG
+         G+vt84EdZCFV9d8KIG2e/dij8mIyXZon3U+vkX/vjKYbfrEHaTb/AeDZL0nhsCX3g2wl
+         QcW0qo/C8XBc+cIfRLyhdC3h0GjDZxbWkJTb8wRPE0oc/v36SVeWDnHtKSRRm943XgTd
+         o07B2HG5kH73p49zY/cAlLCymqDOyR/MEwaLZhksX/l9Py6XXXaY8pRRQdmLMs2YM5fR
+         tyVA==
+X-Gm-Message-State: AOAM533xApFmHD879o/y1p/15vJnm7rCYq8SCz+SZJ5cyS2Rv+FuKZY0
+        +km/UHzTEoLU9eBOu2lFPjnWFQ==
+X-Google-Smtp-Source: ABdhPJw/7U3twnCd7c1YsMkcq4aUp9/C1cmUQTxFjJNOXBbOfcA58aBAU3ZQ50mf3S4Txx0tm1vKPA==
+X-Received: by 2002:adf:de84:: with SMTP id w4mr16649665wrl.54.1590908811613;
+        Sun, 31 May 2020 00:06:51 -0700 (PDT)
 Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.06.43
+        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.06.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 31 May 2020 00:06:45 -0700 (PDT)
+        Sun, 31 May 2020 00:06:51 -0700 (PDT)
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH v3 net-next 3/6] bnxt_en: Use 'enable_live_dev_reset' devlink parameter.
-Date:   Sun, 31 May 2020 12:33:42 +0530
-Message-Id: <1590908625-10952-4-git-send-email-vasundhara-v.volam@broadcom.com>
+Subject: [PATCH v3 net-next 4/6] bnxt_en: Update firmware spec. to 1.10.1.40.
+Date:   Sun, 31 May 2020 12:33:43 +0530
+Message-Id: <1590908625-10952-5-git-send-email-vasundhara-v.volam@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
 References: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
@@ -58,66 +58,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When enabled, device will enable the live reset capability in
-NVRAM configuration.
+Major changes are to add additional flags to configure hot firmware
+reset.
 
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- Documentation/networking/devlink/bnxt.rst         | 2 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 6 ++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h | 1 +
- 3 files changed, 9 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 64 ++++++++++++++++-----------
+ 1 file changed, 37 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/networking/devlink/bnxt.rst b/Documentation/networking/devlink/bnxt.rst
-index 3dfd84c..ae0a69d 100644
---- a/Documentation/networking/devlink/bnxt.rst
-+++ b/Documentation/networking/devlink/bnxt.rst
-@@ -22,6 +22,8 @@ Parameters
-      - Permanent
-    * - ``msix_vec_per_pf_min``
-      - Permanent
-+   * - ``enable_live_dev_reset``
-+     - Permanent
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+index 7e9235c..0a6e60e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+@@ -367,6 +367,8 @@ struct cmd_nums {
+ 	#define HWRM_TF_EXT_EM_OP                         0x2ddUL
+ 	#define HWRM_TF_EXT_EM_CFG                        0x2deUL
+ 	#define HWRM_TF_EXT_EM_QCFG                       0x2dfUL
++	#define HWRM_TF_EM_INSERT                         0x2e0UL
++	#define HWRM_TF_EM_DELETE                         0x2e1UL
+ 	#define HWRM_TF_TCAM_SET                          0x2eeUL
+ 	#define HWRM_TF_TCAM_GET                          0x2efUL
+ 	#define HWRM_TF_TCAM_MOVE                         0x2f0UL
+@@ -391,6 +393,7 @@ struct cmd_nums {
+ 	#define HWRM_DBG_QCAPS                            0xff20UL
+ 	#define HWRM_DBG_QCFG                             0xff21UL
+ 	#define HWRM_DBG_CRASHDUMP_MEDIUM_CFG             0xff22UL
++	#define HWRM_NVM_REQ_ARBITRATION                  0xffedUL
+ 	#define HWRM_NVM_FACTORY_DEFAULTS                 0xffeeUL
+ 	#define HWRM_NVM_VALIDATE_OPTION                  0xffefUL
+ 	#define HWRM_NVM_FLUSH                            0xfff0UL
+@@ -464,8 +467,8 @@ struct hwrm_err_output {
+ #define HWRM_VERSION_MAJOR 1
+ #define HWRM_VERSION_MINOR 10
+ #define HWRM_VERSION_UPDATE 1
+-#define HWRM_VERSION_RSVD 33
+-#define HWRM_VERSION_STR "1.10.1.33"
++#define HWRM_VERSION_RSVD 40
++#define HWRM_VERSION_STR "1.10.1.40"
  
- The ``bnxt`` driver also implements the following driver-specific
- parameters.
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a812beb..3e1a4ef 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -314,6 +314,8 @@ enum bnxt_dl_param_id {
- 	 NVM_OFF_MSIX_VEC_PER_PF_MIN, BNXT_NVM_SHARED_CFG, 7, 4},
- 	{BNXT_DEVLINK_PARAM_ID_GRE_VER_CHECK, NVM_OFF_DIS_GRE_VER_CHECK,
- 	 BNXT_NVM_SHARED_CFG, 1, 1},
-+	{DEVLINK_PARAM_GENERIC_ID_ENABLE_LIVE_DEV_RESET,
-+	 NVM_OFF_FW_LIVE_RESET, BNXT_NVM_SHARED_CFG, 1, 1},
+ /* hwrm_ver_get_input (size:192b/24B) */
+ struct hwrm_ver_get_input {
+@@ -1192,6 +1195,7 @@ struct hwrm_func_qcaps_output {
+ 	#define FUNC_QCAPS_RESP_FLAGS_EXT_ECN_MARK_SUPPORTED         0x1UL
+ 	#define FUNC_QCAPS_RESP_FLAGS_EXT_ECN_STATS_SUPPORTED        0x2UL
+ 	#define FUNC_QCAPS_RESP_FLAGS_EXT_EXT_HW_STATS_SUPPORTED     0x4UL
++	#define FUNC_QCAPS_RESP_FLAGS_EXT_HOT_RESET_IF_SUPPORT       0x8UL
+ 	u8	unused_1[3];
+ 	u8	valid;
+ };
+@@ -1226,6 +1230,7 @@ struct hwrm_func_qcfg_output {
+ 	#define FUNC_QCFG_RESP_FLAGS_TRUSTED_VF                   0x40UL
+ 	#define FUNC_QCFG_RESP_FLAGS_SECURE_MODE_ENABLED          0x80UL
+ 	#define FUNC_QCFG_RESP_FLAGS_PREBOOT_LEGACY_L2_RINGS      0x100UL
++	#define FUNC_QCFG_RESP_FLAGS_HOT_RESET_ALLOWED            0x200UL
+ 	u8	mac_address[6];
+ 	__le16	pci_id;
+ 	__le16	alloc_rsscos_ctx;
+@@ -1352,30 +1357,32 @@ struct hwrm_func_cfg_input {
+ 	#define FUNC_CFG_REQ_FLAGS_NQ_ASSETS_TEST                 0x800000UL
+ 	#define FUNC_CFG_REQ_FLAGS_TRUSTED_VF_DISABLE             0x1000000UL
+ 	#define FUNC_CFG_REQ_FLAGS_PREBOOT_LEGACY_L2_RINGS        0x2000000UL
++	#define FUNC_CFG_REQ_FLAGS_HOT_RESET_IF_EN_DIS            0x4000000UL
+ 	__le32	enables;
+-	#define FUNC_CFG_REQ_ENABLES_MTU                     0x1UL
+-	#define FUNC_CFG_REQ_ENABLES_MRU                     0x2UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_RSSCOS_CTXS         0x4UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_CMPL_RINGS          0x8UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_TX_RINGS            0x10UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_RX_RINGS            0x20UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_L2_CTXS             0x40UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_VNICS               0x80UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_STAT_CTXS           0x100UL
+-	#define FUNC_CFG_REQ_ENABLES_DFLT_MAC_ADDR           0x200UL
+-	#define FUNC_CFG_REQ_ENABLES_DFLT_VLAN               0x400UL
+-	#define FUNC_CFG_REQ_ENABLES_DFLT_IP_ADDR            0x800UL
+-	#define FUNC_CFG_REQ_ENABLES_MIN_BW                  0x1000UL
+-	#define FUNC_CFG_REQ_ENABLES_MAX_BW                  0x2000UL
+-	#define FUNC_CFG_REQ_ENABLES_ASYNC_EVENT_CR          0x4000UL
+-	#define FUNC_CFG_REQ_ENABLES_VLAN_ANTISPOOF_MODE     0x8000UL
+-	#define FUNC_CFG_REQ_ENABLES_ALLOWED_VLAN_PRIS       0x10000UL
+-	#define FUNC_CFG_REQ_ENABLES_EVB_MODE                0x20000UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_MCAST_FILTERS       0x40000UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_HW_RING_GRPS        0x80000UL
+-	#define FUNC_CFG_REQ_ENABLES_CACHE_LINESIZE          0x100000UL
+-	#define FUNC_CFG_REQ_ENABLES_NUM_MSIX                0x200000UL
+-	#define FUNC_CFG_REQ_ENABLES_ADMIN_LINK_STATE        0x400000UL
++	#define FUNC_CFG_REQ_ENABLES_MTU                      0x1UL
++	#define FUNC_CFG_REQ_ENABLES_MRU                      0x2UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_RSSCOS_CTXS          0x4UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_CMPL_RINGS           0x8UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_TX_RINGS             0x10UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_RX_RINGS             0x20UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_L2_CTXS              0x40UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_VNICS                0x80UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_STAT_CTXS            0x100UL
++	#define FUNC_CFG_REQ_ENABLES_DFLT_MAC_ADDR            0x200UL
++	#define FUNC_CFG_REQ_ENABLES_DFLT_VLAN                0x400UL
++	#define FUNC_CFG_REQ_ENABLES_DFLT_IP_ADDR             0x800UL
++	#define FUNC_CFG_REQ_ENABLES_MIN_BW                   0x1000UL
++	#define FUNC_CFG_REQ_ENABLES_MAX_BW                   0x2000UL
++	#define FUNC_CFG_REQ_ENABLES_ASYNC_EVENT_CR           0x4000UL
++	#define FUNC_CFG_REQ_ENABLES_VLAN_ANTISPOOF_MODE      0x8000UL
++	#define FUNC_CFG_REQ_ENABLES_ALLOWED_VLAN_PRIS        0x10000UL
++	#define FUNC_CFG_REQ_ENABLES_EVB_MODE                 0x20000UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_MCAST_FILTERS        0x40000UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_HW_RING_GRPS         0x80000UL
++	#define FUNC_CFG_REQ_ENABLES_CACHE_LINESIZE           0x100000UL
++	#define FUNC_CFG_REQ_ENABLES_NUM_MSIX                 0x200000UL
++	#define FUNC_CFG_REQ_ENABLES_ADMIN_LINK_STATE         0x400000UL
++	#define FUNC_CFG_REQ_ENABLES_HOT_RESET_IF_SUPPORT     0x800000UL
+ 	__le16	mtu;
+ 	__le16	mru;
+ 	__le16	num_rsscos_ctxs;
+@@ -7620,7 +7627,8 @@ struct hwrm_dbg_ring_info_get_input {
+ 	#define DBG_RING_INFO_GET_REQ_RING_TYPE_L2_CMPL 0x0UL
+ 	#define DBG_RING_INFO_GET_REQ_RING_TYPE_TX      0x1UL
+ 	#define DBG_RING_INFO_GET_REQ_RING_TYPE_RX      0x2UL
+-	#define DBG_RING_INFO_GET_REQ_RING_TYPE_LAST   DBG_RING_INFO_GET_REQ_RING_TYPE_RX
++	#define DBG_RING_INFO_GET_REQ_RING_TYPE_NQ      0x3UL
++	#define DBG_RING_INFO_GET_REQ_RING_TYPE_LAST   DBG_RING_INFO_GET_REQ_RING_TYPE_NQ
+ 	u8	unused_0[3];
+ 	__le32	fw_ring_id;
+ };
+@@ -7633,7 +7641,8 @@ struct hwrm_dbg_ring_info_get_output {
+ 	__le16	resp_len;
+ 	__le32	producer_index;
+ 	__le32	consumer_index;
+-	u8	unused_0[7];
++	__le32	cag_vector_ctrl;
++	u8	unused_0[3];
+ 	u8	valid;
  };
  
- union bnxt_nvm_data {
-@@ -640,6 +642,10 @@ static int bnxt_dl_msix_validate(struct devlink *dl, u32 id,
- 			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
- 			     bnxt_dl_nvm_param_get, bnxt_dl_nvm_param_set,
- 			     NULL),
-+	DEVLINK_PARAM_GENERIC(ENABLE_LIVE_DEV_RESET,
-+			      BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			      bnxt_dl_nvm_param_get, bnxt_dl_nvm_param_set,
-+			      NULL),
+@@ -7922,6 +7931,7 @@ struct hwrm_nvm_install_update_input {
+ 	#define NVM_INSTALL_UPDATE_REQ_FLAGS_ERASE_UNUSED_SPACE     0x1UL
+ 	#define NVM_INSTALL_UPDATE_REQ_FLAGS_REMOVE_UNUSED_PKG      0x2UL
+ 	#define NVM_INSTALL_UPDATE_REQ_FLAGS_ALLOWED_TO_DEFRAG      0x4UL
++	#define NVM_INSTALL_UPDATE_REQ_FLAGS_VERIFY_ONLY            0x8UL
+ 	u8	unused_0[2];
  };
  
- static const struct devlink_param bnxt_dl_port_params[] = {
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-index d5c8bd4..0c786fb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-@@ -39,6 +39,7 @@ static inline void bnxt_link_bp_to_dl(struct bnxt *bp, struct devlink *dl)
- #define NVM_OFF_DIS_GRE_VER_CHECK	171
- #define NVM_OFF_ENABLE_SRIOV		401
- #define NVM_OFF_NVM_CFG_VER		602
-+#define NVM_OFF_FW_LIVE_RESET		917
- 
- #define BNXT_NVM_CFG_VER_BITS		24
- #define BNXT_NVM_CFG_VER_BYTES		4
 -- 
 1.8.3.1
 
