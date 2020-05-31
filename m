@@ -2,272 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E47CD1E993A
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 19:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68401E9973
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 19:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728197AbgEaRTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 13:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
+        id S1728362AbgEaRbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 13:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbgEaRTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 13:19:19 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A43C061A0E;
-        Sun, 31 May 2020 10:19:19 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id g5so2341503pfm.10;
-        Sun, 31 May 2020 10:19:19 -0700 (PDT)
+        with ESMTP id S1728282AbgEaRbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 13:31:01 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DD9C061A0E
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 10:31:00 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id o9so5271722ljj.6
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 10:30:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0NoqoLgeFV05DwStme6AY8HWmUhYmSoSETzNa4bMDsM=;
-        b=bp29/DVJEfBLIyIdCDBJ3UqDJ+xLd82ss6uIJt/00FgFMbz/S4Gl4vPr5u4kYjkZ56
-         JksrUcYZ0Wr8qEqKciMSFkiCTdM2xxbZSUt+v2pjkwoB2/vZgF6e8+w9H8zFozI5E0m2
-         Y0CNkch4nNwbRKGEWo0L3H2byr4QhL+AV/bMN9dWlY12Dn8XvpbFY0i6bystBI2p9wIh
-         qIBs2TmyPXWaBR0wrRM3i5JzMH9fX9tUk5OsK1GQC4dRCe9uOJbLdeweyG+VaPXhpV3a
-         PL+ED8ksHuRx9pEPdRdrYN3ouurh4q3+0ZB7K690wlwvEnxzHlRKiHC573owPk5hxcoY
-         zrdg==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U+ftINrOA+kmRvsJhkTq7rpVSC1yiTvQH2y0M6Ic020=;
+        b=XW8nHadCLasGtn40h3x+RxOuS/L2eMigg025to20Lrh4YVe0x/QjdYgzxbFodsb8M+
+         LtYYs9404sul2rB9C1pu9+26Cl6fabsQN7NI/eXdemYjED+zBbOe0XKyOqWAJsUrBxHr
+         o+fFxK8GD5/evtb6aHhIurC3nne8xVE3uw/WA0SP/0L6czDoNvheQxIRzBzInB+rb1GV
+         XaW57QtQX6GuOCDkyPlS5J1XqESTn86dG2Gc6QsNcqkHQ4rtgf8uuDXYgDFHtZi82z3o
+         Eoy4qSkce2YiETr5qaUtZFUnE9rHeON8IQ/6Qf/leYR/2dTXlQz27K2uOuFPsMEe2xF+
+         W6yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0NoqoLgeFV05DwStme6AY8HWmUhYmSoSETzNa4bMDsM=;
-        b=X+QXRvfFC1bsoGRlLhcdcwY0n/nuH2695va1ZD4LlBPWVoUH1XPmqPJFEuCpKHbeUe
-         fR5JiWqQC3BTYhgruLSBNkNjX5Mv26steCHAey/z7UM7jNwsIXL5Hzkw5Q1KsRKZb8sP
-         Lv2F0RJvlZU9ZoTDfA7oQq6cHvMII4omDYIW9slbAGNyMCSPLEwi/WcRVkQCUB57oFv3
-         P5norjtwQHyuBXQuF8sYQ3TaKxr2Qa2TrcMspfOGuvamgZHkyckEiZq6MC5AOrYwoThM
-         ef1hhP9ry029OnUFyaVa+hEaAnA6YKdpdSZNy+FjK4HruRqoh3VuohJ6q4mxzbsifMJg
-         HwvA==
-X-Gm-Message-State: AOAM532sdxwRqBR7TZUGzINLLjhPnETd48vdmfkNpoubsgw56b5MXbtK
-        8GPGffLbx1pFogU7MJXaWzLhdg90
-X-Google-Smtp-Source: ABdhPJy29IWuxxHi6iPZpFGhGmaPW4Gylj3OcVtJcrTRlrQJeuiPWlNqKTWPys/AZ3BvOv+MaBjCbQ==
-X-Received: by 2002:a05:6a00:2b0:: with SMTP id q16mr1187613pfs.104.1590945558897;
-        Sun, 31 May 2020 10:19:18 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:6ddc])
-        by smtp.gmail.com with ESMTPSA id 2sm12046502pfd.163.2020.05.31.10.19.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 10:19:17 -0700 (PDT)
-Date:   Sun, 31 May 2020 10:19:15 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "zhujianwei (C)" <zhujianwei7@huawei.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        Hehuazhen <hehuazhen@huawei.com>,
-        Lennart Poettering <lennart@poettering.net>,
-        Christian Ehrhardt <christian.ehrhardt@canonical.com>,
-        Zbigniew =?utf-8?Q?J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>,
-        daniel@iogearbox.net, netdev@vger.kernel.org
-Subject: Re: new seccomp mode aims to improve performance
-Message-ID: <20200531171915.wsxvdjeetmhpsdv2@ast-mbp.dhcp.thefacebook.com>
-References: <c22a6c3cefc2412cad00ae14c1371711@huawei.com>
- <CAADnVQLnFuOR+Xk1QXpLFGHx-8StPCye7j5UgKbBoLrmKtygQA@mail.gmail.com>
- <202005290903.11E67AB0FD@keescook>
- <202005291043.A63D910A8@keescook>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U+ftINrOA+kmRvsJhkTq7rpVSC1yiTvQH2y0M6Ic020=;
+        b=iBTde4KG3ScwNMcQEy6gvcWB86QC37u8PO11zadsLgzjDlZ8JkyUSHlxneaCZU3j/7
+         /SuGrOvgMRwncmr6EeoQwTEXYqfG0pdBkiFYv43aHqq6meb905EKQwuRld8jWaY0TTD7
+         2DmxFyBdhk6SwTxoxhT0qGCjUZtl8bQlCprfITxYKYXNK6rZpdDTsleKjN7rQ6oizCnQ
+         bopust5I7HuOwHuR33wpMybBQSOKGfga239mEZRSjkPpkTnJJDiTg9oGYD17HV0DxxEw
+         nEmFqsRwaVM7p7fNIt+E5I+S21tJjzFaC0pz/HoaR8qfBon0FjbJYYQ6mkdnOfkgXzZG
+         FuVA==
+X-Gm-Message-State: AOAM530NC1kGIbowWKa084P8YROCBJeY3UG9dvT4PRjcFRuF4MT7yLXu
+        khNuwKjXtW8hCn1GuxLKZPpYCw==
+X-Google-Smtp-Source: ABdhPJz15zNFvak8GH+qaTWNpCKCnljnfH92jm9W8Tui8N9B95Hzb1w4z4wURHT8DM/WtWLzttH/hA==
+X-Received: by 2002:a2e:8e64:: with SMTP id t4mr7401704ljk.414.1590946258520;
+        Sun, 31 May 2020 10:30:58 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:623:2775:c819:56c9:e22:a1f6? ([2a00:1fa0:623:2775:c819:56c9:e22:a1f6])
+        by smtp.gmail.com with ESMTPSA id t5sm3930633lff.39.2020.05.31.10.30.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 May 2020 10:30:57 -0700 (PDT)
+Subject: Re: [PATCH RFT] ravb: Mask PHY mode to avoid inserting delays twice
+To:     David Miller <davem@davemloft.net>, geert+renesas@glider.be
+Cc:     kuba@kernel.org, andrew@lunn.ch, linux@rempel-privat.de,
+        philippe.schenker@toradex.com, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        kazuya.mizuguchi.ks@renesas.com, grygorii.strashko@ti.com,
+        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200529122540.31368-1-geert+renesas@glider.be>
+ <20200530.215102.921642191346859546.davem@davemloft.net>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <ca3b597d-7593-0459-b7be-101f868317cf@cogentembedded.com>
+Date:   Sun, 31 May 2020 20:30:55 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202005291043.A63D910A8@keescook>
+In-Reply-To: <20200530.215102.921642191346859546.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 12:27:03PM -0700, Kees Cook wrote:
-> On Fri, May 29, 2020 at 09:09:28AM -0700, Kees Cook wrote:
-> > On Fri, May 29, 2020 at 08:43:56AM -0700, Alexei Starovoitov wrote:
-> > > I don't think your hunch at where cpu is spending cycles is correct.
-> > > Could you please do two experiments:
-> > > 1. try trivial seccomp bpf prog that simply returns 'allow'
-> > > 2. replace bpf_prog_run_pin_on_cpu() in seccomp.c with C code
-> > >   that returns 'allow' and make sure it's noinline or in a different C file,
-> > >   so that compiler doesn't optimize the whole seccomp_run_filters() into a nop.
-> > > 
-> > > Then measure performance of both.
-> > > I bet you'll see exactly the same numbers.
-> > 
-> > Android has already done this, it appeared to not be the same. Calling
-> > into a SECCOMP_RET_ALLOW filter had a surprisingly high cost. I'll see
-> > if I can get you the numbers. I was frankly quite surprised -- I
-> > understood the bulk of the seccomp overhead to be in taking the TIF_WORK
-> > path, copying arguments, etc, but something else is going on there.
-> 
-> So while it's not the Android measurements, here's what I'm seeing on
-> x86_64 (this is hardly a perfect noiseless benchmark, but sampling error
-> appears to close to 1%):
-> 
-> 
-> net.core.bpf_jit_enable=0:
-> 
-> Benchmarking 16777216 samples...
-> 10.633756139 - 0.004359714 = 10629396425
-> getpid native: 633 ns
-> 23.008737499 - 10.633967641 = 12374769858
-> getpid RET_ALLOW 1 filter: 737 ns
-> 36.723141843 - 23.008975696 = 13714166147
-> getpid RET_ALLOW 2 filters: 817 ns
-> 47.751422021 - 36.723345630 = 11028076391
-> getpid BPF-less allow: 657 ns
-> Estimated total seccomp overhead for 1 filter: 104 ns
-> Estimated total seccomp overhead for 2 filters: 184 ns
-> Estimated seccomp per-filter overhead: 80 ns
-> Estimated seccomp entry overhead: 24 ns
-> Estimated BPF overhead per filter: 80 ns
-> 
-> 
-> net.core.bpf_jit_enable=1:
-> net.core.bpf_jit_harden=1:
-> 
-> Benchmarking 16777216 samples...
-> 31.939978606 - 21.275190689 = 10664787917
-> getpid native: 635 ns
-> 43.324592380 - 31.940794751 = 11383797629
-> getpid RET_ALLOW 1 filter: 678 ns
-> 55.001650599 - 43.326293248 = 11675357351
-> getpid RET_ALLOW 2 filters: 695 ns
-> 65.986452855 - 55.002249904 = 10984202951
-> getpid BPF-less allow: 654 ns
-> Estimated total seccomp overhead for 1 filter: 43 ns
-> Estimated total seccomp overhead for 2 filters: 60 ns
-> Estimated seccomp per-filter overhead: 17 ns
-> Estimated seccomp entry overhead: 26 ns
-> Estimated BPF overhead per filter: 24 ns
-> 
-> 
-> net.core.bpf_jit_enable=1:
-> net.core.bpf_jit_harden=0:
-> 
-> Benchmarking 16777216 samples...
-> 10.684681435 - 0.004198682 = 10680482753
-> getpid native: 636 ns
-> 22.050823167 - 10.685571417 = 11365251750
-> getpid RET_ALLOW 1 filter: 677 ns
-> 33.714134291 - 22.051100183 = 11663034108
-> getpid RET_ALLOW 2 filters: 695 ns
-> 44.793312551 - 33.714383001 = 11078929550
-> getpid BPF-less allow: 660 ns
-> Estimated total seccomp overhead for 1 filter: 41 ns
-> Estimated total seccomp overhead for 2 filters: 59 ns
-> Estimated seccomp per-filter overhead: 18 ns
-> Estimated seccomp entry overhead: 23 ns
-> Estimated BPF overhead per filter: 17 ns
-> 
-> 
-> The above is from my (very dangerous!) benchmarking patch[1].
+Hello!
 
-Thank you for crafting a benchmark.
-The only thing that it's not doing a fair comparison.
-The problem with that patch [1] that is using:
+On 31.05.2020 7:51, David Miller wrote:
 
-static noinline u32 __seccomp_benchmark(struct bpf_prog *prog,
-                                        const struct seccomp_data *sd)
-{
-        return SECCOMP_RET_ALLOW;
-}
-
-as a benchmarking function.
-The 'noinline' keyword tells the compiler to keep the body of the function, but
-the compiler is still doing full control and data flow analysis though this
-function and it is smart enough to optimize its usage in seccomp_run_filters()
-and in __seccomp_filter() because all functions are in a single .c file.
-Lots of code gets optimized away when 'f->benchmark' is on.
-
-To make it into fair comparison I've added the following patch
-on top of your [1].
-
-diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-index 2fdbf5ad8372..86204422e096 100644
---- a/kernel/seccomp.c
-+++ b/kernel/seccomp.c
-@@ -244,7 +244,7 @@ static int seccomp_check_filter(struct sock_filter *filter, unsigned int flen)
-        return 0;
- }
-
--static noinline u32 __seccomp_benchmark(struct bpf_prog *prog,
-+__weak noinline u32 __seccomp_benchmark(struct bpf_prog *prog,
-                                        const struct seccomp_data *sd)
-
-Please take a look at 'make kernel/seccomp.s' before and after to see the difference
-__weak keyword makes.
-And here is what seccomp_benchmark now reports:
-
-Benchmarking 33554432 samples...
-22.618269641 - 15.030812794 = 7587456847
-getpid native: 226 ns
-30.792042986 - 22.619048831 = 8172994155
-getpid RET_ALLOW 1 filter: 243 ns
-39.451435038 - 30.792836778 = 8658598260
-getpid RET_ALLOW 2 filters: 258 ns
-47.616011529 - 39.452190830 = 8163820699
-getpid BPF-less allow: 243 ns
-Estimated total seccomp overhead for 1 filter: 17 ns
-Estimated total seccomp overhead for 2 filters: 32 ns
-Estimated seccomp per-filter overhead: 15 ns
-Estimated seccomp entry overhead: 2 ns
-Estimated BPF overhead per filter: 0 ns
-
-Depending on the run BPF-less mode would be slower than with BPF ;)
-
-Benchmarking 33554432 samples...
-22.602737193 - 15.078827612 = 7523909581
-getpid native: 224 ns
-30.734009056 - 22.603540911 = 8130468145
-getpid RET_ALLOW 1 filter: 242 ns
-39.106701659 - 30.734762631 = 8371939028
-getpid RET_ALLOW 2 filters: 249 ns
-47.326509567 - 39.107552786 = 8218956781
-getpid BPF-less allow: 244 ns
-Estimated total seccomp overhead for 1 filter: 18 ns
-Estimated total seccomp overhead for 2 filters: 25 ns
-Estimated seccomp per-filter overhead: 7 ns
-Estimated seccomp entry overhead: 11 ns
-Estimated BPF overhead per filter: 18446744073709551614 ns
-
-Above numbers were obtained on non-debug kernel with retpoline off
-and net.core.bpf_jit_enable=1.
-When retpoline=y the f->benchmark mode will be slightly faster
-due to retpoline overhead.
-If retpoline is a concern the bpf dispatcher logic can be applied to seccomp.
-It eliminiated retpoline overhead in XDP/bpf fast path.
-
-> So, with the layered nature of seccomp filters there's a reasonable gain
-> to be seen for a O(1) bitmap lookup to skip running even a single filter,
-> even for the fastest BPF mode.
-
-This is not true.
-The O(1) bitmap implemented as kernel C code will have exactly the same speed
-as O(1) bitmap implemented as eBPF program.
-
-> Not that we need to optimize for the pathological case, but this would
-> be especially useful for cases like systemd, which appears to be
-> constructing seccomp filters very inefficiently maybe on a per-syscall[3]
-> basis? For example, systemd-resolved has 32 (!) seccomp filters
-> attached[2]:
+>> Until recently, the Micrel KSZ9031 PHY driver ignored any PHY mode
+>> ("RGMII-*ID") settings, but used the hardware defaults, augmented by
+>> explicit configuration of individual skew values using the "*-skew-ps"
+>> DT properties.  The lack of PHY mode support was compensated by the
+>> EtherAVB MAC driver, which configures TX and/or RX internal delay
+>> itself, based on the PHY mode.
+>>
+>> However, now the KSZ9031 driver has gained PHY mode support, delays may
+>> be configured twice, causing regressions.  E.g. on the Renesas
+>> Salvator-X board with R-Car M3-W ES1.0, TX performance dropped from ca.
+>> 400 Mbps to 0.1-0.3 Mbps, as measured by nuttcp.
+>>
+>> As internal delay configuration supported by the KSZ9031 PHY is too
+>> limited for some use cases, the ability to configure MAC internal delay
+>> is deemed useful and necessary.  Hence a proper fix would involve
+>> splitting internal delay configuration in two parts, one for the PHY,
+>> and one for the MAC.  However, this would require adding new DT
+>> properties, thus breaking DTB backwards-compatibility.
+>>
+>> Hence fix the regression in a backwards-compatibility way, by letting
+>> the EtherAVB driver mask the PHY mode when it has inserted a delay, to
+>> avoid the PHY driver adding a second delay.  This also fixes messages
+>> like:
+>>
+>>      Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00: *-skew-ps values should be used only with phy-mode = "rgmii"
+>>
+>> as the PHY no longer sees the original RGMII-*ID mode.
+>>
+>> Solving the issue by splitting configuration in two parts can be handled
+>> in future patches, and would require retaining a backwards-compatibility
+>> mode anyway.
+>>
+>> Fixes: bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > 
-> # grep ^Seccomp_filters /proc/$(pidof systemd-resolved)/status
-> Seccomp_filters:        32
-> 
-> # grep SystemCall /lib/systemd/system/systemd-resolved.service
-> SystemCallArchitectures=native
-> SystemCallErrorNumber=EPERM
-> SystemCallFilter=@system-service
-> 
-> I'd like to better understand what they're doing, but haven't had time
-> to dig in. (The systemd devel mailing list requires subscription, so
-> I've directly CCed some systemd folks that have touched seccomp there
-> recently. Hi! The starts of this thread is here[4].)
+> Applied to net-next, thank you.
 
-32 seccomp filters sounds like a lot.
-Would be great to find out what are they doing and whether
-they can be optimized into much shorter and faster eBPF program.
+    Why not to net.git? It's a fix after all...
 
-> -Kees
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?h=seccomp/benchmark-bpf&id=20cc7d8f4238ea3bc1798f204bb865f4994cca27
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?h=for-next/seccomp&id=9d06f16f463cef5c445af9738efed2bfe4c64730
-> [3] https://www.freedesktop.org/software/systemd/man/systemd.exec.html#SystemCallFilter=
-> [4] https://lore.kernel.org/bpf/c22a6c3cefc2412cad00ae14c1371711@huawei.com/
-> 
-> -- 
-> Kees Cook
+MBR, Sergei
