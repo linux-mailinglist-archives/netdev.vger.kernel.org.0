@@ -2,57 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EAEC1E9651
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 10:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CCA1E96B2
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 11:53:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbgEaI3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 04:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
+        id S1728125AbgEaJxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 05:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727959AbgEaI3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 04:29:15 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B9DC03E969
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:13 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id e2so6244579eje.13
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=01x38t0xTk7+DfmoaUEjlRqGIKh1P8FrwxiKsjkB7Q0=;
-        b=M47TiDPQiix4JzD5xbIyYxnvk+SV3J2SG9KC/B1Q43LjhLe2Ov7y6KaWBqBvFXprN5
-         x3v12joXadiWi/ztMU06F2ifMulrywdyqrmTdU+7yyLfxtxu9/labftjnJU+omwzL+J7
-         kwd/tfrGdALTvY0z0a7FnnjvPjqnrKc+viKgw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=01x38t0xTk7+DfmoaUEjlRqGIKh1P8FrwxiKsjkB7Q0=;
-        b=ryqAEFcSeXvM3ZG7nX+BVXlSiia9tEjIPHRk3ASJGnFGYltXW2MTv/Wz+oHnq4Hfu4
-         lNJI0XjPDRT0vnGU3oL36HF930mMP3hnDtqig4KvtXbd/haOEyX6r4ougZixgBxDor5w
-         H7lD2KAFcgr4TxhJXRMV+VPJLV3zKATP5qyPmw9bZMTyw0uLxhIuJaZpm3W3qeZXf3oz
-         MNjyNoRVdpW3LXdzCgvfplGh/9LZvfl8Wr/V2AnMqadDIwqNEwhj0rICHycLjK3o2OvN
-         E+Ch3xUzWwW5xTzfy9HSW/xag+07e3vtXpxvuhfUGwb/aplswQ95JdM9R9/cBCJ5iMVa
-         Vojg==
-X-Gm-Message-State: AOAM530sfHhisXVgUn4Zy3vQa3O9RxHDzZ2qiZXFXrIZhFwvuMs3+e99
-        Gj40AJWARzwstFTa3ffV7Vgu4dJWuC4=
-X-Google-Smtp-Source: ABdhPJz8WjaZwgilQvvQsoR/axJltqOCpIRaF8bSEDEd+xTahOmxmxgPMFlyGjDJ+QM6chfo/sET4w==
-X-Received: by 2002:a17:906:9149:: with SMTP id y9mr9343813ejw.153.1590913752225;
-        Sun, 31 May 2020 01:29:12 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id g13sm11778021ejh.119.2020.05.31.01.29.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 01:29:11 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
-Subject: [PATCH bpf-next v2 12/12] selftests/bpf: Extend test_flow_dissector to cover link creation
-Date:   Sun, 31 May 2020 10:28:46 +0200
-Message-Id: <20200531082846.2117903-13-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200531082846.2117903-1-jakub@cloudflare.com>
-References: <20200531082846.2117903-1-jakub@cloudflare.com>
+        with ESMTP id S1725898AbgEaJxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 05:53:44 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C54C061A0E;
+        Sun, 31 May 2020 02:53:44 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jfKey-006fbI-Rf; Sun, 31 May 2020 11:53:41 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2020-05-31
+Date:   Sun, 31 May 2020 11:53:20 +0200
+Message-Id: <20200531095321.18991-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -60,169 +32,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the existing flow_dissector test case to run tests once using direct
-prog attachments, and then for the second time using indirect attachment
-via link.
+Hi Dave,
 
-The intention is to exercises the newly added high-level API for attaching
-programs to network namespace with links (bpf_program__attach_netns).
+My apologies that this comes so late, it took me much longer than
+I had anticipated to pull together the 6 GHz changes between the
+overlaps that Qualcomm and we at Intel had, since we both had much
+of this implemented, though with a bit different focus (AP/mesh
+vs. client). But I think it's now fine, although I left out the
+scanning for now since we're still discussing the userspace API.
 
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- .../selftests/bpf/prog_tests/flow_dissector.c | 115 +++++++++++++-----
- 1 file changed, 82 insertions(+), 33 deletions(-)
+Other than that, nothing really big, you can see the tag message
+below.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-index b6370c0b3b7a..ea14e3ece812 100644
---- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-+++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-@@ -103,6 +103,7 @@ struct test {
- 
- #define VLAN_HLEN	4
- 
-+static __u32 duration;
- struct test tests[] = {
- 	{
- 		.name = "ipv4",
-@@ -474,11 +475,87 @@ static int init_prog_array(struct bpf_object *obj, struct bpf_map *prog_array)
- 	return 0;
- }
- 
-+static void run_tests_skb_less(int tap_fd, struct bpf_map *keys)
-+{
-+	int i, err, keys_fd;
-+
-+	keys_fd = bpf_map__fd(keys);
-+	if (CHECK(keys_fd < 0, "bpf_map__fd", "err %d\n", keys_fd))
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(tests); i++) {
-+		/* Keep in sync with 'flags' from eth_get_headlen. */
-+		__u32 eth_get_headlen_flags =
-+			BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
-+		struct bpf_prog_test_run_attr tattr = {};
-+		struct bpf_flow_keys flow_keys = {};
-+		__u32 key = (__u32)(tests[i].keys.sport) << 16 |
-+			    tests[i].keys.dport;
-+
-+		/* For skb-less case we can't pass input flags; run
-+		 * only the tests that have a matching set of flags.
-+		 */
-+
-+		if (tests[i].flags != eth_get_headlen_flags)
-+			continue;
-+
-+		err = tx_tap(tap_fd, &tests[i].pkt, sizeof(tests[i].pkt));
-+		CHECK(err < 0, "tx_tap", "err %d errno %d\n", err, errno);
-+
-+		err = bpf_map_lookup_elem(keys_fd, &key, &flow_keys);
-+		CHECK_ATTR(err, tests[i].name, "bpf_map_lookup_elem %d\n", err);
-+
-+		CHECK_ATTR(err, tests[i].name, "skb-less err %d\n", err);
-+		CHECK_FLOW_KEYS(tests[i].name, flow_keys, tests[i].keys);
-+
-+		err = bpf_map_delete_elem(keys_fd, &key);
-+		CHECK_ATTR(err, tests[i].name, "bpf_map_delete_elem %d\n", err);
-+	}
-+}
-+
-+static void test_skb_less_prog_attach(struct bpf_flow *skel, int tap_fd)
-+{
-+	int err, prog_fd;
-+
-+	prog_fd = bpf_program__fd(skel->progs._dissect);
-+	if (CHECK(prog_fd < 0, "bpf_program__fd", "err %d\n", prog_fd))
-+		return;
-+
-+	err = bpf_prog_attach(prog_fd, 0, BPF_FLOW_DISSECTOR, 0);
-+	if (CHECK(err, "bpf_prog_attach", "err %d errno %d\n", err, errno))
-+		return;
-+
-+	run_tests_skb_less(tap_fd, skel->maps.last_dissection);
-+
-+	err = bpf_prog_detach(prog_fd, BPF_FLOW_DISSECTOR);
-+	CHECK(err, "bpf_prog_detach", "err %d errno %d\n", err, errno);
-+}
-+
-+static void test_skb_less_link_create(struct bpf_flow *skel, int tap_fd)
-+{
-+	struct bpf_link *link;
-+	int err, net_fd;
-+
-+	net_fd = open("/proc/self/ns/net", O_RDONLY);
-+	if (CHECK(net_fd < 0, "open(/proc/self/ns/net)", "err %d\n", errno))
-+		return;
-+
-+	link = bpf_program__attach_netns(skel->progs._dissect, net_fd);
-+	if (CHECK(IS_ERR(link), "attach_netns", "err %ld\n", PTR_ERR(link)))
-+		goto out_close;
-+
-+	run_tests_skb_less(tap_fd, skel->maps.last_dissection);
-+
-+	err = bpf_link__destroy(link);
-+	CHECK(err, "bpf_link__destroy", "err %d\n", err);
-+out_close:
-+	close(net_fd);
-+}
-+
- void test_flow_dissector(void)
- {
- 	int i, err, prog_fd, keys_fd = -1, tap_fd;
- 	struct bpf_flow *skel;
--	__u32 duration = 0;
- 
- 	skel = bpf_flow__open_and_load();
- 	if (CHECK(!skel, "skel", "failed to open/load skeleton\n"))
-@@ -526,45 +603,17 @@ void test_flow_dissector(void)
- 	 * via BPF map in this case.
- 	 */
- 
--	err = bpf_prog_attach(prog_fd, 0, BPF_FLOW_DISSECTOR, 0);
--	CHECK(err, "bpf_prog_attach", "err %d errno %d\n", err, errno);
--
- 	tap_fd = create_tap("tap0");
- 	CHECK(tap_fd < 0, "create_tap", "tap_fd %d errno %d\n", tap_fd, errno);
- 	err = ifup("tap0");
- 	CHECK(err, "ifup", "err %d errno %d\n", err, errno);
- 
--	for (i = 0; i < ARRAY_SIZE(tests); i++) {
--		/* Keep in sync with 'flags' from eth_get_headlen. */
--		__u32 eth_get_headlen_flags =
--			BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
--		struct bpf_prog_test_run_attr tattr = {};
--		struct bpf_flow_keys flow_keys = {};
--		__u32 key = (__u32)(tests[i].keys.sport) << 16 |
--			    tests[i].keys.dport;
--
--		/* For skb-less case we can't pass input flags; run
--		 * only the tests that have a matching set of flags.
--		 */
--
--		if (tests[i].flags != eth_get_headlen_flags)
--			continue;
--
--		err = tx_tap(tap_fd, &tests[i].pkt, sizeof(tests[i].pkt));
--		CHECK(err < 0, "tx_tap", "err %d errno %d\n", err, errno);
--
--		err = bpf_map_lookup_elem(keys_fd, &key, &flow_keys);
--		CHECK_ATTR(err, tests[i].name, "bpf_map_lookup_elem %d\n", err);
--
--		CHECK_ATTR(err, tests[i].name, "skb-less err %d\n", err);
--		CHECK_FLOW_KEYS(tests[i].name, flow_keys, tests[i].keys);
--
--		err = bpf_map_delete_elem(keys_fd, &key);
--		CHECK_ATTR(err, tests[i].name, "bpf_map_delete_elem %d\n", err);
--	}
-+	/* Test direct prog attachment */
-+	test_skb_less_prog_attach(skel, tap_fd);
-+	/* Test indirect prog attachment via link */
-+	test_skb_less_link_create(skel, tap_fd);
- 
- 	close(tap_fd);
--	bpf_prog_detach(prog_fd, BPF_FLOW_DISSECTOR);
- out_destroy_skel:
- 	bpf_flow__destroy(skel);
- }
--- 
-2.25.4
+Please pull and let me know if there's any problem.
+
+Thanks,
+johannes
+
+
+
+The following changes since commit dc0f3ed1973f101508957b59e529e03da1349e09:
+
+  net: phy: at803x: add cable diagnostics support for ATH9331 and ATH8032 (2020-05-26 23:26:04 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-davem-2020-05-31
+
+for you to fetch changes up to 093a48d2aa4b74db3134b61d7b7a061dbe79177b:
+
+  cfg80211: support bigger kek/kck key length (2020-05-31 11:27:24 +0200)
+
+----------------------------------------------------------------
+Another set of changes, including
+ * many 6 GHz changes, though it's not _quite_ complete
+   (I left out scanning for now, we're still discussing)
+ * allow userspace SA-query processing for operating channel
+   validation
+ * TX status for control port TX, for AP-side operation
+ * more per-STA/TID control options
+ * move to kHz for channels, for future S1G operation
+ * various other small changes
+
+----------------------------------------------------------------
+Arend Van Spriel (1):
+      cfg80211: adapt to new channelization of the 6GHz band
+
+Gustavo A. R. Silva (2):
+      cfg80211: Replace zero-length array with flexible-array
+      mac80211: Replace zero-length array with flexible-array
+
+Hauke Mehrtens (1):
+      wireless: Use linux/stddef.h instead of stddef.h
+
+Ilan Peer (2):
+      mac80211: Add HE 6GHz capabilities element to probe request
+      mac80211: Consider 6 GHz band when handling power constraint
+
+Johannes Berg (15):
+      mac80211: allow SA-QUERY processing in userspace
+      mac80211: fix HT-Control field reception for management frames
+      cfg80211: fix 6 GHz frequencies to kHz
+      nl80211: really allow client-only BIGTK support
+      cfg80211: add a helper to identify 6 GHz PSCs
+      ieee80211: add code to obtain and parse 6 GHz operation field
+      ieee80211: add HE ext EIDs and 6 GHz capability defines
+      cfg80211: add and expose HE 6 GHz band capabilities
+      mac80211: avoid using ext NSS high BW if not supported
+      mac80211: determine chandef from HE 6 GHz operation
+      mac80211: use HE 6 GHz band capability and pass it to the driver
+      cfg80211: treat 6 GHz channels as valid regardless of capability
+      cfg80211: reject HT/VHT capabilities on 6 GHz band
+      cfg80211: require HE capabilities for 6 GHz band
+      mac80211: accept aggregation sessions on 6 GHz
+
+Markus Theil (2):
+      nl80211: add ability to report TX status for control port TX
+      mac80211: support control port TX status reporting
+
+Nathan Errera (1):
+      cfg80211: support bigger kek/kck key length
+
+Patrick Steinhardt (1):
+      cfg80211: fix CFG82011_CRDA_SUPPORT still mentioning internal regdb
+
+Rajkumar Manoharan (5):
+      cfg80211: handle 6 GHz capability of new station
+      mac80211: add HE 6 GHz Band Capabilities into parse extension
+      mac80211: add HE 6 GHz Band Capability element
+      mac80211: build HE operation with 6 GHz oper information
+      mac80211: do not allow HT/VHT IEs in 6 GHz mesh mode
+
+Ramon Fontes (1):
+      mac80211_hwsim: report the WIPHY_FLAG_SUPPORTS_5_10_MHZ capability
+
+Sergey Matyukevich (4):
+      cfg80211: fix mask type in cfg80211_tid_cfg structure
+      mac80211: fix variable names in TID config methods
+      cfg80211: add support for TID specific AMSDU configuration
+      nl80211: simplify peer specific TID configuration
+
+Shaul Triebitz (1):
+      mac80211: check the correct bit for EMA AP
+
+Tamizh Chelvam (2):
+      mac80211: Add new AMPDU factor macro for HE peer caps
+      nl80211: Add support to configure TID specific Tx rate configuration
+
+Thomas Pedersen (4):
+      cfg80211: add KHz variants of frame RX API
+      nl80211: add KHz frequency offset for most wifi commands
+      nl80211: support scan frequencies in KHz
+      ieee80211: S1G defines
+
+Tova Mussai (2):
+      ieee80211: definitions for reduced neighbor reports
+      mac80211: set short_slot for 6 GHz band
+
+ drivers/net/wireless/mac80211_hwsim.c |   1 +
+ include/linux/ieee80211.h             | 344 +++++++++++++++++++++++++++++++++-
+ include/net/cfg80211.h                | 169 ++++++++++++++---
+ include/net/mac80211.h                |  14 +-
+ include/uapi/linux/nl80211.h          | 126 ++++++++++---
+ include/uapi/linux/wireless.h         |   6 +-
+ net/mac80211/agg-rx.c                 |   5 +-
+ net/mac80211/agg-tx.c                 |   3 +-
+ net/mac80211/cfg.c                    |  13 +-
+ net/mac80211/driver-ops.h             |   4 +-
+ net/mac80211/he.c                     |  48 +++++
+ net/mac80211/ibss.c                   |  11 +-
+ net/mac80211/ieee80211_i.h            |  25 ++-
+ net/mac80211/main.c                   |   4 +
+ net/mac80211/mesh.c                   |  54 +++++-
+ net/mac80211/mesh.h                   |   2 +
+ net/mac80211/mesh_plink.c             |   9 +-
+ net/mac80211/mlme.c                   | 120 ++++++++----
+ net/mac80211/rx.c                     | 105 ++++++++---
+ net/mac80211/scan.c                   |  23 ++-
+ net/mac80211/spectmgmt.c              |   4 +-
+ net/mac80211/status.c                 |   9 +-
+ net/mac80211/tdls.c                   |   2 +-
+ net/mac80211/tx.c                     |  65 +++++--
+ net/mac80211/util.c                   | 298 +++++++++++++++++++++++++++--
+ net/wireless/Kconfig                  |   4 +-
+ net/wireless/chan.c                   |  22 ++-
+ net/wireless/core.c                   |  17 +-
+ net/wireless/core.h                   |   2 +-
+ net/wireless/mlme.c                   |   6 +-
+ net/wireless/nl80211.c                | 297 ++++++++++++++++++++++-------
+ net/wireless/rdev-ops.h               |   9 +-
+ net/wireless/sme.c                    |   7 +-
+ net/wireless/trace.h                  |  25 ++-
+ net/wireless/util.c                   |  10 +-
+ 35 files changed, 1575 insertions(+), 288 deletions(-)
 
