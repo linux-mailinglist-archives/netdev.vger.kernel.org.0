@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8FA1E964C
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 10:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F6D1E9653
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 10:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727942AbgEaI3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 04:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36362 "EHLO
+        id S1728043AbgEaI3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 04:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727776AbgEaI3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 04:29:05 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155A9C03E96A
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:04 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id q19so989746eja.7
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:04 -0700 (PDT)
+        with ESMTP id S1727802AbgEaI3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 04:29:06 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03167C08C5C9
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:06 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id m21so4914766eds.13
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 01:29:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5IQjsvRHHSKlUbL/g6OiBtDTmWqGV/fVFGeB8D88fHc=;
-        b=ZK/O2CYJBORQxCyReYSmErjz92XC5oJ2LAeN9QIGTGleKpNCZauhcD3PRu4Ed12/At
-         QSvFCiWb74racNzhfFqQSrnnD7EIlsAYIzjm1Me0Ela24RmTn9Y12ddBrH+5ljf82OH6
-         O3TSRgWLTNFrSiRSsGBj7sMFpAgjubEVqoVAc=
+        bh=P4mfqd4Xn4EQ0V99iX6SdAGczVXsitpi5uLY0Cm55+M=;
+        b=j2SQmLXhfLAsfWe2dVyx4GZDhXEdFvhnNui7S//zA9EwxI0c9ughXwqFmmtzLvUNUO
+         91A2mugUT2sZMVfxSehiz5EqgeJzb5PtD8kH6w7JL+u8KdaKqUtYO5k1aTEmVhZ5lM+g
+         Gy8GipCPpxLkf1NAbUjF52xOPEo4bT3vntUso=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5IQjsvRHHSKlUbL/g6OiBtDTmWqGV/fVFGeB8D88fHc=;
-        b=GTpZiTxMKWwgAzdrgiPc3DUx5uCYRU0q/d+w10i4aELpqhmh6UYDSnJU9XPJZbCFh5
-         hkm3Pxn0Zha46TEv8M30hYOvd5AhD1oHu10/DCrwTXhtZk+dY8wK6qaqfEn4rJqe9fvE
-         3NV9MM4IZep0fk4sx1JVcaE1a13UoZSMgDPLz+vYshutJL/GdA0U8zt5on1nGgt20TAw
-         9pr2Y1tAsX/D5w+W7XsyE52ZsdKvdi7tvK2b8RhnTgY2vsy8KCH+wtWV+k6IHhkAAl4V
-         yf4cTDKflola/Dm6S5O/5oV5akTjKrHJmsVDBucVAC6uEhiJcrcFFGu1QNOGd1KCHo3D
-         eQww==
-X-Gm-Message-State: AOAM5332lPvXbLzB5Gmlhc7Lbc6ohfiqPS1Sg/u0TFezLhjVoq6FrBi2
-        j4ZZGw6CRJdrdmsEZbTiYlLe4g==
-X-Google-Smtp-Source: ABdhPJy4IX7BZDG8OwmUPaBYTu5C2BWioHOk3rnmGlLoG1h+CREHuSD3IAyDJNzgQ3pUo13v1FQqkg==
-X-Received: by 2002:a17:906:86c5:: with SMTP id j5mr14347483ejy.88.1590913742761;
-        Sun, 31 May 2020 01:29:02 -0700 (PDT)
+        bh=P4mfqd4Xn4EQ0V99iX6SdAGczVXsitpi5uLY0Cm55+M=;
+        b=bpAJZtwX8eP/zWBpn9D9Ro2QENLOkx14TLnXwj5K1VMIxkgDc+7ghatMacbirFQ8xV
+         uTi+y4b04w+EFJpmcUvAaQV9GycSiyrRBBxYTIXy5x8AeyCVFMPpP7HAPWxHrrro4zrC
+         zpiY5YLx4Ork9hR87JYDUHtAPsBkEqA9TJkdqB5RkHC5wC0b4NtbsiFiexsHe0J+zBlm
+         2JINNjWYyyFvO8B28kxuocvVidBCKuWDI7qlQ2Q+HAQJRSKf+k43qeWEBwm2rB8ue36a
+         owlH+Kgtc62B9l4cr0Uw8ZhTbki24PtWKkPTp7LDHMhorypGDu0qB1ad2slmpMOHfisr
+         Gnrg==
+X-Gm-Message-State: AOAM532LXRVZn3wkq9ITqxaM0M3EqkWTAn/HR98xEiL60YzDX58wIXXU
+        Bn3YQ8O/Qq1QsTdHtizHJdgE74sAzCs=
+X-Google-Smtp-Source: ABdhPJzCHu0B3zLFyK/UTOwmgfIImU0PHghXhOGoB4Tm04RnReRbV9jJsptjI33EPKOZ95kRfmrt3g==
+X-Received: by 2002:aa7:d84b:: with SMTP id f11mr16585626eds.288.1590913744698;
+        Sun, 31 May 2020 01:29:04 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id f11sm12602957edl.52.2020.05.31.01.29.01
+        by smtp.gmail.com with ESMTPSA id 64sm12536439eda.85.2020.05.31.01.29.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 01:29:02 -0700 (PDT)
+        Sun, 31 May 2020 01:29:04 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH bpf-next v2 07/12] bpftool: Extract helpers for showing link attach type
-Date:   Sun, 31 May 2020 10:28:41 +0200
-Message-Id: <20200531082846.2117903-8-jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: [PATCH bpf-next v2 08/12] bpftool: Support link show for netns-attached links
+Date:   Sun, 31 May 2020 10:28:42 +0200
+Message-Id: <20200531082846.2117903-9-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200531082846.2117903-1-jakub@cloudflare.com>
 References: <20200531082846.2117903-1-jakub@cloudflare.com>
@@ -61,99 +60,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Code for printing link attach_type is duplicated in a couple of places, and
-likely will be duplicated for future link types as well. Create helpers to
-prevent duplication.
+Make `bpf link show` aware of new link type, that is links attached to
+netns. When listing netns-attached links, display netns inode number as its
+identifier and link attach type.
 
-Suggested-by: Andrii Nakryiko <andriin@fb.com>
+Sample session:
+
+  # readlink /proc/self/ns/net
+  net:[4026532251]
+  # bpftool prog show
+  357: flow_dissector  tag a04f5eef06a7f555  gpl
+          loaded_at 2020-05-30T16:53:51+0200  uid 0
+          xlated 16B  jited 37B  memlock 4096B
+  358: flow_dissector  tag a04f5eef06a7f555  gpl
+          loaded_at 2020-05-30T16:53:51+0200  uid 0
+          xlated 16B  jited 37B  memlock 4096B
+  # bpftool link show
+  108: netns  prog 357
+          netns_ino 4026532251  attach_type flow_dissector
+  # bpftool link -jp show
+  [{
+          "id": 108,
+          "type": "netns",
+          "prog_id": 357,
+          "netns_ino": 4026532251,
+          "attach_type": "flow_dissector"
+      }
+  ]
+
+  (... after netns is gone ...)
+
+  # bpftool link show
+  108: netns  prog 357
+          netns_ino 0  attach_type flow_dissector
+  # bpftool link -jp show
+  [{
+          "id": 108,
+          "type": "netns",
+          "prog_id": 357,
+          "netns_ino": 0,
+          "attach_type": "flow_dissector"
+      }
+  ]
+
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- tools/bpf/bpftool/link.c | 44 ++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ tools/bpf/bpftool/link.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index 670a561dc31b..1ff416eff3d7 100644
+index 1ff416eff3d7..fca57ee8fafe 100644
 --- a/tools/bpf/bpftool/link.c
 +++ b/tools/bpf/bpftool/link.c
-@@ -62,6 +62,15 @@ show_link_header_json(struct bpf_link_info *info, json_writer_t *wtr)
- 	jsonw_uint_field(json_wtr, "prog_id", info->prog_id);
- }
+@@ -17,6 +17,7 @@ static const char * const link_type_name[] = {
+ 	[BPF_LINK_TYPE_TRACING]			= "tracing",
+ 	[BPF_LINK_TYPE_CGROUP]			= "cgroup",
+ 	[BPF_LINK_TYPE_ITER]			= "iter",
++	[BPF_LINK_TYPE_NETNS]			= "netns",
+ };
  
-+static void show_link_attach_type_json(__u32 attach_type, json_writer_t *wtr)
-+{
-+	if (attach_type < ARRAY_SIZE(attach_type_name))
-+		jsonw_string_field(wtr, "attach_type",
-+				   attach_type_name[attach_type]);
-+	else
-+		jsonw_uint_field(wtr, "attach_type", attach_type);
-+}
-+
- static int get_prog_info(int prog_id, struct bpf_prog_info *info)
- {
- 	__u32 len = sizeof(*info);
-@@ -105,22 +114,13 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
- 			jsonw_uint_field(json_wtr, "prog_type",
- 					 prog_info.type);
- 
--		if (info->tracing.attach_type < ARRAY_SIZE(attach_type_name))
--			jsonw_string_field(json_wtr, "attach_type",
--			       attach_type_name[info->tracing.attach_type]);
--		else
--			jsonw_uint_field(json_wtr, "attach_type",
--					 info->tracing.attach_type);
-+		show_link_attach_type_json(info->tracing.attach_type,
-+					   json_wtr);
- 		break;
- 	case BPF_LINK_TYPE_CGROUP:
- 		jsonw_lluint_field(json_wtr, "cgroup_id",
+ static int link_parse_fd(int *argc, char ***argv)
+@@ -122,6 +123,11 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
  				   info->cgroup.cgroup_id);
--		if (info->cgroup.attach_type < ARRAY_SIZE(attach_type_name))
--			jsonw_string_field(json_wtr, "attach_type",
--			       attach_type_name[info->cgroup.attach_type]);
--		else
--			jsonw_uint_field(json_wtr, "attach_type",
--					 info->cgroup.attach_type);
-+		show_link_attach_type_json(info->cgroup.attach_type, json_wtr);
+ 		show_link_attach_type_json(info->cgroup.attach_type, json_wtr);
  		break;
++	case BPF_LINK_TYPE_NETNS:
++		jsonw_uint_field(json_wtr, "netns_ino",
++				 info->netns.netns_ino);
++		show_link_attach_type_json(info->netns.attach_type, json_wtr);
++		break;
  	default:
  		break;
-@@ -153,6 +153,14 @@ static void show_link_header_plain(struct bpf_link_info *info)
- 	printf("prog %u  ", info->prog_id);
- }
- 
-+static void show_link_attach_type_plain(__u32 attach_type)
-+{
-+	if (attach_type < ARRAY_SIZE(attach_type_name))
-+		printf("attach_type %s  ", attach_type_name[attach_type]);
-+	else
-+		printf("attach_type %u  ", attach_type);
-+}
-+
- static int show_link_close_plain(int fd, struct bpf_link_info *info)
- {
- 	struct bpf_prog_info prog_info;
-@@ -176,19 +184,11 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
- 		else
- 			printf("\n\tprog_type %u  ", prog_info.type);
- 
--		if (info->tracing.attach_type < ARRAY_SIZE(attach_type_name))
--			printf("attach_type %s  ",
--			       attach_type_name[info->tracing.attach_type]);
--		else
--			printf("attach_type %u  ", info->tracing.attach_type);
-+		show_link_attach_type_plain(info->tracing.attach_type);
- 		break;
- 	case BPF_LINK_TYPE_CGROUP:
+ 	}
+@@ -190,6 +196,10 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
  		printf("\n\tcgroup_id %zu  ", (size_t)info->cgroup.cgroup_id);
--		if (info->cgroup.attach_type < ARRAY_SIZE(attach_type_name))
--			printf("attach_type %s  ",
--			       attach_type_name[info->cgroup.attach_type]);
--		else
--			printf("attach_type %u  ", info->cgroup.attach_type);
-+		show_link_attach_type_plain(info->cgroup.attach_type);
+ 		show_link_attach_type_plain(info->cgroup.attach_type);
  		break;
++	case BPF_LINK_TYPE_NETNS:
++		printf("\n\tnetns_ino %u  ", info->netns.netns_ino);
++		show_link_attach_type_plain(info->netns.attach_type);
++		break;
  	default:
  		break;
+ 	}
 -- 
 2.25.4
 
