@@ -2,61 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E63B1E94DB
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 03:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31DD81E94DD
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 03:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729564AbgEaBIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 May 2020 21:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
+        id S1729534AbgEaBKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 May 2020 21:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729356AbgEaBIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 21:08:10 -0400
+        with ESMTP id S1729356AbgEaBKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 May 2020 21:10:48 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA721C03E969
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 18:08:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F717C03E969
+        for <netdev@vger.kernel.org>; Sat, 30 May 2020 18:10:48 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8B4AE128E0CA3;
-        Sat, 30 May 2020 18:08:09 -0700 (PDT)
-Date:   Sat, 30 May 2020 18:08:08 -0700 (PDT)
-Message-Id: <20200530.180808.1733566688666559106.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 67C0E128E10C2;
+        Sat, 30 May 2020 18:10:47 -0700 (PDT)
+Date:   Sat, 30 May 2020 18:10:46 -0700 (PDT)
+Message-Id: <20200530.181046.1548128761056777698.davem@davemloft.net>
 To:     olteanv@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, antoine.tenart@bootlin.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
-        fido_max@inbox.ru, broonie@kernel.org
-Subject: Re: [PATCH v2 net-next 00/13] New DSA driver for VSC9953 Seville
- switch
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: sja1105: suppress
+ -Wmissing-prototypes in sja1105_vl.c
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200530.180351.1434687967128631713.davem@davemloft.net>
-References: <20200530115142.707415-1-olteanv@gmail.com>
-        <20200530.180351.1434687967128631713.davem@davemloft.net>
+In-Reply-To: <20200530140322.803136-1-olteanv@gmail.com>
+References: <20200530140322.803136-1-olteanv@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 30 May 2020 18:08:10 -0700 (PDT)
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 30 May 2020 18:10:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net>
-Date: Sat, 30 May 2020 18:03:51 -0700 (PDT)
-
-> Looks good, series applied, thanks.
-
-Actually, reverted, this doesn't build:
-
-[davem@localhost net-next]$ make -s -j14
-ld: drivers/net/dsa/ocelot/seville_vsc9953.o: in function `seville_driver_init':
-seville_vsc9953.c:(.init.text+0x0): multiple definition of `init_module'; drivers/net/dsa/ocelot/felix_vsc9959.o:felix_vsc9959.c:(.init.text+0x0): first defined here
-ld: drivers/net/dsa/ocelot/seville_vsc9953.o: in function `seville_driver_exit':
-seville_vsc9953.c:(.exit.text+0x0): multiple definition of `cleanup_module'; drivers/net/dsa/ocelot/felix_vsc9959.o:felix_vsc9959.c:(.exit.text+0x0): first defined here
-make[4]: *** [scripts/Makefile.build:422: drivers/net/dsa/ocelot/mscc_felix.o] Error 1
-make[3]: *** [scripts/Makefile.build:488: drivers/net/dsa/ocelot] Error 2
-make[2]: *** [scripts/Makefile.build:488: drivers/net/dsa] Error 2
+RnJvbTogVmxhZGltaXIgT2x0ZWFuIDxvbHRlYW52QGdtYWlsLmNvbT4NCkRhdGU6IFNhdCwgMzAg
+TWF5IDIwMjAgMTc6MDM6MjIgKzAzMDANCg0KPiBGcm9tOiBWbGFkaW1pciBPbHRlYW4gPHZsYWRp
+bWlyLm9sdGVhbkBueHAuY29tPg0KPiANCj4gTmV3ZXIgQyBjb21waWxlcnMgYXJlIGNvbXBsYWlu
+aW5nIGFib3V0IHRoZSBmYWN0IHRoYXQgdGhlcmUgYXJlIG5vDQo+IGZ1bmN0aW9uIHByb3RvdHlw
+ZXMgaW4gc2phMTEwNV92bC5jIGZvciB0aGUgbm9uLXN0YXRpYyBmdW5jdGlvbnMuDQo+IEdpdmUg
+dGhlbSB3aGF0IHRoZXkgd2FudC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFZsYWRpbWlyIE9sdGVh
+biA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+DQoNClRoaXMgYWN0dWFsbHkgYnJlYWtzIHRoZSBi
+dWlsZCBvbiBjdXJyZW50IG5ldC1uZXh0Og0KDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gZHJpdmVy
+cy9uZXQvZHNhL3NqYTExMDUvc2phMTEwNV92bC5jOjY6DQpkcml2ZXJzL25ldC9kc2Evc2phMTEw
+NS9zamExMTA1X3ZsLmg6MTE6MTE6IHdhcm5pbmc6IKFzdHJ1Y3Qgc2phMTEwNV9rZXmiIGRlY2xh
+cmVkIGluc2lkZSBwYXJhbWV0ZXIgbGlzdCB3aWxsIG5vdCBiZSB2aXNpYmxlIG91dHNpZGUgb2Yg
+dGhpcyBkZWZpbml0aW9uIG9yIGRlY2xhcmF0aW9uDQogICAxMSB8ICAgIHN0cnVjdCBzamExMTA1
+X2tleSAqa2V5LCB1bnNpZ25lZCBsb25nIGRlc3Rwb3J0cywNCiAgICAgIHwgICAgICAgICAgIF5+
+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC9kc2Evc2phMTEwNS9zamExMTA1X3ZsLmg6OTozMjogd2Fy
+bmluZzogoXN0cnVjdCBzamExMTA1X3ByaXZhdGWiIGRlY2xhcmVkIGluc2lkZSBwYXJhbWV0ZXIg
+bGlzdCB3aWxsIG5vdCBiZSB2aXNpYmxlIG91dHNpZGUgb2YgdGhpcyBkZWZpbml0aW9uIG9yIGRl
+Y2xhcmF0aW9uDQogICAgOSB8IGludCBzamExMTA1X3ZsX3JlZGlyZWN0KHN0cnVjdCBzamExMTA1
+X3ByaXZhdGUgKnByaXYsIGludCBwb3J0LA0KICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgXn5+fn5+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC9kc2Evc2phMTEwNS9zamExMTA1
+X3ZsLmg6MTU6MTY6IHdhcm5pbmc6IKFzdHJ1Y3Qgc2phMTEwNV9ydWxloiBkZWNsYXJlZCBpbnNp
+ZGUgcGFyYW1ldGVyIGxpc3Qgd2lsbCBub3QgYmUgdmlzaWJsZSBvdXRzaWRlIG9mIHRoaXMgZGVm
+aW5pdGlvbiBvciBkZWNsYXJhdGlvbg0KICAgMTUgfCAgICAgICAgIHN0cnVjdCBzamExMTA1X3J1
+bGUgKnJ1bGUsDQogICAgICB8ICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fg0KZHJpdmVycy9u
+ZXQvZHNhL3NqYTExMDUvc2phMTEwNV92bC5oOjE0OjMwOiB3YXJuaW5nOiChc3RydWN0IHNqYTEx
+MDVfcHJpdmF0ZaIgZGVjbGFyZWQgaW5zaWRlIHBhcmFtZXRlciBsaXN0IHdpbGwgbm90IGJlIHZp
+c2libGUgb3V0c2lkZSBvZiB0aGlzIGRlZmluaXRpb24gb3IgZGVjbGFyYXRpb24NCiAgIDE0IHwg
+aW50IHNqYTExMDVfdmxfZGVsZXRlKHN0cnVjdCBzamExMTA1X3ByaXZhdGUgKnByaXYsIGludCBw
+b3J0LA0KICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+
+fg0KZHJpdmVycy9uZXQvZHNhL3NqYTExMDUvc2phMTEwNV92bC5oOjIwOjE0OiB3YXJuaW5nOiCh
+c3RydWN0IHNqYTExMDVfa2V5oiBkZWNsYXJlZCBpbnNpZGUgcGFyYW1ldGVyIGxpc3Qgd2lsbCBu
+b3QgYmUgdmlzaWJsZSBvdXRzaWRlIG9mIHRoaXMgZGVmaW5pdGlvbiBvciBkZWNsYXJhdGlvbg0K
+ICAgMjAgfCAgICAgICBzdHJ1Y3Qgc2phMTEwNV9rZXkgKmtleSwgdTMyIGluZGV4LCBzMzIgcHJp
+bywNCiAgICAgIHwgICAgICAgICAgICAgIF5+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC9kc2Evc2ph
+MTEwNS9zamExMTA1X3ZsLmg6MTg6Mjg6IHdhcm5pbmc6IKFzdHJ1Y3Qgc2phMTEwNV9wcml2YXRl
+oiBkZWNsYXJlZCBpbnNpZGUgcGFyYW1ldGVyIGxpc3Qgd2lsbCBub3QgYmUgdmlzaWJsZSBvdXRz
+aWRlIG9mIHRoaXMgZGVmaW5pdGlvbiBvciBkZWNsYXJhdGlvbg0KICAgMTggfCBpbnQgc2phMTEw
+NV92bF9nYXRlKHN0cnVjdCBzamExMTA1X3ByaXZhdGUgKnByaXYsIGludCBwb3J0LA0KICAgICAg
+fCAgICAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn4NCmRyaXZlcnMvbmV0
+L2RzYS9zamExMTA1L3NqYTExMDVfdmwuaDoyNToxNTogd2FybmluZzogoXN0cnVjdCBzamExMTA1
+X3J1bGWiIGRlY2xhcmVkIGluc2lkZSBwYXJhbWV0ZXIgbGlzdCB3aWxsIG5vdCBiZSB2aXNpYmxl
+IG91dHNpZGUgb2YgdGhpcyBkZWZpbml0aW9uIG9yIGRlY2xhcmF0aW9uDQogICAyNSB8ICAgICAg
+ICBzdHJ1Y3Qgc2phMTEwNV9ydWxlICpydWxlLCBzdHJ1Y3QgZmxvd19zdGF0cyAqc3RhdHMsDQog
+ICAgICB8ICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC9kc2Evc2phMTEw
+NS9zamExMTA1X3ZsLmg6MjQ6Mjk6IHdhcm5pbmc6IKFzdHJ1Y3Qgc2phMTEwNV9wcml2YXRloiBk
+ZWNsYXJlZCBpbnNpZGUgcGFyYW1ldGVyIGxpc3Qgd2lsbCBub3QgYmUgdmlzaWJsZSBvdXRzaWRl
+IG9mIHRoaXMgZGVmaW5pdGlvbiBvciBkZWNsYXJhdGlvbg0KICAgMjQgfCBpbnQgc2phMTEwNV92
+bF9zdGF0cyhzdHJ1Y3Qgc2phMTEwNV9wcml2YXRlICpwcml2LCBpbnQgcG9ydCwNCiAgICAgIHwg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fg0KZHJpdmVycy9uZXQv
+ZHNhL3NqYTExMDUvc2phMTEwNV92bC5jOjMzMzo1OiBlcnJvcjogY29uZmxpY3RpbmcgdHlwZXMg
+Zm9yIKFzamExMTA1X3ZsX3JlZGlyZWN0og0KICAzMzMgfCBpbnQgc2phMTEwNV92bF9yZWRpcmVj
+dChzdHJ1Y3Qgc2phMTEwNV9wcml2YXRlICpwcml2LCBpbnQgcG9ydCwNCiAgICAgIHwgICAgIF5+
+fn5+fn5+fn5+fn5+fn5+fn4NCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBkcml2ZXJzL25ldC9kc2Ev
+c2phMTEwNS9zamExMTA1X3ZsLmM6NjoNCmRyaXZlcnMvbmV0L2RzYS9zamExMTA1L3NqYTExMDVf
+dmwuaDo5OjU6IG5vdGU6IHByZXZpb3VzIGRlY2xhcmF0aW9uIG9mIKFzamExMTA1X3ZsX3JlZGly
+ZWN0oiB3YXMgaGVyZQ0KICAgIDkgfCBpbnQgc2phMTEwNV92bF9yZWRpcmVjdChzdHJ1Y3Qgc2ph
+MTEwNV9wcml2YXRlICpwcml2LCBpbnQgcG9ydCwNCiAgICAgIHwgICAgIF5+fn5+fn5+fn5+fn5+
+fn5+fn4NCmRyaXZlcnMvbmV0L2RzYS9zamExMTA1L3NqYTExMDVfdmwuYzozODE6NTogZXJyb3I6
+IGNvbmZsaWN0aW5nIHR5cGVzIGZvciChc2phMTEwNV92bF9kZWxldGWiDQogIDM4MSB8IGludCBz
+amExMTA1X3ZsX2RlbGV0ZShzdHJ1Y3Qgc2phMTEwNV9wcml2YXRlICpwcml2LCBpbnQgcG9ydCwN
+CiAgICAgIHwgICAgIF5+fn5+fn5+fn5+fn5+fn5+DQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gZHJp
+dmVycy9uZXQvZHNhL3NqYTExMDUvc2phMTEwNV92bC5jOjY6DQpkcml2ZXJzL25ldC9kc2Evc2ph
+MTEwNS9zamExMTA1X3ZsLmg6MTQ6NTogbm90ZTogcHJldmlvdXMgZGVjbGFyYXRpb24gb2YgoXNq
+YTExMDVfdmxfZGVsZXRloiB3YXMgaGVyZQ0KICAgMTQgfCBpbnQgc2phMTEwNV92bF9kZWxldGUo
+c3RydWN0IHNqYTExMDVfcHJpdmF0ZSAqcHJpdiwgaW50IHBvcnQsDQogICAgICB8ICAgICBefn5+
+fn5+fn5+fn5+fn5+fg0KZHJpdmVycy9uZXQvZHNhL3NqYTExMDUvc2phMTEwNV92bC5jOjU1OTo1
+OiBlcnJvcjogY29uZmxpY3RpbmcgdHlwZXMgZm9yIKFzamExMTA1X3ZsX2dhdGWiDQogIDU1OSB8
+IGludCBzamExMTA1X3ZsX2dhdGUoc3RydWN0IHNqYTExMDVfcHJpdmF0ZSAqcHJpdiwgaW50IHBv
+cnQsDQogICAgICB8ICAgICBefn5+fn5+fn5+fn5+fn4NCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBk
+cml2ZXJzL25ldC9kc2Evc2phMTEwNS9zamExMTA1X3ZsLmM6NjoNCmRyaXZlcnMvbmV0L2RzYS9z
+amExMTA1L3NqYTExMDVfdmwuaDoxODo1OiBub3RlOiBwcmV2aW91cyBkZWNsYXJhdGlvbiBvZiCh
+c2phMTEwNV92bF9nYXRloiB3YXMgaGVyZQ0KICAgMTggfCBpbnQgc2phMTEwNV92bF9nYXRlKHN0
+cnVjdCBzamExMTA1X3ByaXZhdGUgKnByaXYsIGludCBwb3J0LA0KICAgICAgfCAgICAgXn5+fn5+
+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC9kc2Evc2phMTEwNS9zamExMTA1X3ZsLmM6NzQzOjU6IGVy
+cm9yOiBjb25mbGljdGluZyB0eXBlcyBmb3IgoXNqYTExMDVfdmxfc3RhdHOiDQogIDc0MyB8IGlu
+dCBzamExMTA1X3ZsX3N0YXRzKHN0cnVjdCBzamExMTA1X3ByaXZhdGUgKnByaXYsIGludCBwb3J0
+LA0KICAgICAgfCAgICAgXn5+fn5+fn5+fn5+fn5+fg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGRy
+aXZlcnMvbmV0L2RzYS9zamExMTA1L3NqYTExMDVfdmwuYzo2Og0KZHJpdmVycy9uZXQvZHNhL3Nq
+YTExMDUvc2phMTEwNV92bC5oOjI0OjU6IG5vdGU6IHByZXZpb3VzIGRlY2xhcmF0aW9uIG9mIKFz
+amExMTA1X3ZsX3N0YXRzoiB3YXMgaGVyZQ0KICAgMjQgfCBpbnQgc2phMTEwNV92bF9zdGF0cyhz
+dHJ1Y3Qgc2phMTEwNV9wcml2YXRlICpwcml2LCBpbnQgcG9ydCwNCiAgICAgIHwgICAgIF5+fn5+
+fn5+fn5+fn5+fn4NCg==
