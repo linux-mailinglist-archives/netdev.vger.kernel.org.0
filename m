@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A20C81E9601
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3731E9602
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729655AbgEaHGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 03:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
+        id S2387412AbgEaHGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 03:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726220AbgEaHGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:06:40 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F678C05BD43
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:40 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id x14so8288792wrp.2
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:40 -0700 (PDT)
+        with ESMTP id S2387407AbgEaHGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:06:47 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0637EC05BD43
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:47 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id r7so8301130wro.1
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qXOsLRWOxhLNoFMu89LdsxTD7a2Zk6hJGB1S7/GPv44=;
-        b=gp+KTcu53hmYWMDsGV23Bhp+ktOsiT9nJEmyurR6CWeR+4RfasCM8XMLkOUrAmgAzm
-         cxft9ag6eIQ8Wmnodlwkp2RuQ8N/k+g4FkTSNl5UlkI2joRTff1qpbaBcrRG+4hPO71W
-         dYs6Gr1zYnISDIXrh15QlhT6/QP22ypta7Sck=
+        bh=28iXEgTxZGiycTdVsy4Tz/mI6Y6DSr8IpzNq47taE6U=;
+        b=QqKi83xeAVIB3Rk4gVswD+kmoCTWZRuU7Lu6+j07fwz2M28nBhd6Hc3QTTOOonKGCT
+         1VqlWuHexs8AwTWIwnKXeQQYTyhpQgalQD+5YXjuZy8LwlfJgZgTPVCf1LzAJNEVhhPI
+         yvFaqJN0jt8yrhNhzfXzR0TJX1ULzmARbY1UA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=qXOsLRWOxhLNoFMu89LdsxTD7a2Zk6hJGB1S7/GPv44=;
-        b=IEszP1FvYw7HzpaLGMcCM6+KtbPTbLwFT4ATSZWc8KtS8M8TkvfxRrNQQh7azGnvB6
-         GI9MhMN2gg5/kUq+o0iycF/RaCSWdjE1G4DWskrIzH0arlXVDSa5LbNFHK8Fuqn/FXTh
-         a5Gmtr7GIoTz29VX4p7r7Qn1nULa4evKMca9znwPH5gVhmJbK7mzr0l5y5H+Ycv3UVCW
-         Q/L832DOHdZlU41lEtSH7qr9pzhgiAyn6R310NnBJ/3+UW3E/a/1NK51e60XzzuQfpf+
-         fcrpbknOwMjlJ+cDTN2oNrm3iQGIXP5uuOrxlSrDK8OzBF8zHrLt7nsgjoxX6rqz1eEE
-         0a1A==
-X-Gm-Message-State: AOAM5336xnNpR5/MzeBWSa4pZataqzikhkmvgphNI9xtHw9UULusLLac
-        32moRtXUJmVUqRgLqnJyn7+3zA==
-X-Google-Smtp-Source: ABdhPJwEZl32/U9WKPfEMQNrp/4oEoEsb5SIIboP9cLn5ClR87noI19pwdViiIWqgnNi3+GfCx3eHQ==
-X-Received: by 2002:adf:f4d2:: with SMTP id h18mr16531498wrp.370.1590908798615;
-        Sun, 31 May 2020 00:06:38 -0700 (PDT)
+        bh=28iXEgTxZGiycTdVsy4Tz/mI6Y6DSr8IpzNq47taE6U=;
+        b=St2cisqtfmjzEMz29p2RkuukRetzuGkQEQ6IA6YTs+m06JDdLF8YZSl1plbhrPENF/
+         SppCKkHm2C2JqI3lixhZYcO87wWI7Y6siV7YEsgmKAXsHm6aWoPiQ7YO5zC8kJdxr8JK
+         ZgKCkQV93BNBQ0xbDQ3jSWQFAFIQuXILLAgAI3rjWWCre2NN2uROgQ9M4bUp0/Y0IXW3
+         BP4HH+Usfp1+Vq4pwzjuHiO7YdpmZcSWihKhHKuwKCvyGb2WNtTt7g1WLl7FR3HENIeE
+         1iq29ZxW9uKt3AW0Db6cRHjhAInru1CVksaxg+OIEBui8e1LNhBobBDGqs+mXm7Kxzzc
+         y1hg==
+X-Gm-Message-State: AOAM5302l1gzgTl1554Za8lf8ItOX4Jqc07P9cxujcfxnI1iTjF6Nqt/
+        VPmSPmQgzPFnsKg976YvPcCEVNSqBoo=
+X-Google-Smtp-Source: ABdhPJwhlRVmuv0eGYBQFMy9+EyETPpK00ik/ueqcyTpRWYPuVBifVtW7eXqsTj+KG2D/6vXvwUFTQ==
+X-Received: by 2002:a05:6000:1c8:: with SMTP id t8mr16214736wrx.200.1590908805631;
+        Sun, 31 May 2020 00:06:45 -0700 (PDT)
 Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.06.35
+        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.06.43
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 31 May 2020 00:06:38 -0700 (PDT)
+        Sun, 31 May 2020 00:06:45 -0700 (PDT)
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v3 net-next 2/6] devlink: Add 'allow_live_dev_reset' generic parameter.
-Date:   Sun, 31 May 2020 12:33:41 +0530
-Message-Id: <1590908625-10952-3-git-send-email-vasundhara-v.volam@broadcom.com>
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH v3 net-next 3/6] bnxt_en: Use 'enable_live_dev_reset' devlink parameter.
+Date:   Sun, 31 May 2020 12:33:42 +0530
+Message-Id: <1590908625-10952-4-git-send-email-vasundhara-v.volam@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
 References: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
@@ -60,90 +58,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This parameter is supported only when 'enable_live_dev_reset' is
-true. The purpose of this parameter is to allow the user on a
-host to temporarily disable the live reset feature of the device.
+When enabled, device will enable the live reset capability in
+NVRAM configuration.
 
-For example, if a host is running a mission critical application,
-a user from the host can set this parameter to false, to avoid
-a potential live reset from disrupting it.
-
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- Documentation/networking/devlink/devlink-params.rst | 20 ++++++++++++++++++++
- include/net/devlink.h                               |  4 ++++
- net/core/devlink.c                                  |  5 +++++
- 3 files changed, 29 insertions(+)
+ Documentation/networking/devlink/bnxt.rst         | 2 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 6 ++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h | 1 +
+ 3 files changed, 9 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index 8e12c83..450fe18 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -116,3 +116,23 @@ own name.
-        For example, after flashing a new firmware image, this feature allows the
-        user to initiate the reset immediately from a separate command, to load
-        the new firmware without reloading the driver or resetting the system.
-+
-+       A user can set the 'allow_live_dev_reset' parameter to false to
-+       momentarily disable the live reset capability.
-+   * - ``allow_live_dev_reset``
-+     - Boolean
-+     - This parameter is supported only when 'enable_live_dev_reset' is true.
-+       The purpose of this parameter is to allow the user on a host to
-+       temporarily disable the live reset feature of the device. When this
-+       parameter is set to true from all the hosts in a multi-host environment
-+       for example, a user from any host can initiate live device reset from any
-+       of the host drivers.
-+
-+       For the parameter to be true, all the loaded host drivers must support
-+       the live reset and the parameter must be set to true for all the host
-+       drivers. For example, if any of the host (in case of multi-host NIC) is
-+       loaded with an old driver which is not aware of the feature, then the
-+       value of the parameter will be false until the old driver is upgraded
-+       or unloaded. Also if the user has set the parameter to false on one of
-+       the host (say A), the parameter will be false for all the hosts until the
-+       user sets the parameter to true in the host (A).
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index eb28fa1..d922033 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -407,6 +407,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_LIVE_DEV_RESET,
-+	DEVLINK_PARAM_GENERIC_ID_ALLOW_LIVE_DEV_RESET,
+diff --git a/Documentation/networking/devlink/bnxt.rst b/Documentation/networking/devlink/bnxt.rst
+index 3dfd84c..ae0a69d 100644
+--- a/Documentation/networking/devlink/bnxt.rst
++++ b/Documentation/networking/devlink/bnxt.rst
+@@ -22,6 +22,8 @@ Parameters
+      - Permanent
+    * - ``msix_vec_per_pf_min``
+      - Permanent
++   * - ``enable_live_dev_reset``
++     - Permanent
  
- 	/* add new param generic ids above here*/
- 	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -447,6 +448,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_LIVE_DEV_RESET_NAME "enable_live_dev_reset"
- #define DEVLINK_PARAM_GENERIC_ENABLE_LIVE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
- 
-+#define DEVLINK_PARAM_GENERIC_ALLOW_LIVE_DEV_RESET_NAME "allow_live_dev_reset"
-+#define DEVLINK_PARAM_GENERIC_ALLOW_LIVE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
-+
- #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
- {									\
- 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 7b52b38..e36f6c4 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3016,6 +3016,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_LIVE_DEV_RESET_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_LIVE_DEV_RESET_TYPE,
- 	},
-+	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_ALLOW_LIVE_DEV_RESET,
-+		.name = DEVLINK_PARAM_GENERIC_ALLOW_LIVE_DEV_RESET_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_ALLOW_LIVE_DEV_RESET_TYPE,
-+	},
+ The ``bnxt`` driver also implements the following driver-specific
+ parameters.
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index a812beb..3e1a4ef 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -314,6 +314,8 @@ enum bnxt_dl_param_id {
+ 	 NVM_OFF_MSIX_VEC_PER_PF_MIN, BNXT_NVM_SHARED_CFG, 7, 4},
+ 	{BNXT_DEVLINK_PARAM_ID_GRE_VER_CHECK, NVM_OFF_DIS_GRE_VER_CHECK,
+ 	 BNXT_NVM_SHARED_CFG, 1, 1},
++	{DEVLINK_PARAM_GENERIC_ID_ENABLE_LIVE_DEV_RESET,
++	 NVM_OFF_FW_LIVE_RESET, BNXT_NVM_SHARED_CFG, 1, 1},
  };
  
- static int devlink_param_generic_verify(const struct devlink_param *param)
+ union bnxt_nvm_data {
+@@ -640,6 +642,10 @@ static int bnxt_dl_msix_validate(struct devlink *dl, u32 id,
+ 			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
+ 			     bnxt_dl_nvm_param_get, bnxt_dl_nvm_param_set,
+ 			     NULL),
++	DEVLINK_PARAM_GENERIC(ENABLE_LIVE_DEV_RESET,
++			      BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			      bnxt_dl_nvm_param_get, bnxt_dl_nvm_param_set,
++			      NULL),
+ };
+ 
+ static const struct devlink_param bnxt_dl_port_params[] = {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+index d5c8bd4..0c786fb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+@@ -39,6 +39,7 @@ static inline void bnxt_link_bp_to_dl(struct bnxt *bp, struct devlink *dl)
+ #define NVM_OFF_DIS_GRE_VER_CHECK	171
+ #define NVM_OFF_ENABLE_SRIOV		401
+ #define NVM_OFF_NVM_CFG_VER		602
++#define NVM_OFF_FW_LIVE_RESET		917
+ 
+ #define BNXT_NVM_CFG_VER_BITS		24
+ #define BNXT_NVM_CFG_VER_BYTES		4
 -- 
 1.8.3.1
 
