@@ -2,126 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EEFD1E9605
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:07:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA561E95F6
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387438AbgEaHHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 03:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S1729649AbgEaHDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 03:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387402AbgEaHHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:07:05 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010D7C05BD43
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:07:05 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e1so8265971wrt.5
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:07:04 -0700 (PDT)
+        with ESMTP id S1726020AbgEaHDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:03:12 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907E5C05BD43;
+        Sun, 31 May 2020 00:03:12 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id b6so4267540ljj.1;
+        Sun, 31 May 2020 00:03:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zuuk8Jvs9y7tcShD/HoX533qMHYTmDPbvbQa4HuJiek=;
-        b=avP81T3Lbn0+xWjSrTlCnPZ3mLJAdIHWVMCjMTVlO3yzx9z2th1CUKNPMJgqHxuLr5
-         qgTr3qKQGnKZAzv20oTAD21/zNYA9B6dhQ2d+zgyVqebKB8/cjM2a6Y0orVlbObyAWn8
-         oKvlVNSQF6dV37W8tmcPM0Ds2TbILAW91hCQo=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=orX/y8KZmJNFBM29Gj7r/7pgbaU1Wmo90frTAFgI1II=;
+        b=HxqCyM1EcKPbKMqPglb23SznK7zXBoHpxAe9uB5JZW4tnTxun6GQOGDw+5tBcOaECm
+         suvkefwQ8xbLMfVC0td4JIZo/MMBvKSj6BexhDRnxlbkIPb/scSpoVVPe143s/vDo4EC
+         sP/LA3rn6FUKhnOs2cy+7Ln4pSfdQzUvT/GVMCO+HuBezDF+raa3MHX6WRGeIUKvbY0b
+         /rQt0v1xJO4cQB3MVfq6unPXq/6Y7qyuavQKhIX2u0UJKEr+1qoFR2p6oCwqk1XAj1SF
+         fukGMWUxvbvVYgv1Oau5RfuKCOLwZnXQ2O3IS8CFpnidpslrSl5qRmZuHTYhOE49Ep23
+         O3+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=zuuk8Jvs9y7tcShD/HoX533qMHYTmDPbvbQa4HuJiek=;
-        b=dsVBQMMJdK0SSz7XY/dxDlIKXxmVdH/UrM57Pgfw49SKNlx7oqgm9fF271JjIi2NOI
-         vOzj+46qWjkcqTEBH9o4Bczhu+7TfanYn1XwUXsJ4BdY1hGKt97kzZkV2pU5HFPrKe07
-         wIiVk7J69RXUs+CMwzV+pcUJMnl8W0XFUleeTnfAvP1jNEKVQ3oZ94iu1e4fgAOzPKE0
-         AalfuPIRBfuDwxwqhhNcYF+sRzrDNGlwhdYQwE365qkCEEEzkZkbI6shljfWytAyz8HL
-         /cJqSaewYBHaWsMuJns/oC/5tlMiFGr1KKsgUPMwxkPXUNXuYiwhw6TpoHX4pNIHaCEO
-         xwpg==
-X-Gm-Message-State: AOAM533UFmzuI7nVs159Sp091oxMK39YMrcWOD+hQBM+T5FqXgnDxNEv
-        ptKQyW3tP4qo/jryiz9yIDZ4Nd+BHOs=
-X-Google-Smtp-Source: ABdhPJyJ2TnQbjwFXxzIaQ+E6rFN5J4Acoy2PalepdaRQrcYm0OjjZx9yn7WQ7Ymo7+Nph3+n6Oqhg==
-X-Received: by 2002:adf:c98a:: with SMTP id f10mr4855861wrh.329.1590908823634;
-        Sun, 31 May 2020 00:07:03 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.07.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 31 May 2020 00:07:03 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH v3 net-next 6/6] bnxt_en: Check if fw_live_reset is allowed before doing ETHTOOL_RESET
-Date:   Sun, 31 May 2020 12:33:45 +0530
-Message-Id: <1590908625-10952-7-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
-References: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=orX/y8KZmJNFBM29Gj7r/7pgbaU1Wmo90frTAFgI1II=;
+        b=OMxo/P1Pea4s33P1mwMT7YtjItdM7NTWVbEPIAiThKlWIya8Np/FdkZOxb/IJT8IRG
+         T11iKLb6RAtoL4NblYt3MLR9Sol5AIoxOuTYPdztorIs/rArbvWkOtHSaIo8ZK0UFyKI
+         kRo2pKZ4WJCrWEE1888qsTxm04k7nlqbIirc0SUq9XIfQZ4Be4zH5NkxEUwM8EOfxxPC
+         uqZGBTh/6PDNgP0IcKphE63NvHjlXlP4cNm6MXUVjLU9LSXDluJQDjaUax+VC/sXqnJC
+         RBtaVUSSlC5OCOKPPpeFuTFx1gsJsU+asnDit9Spy0H+iCMNGwaE9ca3v3Y9bBszJatz
+         VsaQ==
+X-Gm-Message-State: AOAM530Aj4Ite11D3x8c0qOFVAV6WJPJTlag8hG34a3HTcv32Q484T2+
+        +3DeLqoaerQq/VgSvhAqbTjW7knmAGw1t1XX72U=
+X-Google-Smtp-Source: ABdhPJywHXsqBndX3laZcwix8rl6zEFIaUWSsfG6YMGcM9LSe//w5BtrRO/NuMPavCMahVKPqbWUuUk4ilCBWssYdFI=
+X-Received: by 2002:a2e:b5d7:: with SMTP id g23mr1384527ljn.70.1590908591076;
+ Sun, 31 May 2020 00:03:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200529234309.484480-1-jhubbard@nvidia.com> <20200529234309.484480-2-jhubbard@nvidia.com>
+In-Reply-To: <20200529234309.484480-2-jhubbard@nvidia.com>
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+Date:   Sun, 31 May 2020 12:41:19 +0530
+Message-ID: <CAFqt6zaCSngh7-N_qZ6-S3Cj8CHF8DTSPv8anP_oJg5E6UWu9g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] docs: mm/gup: pin_user_pages.rst: add a "case 5"
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Jan Kara <jack@suse.cz>, Dave Chinner <david@fromorbit.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If device does not allow fw_live_reset, issue FW_RESET command
-without graceful flag, which requires a driver reload to reset
-the firmware.
+On Sat, May 30, 2020 at 5:13 AM John Hubbard <jhubbard@nvidia.com> wrote:
+>
+> There are four cases listed in pin_user_pages.rst. These are
+> intended to help developers figure out whether to use
+> get_user_pages*(), or pin_user_pages*(). However, the four cases
+> do not cover all the situations. For example, drivers/vhost/vhost.c
+> has a "pin, write to page, set page dirty, unpin" case.
+>
+> Add a fifth case, to help explain that there is a general pattern
+> that requires pin_user_pages*() API calls.
+>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Jan Kara <jack@suse.cz>
+> Cc: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+> Cc: Dave Chinner <david@fromorbit.com>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-fsdevel@vger.kernel.org
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  Documentation/core-api/pin_user_pages.rst | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>
+> diff --git a/Documentation/core-api/pin_user_pages.rst b/Documentation/co=
+re-api/pin_user_pages.rst
+> index 4675b04e8829..b9f2688a2c67 100644
+> --- a/Documentation/core-api/pin_user_pages.rst
+> +++ b/Documentation/core-api/pin_user_pages.rst
+> @@ -171,6 +171,26 @@ If only struct page data (as opposed to the actual m=
+emory contents that a page
+>  is tracking) is affected, then normal GUP calls are sufficient, and neit=
+her flag
+>  needs to be set.
+>
+> +CASE 5: Pinning in order to write to the data within the page
+> +-------------------------------------------------------------
+> +Even though neither DMA nor Direct IO is involved, just a simple case of=
+ "pin,
+> +access page's data, unpin" can cause a problem.
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+Will it be, *"pin, access page's data, set page dirty, unpin" * ?
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index dd0c3f2..e5eb8d2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1888,12 +1888,11 @@ static int bnxt_firmware_reset(struct net_device *dev,
- 	return bnxt_hwrm_firmware_reset(dev, proc_type, self_reset, flags);
- }
- 
--static int bnxt_firmware_reset_chip(struct net_device *dev)
-+static int bnxt_firmware_reset_chip(struct net_device *dev, bool hot_reset)
- {
--	struct bnxt *bp = netdev_priv(dev);
- 	u8 flags = 0;
- 
--	if (bp->fw_cap & BNXT_FW_CAP_HOT_RESET)
-+	if (hot_reset)
- 		flags = FW_RESET_REQ_FLAGS_RESET_GRACEFUL;
- 
- 	return bnxt_hwrm_firmware_reset(dev,
-@@ -3082,7 +3081,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- static int bnxt_reset(struct net_device *dev, u32 *flags)
- {
- 	struct bnxt *bp = netdev_priv(dev);
--	bool reload = false;
-+	bool reload = false, hot_reset;
- 	u32 req = *flags;
- 
- 	if (!req)
-@@ -3093,8 +3092,10 @@ static int bnxt_reset(struct net_device *dev, u32 *flags)
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (pci_vfs_assigned(bp->pdev) &&
--	    !(bp->fw_cap & BNXT_FW_CAP_HOT_RESET)) {
-+	if (bnxt_hwrm_get_hot_reset(bp, &hot_reset))
-+		hot_reset = !!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET);
-+
-+	if (pci_vfs_assigned(bp->pdev) && !hot_reset) {
- 		netdev_err(dev,
- 			   "Reset not allowed when VFs are assigned to VMs\n");
- 		return -EBUSY;
-@@ -3103,9 +3104,9 @@ static int bnxt_reset(struct net_device *dev, u32 *flags)
- 	if ((req & BNXT_FW_RESET_CHIP) == BNXT_FW_RESET_CHIP) {
- 		/* This feature is not supported in older firmware versions */
- 		if (bp->hwrm_spec_code >= 0x10803) {
--			if (!bnxt_firmware_reset_chip(dev)) {
-+			if (!bnxt_firmware_reset_chip(dev, hot_reset)) {
- 				netdev_info(dev, "Firmware reset request successful.\n");
--				if (!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET))
-+				if (!hot_reset)
- 					reload = true;
- 				*flags &= ~BNXT_FW_RESET_CHIP;
- 			}
--- 
-1.8.3.1
-
+Case 5 may be considered a
+> +superset of Case 1, plus Case 2, plus anything that invokes that pattern=
+. In
+> +other words, if the code is neither Case 1 nor Case 2, it may still requ=
+ire
+> +FOLL_PIN, for patterns like this:
+> +
+> +Correct (uses FOLL_PIN calls):
+> +    pin_user_pages()
+> +    access the data within the pages
+> +    set_page_dirty_lock()
+> +    unpin_user_pages()
+> +
+> +INCORRECT (uses FOLL_GET calls):
+> +    get_user_pages()
+> +    access the data within the pages
+> +    set_page_dirty_lock()
+> +    put_page()
+> +
+>  page_maybe_dma_pinned(): the whole point of pinning
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+>
+> --
+> 2.26.2
+>
