@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989921E984F
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 17:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FDD61E985F
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 17:09:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbgEaPFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 11:05:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59288 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727863AbgEaPFH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 31 May 2020 11:05:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bbD+C23yGjZTYXAsHsUqw6g39HqoValm/pb3DEr+jU0=; b=mpSb6YjsIaNAC1u4Ga5kLHjcsJ
-        ObZDy5FQ0Fo/TjJlWCXGf85rlF8xQpGzsIdMujNJRD3sbdo1epqJEsGDap4MZtsR9Bbm4DFj9dzjA
-        92QiYV4kT104vVz+nNNc//9UCOCdJ0OBGnDdhi0NNPSfrbPPStPsSTOSRKvJVbRSbmhI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jfPWK-003o0K-6b; Sun, 31 May 2020 17:05:04 +0200
-Date:   Sun, 31 May 2020 17:05:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: netif_device_present() and Runtime PM / PCI D3
-Message-ID: <20200531150504.GB897737@lunn.ch>
-References: <d7e70ee5-1c7b-c604-61ca-dff1f2995d0b@gmail.com>
+        id S1728344AbgEaPJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 11:09:13 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:21948 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728228AbgEaPJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 11:09:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1590937751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yDUA+JUdTjFPwNW7cVcL/jAUJqXfAJ27+Lah22MRRXo=;
+        b=WPeZmC8nC9xsv8EOqxJPzixC55QKQDXq03vAgwYxNs8Q07QULIn9RW9X3FLy43LA9VHSbC
+        AxH6LiqOxokbESOTAfaI84LoEYzS/V9mzyOoToHB6DCtWaZOOufu/x10t/kWkqfET4qwb4
+        ufmXErZJJWN1caS32IC3bCyhhzueuII=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-115-k7yVd-fmPneHxU-Pj9uOIA-1; Sun, 31 May 2020 11:09:07 -0400
+X-MC-Unique: k7yVd-fmPneHxU-Pj9uOIA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1AF5A835B40;
+        Sun, 31 May 2020 15:09:06 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-138.rdu2.redhat.com [10.10.112.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CFD5F60F8D;
+        Sun, 31 May 2020 15:09:04 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAFAFadCErKJ0mjkyKrVCCDAV7oShdA22O-TD6VEmFM0Mwfqahg@mail.gmail.com>
+References: <CAFAFadCErKJ0mjkyKrVCCDAV7oShdA22O-TD6VEmFM0Mwfqahg@mail.gmail.com>
+To:     gaurav singh <gaurav1086@gmail.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        trivial@kernel.org
+Subject: Re: [PATCH] conn_client: Add check for rxpc channel
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d7e70ee5-1c7b-c604-61ca-dff1f2995d0b@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1159569.1590937744.1@warthog.procyon.org.uk>
+Date:   Sun, 31 May 2020 16:09:04 +0100
+Message-ID: <1159570.1590937744@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 31, 2020 at 02:07:46PM +0200, Heiner Kallweit wrote:
-> I just wonder about the semantics of netif_device_present().
-> If a device is in PCI D3 (e.g. being runtime-suspended), then it's
-> not accessible. So is it present or not?
-> The description of the function just mentions the obvious case that
-> the device has been removed from the system.
+Hi,
 
-Hi Heiner
+Note that "conn_client:" isn't a suitable tag for the subject.  You should use
+"rxrpc:" instead.
 
-Looking at the code, there is no directly link to runtime suspend.  If
-the drivers suspend code has detached the device then it won't be
-present, but that tends to be not runtime PM, but WOL etc.
+How did you find this by the way?  You shouldn't get a NULL pointer there.
+Either the call is waiting for a channel to be assigned (in which case the
+condition on:
 
-> Related is the following regarding ethtool:
-> dev_ethtool() returns an error if device isn't marked as present.
-> If device is runtime-suspended and in PCI D3, then the driver
-> may still be able to provide quite some (cached) info about the
-> device. Same applies for settings: Even if device is sleeping,
-> the driver may store new settings and apply them once the device
-> is awake again.
+	if (!list_empty(&call->chan_wait_link)) {
 
-I think playing with cached state of a device is going to be a sources
-of hard to find bugs. I would want to see a compelling use case for
-this.
+will be true) or it should have been assigned a channel, in which case chan
+will not be NULL.
 
-	Andrew
+Note that the function takes the lock under which this is managed
+(conn->channel_lock) across this, so it shouldn't change.
+
+Even __rxrpc_disconnect_call(), which is called to implicitly close out a call
+that gets superseded on its channel, doesn't stop
+rxrpc_disconnect_client_call() from finding the channel.
+
+David
+
