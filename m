@@ -2,182 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F18591E9A66
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 23:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7C1F1E9A78
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 23:13:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728355AbgEaVAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 17:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        id S1728342AbgEaVNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 17:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbgEaVAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 17:00:30 -0400
+        with ESMTP id S1726008AbgEaVNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 17:13:34 -0400
 Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4411BC061A0E;
-        Sun, 31 May 2020 14:00:29 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id n24so7351211ejd.0;
-        Sun, 31 May 2020 14:00:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83493C061A0E;
+        Sun, 31 May 2020 14:13:33 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id f7so7346500ejq.6;
+        Sun, 31 May 2020 14:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=539l06f53hQ4Xnl2k60xCSVBBlVCTMlRCBAYOVC8l8A=;
-        b=ZegqGqwcO5qNeH0dIwzsq5YM+/4mmrfjYyg21hV+nMf4bNefAObBhTB0JSVDD7I195
-         pdjCG2rrHNbTz2UCmh4qjmyTlOwy/la8SDXM2sLEVn896qnbqnwb+HUPcQfCAeU+K4Jc
-         6/n1QzyZcEaidmZ7I5Nl488n/zLytJSXr2aiFR8ytzKm7Mtqj/zlL5txpm1ZS9PLxp/+
-         PbD96cq5353jC7OaWn5nq2gUtv8nxC7JA8oe9TCKPyUy9wbYCBf439u62nEtRonDR/uM
-         keZJT1NDRI2jdRcfLhoFuXCOf46HgkOXiH9eM7yy3EuhDzYV4DbhPl9154r6s7HTzHWF
-         7Xzw==
+        bh=0IbSTE/Xrv9GWB/H0hTk4DCSalmOsj/ZCdeTy2SmcfM=;
+        b=XB8FIvM+yrtJQE59puzOqM28Rmq5wkc3C6lVlAuPOWX0qsAMpJt+P4qHHLY+fdB6ni
+         VsqIgA8NUYiNCK4LP9aw3pLh23JFhZjLFx4pNq3o341hU/iVhLLnYhS2EZlfM9pHuz99
+         6oRS8X6q0V/bXVFo4bVUZugQu+rjnj0V8BqX7XtJyTcBkkrIjkiZ1804dXdKLjhyEiC0
+         c3r3A2tE2GnoIl/ciKexGXoM/FTYpMNJumdm1g30U0kLvS33MdDiwQmhJrAjY7lLES5I
+         7F7RMTgeGy3GSCRstjVNRwspd7gSloz4gXJY9Cp2v5SfmLaxaoN1pQnye0vNWdfcCTdu
+         Zdpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=539l06f53hQ4Xnl2k60xCSVBBlVCTMlRCBAYOVC8l8A=;
-        b=nhp3JX0zsQXUTTN54IdPdA5NQpWf6LKljVExMSYDR9DbSwXbmNXe/g2Figx1xOMbU6
-         3Dzuiek2ISaKZ0eeVaXBwQiusATl/vKD6EhYZ9zmWTXSq5BBnwtHw1KkOgaTB9vamB8/
-         fjRGzOgsd1ebHar/bJ8Ojvj6Pr4bO6ulEOFTiwYVn1Q/ds/WpH9h/IWSCynNDY1awp8S
-         MeTHcfTE/CGA8tZRjJzuXTD+gjgbRAj8tVT1t+6fIPpOyPY34tfgiEA6qtN1D14u3XsT
-         b1KWgSTHSFobASscYzegLyVEvHF3bIivEFbH9pyC22kjRjU3/S0LJGSMpcm5ZXMSLUiD
-         m2CA==
-X-Gm-Message-State: AOAM530t+YX4UNvPyR5HyuoxHx8hY4Eax+p5fsJo4sVTHzVrR2JWjFwh
-        +G10c5WCZ+tdLpRmVXo2YAsAzlBctVNC4PgOBE4=
-X-Google-Smtp-Source: ABdhPJxYUMqW6wRO3Fnr7TD6KNWzYFwk4YyMVKj47rlRWaDPvigh5zprMrh+zv7vJNa/MaDkvrt0HmLpYrPBAQdGUEc=
-X-Received: by 2002:a17:906:2e50:: with SMTP id r16mr16304256eji.305.1590958827706;
- Sun, 31 May 2020 14:00:27 -0700 (PDT)
+        bh=0IbSTE/Xrv9GWB/H0hTk4DCSalmOsj/ZCdeTy2SmcfM=;
+        b=ii5jLIxyay9T/1H7NJFH7yFfNLdWPHSoSm5ECROMuzRBtjxDe3BKIWX8bfghqFcGvT
+         DYUyWnpUw9RWQPpuXKICAgYq7TLKvHO4eeaegbO1ZKffBA4j1ebCH/YcMtiVV8YXTYx3
+         7LsXH0kfRu4J0nKEXyDigP9utjSQ9PX35rTIX5abUfCfyeQJC+gdD7lEPzu6CpZgESes
+         HpgLamgasDHFXGCZhTJZ0h7pQ/VggG5U8a1h3Fmd8yqIrfMT5GnJToyRNh0z9SEDDiY7
+         YYT68CESrNxCjdPS2sVm3tHMW054XwKBDdlSYqC6Z2D565gay3Ju60fTfSL0V3mB2VR+
+         50HQ==
+X-Gm-Message-State: AOAM530Jt8nEf7BJQZENqSQBuCV1IuUC5E/eKUYFE05r5xq45NRcfbPq
+        x4VGk1slvz4EW0HmGiwVsLvjnN+DibTX5WemBB8=
+X-Google-Smtp-Source: ABdhPJxAzywj6vYZwVVOQwM0Sv8xAs3tPkRvO805mSmRPaatId2sGZKUECq6JqQ/ASI/W4RWS32andW1AnUgV1FayXA=
+X-Received: by 2002:a17:906:e47:: with SMTP id q7mr3488598eji.279.1590959612081;
+ Sun, 31 May 2020 14:13:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200530214315.1051358-1-olteanv@gmail.com> <20200531001849.GG1551@shell.armlinux.org.uk>
-In-Reply-To: <20200531001849.GG1551@shell.armlinux.org.uk>
+References: <20200531180758.1426455-1-olteanv@gmail.com> <CAHp75Vc5NrDUZwv7uW+P=Ly+tz3a9XgEukX6ZgSccj_1sMYQaw@mail.gmail.com>
+In-Reply-To: <CAHp75Vc5NrDUZwv7uW+P=Ly+tz3a9XgEukX6ZgSccj_1sMYQaw@mail.gmail.com>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 1 Jun 2020 00:00:16 +0300
-Message-ID: <CA+h21ho6p=6JhR3Gyjt4L2_SnFhjamE7FuU_nnjUG6AUq04TcQ@mail.gmail.com>
-Subject: Re: [PATCH stable-4.19.y] net: phy: reschedule state machine if AN
- has not completed in PHY_AN state
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, zefir.kurtisi@neratec.com
+Date:   Mon, 1 Jun 2020 00:13:21 +0300
+Message-ID: <CA+h21ho-XYzWo8BqHwu9REnBVEgG2Zynuux=j_UJ8hvhXATOVA@mail.gmail.com>
+Subject: Re: [PATCH v2] devres: keep both device name and resource name in
+ pretty name
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sergei.shtylyov@cogentembedded.com" 
+        <sergei.shtylyov@cogentembedded.com>,
+        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
+        "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
+        "efremov@linux.com" <efremov@linux.com>,
+        "ztuowen@gmail.com" <ztuowen@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 31 May 2020 at 03:19, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
+On Mon, 1 Jun 2020 at 00:05, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 >
-> On Sun, May 31, 2020 at 12:43:15AM +0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > In kernel 4.19 (and probably earlier too) there are issues surrounding
-> > the PHY_AN state.
-> >
-> > For example, if a PHY is in PHY_AN state and AN has not finished, then
-> > what is supposed to happen is that the state machine gets rescheduled
-> > until it is, or until the link_timeout reaches zero which triggers an
-> > autoneg restart process.
-> >
-> > But actually the rescheduling never works if the PHY uses interrupts,
-> > because the condition under which rescheduling occurs is just if
-> > phy_polling_mode() is true. So basically, this whole rescheduling
-> > functionality works for AN-not-yet-complete just by mistake. Let me
-> > explain.
-> >
-> > Most of the time the AN process manages to finish by the time the
-> > interrupt has triggered. One might say "that should always be the case,
-> > otherwise the PHY wouldn't raise the interrupt, right?".
-> > Well, some PHYs implement an .aneg_done method which allows them to tell
-> > the state machine when the AN is really complete.
-> > The AR8031/AR8033 driver (at803x.c) is one such example. Even when
-> > copper autoneg completes, the driver still keeps the "aneg_done"
-> > variable unset until in-band SGMII autoneg finishes too (there is no
-> > interrupt for that). So we have the premises of a race condition.
 >
-> Why do we care whether SGMII autoneg has completed - is that not the
-> domain of the MAC side of the link?
 >
-> It sounds like things are a little confused.  The PHY interrupt is
-> signalling that the copper side has completed its autoneg.  If we're
-> in SGMII mode, the PHY can now start the process of informing the
-> MAC about the negotiation results across the SGMII link.  When the
-> MAC receives those results, and sends the acknowledgement back to the
-> PHY, is it not the responsibility of the MAC to then say "the link is
-> now up" ?
+> On Sunday, May 31, 2020, Vladimir Oltean <olteanv@gmail.com> wrote:
+>>
+>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>
+>> Sometimes debugging a device is easiest using devmem on its register
+>> map, and that can be seen with /proc/iomem. But some device drivers have
+>> many memory regions. Take for example a networking switch. Its memory
+>> map used to look like this in /proc/iomem:
+>>
+>> 1fc000000-1fc3fffff : pcie@1f0000000
+>>   1fc000000-1fc3fffff : 0000:00:00.5
+>>     1fc010000-1fc01ffff : sys
+>>     1fc030000-1fc03ffff : rew
+>>     1fc060000-1fc0603ff : s2
+>>     1fc070000-1fc0701ff : devcpu_gcb
+>>     1fc080000-1fc0800ff : qs
+>>     1fc090000-1fc0900cb : ptp
+>>     1fc100000-1fc10ffff : port0
+>>     1fc110000-1fc11ffff : port1
+>>     1fc120000-1fc12ffff : port2
+>>     1fc130000-1fc13ffff : port3
+>>     1fc140000-1fc14ffff : port4
+>>     1fc150000-1fc15ffff : port5
+>>     1fc200000-1fc21ffff : qsys
+>>     1fc280000-1fc28ffff : ana
+>>
+>> But after the patch in Fixes: was applied, the information is now
+>> presented in a much more opaque way:
+>>
+>> 1fc000000-1fc3fffff : pcie@1f0000000
+>>   1fc000000-1fc3fffff : 0000:00:00.5
+>>     1fc010000-1fc01ffff : 0000:00:00.5
+>>     1fc030000-1fc03ffff : 0000:00:00.5
+>>     1fc060000-1fc0603ff : 0000:00:00.5
+>>     1fc070000-1fc0701ff : 0000:00:00.5
+>>     1fc080000-1fc0800ff : 0000:00:00.5
+>>     1fc090000-1fc0900cb : 0000:00:00.5
+>>     1fc100000-1fc10ffff : 0000:00:00.5
+>>     1fc110000-1fc11ffff : 0000:00:00.5
+>>     1fc120000-1fc12ffff : 0000:00:00.5
+>>     1fc130000-1fc13ffff : 0000:00:00.5
+>>     1fc140000-1fc14ffff : 0000:00:00.5
+>>     1fc150000-1fc15ffff : 0000:00:00.5
+>>     1fc200000-1fc21ffff : 0000:00:00.5
+>>     1fc280000-1fc28ffff : 0000:00:00.5
+>>
+>> That patch made a fair comment that /proc/iomem might be confusing when
+>> it shows resources without an associated device, but we can do better
+>> than just hide the resource name altogether. Namely, we can print the
+>> device name _and_ the resource name. Like this:
+>>
+>> 1fc000000-1fc3fffff : pcie@1f0000000
+>>   1fc000000-1fc3fffff : 0000:00:00.5
+>>     1fc010000-1fc01ffff : 0000:00:00.5 sys
+>>     1fc030000-1fc03ffff : 0000:00:00.5 rew
+>>     1fc060000-1fc0603ff : 0000:00:00.5 s2
+>>     1fc070000-1fc0701ff : 0000:00:00.5 devcpu_gcb
+>>     1fc080000-1fc0800ff : 0000:00:00.5 qs
+>>     1fc090000-1fc0900cb : 0000:00:00.5 ptp
+>>     1fc100000-1fc10ffff : 0000:00:00.5 port0
+>>     1fc110000-1fc11ffff : 0000:00:00.5 port1
+>>     1fc120000-1fc12ffff : 0000:00:00.5 port2
+>>     1fc130000-1fc13ffff : 0000:00:00.5 port3
+>>     1fc140000-1fc14ffff : 0000:00:00.5 port4
+>>     1fc150000-1fc15ffff : 0000:00:00.5 port5
+>>     1fc200000-1fc21ffff : 0000:00:00.5 qsys
+>>     1fc280000-1fc28ffff : 0000:00:00.5 ana
+>>
 >
-
-Things are not at all confused on my end, Russell.
-The "803x_aneg_done: SGMII link is not ok" log message had made me
-aware of the existence of this piece of code for a very long while
-now, but to be honest I hadn't actually read the commit message in
-full detail until I replied to Heiner above. Especially this part:
-
-    It prints a warning on failure but
-    intentionally does not try to recover from this
-    state. As a result, if you ever see a warning
-    '803x_aneg_done: SGMII link is not ok' you will
-    end up having an Ethernet link up but won't get
-    any data through. This should not happen, if it
-    does, please contact the module maintainer.
-
-The author highlighted a valid issue, but then came up with a BS
-solution for it. It solves no problem, and it creates a problem for
-some who originally had none.
-When used in poll mode, the at803x.c driver would occasionally catch
-the in-band AN in a state where it wasn't yet complete, so it would
-print this message once, but all was ok in the end since the state
-machine would get rescheduled and the link would come up. So I
-genuinely thought that the intention of the patch was to be helpful.
-But according to his own words, it is just trying to throw its hands
-up in the air and lay the blame on somebody else [ the gianfar
-maintainer ]. So in that sense, maybe it's my 'fault' for trying to
-make the link come up with 803x_aneg_done in place. Maybe I should
-just respectfully revert the patch
-f62265b53ef34a372b657c99e23d32e95b464316, and replace it with some
-other framework. The trouble is, what to replace it with?
-
-> That's how we deal with it elsewhere with phylink integration, which
-> is what has to be done when you have to cope with PHYs that switch
-> their host interface mode between SGMII, 2500BASE-X, 5GBASE-R and
-> 10GBASE-R - the MAC side needs to be dynamically reconfigured depending
-> on the new host-side operating mode of the PHY.  Only when the MAC
-> subsequently reports that the link has been established is the whole
-> link from the MAC to the media deemed to be operational.
+> All of this seems an ABI change.
+> But also see below.
 >
 
-This sounds to me like 'phylink has this one figured out', but I would
-beg to differ.
-My opinion is that it's not obvious that it would be the MAC's
-responsibility to determine whether the overall link is operational
-(applied in this case to in-band AN), but the system's responsibility,
-and for a simple reason: it takes 2 to negotiate. The MAC PCS and the
-PHY have to agree on whether they perform in-band AN or not. And
-that's wild jungle right there, with some PHY drivers capable of
-in-band AN keeping it enabled and some disabled (and even worse, PHY
-drivers that don't enable it in Linux but enable it in U-Boot, and
-since the setting is sticky, it changes the default behavior), and
-phylink hasn't done anything to add some rules to it, just some
-MAC-side knobs to turn for a particular MAC-PHY combination until
-something works.
+Yes, indeed. What should I understand from your comment though?
 
-This is all relevant because our options for the stable trees boil
-down to 2 choices:
-- Revert f62265b53ef34a372b657c99e23d32e95b464316, fix an API misuse
-and a bug, but lose an (admittedly ad-hoc, but still) useful way of
-troubleshooting a system misconfiguration (hide the problem that Zefir
-Kurtisi was seeing).
-- Apply this patch which make the PHY state machine work even with
-this bent interpretation of the API. It's not as if all phylib users
-could migrate to phylink in stable trees, and even phylink doesn't
-catch all possible configuration cases currently.
+>>
+>> Fixes: 8d84b18f5678 ("devres: always use dev_name() in devm_ioremap_resource()")
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> ---
+>>  lib/devres.c | 17 ++++++++++++++++-
+>>  1 file changed, 16 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/lib/devres.c b/lib/devres.c
+>> index 6ef51f159c54..3d67588c15a7 100644
+>> --- a/lib/devres.c
+>> +++ b/lib/devres.c
+>> @@ -119,6 +119,7 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+>>  {
+>>         resource_size_t size;
+>>         void __iomem *dest_ptr;
+>> +       char *pretty_name;
+>>
+>>         BUG_ON(!dev);
+>>
+>> @@ -129,7 +130,21 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+>>
+>>         size = resource_size(res);
+>>
+>> -       if (!devm_request_mem_region(dev, res->start, size, dev_name(dev))) {
+>> +       if (res->name) {
+>> +               int len = strlen(dev_name(dev)) + strlen(res->name) + 2;
+>> +
+>> +               pretty_name = devm_kzalloc(dev, len, GFP_KERNEL);
+>> +               if (!pretty_name)
+>> +                       return IOMEM_ERR_PTR(-ENOMEM);
+>> +
+>> +               sprintf(pretty_name, "%s %s", dev_name(dev), res->name);
+>
+>
+> Reimplementing devm_kasprintf(), why?
+>
 
-Either one is fine with me.
+Mostly because I didn't remember how it was called, thanks for pointing it out.
 
+>>
+>> +       } else {
+>> +               pretty_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+>> +               if (!pretty_name)
+>> +                       return IOMEM_ERR_PTR(-ENOMEM);
+>> +       }
+>> +
+>> +       if (!devm_request_mem_region(dev, res->start, size, pretty_name)) {
+>>                 dev_err(dev, "can't request region for resource %pR\n", res);
+>>                 return IOMEM_ERR_PTR(-EBUSY);
+>>         }
+>> --
+>> 2.25.1
+>>
+>
+>
 > --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps u
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
 Thanks,
 -Vladimir
