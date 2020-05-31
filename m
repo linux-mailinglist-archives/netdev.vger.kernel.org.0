@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89331E97A3
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA661E97A2
 	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728257AbgEaMgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 08:36:43 -0400
-Received: from mga12.intel.com ([192.55.52.136]:12468 "EHLO mga12.intel.com"
+        id S1728220AbgEaMgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 08:36:41 -0400
+Received: from mga12.intel.com ([192.55.52.136]:12466 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728103AbgEaMgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728111AbgEaMgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 31 May 2020 08:36:25 -0400
-IronPort-SDR: dE2fbGQEKO2kyuuLAXE4rHRx+pbbLREDwbzwjh34EnoriV8bMhnpqebxEVqe5/bCPI/ZyJhxQI
- +GC6Ruv6ROFw==
+IronPort-SDR: 8FONKlX/sV+bVcCm9eyfHz1m+846JwJZWBjbvCUxf7t+gtWss13uW+/2oyjEwWtJmYUJVxl0zt
+ t9IMAU+8QGUQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2020 05:36:23 -0700
-IronPort-SDR: 5wNlBdSJzdfrNGR6n9BLu2/+JJQJ4Xmom1OWZ1Q0kDoXxiELgMHrSga9nvlDWTDplqoygWWcXK
- ORcTeK300l3w==
+IronPort-SDR: em5oT8wws7oY8TKsB+kPoXvN5FPBDQHSZY8ULm4xNQtuV+V2fDfmEd31JDVX88OQexxRATK9Hb
+ BPg1yVxDIzwQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,456,1583222400"; 
-   d="scan'208";a="303345433"
+   d="scan'208";a="303345436"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga002.fm.intel.com with ESMTP; 31 May 2020 05:36:22 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 31 May 2020 05:36:23 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 06/14] ice: Reset VF for all port VLAN changes from host
-Date:   Sun, 31 May 2020 05:36:11 -0700
-Message-Id: <20200531123619.2887469-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 07/14] ice: Always clear QRXFLXP_CNTXT before writing new value
+Date:   Sun, 31 May 2020 05:36:12 -0700
+Message-Id: <20200531123619.2887469-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200531123619.2887469-1-jeffrey.t.kirsher@intel.com>
 References: <20200531123619.2887469-1-jeffrey.t.kirsher@intel.com>
@@ -45,92 +46,129 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Brett Creeley <brett.creeley@intel.com>
 
-Currently the PF is modifying the VF's port VLAN on the fly when
-configured via iproute. This is okay for most cases, but if the VF
-already has guest VLANs configured the PF has to remove all of those
-filters so only VLAN tagged traffic that matches the port VLAN will
-pass. Instead of adding functionality to track which guest VLANs have
-been added, just reset the VF each time port VLAN parameters are
-modified.
+Always clear the previous value in QRXFLXP_CNTXT before writing a new
+value. This will make it so re-used queues will not accidentally take the
+previously configured settings.
 
 Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 42 +++----------------
- 1 file changed, 5 insertions(+), 37 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_base.c | 33 ++++++++---------------
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 26 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_lib.h  |  3 +++
+ 3 files changed, 40 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 9550501f9279..2916cfb9d032 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -3295,7 +3295,6 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 		     __be16 vlan_proto)
- {
- 	struct ice_pf *pf = ice_netdev_to_pf(netdev);
--	struct ice_vsi *vsi;
- 	struct device *dev;
- 	struct ice_vf *vf;
- 	u16 vlanprio;
-@@ -3317,8 +3316,6 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index a174911d8994..d620d26d42ed 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -3,6 +3,7 @@
  
- 	vf = &pf->vf[vf_id];
--	vsi = pf->vsi[vf->lan_vsi_idx];
+ #include <net/xdp_sock_drv.h>
+ #include "ice_base.h"
++#include "ice_lib.h"
+ #include "ice_dcb_lib.h"
+ 
+ /**
+@@ -288,7 +289,6 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	u32 rxdid = ICE_RXDID_FLEX_NIC;
+ 	struct ice_rlan_ctx rlan_ctx;
+ 	struct ice_hw *hw;
+-	u32 regval;
+ 	u16 pf_q;
+ 	int err;
+ 
+@@ -385,27 +385,16 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	/* Rx queue threshold in units of 64 */
+ 	rlan_ctx.lrxqthresh = 1;
+ 
+-	 /* Enable Flexible Descriptors in the queue context which
+-	  * allows this driver to select a specific receive descriptor format
+-	  */
+-	regval = rd32(hw, QRXFLXP_CNTXT(pf_q));
+-	if (vsi->type != ICE_VSI_VF) {
+-		regval |= (rxdid << QRXFLXP_CNTXT_RXDID_IDX_S) &
+-			QRXFLXP_CNTXT_RXDID_IDX_M;
 -
- 	ret = ice_check_vf_ready_for_cfg(vf);
- 	if (ret)
- 		return ret;
-@@ -3331,44 +3328,15 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 		return 0;
- 	}
- 
--	if (vlan_id || qos) {
--		/* remove VLAN 0 filter set by default when transitioning from
--		 * no port VLAN to a port VLAN. No change to old port VLAN on
--		 * failure.
+-		/* increasing context priority to pick up profile ID;
+-		 * default is 0x01; setting to 0x03 to ensure profile
+-		 * is programming if prev context is of same priority
 -		 */
--		ret = ice_vsi_kill_vlan(vsi, 0);
--		if (ret)
--			return ret;
--		ret = ice_vsi_manage_pvid(vsi, vlanprio, true);
--		if (ret)
--			return ret;
+-		regval |= (0x03 << QRXFLXP_CNTXT_RXDID_PRIO_S) &
+-			QRXFLXP_CNTXT_RXDID_PRIO_M;
+-
 -	} else {
--		/* add VLAN 0 filter back when transitioning from port VLAN to
--		 * no port VLAN. No change to old port VLAN on failure.
--		 */
--		ret = ice_vsi_add_vlan(vsi, 0, ICE_FWD_TO_VSI);
--		if (ret)
--			return ret;
--		ret = ice_vsi_manage_pvid(vsi, 0, false);
--		if (ret)
--			return ret;
+-		regval &= ~(QRXFLXP_CNTXT_RXDID_IDX_M |
+-			    QRXFLXP_CNTXT_RXDID_PRIO_M |
+-			    QRXFLXP_CNTXT_TS_M);
 -	}
-+	vf->port_vlan_info = vlanprio;
- 
--	if (vlan_id) {
-+	if (vf->port_vlan_info)
- 		dev_info(dev, "Setting VLAN %d, QoS 0x%x on VF %d\n",
- 			 vlan_id, qos, vf_id);
+-	wr32(hw, QRXFLXP_CNTXT(pf_q), regval);
++	/* Enable Flexible Descriptors in the queue context which
++	 * allows this driver to select a specific receive descriptor format
++	 * increasing context priority to pick up profile ID; default is 0x01;
++	 * setting to 0x03 to ensure profile is programming if prev context is
++	 * of same priority
++	 */
++	if (vsi->type != ICE_VSI_VF)
++		ice_write_qrxflxp_cntxt(hw, pf_q, rxdid, 0x3);
 +	else
-+		dev_info(dev, "Clearing port VLAN on VF %d\n", vf_id);
++		ice_write_qrxflxp_cntxt(hw, pf_q, ICE_RXDID_LEGACY_1, 0x3);
  
--		/* add VLAN filter for the port VLAN */
--		ret = ice_vsi_add_vlan(vsi, vlan_id, ICE_FWD_TO_VSI);
--		if (ret)
--			return ret;
--	}
--	/* remove old port VLAN filter with valid VLAN ID or QoS fields */
--	if (vf->port_vlan_info)
--		ice_vsi_kill_vlan(vsi, vf->port_vlan_info & VLAN_VID_MASK);
--
--	/* keep port VLAN information persistent on resets */
--	vf->port_vlan_info = le16_to_cpu(vsi->info.pvid);
-+	ice_vc_reset_vf(vf);
- 
- 	return 0;
+ 	/* Absolute queue number out of 2K needs to be passed */
+ 	err = ice_write_rxq_ctx(hw, &rlan_ctx, pf_q);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 89e8e4f7f56f..ecc04a696e50 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -1595,6 +1595,32 @@ void ice_vsi_cfg_frame_size(struct ice_vsi *vsi)
+ 	}
  }
+ 
++/**
++ * ice_write_qrxflxp_cntxt - write/configure QRXFLXP_CNTXT register
++ * @hw: HW pointer
++ * @pf_q: index of the Rx queue in the PF's queue space
++ * @rxdid: flexible descriptor RXDID
++ * @prio: priority for the RXDID for this queue
++ */
++void
++ice_write_qrxflxp_cntxt(struct ice_hw *hw, u16 pf_q, u32 rxdid, u32 prio)
++{
++	int regval = rd32(hw, QRXFLXP_CNTXT(pf_q));
++
++	/* clear any previous values */
++	regval &= ~(QRXFLXP_CNTXT_RXDID_IDX_M |
++		    QRXFLXP_CNTXT_RXDID_PRIO_M |
++		    QRXFLXP_CNTXT_TS_M);
++
++	regval |= (rxdid << QRXFLXP_CNTXT_RXDID_IDX_S) &
++		QRXFLXP_CNTXT_RXDID_IDX_M;
++
++	regval |= (prio << QRXFLXP_CNTXT_RXDID_PRIO_S) &
++		QRXFLXP_CNTXT_RXDID_PRIO_M;
++
++	wr32(hw, QRXFLXP_CNTXT(pf_q), regval);
++}
++
+ /**
+  * ice_vsi_cfg_rxqs - Configure the VSI for Rx
+  * @vsi: the VSI being configured
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
+index 076e635e0c9f..d80e6afa4511 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_lib.h
+@@ -74,6 +74,9 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi);
+ 
+ bool ice_is_reset_in_progress(unsigned long *state);
+ 
++void
++ice_write_qrxflxp_cntxt(struct ice_hw *hw, u16 pf_q, u32 rxdid, u32 prio);
++
+ void ice_vsi_put_qs(struct ice_vsi *vsi);
+ 
+ void ice_vsi_dis_irq(struct ice_vsi *vsi);
 -- 
 2.26.2
 
