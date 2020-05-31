@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D671E979D
+	by mail.lfdr.de (Postfix) with ESMTP id A874C1E979E
 	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725987AbgEaMge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 08:36:34 -0400
-Received: from mga12.intel.com ([192.55.52.136]:12468 "EHLO mga12.intel.com"
+        id S1728244AbgEaMgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 08:36:36 -0400
+Received: from mga12.intel.com ([192.55.52.136]:12466 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728166AbgEaMg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728167AbgEaMg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 31 May 2020 08:36:27 -0400
-IronPort-SDR: ksXI1MdMVzO+1lOfCwmuNAfeXzwtFr/xazubCXyd6ccNmgV2HZzerKmStDn9t2p4uNO9m/hZ49
- iGINAAJaAQYg==
+IronPort-SDR: heEiN1Yx3L08hhPvylrNRVBs7dT/Np0wpXYr/zJrDlMXU8aoAlgaruHkcU17A5LMeg7Qv9r1k2
+ tIdt6FvcemCg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2020 05:36:25 -0700
-IronPort-SDR: CgGyfrRrkbcdPnt1eDyEFyxY83n6vBEY1YaneohQ5r6N9I4dbxabgUkuss6cxGzbGBMnvkl44e
- sZx+BtJoaQXg==
+IronPort-SDR: aEdldv1HdYR+nzA5nRbFGUREP4DJXQlvU3oMFoab0IwM7BW1yDmxyLvq3cNtnxIIxM4CKCZeO1
+ riAtqKGDUxiw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,456,1583222400"; 
-   d="scan'208";a="303345454"
+   d="scan'208";a="303345457"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga002.fm.intel.com with ESMTP; 31 May 2020 05:36:24 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 31 May 2020 05:36:25 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Henry Tieman <henry.w.tieman@intel.com>, netdev@vger.kernel.org,
+Cc:     Chinh T Cao <chinh.t.cao@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 13/14] ice: fix aRFS after flow director delete
-Date:   Sun, 31 May 2020 05:36:18 -0700
-Message-Id: <20200531123619.2887469-14-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 14/14] ice: Ignore EMODE when setting PHY config
+Date:   Sun, 31 May 2020 05:36:19 -0700
+Message-Id: <20200531123619.2887469-15-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200531123619.2887469-1-jeffrey.t.kirsher@intel.com>
 References: <20200531123619.2887469-1-jeffrey.t.kirsher@intel.com>
@@ -43,64 +44,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Henry Tieman <henry.w.tieman@intel.com>
+From: Chinh T Cao <chinh.t.cao@intel.com>
 
-The logic was missing for adding back perfect flows after flow director
-filter delete. The code now adds perfect flows into the HW tables after
-filter delete.
+When setting the PHY cfg (CQ cmd 0x0601), if the firmware responds
+with an EMODE error, software will ignore the error as it simply
+means that manageability (ex: BMC) is in control of the link and that
+the new setting may not be applied.
 
-Signed-off-by: Henry Tieman <henry.w.tieman@intel.com>
+Signed-off-by: Chinh T Cao <chinh.t.cao@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_ethtool_fdir.c | 27 ++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_adminq_cmd.h | 1 +
+ drivers/net/ethernet/intel/ice/ice_common.c     | 7 ++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c       | 2 ++
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-index 42803fc0ed18..d7430ce6af26 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-@@ -1363,6 +1363,31 @@ void ice_vsi_manage_fdir(struct ice_vsi *vsi, bool ena)
- 	mutex_unlock(&hw->fdir_fltr_lock);
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 50040c5c55ec..92f82f2a8af4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1826,6 +1826,7 @@ enum ice_aq_err {
+ 	ICE_AQ_RC_EINVAL	= 14, /* Invalid argument */
+ 	ICE_AQ_RC_ENOSPC	= 16, /* No space left or allocation failure */
+ 	ICE_AQ_RC_ENOSYS	= 17, /* Function not implemented */
++	ICE_AQ_RC_EMODE		= 21, /* Op not allowed in current dev mode */
+ 	ICE_AQ_RC_ENOSEC	= 24, /* Missing security manifest */
+ 	ICE_AQ_RC_EBADSIG	= 25, /* Bad RSA signature */
+ 	ICE_AQ_RC_ESVN		= 26, /* SVN number prohibits this package */
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index d4a31c734326..bce0e1281168 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -2232,6 +2232,7 @@ ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
+ 		   struct ice_aqc_set_phy_cfg_data *cfg, struct ice_sq_cd *cd)
+ {
+ 	struct ice_aq_desc desc;
++	enum ice_status status;
+ 
+ 	if (!cfg)
+ 		return ICE_ERR_PARAM;
+@@ -2260,7 +2261,11 @@ ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
+ 	ice_debug(hw, ICE_DBG_LINK, "eeer_value = 0x%x\n", cfg->eeer_value);
+ 	ice_debug(hw, ICE_DBG_LINK, "link_fec_opt = 0x%x\n", cfg->link_fec_opt);
+ 
+-	return ice_aq_send_cmd(hw, &desc, cfg, sizeof(*cfg), cd);
++	status = ice_aq_send_cmd(hw, &desc, cfg, sizeof(*cfg), cd);
++	if (hw->adminq.sq_last_status == ICE_AQ_RC_EMODE)
++		status = 0;
++
++	return status;
  }
  
-+/**
-+ * ice_fdir_do_rem_flow - delete flow and possibly add perfect flow
-+ * @pf: PF structure
-+ * @flow_type: FDir flow type to release
-+ */
-+static void
-+ice_fdir_do_rem_flow(struct ice_pf *pf, enum ice_fltr_ptype flow_type)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+	bool need_perfect = false;
-+
-+	if (flow_type == ICE_FLTR_PTYPE_NONF_IPV4_TCP ||
-+	    flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
-+	    flow_type == ICE_FLTR_PTYPE_NONF_IPV6_TCP ||
-+	    flow_type == ICE_FLTR_PTYPE_NONF_IPV6_UDP)
-+		need_perfect = true;
-+
-+	if (need_perfect && test_bit(flow_type, hw->fdir_perfect_fltr))
-+		return;
-+
-+	ice_fdir_rem_flow(hw, ICE_BLK_FD, flow_type);
-+	if (need_perfect)
-+		ice_create_init_fdir_rule(pf, flow_type);
-+}
-+
  /**
-  * ice_fdir_update_list_entry - add or delete a filter from the filter list
-  * @pf: PF structure
-@@ -1393,7 +1418,7 @@ ice_fdir_update_list_entry(struct ice_pf *pf, struct ice_fdir_fltr *input,
- 			/* we just deleted the last filter of flow_type so we
- 			 * should also delete the HW filter info.
- 			 */
--			ice_fdir_rem_flow(hw, ICE_BLK_FD, old_fltr->flow_type);
-+			ice_fdir_do_rem_flow(pf, old_fltr->flow_type);
- 		list_del(&old_fltr->fltr_node);
- 		devm_kfree(ice_hw_to_dev(hw), old_fltr);
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index cb72ff32a29b..082825e3cb39 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5159,6 +5159,8 @@ const char *ice_aq_str(enum ice_aq_err aq_err)
+ 		return "ICE_AQ_RC_ENOSPC";
+ 	case ICE_AQ_RC_ENOSYS:
+ 		return "ICE_AQ_RC_ENOSYS";
++	case ICE_AQ_RC_EMODE:
++		return "ICE_AQ_RC_EMODE";
+ 	case ICE_AQ_RC_ENOSEC:
+ 		return "ICE_AQ_RC_ENOSEC";
+ 	case ICE_AQ_RC_EBADSIG:
 -- 
 2.26.2
 
