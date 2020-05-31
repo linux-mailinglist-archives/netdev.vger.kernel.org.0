@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5701E95C7
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 07:17:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4705B1E95FF
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 09:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729153AbgEaFRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 01:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        id S1729611AbgEaHGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 03:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725895AbgEaFRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 01:17:37 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133AAC05BD43
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 22:17:37 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 185so1972290pgb.10
-        for <netdev@vger.kernel.org>; Sat, 30 May 2020 22:17:37 -0700 (PDT)
+        with ESMTP id S1726220AbgEaHGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 03:06:06 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1474C05BD43
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:06 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id f185so8237048wmf.3
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 00:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
+        d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id;
-        bh=xRuCKtmAU98/1FoM979BFTI0yYozTBzpHXxwBey2HNA=;
-        b=WuCnRGdoNPe44NoH4xa968aPJCc3VqhIaVE0jfmuFe/l3fosuxw+ZMYRXlb9mILjmh
-         5t47ydHuiJcW76B8BznNuPerU7QQUeLvRIEHfhQIMYzznboGLdkOE09OFzzKWrygdDan
-         UEsA8jQ4evHZaTvryEJogN8g4CQXT99zRgAtA=
+        bh=elDQpODIiaQUs3zg/KlaGUWifEXR1SPnIQSDswktTdE=;
+        b=P5puP0A/RXHPgP2mTSh9wm3fyz2QQh73lPw3XIjsR5CnT7KlMLjECBg9tj4QUNZOOr
+         GZUxe9Fb80e8YexkQQ5rJikYz4xi9J7irM1SMMpYgVqKJ2sNzv4wk7/mdA1b6JJQS1cx
+         WPCaht66gZGee2wUT9PLIG20B9GzEHrpwScoE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xRuCKtmAU98/1FoM979BFTI0yYozTBzpHXxwBey2HNA=;
-        b=pkSVbYpG+mCi3DjRM/Qca31llT3rkfDwcXzLTmzor1ZrOFKJHh/FZNZ7zeXBdPAriu
-         a2b4jET8l0C2PxPEDCV3d6CWcjBhH+89MUom4dIkxim+WUalsWPNc8MmAocaZ3jky+J3
-         +2F/3Cu1GlFiXTtUKkPrXT7gU6BxAbuR3K/DrC+02nrlGtplFHZE7lOnNSlauZghRXmo
-         GoMHYTeyZpOVNC6nFU2VHaNhxYt1BUV1LWQf0VLpKpNs/+HSAI+9w/V827WVfIAncbSf
-         +njN21vQO8qchVNnl4iKToAQUnYcX5xHfRinzxEJR6iL6iXJr5VCpzhZPl9kRpl4tvm2
-         LWxw==
-X-Gm-Message-State: AOAM532Osa+Ag3cyCPyXUeDJ/ym22ap92R5WBGbVOH9iI2ESZ15gR3St
-        JkdDfLX6LSJ775DQ3b/wnKthhA==
-X-Google-Smtp-Source: ABdhPJyyOBzoqaS/j7oGsorOoJ4YNltIjdO1CxMxXTgjvyxmCkWFS8R/x/Q0vyBKH/rY/oqVmUrj2Q==
-X-Received: by 2002:a62:e305:: with SMTP id g5mr15835370pfh.144.1590902256513;
-        Sat, 30 May 2020 22:17:36 -0700 (PDT)
-Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id x191sm11395292pfd.37.2020.05.30.22.17.35
+        bh=elDQpODIiaQUs3zg/KlaGUWifEXR1SPnIQSDswktTdE=;
+        b=dztj1seF0PAzfOcmoKsJUzXeX6cKPtN1Lsu7V+7efa5EBVVkAjtv61MG/RRM1ioKln
+         KusnLX3k0yNOnEO6Abr3NK1g0rbFa5PyWgvuIx8hZ/e9Wlkizohb2dpIxlZfhdyGZkKE
+         FaK6iw++R7q9R/kCO5N2LnKPmmpWScIz6SXHmmQtplSeP0WrKS8Ef1aQ6sSUmDXEkd/y
+         FgNEPbzh9aYPd1WL6JideHEtmGbt3gvNOd8miI3OUrDEovfWjWcD7nHleS7WVypXPnQ5
+         2jD6m5EcBTtRDNkMx1TIPY5+UNwxgJUswQFKjwM/MqhM1wP2KtyTbDhqVH2ZtFvwfHEJ
+         BfKQ==
+X-Gm-Message-State: AOAM531wQy7E2aqdz7d99XeISK77hvfd4xAXJVnZtTAu7pTjVh+8tZFV
+        p+leiu55ja0prJWkoFMpN6lOQA==
+X-Google-Smtp-Source: ABdhPJxDSdIOgDOO7s7iaJSAVkEh9W1Q3tsUBvULMNjHHMa5HFg2V5kMb/wX8yYVGiFtq1IrN5jlNQ==
+X-Received: by 2002:a1c:2bc1:: with SMTP id r184mr16426858wmr.58.1590908765227;
+        Sun, 31 May 2020 00:06:05 -0700 (PDT)
+Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id 5sm4828731wrr.5.2020.05.31.00.06.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 30 May 2020 22:17:35 -0700 (PDT)
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-X-Google-Original-From: Roopa Prabhu
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        nikolay@cumulusnetworks.com, jiri@mellanox.com,
-        idosch@mellanox.com, petrm@mellanox.com
-Subject: [PATCH net-next] vxlan: fix dereference of nexthop group in nexthop update path
-Date:   Sat, 30 May 2020 22:17:20 -0700
-Message-Id: <1590902240-10290-1-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: git-send-email 2.1.4
+        Sun, 31 May 2020 00:06:04 -0700 (PDT)
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params.
+Date:   Sun, 31 May 2020 12:33:39 +0530
+Message-Id: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Live device reset capability allows the users to reset the device in real
+time. For example, after flashing a new firmware image, this feature allows
+a user to initiate the reset immediately from a separate command, to load
+the new firmware without reloading the driver or resetting the system.
 
-fix dereference of nexthop group in fdb nexthop group
-update validation path.
+When device reset is initiated, services running on the host interfaces
+will momentarily pause and resume once reset is completed, which is very
+similar to momentary network outage.
 
-Fixes: 1274e1cc4226 ("vxlan: ecmp support for mac fdb entries")
-Reported-by: Ido Schimmel <idosch@idosch.org>
-Suggested-by: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
----
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This patchset adds support for two new generic devlink parameters for
+controlling the live device reset capability and use it in the bnxt_en
+driver.
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 39bc10a..ea7af03 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -881,13 +881,13 @@ static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
- 			goto err_inval;
- 		}
- 
--		if (!nh->is_group || !nh->nh_grp->mpath) {
-+		nhg = rtnl_dereference(nh->nh_grp);
-+		if (!nh->is_group || !nhg->mpath) {
- 			NL_SET_ERR_MSG(extack, "Nexthop is not a multipath group");
- 			goto err_inval;
- 		}
- 
- 		/* check nexthop group family */
--		nhg = rtnl_dereference(nh->nh_grp);
- 		switch (vxlan->default_dst.remote_ip.sa.sa_family) {
- 		case AF_INET:
- 			if (!nhg->has_v4) {
+Users can initiate the reset from a separate command, for example,
+'ethtool --reset ethX all' or 'devlink dev reload' to reset the
+device.
+Where ethX or dev is any PF with administrative privileges.
+
+Patchset also updates firmware spec. to 1.10.1.40.
+
+
+v2->v3: Split the param into two new params "enable_live_dev_reset" and
+"allow_live_dev_reset".
+- Expand the documentation of each param and update commit messages
+ accordingly.
+- Separated the permanent configuration mode code to another patch and
+rename the callbacks of the "allow_live_dev_reset" parameter accordingly.
+
+v1->v2: Rename param to "allow_fw_live_reset" from "enable_hot_fw_reset".
+- Update documentation files and commit messages with more details of the
+ feature.
+
+Vasundhara Volam (6):
+  devlink: Add 'enable_live_dev_reset' generic parameter.
+  devlink: Add 'allow_live_dev_reset' generic parameter.
+  bnxt_en: Use 'enable_live_dev_reset' devlink parameter.
+  bnxt_en: Update firmware spec. to 1.10.1.40.
+  bnxt_en: Use 'allow_live_dev_reset' devlink parameter.
+  bnxt_en: Check if fw_live_reset is allowed before doing ETHTOOL_RESET
+
+ Documentation/networking/devlink/bnxt.rst          |  4 ++
+ .../networking/devlink/devlink-params.rst          | 28 ++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 28 +++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h          |  2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c  | 49 +++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h  |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  | 17 +++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h      | 64 +++++++++++++---------
+ include/net/devlink.h                              |  8 +++
+ net/core/devlink.c                                 | 10 ++++
+ 10 files changed, 175 insertions(+), 36 deletions(-)
+
 -- 
-2.1.4
+1.8.3.1
 
