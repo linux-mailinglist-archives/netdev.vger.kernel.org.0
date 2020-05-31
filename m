@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B251E9787
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D871E9781
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:27:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728125AbgEaM1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728296AbgEaM1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 31 May 2020 08:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgEaM1F (ORCPT
+        with ESMTP id S1726020AbgEaM1F (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 08:27:05 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA9AC061A0E
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:04 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id x1so6557773ejd.8
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:04 -0700 (PDT)
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A354C05BD43
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:05 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id z5so6595220ejb.3
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7pIri4ANVEN5TdpsWWkmPKNoKC/6RR0JRk0H9C6YdQE=;
-        b=b3RHHn7d40+OHIfdi2TGQgWs6jRfTqo4I6dk9jALDCoJTMponeNv0fwppvFO7rb54m
-         ESHOaLPuWlcRNdWktsO0eDZZp/lra/iOLCRQF2AIAi9N20z4M1xFXmJdCJj1Zoi7eSJb
-         F8ESOTpXd4/RbQoyl/bPId65oP9TYpTBHJros+vg2RxyhoXVMtCn1noB64kcm11xIron
-         Vh1aUj0+aaN1x+YnF/iIDGML8sFhjase05Ks4niSUh4oidX9aO++Q68jZgkqWs7kFU3A
-         3BH4GqZA4rBz+JbTtImcwDDhORIi2RKrKPiDNiKZWGPXYAYcbTefLAKDFfT8XhyUQDGb
-         rbaA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AiNGarBZtu/82wT45Q+33O8Cd48rBTG3T6gYv5coMEg=;
+        b=l1fI9SPnfaFtbBQn+pQ2ynrjvLBL/0/Uea5Q9rQ6DquXkxaWiq2oG/VzdmK+8nDYHh
+         vqLgSXg7TJ4vGW588yfxZ4iREcQxEcWv+CjGTkyY7v6o0aLQ9ZjcDaw47XPxp+ZNAArL
+         9MB0+nTMV5IOIiQYCF+AAPxMt43TmNmtIlYbSiKjGUp5CLcVWHU2iIPsdTVhtZ1jPicU
+         /C+2hE4NKQonnB5XOCwZVbI3WJ/lR4OzKxDoRGyTv45rBgAjj0UD7lcXxKZZ2ePge3zB
+         lDTnBGMb1Pz6p/wF3fF2exMKLovXocvG+dajOg10L82RVKvh8yMCgayEOusOxJ7nIwaG
+         MjyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7pIri4ANVEN5TdpsWWkmPKNoKC/6RR0JRk0H9C6YdQE=;
-        b=gAnytF3tnS9/XttNgLGY92lytpQZfYMMQtzdlfzgdlGWGjHya5sKRGM4RKfpPAPBdG
-         PRgQ16ta8ysLXSDQ59Ur0NuSPf0gBa8k/y+q2dP26yfExkDJn18lap3/yRCv3A+iBUVb
-         VJ4wJX6mpkGq7CEdRC4lLQrFLn16xt7FdoYp+TcL1RsG00eRYtVrdjhVRNWt/DBTJqIa
-         S6DA3s/C2RQ8wSK2D2fVyuvA/nsDF6AMVV4LPRFP2N1kSKw3+T434uP2o/vSUbGq0ea3
-         tCFNUDtvqz3TjljZhQQBvotdUZrq2lQ12vS9zku6y4T2GMAsUQ2VJilPMHe77BYIUwWE
-         PEGQ==
-X-Gm-Message-State: AOAM5325m4svDDOWYpCC6ImSWpZVHONnXY9gWjId0r0R2O+SxOcWTEJ6
-        XByNmWv8qE/B/qHL2umZHkW37ov3
-X-Google-Smtp-Source: ABdhPJzYID6rrpR2Iq97hASmnXNfFa+Y7IuupJM+SudPFsacXNY/FSv66nvW7LFJhePsVzoPZwaP5A==
-X-Received: by 2002:a17:906:3604:: with SMTP id q4mr15626645ejb.69.1590928022728;
-        Sun, 31 May 2020 05:27:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AiNGarBZtu/82wT45Q+33O8Cd48rBTG3T6gYv5coMEg=;
+        b=dIE5EYyHjn20j99ioLlcu48oi54OwVdbpa0OgHc9u3ecIKFpuJAl1VmWE0XoaNO+jo
+         8OwT2heuyWDPzMh0jZdxgpKZDS2wEOjr09/9xHO4M/45Yr6QOcxw8M1fAkbr7xzfoABN
+         +MJj77Ltfn+UhQC3Nte++uQLzW7SMms1PXPMvuibm9DgHpq8OC9pGss/Fuf9006F8OZi
+         i6tWimRVu7Qjs0IRU79aTHtP2kgu9KrcYV5dsFypF0ft10ldpm5MZkn08qTPFQpfeWUv
+         INkGX7h+maYUrG1y2HoexWHpt4fZXsm9Y/hw9dW2+FLd1nJHFWzhE/nD1umlpUd35xxW
+         utig==
+X-Gm-Message-State: AOAM532SQ/EEmVlkjO9rSSgV+ym09/hH0IF3F6TH7mIrH0zewiS9Dqj6
+        85Y/bxdnPqEs6bV56mZmMVU=
+X-Google-Smtp-Source: ABdhPJzWJxssR1YER4jQdUF1zPKRXVePdJ9C5hkxMPSYCFGvBwurcxUYnE/IdNliqTIxDb5jeOOYGQ==
+X-Received: by 2002:a17:906:6c98:: with SMTP id s24mr547900ejr.438.1590928024093;
+        Sun, 31 May 2020 05:27:04 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id b16sm12870024edu.89.2020.05.31.05.27.00
+        by smtp.gmail.com with ESMTPSA id b16sm12870024edu.89.2020.05.31.05.27.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 05:27:01 -0700 (PDT)
+        Sun, 31 May 2020 05:27:03 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,10 +55,12 @@ Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
         fido_max@inbox.ru, broonie@kernel.org
-Subject: [PATCH v3 net-next 00/13] New DSA driver for VSC9953 Seville switch
-Date:   Sun, 31 May 2020 15:26:27 +0300
-Message-Id: <20200531122640.1375715-1-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 01/13] regmap: add helper for per-port regfield initialization
+Date:   Sun, 31 May 2020 15:26:28 +0300
+Message-Id: <20200531122640.1375715-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200531122640.1375715-1-olteanv@gmail.com>
+References: <20200531122640.1375715-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,61 +70,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Looking at the Felix and Ocelot drivers, Maxim asked if it would be
-possible to use them as a base for a new driver for the Seville switch
-inside NXP T1040. Turns out, it is! The result is that the mscc_felix
-driver was extended to probe on Seville.
+Similar to the standalone regfields, add an initializer for the users
+who need to set .id_size and .id_offset in order to use the
+regmap_fields_update_bits_base API.
 
-The biggest challenge seems to be getting register read/write API
-generic enough to cover such wild bitfield variations between hardware
-generations.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20200527234113.2491988-2-olteanv@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ include/linux/regmap.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-There is a trivial dependency patch on the regmap core which is in Mark
-Brown's for-next tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git/commit/?h=for-next&id=8baebfc2aca26e3fa67ab28343671b82be42b22c
-I didn't know what to do with it, so I just added it here as well, as
-01/13, so that net-next builds wouldn't break.
-
-Maxim Kochetkov (4):
-  soc/mscc: ocelot: add MII registers description
-  net: mscc: ocelot: convert SYS_PAUSE_CFG register access to regfield
-  net: mscc: ocelot: extend watermark encoding function
-  net: dsa: felix: introduce support for Seville VSC9953 switch
-
-Vladimir Oltean (9):
-  regmap: add helper for per-port regfield initialization
-  net: dsa: felix: set proper link speed in felix_phylink_mac_config
-  net: mscc: ocelot: convert port registers to regmap
-  net: mscc: ocelot: convert QSYS_SWITCH_PORT_MODE and SYS_PORT_MODE to
-    regfields
-  net: dsa: felix: create a template for the DSA tags on xmit
-  net: mscc: ocelot: split writes to pause frame enable bit and to
-    thresholds
-  net: mscc: ocelot: disable flow control on NPI interface
-  net: dsa: felix: support half-duplex link modes
-  net: dsa: felix: move probing to felix_vsc9959.c
-
- .../devicetree/bindings/net/dsa/ocelot.txt    |  106 +-
- drivers/net/dsa/ocelot/Kconfig                |   12 +-
- drivers/net/dsa/ocelot/Makefile               |    3 +-
- drivers/net/dsa/ocelot/felix.c                |  272 ++--
- drivers/net/dsa/ocelot/felix.h                |   24 +-
- drivers/net/dsa/ocelot/felix_vsc9959.c        |  308 ++++-
- drivers/net/dsa/ocelot/seville_vsc9953.c      | 1106 +++++++++++++++++
- drivers/net/ethernet/mscc/ocelot.c            |   86 +-
- drivers/net/ethernet/mscc/ocelot.h            |    9 +-
- drivers/net/ethernet/mscc/ocelot_board.c      |   21 +-
- drivers/net/ethernet/mscc/ocelot_io.c         |   18 +-
- drivers/net/ethernet/mscc/ocelot_regs.c       |   61 +-
- include/linux/regmap.h                        |    8 +
- include/soc/mscc/ocelot.h                     |   68 +-
- include/soc/mscc/ocelot_dev.h                 |   78 --
- include/soc/mscc/ocelot_qsys.h                |   13 -
- include/soc/mscc/ocelot_sys.h                 |   23 -
- net/dsa/tag_ocelot.c                          |   21 +-
- 18 files changed, 1820 insertions(+), 417 deletions(-)
- create mode 100644 drivers/net/dsa/ocelot/seville_vsc9953.c
-
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 40b07168fd8e..87703d105191 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -1134,6 +1134,14 @@ struct reg_field {
+ 				.msb = _msb,	\
+ 				}
+ 
++#define REG_FIELD_ID(_reg, _lsb, _msb, _size, _offset) {	\
++				.reg = _reg,			\
++				.lsb = _lsb,			\
++				.msb = _msb,			\
++				.id_size = _size,		\
++				.id_offset = _offset,		\
++				}
++
+ struct regmap_field *regmap_field_alloc(struct regmap *regmap,
+ 		struct reg_field reg_field);
+ void regmap_field_free(struct regmap_field *field);
 -- 
 2.25.1
 
