@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FCC1E99CA
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 20:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A2B1E99D5
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 20:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgEaSIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 14:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
+        id S1728263AbgEaS0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 14:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727084AbgEaSII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 14:08:08 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E011C061A0E;
-        Sun, 31 May 2020 11:08:08 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id k8so5582640edq.4;
-        Sun, 31 May 2020 11:08:08 -0700 (PDT)
+        with ESMTP id S1726008AbgEaS0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 14:26:05 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972EDC061A0E
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 11:26:05 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id z5so7128818ejb.3
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 11:26:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JRNzXlDsLeQ6UqKHVVyEnlF0fqK/zXLoqhFyK6Pdqyg=;
-        b=jnWfK5zTLldATkZtCg9IxyO6NTehJ21NP8wqKGiI9OMyuihvbakB7RLb3B8Bbu0Ch/
-         QM8hNDjuiS2ChKR7r6O8NcWT4EaL6Hi0kg7od8eqfXGaSOMY74hc+mqH9oxeSutvvTKm
-         yUzN6BIDuYEukeG31Uy9tGlb4eMomrSOH/ibq4qiGppT9EIw17lQdB24PWCqAsyMxIGM
-         r2VVdm7hJNe+1PVd+1gE6f238NxQ0xeBHuUeJHw0eb55HZDJ3hVbmXDRjCdwKHqMoyh6
-         mjpmkMTtxo95UKmn0BPTwBScagE1NHsxjSsdWHSSApTwDzARUsAsGOV5akUQRsHTtC43
-         Gdpw==
+        bh=EvaqJi/74WGWQg2Fs84pm4eOFkHVIXzwHgQluTo/yyk=;
+        b=MRtmTlJSuxf9VzAW8cSXuIOC15nDbWKppxJwH8vwXUTGx3QeH5NmI2ZTOiy6fJ5yw5
+         YK9o8nL9TwKxVPvKl85uKQrzjmRVYYLWdJAMmXax3pj7R4RkNAdM+UbPE9SpGVHtf7kh
+         PyDe0jKZXxtZOH/iCXp+rKpIBGwZqnetehrsyuwJ8xbGvj+Hrv85YEFE1EM5ctDtdvAh
+         vMK0PD2cPpHLaV0YIji+NTZv/L/3qPw/41fhmFcUJPuByDBl+V8GRHkF303qIrZp4HST
+         2UQic1ITfS4yMZfqURfMkkENoueW+AbfpACaon/Vf1kgoOPDR52MVBpANctPBKAmJHup
+         I3Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JRNzXlDsLeQ6UqKHVVyEnlF0fqK/zXLoqhFyK6Pdqyg=;
-        b=queCoJhW35X2tTXzyVcECySDGA06/pul3iI9yXAK3QI325TnoTYqqx/styMhppWAJG
-         R7GqEBWUCUfquo72Z4ooySPniIOkEkf3O8qKk9+hdGiPN7nBE4EObjEMmmD5XdVJKOeD
-         vTXdcpe/cfKyzqj8i0sl8eIGKZyqGIAum4mhyiJkP7KoRyPRs9YkYdsFmxbrQvN5NumX
-         GktHM0Zl35wVdmq54gnGixesMcw/vrItxTFCrMJXcV60alTRT2t+6Fm9UCeV25az8OhL
-         rWPknFKyyp1SVx3RJ8Gd3p9hpS3rhR4Qz5AUe5vQhn38I5AJMMkF/TZymJZ290X6fLBh
-         JMvA==
-X-Gm-Message-State: AOAM531C82MLFUpjRi8nlrTpuwNt6Q2uzm0LIrusvtjnP/6SflrLAFAJ
-        smaZMOClczqkdEqBQv9Xrow=
-X-Google-Smtp-Source: ABdhPJwvGLIbgx5w0EkUAG/jnAnBYFOVCGmAVK3Y6J8U/v8A1dmKsm7zWPGz7BdUbTLcmAtlW/d6dA==
-X-Received: by 2002:a05:6402:1d30:: with SMTP id dh16mr17543081edb.302.1590948487216;
-        Sun, 31 May 2020 11:08:07 -0700 (PDT)
+        bh=EvaqJi/74WGWQg2Fs84pm4eOFkHVIXzwHgQluTo/yyk=;
+        b=KlLLrP4AYC5BsZCW6foSI1O9UKQ8i0jdvz3vUQr4ibS3wbnltED1vRVBen/rMOx/6k
+         OrsvS5LtyIaOA8wBrU71FI6BSQyiwNEVv2Uc2xtKtL+YbDW7T5XfAQrUwj7+YJyiymzd
+         lSUEpqTFjmebhPbZ7GhpQwySwv/cnXDaNijo+G6G5O9oecd03REdInpItmC0qee+nRcq
+         tZEWAMpd7YIVn96z3+3mnBrw48khXs7w4MZ3L4sGNrp8qDl66JiktdVgbmT2HvhRnc7/
+         llmB2UuMmYgJF9fj9Iz/ODOnDEFcV0VNopHvO1Oqiz/smI4RNjrfWt1RvaNriEi9/ozM
+         yLBw==
+X-Gm-Message-State: AOAM531eHFlXcZB0KyTh4rdiXPokfn6qynLkE4/JTFU2ZB86cP6g26Ch
+        um5qCd7kBX0EU+xCFspHoRGN4uUN
+X-Google-Smtp-Source: ABdhPJyuO76sDyZsBoK04g1PVb9MZXYo56a4aKShjliIFLoPsaAAW7thu7RGs06wgmq2ZVdyweA/UA==
+X-Received: by 2002:a17:906:d93c:: with SMTP id rn28mr4040101ejb.190.1590949564375;
+        Sun, 31 May 2020 11:26:04 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id u23sm3461018eds.73.2020.05.31.11.08.06
+        by smtp.gmail.com with ESMTPSA id p13sm4046340edx.69.2020.05.31.11.26.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 11:08:06 -0700 (PDT)
+        Sun, 31 May 2020 11:26:03 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     gregkh@linuxfoundation.org, arnd@arndb.de,
-        akpm@linux-foundation.org
-Cc:     sergei.shtylyov@cogentembedded.com, bgolaszewski@baylibre.com,
-        mika.westerberg@linux.intel.com, efremov@linux.com,
-        ztuowen@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2] devres: keep both device name and resource name in pretty name
-Date:   Sun, 31 May 2020 21:07:58 +0300
-Message-Id: <20200531180758.1426455-1-olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2 net-next] net: dsa: sja1105: suppress -Wmissing-prototypes in sja1105_vl.c
+Date:   Sun, 31 May 2020 21:25:51 +0300
+Message-Id: <20200531182551.1515185-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,111 +64,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Sometimes debugging a device is easiest using devmem on its register
-map, and that can be seen with /proc/iomem. But some device drivers have
-many memory regions. Take for example a networking switch. Its memory
-map used to look like this in /proc/iomem:
+Newer C compilers are complaining about the fact that there are no
+function prototypes in sja1105_vl.c for the non-static functions.
+Give them what they want.
 
-1fc000000-1fc3fffff : pcie@1f0000000
-  1fc000000-1fc3fffff : 0000:00:00.5
-    1fc010000-1fc01ffff : sys
-    1fc030000-1fc03ffff : rew
-    1fc060000-1fc0603ff : s2
-    1fc070000-1fc0701ff : devcpu_gcb
-    1fc080000-1fc0800ff : qs
-    1fc090000-1fc0900cb : ptp
-    1fc100000-1fc10ffff : port0
-    1fc110000-1fc11ffff : port1
-    1fc120000-1fc12ffff : port2
-    1fc130000-1fc13ffff : port3
-    1fc140000-1fc14ffff : port4
-    1fc150000-1fc15ffff : port5
-    1fc200000-1fc21ffff : qsys
-    1fc280000-1fc28ffff : ana
-
-But after the patch in Fixes: was applied, the information is now
-presented in a much more opaque way:
-
-1fc000000-1fc3fffff : pcie@1f0000000
-  1fc000000-1fc3fffff : 0000:00:00.5
-    1fc010000-1fc01ffff : 0000:00:00.5
-    1fc030000-1fc03ffff : 0000:00:00.5
-    1fc060000-1fc0603ff : 0000:00:00.5
-    1fc070000-1fc0701ff : 0000:00:00.5
-    1fc080000-1fc0800ff : 0000:00:00.5
-    1fc090000-1fc0900cb : 0000:00:00.5
-    1fc100000-1fc10ffff : 0000:00:00.5
-    1fc110000-1fc11ffff : 0000:00:00.5
-    1fc120000-1fc12ffff : 0000:00:00.5
-    1fc130000-1fc13ffff : 0000:00:00.5
-    1fc140000-1fc14ffff : 0000:00:00.5
-    1fc150000-1fc15ffff : 0000:00:00.5
-    1fc200000-1fc21ffff : 0000:00:00.5
-    1fc280000-1fc28ffff : 0000:00:00.5
-
-That patch made a fair comment that /proc/iomem might be confusing when
-it shows resources without an associated device, but we can do better
-than just hide the resource name altogether. Namely, we can print the
-device name _and_ the resource name. Like this:
-
-1fc000000-1fc3fffff : pcie@1f0000000
-  1fc000000-1fc3fffff : 0000:00:00.5
-    1fc010000-1fc01ffff : 0000:00:00.5 sys
-    1fc030000-1fc03ffff : 0000:00:00.5 rew
-    1fc060000-1fc0603ff : 0000:00:00.5 s2
-    1fc070000-1fc0701ff : 0000:00:00.5 devcpu_gcb
-    1fc080000-1fc0800ff : 0000:00:00.5 qs
-    1fc090000-1fc0900cb : 0000:00:00.5 ptp
-    1fc100000-1fc10ffff : 0000:00:00.5 port0
-    1fc110000-1fc11ffff : 0000:00:00.5 port1
-    1fc120000-1fc12ffff : 0000:00:00.5 port2
-    1fc130000-1fc13ffff : 0000:00:00.5 port3
-    1fc140000-1fc14ffff : 0000:00:00.5 port4
-    1fc150000-1fc15ffff : 0000:00:00.5 port5
-    1fc200000-1fc21ffff : 0000:00:00.5 qsys
-    1fc280000-1fc28ffff : 0000:00:00.5 ana
-
-Fixes: 8d84b18f5678 ("devres: always use dev_name() in devm_ioremap_resource()")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- lib/devres.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 2 +-
+ drivers/net/dsa/sja1105/sja1105_vl.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/lib/devres.c b/lib/devres.c
-index 6ef51f159c54..3d67588c15a7 100644
---- a/lib/devres.c
-+++ b/lib/devres.c
-@@ -119,6 +119,7 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
- {
- 	resource_size_t size;
- 	void __iomem *dest_ptr;
-+	char *pretty_name;
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index f37611885376..bdfd6c4e190d 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -3,7 +3,7 @@
+  */
+ #include <net/tc_act/tc_gate.h>
+ #include <linux/dsa/8021q.h>
+-#include "sja1105.h"
++#include "sja1105_vl.h"
  
- 	BUG_ON(!dev);
+ #define SJA1105_SIZE_VL_STATUS			8
  
-@@ -129,7 +130,21 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.h b/drivers/net/dsa/sja1105/sja1105_vl.h
+index 323fa0535af7..173d78963fed 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.h
++++ b/drivers/net/dsa/sja1105/sja1105_vl.h
+@@ -4,6 +4,8 @@
+ #ifndef _SJA1105_VL_H
+ #define _SJA1105_VL_H
  
- 	size = resource_size(res);
- 
--	if (!devm_request_mem_region(dev, res->start, size, dev_name(dev))) {
-+	if (res->name) {
-+		int len = strlen(dev_name(dev)) + strlen(res->name) + 2;
++#include "sja1105.h"
 +
-+		pretty_name = devm_kzalloc(dev, len, GFP_KERNEL);
-+		if (!pretty_name)
-+			return IOMEM_ERR_PTR(-ENOMEM);
-+
-+		sprintf(pretty_name, "%s %s", dev_name(dev), res->name);
-+	} else {
-+		pretty_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
-+		if (!pretty_name)
-+			return IOMEM_ERR_PTR(-ENOMEM);
-+	}
-+
-+	if (!devm_request_mem_region(dev, res->start, size, pretty_name)) {
- 		dev_err(dev, "can't request region for resource %pR\n", res);
- 		return IOMEM_ERR_PTR(-EBUSY);
- 	}
+ #if IS_ENABLED(CONFIG_NET_DSA_SJA1105_VL)
+ 
+ int sja1105_vl_redirect(struct sja1105_private *priv, int port,
 -- 
 2.25.1
 
