@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B08831E978D
-	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDAD81E978C
+	for <lists+netdev@lfdr.de>; Sun, 31 May 2020 14:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729718AbgEaM1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 08:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44814 "EHLO
+        id S1729714AbgEaM1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 May 2020 08:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729686AbgEaM1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 08:27:21 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF7FC03E96A
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:21 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id y13so6589364eju.2
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:20 -0700 (PDT)
+        with ESMTP id S1729696AbgEaM1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 08:27:24 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA440C03E96B
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:22 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id k11so6555915ejr.9
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 05:27:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ahjmFopMf+HWGYftYGhnMhS3kLV273IBmWQaZwQd3Mc=;
-        b=Wr4mLGXt+2XpFVYhtzrFJwG+rbpMe7PFBStNHT/0H82ytgc2R6BPF3yUBVWaSIzyy6
-         ATS2a7R+rojo3TIHnWrZRSE11y8XknxZrzJWgdPUr84Cq84plOXo09xuGZIkvSpzNwlv
-         0e0LhAw6UO8lyAtM401PNy2TgUa0W4ShD/guLUH01eU4ZsB39vK0KhmTYP91EgQUlM4c
-         yQjWqrANKC3VcA6EdO/80Qs1ePhTlxCYmCiiHQjTxFdvwjWUTBIJbll/vHSZAiJKv4eM
-         wBV2UPhZJZx8xHQhikZuKWBsEyUTWgNQ3p6VLZz9bmDI1fzEG5Co1TKWKB82Jd5LMcGP
-         Q47g==
+        bh=iWrKTtIPt1qm75mdaCzoIsvV9HWzaFyokKMMynjejd8=;
+        b=Lh9nba11lfQG/s7eZHoUqHPDQVFAyhfgnY7EpwX4FoffPcQLbl0X6u4FP2KSzKf0iH
+         kAkEchiW+ihyxDpDsfoo8997+757GaD1t7s8yiHwoxNqOLXEm9sp55XVPJrDmrbKv3o/
+         qd2sQckSycbso8Rd1HvSARbO35MHZLDYHdJADeuKWgj/i8Iq1H3EskQfWrEc7gt1cq6+
+         YHzzu8rWdXpZ+5CoWuuRrJ0jpJmdCyHVkt8nH2xvpLbGSk15WkAnNkpWUauAFJUxvDnT
+         /kWLjouSs69FPQw7o2dBVP6NLd9LIQ9cOZdMj+rvNIbxJyCOPZguJ1PcuJGqt32HGDlt
+         uCVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ahjmFopMf+HWGYftYGhnMhS3kLV273IBmWQaZwQd3Mc=;
-        b=JQlxoy4kQ0tu/gTvMkea+2knDoxE3ia8ygvrjxYYs79h+dH/Qs3+AVcW+bLh/JvP/o
-         9Q38srC9R/J2Wb5Bs4/kSXGijA99WNnI8Y9xYS5x1ySr6ez/FlrAOw91NHdRVsV/NMJD
-         nKR3C6MWSGfV1CVE5L0+qasPg2cGueyz6UhsBTTYgJzA/1vIkys3FxC6xoePT3xbi2nv
-         7NHk6aC/HzvBbAYnB/D6NAweQ69o5SxFrulxD7JdU6X4POaw8+7eqL6av6iv96YN+SN8
-         7eOyn4jda9jCusCScpXNxj8Yo+pMzMFsUNPpUVe/PaiYbJsT1TIbJeSTr9Wzc1aL3+Z6
-         dsEA==
-X-Gm-Message-State: AOAM531xCyyWag+xakGEMzLVJ9snVrKKrspPYLtpEEGCqu+TAOUbSn+i
-        l4hdkJsA0oaUPz+EO9DY/64=
-X-Google-Smtp-Source: ABdhPJzPK0pHaMBmj+78m8n+VW3/axd+mU3fOLhSIgQ7wc7zz+gez4EJjP9+pCShMUNvKU+d1DDJ8g==
-X-Received: by 2002:a17:906:a2c5:: with SMTP id by5mr11628747ejb.492.1590928039634;
-        Sun, 31 May 2020 05:27:19 -0700 (PDT)
+        bh=iWrKTtIPt1qm75mdaCzoIsvV9HWzaFyokKMMynjejd8=;
+        b=RWTGWa+q2lPBNk62KLG6E533BuI802s/2xeySiLbrhw8S6diRmOISD0uT2uKmC7VHJ
+         VzI6xqDwYxWghuoc100AzMdfq7ojbHe6HscfSg5FtYUE49joOxv+Gj3UbLClcnCooa23
+         InbK4XTtizyKUzvbcyCc4AbPghtp3wuUp7HKHIs4hU9DkubteqFD7TzZid2Ihxyl+o5c
+         HwL9MekQ/oZ3cO6mEbivxBOTLJBcQHq+vgN2f8UPOZQ6kJmhNwOwCQvoipnO6pX0Abxv
+         ZM4IXXv1c9IyTrMVSIzO3dtCLu1tlnIwGUwKamPStj9jnuITHWaHkNsF6P205QhSE5Cu
+         CCYw==
+X-Gm-Message-State: AOAM533qtox5O7S/X2Q7r8AZfQQSbfLBK67TuTtKS3oJic2t7VnbpHJQ
+        Fh5eHNkNam/P+1AlgHLAXdM=
+X-Google-Smtp-Source: ABdhPJwdHLiR4iCVs6AOAFDJXs61/PJ1gyjjOv6h8AtgjVONXVfp5HXam2Vjf7QTK3CNFp1auab/RA==
+X-Received: by 2002:a17:906:d933:: with SMTP id rn19mr14511180ejb.158.1590928041112;
+        Sun, 31 May 2020 05:27:21 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.147.193])
-        by smtp.gmail.com with ESMTPSA id b16sm12870024edu.89.2020.05.31.05.27.18
+        by smtp.gmail.com with ESMTPSA id b16sm12870024edu.89.2020.05.31.05.27.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2020 05:27:19 -0700 (PDT)
+        Sun, 31 May 2020 05:27:20 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
         fido_max@inbox.ru, broonie@kernel.org
-Subject: [PATCH v3 net-next 12/13] net: dsa: felix: move probing to felix_vsc9959.c
-Date:   Sun, 31 May 2020 15:26:39 +0300
-Message-Id: <20200531122640.1375715-13-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 13/13] net: dsa: felix: introduce support for Seville VSC9953 switch
+Date:   Sun, 31 May 2020 15:26:40 +0300
+Message-Id: <20200531122640.1375715-14-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200531122640.1375715-1-olteanv@gmail.com>
 References: <20200531122640.1375715-1-olteanv@gmail.com>
@@ -68,348 +68,1169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Maxim Kochetkov <fido_max@inbox.ru>
 
-Felix is not actually meant to be a DSA driver only for the switch
-inside NXP LS1028A, but an umbrella for all Vitesse / Microsemi /
-Microchip switches that are register-compatible with Ocelot and that are
-using in DSA mode (with an NPI Ethernet port).
+This is another switch from Vitesse / Microsemi / Microchip, that has
+10 port (8 external, 2 internal) and is integrated into the Freescale /
+NXP T1040 PowerPC SoC. It is very similar to Felix from NXP LS1028A,
+except that this is a platform device and Felix is a PCI device, and it
+doesn't support IEEE 1588 and TSN.
 
-For the dsa_switch_ops exported by the felix driver to be generic enough
-to be used by other non-PCI switches, we need to move the PCI-specific
-probing to the low-level translation module felix_vsc9959.c. This way,
-other switches can have their own probing functions, as platform devices
-or otherwise.
+Like Felix, this driver configures its own PCS on the internal MDIO bus
+using a phy_device abstraction for it (yes, it will be refactored to use
+a raw mdio_device, like other phylink drivers do, but let's keep it like
+that for now). But unlike Felix, the MDIO bus and the PCS are not from
+the same vendor. The PCS is the same QorIQ/Layerscape PCS as found in
+Felix/ENETC/DPAA*, but the internal MDIO bus that is used to access it
+is actually an instantiation of drivers/net/phy/mdio-mscc-miim.c. But it
+would be difficult to reuse that driver (it doesn't even use regmap, and
+it's less than 200 lines of code), so we hand-roll here some internal
+MDIO bus accessors within seville_vsc9953.c, which serves the purpose of
+driving the PCS absolutely fine.
 
-This patch also removes the "Felix instance table", which did not stand
-the test of time and is unnecessary at this point.
+Also, same as Felix, the PCS doesn't support dynamic reconfiguration of
+SerDes protocol, so we need to do pre-validation of PHY mode from device
+tree and not let phylink change it.
 
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
-Added comment at the beginning of felix.c.
-Added a centralized __init felix_init and __exit felix_exit that deals
-with registering the drivers for each individual switch. This is done in
-order to avoid build errors when compiled as module.
+Register this driver from felix.c.
+Make the driver name for seville "mscc_seville" and for felix
+"mscc_felix" instead of KBUILD_MODNAME ("mscc_felix") for both.
 
 Changes in v2:
-Patch is new.
+Now supporting Seville as part of the Felix driver. This has several
+advantages: a lot more code reuse (not only from felix.c, but also from
+the low-level felix_vsc9959.c, the PCS initialization being an example).
+But also a disadvantage: the common driver depends on PCI, but Seville
+is not a PCI device.
+Added devicetree bindings documentation.
 
- drivers/net/dsa/ocelot/felix.c         | 195 +++----------------------
- drivers/net/dsa/ocelot/felix.h         |  15 +-
- drivers/net/dsa/ocelot/felix_vsc9959.c | 187 +++++++++++++++++++++++-
- 3 files changed, 206 insertions(+), 191 deletions(-)
+ .../devicetree/bindings/net/dsa/ocelot.txt    |  106 +-
+ drivers/net/dsa/ocelot/Kconfig                |   12 +-
+ drivers/net/dsa/ocelot/Makefile               |    3 +-
+ drivers/net/dsa/ocelot/felix.c                |   14 +-
+ drivers/net/dsa/ocelot/felix.h                |    8 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |   12 +-
+ drivers/net/dsa/ocelot/seville_vsc9953.c      | 1106 +++++++++++++++++
+ 7 files changed, 1245 insertions(+), 16 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/seville_vsc9953.c
 
+diff --git a/Documentation/devicetree/bindings/net/dsa/ocelot.txt b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
+index 66a129fea705..db8bf8b2e72e 100644
+--- a/Documentation/devicetree/bindings/net/dsa/ocelot.txt
++++ b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
+@@ -4,10 +4,15 @@ Microchip Ocelot switch driver family
+ Felix
+ -----
+ 
+-The VSC9959 core is currently the only switch supported by the driver, and is
+-found in the NXP LS1028A. It is a PCI device, part of the larger ENETC root
+-complex. As a result, the ethernet-switch node is a sub-node of the PCIe root
+-complex node and its "reg" property conforms to the parent node bindings:
++Currently the switches supported by the felix driver are:
++
++- VSC9959 (Felix)
++- VSC9953 (Seville)
++
++The VSC9959 switch is found in the NXP LS1028A. It is a PCI device, part of the
++larger ENETC root complex. As a result, the ethernet-switch node is a sub-node
++of the PCIe root complex node and its "reg" property conforms to the parent
++node bindings:
+ 
+ * reg: Specifies PCIe Device Number and Function Number of the endpoint device,
+   in this case for the Ethernet L2Switch it is PF5 (of device 0, bus 0).
+@@ -114,3 +119,96 @@ Example:
+ 		};
+ 	};
+ };
++
++The VSC9953 switch is found inside NXP T1040. It is a platform device with the
++following required properties:
++
++- compatible:
++	Must be "mscc,vsc9953-switch".
++
++Supported PHY interface types (appropriate SerDes protocol setting changes are
++needed in the RCW binary):
++
++* phy_mode = "internal": on ports 8 and 9
++* phy_mode = "sgmii": on ports 0, 1, 2, 3, 4, 5, 6, 7
++* phy_mode = "qsgmii": on ports 0, 1, 2, 3, 4, 5, 6, 7
++* phy_mode = "2500base-x": on ports 0, 1, 2, 3, 4, 5, 6, 7
++
++Example:
++
++&soc {
++	ethernet-switch@800000 {
++		#address-cells = <0x1>;
++		#size-cells = <0x0>;
++		compatible = "mscc,vsc9953-switch";
++		little-endian;
++		reg = <0x800000 0x290000>;
++
++		ports {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++
++			port@0 {
++				reg = <0x0>;
++				label = "swp0";
++			};
++
++			port@1 {
++				reg = <0x1>;
++				label = "swp1";
++			};
++
++			port@2 {
++				reg = <0x2>;
++				label = "swp2";
++			};
++
++			port@3 {
++				reg = <0x3>;
++				label = "swp3";
++			};
++
++			port@4 {
++				reg = <0x4>;
++				label = "swp4";
++			};
++
++			port@5 {
++				reg = <0x5>;
++				label = "swp5";
++			};
++
++			port@6 {
++				reg = <0x6>;
++				label = "swp6";
++			};
++
++			port@7 {
++				reg = <0x7>;
++				label = "swp7";
++			};
++
++			port@8 {
++				reg = <0x8>;
++				phy-mode = "internal";
++				ethernet = <&enet0>;
++
++				fixed-link {
++					speed = <2500>;
++					full-duplex;
++				};
++			};
++
++			port@9 {
++				reg = <0x9>;
++				phy-mode = "internal";
++				status = "disabled";
++
++				fixed-link {
++					speed = <2500>;
++					full-duplex;
++				};
++			};
++		};
++	};
++};
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index a5b7cca03d09..97da186d9bbc 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -8,7 +8,11 @@ config NET_DSA_MSCC_FELIX
+ 	select NET_DSA_TAG_OCELOT
+ 	select FSL_ENETC_MDIO
+ 	help
+-	  This driver supports the VSC9959 network switch, which is a member of
+-	  the Vitesse / Microsemi / Microchip Ocelot family of switching cores.
+-	  It is embedded as a PCIe function of the NXP LS1028A ENETC integrated
+-	  endpoint.
++	  This driver supports network switches from the the Vitesse /
++	  Microsemi / Microchip Ocelot family of switching cores that are
++	  connected to their host CPU via Ethernet.
++	  The following switches are supported:
++	  - VSC9959 (Felix): embedded as a PCIe function of the NXP LS1028A
++	    ENETC integrated endpoint.
++	  - VSC9953 (Seville): embedded as a platform device on the
++	    NXP T1040 SoC.
+diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
+index 37ad403e0b2a..ec57a5a12330 100644
+--- a/drivers/net/dsa/ocelot/Makefile
++++ b/drivers/net/dsa/ocelot/Makefile
+@@ -3,4 +3,5 @@ obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
+ 
+ mscc_felix-objs := \
+ 	felix.o \
+-	felix_vsc9959.o
++	felix_vsc9959.o \
++	seville_vsc9953.o
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 88b64faa8b25..e30a6d29a7d5 100644
+index e30a6d29a7d5..5f75741609bd 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1,5 +1,9 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright 2019 NXP Semiconductors
-+ *
-+ * This is an umbrella module for all network switches that are
-+ * register-compatible with Ocelot and that perform I/O to their host CPU
-+ * through an NPI (Node Processor Interface) Ethernet port.
-  */
- #include <uapi/linux/if_bridge.h>
- #include <soc/mscc/ocelot_vcap.h>
-@@ -158,37 +162,10 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
- 				   struct phylink_link_state *state)
+@@ -13,6 +13,7 @@
+ #include <soc/mscc/ocelot_ana.h>
+ #include <soc/mscc/ocelot_ptp.h>
+ #include <soc/mscc/ocelot.h>
++#include <linux/platform_device.h>
+ #include <linux/packing.h>
+ #include <linux/module.h>
+ #include <linux/of_net.h>
+@@ -802,13 +803,24 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 
+ static int __init felix_init(void)
  {
- 	struct ocelot *ocelot = ds->priv;
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
--
--	if (state->interface != PHY_INTERFACE_MODE_NA &&
--	    state->interface != ocelot_port->phy_mode) {
--		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
--		return;
--	}
--
--	phylink_set_port_modes(mask);
--	phylink_set(mask, Autoneg);
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
--	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 10baseT_Half);
--	phylink_set(mask, 100baseT_Full);
--	phylink_set(mask, 100baseT_Half);
--	phylink_set(mask, 1000baseT_Full);
--	phylink_set(mask, 1000baseT_Half);
--
--	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
--	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
--	    state->interface == PHY_INTERFACE_MODE_USXGMII) {
--		phylink_set(mask, 2500baseT_Full);
--		phylink_set(mask, 2500baseX_Full);
--	}
-+	struct felix *felix = ocelot_to_felix(ocelot);
- 
--	bitmap_and(supported, supported, mask,
--		   __ETHTOOL_LINK_MODE_MASK_NBITS);
--	bitmap_and(state->advertising, state->advertising, mask,
--		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	if (felix->info->phylink_validate)
-+		felix->info->phylink_validate(ocelot, port, supported, state);
+-	return pci_register_driver(&felix_vsc9959_pci_driver);
++	int err;
++
++	err = pci_register_driver(&felix_vsc9959_pci_driver);
++	if (err)
++		return err;
++
++	err = platform_driver_register(&seville_vsc9953_driver);
++	if (err)
++		return err;
++
++	return 0;
  }
+ module_init(felix_init);
  
- static int felix_phylink_mac_pcs_get_state(struct dsa_switch *ds, int port,
-@@ -438,7 +415,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ static void __exit felix_exit(void)
  {
- 	struct ocelot *ocelot = &felix->ocelot;
- 	phy_interface_t *port_phy_modes;
--	resource_size_t switch_base;
- 	struct resource res;
- 	int port, i, err;
- 
-@@ -469,9 +445,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 		return err;
- 	}
- 
--	switch_base = pci_resource_start(felix->pdev,
--					 felix->info->switch_pci_bar);
--
- 	for (i = 0; i < TARGET_MAX; i++) {
- 		struct regmap *target;
- 
-@@ -480,8 +453,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 
- 		memcpy(&res, &felix->info->target_io_res[i], sizeof(res));
- 		res.flags = IORESOURCE_MEM;
--		res.start += switch_base;
--		res.end += switch_base;
-+		res.start += felix->switch_base;
-+		res.end += felix->switch_base;
- 
- 		target = ocelot_regmap_init(ocelot, &res);
- 		if (IS_ERR(target)) {
-@@ -518,8 +491,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 
- 		memcpy(&res, &felix->info->port_io_res[port], sizeof(res));
- 		res.flags = IORESOURCE_MEM;
--		res.start += switch_base;
--		res.end += switch_base;
-+		res.start += felix->switch_base;
-+		res.end += felix->switch_base;
- 
- 		target = ocelot_regmap_init(ocelot, &res);
- 		if (IS_ERR(target)) {
-@@ -786,7 +759,7 @@ static int felix_port_setup_tc(struct dsa_switch *ds, int port,
- 		return -EOPNOTSUPP;
+ 	pci_unregister_driver(&felix_vsc9959_pci_driver);
++	platform_driver_unregister(&seville_vsc9953_driver);
  }
+ module_exit(felix_exit);
  
--static const struct dsa_switch_ops felix_switch_ops = {
-+const struct dsa_switch_ops felix_switch_ops = {
- 	.get_tag_protocol	= felix_get_tag_protocol,
- 	.setup			= felix_setup,
- 	.teardown		= felix_teardown,
-@@ -827,149 +800,17 @@ static const struct dsa_switch_ops felix_switch_ops = {
- 	.port_setup_tc          = felix_port_setup_tc,
- };
- 
--static struct felix_info *felix_instance_tbl[] = {
--	[FELIX_INSTANCE_VSC9959] = &felix_info_vsc9959,
--};
--
--static irqreturn_t felix_irq_handler(int irq, void *data)
--{
--	struct ocelot *ocelot = (struct ocelot *)data;
--
--	/* The INTB interrupt is used for both PTP TX timestamp interrupt
--	 * and preemption status change interrupt on each port.
--	 *
--	 * - Get txtstamp if have
--	 * - TODO: handle preemption. Without handling it, driver may get
--	 *   interrupt storm.
--	 */
--
--	ocelot_get_txtstamp(ocelot);
--
--	return IRQ_HANDLED;
--}
--
--static int felix_pci_probe(struct pci_dev *pdev,
--			   const struct pci_device_id *id)
-+static int __init felix_init(void)
- {
--	enum felix_instance instance = id->driver_data;
--	struct dsa_switch *ds;
--	struct ocelot *ocelot;
--	struct felix *felix;
--	int err;
--
--	if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
--		dev_info(&pdev->dev, "device is disabled, skipping\n");
--		return -ENODEV;
--	}
--
--	err = pci_enable_device(pdev);
--	if (err) {
--		dev_err(&pdev->dev, "device enable failed\n");
--		goto err_pci_enable;
--	}
--
--	/* set up for high or low dma */
--	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
--	if (err) {
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA configuration failed: 0x%x\n", err);
--			goto err_dma;
--		}
--	}
--
--	felix = kzalloc(sizeof(struct felix), GFP_KERNEL);
--	if (!felix) {
--		err = -ENOMEM;
--		dev_err(&pdev->dev, "Failed to allocate driver memory\n");
--		goto err_alloc_felix;
--	}
--
--	pci_set_drvdata(pdev, felix);
--	ocelot = &felix->ocelot;
--	ocelot->dev = &pdev->dev;
--	felix->pdev = pdev;
--	felix->info = felix_instance_tbl[instance];
--
--	pci_set_master(pdev);
--
--	err = devm_request_threaded_irq(&pdev->dev, pdev->irq, NULL,
--					&felix_irq_handler, IRQF_ONESHOT,
--					"felix-intb", ocelot);
--	if (err) {
--		dev_err(&pdev->dev, "Failed to request irq\n");
--		goto err_alloc_irq;
--	}
--
--	ocelot->ptp = 1;
--
--	ds = kzalloc(sizeof(struct dsa_switch), GFP_KERNEL);
--	if (!ds) {
--		err = -ENOMEM;
--		dev_err(&pdev->dev, "Failed to allocate DSA switch\n");
--		goto err_alloc_ds;
--	}
--
--	ds->dev = &pdev->dev;
--	ds->num_ports = felix->info->num_ports;
--	ds->num_tx_queues = felix->info->num_tx_queues;
--	ds->ops = &felix_switch_ops;
--	ds->priv = ocelot;
--	felix->ds = ds;
--
--	err = dsa_register_switch(ds);
--	if (err) {
--		dev_err(&pdev->dev, "Failed to register DSA switch: %d\n", err);
--		goto err_register_ds;
--	}
--
--	return 0;
--
--err_register_ds:
--	kfree(ds);
--err_alloc_ds:
--err_alloc_irq:
--err_alloc_felix:
--	kfree(felix);
--err_dma:
--	pci_disable_device(pdev);
--err_pci_enable:
--	return err;
-+	return pci_register_driver(&felix_vsc9959_pci_driver);
- }
-+module_init(felix_init);
- 
--static void felix_pci_remove(struct pci_dev *pdev)
-+static void __exit felix_exit(void)
- {
--	struct felix *felix;
--
--	felix = pci_get_drvdata(pdev);
--
--	dsa_unregister_switch(felix->ds);
--
--	kfree(felix->ds);
--	kfree(felix);
--
--	pci_disable_device(pdev);
-+	pci_unregister_driver(&felix_vsc9959_pci_driver);
- }
--
--static struct pci_device_id felix_ids[] = {
--	{
--		/* NXP LS1028A */
--		PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, 0xEEF0),
--		.driver_data = FELIX_INSTANCE_VSC9959,
--	},
--	{ 0, }
--};
--MODULE_DEVICE_TABLE(pci, felix_ids);
--
--static struct pci_driver felix_pci_driver = {
--	.name		= KBUILD_MODNAME,
--	.id_table	= felix_ids,
--	.probe		= felix_pci_probe,
--	.remove		= felix_pci_remove,
--};
--
--module_pci_driver(felix_pci_driver);
-+module_exit(felix_exit);
- 
- MODULE_DESCRIPTION("Felix Switch driver");
- MODULE_LICENSE("GPL v2");
 diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 2f28c28fdef0..f51a29061ae3 100644
+index f51a29061ae3..a0b35b3b5569 100644
 --- a/drivers/net/dsa/ocelot/felix.h
 +++ b/drivers/net/dsa/ocelot/felix.h
-@@ -34,6 +34,9 @@ struct felix_info {
- 	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
- 	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
- 				  struct phylink_link_state *state);
-+	void	(*phylink_validate)(struct ocelot *ocelot, int port,
-+				    unsigned long *supported,
-+				    struct phylink_link_state *state);
- 	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
- 					phy_interface_t phy_mode);
- 	int	(*port_setup_tc)(struct dsa_switch *ds, int port,
-@@ -43,20 +46,18 @@ struct felix_info {
- 	void	(*xmit_template_populate)(struct ocelot *ocelot, int port);
- };
+@@ -48,6 +48,7 @@ struct felix_info {
  
--extern struct felix_info		felix_info_vsc9959;
--
--enum felix_instance {
--	FELIX_INSTANCE_VSC9959		= 0,
--};
-+extern const struct dsa_switch_ops felix_switch_ops;
-+extern struct pci_driver felix_vsc9959_pci_driver;
+ extern const struct dsa_switch_ops felix_switch_ops;
+ extern struct pci_driver felix_vsc9959_pci_driver;
++extern struct platform_driver seville_vsc9953_driver;
  
  /* DSA glue / front-end for struct ocelot */
  struct felix {
- 	struct dsa_switch		*ds;
--	struct pci_dev			*pdev;
--	struct felix_info		*info;
-+	const struct felix_info		*info;
- 	struct ocelot			ocelot;
- 	struct mii_bus			*imdio;
- 	struct phy_device		**pcs;
-+	resource_size_t			switch_base;
-+	resource_size_t			imdio_base;
+@@ -60,4 +61,11 @@ struct felix {
+ 	resource_size_t			imdio_base;
  };
  
++void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
++			    struct phylink_link_state *state);
++void vsc9959_pcs_init(struct ocelot *ocelot, int port,
++		      unsigned int link_an_mode,
++		      const struct phylink_link_state *state);
++void vsc9959_mdio_bus_free(struct ocelot *ocelot);
++
  #endif
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 61c91248a802..214e14893b4a 100644
+index 214e14893b4a..de52158dadb6 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1145,6 +1145,43 @@ static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
- 	vsc9959_pcs_link_state_resolve(pcs, state);
+@@ -963,9 +963,9 @@ static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
+ 		      USXGMII_ADVERTISE_FDX);
  }
  
-+static void vsc9959_phylink_validate(struct ocelot *ocelot, int port,
+-static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+-			     unsigned int link_an_mode,
+-			     const struct phylink_link_state *state)
++void vsc9959_pcs_init(struct ocelot *ocelot, int port,
++		      unsigned int link_an_mode,
++		      const struct phylink_link_state *state)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	struct phy_device *pcs = felix->pcs[port];
+@@ -1113,8 +1113,8 @@ static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
+ 		pcs->duplex = DUPLEX_HALF;
+ }
+ 
+-static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
+-				   struct phylink_link_state *state)
++void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
++			    struct phylink_link_state *state)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	struct phy_device *pcs = felix->pcs[port];
+@@ -1303,7 +1303,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	return 0;
+ }
+ 
+-static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
++void vsc9959_mdio_bus_free(struct ocelot *ocelot)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	int port;
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+new file mode 100644
+index 000000000000..4deb1d903820
+--- /dev/null
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -0,0 +1,1106 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/* Distributed Switch Architecture VSC9953 driver
++ * Copyright (C) 2020, Maxim Kochetkov <fido_max@inbox.ru>
++ */
++#include <linux/types.h>
++#include <soc/mscc/ocelot_vcap.h>
++#include <soc/mscc/ocelot_sys.h>
++#include <soc/mscc/ocelot.h>
++#include <linux/of_platform.h>
++#include <linux/packing.h>
++#include <linux/iopoll.h>
++#include "felix.h"
++
++#define VSC9953_VCAP_IS2_CNT			1024
++#define VSC9953_VCAP_IS2_ENTRY_WIDTH		376
++#define VSC9953_VCAP_PORT_CNT			10
++
++#define MSCC_MIIM_REG_STATUS			0x0
++#define		MSCC_MIIM_STATUS_STAT_BUSY	BIT(3)
++#define MSCC_MIIM_REG_CMD			0x8
++#define		MSCC_MIIM_CMD_OPR_WRITE		BIT(1)
++#define		MSCC_MIIM_CMD_OPR_READ		BIT(2)
++#define		MSCC_MIIM_CMD_WRDATA_SHIFT	4
++#define		MSCC_MIIM_CMD_REGAD_SHIFT	20
++#define		MSCC_MIIM_CMD_PHYAD_SHIFT	25
++#define		MSCC_MIIM_CMD_VLD		BIT(31)
++#define MSCC_MIIM_REG_DATA			0xC
++#define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
++
++#define MSCC_PHY_REG_PHY_CFG		0x0
++#define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
++#define		PHY_CFG_PHY_COMMON_RESET BIT(4)
++#define		PHY_CFG_PHY_RESET	(BIT(5) | BIT(6) | BIT(7) | BIT(8))
++#define MSCC_PHY_REG_PHY_STATUS		0x4
++
++static const u32 vsc9953_ana_regmap[] = {
++	REG(ANA_ADVLEARN,			0x00b500),
++	REG(ANA_VLANMASK,			0x00b504),
++	REG_RESERVED(ANA_PORT_B_DOMAIN),
++	REG(ANA_ANAGEFIL,			0x00b50c),
++	REG(ANA_ANEVENTS,			0x00b510),
++	REG(ANA_STORMLIMIT_BURST,		0x00b514),
++	REG(ANA_STORMLIMIT_CFG,			0x00b518),
++	REG(ANA_ISOLATED_PORTS,			0x00b528),
++	REG(ANA_COMMUNITY_PORTS,		0x00b52c),
++	REG(ANA_AUTOAGE,			0x00b530),
++	REG(ANA_MACTOPTIONS,			0x00b534),
++	REG(ANA_LEARNDISC,			0x00b538),
++	REG(ANA_AGENCTRL,			0x00b53c),
++	REG(ANA_MIRRORPORTS,			0x00b540),
++	REG(ANA_EMIRRORPORTS,			0x00b544),
++	REG(ANA_FLOODING,			0x00b548),
++	REG(ANA_FLOODING_IPMC,			0x00b54c),
++	REG(ANA_SFLOW_CFG,			0x00b550),
++	REG(ANA_PORT_MODE,			0x00b57c),
++	REG_RESERVED(ANA_CUT_THRU_CFG),
++	REG(ANA_PGID_PGID,			0x00b600),
++	REG(ANA_TABLES_ANMOVED,			0x00b4ac),
++	REG(ANA_TABLES_MACHDATA,		0x00b4b0),
++	REG(ANA_TABLES_MACLDATA,		0x00b4b4),
++	REG_RESERVED(ANA_TABLES_STREAMDATA),
++	REG(ANA_TABLES_MACACCESS,		0x00b4b8),
++	REG(ANA_TABLES_MACTINDX,		0x00b4bc),
++	REG(ANA_TABLES_VLANACCESS,		0x00b4c0),
++	REG(ANA_TABLES_VLANTIDX,		0x00b4c4),
++	REG_RESERVED(ANA_TABLES_ISDXACCESS),
++	REG_RESERVED(ANA_TABLES_ISDXTIDX),
++	REG(ANA_TABLES_ENTRYLIM,		0x00b480),
++	REG_RESERVED(ANA_TABLES_PTP_ID_HIGH),
++	REG_RESERVED(ANA_TABLES_PTP_ID_LOW),
++	REG_RESERVED(ANA_TABLES_STREAMACCESS),
++	REG_RESERVED(ANA_TABLES_STREAMTIDX),
++	REG_RESERVED(ANA_TABLES_SEQ_HISTORY),
++	REG_RESERVED(ANA_TABLES_SEQ_MASK),
++	REG_RESERVED(ANA_TABLES_SFID_MASK),
++	REG_RESERVED(ANA_TABLES_SFIDACCESS),
++	REG_RESERVED(ANA_TABLES_SFIDTIDX),
++	REG_RESERVED(ANA_MSTI_STATE),
++	REG_RESERVED(ANA_OAM_UPM_LM_CNT),
++	REG_RESERVED(ANA_SG_ACCESS_CTRL),
++	REG_RESERVED(ANA_SG_CONFIG_REG_1),
++	REG_RESERVED(ANA_SG_CONFIG_REG_2),
++	REG_RESERVED(ANA_SG_CONFIG_REG_3),
++	REG_RESERVED(ANA_SG_CONFIG_REG_4),
++	REG_RESERVED(ANA_SG_CONFIG_REG_5),
++	REG_RESERVED(ANA_SG_GCL_GS_CONFIG),
++	REG_RESERVED(ANA_SG_GCL_TI_CONFIG),
++	REG_RESERVED(ANA_SG_STATUS_REG_1),
++	REG_RESERVED(ANA_SG_STATUS_REG_2),
++	REG_RESERVED(ANA_SG_STATUS_REG_3),
++	REG(ANA_PORT_VLAN_CFG,			0x000000),
++	REG(ANA_PORT_DROP_CFG,			0x000004),
++	REG(ANA_PORT_QOS_CFG,			0x000008),
++	REG(ANA_PORT_VCAP_CFG,			0x00000c),
++	REG(ANA_PORT_VCAP_S1_KEY_CFG,		0x000010),
++	REG(ANA_PORT_VCAP_S2_CFG,		0x00001c),
++	REG(ANA_PORT_PCP_DEI_MAP,		0x000020),
++	REG(ANA_PORT_CPU_FWD_CFG,		0x000060),
++	REG(ANA_PORT_CPU_FWD_BPDU_CFG,		0x000064),
++	REG(ANA_PORT_CPU_FWD_GARP_CFG,		0x000068),
++	REG(ANA_PORT_CPU_FWD_CCM_CFG,		0x00006c),
++	REG(ANA_PORT_PORT_CFG,			0x000070),
++	REG(ANA_PORT_POL_CFG,			0x000074),
++	REG_RESERVED(ANA_PORT_PTP_CFG),
++	REG_RESERVED(ANA_PORT_PTP_DLY1_CFG),
++	REG_RESERVED(ANA_PORT_PTP_DLY2_CFG),
++	REG_RESERVED(ANA_PORT_SFID_CFG),
++	REG(ANA_PFC_PFC_CFG,			0x00c000),
++	REG_RESERVED(ANA_PFC_PFC_TIMER),
++	REG_RESERVED(ANA_IPT_OAM_MEP_CFG),
++	REG_RESERVED(ANA_IPT_IPT),
++	REG_RESERVED(ANA_PPT_PPT),
++	REG_RESERVED(ANA_FID_MAP_FID_MAP),
++	REG(ANA_AGGR_CFG,			0x00c600),
++	REG(ANA_CPUQ_CFG,			0x00c604),
++	REG_RESERVED(ANA_CPUQ_CFG2),
++	REG(ANA_CPUQ_8021_CFG,			0x00c60c),
++	REG(ANA_DSCP_CFG,			0x00c64c),
++	REG(ANA_DSCP_REWR_CFG,			0x00c74c),
++	REG(ANA_VCAP_RNG_TYPE_CFG,		0x00c78c),
++	REG(ANA_VCAP_RNG_VAL_CFG,		0x00c7ac),
++	REG_RESERVED(ANA_VRAP_CFG),
++	REG_RESERVED(ANA_VRAP_HDR_DATA),
++	REG_RESERVED(ANA_VRAP_HDR_MASK),
++	REG(ANA_DISCARD_CFG,			0x00c7d8),
++	REG(ANA_FID_CFG,			0x00c7dc),
++	REG(ANA_POL_PIR_CFG,			0x00a000),
++	REG(ANA_POL_CIR_CFG,			0x00a004),
++	REG(ANA_POL_MODE_CFG,			0x00a008),
++	REG(ANA_POL_PIR_STATE,			0x00a00c),
++	REG(ANA_POL_CIR_STATE,			0x00a010),
++	REG_RESERVED(ANA_POL_STATE),
++	REG(ANA_POL_FLOWC,			0x00c280),
++	REG(ANA_POL_HYST,			0x00c2ec),
++	REG_RESERVED(ANA_POL_MISC_CFG),
++};
++
++static const u32 vsc9953_qs_regmap[] = {
++	REG(QS_XTR_GRP_CFG,			0x000000),
++	REG(QS_XTR_RD,				0x000008),
++	REG(QS_XTR_FRM_PRUNING,			0x000010),
++	REG(QS_XTR_FLUSH,			0x000018),
++	REG(QS_XTR_DATA_PRESENT,		0x00001c),
++	REG(QS_XTR_CFG,				0x000020),
++	REG(QS_INJ_GRP_CFG,			0x000024),
++	REG(QS_INJ_WR,				0x00002c),
++	REG(QS_INJ_CTRL,			0x000034),
++	REG(QS_INJ_STATUS,			0x00003c),
++	REG(QS_INJ_ERR,				0x000040),
++	REG_RESERVED(QS_INH_DBG),
++};
++
++static const u32 vsc9953_s2_regmap[] = {
++	REG(S2_CORE_UPDATE_CTRL,		0x000000),
++	REG(S2_CORE_MV_CFG,			0x000004),
++	REG(S2_CACHE_ENTRY_DAT,			0x000008),
++	REG(S2_CACHE_MASK_DAT,			0x000108),
++	REG(S2_CACHE_ACTION_DAT,		0x000208),
++	REG(S2_CACHE_CNT_DAT,			0x000308),
++	REG(S2_CACHE_TG_DAT,			0x000388),
++};
++
++static const u32 vsc9953_qsys_regmap[] = {
++	REG(QSYS_PORT_MODE,			0x003600),
++	REG(QSYS_SWITCH_PORT_MODE,		0x003630),
++	REG(QSYS_STAT_CNT_CFG,			0x00365c),
++	REG(QSYS_EEE_CFG,			0x003660),
++	REG(QSYS_EEE_THRES,			0x003688),
++	REG(QSYS_IGR_NO_SHARING,		0x00368c),
++	REG(QSYS_EGR_NO_SHARING,		0x003690),
++	REG(QSYS_SW_STATUS,			0x003694),
++	REG(QSYS_EXT_CPU_CFG,			0x0036c0),
++	REG_RESERVED(QSYS_PAD_CFG),
++	REG(QSYS_CPU_GROUP_MAP,			0x0036c8),
++	REG_RESERVED(QSYS_QMAP),
++	REG_RESERVED(QSYS_ISDX_SGRP),
++	REG_RESERVED(QSYS_TIMED_FRAME_ENTRY),
++	REG_RESERVED(QSYS_TFRM_MISC),
++	REG_RESERVED(QSYS_TFRM_PORT_DLY),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_1),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_2),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_3),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_4),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_5),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_6),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_7),
++	REG_RESERVED(QSYS_TFRM_TIMER_CFG_8),
++	REG(QSYS_RED_PROFILE,			0x003724),
++	REG(QSYS_RES_QOS_MODE,			0x003764),
++	REG(QSYS_RES_CFG,			0x004000),
++	REG(QSYS_RES_STAT,			0x004004),
++	REG(QSYS_EGR_DROP_MODE,			0x003768),
++	REG(QSYS_EQ_CTRL,			0x00376c),
++	REG_RESERVED(QSYS_EVENTS_CORE),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_0),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_1),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_2),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_3),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_4),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_5),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_6),
++	REG_RESERVED(QSYS_QMAXSDU_CFG_7),
++	REG_RESERVED(QSYS_PREEMPTION_CFG),
++	REG(QSYS_CIR_CFG,			0x000000),
++	REG_RESERVED(QSYS_EIR_CFG),
++	REG(QSYS_SE_CFG,			0x000008),
++	REG(QSYS_SE_DWRR_CFG,			0x00000c),
++	REG_RESERVED(QSYS_SE_CONNECT),
++	REG_RESERVED(QSYS_SE_DLB_SENSE),
++	REG(QSYS_CIR_STATE,			0x000044),
++	REG_RESERVED(QSYS_EIR_STATE),
++	REG_RESERVED(QSYS_SE_STATE),
++	REG(QSYS_HSCH_MISC_CFG,			0x003774),
++	REG_RESERVED(QSYS_TAG_CONFIG),
++	REG_RESERVED(QSYS_TAS_PARAM_CFG_CTRL),
++	REG_RESERVED(QSYS_PORT_MAX_SDU),
++	REG_RESERVED(QSYS_PARAM_CFG_REG_1),
++	REG_RESERVED(QSYS_PARAM_CFG_REG_2),
++	REG_RESERVED(QSYS_PARAM_CFG_REG_3),
++	REG_RESERVED(QSYS_PARAM_CFG_REG_4),
++	REG_RESERVED(QSYS_PARAM_CFG_REG_5),
++	REG_RESERVED(QSYS_GCL_CFG_REG_1),
++	REG_RESERVED(QSYS_GCL_CFG_REG_2),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_1),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_2),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_3),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_4),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_5),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_6),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_7),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_8),
++	REG_RESERVED(QSYS_PARAM_STATUS_REG_9),
++	REG_RESERVED(QSYS_GCL_STATUS_REG_1),
++	REG_RESERVED(QSYS_GCL_STATUS_REG_2),
++};
++
++static const u32 vsc9953_rew_regmap[] = {
++	REG(REW_PORT_VLAN_CFG,			0x000000),
++	REG(REW_TAG_CFG,			0x000004),
++	REG(REW_PORT_CFG,			0x000008),
++	REG(REW_DSCP_CFG,			0x00000c),
++	REG(REW_PCP_DEI_QOS_MAP_CFG,		0x000010),
++	REG_RESERVED(REW_PTP_CFG),
++	REG_RESERVED(REW_PTP_DLY1_CFG),
++	REG_RESERVED(REW_RED_TAG_CFG),
++	REG(REW_DSCP_REMAP_DP1_CFG,		0x000610),
++	REG(REW_DSCP_REMAP_CFG,			0x000710),
++	REG_RESERVED(REW_STAT_CFG),
++	REG_RESERVED(REW_REW_STICKY),
++	REG_RESERVED(REW_PPT),
++};
++
++static const u32 vsc9953_sys_regmap[] = {
++	REG(SYS_COUNT_RX_OCTETS,		0x000000),
++	REG(SYS_COUNT_RX_MULTICAST,		0x000008),
++	REG(SYS_COUNT_RX_SHORTS,		0x000010),
++	REG(SYS_COUNT_RX_FRAGMENTS,		0x000014),
++	REG(SYS_COUNT_RX_JABBERS,		0x000018),
++	REG(SYS_COUNT_RX_64,			0x000024),
++	REG(SYS_COUNT_RX_65_127,		0x000028),
++	REG(SYS_COUNT_RX_128_255,		0x00002c),
++	REG(SYS_COUNT_RX_256_1023,		0x000030),
++	REG(SYS_COUNT_RX_1024_1526,		0x000034),
++	REG(SYS_COUNT_RX_1527_MAX,		0x000038),
++	REG(SYS_COUNT_RX_LONGS,			0x000048),
++	REG(SYS_COUNT_TX_OCTETS,		0x000100),
++	REG(SYS_COUNT_TX_COLLISION,		0x000110),
++	REG(SYS_COUNT_TX_DROPS,			0x000114),
++	REG(SYS_COUNT_TX_64,			0x00011c),
++	REG(SYS_COUNT_TX_65_127,		0x000120),
++	REG(SYS_COUNT_TX_128_511,		0x000124),
++	REG(SYS_COUNT_TX_512_1023,		0x000128),
++	REG(SYS_COUNT_TX_1024_1526,		0x00012c),
++	REG(SYS_COUNT_TX_1527_MAX,		0x000130),
++	REG(SYS_COUNT_TX_AGING,			0x000178),
++	REG(SYS_RESET_CFG,			0x000318),
++	REG_RESERVED(SYS_SR_ETYPE_CFG),
++	REG(SYS_VLAN_ETYPE_CFG,			0x000320),
++	REG(SYS_PORT_MODE,			0x000324),
++	REG(SYS_FRONT_PORT_MODE,		0x000354),
++	REG(SYS_FRM_AGING,			0x00037c),
++	REG(SYS_STAT_CFG,			0x000380),
++	REG_RESERVED(SYS_SW_STATUS),
++	REG_RESERVED(SYS_MISC_CFG),
++	REG_RESERVED(SYS_REW_MAC_HIGH_CFG),
++	REG_RESERVED(SYS_REW_MAC_LOW_CFG),
++	REG_RESERVED(SYS_TIMESTAMP_OFFSET),
++	REG(SYS_PAUSE_CFG,			0x00044c),
++	REG(SYS_PAUSE_TOT_CFG,			0x000478),
++	REG(SYS_ATOP,				0x00047c),
++	REG(SYS_ATOP_TOT_CFG,			0x0004a8),
++	REG(SYS_MAC_FC_CFG,			0x0004ac),
++	REG(SYS_MMGT,				0x0004d4),
++	REG_RESERVED(SYS_MMGT_FAST),
++	REG_RESERVED(SYS_EVENTS_DIF),
++	REG_RESERVED(SYS_EVENTS_CORE),
++	REG_RESERVED(SYS_CNT),
++	REG_RESERVED(SYS_PTP_STATUS),
++	REG_RESERVED(SYS_PTP_TXSTAMP),
++	REG_RESERVED(SYS_PTP_NXT),
++	REG_RESERVED(SYS_PTP_CFG),
++	REG_RESERVED(SYS_RAM_INIT),
++	REG_RESERVED(SYS_CM_ADDR),
++	REG_RESERVED(SYS_CM_DATA_WR),
++	REG_RESERVED(SYS_CM_DATA_RD),
++	REG_RESERVED(SYS_CM_OP),
++	REG_RESERVED(SYS_CM_DATA),
++};
++
++static const u32 vsc9953_gcb_regmap[] = {
++	REG(GCB_SOFT_RST,			0x000008),
++	REG(GCB_MIIM_MII_STATUS,		0x0000ac),
++	REG(GCB_MIIM_MII_CMD,			0x0000b4),
++	REG(GCB_MIIM_MII_DATA,			0x0000b8),
++};
++
++static const u32 vsc9953_dev_gmii_regmap[] = {
++	REG(DEV_CLOCK_CFG,			0x0),
++	REG(DEV_PORT_MISC,			0x4),
++	REG_RESERVED(DEV_EVENTS),
++	REG(DEV_EEE_CFG,			0xc),
++	REG_RESERVED(DEV_RX_PATH_DELAY),
++	REG_RESERVED(DEV_TX_PATH_DELAY),
++	REG_RESERVED(DEV_PTP_PREDICT_CFG),
++	REG(DEV_MAC_ENA_CFG,			0x10),
++	REG(DEV_MAC_MODE_CFG,			0x14),
++	REG(DEV_MAC_MAXLEN_CFG,			0x18),
++	REG(DEV_MAC_TAGS_CFG,			0x1c),
++	REG(DEV_MAC_ADV_CHK_CFG,		0x20),
++	REG(DEV_MAC_IFG_CFG,			0x24),
++	REG(DEV_MAC_HDX_CFG,			0x28),
++	REG_RESERVED(DEV_MAC_DBG_CFG),
++	REG(DEV_MAC_FC_MAC_LOW_CFG,		0x30),
++	REG(DEV_MAC_FC_MAC_HIGH_CFG,		0x34),
++	REG(DEV_MAC_STICKY,			0x38),
++	REG_RESERVED(PCS1G_CFG),
++	REG_RESERVED(PCS1G_MODE_CFG),
++	REG_RESERVED(PCS1G_SD_CFG),
++	REG_RESERVED(PCS1G_ANEG_CFG),
++	REG_RESERVED(PCS1G_ANEG_NP_CFG),
++	REG_RESERVED(PCS1G_LB_CFG),
++	REG_RESERVED(PCS1G_DBG_CFG),
++	REG_RESERVED(PCS1G_CDET_CFG),
++	REG_RESERVED(PCS1G_ANEG_STATUS),
++	REG_RESERVED(PCS1G_ANEG_NP_STATUS),
++	REG_RESERVED(PCS1G_LINK_STATUS),
++	REG_RESERVED(PCS1G_LINK_DOWN_CNT),
++	REG_RESERVED(PCS1G_STICKY),
++	REG_RESERVED(PCS1G_DEBUG_STATUS),
++	REG_RESERVED(PCS1G_LPI_CFG),
++	REG_RESERVED(PCS1G_LPI_WAKE_ERROR_CNT),
++	REG_RESERVED(PCS1G_LPI_STATUS),
++	REG_RESERVED(PCS1G_TSTPAT_MODE_CFG),
++	REG_RESERVED(PCS1G_TSTPAT_STATUS),
++	REG_RESERVED(DEV_PCS_FX100_CFG),
++	REG_RESERVED(DEV_PCS_FX100_STATUS),
++};
++
++static const u32 *vsc9953_regmap[TARGET_MAX] = {
++	[ANA]		= vsc9953_ana_regmap,
++	[QS]		= vsc9953_qs_regmap,
++	[QSYS]		= vsc9953_qsys_regmap,
++	[REW]		= vsc9953_rew_regmap,
++	[SYS]		= vsc9953_sys_regmap,
++	[S2]		= vsc9953_s2_regmap,
++	[GCB]		= vsc9953_gcb_regmap,
++	[DEV_GMII]	= vsc9953_dev_gmii_regmap,
++};
++
++/* Addresses are relative to the device's base address */
++static const struct resource vsc9953_target_io_res[TARGET_MAX] = {
++	[ANA] = {
++		.start	= 0x0280000,
++		.end	= 0x028ffff,
++		.name	= "ana",
++	},
++	[QS] = {
++		.start	= 0x0080000,
++		.end	= 0x00800ff,
++		.name	= "qs",
++	},
++	[QSYS] = {
++		.start	= 0x0200000,
++		.end	= 0x021ffff,
++		.name	= "qsys",
++	},
++	[REW] = {
++		.start	= 0x0030000,
++		.end	= 0x003ffff,
++		.name	= "rew",
++	},
++	[SYS] = {
++		.start	= 0x0010000,
++		.end	= 0x001ffff,
++		.name	= "sys",
++	},
++	[S2] = {
++		.start	= 0x0060000,
++		.end	= 0x00603ff,
++		.name	= "s2",
++	},
++	[PTP] = {
++		.start	= 0x0090000,
++		.end	= 0x00900cb,
++		.name	= "ptp",
++	},
++	[GCB] = {
++		.start	= 0x0070000,
++		.end	= 0x00701ff,
++		.name	= "devcpu_gcb",
++	},
++};
++
++static const struct resource vsc9953_port_io_res[] = {
++	{
++		.start	= 0x0100000,
++		.end	= 0x010ffff,
++		.name	= "port0",
++	},
++	{
++		.start	= 0x0110000,
++		.end	= 0x011ffff,
++		.name	= "port1",
++	},
++	{
++		.start	= 0x0120000,
++		.end	= 0x012ffff,
++		.name	= "port2",
++	},
++	{
++		.start	= 0x0130000,
++		.end	= 0x013ffff,
++		.name	= "port3",
++	},
++	{
++		.start	= 0x0140000,
++		.end	= 0x014ffff,
++		.name	= "port4",
++	},
++	{
++		.start	= 0x0150000,
++		.end	= 0x015ffff,
++		.name	= "port5",
++	},
++	{
++		.start	= 0x0160000,
++		.end	= 0x016ffff,
++		.name	= "port6",
++	},
++	{
++		.start	= 0x0170000,
++		.end	= 0x017ffff,
++		.name	= "port7",
++	},
++	{
++		.start	= 0x0180000,
++		.end	= 0x018ffff,
++		.name	= "port8",
++	},
++	{
++		.start	= 0x0190000,
++		.end	= 0x019ffff,
++		.name	= "port9",
++	},
++};
++
++static const struct reg_field vsc9953_regfields[REGFIELD_MAX] = {
++	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 10, 10),
++	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 9),
++	[ANA_ANEVENTS_AUTOAGE] = REG_FIELD(ANA_ANEVENTS, 24, 24),
++	[ANA_ANEVENTS_STORM_DROP] = REG_FIELD(ANA_ANEVENTS, 22, 22),
++	[ANA_ANEVENTS_LEARN_DROP] = REG_FIELD(ANA_ANEVENTS, 21, 21),
++	[ANA_ANEVENTS_AGED_ENTRY] = REG_FIELD(ANA_ANEVENTS, 20, 20),
++	[ANA_ANEVENTS_CPU_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 19, 19),
++	[ANA_ANEVENTS_AUTO_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 18, 18),
++	[ANA_ANEVENTS_LEARN_REMOVE] = REG_FIELD(ANA_ANEVENTS, 17, 17),
++	[ANA_ANEVENTS_AUTO_LEARNED] = REG_FIELD(ANA_ANEVENTS, 16, 16),
++	[ANA_ANEVENTS_AUTO_MOVED] = REG_FIELD(ANA_ANEVENTS, 15, 15),
++	[ANA_ANEVENTS_CLASSIFIED_DROP] = REG_FIELD(ANA_ANEVENTS, 13, 13),
++	[ANA_ANEVENTS_CLASSIFIED_COPY] = REG_FIELD(ANA_ANEVENTS, 12, 12),
++	[ANA_ANEVENTS_VLAN_DISCARD] = REG_FIELD(ANA_ANEVENTS, 11, 11),
++	[ANA_ANEVENTS_FWD_DISCARD] = REG_FIELD(ANA_ANEVENTS, 10, 10),
++	[ANA_ANEVENTS_MULTICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 9, 9),
++	[ANA_ANEVENTS_UNICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 8, 8),
++	[ANA_ANEVENTS_DEST_KNOWN] = REG_FIELD(ANA_ANEVENTS, 7, 7),
++	[ANA_ANEVENTS_BUCKET3_MATCH] = REG_FIELD(ANA_ANEVENTS, 6, 6),
++	[ANA_ANEVENTS_BUCKET2_MATCH] = REG_FIELD(ANA_ANEVENTS, 5, 5),
++	[ANA_ANEVENTS_BUCKET1_MATCH] = REG_FIELD(ANA_ANEVENTS, 4, 4),
++	[ANA_ANEVENTS_BUCKET0_MATCH] = REG_FIELD(ANA_ANEVENTS, 3, 3),
++	[ANA_ANEVENTS_CPU_OPERATION] = REG_FIELD(ANA_ANEVENTS, 2, 2),
++	[ANA_ANEVENTS_DMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 1, 1),
++	[ANA_ANEVENTS_SMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 0, 0),
++	[ANA_TABLES_MACACCESS_B_DOM] = REG_FIELD(ANA_TABLES_MACACCESS, 16, 16),
++	[ANA_TABLES_MACTINDX_BUCKET] = REG_FIELD(ANA_TABLES_MACTINDX, 11, 12),
++	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 10),
++	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 7, 7),
++	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 6, 6),
++	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 5, 5),
++	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 0, 0),
++	[GCB_MIIM_MII_STATUS_PENDING] = REG_FIELD(GCB_MIIM_MII_STATUS, 2, 2),
++	[GCB_MIIM_MII_STATUS_BUSY] = REG_FIELD(GCB_MIIM_MII_STATUS, 3, 3),
++	/* Replicated per number of ports (11), register size 4 per port */
++	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 13, 13, 11, 4),
++	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 11, 4),
++	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 11, 4),
++	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 11, 4),
++	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 11, 4),
++	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 4, 5, 11, 4),
++	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 2, 3, 11, 4),
++	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 11, 4),
++	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 11, 20, 11, 4),
++	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 10, 11, 4),
++	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 11, 4),
++};
++
++static const struct ocelot_stat_layout vsc9953_stats_layout[] = {
++	{ .offset = 0x00,	.name = "rx_octets", },
++	{ .offset = 0x01,	.name = "rx_unicast", },
++	{ .offset = 0x02,	.name = "rx_multicast", },
++	{ .offset = 0x03,	.name = "rx_broadcast", },
++	{ .offset = 0x04,	.name = "rx_shorts", },
++	{ .offset = 0x05,	.name = "rx_fragments", },
++	{ .offset = 0x06,	.name = "rx_jabbers", },
++	{ .offset = 0x07,	.name = "rx_crc_align_errs", },
++	{ .offset = 0x08,	.name = "rx_sym_errs", },
++	{ .offset = 0x09,	.name = "rx_frames_below_65_octets", },
++	{ .offset = 0x0A,	.name = "rx_frames_65_to_127_octets", },
++	{ .offset = 0x0B,	.name = "rx_frames_128_to_255_octets", },
++	{ .offset = 0x0C,	.name = "rx_frames_256_to_511_octets", },
++	{ .offset = 0x0D,	.name = "rx_frames_512_to_1023_octets", },
++	{ .offset = 0x0E,	.name = "rx_frames_1024_to_1526_octets", },
++	{ .offset = 0x0F,	.name = "rx_frames_over_1526_octets", },
++	{ .offset = 0x10,	.name = "rx_pause", },
++	{ .offset = 0x11,	.name = "rx_control", },
++	{ .offset = 0x12,	.name = "rx_longs", },
++	{ .offset = 0x13,	.name = "rx_classified_drops", },
++	{ .offset = 0x14,	.name = "rx_red_prio_0", },
++	{ .offset = 0x15,	.name = "rx_red_prio_1", },
++	{ .offset = 0x16,	.name = "rx_red_prio_2", },
++	{ .offset = 0x17,	.name = "rx_red_prio_3", },
++	{ .offset = 0x18,	.name = "rx_red_prio_4", },
++	{ .offset = 0x19,	.name = "rx_red_prio_5", },
++	{ .offset = 0x1A,	.name = "rx_red_prio_6", },
++	{ .offset = 0x1B,	.name = "rx_red_prio_7", },
++	{ .offset = 0x1C,	.name = "rx_yellow_prio_0", },
++	{ .offset = 0x1D,	.name = "rx_yellow_prio_1", },
++	{ .offset = 0x1E,	.name = "rx_yellow_prio_2", },
++	{ .offset = 0x1F,	.name = "rx_yellow_prio_3", },
++	{ .offset = 0x20,	.name = "rx_yellow_prio_4", },
++	{ .offset = 0x21,	.name = "rx_yellow_prio_5", },
++	{ .offset = 0x22,	.name = "rx_yellow_prio_6", },
++	{ .offset = 0x23,	.name = "rx_yellow_prio_7", },
++	{ .offset = 0x24,	.name = "rx_green_prio_0", },
++	{ .offset = 0x25,	.name = "rx_green_prio_1", },
++	{ .offset = 0x26,	.name = "rx_green_prio_2", },
++	{ .offset = 0x27,	.name = "rx_green_prio_3", },
++	{ .offset = 0x28,	.name = "rx_green_prio_4", },
++	{ .offset = 0x29,	.name = "rx_green_prio_5", },
++	{ .offset = 0x2A,	.name = "rx_green_prio_6", },
++	{ .offset = 0x2B,	.name = "rx_green_prio_7", },
++	{ .offset = 0x40,	.name = "tx_octets", },
++	{ .offset = 0x41,	.name = "tx_unicast", },
++	{ .offset = 0x42,	.name = "tx_multicast", },
++	{ .offset = 0x43,	.name = "tx_broadcast", },
++	{ .offset = 0x44,	.name = "tx_collision", },
++	{ .offset = 0x45,	.name = "tx_drops", },
++	{ .offset = 0x46,	.name = "tx_pause", },
++	{ .offset = 0x47,	.name = "tx_frames_below_65_octets", },
++	{ .offset = 0x48,	.name = "tx_frames_65_to_127_octets", },
++	{ .offset = 0x49,	.name = "tx_frames_128_255_octets", },
++	{ .offset = 0x4A,	.name = "tx_frames_256_511_octets", },
++	{ .offset = 0x4B,	.name = "tx_frames_512_1023_octets", },
++	{ .offset = 0x4C,	.name = "tx_frames_1024_1526_octets", },
++	{ .offset = 0x4D,	.name = "tx_frames_over_1526_octets", },
++	{ .offset = 0x4E,	.name = "tx_yellow_prio_0", },
++	{ .offset = 0x4F,	.name = "tx_yellow_prio_1", },
++	{ .offset = 0x50,	.name = "tx_yellow_prio_2", },
++	{ .offset = 0x51,	.name = "tx_yellow_prio_3", },
++	{ .offset = 0x52,	.name = "tx_yellow_prio_4", },
++	{ .offset = 0x53,	.name = "tx_yellow_prio_5", },
++	{ .offset = 0x54,	.name = "tx_yellow_prio_6", },
++	{ .offset = 0x55,	.name = "tx_yellow_prio_7", },
++	{ .offset = 0x56,	.name = "tx_green_prio_0", },
++	{ .offset = 0x57,	.name = "tx_green_prio_1", },
++	{ .offset = 0x58,	.name = "tx_green_prio_2", },
++	{ .offset = 0x59,	.name = "tx_green_prio_3", },
++	{ .offset = 0x5A,	.name = "tx_green_prio_4", },
++	{ .offset = 0x5B,	.name = "tx_green_prio_5", },
++	{ .offset = 0x5C,	.name = "tx_green_prio_6", },
++	{ .offset = 0x5D,	.name = "tx_green_prio_7", },
++	{ .offset = 0x5E,	.name = "tx_aged", },
++	{ .offset = 0x80,	.name = "drop_local", },
++	{ .offset = 0x81,	.name = "drop_tail", },
++	{ .offset = 0x82,	.name = "drop_yellow_prio_0", },
++	{ .offset = 0x83,	.name = "drop_yellow_prio_1", },
++	{ .offset = 0x84,	.name = "drop_yellow_prio_2", },
++	{ .offset = 0x85,	.name = "drop_yellow_prio_3", },
++	{ .offset = 0x86,	.name = "drop_yellow_prio_4", },
++	{ .offset = 0x87,	.name = "drop_yellow_prio_5", },
++	{ .offset = 0x88,	.name = "drop_yellow_prio_6", },
++	{ .offset = 0x89,	.name = "drop_yellow_prio_7", },
++	{ .offset = 0x8A,	.name = "drop_green_prio_0", },
++	{ .offset = 0x8B,	.name = "drop_green_prio_1", },
++	{ .offset = 0x8C,	.name = "drop_green_prio_2", },
++	{ .offset = 0x8D,	.name = "drop_green_prio_3", },
++	{ .offset = 0x8E,	.name = "drop_green_prio_4", },
++	{ .offset = 0x8F,	.name = "drop_green_prio_5", },
++	{ .offset = 0x90,	.name = "drop_green_prio_6", },
++	{ .offset = 0x91,	.name = "drop_green_prio_7", },
++};
++
++static struct vcap_field vsc9953_vcap_is2_keys[] = {
++	/* Common: 41 bits */
++	[VCAP_IS2_TYPE]				= {  0,   4},
++	[VCAP_IS2_HK_FIRST]			= {  4,   1},
++	[VCAP_IS2_HK_PAG]			= {  5,   8},
++	[VCAP_IS2_HK_IGR_PORT_MASK]		= { 13,  11},
++	[VCAP_IS2_HK_RSV2]			= { 24,   1},
++	[VCAP_IS2_HK_HOST_MATCH]		= { 25,   1},
++	[VCAP_IS2_HK_L2_MC]			= { 26,   1},
++	[VCAP_IS2_HK_L2_BC]			= { 27,   1},
++	[VCAP_IS2_HK_VLAN_TAGGED]		= { 28,   1},
++	[VCAP_IS2_HK_VID]			= { 29,  12},
++	[VCAP_IS2_HK_DEI]			= { 41,   1},
++	[VCAP_IS2_HK_PCP]			= { 42,   3},
++	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
++	[VCAP_IS2_HK_L2_DMAC]			= { 45,  48},
++	[VCAP_IS2_HK_L2_SMAC]			= { 93,  48},
++	/* MAC_ETYPE (TYPE=000) */
++	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= {141,  16},
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= {157,  16},
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= {173,   8},
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= {181,   3},
++	/* MAC_LLC (TYPE=001) */
++	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= {141,  40},
++	/* MAC_SNAP (TYPE=010) */
++	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= {141,  40},
++	/* MAC_ARP (TYPE=011) */
++	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 45,  48},
++	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 93,   1},
++	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 94,   1},
++	[VCAP_IS2_HK_MAC_ARP_LEN_OK]		= { 95,   1},
++	[VCAP_IS2_HK_MAC_ARP_TARGET_MATCH]	= { 96,   1},
++	[VCAP_IS2_HK_MAC_ARP_SENDER_MATCH]	= { 97,   1},
++	[VCAP_IS2_HK_MAC_ARP_OPCODE_UNKNOWN]	= { 98,   1},
++	[VCAP_IS2_HK_MAC_ARP_OPCODE]		= { 99,   2},
++	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= {101,  32},
++	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= {133,  32},
++	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= {165,   1},
++	/* IP4_TCP_UDP / IP4_OTHER common */
++	[VCAP_IS2_HK_IP4]			= { 45,   1},
++	[VCAP_IS2_HK_L3_FRAGMENT]		= { 46,   1},
++	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 47,   1},
++	[VCAP_IS2_HK_L3_OPTIONS]		= { 48,   1},
++	[VCAP_IS2_HK_IP4_L3_TTL_GT0]		= { 49,   1},
++	[VCAP_IS2_HK_L3_TOS]			= { 50,   8},
++	[VCAP_IS2_HK_L3_IP4_DIP]		= { 58,  32},
++	[VCAP_IS2_HK_L3_IP4_SIP]		= { 90,  32},
++	[VCAP_IS2_HK_DIP_EQ_SIP]		= {122,   1},
++	/* IP4_TCP_UDP (TYPE=100) */
++	[VCAP_IS2_HK_TCP]			= {123,   1},
++	[VCAP_IS2_HK_L4_SPORT]			= {124,  16},
++	[VCAP_IS2_HK_L4_DPORT]			= {140,  16},
++	[VCAP_IS2_HK_L4_RNG]			= {156,   8},
++	[VCAP_IS2_HK_L4_SPORT_EQ_DPORT]		= {164,   1},
++	[VCAP_IS2_HK_L4_SEQUENCE_EQ0]		= {165,   1},
++	[VCAP_IS2_HK_L4_URG]			= {166,   1},
++	[VCAP_IS2_HK_L4_ACK]			= {167,   1},
++	[VCAP_IS2_HK_L4_PSH]			= {168,   1},
++	[VCAP_IS2_HK_L4_RST]			= {169,   1},
++	[VCAP_IS2_HK_L4_SYN]			= {170,   1},
++	[VCAP_IS2_HK_L4_FIN]			= {171,   1},
++	/* IP4_OTHER (TYPE=101) */
++	[VCAP_IS2_HK_IP4_L3_PROTO]		= {123,   8},
++	[VCAP_IS2_HK_L3_PAYLOAD]		= {131,  56},
++	/* IP6_STD (TYPE=110) */
++	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 45,   1},
++	[VCAP_IS2_HK_L3_IP6_SIP]		= { 46, 128},
++	[VCAP_IS2_HK_IP6_L3_PROTO]		= {174,   8},
++};
++
++static struct vcap_field vsc9953_vcap_is2_actions[] = {
++	[VCAP_IS2_ACT_HIT_ME_ONCE]		= {  0,  1},
++	[VCAP_IS2_ACT_CPU_COPY_ENA]		= {  1,  1},
++	[VCAP_IS2_ACT_CPU_QU_NUM]		= {  2,  3},
++	[VCAP_IS2_ACT_MASK_MODE]		= {  5,  2},
++	[VCAP_IS2_ACT_MIRROR_ENA]		= {  7,  1},
++	[VCAP_IS2_ACT_LRN_DIS]			= {  8,  1},
++	[VCAP_IS2_ACT_POLICE_ENA]		= {  9,  1},
++	[VCAP_IS2_ACT_POLICE_IDX]		= { 10,  8},
++	[VCAP_IS2_ACT_POLICE_VCAP_ONLY]		= { 21,  1},
++	[VCAP_IS2_ACT_PORT_MASK]		= { 22, 10},
++	[VCAP_IS2_ACT_ACL_ID]			= { 44,  6},
++	[VCAP_IS2_ACT_HIT_CNT]			= { 50, 32},
++};
++
++static const struct vcap_props vsc9953_vcap_props[] = {
++	[VCAP_IS2] = {
++		.tg_width = 2,
++		.sw_count = 4,
++		.entry_count = VSC9953_VCAP_IS2_CNT,
++		.entry_width = VSC9953_VCAP_IS2_ENTRY_WIDTH,
++		.action_count = VSC9953_VCAP_IS2_CNT +
++				VSC9953_VCAP_PORT_CNT + 2,
++		.action_width = 101,
++		.action_type_width = 1,
++		.action_table = {
++			[IS2_ACTION_TYPE_NORMAL] = {
++				.width = 44,
++				.count = 2
++			},
++			[IS2_ACTION_TYPE_SMAC_SIP] = {
++				.width = 6,
++				.count = 4
++			},
++		},
++		.counter_words = 4,
++		.counter_width = 32,
++	},
++};
++
++#define VSC9953_INIT_TIMEOUT			50000
++#define VSC9953_GCB_RST_SLEEP			100
++#define VSC9953_SYS_RAMINIT_SLEEP		80
++#define VCS9953_MII_TIMEOUT			10000
++
++static int vsc9953_gcb_soft_rst_status(struct ocelot *ocelot)
++{
++	int val;
++
++	ocelot_field_read(ocelot, GCB_SOFT_RST_SWC_RST, &val);
++
++	return val;
++}
++
++static int vsc9953_gcb_miim_pending_status(struct ocelot *ocelot)
++{
++	int val;
++
++	ocelot_field_read(ocelot, GCB_MIIM_MII_STATUS_PENDING, &val);
++
++	return val;
++}
++
++static int vsc9953_gcb_miim_busy_status(struct ocelot *ocelot)
++{
++	int val;
++
++	ocelot_field_read(ocelot, GCB_MIIM_MII_STATUS_BUSY, &val);
++
++	return val;
++}
++
++static int vsc9953_sys_ram_init_status(struct ocelot *ocelot)
++{
++	int val;
++
++	ocelot_field_read(ocelot, SYS_RESET_CFG_MEM_INIT, &val);
++
++	return val;
++}
++
++static int vsc9953_mdio_write(struct mii_bus *bus, int phy_id, int regnum,
++			      u16 value)
++{
++	struct ocelot *ocelot = bus->priv;
++	int err, cmd, val;
++
++	/* Wait while MIIM controller becomes idle */
++	err = readx_poll_timeout(vsc9953_gcb_miim_pending_status, ocelot,
++				 val, !val, 10, VCS9953_MII_TIMEOUT);
++	if (err) {
++		dev_err(ocelot->dev, "MDIO write: pending timeout\n");
++		goto out;
++	}
++
++	cmd = MSCC_MIIM_CMD_VLD | (phy_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
++	      (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
++	      (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
++	      MSCC_MIIM_CMD_OPR_WRITE;
++
++	ocelot_write(ocelot, cmd, GCB_MIIM_MII_CMD);
++
++out:
++	return err;
++}
++
++static int vsc9953_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
++{
++	struct ocelot *ocelot = bus->priv;
++	int err, cmd, val;
++
++	/* Wait until MIIM controller becomes idle */
++	err = readx_poll_timeout(vsc9953_gcb_miim_pending_status, ocelot,
++				 val, !val, 10, VCS9953_MII_TIMEOUT);
++	if (err) {
++		dev_err(ocelot->dev, "MDIO read: pending timeout\n");
++		goto out;
++	}
++
++	/* Write the MIIM COMMAND register */
++	cmd = MSCC_MIIM_CMD_VLD | (phy_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
++	      (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) | MSCC_MIIM_CMD_OPR_READ;
++
++	ocelot_write(ocelot, cmd, GCB_MIIM_MII_CMD);
++
++	/* Wait while read operation via the MIIM controller is in progress */
++	err = readx_poll_timeout(vsc9953_gcb_miim_busy_status, ocelot,
++				 val, !val, 10, VCS9953_MII_TIMEOUT);
++	if (err) {
++		dev_err(ocelot->dev, "MDIO read: busy timeout\n");
++		goto out;
++	}
++
++	val = ocelot_read(ocelot, GCB_MIIM_MII_DATA);
++
++	err = val & 0xFFFF;
++out:
++	return err;
++}
++
++static int vsc9953_reset(struct ocelot *ocelot)
++{
++	int val, err;
++
++	/* soft-reset the switch core */
++	ocelot_field_write(ocelot, GCB_SOFT_RST_SWC_RST, 1);
++
++	err = readx_poll_timeout(vsc9953_gcb_soft_rst_status, ocelot, val, !val,
++				 VSC9953_GCB_RST_SLEEP, VSC9953_INIT_TIMEOUT);
++	if (err) {
++		dev_err(ocelot->dev, "timeout: switch core reset\n");
++		return err;
++	}
++
++	/* initialize switch mem ~40us */
++	ocelot_field_write(ocelot, SYS_RESET_CFG_MEM_INIT, 1);
++	ocelot_field_write(ocelot, SYS_RESET_CFG_MEM_ENA, 1);
++
++	err = readx_poll_timeout(vsc9953_sys_ram_init_status, ocelot, val, !val,
++				 VSC9953_SYS_RAMINIT_SLEEP,
++				 VSC9953_INIT_TIMEOUT);
++	if (err) {
++		dev_err(ocelot->dev, "timeout: switch sram init\n");
++		return err;
++	}
++
++	/* enable switch core */
++	ocelot_field_write(ocelot, SYS_RESET_CFG_MEM_ENA, 1);
++	ocelot_field_write(ocelot, SYS_RESET_CFG_CORE_ENA, 1);
++
++	return 0;
++}
++
++static void vsc9953_phylink_validate(struct ocelot *ocelot, int port,
 +				     unsigned long *supported,
 +				     struct phylink_link_state *state)
 +{
@@ -434,8 +1255,7 @@ index 61c91248a802..214e14893b4a 100644
 +	phylink_set(mask, 1000baseT_Half);
 +
 +	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
-+	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
-+	    state->interface == PHY_INTERFACE_MODE_USXGMII) {
++	    state->interface == PHY_INTERFACE_MODE_2500BASEX) {
 +		phylink_set(mask, 2500baseT_Full);
 +		phylink_set(mask, 2500baseX_Full);
 +	}
@@ -446,99 +1266,148 @@ index 61c91248a802..214e14893b4a 100644
 +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
 +}
 +
- static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
- 					phy_interface_t phy_mode)
- {
-@@ -1188,7 +1225,6 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	struct enetc_mdio_priv *mdio_priv;
- 	struct device *dev = ocelot->dev;
--	resource_size_t imdio_base;
- 	void __iomem *imdio_regs;
- 	struct resource res;
- 	struct enetc_hw *hw;
-@@ -1204,13 +1240,10 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 		return -ENOMEM;
- 	}
- 
--	imdio_base = pci_resource_start(felix->pdev,
--					felix->info->imdio_pci_bar);
--
- 	memcpy(&res, felix->info->imdio_res, sizeof(res));
- 	res.flags = IORESOURCE_MEM;
--	res.start += imdio_base;
--	res.end += imdio_base;
-+	res.start += felix->imdio_base;
-+	res.end += felix->imdio_base;
- 
- 	imdio_regs = devm_ioremap_resource(dev, &res);
- 	if (IS_ERR(imdio_regs)) {
-@@ -1484,7 +1517,7 @@ static void vsc9959_xmit_template_populate(struct ocelot *ocelot, int port)
- 	packing(template, &src,     46,  43, OCELOT_TAG_LEN, PACK, 0);
- }
- 
--struct felix_info felix_info_vsc9959 = {
-+const struct felix_info felix_info_vsc9959 = {
- 	.target_io_res		= vsc9959_target_io_res,
- 	.port_io_res		= vsc9959_port_io_res,
- 	.imdio_res		= &vsc9959_imdio_res,
-@@ -1507,8 +1540,148 @@ struct felix_info felix_info_vsc9959 = {
- 	.pcs_init		= vsc9959_pcs_init,
- 	.pcs_an_restart		= vsc9959_pcs_an_restart,
- 	.pcs_link_state		= vsc9959_pcs_link_state,
-+	.phylink_validate	= vsc9959_phylink_validate,
- 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
- 	.port_setup_tc          = vsc9959_port_setup_tc,
- 	.port_sched_speed_set   = vsc9959_sched_speed_set,
- 	.xmit_template_populate	= vsc9959_xmit_template_populate,
- };
-+
-+static irqreturn_t felix_irq_handler(int irq, void *data)
++static int vsc9953_prevalidate_phy_mode(struct ocelot *ocelot, int port,
++					phy_interface_t phy_mode)
 +{
-+	struct ocelot *ocelot = (struct ocelot *)data;
-+
-+	/* The INTB interrupt is used for both PTP TX timestamp interrupt
-+	 * and preemption status change interrupt on each port.
-+	 *
-+	 * - Get txtstamp if have
-+	 * - TODO: handle preemption. Without handling it, driver may get
-+	 *   interrupt storm.
-+	 */
-+
-+	ocelot_get_txtstamp(ocelot);
-+
-+	return IRQ_HANDLED;
++	switch (phy_mode) {
++	case PHY_INTERFACE_MODE_INTERNAL:
++		if (port != 8 && port != 9)
++			return -ENOTSUPP;
++		return 0;
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_2500BASEX:
++		/* Not supported on internal to-CPU ports */
++		if (port == 8 || port == 9)
++			return -ENOTSUPP;
++		return 0;
++	default:
++		return -ENOTSUPP;
++	}
 +}
 +
-+static int felix_pci_probe(struct pci_dev *pdev,
-+			   const struct pci_device_id *id)
++/* Watermark encode
++ * Bit 9:   Unit; 0:1, 1:16
++ * Bit 8-0: Value to be multiplied with unit
++ */
++static u16 vsc9953_wm_enc(u16 value)
++{
++	if (value >= BIT(9))
++		return BIT(9) | (value / 16);
++
++	return value;
++}
++
++static const struct ocelot_ops vsc9953_ops = {
++	.reset			= vsc9953_reset,
++	.wm_enc			= vsc9953_wm_enc,
++};
++
++static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct device *dev = ocelot->dev;
++	struct mii_bus *bus;
++	int port;
++	int rc;
++
++	felix->pcs = devm_kcalloc(dev, felix->info->num_ports,
++				  sizeof(struct phy_device *),
++				  GFP_KERNEL);
++	if (!felix->pcs) {
++		dev_err(dev, "failed to allocate array for PCS PHYs\n");
++		return -ENOMEM;
++	}
++
++	bus = devm_mdiobus_alloc(dev);
++	if (!bus)
++		return -ENOMEM;
++
++	bus->name = "VSC9953 internal MDIO bus";
++	bus->read = vsc9953_mdio_read;
++	bus->write = vsc9953_mdio_write;
++	bus->parent = dev;
++	bus->priv = ocelot;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
++
++	/* Needed in order to initialize the bus mutex lock */
++	rc = mdiobus_register(bus);
++	if (rc < 0) {
++		dev_err(dev, "failed to register MDIO bus\n");
++		return rc;
++	}
++
++	felix->imdio = bus;
++
++	for (port = 0; port < felix->info->num_ports; port++) {
++		struct ocelot_port *ocelot_port = ocelot->ports[port];
++		struct phy_device *pcs;
++		int addr = port + 4;
++
++		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
++			continue;
++
++		pcs = get_phy_device(felix->imdio, addr, false);
++		if (IS_ERR(pcs))
++			continue;
++
++		pcs->interface = ocelot_port->phy_mode;
++		felix->pcs[port] = pcs;
++
++		dev_info(dev, "Found PCS at internal MDIO address %d\n", addr);
++	}
++
++	return 0;
++}
++
++static void vsc9953_xmit_template_populate(struct ocelot *ocelot, int port)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	u8 *template = ocelot_port->xmit_template;
++	u64 bypass, dest, src;
++
++	/* Set the source port as the CPU port module and not the
++	 * NPI port
++	 */
++	src = ocelot->num_phys_ports;
++	dest = BIT(port);
++	bypass = true;
++
++	packing(template, &bypass, 127, 127, OCELOT_TAG_LEN, PACK, 0);
++	packing(template, &dest,    67,  57, OCELOT_TAG_LEN, PACK, 0);
++	packing(template, &src,     46,  43, OCELOT_TAG_LEN, PACK, 0);
++}
++
++struct felix_info seville_info_vsc9953 = {
++	.target_io_res		= vsc9953_target_io_res,
++	.port_io_res		= vsc9953_port_io_res,
++	.regfields		= vsc9953_regfields,
++	.map			= vsc9953_regmap,
++	.ops			= &vsc9953_ops,
++	.stats_layout		= vsc9953_stats_layout,
++	.num_stats		= ARRAY_SIZE(vsc9953_stats_layout),
++	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
++	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
++	.vcap			= vsc9953_vcap_props,
++	.shared_queue_sz	= 128 * 1024,
++	.num_mact_rows		= 2048,
++	.num_ports		= 10,
++	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
++	.mdio_bus_free		= vsc9959_mdio_bus_free,
++	.pcs_init		= vsc9959_pcs_init,
++	.pcs_link_state		= vsc9959_pcs_link_state,
++	.phylink_validate	= vsc9953_phylink_validate,
++	.prevalidate_phy_mode	= vsc9953_prevalidate_phy_mode,
++	.xmit_template_populate	= vsc9953_xmit_template_populate,
++};
++
++static int seville_probe(struct platform_device *pdev)
 +{
 +	struct dsa_switch *ds;
 +	struct ocelot *ocelot;
++	struct resource *res;
 +	struct felix *felix;
 +	int err;
-+
-+	if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
-+		dev_info(&pdev->dev, "device is disabled, skipping\n");
-+		return -ENODEV;
-+	}
-+
-+	err = pci_enable_device(pdev);
-+	if (err) {
-+		dev_err(&pdev->dev, "device enable failed\n");
-+		goto err_pci_enable;
-+	}
-+
-+	/* set up for high or low dma */
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	if (err) {
-+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+		if (err) {
-+			dev_err(&pdev->dev,
-+				"DMA configuration failed: 0x%x\n", err);
-+			goto err_dma;
-+		}
-+	}
 +
 +	felix = kzalloc(sizeof(struct felix), GFP_KERNEL);
 +	if (!felix) {
@@ -547,26 +1416,14 @@ index 61c91248a802..214e14893b4a 100644
 +		goto err_alloc_felix;
 +	}
 +
-+	pci_set_drvdata(pdev, felix);
++	platform_set_drvdata(pdev, felix);
++
 +	ocelot = &felix->ocelot;
 +	ocelot->dev = &pdev->dev;
-+	felix->info = &felix_info_vsc9959;
-+	felix->switch_base = pci_resource_start(pdev,
-+						felix->info->switch_pci_bar);
-+	felix->imdio_base = pci_resource_start(pdev,
-+					       felix->info->imdio_pci_bar);
++	felix->info = &seville_info_vsc9953;
 +
-+	pci_set_master(pdev);
-+
-+	err = devm_request_threaded_irq(&pdev->dev, pdev->irq, NULL,
-+					&felix_irq_handler, IRQF_ONESHOT,
-+					"felix-intb", ocelot);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to request irq\n");
-+		goto err_alloc_irq;
-+	}
-+
-+	ocelot->ptp = 1;
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	felix->switch_base = res->start;
 +
 +	ds = kzalloc(sizeof(struct dsa_switch), GFP_KERNEL);
 +	if (!ds) {
@@ -577,7 +1434,6 @@ index 61c91248a802..214e14893b4a 100644
 +
 +	ds->dev = &pdev->dev;
 +	ds->num_ports = felix->info->num_ports;
-+	ds->num_tx_queues = felix->info->num_tx_queues;
 +	ds->ops = &felix_switch_ops;
 +	ds->priv = ocelot;
 +	felix->ds = ds;
@@ -593,43 +1449,38 @@ index 61c91248a802..214e14893b4a 100644
 +err_register_ds:
 +	kfree(ds);
 +err_alloc_ds:
-+err_alloc_irq:
 +err_alloc_felix:
 +	kfree(felix);
-+err_dma:
-+	pci_disable_device(pdev);
-+err_pci_enable:
 +	return err;
 +}
 +
-+static void felix_pci_remove(struct pci_dev *pdev)
++static int seville_remove(struct platform_device *pdev)
 +{
 +	struct felix *felix;
 +
-+	felix = pci_get_drvdata(pdev);
++	felix = platform_get_drvdata(pdev);
 +
 +	dsa_unregister_switch(felix->ds);
 +
 +	kfree(felix->ds);
 +	kfree(felix);
 +
-+	pci_disable_device(pdev);
++	return 0;
 +}
 +
-+static struct pci_device_id felix_ids[] = {
-+	{
-+		/* NXP LS1028A */
-+		PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, 0xEEF0),
-+	},
-+	{ 0, }
++static const struct of_device_id seville_of_match[] = {
++	{ .compatible = "mscc,vsc9953-switch" },
++	{ },
 +};
-+MODULE_DEVICE_TABLE(pci, felix_ids);
++MODULE_DEVICE_TABLE(of, seville_of_match);
 +
-+struct pci_driver felix_vsc9959_pci_driver = {
-+	.name		= "mscc_felix",
-+	.id_table	= felix_ids,
-+	.probe		= felix_pci_probe,
-+	.remove		= felix_pci_remove,
++struct platform_driver seville_vsc9953_driver = {
++	.probe		= seville_probe,
++	.remove		= seville_remove,
++	.driver = {
++		.name		= "mscc_seville",
++		.of_match_table	= of_match_ptr(seville_of_match),
++	},
 +};
 -- 
 2.25.1
