@@ -2,120 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCEA1E9CF7
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 07:11:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4EB1E9D2C
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 07:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbgFAFLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 01:11:50 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:12104 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgFAFLu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 01:11:50 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ed48dbf0000>; Sun, 31 May 2020 22:10:24 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Sun, 31 May 2020 22:11:50 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Sun, 31 May 2020 22:11:50 -0700
-Received: from [10.2.56.10] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Jun
- 2020 05:11:49 +0000
-From:   John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH 1/2] docs: mm/gup: pin_user_pages.rst: add a "case 5"
-To:     Souptick Joarder <jrdr.linux@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Jan Kara <jack@suse.cz>, Dave Chinner <david@fromorbit.com>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20200529234309.484480-1-jhubbard@nvidia.com>
- <20200529234309.484480-2-jhubbard@nvidia.com>
- <CAFqt6zaCSngh7-N_qZ6-S3Cj8CHF8DTSPv8anP_oJg5E6UWu9g@mail.gmail.com>
-X-Nvconfidentiality: public
-Message-ID: <b8de5a5e-b53a-81e8-9165-405d203deb33@nvidia.com>
-Date:   Sun, 31 May 2020 22:11:49 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1726143AbgFAFTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 01:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgFAFTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 01:19:53 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9ADC061A0E;
+        Sun, 31 May 2020 22:19:53 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id s88so3859778pjb.5;
+        Sun, 31 May 2020 22:19:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sO8jcvPiOukatlC6URpKN2G0/iDSlj0IFO4ApIBDM5Q=;
+        b=BX8Vuxfjwu6ye+y9HvZFXuGYzvBaaleulIo30K+5I0RyTywGmZuI+Ccn82aMK+DD6j
+         LTAyYFs8Tf7WEHAnNkbpOMLmFA9K4+95SXaA6/03MQBwLw7eMrzzm+0MPK4wvWhAHQti
+         znXATEvs/CfYBMnvGzmmROla2P1m9VK2R69dkTwpeo58bCHCBbM4bUi7UIfzXUnL2LbV
+         tPAGNMUKxb9Elli2yoyDHuMJxqyikf6p5EiFA545v5jcpCTbOqr/Osgrvix5aphY9yvy
+         De6me9qB46xlLouxc1gTOZjKaPikpiFA0bOO6U4zUUCRseFzU50SWfJOt616NRjG7an9
+         S5pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sO8jcvPiOukatlC6URpKN2G0/iDSlj0IFO4ApIBDM5Q=;
+        b=N3gPNavAqQb3DTYCbauv8FEFht2aleesu8Nbk3WON6ggGx2aQwRaSqdoh/Y0FTR8m2
+         K+DRv3oFExPjo9+ZpWA+BdNIuKDYP0lEV4Ni9vSQZMQJPuo0I7bcGMpeWxO/m4gBLYBg
+         6vqSJogbcZ5gykoB89CrQBOoKqTLP6zBFcqxkaVZkoc/qchBmOQch8afDT8ak9Dzjoby
+         l3GTzGK0c4pQj7kDZ6VNWgOeQUMwe5iISSgUKwdAlrcjAUgCyJt9uAoL9p3NifHH/Kup
+         meZUhOJTWUbBIGV56XoM8R6u1/ckjJdO725g13vWJGp8AoZ8rITqDZMOS72FFSpmlfC+
+         DRYw==
+X-Gm-Message-State: AOAM531Sjrcr7IoJANPSVkWRye/l7Cf6K5MkjNijwCF6XBIiLk6D6/Lv
+        Ewxlv1uQm3ttUEqKy2x+z70=
+X-Google-Smtp-Source: ABdhPJyY9uOLpdfNARQ7gU6mScXwZv/e5G3IgkWWLW3MEl7XePDvpgX/zsqnAn006JfMQ3kLxIVe1Q==
+X-Received: by 2002:a17:902:9f90:: with SMTP id g16mr11468281plq.146.1590988793099;
+        Sun, 31 May 2020 22:19:53 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id v9sm6598865pfu.212.2020.05.31.22.19.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 31 May 2020 22:19:51 -0700 (PDT)
+Date:   Mon, 1 Jun 2020 14:19:47 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Jil Rouceau <jilrouceau@gmail.com>
+Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge: qlge_main.c: fixed spaces coding style
+ issues
+Message-ID: <20200601051947.GA12667@f3>
+References: <20200529151749.34018-1-jilrouceau@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFqt6zaCSngh7-N_qZ6-S3Cj8CHF8DTSPv8anP_oJg5E6UWu9g@mail.gmail.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1590988224; bh=9bFIJ1fdeUjA5o+dFxctvjpXw8nTkPS99fUnc8XcE0I=;
-        h=X-PGP-Universal:From:Subject:To:CC:References:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=QbVXe76ixZyU/4kNOFUP5irHut9M8oYwtRvqVPMBs8MwCPoBca+201MH6KAunI+hC
-         YI80foKFhnvqpOlbkPGohIsaFJrF/KNCZGr+3ThzCd3bCk1avxVy3WXxbF/4r2quEF
-         7yrNewG5QVpWJoVuLj1oHvaRgry+KxpeM1VOIv3nmyznPJUllYlOKwL+c7N4xh6Uz+
-         +qU9FTcgG6RIPcdtoZ+KUxCbcCvD5lTT2AvEWImzE7NSJc+NbL3ZKHm+rp245WmBsC
-         +sdrJvoCqXCZvICidj76kgi5z1yDjAHsgJtBx183NoBxycsge6pMGpAdd0nSqbWfbK
-         z4XykyLCQxZNg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200529151749.34018-1-jilrouceau@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-31 00:11, Souptick Joarder wrote:
-...
->> diff --git a/Documentation/core-api/pin_user_pages.rst b/Documentation/core-api/pin_user_pages.rst
->> index 4675b04e8829..b9f2688a2c67 100644
->> --- a/Documentation/core-api/pin_user_pages.rst
->> +++ b/Documentation/core-api/pin_user_pages.rst
->> @@ -171,6 +171,26 @@ If only struct page data (as opposed to the actual memory contents that a page
->>   is tracking) is affected, then normal GUP calls are sufficient, and neither flag
->>   needs to be set.
->>
->> +CASE 5: Pinning in order to write to the data within the page
->> +-------------------------------------------------------------
->> +Even though neither DMA nor Direct IO is involved, just a simple case of "pin,
->> +access page's data, unpin" can cause a problem.
+On 2020-05-29 17:17 +0200, Jil Rouceau wrote:
+> Fixed the missing spaces before and after binary operators.
 > 
-> Will it be, *"pin, access page's data, set page dirty, unpin" * ?
+> Signed-off-by: Jil Rouceau <jilrouceau@gmail.com>
 
-Well...the problem can show up with just accessing (writing) the data.
-But it is true that this statement is a little different from the
-patterns below, which is confusing. I'll delete set_page_dirty() from each
-of them, in order to avoid confusing things. (Although each is correct.)
-And I'll also change the above to "pin, write to a page's data, upin".
-
-set_page_dirty() interactions are really just extra credit here. :) And
-fully read-only situations won't cause a problem.
-
-> 
-> Case 5 may be considered a
->> +superset of Case 1, plus Case 2, plus anything that invokes that pattern. In
->> +other words, if the code is neither Case 1 nor Case 2, it may still require
->> +FOLL_PIN, for patterns like this:
->> +
->> +Correct (uses FOLL_PIN calls):
->> +    pin_user_pages()
->> +    access the data within the pages
->> +    set_page_dirty_lock()
->> +    unpin_user_pages()
->> +
->> +INCORRECT (uses FOLL_GET calls):
->> +    get_user_pages()
->> +    access the data within the pages
->> +    set_page_dirty_lock()
->> +    put_page()
->> +
-
-I'll send a v2 shortly.
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+This patch does not apply cleanly. I think your base tree is missing
+commit ec269f1250c6 ("staging: qlge: Remove unnecessary spaces in
+qlge_main.c").
