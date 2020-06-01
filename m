@@ -2,114 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83081EA45F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 15:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D03A1EA4F7
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 15:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726075AbgFANCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 09:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbgFANCw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 09:02:52 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACADC061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 06:02:52 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id j10so11391057wrw.8
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 06:02:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c+QoV/HcMCTMVpf40QgOdghuE0cBC54AdoG6hgzUvEU=;
-        b=bXNGLd36g19lQhm9wc2ucAu6ZWWI/gszeaBbB1NS+obGicxXFoHjlU2iinmTbvKo70
-         Id6xXBUi/krErs7Q6DieEbq471E+GLthmwz5o/nNEmXxiyGvqE4VogS/eEnUeMnD5Th6
-         pcrcl+e6USCW+qGg58swXjw+R6EjNCNcgQ5kY=
+        id S1727063AbgFAN0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 09:26:13 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50071 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725976AbgFAN0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 09:26:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591017970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IRfq5vWGxkg2iGmNT2OiJJevysZiaYLSO0DYjWQmzCo=;
+        b=VNwbIyLKC7a7KCC48/0No8RitbCeA6MKCmaGzBp1JV/crZh+WaxG4PnIhxaiwCEKal4BvA
+        S5RZCTB/mqIeHImQivBDHHppHXfSPDHGxUCyEsc9NGP1ZIqi7fhZpyEqsel9budd1J6/N+
+        PFMyJ+Ysao2mrZyTQ1hHQugOdjq+1TQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-363-_GUGVgQVOJGSy5gxp12YBg-1; Mon, 01 Jun 2020 09:26:05 -0400
+X-MC-Unique: _GUGVgQVOJGSy5gxp12YBg-1
+Received: by mail-wr1-f69.google.com with SMTP id m14so3059666wrj.12
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 06:26:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=c+QoV/HcMCTMVpf40QgOdghuE0cBC54AdoG6hgzUvEU=;
-        b=D4WevVTR0aeqSu89Plw0pNG+ijjzy3g/dRzfQWdmLXp6bIITjw7ev/4lm67cNaCo/o
-         Zzaw5gIPRC5Nv//VZEPi8TvSctrxi33Dd4r8W7+j7K/mJOTgAbb+oC2/jov17qjml0Qk
-         7kyq/sw0ggtcZV1QTcNLceClEAHSoTSpw+SOFzJq4ssIm1B8wr0+7DUv+1QhS4FCwUaj
-         cOMvGhfVD7THSS3vYnYTLNzhJx7bDZsoLaCrOWvFFEUJiPN59bnAib9USuapx/eImhhE
-         YhIhNd2SsqVbZlr8uod8TAsYR8CFDF60b00xE+x5yehQ6GjVy8b2Qw2Xgl7CcgQB0/Sh
-         curQ==
-X-Gm-Message-State: AOAM532KpdvoEzneYk77DYOz0KJrMKHe6Jz/YUkkatJ9a0D3GHsOhFJz
-        ZYga7LMZpNtCrDljj7o2k0qR1g==
-X-Google-Smtp-Source: ABdhPJyvJgDBLwC4bSkCDVyoydG38HExBeyXwTCGezzxTjgwWFG8eRidscqY9ZUDo/lnnpjqVUHz/Q==
-X-Received: by 2002:a5d:4a43:: with SMTP id v3mr23124419wrs.115.1591016570931;
-        Mon, 01 Jun 2020 06:02:50 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id l1sm12897330wrb.31.2020.06.01.06.02.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Jun 2020 06:02:50 -0700 (PDT)
-Subject: Re: [PATCH net 2/2] vxlan: Avoid infinite loop when suppressing NS
- messages with invalid options
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, roopa@cumulusnetworks.com,
-        dlstevens@us.ibm.com, allas@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20200601125855.1751343-1-idosch@idosch.org>
- <20200601125855.1751343-3-idosch@idosch.org>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <b0466e34-47a5-b71f-58bd-321955fdb9aa@cumulusnetworks.com>
-Date:   Mon, 1 Jun 2020 16:02:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=IRfq5vWGxkg2iGmNT2OiJJevysZiaYLSO0DYjWQmzCo=;
+        b=E7B7HWwIMpOdlWnSLFLoULCAVZHY96T8h0zAxKl/ofILAbBM++9aERrY3G/c/2gX2z
+         Jx1ZWk8YncAw0+SIZMVvLjjnqJhfoyzFyNi97j5MCVRo1FIj/alB+AhJ77zg0PwWAV/J
+         THzPyHPQkF1xa9SIvMjTOxhxpK1GORgaxu/FcOm/Pgmnl0l7Ww7kJMO+7ELBGgdXhQmP
+         7r/bpiZuBbjQC8dRNT1YIYKJ7aUvB0+hVFfP2x7P1K6EoLCSI7wp5ylnBa9HbJI5aT3E
+         y0Z123FRHr07coliMa8HX8JzFv5p05JZ2OTScoLG7SkvLXBwNAgx9qOFywNXcI8pmH3D
+         xF5g==
+X-Gm-Message-State: AOAM533MNz5+r5c/tsX8TcsQ8hBxPcNI20igQ03hYscx/2vn6rWLiK4Y
+        Sz3atfY7pne7jRBXeudDxJZPak2uk53WJtSGI2OolMieLJ8I1LTnL88zBEAK3rkVnAbG3+spUe1
+        pvy3ujrsuzMJ0B2om
+X-Received: by 2002:a7b:cd83:: with SMTP id y3mr9035988wmj.5.1591017964167;
+        Mon, 01 Jun 2020 06:26:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzl8lRUHSE787paC5X60OoxhERxaaxtuTvkoS0LlVBYhPgpTofNEGYr/DfLFh8K2PDep2O2VQ==
+X-Received: by 2002:a7b:cd83:: with SMTP id y3mr9035967wmj.5.1591017963973;
+        Mon, 01 Jun 2020 06:26:03 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id p1sm20620154wrx.44.2020.06.01.06.26.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 06:26:03 -0700 (PDT)
+Date:   Mon, 1 Jun 2020 09:26:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     xiangxia.m.yue@gmail.com, makita.toshiaki@lab.ntt.co.jp,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v8 7/7] net: vhost: make busyloop_intr more
+ accurate
+Message-ID: <20200601092522-mutt-send-email-mst@kernel.org>
+References: <1534680686-3108-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <1534680686-3108-8-git-send-email-xiangxia.m.yue@gmail.com>
+ <f85bfa97-ab9c-2d51-2053-1fe6bb3d45bc@redhat.com>
+ <8460e039-d58e-85df-cef9-c87933f46cc2@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200601125855.1751343-3-idosch@idosch.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8460e039-d58e-85df-cef9-c87933f46cc2@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/06/2020 15:58, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
+On Tue, Aug 21, 2018 at 08:47:35AM +0800, Jason Wang wrote:
 > 
-> When proxy mode is enabled the vxlan device might reply to Neighbor
-> Solicitation (NS) messages on behalf of remote hosts.
 > 
-> In case the NS message includes the "Source link-layer address" option
-> [1], the vxlan device will use the specified address as the link-layer
-> destination address in its reply.
+> On 2018年08月21日 08:33, Jason Wang wrote:
+> > 
+> > 
+> > On 2018年08月19日 20:11, xiangxia.m.yue@gmail.com wrote:
+> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > 
+> > > The patch uses vhost_has_work_pending() to check if
+> > > the specified handler is scheduled, because in the most case,
+> > > vhost_has_work() return true when other side handler is added
+> > > to worker list. Use the vhost_has_work_pending() insead of
+> > > vhost_has_work().
+> > > 
+> > > Topology:
+> > > [Host] ->linux bridge -> tap vhost-net ->[Guest]
+> > > 
+> > > TCP_STREAM (netperf):
+> > > * Without the patch:  38035.39 Mbps, 3.37 us mean latency
+> > > * With the patch:     38409.44 Mbps, 3.34 us mean latency
+> > 
+> > The improvement is not obvious as last version. Do you imply there's
+> > some recent changes of vhost that make it faster?
+> > 
 > 
-> To avoid an infinite loop, break out of the options parsing loop when
-> encountering an option with length zero and disregard the NS message.
+> I misunderstood the numbers, please ignore this.
 > 
-> This is consistent with the IPv6 ndisc code and RFC 4886 which states
-> that "Nodes MUST silently discard an ND packet that contains an option
-> with length zero" [2].
+> It shows less than 1% improvement. I'm not sure it's worth to do so. Can you
+> try bi-directional pktgen to see if it has more obvious effect?
 > 
-> [1] https://tools.ietf.org/html/rfc4861#section-4.3
-> [2] https://tools.ietf.org/html/rfc4861#section-4.6
-> 
-> Fixes: 4b29dba9c085 ("vxlan: fix nonfunctional neigh_reduce()")
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  drivers/net/vxlan.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-> index a5b415fed11e..779e56c43d27 100644
-> --- a/drivers/net/vxlan.c
-> +++ b/drivers/net/vxlan.c
-> @@ -1924,6 +1924,10 @@ static struct sk_buff *vxlan_na_create(struct sk_buff *request,
->  	ns_olen = request->len - skb_network_offset(request) -
->  		sizeof(struct ipv6hdr) - sizeof(*ns);
->  	for (i = 0; i < ns_olen-1; i += (ns->opt[i+1]<<3)) {
-> +		if (!ns->opt[i + 1]) {
-> +			kfree_skb(reply);
-> +			return NULL;
-> +		}
->  		if (ns->opt[i] == ND_OPT_SOURCE_LL_ADDR) {
->  			daddr = ns->opt + i + sizeof(struct nd_opt_hdr);
->  			break;
-> 
+> Thanks
 
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+
+Right, this kind of gain is in the noise. Try measuring CPU utilization?
+
+> > Thanks
+> > 
+> > > 
+> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > ---
+> > >   drivers/vhost/net.c | 9 ++++++---
+> > >   1 file changed, 6 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> > > index db63ae2..b6939ef 100644
+> > > --- a/drivers/vhost/net.c
+> > > +++ b/drivers/vhost/net.c
+> > > @@ -487,10 +487,8 @@ static void vhost_net_busy_poll(struct
+> > > vhost_net *net,
+> > >       endtime = busy_clock() + busyloop_timeout;
+> > >         while (vhost_can_busy_poll(endtime)) {
+> > > -        if (vhost_has_work(&net->dev)) {
+> > > -            *busyloop_intr = true;
+> > > +        if (vhost_has_work(&net->dev))
+> > >               break;
+> > > -        }
+> > >             if ((sock_has_rx_data(sock) &&
+> > >                !vhost_vq_avail_empty(&net->dev, rvq)) ||
+> > > @@ -513,6 +511,11 @@ static void vhost_net_busy_poll(struct
+> > > vhost_net *net,
+> > >           !vhost_has_work_pending(&net->dev, VHOST_NET_VQ_RX))
+> > >           vhost_net_enable_vq(net, rvq);
+> > >   +    if (vhost_has_work_pending(&net->dev,
+> > > +                   poll_rx ?
+> > > +                   VHOST_NET_VQ_RX: VHOST_NET_VQ_TX))
+> > > +        *busyloop_intr = true;
+> > > +
+> > >       mutex_unlock(&vq->mutex);
+> > >   }
+> > 
+> > _______________________________________________
+> > Virtualization mailing list
+> > Virtualization@lists.linux-foundation.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+
