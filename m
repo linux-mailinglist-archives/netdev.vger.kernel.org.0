@@ -2,155 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D9B1EA214
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 12:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D02201EA217
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 12:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbgFAKoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 06:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
+        id S1726089AbgFAKpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 06:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgFAKoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 06:44:10 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C52C061A0E;
-        Mon,  1 Jun 2020 03:44:09 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id f7so8756463ejq.6;
-        Mon, 01 Jun 2020 03:44:09 -0700 (PDT)
+        with ESMTP id S1725788AbgFAKpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 06:45:31 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBE1C061A0E;
+        Mon,  1 Jun 2020 03:45:30 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id k19so6879960edv.9;
+        Mon, 01 Jun 2020 03:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sQTTy8nx24g4sA9k9wroE7mKOafWdrpZxfmI910Hnf4=;
-        b=J3gAk8ITQtD3udEyuHfDt58wMvTs9TJPki6UlHOBmLxhTQqkNrrfFRJZKe96TpAsLf
-         XBJIVentwfSZgYYVzg40hj35Fc+66J6HOr+3nXJ4YnhGoDovKByHruQIewqICH0x59ua
-         tpCKQCnJFUD+biNTGnLL3O4W1d8cPp2AblVy4O6HzbG2+828etD3thDKHn22nGDOQEfj
-         gyk41KAKseazyerYIaZDYkZK8esYTCnygob6yNyVjL5jya8GiTDYmP/b4tl9NjJuG8xu
-         TUkhFPIvKHzd1etIDPNvLuaFdFSDZS3ll1wnk46hvzvFttWDQt2cwnefzOxcgsL9RKn9
-         0NXw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AQCWkDRq2fhfxdoPdO9VTDnwBK6o27h3tUHRPkDXm2M=;
+        b=e6PjRJPOmtFkfuUv9375vTAtLHEE81iHXsUcTZeDIaicRpjzz3zh6/4s+CP+KJbHq0
+         9yFdmTj0dMewxswB6bd/1UIAB1hJGNKyD9Uo+JRQraQ16zN4w9+2BuFzqJdVn+MLF/Gr
+         skjGuUgM7/opznglu3d0lFNxD/HwQGREr7xJvuc+5V6WOFPWdcBwmopOeNjkcRMWKmeg
+         rbw0PAFrTI7nGUHONO8OtPtCXWXAR9y4kJsYEQsC8LQYeWWL1l8t4q4I1m7YcUxmLG5t
+         ovbqwkk6JU6biOoLcxX8MMIYEWtpei463MPawitarFfVcxyDNzNbYH0O8aVV7GRyosMi
+         vWRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sQTTy8nx24g4sA9k9wroE7mKOafWdrpZxfmI910Hnf4=;
-        b=mlH+ixKGA96xjzRiOVqpIclyixwwp0JcgDMsUbrTxjOuqdvpxR97AGGy/QrBCKv30O
-         nqDFwxl6XSoxddAHVOiAEl/qTikC5e7OZbyZswr4lZ8S295FKuKTMjHpEkejqvvxLVIE
-         xzJ6i1l/ZsXF4PU9y0tu+atcIiVNuRFAWCW4chuxCLzK7kKe3LzSUCYT2+Bj4TD9nNMb
-         IanYiJDJyHLkW7gCGFXG/sRVqXucYak82XFfgbPxu2FIilKBfd0vA/HmCi0hhUCIM0dT
-         afqaI64xP2NjM39WX0Wqc9n3B2kjKDLoXi8KXoW6klJW4LnUsB50nbCpsAQHVfAIJcyN
-         wynQ==
-X-Gm-Message-State: AOAM533zNofmdkadPy0g2HZFwy2LHfQD3/Va1mu/L0CwE0S/4Fcpi8dC
-        4uin193AMkAjZ6yf05gzbb3tYc8zYtSNP3QxHrk=
-X-Google-Smtp-Source: ABdhPJwlJp6OtNe0ZRtufcs4UM6tNghYXCv7mCoaWDMy0RU83sY+BfcIwCpZySTW1TtkoILBvyYcafnbXp31es83JaY=
-X-Received: by 2002:a17:906:851:: with SMTP id f17mr7835368ejd.396.1591008248424;
- Mon, 01 Jun 2020 03:44:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AQCWkDRq2fhfxdoPdO9VTDnwBK6o27h3tUHRPkDXm2M=;
+        b=EB8iRRP+UNRIFSKiK55QBGbP0OvG+AUtCCl9OsqyBW/Gd+DBEVp4Ev95JOa2/me3Qo
+         LGrZ+AE6x5ZF8ablDRdv/V1O4qaaHGznt/uBDe+LXPDrvO9FE2/lRRaI06ypXjR06n+Y
+         +qMmKXyGRQfWvZmEwCZqZTub9NttAY1zB74JD+dql1LxWnB1OR10cxHeAmb7Zpb81L39
+         EQOopu9cukx6g6WGOJzFxXKA2SiX6rg+Xu8DHI6+NHmn3H914Hvtw342ISmxDKV8yGjQ
+         OUzRBTPwHJ2rfz85Mu7NmNPoD120KfDAunoAm6i/81W3ntD8uW4ZOEUB/EFdYKDmlPSe
+         VmYQ==
+X-Gm-Message-State: AOAM5308eu1EyPeCqq3yr9MzJaVzoCS75dJyko33cyPOwS3T6hjsnxxN
+        JYjQ2fVw3ySFKgCHi8qA4Bo=
+X-Google-Smtp-Source: ABdhPJwCI8kOy/Wj8syQKlllWZd6n9UrlrKdjr1Mn56O/Q0uCz9gJxrvUKgqALFfIXue4utIqXp3xQ==
+X-Received: by 2002:a50:f9cc:: with SMTP id a12mr4160580edq.227.1591008329663;
+        Mon, 01 Jun 2020 03:45:29 -0700 (PDT)
+Received: from ubuntu.localdomain (host-85-26-109-233.dynamic.voo.be. [85.26.109.233])
+        by smtp.gmail.com with ESMTPSA id sa19sm8360923ejb.15.2020.06.01.03.45.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 03:45:28 -0700 (PDT)
+From:   Jil Rouceau <jilrouceau@gmail.com>
+To:     manishc@marvell.com
+Cc:     GR-Linux-NIC-Dev@marvell.com, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Jil Rouceau <jilrouceau@gmail.com>
+Subject: [PATCH v2] staging: qlge: qlge_main.c: fixed spaces coding style issues
+Date:   Mon,  1 Jun 2020 12:44:16 +0200
+Message-Id: <20200601104416.102566-1-jilrouceau@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200531180758.1426455-1-olteanv@gmail.com> <CAHp75Vc5NrDUZwv7uW+P=Ly+tz3a9XgEukX6ZgSccj_1sMYQaw@mail.gmail.com>
- <CA+h21ho-XYzWo8BqHwu9REnBVEgG2Zynuux=j_UJ8hvhXATOVA@mail.gmail.com> <CAHp75Vfg20sTa2qCQkA5g5uFzGtm7rGc9MuqpC4CSjU-4y0V9g@mail.gmail.com>
-In-Reply-To: <CAHp75Vfg20sTa2qCQkA5g5uFzGtm7rGc9MuqpC4CSjU-4y0V9g@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 1 Jun 2020 13:43:57 +0300
-Message-ID: <CA+h21hopjyuc5t+iCbDcRpZNMzxgQNKXBe=p+WjQFGVcJ+PL6A@mail.gmail.com>
-Subject: Re: [PATCH v2] devres: keep both device name and resource name in
- pretty name
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sergei.shtylyov@cogentembedded.com" 
-        <sergei.shtylyov@cogentembedded.com>,
-        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
-        "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
-        "efremov@linux.com" <efremov@linux.com>,
-        "ztuowen@gmail.com" <ztuowen@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Jun 2020 at 13:39, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Jun 1, 2020 at 12:13 AM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, 1 Jun 2020 at 00:05, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Sunday, May 31, 2020, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> > >> Sometimes debugging a device is easiest using devmem on its register
-> > >> map, and that can be seen with /proc/iomem. But some device drivers have
-> > >> many memory regions. Take for example a networking switch. Its memory
-> > >> map used to look like this in /proc/iomem:
-> > >>
-> > >> 1fc000000-1fc3fffff : pcie@1f0000000
-> > >>   1fc000000-1fc3fffff : 0000:00:00.5
-> > >>     1fc010000-1fc01ffff : sys
-> > >>     1fc030000-1fc03ffff : rew
-> > >>     1fc060000-1fc0603ff : s2
-> > >>     1fc070000-1fc0701ff : devcpu_gcb
-> > >>     1fc080000-1fc0800ff : qs
-> > >>     1fc090000-1fc0900cb : ptp
-> > >>     1fc100000-1fc10ffff : port0
-> > >>     1fc110000-1fc11ffff : port1
-> > >>     1fc120000-1fc12ffff : port2
-> > >>     1fc130000-1fc13ffff : port3
-> > >>     1fc140000-1fc14ffff : port4
-> > >>     1fc150000-1fc15ffff : port5
-> > >>     1fc200000-1fc21ffff : qsys
-> > >>     1fc280000-1fc28ffff : ana
-> > >>
-> > >> But after the patch in Fixes: was applied, the information is now
-> > >> presented in a much more opaque way:
-> > >>
-> > >> 1fc000000-1fc3fffff : pcie@1f0000000
-> > >>   1fc000000-1fc3fffff : 0000:00:00.5
-> > >>     1fc010000-1fc01ffff : 0000:00:00.5
-> > >>     1fc030000-1fc03ffff : 0000:00:00.5
-> > >>     1fc060000-1fc0603ff : 0000:00:00.5
-> > >>     1fc070000-1fc0701ff : 0000:00:00.5
-> > >>     1fc080000-1fc0800ff : 0000:00:00.5
-> > >>     1fc090000-1fc0900cb : 0000:00:00.5
-> > >>     1fc100000-1fc10ffff : 0000:00:00.5
-> > >>     1fc110000-1fc11ffff : 0000:00:00.5
-> > >>     1fc120000-1fc12ffff : 0000:00:00.5
-> > >>     1fc130000-1fc13ffff : 0000:00:00.5
-> > >>     1fc140000-1fc14ffff : 0000:00:00.5
-> > >>     1fc150000-1fc15ffff : 0000:00:00.5
-> > >>     1fc200000-1fc21ffff : 0000:00:00.5
-> > >>     1fc280000-1fc28ffff : 0000:00:00.5
-> > >>
-> > >> That patch made a fair comment that /proc/iomem might be confusing when
-> > >> it shows resources without an associated device, but we can do better
-> > >> than just hide the resource name altogether. Namely, we can print the
-> > >> device name _and_ the resource name. Like this:
-> > >>
-> > >> 1fc000000-1fc3fffff : pcie@1f0000000
-> > >>   1fc000000-1fc3fffff : 0000:00:00.5
-> > >>     1fc010000-1fc01ffff : 0000:00:00.5 sys
-> > >>     1fc030000-1fc03ffff : 0000:00:00.5 rew
-> > >>     1fc060000-1fc0603ff : 0000:00:00.5 s2
-> > >>     1fc070000-1fc0701ff : 0000:00:00.5 devcpu_gcb
-> > >>     1fc080000-1fc0800ff : 0000:00:00.5 qs
-> > >>     1fc090000-1fc0900cb : 0000:00:00.5 ptp
-> > >>     1fc100000-1fc10ffff : 0000:00:00.5 port0
-> > >>     1fc110000-1fc11ffff : 0000:00:00.5 port1
-> > >>     1fc120000-1fc12ffff : 0000:00:00.5 port2
-> > >>     1fc130000-1fc13ffff : 0000:00:00.5 port3
-> > >>     1fc140000-1fc14ffff : 0000:00:00.5 port4
-> > >>     1fc150000-1fc15ffff : 0000:00:00.5 port5
-> > >>     1fc200000-1fc21ffff : 0000:00:00.5 qsys
-> > >>     1fc280000-1fc28ffff : 0000:00:00.5 ana
->
-> > > All of this seems an ABI change.
->
-> > Yes, indeed. What should I understand from your comment though?
->
-> You effectively break an ABI.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+Fixed the missing spaces before and after binary operators.
 
-I've replied to Greg about this in the v3 patch.
+Signed-off-by: Jil Rouceau <jilrouceau@gmail.com>
+---
+Changes in v2:
+	- Based tree changed from Linus' to linux-next.
 
-Regards,
--Vladimir
+ drivers/staging/qlge/qlge_main.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 402edaeffe12..1650de13842f 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -687,7 +687,7 @@ static int ql_get_8000_flash_params(struct ql_adapter *qdev)
+ 
+ 	size = sizeof(struct flash_params_8000) / sizeof(u32);
+ 	for (i = 0; i < size; i++, p++) {
+-		status = ql_read_flash_word(qdev, i+offset, p);
++		status = ql_read_flash_word(qdev, i + offset, p);
+ 		if (status) {
+ 			netif_err(qdev, ifup, qdev->ndev,
+ 				  "Error reading flash.\n");
+@@ -750,7 +750,7 @@ static int ql_get_8012_flash_params(struct ql_adapter *qdev)
+ 		return -ETIMEDOUT;
+ 
+ 	for (i = 0; i < size; i++, p++) {
+-		status = ql_read_flash_word(qdev, i+offset, p);
++		status = ql_read_flash_word(qdev, i + offset, p);
+ 		if (status) {
+ 			netif_err(qdev, ifup, qdev->ndev,
+ 				  "Error reading flash.\n");
+@@ -1528,7 +1528,7 @@ static void ql_process_mac_rx_page(struct ql_adapter *qdev,
+ 			struct iphdr *iph =
+ 				(struct iphdr *)((u8 *)addr + hlen);
+ 			if (!(iph->frag_off &
+-				htons(IP_MF|IP_OFFSET))) {
++				htons(IP_MF | IP_OFFSET))) {
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 				netif_printk(qdev, rx_status, KERN_DEBUG,
+ 					     qdev->ndev,
+@@ -1635,7 +1635,7 @@ static void ql_process_mac_rx_skb(struct ql_adapter *qdev,
+ 			struct iphdr *iph = (struct iphdr *)skb->data;
+ 
+ 			if (!(iph->frag_off &
+-				htons(IP_MF|IP_OFFSET))) {
++				htons(IP_MF | IP_OFFSET))) {
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 				netif_printk(qdev, rx_status, KERN_DEBUG,
+ 					     qdev->ndev,
+@@ -1924,7 +1924,7 @@ static void ql_process_mac_split_rx_intr(struct ql_adapter *qdev,
+ 			struct iphdr *iph = (struct iphdr *)skb->data;
+ 
+ 			if (!(iph->frag_off &
+-				htons(IP_MF|IP_OFFSET))) {
++				htons(IP_MF | IP_OFFSET))) {
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 				netif_printk(qdev, rx_status, KERN_DEBUG, qdev->ndev,
+ 					     "TCP checksum done!\n");
+@@ -4547,7 +4547,7 @@ static void ql_timer(struct timer_list *t)
+ 		return;
+ 	}
+ 
+-	mod_timer(&qdev->timer, jiffies + (5*HZ));
++	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+ }
+ 
+ static int qlge_probe(struct pci_dev *pdev,
+@@ -4619,7 +4619,7 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	 * the bus goes dead
+ 	 */
+ 	timer_setup(&qdev->timer, ql_timer, TIMER_DEFERRABLE);
+-	mod_timer(&qdev->timer, jiffies + (5*HZ));
++	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+ 	ql_link_off(qdev);
+ 	ql_display_dev_info(ndev);
+ 	atomic_set(&qdev->lb_count, 0);
+@@ -4753,7 +4753,7 @@ static void qlge_io_resume(struct pci_dev *pdev)
+ 		netif_err(qdev, ifup, qdev->ndev,
+ 			  "Device was not running prior to EEH.\n");
+ 	}
+-	mod_timer(&qdev->timer, jiffies + (5*HZ));
++	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+ 	netif_device_attach(ndev);
+ }
+ 
+@@ -4815,7 +4815,7 @@ static int qlge_resume(struct pci_dev *pdev)
+ 			return err;
+ 	}
+ 
+-	mod_timer(&qdev->timer, jiffies + (5*HZ));
++	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+ 	netif_device_attach(ndev);
+ 
+ 	return 0;
+-- 
+2.25.1
+
