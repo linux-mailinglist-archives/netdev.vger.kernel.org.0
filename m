@@ -2,65 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE471EA888
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 19:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCAE1EA8AD
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 19:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgFARnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 13:43:39 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:57523 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbgFARnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 13:43:39 -0400
-Received: from chumthang.blr.asicdesigners.com (chumthang.blr.asicdesigners.com [10.193.186.96])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 051HhBcD032125;
-        Mon, 1 Jun 2020 10:43:33 -0700
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        manojmalviya@chelsio.com
-Cc:     netdev@vger.kernel.org, Ayush Sawal <ayush.sawal@chelsio.com>
-Subject: [PATCH net-next V2 2/2] Crypto/chcr: Fixes a coccinile check error
-Date:   Mon,  1 Jun 2020 23:11:59 +0530
-Message-Id: <20200601174159.9900-3-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.26.0.rc1.11.g30e9940
-In-Reply-To: <20200601174159.9900-1-ayush.sawal@chelsio.com>
-References: <20200601174159.9900-1-ayush.sawal@chelsio.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728351AbgFARxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 13:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726113AbgFARxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 13:53:45 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C74EC05BD43;
+        Mon,  1 Jun 2020 10:53:45 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CD2D811D69C3B;
+        Mon,  1 Jun 2020 10:53:42 -0700 (PDT)
+Date:   Mon, 01 Jun 2020 10:53:39 -0700 (PDT)
+Message-Id: <20200601.105339.1821963108388271707.davem@davemloft.net>
+To:     luobin9@huawei.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        luoxianjun@huawei.com, yin.yinshi@huawei.com,
+        cloud.wangxiaoyun@huawei.com
+Subject: Re: [PATCH net-next v5] hinic: add set_channels ethtool_ops support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200601105748.27511-1-luobin9@huawei.com>
+References: <20200601105748.27511-1-luobin9@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jun 2020 10:53:43 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes an error observed after running coccinile check.
-drivers/crypto/chelsio/chcr_algo.c:1462:5-8: Unneeded variable:
-"err". Return "0" on line 1480
+From: Luo bin <luobin9@huawei.com>
+Date: Mon, 1 Jun 2020 18:57:48 +0800
 
-This line is missed in the commit 567be3a5d227 ("crypto:
-chelsio - Use multiple txq/rxq per tfm to process the requests").
+> @@ -470,6 +470,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
+>  	struct hinic_txq *txq;
+>  	struct hinic_qp *qp;
+>  
+> +	if (unlikely(!netif_carrier_ok(netdev))) {
+> +		dev_kfree_skb_any(skb);
+> +		return NETDEV_TX_OK;
+> +	}
 
-Fixes: 567be3a5d227 ("crypto:
-chelsio - Use multiple txq/rxq per tfm to process the requests").
-
-V1->V2
--Modified subject.
-
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/crypto/chelsio/chcr_algo.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/crypto/chelsio/chcr_algo.c b/drivers/crypto/chelsio/chcr_algo.c
-index 94cf04e5aacf..2080b2ec6639 100644
---- a/drivers/crypto/chelsio/chcr_algo.c
-+++ b/drivers/crypto/chelsio/chcr_algo.c
-@@ -1464,6 +1464,7 @@ static int chcr_device_init(struct chcr_context *ctx)
- 	if (!ctx->dev) {
- 		u_ctx = assign_chcr_device();
- 		if (!u_ctx) {
-+			err = -ENXIO;
- 			pr_err("chcr device assignment fails\n");
- 			goto out;
- 		}
--- 
-2.26.0.rc1.11.g30e9940
-
+As stated by another reviewer, this change is unrelated to adding
+set_channels support.  Please remove it from this patch.
