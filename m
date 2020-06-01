@@ -2,73 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251931EAF3C
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 21:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B651EAF52
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 21:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730518AbgFATAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 15:00:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42382 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728690AbgFATAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 15:00:18 -0400
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 093C320870;
-        Mon,  1 Jun 2020 19:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591038018;
-        bh=pr9PvQnF5zAiRXt8e86klZuiScWhu0KwXsqnQcYEQeE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=k7+p2DW48kROSbsdG/WEAWOeJX8zb/7dCbdnmUSfEs9GbzPfYmetHfPLxxDhRMI3H
-         lPi/06u2YdyrhsczgP24IWd9etQdyC+pNitb/i2zJYWZSzVbHdV3h0/OBOrtUxkB++
-         Kay9T5Bkk9A6uMQ72JSAfzIAsaCeDd6HR6qXnCPI=
-Received: by mail-lj1-f175.google.com with SMTP id z18so9454188lji.12;
-        Mon, 01 Jun 2020 12:00:17 -0700 (PDT)
-X-Gm-Message-State: AOAM530/ZXxT+IWcCHoQOK1KnLoO2V2mFknVnigcD6Klme4ksvo0rp/P
-        8aJv+teIHUgxVYTeHLyTYwAXCA4a3+x9Zpc1LF8=
-X-Google-Smtp-Source: ABdhPJx/0j4LHk4TcYUV2BrcdD/1vRTTWF+DxCAFwu3W4r44pv+1FFUhqrggwYBZjbbcm05UY81vfYmCOvALFt1XRXQ=
-X-Received: by 2002:a2e:99da:: with SMTP id l26mr4281002ljj.446.1591038016255;
- Mon, 01 Jun 2020 12:00:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200531154255.896551-1-jolsa@kernel.org>
-In-Reply-To: <20200531154255.896551-1-jolsa@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 1 Jun 2020 12:00:05 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7HevOVgEe-g3RH_OmRqzWedXzGkuoNNzJfSwKhtzGxFw@mail.gmail.com>
-Message-ID: <CAPhsuW7HevOVgEe-g3RH_OmRqzWedXzGkuoNNzJfSwKhtzGxFw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Use tracing helpers for lsm programs
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        KP Singh <kpsingh@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729982AbgFATB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 15:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728449AbgFATB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 15:01:27 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C4EC061A0E
+        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 12:01:27 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9FDA6120477C4;
+        Mon,  1 Jun 2020 12:01:26 -0700 (PDT)
+Date:   Mon, 01 Jun 2020 12:01:25 -0700 (PDT)
+Message-Id: <20200601.120125.700408609849004774.davem@davemloft.net>
+To:     gnault@redhat.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH net-next] cls_flower: remove mpls_opts_policy
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <4158adb2a6a49cd652f3ad47d59f2a976b6c1d18.1590864517.git.gnault@redhat.com>
+References: <4158adb2a6a49cd652f3ad47d59f2a976b6c1d18.1590864517.git.gnault@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jun 2020 12:01:26 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 31, 2020 at 8:45 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Currenty lsm uses bpf_tracing_func_proto helpers which do
-> not include stack trace or perf event output. It's useful
-> to have those for bpftrace lsm support [1].
->
-> Using tracing_prog_func_proto helpers for lsm programs.
-
-How about using raw_tp_prog_func_proto?
-
-Thanks,
-Song
-
-PS: Please tag the patch with subject prefix "PATCH bpf" for
-"PATCH bpf-next". I think this one belongs to bpf-next, which means
-we should wait after the merge window.
+RnJvbTogR3VpbGxhdW1lIE5hdWx0IDxnbmF1bHRAcmVkaGF0LmNvbT4NCkRhdGU6IFNhdCwgMzAg
+TWF5IDIwMjAgMjA6NDk6NTYgKzAyMDANCg0KPiBDb21waWxpbmcgd2l0aCBXPTEgZ2l2ZXMgdGhl
+IGZvbGxvd2luZyB3YXJuaW5nOg0KPiBuZXQvc2NoZWQvY2xzX2Zsb3dlci5jOjczMToxOiB3YXJu
+aW5nOiChbXBsc19vcHRzX3BvbGljeaIgZGVmaW5lZCBidXQgbm90IHVzZWQgWy1XdW51c2VkLWNv
+bnN0LXZhcmlhYmxlPV0NCj4gDQo+IFRoZSBUQ0FfRkxPV0VSX0tFWV9NUExTX09QVFMgY29udGFp
+bnMgYSBsaXN0IG9mDQo+IFRDQV9GTE9XRVJfS0VZX01QTFNfT1BUU19MU0UuIFRoZXJlZm9yZSwg
+dGhlIGF0dHJpYnV0ZXMgYWxsIGhhdmUgdGhlDQo+IHNhbWUgdHlwZSBhbmQgd2UgY2FuJ3QgcGFy
+c2UgdGhlIGxpc3Qgd2l0aCBubGFfcGFyc2UqKCkgYW5kIGhhdmUgdGhlDQo+IGF0dHJpYnV0ZXMg
+dmFsaWRhdGVkIGF1dG9tYXRpY2FsbHkgdXNpbmcgYW4gbmxhX3BvbGljeS4NCj4gDQo+IGZsX3Nl
+dF9rZXlfbXBsc19vcHRzKCkgcHJvcGVybHkgdmVyaWZpZXMgdGhhdCBhbGwgYXR0cmlidXRlcyBp
+biB0aGUNCj4gbGlzdCBhcmUgVENBX0ZMT1dFUl9LRVlfTVBMU19PUFRTX0xTRS4gVGhlbiBmbF9z
+ZXRfa2V5X21wbHNfbHNlKCkNCj4gdXNlcyBubGFfcGFyc2VfbmVzdGVkKCkgb24gYWxsIHRoZXNl
+IGF0dHJpYnV0ZXMsIHRodXMgdmVyaWZ5aW5nIHRoYXQNCj4gdGhleSBoYXZlIHRoZSBOTEFfRl9O
+RVNURUQgZmxhZy4gU28gd2UgY2FuIHNhZmVseSBkcm9wIHRoZQ0KPiBtcGxzX29wdHNfcG9saWN5
+Lg0KPiANCj4gUmVwb3J0ZWQtYnk6IGtidWlsZCB0ZXN0IHJvYm90IDxsa3BAaW50ZWwuY29tPg0K
+PiBTaWduZWQtb2ZmLWJ5OiBHdWlsbGF1bWUgTmF1bHQgPGduYXVsdEByZWRoYXQuY29tPg0KDQpB
+cHBsaWVkLCB0aGFuayB5b3UuDQo=
