@@ -2,140 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9F51E9C4D
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 06:02:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC911E9C65
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 06:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725847AbgFAECw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 00:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S1725952AbgFAEKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 00:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbgFAECv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 00:02:51 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3C0C08C5C0;
-        Sun, 31 May 2020 21:02:51 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id g7so3856142qvx.11;
-        Sun, 31 May 2020 21:02:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xSL4Rwko5/HkgdvMP+XVPOJGxcmAkk6sOYaPeEUCqWs=;
-        b=dhgYMtAZEeWAExhBHdqQf59/QKRQyxWB/vLhKKsg0rm9pEwy6I59GMwCGvo5SANXY4
-         Pls7AUyqNurVr6zMis8eZsqNeB7dqOq8NUYKqstH1/zO1JmLynPMkeHDpFHgw1HtaF9w
-         8uSwNgVycJwagSAJh0eCjgC8IH9GK2wIvBDPD6FStGztfiHaAPEQZhrWyO0ur3XJUOan
-         w2W9SkphsIB4Wg+4siK1UDjZK9GSb/E1+ZkOy6+x9DSwpMbUzCKF+JVw8EhdMAGZn5Rv
-         G+P6DhiBNwIzJ03O25X0ZXZhCc37mVhbuF+WR3G5mKFlX3fJIeKdAy5Qdvy1wJ8tEDIk
-         qSTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xSL4Rwko5/HkgdvMP+XVPOJGxcmAkk6sOYaPeEUCqWs=;
-        b=qP5nAx5I4M3TCQFoaAAOMuLcpjUIrCPM+QzMM9uIpdJLL+fneIISIilQLR+oM5axi1
-         4LtFuvN8VaZ9MCgAihxOkdizUCLYps2CF6oOkS1rSu6JnODlAk0Q97IG5KHOKXgrcHts
-         YETagC+Mie73YRd0ifh/YUJRww2sD1dmpdfngy9/4VLIAgfiW9MpFfsHemaEdn+54kQG
-         UyOk6UJ1CuEX/ZuWzegXtpR+e5Wr+kuv4pWq8n+ZEVxi1GsvYXr8gnde2fUNub/3up+x
-         ukykQaHiMPx6yyhJFPgXIks0s9qj9j7JsFtjMqM8Ivon9ZiAkNn/FvYFOpssaYzLnZ12
-         oCOw==
-X-Gm-Message-State: AOAM533YQC6xnrQxj/iKYcYfdl6SUAsoskuCFkFgWz6kAaV3oucneVJs
-        le+uBdUv+nCpqWmjGXKJPq1tK/DbPQ2xttpHjPdgjQVkCoPrag==
-X-Google-Smtp-Source: ABdhPJzPQujoEuNuqjtKE11B/7zPGB5/YcSVwJAi84m26AKd9+hb7IuKojNpwCUwkCEEB0d2rz5QHcorYFJWOQ472NM=
-X-Received: by 2002:ad4:4e14:: with SMTP id dl20mr6953824qvb.101.1590984170297;
- Sun, 31 May 2020 21:02:50 -0700 (PDT)
+        with ESMTP id S1725290AbgFAEKG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 00:10:06 -0400
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3F9C08C5C0
+        for <netdev@vger.kernel.org>; Sun, 31 May 2020 21:10:06 -0700 (PDT)
+Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05149mjg031694;
+        Mon, 1 Jun 2020 05:09:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=kmwaOksx6U423nHKSyTVLqUCl/KNWpIF22XSqHc5vVY=;
+ b=W3ATNHbh/LCss0o1KX0wVv0yVJAW6fbq86SLX5o7TEhBwurAQoXABHHqiKAsiIacg6Al
+ BkUGAnO7KfbRaZpfJs5pJAcwJP+hAF/I0yVK/XL3ZFCXu7nKvuaw9Oymbt3rQyjQbuaw
+ 8AltmGkp4iI+sUQr3hJujz9fyBs9xTKZhOCqFl90MDVYMFmdZbfd+rTiAtUfRifbqoEq
+ RGckj/IUqLYpzYbfKB/PS669U2o1mOKJAKMFVlHAUfaulLdSiy81N02gTpaWDpaxktaB
+ OHqKc13Bv3RMKvqwvqeTSIxGVpFwa9l0QljNmBbBmO06VJ1XG6O0fX99e7W/rKEgStaU eQ== 
+Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 31bd51ckpw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 01 Jun 2020 05:09:59 +0100
+Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
+        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id 0513m0qj014464;
+        Mon, 1 Jun 2020 00:09:58 -0400
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint1.akamai.com with ESMTP id 31bjtu773w-1;
+        Mon, 01 Jun 2020 00:09:58 -0400
+Received: from [0.0.0.0] (stag-ssh-gw01.bos01.corp.akamai.com [172.27.113.23])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id A14BD349F6;
+        Mon,  1 Jun 2020 04:09:58 +0000 (GMT)
+Subject: Re: [net-next 0/2] net: sched: cls-flower: add support for port-based
+ fragment filtering
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us
+References: <1590611130-19146-1-git-send-email-jbaron@akamai.com>
+ <20200529.165234.25764810096006532.davem@davemloft.net>
+From:   Jason Baron <jbaron@akamai.com>
+Message-ID: <9aba7ddc-d908-892d-c4fa-addd733e1277@akamai.com>
+Date:   Mon, 1 Jun 2020 00:09:58 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200601035503.3594635-1-liuhangbin@gmail.com>
-In-Reply-To: <20200601035503.3594635-1-liuhangbin@gmail.com>
-From:   Hangbin Liu <liuhangbin@gmail.com>
-Date:   Mon, 1 Jun 2020 12:02:39 +0800
-Message-ID: <CAPwn2JSeFK7LvMfiq9_LWDcP4=Mbi=ZTSh+BqbOvEWLbkysKRg@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: fix IPV6_ADDRFORM operation logic
-To:     network dev <netdev@vger.kernel.org>
-Cc:     John Haxby <john.haxby@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
-        Frantisek Hrbata <fhrbata@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200529.165234.25764810096006532.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-01_01:2020-05-28,2020-06-01 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=750
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2004280000 definitions=main-2006010027
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-01_01:2020-05-28,2020-06-01 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=728 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 phishscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 priorityscore=1501 spamscore=0 impostorscore=0
+ cotscore=-2147483648 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006010030
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cc Frantisek
 
-On Mon, 1 Jun 2020 at 12:00, Hangbin Liu <liuhangbin@gmail.com> wrote:
+
+On 5/29/20 7:52 PM, David Miller wrote:
+> From: Jason Baron <jbaron@akamai.com>
+> Date: Wed, 27 May 2020 16:25:28 -0400
+> 
+>> Port based allow rules must currently allow all fragments since the
+>> port number is not included in the 1rst fragment. We want to restrict
+>> allowing all fragments by inclucding the port number in the 1rst
+>> fragments.
+>>
+>> For example, we can now allow fragments for only port 80 via:
+>>
+>> # tc filter add dev $DEVICE parent ffff: priority 1 protocol ipv4 flower
+>>   ip_proto tcp dst_port 80 action pass
+>> # tc filter add dev $DEVICE parent ffff: priority 2 protocol ipv4 flower
+>>   ip_flags frag/nofirstfrag action pass
+>>
+>> The first patch includes ports for 1rst fragments.
+>> The second patch adds test cases, demonstrating the new behavior.
+> 
+> But this is only going to drop the first frag right?
 >
-> Socket option IPV6_ADDRFORM supports UDP/UDPLITE and TCP at present.
-> Previously the checking logic looks like:
-> if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
->         do_some_check;
-> else if (sk->sk_protocol != IPPROTO_TCP)
->         break;
->
-> After commit b6f6118901d1 ("ipv6: restrict IPV6_ADDRFORM operation"), TCP
-> was blocked as the logic changed to:
-> if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
->         do_some_check;
-> else if (sk->sk_protocol == IPPROTO_TCP)
->         do_some_check;
->         break;
-> else
->         break;
->
-> Then after commit 82c9ae440857 ("ipv6: fix restrict IPV6_ADDRFORM operation")
-> UDP/UDPLITE were blocked as the logic changed to:
-> if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
->         do_some_check;
-> if (sk->sk_protocol == IPPROTO_TCP)
->         do_some_check;
->
-> if (sk->sk_protocol != IPPROTO_TCP)
->         break;
->
-> Fix it by using Eric's code and simply remove the break in TCP check, which
-> looks like:
-> if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
->         do_some_check;
-> else if (sk->sk_protocol == IPPROTO_TCP)
->         do_some_check;
-> else
->         break;
->
-> Fixes: 82c9ae440857 ("ipv6: fix restrict IPV6_ADDRFORM operation")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  net/ipv6/ipv6_sockglue.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-> index 18d05403d3b5..5af97b4f5df3 100644
-> --- a/net/ipv6/ipv6_sockglue.c
-> +++ b/net/ipv6/ipv6_sockglue.c
-> @@ -183,14 +183,15 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
->                                         retv = -EBUSY;
->                                         break;
->                                 }
-> -                       }
-> -                       if (sk->sk_protocol == IPPROTO_TCP &&
-> -                           sk->sk_prot != &tcpv6_prot) {
-> -                               retv = -EBUSY;
-> +                       } else if (sk->sk_protocol == IPPROTO_TCP) {
-> +                               if (sk->sk_prot != &tcpv6_prot) {
-> +                                       retv = -EBUSY;
-> +                                       break;
-> +                               }
-> +                       } else {
->                                 break;
->                         }
-> -                       if (sk->sk_protocol != IPPROTO_TCP)
-> -                               break;
-> +
->                         if (sk->sk_state != TCP_ESTABLISHED) {
->                                 retv = -ENOTCONN;
->                                 break;
-> --
-> 2.25.4
->
+
+Yes, only the first frag is dropped, as subsequent packets wouldn't
+have the port #. This will prevent re-assembly since the first fragment
+is missing. Currently, drop rules on ports will just allow all fragments
+through, so this seems to me to be easy to subvert.
+
+> Unless there is logic to toss the rest of the frags this seems
+> extremely hackish as best.
+> 
+> I don't want to apply this as-is, it's a short sighted design
+> as far as I am concerned.
+> 
+
+The use-case we are using this patch for is to allow specific ports
+through the firewall without having to allow all fragments. So the
+rules look like:
+
+1) Allow port 80 including first frags
+
+# tc filter add dev $DEVICE parent ffff: priority 1 protocol ipv4 flower
+  ip_proto tcp dst_port 80 action pass
+
+2) Allow all non-first frags
+
+# tc filter add dev $DEVICE parent ffff: priority 2 protocol ipv4 flower
+  ip_flags frag/nofirstfrag action pass
+
+3) Drop everything left
+
+# tc filter add dev $DEVICE parent ffff: priority 3 flower action drop
+
+
+This allows one to process fragments without allowing all fragments to
+all ports.
+
+I'm certainly open to other ideas on how to improve this.
+
+Thanks,
+
+-Jason
+
