@@ -2,101 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9C11EAFE6
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 22:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B72C1EAFEA
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 22:03:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728162AbgFAUB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 16:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
+        id S1728358AbgFAUDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 16:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726944AbgFAUB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 16:01:58 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AE9C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 13:01:57 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id a13so5837575ilh.3
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 13:01:57 -0700 (PDT)
+        with ESMTP id S1728205AbgFAUDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 16:03:41 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B0FC061A0E;
+        Mon,  1 Jun 2020 13:03:41 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id s19so8223967edt.12;
+        Mon, 01 Jun 2020 13:03:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iFga/pb0neS3XDXdqtG99uZKbxGiRmHPkvnLLUXpazk=;
-        b=oVVfMifS/iaYyL1SwfdfRhga36aq+TBs8qNke+JKC9nRjC+FSNno/ZknOSvYuWFixF
-         hb2MSCsznwAwdAN5cRzaVYIxUOkOPB84GT3VqVFeSI9KQSmy/Px2L6kxCnA1526dHMJO
-         raokDoKfeK/nzxFe/O3Dj2cnPrf2uR1mpY/GzWRNXukRY4C2fZ/A2A2kJDwv+2XUWC3E
-         lhGdYqTISHNmKwLDYDFbonrtwSPAMSjjJz89+t+jnFkvuPECwTAIPO6NIM5i1vZcO8m+
-         Gpo7jU0sg9fiJXaJyaHUIPsIP8LduO7UDvhk4yOCpSS9Llj68P7PfuyRdc92QyZmUGPH
-         EKRQ==
+        bh=SKDaq52eODW+ntnFol3ecy2v0dHMmTzzXT8sIsSPLnI=;
+        b=iZYzhAt2RbVdrmChKXkH2OD9g1wwdL+cJN/1p3PCAWVW+523Nd2fsIInjxDwnh1BCr
+         +naDMYchvYAxYuyNxSIxOUa+uPIcjThQwsypEu2RmlEJvwG1KKtsNvaGw4u2tMbf7L1V
+         QcGFHhywW5FhEZioMWoiSXOf8uwUbScCAJ75gqsOGhSz8+gxIvrcCkqpqTBLvGwKUHxp
+         L/w4VkIWq+xwU55mnhhRHlMbNvr3QTqhvu+ZVnB+x15SZ2CqRrwHR/Lhqp72hk+Z/kHA
+         2ZYshWbrVZx1CHT04Esp1G3QLxoknYcTpNHu5ncKnrkSddMwlsNnTKtspI5Xe1hMSi0z
+         7fsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iFga/pb0neS3XDXdqtG99uZKbxGiRmHPkvnLLUXpazk=;
-        b=LLButtwDRWoW1rPInKxS+5qNvA7S7f/M/AfYKHwEbdJID3JJM0lUVeTTYTyJRHAwRS
-         n68i9KBttlH/z2PUG+VWq9gSkPEIBRtn5vKaZgeIRRi/Hr/t68r/qpIdW9Nurd/OQogA
-         RsNZOBsA/2GeF88OSXRqsqt/jUFjID00IHf+NncEEvl2N49sr7voeD2LJ5gYzdYp8Qjl
-         DtwzpgYQltGUjYDeOUhrsVoS/UEuNqqgNo8yDP3OugcOG7fWNHNLx4QSm7feIUB6l34i
-         cfsENst2uq0kCtAZmemID2RGMOWL2kdi2EzXa7cNPms8eeshC56D0FYbV2W9yro23KIa
-         ef/w==
-X-Gm-Message-State: AOAM5314srazLV51C+ehFo0wsmuLBqqmdMEWxBXCksuGNTE4Mi/IJWaW
-        e4l/49b5s8BUR71eX0BVA6fPyizsAol6xRmBLh3tIg==
-X-Google-Smtp-Source: ABdhPJytLnuwbPhbBgXvp/4LuWdOUy6SxnjNuBh3j4vkUu5UenOPO/FcznR3udrkQlthYkUx+tDOzTsE4h/Nb325VDo=
-X-Received: by 2002:a92:5b15:: with SMTP id p21mr21746001ilb.22.1591041717382;
- Mon, 01 Jun 2020 13:01:57 -0700 (PDT)
+        bh=SKDaq52eODW+ntnFol3ecy2v0dHMmTzzXT8sIsSPLnI=;
+        b=U99yDqysnEIxyFnfdeAaNfXl4bzf7yo/rIG47Wo8ipJ8yAPw4LJxbktz1rXt1QBRUE
+         7XeFZRA8p/5XY5k7j7aNrrxwR/1JAEKMbQYugblnbUJ+Lhu+DFaqPxpGH9RHk1mGFonL
+         VRG5lKLTNgMWENl92DZLiXCK4KNaJe8OS0sriE7WmBM3KAGucz3ygU24BWejJ7W2+kLu
+         NmtiSwp2thiUiLTFczgmZeJ3pTHcZsm+/QvDRlvw5RHt+oJhi1wk1x2VoGn4FeSIuPkQ
+         ZJgnfl0SlmDbUCKW7M3/PA0qi0pDB0eKe+qdFoeIN9kTgtpqdOHpCpYZ3DJ2wv+wg8g3
+         jVmg==
+X-Gm-Message-State: AOAM530M/RIbhvV4hi9DsW/uwRXdaiQTlzVwWPqFt3ySRkkBe5HnH/5h
+        q2H/epWINiV+7yuT28dACkUuO4q7zYRGclYG0TY=
+X-Google-Smtp-Source: ABdhPJyiAMFmqOPa5W3SEJLU8SiHs1GkPzEW1LyWXAVfMY/86aeh8wxWS6EDO/EpLEkmXrN9iAHiPbzphB8Kn+0ogDo=
+X-Received: by 2002:a05:6402:719:: with SMTP id w25mr23551045edx.179.1591041819901;
+ Mon, 01 Jun 2020 13:03:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1590512901.git.petrm@mellanox.com> <CAM_iQpW8NcZy=ayJ49iY-pCix+HFusTfoOpoD_oMOR6+LeGy1g@mail.gmail.com>
- <877dwxvgzk.fsf@mellanox.com> <CAM_iQpX2LMkuWw3xY==LgqpcFs8G01BKz=f4LimN4wmQW55GMQ@mail.gmail.com>
- <87wo4wtmnx.fsf@mellanox.com> <CAM_iQpUxNJ56o+jW=+GHQjyq-A_yLUcJYt+jJJYwRTose1LqLg@mail.gmail.com>
- <87o8q5u7hl.fsf@mellanox.com>
-In-Reply-To: <87o8q5u7hl.fsf@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 1 Jun 2020 13:01:46 -0700
-Message-ID: <CAM_iQpWE7p6s-SgcG85f1r0jBUGTezZtf68toQivhvBPduC_zQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/3] TC: Introduce qevents
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
+References: <20200601095826.1757621-1-olteanv@gmail.com> <7d88d376-dde7-828e-ad0a-12c0cb596ac1@cogentembedded.com>
+In-Reply-To: <7d88d376-dde7-828e-ad0a-12c0cb596ac1@cogentembedded.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 1 Jun 2020 23:03:27 +0300
+Message-ID: <CA+h21hotyQhJeMLJz5SaNc+McRF=w2m4m_qAAQV2D6phE6apkA@mail.gmail.com>
+Subject: Re: [PATCH v3] devres: keep both device name and resource name in
+ pretty name
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        bgolaszewski@baylibre.com, mika.westerberg@linux.intel.com,
+        efremov@linux.com, ztuowen@gmail.com,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 30, 2020 at 1:55 AM Petr Machata <petrm@mellanox.com> wrote:
+Hi Sergei,
+
+On Mon, 1 Jun 2020 at 21:48, Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
 >
+> On 06/01/2020 12:58 PM, Vladimir Oltean wrote:
 >
-> Cong Wang <xiyou.wangcong@gmail.com> writes:
->
-> > On Thu, May 28, 2020 at 2:48 AM Petr Machata <petrm@mellanox.com> wrote:
-> >> So you propose to have further division within the block? To have sort
-> >> of namespaces within blocks or chains, where depending on the context,
-> >> only filters in the corresponding namespace are executed?
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > >
-> > What I suggest is to let filters (or chain or block) decide where
-> > they belong to, because I think that fit naturally.
+> > Sometimes debugging a device is easiest using devmem on its register
+> > map, and that can be seen with /proc/iomem. But some device drivers have
+> > many memory regions. Take for example a networking switch. Its memory
+> > map used to look like this in /proc/iomem:
+> >
+> > 1fc000000-1fc3fffff : pcie@1f0000000
+> >   1fc000000-1fc3fffff : 0000:00:00.5
+> >     1fc010000-1fc01ffff : sys
+> >     1fc030000-1fc03ffff : rew
+> >     1fc060000-1fc0603ff : s2
+> >     1fc070000-1fc0701ff : devcpu_gcb
+> >     1fc080000-1fc0800ff : qs
+> >     1fc090000-1fc0900cb : ptp
+> >     1fc100000-1fc10ffff : port0
+> >     1fc110000-1fc11ffff : port1
+> >     1fc120000-1fc12ffff : port2
+> >     1fc130000-1fc13ffff : port3
+> >     1fc140000-1fc14ffff : port4
+> >     1fc150000-1fc15ffff : port5
+> >     1fc200000-1fc21ffff : qsys
+> >     1fc280000-1fc28ffff : ana
+> >
+> > But after the patch in Fixes: was applied, the information is now
+> > presented in a much more opaque way:
+> >
+> > 1fc000000-1fc3fffff : pcie@1f0000000
+> >   1fc000000-1fc3fffff : 0000:00:00.5
+> >     1fc010000-1fc01ffff : 0000:00:00.5
+> >     1fc030000-1fc03ffff : 0000:00:00.5
+> >     1fc060000-1fc0603ff : 0000:00:00.5
+> >     1fc070000-1fc0701ff : 0000:00:00.5
+> >     1fc080000-1fc0800ff : 0000:00:00.5
+> >     1fc090000-1fc0900cb : 0000:00:00.5
+> >     1fc100000-1fc10ffff : 0000:00:00.5
+> >     1fc110000-1fc11ffff : 0000:00:00.5
+> >     1fc120000-1fc12ffff : 0000:00:00.5
+> >     1fc130000-1fc13ffff : 0000:00:00.5
+> >     1fc140000-1fc14ffff : 0000:00:00.5
+> >     1fc150000-1fc15ffff : 0000:00:00.5
+> >     1fc200000-1fc21ffff : 0000:00:00.5
+> >     1fc280000-1fc28ffff : 0000:00:00.5
+> >
+> > That patch made a fair comment that /proc/iomem might be confusing when
+> > it shows resources without an associated device, but we can do better
+> > than just hide the resource name altogether. Namely, we can print the
+> > device name _and_ the resource name. Like this:
+> >
+> > 1fc000000-1fc3fffff : pcie@1f0000000
+> >   1fc000000-1fc3fffff : 0000:00:00.5
+> >     1fc010000-1fc01ffff : 0000:00:00.5 sys
+> >     1fc030000-1fc03ffff : 0000:00:00.5 rew
+> >     1fc060000-1fc0603ff : 0000:00:00.5 s2
+> >     1fc070000-1fc0701ff : 0000:00:00.5 devcpu_gcb
+> >     1fc080000-1fc0800ff : 0000:00:00.5 qs
+> >     1fc090000-1fc0900cb : 0000:00:00.5 ptp
+> >     1fc100000-1fc10ffff : 0000:00:00.5 port0
+> >     1fc110000-1fc11ffff : 0000:00:00.5 port1
+> >     1fc120000-1fc12ffff : 0000:00:00.5 port2
+> >     1fc130000-1fc13ffff : 0000:00:00.5 port3
+> >     1fc140000-1fc14ffff : 0000:00:00.5 port4
+> >     1fc150000-1fc15ffff : 0000:00:00.5 port5
+> >     1fc200000-1fc21ffff : 0000:00:00.5 qsys
+> >     1fc280000-1fc28ffff : 0000:00:00.5 ana
+> >
+> > Fixes: 8d84b18f5678 ("devres: always use dev_name() in devm_ioremap_resource()")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
+> > Changes in v2:
+> > Checking for memory allocation errors and returning -ENOMEM.
+> >
+> > Changes in v3:
+> > Using devm_kasprintf instead of open-coding it.
+> >
+> >  lib/devres.c | 11 ++++++++++-
+> >  1 file changed, 10 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/lib/devres.c b/lib/devres.c
+> > index 6ef51f159c54..ca0d28727cce 100644
+> > --- a/lib/devres.c
+> > +++ b/lib/devres.c
+> > @@ -119,6 +119,7 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+> >  {
+> >       resource_size_t size;
+> >       void __iomem *dest_ptr;
+> > +     char *pretty_name;
+> >
+> >       BUG_ON(!dev);
+> >
+> > @@ -129,7 +130,15 @@ __devm_ioremap_resource(struct device *dev, const struct resource *res,
+> >
+> >       size = resource_size(res);
+> >
+> > -     if (!devm_request_mem_region(dev, res->start, size, dev_name(dev))) {
+> > +     if (res->name)
+> > +             pretty_name = devm_kasprintf(dev, GFP_KERNEL, "%s %s",
 >
-> So filters would have this attribute that marks them for execution in
-> the qevent context?
-
-If you view it as position rather than qevent, sure, we already need to
-specify the "context" for tc filter creations anyway, "dev... parent ..." is
-is context to locate the filter placeholders. This is why it makes sense
-to add one more piece, say "position", that is "dev... parent... position...".
-
-It is you who calls it qevent which of course looks like only belong to
-qdisc's.
-
+>    What about "%s:%s"? I suspect it'd be better on the ABI side of things?
 >
-> Ultimately the qdisc decides what qevents to expose. Qevents are closely
-> tied to the inner workings of a qdisc algorithm, they can't be probed as
-> modules the way qdiscs, filters and actions can. If a user wishes to
-> make use of them, they will have to let qdiscs "dictate" where to put
-> the filters one way or another.
+> [...]
+>
+> MBR, Sergei
 
-For a specific event like early drop, sure. But if we think it generally,
-"enqueue" has the same problem, there are a few qdisc's don't even
-support filtering (noop). We can just return ENOSUPP anyway.
+I don't have a particular preference, but out of curiosity, why would
+it be better?
+
+Thanks,
+-Vladimir
