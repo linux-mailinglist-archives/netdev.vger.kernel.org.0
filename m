@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0BC21EA39C
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 14:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A24F1EA43B
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 14:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726035AbgFAMPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 08:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgFAMPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 08:15:20 -0400
-Received: from smtp.tuxdriver.com (tunnel92311-pt.tunnel.tserv13.ash1.ipv6.he.net [IPv6:2001:470:7:9c9::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CADEC061A0E;
-        Mon,  1 Jun 2020 05:15:20 -0700 (PDT)
-Received: from 2606-a000-111b-4634-0000-0000-0000-1bf2.inf6.spectrum.com ([2606:a000:111b:4634::1bf2] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1jfjLE-0006ak-5S; Mon, 01 Jun 2020 08:15:05 -0400
-Date:   Mon, 1 Jun 2020 08:14:55 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Harald Welte <laforge@gnumonks.org>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem@davemloft.net, Julien Gomes <julien@arista.com>
-Subject: Re: ABI breakage in sctp_event_subscribe (was [PATCH net-next 0/4]
- sctp: add some missing events from rfc5061)
-Message-ID: <20200601121455.GA210755@hmswarspite.think-freely.org>
-References: <cover.1570534014.git.lucien.xin@gmail.com>
- <20200419102536.GA4127396@nataraja>
+        id S1725977AbgFAMu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 08:50:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54838 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725838AbgFAMuz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 08:50:55 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 74AF520679;
+        Mon,  1 Jun 2020 12:50:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591015855;
+        bh=ZFR/1nKVvVuJNSvEtcPQ3+cbnQ1/sjfMOci6Hl3Vomw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B4HUeLw6T1dEx7cjm5s1OOZffbuSU+n6q80OA8IBpCQDiK9tJKDe6hFANLeSlnDQJ
+         tF3q/4XO043Y78Wkj9AZoZEX5oMwI+voaTEw56yCkSKz4YwT/ZjJ39hVs90R6vrJSV
+         oucpWFT0f4c4ZPSSRNvdowsFTsEgNKhzQ2f3yVxw=
+Date:   Mon, 1 Jun 2020 13:50:52 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
+Subject: Re: [PATCH v3 net-next 01/13] regmap: add helper for per-port
+ regfield initialization
+Message-ID: <20200601125052.GD45647@sirena.org.uk>
+References: <20200531122640.1375715-1-olteanv@gmail.com>
+ <20200531122640.1375715-2-olteanv@gmail.com>
+ <20200601105430.GB5234@sirena.org.uk>
+ <CA+h21hqp92JBchpesxT8spZs7P7nmW_Vf0tev_Li4hjWw2_vUw@mail.gmail.com>
+ <20200601115131.GA3720@piout.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="LTeJQqWS0MN7I/qa"
 Content-Disposition: inline
-In-Reply-To: <20200419102536.GA4127396@nataraja>
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <20200601115131.GA3720@piout.net>
+X-Cookie: Help a swallow land at Capistrano.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 19, 2020 at 12:25:36PM +0200, Harald Welte wrote:
-> Dear Linux SCTP developers,
-> 
-> this patchset (merged back in Q4/2019) has broken ABI compatibility, more
-> or less exactly as it was discussed/predicted in Message-Id
-> <20190206201430.18830-1-julien@arista.com>
-> "[PATCH net] sctp: make sctp_setsockopt_events() less strict about the option length"
-> on this very list in February 2019.
-> 
-> The process to reproduce this is quite simple:
-> * upgrade your kernel / uapi headers to a later version (happens
->   automatically on most distributions as linux-libc-dev is upgraded)
-> * rebuild any application using SCTP_EVENTS which was working perfectly
->   fine before
-> * fail to execute on any older kernels
-> 
-> This can be a severe issue in production systems where you may not
-> upgrade the kernel until/unless a severe security issue actually makes
-> you do so.
-> 
-> Those steps above can very well happen on different machines, i.e. your
-> build server having a more recent linux-libc-dev package (and hence
-> linux/sctp.h) than some of the users in the field are running kernels.
-> 
-> I think this is a severe problem that affects portability of binaries
-> between differnt Linux versions and hence the kind of ABI breakage that
-> the kernel exactly doesn't want to have.
-> 
-> The point here is that there is no check if any of those newly-added
-> events at the end are actually used.  I can accept that programs using
-> those new options will not run on older kernels - obviously.  But old
-> programs that have no interest in new events being added should run just
-> fine, even if rebuilt against modern headers.
-> 
-> In the kernel setsockopt handling coee: Why not simply check if any of
-> the newly-added events are actually set to non-zero?  If those are all
-> zero, we can assume that the code doesn't use them.
-> 
-> Yes, for all the existing kernels out there it's too late as they simply
-> only have the size based check.  But I'm worried history will repeat
-> itself...
-> 
-> Thanks for your consideration.
-> 
-As Marcello noted, I don't think theres anything we can do here.  We screwed
-this up, but reverting the change is just going to create a second breakage
-point through which users are going to have to deal with this.  The best way
-forward is to document the need to run a newer userspace uapi header set on a
-correspondingly new kernel, and be sure in the future that any extension to the
-uapi structures are codified as separate structures with separate socket options
-(or some simmilar approach to allow for fixed size api structures)
 
-Neil
+--LTeJQqWS0MN7I/qa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> -- 
-> - Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-> ============================================================================
-> "Privacy in residential applications is a desirable marketing option."
->                                                   (ETSI EN 300 175-7 Ch. A6)
-> 
+On Mon, Jun 01, 2020 at 01:51:31PM +0200, Alexandre Belloni wrote:
+> On 01/06/2020 14:12:38+0300, Vladimir Oltean wrote:
+
+> > In my mind I am not exactly sure what the pull request does to improve
+> > the work flow. My simplified idea was that you would send a pull
+> > request upstream, then David would send a pull request upstream (or
+> > the other way around), and poof, this common commit would disappear
+> > from one of the pull requests.
+
+> No, this would make you commit appear twice in the history with
+> different hashes. If you want to have what you suggest, Dave needs to
+> first take Mark's PR so both PR will have the same commit hash.
+
+Right, in general you shouldn't resend patches which have already been
+applied especially not to other maintainers.  It causes confusion like
+we saw earlier with Dave applying the patch again (fortunately it seems
+that he reverted it).  As well as the duplicated commits this is often a
+source of merge confilicts if any changes are made on top of the patch. =20
+
+I've now sent my pull request for this cycle so it should appear in
+v5.8-rc1 but in case Dave is still applying stuff even after the merge
+window opened:
+
+The following changes since commit 8f3d9f354286745c751374f5f1fcafee6b3f3136:
+
+  Linux 5.7-rc1 (2020-04-12 12:35:55 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/r=
+egmap-per-port-field
+
+for you to fetch changes up to 8baebfc2aca26e3fa67ab28343671b82be42b22c:
+
+  regmap: add helper for per-port regfield initialization (2020-05-29 13:44=
+:30 +0100)
+
+----------------------------------------------------------------
+regmap: Add per-port field initialization helpers
+
+----------------------------------------------------------------
+Vladimir Oltean (1):
+      regmap: add helper for per-port regfield initialization
+
+ include/linux/regmap.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--LTeJQqWS0MN7I/qa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7U+awACgkQJNaLcl1U
+h9Aqewf+KfQEFefZOnzCPzQpRswBYwn7Px1y8QWQWE7TelWGZPFgOH5erYvJlmlj
+OQqURbHcIj8JvsCNkFHmJrSUprmGG3FgKIuvR1/WZjbuzhWQh2zs4MR7ZgR9UGF2
+zgkd8izUQvqB1sms8LtqSOnfy3fH714A3/atRiove8Na3sTskN8qfK/6+YPM+AVS
+sWrgwARgMSM04SP55X5TKHPpf2B4AfUjY1vBQgz6I2JFk95+o44INbJJrIh0rStV
+WhbqncZDbJPK9OoggXr1Nr7AkqCEByn3cwuR6xOJDyJ6FzofRlli/km21bCE/Q6D
+IO2OloqsgZcp/xN8LK7vYPN2EVExNA==
+=Ebcz
+-----END PGP SIGNATURE-----
+
+--LTeJQqWS0MN7I/qa--
