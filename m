@@ -2,94 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1F31EAD91
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 20:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A969F1EAD95
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 20:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730878AbgFASqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 14:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728444AbgFASqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 14:46:17 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4147C061A0E;
-        Mon,  1 Jun 2020 11:46:16 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id f5so564056wmh.2;
-        Mon, 01 Jun 2020 11:46:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=yC2JNqaMtAkcCstXMD1OLdmFXFYbSrgxv313zGmoBpg=;
-        b=tTYJlBEYMNZvBGCBO6TjRr0O6X67GYQMyMfKFjlLyLagf61IkcvdCiQhSFSyi7pIRJ
-         CjMclrZicbcfS9hpXyacz68X7gPO7Mhdqsr/G7uwLj6iIe8+iOBC/QfsVxow0AoeS/Vi
-         NbGtdY6b6NW9oLjO5OZagpcavd3/nfiP5c9+6tb/41miM1KStCGyD77L/FmCgD16Ne7V
-         DtzbigiIArZRCkyqidG3fbcHA0RFqHdbyoJHGu7xA6FwH2Ggoa7qV4oy0bhFQE9qQpM6
-         BtugETeaVK4C/AfcuGrO4zQiSPpo/VJzSFPvLcvU5XQKuwA/Lb95QNFvFZz/GFVzvI+Y
-         9Fvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=yC2JNqaMtAkcCstXMD1OLdmFXFYbSrgxv313zGmoBpg=;
-        b=mpIYYapcDZE3Nj2SYlVZ2FRTqqxc/Rny7CFjNZPRiGADRBI9tBfFVbotXmv5I+BrXF
-         JZjj9ifREbNggUtJ45kA/1YoPPz2YTkOHmGbCzJsuuNc7M/wMd5HA+AJwJ1NaYbFshLm
-         28n7uhC6ZaSy+wFJzdHKe7BOZqWSwFSfOTlAmiNOKRFzXQxhfvSqpJ07560u7Lt6mskp
-         0FOB5rb+i/pJdurfctgvADmHLlvcQ/oaU0ad2wzYqdSmB0aj9x/fDGcyT/SPYnY6K7NR
-         X+dpeZutL4EElrcXRQeQfWutSKcQAsKGWxrKbV16JOeV4JVO7Uc1od1GeIptuQ/rYxLp
-         Z9Ug==
-X-Gm-Message-State: AOAM531TgSD7hxoFJ4rtll15tx3LLiptIfRiXavTamX3eUEXLkqKYiZc
-        L+4f2+DQjnhuybPraY///BRUegOEuGs9
-X-Google-Smtp-Source: ABdhPJxYAaKeGr4cCdAQgov6CqNU43C2XC13QVZdwZ1XaZCZ6K6WDudBOAjdkMCNUu6F5VhkUDUk/g==
-X-Received: by 2002:a7b:c311:: with SMTP id k17mr582316wmj.148.1591037175510;
-        Mon, 01 Jun 2020 11:46:15 -0700 (PDT)
-Received: from earth3.lan (host-92-15-172-76.as43234.net. [92.15.172.76])
-        by smtp.googlemail.com with ESMTPSA id 23sm302229wmg.10.2020.06.01.11.46.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2020 11:46:15 -0700 (PDT)
-From:   Jules Irenge <jbi.octave@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     tglx@linutronix.de, paulmck@kernel.org, mingo@redhat.com,
-        boqun.feng@gmail.com, Jules Irenge <jbi.octave@gmail.com>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org (open list:SFC NETWORK DRIVER)
-Subject: [PATCH 5/5] sfc: add  missing annotation for efx_ef10_try_update_nic_stats_vf()
-Date:   Mon,  1 Jun 2020 19:45:52 +0100
-Message-Id: <20200601184552.23128-6-jbi.octave@gmail.com>
-X-Mailer: git-send-email 2.18.2
-In-Reply-To: <20200601184552.23128-1-jbi.octave@gmail.com>
-References: <20200601184552.23128-1-jbi.octave@gmail.com>
+        id S1731011AbgFASq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 14:46:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56254 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731035AbgFASqX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 14:46:23 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BE83206C3;
+        Mon,  1 Jun 2020 18:46:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591037183;
+        bh=e5Qef3dmczUwuHZqTw6EERJ4IhHrefksgJsUZASLXQE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EPRxpUAViQ0TEernHJkDM4zYgOXqmLTcvMqM4OttqWWxcHD4GsmHNr0zDVhFEC4Od
+         v+BIBXqxrL4FbuGy57NSvvb/gxTjry4yKgfOHMuf8BI/qTuFdAZVQzeawwAPxyYx58
+         zRVHM6EimWYc0OArYHS8BFgMHU4LwTJftqwVZhqM=
+Date:   Mon, 1 Jun 2020 19:46:20 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     brgl@bgdev.pl, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, kuba@kernel.org, matthias.bgg@gmail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        fparent@baylibre.com, stephane.leprovost@mediatek.com,
+        pedro.tsai@mediatek.com, andrew.perepech@mediatek.com,
+        bgolaszewski@baylibre.com
+Subject: Re: [PATCH v3 0/2] regmap: provide simple bitops and use them in a
+ driver
+Message-ID: <20200601184620.GF45647@sirena.org.uk>
+References: <20200528154503.26304-1-brgl@bgdev.pl>
+ <20200601.113536.134620919829517847.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="924gEkU1VlJlwnwX"
+Content-Disposition: inline
+In-Reply-To: <20200601.113536.134620919829517847.davem@davemloft.net>
+X-Cookie: Help a swallow land at Capistrano.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse reports a warning at efx_ef10_try_update_nic_stats_vf()
-warning: context imbalance in efx_ef10_try_update_nic_stats_vf()
-	- unexpected unlock
-The root cause is the missing annotation at
-efx_ef10_try_update_nic_stats_vf()
-Add the missing _must_hold(&efx->stats_lock) annotation
 
-Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
----
- drivers/net/ethernet/sfc/ef10.c | 1 +
- 1 file changed, 1 insertion(+)
+--924gEkU1VlJlwnwX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 3f16bd807c6e..e8bbbd366625 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -1820,6 +1820,7 @@ static size_t efx_ef10_update_stats_pf(struct efx_nic *efx, u64 *full_stats,
- }
- 
- static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
-+	__must_hold(&efx->stats_lock)
- {
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAC_STATS_IN_LEN);
- 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
--- 
-2.18.2
+On Mon, Jun 01, 2020 at 11:35:36AM -0700, David Miller wrote:
 
+> > v2 -> v3:
+> > - drop unneeded ternary operator
+
+> Series applied to net-next, thank you.
+
+I already applied patch 1 and sent a pull request to Linus for it.  As I
+said:
+
+| Let me know if you need a pull request for this, given the merge window
+| is likely to open over the weekend I figured it's likely too late to
+| apply the second patch before then.
+
+Hopefully this merges cleanly...  ideally we'd have had that pull
+request.
+
+--924gEkU1VlJlwnwX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7VTPwACgkQJNaLcl1U
+h9BC5Qf+Pqf/FZV1N/xA1qCR5gdSQfu1xeoilmJVrmPkNe7ZPkKJw08ysvy2BAQO
+FWtv1JeTxdz13haQKXAmahMt6vZ7SfvpE0SKsW9UQskdbLt3Ib1BhoJk3TPr9u5Y
+9TKyGAUpkjmvXkM/GLOEGiqWcy6FbAuPmc/NsFaCaHv6MpjefCKi7qFs+u4rNMJG
+OfbU/RjMmOjojflkQWTLxMbOcW79doEFgvx1fRxvRcg4NRZOEfMRnWjIp5Eb3J5S
+kBrG02l6iQCsuFijjLFRC4tpFKG5LAld12jDjRwiCgsw9YpNU/6piftFObxGzBsl
+t07Asv5z8Ea2gvA5oCJzjkYVpgMY+w==
+=PMqK
+-----END PGP SIGNATURE-----
+
+--924gEkU1VlJlwnwX--
