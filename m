@@ -2,80 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF921EB14D
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 23:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EAEA1EB177
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728805AbgFAVxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 17:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45820 "EHLO
+        id S1729107AbgFAWCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 18:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728336AbgFAVxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 17:53:02 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174D0C061A0E;
-        Mon,  1 Jun 2020 14:53:02 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id x22so4862617lfd.4;
-        Mon, 01 Jun 2020 14:53:02 -0700 (PDT)
+        with ESMTP id S1728336AbgFAWCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 18:02:20 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E66BC061A0E;
+        Mon,  1 Jun 2020 15:02:20 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id z6so10048717ljm.13;
+        Mon, 01 Jun 2020 15:02:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JGFRGjB8KlVMfwSTDSAUcjWqnVY9QFMY5Q7CDZwYx84=;
-        b=YRi8fEyFRNi6j6tuvcquGxpn4l9y/Q66dfCQW/SEyRB2J5YiVTeWsAMZSEffJf3hyv
-         Y4bjcBmLtN/H52fHcqSxZQHSOCnHByduajP2UzKyoYBAGd5J90D+YV7eIv6bZmmlQUeQ
-         Zi9IX07cwFhYcyK4icduPnwVX5UzgEU+ks3xVcfV1+UA+pUtavoZ4iHYdctJMS/ozCxA
-         K9GQXgdgH7h9S53saDAm7LY1QnD79ID4Bc9wPnKTLF+hFG1JYX7m/ZO5zx4fdcm53IP6
-         o+q+pDuNa4PrQ9XoxHDnbdyCNMcC60ooc+FlVeY1Lv9/K0mCybeCwg1S4fFeHeqWkz8y
-         JSug==
+        bh=28IDDw8HM/QpEtquXlco0ovqKhcVd+N9TrIHHVHfSZc=;
+        b=N0WYEz0mVwPtvxMgILf0uU9UOt7cknWnAKxxl/JVG+o2pJHHQHI2VeaTLbv8wirlf4
+         cmeUvmOlS+iLpu2Ay4fUt9eSHuy5MfWnb+v+hFGFxdg8YnjUNu5IUJGFLLtoQqBKvG6q
+         DoN8o3zlVaNhyCFztWK19QJ/DW8CUgiuULvYW6erl97TlDRNRpy0+Lx+5zVSdTPWML9p
+         +ek8+QlRInSt9ymZjbV5QGj2d6PUjP3L8iNGhR7BiRx4TjlVloUCYAZqgCGlOMTvsBzW
+         XWiSgD2hdIymKBxNFfYlacjphRLNI62lyHy3D5fyCZKvoJUh3PhMGaw6JnS01254hGcZ
+         xX5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JGFRGjB8KlVMfwSTDSAUcjWqnVY9QFMY5Q7CDZwYx84=;
-        b=NYlPyHdTGFhhBKIQvwvBgIJjyLR77Yycdv2OCLGEhqf6oJzFtWKI2kuPD05rYjJTy3
-         cHH6hee3YHmuK8/Ne/BDh3wuJm7S7k6dpSMYgjfWJD5TqBmx3BzxWEYDnvnVZiSN+vyT
-         OM8tb2oMubczfIvXmPoRj5lABVc02hkkczgV0ewKR9Uiyx2uLUdri09p6mJVl1vBM7UN
-         v7IR0tk8nNy4K8RAT85uPnqlF0auqJMW3jC7ofZ7gMlZVn2pzufL7wWIDhZb9bcRS/cP
-         lMi0d78gVcEtmpN82S7WCR81Ij6ZcI0bMj7Nf64MFMaStBeOYlk5LUAYe4dZlh1p4kpR
-         MF/A==
-X-Gm-Message-State: AOAM530m4FoL0WONANt2jeT4q05FAC7+pVIkNT9tvwKywOD4TNk397w+
-        zjWVKKOsgiQzyB0C7g8hz357+PuBhhBWRxelDGQpc4Wx
-X-Google-Smtp-Source: ABdhPJylayFI/Y6i92Ue/tYvBnAXyW6msOz4enPLpMU0wrbPR5XRgDvppc2l82bICQJqf4+bCwnfpiwJM66FXRaNx8k=
-X-Received: by 2002:a19:987:: with SMTP id 129mr12303056lfj.8.1591048380448;
- Mon, 01 Jun 2020 14:53:00 -0700 (PDT)
+        bh=28IDDw8HM/QpEtquXlco0ovqKhcVd+N9TrIHHVHfSZc=;
+        b=rYxPZJjXUN9B7OIFnXay3zTVTKYz7JEtPiiaCE5Rj1EC1/yRH+s62DhMkxQnVMBMYr
+         56TEKzRfOjTts5f0dprGCcjU5q9ECpECSo5K4p1dgrp1ajQp+luNKQujKg+Ouvm/sYsL
+         wB28yDYCAfkapALQK+mBWeB+Zw5n5zy2MrcBl+bB28tlmXyWmqr6FctInvswyKU3jM65
+         1a5U6JHdQq4JLeflN52feRGAxCBbYnNmPd/M2AZ20jZizixbFwBuyEIivBqiTuNjnPpK
+         awemPm5CAy4WjjabM2mEPHjD3F1DWX/o5Mo+63te4PHxIriCq+OcpHWA+/3l+E1q9FY+
+         FORg==
+X-Gm-Message-State: AOAM533mi1rIoqug2uvfkojkhGGqR7BOdRQOVwfuYit0GysFCrubU0Fh
+        Jxi8yzwjedGougyqDM+ePLkXAWFrbqr04tUBIRU=
+X-Google-Smtp-Source: ABdhPJygItLNvavDHJ6vXhjXK/4zzTwyPSrq04ENAeMiA2fy2e9S2Scw0THZlGwqwV10gSNGDNmuLLDSh+6pEcdHZDA=
+X-Received: by 2002:a2e:150e:: with SMTP id s14mr11038853ljd.290.1591048938509;
+ Mon, 01 Jun 2020 15:02:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200527195849.97118-1-zeil@yandex-team.ru> <CAADnVQJ9vD_qfBM21JS-=zdBwK8RoN2grUhaVd2oFmunD+0K_g@mail.gmail.com>
-In-Reply-To: <CAADnVQJ9vD_qfBM21JS-=zdBwK8RoN2grUhaVd2oFmunD+0K_g@mail.gmail.com>
+References: <cover.1590871065.git.fejes@inf.elte.hu>
+In-Reply-To: <cover.1590871065.git.fejes@inf.elte.hu>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 1 Jun 2020 14:52:48 -0700
-Message-ID: <CAADnVQKrX4=A6Sv+mDG6WcK6UG-pSarrRRnQ7RotmRnd6he37A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] sock: move sock_valbool_flag to header
-To:     Dmitry Yakunin <zeil@yandex-team.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
+Date:   Mon, 1 Jun 2020 15:02:07 -0700
+Message-ID: <CAADnVQJvPAibc3a98hfeFxu3OKC98+FQdCKmovgVvgeExBq2VQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 0/3] Extending bpf_setsockopt with
+ SO_BINDTODEVICE sockopt
+To:     Ferenc Fejes <fejes@inf.elte.hu>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 1, 2020 at 1:32 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Sat, May 30, 2020 at 2:11 PM Ferenc Fejes <fejes@inf.elte.hu> wrote:
 >
-> On Wed, May 27, 2020 at 1:00 PM Dmitry Yakunin <zeil@yandex-team.ru> wrote:
-> >
-> > This is preparation for usage in bpf_setsockopt.
-> >
-> > Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-> > Acked-by: Martin KaFai Lau <kafai@fb.com>
+> This option makes it possible to programatically bind sockets
+> to netdevices. With the help of this option sockets
+> of VRF unaware applications could be distributed between
+> multiple VRFs with an eBPF program. This lets the applications
+> benefit from multiple possible routes.
 >
-> Applied the set. Thanks
+> v2:
+> - splitting up the patch to three parts
+> - lock_sk parameter for optional locking in sock_bindtoindex - Stanislav Fomichev
+> - testing the SO_BINDTODEVICE option - Andrii Nakryiko
 
-I had to drop it due to non-trivial conflict with net-next :(
-Commit 71c48eb81c9e ("tcp: add tcp_sock_set_keepidle")
-introduced __tcp_sock_set_keepidle() which is exactly the patch 2.
-I didn't want to do such surgery.
-Pls respin.
+Applied. Thanks
