@@ -2,136 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92EF51EA5D3
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 16:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26FCF1EA659
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 16:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727891AbgFAO2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 10:28:50 -0400
-Received: from mail-eopbgr40040.outbound.protection.outlook.com ([40.107.4.40]:30670
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727866AbgFAO2u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 10:28:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VfEOjwPWhMOJLQfTH9twZdxK4jmxJH1NPLBvekB/HfpOR4rQYyHTbqyoyDbpoJvX11ihzeOe9UP1KR9bYqMMcnjIyP3PtmrZaDIj249JWAhL1UQfth8fwfZeltHDyaqKTXwHKVT1m+UTajwicDCVKdFnAeL9K+Bufi89ct4ho39ikHnuDJ40JfhhykqybIcRUrRAWLZupDygF+u5agMeiPMEvJ5eC3PuS44ABxAo09qI8hTSv0WWTMs+KC2n6HiWIoRSnhMo3CHPHj8zLAb1HDhiz0dg7gyvo4cJnMbkkli4NMmJrLRzl/aGzqo8EgWakyG5R2VjsJdjh/QWZGHuRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnxLJs1CSFChl9uZhst9BYasFuWTh/SAXRcw206g9ok=;
- b=nn+8zym0pBfkPDQlU6BTcYyP0rEq7A+pOmvW0WXpJQ2D/Rf2hvKtXbKN9fqkXgVwKbq2FoJWLgF6F6tX2eKLknOesuiyvSY8D3HKIWQj5i1pqQKy58+KGGZiACSzZ4DpXYwnyTCtUuBGbRmtrjdak81JzmgmY7UXeVun9UqHsNEmGMO0uJ0OQNwBOpuG/CSIEApSsXvX7dR3ETXqmzBDA7KzwjZa5y0tSXql4KBOgo36A0YFIF+bVBhIc0jN9UdvMRgLqJIriDBMWRR4RkistTCzhPP1woP3h34VutKhbB+9L8vzz598o4NqJjpS1P0swPW8+MjgFBfFX7lBP13s1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnxLJs1CSFChl9uZhst9BYasFuWTh/SAXRcw206g9ok=;
- b=akpz3jx2aPLTUYOPnFh+mg/yItDS4AE7eweHLUsxNFXoVUHI6DqYC8H4R+5z5UdviuTXesuc6PAftllyuNrPeQboljp8ElyIj2qQFNf0kPbAhA85eRUpuSmOumPkqOgKau1QYOVfA3aqwM5m28tjUyxL5hfHMD5Wk/rvgIQRPDI=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:44::15)
- by VI1PR05MB6670.eurprd05.prod.outlook.com (2603:10a6:800:141::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17; Mon, 1 Jun
- 2020 14:28:44 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::848b:fcd0:efe3:189e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::848b:fcd0:efe3:189e%7]) with mapi id 15.20.3045.022; Mon, 1 Jun 2020
- 14:28:44 +0000
-Date:   Mon, 1 Jun 2020 11:28:40 -0300
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>
-Subject: Re: [RDMA RFC v6 00/16] Intel RDMA Driver Updates 2020-05-19
-Message-ID: <20200601142840.GE4962@mellanox.com>
-References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
- <20200521141247.GQ24561@mellanox.com>
- <9DD61F30A802C4429A01CA4200E302A7EE04047F@fmsmsx124.amr.corp.intel.com>
- <20200527050855.GB349682@unreal>
- <9DD61F30A802C4429A01CA4200E302A7EE045C3B@fmsmsx124.amr.corp.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7EE045C3B@fmsmsx124.amr.corp.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MN2PR17CA0028.namprd17.prod.outlook.com
- (2603:10b6:208:15e::41) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
+        id S1727000AbgFAO5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 10:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgFAO5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 10:57:31 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B0FC03E96F
+        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 07:57:31 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id q19so4194901eja.7
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 07:57:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GtVCS7DBg5IZVzTuXW5+e+BS6VDlNJ+w0jwnfdmJFNc=;
+        b=lY3UBbOzpbjBvBEzUK5rHRGykpyVJjthCrnOeoVxAC/ueanpx1CXourOABHBXwtwlx
+         wsQr06GMoTnr7P6Tqky72hhY5D5xRwMKhDrdHRFldSkI7bw3IvlH29jwR8b74466wRbc
+         CRH+i4sBIgGx7dgPntxKjo6fhVKMChRUUis/c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GtVCS7DBg5IZVzTuXW5+e+BS6VDlNJ+w0jwnfdmJFNc=;
+        b=E6MkO+77ObXJDfsuK/CpUGTEF9Wb/lkZdlnrWxStxGQO4Lj25IUIQfC+3kEL/Qg+5/
+         iO+jn83DhZDiIxeyVfw0dWaY7p5RM1tX8o6z2E2PpqCiLPCTqEWFwxb0Dr1pQRN8nBzH
+         ZZjFd5Pt6VLy9OjgclgQp3Qto6VMkWbOKvcazt0+SLrJ8wirKHWVlTePrR9FoQ/7ma5o
+         2tdSoLiVLIwT54Ot1BMX8EjoPuFp6fiDykMamMbA4YL6jZlvdOfljBhgLkOcw27Aug46
+         JBbR+TCirwNW8QWJaiGbK+cNwvKOUTayUsLDzVSQt8tXEX2zkIVpzuBYeMY6alGY3/qE
+         O1rg==
+X-Gm-Message-State: AOAM533YtdsHAsRMCSBj067J9gZaRNjzSSxbaIO5FGHZdcDbaDBOUuxm
+        mMdMe/OPmr+l+bvaw/1xkaPRSw==
+X-Google-Smtp-Source: ABdhPJyA5gtmrMEOC8h3czFqyOTNZU9VDREUeQV5/TGDeA8LJad0KAjx5TO2gAkp/ZnwZamIONgeWg==
+X-Received: by 2002:a17:906:3a43:: with SMTP id a3mr19190464ejf.121.1591023449974;
+        Mon, 01 Jun 2020 07:57:29 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id m30sm15259301eda.16.2020.06.01.07.57.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 07:57:20 -0700 (PDT)
+Date:   Mon, 1 Jun 2020 16:57:16 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Subject: Re: [bpf-next PATCH 2/3] bpf: fix running sk_skb program types with
+ ktls
+Message-ID: <20200601165716.5a6fa76a@toad>
+In-Reply-To: <159079361946.5745.605854335665044485.stgit@john-Precision-5820-Tower>
+References: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
+        <159079361946.5745.605854335665044485.stgit@john-Precision-5820-Tower>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR17CA0028.namprd17.prod.outlook.com (2603:10b6:208:15e::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Mon, 1 Jun 2020 14:28:43 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jflQe-0006R2-Mw; Mon, 01 Jun 2020 11:28:40 -0300
-X-Originating-IP: [156.34.48.30]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 968d4146-5b7a-4ba1-3ab0-08d806381679
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6670:
-X-Microsoft-Antispam-PRVS: <VI1PR05MB667008F0FC5469431C93EA78CF8A0@VI1PR05MB6670.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0421BF7135
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lhZqsarE4wrbYlsyVSgkLcsH55rVZF5pnm2FvNBstnALpsrL5idDgwyb0N2Ra2yfV9IoEqO2Ils6HOW2bQB/beBzncCsWwbexEkOeUPEuEOzlrppBjffsLK36Lb9qdi+gdE6OASO5bZ5RMi3gGTM2+afnjJ5fB8GSShLqCN1y2MhNJ/3I4XBdLgShZcHmNaDTqCjJWQxh4XsPRnBpsE414KsmnLcxLejQtkq2J9RncsBBflq9gfTF3SpKJGLV0eu/l2UODCtuiXf6lBnjJlR1YBooDhV5df4rUESNYWyHU3LXrHOsP2xGE1uNdNS/CHQN4FnvimmERjujnykbfrXZTLd1W/hM0DVd4w/KMqizk//cChkRP5M92RxCrFBFwDi
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4141.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(346002)(396003)(136003)(39860400002)(54906003)(1076003)(316002)(86362001)(7416002)(478600001)(26005)(186003)(36756003)(9746002)(9786002)(66556008)(66476007)(66946007)(2906002)(2616005)(4326008)(33656002)(15650500001)(5660300002)(83380400001)(8936002)(8676002)(6916009)(24400500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Yl8jSFpqQ9R6A02t8nx51IcE5LmlQ4L+0smoF394OqDgmptyAKPD5eKB5Rb+eSFj68NY5aBQbaNMTYJYGORa1637L34BpAYqLFv4QmAeMazqJ4qDMXlEq/4IlEwKD266AZfEU0YeBe6kkc10cidHB0tVrQHSIuJg2+AuZFRTyigkYYorxENm8odgxZcQw1Bx+pSXpyOOZL42VgVvftFGw0+RznZ2NZoy3RF3dxwpSsWguxrSAMCdPKnO5ijZJ5C2PvHTuqFG9ajo43e8XcznMynezhRpQQWT89UDhnLxImSHnZq6SeAI1odrHQViqpqDawP1PRXZn+18BCE8ZOKhfmDruDyWbs2MwEvEELlIAOgYSyNPUBL6h914n+KiX2WmkhxIEWf+WTk4CgOEd/k0AQ1sTnXM6i/7MomHk46NB8D7TfUZSpWDxgmJV7NZGX5CyE+DZYOXIWMY/oTmDben2pLwhJXAX5muBUDHLp+7FvU=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 968d4146-5b7a-4ba1-3ab0-08d806381679
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2020 14:28:44.2791
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JuIKT+KHT7/4MX0CKotsidOUz4qcYgF6lg0RrQwxjl0RGGDdb0/SQZOyPD8x7UZHqaFkz0IweheYeK+azPN6Mg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6670
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 03:21:05PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [RDMA RFC v6 00/16] Intel RDMA Driver Updates 2020-05-19
-> > 
-> 
-> [......]
-> 
-> > 
-> > I'm looking on it and see static assignments, to by dynamic you will need "to play"
-> > with hw_shifts/hw_masks later, but you don't. What am I missing?
-> > 
-> > +	for (i = 0; i < IRDMA_MAX_SHIFTS; ++i)
-> > +		dev->hw_shifts[i] = i40iw_shifts[i];
-> > +
-> > +	for (i = 0; i < IRDMA_MAX_MASKS; ++i)
-> > +		dev->hw_masks[i] = i40iw_masks[i];
-> > 
-> > >
-> > > we still need to use the custom macro FLD_LS_64 without FIELD_PREP in
-> > > this case as FIELD_PREP expects compile time constants.
-> > > +#define FLD_LS_64(dev, val, field)	\
-> > > +	(((u64)(val) << (dev)->hw_shifts[field ## _S]) &
-> > > +(dev)->hw_masks[field ## _M])
-> > > And the shifts are still required for these fields which causes a bit
-> > > of inconsistency
-> > >
-> 
-> 
-> The device hw_masks/hw_shifts array store masks/shifts of those
-> descriptor fields that have same name across HW generations but
-> differ in some attribute such as field width. Yes they are statically assigned,
-> initialized with values from i40iw_masks and icrdma_masks, depending on
-> the HW generation. We can even use GENMASK for the values in
-> i40iw_masks[] , icrdma_masks[] but FIELD_PREP cant be used on
-> dev->hw_masks[]
+On Fri, 29 May 2020 16:06:59 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-So compute the shift and mask when building i40iw_shifts array using
-the compile time constant?
+> KTLS uses a stream parser to collect TLS messages and send them to
+> the upper layer tls receive handler. This ensures the tls receiver
+> has a full TLS header to parse when it is run. However, when a
+> socket has BPF_SK_SKB_STREAM_VERDICT program attached before KTLS
+> is enabled we end up with two stream parsers running on the same
+> socket.
+> 
+> The result is both try to run on the same socket. First the KTLS
+> stream parser runs and calls read_sock() which will tcp_read_sock
+> which in turn calls tcp_rcv_skb(). This dequeues the skb from the
+> sk_receive_queue. When this is done KTLS code then data_ready()
+> callback which because we stacked KTLS on top of the bpf stream
+> verdict program has been replaced with sk_psock_start_strp(). This
+> will in turn kick the stream parser again and eventually do the
+> same thing KTLS did above calling into tcp_rcv_skb() and dequeuing
+> a skb from the sk_receive_queue.
+> 
+> At this point the data stream is broke. Part of the stream was
+> handled by the KTLS side some other bytes may have been handled
+> by the BPF side. Generally this results in either missing data
+> or more likely a "Bad Message" complaint from the kTLS receive
+> handler as the BPF program steals some bytes meant to be in a
+> TLS header and/or the TLS header length is no longer correct.
+> 
+> We've already broke the idealized model where we can stack ULPs
+> in any order with generic callbacks on the TX side to handle this.
+> So in this patch we do the same thing but for RX side. We add
+> a sk_psock_strp_enabled() helper so TLS can learn a BPF verdict
+> program is running and add a tls_sw_has_ctx_rx() helper so BPF
+> side can learn there is a TLS ULP on the socket.
+> 
+> Then on BPF side we omit calling our stream parser to avoid
+> breaking the data stream for the KTLS receiver. Then on the
+> KTLS side we call BPF_SK_SKB_STREAM_VERDICT once the KTLS
+> receiver is done with the packet but before it posts the
+> msg to userspace. This gives us symmetry between the TX and
+> RX halfs and IMO makes it usable again. On the TX side we
+> process packets in this order BPF -> TLS -> TCP and on
+> the receive side in the reverse order TCP -> TLS -> BPF.
+> 
+> Discovered while testing OpenSSL 3.0 Alpha2.0 release.
+> 
+> Fixes: d829e9c4112b5 ("tls: convert to generic sk_msg interface")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  include/linux/skmsg.h |    8 ++++++++
+>  include/net/tls.h     |    9 +++++++++
+>  net/core/skmsg.c      |   43 ++++++++++++++++++++++++++++++++++++++++---
+>  net/tls/tls_sw.c      |   20 ++++++++++++++++++--
+>  4 files changed, 75 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index ad31c9f..08674cd 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -437,4 +437,12 @@ static inline void psock_progs_drop(struct sk_psock_progs *progs)
+>  	psock_set_prog(&progs->skb_verdict, NULL);
+>  }
+>  
+> +int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb);
+> +
+> +static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
+> +{
+> +	if (!psock)
+> +		return false;
+> +	return psock->parser.enabled;
+> +}
+>  #endif /* _LINUX_SKMSG_H */
+> diff --git a/include/net/tls.h b/include/net/tls.h
+> index bf9eb48..b74d59b 100644
+> --- a/include/net/tls.h
+> +++ b/include/net/tls.h
+> @@ -567,6 +567,15 @@ static inline bool tls_sw_has_ctx_tx(const struct sock *sk)
+>  	return !!tls_sw_ctx_tx(ctx);
+>  }
+>  
+> +static inline bool tls_sw_has_ctx_rx(const struct sock *sk)
+> +{
+> +	struct tls_context *ctx = tls_get_ctx(sk);
+> +
+> +	if (!ctx)
+> +		return false;
+> +	return !!tls_sw_ctx_rx(ctx);
+> +}
+> +
+>  void tls_sw_write_space(struct sock *sk, struct tls_context *ctx);
+>  void tls_device_write_space(struct sock *sk, struct tls_context *ctx);
+>  
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index 9d72f71..351afbf 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -7,6 +7,7 @@
+>  
+>  #include <net/sock.h>
+>  #include <net/tcp.h>
+> +#include <net/tls.h>
+>  
+>  static bool sk_msg_try_coalesce_ok(struct sk_msg *msg, int elem_first_coalesce)
+>  {
+> @@ -714,6 +715,38 @@ static void sk_psock_skb_redirect(struct sk_psock *psock, struct sk_buff *skb)
+>  	}
+>  }
+>  
+> +static void sk_psock_tls_verdict_apply(struct sk_psock *psock,
+> +				       struct sk_buff *skb, int verdict)
+> +{
+> +	switch (verdict) {
+> +	case __SK_REDIRECT:
+> +		sk_psock_skb_redirect(psock, skb);
+> +		break;
+> +	case __SK_PASS:
+> +	case __SK_DROP:
 
-Jason
+The two cases above need a "fallthrough;", right?
+
+> +	default:
+> +		break;
+> +	}
+> +}
+> +
+> +int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+> +{
+> +	struct bpf_prog *prog;
+> +	int ret = __SK_PASS;
+> +
+> +	rcu_read_lock();
+> +	prog = READ_ONCE(psock->progs.skb_verdict);
+> +	if (likely(prog)) {
+> +		tcp_skb_bpf_redirect_clear(skb);
+> +		ret = sk_psock_bpf_run(psock, prog, skb);
+> +		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> +	}
+> +	rcu_read_unlock();
+> +	sk_psock_tls_verdict_apply(psock, skb, ret);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(sk_psock_tls_strp_read);
+> +
+>  static void sk_psock_verdict_apply(struct sk_psock *psock,
+>  				   struct sk_buff *skb, int verdict)
+>  {
+> @@ -792,9 +825,13 @@ static void sk_psock_strp_data_ready(struct sock *sk)
+>  	rcu_read_lock();
+>  	psock = sk_psock(sk);
+>  	if (likely(psock)) {
+> -		write_lock_bh(&sk->sk_callback_lock);
+> -		strp_data_ready(&psock->parser.strp);
+> -		write_unlock_bh(&sk->sk_callback_lock);
+> +		if (tls_sw_has_ctx_rx(sk)) {
+> +			psock->parser.saved_data_ready(sk);
+> +		} else {
+> +			write_lock_bh(&sk->sk_callback_lock);
+> +			strp_data_ready(&psock->parser.strp);
+> +			write_unlock_bh(&sk->sk_callback_lock);
+> +		}
+>  	}
+>  	rcu_read_unlock();
+>  }
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index 2d399b6..61043c6 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -1731,6 +1731,7 @@ int tls_sw_recvmsg(struct sock *sk,
+>  	long timeo;
+>  	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
+>  	bool is_peek = flags & MSG_PEEK;
+> +	bool bpf_strp_enabled;
+>  	int num_async = 0;
+>  
+>  	flags |= nonblock;
+> @@ -1740,6 +1741,7 @@ int tls_sw_recvmsg(struct sock *sk,
+>  
+>  	psock = sk_psock_get(sk);
+>  	lock_sock(sk);
+> +	bpf_strp_enabled = sk_psock_strp_enabled(psock);
+>  
+>  	/* Process pending decrypted records. It must be non-zero-copy */
+>  	err = process_rx_list(ctx, msg, &control, &cmsg, 0, len, false,
+> @@ -1793,11 +1795,12 @@ int tls_sw_recvmsg(struct sock *sk,
+>  
+>  		if (to_decrypt <= len && !is_kvec && !is_peek &&
+>  		    ctx->control == TLS_RECORD_TYPE_DATA &&
+> -		    prot->version != TLS_1_3_VERSION)
+> +		    prot->version != TLS_1_3_VERSION &&
+> +		    !sk_psock_strp_enabled(psock))
+
+Is this recheck of parser state intentional? Or can we test for
+"!bpf_strp_enabled" here also?
+
+>  			zc = true;
+>  
+>  		/* Do not use async mode if record is non-data */
+> -		if (ctx->control == TLS_RECORD_TYPE_DATA)
+> +		if (ctx->control == TLS_RECORD_TYPE_DATA && !bpf_strp_enabled)
+>  			async_capable = ctx->async_capable;
+>  		else
+>  			async_capable = false;
+> @@ -1847,6 +1850,19 @@ int tls_sw_recvmsg(struct sock *sk,
+>  			goto pick_next_record;
+>  
+>  		if (!zc) {
+> +			if (bpf_strp_enabled) {
+> +				err = sk_psock_tls_strp_read(psock, skb);
+> +				if (err != __SK_PASS) {
+> +					rxm->offset = rxm->offset + rxm->full_len;
+> +					rxm->full_len = 0;
+> +					if (err == __SK_DROP)
+> +						consume_skb(skb);
+> +					ctx->recv_pkt = NULL;
+> +					__strp_unpause(&ctx->strp);
+> +					continue;
+> +				}
+> +			}
+> +
+>  			if (rxm->full_len > len) {
+>  				retain_skb = true;
+>  				chunk = len;
+> 
+
