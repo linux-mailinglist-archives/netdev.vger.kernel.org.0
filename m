@@ -2,55 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCAE1EA8AD
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 19:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C9311EAD0F
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 20:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728351AbgFARxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 13:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbgFARxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 13:53:45 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C74EC05BD43;
-        Mon,  1 Jun 2020 10:53:45 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CD2D811D69C3B;
-        Mon,  1 Jun 2020 10:53:42 -0700 (PDT)
-Date:   Mon, 01 Jun 2020 10:53:39 -0700 (PDT)
-Message-Id: <20200601.105339.1821963108388271707.davem@davemloft.net>
-To:     luobin9@huawei.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        luoxianjun@huawei.com, yin.yinshi@huawei.com,
-        cloud.wangxiaoyun@huawei.com
-Subject: Re: [PATCH net-next v5] hinic: add set_channels ethtool_ops support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200601105748.27511-1-luobin9@huawei.com>
-References: <20200601105748.27511-1-luobin9@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jun 2020 10:53:43 -0700 (PDT)
+        id S1729948AbgFASmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 14:42:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59450 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731176AbgFASMG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 14:12:06 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEAE7206E2;
+        Mon,  1 Jun 2020 18:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591035125;
+        bh=02DePW7699cZ/ay8bB9bEtuVud5XW5WaeGoLYCVGwSY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mXMM1E9EC/Ht+ClV7msMOBi3yii4Y32DhsGJsAt65Ynxlk/pFBDUAkEcIAozr2XZj
+         q4JBSHgstPA/luj1qT3h3AWweGuS2vmiGVYTU/RkUrDmjfaX3uXDG5nvlU6BoR1wW6
+         8mPya/gc2GV5zs1+uUE3xlBvgnIs/h20K7ZSD8e0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, jere.leppanen@nokia.com,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH 5.6 020/177] sctp: Dont add the shutdown timer if its already been added
+Date:   Mon,  1 Jun 2020 19:52:38 +0200
+Message-Id: <20200601174050.390884187@linuxfoundation.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200601174048.468952319@linuxfoundation.org>
+References: <20200601174048.468952319@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luo bin <luobin9@huawei.com>
-Date: Mon, 1 Jun 2020 18:57:48 +0800
+From: Neil Horman <nhorman@tuxdriver.com>
 
-> @@ -470,6 +470,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
->  	struct hinic_txq *txq;
->  	struct hinic_qp *qp;
->  
-> +	if (unlikely(!netif_carrier_ok(netdev))) {
-> +		dev_kfree_skb_any(skb);
-> +		return NETDEV_TX_OK;
-> +	}
+[ Upstream commit 20a785aa52c82246055a089e55df9dac47d67da1 ]
 
-As stated by another reviewer, this change is unrelated to adding
-set_channels support.  Please remove it from this patch.
+This BUG halt was reported a while back, but the patch somehow got
+missed:
+
+PID: 2879   TASK: c16adaa0  CPU: 1   COMMAND: "sctpn"
+ #0 [f418dd28] crash_kexec at c04a7d8c
+ #1 [f418dd7c] oops_end at c0863e02
+ #2 [f418dd90] do_invalid_op at c040aaca
+ #3 [f418de28] error_code (via invalid_op) at c08631a5
+    EAX: f34baac0  EBX: 00000090  ECX: f418deb0  EDX: f5542950  EBP: 00000000
+    DS:  007b      ESI: f34ba800  ES:  007b      EDI: f418dea0  GS:  00e0
+    CS:  0060      EIP: c046fa5e  ERR: ffffffff  EFLAGS: 00010286
+ #4 [f418de5c] add_timer at c046fa5e
+ #5 [f418de68] sctp_do_sm at f8db8c77 [sctp]
+ #6 [f418df30] sctp_primitive_SHUTDOWN at f8dcc1b5 [sctp]
+ #7 [f418df48] inet_shutdown at c080baf9
+ #8 [f418df5c] sys_shutdown at c079eedf
+ #9 [f418df70] sys_socketcall at c079fe88
+    EAX: ffffffda  EBX: 0000000d  ECX: bfceea90  EDX: 0937af98
+    DS:  007b      ESI: 0000000c  ES:  007b      EDI: b7150ae4
+    SS:  007b      ESP: bfceea7c  EBP: bfceeaa8  GS:  0033
+    CS:  0073      EIP: b775c424  ERR: 00000066  EFLAGS: 00000282
+
+It appears that the side effect that starts the shutdown timer was processed
+multiple times, which can happen as multiple paths can trigger it.  This of
+course leads to the BUG halt in add_timer getting called.
+
+Fix seems pretty straightforward, just check before the timer is added if its
+already been started.  If it has mod the timer instead to min(current
+expiration, new expiration)
+
+Its been tested but not confirmed to fix the problem, as the issue has only
+occured in production environments where test kernels are enjoined from being
+installed.  It appears to be a sane fix to me though.  Also, recentely,
+Jere found a reproducer posted on list to confirm that this resolves the
+issues
+
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+CC: Vlad Yasevich <vyasevich@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: jere.leppanen@nokia.com
+CC: marcelo.leitner@gmail.com
+CC: netdev@vger.kernel.org
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/sctp/sm_sideeffect.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -1523,9 +1523,17 @@ static int sctp_cmd_interpreter(enum sct
+ 			timeout = asoc->timeouts[cmd->obj.to];
+ 			BUG_ON(!timeout);
+ 
+-			timer->expires = jiffies + timeout;
+-			sctp_association_hold(asoc);
+-			add_timer(timer);
++			/*
++			 * SCTP has a hard time with timer starts.  Because we process
++			 * timer starts as side effects, it can be hard to tell if we
++			 * have already started a timer or not, which leads to BUG
++			 * halts when we call add_timer. So here, instead of just starting
++			 * a timer, if the timer is already started, and just mod
++			 * the timer with the shorter of the two expiration times
++			 */
++			if (!timer_pending(timer))
++				sctp_association_hold(asoc);
++			timer_reduce(timer, jiffies + timeout);
+ 			break;
+ 
+ 		case SCTP_CMD_TIMER_RESTART:
+
+
