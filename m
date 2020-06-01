@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E231EA058
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 10:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9091EA065
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 10:58:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725847AbgFAIxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 04:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
+        id S1725951AbgFAI6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 04:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbgFAIxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 04:53:32 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B060C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 01:53:32 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id r125so3440194lff.13
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 01:53:32 -0700 (PDT)
+        with ESMTP id S1725290AbgFAI6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 04:58:23 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FFEC061A0E
+        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 01:58:22 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id c11so7177609ljn.2
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 01:58:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fv+vfcvFFtchtnXKCS/2t+mcirEZrhc2fOAtUM0gKwI=;
-        b=D5r016slYQFJP50E5pfkan5cSEWwGqbqU49GaYL76LT0wFhvmxgBN3e8DN0FKyhqU+
-         DuO+OIlqXyZ9hA0pgvNDgD3t0rHqrsbStgIB/4kugWgXOCFtbUeH77Z/E4mp1hedYVkY
-         B2I0zRdkGlNP/o89kq+qWDgRA1tvNjPdy+Q3k=
+        bh=GeWOD0rEiNE3biMnBSTXn0BpAA5TUIjGyRINumfdZkE=;
+        b=MoVFuD1z96bI2zMWahs1zdS03PtMNckhsquUqKmyrbTLqPDZ1Ru0xBpYgTQtAun2e6
+         GrrQSthcqgCRAVv2MATdYgcMP5sEKtFsj1yzWCIiKnpZ7rNA5Q4kWy2taGH0HN+/Ukia
+         /QYuaU35k8Kw+xgT3WE3Q9ukb4UbCZLZ+e8UI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fv+vfcvFFtchtnXKCS/2t+mcirEZrhc2fOAtUM0gKwI=;
-        b=ZQYRXtoka9ccraJr1dxqgriivymnUC7slFm4Py9AvWc0RcYY/qUucyk7qEs5V43VMs
-         kJ8o6G5/THQWfsv4iLNBuAE08gsvakMzE5yrSqWIBKrUCUnCNdIPKrrzsvzONNiN6Elw
-         GnLDWWvHvJw1NMOpGEaR+raWERw/mzBVCASxkyu1AHT4hJ+sO0uUMysuW1iBUrNKnzYJ
-         ioPjmNM2mauX7oigusYj7TvovB/ljtgr3F6nzFkuc3DLLXH3Uyg4JyQ5iSNZ7f//PN2j
-         WRC41Myx0yu/ILDIEtg0z2/W9nbckU50ZeI/cQd/XHEJZatuAlDBgKqfOL7sqkyuabrM
-         Wf/Q==
-X-Gm-Message-State: AOAM531NfRPRt2Zz2X/94y0IZTyoSlKxfJcNk56z5ffA+3eWRe2d7T0t
-        8whZeTjJSz1mkNKU8JUcieJxDAQS0Pg06qZMZLxM5A==
-X-Google-Smtp-Source: ABdhPJy3Thn1edF1ZMgW23oAEJ2PoTboRxG5jz0R/wNRFlFvVPCHsN5HE6yeEkzuh4Ss1DrvOjkEukl7kbp7uhiPk/o=
-X-Received: by 2002:ac2:5cac:: with SMTP id e12mr10863959lfq.92.1591001610578;
- Mon, 01 Jun 2020 01:53:30 -0700 (PDT)
+        bh=GeWOD0rEiNE3biMnBSTXn0BpAA5TUIjGyRINumfdZkE=;
+        b=L6dwio1/OSo2wZp20owe3Wqp40umwnVNVVwh+P0wTvMluLtvn6sF5pDKHhtQcSkAUg
+         qe8CuXtGkJLGpkL9B55HCR3TgvFc95luW034PVgNXQpq1wmwHE0UUioGNHIgpqgMM8S5
+         QoOPB48+XATtkkNu5sBiIhv0eIh2l02/l3/xvd0QNlQmOnZtXZtlqeCBWV4gd/hlqo8G
+         3x05s43bxmJpWFkDK1mYAA3FM2TxCxWW4sRwCrLbCDhgFLPgFxQ/W8wUaSZvddWXWYyp
+         XioLklE9nv8+rI3WAgRF6AP3MrY5cKINJ0kXhCDsQOStvUQW2Y2o8/vjHXH2JY7r7x0+
+         RvBA==
+X-Gm-Message-State: AOAM531nFlG1mizfEGw+Yb2D+hIKRI9Tpln8iGmgRU8NPablrc/KupFz
+        RTArw+uLIgbaAEybp0cTyfHmJSTIsQAY7wh5RqyKhg99
+X-Google-Smtp-Source: ABdhPJyY9/RkHzsO+kMywmM6/7hArNN/v6GWivo4j4FziBuOz3ysDTUGdNuFVqhms34cELEKYbkE9gACePdMivlSjrs=
+X-Received: by 2002:a2e:7c02:: with SMTP id x2mr10531273ljc.316.1591001900790;
+ Mon, 01 Jun 2020 01:58:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <1590214105-10430-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1590214105-10430-2-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200524045335.GA22938@nanopsycho> <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
- <20200525172602.GA14161@nanopsycho> <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
- <20200526044727.GB14161@nanopsycho> <CAACQVJp8SfmP=R=YywDWC8njhA=ntEcs5o_KjBoHafPkHaj-iA@mail.gmail.com>
- <20200526134032.GD14161@nanopsycho> <CAACQVJrwFB4oHjTAw4DK28grxGGP15x52+NskjDtOYQdOUMbOg@mail.gmail.com>
- <20200601071847.GG2282@nanopsycho>
-In-Reply-To: <20200601071847.GG2282@nanopsycho>
+References: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200601061819.GA2282@nanopsycho> <20200601064323.GF2282@nanopsycho>
+In-Reply-To: <20200601064323.GF2282@nanopsycho>
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Mon, 1 Jun 2020 14:23:19 +0530
-Message-ID: <CAACQVJowMSW1kZLW+5XHBq8Hm8v9idj0sqxQPuCJh5epySo8-g@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
- generic device parameter.
+Date:   Mon, 1 Jun 2020 14:28:09 +0530
+Message-ID: <CAACQVJoW9TcTkKgzAhoz=ejr693JyBzUzOK75GhFrxPTYOkAaw@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and
+ 'allow_live_dev_reset' generic devlink params.
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
+        Netdev <netdev@vger.kernel.org>,
         Michael Chan <michael.chan@broadcom.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -64,219 +59,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 1, 2020 at 12:48 PM Jiri Pirko <jiri@resnulli.us> wrote:
+On Mon, Jun 1, 2020 at 12:13 PM Jiri Pirko <jiri@resnulli.us> wrote:
 >
-> Tue, May 26, 2020 at 04:23:48PM CEST, vasundhara-v.volam@broadcom.com wrote:
-> >On Tue, May 26, 2020 at 7:10 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> Mon, Jun 01, 2020 at 08:18:19AM CEST, jiri@resnulli.us wrote:
+> >Sun, May 31, 2020 at 09:03:39AM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >>Live device reset capability allows the users to reset the device in real
+> >>time. For example, after flashing a new firmware image, this feature allows
+> >>a user to initiate the reset immediately from a separate command, to load
+> >>the new firmware without reloading the driver or resetting the system.
 > >>
-> >> Tue, May 26, 2020 at 08:42:28AM CEST, vasundhara-v.volam@broadcom.com wrote:
-> >> >On Tue, May 26, 2020 at 10:17 AM Jiri Pirko <jiri@resnulli.us> wrote:
-> >> >>
-> >> >> Tue, May 26, 2020 at 06:28:59AM CEST, vasundhara-v.volam@broadcom.com wrote:
-> >> >> >On Mon, May 25, 2020 at 10:56 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> >> >> >>
-> >> >> >> Sun, May 24, 2020 at 08:29:56AM CEST, vasundhara-v.volam@broadcom.com wrote:
-> >> >> >> >On Sun, May 24, 2020 at 10:23 AM Jiri Pirko <jiri@resnulli.us> wrote:
-> >> >> >> >>
-> >> >> >> >> Sat, May 23, 2020 at 08:08:22AM CEST, vasundhara-v.volam@broadcom.com wrote:
-> >> >> >> >> >Add a new "allow_fw_live_reset" generic device bool parameter. When
-> >> >> >> >> >parameter is set, user is allowed to reset the firmware in real time.
-> >> >> >> >> >
-> >> >> >> >> >This parameter is employed to communicate user consent or dissent for
-> >> >> >> >> >the live reset to happen. A separate command triggers the actual live
-> >> >> >> >> >reset.
-> >> >> >> >> >
-> >> >> >> >> >Cc: Jiri Pirko <jiri@mellanox.com>
-> >> >> >> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> >> >> >> >> >Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> >> >> >> >> >---
-> >> >> >> >> >v2: Rename param name to "allow_fw_live_reset" from
-> >> >> >> >> >"enable_hot_fw_reset".
-> >> >> >> >> >Update documentation for the param in devlink-params.rst file.
-> >> >> >> >> >---
-> >> >> >> >> > Documentation/networking/devlink/devlink-params.rst | 6 ++++++
-> >> >> >> >> > include/net/devlink.h                               | 4 ++++
-> >> >> >> >> > net/core/devlink.c                                  | 5 +++++
-> >> >> >> >> > 3 files changed, 15 insertions(+)
-> >> >> >> >> >
-> >> >> >> >> >diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-> >> >> >> >> >index d075fd0..ad54dfb 100644
-> >> >> >> >> >--- a/Documentation/networking/devlink/devlink-params.rst
-> >> >> >> >> >+++ b/Documentation/networking/devlink/devlink-params.rst
-> >> >> >> >> >@@ -108,3 +108,9 @@ own name.
-> >> >> >> >> >    * - ``region_snapshot_enable``
-> >> >> >> >> >      - Boolean
-> >> >> >> >> >      - Enable capture of ``devlink-region`` snapshots.
-> >> >> >> >> >+   * - ``allow_fw_live_reset``
-> >> >> >> >> >+     - Boolean
-> >> >> >> >> >+     - Firmware live reset allows users to reset the firmware in real time.
-> >> >> >> >> >+       For example, after firmware upgrade, this feature can immediately reset
-> >> >> >> >> >+       to run the new firmware without reloading the driver or rebooting the
-> >> >> >> >>
-> >> >> >> >> This does not tell me anything about the reset being done on another
-> >> >> >> >> host. You need to emhasize that, in the name of the param too.
-> >> >> >> >I am not sure if I completely understand your query.
-> >> >> >> >
-> >> >> >> >Reset is actually initiated by one of the PF/host of the device, which
-> >> >> >> >resets the entire same device.
-> >> >> >> >
-> >> >> >> >Reset is not initiated by any other remote device/host.
-> >> >> >>
-> >> >> >> Well, in case of multihost system, it might be, right?
-> >> >> >>
-> >> >> >In case of multi-host system also, it is one of the host that triggers
-> >> >> >the reset, which resets the entire same device. I don't think this is
-> >> >> >remote.
-> >> >> >
-> >> >> >As the parameter is a device parameter, it is applicable to the entire
-> >> >> >device. When a user initiates the reset from any of the host in case
-> >> >> >of multi-host and any of the PF in case of stand-alone or smartNIC
-> >> >> >device, the entire device goes for a reset.
-> >> >> >
-> >> >> >I will be expanding the description to the following to make it more clear.
-> >> >> >
-> >> >> >------------------------
-> >> >> >- Firmware live reset allows users to reset the firmware in real time.
-> >> >> >For example, after firmware upgrade, this feature can immediately
-> >> >> >reset to run the new firmware without reloading the driver or
-> >> >> >rebooting the system.
-> >> >> >When a user initiates the reset from any of the host (in case of
-> >> >> >multi-host system) / PF (in case of stand-alone or smartNIC device),
-> >> >> >the entire device goes for a reset when the parameter is enabled.
-> >> >>
-> >> >> Sorry, this is still not clear. I think that you are mixing up two
-> >> >> different things:
-> >> >> 1) option of devlink reload to indicate that user is interested in "live
-> >> >>    reset" of firmware without reloading driver
-> >> >
-> >> >This is the option we are trying to add. If a user is interested in
-> >> >"live reset", he needs to enable the parameter to enable it in device
-> >> >capabilities, which is achieved by permanent configuration mode. When
-> >> >capability is enabled in the device, new firmware which is aware will
-> >> >allocate the resources and exposes the capability to host drivers.
-> >> >
-> >> >But firmware allows the "live reset" only when all the loaded drivers
-> >> >are aware of/supports the capability. For example, if any of the host
-> >> >is loaded with an old driver, "live reset" is not allowed until the
-> >> >driver is upgraded or unloaded. or if the host driver turns it off,
-> >> >then also "live reset" is not allowed.
-> >> >
-> >> >In case of runtime parameter cmode, if any of the host turns off the
-> >> >capability in the host driver, "live reset" is not allowed until the
-> >> >driver is unloaded or the user enables it again.
-> >> >
-> >> >To make it clear, I can add two parameters.
-> >> >
-> >> >1. enable_fw_live_reset - To indicate that the user is interested in
-> >> >"live reset". This will be a generic param.
+> >>When device reset is initiated, services running on the host interfaces
+> >>will momentarily pause and resume once reset is completed, which is very
+> >>similar to momentary network outage.
 > >>
-> >> As I wrote above, I believe this should be an option
-> >> to "devlink dev reload", not a param.
-> >I think you are still confused with enabling feature in NVRAM
-> >configuration of the device and command to trigger reset. This param
-> >will enable the feature in the device NVRAM configuration and does not
-> >trigger the actual reset.
+> >>This patchset adds support for two new generic devlink parameters for
+> >>controlling the live device reset capability and use it in the bnxt_en
+> >>driver.
+> >>
+> >>Users can initiate the reset from a separate command, for example,
+> >>'ethtool --reset ethX all' or 'devlink dev reload' to reset the
+> >>device.
+> >>Where ethX or dev is any PF with administrative privileges.
+> >>
+> >>Patchset also updates firmware spec. to 1.10.1.40.
+> >>
+> >>
+> >>v2->v3: Split the param into two new params "enable_live_dev_reset" and
 > >
-> >Only when the param is set, feature will be enabled in the device and
-> >firmware supports the "live reset". When the param is disabled,
-> >firmware cannot support "live reset" and user needs to do PCIe reset
-> >after flashing the firmware for it to take effect..
+> >Vasundhara, I asked you multiple times for this to be "devlink dev reload"
+> >attribute. I don't recall you telling any argument against it. I belive
+> >that this should not be paramater. This is very tightly related to
+> >reload, could you please have it as an attribute of reload, as I
+> >suggested?
 >
-> Does that mean that after reboot, when user triggers fw reset, it will
-> be always "live" is possible? Meaning, user will no have a way to
-> specify that per-reset?
-Right now, there is no option for user to mention the type of reset.
+> I just wrote the thread to the previous version. I understand now why
+> you need param as you require reboot to activate the feature.
 
-As you suggested, we need to extend 'devlink dev reload' for users to
-mention the type of reset.
+Okay.
+>
+> However, I don't think it is correct to use enable_live_dev_reset to
+> indicate the live-reset capability to the user. Params serve for
+> configuration only. Could you please move the indication some place
+> else? ("devlink dev info" seems fitting).
+
+Here we are not indicating the support. If the parameter is set to
+true, we are enabling the feature in firmware and driver after reboot.
+Users can disable the feature by setting the parameter to false and
+reboot. This is the configuration which is enabling or disabling the
+feature in the device.
+
+>
+> I think that you can do the indication in a follow-up patchset. But
+> please remove it from this one where you do it with params.
+
+Could you please see the complete patchset and use it bnxt_en driver
+to get a clear picture? We are not indicating the support.
+
+Thanks.
 
 >
 >
 > >
-> >Once feature is enabled in NVRAM configuration, it will be persistent
-> >across reboots.
+> >Thanks!
 > >
-> >User still needs to use "devlink dev reload" command to do the "live reset".
+> >
+> >>"allow_live_dev_reset".
+> >>- Expand the documentation of each param and update commit messages
+> >> accordingly.
+> >>- Separated the permanent configuration mode code to another patch and
+> >>rename the callbacks of the "allow_live_dev_reset" parameter accordingly.
 > >>
+> >>v1->v2: Rename param to "allow_fw_live_reset" from "enable_hot_fw_reset".
+> >>- Update documentation files and commit messages with more details of the
+> >> feature.
 > >>
-> >> >
-> >> >2. allow_fw_live_reset - To indicate, if any of the host/PF turns it
-> >> >off, "live reset" is not allowed. This serves the purpose of what we
-> >> >are trying to add in runtime cmode.
+> >>Vasundhara Volam (6):
+> >>  devlink: Add 'enable_live_dev_reset' generic parameter.
+> >>  devlink: Add 'allow_live_dev_reset' generic parameter.
+> >>  bnxt_en: Use 'enable_live_dev_reset' devlink parameter.
+> >>  bnxt_en: Update firmware spec. to 1.10.1.40.
+> >>  bnxt_en: Use 'allow_live_dev_reset' devlink parameter.
+> >>  bnxt_en: Check if fw_live_reset is allowed before doing ETHTOOL_RESET
 > >>
-> >> Yeah.
-> >And this param will enable the feature in the driver for driver to
-> >allow the firmware to go for "live reset", where as above param will
-> >enable the feature in NVRAM configuration of the device.
+> >> Documentation/networking/devlink/bnxt.rst          |  4 ++
+> >> .../networking/devlink/devlink-params.rst          | 28 ++++++++++
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 28 +++++++++-
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt.h          |  2 +
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c  | 49 +++++++++++++++++
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h  |  1 +
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  | 17 +++---
+> >> drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h      | 64 +++++++++++++---------
+> >> include/net/devlink.h                              |  8 +++
+> >> net/core/devlink.c                                 | 10 ++++
+> >> 10 files changed, 175 insertions(+), 36 deletions(-)
 > >>
-> >> >Do you want me to keep it as a driver-specific param?
+> >>--
+> >>1.8.3.1
 > >>
-> >> There is nothing driver-specific about this.
-> >okay.
-> >>
-> >>
-> >> >
-> >> >Please let me know if this is clear and makes less confusion.
-> >> >
-> >> >Thanks,
-> >> >Vasundhara
-> >> >
-> >> >> 2) devlink param that would indicate "I am okay if someone else (not by
-> >> >>    my devlink instance) resets my firmware".
-> >> >>
-> >> >> Could you please split?
-> >> >>
-> >> >>
-> >> >> >------------------------
-> >> >> >
-> >> >> >Thanks,
-> >> >> >Vasundhara
-> >> >> >>
-> >> >> >> >
-> >> >> >> >Thanks,
-> >> >> >> >Vasundhara
-> >> >> >> >>
-> >> >> >> >>
-> >> >> >> >>
-> >> >> >> >> >+       system.
-> >> >> >> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
-> >> >> >> >> >index 8ffc1b5c..488b61c 100644
-> >> >> >> >> >--- a/include/net/devlink.h
-> >> >> >> >> >+++ b/include/net/devlink.h
-> >> >> >> >> >@@ -406,6 +406,7 @@ enum devlink_param_generic_id {
-> >> >> >> >> >       DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
-> >> >> >> >> >       DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
-> >> >> >> >> >       DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
-> >> >> >> >> >+      DEVLINK_PARAM_GENERIC_ID_ALLOW_FW_LIVE_RESET,
-> >> >> >> >> >
-> >> >> >> >> >       /* add new param generic ids above here*/
-> >> >> >> >> >       __DEVLINK_PARAM_GENERIC_ID_MAX,
-> >> >> >> >> >@@ -443,6 +444,9 @@ enum devlink_param_generic_id {
-> >> >> >> >> > #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME "enable_roce"
-> >> >> >> >> > #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE DEVLINK_PARAM_TYPE_BOOL
-> >> >> >> >> >
-> >> >> >> >> >+#define DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_NAME "allow_fw_live_reset"
-> >> >> >> >> >+#define DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
-> >> >> >> >> >+
-> >> >> >> >> > #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)    \
-> >> >> >> >> > {                                                                     \
-> >> >> >> >> >       .id = DEVLINK_PARAM_GENERIC_ID_##_id,                           \
-> >> >> >> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
-> >> >> >> >> >index 7b76e5f..8544f23 100644
-> >> >> >> >> >--- a/net/core/devlink.c
-> >> >> >> >> >+++ b/net/core/devlink.c
-> >> >> >> >> >@@ -3011,6 +3011,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
-> >> >> >> >> >               .name = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME,
-> >> >> >> >> >               .type = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE,
-> >> >> >> >> >       },
-> >> >> >> >> >+      {
-> >> >> >> >> >+              .id = DEVLINK_PARAM_GENERIC_ID_ALLOW_FW_LIVE_RESET,
-> >> >> >> >> >+              .name = DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_NAME,
-> >> >> >> >> >+              .type = DEVLINK_PARAM_GENERIC_ALLOW_FW_LIVE_RESET_TYPE,
-> >> >> >> >> >+      },
-> >> >> >> >> > };
-> >> >> >> >> >
-> >> >> >> >> > static int devlink_param_generic_verify(const struct devlink_param *param)
-> >> >> >> >> >--
-> >> >> >> >> >1.8.3.1
-> >> >> >> >> >
