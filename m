@@ -2,66 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDD01EB10D
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 23:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD351EB141
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 23:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728825AbgFAVkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 17:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbgFAVkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 17:40:11 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58D1C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 14:40:11 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7315E11F5F637;
-        Mon,  1 Jun 2020 14:40:11 -0700 (PDT)
-Date:   Mon, 01 Jun 2020 14:40:08 -0700 (PDT)
-Message-Id: <20200601.144008.2114976182852633034.davem@davemloft.net>
-To:     mkubecek@suse.cz
-Cc:     Jason@zx2c4.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/1] wireguard column reformatting for end of
- cycle
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200601211307.qj27qx5rnjxdm3zi@lion.mk-sys.cz>
-References: <20200601.110044.945252928135960732.davem@davemloft.net>
-        <CAHmME9pJB_Ts0+RBD=JqNBg-sfZMU+OtCCAtODBx61naZO3fqQ@mail.gmail.com>
-        <20200601211307.qj27qx5rnjxdm3zi@lion.mk-sys.cz>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728914AbgFAVoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 17:44:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728360AbgFAVoj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 17:44:39 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 40496206E2;
+        Mon,  1 Jun 2020 21:44:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591047878;
+        bh=3GvJTphYH4pfc8EouAYGjuZ6km2vxfHOOChO0Q8xYH4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cwfFQgKXWs+BZC6F9wn9QNjecIAW0Y8p3XxqmR5ueXeBBp95YJyTSy3a7ObAi8NAC
+         5pEt0qdV5z91ladt7Vk9snFWXW4brectmfvdhNh+WTdgP20CgGNYcMLG9wn470HknP
+         7xwG4oVbAPSlzz05jMEXGyum9DDnvQMquwy4mPp0=
+Date:   Mon, 1 Jun 2020 14:44:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH v2 net-next 1/4] devlink: Add new "allow_fw_live_reset"
+ generic device parameter.
+Message-ID: <20200601144436.75bab03f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200601063918.GD2282@nanopsycho>
+References: <CAACQVJpbXSnf0Gc5HehFc6KzKjZU7dV5tY9cwR72pBhweVRkFw@mail.gmail.com>
+        <20200525172602.GA14161@nanopsycho>
+        <CAACQVJpRrOSn2eLzS1z9rmATrmzA2aNG-9pcbn-1E+sQJ5ET_g@mail.gmail.com>
+        <20200526044727.GB14161@nanopsycho>
+        <CAACQVJp8SfmP=R=YywDWC8njhA=ntEcs5o_KjBoHafPkHaj-iA@mail.gmail.com>
+        <20200526134032.GD14161@nanopsycho>
+        <CAACQVJrwFB4oHjTAw4DK28grxGGP15x52+NskjDtOYQdOUMbOg@mail.gmail.com>
+        <CAACQVJqTc9s2KwUCEvGLfG3fh7kKj3-KmpeRgZMWM76S-474+w@mail.gmail.com>
+        <20200527131401.2e269ab8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CACKFLi=+Q4CkOvaxQQm5Ya8+Ft=jNMwCAuK+=5SMxAfNGGriBw@mail.gmail.com>
+        <20200601063918.GD2282@nanopsycho>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jun 2020 14:40:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
-Date: Mon, 1 Jun 2020 23:13:07 +0200
-
-> On Mon, Jun 01, 2020 at 01:33:46PM -0600, Jason A. Donenfeld wrote:
->> This possibility had occurred to me too, which is why I mentioned the
->> project being sufficiently young that this can work out. It's not
->> actually in any LTS yet, which means at the worst, this will apply
->> temporarily for 5.6,
+On Mon, 1 Jun 2020 08:39:18 +0200 Jiri Pirko wrote:
+> > If the permanent (NVRAM) parameter is true, all loaded new drivers
+> > will indicate support for this feature and set the runtime value to
+> > true by default.  The runtime value would not be true if any loaded
+> > driver is too old or has set the runtime value to false.  
 > 
-> It's not only about stable. The code has been backported e.g. into SLE15
-> SP2 and openSUSE Leap 15.2 kernels which which are deep in RC phase so
-> that we would face the choice between backporting this huge patch in
-> a maintenance update and keeping to stumble over it in most of future
-> backports (for years). Neither is very appealing (to put it mildly).
-> I have no idea how many other distributions would be affected or for how
-> long but I doubt we are the only ones.
+> This is a bit odd. It is a configuration, not an indication. When you
+> want to indicate what you support something, I think it should be done
+> in a different place. I think that "devlink dev info" is the place to
+> put it, I think that we need "capabilities" there.
 
-And google and Facebook and twitter and Amazon and whatever else major
-infrastructure provider decides to pull Wireguard into their tree.
+Could you explain the need for "capabilities" under dev info?
 
-Jason, I bet you're pretty happy about the uptake of Wireguard but
-that popularity and distribution has consequences.  Small things have
-huge ramifications for developers all over the place who now have to
-keep up with your work and do backports of your fixes.
+I don't like catch-all mechanisms in principle. Better if capabilities
+are expressed by the API dedicated to configuration of a given feature.
+
+In this particular example the ability to do live reset is clearly
+expressed by the presence of the parameter (as implemented by this set).
+
