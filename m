@@ -2,154 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4400D1EA580
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 16:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A30021EA5A3
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 16:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbgFAODl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 10:03:41 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:63952 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbgFAODl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 10:03:41 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 051E3Xdf031664;
-        Mon, 1 Jun 2020 07:03:34 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     kuba@kernel.org, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net] crypto/chcr: IPV6 code needs to be in CONFIG_IPV6
-Date:   Mon,  1 Jun 2020 19:33:32 +0530
-Message-Id: <20200601140332.24516-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1727063AbgFAOQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 10:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbgFAOQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 10:16:46 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EEFC03E96B
+        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 07:16:45 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id y13so9371159eju.2
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 07:16:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0RXojda16OnGmgNKSmtyw7Ld824D2dHnKxVXAUlbFzY=;
+        b=WpEPYsC/ouh8NovMeea6DUrUXsf+lzEHm8v1a0KYLtGsk+v/WgYML58SySY8kzD0M6
+         LWLBesNp0LiPUYwcVKUSU2JY01tohZ9kgJUjGphJuJrKtlz9p9GJucOTnx2MNTcqhtU7
+         feRrBOkjkQTEBWzj0nmPugJaW+2MPLnJttSVI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0RXojda16OnGmgNKSmtyw7Ld824D2dHnKxVXAUlbFzY=;
+        b=rpxQc8Pq/B9+GdvIeY0ebIn3SPNJsiMCG/oZpmoVMZfTI+vJ5UVZa1EcvADhJaL4mz
+         5E5yFDnKNI/WKsKJvgsZY2CSeKMb1MDVKulXs3TEIltbVA/pMd2sb2tjTTo+icQl5tUG
+         eaFbjQ6iiVKQ+MtkUS+OMwS5zd8o58Zv1vwxI9ptuF61wMVYnkB3pkr1vmdwTdFmWSK9
+         7vyCbMew0q1z3BmlWgShcWMS/DHU5Y0foal2GJG2US5bJ6RzX/M4zUbPM2X0U8LbbkIi
+         JBvJwmvQfayWhzZFmIKu8BBfj5124wgZRQn5UqLG6oMam9UzfGgBVfnllY3VVTM+aIZr
+         p6aA==
+X-Gm-Message-State: AOAM532+MFoGt6+GHnliCwLQpzeygHQr4u+C51uFnoLAjBIrLWT8Ly1x
+        1KLeVn4fqdmeZZOm6mXTXvFusQ==
+X-Google-Smtp-Source: ABdhPJz3oDHtYW6LNlLnXVNxbQecxUE4mFbdUo8WW2phtjh2jfRhgHK3IHNuF6iZ3E48SSkesyI4kg==
+X-Received: by 2002:a17:906:818:: with SMTP id e24mr8375878ejd.453.1591021004391;
+        Mon, 01 Jun 2020 07:16:44 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id w13sm5759430eju.124.2020.06.01.07.16.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 07:16:44 -0700 (PDT)
+Date:   Mon, 1 Jun 2020 16:16:14 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Subject: Re: [bpf-next PATCH 1/3] bpf: refactor sockmap redirect code so its
+ easy to reuse
+Message-ID: <20200601161614.4bea42b0@toad>
+In-Reply-To: <159079360110.5745.7024009076049029819.stgit@john-Precision-5820-Tower>
+References: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
+        <159079360110.5745.7024009076049029819.stgit@john-Precision-5820-Tower>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Error messages seen while building kernel with CONFIG_IPV6
-disabled.
+On Fri, 29 May 2020 16:06:41 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- drivers/crypto/chelsio/chcr_ktls.c | 48 ++++++++++++++++++++----------
- 1 file changed, 33 insertions(+), 15 deletions(-)
+> We will need this block of code called from tls context shortly
+> lets refactor the redirect logic so its easy to use. This also
+> cleans up the switch stmt so we have fewer fallthrough cases.
+> 
+> No logic changes are intended.
+> 
+> Fixes: d829e9c4112b5 ("tls: convert to generic sk_msg interface")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
-index f55b87152166..91dee616d15e 100644
---- a/drivers/crypto/chelsio/chcr_ktls.c
-+++ b/drivers/crypto/chelsio/chcr_ktls.c
-@@ -221,6 +221,7 @@ static int chcr_ktls_act_open_req(struct sock *sk,
- 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- /*
-  * chcr_ktls_act_open_req6: creates TCB entry for ipv6 connection.
-  * @sk - tcp socket.
-@@ -270,6 +271,7 @@ static int chcr_ktls_act_open_req6(struct sock *sk,
- 
- 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
- }
-+#endif /* #if IS_ENABLED(CONFIG_IPV6) */
- 
- /*
-  * chcr_setup_connection:  create a TCB entry so that TP will form tcp packets.
-@@ -290,20 +292,26 @@ static int chcr_setup_connection(struct sock *sk,
- 	tx_info->atid = atid;
- 	tx_info->ip_family = sk->sk_family;
- 
--	if (sk->sk_family == AF_INET ||
--	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
--	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
-+	if (sk->sk_family == AF_INET) {
- 		tx_info->ip_family = AF_INET;
- 		ret = chcr_ktls_act_open_req(sk, tx_info, atid);
-+#if IS_ENABLED(CONFIG_IPV6)
- 	} else {
--		tx_info->ip_family = AF_INET6;
--		ret =
--		cxgb4_clip_get(tx_info->netdev,
--			       (const u32 *)&sk->sk_v6_rcv_saddr.in6_u.u6_addr8,
--			       1);
--		if (ret)
--			goto out;
--		ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
-+		if (!sk->sk_ipv6only &&
-+		    ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED) {
-+			tx_info->ip_family = AF_INET;
-+			ret = chcr_ktls_act_open_req(sk, tx_info, atid);
-+		} else {
-+			tx_info->ip_family = AF_INET6;
-+			ret = cxgb4_clip_get(tx_info->netdev,
-+					     (const u32 *)
-+					     &sk->sk_v6_rcv_saddr.s6_addr,
-+					     1);
-+			if (ret)
-+				goto out;
-+			ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
-+		}
-+#endif
- 	}
- 
- 	/* if return type is NET_XMIT_CN, msg will be sent but delayed, mark ret
-@@ -394,11 +402,13 @@ void chcr_ktls_dev_del(struct net_device *netdev,
- 	if (tx_info->l2te)
- 		cxgb4_l2t_release(tx_info->l2te);
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- 	/* clear clip entry */
- 	if (tx_info->ip_family == AF_INET6)
- 		cxgb4_clip_release(netdev,
- 				   (const u32 *)&sk->sk_v6_daddr.in6_u.u6_addr8,
- 				   1);
-+#endif
- 
- 	/* clear tid */
- 	if (tx_info->tid != -1) {
-@@ -491,12 +501,16 @@ int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 		goto out2;
- 
- 	/* get peer ip */
--	if (sk->sk_family == AF_INET ||
--	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
--	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
-+	if (sk->sk_family == AF_INET) {
- 		memcpy(daaddr, &sk->sk_daddr, 4);
-+#if IS_ENABLED(CONFIG_IPV6)
- 	} else {
--		memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
-+		if (!sk->sk_ipv6only &&
-+		    ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)
-+			memcpy(daaddr, &sk->sk_daddr, 4);
-+		else
-+			memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
-+#endif
- 	}
- 
- 	/* get the l2t index */
-@@ -903,7 +917,9 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 	struct fw_eth_tx_pkt_wr *wr;
- 	struct cpl_tx_pkt_core *cpl;
- 	u32 ctrl, iplen, maclen;
-+#if IS_ENABLED(CONFIG_IPV6)
- 	struct ipv6hdr *ip6;
-+#endif
- 	unsigned int ndesc;
- 	struct tcphdr *tcp;
- 	int len16, pktlen;
-@@ -958,9 +974,11 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
- 		/* we need to correct ip header len */
- 		ip = (struct iphdr *)(buf + maclen);
- 		ip->tot_len = htons(pktlen - maclen);
-+#if IS_ENABLED(CONFIG_IPV6)
- 	} else {
- 		ip6 = (struct ipv6hdr *)(buf + maclen);
- 		ip6->payload_len = htons(pktlen - maclen - iplen);
-+#endif
- 	}
- 	/* now take care of the tcp header, if fin is not set then clear push
- 	 * bit as well, and if fin is set, it will be sent at the last so we
--- 
-2.18.1
+Keeping out_free in the extracted helper might have been cleaner.
 
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
