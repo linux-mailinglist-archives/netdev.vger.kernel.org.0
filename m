@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F3E1EB1B1
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E3C1EB1B3
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:28:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728721AbgFAW17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 18:27:59 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:57525 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728216AbgFAW16 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 18:27:58 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 0ce7a44f
-        for <netdev@vger.kernel.org>;
-        Mon, 1 Jun 2020 22:11:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=PKIaTJ99jKq0Wr71JDkLG3FOc24=; b=Oy247X
-        uGrbZ74gxiWUni8fFanoD90DSCZH9JZFsRpoH7yaaGLMmsr3UV1ah5f9E//vtyDI
-        3FPEQipWCHvUkr4a450rCkgE/7MV+3m3Oft1hcrsN/fjPQzd/zrcwgCT85MLKcqa
-        VRRw/lGRW++gWxdidG/59T6ppfLykWfHHTwMPaT2cvO85Qaydo9mt99LFP6PVWG0
-        5ZUKD0fxDjwBwYoINCZV8u8mYKDxcF940bKbGpoQnGyI6EiNhAtDdPrLTjMMPANu
-        ZTwrktkqy87AZpelXBR28ZWIyZRZUweMEML+FcjrAJ7XicAzZFP+UHFK6j0NsZP4
-        QPBtQjejoO6go47A==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e984af9a (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 1 Jun 2020 22:11:52 +0000 (UTC)
-Received: by mail-il1-f171.google.com with SMTP id 9so10961929ilg.12
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 15:27:57 -0700 (PDT)
-X-Gm-Message-State: AOAM533f0eRldS7rREn9eRdZ/OkF2LQXmCqanmNm0FiIQf8B0gyznKxc
-        iu0rxdghPFVsmqt4JuuhqjmNRBzHGw1FFbAeqdY=
-X-Google-Smtp-Source: ABdhPJwHQRSUsnU5g7Tb78l3OTbwG6g/f+uokyQ2/LPEN6e5dQ7VtoSg9+WuGpthAWjnyRGP0ylIh6JKRNCzZbtyJJI=
-X-Received: by 2002:a05:6e02:130e:: with SMTP id g14mr23711407ilr.38.1591050476629;
- Mon, 01 Jun 2020 15:27:56 -0700 (PDT)
+        id S1728869AbgFAW2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 18:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbgFAW2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 18:28:06 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F6AC061A0E;
+        Mon,  1 Jun 2020 15:28:05 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id y9so855522qvs.4;
+        Mon, 01 Jun 2020 15:28:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=w34qrgAtqKgWn0UNxg9g50JFvRmAbPE4l3k1NpuixCc=;
+        b=FX3ZGVwbd1+L4oOVXEzicN4ElNQPWdDo46vCq5u9/Zg9fJrvymADqyIooj05mKYtSc
+         ItJiinZOjBYSmg2Ru9TWKF4O36DOt93Gl8E0HcT4FlVSGUzz150TUrOy4JBGd7KtYM7Y
+         yktw1fdHkT7uv4LvBkc6GrzaHmMLWhEFIY7ii9aU0WdM1z8dm3p1lGVTVmsCqcoEzrW+
+         XPz7MlgrAnkiZvDeC5Bjg4s3GHOy0LZ1gMftsoCWKcL2MgMlPKYnwMUKtXh/TlTy2Oi/
+         8TZS+MSY8RxjBRng7+UF1j8gtTMPENJPfJv15K8kuH3TJbk6Q9b7MQcB4RT1mCG4NPRB
+         hwaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=w34qrgAtqKgWn0UNxg9g50JFvRmAbPE4l3k1NpuixCc=;
+        b=T1ZZQyGCTyFLzs46YyLUomTOqN3fpvk94E3TFML/fB69HbtgOMod529JYeNcGwtnHr
+         9gm5dxgDlqYfWz9nYtPhV+cmW9FyiyC4qIrJQ71rMnMOPoym5cOTdF6zzQRGlSKZ3M9G
+         /nau74nAf9us4tgi0+mtQKn6BCr2dB0T2W4rG1QLa+DSgca8rNQMinNb0oL+Wskv9HUD
+         ckZ/PpwstkBXmrtRK4JsX3fdQnvKw/oefazULYpOHOuV+eNFnaOa3G7ci48XIngPBpMq
+         5x3QL29vhWOBtUzVhUvueWri1P0lRfBA3TDKQylkPYX7+vxVy/1bVVRdQAjYI4Pks0vf
+         suIg==
+X-Gm-Message-State: AOAM533EBr4jJBfkqOtMsNaq7DCOCYU1h0+qsTGF/rcA+VmIWthgmNCp
+        q2OZwT4uC5sxOrQL1yR+FyE=
+X-Google-Smtp-Source: ABdhPJzNoUyN6nQF1jd4/5OR1guuPDqOvhgxEfgWG7sYy2kB+jgYnMY86pXH39We+onlcCe98+nCQQ==
+X-Received: by 2002:a0c:b60c:: with SMTP id f12mr22811410qve.244.1591050484893;
+        Mon, 01 Jun 2020 15:28:04 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c9ef:b9c4:cdc1:2f07? ([2601:282:803:7700:c9ef:b9c4:cdc1:2f07])
+        by smtp.googlemail.com with ESMTPSA id y66sm652093qka.24.2020.06.01.15.28.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Jun 2020 15:28:04 -0700 (PDT)
+Subject: Re: [PATCH v4 bpf-next 0/5] bpf: Add support for XDP programs in
+ DEVMAP entries
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20200529220716.75383-1-dsahern@kernel.org>
+ <CAADnVQK1rzFfzcQX-EGW57=O2xnz2pjX5madnZGTiAsKnCmbHA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ed66bdc6-4114-2ecf-1812-176d0250730b@gmail.com>
+Date:   Mon, 1 Jun 2020 16:28:02 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.1
 MIME-Version: 1.0
-References: <20200601.110044.945252928135960732.davem@davemloft.net>
- <CAHmME9pJB_Ts0+RBD=JqNBg-sfZMU+OtCCAtODBx61naZO3fqQ@mail.gmail.com>
- <20200601211307.qj27qx5rnjxdm3zi@lion.mk-sys.cz> <20200601.144008.2114976182852633034.davem@davemloft.net>
-In-Reply-To: <20200601.144008.2114976182852633034.davem@davemloft.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 1 Jun 2020 16:27:45 -0600
-X-Gmail-Original-Message-ID: <CAHmME9orPzKJf7LhbJpU6HXki7twbPV0Z7m8vpVwBO6vCU7kaw@mail.gmail.com>
-Message-ID: <CAHmME9orPzKJf7LhbJpU6HXki7twbPV0Z7m8vpVwBO6vCU7kaw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/1] wireguard column reformatting for end of cycle
-To:     David Miller <davem@davemloft.net>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAADnVQK1rzFfzcQX-EGW57=O2xnz2pjX5madnZGTiAsKnCmbHA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 1, 2020 at 3:40 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Michal Kubecek <mkubecek@suse.cz>
-> Date: Mon, 1 Jun 2020 23:13:07 +0200
->
-> > On Mon, Jun 01, 2020 at 01:33:46PM -0600, Jason A. Donenfeld wrote:
-> >> This possibility had occurred to me too, which is why I mentioned the
-> >> project being sufficiently young that this can work out. It's not
-> >> actually in any LTS yet, which means at the worst, this will apply
-> >> temporarily for 5.6,
-> >
-> > It's not only about stable. The code has been backported e.g. into SLE15
-> > SP2 and openSUSE Leap 15.2 kernels which which are deep in RC phase so
-> > that we would face the choice between backporting this huge patch in
-> > a maintenance update and keeping to stumble over it in most of future
-> > backports (for years). Neither is very appealing (to put it mildly).
-> > I have no idea how many other distributions would be affected or for how
-> > long but I doubt we are the only ones.
->
-> And google and Facebook and twitter and Amazon and whatever else major
-> infrastructure provider decides to pull Wireguard into their tree.
->
-> Jason, I bet you're pretty happy about the uptake of Wireguard but
-> that popularity and distribution has consequences.  Small things have
-> huge ramifications for developers all over the place who now have to
-> keep up with your work and do backports of your fixes.
+On 6/1/20 3:12 PM, Alexei Starovoitov wrote:
+> In patch 5 I had to fix:
+> /data/users/ast/net-next/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c:
+> In function ‘test_neg_xdp_devmap_helpers’:
+> /data/users/ast/net-next/tools/testing/selftests/bpf/test_progs.h:106:3:
+> warning: ‘duration’ may be used uninitialized in this function
+> [-Wmaybe-uninitialized]
+>   106 |   fprintf(stdout, "%s:PASS:%s %d nsec\n",   \
+>       |   ^~~~~~~
+> /data/users/ast/net-next/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c:79:8:
+> note: ‘duration’ was declared here
+>    79 |  __u32 duration;
 
-You're right, a fair point. Folks are indeed backporting this with
-their own processes. I'm maintaining a 5.4.y backport, but it'd be
-foolish to assume that's the only one.
+What compiler version? it compiles cleanly with ubuntu 20.04 and gcc
+9.3. The other prog_tests are inconsistent with initializing it.
 
-Jason
+> 
+> and that selftest is imo too primitive.
+
+I focused the selftests on API changes introduced by this set - new
+attach type, valid accesses to egress_ifindex and not allowing devmap
+programs with xdp generic.
+
+> It's only loading progs and not executing them.
+> Could you please add prog_test_run to it?
+> 
+
+I will look into it.
