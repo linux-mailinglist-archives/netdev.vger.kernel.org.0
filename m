@@ -2,123 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D171EB23F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 01:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D73A91EB273
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 01:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728372AbgFAXgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 19:36:43 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:59549 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgFAXgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 19:36:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1591054601; x=1622590601;
-  h=from:to:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version:subject;
-  bh=J/MloPbOinRJ95w81UPzW+FxLSViVtVGzpvoTyLM11E=;
-  b=RZxK3wAOHv6CMin5dMxgBXCRZ9obWrv84xYhEPiBIL3JP2iPgWCZwwFw
-   MM5UMHV9x/2Qdd3ctwiXXfVvBI85t5xZo9erEs3RhTlSWjyNfakuvmq83
-   GgvgzIF33CIaUY4r/+N2Gr61rKg5m85UmMgl/lUZo96Vx6jv+cr0f2+0i
-   U=;
-IronPort-SDR: LkBdX1Jax7kcHTVh6vnZJsyZjBLWu31bHv/02Ku7vm+Mkckt6fxAI0NtZC78idaa9UVK8IjDRw
- A+7M5cTZONqA==
-X-IronPort-AV: E=Sophos;i="5.73,462,1583193600"; 
-   d="scan'208";a="33842841"
-Subject: Re: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
-Thread-Topic: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 01 Jun 2020 23:36:26 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com (Postfix) with ESMTPS id C2C57A1F45;
-        Mon,  1 Jun 2020 23:36:24 +0000 (UTC)
-Received: from EX13D10UWB001.ant.amazon.com (10.43.161.111) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 1 Jun 2020 23:36:24 +0000
-Received: from EX13D07UWB001.ant.amazon.com (10.43.161.238) by
- EX13D10UWB001.ant.amazon.com (10.43.161.111) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 1 Jun 2020 23:36:24 +0000
-Received: from EX13D07UWB001.ant.amazon.com ([10.43.161.238]) by
- EX13D07UWB001.ant.amazon.com ([10.43.161.238]) with mapi id 15.00.1497.006;
- Mon, 1 Jun 2020 23:36:23 +0000
-From:   "Agarwal, Anchal" <anchalag@amazon.com>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Thread-Index: AQHWLjS9hSpS5JM2xU+iWpBujRQ276jBTrMAgAK6doA=
-Date:   Mon, 1 Jun 2020 23:36:23 +0000
-Message-ID: <687F52C0-A277-4D21-8802-3CF1358EEB31@amazon.com>
-References: <cover.1589926004.git.anchalag@amazon.com>
- <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
- <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
-In-Reply-To: <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.162.200]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E4B98ACC553D1F40BCA6C165846D175D@amazon.com>
-Content-Transfer-Encoding: base64
+        id S1728978AbgFAX4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 19:56:44 -0400
+Received: from sonic308-10.consmr.mail.ne1.yahoo.com ([66.163.187.33]:34213
+        "EHLO sonic308-10.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726472AbgFAX4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 19:56:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1591055803; bh=DPYuw2gUpgtMJzJhlH/AVmRGu2wSKCY1C+f8nOCoxu0=; h=Date:From:Reply-To:Subject:References:From:Subject; b=KL6zFI7nsgL+LhP4VckICxZ+GkRKXASsPdsZ2J9Av5jIdb7twjJbv4z32cldmDVAGGDQGFevYvLjkvHcDEkuGUupZanhTjK8eIQER9D6AqSRkkvWObZq8jp6Du/SGEtjuxpiq0GWlrPFm4CIyeu5V6YQnEMtAzW5G+5MXadjrExUK9BIlPro+d4nU39S22alVzawe4QB62ZuT5EWm46rQiOJ/TADTF80P0bmB25J5FkJMMZ87kGsL0up+FQ/xreDHW90Iucoytq0UVOxleItU2hO2mOngegvOOrVlZ/4w7O+JCUQ5kwEzmez38WAyJmB1MQCJMi/KHqd5xm9OIvw7A==
+X-YMail-OSG: O0Ici_QVM1mB9qv5MzgppSg_.arx4QsVQjDVWfoIv_6s.efZKelBpn0brUGrHAQ
+ E8VqK2jJvj7_k1Oa2epzTsAUXy1d9sZNPE5v_ZyYO6CoPVY9Dt675nrJtCFnmM1p_uuP1W1vgRuT
+ b9pXkCiwXXGTfezTLm2A0hbjiMRJWkQgNs6Xb0imgjmxxMkE0rTAdAdAmZi90UP96mPncuHYL9XV
+ wS2eMYg6zYFrJhzbhxeNrmd1pBKcMxN0ZcRGUQhrQTwJ8UQ.47zM95G.QdBNLhbUvFe9HNi4yEbt
+ egc80xXIMYcgdooKnbrgYyStic9EylliuiBkO4vKt0r.wxfrYYgVEsV_n.0vn5fbekbGzBMu3PfP
+ MNjvnLdLUP48N11MtsLlIeH7A_gKJDMtILkQD3pIquH6CvYXHf8Zy_COYZFfkn1X5tB756p08_Tb
+ 0Eswhhi5T8rZV.X_u49vbGWa3TotlKdrtesiNGJdsiq6bDee6sMrPC.UGxYahQUDA6Y91fe95t3n
+ vRaOTC1vl6JFh7QGbJLF6PYrMRFOXZMV8yobKEGLvbM9wXEAJCwWLy6AZTs6j9ejezdD5jC0gjub
+ ld6CXG1rccl5uGr.K6Eynxxs2DuHquyMqzflBIvvadklJXl.BZE64swEOkv1sthiIUx4FqDfQJxu
+ CU7awI.6jwd1UCQQutb2kWb6ZzCCZqTLe0sfl48KKRyefCwD_MZgA2TK7kWTi3Dq2SfNs41zoTCq
+ gUxB8GBR72EGf7od1wOMq30AT5A9SvhPZ7dCvC0z3juG89dUrnn96bOOH3E3RYagYaxwnrl_QvHp
+ iqeObkkNGSbyyITtAyh2Ms7wiax5OQ3pWUjXWy4eQ4kNrIZLAsVbTxzW45wlfsT7hD7dCZW4ewHX
+ 5cwu4uD8irxHDxYNqTSYZAN8i.3.TybQXILzkAX40cQ8DepfS58FtYN231t1EuovFO3CgxtJ_CYB
+ yjm30XUvNnIKKRCsoOgohKVxOaVqTuLnIMeDC9PKGzg2.eaC.tUtAclHC0DbibwOtp.7BwbknEgA
+ jtUUs6Qgp3u.zdarA1qisrlwuXYtduXEgAF7T3E6PxmxdogHLxJND5uxj7TMsqmACC2pf6Nyeh3Z
+ ScVTOOPi_qzWQpSA5D6CkfvvNpJWFL6lK3BfK5wkcQDQk0rknb7vjrLfIgNzD9AtD9HVRJgxc555
+ m0t0RfPvDuuk2Yy9XOj0ldD1G2ttTbnx01Ny6v4yY3Q87fnXU6mrgnQvYeaiLPZgPPIosqKfL82O
+ MfgP2WoH9Et9toLPQavrPKgCL.b97V2DzUvFzdL3Lf34eGwQEzZFjLa2E__6VgU3m4tbwf2o-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Mon, 1 Jun 2020 23:56:43 +0000
+Date:   Mon, 1 Jun 2020 23:56:37 +0000 (UTC)
+From:   " Mrs. Mina A. Brunel" <mrsminaabrunel2334@gmail.com>
+Reply-To: bmrsminaa232@gmail.com
+Message-ID: <1146360412.1171587.1591055797867@mail.yahoo.com>
+Subject: My Dear in the lord
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <1146360412.1171587.1591055797867.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16037 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7vyAgICBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9m
-IHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRz
-IHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBp
-cyBzYWZlLg0KDQoNCg0KICAgIE9uIDUvMTkvMjAgNzoyNSBQTSwgQW5jaGFsIEFnYXJ3YWwgd3Jv
-dGU6DQogICAgPg0KICAgID4gIGludCB4ZW5idXNfZGV2X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpk
-ZXYpDQogICAgPiAgew0KICAgID4gLSAgICAgaW50IGVycjsNCiAgICA+ICsgICAgIGludCBlcnIg
-PSAwOw0KDQoNCiAgICBUaGF0J3Mgbm90IG5lY2Vzc2FyeS4NCkFDSy4NCg0KICAgID4gICAgICAg
-c3RydWN0IHhlbmJ1c19kcml2ZXIgKmRydjsNCiAgICA+ICAgICAgIHN0cnVjdCB4ZW5idXNfZGV2
-aWNlICp4ZGV2DQogICAgPiAgICAgICAgICAgICAgID0gY29udGFpbmVyX29mKGRldiwgc3RydWN0
-IHhlbmJ1c19kZXZpY2UsIGRldik7DQogICAgPiAtDQogICAgPiArICAgICBib29sIHhlbl9zdXNw
-ZW5kID0geGVuX3N1c3BlbmRfbW9kZV9pc194ZW5fc3VzcGVuZCgpOw0KICAgID4gICAgICAgRFBS
-SU5USygiJXMiLCB4ZGV2LT5ub2RlbmFtZSk7DQogICAgPg0KICAgID4gICAgICAgaWYgKGRldi0+
-ZHJpdmVyID09IE5VTEwpDQogICAgPiBAQCAtNjI3LDI0ICs2NDUsMzIgQEAgaW50IHhlbmJ1c19k
-ZXZfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICA+ICAgICAgIGRydiA9IHRvX3hlbmJ1
-c19kcml2ZXIoZGV2LT5kcml2ZXIpOw0KICAgID4gICAgICAgZXJyID0gdGFsa190b19vdGhlcmVu
-ZCh4ZGV2KTsNCiAgICA+ICAgICAgIGlmIChlcnIpIHsNCiAgICA+IC0gICAgICAgICAgICAgcHJf
-d2FybigicmVzdW1lICh0YWxrX3RvX290aGVyZW5kKSAlcyBmYWlsZWQ6ICVpXG4iLA0KICAgID4g
-KyAgICAgICAgICAgICBwcl93YXJuKCIlcyAodGFsa190b19vdGhlcmVuZCkgJXMgZmFpbGVkOiAl
-aVxuIiwNCg0KDQogICAgUGxlYXNlIHVzZSBkZXZfd2FybigpIGV2ZXJ5d2hlcmUsIHdlIGp1c3Qg
-aGFkIGEgYnVuY2ggb2YgcGF0Y2hlcyB0aGF0DQogICAgcmVwbGFjZWQgcHJfd2FybigpLiBJbiBm
-YWN0LCAgdGhpcyBpcyBvbmUgb2YgdGhlIGxpbmVzIHRoYXQgZ290IGNoYW5nZWQuDQoNCkFDSy4g
-V2lsbCBzZW5kIGZpeGVzIGluIG5leHQgc2VyaWVzDQoNCiAgICA+DQogICAgPiAgaW50IHhlbmJ1
-c19kZXZfY2FuY2VsKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICA+ICB7DQogICAgPiAtICAgICAv
-KiBEbyBub3RoaW5nICovDQogICAgPiAtICAgICBEUFJJTlRLKCJjYW5jZWwiKTsNCiAgICA+ICsg
-ICAgIGludCBlcnIgPSAwOw0KDQoNCiAgICBBZ2Fpbiwgbm8gbmVlZCB0byBpbml0aWFsaXplLg0K
-DQpBQ0suDQogICAgPiArICAgICBzdHJ1Y3QgeGVuYnVzX2RyaXZlciAqZHJ2Ow0KICAgID4gKyAg
-ICAgc3RydWN0IHhlbmJ1c19kZXZpY2UgKnhkZXYNCiAgICA+ICsgICAgICAgICAgICAgPSBjb250
-YWluZXJfb2YoZGV2LCBzdHJ1Y3QgeGVuYnVzX2RldmljZSwgZGV2KTsNCg0KDQogICAgeGVuZGV2
-IHBsZWFzZSB0byBiZSBjb25zaXN0ZW50IHdpdGggb3RoZXIgY29kZS4gQW5kIHVzZSB0b194ZW5i
-dXNfZGV2aWNlKCkuDQpBQ0suDQoNCiAgICAtYm9yaXMNCg0KSSB3aWxsIHB1dCB0aGUgZml4ZXMg
-aW4gbmV4dCByb3VuZCBvZiBwYXRjaGVzLg0KDQpUaGFua3MsDQpBbmNoYWwNCg0KDQo=
+
+
+My Dear in the lord
+
+
+My name is Mrs. Mina A. Brunel I am a Norway Citizen who is living in Burki=
+na Faso, I am married to Mr. Brunel Patrice, a politicians who owns a small=
+ gold company in Burkina Faso; He died of Leprosy and Radesyge, in year Feb=
+ruary 2010, During his lifetime he deposited the sum of =E2=82=AC 8.5 Milli=
+on Euro) Eight million, Five hundred thousand Euros in a bank in Ouagadougo=
+u the capital city of of Burkina in West Africa. The money was from the sal=
+e of his company and death benefits payment and entitlements of my deceased=
+ husband by his company.
+
+I am sending you this message with heavy tears in my eyes and great sorrow =
+in my heart, and also praying that it will reach you in good health because=
+ I am not in good health, I sleep every night without knowing if I may be a=
+live to see the next day. I am suffering from long time cancer and presentl=
+y I am partially suffering from Leprosy, which has become difficult for me =
+to move around. I was married to my late husband for more than 6 years with=
+out having a child and my doctor confided that I have less chance to live, =
+having to know when the cup of death will come, I decided to contact you to=
+ claim the fund since I don't have any relation I grew up from an orphanage=
+ home.
+
+I have decided to donate this money for the support of helping Motherless b=
+abies/Less privileged/Widows and churches also to build the house of God be=
+cause I am dying and diagnosed with cancer for about 3 years ago. I have de=
+cided to donate from what I have inherited from my late husband to you for =
+the good work of Almighty God; I will be going in for an operation surgery =
+soon.
+
+Now I want you to stand as my next of kin to claim the funds for charity pu=
+rposes. Because of this money remains unclaimed after my death, the bank ex=
+ecutives or the government will take the money as unclaimed fund and maybe =
+use it for selfishness and worthless ventures, I need a very honest person =
+who can claim this money and use it for Charity works, for orphanages, wido=
+ws and also build schools and churches for less privilege that will be name=
+d after my late husband and my name.
+
+I need your urgent answer to know if you will be able to execute this proje=
+ct, and I will give you more information on how the fund will be transferre=
+d to your bank account or online banking.
+
+Thanks
+Mrs. Mina A. Brunel
