@@ -2,137 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A814A1EA533
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 15:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4400D1EA580
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 16:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgFANk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 09:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52658 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726176AbgFANk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 09:40:27 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCBEC061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 06:40:26 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id p5so5618910wrw.9
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 06:40:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IG1LNnXURRkU6TgMc6yGnkqy1XnH8Wt7NC9998fcIzw=;
-        b=ItEaAklqEaZ9ggAUrZd+fvG2Zq5B8zUJD6j093SbAkr6lksa24WHO2LqB3Lwxuc6f0
-         SqEldx/7pLjdTcaMcSsdGPAWPx4V2QRH05ufrUg8mK53Bxwemqta/L2rGZZnfre3OYQK
-         xYnJ1Xx9ckYtimNnP3UPGUjcoVEqVN39iKt0TrEoRG8cfvaR11o3nRCLik6oOvIwsykB
-         J1KV3qMreVWUlhde6RYrXQkcCzFVc7uZ4hCmwIc/EPRG//CSCRvNa1+KRjUDOoF6oQ5J
-         jBsWlvRj3SKeaKeLXKXTCITPpe56MnEipEwIl2z/arO+OfCswylpNBsN1+JjOHlHIf9t
-         IdiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IG1LNnXURRkU6TgMc6yGnkqy1XnH8Wt7NC9998fcIzw=;
-        b=ixX4ITbpZVW+rsVCdMHvfS2M0QVNKm31PKmE7Y0CoPYqIsCb+ItRbWhVDuScLT3cPa
-         A6/q9QpOz2WUgcMNslC+6X84O2/S1IQmcK8FhaGFqMfL5B9mjyD+cLZwMBmxKHj+Ms9T
-         a7THdneRG4Ct08z1dNbqFPOeM2boIzB+WmmlHmAEUTsEWD3u76RpIRJAcssZcJ6//W18
-         fln73N0pPrXo+wYstVUoG90UOhYDfGU5XQQYkn7nLqD7ssxm1r8KB8PQdrcdPmRuqhN+
-         FJmRkTr1gV5x1hYtponUxYNi8b7H9fg3OXlu6ztwBnDJT4aimK+Kkq8VNMf1QqDlPK6z
-         AQTg==
-X-Gm-Message-State: AOAM5331acllcKIcfJeYEFtr8F7evEtpFxWnH7Jfbnu775a2F9Rv8P/R
-        t+GIiPCN/6UM4M4OITGnPTOoJw==
-X-Google-Smtp-Source: ABdhPJwLH7JtfmcI2VjUTgSLJfnjYw5rNvZSSo9t3BoS+uzgXZD2JCKTsCJnQlfkPinO9DXcVZQLAA==
-X-Received: by 2002:adf:f0c6:: with SMTP id x6mr23679334wro.301.1591018825409;
-        Mon, 01 Jun 2020 06:40:25 -0700 (PDT)
-Received: from localhost (ip-78-102-58-167.net.upcbroadband.cz. [78.102.58.167])
-        by smtp.gmail.com with ESMTPSA id u3sm13851540wmg.38.2020.06.01.06.40.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2020 06:40:24 -0700 (PDT)
-Date:   Mon, 1 Jun 2020 15:40:23 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Petr Machata <petrm@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [RFC PATCH net-next 0/3] TC: Introduce qevents
-Message-ID: <20200601134023.GQ2282@nanopsycho>
-References: <cover.1590512901.git.petrm@mellanox.com>
- <CAM_iQpW8NcZy=ayJ49iY-pCix+HFusTfoOpoD_oMOR6+LeGy1g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpW8NcZy=ayJ49iY-pCix+HFusTfoOpoD_oMOR6+LeGy1g@mail.gmail.com>
+        id S1726128AbgFAODl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 10:03:41 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:63952 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbgFAODl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 10:03:41 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 051E3Xdf031664;
+        Mon, 1 Jun 2020 07:03:34 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     kuba@kernel.org, secdev@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net] crypto/chcr: IPV6 code needs to be in CONFIG_IPV6
+Date:   Mon,  1 Jun 2020 19:33:32 +0530
+Message-Id: <20200601140332.24516-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, May 27, 2020 at 06:09:03AM CEST, xiyou.wangcong@gmail.com wrote:
->On Tue, May 26, 2020 at 10:11 AM Petr Machata <petrm@mellanox.com> wrote:
->>
->> The Spectrum hardware allows execution of one of several actions as a
->> result of queue management events: tail-dropping, early-dropping, marking a
->> packet, or passing a configured latency threshold or buffer size. Such
->> packets can be mirrored, trapped, or sampled.
->>
->> Modeling the action to be taken as simply a TC action is very attractive,
->> but it is not obvious where to put these actions. At least with ECN marking
->> one could imagine a tree of qdiscs and classifiers that effectively
->> accomplishes this task, albeit in an impractically complex manner. But
->> there is just no way to match on dropped-ness of a packet, let alone
->> dropped-ness due to a particular reason.
->>
->> To allow configuring user-defined actions as a result of inner workings of
->> a qdisc, this patch set introduces a concept of qevents. Those are attach
->> points for TC blocks, where filters can be put that are executed as the
->> packet hits well-defined points in the qdisc algorithms. The attached
->> blocks can be shared, in a manner similar to clsact ingress and egress
->> blocks, arbitrary classifiers with arbitrary actions can be put on them,
->> etc.
->
->This concept does not fit well into qdisc, essentially you still want to
->install filters (and actions) somewhere on qdisc, but currently all filters
->are executed at enqueue, basically you want to execute them at other
->pre-defined locations too, for example early drop.
->
->So, perhaps adding a "position" in tc filter is better? Something like:
->
->tc qdisc add dev x root handle 1: ... # same as before
->tc filter add dev x parent 1:0 position early_drop matchall action....
->
->And obviously default position must be "enqueue". Makes sense?
+Error messages seen while building kernel with CONFIG_IPV6
+disabled.
 
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+---
+ drivers/crypto/chelsio/chcr_ktls.c | 48 ++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
 
-Well, if you look at the examples in the cover letter, I think that they
-are showing something very similar you are talking about:
+diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
+index f55b87152166..91dee616d15e 100644
+--- a/drivers/crypto/chelsio/chcr_ktls.c
++++ b/drivers/crypto/chelsio/chcr_ktls.c
+@@ -221,6 +221,7 @@ static int chcr_ktls_act_open_req(struct sock *sk,
+ 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ /*
+  * chcr_ktls_act_open_req6: creates TCB entry for ipv6 connection.
+  * @sk - tcp socket.
+@@ -270,6 +271,7 @@ static int chcr_ktls_act_open_req6(struct sock *sk,
+ 
+ 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
+ }
++#endif /* #if IS_ENABLED(CONFIG_IPV6) */
+ 
+ /*
+  * chcr_setup_connection:  create a TCB entry so that TP will form tcp packets.
+@@ -290,20 +292,26 @@ static int chcr_setup_connection(struct sock *sk,
+ 	tx_info->atid = atid;
+ 	tx_info->ip_family = sk->sk_family;
+ 
+-	if (sk->sk_family == AF_INET ||
+-	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
+-	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
++	if (sk->sk_family == AF_INET) {
+ 		tx_info->ip_family = AF_INET;
+ 		ret = chcr_ktls_act_open_req(sk, tx_info, atid);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+-		tx_info->ip_family = AF_INET6;
+-		ret =
+-		cxgb4_clip_get(tx_info->netdev,
+-			       (const u32 *)&sk->sk_v6_rcv_saddr.in6_u.u6_addr8,
+-			       1);
+-		if (ret)
+-			goto out;
+-		ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
++		if (!sk->sk_ipv6only &&
++		    ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED) {
++			tx_info->ip_family = AF_INET;
++			ret = chcr_ktls_act_open_req(sk, tx_info, atid);
++		} else {
++			tx_info->ip_family = AF_INET6;
++			ret = cxgb4_clip_get(tx_info->netdev,
++					     (const u32 *)
++					     &sk->sk_v6_rcv_saddr.s6_addr,
++					     1);
++			if (ret)
++				goto out;
++			ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
++		}
++#endif
+ 	}
+ 
+ 	/* if return type is NET_XMIT_CN, msg will be sent but delayed, mark ret
+@@ -394,11 +402,13 @@ void chcr_ktls_dev_del(struct net_device *netdev,
+ 	if (tx_info->l2te)
+ 		cxgb4_l2t_release(tx_info->l2te);
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ 	/* clear clip entry */
+ 	if (tx_info->ip_family == AF_INET6)
+ 		cxgb4_clip_release(netdev,
+ 				   (const u32 *)&sk->sk_v6_daddr.in6_u.u6_addr8,
+ 				   1);
++#endif
+ 
+ 	/* clear tid */
+ 	if (tx_info->tid != -1) {
+@@ -491,12 +501,16 @@ int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 		goto out2;
+ 
+ 	/* get peer ip */
+-	if (sk->sk_family == AF_INET ||
+-	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
+-	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
++	if (sk->sk_family == AF_INET) {
+ 		memcpy(daaddr, &sk->sk_daddr, 4);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+-		memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
++		if (!sk->sk_ipv6only &&
++		    ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)
++			memcpy(daaddr, &sk->sk_daddr, 4);
++		else
++			memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
++#endif
+ 	}
+ 
+ 	/* get the l2t index */
+@@ -903,7 +917,9 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
+ 	struct fw_eth_tx_pkt_wr *wr;
+ 	struct cpl_tx_pkt_core *cpl;
+ 	u32 ctrl, iplen, maclen;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	struct ipv6hdr *ip6;
++#endif
+ 	unsigned int ndesc;
+ 	struct tcphdr *tcp;
+ 	int len16, pktlen;
+@@ -958,9 +974,11 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
+ 		/* we need to correct ip header len */
+ 		ip = (struct iphdr *)(buf + maclen);
+ 		ip->tot_len = htons(pktlen - maclen);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		ip6 = (struct ipv6hdr *)(buf + maclen);
+ 		ip6->payload_len = htons(pktlen - maclen - iplen);
++#endif
+ 	}
+ 	/* now take care of the tcp header, if fin is not set then clear push
+ 	 * bit as well, and if fin is set, it will be sent at the last so we
+-- 
+2.18.1
 
-# tc qdisc add dev eth0 root handle 1: \
-        red limit 500K avpkt 1K qevent early block 10
-# tc filter add block 10 \
-        matchall action mirred egress mirror dev eth1
-
-
-The first command just says "early drop position should be processed by
-block 10"
-
-The second command just adds a filter to the block 10.
-
-
-
-We have this concept of blocks, we use them in "tc filter" as a handle.
-
-The block as a unit could be attached to be processed not only to
-"enqueue" but to anything else, like some qdisc stage.
-
-Looks quite neat to me.
-
-
-
->
->(The word "position" may be not accurate, but hope you get my point
->here.)
->
->Thanks.
