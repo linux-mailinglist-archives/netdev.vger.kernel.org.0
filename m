@@ -2,79 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306951EB224
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 01:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D171EB23F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 01:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbgFAXYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 19:24:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58670 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725802AbgFAXYT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 19:24:19 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E084320663;
-        Mon,  1 Jun 2020 23:24:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591053859;
-        bh=ergccIyoCMuEvMoRxmnvMTMpWUMthaO4EMSsVlyRjdc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QTi/ly4jprPCPk+eroF5J3zaYkzGoprzd6TWKeJwsh3XXk3vydZr0DaYVtblkmBbv
-         eq+Z5ODcCoSnew9YUYKzJaDSS3muB6dBfchnKHXbPmI57YdiqI0hVzHi1JBLcJuEtp
-         R7+gR3CR3gFVmRUf2LpTSFC/4jvknj83zmOBqVr8=
-Date:   Mon, 1 Jun 2020 16:24:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset'
- and 'allow_live_dev_reset' generic devlink params.
-Message-ID: <20200601162416.386937b2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <CAACQVJomhn1p2L=ZQakwSRXAci2oK0EG0HQsTVhRz6NLFZEHqw@mail.gmail.com>
-References: <1590908625-10952-1-git-send-email-vasundhara-v.volam@broadcom.com>
-        <20200601061819.GA2282@nanopsycho>
-        <20200601064323.GF2282@nanopsycho>
-        <CAACQVJoW9TcTkKgzAhoz=ejr693JyBzUzOK75GhFrxPTYOkAaw@mail.gmail.com>
-        <20200601100411.GL2282@nanopsycho>
-        <CAACQVJomhn1p2L=ZQakwSRXAci2oK0EG0HQsTVhRz6NLFZEHqw@mail.gmail.com>
+        id S1728372AbgFAXgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 19:36:43 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:59549 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbgFAXgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 19:36:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1591054601; x=1622590601;
+  h=from:to:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=J/MloPbOinRJ95w81UPzW+FxLSViVtVGzpvoTyLM11E=;
+  b=RZxK3wAOHv6CMin5dMxgBXCRZ9obWrv84xYhEPiBIL3JP2iPgWCZwwFw
+   MM5UMHV9x/2Qdd3ctwiXXfVvBI85t5xZo9erEs3RhTlSWjyNfakuvmq83
+   GgvgzIF33CIaUY4r/+N2Gr61rKg5m85UmMgl/lUZo96Vx6jv+cr0f2+0i
+   U=;
+IronPort-SDR: LkBdX1Jax7kcHTVh6vnZJsyZjBLWu31bHv/02Ku7vm+Mkckt6fxAI0NtZC78idaa9UVK8IjDRw
+ A+7M5cTZONqA==
+X-IronPort-AV: E=Sophos;i="5.73,462,1583193600"; 
+   d="scan'208";a="33842841"
+Subject: Re: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
+Thread-Topic: [PATCH 02/12] xenbus: add freeze/thaw/restore callbacks support
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 01 Jun 2020 23:36:26 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com (Postfix) with ESMTPS id C2C57A1F45;
+        Mon,  1 Jun 2020 23:36:24 +0000 (UTC)
+Received: from EX13D10UWB001.ant.amazon.com (10.43.161.111) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 1 Jun 2020 23:36:24 +0000
+Received: from EX13D07UWB001.ant.amazon.com (10.43.161.238) by
+ EX13D10UWB001.ant.amazon.com (10.43.161.111) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 1 Jun 2020 23:36:24 +0000
+Received: from EX13D07UWB001.ant.amazon.com ([10.43.161.238]) by
+ EX13D07UWB001.ant.amazon.com ([10.43.161.238]) with mapi id 15.00.1497.006;
+ Mon, 1 Jun 2020 23:36:23 +0000
+From:   "Agarwal, Anchal" <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Thread-Index: AQHWLjS9hSpS5JM2xU+iWpBujRQ276jBTrMAgAK6doA=
+Date:   Mon, 1 Jun 2020 23:36:23 +0000
+Message-ID: <687F52C0-A277-4D21-8802-3CF1358EEB31@amazon.com>
+References: <cover.1589926004.git.anchalag@amazon.com>
+ <7fd12227f923eacc5841b47bd69f72b4105843a7.1589926004.git.anchalag@amazon.com>
+ <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
+In-Reply-To: <835ca864-3e35-9a82-f3fd-24ca4e2ec06e@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.162.200]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E4B98ACC553D1F40BCA6C165846D175D@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Jun 2020 21:01:42 +0530 Vasundhara Volam wrote:
-> > I think that the legacy ethtool should stick with the "ordinary fw reset",
-> > becase that is what user expects. You should add an attribute to
-> > "devlink dev reload" to trigger the "live fw reset"  
-> 
-> Okay.
-> 
-> I am planning to add a type field with "driver-only | fw-reset |
-> live-fw-reset | live-fw-patch" to "devlink dev reload" command.
-> 
-> driver-only - Resets host driver instance of the 'devlink dev'
-> (current behaviour). This will be default, if the user does not
-> provide the type option.
-> fw-reset - Initiate the reset command for the currently running
-> firmware and wait for the driver reload for completing the reset.
-> (This is similar to the legacy "ethtool --reset all" command).
-> live-fw-reset - Resets the currently running firmware and driver entities.
-> live-fw-patch - Loads the currently pending flashed firmware and
-> reloads all driver entities. If no pending flashed firmware, resets
-> currently loaded firmware.
-
-FWIW I'd prefer to extend the ethtool semantics. Ethtool reset has two
-reset "depths" already - single port, entire adapter, we could just add
-"entire sled" here. IOW we'd have reset which can affect only given
-port, then reset which can affect multiple ports, and reset which may
-affect multiple systems.
-
-The mechanism of the reset and whether old or new version of FW is
-activated is a detail, which I believe will be entirely uninteresting 
-to the user. Whether other systems or ports are affected is _very_
-important, OTOH.
+DQoNCu+7vyAgICBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9m
+IHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRz
+IHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBp
+cyBzYWZlLg0KDQoNCg0KICAgIE9uIDUvMTkvMjAgNzoyNSBQTSwgQW5jaGFsIEFnYXJ3YWwgd3Jv
+dGU6DQogICAgPg0KICAgID4gIGludCB4ZW5idXNfZGV2X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpk
+ZXYpDQogICAgPiAgew0KICAgID4gLSAgICAgaW50IGVycjsNCiAgICA+ICsgICAgIGludCBlcnIg
+PSAwOw0KDQoNCiAgICBUaGF0J3Mgbm90IG5lY2Vzc2FyeS4NCkFDSy4NCg0KICAgID4gICAgICAg
+c3RydWN0IHhlbmJ1c19kcml2ZXIgKmRydjsNCiAgICA+ICAgICAgIHN0cnVjdCB4ZW5idXNfZGV2
+aWNlICp4ZGV2DQogICAgPiAgICAgICAgICAgICAgID0gY29udGFpbmVyX29mKGRldiwgc3RydWN0
+IHhlbmJ1c19kZXZpY2UsIGRldik7DQogICAgPiAtDQogICAgPiArICAgICBib29sIHhlbl9zdXNw
+ZW5kID0geGVuX3N1c3BlbmRfbW9kZV9pc194ZW5fc3VzcGVuZCgpOw0KICAgID4gICAgICAgRFBS
+SU5USygiJXMiLCB4ZGV2LT5ub2RlbmFtZSk7DQogICAgPg0KICAgID4gICAgICAgaWYgKGRldi0+
+ZHJpdmVyID09IE5VTEwpDQogICAgPiBAQCAtNjI3LDI0ICs2NDUsMzIgQEAgaW50IHhlbmJ1c19k
+ZXZfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICA+ICAgICAgIGRydiA9IHRvX3hlbmJ1
+c19kcml2ZXIoZGV2LT5kcml2ZXIpOw0KICAgID4gICAgICAgZXJyID0gdGFsa190b19vdGhlcmVu
+ZCh4ZGV2KTsNCiAgICA+ICAgICAgIGlmIChlcnIpIHsNCiAgICA+IC0gICAgICAgICAgICAgcHJf
+d2FybigicmVzdW1lICh0YWxrX3RvX290aGVyZW5kKSAlcyBmYWlsZWQ6ICVpXG4iLA0KICAgID4g
+KyAgICAgICAgICAgICBwcl93YXJuKCIlcyAodGFsa190b19vdGhlcmVuZCkgJXMgZmFpbGVkOiAl
+aVxuIiwNCg0KDQogICAgUGxlYXNlIHVzZSBkZXZfd2FybigpIGV2ZXJ5d2hlcmUsIHdlIGp1c3Qg
+aGFkIGEgYnVuY2ggb2YgcGF0Y2hlcyB0aGF0DQogICAgcmVwbGFjZWQgcHJfd2FybigpLiBJbiBm
+YWN0LCAgdGhpcyBpcyBvbmUgb2YgdGhlIGxpbmVzIHRoYXQgZ290IGNoYW5nZWQuDQoNCkFDSy4g
+V2lsbCBzZW5kIGZpeGVzIGluIG5leHQgc2VyaWVzDQoNCiAgICA+DQogICAgPiAgaW50IHhlbmJ1
+c19kZXZfY2FuY2VsKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICA+ICB7DQogICAgPiAtICAgICAv
+KiBEbyBub3RoaW5nICovDQogICAgPiAtICAgICBEUFJJTlRLKCJjYW5jZWwiKTsNCiAgICA+ICsg
+ICAgIGludCBlcnIgPSAwOw0KDQoNCiAgICBBZ2Fpbiwgbm8gbmVlZCB0byBpbml0aWFsaXplLg0K
+DQpBQ0suDQogICAgPiArICAgICBzdHJ1Y3QgeGVuYnVzX2RyaXZlciAqZHJ2Ow0KICAgID4gKyAg
+ICAgc3RydWN0IHhlbmJ1c19kZXZpY2UgKnhkZXYNCiAgICA+ICsgICAgICAgICAgICAgPSBjb250
+YWluZXJfb2YoZGV2LCBzdHJ1Y3QgeGVuYnVzX2RldmljZSwgZGV2KTsNCg0KDQogICAgeGVuZGV2
+IHBsZWFzZSB0byBiZSBjb25zaXN0ZW50IHdpdGggb3RoZXIgY29kZS4gQW5kIHVzZSB0b194ZW5i
+dXNfZGV2aWNlKCkuDQpBQ0suDQoNCiAgICAtYm9yaXMNCg0KSSB3aWxsIHB1dCB0aGUgZml4ZXMg
+aW4gbmV4dCByb3VuZCBvZiBwYXRjaGVzLg0KDQpUaGFua3MsDQpBbmNoYWwNCg0KDQo=
