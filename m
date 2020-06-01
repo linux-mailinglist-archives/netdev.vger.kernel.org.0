@@ -2,100 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2775F1EB1BB
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1488E1EB1BD
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:31:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728746AbgFAWbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 18:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S1728791AbgFAWbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 18:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbgFAWbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 18:31:17 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9E0C061A0E;
-        Mon,  1 Jun 2020 15:31:17 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id w90so9105093qtd.8;
-        Mon, 01 Jun 2020 15:31:17 -0700 (PDT)
+        with ESMTP id S1725800AbgFAWbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 18:31:51 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB7AC061A0E;
+        Mon,  1 Jun 2020 15:31:51 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id d6so474907pjs.3;
+        Mon, 01 Jun 2020 15:31:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g+bb5Fv8m97eYaCXwELhIZijqdlPHbFSsMGVucGIDBc=;
-        b=ikQIObI7BsertJDB0m8+hQEyCGLVfDH25f7EeW0TAfqSqpfVvKJIG1fYlUOsVHM/8Q
-         09dtGgWx4VEQsXgfH4UPtTUjRZSVqTAyb8zQNophWI2JP2PFlFrhPfKtPNiHfp7H9QPR
-         +Y4DKpyzq2zyDpRNg4nO5Zo7iVZ6I5OOZBmQNbbHqPPkcizDy77xEbfRjtIeZTZ7sHkG
-         172y5il3W9WxU5l+ipa+cy5KKAZkAQbOkzCLLiwViIN/zrrRrInVZ2wE+1TUYFvzwmcP
-         I8Nn0aSo82Itae/bn+igJqPlu2xzgHZ/d5axWG+lsgLMo0XMmEv6QYysTanxb0Aetnyr
-         ddgg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=TaL9dBLflepRYzoRLaZFanEEmw69HewulymdvVbPJiQ=;
+        b=Ej6mEz13A1I/PIEnfB0zEr+K2X4sJ7B2kFZbGaj3HaaJbufV0Vy/lVSjbaoXTPgt/U
+         5fqdWTWacgYqBNyEHRNfrJBremKWeIJcTYvjZseHiGCMWI+iU9b7ER2tcbtUeoGMmCrY
+         Es3M9eRYXnIvLtw1fUHzsSwSAljH0rDchVF5DroRdC+jnYuJ3EozmIiICAdBDcbrGUaz
+         qlxiSVnTdnYcosz1oq32Q2B/oMNvEszmPWJFgmBiX/b/H0sqw+d1mfcUvCBOP+3cTraV
+         w9LPJRTufJvuUroxKYNWNq4elW/DRSGggflJk262lghAGAWD0fMWTq5iiOeVV4VOMpgF
+         iwPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g+bb5Fv8m97eYaCXwELhIZijqdlPHbFSsMGVucGIDBc=;
-        b=G6LG0khofI8WMJ4oY6mr/lzcESyzqoF8kNG2sONu5QEdIIIzY649fWuy5dJD0voNCT
-         zXjEbOIkra3TZIcPXSmFRKnzOZvRFEI1bwKDW+IlFqkLm8rhIW9AsdWGJjI1ebEnlVZv
-         fxJEnRwozQhE/Ghk2/2FO7KJQ56XPb1krtZS6lYSIPiCFe2UL7wt6Cb/kZ/uMU1RXG4e
-         FOIltWBEfCYebn1C2TihmxYlNp8lFr/huZq8jN35zK1Nobrk0/01jZao/yFPvGXR5eYZ
-         raiErL6Do0Gl1HbLZIV/7AQmKrI/ukO4ZZDoSRaMzuLixyubga//KprkSwzpdhtXJ7tu
-         LMuQ==
-X-Gm-Message-State: AOAM533dvpPA69WzOpZrNPCWRBK+pFdZtPmy5suLZ1PtSpmbegbPrdKQ
-        K2Y7Vv5Vbb5uznFoUanTv3DTeNNC1bpNsEvB6uhe/wX1
-X-Google-Smtp-Source: ABdhPJwtRPd/ecs/xIqCQh7zIulmE4Egq2y0kb0QEG6UNCyXUGRoOQvw8gsWLxeDg+YdAjOYf7mIk74xAhlZcZZdBG0=
-X-Received: by 2002:ac8:42ce:: with SMTP id g14mr24125771qtm.117.1591050676996;
- Mon, 01 Jun 2020 15:31:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=TaL9dBLflepRYzoRLaZFanEEmw69HewulymdvVbPJiQ=;
+        b=TAdAXV2uI0MoBKZY2rSB0TQBGONhRoQd6FS6nOoLNZjuTq8wcpqn02MczSBc7+d5LP
+         3V7/jwzW/Gr8gNeBWG28jf+Tz48V05yPg/uFArvQHhoXsL+UXMw6uv2Hn8wUdWLnwrrX
+         UT1mnFjukA70sRblVE5gl4DGM9VDBf98pWYnTy7A34aumtX3EhZa5gf7J5vCzqVZGqYi
+         Cq/pG29qdR5DdYQVbL/TKqX/LdsMHxlbZlturSFVsjXzwprHRL4gjJhY+P5UWqEJvKV7
+         PVyogpZMB0g8hcWPO1HcHoNu/hdkCu0YdQ1m2pLA8aleNQQz7WhPD4+6S26bHM/PV8nX
+         7nJQ==
+X-Gm-Message-State: AOAM5321QJg62zEYH/VD22KPU8xHFTLSdDjPu/laA4MZ+qqmbTDKi/rc
+        OIB2UbeR5tc84OhqRRYh06IgtI0j
+X-Google-Smtp-Source: ABdhPJyOoPJLBwFk1aceBWA7ggfa15g8836ZqkW+xNAY/tYxQ4YLJmQphAvrgEjyaOD4kr6tZ9xQNQ==
+X-Received: by 2002:a17:902:7e41:: with SMTP id a1mr21844801pln.72.1591050711026;
+        Mon, 01 Jun 2020 15:31:51 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:514a])
+        by smtp.gmail.com with ESMTPSA id 140sm370953pfv.38.2020.06.01.15.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 15:31:50 -0700 (PDT)
+Date:   Mon, 1 Jun 2020 15:31:46 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH v4 bpf-next 0/5] bpf: Add support for XDP programs in
+ DEVMAP entries
+Message-ID: <20200601223146.bghhao75rzpdk3kx@ast-mbp.dhcp.thefacebook.com>
+References: <20200529220716.75383-1-dsahern@kernel.org>
+ <CAADnVQK1rzFfzcQX-EGW57=O2xnz2pjX5madnZGTiAsKnCmbHA@mail.gmail.com>
+ <ed66bdc6-4114-2ecf-1812-176d0250730b@gmail.com>
 MIME-Version: 1.0
-References: <20200531082846.2117903-1-jakub@cloudflare.com> <20200531082846.2117903-6-jakub@cloudflare.com>
-In-Reply-To: <20200531082846.2117903-6-jakub@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 1 Jun 2020 15:31:05 -0700
-Message-ID: <CAEf4BzbRpTrbFWDRD8TfWBDO6_4jZyseX08Q8emZz4qPDA4QqA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 05/12] bpf, cgroup: Return ENOLINK for
- auto-detached links on update
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ed66bdc6-4114-2ecf-1812-176d0250730b@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 31, 2020 at 1:29 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> Failure to update a bpf_link because it has been auto-detached by a dying
-> cgroup currently results in EINVAL error, even though the arguments passed
-> to bpf() syscall are not wrong.
->
-> bpf_links attaching to netns in this case will return ENOLINK, which
-> carries the message that the link is no longer attached to anything.
->
-> Change cgroup bpf_links to do the same to keep the uAPI errors consistent.
->
-> Fixes: 0c991ebc8c69 ("bpf: Implement bpf_prog replacement for an active bpf_cgroup_link")
-> Suggested-by: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+On Mon, Jun 01, 2020 at 04:28:02PM -0600, David Ahern wrote:
+> On 6/1/20 3:12 PM, Alexei Starovoitov wrote:
+> > In patch 5 I had to fix:
+> > /data/users/ast/net-next/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c:
+> > In function ‘test_neg_xdp_devmap_helpers’:
+> > /data/users/ast/net-next/tools/testing/selftests/bpf/test_progs.h:106:3:
+> > warning: ‘duration’ may be used uninitialized in this function
+> > [-Wmaybe-uninitialized]
+> >   106 |   fprintf(stdout, "%s:PASS:%s %d nsec\n",   \
+> >       |   ^~~~~~~
+> > /data/users/ast/net-next/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c:79:8:
+> > note: ‘duration’ was declared here
+> >    79 |  __u32 duration;
+> 
+> What compiler version? it compiles cleanly with ubuntu 20.04 and gcc
+> 9.3. The other prog_tests are inconsistent with initializing it.
 
-Looks good, thanks!
+official rhel's devtoolset-9
+gcc version 9.1.1 20190605 (Red Hat 9.1.1-2) (GCC)
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > 
+> > and that selftest is imo too primitive.
+> 
+> I focused the selftests on API changes introduced by this set - new
+> attach type, valid accesses to egress_ifindex and not allowing devmap
+> programs with xdp generic.
+> 
+> > It's only loading progs and not executing them.
+> > Could you please add prog_test_run to it?
+> > 
+> 
+> I will look into it.
 
->  kernel/bpf/cgroup.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index 5c0e964105ac..fdf7836750a3 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -595,7 +595,7 @@ static int cgroup_bpf_replace(struct bpf_link *link, struct bpf_prog *new_prog,
->         mutex_lock(&cgroup_mutex);
->         /* link might have been auto-released by dying cgroup, so fail */
->         if (!cg_link->cgroup) {
-> -               ret = -EINVAL;
-> +               ret = -ENOLINK;
->                 goto out_unlock;
->         }
->         if (old_prog && link->prog != old_prog) {
-> --
-> 2.25.4
->
+Thanks!
