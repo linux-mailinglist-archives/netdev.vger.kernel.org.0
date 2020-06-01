@@ -2,149 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C31A1EB1AF
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F3E1EB1B1
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 00:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728833AbgFAW0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 18:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728478AbgFAW0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 18:26:35 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445C0C061A0E;
-        Mon,  1 Jun 2020 15:26:35 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id j12so2184835lfh.0;
-        Mon, 01 Jun 2020 15:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nk/3gy4rhWFtZzEIg7CzzGWUKTHes4CV4dirJuIzOFs=;
-        b=fyflDZygD8LsPhM3zh/m5Jh3IW/gjOsC+OEiqls/TRQ+N2OCJ8wTWB+/uSvEbJbgG7
-         jSmieFkh3/ITbJsQ3CiqTPE08SrnO4h1rRdRniLjVm7pU0lkFx0RBsj3sl94YSnsk33I
-         1j/4rdzV/4gXDlPPJLwsXZbkEIKKefLZXqcoYWZDtIfvQywBlzo2Q8WOgktfEuZQJHeu
-         8ynL2l8qkQNA7NLPPJUC+hRZbEKRENL92WRYOp4oiR/VUxKtxMxjBYcSFxvD4GOHxCJ+
-         E/5300IKSNvqYnRa8YcLUDRRf3l93UuL/K5HlHGi+MfR/a1pNediu9qug/jxMngq5hjN
-         G+RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nk/3gy4rhWFtZzEIg7CzzGWUKTHes4CV4dirJuIzOFs=;
-        b=uH0OPmvMXpSptIIjpWoxi9OWYPi2A23FOBsLNyBidbS4+bt+cb8xUU8j/Y1Md3zlbS
-         xJoxVVmveIN9APCldDgpB76mZbNizzTa4BUmJdHGBTfGYNJaV58MTGQR1ait9GZPSSIH
-         dCviNb6233Gasqi2KOzsiqzXV2YVpxxwoEDBzK5+RwbueXG4MNWk35UHRhsLeSi6wV1R
-         7JWi6ZCSC3XtBBqcPeiZ/HCG+s+mRuaDb3uJq2F962hydjtXguBMRaK/lVxT5Nk3C3K9
-         H1UskzBQfc9+lg7MS5WItOFHuUk320L75ZDivlLSSrxJpgFLrV9Uei1iN21FIwFD1tbK
-         YeOA==
-X-Gm-Message-State: AOAM530IrZwahpLqE+z5W8MC5nzWY8m3m6fKaja/lf4b+qdfEKcXLTJt
-        Q9un1IKI9tU0HfD17F9lH3vvMoK36tEGJG8gqemZwA==
-X-Google-Smtp-Source: ABdhPJzW3iYTzGHJDV2pULPYHk3q1ZfeFzqWsr7cDruoEAtCV7G8lHF+8gCifK/n/n0jK9CTXa9WeXvXSe2beW6FsdU=
-X-Received: by 2002:a19:48e:: with SMTP id 136mr12374796lfe.134.1591050393731;
- Mon, 01 Jun 2020 15:26:33 -0700 (PDT)
+        id S1728721AbgFAW17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 18:27:59 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:57525 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728216AbgFAW16 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 18:27:58 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 0ce7a44f
+        for <netdev@vger.kernel.org>;
+        Mon, 1 Jun 2020 22:11:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=PKIaTJ99jKq0Wr71JDkLG3FOc24=; b=Oy247X
+        uGrbZ74gxiWUni8fFanoD90DSCZH9JZFsRpoH7yaaGLMmsr3UV1ah5f9E//vtyDI
+        3FPEQipWCHvUkr4a450rCkgE/7MV+3m3Oft1hcrsN/fjPQzd/zrcwgCT85MLKcqa
+        VRRw/lGRW++gWxdidG/59T6ppfLykWfHHTwMPaT2cvO85Qaydo9mt99LFP6PVWG0
+        5ZUKD0fxDjwBwYoINCZV8u8mYKDxcF940bKbGpoQnGyI6EiNhAtDdPrLTjMMPANu
+        ZTwrktkqy87AZpelXBR28ZWIyZRZUweMEML+FcjrAJ7XicAzZFP+UHFK6j0NsZP4
+        QPBtQjejoO6go47A==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e984af9a (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 1 Jun 2020 22:11:52 +0000 (UTC)
+Received: by mail-il1-f171.google.com with SMTP id 9so10961929ilg.12
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 15:27:57 -0700 (PDT)
+X-Gm-Message-State: AOAM533f0eRldS7rREn9eRdZ/OkF2LQXmCqanmNm0FiIQf8B0gyznKxc
+        iu0rxdghPFVsmqt4JuuhqjmNRBzHGw1FFbAeqdY=
+X-Google-Smtp-Source: ABdhPJwHQRSUsnU5g7Tb78l3OTbwG6g/f+uokyQ2/LPEN6e5dQ7VtoSg9+WuGpthAWjnyRGP0ylIh6JKRNCzZbtyJJI=
+X-Received: by 2002:a05:6e02:130e:: with SMTP id g14mr23711407ilr.38.1591050476629;
+ Mon, 01 Jun 2020 15:27:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200531082846.2117903-1-jakub@cloudflare.com>
-In-Reply-To: <20200531082846.2117903-1-jakub@cloudflare.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 1 Jun 2020 15:26:22 -0700
-Message-ID: <CAADnVQJhs4FMnHfSAgAAujAE70n98BA7YNvdd2eO4__FVe7CcQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/12] Link-based program attachment to
- network namespaces
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Stanislav Fomichev <sdf@google.com>
+References: <20200601.110044.945252928135960732.davem@davemloft.net>
+ <CAHmME9pJB_Ts0+RBD=JqNBg-sfZMU+OtCCAtODBx61naZO3fqQ@mail.gmail.com>
+ <20200601211307.qj27qx5rnjxdm3zi@lion.mk-sys.cz> <20200601.144008.2114976182852633034.davem@davemloft.net>
+In-Reply-To: <20200601.144008.2114976182852633034.davem@davemloft.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 1 Jun 2020 16:27:45 -0600
+X-Gmail-Original-Message-ID: <CAHmME9orPzKJf7LhbJpU6HXki7twbPV0Z7m8vpVwBO6vCU7kaw@mail.gmail.com>
+Message-ID: <CAHmME9orPzKJf7LhbJpU6HXki7twbPV0Z7m8vpVwBO6vCU7kaw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/1] wireguard column reformatting for end of cycle
+To:     David Miller <davem@davemloft.net>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 31, 2020 at 1:28 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On Mon, Jun 1, 2020 at 3:40 PM David Miller <davem@davemloft.net> wrote:
 >
-> One of the pieces of feedback from recent review of BPF hooks for socket
-> lookup [0] was that new program types should use bpf_link-based
-> attachment.
+> From: Michal Kubecek <mkubecek@suse.cz>
+> Date: Mon, 1 Jun 2020 23:13:07 +0200
 >
-> This series introduces new bpf_link type for attaching to network
-> namespace. All link operations are supported. Errors returned from ops
-> follow cgroup example. Patch 4 description goes into error semantics.
+> > On Mon, Jun 01, 2020 at 01:33:46PM -0600, Jason A. Donenfeld wrote:
+> >> This possibility had occurred to me too, which is why I mentioned the
+> >> project being sufficiently young that this can work out. It's not
+> >> actually in any LTS yet, which means at the worst, this will apply
+> >> temporarily for 5.6,
+> >
+> > It's not only about stable. The code has been backported e.g. into SLE15
+> > SP2 and openSUSE Leap 15.2 kernels which which are deep in RC phase so
+> > that we would face the choice between backporting this huge patch in
+> > a maintenance update and keeping to stumble over it in most of future
+> > backports (for years). Neither is very appealing (to put it mildly).
+> > I have no idea how many other distributions would be affected or for how
+> > long but I doubt we are the only ones.
 >
-> The major change in v2 is a switch away from RCU to mutex-only
-> synchronization. Andrii pointed out that it is not needed, and it makes
-> sense to keep locking straightforward.
+> And google and Facebook and twitter and Amazon and whatever else major
+> infrastructure provider decides to pull Wireguard into their tree.
 >
-> Also, there were a couple of bugs in update_prog and fill_info initial
-> implementation, one picked up by kbuild. Those are now fixed. Tests have
-> been extended to cover them. Full changelog below.
->
-> Series is organized as so:
->
-> Patches 1-3 prepare a space in struct net to keep state for attached BPF
-> programs, and massage the code in flow_dissector to make it attach type
-> agnostic, to finally move it under kernel/bpf/.
->
-> Patch 4, the most important one, introduces new bpf_link link type for
-> attaching to network namespace.
->
-> Patch 5 unifies the update error (ENOLINK) between BPF cgroup and netns.
->
-> Patches 6-8 make libbpf and bpftool aware of the new link type.
->
-> Patches 9-12 Add and extend tests to check that link low- and high-level
-> API for operating on links to netns works as intended.
->
-> Thanks to Alexei, Andrii, Lorenz, Marek, and Stanislav for feedback.
->
-> -jkbs
->
-> [0] https://lore.kernel.org/bpf/20200511185218.1422406-1-jakub@cloudflare.com/
->
-> Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Cc: Marek Majkowski <marek@cloudflare.com>
-> Cc: Stanislav Fomichev <sdf@google.com>
->
-> v1 -> v2:
->
-> - Switch to mutex-only synchronization. Don't rely on RCU grace period
->   guarantee when accessing struct net from link release / update /
->   fill_info, and when accessing bpf_link from pernet pre_exit
->   callback. (Andrii)
-> - Drop patch 1, no longer needed with mutex-only synchronization.
-> - Don't leak uninitialized variable contents from fill_info callback
->   when link is in defunct state. (kbuild)
-> - Make fill_info treat the link as defunct (i.e. no attached netns) when
->   struct net refcount is 0, but link has not been yet auto-detached.
-> - Add missing BPF_LINK_TYPE define in bpf_types.h for new link type.
-> - Fix link update_prog callback to update the prog that will run, and
->   not just the link itself.
-> - Return EEXIST on prog attach when link already exists, and on link
->   create when prog is already attached directly. (Andrii)
-> - Return EINVAL on prog detach when link is attached. (Andrii)
-> - Fold __netns_bpf_link_attach into its only caller. (Stanislav)
-> - Get rid of a wrapper around container_of() (Andrii)
-> - Use rcu_dereference_protected instead of rcu_access_pointer on
->   update-side. (Stanislav)
-> - Make return-on-success from netns_bpf_link_create less
->   confusing. (Andrii)
-> - Adapt bpf_link for cgroup to return ENOLINK when updating a defunct
->   link. (Andrii, Alexei)
-> - Order new exported symbols in libbpf.map alphabetically (Andrii)
-> - Keep libbpf's "failed to attach link" warning message clear as to what
->   we failed to attach to (cgroup vs netns). (Andrii)
-> - Extract helpers for printing link attach type. (bpftool, Andrii)
-> - Switch flow_dissector tests to BPF skeleton and extend them to
->   exercise link-based flow dissector attachment. (Andrii)
-> - Harden flow dissector attachment tests with prog query checks after
->   prog attach/detach, or link create/update/close.
-> - Extend flow dissector tests to cover fill_info for defunct links.
-> - Rebase onto recent bpf-next
+> Jason, I bet you're pretty happy about the uptake of Wireguard but
+> that popularity and distribution has consequences.  Small things have
+> huge ramifications for developers all over the place who now have to
+> keep up with your work and do backports of your fixes.
 
-I really like the set. Applied. Thanks!
+You're right, a fair point. Folks are indeed backporting this with
+their own processes. I'm maintaining a 5.4.y backport, but it'd be
+foolish to assume that's the only one.
+
+Jason
