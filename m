@@ -2,148 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AAC81EA256
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 12:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CC21EA277
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 13:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbgFAK7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 06:59:14 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5832 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726094AbgFAK7M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 06:59:12 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 6B1E04F4E01298E3E784;
-        Mon,  1 Jun 2020 18:59:09 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 1 Jun 2020 18:59:02 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <luobin9@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: [PATCH net-next v5] hinic: add set_channels ethtool_ops support
-Date:   Mon, 1 Jun 2020 18:57:48 +0800
-Message-ID: <20200601105748.27511-1-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726152AbgFALMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 07:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbgFALML (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 07:12:11 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563A7C061A0E;
+        Mon,  1 Jun 2020 04:12:11 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id l1so6105591ede.11;
+        Mon, 01 Jun 2020 04:12:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=czTuxz2CoTD0fHv9cb/RIUM0+nflo6a9HHpNnue05Fg=;
+        b=QPgCYOdW18MdnNvpGvIIqghpVZt0hwClQx6lTBAY1h1dTlbx7kJzCnRlXPGQVeyrFt
+         VA3i1DGARrsHLL37y8Ap5Cc7UfBlT+VVKOd6eg2mjpSOSd4jeuSWWB2Abn9838dbhZ0r
+         bEraHOxVj0yanqSDO/2IWh93JQRpxGIT0s0Nzk/mD2TfLaplOfTHA5KMMi1unhGbKtWC
+         k8U/+JM51LrpC5j3t03A0yYP9qlGml1XX+Qe3/Idm4qNV8VI3oy1XkCE+2621Ip3IMBx
+         3l/8Z7V/xBTXs2Xb3ZxJudvlA7LZX2hC8n+/+2tPuDorJCK1b/fpMdZwB5EkCoRsdduf
+         +xjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=czTuxz2CoTD0fHv9cb/RIUM0+nflo6a9HHpNnue05Fg=;
+        b=hdJNY5TMmL5DCLLZ6i8p5juneQ8ERXSnmBISQUdWovw7FyweRbGn4xHZpkV8sBI42A
+         gl99qCXj30E6mFwMtBZAhiy9nVXGjFn5h+pd/oANocl24VqgPONeLf/gTGJHdpxKw8Gu
+         piy6qH4YXzw/dwnQI3fjnTi4VU/PF71WmI/lfUcWjkk29VUzPla439oUGvfbfT7q57V9
+         PKi0iSekzKSFWstK+PUj6/+v/UUxFDjHyv1YhFlNXgRy1b8njcMjLKctmNXQbaVwWe2A
+         b0muHvzptzta85ciy01OitMUz+XX0pgUCQyghXyVkx4IKoR46JsSWwE0Dnj4XvbohqyB
+         HT3g==
+X-Gm-Message-State: AOAM5331Nq4aJpIYHhBTLe3Cc8PjMrFX7Z6xGjGiAmXMs2P+WcLCpY7S
+        Im6IDpX4WXnajgVDEJrAvp4=
+X-Google-Smtp-Source: ABdhPJx8nJJQm81YEZpmsWNF28u/VBUFA9tk5tgTNRmrEi/WfOhCo400cNlidSnNiRBjvYuOS3fGeg==
+X-Received: by 2002:a50:ee18:: with SMTP id g24mr14329517eds.370.1591009930136;
+        Mon, 01 Jun 2020 04:12:10 -0700 (PDT)
+Received: from X1000-Arch.fritz.box ([2001:171b:2272:c620:bc2a:b7:554a:5740])
+        by smtp.gmail.com with ESMTPSA id 13sm14504017ejh.65.2020.06.01.04.12.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 04:12:09 -0700 (PDT)
+From:   patrickeigensatz@gmail.com
+X-Google-Original-From: patrick.eigensatz@gmail.com
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Patrick Eigensatz <patrickeigensatz@gmail.com>,
+        Coverity <scan-admin@coverity.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ipv4: nexthop: Fix deadcode issue by performing a proper NULL check
+Date:   Mon,  1 Jun 2020 13:12:01 +0200
+Message-Id: <20200601111201.64124-1-patrick.eigensatz@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add support to change TX/RX queue number with "ethtool -L combined".
+From: Patrick Eigensatz <patrickeigensatz@gmail.com>
 
-V4 -> V5: change time zone in patch header
-V4 -> V3: update date in patch header
-V3 -> V2: remove check for zero channels->combined_count
-V1 -> V2: update commit message("ethtool -L" to "ethtool -L combined")
-V0 -> V1: remove check for channels->tx_count/rx_count/other_count
+After allocating the spare nexthop group it should be tested for kzalloc()
+returning NULL, instead the already used nexthop group (which cannot be
+NULL at this point) had been tested so far.
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
+Additionally, if kzalloc() fails, return ERR_PTR(-ENOMEM) instead of NULL.
+
+Coverity-id: 1463885
+Reported-by: Coverity <scan-admin@coverity.com>
+Signed-off-by: Patrick Eigensatz <patrickeigensatz@gmail.com>
 ---
- .../net/ethernet/huawei/hinic/hinic_ethtool.c | 40 +++++++++++++++----
- .../net/ethernet/huawei/hinic/hinic_main.c    |  2 +-
- drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  5 +++
- 3 files changed, 38 insertions(+), 9 deletions(-)
+ net/ipv4/nexthop.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-index ace18d258049..efb02e03e7da 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-@@ -619,14 +619,37 @@ static void hinic_get_channels(struct net_device *netdev,
- 	struct hinic_dev *nic_dev = netdev_priv(netdev);
- 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 563f71bcb2d7..cb9412cd5e4b 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1118,10 +1118,10 @@ static struct nexthop *nexthop_create_group(struct net *net,
  
--	channels->max_rx = hwdev->nic_cap.max_qps;
--	channels->max_tx = hwdev->nic_cap.max_qps;
--	channels->max_other = 0;
--	channels->max_combined = 0;
--	channels->rx_count = hinic_hwdev_num_qps(hwdev);
--	channels->tx_count = hinic_hwdev_num_qps(hwdev);
--	channels->other_count = 0;
--	channels->combined_count = 0;
-+	channels->max_combined = nic_dev->max_qps;
-+	channels->combined_count = hinic_hwdev_num_qps(hwdev);
-+}
-+
-+static int hinic_set_channels(struct net_device *netdev,
-+			      struct ethtool_channels *channels)
-+{
-+	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+	unsigned int count = channels->combined_count;
-+	int err;
-+
-+	netif_info(nic_dev, drv, netdev, "Set max combined queue number from %d to %d\n",
-+		   hinic_hwdev_num_qps(nic_dev->hwdev), count);
-+
-+	if (netif_running(netdev)) {
-+		netif_info(nic_dev, drv, netdev, "Restarting netdev\n");
-+		hinic_close(netdev);
-+
-+		nic_dev->hwdev->nic_cap.num_qps = count;
-+
-+		err = hinic_open(netdev);
-+		if (err) {
-+			netif_err(nic_dev, drv, netdev,
-+				  "Failed to open netdev\n");
-+			return -EFAULT;
-+		}
-+	} else {
-+		nic_dev->hwdev->nic_cap.num_qps = count;
-+	}
-+
-+	return 0;
- }
- 
- static int hinic_get_rss_hash_opts(struct hinic_dev *nic_dev,
-@@ -1219,6 +1242,7 @@ static const struct ethtool_ops hinic_ethtool_ops = {
- 	.get_ringparam = hinic_get_ringparam,
- 	.set_ringparam = hinic_set_ringparam,
- 	.get_channels = hinic_get_channels,
-+	.set_channels = hinic_set_channels,
- 	.get_rxnfc = hinic_get_rxnfc,
- 	.set_rxnfc = hinic_set_rxnfc,
- 	.get_rxfh_key_size = hinic_get_rxfh_key_size,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index c8ab129a7ae8..e9e6f4c9309a 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -326,7 +326,6 @@ static void hinic_enable_rss(struct hinic_dev *nic_dev)
- 	int i, node, err = 0;
- 	u16 num_cpus = 0;
- 
--	nic_dev->max_qps = hinic_hwdev_max_num_qps(hwdev);
- 	if (nic_dev->max_qps <= 1) {
- 		nic_dev->flags &= ~HINIC_RSS_ENABLE;
- 		nic_dev->rss_limit = nic_dev->max_qps;
-@@ -1031,6 +1030,7 @@ static int nic_dev_init(struct pci_dev *pdev)
- 	nic_dev->rq_depth = HINIC_RQ_DEPTH;
- 	nic_dev->sriov_info.hwdev = hwdev;
- 	nic_dev->sriov_info.pdev = pdev;
-+	nic_dev->max_qps = num_qps;
- 
- 	sema_init(&nic_dev->mgmt_lock, 1);
- 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-index 4c66a0bc1b28..6da761d7a6ef 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-@@ -470,6 +470,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
- 	struct hinic_txq *txq;
- 	struct hinic_qp *qp;
- 
-+	if (unlikely(!netif_carrier_ok(netdev))) {
-+		dev_kfree_skb_any(skb);
-+		return NETDEV_TX_OK;
-+	}
-+
- 	txq = &nic_dev->txqs[q_id];
- 	qp = container_of(txq->sq, struct hinic_qp, sq);
+ 	/* spare group used for removals */
+ 	nhg->spare = nexthop_grp_alloc(num_nh);
+-	if (!nhg) {
++	if (!nhg->spare) {
+ 		kfree(nhg);
+ 		kfree(nh);
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+ 	}
+ 	nhg->spare->spare = nhg;
  
 -- 
-2.17.1
+2.26.2
 
