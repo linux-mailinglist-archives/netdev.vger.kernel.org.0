@@ -2,102 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E35F1EB0E2
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 23:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D90D1EB0E7
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 23:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbgFAVVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 17:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
+        id S1728681AbgFAVXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 17:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbgFAVVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 17:21:37 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D551C061A0E;
-        Mon,  1 Jun 2020 14:21:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=tqW4VYGG9Fe/MRunQJThk25D/0Z+SuQJNcCD6SJisQk=; b=ei05sGg8B9oW+xlKoWiwGUwVd
-        0JPFiBUZSr0zNQlwQb8NBoHCLlAoS+iC3jwwfkP5NHlNw9nGACB9z2YVjc3wnu+NrLUnXdHpZFSGB
-        Zf1A8FDj2KKaSeq3kjSpzcQfIO7ptFPaznj+pvKLRSTyIvq09DL38/mDamHwUiSdRfABVT3SDMww1
-        wmB2BIo4B0yL+aPdleD5ShLOIDyYlX4MwHBPPeoYfL6SjiKYsB0nZ8ecV4zJi6oogNfBrNmEFTBrZ
-        mpttlHb+bZv2UbHvYPFmkH1+uCUOKXj7K77PbvMuZhOZ1tXW4TPLCb9m6C6/lE120mh2N6dI09Rot
-        AXLG51T9w==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:37666)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jfrs2-0001JV-Sm; Mon, 01 Jun 2020 22:21:23 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jfrru-0003fj-Jp; Mon, 01 Jun 2020 22:21:14 +0100
-Date:   Mon, 1 Jun 2020 22:21:14 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, zefir.kurtisi@neratec.com
-Subject: Re: [PATCH stable-4.19.y] net: phy: reschedule state machine if AN
- has not completed in PHY_AN state
-Message-ID: <20200601212114.GT1551@shell.armlinux.org.uk>
-References: <20200530214315.1051358-1-olteanv@gmail.com>
- <20200531001849.GG1551@shell.armlinux.org.uk>
- <CA+h21ho6p=6JhR3Gyjt4L2_SnFhjamE7FuU_nnjUG6AUq04TcQ@mail.gmail.com>
- <20200601002753.GH1551@shell.armlinux.org.uk>
- <CA+h21hqongWM=M7E_0d+Zb_qOsw-Gc4soZXoXd_izciz6YeUpA@mail.gmail.com>
+        with ESMTP id S1728205AbgFAVXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 17:23:38 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA94C061A0E;
+        Mon,  1 Jun 2020 14:23:38 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id 202so4813355lfe.5;
+        Mon, 01 Jun 2020 14:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H2b28AkIEl8cTTOnSvSwRsLMj8pDY11OVKWEIgc0mGY=;
+        b=XsekpyEm+5Xn61AEAPS7v3MqalHbMC2MXcaXKOmkzjQo10uFt1DRTK2RQULzRL3pWv
+         lzWJCZ5TlskshiZJ+2RTYRm9aRcn+gBW+gPQL97Say73gv0pNVtA49soCjtclFFgTwAY
+         ducc+vCLTwtWi46NvjZPg+Oti3IfG+aliogznZqF5yLx27bnS2jdT2qQ4vb6yk4e5uep
+         AhnPsoHwcXofl5C35uHT92nZfvzmleP/iOAsPx7LgSSjsw4WB6usmYBdLJtf0ch9+ruO
+         NBhFQnufe/vzKWtVK1XAD0UbJ4ODwZAh3WDeWNC1esU6E3G/fjXWfGD/R9Gy/uv4rQIs
+         c7Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H2b28AkIEl8cTTOnSvSwRsLMj8pDY11OVKWEIgc0mGY=;
+        b=KbLrgdC0avM6byVOHL+sIdbSi8BvjIPSrup6sm7cVeoJJnTieUXEkGfFXl4KrdszcH
+         KuwWP5HW/nMClSMmy2sWczwl/ZUm3X6yJSgEjvKDRzLqLhhhINA0lhl3umLZBxwKQ4Wq
+         5bxFCd/tuuWIQ906eDoryjBAHf+EPLhkxbQ94+oQ+8opI9Gw0/DCeenHC+auL7njXWHa
+         5ZcteSOkuw6J2zAMc3OUHcFmErm/BYbzbeKobWI2/rR0DDMuV1u2eVAW37WYYIqONUK8
+         TjE93Jrqxg7dyEsyTenXgHIsJ7gve4PKtln6vjLz11rTXTDKtkCGh+DKA3alvYFQpgQh
+         3saQ==
+X-Gm-Message-State: AOAM532Dmma3cyC8rZ66uhsH1HlPE7GjFwRbU5RYlLOnrF1zqVc7cFeC
+        yrNX+FMKHAYUwagUI+BZW2yfWPkeUTknaVsG2LT3WQ==
+X-Google-Smtp-Source: ABdhPJyDNeHW02meK621RTVpww8SqO92MrRK8y8cHP48Q3zWX/DgXHR5btr6zdLjjFjbjktFTVri0TQnOn+6nG1w/Ks=
+X-Received: by 2002:a19:987:: with SMTP id 129mr12253517lfj.8.1591046616932;
+ Mon, 01 Jun 2020 14:23:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hqongWM=M7E_0d+Zb_qOsw-Gc4soZXoXd_izciz6YeUpA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower>
+ <159079361946.5745.605854335665044485.stgit@john-Precision-5820-Tower>
+ <20200601165716.5a6fa76a@toad> <5ed51cae71d0d_3f612ade269e05b46e@john-XPS-13-9370.notmuch>
+In-Reply-To: <5ed51cae71d0d_3f612ade269e05b46e@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 1 Jun 2020 14:23:25 -0700
+Message-ID: <CAADnVQ+2NTdyKY+ZX3xW965h8_PGRimy9se=iqW6AvmnB8v7wg@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 2/3] bpf: fix running sk_skb program types with ktls
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 01, 2020 at 11:57:30PM +0300, Vladimir Oltean wrote:
-> On Mon, 1 Jun 2020 at 03:28, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> > And yes, I do have some copper SFP modules that have an (inaccessible)
-> > AR803x PHY on them - Microtik S-RJ01 to be exact.  I forget exactly
-> > which variant it is, and no, I haven't seen any of this "SGMII fails
-> > to come up" - in fact, the in-band SGMII status is the only way to
-> > know what the PHY negotiated with its link partner... and this SFP
-> > module works with phylink with no issues.
-> 
-> See, you should also specify what kernel you're testing on. Since
-> Heiner did the PHY_AN cleanup, phy_aneg_done is basically dead code
-> from the state machine's perspective, only a few random drivers call
-> it:
-> https://elixir.bootlin.com/linux/latest/A/ident/phy_aneg_done
-> So I would not be at all surprised that you're not hitting it simply
-> because at803x_aneg_done is never in your call path.
+On Mon, Jun 1, 2020 at 8:20 AM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > @@ -1793,11 +1795,12 @@ int tls_sw_recvmsg(struct sock *sk,
+> > >
+> > >             if (to_decrypt <= len && !is_kvec && !is_peek &&
+> > >                 ctx->control == TLS_RECORD_TYPE_DATA &&
+> > > -               prot->version != TLS_1_3_VERSION)
+> > > +               prot->version != TLS_1_3_VERSION &&
+> > > +               !sk_psock_strp_enabled(psock))
+> >
+> > Is this recheck of parser state intentional? Or can we test for
+> > "!bpf_strp_enabled" here also?
+>
+> Yes I'll fix it up to use bpf_strp_enabled. Thanks
 
-Please re-read the paragraph of my reply that is quoted above, and
-consider your response to it in light of the word *inaccessible* in
-my paragraph above.
+I fixed that bit and applied the set.
 
-Specifically, ask yourself the question: "if the PHY is inaccessible,
-does it matter what kernel version is being tested?  Does it matter
-what the at803x code is doing?"
-
-The point that I was trying to get across, but you seem to have missed,
-is that this SFP module uses an AR803x PHY that is inaccessible and I
-have never seen a problem with the SGMII side coming up - and if the
-SGMII side does not come up, we have no way to know what the copper
-side is doing.  With this module, we are totally reliant on the SGMII
-side working correctly to work out what the copper side status is.
-
-*Frustrated*.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+Thanks!
