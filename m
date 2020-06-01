@@ -2,115 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E671EA291
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 13:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7801EA295
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 13:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725972AbgFALS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 07:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbgFALS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 07:18:27 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1B0C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 04:18:25 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id g10so2696374wmh.4
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 04:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=g0VCdWKmiQwqzeZ1145Q+jD/a6zqNIWdbNoYho8IUD0=;
-        b=FJP0TzjycG35j8tltdqEefozgArLWxJRNm/8pejgk3vi+YrzWYohveIo+Wv32u9RyO
-         ZM81uVxshoCGVU+k2TohNajLp6bVNA2XU23gRT9SZOTgTTbAt2+A+iMYZcjvWWJ8mzlQ
-         zfNvKWd2clOWM8C3xpLHdyLROXd0Q8POb8TqU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=g0VCdWKmiQwqzeZ1145Q+jD/a6zqNIWdbNoYho8IUD0=;
-        b=WnVjZOOkiCgtA63alaNVeJck0/+vamPCqMd+fKwz5TJErKiEpUW4iQ4aWgBy5P0Z7D
-         ZKBrMMDx/NmEjU2wogO5eAckMBeB/Ck6HI2SmMR3YoVvQj6NQqBZDuzXfuvuMJb3Djzn
-         Oe7qQIvJCufEZURGXftEVEJV2u+pvPs0RsWLaq3FXyzO9G4WQKQup0/CLicp5ZklCCqq
-         5g7SogC6vtj3q0ovlhXotogYf7PjZq5bq011Gr6gqyjPqd27ctpuJ3LNogf3QqqtzMCd
-         J+sk725elYHzPxEDep1G4ip2eqIe1OjLrOwb8LWk3B6r75LAnj1wWiT6C/l3AOaTFYvI
-         9XtQ==
-X-Gm-Message-State: AOAM532X9guYXi9XRVMxCr8P1rLn7yKOLSr2nISA8ulY3gWjrbOBADEr
-        4igEwpCSaBpc8QbYHv2lKXSsqw==
-X-Google-Smtp-Source: ABdhPJwdYJu0zMaWhn84ZbnLMJkV5ivwehiW6NRByLBq2FJYb+LNL4BsdrTKY6NK2+rut3Dk64b2Qg==
-X-Received: by 2002:a1c:6244:: with SMTP id w65mr19535960wmb.82.1591010304464;
-        Mon, 01 Jun 2020 04:18:24 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id a1sm13861812wmd.28.2020.06.01.04.18.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Jun 2020 04:18:23 -0700 (PDT)
-Subject: Re: [PATCH] ipv4: nexthop: Fix deadcode issue by performing a proper
- NULL check
-To:     patrickeigensatz@gmail.com, David Ahern <dsahern@kernel.org>
-Cc:     Coverity <scan-admin@coverity.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200601111201.64124-1-patrick.eigensatz@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <a4fc3fdc-48c2-3af9-95fc-342c1e87ed62@cumulusnetworks.com>
-Date:   Mon, 1 Jun 2020 14:18:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726159AbgFALSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 07:18:51 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:38709 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725976AbgFALSv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 07:18:51 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 1be68f30
+        for <netdev@vger.kernel.org>;
+        Mon, 1 Jun 2020 11:02:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=UW7c3FOIe8NfL3ecX7uTUfefE2Y=; b=HQGs5V
+        F+EvIm0aELxwxvnGXVt7OYBGLETBySq0yBxrlHH2WjsW0fNHzckGbnudFg+NhQfd
+        R2eZXafEv48k3AMK59+k4LGyDyy11/TihP6YFmycHH2RJeX8ExOGS8z6Fzs2+MnZ
+        npYZBWc7W9G1cCZdDec9kcFKMqEFEehzNdClxMpAvTnxtlp/R7BsxiHZNwTeXCmX
+        4p+4dZAIQcrifJmFAsPMoDS1gspcNU84srxUv25LrRVENxsaYR71SHbpa4goU2g4
+        s9ZXLBTH/zC5x1aAVAUhqYcskTIgugRbKR1ITxF39sZBjjOSYWk/z7SQ4SSRx01/
+        8ewiyQl3waYcUayw==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d45600aa (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 1 Jun 2020 11:02:46 +0000 (UTC)
+Received: by mail-il1-f170.google.com with SMTP id j3so8944876ilk.11
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 04:18:47 -0700 (PDT)
+X-Gm-Message-State: AOAM533xkMmAAhwF7DiUO41oL1uT8/c9pBAfATn026TNEdX8ygjUX89U
+        cFpy+q0iiFPWNQAwXNgBFIPp7FIUd8tZ1UweV1o=
+X-Google-Smtp-Source: ABdhPJxStAdyQbink3dezSh0PfJBzdE/Dqlt6vgBTK0t+wlNy9FTIFSRF2Wnelm5+p0c7oN59dL442WBNPQvnda9FWs=
+X-Received: by 2002:a92:af15:: with SMTP id n21mr14384848ili.64.1591010327243;
+ Mon, 01 Jun 2020 04:18:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200601111201.64124-1-patrick.eigensatz@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200601062946.160954-1-Jason@zx2c4.com> <20200601062946.160954-2-Jason@zx2c4.com>
+ <517a1ae3d93ff750263008c9807c224fb127b704.camel@perches.com>
+In-Reply-To: <517a1ae3d93ff750263008c9807c224fb127b704.camel@perches.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 1 Jun 2020 05:18:36 -0600
+X-Gmail-Original-Message-ID: <CAHmME9pf7i6u4UXS0eJ_YN8q5K2wtUx0iAS+rb4b=7FiWJNwKQ@mail.gmail.com>
+Message-ID: <CAHmME9pf7i6u4UXS0eJ_YN8q5K2wtUx0iAS+rb4b=7FiWJNwKQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/1] wireguard: reformat to 100 column lines
+To:     Joe Perches <joe@perches.com>
+Cc:     Netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/06/2020 14:12, patrickeigensatz@gmail.com wrote:
-> From: Patrick Eigensatz <patrickeigensatz@gmail.com>
-> 
-> After allocating the spare nexthop group it should be tested for kzalloc()
-> returning NULL, instead the already used nexthop group (which cannot be
-> NULL at this point) had been tested so far.
-> 
-> Additionally, if kzalloc() fails, return ERR_PTR(-ENOMEM) instead of NULL.
-> 
-> Coverity-id: 1463885
-> Reported-by: Coverity <scan-admin@coverity.com>
-> Signed-off-by: Patrick Eigensatz <patrickeigensatz@gmail.com>
-> ---
->  net/ipv4/nexthop.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-> index 563f71bcb2d7..cb9412cd5e4b 100644
-> --- a/net/ipv4/nexthop.c
-> +++ b/net/ipv4/nexthop.c
-> @@ -1118,10 +1118,10 @@ static struct nexthop *nexthop_create_group(struct net *net,
->  
->  	/* spare group used for removals */
->  	nhg->spare = nexthop_grp_alloc(num_nh);
-> -	if (!nhg) {
-> +	if (!nhg->spare) {
->  		kfree(nhg);
->  		kfree(nh);
-> -		return NULL;
-> +		return ERR_PTR(-ENOMEM);
->  	}
->  	nhg->spare->spare = nhg;
->  
-> 
+On Mon, Jun 1, 2020 at 5:12 AM Joe Perches <joe@perches.com> wrote:
+> Newspaper columns are pretty narrow for a reason.
+>
+> Please remember that left to right scanning of text, especially for
+> comments, is not particularly improved by longer lines.
 
-As Colin's similar patch[1] was rejected recently, this one also fixes the issue.
-This is targeted at -net.
+I agree that extra long lines make reading text impossible -- 500 is
+madness, for example -- but 100 columns is a marked improvement over
+80 in reading quickly for me, where I can take in more text on one
+glance. I regularly will reformat long emails in vim with gq, and I'm
+not the only one who does that; it was a nice suggestion made to me
+years ago.
 
-Fixes: 90f33bffa382 ("nexthops: don't modify published nexthop groups")
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Either way, I would prefer not to bikeshed these minutia. If you want
+to impose a different column limit for comments than for the rest of
+the code, I suggest you bring that up in the original thread where
+Linus was discussing this stuff and codify it there as part of the
+style guide. Please don't derail this patch before net-next closes
+tomorrow; that will make things a larger headache than necessary.
 
-Thanks!
-
-[1] https://lkml.org/lkml/2020/5/28/909
+Jason
