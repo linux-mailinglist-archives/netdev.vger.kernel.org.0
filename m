@@ -2,93 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8846F1E9C70
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 06:16:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 959161E9CD0
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 06:54:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgFAEQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 00:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgFAEQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 00:16:23 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78646C08C5C0
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 21:16:23 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id l1so5386899ede.11
-        for <netdev@vger.kernel.org>; Sun, 31 May 2020 21:16:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=OvRsMtNyIKIk7Sc8KCclbreP4Z4+OxlMjgwmceSdLLI=;
-        b=kmb56z6FG3gFSDwpJfWUvN1ihQjqtPY2KZxmO5xCwE6Ac/Yu/BtKSIdxEtpcJuguUM
-         HBLs0Dm1WAKvRQLIMSKGlEx6YMq7eCH0Nc3DsFBCbcqca5vUjrq988DJ+9/AJI5HHAn6
-         BloslZOIAW6BxToY70IF9w8/roRfwFmC1M5IkD7seTVxycV882fI9mZM41Z1HAt2PIPy
-         sFb8PRfUGlyutyAERrvfs49X+L7Q03EXU+/KoJPc+hbGdWSj866U9HcX29VFCosP22f3
-         rjC+OcqMtiMxDg7f2IecyGctFtC+8fhnb812XNTNIQyQ7NSaqgoNVykBGwPY4aUuhx9s
-         gSRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=OvRsMtNyIKIk7Sc8KCclbreP4Z4+OxlMjgwmceSdLLI=;
-        b=RKnk7IfFpdRcAOcTQdg+bYPo2dh4WYT9v8Hofv3VRj6vgkGI+jDewJaxYUzc9hO8B7
-         7TkSRvBL/7cy/lsmm0e3YWOlkO4hnE/EoQQmpghE5vqLI4K5HSoIg8FeWdCsDpx14pug
-         gkI76dnRdkYWcSl0GEVUQSfX794SguSUObLRigxuqU4jMjNYAIi9vLx9RnXyNMMtkYFv
-         7gwWaHT1eEMXvmUJ4yvk2wfsoLil0cpliJrwUDeU+TA+YeGdfiDE6sVWpdj72OS5RRk7
-         TaYviErx2JMSoOrzorKAMg4e4ypoTUEaWp72h6sMBtFk/MK2i7Vm+RISy/v1YFealjIU
-         P4LQ==
-X-Gm-Message-State: AOAM531N8/Qa/BXG+eOI56Sdwzv/qpLi0AHYGONbm9up3A/jQfl0ks8P
-        FKgjsuxCio+NmBVnQzQ08erTR+Hwn/LTJ19/Y1k=
-X-Google-Smtp-Source: ABdhPJyFT5NiiTzlbnyvbb3t7qgegoM4wuqnpYDOGg/kOuSbFmjAgZbJpZldTh3Z1yPcQNULhDd4+WQw5xQTTMyQFZs=
-X-Received: by 2002:a50:9f0f:: with SMTP id b15mr19314308edf.60.1590984982203;
- Sun, 31 May 2020 21:16:22 -0700 (PDT)
+        id S1725847AbgFAEyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 00:54:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58498 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725290AbgFAEyP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 00:54:15 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id EFA63AE6E;
+        Mon,  1 Jun 2020 04:54:14 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id C97FA6045E; Mon,  1 Jun 2020 06:54:11 +0200 (CEST)
+Date:   Mon, 1 Jun 2020 06:54:11 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Luo bin <luobin9@huawei.com>, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, luoxianjun@huawei.com,
+        yin.yinshi@huawei.com, cloud.wangxiaoyun@huawei.com
+Subject: Re: [PATCH net-next v4] hinic: add set_channels ethtool_ops support
+Message-ID: <20200601045411.6hgos2pyxum4o2sd@lion.mk-sys.cz>
+References: <20200601094206.20785-1-luobin9@huawei.com>
 MIME-Version: 1.0
-Received: by 2002:a17:906:970c:0:0:0:0 with HTTP; Sun, 31 May 2020 21:16:21
- -0700 (PDT)
-Reply-To: mrsfatimakargbo@outlook.com
-From:   Mr Suleman Bello <darissapascal11@gmail.com>
-Date:   Sun, 31 May 2020 21:16:21 -0700
-Message-ID: <CABhhPTpTNBa0PpJy7+LciOwiN=xHzc4QkCHYSkogZ+Y3jETm1g@mail.gmail.com>
-Subject: Can i trust you?
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200601094206.20785-1-luobin9@huawei.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Mon, Jun 01, 2020 at 09:42:06AM +0000, Luo bin wrote:
+> add support to change TX/RX queue number with ethtool -L ethx combined
+> 
+> Signed-off-by: Luo bin <luobin9@huawei.com>
+> ---
+[...]
 
-Please i want you to read this letter very carefully and i must
-apologize for berging this message into your mail box without any
-formal introduction due to the urgency and confidential of this issue
-and i know that this message will come to you as a surprise, Please
-this is not a joke and i will not like you to joke with it.I am
-Mr.Suleman Bello, a staff in African Development Bank (A.D.B)
-Ouagadougou, Burkina faso West Africa.I discovered existing dormant
-account for years. When I discovered that there had been neither
-continuation nor withdrawals from this account for this long period
-and according to the laws and constitution guiding this banking
-institution, any unserviceable account for more than (7) seven years,
-that fund will be transferred to national treasury as unclaimed fund.
+The patch looks correct but I'm not sure how is this change
 
-I Hoped that you will not expose or betray this trust and confident
-that i am about to extablish with you for the mutual benefit of you
-and i,I need your urgent assistance in transferring the sum of $10.5
-)million usd into your account within 7 banking days. This money has
-been dormant for years in our Bank, and The request of foreigner in
-this transaction is necessary because our late customer was a
-foreigner and a burkinabe cannot stand as next of kin to a
-foreigner.Because of the static of this transaction I want you to
-stand as the next of kin so that our bank will accord you the
-recognition and have the fund transferred to your account.
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
+> index 4c66a0bc1b28..6da761d7a6ef 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
+> @@ -470,6 +470,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
+>  	struct hinic_txq *txq;
+>  	struct hinic_qp *qp;
+>  
+> +	if (unlikely(!netif_carrier_ok(netdev))) {
+> +		dev_kfree_skb_any(skb);
+> +		return NETDEV_TX_OK;
+> +	}
+> +
+>  	txq = &nic_dev->txqs[q_id];
+>  	qp = container_of(txq->sq, struct hinic_qp, sq);
+>  
 
-Upon your response, I shall then provide you with further information
-and more deities that will help you understand the transaction. I am
-expecting your urgent response to enable me inform you on how the
-business will be executed. Please I would like you to keep this
-transaction confidential and as a top secret or delete if you are not
-interested.
+related to the rest. It rather looks as a fix/workaround for a race
+condition you encountered while testing it but which could also happen
+under other circumstances.
 
-Thanks
-Mr.Suleman Bello.
+Michal
