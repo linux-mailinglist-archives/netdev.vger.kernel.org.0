@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6B41EB026
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 22:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A6C1EB029
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 22:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728394AbgFAUXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 16:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbgFAUXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 16:23:44 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED396C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 13:23:43 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id h188so4718253lfd.7
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 13:23:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qz5FAoTQx8T8gE8j7kKiXewzMi3OlovWcaQwsJrdmx4=;
-        b=PqDzapFPdFvnfrunKEo1CHlRHj6Hm9cHDuWV47VjxHbSnbNt8neYunGh/JqZ/FfjWA
-         Z47QGmkY+exLsQGCE+vKix6ikiWMeq3ydvD/q2tHME2mgJv+k8mbCGku6cYWZJ50JUlO
-         l0vqzWxL2XIwv4rz16Lt9JsgO85NOJ8vE8T7UoFK0u+4p6X1dTR5eF6aM38xjZVhT7Nj
-         nKUFy8m1+Aw/Gz47v1pq4zwGsnI/tSWhFyi8Lq3AnfPMEzqgopVmaFyOG8VIzZSd2bj6
-         KXOcD1nDRDUADF7t/EpWTWkH3E8HuhB+Mw+0O8QlyAH7ksRRxqLXjprfvOToOf1BjBLP
-         7mWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qz5FAoTQx8T8gE8j7kKiXewzMi3OlovWcaQwsJrdmx4=;
-        b=f9RKUHOVfyjdmG2s+bzZUrM759y+1OY/Q/pWXceB8BH22+37ssk/MI9M/KiafMED4E
-         QB7Qg/CEns+truuQEYNRfz8BgR/YjrA9zxbMNU0GRwCON29iObPr8Oy6LAqbrQE1vLas
-         ZC6IGiUrjKvH7/wfkYbAmOr2mQQ6dVKzhMh80nYFHom0apwv03WcqDg0ye6xCmYnAE3V
-         dd2o1ZTxdyP6CLqjLezHPcSxi1W5k/K/e3741D2WEGvCoyd9tKKprMcPotmqF4TdpMIT
-         Dzfg74aSTU5NzDTgxQri3BnJI+TM9DHcisgpRPrrQb/tYLHsj5Vns5JdPpBIKEgnA5A1
-         U1fQ==
-X-Gm-Message-State: AOAM53191LL/1CXhO++Ig4s6kXkyAxMp56NQsV/pTDftaA7xrEQKadIg
-        xbNxne6uBxdYUwF61Bf/iSK+pRabewmXwvSHp07kjQ==
-X-Google-Smtp-Source: ABdhPJxhxi92o31uNCDmoNMyDyge9aqXdFWJAaVZ8nvy4AzRGHn7z9EdNp1AWOLKeKnFUVDjD2DS+cUEdP8B+wUZjUM=
-X-Received: by 2002:a19:84:: with SMTP id 126mr11977971lfa.174.1591043022259;
- Mon, 01 Jun 2020 13:23:42 -0700 (PDT)
+        id S1727875AbgFAU0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 16:26:07 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:1764 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726944AbgFAU0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 16:26:07 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 051KNDC6032519
+        for <netdev@vger.kernel.org>; Mon, 1 Jun 2020 13:26:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=jhVyv6SCTRhzcDbzRM8m3iHR5YxHnLZfRHg/sXy5jco=;
+ b=Jh2daGpQykN0yGVwI3SBQweg3X+FGVGJVA7KWidJJXlVkMhHd27Rkfop2p4Dz2hiUCps
+ jvBs4QgS8RJgoSKatFnn05clGBZ+m9E2tw7GRwewCkC+3LlUYdwkjR/sNgepc7pRp3Um
+ j8KddyuMr0p4AuNr0hgkYB/FT2aktH3oZSo= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31bnafq636-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 13:26:06 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 1 Jun 2020 13:26:04 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 526082EC2FCF; Mon,  1 Jun 2020 13:26:03 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: add _GNU_SOURCE for reallocarray to ringbuf.c
+Date:   Mon, 1 Jun 2020 13:26:01 -0700
+Message-ID: <20200601202601.2139477-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <159053967673.36091.13796251125796306358.stgit@anambiarhost.jf.intel.com>
-In-Reply-To: <159053967673.36091.13796251125796306358.stgit@anambiarhost.jf.intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 1 Jun 2020 13:23:31 -0700
-Message-ID: <CAADnVQLk_aWFOAaJMZyBPwaE6Bw0RTe+im0AA1WcoxYeG69jEQ@mail.gmail.com>
-Subject: Re: [bpf-next PATCH v3] bpf: Add rx_queue_mapping to bpf_sock
-To:     Amritha Nambiar <amritha.nambiar@intel.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-01_12:2020-06-01,2020-06-01 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 mlxlogscore=507 impostorscore=0 bulkscore=0 clxscore=1015
+ phishscore=0 suspectscore=8 adultscore=0 mlxscore=0 spamscore=0
+ cotscore=-2147483648 priorityscore=1501 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006010148
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 26, 2020 at 5:34 PM Amritha Nambiar
-<amritha.nambiar@intel.com> wrote:
->
-> Add "rx_queue_mapping" to bpf_sock. This gives read access for the
-> existing field (sk_rx_queue_mapping) of struct sock from bpf_sock.
-> Semantics for the bpf_sock rx_queue_mapping access are similar to
-> sk_rx_queue_get(), i.e the value NO_QUEUE_MAPPING is not allowed
-> and -1 is returned in that case. This is useful for transmit queue
-> selection based on the received queue index which is cached in the
-> socket in the receive path.
->
-> v3: Addressed review comments to add usecase in patch description,
->     and fixed default value for rx_queue_mapping.
-> v2: fixed build error for CONFIG_XPS wrapping, reported by
->     kbuild test robot <lkp@intel.com>
->
-> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+On systems with recent enough glibc, reallocarray compat won't kick in, s=
+o
+reallocarray() itself has to come from stdlib.h include. But _GNU_SOURCE =
+is
+necessary to enable it. So add it.
 
-Applied. Thanks
+Fixes: 4cff2ba58bf1 ("libbpf: Add BPF ring buffer support")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/ringbuf.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tools/lib/bpf/ringbuf.c b/tools/lib/bpf/ringbuf.c
+index bc10fa1d43c7..4fc6c6cbb4eb 100644
+--- a/tools/lib/bpf/ringbuf.c
++++ b/tools/lib/bpf/ringbuf.c
+@@ -4,6 +4,9 @@
+  *
+  * Copyright (C) 2020 Facebook, Inc.
+  */
++#ifndef _GNU_SOURCE
++#define _GNU_SOURCE
++#endif
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <errno.h>
+--=20
+2.24.1
+
