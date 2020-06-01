@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BD01EADD8
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 20:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5A11EAE5D
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 20:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731035AbgFASs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 14:48:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53176 "EHLO mail.kernel.org"
+        id S1729994AbgFASCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 14:02:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46074 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730567AbgFASHT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 14:07:19 -0400
+        id S1729981AbgFASCt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jun 2020 14:02:49 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC1222068D;
-        Mon,  1 Jun 2020 18:07:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E1CC3206E2;
+        Mon,  1 Jun 2020 18:02:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591034838;
-        bh=XSEn190Tndzz1u6lmua3AGXG2CfzvcWuvZBGn3mQDa8=;
+        s=default; t=1591034568;
+        bh=0L32+1uIV4NXwp2BU7QjlrINyxRBtIPCuodI8AO0FAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fydtuUh5RApQ5mi16HhdmC7tDup5Q3BAb+dG02xs13fKVPMrzKrGu25h+uhiPKgWg
-         PtPG2sZIjHKbXlp/xAimrgo1y17LlsKYwlCgwxQBdrPLr6QhKWtuxXyhGnbr/qFLSE
-         lMj/YxIIUGTuLQF5oa1kYdRljo2eEG8//DacoADw=
+        b=pp0jeLXBth4qtwfFcUXY88r53aaNPTkM0M+bczIEkf6A9RLyoPHHQzt0in11hiy9r
+         MzMKcfwlMnSmZekflORur+2ZwJL5JI0LP6V0pbtrXV95jjfwqj+duvGhh3G1rtJUfw
+         XVLBGD72BDATOd3qID/tuagDwwBoh/nitK0mxf2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -30,12 +30,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Vlad Yasevich <vyasevich@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, jere.leppanen@nokia.com,
         marcelo.leitner@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH 5.4 018/142] sctp: Dont add the shutdown timer if its already been added
-Date:   Mon,  1 Jun 2020 19:52:56 +0200
-Message-Id: <20200601174039.765838306@linuxfoundation.org>
+Subject: [PATCH 4.19 12/95] sctp: Dont add the shutdown timer if its already been added
+Date:   Mon,  1 Jun 2020 19:53:12 +0200
+Message-Id: <20200601174022.821314482@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200601174037.904070960@linuxfoundation.org>
-References: <20200601174037.904070960@linuxfoundation.org>
+In-Reply-To: <20200601174020.759151073@linuxfoundation.org>
+References: <20200601174020.759151073@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -100,7 +100,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/sctp/sm_sideeffect.c
 +++ b/net/sctp/sm_sideeffect.c
-@@ -1522,9 +1522,17 @@ static int sctp_cmd_interpreter(enum sct
+@@ -1537,9 +1537,17 @@ static int sctp_cmd_interpreter(enum sct
  			timeout = asoc->timeouts[cmd->obj.to];
  			BUG_ON(!timeout);
  
