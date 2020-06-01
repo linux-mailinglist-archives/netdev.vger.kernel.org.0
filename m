@@ -2,157 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9795A1E9BF8
-	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 05:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75101E9C4A
+	for <lists+netdev@lfdr.de>; Mon,  1 Jun 2020 06:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbgFADME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 May 2020 23:12:04 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:8063 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727121AbgFADME (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 May 2020 23:12:04 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 7955C5C1F17;
-        Mon,  1 Jun 2020 11:11:59 +0800 (CST)
-Subject: Re: [PATCH net-next 2/2] net/mlx5e: add ct_metadata.nat support in ct
- offload
-To:     Oz Shlomo <ozsh@mellanox.com>, paulb@mellanox.com,
-        saeedm@mellanox.com
-Cc:     netdev@vger.kernel.org
-References: <1590650155-4403-1-git-send-email-wenxu@ucloud.cn>
- <1590650155-4403-3-git-send-email-wenxu@ucloud.cn>
- <91589d29-42cb-7384-3ccc-58af4350a984@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <a6b01a18-f3f1-1af8-7d2e-6f9b282d42be@ucloud.cn>
-Date:   Mon, 1 Jun 2020 11:11:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1725788AbgFAEA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 00:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725290AbgFAEA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 00:00:59 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465D1C08C5C0;
+        Sun, 31 May 2020 21:00:59 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id v2so2813062pfv.7;
+        Sun, 31 May 2020 21:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LVKJu03U8Q8qevPDyP1VjaDzcYQ7HNfppqfKazJ9gIg=;
+        b=FLg4lbyNni935s9Fw0W5D6kuelexVZE9u6jNbaqOmyjPtGL31JVgulJs4xJxsUHQuH
+         7EVZCSTNOLki4tKQbBR5zElqHWeYtEF5/JA8mm6R0oCbFwX0iAni8BkBYMKqx57+iht1
+         6Nf3vpI7ZNjbdgoJFbhNNNgs6zWQ0Izlth9iT/jj4/akheIjYfcI+DjYBImkrqcAQAmT
+         HZr1exU2+cf/9E7sOjfnG1pqmpFqu/azRf1X735cBM6ZAATHZXKy2XfmSyFuMBirPdSS
+         4zs9I0OOZaxqQ/FQXR6qigAw+zD2Hlkqm+fn986uTMj42oqOEgNMpNCdmC+TKsb+hqLW
+         nzQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LVKJu03U8Q8qevPDyP1VjaDzcYQ7HNfppqfKazJ9gIg=;
+        b=Cj9RDJm0I8wOSzMAsRB0WcNOOQ4R+ZeMPQC5orV7e0A+bPHI3pgSA/gXSnRw6N5mNW
+         puvaD7yqqWPcXs/NLq+Uaygg+bRgKGRZG6aOTh31Z/jHOwDIAeeeQ3GRAutIexQYPAS0
+         H0jsJr98aTZr7/CRl+CS+0EUdJTDzthx7njVNEt8Ut5GHM84FWEWOa/9OSGp5MDQsxi+
+         9UbwSP01+kZdbwPIPNuXpjp4QlC7UmvxUvn0kMlRlbdQOIvgQtE8Glw3UTPjp9eJD5gy
+         i+xYtfTxxLlGtFUnJmj05AGjD3wU8TmAgx60HE0+gctMWvnV0pQbgwtYqM1eq9fLvkRz
+         i6Yw==
+X-Gm-Message-State: AOAM531y6xLQWqYBFwudILvnlu5GwoljSOCXrlqYXXSoaEbRUearpuca
+        Jmc+LipgoAqYwDTaVcyMeILp4tWobcKzLA==
+X-Google-Smtp-Source: ABdhPJypj3srXr6HIOCY52BYOx0RYWtMHK8UXKgORFkIOn6rEUi25GtJtexPPu67jjLbHfR+LUmoSQ==
+X-Received: by 2002:a63:7407:: with SMTP id p7mr18365207pgc.268.1590984058598;
+        Sun, 31 May 2020 21:00:58 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v129sm13235321pfv.18.2020.05.31.21.00.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 31 May 2020 21:00:57 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     John Haxby <john.haxby@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] ipv6: fix IPV6_ADDRFORM operation logic
+Date:   Mon,  1 Jun 2020 11:55:03 +0800
+Message-Id: <20200601035503.3594635-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <91589d29-42cb-7384-3ccc-58af4350a984@mellanox.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEpJS0tLSk5OT09DQkpZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw*M04DHSQYHykeDBkqTTocVlZVSktJSyhJWVdZCQ
-        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nio6Azo5Fzg#Mz5KIgEzKx1W
-        FBYKCiNVSlVKTkJLQkNKSkpCTE9MVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFNSExLNwY+
-X-HM-Tid: 0a726ddd4e902087kuqy7955c5c1f17
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Socket option IPV6_ADDRFORM supports UDP/UDPLITE and TCP at present.
+Previously the checking logic looks like:
+if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
+	do_some_check;
+else if (sk->sk_protocol != IPPROTO_TCP)
+	break;
 
-On 5/31/2020 4:01 PM, Oz Shlomo wrote:
-> Hi Wenxu,
->
-> On 5/28/2020 10:15 AM, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> In the ct offload all the conntrack entry offload  rules
->> will be add to both ct ft and ct_nat ft twice.
->> It is not makesense. The ct_metadat.nat will tell driver
->
-> Adding the connection to both tables is required because the user may
-> perform a CT action without NAT even though a NAT entry was allocated
-> when the connection was committed.
+After commit b6f6118901d1 ("ipv6: restrict IPV6_ADDRFORM operation"), TCP
+was blocked as the logic changed to:
+if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
+	do_some_check;
+else if (sk->sk_protocol == IPPROTO_TCP)
+	do_some_check;
+	break;
+else
+	break;
 
-Thanks, understood.  But I just wonder what use case for this behavior?
->
->> the rule should add to ct or ct_nat flow table
->>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>   drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 34 ++++++++--------------
->>   1 file changed, 12 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
->> index 995b2ef..02ecd24 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
->> @@ -88,7 +88,7 @@ struct mlx5_ct_entry {
->>       struct mlx5_fc *counter;
->>       unsigned long cookie;
->>       unsigned long restore_cookie;
->> -    struct mlx5_ct_zone_rule zone_rules[2];
->> +    struct mlx5_ct_zone_rule zone_rule;
->>   };
->>     static const struct rhashtable_params cts_ht_params = {
->> @@ -238,10 +238,9 @@ struct mlx5_ct_entry {
->>     static void
->>   mlx5_tc_ct_entry_del_rule(struct mlx5_tc_ct_priv *ct_priv,
->> -              struct mlx5_ct_entry *entry,
->> -              bool nat)
->> +              struct mlx5_ct_entry *entry)
->>   {
->> -    struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
->> +    struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rule;
->>       struct mlx5_esw_flow_attr *attr = &zone_rule->attr;
->>       struct mlx5_eswitch *esw = ct_priv->esw;
->>   @@ -256,8 +255,7 @@ struct mlx5_ct_entry {
->>   mlx5_tc_ct_entry_del_rules(struct mlx5_tc_ct_priv *ct_priv,
->>                  struct mlx5_ct_entry *entry)
->>   {
->> -    mlx5_tc_ct_entry_del_rule(ct_priv, entry, true);
->> -    mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
->> +    mlx5_tc_ct_entry_del_rule(ct_priv, entry);
->>         mlx5_fc_destroy(ct_priv->esw->dev, entry->counter);
->>   }
->> @@ -493,7 +491,7 @@ struct mlx5_ct_entry {
->>                 struct mlx5_ct_entry *entry,
->>                 bool nat)
->>   {
->> -    struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
->> +    struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rule;
->>       struct mlx5_esw_flow_attr *attr = &zone_rule->attr;
->>       struct mlx5_eswitch *esw = ct_priv->esw;
->>       struct mlx5_flow_spec *spec = NULL;
->> @@ -562,7 +560,8 @@ struct mlx5_ct_entry {
->>   static int
->>   mlx5_tc_ct_entry_add_rules(struct mlx5_tc_ct_priv *ct_priv,
->>                  struct flow_rule *flow_rule,
->> -               struct mlx5_ct_entry *entry)
->> +               struct mlx5_ct_entry *entry,
->> +               bool nat)
->>   {
->>       struct mlx5_eswitch *esw = ct_priv->esw;
->>       int err;
->> @@ -574,20 +573,10 @@ struct mlx5_ct_entry {
->>           return err;
->>       }
->>   -    err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, false);
->> +    err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, nat);
->>       if (err)
->> -        goto err_orig;
->> -
->> -    err = mlx5_tc_ct_entry_add_rule(ct_priv, flow_rule, entry, true);
->> -    if (err)
->> -        goto err_nat;
->> -
->> -    return 0;
->> +        mlx5_fc_destroy(esw->dev, entry->counter);
->>   -err_nat:
->> -    mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
->> -err_orig:
->> -    mlx5_fc_destroy(esw->dev, entry->counter);
->>       return err;
->>   }
->>   @@ -619,7 +608,8 @@ struct mlx5_ct_entry {
->>       entry->cookie = flow->cookie;
->>       entry->restore_cookie = meta_action->ct_metadata.cookie;
->>   -    err = mlx5_tc_ct_entry_add_rules(ct_priv, flow_rule, entry);
->> +    err = mlx5_tc_ct_entry_add_rules(ct_priv, flow_rule, entry,
->> +                     meta_action->ct_metadata.nat);
->>       if (err)
->>           goto err_rules;
->>   @@ -1620,7 +1610,7 @@ struct mlx5_flow_handle *
->>           return false;
->>         entry = container_of(zone_rule, struct mlx5_ct_entry,
->> -                 zone_rules[zone_rule->nat]);
->> +                 zone_rule);
->>       tcf_ct_flow_table_restore_skb(skb, entry->restore_cookie);
->>         return true;
->>
->
+Then after commit 82c9ae440857 ("ipv6: fix restrict IPV6_ADDRFORM operation")
+UDP/UDPLITE were blocked as the logic changed to:
+if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
+	do_some_check;
+if (sk->sk_protocol == IPPROTO_TCP)
+	do_some_check;
+
+if (sk->sk_protocol != IPPROTO_TCP)
+	break;
+
+Fix it by using Eric's code and simply remove the break in TCP check, which
+looks like:
+if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE)
+	do_some_check;
+else if (sk->sk_protocol == IPPROTO_TCP)
+	do_some_check;
+else
+	break;
+
+Fixes: 82c9ae440857 ("ipv6: fix restrict IPV6_ADDRFORM operation")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ net/ipv6/ipv6_sockglue.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index 18d05403d3b5..5af97b4f5df3 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -183,14 +183,15 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 					retv = -EBUSY;
+ 					break;
+ 				}
+-			}
+-			if (sk->sk_protocol == IPPROTO_TCP &&
+-			    sk->sk_prot != &tcpv6_prot) {
+-				retv = -EBUSY;
++			} else if (sk->sk_protocol == IPPROTO_TCP) {
++				if (sk->sk_prot != &tcpv6_prot) {
++					retv = -EBUSY;
++					break;
++				}
++			} else {
+ 				break;
+ 			}
+-			if (sk->sk_protocol != IPPROTO_TCP)
+-				break;
++
+ 			if (sk->sk_state != TCP_ESTABLISHED) {
+ 				retv = -ENOTCONN;
+ 				break;
+-- 
+2.25.4
+
