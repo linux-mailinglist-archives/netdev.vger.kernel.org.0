@@ -2,109 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C191EB4B0
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED691EB4C7
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725793AbgFBErB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 00:47:01 -0400
-Received: from mail-eopbgr70127.outbound.protection.outlook.com ([40.107.7.127]:6279
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725921AbgFBErA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 00:47:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e4Dk3dxr7RRTStIQBiGvxE2zam6+gJh6a0SYLS6grYzHjGWE8obT/ojhVHjmcLzucprb6ZUb0VCJKQe9HZIxdNeLHao4NWMirc2mZnKQ50gdh6sR3BVFXnEjMsRUCmr/6UEj9UUWY1EcrpYPzc17SJr0HHJILE286hOScBDpRd/j8Ao3pt/HeAMrX+h8R85kqkY/R5SemDkglq9h8G/H5F46bfLZNTz6w2BTspyA0/9Ul4kTfreM8Sovd/0/j3osD2AQu/NNJmiZftIuUPyms48LRyZw3wbRthOWy2xd8yOJ7ZB/+sFeMO9LW9JWovSLz8b/dJbqOkk+ewqJrrMM8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uhw9xar2tS4SRbBVpHbUBKQJCFT9VNz3d4p58CvvexY=;
- b=j3Yk0wul0cZt9HKEqTYIS4VF6gxTmFxifF6lOV0jJDILyoQ/NkFPHZZPRSvGlSaSX6AGBYweLEF3Yc+XMUvK8/pD47dhlW6At6LFmABfMQKz+Dyj3yt3MWNUk5t8lR4lAhiVYta3bYddgQs/zwXieLPQLOZaf0tBtQpio1VlKZGYvvPjsic7Yv0TUPJ9Rhw6T6b2wGS4BY1E+XGHa4AW/0+Obq6xvpwYQJWO02f+pQsHTxlwYoi2zoVrS0hc9l7kieW2d1tXfYbd3K1FO21s8dVygDNgIIq5WbyeOBI+HYSZoAf03k99rXEP6P34bf81iljHk8b8c/gfJdzwYJ/wUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uhw9xar2tS4SRbBVpHbUBKQJCFT9VNz3d4p58CvvexY=;
- b=YXNXAspr7jwct0Fb6niQfQH+FuXb+ICDnZPKgeHyFU6WXsSxRPt0zLYFHfru+71axQAEBbthgZCQXg5EiNFY+qrvXbv0uW/wzpYw5dtGNq5VmirrOsHuvUB3SnsnF4OSFdJTP16CIkfxeDyU1ZKPauYgDhuCluGR1xWdOmRXOzg=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=dektech.com.au;
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
- by AM6SPR01MB0038.eurprd05.prod.outlook.com (2603:10a6:20b:3b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17; Tue, 2 Jun
- 2020 04:46:54 +0000
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::4d5f:2ab:5a66:deaf]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::4d5f:2ab:5a66:deaf%7]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
- 04:46:54 +0000
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net 2/2] Revert "tipc: Fix potential tipc_aead refcnt leak in tipc_crypto_rcv"
-Date:   Tue,  2 Jun 2020 11:46:41 +0700
-Message-Id: <20200602044641.10535-3-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
-In-Reply-To: <20200602044641.10535-1-tuong.t.lien@dektech.com.au>
-References: <20200602044641.10535-1-tuong.t.lien@dektech.com.au>
-Content-Type: text/plain
-X-ClientProxiedBy: SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19)
- To AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
+        id S1726365AbgFBE50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 00:57:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55317 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726260AbgFBE5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 00:57:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591073842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gchTFiwviKMDwZXWqMwug6HrHP15DUCH03zQ9j5rpHE=;
+        b=h4aCWA5qKx+pDzn/2TRzQ+7mrIR88SOCz+W7NSasr0xx3PB04ad4Wj4h6Mz9sCZ0r6p4wr
+        kqxo2QvIgs6V/niea5WXXOC2W98DOZJTvm12anJqF4UyJUAFEQzi5bYGVHHwUbV4ioN5AI
+        pNE300h+sbj7njvBXfQc+Ot3rbdhAyY=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-344-WuhR1PH9OFaJ79_1VIdtaQ-1; Tue, 02 Jun 2020 00:57:00 -0400
+X-MC-Unique: WuhR1PH9OFaJ79_1VIdtaQ-1
+Received: by mail-wr1-f72.google.com with SMTP id d6so879723wrn.1
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 21:56:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gchTFiwviKMDwZXWqMwug6HrHP15DUCH03zQ9j5rpHE=;
+        b=mk4oaqNdYd6VFoCpZvtnap+4DNNu2nlOihxEIdp8Z/xZQIehumcPsIT+tiVq0Ytqjb
+         LzEIhhbPxYXt8MHJnuXfIJMuxGoX5EhWsGdlmFe+E6MUaTbSRMqyA8dY3w1+4ZQj+NUk
+         jLmKOj3ZhU61KdgnMyiuqxb9nW5AkUh7UEd+8gWYt7TlgGTfwdzsrQLKOPzjnZObNRU6
+         EkPvsK4g6vvQigcj+eWfGs/gGppVUGm/l2gVKhYpp0i52CxtskAbdHUGdHc0psBCd668
+         nSqZ/HEt9W069d1/qzFOuTTofR0ct0mSQcA8bwX5oE1kfWYS4vhyD8oDDXcTIUPi0iO+
+         K5UQ==
+X-Gm-Message-State: AOAM530j8LQF8YR9dn2KC58+83XT+XkBrTXfOeR0RrP1R8nH9v9A1QeA
+        Uyy0otMoq9F8g5fWjjuqkuW4qrBHqKUh7olgapkIzpp2S9ukrs4jrgrJ92E1pbDGuBUfszMw8vk
+        3Pv4UJrG/unt4aFRr
+X-Received: by 2002:a1c:ed0e:: with SMTP id l14mr2320509wmh.8.1591073818233;
+        Mon, 01 Jun 2020 21:56:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwezYypzZbKEY1d6YwmBv/8PZj3UfnzO1aXl2q6kGlCaJNGq8F3H+NRcEoRO1KXyF9lWjuqqA==
+X-Received: by 2002:a1c:ed0e:: with SMTP id l14mr2320484wmh.8.1591073818026;
+        Mon, 01 Jun 2020 21:56:58 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id x205sm1900586wmx.21.2020.06.01.21.56.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 21:56:57 -0700 (PDT)
+Date:   Tue, 2 Jun 2020 00:56:54 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     kbuild test robot <lkp@intel.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kbuild-all@lists.01.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rob.miller@broadcom.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com
+Subject: Re: [PATCH 4/6] vhost_vdpa: support doorbell mapping via mmap
+Message-ID: <20200602005007-mutt-send-email-mst@kernel.org>
+References: <20200529080303.15449-5-jasowang@redhat.com>
+ <202006020308.kLXTHt4n%lkp@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3045.17 via Frontend Transport; Tue, 2 Jun 2020 04:46:52 +0000
-X-Mailer: git-send-email 2.13.7
-X-Originating-IP: [14.161.14.188]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bfef5b0a-15d0-4e91-ee7e-08d806aff908
-X-MS-TrafficTypeDiagnostic: AM6SPR01MB0038:
-X-Microsoft-Antispam-PRVS: <AM6SPR01MB0038C38C4A5868957FECFA0BE28B0@AM6SPR01MB0038.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:389;
-X-Forefront-PRVS: 0422860ED4
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZqhIv+4EOXbVkkpz6uAXmlrO+t7yO2z7OFNLIX2R3MugiuH7I/KlPjw6Cwr8RAZBXPLlsKvW/jMlx5Lm8VWWN9ti97O4tqK7NPwXxfc8k71vKifPBaFOhn8cQtWuIWSZVl4Fg7rdfjH6drnBTu00aECNmOCiD0x96pyyI9uAgZz5lAYGK76NT5MYLqeRcB3Qku4Xw1u2lMF50b5LjQFdLrUgs+V8ZUNyVMs0XYUoQNBbN74Ap5yTVySn6w0t6sochYcWzeCBpbopVOyZbEUh5XPwtaEYE487VI1OmvMRvDCFZy2wMvSoQFn5NrV9qeeX
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(136003)(346002)(396003)(39850400004)(376002)(478600001)(86362001)(66476007)(66556008)(5660300002)(36756003)(83380400001)(8936002)(55016002)(103116003)(66946007)(1076003)(26005)(2616005)(16526019)(7696005)(52116002)(956004)(6666004)(4326008)(4744005)(186003)(2906002)(316002)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: st32RJT1gGWmoYMhmtp3C+vtOCi9GAouTJay8l/OXN9OCftYF6oam0ubew0L7sG4SLRrwhxxhe78u256LzwZkwSiF0DUcr5lvMNCiIdFQTWGXftfy+cRtJrzAemg1KiAYGWEuSRnrxt7iWQKdPOmBGCotc0Nm3o42zk+NIRPXliW+LuIz4LkQ10GxPgDglWn3IQdXOsb8lhCXVy7uDILhyniRMxkKBhz/YhehEZ9nV17vl03TqVtCe8ZUFoRybrvT18k+tObRcvcrvXNogg+osPgbM2eP+A+u0V5PqRrcT9WLmBFWEqRxyLzsqwWyJaAX4exYsYoC13+g8MP/M5DHcPfQEbs4GZhSQJmIZp6kVmlde7Md3znX83k2E9zoAIM6FtyWnVLGQJvsqKTLia0F4VvK+OCJBcn84lfPQ1AiCFTukguWXWst8uBc8LWofvrX8SFnB/pyWn6fH5YdnLbsSXDIA6CWBuL2s3gFXNB+94=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfef5b0a-15d0-4e91-ee7e-08d806aff908
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2020 04:46:54.3458
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ArPtkSdMm//1V1vGRvaKOa7mI639uVqvHs/pqgGX7n/i/CIiRL48S5fQrSFx+4qdsuUpiabD0VD0QTUcOHhidezsCa30lG2aXe7dBHgmLDs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0038
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202006020308.kLXTHt4n%lkp@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 441870ee4240cf67b5d3ab8e16216a9ff42eb5d6.
+On Tue, Jun 02, 2020 at 03:22:49AM +0800, kbuild test robot wrote:
+> Hi Jason,
+> 
+> I love your patch! Yet something to improve:
+> 
+> [auto build test ERROR on vhost/linux-next]
+> [also build test ERROR on linus/master v5.7 next-20200529]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-doorbell-mapping/20200531-070834
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+> config: m68k-randconfig-r011-20200601 (attached as .config)
+> compiler: m68k-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k 
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kbuild test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>, old ones prefixed by <<):
+> 
+> drivers/vhost/vdpa.c: In function 'vhost_vdpa_fault':
+> >> drivers/vhost/vdpa.c:754:22: error: implicit declaration of function 'pgprot_noncached' [-Werror=implicit-function-declaration]
+> 754 |  vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> |                      ^~~~~~~~~~~~~~~~
+> >> drivers/vhost/vdpa.c:754:22: error: incompatible types when assigning to type 'pgprot_t' {aka 'struct <anonymous>'} from type 'int'
+> cc1: some warnings being treated as errors
+> 
+> vim +/pgprot_noncached +754 drivers/vhost/vdpa.c
+> 
+>    742	
+>    743	static vm_fault_t vhost_vdpa_fault(struct vm_fault *vmf)
+>    744	{
+>    745		struct vhost_vdpa *v = vmf->vma->vm_file->private_data;
+>    746		struct vdpa_device *vdpa = v->vdpa;
+>    747		const struct vdpa_config_ops *ops = vdpa->config;
+>    748		struct vdpa_notification_area notify;
+>    749		struct vm_area_struct *vma = vmf->vma;
+>    750		u16 index = vma->vm_pgoff;
+>    751	
+>    752		notify = ops->get_vq_notification(vdpa, index);
+>    753	
+>  > 754		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+>    755		if (remap_pfn_range(vma, vmf->address & PAGE_MASK,
+>    756				    notify.addr >> PAGE_SHIFT, PAGE_SIZE,
+>    757				    vma->vm_page_prot))
+>    758			return VM_FAULT_SIGBUS;
+>    759	
+>    760		return VM_FAULT_NOPAGE;
+>    761	}
+>    762	
 
-Like the previous patch in this series, we revert the above commit that
-causes similar issues with the 'aead' object.
+Yes well, all this remapping clearly has no chance to work
+on systems without CONFIG_MMU.
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/crypto.c | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 8c47ded2edb6..c8c47fc72653 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -1712,7 +1712,6 @@ int tipc_crypto_rcv(struct net *net, struct tipc_crypto *rx,
- 	case -EBUSY:
- 		this_cpu_inc(stats->stat[STAT_ASYNC]);
- 		*skb = NULL;
--		tipc_aead_put(aead);
- 		return rc;
- 	default:
- 		this_cpu_inc(stats->stat[STAT_NOK]);
--- 
-2.13.7
+
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
 
