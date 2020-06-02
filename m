@@ -2,114 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B101EBD00
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3971EBD1E
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbgFBNWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 09:22:01 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:3034 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728059AbgFBNV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:21:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1591104118; x=1622640118;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oDsDX0QdQSpfZ/Q/4sKlLkcixQqCcHNDp/ODQx0BpgQ=;
-  b=vgAO+cVbS5AbFIDmhtPe6B9b30FAxcW13I0fNvtbhCLCwglWokzMN23R
-   K5i+v3Yj3wTbCAv49svxiXVUw19wybAtfaqjMhrrdcbkD+PkL/dZ1LjGT
-   gRGstHQjhP2LU+S4s6DAA+MPM5CmJR+kYg0vemjtcH4ub9dtTDrPsbb7e
-   w=;
-IronPort-SDR: uAPpbdT5xz9egBfu6d2X5+u9oafCnmOlsFtGTza3OgXfLyyXRpl2VgqqRdaRjLGqWqKhug11VD
- l1rPh7qWJahQ==
-X-IronPort-AV: E=Sophos;i="5.73,464,1583193600"; 
-   d="scan'208";a="49179651"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 02 Jun 2020 13:21:56 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 03D47A25FF;
-        Tue,  2 Jun 2020 13:21:54 +0000 (UTC)
-Received: from EX13d09UWA002.ant.amazon.com (10.43.160.186) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 2 Jun 2020 13:21:54 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13d09UWA002.ant.amazon.com (10.43.160.186) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 2 Jun 2020 13:21:53 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Tue, 2 Jun 2020 13:21:53 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 228C481CF4; Tue,  2 Jun 2020 13:21:53 +0000 (UTC)
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V1 net 2/2] net: ena: xdp: update napi budget for DROP and ABORTED
-Date:   Tue, 2 Jun 2020 13:21:51 +0000
-Message-ID: <20200602132151.366-3-sameehj@amazon.com>
-X-Mailer: git-send-email 2.24.1.AMZN
-In-Reply-To: <20200602132151.366-1-sameehj@amazon.com>
-References: <20200602132151.366-1-sameehj@amazon.com>
+        id S1727982AbgFBNbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 09:31:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:47698 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726130AbgFBNbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:31:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591104696;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b3UuSFOoTLf1u64HrlCpEbdeT2AgnRILXvuyVUe6Wag=;
+        b=ZB6hR64bFt1uW22rNOwoUArRXSUHl5HU9+GQf5AJNivSWsaieIcbkrPvcxRaVvwo5rkldz
+        kaoXIK6WMPRHNL/ie050ChW4FQMTq050h4Oj6CYp2yzwoun3GxAHLseQa9gEGLDs9D3jEL
+        QgYKgypRFTlEpXpkbx06DGg6f/5nYXQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-32-2GK2zh26OPO6u9DQjqGNWA-1; Tue, 02 Jun 2020 09:31:22 -0400
+X-MC-Unique: 2GK2zh26OPO6u9DQjqGNWA-1
+Received: by mail-wr1-f72.google.com with SMTP id c14so1395529wrm.15
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 06:31:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=b3UuSFOoTLf1u64HrlCpEbdeT2AgnRILXvuyVUe6Wag=;
+        b=nRwuBRSC41It0UcZf67lpXw8cf5VksMq/rZ1GUxkhLilyh0mmwT43UwYK8wKA0ii0A
+         rIbQl57V+JM0Z4Ta98gjiJSiUHR0hCO74JUj1U4LRwM9fyj6yiCrmokP2vd10YcJ7ESC
+         OBEn5wXaYZJUYPfjdUVoK+lFyDM7DC5ih0R8qUJuQKKtfh3MdB2FffDb9m2TzSU2z0Yl
+         dNrKY64JEa02zO6KvjwIUHAh2Ak4wmZZIYvyw6qTWf0ir9WWMGI4nfovlG9CISTI2U/Z
+         p0pnbazJXhJT9/flXoAtj99ewqPBwtiSXT5vNGFuYip+Lt43ykOl5usCmo69BUiz9X5r
+         Vd8A==
+X-Gm-Message-State: AOAM530gbn8v6OiVX+cqs7UaTHgAX+xITCoDbwUK6WLn//oHse3wH/IO
+        xrfNZdc/yVAgm03ERlGxkO1v767um/9+rZV9OGXj7g/OUuVaBiCwnP/Q013P4XzbvoDmiY70Omb
+        fMsYz4OwPcEPGl7Yt
+X-Received: by 2002:adf:ecce:: with SMTP id s14mr14789309wro.154.1591104680988;
+        Tue, 02 Jun 2020 06:31:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzhzCp7N+xdkukbytg74zX2M6EFznyG8/VyZ15EbaVCa6fcCkeslvcsieleP04VZHHIBXLV0w==
+X-Received: by 2002:adf:ecce:: with SMTP id s14mr14789293wro.154.1591104680670;
+        Tue, 02 Jun 2020 06:31:20 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id n204sm3972286wma.5.2020.06.02.06.31.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 06:31:19 -0700 (PDT)
+Date:   Tue, 2 Jun 2020 09:31:16 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rob.miller@broadcom.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com
+Subject: Re: [PATCH 4/6] vhost_vdpa: support doorbell mapping via mmap
+Message-ID: <20200602093025-mutt-send-email-mst@kernel.org>
+References: <20200529080303.15449-5-jasowang@redhat.com>
+ <202006020308.kLXTHt4n%lkp@intel.com>
+ <20200602005007-mutt-send-email-mst@kernel.org>
+ <bd7dde11-b726-ee08-4e80-71fb784fa549@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <bd7dde11-b726-ee08-4e80-71fb784fa549@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+On Tue, Jun 02, 2020 at 02:49:38PM +0800, Jason Wang wrote:
+> 
+> On 2020/6/2 下午12:56, Michael S. Tsirkin wrote:
+> > On Tue, Jun 02, 2020 at 03:22:49AM +0800, kbuild test robot wrote:
+> > > Hi Jason,
+> > > 
+> > > I love your patch! Yet something to improve:
+> > > 
+> > > [auto build test ERROR on vhost/linux-next]
+> > > [also build test ERROR on linus/master v5.7 next-20200529]
+> > > [if your patch is applied to the wrong git tree, please drop us a note to help
+> > > improve the system. BTW, we also suggest to use '--base' option to specify the
+> > > base tree in git format-patch, please seehttps://stackoverflow.com/a/37406982]
+> > > 
+> > > url:https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-doorbell-mapping/20200531-070834
+> > > base:https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git  linux-next
+> > > config: m68k-randconfig-r011-20200601 (attached as .config)
+> > > compiler: m68k-linux-gcc (GCC) 9.3.0
+> > > reproduce (this is a W=1 build):
+> > >          wgethttps://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross  -O ~/bin/make.cross
+> > >          chmod +x ~/bin/make.cross
+> > >          # save the attached .config to linux build tree
+> > >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k
+> > > 
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kbuild test robot<lkp@intel.com>
+> > > 
+> > > All errors (new ones prefixed by >>, old ones prefixed by <<):
+> > > 
+> > > drivers/vhost/vdpa.c: In function 'vhost_vdpa_fault':
+> > > > > drivers/vhost/vdpa.c:754:22: error: implicit declaration of function 'pgprot_noncached' [-Werror=implicit-function-declaration]
+> > > 754 |  vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> > > |                      ^~~~~~~~~~~~~~~~
+> > > > > drivers/vhost/vdpa.c:754:22: error: incompatible types when assigning to type 'pgprot_t' {aka 'struct <anonymous>'} from type 'int'
+> > > cc1: some warnings being treated as errors
+> > > 
+> > > vim +/pgprot_noncached +754 drivers/vhost/vdpa.c
+> > > 
+> > >     742	
+> > >     743	static vm_fault_t vhost_vdpa_fault(struct vm_fault *vmf)
+> > >     744	{
+> > >     745		struct vhost_vdpa *v = vmf->vma->vm_file->private_data;
+> > >     746		struct vdpa_device *vdpa = v->vdpa;
+> > >     747		const struct vdpa_config_ops *ops = vdpa->config;
+> > >     748		struct vdpa_notification_area notify;
+> > >     749		struct vm_area_struct *vma = vmf->vma;
+> > >     750		u16 index = vma->vm_pgoff;
+> > >     751	
+> > >     752		notify = ops->get_vq_notification(vdpa, index);
+> > >     753	
+> > >   > 754		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> > >     755		if (remap_pfn_range(vma, vmf->address & PAGE_MASK,
+> > >     756				    notify.addr >> PAGE_SHIFT, PAGE_SIZE,
+> > >     757				    vma->vm_page_prot))
+> > >     758			return VM_FAULT_SIGBUS;
+> > >     759	
+> > >     760		return VM_FAULT_NOPAGE;
+> > >     761	}
+> > >     762	
+> > Yes well, all this remapping clearly has no chance to work
+> > on systems without CONFIG_MMU.
+> 
+> 
+> It looks to me mmap can work according to Documentation/nommu-mmap.txt. But
+> I'm not sure it's worth to bother.
+> 
+> Thanks
 
-This patch fixes two issues with XDP:
 
-1. If the XDP verdict is XDP_ABORTED we break the loop, which results in
-   us handling one buffer per napi cycle instead of the total budget
-   (usually 64). To overcome this simply change the xdp_verdict check to
-   != XDP_PASS. When the verdict is XDP_PASS, the skb is not expected to
-   be NULL.
+Well
 
-2. Update the residual budget for XDP_DROP and XDP_ABORTED, since
-   packets are handled in these cases.
+int remap_pfn_range(struct vm_area_struct *vma, unsigned long addr,
+                unsigned long pfn, unsigned long size, pgprot_t prot)
+{
+        if (addr != (pfn << PAGE_SHIFT))
+                return -EINVAL;
 
-Fixes: cad451dd2427 ("net: ena: Implement XDP_TX action")
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+        vma->vm_flags |= VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP;
+        return 0;
+}
+EXPORT_SYMBOL(remap_pfn_range);
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index ec115b753..2beccda7e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1638,11 +1638,9 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 					 &next_to_clean);
- 
- 		if (unlikely(!skb)) {
--			if (xdp_verdict == XDP_TX) {
-+			if (xdp_verdict == XDP_TX)
- 				ena_free_rx_page(rx_ring,
- 						 &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id]);
--				res_budget--;
--			}
- 			for (i = 0; i < ena_rx_ctx.descs; i++) {
- 				rx_ring->free_ids[next_to_clean] =
- 					rx_ring->ena_bufs[i].req_id;
-@@ -1650,8 +1648,10 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 					ENA_RX_RING_IDX_NEXT(next_to_clean,
- 							     rx_ring->ring_size);
- 			}
--			if (xdp_verdict == XDP_TX || xdp_verdict == XDP_DROP)
-+			if (xdp_verdict != XDP_PASS) {
-+				res_budget--;
- 				continue;
-+			}
- 			break;
- 		}
- 
--- 
-2.24.1.AMZN
+
+So things aren't going to work if you have a fixed PFN
+which is the case of the hardware device.
+
+
+> 
+> > 
+> > 
+> > 
 
