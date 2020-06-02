@@ -2,79 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 639421EB768
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0E91EB77A
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgFBIbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 04:31:46 -0400
-Received: from mailgw.unisannio.it ([193.206.108.11]:37513 "EHLO
-        mailgw.unisannio.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgFBIbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 04:31:46 -0400
-X-Greylist: delayed 344 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Jun 2020 04:31:45 EDT
-Received: from localhost (unknown [127.0.0.1])
-        by mailgw.unisannio.it (Postfix) with ESMTP id DD9F5500E71;
-        Tue,  2 Jun 2020 08:36:33 +0000 (UTC)
-Received: from mailgw.unisannio.it ([127.0.0.1])
- by localhost (mailgw.unisannio.it [127.0.0.1]) (amavisd-maia, port 10024)
- with ESMTP id 02089-05-2; Tue,  2 Jun 2020 10:36:32 +0200 (CEST)
-Received: from pamx1.unisannio.it (pamx1.unisannio.it [193.206.108.12])
-        by mailgw.unisannio.it (Postfix) with ESMTP id 2E849500E6D;
-        Tue,  2 Jun 2020 10:36:31 +0200 (CEST)
-Received: from webmail.unisannio.it (webmail.unisannio.it [193.206.108.9])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: guarino)
-        by pamx1.unisannio.it (Postfix) with ESMTPSA id 10D051E0430;
-        Tue,  2 Jun 2020 10:25:38 +0200 (CEST)
+        id S1725969AbgFBIf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 04:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725811AbgFBIf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 04:35:58 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5505BC061A0E
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 01:35:58 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id m23so700871vko.2
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 01:35:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=LWyVBkwqIlgjtk92jvu6kp6Zi5zcp1h1Xn/pfsMWHjs=;
+        b=BT46YFP5HFBqmmCjWzFhOH5ffXKzBAaWEuDrmDeO7t4Lc2pdz64uKckwm52gZ7i/Hb
+         9VfioHRnDkLloV3APHmqfInQLpjRuDXyCwq52GnYI2+J7a8Sev8IRPqsgBdMHIY9HpxU
+         OOIZ2tZx7ixxbd4od/rEUiGbqwEUkiRz1O4nMzwHvJU1piFcISnHRXIWM31mqzRLMQE3
+         91AqiQLy2Dc+ZJwmFB6Qw0nA3uF9RFR64XlSJF50q5UhVX1V1XS3pRVwifHsH3+08B+J
+         Zf7qvLQ5d2HnVQgMpnMwSXTs98efR1cRW6OqnVh6XwvQx7dYMEGvcxXgGouO2t/TFZWb
+         vYFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=LWyVBkwqIlgjtk92jvu6kp6Zi5zcp1h1Xn/pfsMWHjs=;
+        b=tPp9cO8sziWQI99HztOKyorib9aGVa9xVt2sqk0hKyCau+/o3ZqTy2aFuSqIEaIx7V
+         ksx9ygUygMQJUFzVHvdb4sXV9ItvSgn90kolkXVORHiBmLOrv8auJKXRbUWXoatKfbAG
+         QIttK7z7kFYthtl4sPzYHy/fxVWJuuM42tyYJAfb4jzBAZd1UmMvDaZZiOeZlA1IkKXp
+         F4cKo2RIPEYEntqVhw+e2II62mt1+KOq36UeZTlG3lg35eqN+AeZhkaQrodPcny7Q9Zg
+         q34tGttScE65eo/19AuR7cAKtayRf55JsvCIYSiRMsq6ylrEnigL/VrJv0jBiR8N2NCf
+         UPlA==
+X-Gm-Message-State: AOAM530sxv3LFktB8FCLHlBE1FdkRx/e2qLa1hnmbhNOZE87WaNXGuAo
+        wpcz49ESgz4AlaruDg0h/0iWgBfu0V7iy0lnIQ0=
+X-Google-Smtp-Source: ABdhPJx/EL6vwcgFpZrqhfTp1Udmth0YeKXNJWuZlNiXHf/u0AJB6MIy/8Tv8PtO7A5Bwl34eTU0jpKL8mDvhDhuCYI=
+X-Received: by 2002:a1f:cd83:: with SMTP id d125mr17348571vkg.35.1591086957422;
+ Tue, 02 Jun 2020 01:35:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Tue, 02 Jun 2020 11:25:37 +0300
-From:   "Banca IMI S.P.A" <guaarino@unisannio.it>
+Received: by 2002:a1f:9fcd:0:0:0:0:0 with HTTP; Tue, 2 Jun 2020 01:35:55 -0700 (PDT)
+Reply-To: afringawa6@gmail.com
+From:   Afrin Gawa <karimwattara222@gmail.com>
+Date:   Tue, 2 Jun 2020 08:35:55 +0000
+Message-ID: <CAFYybWB-TD14cw9uqj8n2jW4xgP0Jao_5BK2=5De8YSZGzi+DA@mail.gmail.com>
+Subject: Please respond urgently
 To:     undisclosed-recipients:;
-Subject: Finanzielle Hilfe (Darlehen @ 1,3%)
-Organization: Banca IMI S.P.A
-Reply-To: info.bancaimi.uk@gmail.com
-Mail-Reply-To: info.bancaimi.uk@gmail.com
-Message-ID: <06237a57841307608a407802b1a48f74@unisannio.it>
-X-Sender: guaarino@unisannio.it
-User-Agent: Roundcube Webmail/1.3.9
-X-Virus-Scanned: Maia Mailguard 1.0.0
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Greetings,
 
+I know that this mail will come to you as a surprise as we have never
+met before, but need not to worry as I am contacting you independently
+of my investigation and no one is informed of this communication. I
+need your urgent assistance in transferring the sum of $11,300,000.00
+USD immediately to your private account.The money has been here in our
+Bank lying dormant for years now without anybody coming for the claim
+of it.
 
--- 
-Grüße Herr / Frau,
+I want to release the money to you as the relative to our deceased
+customer (the account owner) who died a long with his supposed NEXT OF
+KIN since 16th October 2005. The Banking laws here does not allow such
+money to stay more than 15 years, because the money will be recalled
+to the Bank treasury account as unclaimed fund.
 
-    Benötigen Sie finanzielle Unterstützung (Darlehen)?
-Sprechen Sie mit uns bei BANCA IMI S.P.A, wir werden Ihre finanziellen
-Probleme lösen. Wir bieten unseren Kunden gesicherte und ungesicherte
-Privatkredite für jeden Zweck an, unabhängig davon, ob es sich um ein
-Darlehen für Neugeschäfte, Privatpersonen oder Unternehmen handelt.
+By indicating your interest I will send you the full details on how
+the business will be executed.
 
-Unser Zinssatz beträgt 1,3% pro Jahr. Bewerben Sie sich jetzt, füllen 
-Sie
-die unten stehenden Bewerbungsdetails aus und überlassen Sie den Rest 
-uns!
+Please respond urgently and delete if you are not interested.
 
-
-Vollständiger Name:____________________
-Darlehensbetrag:___________________
-Leihdauer:_____________________
-Darlehen Zweck:_______________
-Telefon:___________________
-
-Wir warten auf Ihren Antrag, damit Ihr Kreditantrag bearbeitet werden 
-kann.
-
-
-Freundliche Grüße
-
-Email Kontakt: INFO.BANCAIMI.UK@GMAIL.COM
-                       INFOBANCAIMI@FINANCIER.COM
+Best Regards,
+Mr. Afrin Gawa
