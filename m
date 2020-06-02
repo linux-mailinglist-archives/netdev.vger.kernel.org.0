@@ -2,90 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7231EBF2E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA51A1EBF59
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbgFBPj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 11:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgFBPjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:39:25 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E10C08C5C0;
-        Tue,  2 Jun 2020 08:39:24 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id nu7so1558304pjb.0;
-        Tue, 02 Jun 2020 08:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fCLWRAj6WHhP+ObXwD/pQyps8oF17BSxdX9gcDmUZ5M=;
-        b=pYX+IbGFVr/4qqRHb5kRjVgsVNJywwsLdY5LnuVhvmvbiGoFVS9JFPZZmAZcUUjdUx
-         17jyd9swcx/riFEjI2EPmREzbCpX4L+KbQjnq8uId4tpci0z1KkY1ydsoDh9mjkt/lsQ
-         KvqahWYTihDV7jJkHss2j23dHFLnPIwHH4muKUXhbIuFAbxlc1ib0sqeqPeAXRbsf2gn
-         wMlfw5iE5+82xDhtiUcH9lZ2LjiFO0Q18LzILiH/AjH2dWOVpIHroxi3cye70Vttht45
-         p4NgKs1ziO5yv5/YpdJ5Xn+KBOIdJ3LyMXSahsiA9kTaNEnK4E9Zaa8Veb9eIt19hBou
-         xm4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fCLWRAj6WHhP+ObXwD/pQyps8oF17BSxdX9gcDmUZ5M=;
-        b=Tb8WyjcPG4/P2a7ZE4oRFd3lVwFeSJr//U3qEjRaB9lLUdM1x0yknnsiA/WnQCAgCn
-         Zee05wNwkG6fK6+PDsi3mvZ27Ksf07pMWezo25lrX/gxaKjFj6aTelsvg4Qz898BDDf/
-         M4fuMDgZ51g7ZqSgmpfpCLF2Y6eJl3HeOiCFCYfGeY6E9C6sgCCgVILlkfgCif+kgecG
-         O9cl6P3gy/am1IUvhvNaFPvtoD3bNY0rJYFsc5wSSgwaiW2JKm3Uo2tD7m6X12k/vGq+
-         DZDu5cg4vxOMLSl1IzsFNchYrVFS010TtRPfAkab5T+9AtB6aMKfp+UpIwcuihrw8xG1
-         zLlg==
-X-Gm-Message-State: AOAM531WnqREvvqM1I95Ts/eLZGnUJF+XFgVaS4grANRQy0OzdA0QV+h
-        qRqdu4CnY2EFbziSBXAu3m7piRVeLktCEPrwRdKuniqGu98=
-X-Google-Smtp-Source: ABdhPJw+pAar+vtUn4AwgUT0o2Iuxy0FG7fSieSNVJ9T1qGejv6fs7xmWgK3SbEGwklxDEF73pROvDThMsFErvvXCrE=
-X-Received: by 2002:a17:90a:ac05:: with SMTP id o5mr6420217pjq.228.1591112364465;
- Tue, 02 Jun 2020 08:39:24 -0700 (PDT)
+        id S1727776AbgFBPs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 11:48:57 -0400
+Received: from www62.your-server.de ([213.133.104.62]:44268 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbgFBPs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:48:56 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jg99q-0003Uw-QZ; Tue, 02 Jun 2020 17:48:54 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jg99q-0003Xd-JC; Tue, 02 Jun 2020 17:48:54 +0200
+Subject: Re: [PATCH bpf 3/3] bpf, selftests: Adapt cls_redirect to call
+ csum_level helper
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+References: <cover.1591108731.git.daniel@iogearbox.net>
+ <e7458f10e3f3d795307cbc5ad870112671d9c6f7.1591108731.git.daniel@iogearbox.net>
+ <CACAyw998Yy6NBJbSi+RfUofpKQYjYA78HGmWEqDTm1B+BkvuOw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <65cde627-96af-b99e-7a6f-a688c2c6dbdd@iogearbox.net>
+Date:   Tue, 2 Jun 2020 17:48:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200602092118.32283-1-piotr.stankiewicz@intel.com>
-In-Reply-To: <20200602092118.32283-1-piotr.stankiewicz@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 2 Jun 2020 18:39:12 +0300
-Message-ID: <CAHp75VfEcm-Mmo7=i40sJ0RqpOgFRpJHxQ9ePWvvqsyRp+=9GA@mail.gmail.com>
-Subject: Re: [PATCH 14/15] net: hns3: use PCI_IRQ_MSI_TYPES where appropriate
-To:     Piotr Stankiewicz <piotr.stankiewicz@intel.com>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CACAyw998Yy6NBJbSi+RfUofpKQYjYA78HGmWEqDTm1B+BkvuOw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25831/Tue Jun  2 14:41:03 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 12:26 PM Piotr Stankiewicz
-<piotr.stankiewicz@intel.com> wrote:
->
-> Seeing as there is shorthand available to use when asking for any type
-> of interrupt, or any type of message signalled interrupt, leverage it.
+On 6/2/20 5:13 PM, Lorenz Bauer wrote:
+> On Tue, 2 Jun 2020 at 15:58, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> Adapt bpf_skb_adjust_room() to pass in BPF_F_ADJ_ROOM_NO_CSUM_RESET flag and
+>> use the new bpf_csum_level() helper to inc/dec the checksum level by one after
+>> the encap/decap.
+> 
+> Just to be on the safe side: we go from
+>      | ETH | IP | UDP | GUE | IP | TCP |
+> to
+>      | ETH | IP | TCP |
+> by cutting | IP | UDP | GUE | after the Ethernet header.
+> 
+> Since IP is never included in csum_level and because GUE is not eligible for
+> CHECKSUM_UNNECESSARY we only need to do csum_level-- once, not twice.
 
-...
-
->         vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
-> -                                       hdev->num_msi,
-> -                                       PCI_IRQ_MSI | PCI_IRQ_MSIX);
-> +                                       hdev->num_msi, PCI_IRQ_MSI_TYPES);
-
-...
-
->                 vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
-
->                                                 hdev->num_msi,
-> -                                               PCI_IRQ_MSI | PCI_IRQ_MSIX);
-> +                                               PCI_IRQ_MSI_TYPES);
-
-One line as above?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Yes, that is correct.
