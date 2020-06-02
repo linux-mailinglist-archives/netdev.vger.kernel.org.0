@@ -2,219 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45B061EC253
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 21:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78A21EC28C
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 21:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgFBTEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 15:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        id S1727784AbgFBTRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 15:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbgFBTEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 15:04:36 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5D2C08C5C1
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 12:04:36 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id j32so11541568qte.10
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 12:04:36 -0700 (PDT)
+        with ESMTP id S1726174AbgFBTRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 15:17:08 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3043C08C5C0;
+        Tue,  2 Jun 2020 12:17:07 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id e9so4395969pgo.9;
+        Tue, 02 Jun 2020 12:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ydjZZ/ilQLsmdZFvWneFx8YQw0naaW6pMoRk4YZc32g=;
-        b=nT+oxDDS7llQ8jlw8oVLNxwiKx8QkQh0lqFx+X+OJ4rrD9GaMGlCbh5k+zmjxrgoB7
-         aZS50ng2VjS0dmHyWGig7J+DtV+HGrey5UvShw2UKWL30q1y5CyqZgXHpBm33PFkqRjn
-         hv25zLn7EKwnljJgEHcxIfj1jwaE6rO1J9c8Q1xA/M7QoqQ55v3Huct2Z8Z/LLgRgd28
-         3aLG3NTuAGh/k8jACu9eNjWvR0IMPWTzhGfr+ykXZ0FbhHPGaXXqhJoPGQ3hbg0VY6fb
-         qhC/KlJX6NFMiVkOlavw4otwGW9QumjgXovMRgujsFufxretv/CaMxaZEJ+7yyq0ja5K
-         QkqA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ERk066J2kbr4z1++RmP1dJLaVwbGWGmMSnbedw3Oxy8=;
+        b=GafUOppcftTmTnqBNb0uh3fbk/HTmNrhcKYxKTbaJtJ+UXG++ljmzTovkylp+KfkQt
+         JjbGdripYCUbpWhYh+9yFPTc0b0NqwlbeMfSGmBj1Wlxp40BWeDyFTFVkp0kzrMp1g75
+         qrd1/F31I6ZXftrylJmdp2tpLllz3ORuR1h1D/Z86ulwvzXL6naLpSJ5fvzBrd024X9h
+         w/4hPpPGIBXvv3bPLuFWwDnaNDIijsbU8lJfZbCI2RejPrW25c5LNdVuhEO8tYug04O6
+         2PGRheBTiCdSuSCyBuxPa1R2iYLqkdwsUQAZjPEkcdjjGXn1AtWaVjZ4dnW6RY+z+YxL
+         NIxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ydjZZ/ilQLsmdZFvWneFx8YQw0naaW6pMoRk4YZc32g=;
-        b=Q4xAOYsGBXjt3hSnxP9UASyFfM4Gmj69TuWacrzFk+N+oKlYup6eKIXywiTcEgTlUV
-         mZKGrMIwsWeMj5qJyWe5uRZZKjwTGNz3Z5kO7ICH2A5uP0Vip9Q4uzIHG56sIIpL3vhs
-         Zy5dnfgnoM02I9PR1IsR1nDVqx9wJPekIx/8ykK5Kg3N8I0DXwx0dnZHJELOxqUVNYwB
-         tWZFF/2MfFqtdn86h+HBUeVQvg1yaOZrV0ur+HxQ1yc/m4zDwHEqc97nE9dy1UU4id4I
-         Dl60cP4zPqVaNRfKdyXrtNTVwws8WnFs6N4Nm0V6sunOVdBqVpwHfPqwSi1TGkdSbjUb
-         psQQ==
-X-Gm-Message-State: AOAM531wy1RuQw6lFqkXf5rzUCLJg4VcgWuIT7uzVE2S8slKbjjcqLTL
-        JD+7xVbdm9yyMp7SGHb6mP1DrnXV
-X-Google-Smtp-Source: ABdhPJy5NqIiUX7mTL7CE/Z03BlPwAwVYpFkfnsqoESS7WbR4A7q5WWdOiUUht3YwXkAD6JUxaVsGA==
-X-Received: by 2002:ac8:6a08:: with SMTP id t8mr28740664qtr.271.1591124674592;
-        Tue, 02 Jun 2020 12:04:34 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id b11sm3234893qti.50.2020.06.02.12.04.32
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jun 2020 12:04:33 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id k18so3720094ybm.13
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 12:04:32 -0700 (PDT)
-X-Received: by 2002:a25:f413:: with SMTP id q19mr45810132ybd.178.1591124672091;
- Tue, 02 Jun 2020 12:04:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ERk066J2kbr4z1++RmP1dJLaVwbGWGmMSnbedw3Oxy8=;
+        b=JltdQVircmTYNhDJ32KIS7XiftkWZFLjnAtFTHQWzKhgdBJ5zSYLdFjaS8ub1bZKW0
+         qOX/eonHIxEqhBYwnbWUKa7o43uLvBKo5CMqaNthquxMtXNozPpC6ic5iWjalwq2emKx
+         WWfpgm0fT8yTt8UuSKdGp3iTH9OhFHfgwlZsG2nYwc4OvPRiC/mjImQHJYInu8bIdt6h
+         hB15YhamgI2uRqGWYQWBzkwRo5ukyHVvPJ7Tse+KY48BqeYS7TOvO/vfelPxYCHwEAaB
+         NaAYJB3ylWO8CNtqVhm56gWVems/is8rPz6v1/qI2RhlxmLFniHNZEMlYlOXKtvQ3aPn
+         O6WA==
+X-Gm-Message-State: AOAM532pAuKhVMGao7h045B3ebUkm4E64taJ9q8w7LMAq53CMvCLHHUk
+        NQZCXaAQPtb66m54z641v+Ia+Rln
+X-Google-Smtp-Source: ABdhPJxrLBTRjhYYQ8aylnRTJsImNG9e2BYc18+Q/s66Jql+u9eFvQlIzqbvwEiZ1NKXEsFgfnkiOA==
+X-Received: by 2002:a17:90b:b14:: with SMTP id bf20mr688347pjb.231.1591125427339;
+        Tue, 02 Jun 2020 12:17:07 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:514a])
+        by smtp.gmail.com with ESMTPSA id n2sm3137456pfd.125.2020.06.02.12.17.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 12:17:06 -0700 (PDT)
+Date:   Tue, 2 Jun 2020 12:17:03 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Michael Forney <mforney@mforney.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
+ used from BPF program side to enums
+Message-ID: <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
+References: <20200303003233.3496043-1-andriin@fb.com>
+ <20200303003233.3496043-2-andriin@fb.com>
+ <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net>
+ <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
+ <87blpc4g14.fsf@toke.dk>
+ <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
+ <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200602080535.1427-1-victor@inliniac.net> <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
- <b0a9d785-9d5e-9897-b051-6d9a1e8f914e@inliniac.net> <CA+FuTSd07inNysGhx088hq_jybrikSQdxw8HYjmP84foXhnXOA@mail.gmail.com>
- <06479df9-9da4-dbda-5bd1-f6e4d61471d0@inliniac.net>
-In-Reply-To: <06479df9-9da4-dbda-5bd1-f6e4d61471d0@inliniac.net>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Jun 2020 15:03:55 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSci29=W89CLweZcW=RTKwEXpUdPjsLGTB95iSNcnpU_Lw@mail.gmail.com>
-Message-ID: <CA+FuTSci29=W89CLweZcW=RTKwEXpUdPjsLGTB95iSNcnpU_Lw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are good
-To:     Victor Julien <victor@inliniac.net>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
-        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Alexander Drozdov <al.drozdov@gmail.com>,
-        Tom Herbert <tom@herbertland.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 2:31 PM Victor Julien <victor@inliniac.net> wrote:
->
-> Hi Willem,
->
-> On 02-06-2020 19:37, Willem de Bruijn wrote:
-> > On Tue, Jun 2, 2020 at 1:03 PM Victor Julien <victor@inliniac.net> wrote:
-> >>
-> >> On 02-06-2020 16:29, Willem de Bruijn wrote:
-> >>> On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
-> >>>>
-> >>>> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
-> >>>> that the driver has completely validated the checksums in the packet.
-> >>>>
-> >>>> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
-> >>>> in that the new flag will only be set if all the layers are valid,
-> >>>> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
-> >>>
-> >>> transport, not ip checksum.
-> >>
-> >> Allow me a n00b question: what does transport refer to here? Things like
-> >> ethernet? It isn't clear to me from the doc.
-> >
-> > The TCP/UDP/.. transport protocol checksum.
->
-> Hmm that is what I thought originally, but then it didn't seem to work.
-> Hence my patch.
->
-> However I just redid my testing. I took the example tpacketv3 program
-> and added the status flag checks to the 'display()' func:
->
->                 if (ppd->tp_status & TP_STATUS_CSUM_VALID) {
->                         printf("TP_STATUS_CSUM_VALID, ");
->                 }
->                 if (ppd->tp_status & (1<<8)) {
->                         printf("TP_STATUS_CSUM_UNNECESSARY, ");
->
->                 }
->
-> Then using scapy sent some packets in 2 variants:
-> - default (good csums)
-> - deliberately bad csums
-> (then also added a few things like ip6 over ip)
->
->
-> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(),
-> iface="enp1s0") // good csums
->
-> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(chksum=1),
-> iface="enp1s0") //bad tcp
+On Mon, Jun 01, 2020 at 10:31:34PM -0700, Michael Forney wrote:
+> Hi,
+> 
+> On 2020-03-04, Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > I was about to push the series out, but agree that there may be a risk for
+> > #ifndefs
+> > in the BPF C code. If we want to be on safe side, #define FOO FOO would be
+> > needed.
+> 
+> I did indeed hit some breakage due to this change, but not for the
+> anticipated reason.
+> 
+> The C standard requires that enumeration constants be representable as
+> an int, and have type int. While it is a common extension to allow
+> constants that exceed the limits of int, and this is required
+> elsewhere in Linux UAPI headers, this is the first case I've
+> encountered where the constant is not representable as unsigned int
+> either:
+> 
+> 	enum {
+> 		BPF_F_CTXLEN_MASK		= (0xfffffULL << 32),
+> 	};
+> 
+> To see why this can be problematic, consider the following program:
+> 
+> 	#include <stdio.h>
+> 	
+> 	enum {
+> 		A = 1,
+> 		B = 0x80000000,
+> 		C = 1ULL << 32,
+> 	
+> 		A1 = sizeof(A),
+> 		B1 = sizeof(B),
+> 	};
+> 	
+> 	enum {
+> 		A2 = sizeof(A),
+> 		B2 = sizeof(B),
+> 	};
+> 	
+> 	int main(void) {
+> 		printf("sizeof(A) = %d, %d\n", (int)A1, (int)A2);
+> 		printf("sizeof(B) = %d, %d\n", (int)B1, (int)B2);
+> 	}
+> 
+> You might be surprised by the output:
+> 
+> 	sizeof(A) = 4, 4
+> 	sizeof(B) = 4, 8
+> 
+> This is because the type of B is different inside and outside the
+> enum. In my C compiler, I have implemented the extension only for
+> constants that fit in unsigned int to avoid these confusing semantics.
+> 
+> Since BPF_F_CTXLEN_MASK is the only offending constant, is it possible
+> to restore its definition as a macro?
 
-Is this a test between two machines? What is the device driver of the
-machine receiving and printing the packet? It would be helpful to know
-whether this uses CHECKSUM_COMPLETE or CHECKSUM_UNNECESSARY.
+It's possible, but I'm not sure what it will fix.
+Your example is a bit misleading, since it's talking about B
+which doesn't have type specifier, whereas enums in bpf.h have ULL
+suffix where necessary.
+And the one you pointed out BPF_F_CTXLEN_MASK has sizeof == 8 in all cases.
 
->
-> 1.2.3.4 -> 5.6.7.8, TP_STATUS_CSUM_VALID, TP_STATUS_CSUM_UNNECESSARY,
-> rxhash: 0x81ad5744
-> 1.2.3.4 -> 5.6.7.8, rxhash: 0x81ad5744
->
-> So this suggests that what you're saying is correct, that it sets
-> TP_STATUS_CSUM_VALID if the TCP/UDP csum (and IPv4 csum) is valid, and
-> does not set it when either of them are invalid.
+Also when B is properly annotated like 0x80000000ULL it will have size 8
+as well.
 
-That's not exactly what I said. It looks to me that a device that sets
-CHECKSUM_COMPLETE will return TP_STATUS_CSUM_VALID from
-__netif_receive_skb_core even if the TCP checksum turns out to be bad.
-If a driver would insert such packets into the stack, that is.
+#include <stdio.h>
 
-> I'll also re-evaluate things in Suricata.
->
->
-> One thing I wonder if what this "at least" from the 682f048bd494 commit
-> message means:
->
-> "Introduce TP_STATUS_CSUM_VALID tp_status flag to tell the
->  af_packet user that at least the transport header checksum
->  has been already validated."
->
-> For TCP/UDP there wouldn't be a higher layer with csums, right? And
-> based on my testing it seems lower levels (at least IP) is also
-> included. Or would that perhaps refer to something like VXLAN or Geneve
-> over UDP? That the csums of packets on top of those layers aren't
-> (necessarily) considered?
+enum {
+        A = 1,
+        B = 0x80000000,
+        C = 1ULL << 32,
+        D = 0x80000000ULL,
 
-The latter. All these checksums are about transport layer checksums
-(the ip header checksum is cheap to compute). Multiple checksums
-refers to packets encapsulated in other protocols with checksum, such
-as GRE or UDP based like Geneve.
+        A1 = sizeof(A),
+        B1 = sizeof(B),
+        C1 = sizeof(C),
+        D1 = sizeof(D),
+};
 
->
-> Thanks,
-> Victor
->
->
-> >> (happy to follow up with a patch to clarify the doc when I understand
-> >> things better)
-> >>
-> >>> But as I understand it drivers set CHECKSUM_COMPLETE if they fill in
-> >>> skb->csum over the full length of the packet. This does not
-> >>> necessarily imply that any of the checksum fields in the packet are
-> >>> valid yet (see also skb->csum_valid). Protocol code later compares
-> >>> checksum fields against this using __skb_checksum_validate_complete and friends.
-> >>>
-> >>> But packet sockets may be called before any of this, however. So I wonder
-> >>> how valid the checksum really is right now when setting TP_STATUS_CSUM_VALID.
-> >>> I assume it's correct, but don't fully understand where the validation
-> >>> has taken place..
-> >>
-> >> I guess I'm more confused now about what TP_STATUS_CSUM_VALID actually
-> >> means. It sounds almost like the opposite of TP_STATUS_CSUMNOTREADY, but
-> >> I'm not sure I understand what the value would be.
-> >>
-> >> It would be great if someone could help clear this up. Everything I
-> >> thought I knew/understood so far has been proven wrong, so I'm not too
-> >> confident about my patch anymore...
-> >
-> > Agreed that we should clear this up.
-> >
-> >>> Similar to commit 682f048bd494 ("af_packet: pass checksum validation
-> >>> status to the user"), please update tpacket_rcv and packet_rcv.
-> >>
-> >> Ah yes, good catch. Will add it there as well.
-> >>
-> >>> Note also that net-next is currently closed.
-> >>
-> >> Should I hold off on sending a v3 until it reopens?
-> >
-> > Yep, thanks. You can always check
-> > http://vger.kernel.org/~davem/net-next.html when unsure.
-> >
->
->
-> --
-> ---------------------------------------------
-> Victor Julien
-> http://www.inliniac.net/
-> PGP: http://www.inliniac.net/victorjulien.asc
-> ---------------------------------------------
->
+enum {
+        A2 = sizeof(A),
+        B2 = sizeof(B),
+        C2 = sizeof(C),
+        D2 = sizeof(D),
+};
+
+int main(void) {
+        printf("sizeof(A) = %d, %d\n", (int)A1, (int)A2);
+        printf("sizeof(B) = %d, %d\n", (int)B1, (int)B2);
+        printf("sizeof(C) = %d, %d\n", (int)C1, (int)C2);
+        printf("sizeof(D) = %d, %d\n", (int)D1, (int)D2);
+}
+
+sizeof(A) = 4, 4
+sizeof(B) = 4, 8
+sizeof(C) = 8, 8
+sizeof(D) = 8, 8
+
+So the problem is only with non-annotated enums that are mixed
+in a enum with some values <32bit and others >32 bit.
+bpf.h has only one such enum:
+enum {
+        BPF_F_INDEX_MASK                = 0xffffffffULL,
+        BPF_F_CURRENT_CPU               = BPF_F_INDEX_MASK,
+        BPF_F_CTXLEN_MASK               = (0xfffffULL << 32),
+};
+
+and all values are annotated with ULL.
+So I really don't see a problem.
+
+> Also, I'm not sure if it was considered, but using enums also changes
+> the signedness of these constants. Many of the previous macro
+> expressions had type unsigned long long, and now they have type int
+> (the type of the expression specifying the constant value does not
+> matter). I could see this causing problems if these constants are used
+> in expressions involving shifts or implicit conversions.
+
+It would have been if the enums were not annotated. But that's not the case. 
