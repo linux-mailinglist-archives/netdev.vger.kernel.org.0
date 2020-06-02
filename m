@@ -2,80 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD091EB5BC
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 08:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43051EB5C1
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 08:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbgFBGRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 02:17:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50050 "EHLO mail.kernel.org"
+        id S1726110AbgFBGSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 02:18:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50308 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725616AbgFBGRT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 02:17:19 -0400
+        id S1725616AbgFBGSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 02:18:38 -0400
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4587B20772;
-        Tue,  2 Jun 2020 06:17:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20BF420734;
+        Tue,  2 Jun 2020 06:18:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591078639;
-        bh=ep5l1ExG4gfRIqOhdJgGRgQz5NIwz5nYtmlie8CVHk0=;
+        s=default; t=1591078717;
+        bh=dfTXNH+fO4KHybwHWDqOQVsJWSqM89WbqAwXBn6Yq8A=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BTHW6K9EtYZMHqWIKankCYohBkF5ZQUGzXIM0CeutRMPBUevZalzoyQq0KpjOBcaD
-         qeiETdixprK14YCDQgZZi8fU5rKI5bsfKoWUKChQzkBX9p4SAY97jBGGjch8ww5MfK
-         Jz/83myBFWfGC6X66baOsPAZqwi0hQHXH44PRGIM=
-Date:   Tue, 2 Jun 2020 09:17:15 +0300
+        b=NjM0KtSCSadjWtRFLplN00mR2MBfKz+QY83Brp0T3nJxiEBgRm97ixl4FZ4Cyx8G4
+         5+JhglrL5/36NO1No4sFvYys6GwQWbAv9TMMbxsEqRBVsAJXPxAhyLaGajTgkKoiC1
+         Wb7XvqjzE54WU7Srzlesqd1JUBR13xLi4pGJc0cM=
+Date:   Tue, 2 Jun 2020 09:18:33 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Rao Shoaib <rao.shoaib@oracle.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, somasundaram.krishnasamy@oracle.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
 Subject: Re: [PATCH net-next] rds: transport module should be auto loaded
  when transport is set
-Message-ID: <20200602061715.GA56352@unreal>
+Message-ID: <20200602061833.GB56352@unreal>
 References: <20200527081742.25718-1-rao.shoaib@oracle.com>
- <20200529.164107.1817677145426311890.davem@davemloft.net>
- <4f86d778-1f6b-d533-c062-c78daa257829@oracle.com>
+ <20200531100833.GI66309@unreal>
+ <c2631a65-c4f9-2913-8a24-08a2de5ac1d3@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4f86d778-1f6b-d533-c062-c78daa257829@oracle.com>
+In-Reply-To: <c2631a65-c4f9-2913-8a24-08a2de5ac1d3@oracle.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 01, 2020 at 09:59:30AM -0700, Rao Shoaib wrote:
+On Mon, Jun 01, 2020 at 10:08:44AM -0700, Rao Shoaib wrote:
 >
-> On 5/29/20 4:41 PM, David Miller wrote:
-> > From: rao.shoaib@oracle.com
-> > Date: Wed, 27 May 2020 01:17:42 -0700
+> On 5/31/20 3:08 AM, Leon Romanovsky wrote:
+> > On Wed, May 27, 2020 at 01:17:42AM -0700, rao.shoaib@oracle.com wrote:
+> > > From: Rao Shoaib <rao.shoaib@oracle.com>
+> > >
+> > > This enhancement auto loads transport module when the transport
+> > > is set via SO_RDS_TRANSPORT socket option.
+> > >
+> > > Orabug: 31032127
+> > I think that it is internal to Oracle and should not be in the commit
+> > message.
 > >
-> > > diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
-> > > index cba368e55863..7273c681e6c1 100644
-> > > --- a/include/uapi/linux/rds.h
-> > > +++ b/include/uapi/linux/rds.h
-> > > @@ -64,7 +64,7 @@
-> > >   /* supported values for SO_RDS_TRANSPORT */
-> > >   #define	RDS_TRANS_IB	0
-> > > -#define	RDS_TRANS_IWARP	1
-> > > +#define	RDS_TRANS_GAP	1
-> > >   #define	RDS_TRANS_TCP	2
-> > >   #define RDS_TRANS_COUNT	3
-> > >   #define	RDS_TRANS_NONE	(~0)
-> > You can't break user facing UAPI like this, sorry.
+> > Thanks
 >
-> I was hoping that this could be considered an exception as IWARP has been
-> deprecated for almost a decade and there is no current product using it.
-> With the change any old binary will continue to work, a new compilation fill
-> fail so that the code can be examined, otherwise we will never be able to
-> reuse this number.
+> There are logs that have internals bug numbers mentioned in them.
+
+Right, it was missed in the review.
+
+> I do agree with you and will take the bug number out.
 >
-> If the above is not acceptable I can revert this part of the change.
-
-Nothing prohibits you from adding the following lines:
-
-+ /* don't use RDS_TRANS_IWARP - it is deprecated */
-+ #define  RDS_TRANS_GAP RDS_TRANS_IWARP
-
+> Thanks for the comment.
 >
 > Shoaib
 >
