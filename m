@@ -2,137 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE971EB54D
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B621EB56A
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:42:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725781AbgFBFbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 01:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbgFBFbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 01:31:37 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB47C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 22:31:37 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id h4so6249300iob.10
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 22:31:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mforney-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=T4o7JQzfrNq8g506DM2CjZrMkPTAiudDI9kXxj57o5w=;
-        b=sewehkqVaaIYvJ1hCHPYZDK6w1u746F+mhXstgHVIdw70deqJa8YLG3Waq/RlEOYCQ
-         1PVfrXl0Tn+SagdDEoQBukL4GwD7j9X8UJi6lbxvYhjMwYrQhVwlD2sBuzH4jyPxvHba
-         Kx1Zg/hHUTbAk7OOjrLoBb3k8/vYBTc1gMdEK7xWroccD0PUsC+RSv6a5kpTxAUyFa6L
-         5TPCCCGm7iRHRcvpNbaTqGxLxpQ+kBkQjRM7AHpSL40Z1XDyi/nVSgOB0VIIgxfvwyEX
-         L3W4o+EbQWRprg70WbYz63CjJz382hox1L1Ngaf018NeuFdHVRXAbeuIi9pCVp6vMXJZ
-         cMtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=T4o7JQzfrNq8g506DM2CjZrMkPTAiudDI9kXxj57o5w=;
-        b=TQqBV5ZIgTtl5CA9gg5FX9q7CW1G/o0owT9IVlwrnqGRG/zM3ROfMuNBqaIT0AQHUH
-         v1BvTnR4FbfRB9FXYPOAUckWmPzrjfMXCDZWzjqzwe777FUDc7PPl7Sgr38cDgshUhWd
-         wY6+EhLaVpjqgnw9rSa/LzmWp5M40wRLczickAF8LraXmfgEEMP45dBOup6UJGKF5zD6
-         vpo7OxRXvi2A/2SkcCfnz7SF1TJIKyg3IOdw3OL8Ed62OEvGGMeQ1iszJJZOLkQ+50/n
-         OgUsZZpxHsj9WL9eeZSmrSmLxHLUYTXTol7zQKuCkXt68LOsoIWnqxxS7UZrFjRo6U9K
-         Cbug==
-X-Gm-Message-State: AOAM531+N1EzxaSuT44F9FoDJDr0X5Qk+HsTTrKx4Yzd/QwGsmQU95fN
-        cp1JMoXScss2NVHNE1u1VopVq5AdsYJtu84jXXS16SI4iFc=
-X-Google-Smtp-Source: ABdhPJzFqvhcbxOA8g1039MDFa3LEyPLLRJNx+K5nL09YinYKNk+7s5y9w+eSsFhq60i6aaqzu4BC25Oh6FGdpvB8Pg=
-X-Received: by 2002:a02:6c8f:: with SMTP id w137mr24710725jab.38.1591075895419;
- Mon, 01 Jun 2020 22:31:35 -0700 (PDT)
+        id S1726012AbgFBFmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 01:42:47 -0400
+Received: from mail-eopbgr30091.outbound.protection.outlook.com ([40.107.3.91]:45726
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725781AbgFBFmq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 01:42:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=clk8aUMegKzgBduzwOL9Dzps5vIgTjaUGPhFvKTYms+zozk2ra0xoxSW1u6fOGJiVqF+W6XG/fTgEqIE/lTNlkpSVjA6piFpP0SmlLz4MXs+g9v8I/aEGtQ1E1tB59FOT5XJjzr9vudVNiUFWHSPpdVEoMc05y1MQKQjB3Ew7NM57FZQ32brGr8hQ+DYBMDHyFpIs+5NWUVwKlwJM9iOU7Hi2KUKjIgyod3sN9DuKVRmNJgjTkpWbezc1IraIC/ir4p29Ki0BYQecUuKZRIo6ziYBOLxNh8+aheN/r6zd/a5L9q+WXxm4/di4GTeOZPPKSllSSwUgIJwhgjKJigopA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vBWN70O0yx5sJaqaTRLyzQdKQ+umDgnMSh+5AFKmbXI=;
+ b=fluTCuF0iArqWjjwyTrovtEABKPiWkV9xfKYGrEDXARbwyROltxD8WAO0M26j5al4e/66Uz1wiznXe8e4I9F7Q/wwYWAOFGkMyoBiE/zUP8cWt397RqM2FGFdY/DgG4Lw8CRsoxrEsdTJnqadr0qtN9ADvEWDJGZTRUENQbWuHGwvywYnMSkCyDfMbac2gSwOsfAFvU+zCVRMEHueQcNDGp6gPpcuNjg2hDpaQvOCIbXn+EhAoWNv3p7DBr1xkIWhfU5xW0auy7rR6MOGycRLvPOPBaqI6kkE33mT4TAQa+PRVJmhuRylKQtzzMkfPn3QTEizTu33/5Ej+pzy4OxsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vBWN70O0yx5sJaqaTRLyzQdKQ+umDgnMSh+5AFKmbXI=;
+ b=oClrBF5oGNegwydcrFb2jwvt4E9JTyIeWYsArg/xppxQMGxY9q2BEMHstHVf/rIiMZIiLmSCk+uYNlrmk8IkkGt/y/Raw0fqLFvjb1D4CoJ9psrHbaPS92kaD0bCv24aVDJ8vPxYZ8O6+vjd7XF9qkNS+LPcpAcGYyp8jQC1YV0=
+Authentication-Results: dektech.com.au; dkim=none (message not signed)
+ header.d=none;dektech.com.au; dmarc=none action=none
+ header.from=dektech.com.au;
+Received: from DB6PR05MB4598.eurprd05.prod.outlook.com (2603:10a6:6:4d::19) by
+ DB6PR05MB4534.eurprd05.prod.outlook.com (2603:10a6:6:53::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3045.21; Tue, 2 Jun 2020 05:42:41 +0000
+Received: from DB6PR05MB4598.eurprd05.prod.outlook.com
+ ([fe80::ad4d:99ad:217c:47b9]) by DB6PR05MB4598.eurprd05.prod.outlook.com
+ ([fe80::ad4d:99ad:217c:47b9%5]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
+ 05:42:41 +0000
+Date:   Tue, 2 Jun 2020 12:42:32 +0700
+From:   "hoang.h.le" <hoang.h.le@dektech.com.au>
+To:     Tuong Lien <tuong.t.lien@dektech.com.au>
+Cc:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: Re: [net 1/2] Revert "tipc: Fix potential tipc_node refcnt leak in
+ tipc_rcv"
+Message-ID: <20200602053046.GA7054@example.com>
+References: <20200602044641.10535-1-tuong.t.lien@dektech.com.au>
+ <20200602044641.10535-2-tuong.t.lien@dektech.com.au>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200602044641.10535-2-tuong.t.lien@dektech.com.au>
+X-ClientProxiedBy: SG2PR06CA0211.apcprd06.prod.outlook.com
+ (2603:1096:4:68::19) To DB6PR05MB4598.eurprd05.prod.outlook.com
+ (2603:10a6:6:4d::19)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:150:0:0:0:0 with HTTP; Mon, 1 Jun 2020 22:31:34
- -0700 (PDT)
-X-Originating-IP: [73.70.188.119]
-In-Reply-To: <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
-References: <20200303003233.3496043-1-andriin@fb.com> <20200303003233.3496043-2-andriin@fb.com>
- <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net> <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
- <87blpc4g14.fsf@toke.dk> <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
-From:   Michael Forney <mforney@mforney.org>
-Date:   Mon, 1 Jun 2020 22:31:34 -0700
-Message-ID: <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
- used from BPF program side to enums
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from example.com (14.161.14.188) by SG2PR06CA0211.apcprd06.prod.outlook.com (2603:1096:4:68::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17 via Frontend Transport; Tue, 2 Jun 2020 05:42:39 +0000
+X-Originating-IP: [14.161.14.188]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4b8b2069-ab8a-48f0-1d54-08d806b7c3d9
+X-MS-TrafficTypeDiagnostic: DB6PR05MB4534:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR05MB45348BF633CE99F21D374C30F18B0@DB6PR05MB4534.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:751;
+X-Forefront-PRVS: 0422860ED4
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kCVs7kal/gGZ9m9qQ8veb3HatKVzLS1FS7Iv1kBBz8zj2kKYHQuTJvFl5Rk4ugOIySnX5a7grxNuybqpCETepSnWB9QZhVIh+otMx+EFCgAZEiR+S7i5md2y3seflkHZDJAflF4GWuMnXb80GFEY2hpUWNPVICsyeR/bHd2R9V58G7sQf0ZfKK5F6k867I71s0vrwM84C5vwGWpMMdpManAaBb3W1LgX3Nx0hcsP1YKwBms5Cp0b03r2FyoBlnMlNXdpk/VwxdkkvOxVj1V65bm5bCv5SWqXR05bK/9v3doIW4zpHQUgdB0HQmQtJUijvxk0MaFrjkKUZyolnoV5rw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6PR05MB4598.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(366004)(39850400004)(376002)(396003)(346002)(33656002)(8676002)(2906002)(5660300002)(55016002)(26005)(6506007)(6636002)(4326008)(316002)(478600001)(16526019)(186003)(956004)(9686003)(6862004)(52116002)(66556008)(7696005)(36756003)(8886007)(66946007)(66476007)(6666004)(83380400001)(8936002)(86362001)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: ULekyBGVxstjcanW5Ug68jpnPYPCGlbQVPMnaGOujKnQebe1yQ9Lv4SLFxtxyFw4VFn6Ef8cl1S5Aw7TpA9P7N3cynP62VqtzR3qYGsMeggu19HVnL3wB4+qpvjef8SrO+fV6Ylwg/wRjHjYhOl7oetli49PsA5Hq4BQuTlHSoZWPm1lMEuPBIpKAUwqOI85ucN8614XzOIyrGI+0FHPgOXhfouHwLnwG6AXIDlWKdWpw5s7JWm62s/br0FtwDEyvjbm0O8rZyYWf/wduzOGJAblwpyaSBtBUAsz5fyVW9ZM1JHuQtP0JSYMEw/eefeZtji418C7pw5+WOERbPSEoMzGz0B0V/a6zshkhgJVuJAK9A3RC7wgTrByk/+DSYRw9g1XX88e8AMJya0hLsyoa6agB/bblQLsEqWFlbCb0KgXvcw3UQkVR/q//hZU14gIIIhQyOxijRCOC7mt50LWtVMhMpzVvLW3w3DI8wLyIx4=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b8b2069-ab8a-48f0-1d54-08d806b7c3d9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2020 05:42:41.0501
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k9RSGdK+RAZ6xH6RFf2N+1Nn0UoYQK88ydOIKVgF2nebLbIa7KFjgG2SEl/AI3m4SSgEeP+F8Wij5Tm4xEvfR5dwWDjLyJ6lRMR9QW3M4k4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB4534
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Jun 02, 2020 at 11:46:40AM +0700, Tuong Lien wrote:
+Tested-by: Hoang Le <hoang.h.le@dektech.com.au>
 
-On 2020-03-04, Daniel Borkmann <daniel@iogearbox.net> wrote:
-> I was about to push the series out, but agree that there may be a risk for
-> #ifndefs
-> in the BPF C code. If we want to be on safe side, #define FOO FOO would be
-> needed.
-
-I did indeed hit some breakage due to this change, but not for the
-anticipated reason.
-
-The C standard requires that enumeration constants be representable as
-an int, and have type int. While it is a common extension to allow
-constants that exceed the limits of int, and this is required
-elsewhere in Linux UAPI headers, this is the first case I've
-encountered where the constant is not representable as unsigned int
-either:
-
-	enum {
-		BPF_F_CTXLEN_MASK		= (0xfffffULL << 32),
-	};
-
-To see why this can be problematic, consider the following program:
-
-	#include <stdio.h>
-	
-	enum {
-		A = 1,
-		B = 0x80000000,
-		C = 1ULL << 32,
-	
-		A1 = sizeof(A),
-		B1 = sizeof(B),
-	};
-	
-	enum {
-		A2 = sizeof(A),
-		B2 = sizeof(B),
-	};
-	
-	int main(void) {
-		printf("sizeof(A) = %d, %d\n", (int)A1, (int)A2);
-		printf("sizeof(B) = %d, %d\n", (int)B1, (int)B2);
-	}
-
-You might be surprised by the output:
-
-	sizeof(A) = 4, 4
-	sizeof(B) = 4, 8
-
-This is because the type of B is different inside and outside the
-enum. In my C compiler, I have implemented the extension only for
-constants that fit in unsigned int to avoid these confusing semantics.
-
-Since BPF_F_CTXLEN_MASK is the only offending constant, is it possible
-to restore its definition as a macro?
-
-Also, I'm not sure if it was considered, but using enums also changes
-the signedness of these constants. Many of the previous macro
-expressions had type unsigned long long, and now they have type int
-(the type of the expression specifying the constant value does not
-matter). I could see this causing problems if these constants are used
-in expressions involving shifts or implicit conversions.
-
-Thanks for your time,
-
--Michael
+> This reverts commit de058420767df21e2b6b0f3bb36d1616fb962032.
+> 
+> There is no actual tipc_node refcnt leak as stated in the above commit.
+> The refcnt is hold carefully for the case of an asynchronous decryption
+> (i.e. -EINPROGRESS/-EBUSY and skb = NULL is returned), so that the node
+> object cannot be freed in the meantime. The counter will be re-balanced
+> when the operation's callback arrives with the decrypted buffer if any.
+> In other cases, e.g. a synchronous crypto the counter will be decreased
+> immediately when it is done.
+> 
+> Now with that commit, a kernel panic will occur when there is no node
+> found (i.e. n = NULL) in the 'tipc_rcv()' or a premature release of the
+> node object.
+> 
+> This commit solves the issues by reverting the said commit, but keeping
+> one valid case that the 'skb_linearize()' is failed.
+> 
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+> ---
+>  net/tipc/node.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/tipc/node.c b/net/tipc/node.c
+> index 0312fb181d94..a4c2816c3746 100644
+> --- a/net/tipc/node.c
+> +++ b/net/tipc/node.c
+> @@ -2038,7 +2038,6 @@ void tipc_rcv(struct net *net, struct sk_buff *skb, struct tipc_bearer *b)
+>  		n = tipc_node_find_by_id(net, ehdr->id);
+>  	}
+>  	tipc_crypto_rcv(net, (n) ? n->crypto_rx : NULL, &skb, b);
+> -	tipc_node_put(n);
+>  	if (!skb)
+>  		return;
+>  
