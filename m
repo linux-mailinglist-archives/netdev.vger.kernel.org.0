@@ -2,115 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8D71EB52C
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE971EB54D
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728076AbgFBFY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 01:24:27 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:44738 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726964AbgFBFYU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 01:24:20 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DEE9D1A0B71;
-        Tue,  2 Jun 2020 07:24:18 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1B0311A0B79;
-        Tue,  2 Jun 2020 07:24:09 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 776FE402E4;
-        Tue,  2 Jun 2020 13:23:57 +0800 (SGT)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     xiaoliang.yang_1@nxp.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        kuba@kernel.org, vinicius.gomes@intel.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        UNGLinuxDriver@microchip.com, linux-devel@linux.nxdi.nxp.com
-Subject: [PATCH v2 net-next 10/10] net: dsa: tag_ocelot: use VLAN information from tagging header when available
-Date:   Tue,  2 Jun 2020 13:18:28 +0800
-Message-Id: <20200602051828.5734-11-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200602051828.5734-1-xiaoliang.yang_1@nxp.com>
-References: <20200602051828.5734-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725781AbgFBFbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 01:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725616AbgFBFbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 01:31:37 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB47C061A0E
+        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 22:31:37 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id h4so6249300iob.10
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 22:31:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mforney-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=T4o7JQzfrNq8g506DM2CjZrMkPTAiudDI9kXxj57o5w=;
+        b=sewehkqVaaIYvJ1hCHPYZDK6w1u746F+mhXstgHVIdw70deqJa8YLG3Waq/RlEOYCQ
+         1PVfrXl0Tn+SagdDEoQBukL4GwD7j9X8UJi6lbxvYhjMwYrQhVwlD2sBuzH4jyPxvHba
+         Kx1Zg/hHUTbAk7OOjrLoBb3k8/vYBTc1gMdEK7xWroccD0PUsC+RSv6a5kpTxAUyFa6L
+         5TPCCCGm7iRHRcvpNbaTqGxLxpQ+kBkQjRM7AHpSL40Z1XDyi/nVSgOB0VIIgxfvwyEX
+         L3W4o+EbQWRprg70WbYz63CjJz382hox1L1Ngaf018NeuFdHVRXAbeuIi9pCVp6vMXJZ
+         cMtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=T4o7JQzfrNq8g506DM2CjZrMkPTAiudDI9kXxj57o5w=;
+        b=TQqBV5ZIgTtl5CA9gg5FX9q7CW1G/o0owT9IVlwrnqGRG/zM3ROfMuNBqaIT0AQHUH
+         v1BvTnR4FbfRB9FXYPOAUckWmPzrjfMXCDZWzjqzwe777FUDc7PPl7Sgr38cDgshUhWd
+         wY6+EhLaVpjqgnw9rSa/LzmWp5M40wRLczickAF8LraXmfgEEMP45dBOup6UJGKF5zD6
+         vpo7OxRXvi2A/2SkcCfnz7SF1TJIKyg3IOdw3OL8Ed62OEvGGMeQ1iszJJZOLkQ+50/n
+         OgUsZZpxHsj9WL9eeZSmrSmLxHLUYTXTol7zQKuCkXt68LOsoIWnqxxS7UZrFjRo6U9K
+         Cbug==
+X-Gm-Message-State: AOAM531+N1EzxaSuT44F9FoDJDr0X5Qk+HsTTrKx4Yzd/QwGsmQU95fN
+        cp1JMoXScss2NVHNE1u1VopVq5AdsYJtu84jXXS16SI4iFc=
+X-Google-Smtp-Source: ABdhPJzFqvhcbxOA8g1039MDFa3LEyPLLRJNx+K5nL09YinYKNk+7s5y9w+eSsFhq60i6aaqzu4BC25Oh6FGdpvB8Pg=
+X-Received: by 2002:a02:6c8f:: with SMTP id w137mr24710725jab.38.1591075895419;
+ Mon, 01 Jun 2020 22:31:35 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:6638:150:0:0:0:0 with HTTP; Mon, 1 Jun 2020 22:31:34
+ -0700 (PDT)
+X-Originating-IP: [73.70.188.119]
+In-Reply-To: <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
+References: <20200303003233.3496043-1-andriin@fb.com> <20200303003233.3496043-2-andriin@fb.com>
+ <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net> <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
+ <87blpc4g14.fsf@toke.dk> <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
+From:   Michael Forney <mforney@mforney.org>
+Date:   Mon, 1 Jun 2020 22:31:34 -0700
+Message-ID: <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
+ used from BPF program side to enums
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi,
 
-When the Extraction Frame Header contains a valid classified VLAN, use
-that instead of the VLAN header present in the packet.
+On 2020-03-04, Daniel Borkmann <daniel@iogearbox.net> wrote:
+> I was about to push the series out, but agree that there may be a risk for
+> #ifndefs
+> in the BPF C code. If we want to be on safe side, #define FOO FOO would be
+> needed.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/tag_ocelot.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+I did indeed hit some breakage due to this change, but not for the
+anticipated reason.
 
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index b0c98ee4e13b..253188b0e56b 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -181,9 +181,16 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 				  struct net_device *netdev,
- 				  struct packet_type *pt)
- {
-+	struct dsa_port *cpu_dp = netdev->dsa_ptr;
-+	struct dsa_switch *ds = cpu_dp->ds;
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port;
- 	u64 src_port, qos_class;
- 	u8 *start = skb->data;
-+	struct ethhdr *hdr;
- 	u8 *extraction;
-+	u64 vlan_tci;
-+	u16 vid;
- 
- 	/* Revert skb->data by the amount consumed by the DSA master,
- 	 * so it points to the beginning of the frame.
-@@ -211,6 +218,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 
- 	packing(extraction, &src_port,  46, 43, OCELOT_TAG_LEN, UNPACK, 0);
- 	packing(extraction, &qos_class, 19, 17, OCELOT_TAG_LEN, UNPACK, 0);
-+	packing(extraction, &vlan_tci,  15,  0, OCELOT_TAG_LEN, UNPACK, 0);
- 
- 	skb->dev = dsa_master_find_slave(netdev, 0, src_port);
- 	if (!skb->dev)
-@@ -225,6 +233,27 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 	skb->offload_fwd_mark = 1;
- 	skb->priority = qos_class;
- 
-+	/* The VID from the extraction header contains the classified VLAN. But
-+	 * if VLAN awareness is off and no retagging is done via VCAP IS1, that
-+	 * classified VID will always be the pvid of the src_port.
-+	 * port. We want Linux to see the classified VID, but only if the switch
-+	 * intended to send the packet as untagged, i.e. if the VID is different
-+	 * than the CPU port's untagged (native) VID.
-+	 */
-+	vid = vlan_tci & VLAN_VID_MASK;
-+	hdr = eth_hdr(skb);
-+	ocelot_port = ocelot->ports[src_port];
-+	if (hdr->h_proto == htons(ETH_P_8021Q) && vid != ocelot_port->pvid) {
-+		u16 dummy_vlan_tci;
-+
-+		skb_push_rcsum(skb, ETH_HLEN);
-+		__skb_vlan_pop(skb, &dummy_vlan_tci);
-+		skb_pull_rcsum(skb, ETH_HLEN);
-+		skb_reset_network_header(skb);
-+		skb_reset_transport_header(skb);
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-+	}
-+
- 	return skb;
- }
- 
--- 
-2.17.1
+The C standard requires that enumeration constants be representable as
+an int, and have type int. While it is a common extension to allow
+constants that exceed the limits of int, and this is required
+elsewhere in Linux UAPI headers, this is the first case I've
+encountered where the constant is not representable as unsigned int
+either:
 
+	enum {
+		BPF_F_CTXLEN_MASK		= (0xfffffULL << 32),
+	};
+
+To see why this can be problematic, consider the following program:
+
+	#include <stdio.h>
+	
+	enum {
+		A = 1,
+		B = 0x80000000,
+		C = 1ULL << 32,
+	
+		A1 = sizeof(A),
+		B1 = sizeof(B),
+	};
+	
+	enum {
+		A2 = sizeof(A),
+		B2 = sizeof(B),
+	};
+	
+	int main(void) {
+		printf("sizeof(A) = %d, %d\n", (int)A1, (int)A2);
+		printf("sizeof(B) = %d, %d\n", (int)B1, (int)B2);
+	}
+
+You might be surprised by the output:
+
+	sizeof(A) = 4, 4
+	sizeof(B) = 4, 8
+
+This is because the type of B is different inside and outside the
+enum. In my C compiler, I have implemented the extension only for
+constants that fit in unsigned int to avoid these confusing semantics.
+
+Since BPF_F_CTXLEN_MASK is the only offending constant, is it possible
+to restore its definition as a macro?
+
+Also, I'm not sure if it was considered, but using enums also changes
+the signedness of these constants. Many of the previous macro
+expressions had type unsigned long long, and now they have type int
+(the type of the expression specifying the constant value does not
+matter). I could see this causing problems if these constants are used
+in expressions involving shifts or implicit conversions.
+
+Thanks for your time,
+
+-Michael
