@@ -2,68 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FDD31EB956
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 12:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE2D1EB961
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 12:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgFBKP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 06:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgFBKP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 06:15:27 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F645C061A0E
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 03:15:26 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 38C8B22F2D;
-        Tue,  2 Jun 2020 12:15:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1591092921;
+        id S1727935AbgFBKQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 06:16:11 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23040 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726429AbgFBKQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 06:16:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591092965;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FKb5F58jpdTDxau8IJCImFMyi7/5CE9+wavDsjQgsrs=;
-        b=U7FhAzj2GZPxpsYh2b5f6Y1Ri/JYMK4DOTaZ3bfJ16QPbRmD2bbXsshywv79ibT81nwgth
-        X7C6K/SrA1tttFEqyb2cVhiquaUpQUNR8gLyCOzL2efubABErkLJt1a7kVUjnopgiMERN+
-        7ImMpT93yz6A7GPlMuXPgdlUkWsOeYo=
+        bh=B1kuok90cqFe8k5lrqY4B28NHCTcMIuHRs+lnAefnkA=;
+        b=OXFp+CtQ3wTUwQcGWw+mT8Eq0UmUOlKz3mlP4+byeZq1uNJbUxxut21qd13F1BitfJh+re
+        ndUPaeAnops4quEH+HCAAMakYnddwTAVng7GJZX1aVWiDRBxuG/9pBkMch/utYrW1Fv1/m
+        D9VFlW8YYBhFxS0CQfEkDAGaZ8QdjCo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-8lNvRmN0PPmIXv85p_HYSw-1; Tue, 02 Jun 2020 06:16:03 -0400
+X-MC-Unique: 8lNvRmN0PPmIXv85p_HYSw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E5ABCA0C03;
+        Tue,  2 Jun 2020 10:16:02 +0000 (UTC)
+Received: from [10.72.12.83] (ovpn-12-83.pek2.redhat.com [10.72.12.83])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11B6F7E7EA;
+        Tue,  2 Jun 2020 10:15:58 +0000 (UTC)
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+References: <20200602084257.134555-1-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fc204429-7a6e-8214-a66f-bf2676018aae@redhat.com>
+Date:   Tue, 2 Jun 2020 18:15:57 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 02 Jun 2020 12:15:21 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>, mkl@pengutronix.de
-Cc:     linux-can@vger.kernel.org, dl-linux-imx <linux-imx@nxp.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-In-Reply-To: <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
- <20200416093126.15242-2-qiangqing.zhang@nxp.com>
- <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
-User-Agent: Roundcube Webmail/1.4.4
-Message-ID: <d5579883c7e9ab3489ec08a73c407982@walle.cc>
-X-Sender: michael@walle.cc
+In-Reply-To: <20200602084257.134555-1-mst@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-Am 2020-04-16 11:41, schrieb Joakim Zhang:
-> Hi Marc,
-> 
-> How about FlexCAN FD patch set, it is pending for a long time. Many
-> work would base on it, we are happy to see it in upstream mainline
-> ASAP.
-> 
-> Michael Walle also gives out the test-by tag:
-> 	Tested-by: Michael Walle <michael@walle.cc>
+On 2020/6/2 下午4:45, Michael S. Tsirkin wrote:
+> So vhost needs to poke at userspace *a lot* in a quick succession.  It
+> is thus benefitial to enable userspace access, do our thing, then
+> disable. Except access_ok has already been pre-validated with all the
+> relevant nospec checks, so we don't need that.  Add an API to allow
+> userspace access after access_ok and barrier_nospec are done.
+>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>
+> Jason, so I've been thinking using something along these lines,
+> then switching vhost to use unsafe_copy_to_user and friends would
+> solve lots of problems you observed with SMAP.
+>
+> What do you think?
 
-There seems to be no activity for months here. Any reason for that? Is
-there anything we can do to speed things up?
 
--michael
+I'm fine with this approach.
+
+
+>   Do we need any other APIs to make it practical?
+
+
+It's not clear whether we need a new API, I think __uaccess_being() has 
+the assumption that the address has been validated by access_ok().
+
+Thanks
+
+
+>
+>   arch/x86/include/asm/uaccess.h | 1 +
+>   include/linux/uaccess.h        | 1 +
+>   2 files changed, 2 insertions(+)
+>
+> diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+> index d8f283b9a569..fa5afb3a54fe 100644
+> --- a/arch/x86/include/asm/uaccess.h
+> +++ b/arch/x86/include/asm/uaccess.h
+> @@ -483,6 +483,7 @@ static __must_check __always_inline bool user_access_begin(const void __user *pt
+>   	return 1;
+>   }
+>   #define user_access_begin(a,b)	user_access_begin(a,b)
+> +#define user_access_begin_after_access_ok()	__uaccess_begin()
+>   #define user_access_end()	__uaccess_end()
+>   
+>   #define user_access_save()	smap_save()
+> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+> index 67f016010aad..4c0a959ad639 100644
+> --- a/include/linux/uaccess.h
+> +++ b/include/linux/uaccess.h
+> @@ -370,6 +370,7 @@ extern long strnlen_unsafe_user(const void __user *unsafe_addr, long count);
+>   
+>   #ifndef user_access_begin
+>   #define user_access_begin(ptr,len) access_ok(ptr, len)
+> +#define user_access_begin_after_access_ok() do { } while (0)
+>   #define user_access_end() do { } while (0)
+>   #define unsafe_op_wrap(op, err) do { if (unlikely(op)) goto err; } while (0)
+>   #define unsafe_get_user(x,p,e) unsafe_op_wrap(__get_user(x,p),e)
+
