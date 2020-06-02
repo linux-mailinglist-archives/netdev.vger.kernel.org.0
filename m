@@ -2,168 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E07DE1EC1C4
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 20:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE241EC1CF
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 20:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbgFBS1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 14:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgFBS1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 14:27:17 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0A7C08C5C0;
-        Tue,  2 Jun 2020 11:27:16 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id r125so6737542lff.13;
-        Tue, 02 Jun 2020 11:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mw0A1EMjbP0QpDjC9h17qag8cRf1NervhA9yGpFDSfk=;
-        b=nOTsOaAdN5kCuMt+z/tcJmqT+mvf62yBJZIyJqThbdcBFBCTnhM0ifZgJghCvCsyRS
-         f3hSMxZ9QfstXL6Lnf9H9Pj2vIdrFYit69KlxRrz/0+On0UALO04lQ/ds8EYfVF/bWr7
-         Yr3iBz3uonxYIvDYZhy3JJeOgRC+62tTn/qzkDLC/24ARpJQrbUK2CQcFG+Y+x8jDZ7P
-         pKxBlA8jBjgJU+Sq7MFEootaAog4t8kLTrECuz78Ntg3k2xFNJcjwlbUOFZn5wBOX7oU
-         PmGxNV6SOa8vBi6rogt7i1rYjKlDqRPtx0spuG9Dv3So9/EJ5cvbXzbnu9abwHgjaO6T
-         PwbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mw0A1EMjbP0QpDjC9h17qag8cRf1NervhA9yGpFDSfk=;
-        b=G8bnu+AsSFJb++siEQl/eZ94YZfP88vcFkl391lRCpd39vLOOZdDZ1plJz9BcushLu
-         j563QY+5aM4CRRBBwkooiNBZkJXQzTziVXRgwE9Xampjvw9j+yayDgXSM5STmVRCQOWN
-         VSJVD7g5FtIeL2IXOPtQbZneEnM2PqpHRzjsMjssV2Ehav/5VN6BlkEXmrAWbzjz0NX3
-         Ae0+XF+kxOC5FzNvW0eHYHK3ZW9kqEveyQbwzwyEwvOuxhqJsOWCjX2rhaNMqsmOTiv0
-         vj/ftlXH8vA/fbss1yafvA3xsPWgvfx6L2ggR7tN5JPUBfUbsSWD2Ty6CJdyu4csy/R+
-         AUqw==
-X-Gm-Message-State: AOAM533bLQOF9AwfMMAUfl+HYyJJzYVpJoRLyM49QRNez6JFdcmmotg1
-        o6z6Mx+SqLvIQN3FXBmyQhCwt4ufI35usMCBom8=
-X-Google-Smtp-Source: ABdhPJyGEMNlLMbll5Hl1HP0/QWQeqLPmIldvvkylcKKjeRsK2hitNB9GyHrXBNoc4WCLmvUkiHlpxcCIdVENK2LxgQ=
-X-Received: by 2002:a19:103:: with SMTP id 3mr337429lfb.196.1591122435033;
- Tue, 02 Jun 2020 11:27:15 -0700 (PDT)
+        id S1726853AbgFBSbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 14:31:34 -0400
+Received: from static-27.netfusion.at ([83.215.238.27]:56314 "EHLO
+        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbgFBSbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 14:31:33 -0400
+Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
+        (Authenticated sender: victor)
+        by mail.inliniac.net (Postfix) with ESMTPSA id 670C010C;
+        Tue,  2 Jun 2020 20:33:41 +0200 (CEST)
+Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are
+ good
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
+        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alexander Drozdov <al.drozdov@gmail.com>,
+        Tom Herbert <tom@herbertland.com>
+References: <20200602080535.1427-1-victor@inliniac.net>
+ <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
+ <b0a9d785-9d5e-9897-b051-6d9a1e8f914e@inliniac.net>
+ <CA+FuTSd07inNysGhx088hq_jybrikSQdxw8HYjmP84foXhnXOA@mail.gmail.com>
+From:   Victor Julien <victor@inliniac.net>
+Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
+ S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
+ dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
+ Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
+ Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
+ WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
+ YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
+ di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
+ WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
+ SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
+ UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
+ MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
+ M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
+ YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
+ WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
+ SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
+ RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
+ QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
+ RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
+ K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
+ VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
+ enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
+ b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
+ b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
+ dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
+ NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
+ V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
+ ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
+ Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
+ Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
+ eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
+ MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
+ aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
+ MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
+ TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
+ OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
+ L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
+ UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
+ CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
+ UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
+ WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
+ RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
+ b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
+ YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
+ dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
+ djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
+ dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
+ Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
+ aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
+Message-ID: <06479df9-9da4-dbda-5bd1-f6e4d61471d0@inliniac.net>
+Date:   Tue, 2 Jun 2020 20:31:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <159076794319.1387573.8722376887638960093.stgit@firesoul>
- <159076798566.1387573.8417040652693679408.stgit@firesoul> <20200601213012.vgt7oqplfbzeddzm@ast-mbp.dhcp.thefacebook.com>
- <20200602090005.5a6eb50c@carbon>
-In-Reply-To: <20200602090005.5a6eb50c@carbon>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 2 Jun 2020 11:27:03 -0700
-Message-ID: <CAADnVQJDj_5i=g0S1UhxP1EUKwNUx1KuQ=V7y089+oy8rdnZ=g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next RFC 2/3] bpf: devmap dynamic map-value storage
- area based on BTF
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CA+FuTSd07inNysGhx088hq_jybrikSQdxw8HYjmP84foXhnXOA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 12:00 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Mon, 1 Jun 2020 14:30:12 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
-> > On Fri, May 29, 2020 at 05:59:45PM +0200, Jesper Dangaard Brouer wrote:
-> > > +
-> > > +/* Expected BTF layout that match struct bpf_devmap_val */
-> > > +static const struct expect layout[] = {
-> > > +   {BTF_KIND_INT,          true,    0,      4,     "ifindex"},
-> > > +   {BTF_KIND_UNION,        false,  32,      4,     "bpf_prog"},
-> > > +   {BTF_KIND_STRUCT,       false,  -1,     -1,     "storage"}
-> > > +};
-> > > +
-> > > +static int dev_map_check_btf(const struct bpf_map *map,
-> > > +                        const struct btf *btf,
-> > > +                        const struct btf_type *key_type,
-> > > +                        const struct btf_type *value_type)
-> > > +{
-> > > +   struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
-> > > +   u32 found_members_cnt = 0;
-> > > +   u32 int_data;
-> > > +   int off;
-> > > +   u32 i;
-> > > +
-> > > +   /* Validate KEY type and size */
-> > > +   if (BTF_INFO_KIND(key_type->info) != BTF_KIND_INT)
-> > > +           return -EOPNOTSUPP;
-> > > +
-> > > +   int_data = *(u32 *)(key_type + 1);
-> > > +   if (BTF_INT_BITS(int_data) != 32 || BTF_INT_OFFSET(int_data) != 0)
-> > > +           return -EOPNOTSUPP;
-> > > +
-> > > +   /* Validate VALUE have layout that match/map-to struct bpf_devmap_val
-> > > +    * - With a flexible size of member 'storage'.
-> > > +    */
-> > > +
-> > > +   if (BTF_INFO_KIND(value_type->info) != BTF_KIND_STRUCT)
-> > > +           return -EOPNOTSUPP;
-> > > +
-> > > +   /* Struct/union members in BTF must not exceed (max) expected members */
-> > > +   if (btf_type_vlen(value_type) > ARRAY_SIZE(layout))
-> > > +                   return -E2BIG;
-> > > +
-> > > +   for (i = 0; i < ARRAY_SIZE(layout); i++) {
-> > > +           off = btf_find_expect_layout_offset(btf, value_type, &layout[i]);
-> > > +
-> > > +           if (off < 0 && layout[i].mandatory)
-> > > +                   return -EUCLEAN;
-> > > +
-> > > +           if (off >= 0)
-> > > +                   found_members_cnt++;
-> > > +
-> > > +           /* Transfer layout config to map */
-> > > +           switch (i) {
-> > > +           case 0:
-> > > +                   dtab->cfg.btf_offset.ifindex = off;
-> > > +                   break;
-> > > +           case 1:
-> > > +                   dtab->cfg.btf_offset.bpf_prog = off;
-> > > +                   break;
-> > > +           default:
-> > > +                   break;
-> > > +           }
-> > > +   }
-> > > +
-> > > +   /* Detect if BTF/vlen have members that were not found */
-> > > +   if (btf_type_vlen(value_type) > found_members_cnt)
-> > > +           return -E2BIG;
-> > > +
-> > > +   return 0;
-> > > +}
-> >
-> > This layout validation looks really weird to me.
-> > That layout[] array sort of complements BTF to describe the data,
-> > but double describe of the layout feels like hack.
->
-> This is the kind of feedback I'm looking for.  I want to make the
-> map-value more dynamic.  It seems so old school to keep extending the
-> map-value with a size and fixed binary layout, when we have BTF
-> available.  I'm open to input on how to better verify/parse/desc the
-> expected BTF layout for kernel-code side.
->
-> The patch demonstrates that this is possible, I'm open for changes.
-> E.g. devmap is now extended with a bpf_prog, but most end-users will
-> not be using this feature. Today they can use value_size=4 to avoid
-> using this field. When we extend map-value again, then end-users are
-> force into providing 'bpf_prog.fd' if they want to use the newer
-> options.  In this patch end-users don't need to provide 'bpf_prog' if
-> they don't use it. Via BTF we can see this struct member can be skipped.
+Hi Willem,
 
-I think 'struct bpf_devmap_val' should be in uapi/bpf.h.
-That's what it is and it will be extended with new fields at the end
-just like all other structs in uapi/bpf.h
-I don't think BTF can become a substitute for uapi
-where uapi struct has to have all fields defined and backwards supported
-by the kernel.
-BTF is for flexible structs where fields may disappear.
-BTF is there to define a meaning of a binary blob.
-'struct bpf_devmap_val' is not such thing. It's very much known with
-fixed fields and fixed meaning.
+On 02-06-2020 19:37, Willem de Bruijn wrote:
+> On Tue, Jun 2, 2020 at 1:03 PM Victor Julien <victor@inliniac.net> wrote:
+>>
+>> On 02-06-2020 16:29, Willem de Bruijn wrote:
+>>> On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
+>>>>
+>>>> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
+>>>> that the driver has completely validated the checksums in the packet.
+>>>>
+>>>> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
+>>>> in that the new flag will only be set if all the layers are valid,
+>>>> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
+>>>
+>>> transport, not ip checksum.
+>>
+>> Allow me a n00b question: what does transport refer to here? Things like
+>> ethernet? It isn't clear to me from the doc.
+> 
+> The TCP/UDP/.. transport protocol checksum.
+
+Hmm that is what I thought originally, but then it didn't seem to work.
+Hence my patch.
+
+However I just redid my testing. I took the example tpacketv3 program
+and added the status flag checks to the 'display()' func:
+
+                if (ppd->tp_status & TP_STATUS_CSUM_VALID) {
+                        printf("TP_STATUS_CSUM_VALID, ");
+                }
+                if (ppd->tp_status & (1<<8)) {
+                        printf("TP_STATUS_CSUM_UNNECESSARY, ");
+
+                }
+
+Then using scapy sent some packets in 2 variants:
+- default (good csums)
+- deliberately bad csums
+(then also added a few things like ip6 over ip)
+
+
+srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(),
+iface="enp1s0") // good csums
+
+srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(chksum=1),
+iface="enp1s0") //bad tcp
+
+1.2.3.4 -> 5.6.7.8, TP_STATUS_CSUM_VALID, TP_STATUS_CSUM_UNNECESSARY,
+rxhash: 0x81ad5744
+1.2.3.4 -> 5.6.7.8, rxhash: 0x81ad5744
+
+So this suggests that what you're saying is correct, that it sets
+TP_STATUS_CSUM_VALID if the TCP/UDP csum (and IPv4 csum) is valid, and
+does not set it when either of them are invalid.
+
+I'll also re-evaluate things in Suricata.
+
+
+One thing I wonder if what this "at least" from the 682f048bd494 commit
+message means:
+
+"Introduce TP_STATUS_CSUM_VALID tp_status flag to tell the
+ af_packet user that at least the transport header checksum
+ has been already validated."
+
+For TCP/UDP there wouldn't be a higher layer with csums, right? And
+based on my testing it seems lower levels (at least IP) is also
+included. Or would that perhaps refer to something like VXLAN or Geneve
+over UDP? That the csums of packets on top of those layers aren't
+(necessarily) considered?
+
+Thanks,
+Victor
+
+
+>> (happy to follow up with a patch to clarify the doc when I understand
+>> things better)
+>>
+>>> But as I understand it drivers set CHECKSUM_COMPLETE if they fill in
+>>> skb->csum over the full length of the packet. This does not
+>>> necessarily imply that any of the checksum fields in the packet are
+>>> valid yet (see also skb->csum_valid). Protocol code later compares
+>>> checksum fields against this using __skb_checksum_validate_complete and friends.
+>>>
+>>> But packet sockets may be called before any of this, however. So I wonder
+>>> how valid the checksum really is right now when setting TP_STATUS_CSUM_VALID.
+>>> I assume it's correct, but don't fully understand where the validation
+>>> has taken place..
+>>
+>> I guess I'm more confused now about what TP_STATUS_CSUM_VALID actually
+>> means. It sounds almost like the opposite of TP_STATUS_CSUMNOTREADY, but
+>> I'm not sure I understand what the value would be.
+>>
+>> It would be great if someone could help clear this up. Everything I
+>> thought I knew/understood so far has been proven wrong, so I'm not too
+>> confident about my patch anymore...
+> 
+> Agreed that we should clear this up.
+> 
+>>> Similar to commit 682f048bd494 ("af_packet: pass checksum validation
+>>> status to the user"), please update tpacket_rcv and packet_rcv.
+>>
+>> Ah yes, good catch. Will add it there as well.
+>>
+>>> Note also that net-next is currently closed.
+>>
+>> Should I hold off on sending a v3 until it reopens?
+> 
+> Yep, thanks. You can always check
+> http://vger.kernel.org/~davem/net-next.html when unsure.
+> 
+
+
+-- 
+---------------------------------------------
+Victor Julien
+http://www.inliniac.net/
+PGP: http://www.inliniac.net/victorjulien.asc
+---------------------------------------------
+
