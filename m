@@ -2,109 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 658721EB6F3
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:05:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FED11EB6FD
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbgFBIFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 04:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgFBIFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 04:05:00 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FAAC061A0E;
-        Tue,  2 Jun 2020 01:05:00 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id b201so595469pfb.0;
-        Tue, 02 Jun 2020 01:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VmsAWnP0O08xC6A5/1RKLXXMeARPygzzyLJjjBOAChY=;
-        b=QDtXRSN+kdE4n7U+lfSCk+i6qwtZE06oSr5hlb9glQkQu5gzoyG8WNElhPTGX7Bz9r
-         bO8MYBypauImxehYw9HTibVqrdKSfLsUNAanIieDIarNpuntaMqiNpeKRaE+hWeEbI9F
-         DgkPF+OzsCNzSEBbDXQ5y2j2S2MwFpyqhC4HyTnVCS15ZV8RWZvZ9CUYn3pDU8291U2x
-         /ACXph1uR2Dn0CnriE+lV9PVtcAl+4CmIc6oaAZkZxJW9plcMr8WGaTojaQQdLgtL1MD
-         UKOd4n0YMuEfvzo9rC/zUCJvfs4vSg7rwc0q2XlirtMLufYDKEpRcJnzOGHRqxH3NRcq
-         iM+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VmsAWnP0O08xC6A5/1RKLXXMeARPygzzyLJjjBOAChY=;
-        b=hgltD1hVcnK45awcR3KymCmZs50axeR6UZ0kwvboyvKLNWdqj3jtZnm0IJD2uu6Zyf
-         rhd6FAw3ckZgjfqrIdeMSPmenLn9juIEHiEYWVhTv9oxy3HSxz2nb5OQ80makuTm6eLB
-         BXkU2NPpUOcaIiA1hyJvurY5z8Ai4I3qFFnEHnBlpLEFojrQa/oUU08huFjzfecl3R7J
-         Aj/jGRnkEAW940rClmcfijQ5amIJjsMkkCATNBUcvb6KrH1ZSjYI6qPtXZaArbPVETSE
-         oTS9StbEMoFTtsAEjcfZ5Pm5oRRebpGouvJKmhw0YHHzHERabA5SR0/vYfc6BdatO468
-         YFKA==
-X-Gm-Message-State: AOAM533ZNoaL60kFmNOS3ehIvEARwcBIon9DiUsKVIWArS19YslGiZZr
-        wrA2GUwewrjBvTEYztyf9vY=
-X-Google-Smtp-Source: ABdhPJx1QIYuAIhcf3j5ThsKLfHs/AIlMrhWQJgS+dpOKutSnDkx5yhPN5dzRldYHQr+H9kf6UMXcg==
-X-Received: by 2002:aa7:93ac:: with SMTP id x12mr26297388pff.143.1591085099727;
-        Tue, 02 Jun 2020 01:04:59 -0700 (PDT)
-Received: from localhost.localdomain ([45.192.173.250])
-        by smtp.gmail.com with ESMTPSA id j7sm1545305pfh.154.2020.06.02.01.04.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jun 2020 01:04:58 -0700 (PDT)
-From:   kerneljasonxing@gmail.com
-To:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, kerneljasonxing@gmail.com,
-        linux-kernel@vger.kernel.org, liweishi@kuaishou.com,
-        lishujin@kuaishou.com
-Subject: [PATCH] tcp: fix TCP socks unreleased in BBR mode
-Date:   Tue,  2 Jun 2020 16:04:25 +0800
-Message-Id: <20200602080425.93712-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726496AbgFBIF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 04:05:59 -0400
+Received: from static-27.netfusion.at ([83.215.238.27]:56064 "EHLO
+        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725811AbgFBIF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 04:05:58 -0400
+Received: by mail.inliniac.net (Postfix, from userid 108)
+        id 5BD4F1A3B; Tue,  2 Jun 2020 10:08:07 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on tulpe.vuurmuur.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        SURBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from z440.inliniac.lan (a80-127-179-75.adsl.xs4all.nl [80.127.179.75])
+        (Authenticated sender: victor)
+        by mail.inliniac.net (Postfix) with ESMTPSA id 1C6E510C;
+        Tue,  2 Jun 2020 10:07:56 +0200 (CEST)
+From:   Victor Julien <victor@inliniac.net>
+To:     netdev@vger.kernel.org
+Cc:     victor@inliniac.net, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
+        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2] af-packet: new flag to indicate all csums are good
+Date:   Tue,  2 Jun 2020 10:05:33 +0200
+Message-Id: <20200602080535.1427-1-victor@inliniac.net>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kerneljasonxing@gmail.com>
+Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
+that the driver has completely validated the checksums in the packet.
 
-TCP socks cannot be released because of the sock_hold() increasing the
-sk_refcnt in the manner of tcp_internal_pacing() when RTO happens.
-Therefore, this situation could increase the slab memory and then trigger
-the OOM if the machine has beening running for a long time. This issue,
-however, can happen on some machine only running a few days.
+The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
+in that the new flag will only be set if all the layers are valid,
+while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
 
-We add one exception case to avoid unneeded use of sock_hold if the
-pacing_timer is enqueued.
+The name is derived from the skb->ip_summed setting CHECKSUM_UNNECESSARY.
 
-Reproduce procedure:
-0) cat /proc/slabinfo | grep TCP
-1) switch net.ipv4.tcp_congestion_control to bbr
-2) using wrk tool something like that to send packages
-3) using tc to increase the delay in the dev to simulate the busy case.
-4) cat /proc/slabinfo | grep TCP
-5) kill the wrk command and observe the number of objects and slabs in TCP.
-6) at last, you could notice that the number would not decrease.
+Security tools such as Suricata, Snort, Zeek/Bro need to know not
+only that a packet has not been corrupted, but also that the
+checksums are correct. Without this an attacker could send a packet,
+for example a TCP RST packet, that would be accepted by the
+security tool, but rejected by the end host creating an impendance
+mismatch.
 
-Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
-Signed-off-by: liweishi <liweishi@kuaishou.com>
-Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+To avoid this scenario tools currently will have to (re)calcultate/validate
+the checksums as well. With this patch this becomes unnecessary for many
+of the packets.
+
+This patch has been tested with Suricata with the virtio driver,
+where it reduced the ammount of time spent in the Suricata TCP
+checksum validation to about half.
+
+Signed-off-by: Victor Julien <victor@inliniac.net>
 ---
- net/ipv4/tcp_output.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/networking/packet_mmap.rst | 80 +++++++++++++-----------
+ include/uapi/linux/if_packet.h           |  1 +
+ net/packet/af_packet.c                   | 11 ++--
+ 3 files changed, 52 insertions(+), 40 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index cc4ba42..5cf63d9 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -969,7 +969,8 @@ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
- 	u64 len_ns;
- 	u32 rate;
+diff --git a/Documentation/networking/packet_mmap.rst b/Documentation/networking/packet_mmap.rst
+index 6c009ceb1183..1711be47d61d 100644
+--- a/Documentation/networking/packet_mmap.rst
++++ b/Documentation/networking/packet_mmap.rst
+@@ -437,42 +437,50 @@ and the following flags apply:
+ Capture process
+ ^^^^^^^^^^^^^^^
  
--	if (!tcp_needs_internal_pacing(sk))
-+	if (!tcp_needs_internal_pacing(sk) ||
-+	    hrtimer_is_queued(&tcp_sk(sk)->pacing_timer))
- 		return;
- 	rate = sk->sk_pacing_rate;
- 	if (!rate || rate == ~0U)
+-     from include/linux/if_packet.h
+-
+-     #define TP_STATUS_COPY          (1 << 1)
+-     #define TP_STATUS_LOSING        (1 << 2)
+-     #define TP_STATUS_CSUMNOTREADY  (1 << 3)
+-     #define TP_STATUS_CSUM_VALID    (1 << 7)
+-
+-======================  =======================================================
+-TP_STATUS_COPY		This flag indicates that the frame (and associated
+-			meta information) has been truncated because it's
+-			larger than tp_frame_size. This packet can be
+-			read entirely with recvfrom().
+-
+-			In order to make this work it must to be
+-			enabled previously with setsockopt() and
+-			the PACKET_COPY_THRESH option.
+-
+-			The number of frames that can be buffered to
+-			be read with recvfrom is limited like a normal socket.
+-			See the SO_RCVBUF option in the socket (7) man page.
+-
+-TP_STATUS_LOSING	indicates there were packet drops from last time
+-			statistics where checked with getsockopt() and
+-			the PACKET_STATISTICS option.
+-
+-TP_STATUS_CSUMNOTREADY	currently it's used for outgoing IP packets which
+-			its checksum will be done in hardware. So while
+-			reading the packet we should not try to check the
+-			checksum.
+-
+-TP_STATUS_CSUM_VALID	This flag indicates that at least the transport
+-			header checksum of the packet has been already
+-			validated on the kernel side. If the flag is not set
+-			then we are free to check the checksum by ourselves
+-			provided that TP_STATUS_CSUMNOTREADY is also not set.
+-======================  =======================================================
++from include/linux/if_packet.h::
++
++     #define TP_STATUS_COPY		(1 << 1)
++     #define TP_STATUS_LOSING		(1 << 2)
++     #define TP_STATUS_CSUMNOTREADY	(1 << 3)
++     #define TP_STATUS_CSUM_VALID	(1 << 7)
++     #define TP_STATUS_CSUM_UNNECESSARY	(1 << 8)
++
++==========================  =====================================================
++TP_STATUS_COPY		    This flag indicates that the frame (and associated
++			    meta information) has been truncated because it's
++			    larger than tp_frame_size. This packet can be
++			    read entirely with recvfrom().
++
++			    In order to make this work it must to be
++			    enabled previously with setsockopt() and
++			    the PACKET_COPY_THRESH option.
++
++			    The number of frames that can be buffered to
++			    be read with recvfrom is limited like a normal socket.
++			    See the SO_RCVBUF option in the socket (7) man page.
++
++TP_STATUS_LOSING	    indicates there were packet drops from last time
++			    statistics where checked with getsockopt() and
++			    the PACKET_STATISTICS option.
++
++TP_STATUS_CSUMNOTREADY	    currently it's used for outgoing IP packets which
++			    its checksum will be done in hardware. So while
++			    reading the packet we should not try to check the
++			    checksum.
++
++TP_STATUS_CSUM_VALID	    This flag indicates that at least the transport
++			    header checksum of the packet has been already
++			    validated on the kernel side. If the flag is not set
++			    then we are free to check the checksum by ourselves
++			    provided that TP_STATUS_CSUMNOTREADY is also not set.
++
++TP_STATUS_CSUM_UNNECESSARY  This flag indicates that the driver validated all
++			    the packets csums. If it is not set it might be that
++			    the driver doesn't support this, or that one of the
++			    layers csums is bad. TP_STATUS_CSUM_VALID may still
++			    be set if the transport layer csum is correct or
++			    if the driver supports only this mode.
++==========================  =====================================================
+ 
+ for convenience there are also the following defines::
+ 
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index 3d884d68eb30..76a5c762e2e0 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -113,6 +113,7 @@ struct tpacket_auxdata {
+ #define TP_STATUS_BLK_TMO		(1 << 5)
+ #define TP_STATUS_VLAN_TPID_VALID	(1 << 6) /* auxdata has valid tp_vlan_tpid */
+ #define TP_STATUS_CSUM_VALID		(1 << 7)
++#define TP_STATUS_CSUM_UNNECESSARY	(1 << 8)
+ 
+ /* Tx ring - header status */
+ #define TP_STATUS_AVAILABLE	      0
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 29bd405adbbd..94e213537646 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2215,10 +2215,13 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL)
+ 		status |= TP_STATUS_CSUMNOTREADY;
+-	else if (skb->pkt_type != PACKET_OUTGOING &&
+-		 (skb->ip_summed == CHECKSUM_COMPLETE ||
+-		  skb_csum_unnecessary(skb)))
+-		status |= TP_STATUS_CSUM_VALID;
++	else if (skb->pkt_type != PACKET_OUTGOING) {
++		if (skb->ip_summed == CHECKSUM_UNNECESSARY)
++			status |= TP_STATUS_CSUM_UNNECESSARY | TP_STATUS_CSUM_VALID;
++		else if (skb->ip_summed == CHECKSUM_COMPLETE ||
++			 skb_csum_unnecessary(skb))
++			status |= TP_STATUS_CSUM_VALID;
++	}
+ 
+ 	if (snaplen > res)
+ 		snaplen = res;
 -- 
-1.8.3.1
+2.17.1
 
