@@ -2,123 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9532F1EB443
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C09A1EB4AE
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbgFBEX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 00:23:58 -0400
-Received: from static-27.netfusion.at ([83.215.238.27]:55956 "EHLO
-        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725781AbgFBEX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 00:23:58 -0400
-Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
-        (Authenticated sender: victor)
-        by mail.inliniac.net (Postfix) with ESMTPSA id C981A10C;
-        Tue,  2 Jun 2020 06:26:05 +0200 (CEST)
-Subject: Re: [PATCH net-next] af-packet: new flag to indicate all csums are
- good
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, corbet@lwn.net,
-        edumazet@google.com, willemb@google.com, maowenan@huawei.com,
-        arnd@arndb.de, nhorman@tuxdriver.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200601204938.13302-1-victor@inliniac.net>
- <20200601.144535.203726078659236025.davem@davemloft.net>
-From:   Victor Julien <victor@inliniac.net>
-Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
- S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
- dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
- Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
- Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
- WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
- YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
- di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
- WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
- SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
- UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
- MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
- M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
- YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
- WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
- SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
- RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
- QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
- RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
- K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
- VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
- enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
- b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
- b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
- dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
- NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
- V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
- ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
- Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
- Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
- eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
- MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
- aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
- MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
- TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
- OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
- L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
- UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
- CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
- UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
- WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
- RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
- b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
- YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
- dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
- djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
- dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
- Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
- aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
-Message-ID: <11986598-9357-dfdd-e187-c9eb0428fd62@inliniac.net>
-Date:   Tue, 2 Jun 2020 06:23:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726043AbgFBEqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 00:46:55 -0400
+Received: from mail-eopbgr70127.outbound.protection.outlook.com ([40.107.7.127]:6279
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725793AbgFBEqy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 00:46:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EmUXGMrTu/dDVwt6uaCLVZfo5UsmzYFvEB9s+F5jtoJ3imklbC6qyPhVysw7C/5sg+LNFqSdriNS0RSJxgCL6X4YIRjgpUZFCUvpnzvdrOzkY7mri+5SQNsVtCGn+QX90rAp32HlfOaglZKT5Nl1SbTS+ACSLQsOFsRAE7+XDoB2UVrwZEanqWQFivdCwI1VdMukSKtR5P+qywBpfd3dl33f/mxb+wEUyxP4Zz+TtwvE9eTo0NNyK+MG+Glimig0r/4/PIYH4EkTuvNFMWYTDaz8DW29HUa7N0GbtDanEOp+de+8uDUrgGCL6hCPWMTIKp33/tkSo4m9VAIRId3GHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TS9JDinM1mbqxKFpH9eckcQN07t9EWfxdtP38syfAjg=;
+ b=dSeImFceMI1iQ3IR8nEWofHyCtjcVl+oA94u/WdD/K3kC3qEKSY+Qv3GaTaJXeGexy+UmgRbVYhnWFzMlN/IIy4uNUU1NvkACjRY3p8Pr/IoSa2+5gxaxw1EH9+CXeMl7/VdGR+h3Qg1jxsVV3VgLdkW6HR71B7z48PQThR3xDaOv/WHAQxu+F+Pokts+svd1t7JZKYMFvWEObxxl6x5bh1dp2Ci8NcoQPtNWdfLI7vRoJ0B/gD/6r+7t/XXTqfPt+C6z8io3//d+MNLFQzgRSXy3N+iIKh1huFLRvfpPxHfJQB0rFfIQyJcgUx5MPI23qzHEWbctGYx1ozVxB9O2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TS9JDinM1mbqxKFpH9eckcQN07t9EWfxdtP38syfAjg=;
+ b=HZxNfucmqKsG8BIc+6ObWXH/7D7cPt1Zw2aDrqT61zssW/Zc197HfrOzdafcPuajOyJC8GEOp8DD5g9gF7i+xzfJe9jtOX0gUmqFl3B3TkgKCgs+wZnHCieptcUm14DIFlIa2hbZ1Pr/Ho7JXyK1gSq7lM2TJGYKVqD8CPrGbeo=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none
+ header.from=dektech.com.au;
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
+ by AM6SPR01MB0038.eurprd05.prod.outlook.com (2603:10a6:20b:3b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.17; Tue, 2 Jun
+ 2020 04:46:50 +0000
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::4d5f:2ab:5a66:deaf]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::4d5f:2ab:5a66:deaf%7]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
+ 04:46:49 +0000
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net 0/2] tipc: revert two patches
+Date:   Tue,  2 Jun 2020 11:46:39 +0700
+Message-Id: <20200602044641.10535-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19)
+ To AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
 MIME-Version: 1.0
-In-Reply-To: <20200601.144535.203726078659236025.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (14.161.14.188) by SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3045.17 via Frontend Transport; Tue, 2 Jun 2020 04:46:47 +0000
+X-Mailer: git-send-email 2.13.7
+X-Originating-IP: [14.161.14.188]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e365aef-2e34-4ea9-c432-08d806aff659
+X-MS-TrafficTypeDiagnostic: AM6SPR01MB0038:
+X-Microsoft-Antispam-PRVS: <AM6SPR01MB00384784CF8CEC88DE8DF0AFE28B0@AM6SPR01MB0038.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-Forefront-PRVS: 0422860ED4
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UQjz2aJtuHDC2JTNfpMSC6d4kCzBEl7vaxjkU5L5HtgYU4ObLbdA3CReEOw7O6SN0PB+F+0e7357HQmW/arqvWLndyGGL5YQU5St/FPV91oDH6YgEP/TNtnNpct6PHAuKl+/OgyR2kIZREMGdS/mlxes0wNAF3i/PsNPWaP43eW72FKGKIGuH00IZc2ELtOJdGD2oDf/2UhguW586GJl3lQsNCsc6MLFEmCW2MXbcKdv7kdKuB7FbP8r+rkrLqS04qbwC0E3SpygXKfkF3r8nS7j8xx6wgB19CJ7aXawTImmsJixQgizLpV81Ij5TrPC
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(136003)(346002)(396003)(39850400004)(376002)(478600001)(86362001)(66476007)(66556008)(5660300002)(36756003)(83380400001)(8936002)(55016002)(103116003)(66946007)(1076003)(26005)(2616005)(16526019)(7696005)(52116002)(956004)(6666004)(4326008)(4744005)(186003)(2906002)(316002)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: Bt8vBVbxum1BtFH8t6isshvOcjDrc8R2LcB/RiouAtrwNkgx0118bjAZHT5mI3Ql+PnkUPZ2s1Wo9ME5uZDm/GgoyTySCNelrUKvqte3PKuLVvdy0SDu4upFua7YaQlOXh80kwwRM7JKs+r1erW0QGV/1zb2+PLXjs2l8xzQbdOcyJNN+odaYuygvHtY7KCOuHtMTDClBeTuTGcanI2KNu4t7UVBRplwaXfXHyrhE8+PigXuAFV6aBY6oOYD5V2pkGDVOfTWX3cjVUGi++iLkdA4a8trq3QwzFLTCVDrfPNsjQjPNpWJlsNSJeSF6azyadkgTfn00veiK2lZjZkuW4nMRC11P7EQQS39aqzHUyFrFm+pEhD/tg7soMSg/GeEe/kTbNjsbCRE5XDGdJo5nXjflDvepKpLe6PYSXZO3ysqSJm6WCvDipzvcAi3xRqLlhcJ4fY0AkBSI+S8bciH0TKUtNuo0d3cCgAE7GWmhRw=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e365aef-2e34-4ea9-c432-08d806aff659
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2020 04:46:49.8804
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: u/L/taWJo1/HlxeCGO0Onn9dJ2WvJF+L3XdaVF7Uad2tm8N2CtFCLKK6rJ4/YkNz5Xse1xLegkAIkACU0F+uchWlNWLuZpagpyIT7OmCKic=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0038
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01-06-2020 23:45, David Miller wrote:
-> From: Victor Julien <victor@inliniac.net>
-> Date: Mon,  1 Jun 2020 22:49:37 +0200
-> 
->> @@ -472,6 +472,12 @@ TP_STATUS_CSUM_VALID	This flag indicates that at least the transport
->>  			validated on the kernel side. If the flag is not set
->>  			then we are free to check the checksum by ourselves
->>  			provided that TP_STATUS_CSUMNOTREADY is also not set.
->> +TP_STATUS_CSUM_UNNECESSARY  This flag indicates that the driver validated all
->> +                        the packets csums. If it is not set it might be that
->> +                        the driver doesn't support this, or that one of the
->> +                        layers csums is bad. TP_STATUS_CSUM_VALID may still
->> +                        be set if the transport layer csum is correct or
->> +                        if the driver supports only this mode.
->>  ======================  =======================================================
->                         ^^^^^
-> 
-> I think you need to reformat these dividers.
-> 
+We revert two patches:
 
-Yes of course. Think I'll have to reformat the whole table then, at
-least for `rst2pdf` to accept it.
+tipc: Fix potential tipc_node refcnt leak in tipc_rcv
+tipc: Fix potential tipc_aead refcnt leak in tipc_crypto_rcv
 
-Alternatively I can try to come up with a shorter name for the flag, but
-I'm not really coming up with anything so far.
+which prevented TIPC encryption from working properly and caused kernel
+panic.
+
+Tuong Lien (2):
+  Revert "tipc: Fix potential tipc_node refcnt leak in tipc_rcv"
+  Revert "tipc: Fix potential tipc_aead refcnt leak in tipc_crypto_rcv"
+
+ net/tipc/crypto.c | 1 -
+ net/tipc/node.c   | 1 -
+ 2 files changed, 2 deletions(-)
 
 -- 
----------------------------------------------
-Victor Julien
-http://www.inliniac.net/
-PGP: http://www.inliniac.net/victorjulien.asc
----------------------------------------------
+2.13.7
 
