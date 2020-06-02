@@ -2,129 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2142E1EB43D
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9590D1EB44A
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgFBEWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 00:22:37 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36894 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725872AbgFBEWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 00:22:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591071755;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YDfsRlwfRR1nDcp4wd5hK1KujxFVRibBNSbBOaOrz2Q=;
-        b=X8FnC/x9SCa5vJY15Os/NgB6nawcFpKJaDXreIB8m84EPDlTy9XHLAWv/Zny3K0FHi4Nb3
-        8LdpUU/8m/eOLIxkEiiX9UFoTyhOTFaK/KJFTZMPWNZ3Let1L3FvT3iSJVQSnPTVqcc4R7
-        i1c1lgV4k52xxGtwe+/HGiSPJXPtk+c=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-461-pFuGCqgmPKmgHWJT6iELXQ-1; Tue, 02 Jun 2020 00:22:30 -0400
-X-MC-Unique: pFuGCqgmPKmgHWJT6iELXQ-1
-Received: by mail-wr1-f72.google.com with SMTP id e7so851413wrp.14
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 21:22:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YDfsRlwfRR1nDcp4wd5hK1KujxFVRibBNSbBOaOrz2Q=;
-        b=gZ22/qTRZKDwRP9WMSjeVofe4MXQgUQXBKbux6Y++kmfd717b2wqeZAFTKoEfD/JAI
-         f3XRkeahvX9dHkIXHXnchx635DkSStB8uHMRvdjzuQP90tcwnUW05iQqQtID2YS/atvK
-         rLfOTa2i1vA+XFERlbgcdh2R55pywKOSJ5yfu1zgwCo6yddU9uzJsWRRuO3WsD251tsL
-         SZm7u2dd9E5L70uBR+9My0lvikarDybKe/V2oyByj1Ictx6AJQEdV11aO0TwH5N2mafa
-         tQe/9LjeEVfJ6vQLFwAWzywOmIEDTxSqXZBws3HP3xd7qpqWpgbPlHLTBdXKohGf5XQ1
-         G6sg==
-X-Gm-Message-State: AOAM530CCnAI42ASDV1vSvPm/vdpGD3QXjULfW7CAya7aTGcIPzLQy8G
-        d4sv7HG7W7GLJ2Itu2tipOhMOaKUS723/mWt83y0IRfq6g9AZjbZbVBEsjlo4w7kqyOTGOyplFh
-        QI/vNisiz5QsNWDc8
-X-Received: by 2002:a05:6000:1083:: with SMTP id y3mr23714184wrw.425.1591071749222;
-        Mon, 01 Jun 2020 21:22:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx2SKrCnIib4b4OHp9esqIfnn8bX4FrOHyf8lEFnkhypfH/4sW2rsrN9doierFMkcN8evfSkA==
-X-Received: by 2002:a05:6000:1083:: with SMTP id y3mr23714174wrw.425.1591071749030;
-        Mon, 01 Jun 2020 21:22:29 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id z2sm1731263wrs.87.2020.06.01.21.22.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2020 21:22:28 -0700 (PDT)
-Date:   Tue, 2 Jun 2020 00:22:25 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Jan Kara <jack@suse.cz>, Dave Chinner <david@fromorbit.com>,
-        Souptick Joarder <jrdr.linux@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org
-Subject: Re: [PATCH 2/2] vhost: convert get_user_pages() --> pin_user_pages()
-Message-ID: <20200602002212-mutt-send-email-mst@kernel.org>
-References: <20200529234309.484480-1-jhubbard@nvidia.com>
- <20200529234309.484480-3-jhubbard@nvidia.com>
+        id S1726181AbgFBEYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 00:24:18 -0400
+Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:6046
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725781AbgFBEYS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 00:24:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CkIKdOaga5NVKdfNJ6QqWsbfx2PFTiUYycV8qCqJdXyJKkDIbzNEhc7pqW0eIGhiIg1U/usggefhQ/9kbricQk3HPPMF23kqTG8pAlwC4D844TO80I+2QAi+bHnu4Bufl73JQpmUGxArxwh1Zlpf8/1QBl/R1Q4w+yotlk87gPYbVUAnUl5dP2H2+JpHYHxr+EO+oN/Gull1EmFGIoEguL8n5RKYhQabIG38V0CpXj48BpFHbjtX49gCHO1CHjPCEN7u8uAiFmdenWWBQP+EXjEsORADf6F4kJFN3kL7evn5OEfR4RcQmGPFjqQaLbUFIqHghqVzmFZXPO8B3AMXlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=udfppQiuzqMAcmNlREM0/Cp7djt31f2YAyluS3qM02M=;
+ b=BJEkXDKthVB4J8EzthoHUk75wA362GftILOzuM5VSqTl1QgW/vNiE/YEVZ/zU2Pt4h3tcffZ11iev04sqRsNyZz69utigPVMbhQSsnHo7NigOXZPBboAw3zZBdWvrOwJdnbyMhcF0GjAChn5vENn2IzFQu0l+0EbyY6tmPr6B7c3KpRceYqd6lKs/GzEvhrJ2wTpoygvvOTovvLmKt7ywdk8MrQXgrUs3Rvzscj6vZ1oRnuW4Kmtb70GhNhQoX6OnOTUPsDIV1prEpJsJNq3oilCVBrGZ7D6WeCOqjVOBQ9qM7i5XgUkOCj1UeG1XzaCGUxV/kyo6QgP9p16tVCbyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=udfppQiuzqMAcmNlREM0/Cp7djt31f2YAyluS3qM02M=;
+ b=bd7ZG7bqL4Vj/oNC3LPGUXS49MVFCjaA0AVBLafzupv6XucO7LRsQQQmIZ45beLjOKC1+8d3Ksk82Wu3FEOM7M1goO2pCwcABa38gM7VoD/eLaYfdaCI8CFc+DYRZ6fyk/MnJULbCdaPbFzrgYwb5IjsetIKcvL5U3wvDzErNe0=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from DBAPR05MB7095.eurprd05.prod.outlook.com (2603:10a6:10:18e::21)
+ by DBAPR05MB7112.eurprd05.prod.outlook.com (2603:10a6:10:18c::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.21; Tue, 2 Jun
+ 2020 04:24:14 +0000
+Received: from DBAPR05MB7095.eurprd05.prod.outlook.com
+ ([fe80::18fc:e79:48a8:fb5a]) by DBAPR05MB7095.eurprd05.prod.outlook.com
+ ([fe80::18fc:e79:48a8:fb5a%5]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
+ 04:24:13 +0000
+Subject: Re: [net-next 10/11] net/mlx5e: kTLS, Add kTLS RX resync support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+References: <20200529194641.243989-1-saeedm@mellanox.com>
+ <20200529194641.243989-11-saeedm@mellanox.com>
+ <20200529131631.285351a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <e0b8a4d9395207d553e46cb28e38f37b8f39b99d.camel@mellanox.com>
+ <20200529145043.5d218693@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <27149ee9-0483-ecff-a4ec-477c8c03d4dd@mellanox.com>
+ <20200601151206.454168ad@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Boris Pismenny <borisp@mellanox.com>
+Message-ID: <c58e2276-81a1-5d4a-b6e1-b89fe076e8ba@mellanox.com>
+Date:   Tue, 2 Jun 2020 07:23:53 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
+In-Reply-To: <20200601151206.454168ad@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR02CA0104.eurprd02.prod.outlook.com
+ (2603:10a6:208:154::45) To DBAPR05MB7095.eurprd05.prod.outlook.com
+ (2603:10a6:10:18e::21)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200529234309.484480-3-jhubbard@nvidia.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.11] (213.57.108.142) by AM0PR02CA0104.eurprd02.prod.outlook.com (2603:10a6:208:154::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Tue, 2 Jun 2020 04:24:12 +0000
+X-Originating-IP: [213.57.108.142]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a224057e-aab1-4ce7-ca8c-08d806acce27
+X-MS-TrafficTypeDiagnostic: DBAPR05MB7112:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DBAPR05MB7112997694DB41C0AB5A8E56B08B0@DBAPR05MB7112.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 0422860ED4
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: snSZOlbVSv/mQZ1fop7iSghHyj/TM4h7K+sFTmSoZ0sbIB5tclQ0WoCat2IwrujVr1iohMVzMfJFbFLkZXczvZcqmoLxl6LtQf6lC6Mc0aDmJ94DlQMh6vrybGouw/YmlHA8SdMpAwEUS1jApXeqR5T/yG5wJBfFpdyZMtglcWAwT5tcPlqIeGSlcLAnwm3HCzytOssYIi+ZUQC+5Ize8/6zAIE7Eebosprh5I5inZbyA3zNSa/ToUtPCGoZe7gw95Ttnt03xTILBDvfYJYbeKkrTwQEb7gcyXzyQwzZN6MYaRGzBO9nX5LpW/W15aoIM6YzVSOHqHRcBT4xlRZdbhsHBgS703oz7U0Hut6JycjLVJqcvQZUJN+UwZ5ItiDb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7095.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(136003)(376002)(39860400002)(366004)(5660300002)(54906003)(316002)(83380400001)(53546011)(2906002)(6916009)(6486002)(956004)(26005)(8676002)(31686004)(2616005)(52116002)(478600001)(8936002)(186003)(16526019)(16576012)(6666004)(107886003)(4326008)(66946007)(66476007)(66556008)(86362001)(4744005)(31696002)(36756003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: JOcFDJV9DuLNiZ6mt63dMQhC+hpuUVA7s2SDrZqAtLhJ+1rTIVlaPOyBLXnp3T0xKEF5VEt2t/nzJq29zOjU4fd+bv8nEB1asMCY748HP4C6VaWZqaAzVmVS/ybCHtzHHlaRcX33thweqcGB3MJCfE73dYpqh1fUjweCpNP5qHibaVhfIumiPmtq4mfZ6erzEiNsLuZZc0eMqFzQFBiuALU+fzemyah3DY5FAmR0vq/UobvxrGF9jP3PHgXBJY/11Tmwniz7Mnr3tS0boOOshdEVVpHtrQ2y/SMeqi8m6wbjvrj6AxPvULV2qOVqVI4dA0KtjsWbAJnpGnWnMhkY7XicdY5Cs2VPAE9VlfHcSLe/dQ0fa52c66JYMbhNAYbdHTM9TDuGK98sUa81gKScgqX7z624y1OetLekrJLBRVE774NdtkCPiWK9lMt872CxSNmhMEjsoC0bKsDRGlApSQ7s/8tzDUi53c6tUP9znRa37ESJSHAnXs34yi/vaNsY
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a224057e-aab1-4ce7-ca8c-08d806acce27
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2020 04:24:13.7145
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wQ5WzcH7mCuLjvITFAJczv2F2k+ujcocXHsV137gbIc9eLTBpE0nnR8nvQyKy/UGeuxEJN3fOayrcA+xUqrcww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR05MB7112
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 04:43:09PM -0700, John Hubbard wrote:
-> This code was using get_user_pages*(), in approximately a "Case 5"
-> scenario (accessing the data within a page), using the categorization
-> from [1]. That means that it's time to convert the get_user_pages*() +
-> put_page() calls to pin_user_pages*() + unpin_user_pages() calls.
-> 
-> There is some helpful background in [2]: basically, this is a small
-> part of fixing a long-standing disconnect between pinning pages, and
-> file systems' use of those pages.
-> 
-> [1] Documentation/core-api/pin_user_pages.rst
-> 
-> [2] "Explicit pinning of user-space pages":
->     https://lwn.net/Articles/807108/
-> 
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: kvm@vger.kernel.org
-> Cc: virtualization@lists.linux-foundation.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+On 02/06/2020 1:12, Jakub Kicinski wrote:
+> On Sun, 31 May 2020 15:06:28 +0300 Boris Pismenny wrote:
+>> On 30/05/2020 0:50, Jakub Kicinski wrote:
+>>
+>>> IIUC every ooo packet causes a resync request in your
+>>> implementation - is that true?
+>>>   
+>> No, only header loss. We never required a resync per OOO packet. I'm
+>> not sure why would you think that.
+> I mean until device is back in sync every frame kicks off
+> resync_update_sn() and tries to queue the work, right?
+>
+Nope, only the first frame triggers resync_update_sn, so as to keep the process efficient and avoid spamming the system with resync requests. Per-flow, the device will try again to trigger resync_update_sn only if it gets out of sync due to out-of-sequence record headers.
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-> ---
->  drivers/vhost/vhost.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 21a59b598ed8..596132a96cd5 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1762,15 +1762,14 @@ static int set_bit_to_user(int nr, void __user *addr)
->  	int bit = nr + (log % PAGE_SIZE) * 8;
->  	int r;
->  
-> -	r = get_user_pages_fast(log, 1, FOLL_WRITE, &page);
-> +	r = pin_user_pages_fast(log, 1, FOLL_WRITE, &page);
->  	if (r < 0)
->  		return r;
->  	BUG_ON(r != 1);
->  	base = kmap_atomic(page);
->  	set_bit(bit, base);
->  	kunmap_atomic(base);
-> -	set_page_dirty_lock(page);
-> -	put_page(page);
-> +	unpin_user_pages_dirty_lock(&page, 1, true);
->  	return 0;
->  }
->  
-> -- 
-> 2.26.2
 
