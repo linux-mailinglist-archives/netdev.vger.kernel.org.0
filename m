@@ -2,110 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 756C71EC592
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 01:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9421EC5A5
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 01:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728299AbgFBXVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 19:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726589AbgFBXVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 19:21:02 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F456C08C5C0
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 16:21:02 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id b5so603056iln.5
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 16:21:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mforney-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=rKLwbDj0Nm8UB8U3LBRjaFhNE/ibgWumyiHSHHsuajI=;
-        b=sc4v2U5d8vQlexafU7mTJ1c0h9lF0UrIOSIcY8kJcHY7zHVzolCwLZHC9VrLISRD9q
-         ZzWDc8BjLytNhe+KpuKsZ5lYSfSsp3QhxKC58ad/B5fkfhUXWgA9r+KLPmpuA4wWzQ2j
-         WM9fDoGz3tTSHNWMFgDtZeFmq7Q4C4ffMAwI4P7FYbCJTT8/B45GwlfD5ET8/FWJ17tV
-         4Htg4wO90KnCmdjrl9M42ilWDCjOul5YITEsTC5dkQwTI0U7kLTOrAuuLGghF5hDNbYQ
-         nDn+HKPbtEkgo0nqhpcCFJY6IpzPOKX7M/P2aiKyNiaAbozllRbxOCmA6X8Z7mNZ11PE
-         iXvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=rKLwbDj0Nm8UB8U3LBRjaFhNE/ibgWumyiHSHHsuajI=;
-        b=OD9hxPs3sPLBUAv3PSfNTW3kURB3YWNvCeIi7cbxahTIVOkb6sSc85zSno6v15PbmI
-         sMrvG131A+DVa/W8KKDEvZ6nDv6y3TaTcU3dH73H8avbAWDk7v5T/hPFEz08iPPYekek
-         CMevED9FoG3yv6xX5jfAImvg2D0x3w2e4weXaHyvBrp3RLNuL8B89S8Zgm/s4zodHx8d
-         LQ6lM1YK507so1IGI7z42ESscu/3H0EwSpqO93MHrH0oKxse/6XdhaQFZJQX6B2yZKPM
-         pyhVV6jjRSHE3mqDdbm7wYCsb855SVzZ9YRIGGFIlEhwjiYhnWTvXuu1ih8Loz1jV9hU
-         6jxQ==
-X-Gm-Message-State: AOAM531Y3cDKELxw+g3ctuTNVfQ04zq85FGpzhfYkYWzobISgXm4fVBg
-        BOA3RV5OHVG6HeBXJNHyX3m1CYqynBOpBMAUPPjsqA==
-X-Google-Smtp-Source: ABdhPJyU5GjMh5Pz9ddkKuUVlM4AEBS535l20xZroynV46Yl/4egt2hFWdCTfTTuEu9XbC3QBw28pDIYY9+vHKwnAEw=
-X-Received: by 2002:a92:2a06:: with SMTP id r6mr1457141ile.121.1591140061496;
- Tue, 02 Jun 2020 16:21:01 -0700 (PDT)
+        id S1728322AbgFBXZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 19:25:51 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:44994 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbgFBXZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 19:25:51 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 052NPikl122066;
+        Tue, 2 Jun 2020 18:25:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1591140344;
+        bh=57f0sfDTz9OQHmsWrmTpwvsYlGRpugs3Euu4K1JkpO8=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=YZ9QK3EZSrjlprVxCKsqNkiPJnzxZKoCLCXJXArOwUM2f34tP1Gc8+o4LW6PAt3mu
+         Sgfulw3L0z8PcdF14Ra+oyDZbcO7W42KcftKC+EwoCQ9URVkSZaaSyIDpy5YGcA7+q
+         g4KmMKlsg7nFemc+JZNAcTGiKAC2EjHBO8j77wOo=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 052NPieK040733
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 2 Jun 2020 18:25:44 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 2 Jun
+ 2020 18:25:44 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 2 Jun 2020 18:25:44 -0500
+Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 052NPiAo053381;
+        Tue, 2 Jun 2020 18:25:44 -0500
+Subject: Re: [PATCH net-next v5 4/4] net: dp83869: Add RGMII internal delay
+ configuration
+From:   Dan Murphy <dmurphy@ti.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <davem@davemloft.net>, <robh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+References: <20200602164522.3276-1-dmurphy@ti.com>
+ <20200602164522.3276-5-dmurphy@ti.com>
+ <c3c68dcd-ccf1-25fd-fc4c-4c30608a1cc8@gmail.com>
+ <61888788-041f-7b93-9d99-7dad4c148021@ti.com>
+ <6981527b-f155-a46b-574a-2e6621589ca4@gmail.com>
+ <f92f70b2-6e42-5bdb-187d-ecd8533b06a6@ti.com>
+Message-ID: <fd70a4c5-0489-bb47-5ad8-b0d668495b17@ti.com>
+Date:   Tue, 2 Jun 2020 18:25:38 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Received: by 2002:a05:6638:150:0:0:0:0 with HTTP; Tue, 2 Jun 2020 16:21:00
- -0700 (PDT)
-X-Originating-IP: [73.70.188.119]
-In-Reply-To: <20200602230720.hf2ysnlssg67cpmw@ast-mbp.dhcp.thefacebook.com>
-References: <20200303003233.3496043-1-andriin@fb.com> <20200303003233.3496043-2-andriin@fb.com>
- <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net> <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
- <87blpc4g14.fsf@toke.dk> <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
- <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com>
- <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
- <CAGw6cBstsD40MMoHg2dGUe7YvR5KdHD8BqQ5xeXoYKLCUFAudg@mail.gmail.com> <20200602230720.hf2ysnlssg67cpmw@ast-mbp.dhcp.thefacebook.com>
-From:   Michael Forney <mforney@mforney.org>
-Date:   Tue, 2 Jun 2020 16:21:00 -0700
-Message-ID: <CAGw6cBuF8Dj-22bH=ryL+17N48pwMD5hN49sH4AHYYyMm2xgtg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
- used from BPF program side to enums
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <f92f70b2-6e42-5bdb-187d-ecd8533b06a6@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-02, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> the enum definition of BPF_F_CTXLEN_MASK is certainly within standard.
-> I don't think kernel should adjust its headers because some compiler
-> is failing to understand C standard.
+Florian
 
-This is not true. See C11 6.7.2.2p2: "The expression that defines the
-value of an enumeration constant shall be an integer constant
-expression that has a value representable as an int."
+On 6/2/20 6:18 PM, Dan Murphy wrote:
+> Florian
+>
+> On 6/2/20 6:13 PM, Florian Fainelli wrote:
+>>
+>> On 6/2/2020 4:10 PM, Dan Murphy wrote:
+>>> Florian
+>>>
+>>> On 6/2/20 5:33 PM, Florian Fainelli wrote:
+>>>> On 6/2/2020 9:45 AM, Dan Murphy wrote:
+>>>>> Add RGMII internal delay configuration for Rx and Tx.
+>>>>>
+>>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>>>> ---
+>>>> [snip]
+>>>>
+>>>>> +
+>>>>>    enum {
+>>>>>        DP83869_PORT_MIRRORING_KEEP,
+>>>>>        DP83869_PORT_MIRRORING_EN,
+>>>>> @@ -108,6 +113,8 @@ enum {
+>>>>>    struct dp83869_private {
+>>>>>        int tx_fifo_depth;
+>>>>>        int rx_fifo_depth;
+>>>>> +    s32 rx_id_delay;
+>>>>> +    s32 tx_id_delay;
+>>>>>        int io_impedance;
+>>>>>        int port_mirroring;
+>>>>>        bool rxctrl_strap_quirk;
+>>>>> @@ -232,6 +239,22 @@ static int dp83869_of_init(struct phy_device
+>>>>> *phydev)
+>>>>>                     &dp83869->tx_fifo_depth))
+>>>>>            dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
+>>>>>    +    ret = of_property_read_u32(of_node, "rx-internal-delay-ps",
+>>>>> +                   &dp83869->rx_id_delay);
+>>>>> +    if (ret) {
+>>>>> +        dp83869->rx_id_delay =
+>>>>> + dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
+>>>>> +        ret = 0;
+>>>>> +    }
+>>>>> +
+>>>>> +    ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
+>>>>> +                   &dp83869->tx_id_delay);
+>>>>> +    if (ret) {
+>>>>> +        dp83869->tx_id_delay =
+>>>>> + dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
+>>>>> +        ret = 0;
+>>>>> +    }
+>>>> It is still not clear to me why is not the parsing being done by 
+>>>> the PHY
+>>>> library helper directly?
+>>> Why would we do that for these properties and not any other?
+>> Those properties have a standard name, which makes them suitable for
+>> parsing by the core PHY library.
+>>> Unless there is a new precedence being set here by having the PHY
+>>> framework do all the dt node parsing for common properties.
+>> You could parse the vendor properties through the driver, let the PHY
+>> library parse the standard properties, and resolve any ordering
+>> precedence within the driver. In general, I would favor standard
+>> properties over vendor properties.
+>>
+>> Does this help?
+>
+> Ok so new precedence then.
+>
+> Because there are common properties like tx-fifo-depth, rx-fifo-depth, 
+> enet-phy-lane-swap and max_speed that the PHY framework should parse 
+> as well.
+>
+I am assuming that the retrieval of the property and getting the index 
+should be 2 separate APIs?
 
-You can also see this with gcc if you turn on -Wpedantic and include
-it in a way such that warnings are not silenced:
+One API to get the property value and one API to find the index value.
 
-$ gcc -Wpedantic -x c -c -o /dev/null /usr/include/linux/bpf.h
-/usr/include/linux/bpf.h:76:7: warning: ISO C forbids zero-size array
-'data' [-Wpedantic]
-   76 |  __u8 data[0]; /* Arbitrary size */
-      |       ^~~~
-/usr/include/linux/bpf.h:3220:22: warning: ISO C restricts enumerator
-values to range of 'int' [-Wpedantic]
- 3220 |  BPF_F_INDEX_MASK  = 0xffffffffULL,
-      |                      ^~~~~~~~~~~~~
-/usr/include/linux/bpf.h:3221:23: warning: ISO C restricts enumerator
-values to range of 'int' [-Wpedantic]
- 3221 |  BPF_F_CURRENT_CPU  = BPF_F_INDEX_MASK,
-      |                       ^~~~~~~~~~~~~~~~
-/usr/include/linux/bpf.h:3223:23: warning: ISO C restricts enumerator
-values to range of 'int' [-Wpedantic]
- 3223 |  BPF_F_CTXLEN_MASK  = (0xfffffULL << 32),
-      |                       ^
-/usr/include/linux/bpf.h:3797:8: warning: ISO C forbids zero-size
-array 'args' [-Wpedantic]
- 3797 |  __u64 args[0];
-      |        ^~~~
-$
+Dan
 
--Michael
+
+> Dan
+>
