@@ -2,156 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E908B1EBA25
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 13:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9338E1EBA46
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 13:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgFBLKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 07:10:53 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43052 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725802AbgFBLKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 07:10:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591096251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e1bN6BFwrFb8HaDkHCOaH4+Ma1lbuG7/W6ik/b1HbRs=;
-        b=B9IEMppMxroekJlIZoIy4zVaMvQVnEhSqo2IYoTdq8SkT417pbsjLv09IoQ73nEFKVXpd7
-        9MZgX/hzbd1IqrIhj3r4pL+jasgrYVWdoxspG5FdNbEYlrJDAfWTOmvJNDHBoTDdLufWoZ
-        MHubp9EDaYWMuAQROHqohWOVwIJw8aM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-216-peAYYSG6MtaV1fKxi7DMpw-1; Tue, 02 Jun 2020 07:10:49 -0400
-X-MC-Unique: peAYYSG6MtaV1fKxi7DMpw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EDEAA1883607;
-        Tue,  2 Jun 2020 11:10:46 +0000 (UTC)
-Received: from [10.72.12.83] (ovpn-12-83.pek2.redhat.com [10.72.12.83])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A75B578EFB;
-        Tue,  2 Jun 2020 11:10:39 +0000 (UTC)
-Subject: Re: [PATCH] vdpa: bypass waking up vhost_woker for vdpa vq kick
-From:   Jason Wang <jasowang@redhat.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org, lulu@redhat.com,
-        dan.daly@intel.com, cunming.liang@intel.com
-References: <20200602094203.GU30374@kadam>
- <b8ccbccf-f667-8d15-8de2-b87da5f51ec3@redhat.com>
-Message-ID: <c2f3cd6c-6f75-15db-080e-9895a35a0456@redhat.com>
-Date:   Tue, 2 Jun 2020 19:10:38 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <b8ccbccf-f667-8d15-8de2-b87da5f51ec3@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        id S1726342AbgFBLWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 07:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbgFBLWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 07:22:41 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405CCC061A0E;
+        Tue,  2 Jun 2020 04:22:41 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id n9so1240223plk.1;
+        Tue, 02 Jun 2020 04:22:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=LFCYo6Ppo4sEF/Ge4xWjhzf5GS4llSMO5W63JlrM7KQ=;
+        b=bKZCM1vPpptfyYMSXvgRkpuRDbMki1FhOPMqlwbLnVstbWg0qiqkCS1O57oOXwQuQd
+         +ilqEQ3DcHER6lECOK0foKhzOkTLOSYYit6+mH2EPqtG6maZexBnUAhVwi21cWColo0Q
+         LNLXHyjqDkZ+BpqzSA4rD7zFYqK9asLhlURmRvN5Clt2uOtW5gk+oJJMZgIKxdV4HfME
+         XLZ+iDkilPNPZAN39AAfIUzJ1nHvXIMVEWwTbpZ+ZKUPESlWucThCvXB2gDmpRwMTDSu
+         6UJDn0pcZiK9LrY8sUHbLAI4FD7gQnKG+9tZ7dDHfESkcuIw0qdBa9KR49+mZTrYxGwB
+         DLdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LFCYo6Ppo4sEF/Ge4xWjhzf5GS4llSMO5W63JlrM7KQ=;
+        b=W1I5D3653Iy6hxd+zG13t5VuSXLERO31JyAK4HArgnjUAT515TtgtPa1I+pE5n4Kqe
+         0fjzC9QI2HnQpjcAM8hmnTXchdKY112JkOH3fs871uEkpiQbHcphDgenwzuC0UcRjY1v
+         6d+4vjXFCTfdJob9QJWF2Xwjcy+wMRUxhyoc1QcfIn7yIsULoEqPgWtanzAlm8+LUoCJ
+         4bWJ2IcRT7zb2MfEM/12E58GsgxvNSPNSg1WnqjFhbid3JZKk87PwbDkCcKorv6Lb1Ct
+         zCMJEcQ6z2wj6TYtBYPf4XiLqMSA456sW1FERShdAHKDkDCgeah8NkVTfIu0hu6B+qMS
+         CtYg==
+X-Gm-Message-State: AOAM531Udhb/OXNjIdpom/7njC5K+9SiSuxfvArt1u6PrdZMr7jf0aM3
+        VSwcli1Big9e1jh83eTixBk=
+X-Google-Smtp-Source: ABdhPJwfTFUI1HfGsYg4wx0v6+YoLTxCwj7X0smn80Ce1gQdJ41svgwZ/rNmBwG0aIWD24XxuXXlDA==
+X-Received: by 2002:a17:902:bb95:: with SMTP id m21mr12586768pls.262.1591096960561;
+        Tue, 02 Jun 2020 04:22:40 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:189:c86a:7149:74ab:b584:ecf8])
+        by smtp.gmail.com with ESMTPSA id j9sm2238172pje.28.2020.06.02.04.22.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 04:22:39 -0700 (PDT)
+From:   Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
+To:     Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     aishwaryarj100@gmail.com
+Subject: [PATCH] net: nvidia: forcedeth: Drop a condition with no effect
+Date:   Tue,  2 Jun 2020 16:52:28 +0530
+Message-Id: <20200602112228.30333-1-aishwaryarj100@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As the "else if" and "else" branch body are identical the
+condition has no effect. So removing "else if" condition.
 
-On 2020/6/2 下午6:16, Jason Wang wrote:
->
-> On 2020/6/2 下午5:42, Dan Carpenter wrote:
->> Hi Zhu,
->>
->> url: 
->> https://github.com/0day-ci/linux/commits/Zhu-Lingshan/vdpa-bypass-waking-up-vhost_woker-for-vdpa-vq-kick/20200526-133819 
->>
->> base: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git 
->> linux-next
->> config: x86_64-randconfig-m001-20200529 (attached as .config)
->> compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kbuild test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->>
->> smatch warnings:
->> drivers/vhost/vdpa.c:348 vhost_vdpa_set_vring_kick() error: 
->> uninitialized symbol 'r'.
->>
->> # 
->> https://github.com/0day-ci/linux/commit/a84ddbf1ef29f18aafb2bb8a93bcedd4a29a967d 
->>
->> git remote add linux-review https://github.com/0day-ci/linux
->> git remote update linux-review
->> git checkout a84ddbf1ef29f18aafb2bb8a93bcedd4a29a967d
->> vim +/r +348 drivers/vhost/vdpa.c
->>
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  316  static long 
->> vhost_vdpa_set_vring_kick(struct vhost_virtqueue *vq,
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26 317                        
->> void __user *argp)
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  318  {
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  319      bool pollstart = 
->> false, pollstop = false;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  320      struct file 
->> *eventfp, *filep = NULL;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  321      struct 
->> vhost_vring_file f;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  322      long r;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  323
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  324      if 
->> (copy_from_user(&f, argp, sizeof(f)))
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  325          return -EFAULT;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  326
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  327      eventfp = f.fd == -1 
->> ? NULL : eventfd_fget(f.fd);
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  328      if (IS_ERR(eventfp)) {
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  329          r = 
->> PTR_ERR(eventfp);
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  330          return r;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  331      }
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  332
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  333      if (eventfp != 
->> vq->kick) {
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  334          pollstop = 
->> (filep = vq->kick) != NULL;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  335          pollstart = 
->> (vq->kick = eventfp) != NULL;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  336      } else
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  337          filep = eventfp;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  338
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  339      if (pollstop && 
->> vq->handle_kick)
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  340 vhost_vdpa_poll_stop(vq);
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  341
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  342      if (filep)
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  343 fput(filep);
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  344
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  345      if (pollstart && 
->> vq->handle_kick)
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  346          r = 
->> vhost_vdpa_poll_start(vq);
->>
->> "r" not initialized on else path.
->>
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  347
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26 @348      return r;
->> a84ddbf1ef29f1 Zhu Lingshan 2020-05-26  349  }
->
->
-> Will fix.
->
-> Thanks 
+Signed-off-by: Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
+---
+ drivers/net/ethernet/nvidia/forcedeth.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-
-Lingshan reminds me that we've posted V2 which reuses the vhost.c 
-implementation for polling.
-
-So there's no need for the fix.
-
-Thanks
-
-
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 2fc10a36afa4..87ed7e192ce9 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -3476,9 +3476,6 @@ static int nv_update_linkspeed(struct net_device *dev)
+ 	} else if (adv_lpa & LPA_10FULL) {
+ 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+ 		newdup = 1;
+-	} else if (adv_lpa & LPA_10HALF) {
+-		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+-		newdup = 0;
+ 	} else {
+ 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+ 		newdup = 0;
+-- 
+2.17.1
 
