@@ -2,108 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE0F51EB58B
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B23021EB5CE
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 08:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725835AbgFBF7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 01:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbgFBF7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 01:59:21 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370F8C061A0E
-        for <netdev@vger.kernel.org>; Mon,  1 Jun 2020 22:59:21 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id x6so1979327wrm.13
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 22:59:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uUnrnofyj06ZMmhQ3XK96fL5upjJdk6xA38GTIW2I7A=;
-        b=GoZZOnqDgIMqR+3WeEcDkPM16AYBdRN+qAqN7r6exSLxVF/1VjrKJu0fw+Yd3JIcTj
-         3whcZ9CtW5pnON4dl0n8Ui7sS1tvL13kX0A80eRuTGNmJR8bkXeyuY/YiprODy70EzyC
-         iOrXDCCr0hgHwAnGeIMwNsjNYgKHL5AFtrFsCPemxaN8PT2yVZclhPshDpeLTl3oX42G
-         TzTz1FTRMZBfhKIp4WND7AYbLlkEslmhfOTjKkq7cAdzNRb7rspAHnW15NZLC1C9hgBa
-         QGIA/sz/tfmcvGX2aVvlGfdl44L/NDY9WsIVCMcIl49IUpDa7j+PJKXfrk3+sJEGF2LA
-         8Qcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uUnrnofyj06ZMmhQ3XK96fL5upjJdk6xA38GTIW2I7A=;
-        b=g+0El7rIVrdA2xM5eRtHNQ5JrKlqZXNkUThlWtVA5pydbw14SzK9re6gISUdQsTXTi
-         pQIQOULF6AWYEKLcO/j/EpO01/tYEUnmj54QlwCnewu+2CvBo/bYh8fQX7bZDA+3wzrZ
-         LLMWcP3TAndU3cpfcXNtIi2IkYr4kVDH0SdPQz5j8qqVIK8zCrfEOas1aKvBL++GK03N
-         CzDTbqcwHyxUoJvh1ap/ZGx9ox+3wQN6e0L6m5PStGqvShQw4WZnHZFnnCD4tTmyC/qg
-         vWZ+4g2JZxjUnYaab28TtDlDs1mrYbt/opagtJWJ1b+8mkLwdqmBWyL/lFrHnhJLTGqh
-         jUZA==
-X-Gm-Message-State: AOAM5338BwrpnV+Hx4YHX1m5Yq4wKBmPwpJ3V+f/74y3116RHL50LyPW
-        0QGLEf56/kOcf9mLsESUBKI=
-X-Google-Smtp-Source: ABdhPJxyiORpjGgaz1xzzVW0SP4lLdsKq/8rSwRXJAI1yHxBDEa3Tpa8KOtZIy/vRc27D0Ww5pXJpQ==
-X-Received: by 2002:adf:dcc3:: with SMTP id x3mr23967624wrm.93.1591077559882;
-        Mon, 01 Jun 2020 22:59:19 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:a450:3f43:b041:bc74? (p200300ea8f235700a4503f43b041bc74.dip0.t-ipconnect.de. [2003:ea:8f23:5700:a450:3f43:b041:bc74])
-        by smtp.googlemail.com with ESMTPSA id z132sm1999760wmc.29.2020.06.01.22.59.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Jun 2020 22:59:19 -0700 (PDT)
-Subject: Re: netif_device_present() and Runtime PM / PCI D3
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <d7e70ee5-1c7b-c604-61ca-dff1f2995d0b@gmail.com>
- <20200531150504.GB897737@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <fb84709f-568e-9d7d-0d3a-e50518052f36@gmail.com>
-Date:   Tue, 2 Jun 2020 07:58:58 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1726198AbgFBG3I convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jun 2020 02:29:08 -0400
+Received: from asix.com.tw ([210.243.224.51]:11298 "EHLO freebsd2.asix.com.tw"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725616AbgFBG3H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 02:29:07 -0400
+X-Greylist: delayed 1798 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Jun 2020 02:29:06 EDT
+Received: from AllanWin10 (122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged))
+        (authenticated bits=0)
+        by freebsd2.asix.com.tw (8.15.2/8.15.2) with ESMTPSA id 0525vRxh054591
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 2 Jun 2020 13:57:29 +0800 (CST)
+        (envelope-from allan@asix.com.tw)
+Authentication-Results: freebsd2.asix.com.tw; sender-id=softfail header.from=allan@asix.com.tw; auth=pass (LOGIN); spf=softfail smtp.mfrom=allan@asix.com.tw
+X-Authentication-Warning: freebsd2.asix.com.tw: Host 122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged) claimed to be AllanWin10
+From:   "ASIX_Allan [Office]" <allan@asix.com.tw>
+To:     "'Jeremy Kerr'" <jk@ozlabs.org>,
+        "'Freddy Xin'" <freddy@asix.com.tw>,
+        =?UTF-8?B?QVNJWCBMb3VpcyBb6JiH5aiB6Zm4XQ==?= <louis@asix.com.tw>
+Cc:     "'Peter Fink'" <pfink@christ-es.de>, <netdev@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>
+References: <20200527060334.19441-1-jk@ozlabs.org> <b9e1db7761761e321b23bd0d22ab981cbd5d6abe.camel@ozlabs.org>
+In-Reply-To: <b9e1db7761761e321b23bd0d22ab981cbd5d6abe.camel@ozlabs.org>
+Subject: RE: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
+Date:   Tue, 2 Jun 2020 13:53:48 +0800
+Message-ID: <000601d638a2$317f44d0$947dce70$@asix.com.tw>
 MIME-Version: 1.0
-In-Reply-To: <20200531150504.GB897737@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHmoCzAkPvBY+mFBa6Wg5HaQv5jdQFGCLaeqJnTHoA=
+Content-Language: zh-tw
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31.05.2020 17:05, Andrew Lunn wrote:
-> On Sun, May 31, 2020 at 02:07:46PM +0200, Heiner Kallweit wrote:
->> I just wonder about the semantics of netif_device_present().
->> If a device is in PCI D3 (e.g. being runtime-suspended), then it's
->> not accessible. So is it present or not?
->> The description of the function just mentions the obvious case that
->> the device has been removed from the system.
-> 
-> Hi Heiner
-> 
-> Looking at the code, there is no directly link to runtime suspend.  If
-> the drivers suspend code has detached the device then it won't be
-> present, but that tends to be not runtime PM, but WOL etc.
-> 
-Thanks, Andrew. To rephrase the question, should a driver always mark
-the device as not present when it's not accessible, e.g. in PCI D3?
-I think there are good reasons for it.
+Hi Louis,
 
->> Related is the following regarding ethtool:
->> dev_ethtool() returns an error if device isn't marked as present.
->> If device is runtime-suspended and in PCI D3, then the driver
->> may still be able to provide quite some (cached) info about the
->> device. Same applies for settings: Even if device is sleeping,
->> the driver may store new settings and apply them once the device
->> is awake again.
-> 
-> I think playing with cached state of a device is going to be a sources
-> of hard to find bugs. I would want to see a compelling use case for
-> this.
-> 
-One example I'm aware of: r8169 allows to change WoL settings even if
-device is in D3 (runtime-suspended after removing cable). Driver
-stores new settings and updates device once it's resuming.
+Please help to take care of this problem. Thanks a lot.
 
-> 	Andrew
+ 
+---
+Best regards,
+Allan Chou
+ASIX Electronics Corporation
+TEL: 886-3-5799500 ext.228
+FAX: 886-3-5799558
+E-mail: allan@asix.com.tw 
+https://www.asix.com.tw/ 
+
+
+
+-----Original Message-----
+From: Jeremy Kerr <jk@ozlabs.org> 
+Sent: Tuesday, June 2, 2020 11:18 AM
+To: Freddy Xin <freddy@asix.com.tw>; Allan Chou <allan@asix.com.tw>
+Cc: Peter Fink <pfink@christ-es.de>; netdev@vger.kernel.org; linux-usb@vger.kernel.org
+Subject: Re: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
+
+Hi Freddy and Allan,
+
+Just following up on the RFC patch below: Can you confirm whether the packet len (in the hardware-provided packet RX metadata) includes the two-byte padding field? Is this the same for all ax88179 devices?
+
+Cheers,
+
+
+Jeremy
+
+> Using a AX88179 device (0b95:1790), I see two bytes of appended data 
+> on every RX packet. For example, this 48-byte ping, using 0xff as a 
+> payload byte:
 > 
-Heiner
+>   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
+> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
+> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
+> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
+> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
+> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0060:  ffff 961f
+> 
+> Those last two bytes - 96 1f - aren't part of the original packet.
+> 
+> In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte 
+> 'alignment pseudo header' from the start of the packet, and sets the 
+> length from a per-packet field populated by hardware. It looks like 
+> that length field *includes* the 2-byte header; the current driver 
+> assumes that it's excluded.
+> 
+> This change trims the 2-byte alignment header after we've set the 
+> packet length, so the resulting packet length is correct. While we're 
+> moving the comment around, this also fixes the spelling of 'pseudo'.
+> 
+> Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
+> 
+> ---
+> RFC: I don't have access to docs for this hardware, so this is all 
+> based on observed behaviour of the reported packet length.
+> ---
+>  drivers/net/usb/ax88179_178a.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/usb/ax88179_178a.c 
+> b/drivers/net/usb/ax88179_178a.c index 93044cf1417a..1fe4cc28d154 
+> 100644
+> --- a/drivers/net/usb/ax88179_178a.c
+> +++ b/drivers/net/usb/ax88179_178a.c
+> @@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+>  		}
+>  
+>  		if (pkt_cnt == 0) {
+> -			/* Skip IP alignment psudo header */
+> -			skb_pull(skb, 2);
+>  			skb->len = pkt_len;
+> -			skb_set_tail_pointer(skb, pkt_len);
+> +			/* Skip IP alignment pseudo header */
+> +			skb_pull(skb, 2);
+> +			skb_set_tail_pointer(skb, skb->len);
+>  			skb->truesize = pkt_len + sizeof(struct sk_buff);
+>  			ax88179_rx_checksum(skb, pkt_hdr);
+>  			return 1;
+> @@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+>  		ax_skb = skb_clone(skb, GFP_ATOMIC);
+>  		if (ax_skb) {
+>  			ax_skb->len = pkt_len;
+> -			ax_skb->data = skb->data + 2;
+> -			skb_set_tail_pointer(ax_skb, pkt_len);
+> +			/* Skip IP alignment pseudo header */
+> +			skb_pull(ax_skb, 2);
+> +			skb_set_tail_pointer(ax_skb, ax_skb->len);
+>  			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+>  			ax88179_rx_checksum(ax_skb, pkt_hdr);
+>  			usbnet_skb_return(dev, ax_skb);
+> 
+
