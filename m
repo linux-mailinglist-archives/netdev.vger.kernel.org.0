@@ -2,161 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E3B1EC327
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 21:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 775E81EC361
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 22:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728629AbgFBTwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 15:52:06 -0400
-Received: from forwardcorp1o.mail.yandex.net ([95.108.205.193]:39282 "EHLO
-        forwardcorp1o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728615AbgFBTwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 15:52:03 -0400
-Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
-        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 7717E2E15CC;
-        Tue,  2 Jun 2020 22:52:00 +0300 (MSK)
-Received: from vla1-81430ab5870b.qloud-c.yandex.net (vla1-81430ab5870b.qloud-c.yandex.net [2a02:6b8:c0d:35a1:0:640:8143:ab5])
-        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id HtHAFXis5b-pvfmmxVL;
-        Tue, 02 Jun 2020 22:52:00 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1591127520; bh=5DydsKYe2yyQXWLg6DiPRgeyXzchovJ5c/vHirY2OBM=;
-        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=n05NkSAvybqNpXKLNSuQ98TH0AWi5QcYJ6K47LEyazt/UhnBFxNKddbLYr9mo6kBY
-         WIcxD6WFTLrD3zwLXDbZt7Ms6Vr4VgwCu4gKEwgu+RhZ1n0fqf/jiQb8E0OFUHJ0/A
-         0hiyi0oUdk/KCZp9AwXq4XgI5c7fSZUGSI71Ojak=
-Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from 178.154.178.227-vpn.dhcp.yndx.net (178.154.178.227-vpn.dhcp.yndx.net [178.154.178.227])
-        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 8r0TlSmqCc-pvW8tjdn;
-        Tue, 02 Jun 2020 22:51:57 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     alexei.starovoitov@gmail.com
-Cc:     davem@davemloft.net, brakmo@fb.com, eric.dumazet@gmail.com,
-        kafai@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v4 3/3] bpf: add SO_KEEPALIVE and related options to bpf_setsockopt
-Date:   Tue,  2 Jun 2020 22:51:47 +0300
-Message-Id: <20200602195147.56912-3-zeil@yandex-team.ru>
-In-Reply-To: <20200602195147.56912-1-zeil@yandex-team.ru>
-References: <20200602195147.56912-1-zeil@yandex-team.ru>
+        id S1728309AbgFBUFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 16:05:16 -0400
+Received: from static-27.netfusion.at ([83.215.238.27]:56408 "EHLO
+        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726139AbgFBUFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 16:05:16 -0400
+Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
+        (Authenticated sender: victor)
+        by mail.inliniac.net (Postfix) with ESMTPSA id 88B5110C;
+        Tue,  2 Jun 2020 22:07:24 +0200 (CEST)
+Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are
+ good
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
+        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alexander Drozdov <al.drozdov@gmail.com>,
+        Tom Herbert <tom@herbertland.com>
+References: <20200602080535.1427-1-victor@inliniac.net>
+ <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
+ <b0a9d785-9d5e-9897-b051-6d9a1e8f914e@inliniac.net>
+ <CA+FuTSd07inNysGhx088hq_jybrikSQdxw8HYjmP84foXhnXOA@mail.gmail.com>
+ <06479df9-9da4-dbda-5bd1-f6e4d61471d0@inliniac.net>
+ <CA+FuTSci29=W89CLweZcW=RTKwEXpUdPjsLGTB95iSNcnpU_Lw@mail.gmail.com>
+ <6a3dcce9-4635-28e9-d78e-1c7f1f7874da@inliniac.net>
+ <CA+FuTSdmtC4+0cnC2K1gwRLksXgb4hffUpyRbHjjGZbOJOfL0w@mail.gmail.com>
+From:   Victor Julien <victor@inliniac.net>
+Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
+ S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
+ dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
+ Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
+ Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
+ WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
+ YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
+ di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
+ WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
+ SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
+ UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
+ MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
+ M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
+ YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
+ WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
+ SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
+ RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
+ QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
+ RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
+ K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
+ VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
+ enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
+ b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
+ b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
+ dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
+ NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
+ V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
+ ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
+ Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
+ Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
+ eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
+ MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
+ aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
+ MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
+ TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
+ OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
+ L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
+ UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
+ CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
+ UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
+ WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
+ RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
+ b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
+ YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
+ dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
+ djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
+ dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
+ Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
+ aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
+Message-ID: <21a2224a-65f2-6375-589d-9cadb4fab840@inliniac.net>
+Date:   Tue, 2 Jun 2020 22:05:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <CA+FuTSdmtC4+0cnC2K1gwRLksXgb4hffUpyRbHjjGZbOJOfL0w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support of SO_KEEPALIVE flag and TCP related options
-to bpf_setsockopt() routine. This is helpful if we want to enable or tune
-TCP keepalive for applications which don't do it in the userspace code.
+On 02-06-2020 21:38, Willem de Bruijn wrote:
+> On Tue, Jun 2, 2020 at 3:22 PM Victor Julien <victor@inliniac.net> wrote:
+>>
+>> On 02-06-2020 21:03, Willem de Bruijn wrote:
+>>> On Tue, Jun 2, 2020 at 2:31 PM Victor Julien <victor@inliniac.net> wrote:
+>>>> On 02-06-2020 19:37, Willem de Bruijn wrote:
+>>>>> On Tue, Jun 2, 2020 at 1:03 PM Victor Julien <victor@inliniac.net> wrote:
+>>>>>>
+>>>>>> On 02-06-2020 16:29, Willem de Bruijn wrote:
+>>>>>>> On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
+>>>>>>>>
+>>>>>>>> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
+>>>>>>>> that the driver has completely validated the checksums in the packet.
+>>>>>>>>
+>>>>>>>> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
+>>>>>>>> in that the new flag will only be set if all the layers are valid,
+>>>>>>>> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
+>>>>>>>
+>>>>>>> transport, not ip checksum.
+>>>>>>
+>>>>>> Allow me a n00b question: what does transport refer to here? Things like
+>>>>>> ethernet? It isn't clear to me from the doc.
+>>>>>
+>>>>> The TCP/UDP/.. transport protocol checksum.
+>>>>
+>>>> Hmm that is what I thought originally, but then it didn't seem to work.
+>>>> Hence my patch.
+>>>>
+>>>> However I just redid my testing. I took the example tpacketv3 program
+>>>> and added the status flag checks to the 'display()' func:
+>>>>
+>>>>                 if (ppd->tp_status & TP_STATUS_CSUM_VALID) {
+>>>>                         printf("TP_STATUS_CSUM_VALID, ");
+>>>>                 }
+>>>>                 if (ppd->tp_status & (1<<8)) {
+>>>>                         printf("TP_STATUS_CSUM_UNNECESSARY, ");
+>>>>
+>>>>                 }
+>>>>
+>>>> Then using scapy sent some packets in 2 variants:
+>>>> - default (good csums)
+>>>> - deliberately bad csums
+>>>> (then also added a few things like ip6 over ip)
+>>>>
+>>>>
+>>>> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(),
+>>>> iface="enp1s0") // good csums
+>>>>
+>>>> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(chksum=1),
+>>>> iface="enp1s0") //bad tcp
+>>>
+>>> Is this a test between two machines? What is the device driver of the
+>>> machine receiving and printing the packet? It would be helpful to know
+>>> whether this uses CHECKSUM_COMPLETE or CHECKSUM_UNNECESSARY.
+>>
+>> Yes 2 machines, or actually 2 machines and a VM. The receiving Linux
+>> sits in a kvm vm with network pass through and uses the virtio driver
+>> (host uses e1000e). Based on a quick 'git grep CHECKSUM_UNNECESSARY'
+>> virtio seems to support that.
+>>
+>> I've done some more tests. In a pcap replay that I know contains packet
+>> with bad TCP csums (but good IP csums for those pkts), to a physical
+>> host running Ubuntu Linux kernel 5.3:
+>>
+>> - receiver uses nfp (netronome) driver: TP_STATUS_CSUM_VALID set for
+>> every packet, including the bad TCP ones
+>> - receiver uses ixgbe driver: TP_STATUS_CSUM_VALID not set for the bad
+>> packets.
+> 
+> Great. Thanks a lot for running all these experiments.
+> 
+> We might have to drop the TP_STATUS_CSUM_VALID with CHECKSUM_COMPLETE
+> unless skb->csum_valid.
+> 
+> For packets with multiple transport layer checksums,
+> CHECKSUM_UNNECESSARY should mean that all have been verified.
+> 
+> I believe that in the case of multiple transport headers, csum_valid
+> similarly ensures all checksums up to csum_start are valid. Will need
+> to double check.
+> 
+> If so, there probably is no need for a separate new TP_STATUS.
+> TP_STATUS_CSUM_VALID is reported only when all checksums are valid.
 
-v2:
-  - update kernel-doc (Nikita Vetoshkin <nekto0n@yandex-team.ru>)
+So if I understand you correctly the key may be in the call to
+`skb_csum_unnecessary`:
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
----
- include/uapi/linux/bpf.h |  7 +++++--
- net/core/filter.c        | 36 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 40 insertions(+), 3 deletions(-)
+That reads:
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b9ed9f1..3b8815d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1621,10 +1621,13 @@ union bpf_attr {
-  *
-  * 		* **SOL_SOCKET**, which supports the following *optname*\ s:
-  * 		  **SO_RCVBUF**, **SO_SNDBUF**, **SO_MAX_PACING_RATE**,
-- * 		  **SO_PRIORITY**, **SO_RCVLOWAT**, **SO_MARK**.
-+ * 		  **SO_PRIORITY**, **SO_RCVLOWAT**, **SO_MARK**,
-+ * 		  **SO_BINDTODEVICE**, **SO_KEEPALIVE**.
-  * 		* **IPPROTO_TCP**, which supports the following *optname*\ s:
-  * 		  **TCP_CONGESTION**, **TCP_BPF_IW**,
-- * 		  **TCP_BPF_SNDCWND_CLAMP**.
-+ * 		  **TCP_BPF_SNDCWND_CLAMP**, **TCP_SAVE_SYN**,
-+ * 		  **TCP_KEEPIDLE**, **TCP_KEEPINTVL**, **TCP_KEEPCNT**,
-+ * 		  **TCP_SYNCNT**, **TCP_USER_TIMEOUT**.
-  * 		* **IPPROTO_IP**, which supports *optname* **IP_TOS**.
-  * 		* **IPPROTO_IPV6**, which supports *optname* **IPV6_TCLASS**.
-  * 	Return
-diff --git a/net/core/filter.c b/net/core/filter.c
-index ae82bcb..674272c 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4249,10 +4249,10 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			   char *optval, int optlen, u32 flags)
- {
- 	char devname[IFNAMSIZ];
-+	int val, valbool;
- 	struct net *net;
- 	int ifindex;
- 	int ret = 0;
--	int val;
- 
- 	if (!sk_fullsock(sk))
- 		return -EINVAL;
-@@ -4263,6 +4263,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 		if (optlen != sizeof(int) && optname != SO_BINDTODEVICE)
- 			return -EINVAL;
- 		val = *((int *)optval);
-+		valbool = val ? 1 : 0;
- 
- 		/* Only some socketops are supported */
- 		switch (optname) {
-@@ -4324,6 +4325,11 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			ret = sock_bindtoindex(sk, ifindex, false);
- #endif
- 			break;
-+		case SO_KEEPALIVE:
-+			if (sk->sk_prot->keepalive)
-+				sk->sk_prot->keepalive(sk, valbool);
-+			sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
-+			break;
- 		default:
- 			ret = -EINVAL;
- 		}
-@@ -4384,6 +4390,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			ret = tcp_set_congestion_control(sk, name, false,
- 							 reinit, true);
- 		} else {
-+			struct inet_connection_sock *icsk = inet_csk(sk);
- 			struct tcp_sock *tp = tcp_sk(sk);
- 
- 			if (optlen != sizeof(int))
-@@ -4412,6 +4419,33 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 				else
- 					tp->save_syn = val;
- 				break;
-+			case TCP_KEEPIDLE:
-+				ret = tcp_sock_set_keepidle_locked(sk, val);
-+				break;
-+			case TCP_KEEPINTVL:
-+				if (val < 1 || val > MAX_TCP_KEEPINTVL)
-+					ret = -EINVAL;
-+				else
-+					tp->keepalive_intvl = val * HZ;
-+				break;
-+			case TCP_KEEPCNT:
-+				if (val < 1 || val > MAX_TCP_KEEPCNT)
-+					ret = -EINVAL;
-+				else
-+					tp->keepalive_probes = val;
-+				break;
-+			case TCP_SYNCNT:
-+				if (val < 1 || val > MAX_TCP_SYNCNT)
-+					ret = -EINVAL;
-+				else
-+					icsk->icsk_syn_retries = val;
-+				break;
-+			case TCP_USER_TIMEOUT:
-+				if (val < 0)
-+					ret = -EINVAL;
-+				else
-+					icsk->icsk_user_timeout = val;
-+				break;
- 			default:
- 				ret = -EINVAL;
- 			}
+static inline int skb_csum_unnecessary(const struct sk_buff *skb)
+{
+        return ((skb->ip_summed == CHECKSUM_UNNECESSARY) ||
+                skb->csum_valid ||
+                (skb->ip_summed == CHECKSUM_PARTIAL &&
+                 skb_checksum_start_offset(skb) >= 0));
+}
+
+But really only the first 2 conditions are reachable, as we already know
+skb->ip_summed is not CHECKSUM_PARTIAL when we call it.
+
+So our unmodified check is:
+
+        else if (skb->pkt_type != PACKET_OUTGOING &&
+                (skb->ip_summed == CHECKSUM_COMPLETE ||
+		 skb->ip_summed == CHECKSUM_UNNECESSARY ||
+		 skb->csum_valid))
+
+Should this become something like:
+
+        else if (skb->pkt_type != PACKET_OUTGOING &&
+                (skb->ip_summed == CHECKSUM_COMPLETE &&
+                 skb->csum_valid) ||
+		 skb->ip_summed == CHECKSUM_UNNECESSARY)
+
+Is this what you had in mind?
+
 -- 
-2.7.4
+---------------------------------------------
+Victor Julien
+http://www.inliniac.net/
+PGP: http://www.inliniac.net/victorjulien.asc
+---------------------------------------------
 
