@@ -2,119 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5541EC3D2
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 22:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8121EC3D8
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 22:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbgFBUlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 16:41:04 -0400
-Received: from www62.your-server.de ([213.133.104.62]:58912 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726580AbgFBUlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 16:41:04 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jgDiO-00040o-DE; Tue, 02 Jun 2020 22:40:52 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2020-06-02
-Date:   Tue,  2 Jun 2020 22:40:51 +0200
-Message-Id: <20200602204051.29623-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1728331AbgFBUlo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jun 2020 16:41:44 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:60513 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726130AbgFBUlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 16:41:44 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-82-jLs4S1xMMpC_5-DMx-FG-A-1; Tue, 02 Jun 2020 21:41:39 +0100
+X-MC-Unique: jLs4S1xMMpC_5-DMx-FG-A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 2 Jun 2020 21:41:38 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 2 Jun 2020 21:41:38 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Michael S. Tsirkin'" <mst@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+CC:     Al Viro <viro@zeniv.linux.org.uk>,
+        Jason Wang <jasowang@redhat.com>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: RE: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+Thread-Topic: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+Thread-Index: AQHWOR0GBiAzsIPf10apeP3ZClgqcqjFyCZA
+Date:   Tue, 2 Jun 2020 20:41:38 +0000
+Message-ID: <950896ceff2d44e8aaf6f9f5fab210e4@AcuMS.aculab.com>
+References: <20200602084257.134555-1-mst@redhat.com>
+ <fc204429-7a6e-8214-a66f-bf2676018aae@redhat.com>
+ <20200602163306.GM23230@ZenIV.linux.org.uk>
+ <CAHk-=wjgg0bpD0qjYF=twJNXmRXYPjXqO1EFLL-mS8qUphe0AQ@mail.gmail.com>
+ <20200602162931-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200602162931-mutt-send-email-mst@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25831/Tue Jun  2 14:41:03 2020)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+From: Michael S. Tsirkin
+> Sent: 02 June 2020 21:33
+> On Tue, Jun 02, 2020 at 10:18:09AM -0700, Linus Torvalds wrote:
+> > On Tue, Jun 2, 2020 at 9:33 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> > >
+> > > >
+> > > > It's not clear whether we need a new API, I think __uaccess_being() has the
+> > > > assumption that the address has been validated by access_ok().
+> > >
+> > > __uaccess_begin() is a stopgap, not a public API.
+> >
+> > Correct. It's just an x86 implementation detail.
+> >
+> > > The problem is real, but "let's add a public API that would do user_access_begin()
+> > > with access_ok() already done" is no-go.
+> >
+> > Yeah, it's completely pointless.
+> >
+> > The solution to this is easy: remove the incorrect and useless early
+> > "access_ok()". Boom, done.
+> 
+> Hmm are you sure we can drop it? access_ok is done in the context
+> of the process. Access itself in the context of a kernel thread
+> that borrows the same mm. IIUC if the process can be 32 bit
+> while the kernel is 64 bit, access_ok in the context of the
+> kernel thread will not DTRT.
 
-The following pull-request contains BPF _fixes-only_ for your *net-next*
-tree.
+In which case you need a 'user_access_begin' that takes the mm
+as an additional parameter.
 
-We've added 10 non-merge commits during the last 1 day(s) which contain
-a total of 15 files changed, 229 insertions(+), 74 deletions(-).
+I found an 'interesting' acccess_ok() call in the code that copies
+iov[] into kernel (eg for readv()).
 
-The main changes are:
+a) It is a long way from any copies.
+b) It can be conditionally ignored - and is so for one call.
+   The oddball is code that reads from a different process.
+   I didn't spot an equivalent check, but it all worked by
+   mapping in the required page - so I'm not sure what happens.
 
-1) Several fixes to s390 BPF JIT e.g. fixing kernel panic when BPF stack is
-   not 8-byte aligned, from Ilya Leoshkevich.
+Are there really just 2 limits for access_ok().
+One for 64bit programs and one for 32bit?
+With the limit being just below the 'dso' page??
+So checking the current processes limit is never going
+to restrict access.
 
-2) Fix bpf_skb_adjust_room() helper's CHECKSUM_UNNECESSARY handling which
-   was wrongly bypassing TCP checksum verification, from Daniel Borkmann.
+	David
 
-3) Fix tools/bpf/ build under MAKEFLAGS=rR which causes built-in CXX and
-   others vars to be undefined, also from Ilya Leoshkevich.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-4) Fix BPF ringbuf's selftest shared sample_cnt variable to avoid compiler
-   optimizations on it, from Andrii Nakryiko.
-
-5) Fix up test_verifier selftest due to addition of rx_queue_mapping to
-   the bpf_sock structure, from Alexei Starovoitov.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alan Maguire, Lorenz Bauer, Song Liu
-
-----------------------------------------------------------------
-
-The following changes since commit 9a25c1df24a6fea9dc79eec950453c4e00f707fd:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2020-06-01 15:53:08 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to e7ad28e6fdbffa2b9b1bd376431fb81a5403bcfd:
-
-  selftests/bpf: Add a default $(CXX) value (2020-06-02 22:03:25 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      Merge branch 'csum-fixes'
-      selftests/bpf: Fix verifier test
-
-Andrii Nakryiko (1):
-      selftests/bpf: Fix sample_cnt shared between two threads
-
-Daniel Borkmann (3):
-      bpf: Fix up bpf_skb_adjust_room helper's skb csum setting
-      bpf: Add csum_level helper for fixing up csum levels
-      bpf, selftests: Adapt cls_redirect to call csum_level helper
-
-Ilya Leoshkevich (5):
-      s390/bpf: Maintain 8-byte stack alignment
-      s390/bpf: Use bcr 0,%0 as tail call nop filler
-      bpf, selftests: Use bpf_probe_read_kernel
-      tools/bpf: Don't use $(COMPILE.c)
-      selftests/bpf: Add a default $(CXX) value
-
- arch/s390/net/bpf_jit_comp.c                       | 22 +++++-----
- include/linux/skbuff.h                             |  8 ++++
- include/uapi/linux/bpf.h                           | 51 +++++++++++++++++++++-
- net/core/filter.c                                  | 46 ++++++++++++++++++-
- tools/bpf/Makefile                                 |  6 +--
- tools/bpf/bpftool/Makefile                         |  8 ++--
- tools/include/uapi/linux/bpf.h                     | 51 +++++++++++++++++++++-
- tools/testing/selftests/bpf/Makefile               |  2 +
- tools/testing/selftests/bpf/prog_tests/ringbuf.c   |  2 +-
- .../selftests/bpf/progs/test_cls_redirect.c        |  9 ++--
- tools/testing/selftests/bpf/verifier/const_or.c    |  8 ++--
- .../selftests/bpf/verifier/helper_access_var_len.c | 44 +++++++++----------
- .../selftests/bpf/verifier/helper_value_access.c   | 36 +++++++--------
- tools/testing/selftests/bpf/verifier/precise.c     |  8 ++--
- tools/testing/selftests/bpf/verifier/sock.c        |  2 +-
- 15 files changed, 229 insertions(+), 74 deletions(-)
