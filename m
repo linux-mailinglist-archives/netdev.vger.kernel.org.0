@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 134B61EC54B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 00:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 972C51EC55D
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 00:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730551AbgFBWup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 18:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730538AbgFBWup (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 18:50:45 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874B7C08C5C0;
-        Tue,  2 Jun 2020 15:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=XI9cmcvIp+zxYD2LnkDNCdpEuGEtD9ivOfT8pNYkEmQ=; b=O78nHFvB6wFptLGE3yECGhxTh
-        mpSWC35Ev/9JddYutopFnftt5RT8FFLJuZMxhTUs/fhpbLI8+D1j0Ijtuzt/p179IM050ipyOAA1v
-        WIeQzr4Da3cRH8Yb9gOglG00zPShgJQZNidsWb3bbyz0XltfhZMbryV9P12dQDqVp9CTDIUXvvtDv
-        nQMMqk8AvBJjaiiUurLB8tGRUKZyb+9IO7SZa6mAWt1yNE9eNOvoEMeY3YufEuVKHuRTvyMsa5HmN
-        xQHnHCn1mWvMMg307Lywp9XGF0i/pN/Ao2vkTuYMeRekR4bb0M9dQ0Hhq/JQ2gmEXGDWOq55cS/wv
-        5xcQXcMyQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38106)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jgFjh-0003sd-5T; Tue, 02 Jun 2020 23:50:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jgFjd-0004lD-60; Tue, 02 Jun 2020 23:50:17 +0100
-Date:   Tue, 2 Jun 2020 23:50:17 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-ID: <20200602225016.GX1551@shell.armlinux.org.uk>
-References: <20200528151733.f1bc2fcdcb312b19b2919be9@suse.de>
- <20200528135608.GU1551@shell.armlinux.org.uk>
- <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
- <20200528144805.GW1551@shell.armlinux.org.uk>
- <20200528204312.df9089425162a22e89669cf1@suse.de>
- <20200528220420.GY1551@shell.armlinux.org.uk>
- <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
- <20200529145928.GF869823@lunn.ch>
- <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
- <20200529163340.GI869823@lunn.ch>
+        id S1728910AbgFBW7s convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jun 2020 18:59:48 -0400
+Received: from mga11.intel.com ([192.55.52.93]:11992 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728128AbgFBW7s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 18:59:48 -0400
+IronPort-SDR: LoPCPWnEyR1urLYnV8i18uqA6cFPFGF+bR0YIIYHZa2SnG1562/ZlugTXcc9or/2AMpOvKj+VR
+ WyHDrdzNMdfA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2020 15:59:48 -0700
+IronPort-SDR: fJn/aZ8iK/PsOq6sdhpg597V3t7fiYdWeE6tk3Bc00X0fCnpUPTZA8G20bGcpeAXbUBfvv5qCF
+ heJFMjRc3+nQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,466,1583222400"; 
+   d="scan'208";a="304173342"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by fmsmga002.fm.intel.com with ESMTP; 02 Jun 2020 15:59:47 -0700
+Received: from fmsmsx118.amr.corp.intel.com (10.18.116.18) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 2 Jun 2020 15:59:47 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.63]) by
+ fmsmsx118.amr.corp.intel.com ([169.254.1.174]) with mapi id 14.03.0439.000;
+ Tue, 2 Jun 2020 15:59:46 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "poswald@suse.com" <poswald@suse.com>
+Subject: RE: [RDMA RFC v6 00/16] Intel RDMA Driver Updates 2020-05-19
+Thread-Topic: [RDMA RFC v6 00/16] Intel RDMA Driver Updates 2020-05-19
+Thread-Index: AQHWL3n2Pw6kzLOq1Ui4t0VQsTHX2qi6bFjAgAFz44CAAjb+0IAGQQ8AgAFIiQA=
+Date:   Tue, 2 Jun 2020 22:59:46 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7EE04CC42@fmsmsx124.amr.corp.intel.com>
+References: <20200520070415.3392210-1-jeffrey.t.kirsher@intel.com>
+ <20200521141247.GQ24561@mellanox.com>
+ <9DD61F30A802C4429A01CA4200E302A7EE04047F@fmsmsx124.amr.corp.intel.com>
+ <20200527050855.GB349682@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7EE045C3B@fmsmsx124.amr.corp.intel.com>
+ <20200601142840.GE4962@mellanox.com>
+In-Reply-To: <20200601142840.GE4962@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200529163340.GI869823@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 29, 2020 at 06:33:40PM +0200, Andrew Lunn wrote:
-> Given the current code, you cannot. Now we understand the
-> requirements, we can come up with some ideas how to do this properly.
+> Subject: Re: [RDMA RFC v6 00/16] Intel RDMA Driver Updates 2020-05-19
+> 
+> On Fri, May 29, 2020 at 03:21:05PM +0000, Saleem, Shiraz wrote:
+> > > Subject: Re: [RDMA RFC v6 00/16] Intel RDMA Driver Updates
+> > > 2020-05-19
+> > >
+> >
+> > [......]
+> >
+> > >
+> > > I'm looking on it and see static assignments, to by dynamic you will need "to
+> play"
+> > > with hw_shifts/hw_masks later, but you don't. What am I missing?
+> > >
+> > > +	for (i = 0; i < IRDMA_MAX_SHIFTS; ++i)
+> > > +		dev->hw_shifts[i] = i40iw_shifts[i];
+> > > +
+> > > +	for (i = 0; i < IRDMA_MAX_MASKS; ++i)
+> > > +		dev->hw_masks[i] = i40iw_masks[i];
+> > >
+> > > >
+> > > > we still need to use the custom macro FLD_LS_64 without FIELD_PREP
+> > > > in this case as FIELD_PREP expects compile time constants.
+> > > > +#define FLD_LS_64(dev, val, field)	\
+> > > > +	(((u64)(val) << (dev)->hw_shifts[field ## _S]) &
+> > > > +(dev)->hw_masks[field ## _M])
+> > > > And the shifts are still required for these fields which causes a
+> > > > bit of inconsistency
+> > > >
+> >
+> >
+> > The device hw_masks/hw_shifts array store masks/shifts of those
+> > descriptor fields that have same name across HW generations but differ
+> > in some attribute such as field width. Yes they are statically
+> > assigned, initialized with values from i40iw_masks and icrdma_masks,
+> > depending on the HW generation. We can even use GENMASK for the values
+> > in i40iw_masks[] , icrdma_masks[] but FIELD_PREP cant be used on
+> > dev->hw_masks[]
+> 
+> So compute the shift and mask when building i40iw_shifts array using the compile
+> time constant?
+> 
 
-Okay, I've been a little quiet because of sorting out the ARM tree
-for merging with Linus (now done) and I've been working on a solution
-to this problem.
+i40iw_shifts[] and i40iw_mask[] are setup as compile constants
+and used to initialize dev->hw_masks[], dev->hw_shifts[] if the device is gen1.
+I still don't see how FIELD_PREP can be used on a value and
+dev->hw_masks[i].
 
-The good news is, I have an implementation in phylink to use the sync
-status reported from a PCS, and to appropriately enable sync status
-reporting.  I'm quite nervous about having that enabled as a matter of
-routine as I've seen some Marvell hardware end up with interrupt storms
-from it - presumably due to noise pickup on the serdes lines being
-interpreted as an intermittently valid signal.
-
-I have mvneta using it, and partially tested on the SolidRun Clearfog
-platform; for testing, I've stripped out everything for the SFP and
-replaced it with a fixed link - that way, I can control whether the
-serdes is in sync or not. It isn't mainline quality as I need to work
-out how to properly handle the MVNETA_INTR_MISC_MASK which looks to me
-like it's needlessly written in multiple places in the driver.
-
-I have a partial implementation on mvpp2, but not complete yet, that
-is to come - it will need mvpp2 converted to the new phylink pcs_ops
-which has yet to happen, and may take a bit of time to sort.
-
-So, some progress towards a solution, but not to the point where I'd
-be happy to post some patches just yet.
-
-However, I think we need to think about:
-1) how we classify Thomas' problem - does it count as a regression
-   given that support for his platform is not part of mainline, and
-   the use of in-band-status in his unreviewed DT is clearly incorrect?
-
-2) if we deem it to be a regression, then how do we intend to solve
-   this for stable kernels?
-
-3) re-enabling AN bypass for mvpp2 would create inconsistencies
-   between different drivers for similar hardware from the same
-   manufacturer, so should we propagate the "fix" to them as
-   well (e.g. mvneta.)
-
-4) what about when we have a proper solution to this, what do we
-   then do with mvpp2 if we decide to change it's behaviour, and
-   do we then recommend that Thomas switches to using this (I
-   suppose so, otherwise there's not much point me developing a
-   solution to this problem.)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
