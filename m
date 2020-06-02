@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2F611EBFC5
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 18:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC351EBFD2
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 18:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726630AbgFBQRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 12:17:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56360 "EHLO mail.kernel.org"
+        id S1728226AbgFBQSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 12:18:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726345AbgFBQRC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 12:17:02 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726380AbgFBQS3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 12:18:29 -0400
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B3DE6206E2;
-        Tue,  2 Jun 2020 16:17:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F1A1E20772;
+        Tue,  2 Jun 2020 16:18:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591114622;
-        bh=5B6Ig6Gy857CuHoNuQS9dtVgymR447DlKdc8pks5fYQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oGVnwKrZ4tD1qFDG4w6lTXp2cZflwTuq0bL4HFDd28rTzBxsGqhaU92IhAagIdm4r
-         FNVBSK7Pn68LTYw/IX5kYJxjs652Hh7nhQSPEgVWOnnvbTGyN1uonRam7NXp5IhfG8
-         vaxjbGkarI9dZzcKUwAyIYS0QEG0hRhplCqHkDPo=
-Date:   Tue, 2 Jun 2020 09:17:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        vinicius.gomes@intel.com, nikolay@cumulusnetworks.com,
-        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        linux-devel@linux.nxdi.nxp.com
-Subject: Re: [PATCH v2 net-next 06/10] net: mscc: ocelot: VCAP ES0 support
-Message-ID: <20200602091700.6b476c80@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20200602051828.5734-7-xiaoliang.yang_1@nxp.com>
-References: <20200602051828.5734-1-xiaoliang.yang_1@nxp.com>
-        <20200602051828.5734-7-xiaoliang.yang_1@nxp.com>
+        s=default; t=1591114709;
+        bh=ArZ6umqiHSZfYPmHnJiMNZHFgrWta8wpfvveeNknTmQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bhgt+NOMmVl1Fxs6Jvvmwzj8fcvNejvcPJzWiQH/JJhhUk9mY1fdKlaPQS/ifXgvr
+         CuiDGYQ8r5IykX8DTdBuL0DCNUmYY47BSuBgECS+Glr/lG45UuB5H6BU6JrxBDkka0
+         KvY3TIJN/8D70ZPyvrFOUwUWSRhEUdfNFl+jUou8=
+Received: by mail-lj1-f178.google.com with SMTP id u10so12086291ljj.9;
+        Tue, 02 Jun 2020 09:18:28 -0700 (PDT)
+X-Gm-Message-State: AOAM532sWIc70tw2/Vyzjn1+X7jN19/H7SQ257+gI+09SPa/hGhZdcWg
+        cL/2+NkciUESF6GjIPbYtu1/p8n4p/NlUCCjgzY=
+X-Google-Smtp-Source: ABdhPJzl+VhF4CC9ZMYjRDxd6lcRMoyH/FHhp4+Ze4y2bqt6VOrwRdH00raBrXJmVUHoSofuvnqlnQDbKwTEuDfIftQ=
+X-Received: by 2002:a05:651c:1130:: with SMTP id e16mr13734243ljo.10.1591114707316;
+ Tue, 02 Jun 2020 09:18:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200602050349.215037-1-andriin@fb.com>
+In-Reply-To: <20200602050349.215037-1-andriin@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 2 Jun 2020 09:18:16 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5OH9paDZpG-KfYK3EkwpaQWPOcD6c0kyLQ7+ePs9Xd8g@mail.gmail.com>
+Message-ID: <CAPhsuW5OH9paDZpG-KfYK3EkwpaQWPOcD6c0kyLQ7+ePs9Xd8g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix sample_cnt shared between two threads
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  2 Jun 2020 13:18:24 +0800 Xiaoliang Yang wrote:
-> VCAP ES0 is an egress VCAP working on all outgoing frames.
-> This patch added ES0 driver to support vlan push action of tc filter.
-> Usage:
-> 	tc filter add dev swp1 egress protocol 802.1Q flower skip_sw
-> 	vlan_id 1 vlan_prio 1 action vlan push id 2 priority 2
-> 
-> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+On Mon, Jun 1, 2020 at 10:04 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Make sample_cnt volatile to fix possible selftests failure due to compiler
+> optimization preventing latest sample_cnt value to be visible to main thread.
+> sample_cnt is incremented in background thread, which is then joined into main
+> thread. So in terms of visibility sample_cnt update is ok. But because it's
+> not volatile, compiler might make optimizations that would prevent main thread
+> to see latest updated value. Fix this by marking global variable volatile.
+>
+> Fixes: cb1c9ddd5525 ("selftests/bpf: Add BPF ringbuf selftests")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Please make sure code builds cleanly with W=1 C=1 flags.
-
-drivers/net/dsa/ocelot/felix_vsc9959.c:577:19: warning: symbol 'vsc9959_vcap_es0_keys' was not declared. Should it be static?
-drivers/net/dsa/ocelot/felix_vsc9959.c:588:19: warning: symbol 'vsc9959_vcap_es0_actions' was not declared. Should it be static?
+Acked-by: Song Liu <songliubraving@fb.com>
