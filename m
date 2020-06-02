@@ -2,110 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9590D1EB44A
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9532F1EB443
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 06:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726181AbgFBEYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 00:24:18 -0400
-Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:6046
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725781AbgFBEYS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 00:24:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CkIKdOaga5NVKdfNJ6QqWsbfx2PFTiUYycV8qCqJdXyJKkDIbzNEhc7pqW0eIGhiIg1U/usggefhQ/9kbricQk3HPPMF23kqTG8pAlwC4D844TO80I+2QAi+bHnu4Bufl73JQpmUGxArxwh1Zlpf8/1QBl/R1Q4w+yotlk87gPYbVUAnUl5dP2H2+JpHYHxr+EO+oN/Gull1EmFGIoEguL8n5RKYhQabIG38V0CpXj48BpFHbjtX49gCHO1CHjPCEN7u8uAiFmdenWWBQP+EXjEsORADf6F4kJFN3kL7evn5OEfR4RcQmGPFjqQaLbUFIqHghqVzmFZXPO8B3AMXlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=udfppQiuzqMAcmNlREM0/Cp7djt31f2YAyluS3qM02M=;
- b=BJEkXDKthVB4J8EzthoHUk75wA362GftILOzuM5VSqTl1QgW/vNiE/YEVZ/zU2Pt4h3tcffZ11iev04sqRsNyZz69utigPVMbhQSsnHo7NigOXZPBboAw3zZBdWvrOwJdnbyMhcF0GjAChn5vENn2IzFQu0l+0EbyY6tmPr6B7c3KpRceYqd6lKs/GzEvhrJ2wTpoygvvOTovvLmKt7ywdk8MrQXgrUs3Rvzscj6vZ1oRnuW4Kmtb70GhNhQoX6OnOTUPsDIV1prEpJsJNq3oilCVBrGZ7D6WeCOqjVOBQ9qM7i5XgUkOCj1UeG1XzaCGUxV/kyo6QgP9p16tVCbyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=udfppQiuzqMAcmNlREM0/Cp7djt31f2YAyluS3qM02M=;
- b=bd7ZG7bqL4Vj/oNC3LPGUXS49MVFCjaA0AVBLafzupv6XucO7LRsQQQmIZ45beLjOKC1+8d3Ksk82Wu3FEOM7M1goO2pCwcABa38gM7VoD/eLaYfdaCI8CFc+DYRZ6fyk/MnJULbCdaPbFzrgYwb5IjsetIKcvL5U3wvDzErNe0=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from DBAPR05MB7095.eurprd05.prod.outlook.com (2603:10a6:10:18e::21)
- by DBAPR05MB7112.eurprd05.prod.outlook.com (2603:10a6:10:18c::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.21; Tue, 2 Jun
- 2020 04:24:14 +0000
-Received: from DBAPR05MB7095.eurprd05.prod.outlook.com
- ([fe80::18fc:e79:48a8:fb5a]) by DBAPR05MB7095.eurprd05.prod.outlook.com
- ([fe80::18fc:e79:48a8:fb5a%5]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
- 04:24:13 +0000
-Subject: Re: [net-next 10/11] net/mlx5e: kTLS, Add kTLS RX resync support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-References: <20200529194641.243989-1-saeedm@mellanox.com>
- <20200529194641.243989-11-saeedm@mellanox.com>
- <20200529131631.285351a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <e0b8a4d9395207d553e46cb28e38f37b8f39b99d.camel@mellanox.com>
- <20200529145043.5d218693@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <27149ee9-0483-ecff-a4ec-477c8c03d4dd@mellanox.com>
- <20200601151206.454168ad@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Boris Pismenny <borisp@mellanox.com>
-Message-ID: <c58e2276-81a1-5d4a-b6e1-b89fe076e8ba@mellanox.com>
-Date:   Tue, 2 Jun 2020 07:23:53 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-In-Reply-To: <20200601151206.454168ad@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM0PR02CA0104.eurprd02.prod.outlook.com
- (2603:10a6:208:154::45) To DBAPR05MB7095.eurprd05.prod.outlook.com
- (2603:10a6:10:18e::21)
+        id S1725937AbgFBEX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 00:23:58 -0400
+Received: from static-27.netfusion.at ([83.215.238.27]:55956 "EHLO
+        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgFBEX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 00:23:58 -0400
+Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
+        (Authenticated sender: victor)
+        by mail.inliniac.net (Postfix) with ESMTPSA id C981A10C;
+        Tue,  2 Jun 2020 06:26:05 +0200 (CEST)
+Subject: Re: [PATCH net-next] af-packet: new flag to indicate all csums are
+ good
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, corbet@lwn.net,
+        edumazet@google.com, willemb@google.com, maowenan@huawei.com,
+        arnd@arndb.de, nhorman@tuxdriver.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200601204938.13302-1-victor@inliniac.net>
+ <20200601.144535.203726078659236025.davem@davemloft.net>
+From:   Victor Julien <victor@inliniac.net>
+Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
+ S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
+ dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
+ Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
+ Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
+ WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
+ YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
+ di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
+ WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
+ SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
+ UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
+ MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
+ M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
+ YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
+ WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
+ SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
+ RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
+ QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
+ RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
+ K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
+ VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
+ enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
+ b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
+ b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
+ dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
+ NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
+ V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
+ ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
+ Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
+ Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
+ eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
+ MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
+ aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
+ MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
+ TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
+ OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
+ L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
+ UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
+ CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
+ UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
+ WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
+ RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
+ b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
+ YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
+ dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
+ djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
+ dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
+ Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
+ aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
+Message-ID: <11986598-9357-dfdd-e187-c9eb0428fd62@inliniac.net>
+Date:   Tue, 2 Jun 2020 06:23:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.11] (213.57.108.142) by AM0PR02CA0104.eurprd02.prod.outlook.com (2603:10a6:208:154::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19 via Frontend Transport; Tue, 2 Jun 2020 04:24:12 +0000
-X-Originating-IP: [213.57.108.142]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a224057e-aab1-4ce7-ca8c-08d806acce27
-X-MS-TrafficTypeDiagnostic: DBAPR05MB7112:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR05MB7112997694DB41C0AB5A8E56B08B0@DBAPR05MB7112.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 0422860ED4
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: snSZOlbVSv/mQZ1fop7iSghHyj/TM4h7K+sFTmSoZ0sbIB5tclQ0WoCat2IwrujVr1iohMVzMfJFbFLkZXczvZcqmoLxl6LtQf6lC6Mc0aDmJ94DlQMh6vrybGouw/YmlHA8SdMpAwEUS1jApXeqR5T/yG5wJBfFpdyZMtglcWAwT5tcPlqIeGSlcLAnwm3HCzytOssYIi+ZUQC+5Ize8/6zAIE7Eebosprh5I5inZbyA3zNSa/ToUtPCGoZe7gw95Ttnt03xTILBDvfYJYbeKkrTwQEb7gcyXzyQwzZN6MYaRGzBO9nX5LpW/W15aoIM6YzVSOHqHRcBT4xlRZdbhsHBgS703oz7U0Hut6JycjLVJqcvQZUJN+UwZ5ItiDb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7095.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(136003)(376002)(39860400002)(366004)(5660300002)(54906003)(316002)(83380400001)(53546011)(2906002)(6916009)(6486002)(956004)(26005)(8676002)(31686004)(2616005)(52116002)(478600001)(8936002)(186003)(16526019)(16576012)(6666004)(107886003)(4326008)(66946007)(66476007)(66556008)(86362001)(4744005)(31696002)(36756003)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: JOcFDJV9DuLNiZ6mt63dMQhC+hpuUVA7s2SDrZqAtLhJ+1rTIVlaPOyBLXnp3T0xKEF5VEt2t/nzJq29zOjU4fd+bv8nEB1asMCY748HP4C6VaWZqaAzVmVS/ybCHtzHHlaRcX33thweqcGB3MJCfE73dYpqh1fUjweCpNP5qHibaVhfIumiPmtq4mfZ6erzEiNsLuZZc0eMqFzQFBiuALU+fzemyah3DY5FAmR0vq/UobvxrGF9jP3PHgXBJY/11Tmwniz7Mnr3tS0boOOshdEVVpHtrQ2y/SMeqi8m6wbjvrj6AxPvULV2qOVqVI4dA0KtjsWbAJnpGnWnMhkY7XicdY5Cs2VPAE9VlfHcSLe/dQ0fa52c66JYMbhNAYbdHTM9TDuGK98sUa81gKScgqX7z624y1OetLekrJLBRVE774NdtkCPiWK9lMt872CxSNmhMEjsoC0bKsDRGlApSQ7s/8tzDUi53c6tUP9znRa37ESJSHAnXs34yi/vaNsY
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a224057e-aab1-4ce7-ca8c-08d806acce27
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2020 04:24:13.7145
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wQ5WzcH7mCuLjvITFAJczv2F2k+ujcocXHsV137gbIc9eLTBpE0nnR8nvQyKy/UGeuxEJN3fOayrcA+xUqrcww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR05MB7112
+In-Reply-To: <20200601.144535.203726078659236025.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/06/2020 1:12, Jakub Kicinski wrote:
-> On Sun, 31 May 2020 15:06:28 +0300 Boris Pismenny wrote:
->> On 30/05/2020 0:50, Jakub Kicinski wrote:
->>
->>> IIUC every ooo packet causes a resync request in your
->>> implementation - is that true?
->>>   
->> No, only header loss. We never required a resync per OOO packet. I'm
->> not sure why would you think that.
-> I mean until device is back in sync every frame kicks off
-> resync_update_sn() and tries to queue the work, right?
->
-Nope, only the first frame triggers resync_update_sn, so as to keep the process efficient and avoid spamming the system with resync requests. Per-flow, the device will try again to trigger resync_update_sn only if it gets out of sync due to out-of-sequence record headers.
+On 01-06-2020 23:45, David Miller wrote:
+> From: Victor Julien <victor@inliniac.net>
+> Date: Mon,  1 Jun 2020 22:49:37 +0200
+> 
+>> @@ -472,6 +472,12 @@ TP_STATUS_CSUM_VALID	This flag indicates that at least the transport
+>>  			validated on the kernel side. If the flag is not set
+>>  			then we are free to check the checksum by ourselves
+>>  			provided that TP_STATUS_CSUMNOTREADY is also not set.
+>> +TP_STATUS_CSUM_UNNECESSARY  This flag indicates that the driver validated all
+>> +                        the packets csums. If it is not set it might be that
+>> +                        the driver doesn't support this, or that one of the
+>> +                        layers csums is bad. TP_STATUS_CSUM_VALID may still
+>> +                        be set if the transport layer csum is correct or
+>> +                        if the driver supports only this mode.
+>>  ======================  =======================================================
+>                         ^^^^^
+> 
+> I think you need to reformat these dividers.
+> 
 
+Yes of course. Think I'll have to reformat the whole table then, at
+least for `rst2pdf` to accept it.
+
+Alternatively I can try to come up with a shorter name for the flag, but
+I'm not really coming up with anything so far.
+
+-- 
+---------------------------------------------
+Victor Julien
+http://www.inliniac.net/
+PGP: http://www.inliniac.net/victorjulien.asc
+---------------------------------------------
 
