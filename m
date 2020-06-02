@@ -2,121 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C531EB3B7
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 05:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A25161EB3DE
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 05:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbgFBDRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jun 2020 23:17:46 -0400
-Received: from ozlabs.org ([203.11.71.1]:53761 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725841AbgFBDRq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jun 2020 23:17:46 -0400
+        id S1726019AbgFBDoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jun 2020 23:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725850AbgFBDoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jun 2020 23:44:06 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40208C061A0E;
+        Mon,  1 Jun 2020 20:44:06 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49bcft6Gdgz9sSn;
-        Tue,  2 Jun 2020 13:17:41 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
-        t=1591067864; bh=b/bdhBRmnux6Rm4XZlS6YImDkqQA7n6ceo9UyjXrZQM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=yzcRawpLTZ5VMzZYqYJspMYmCUI4oQhzXudOasPGmbg6w7jptnsifBvkPQm8UKynu
-         pBmJuAtM9Ht0REuGSFmg1W0zZo+S/DFjaBoVEV5Z4acTHyUScJGncTs/N0bXfRRDkq
-         xS6I7eRQ3aJCNxhUzvD4K0sMHPh6UbOHcwo/EHFDNBSkXJyT77N+nv/tv9Py7pG7VX
-         fOVT1I0MWJ3/23G8fJz+U4soe1lBnPFn/N57S5Ui1zpde4AUDfCJomgwKNK2vksPeq
-         xsawVUl4G9mLAYNkxPFlC9pndrwovlp0lXDukwdXsjRrqN3bJOOcSdXzuEqgona/A4
-         Qpx0X6mSSFlLg==
-Message-ID: <b9e1db7761761e321b23bd0d22ab981cbd5d6abe.camel@ozlabs.org>
-Subject: Re: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
-From:   Jeremy Kerr <jk@ozlabs.org>
-To:     Freddy Xin <freddy@asix.com.tw>, Allan Chou <allan@asix.com.tw>
-Cc:     Peter Fink <pfink@christ-es.de>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Date:   Tue, 02 Jun 2020 11:17:34 +0800
-In-Reply-To: <20200527060334.19441-1-jk@ozlabs.org>
-References: <20200527060334.19441-1-jk@ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49bdFG5hnFz9sSd;
+        Tue,  2 Jun 2020 13:44:02 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1591069444;
+        bh=IkHBSWOk4xtC0dkcZ7o1RZslpqdZBMj0Kw2jYCO1qUY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=jV4XNwn4hXf7JpW1qLzUOSoj5vr2KfFwGy6Oe3cyz1LJC6NTZ/yR7fbZ/pWZCZQ+7
+         bOCV56ih0dnjkkZt2dueTgHHocPa4k/KrC9ifuWJiHOOJekWuLkNaMcuJDi03RC7Ej
+         t1GU+1T+xmcCxlxRs24N5maYbIRjpBwKvIbcpLZxnPnmNoL177JwaJMYIhJL0kBx0z
+         inaF9GtdQm7SrWp54bH0HTJddnheXB9emXcljRbje2zC2MBx8dG/58oxGbNXtRi5Tv
+         jaZwaQs9K8EIO2MVLuwSNSjIszHOcfyFhkdnQQSupyZgrcvJ9ka3xCs6/a2eTP/1nX
+         hv6zLwGpTpEkg==
+Date:   Tue, 2 Jun 2020 13:44:02 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: linux-next: build failure after merge of the mmc tree
+Message-ID: <20200602134402.24c19488@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/6oBASpyjlxKneHsRjZJ2Yie";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Freddy and Allan,
+--Sig_/6oBASpyjlxKneHsRjZJ2Yie
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Just following up on the RFC patch below: Can you confirm whether the
-packet len (in the hardware-provided packet RX metadata) includes the
-two-byte padding field? Is this the same for all ax88179 devices?
+Hi all,
 
+After merging the mmc tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
+
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c: In function 'brc=
+mf_sdiod_probe':
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c:915:7: error: 'SD=
+IO_DEVICE_ID_CYPRESS_4373' undeclared (first use in this function); did you=
+ mean 'SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373'?
+  915 |  case SDIO_DEVICE_ID_CYPRESS_4373:
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |       SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c:915:7: note: each=
+ undeclared identifier is reported only once for each function it appears in
+
+Caused by commit
+
+  1eb911258805 ("mmc: sdio: Fix Cypress SDIO IDs macros in common include f=
+ile")
+
+interacting with commit
+
+  2a7621ded321 ("brcmfmac: set F2 blocksize for 4373")
+
+from the net-next tree.
+
+I have applied the following merge fix patch.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 2 Jun 2020 13:41:04 +1000
+Subject: [PATCH] mmc: sdio: merge fix for "brcmfmac: set F2 blocksize for
+ 4373"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/dr=
+ivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+index e718bd466830..46346cb3bc84 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -912,7 +912,7 @@ static int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdi=
+odev)
+ 		goto out;
+ 	}
+ 	switch (sdiodev->func2->device) {
+-	case SDIO_DEVICE_ID_CYPRESS_4373:
++	case SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373:
+ 		f2_blksz =3D SDIO_4373_FUNC2_BLOCKSIZE;
+ 		break;
+ 	case SDIO_DEVICE_ID_BROADCOM_4359:
+--=20
+2.26.2
+
+--=20
 Cheers,
+Stephen Rothwell
 
+--Sig_/6oBASpyjlxKneHsRjZJ2Yie
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Jeremy
+-----BEGIN PGP SIGNATURE-----
 
-> Using a AX88179 device (0b95:1790), I see two bytes of appended data on
-> every RX packet. For example, this 48-byte ping, using 0xff as a
-> payload byte:
-> 
->   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
-> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
-> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
-> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
-> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
-> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0060:  ffff 961f
-> 
-> Those last two bytes - 96 1f - aren't part of the original packet.
-> 
-> In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte
-> 'alignment pseudo header' from the start of the packet, and sets the
-> length from a per-packet field populated by hardware. It looks like that
-> length field *includes* the 2-byte header; the current driver assumes
-> that it's excluded.
-> 
-> This change trims the 2-byte alignment header after we've set the packet
-> length, so the resulting packet length is correct. While we're moving
-> the comment around, this also fixes the spelling of 'pseudo'.
-> 
-> Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
-> 
-> ---
-> RFC: I don't have access to docs for this hardware, so this is all based
-> on observed behaviour of the reported packet length.
-> ---
->  drivers/net/usb/ax88179_178a.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-> index 93044cf1417a..1fe4cc28d154 100644
-> --- a/drivers/net/usb/ax88179_178a.c
-> +++ b/drivers/net/usb/ax88179_178a.c
-> @@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->  		}
->  
->  		if (pkt_cnt == 0) {
-> -			/* Skip IP alignment psudo header */
-> -			skb_pull(skb, 2);
->  			skb->len = pkt_len;
-> -			skb_set_tail_pointer(skb, pkt_len);
-> +			/* Skip IP alignment pseudo header */
-> +			skb_pull(skb, 2);
-> +			skb_set_tail_pointer(skb, skb->len);
->  			skb->truesize = pkt_len + sizeof(struct sk_buff);
->  			ax88179_rx_checksum(skb, pkt_hdr);
->  			return 1;
-> @@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->  		ax_skb = skb_clone(skb, GFP_ATOMIC);
->  		if (ax_skb) {
->  			ax_skb->len = pkt_len;
-> -			ax_skb->data = skb->data + 2;
-> -			skb_set_tail_pointer(ax_skb, pkt_len);
-> +			/* Skip IP alignment pseudo header */
-> +			skb_pull(ax_skb, 2);
-> +			skb_set_tail_pointer(ax_skb, ax_skb->len);
->  			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
->  			ax88179_rx_checksum(ax_skb, pkt_hdr);
->  			usbnet_skb_return(dev, ax_skb);
-> 
+iQEyBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7VywIACgkQAVBC80lX
+0Gx1jQf4h3jixfTBJdfoXrWTH62gOFe/BoWtLIWdHCyfMtA7Sf1zbF17/OLvqYVF
+h4bLdXofoSq3oo73r0hX+9H8yTHS/2pv+AtdRsVfEHIA83y90c9LV/5pcwBvKK2P
+pSlogXUr3ci6q6a03PmbPxTalftLoJJsImp+FRIKJWaYS1nBTVfHx0Ncv6T80Fk9
+mMICIPOt7HFMQ+quaQcSul0u/fAh3RF5VQ2hbMO/BRddnOh3dUv9b/sU7bhut+ki
+Pxh0KGjw4Zsfct1VvyOiZtfM2kOTD0cBA8bQXZzNxMIQovKB650m2X9viVu0r26A
+otvqF2cwQf/H4whVvSZe5f+7tV0+
+=C2bh
+-----END PGP SIGNATURE-----
 
+--Sig_/6oBASpyjlxKneHsRjZJ2Yie--
