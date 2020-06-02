@@ -2,107 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2043F1EB69D
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 09:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501E01EB6D0
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 09:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbgFBHhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 03:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbgFBHhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 03:37:11 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A818C061A0E
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 00:37:11 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g10so1862519wmh.4
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 00:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xqds7VbU+K4A2laqYmDPq+zdOfWX/VjHAo0lo4mVXR0=;
-        b=anQ2chfqCtHiZ4pB5qiENxzfk8kF2TaVNvzhYEztrPanUnTZOwgh9uLDEQQUB0D9Nm
-         epHJcbtRVzaKPvJAQQ6gnjksaOc6SJjLnX4DJq3azYt54ilj0wLyXuKTfuoyLODJbWm0
-         cbky1C0TxwTgECHxolmkjGf913LY89hRXbYtg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xqds7VbU+K4A2laqYmDPq+zdOfWX/VjHAo0lo4mVXR0=;
-        b=LrWcIBBkcTDbvtpd/4nt66W5gC49iFfPHrcWQMjCL4EQP6TOppl7SurFtHUkVQp3os
-         ZW68J+Js5VmIb9Iib7d7t6PlhT9EZOk+HhEMEeM9Kk+pYT41uwmrPqpD/JuAHFi//Qy+
-         UVI954d5LMrh8Lk8hiI3rLO4CZbvLxW3x/7EQUtIcX4+64vHrzMlgpdS8NTc70AmS4Wj
-         JSoMLMxaOcK/EpOisitNUXZyG0mkjfhzfXSBOKSZQ9WyTxyjCs//TmS0gQaRIHSkXace
-         8BGxeloahYRuvh/16qr9nNTXeDCDNBmYZH5+rtXDD5jGfeyfMsNo+Lc3wsAMYLCy8I0B
-         dnDw==
-X-Gm-Message-State: AOAM532W8w3QVPkguq4gAuHWVUuosZIXpZWJLaBYttiPF9FrYM0kwvsV
-        1sJFZMG2QwOA8j0U3+FM/NsCRMCcu34=
-X-Google-Smtp-Source: ABdhPJxVmq6mSWg/iUiuouLU0cmof6ha99AdKRzM2oufoIVIFhcGa8uQFobYRnwf9lC+PgvBrVralA==
-X-Received: by 2002:a05:600c:2110:: with SMTP id u16mr2832929wml.26.1591083430327;
-        Tue, 02 Jun 2020 00:37:10 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 23sm2333774wmo.18.2020.06.02.00.37.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jun 2020 00:37:09 -0700 (PDT)
-Subject: Re: [PATCH] ipv4: nexthop: Fix deadcode issue by performing a proper
- NULL check
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     David Miller <davem@davemloft.net>, patrickeigensatz@gmail.com
-Cc:     dsahern@kernel.org, scan-admin@coverity.com, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200601111201.64124-1-patrick.eigensatz@gmail.com>
- <20200601.110654.1178868171436999333.davem@davemloft.net>
- <4e6ba1a8-be3b-fd22-e0b8-485d33bb51eb@cumulusnetworks.com>
-Message-ID: <beb306e9-228f-6810-fc77-972e5acb5863@cumulusnetworks.com>
-Date:   Tue, 2 Jun 2020 10:37:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726012AbgFBHxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 03:53:18 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30767 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725835AbgFBHxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 03:53:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591084396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9fXPh1Sc70qevQYVJkCzgdC36xMAEASZNp7tv9X5TZ0=;
+        b=Yxdxx1Kra5F8zM1Zvza9/fWW8ZLNCh0vHkHB4cbycRGI+O0H9JhthG6FHmoSjPA5iGi/JK
+        7gltpe53WnFDJDApKNqkX2NW671rcKQ3147NvIQ9OecACbdTe38jTjuGRRNezGiBJGzI8e
+        B+QgZFPYeTTYxEUPk8QorLLovazXRjY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-113-D6Cl2oSjMqCzW72UuhGHAw-1; Tue, 02 Jun 2020 03:53:14 -0400
+X-MC-Unique: D6Cl2oSjMqCzW72UuhGHAw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 32F38100CD40;
+        Tue,  2 Jun 2020 07:53:13 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0410119C79;
+        Tue,  2 Jun 2020 07:53:01 +0000 (UTC)
+Date:   Tue, 2 Jun 2020 09:53:00 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, toke@redhat.com, daniel@iogearbox.net,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH bpf-next 4/6] bpf: cpumap: add the possibility to attach
+ an eBPF program to cpumap
+Message-ID: <20200602095300.486ae35c@carbon>
+In-Reply-To: <2543519aa9cdb368504cb6043fad6cae6f6ec745.1590960613.git.lorenzo@kernel.org>
+References: <cover.1590960613.git.lorenzo@kernel.org>
+        <2543519aa9cdb368504cb6043fad6cae6f6ec745.1590960613.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <4e6ba1a8-be3b-fd22-e0b8-485d33bb51eb@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/06/2020 10:23, Nikolay Aleksandrov wrote:
-> On 01/06/2020 21:06, David Miller wrote:
->> From: patrickeigensatz@gmail.com
->> Date: Mon,  1 Jun 2020 13:12:01 +0200
->>
->>> From: Patrick Eigensatz <patrickeigensatz@gmail.com>
->>>
->>> After allocating the spare nexthop group it should be tested for kzalloc()
->>> returning NULL, instead the already used nexthop group (which cannot be
->>> NULL at this point) had been tested so far.
->>>
->>> Additionally, if kzalloc() fails, return ERR_PTR(-ENOMEM) instead of NULL.
->>>
->>> Coverity-id: 1463885
->>> Reported-by: Coverity <scan-admin@coverity.com>
->>> Signed-off-by: Patrick Eigensatz <patrickeigensatz@gmail.com>
->>
->> Applied, thank you.
->>
-> 
-> Hi Dave,
-> I see this patch in -net-next but it should've been in -net as I wrote in my
-> review[1]. This patch should go along with the recent nexthop set that fixes
-> a few bugs, since it could result in a null ptr deref if the spare group cannot
-> be allocated.
+On Sun, 31 May 2020 23:46:49 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Obviously I forgot to mention in my review that it should go to -stable with the
-nexthop fix set.
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index 57402276d8af..24ab0a6b9772 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -51,6 +51,10 @@ struct xdp_bulk_queue {
+>  /* CPUMAP value */
+>  struct bpf_cpumap_val {
+>  	u32 qsize;	/* queue size */
+> +	union {
+> +		int fd;	/* program file descriptor */
+> +		u32 id;	/* program id */
+> +	} prog;
+>  };
+  
+Please name the union 'bpf_prog' and not 'prog'.
+We should match what David Ahern did for devmap.
 
-> How would you like to proceed? Should it be submitted for -net as well?
-> 
-> Thanks,
->  Nik
-> 
-> [1] https://lkml.org/lkml/2020/6/1/391
-> 
+Even-though we are NOT exposing this in the UAPI header-file, this still
+becomes a UAPI interface (actually kABI).  The struct member names are
+still important, even-though this is a binary layout, because the BTF
+info is basically documenting this API.
+
+Notice when kernel is compiled with BTF info, you (or end-user) can use
+pahole to "reverse" the struct layout (comments don't survive, so we
+need descriptive member names):
+
+$ pahole bpf_devmap_val
+struct bpf_devmap_val {
+	__u32                      ifindex;              /*     0     4 */
+	union {
+		int                fd;                   /*     4     4 */
+		__u32              id;                   /*     4     4 */
+	} bpf_prog;                                      /*     4     4 */
+	struct {
+		unsigned char      data[24];             /*     8    24 */
+	} storage;                                       /*     8    24 */
+
+	/* size: 32, cachelines: 1, members: 3 */
+	/* last cacheline: 32 bytes */
+};
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+
+$ bpftool btf dump file /sys/kernel/btf/vmlinux format c | grep -A10 'struct bpf_devmap_val {'
+struct bpf_devmap_val {
+	__u32 ifindex;
+	union {
+		int fd;
+		__u32 id;
+	} bpf_prog;
+	struct {
+		unsigned char data[24];
+	} storage;
+};
 
