@@ -2,122 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 792861EBC5A
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF521EBC90
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgFBNF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 09:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726139AbgFBNF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:05:58 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D65C061A0E
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 06:05:57 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id n5so715482ybo.7
+        id S1727860AbgFBNGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 09:06:05 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37352 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726853AbgFBNGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:06:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591103160;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=vdmj+Tg8SGx2NrYVAizct++/zxOMWuxvcR8U68lSB2Q=;
+        b=eu0O3jUmLKHk3JeifQFqOALalNmL+ETGiPqdwMKGLZsZJSaK9jaIUg53Oqnbb+prKQ4ZWO
+        C1VJyY0HYRM3h1pt0RTVPKlNW0gGg4kOzkqJo4HXYVSsOns8GigxqRU0dEjpkqNXTZQRE5
+        z7MK43887Fa9EwDcpyryr562UHHL86I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-230-wGAh0UCJP525IAx-YsEeQg-1; Tue, 02 Jun 2020 09:05:58 -0400
+X-MC-Unique: wGAh0UCJP525IAx-YsEeQg-1
+Received: by mail-wm1-f70.google.com with SMTP id b63so889257wme.1
         for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 06:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aFsfcQemjMCArAIh7NlAUzZw5oK+VuGVflBxxbpyMNU=;
-        b=G4Mkc+dNtZ2fipofo7VgIwjo6Ks9tpbC6pTKI3gzplgDni4JSiqB9yPwgmRwdCtu7+
-         1bt4uS4hOVY5WynzAh8i58D7dIGglCDme3P1ciuce5tOW0mQrDhSWDPHIzwa6ghy/sJs
-         PK1lXT4B+R20cEUL3r1zB1SaNHwTIfRosxBFat94kvDohAQKJuYdAUXVcE0KxCa5gMaQ
-         HUi3iYsOlKIHYa2d0Omla2grPzxrYTDh07w/ihOgY0R0iDTHy3i9V5iatmaQJU5KBWE0
-         0RQzW3uST/RJ/oMPznqN37S5lmuD+1lExLqMBwbEadjWNDISGstNiMp5Iigy7VsgZ0Eo
-         /WMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aFsfcQemjMCArAIh7NlAUzZw5oK+VuGVflBxxbpyMNU=;
-        b=AH1fqQRlayaX86d/3SvUrGpDLNmm81z3Pba2bzI0Ov5pzzKLNs1NQxGuSi459+MxJY
-         cyeCLuJV0hLlP9qpXfTO8dFb4b/lTJZJlb0A39cN2AU6p7pBHnJdD3Zm33uZPnEfuEF4
-         XDKGH+eIWcLsFMjT4x1Zx0owugs5lXHSrMVWmocxMtx7qh3mbsiZR2VQkpyg/tIyv79o
-         ia1UozCAyYpVUTcDUekx4B4BWEqpvltDFVImEh13s4EJiGEbF7avGmiEN0ZCMyQyV89T
-         lQb0r9VGfZKsNYkpvThULjQfJil0iyYoftHsbh5ylostdnVq7mZMuWb3LfzaZJ0hgsN0
-         7S6w==
-X-Gm-Message-State: AOAM532s39YrfL36Tz86GoptxMxNG2A6izVxfMdHA+8y9CM+pFpxyPjW
-        /vniMQatjJL8CiwQe37lxnise5mmD0GULaETINLnbg==
-X-Google-Smtp-Source: ABdhPJxnq83T9uPawX2t1PQAbsAWK2BSFIDF95VJt6uuLTrHGnv4Dsd7tdgkYmLmwexjJ1fZKR+RgjJN5pWQvPcwaVM=
-X-Received: by 2002:a25:1484:: with SMTP id 126mr41221569ybu.380.1591103156614;
- Tue, 02 Jun 2020 06:05:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=vdmj+Tg8SGx2NrYVAizct++/zxOMWuxvcR8U68lSB2Q=;
+        b=XxZR4GhDwdVzM3czjtxqC5E8fhaevGPzezj18HVlBdMl+5jYtV+VKiuLAeu/kPnma5
+         5txoM/vzO8I9dA3yuqvEoxIROJHye+d8pHw7D7Pl1IfT6SzYlY3l/+BZUeVcb/YzIkb0
+         2kz+P13+zOuV2W4uZCzXnEuTkTKOVMl0NExbGKCdiOhgKQ8mTxbI9JuH3qBK745h1aqX
+         Z9zxaMNrrGuClQz8NUA/lz26yepSo5AsZXZQK/b3TTT7+rup1AegUXt8lsQL1O9CySNn
+         qyy+bg8DrVq0Yt8y7gSwoQ5QqI7k7NvG0NF0TOXuPF3Aw4UW3aZIYTU+RprLNfKmLTTo
+         Lm+g==
+X-Gm-Message-State: AOAM532aosLtsBHcZ4gDiJ8oMwLqUAEWyC7yx3moPO0sZHPha/4VLSj5
+        eRY4QKeVrJOH6cD60i4YIVpcYUuY2IaBAlx+XH9gz1HS021hmFzIqh33gAQI0uhgJyFPkUL+y5r
+        VANSy3y5KoHsMvujj
+X-Received: by 2002:a1c:e355:: with SMTP id a82mr3952752wmh.1.1591103156752;
+        Tue, 02 Jun 2020 06:05:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzxhvL+9CoWDlbet28l8cBoDZ1y4Jq12uY4hkhtEZgSR8vXHFkGEgf8rds3ZCLy2cNng3Lahg==
+X-Received: by 2002:a1c:e355:: with SMTP id a82mr3952727wmh.1.1591103156470;
+        Tue, 02 Jun 2020 06:05:56 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id 5sm3408485wmz.16.2020.06.02.06.05.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 06:05:55 -0700 (PDT)
+Date:   Tue, 2 Jun 2020 09:05:54 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH RFC 00/13] vhost: format independence
+Message-ID: <20200602130543.578420-1-mst@redhat.com>
 MIME-Version: 1.0
-References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20200602080425.93712-1-kerneljasonxing@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 2 Jun 2020 06:05:44 -0700
-Message-ID: <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
-Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
-To:     kerneljasonxing@gmail.com
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, liweishi@kuaishou.com,
-        lishujin@kuaishou.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 1:05 AM <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <kerneljasonxing@gmail.com>
->
-> TCP socks cannot be released because of the sock_hold() increasing the
-> sk_refcnt in the manner of tcp_internal_pacing() when RTO happens.
-> Therefore, this situation could increase the slab memory and then trigger
-> the OOM if the machine has beening running for a long time. This issue,
-> however, can happen on some machine only running a few days.
->
-> We add one exception case to avoid unneeded use of sock_hold if the
-> pacing_timer is enqueued.
->
-> Reproduce procedure:
-> 0) cat /proc/slabinfo | grep TCP
-> 1) switch net.ipv4.tcp_congestion_control to bbr
-> 2) using wrk tool something like that to send packages
-> 3) using tc to increase the delay in the dev to simulate the busy case.
-> 4) cat /proc/slabinfo | grep TCP
-> 5) kill the wrk command and observe the number of objects and slabs in TCP.
-> 6) at last, you could notice that the number would not decrease.
->
-> Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
-> Signed-off-by: liweishi <liweishi@kuaishou.com>
-> Signed-off-by: Shujin Li <lishujin@kuaishou.com>
-> ---
->  net/ipv4/tcp_output.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index cc4ba42..5cf63d9 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -969,7 +969,8 @@ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
->         u64 len_ns;
->         u32 rate;
->
-> -       if (!tcp_needs_internal_pacing(sk))
-> +       if (!tcp_needs_internal_pacing(sk) ||
-> +           hrtimer_is_queued(&tcp_sk(sk)->pacing_timer))
->                 return;
->         rate = sk->sk_pacing_rate;
->         if (!rate || rate == ~0U)
-> --
-> 1.8.3.1
->
+We let the specifics of the ring format seep through to vhost API
+callers - mostly because there was only one format so it was
+hard to imagine what an independent API would look like.
+Now that there's an alternative in form of the packed ring,
+it's easier to see the issues, and fixing them is perhaps
+the cleanest way to add support for more formats.
 
-Hi Jason.
+This patchset does this by indtroducing two new structures: vhost_buf to
+represent a buffer and vhost_desc to represent a descriptor.
+Descriptors aren't normally of interest to devices but do occationally
+get exposed e.g. for logging.
 
-Please do not send patches that do not apply to current upstream trees.
+Perhaps surprisingly, the higher level API actually makes things a bit
+easier for callers, as well as allows more freedom for the vhost core.
+The end result is basically unchanged performance (based on preliminary
+testing) even though we are forced to go through a format conversion.
 
-Instead, backport to your kernels the needed fixes.
+The conversion also exposed (more) bugs in vhost scsi - which isn't
+really surprising, that driver needs a lot more love than it's getting.
 
-I suspect that you are not using a pristine linux kernel, but some
-heavily modified one and something went wrong in your backports.
-Do not ask us to spend time finding what went wrong.
+Very lightly tested. Would appreciate feedback and testing.
 
-Thank you.
+Michael S. Tsirkin (13):
+  vhost: option to fetch descriptors through an independent struct
+  vhost: use batched version by default
+  vhost: batching fetches
+  vhost: cleanup fetch_buf return code handling
+  vhost/net: pass net specific struct pointer
+  vhost: reorder functions
+  vhost: format-independent API for used buffers
+  vhost/net: convert to new API: heads->bufs
+  vhost/net: avoid iov length math
+  vhost/test: convert to the buf API
+  vhost/scsi: switch to buf APIs
+  vhost/vsock: switch to the buf API
+  vhost: drop head based APIs
+
+ drivers/vhost/net.c   | 173 +++++++++----------
+ drivers/vhost/scsi.c  |  73 ++++----
+ drivers/vhost/test.c  |  22 +--
+ drivers/vhost/vhost.c | 375 +++++++++++++++++++++++++++---------------
+ drivers/vhost/vhost.h |  46 ++++--
+ drivers/vhost/vsock.c |  30 ++--
+ 6 files changed, 436 insertions(+), 283 deletions(-)
+
+-- 
+MST
+
