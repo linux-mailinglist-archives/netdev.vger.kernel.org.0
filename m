@@ -2,147 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0E81EBE23
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 16:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAF201EBE80
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 16:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbgFBOaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 10:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59276 "EHLO
+        id S1726162AbgFBOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 10:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727839AbgFBOaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 10:30:01 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4E3C08C5C1
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 07:30:01 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b27so12667375qka.4
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 07:30:01 -0700 (PDT)
+        with ESMTP id S1725958AbgFBOzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 10:55:43 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A353CC08C5C0;
+        Tue,  2 Jun 2020 07:55:43 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i68so10844283qtb.5;
+        Tue, 02 Jun 2020 07:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BRMN3iW+oQWPEGyzG/UpcFySwPI4120k+UQlkFdg484=;
-        b=kK7I4XWxI7j45Cc5kvmTaPzrHmDCP25WmNaXinU+Azay3c4ZdKP+5IlDrppnIqoHoc
-         bqx76b84raNpQM4UaYsRcS0J7wNeC6ej+9ZUmF823/bQ5RC7KIzeoAMqneKVHOVAX8+Z
-         spHi4PsiPQTDcxjflrqcaA+EGr7RNld40CvgCxnmDQPFHWrWSvEQ5f4qImmLZeFdd2cj
-         mTCxrfvK5BVe62c3aBe3Qf/iTVvKm20u+dw8oPAtogsOupBpZfx7idE7We/YPdBYHgxb
-         C+TJLkS3Uz47iw6JB1LwjFLtxygGGJMtRadxYUUbU5RGPbDim9jUnY9SPzxaQiMkAnQR
-         UXZw==
+        h=from:to:subject:date:message-id;
+        bh=eHWCJpGvOMEPpbXW8VfTPl1JdLuLDh+ZhBh8b3W6cCY=;
+        b=jpqGqN5fusT3dEfyPkAsKndNeYEfRXRWU1PhJd65J8bZN2d1/bfpNZ9IA1O92M+0N7
+         dROeL52SwahvX5Q6zIVdg4xJOeUgeh4LcYz02Zo3G2GD4oVN7S6tEeXjUe+bEDTo9JIE
+         yV5bA30W1QANra6CGbp6JgocbhtOvnXiL+jZCEFLAaXrIpQZbIjb1b7TE6bmtTTmSZX8
+         HYTDVQH0YNr4Gu1Qz0hs4y38CgLuHh3AuNnma9AX88CCaJA05BD96z9kySU+0NAJNQBN
+         1y+/1iWkY8zC8yjczOyJZaogzKHscp2hhOC4CmUBHEPPf8Dkjc0AOr1KBKA1RD6ug0HF
+         IS6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BRMN3iW+oQWPEGyzG/UpcFySwPI4120k+UQlkFdg484=;
-        b=uZQOBXBPjPFFMdaCq52Zwy96clkYh1Ds9tXxWyVzMxOxV/JgJWWqbghxTedsVwd0hu
-         OzBElhRYKwu3WRRRmM/Tl+6cci21qODyJWBkb+91lUfAQ7J6XS9mPrkK6zb43VjG7+qW
-         2RHEocmDw/yAQUEfgTyjfpnMFXZkGQJ2HoTRQySf2/QlNX5TaFNnI7atCZLMYwHdBYTS
-         NRGJ1RSHVbMJOwRyxqA9KbNqCqt4xea6JVgqW7PaECi+FbYJEIMaM4NEHJqU4+7hHrEA
-         KlIAH551ktHxEhRrsj8OAE1xzXokhjd1fGEWVIb9n0Cy5WizFX3/BD31wofi/vCEfP1l
-         p36A==
-X-Gm-Message-State: AOAM530e3VVjWzTk0oUoKW3fwu662cgbVZ1D3P0z1O6dBFj18198G4AZ
-        TDBvTim9G4QYspjNkFOoLzSjCxzH
-X-Google-Smtp-Source: ABdhPJwp0kmZItBnFKYMwzKpl50j01Kt0KOXj8rt8RsaKTk/04ghKudMoXnex22wUipwA0kwnlWyxg==
-X-Received: by 2002:a37:2e86:: with SMTP id u128mr22681034qkh.26.1591108198840;
-        Tue, 02 Jun 2020 07:29:58 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id n130sm2517614qke.77.2020.06.02.07.29.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jun 2020 07:29:57 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id j8so7114675ybj.12
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 07:29:56 -0700 (PDT)
-X-Received: by 2002:a25:aa70:: with SMTP id s103mr17445033ybi.492.1591108195719;
- Tue, 02 Jun 2020 07:29:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200602080535.1427-1-victor@inliniac.net>
-In-Reply-To: <20200602080535.1427-1-victor@inliniac.net>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Jun 2020 10:29:19 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
-Message-ID: <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are good
-To:     Victor Julien <victor@inliniac.net>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
-        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Alexander Drozdov <al.drozdov@gmail.com>,
-        Tom Herbert <tom@herbertland.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=eHWCJpGvOMEPpbXW8VfTPl1JdLuLDh+ZhBh8b3W6cCY=;
+        b=PfsptOiyHWZenMv1fP4UaqB80lVchW8wTarcgWDz+Z+d2apfr4vi/Ln5ImukCiql42
+         VYeFnVZyesV46gYXazrsED+EvKSKq/fZheIFPU+svNIdjO79TIkRiSxQ9raChnxkUaKP
+         TEmyhIPmEKFT8WRl0NvpXSJroz5jsUVTHYJMaGxmar1UHMsfjM62FYorxUdbA9+Pbf3V
+         74ma3yXPccMq8ffp8uVucwRUJjV61FiQ/U7Ue3k/NRZSz3RK3XUczJXjCxF7pbN4dmOA
+         jbqxwDGsMw14kTeMzSf3XU7ml8c8A0toZa0Jv5B2og2WW6QCW3fg7BeSM04FYxm3uza/
+         v9mg==
+X-Gm-Message-State: AOAM5318uAdJxoFQCJ4AsWw8kA7oQGPmEv3UZOlWU0JHUE86RKlgVYVN
+        A6FTK3E212DFQuRFYhXiiz0=
+X-Google-Smtp-Source: ABdhPJz1Ct9gAsI5WNAA/0iVbz1MV6e4nAoXjyM5/drYO5uvJS6nmIgxrDcPzfa28AwAWvDch5HBUw==
+X-Received: by 2002:aed:24db:: with SMTP id u27mr27047925qtc.256.1591109742727;
+        Tue, 02 Jun 2020 07:55:42 -0700 (PDT)
+Received: from kvmhost.ch.hwng.net (kvmhost.ch.hwng.net. [69.16.191.151])
+        by smtp.gmail.com with ESMTPSA id c58sm2923849qtd.27.2020.06.02.07.55.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Jun 2020 07:55:42 -0700 (PDT)
+From:   Pooja Trivedi <poojatrivedi@gmail.com>
+X-Google-Original-From: Pooja Trivedi <pooja.trivedi@stackpath.com>
+To:     mallesh537@gmail.com, pooja.trivedi@stackpath.com,
+        josh.tway@stackpath.com, borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net, kuba@kernel.org,
+        davem@davemloft.net, vakul.garg@nxp.com, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org
+Subject: [RFC 0/1] net/tls(TLS_SW): Data integrity issue with sw kTLS using sendfile
+Date:   Tue,  2 Jun 2020 14:55:33 +0000
+Message-Id: <1591109733-14159-1-git-send-email-pooja.trivedi@stackpath.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
->
-> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
-> that the driver has completely validated the checksums in the packet.
->
-> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
-> in that the new flag will only be set if all the layers are valid,
-> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
+When sendfile is used for kTLS file delivery and 
+the size provided to sendfile via its 'count'
+parameter is greater than the file size, kTLS fails
+to send the file correctly. The last chunk of the 
+file is not sent, and the data integrity of the 
+file is compromised on the receiver side. 
+Based on studying the sendfile source code, in
+such a case, last chunk of the file will be passed
+with the MSG_MORE flag set. Following snippet from
+fs/splice.c:1814 shows code within the while loop 
+in splice_direct_to_actor() function that sets this
+flag:
 
-transport, not ip checksum.
+--------
 
-But as I understand it drivers set CHECKSUM_COMPLETE if they fill in
-skb->csum over the full length of the packet. This does not
-necessarily imply that any of the checksum fields in the packet are
-valid yet (see also skb->csum_valid). Protocol code later compares
-checksum fields against this using __skb_checksum_validate_complete and friends.
+	/*
+	 * If more data is pending, set SPLICE_F_MORE
+	 * If this is the last data and SPLICE_F_MORE 
+	 * was not set initially, clears it.
+	 */
+	if (read_len < len)
+		sd->flags |= SPLICE_F_MORE;
+	else if (!more)
+		sd->flags &= ~SPLICE_F_MORE;
 
-But packet sockets may be called before any of this, however. So I wonder
-how valid the checksum really is right now when setting TP_STATUS_CSUM_VALID.
-I assume it's correct, but don't fully understand where the validation
-has taken place..
+--------
 
-Similar to commit 682f048bd494 ("af_packet: pass checksum validation
-status to the user"), please update tpacket_rcv and packet_rcv.
+Due to this, tls layer adds the chunk to the pending 
+records, but does not push it. Following lines of code
+from tls_sw_do_sendpage() function in tls_sw.c:1153 show 
+the end of record (eor) variable being set based on 
+MSG_MORE flag:
 
-Note also that net-next is currently closed.
+--------
+
+	bool eor;
+
+	eor = !(flags & (MSG_MORE | MSG_SENDPAGE_NOTLAST));
+
+--------
+
+This eor bool is then used in the condition check for 
+full_record, end of record, or sk_msg_full in 
+tls_sw_do_sendpage() function in tls_sw.c:1212:
+
+--------
+
+	if (full_record || eor || sk_msg_full(msg_pl)) {
+		ret = bpf_exec_tx_verdict(msg_pl, sk, full_record,
+				  record_type, &copied, flags);
+		if (ret) {
+			if (ret == -EINPROGRESS)
+				num_async++;
+			else if (ret == -ENOMEM)
+				goto wait_for_memory;
+			else if (ret != -EAGAIN) {
+				if (ret == -ENOSPC)
+					ret = 0;
+				goto sendpage_end;
+			}
+		}
+	}
+	continue;
+
+--------
+
+Changing the code in splice_direct_to_actor() function 
+in fs/splice.c to detect end of file by checking 'pos'
+variable against file size, and setting MSG_MORE flag
+only when EOF is not reached, fixes the issue:
+
+--- a/fs/splice.c
++++ b/fs/splice.c
+@@ -980,10 +980,12 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
+                 * If this is the last data and SPLICE_F_MORE was not set
+                 * initially, clears it.
+                 */
+-               if (read_len < len)
+-                       sd->flags |= SPLICE_F_MORE;
+-               else if (!more)
++               if (read_len < len) {
++                       if (pos < i_size_read(file_inode(in)))
++                               sd->flags |= SPLICE_F_MORE;
++               } else if (!more)
+                        sd->flags &= ~SPLICE_F_MORE;
++               }
 
 
-
-
->  for convenience there are also the following defines::
->
-> diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
-> index 3d884d68eb30..76a5c762e2e0 100644
-> --- a/include/uapi/linux/if_packet.h
-> +++ b/include/uapi/linux/if_packet.h
-> @@ -113,6 +113,7 @@ struct tpacket_auxdata {
->  #define TP_STATUS_BLK_TMO              (1 << 5)
->  #define TP_STATUS_VLAN_TPID_VALID      (1 << 6) /* auxdata has valid tp_vlan_tpid */
->  #define TP_STATUS_CSUM_VALID           (1 << 7)
-> +#define TP_STATUS_CSUM_UNNECESSARY     (1 << 8)
->
->  /* Tx ring - header status */
->  #define TP_STATUS_AVAILABLE          0
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index 29bd405adbbd..94e213537646 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -2215,10 +2215,13 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
->
->         if (skb->ip_summed == CHECKSUM_PARTIAL)
->                 status |= TP_STATUS_CSUMNOTREADY;
-> -       else if (skb->pkt_type != PACKET_OUTGOING &&
-> -                (skb->ip_summed == CHECKSUM_COMPLETE ||
-> -                 skb_csum_unnecessary(skb)))
-> -               status |= TP_STATUS_CSUM_VALID;
-> +       else if (skb->pkt_type != PACKET_OUTGOING) {
-> +               if (skb->ip_summed == CHECKSUM_UNNECESSARY)
-> +                       status |= TP_STATUS_CSUM_UNNECESSARY | TP_STATUS_CSUM_VALID;
-> +               else if (skb->ip_summed == CHECKSUM_COMPLETE ||
-> +                        skb_csum_unnecessary(skb))
-> +                       status |= TP_STATUS_CSUM_VALID;
-> +       }
->
->         if (snaplen > res)
->                 snaplen = res;
-> --
-> 2.17.1
->
+Sending a followup patch to this that adds a selftest 
+that helps reproduce the issue.
