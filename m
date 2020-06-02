@@ -2,138 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D76351EB7A1
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C6AC1EB7BA
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 10:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbgFBIuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 04:50:03 -0400
-Received: from mail-vi1eur05on2065.outbound.protection.outlook.com ([40.107.21.65]:19041
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725900AbgFBIuC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 04:50:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iWKC9PDEGJGHaEm0WrO/VKp1ZQczh7YXRVlFYpvrTkgVaHuw1kVqxPbnMKhBZdA6g2SvO+O7SQ04B63v5yNGfW+siB1yv9Gmnkwav+zV8dvSs/MNC/HcQXT1T7N45b7PTrzogxB5vPqCcIIvxc/QWToUxdMDhACI2Y6c3AWFUdDaVf+2h47mlmqal+ZhV+xYyS3WEnkEwr/A5INlej5JfwDMCUQidNQrE7IAL4gs3SbTAXJ37YhiXo5uD2F+V9w7kyA6sraUc/qSEytDUlEZpzXAEfsXlvsmrWpuBstGvQBNt5eBLaGkRviGWgboe8Yy0uq12UWNgHZMdDur33Ig4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z5umUObFYf08UQk3FhK1WDQndXNqX+zJiQRgK+o9X0g=;
- b=IIIRyWYl3Tw38RaDhZt6ECZTOLIEuyUX2IjaicnK0xP4JUp5iQVT7bzWcaus8F9Jmo6N7M/KjvSUzZEwkuDi7Lepqkn3cV81m431uU7GgyBQt1E0k65ZKryyXbmclMov25Dy46dqu37C3TlxnknU0GEuCfkDGUuMMRyPy7mK9KaNidEzW9zXYIB98OYtyTTWcHEXJXfIntzaMRVqCujh15p/A02pyAg6BeLX5/CAqmoPy9ERCmx8YTsziBqX93XxAHzeQtKimzsUmnplMsiJO3XPQfIK/Py9hVPmbiuZCJ+rrwZbCmI8tYmXeThjVKXcf14NWbC00Y6SstaVTw6hEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z5umUObFYf08UQk3FhK1WDQndXNqX+zJiQRgK+o9X0g=;
- b=Y9YrWGMgZSBrJiz8CmTZbbtRMJXnIabV/QhCJh7yf1iARQLgqnVg84yMeTDD4hWas7dcSFAm6pGIzi58srk8X+P+XTjETMbcdhCFce5RYrJELC/n8CraSr1ZF2zj3cRf+Et5A2u7RWqU/1K/MarVbCq0a+a5AOZzVSgcyqxl/4U=
-Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
- by DB8PR04MB5770.eurprd04.prod.outlook.com (2603:10a6:10:a6::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.18; Tue, 2 Jun
- 2020 08:49:58 +0000
-Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
- ([fe80::b502:cec6:9389:665]) by DB8PR04MB5785.eurprd04.prod.outlook.com
- ([fe80::b502:cec6:9389:665%3]) with mapi id 15.20.3045.024; Tue, 2 Jun 2020
- 08:49:58 +0000
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Po Liu <po.liu@nxp.com>, Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
-Subject: RE: [EXT] Re: [PATCH v2 net-next 00/10] net: ocelot: VCAP IS1 and ES0
- support
-Thread-Topic: [EXT] Re: [PATCH v2 net-next 00/10] net: ocelot: VCAP IS1 and
- ES0 support
-Thread-Index: AQHWOJ4Fuv2ph3WWWkedqpufch3pGajE91GAgAAAmhA=
-Date:   Tue, 2 Jun 2020 08:49:58 +0000
-Message-ID: <DB8PR04MB5785D8DA658A4557973EA233F08B0@DB8PR04MB5785.eurprd04.prod.outlook.com>
-References: <20200602051828.5734-1-xiaoliang.yang_1@nxp.com>
- <CA+h21hp5K8BvNSuWKuAc_tVYeLpRUqrZtfvFz+3hdLWcAOfMag@mail.gmail.com>
-In-Reply-To: <CA+h21hp5K8BvNSuWKuAc_tVYeLpRUqrZtfvFz+3hdLWcAOfMag@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6a5d29b3-db86-45aa-c291-08d806d1ee0e
-x-ms-traffictypediagnostic: DB8PR04MB5770:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB57701146B244E85A3047E425F08B0@DB8PR04MB5770.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0422860ED4
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CpT20s6Jky0vigr6h9Ggkir5XVRHgCLzwzR84OLDMxMlRTMkuEpAyUFGzHeTWNGvsDC9tQlkrxUZz9e+5kfEtxWodsWbc6K5Cp45XrIsP0U5THDTfpErPMWAscA9+BlGDvT33KWZEapZdeU3UrC0x/yFbzDlPI/vtcwaMcjb/zcIzc8WkczK8vu/ysZ5yIHZEdl9ebyOnKvPB8i9jhDiY5UfDfvpWefKQtBymA4gR31T+os3/fJswMfM0poLdqe9B35t3IgLdjzDaKSHDfx+KrOm+wNDy9CqZ/FT9nPl9jxIz94LGtSXzgLXAatFQxHzIrvxJoxrz9YphegxP5Dgj4P0KDuJ3BwGEJRPdLVif0Xw//CkI76Dx5xXQFXRVE8moFVfCVgAxd82JZ/jPgsISg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(396003)(376002)(366004)(346002)(6506007)(966005)(8936002)(86362001)(71200400001)(4326008)(45080400002)(33656002)(7416002)(478600001)(8676002)(7696005)(2906002)(83380400001)(52536014)(9686003)(186003)(66446008)(64756008)(66556008)(66476007)(55016002)(26005)(54906003)(66946007)(316002)(76116006)(5660300002)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: WI+xr9GZ1waG+10C1WBBzc1Mvu2RG3UtRyeYghHlGuSRQFO48s06IWkvAsMtLY6eA04rtQfE7ct28i5WbItDRtnB7cJbB8XozNv7QLyo6sndQKR0lhCjWTJU8eepyfkZQSCGFF5/02OD1iMtxJDVW4YL0ixPdT+37UrIkpFfNHeHMQJPqtAL6CODhtBnOgCjsBM1yMud1CZQC0mueoFpZEbLLQOV1QCVSCl56okeO1vlVOYbHwZ2oQQ79WvZoBaLecJjJ8ZAE6eH6wwH13wNII4kVEnmhbxGOuSDsJLGD0uhPN/YAUPpmNBbj/SrLP1kfvBEzjbExV1yjPS3+NRXKvz4L+eoIDd48F0xaK8Q15iq5sSU0DB3cKE3cDa7Q1y117yxISNz6VcXMoBSsml70mfTBFFhdE7uHpa1uL378Cjn6IMlc2WQsddz3te/94xJRNmLSrRCPUkfeXI3Tmg0xhitx7Z8HqqLACs8DXIpB28=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726315AbgFBIzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 04:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726243AbgFBIzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 04:55:16 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94E0C03E97D
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 01:55:15 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id z5so11987803ejb.3
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 01:55:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=UpZeVaraeAQCVNTZxXpOffz+FSPS8pHdNGnocyS2mhk=;
+        b=IfTL60FvMGXj/A7fWRprxLo4myJSe/7osNvWnXdiUhVLmyrNXubAGMwIkVO9CPVnJa
+         C0J6bji0V7H6sHXSlwvcr/L8YjnMrYhoZGXOqHzOOEWJfBsn/9BNRPCD255Y/YPiij1V
+         vkPqMp6+ldS0xbEku1m5tfZw40rDl+vFsUCt4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=UpZeVaraeAQCVNTZxXpOffz+FSPS8pHdNGnocyS2mhk=;
+        b=WWeJGBiCG1BMQUAcXp/g7rUBBuK3ztGKzpothOKC+1vyde/C76siqxo9cdqihkSKRI
+         bZ+E0QNTEWriv/MtTlZMzEN09p8xMq9hBXOaX9OInDEza/aNd8OW83w0EcQg0YL/QdV7
+         1zJEv4+uCzcPZI5Ob/8z/9oOkHrKJhur2CHZZ4nvZkwGi3AFkKpfm4pOPWT8zJheb8l9
+         R1gxkjy88iGGUi680GX0lXJ+1uvZYzP03vcS5Vfs4bM98EQDTEZzPgpLiDm45Adr4zFo
+         jOVRU5+zxzIYYH2nNWkpExPZnlAmfE7dRDsPRYjdOt8p7RahmmGUm6kRMVFo7LRxNd6+
+         aVWQ==
+X-Gm-Message-State: AOAM531YKV25Gdmu1DXMevwXzMaTD/KIQsEtPwJ9gXxo0d6ipGEWz0Go
+        yu6hytw0Wwubahy7f9Yc/r/rQ31t8Uk=
+X-Google-Smtp-Source: ABdhPJwJqxgwVu93QJg4CxBwG5J1Q0TEJ2Y32gJowtg7cF18HlBLAu2TrQXYuGRlXg4kMh8XqgxwhQ==
+X-Received: by 2002:a17:906:934d:: with SMTP id p13mr23219841ejw.414.1591088113536;
+        Tue, 02 Jun 2020 01:55:13 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id la5sm1347388ejb.94.2020.06.02.01.55.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 01:55:12 -0700 (PDT)
+References: <159079336010.5745.8538518572099799848.stgit@john-Precision-5820-Tower> <159079361946.5745.605854335665044485.stgit@john-Precision-5820-Tower> <20200601165716.5a6fa76a@toad> <5ed51cae71d0d_3f612ade269e05b46e@john-XPS-13-9370.notmuch> <5ed523a8b7749_54cc2acde13425b85b@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Subject: Re: [bpf-next PATCH 2/3] bpf: fix running sk_skb program types with ktls
+In-reply-to: <5ed523a8b7749_54cc2acde13425b85b@john-XPS-13-9370.notmuch>
+Date:   Tue, 02 Jun 2020 10:55:11 +0200
+Message-ID: <87img93l00.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a5d29b3-db86-45aa-c291-08d806d1ee0e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2020 08:49:58.3782
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9SsXwcGgeME8al39z6sBBzgEAcWEA7a9ui6nGQdeqK+Noe0ji7JtmHpVI3ITOyhBzmfPuo6FxdpBX0CexJsw4isjW8j527J5M2lkRj7CIQM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB5770
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmxhZGltaXIsDQoNCk9uIFR1cywgMiBKdW4gMjAyMCBhdCAxNjowNCwNCj4gRmlyc3Qgb2Yg
-YWxsLCBuZXQtbmV4dCBoYXMganVzdCBjbG9zZWQgeWVzdGVyZGF5IGFuZCB3aWxsIGJlIGNsb3Nl
-ZCBmb3IgdGhlIGZvbGxvd2luZyAyIHdlZWtzOg0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5w
-cm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cDolMkYlMkZ2Z2VyLmtlcm5lbC5vcmclMkZ+
-ZGF2ZW0lMkZuZXQtbmV4dC5odG1sJmFtcDtkYXRhPTAyJTdDMDElIDdDeGlhb2xpYW5nLnlhbmdf
-MSU0MG54cC5jb20lN0MyZmFkNDQ5NWRhYmM0ZjRjYTVmZDA4ZDgwNmNiNzBhZiU3QzY4NmVhMWQz
-YmMyYjRjNmZhOTJjZDk5YzVjMzAxNjM1JTdDMCU3QzAlN0M2MzcyNjY4MTgxMTc2NjYzODYmYW1w
-O3NkYXRhPXppVnliV2I0SHpZWGFuZWhGNUt3TnY1UkpMJTJCWno2TmVGdnJaV2c2NTdCOCUzRCZh
-bXA7cmVzZXJ2ZWQ9MA0KPg0KPiBTZWNvbmRseSwgY291bGQgeW91IGdpdmUgYW4gZXhhbXBsZSBv
-ZiBob3cgZGlmZmVyZW50IGNoYWlucyBjb3VsZCBleHByZXNzIHRoZSBmYWN0IHRoYXQgcnVsZXMg
-YXJlIGV4ZWN1dGVkIGluIHBhcmFsbGVsIGJldHdlZW4gdGhlIElTMSwNCj4gSVMyIGFuZCBFUzAg
-VENBTXM/DQo+DQoNCkRpZmZlcmVudCBUQ0FNcyBhcmUgbm90IHJ1bm5pbmcgaW4gcGFyYWxsZWws
-IHRoZXkgaGF2ZSBmbG93IG9yZGVyOiBJUzEtPklTMi0+RVMwLiBVc2luZyBnb3RvIGNoYWluIHRv
-IGV4cHJlc3MgdGhlIGZsb3cgb3JkZXIuIA0KRm9yIGV4YW1wbGU6DQoJdGMgcWRpc2MgYWRkIGRl
-diBzd3AwIGluZ3Jlc3MNCgl0YyBmaWx0ZXIgYWRkIGRldiBzd3AwIGNoYWluIDAgcHJvdG9jb2wg
-ODAyLjFRIHBhcmVudCBmZmZmOiBmbG93ZXIgc2tpcF9zdyB2bGFuX2lkIDEgdmxhbl9wcmlvIDEg
-YWN0aW9uIHZsYW4gbW9kaWZ5IGlkIDIgcHJpb3JpdHkgMiBhY3Rpb24gZ290byBjaGFpbiAxDQoJ
-dGMgZmlsdGVyIGFkZCBkZXYgc3dwMCBjaGFpbiAxIHByb3RvY29sIDgwMi4xUSBwYXJlbnQgZmZm
-ZjogZmxvd2VyIHNraXBfc3cgdmxhbl9pZCAyIHZsYW5fcHJpbyAyIGFjdGlvbiBkcm9wDQpJbiB0
-aGlzIGV4YW1wbGUsIHBhY2thZ2Ugd2l0aCAodmlkPTEscGNwPTEpIHZsYW4gdGFnIHdpbGwgYmUg
-bW9kaWZpZWQgdG8gKHZpZD0yLHBjcD0yKSB2bGFuIHRhZyBvbiBJUzEsIHRoZW4gd2lsbCBiZSBk
-cm9wcGVkIG9uIElTMi4NCg0KSWYgdGhlcmUgaXMgbm8gcnVsZSBtYXRjaCBvbiBJUzEsIGl0IHdp
-bGwgc3RpbGwgbG9va3VwIG9uIElTMi4gV2UgY2FuIHNldCBhIHJ1bGUgb24gY2hhaW4gMCB0byBl
-eHByZXNzIHRoaXM6DQoJdGMgZmlsdGVyIGFkZCBkZXYgc3dwMCBjaGFpbiAwIHBhcmVudCBmZmZm
-OiBmbG93ZXIgc2tpcF9zdyBhY3Rpb24gZ290byBjaGFpbiAxDQoNCkluIGFkZGl0aW9uLCBWU0M5
-OTU5IGNoaXAgaGFzIFBTRlAgYW5kICJTZXF1ZW5jZSBHZW5lcmF0aW9uIHJlY292ZXJ5IiBtb2R1
-bGVzIGFyZSBydW5uaW5nIGFmdGVyIElTMiwgdGhlIGZsb3cgb3JkZXIgbGlrZSB0aGlzOiBJUzEt
-PklTMi0+UFNGUC0+ICJTZXF1ZW5jZSBHZW5lcmF0aW9uIHJlY292ZXJ5IiAtPkVTMCwgd2UgY2Fu
-IGFsc28gYWRkIGNoYWlucyBsaWtlIHRoaXMgdG8gZXhwcmVzcyB0aGVzZSB0d28gbW9kdWxlcyBp
-biBmdXR1cmUuDQoNCkJUVywgd2hlcmUgc2hvdWxkIEkgc2VudCBwYXRjaGVzIHRvIGR1ZSB0byBu
-ZXQtbmV4dCBjbG9zZWQ/DQoNClRoYW5rcywNClhpYW9saWFuZyBZYW5nDQo=
+On Mon, Jun 01, 2020 at 05:50 PM CEST, John Fastabend wrote:
+> John Fastabend wrote:
+>> Jakub Sitnicki wrote:
+>> > On Fri, 29 May 2020 16:06:59 -0700
+>> > John Fastabend <john.fastabend@gmail.com> wrote:
+>> >
+>> > > KTLS uses a stream parser to collect TLS messages and send them to
+>> > > the upper layer tls receive handler. This ensures the tls receiver
+>> > > has a full TLS header to parse when it is run. However, when a
+>> > > socket has BPF_SK_SKB_STREAM_VERDICT program attached before KTLS
+>> > > is enabled we end up with two stream parsers running on the same
+>> > > socket.
+>> > >
+>> > > The result is both try to run on the same socket. First the KTLS
+>> > > stream parser runs and calls read_sock() which will tcp_read_sock
+>> > > which in turn calls tcp_rcv_skb(). This dequeues the skb from the
+>> > > sk_receive_queue. When this is done KTLS code then data_ready()
+>> > > callback which because we stacked KTLS on top of the bpf stream
+>> > > verdict program has been replaced with sk_psock_start_strp(). This
+>> > > will in turn kick the stream parser again and eventually do the
+>> > > same thing KTLS did above calling into tcp_rcv_skb() and dequeuing
+>> > > a skb from the sk_receive_queue.
+>> > >
+>> > > At this point the data stream is broke. Part of the stream was
+>> > > handled by the KTLS side some other bytes may have been handled
+>> > > by the BPF side. Generally this results in either missing data
+>> > > or more likely a "Bad Message" complaint from the kTLS receive
+>> > > handler as the BPF program steals some bytes meant to be in a
+>> > > TLS header and/or the TLS header length is no longer correct.
+>> > >
+>> > > We've already broke the idealized model where we can stack ULPs
+>> > > in any order with generic callbacks on the TX side to handle this.
+>> > > So in this patch we do the same thing but for RX side. We add
+>> > > a sk_psock_strp_enabled() helper so TLS can learn a BPF verdict
+>> > > program is running and add a tls_sw_has_ctx_rx() helper so BPF
+>> > > side can learn there is a TLS ULP on the socket.
+>> > >
+>> > > Then on BPF side we omit calling our stream parser to avoid
+>> > > breaking the data stream for the KTLS receiver. Then on the
+>> > > KTLS side we call BPF_SK_SKB_STREAM_VERDICT once the KTLS
+>> > > receiver is done with the packet but before it posts the
+>> > > msg to userspace. This gives us symmetry between the TX and
+>> > > RX halfs and IMO makes it usable again. On the TX side we
+>> > > process packets in this order BPF -> TLS -> TCP and on
+>> > > the receive side in the reverse order TCP -> TLS -> BPF.
+>> > >
+>> > > Discovered while testing OpenSSL 3.0 Alpha2.0 release.
+>> > >
+>> > > Fixes: d829e9c4112b5 ("tls: convert to generic sk_msg interface")
+>> > > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+>> > > ---
+>
+> [...]
+>
+>> > > +static void sk_psock_tls_verdict_apply(struct sk_psock *psock,
+>> > > +				       struct sk_buff *skb, int verdict)
+>> > > +{
+>> > > +	switch (verdict) {
+>> > > +	case __SK_REDIRECT:
+>> > > +		sk_psock_skb_redirect(psock, skb);
+>> > > +		break;
+>> > > +	case __SK_PASS:
+>> > > +	case __SK_DROP:
+>> >
+>> > The two cases above need a "fallthrough;", right?
+>>
+>> Correct otherwise will get the "fallthrough" patch shortly after this
+>> lands. Thanks I'll add it.
+>>
+>
+> hmm actually I don't think we need 'fallthrough;' here when the
+> case doesn't have statements,
+>
+>  switch (a) {
+>  case 1:
+>  case 2:
+>  default:
+>      break;
+>  }
+>
+> seems OK to me. I don't have a preference though so feel free to
+> correct me.
+
+I misunderstood guidance in [0]. You're right, it seems too verbose to
+annotate cases without statements. Didn't mean to nit-pick :-)
+
+[0] https://www.kernel.org/doc/html/latest/process/deprecated.html#implicit-switch-case-fall-through
