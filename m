@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FAE1EBF1F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7231EBF2E
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbgFBPf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 11:35:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42790 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgFBPf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:35:57 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jg8xH-0002dA-5Q; Tue, 02 Jun 2020 17:35:55 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jg8xG-000LL1-TM; Tue, 02 Jun 2020 17:35:54 +0200
-Subject: Re: [PATCH bpf 2/3] bpf: Add csum_level helper for fixing up csum
- levels
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
-References: <cover.1591108731.git.daniel@iogearbox.net>
- <279ae3717cb3d03c0ffeb511493c93c450a01e1a.1591108731.git.daniel@iogearbox.net>
- <CACAyw982WPUfNN_9LD0bhGPTtBSca7t0UV_0UsO3dVGjtEZm9A@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5d317380-142e-c364-2793-68d0bed9efcd@iogearbox.net>
-Date:   Tue, 2 Jun 2020 17:35:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726922AbgFBPj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 11:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgFBPjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:39:25 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E10C08C5C0;
+        Tue,  2 Jun 2020 08:39:24 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id nu7so1558304pjb.0;
+        Tue, 02 Jun 2020 08:39:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fCLWRAj6WHhP+ObXwD/pQyps8oF17BSxdX9gcDmUZ5M=;
+        b=pYX+IbGFVr/4qqRHb5kRjVgsVNJywwsLdY5LnuVhvmvbiGoFVS9JFPZZmAZcUUjdUx
+         17jyd9swcx/riFEjI2EPmREzbCpX4L+KbQjnq8uId4tpci0z1KkY1ydsoDh9mjkt/lsQ
+         KvqahWYTihDV7jJkHss2j23dHFLnPIwHH4muKUXhbIuFAbxlc1ib0sqeqPeAXRbsf2gn
+         wMlfw5iE5+82xDhtiUcH9lZ2LjiFO0Q18LzILiH/AjH2dWOVpIHroxi3cye70Vttht45
+         p4NgKs1ziO5yv5/YpdJ5Xn+KBOIdJ3LyMXSahsiA9kTaNEnK4E9Zaa8Veb9eIt19hBou
+         xm4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fCLWRAj6WHhP+ObXwD/pQyps8oF17BSxdX9gcDmUZ5M=;
+        b=Tb8WyjcPG4/P2a7ZE4oRFd3lVwFeSJr//U3qEjRaB9lLUdM1x0yknnsiA/WnQCAgCn
+         Zee05wNwkG6fK6+PDsi3mvZ27Ksf07pMWezo25lrX/gxaKjFj6aTelsvg4Qz898BDDf/
+         M4fuMDgZ51g7ZqSgmpfpCLF2Y6eJl3HeOiCFCYfGeY6E9C6sgCCgVILlkfgCif+kgecG
+         O9cl6P3gy/am1IUvhvNaFPvtoD3bNY0rJYFsc5wSSgwaiW2JKm3Uo2tD7m6X12k/vGq+
+         DZDu5cg4vxOMLSl1IzsFNchYrVFS010TtRPfAkab5T+9AtB6aMKfp+UpIwcuihrw8xG1
+         zLlg==
+X-Gm-Message-State: AOAM531WnqREvvqM1I95Ts/eLZGnUJF+XFgVaS4grANRQy0OzdA0QV+h
+        qRqdu4CnY2EFbziSBXAu3m7piRVeLktCEPrwRdKuniqGu98=
+X-Google-Smtp-Source: ABdhPJw+pAar+vtUn4AwgUT0o2Iuxy0FG7fSieSNVJ9T1qGejv6fs7xmWgK3SbEGwklxDEF73pROvDThMsFErvvXCrE=
+X-Received: by 2002:a17:90a:ac05:: with SMTP id o5mr6420217pjq.228.1591112364465;
+ Tue, 02 Jun 2020 08:39:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CACAyw982WPUfNN_9LD0bhGPTtBSca7t0UV_0UsO3dVGjtEZm9A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25831/Tue Jun  2 14:41:03 2020)
+References: <20200602092118.32283-1-piotr.stankiewicz@intel.com>
+In-Reply-To: <20200602092118.32283-1-piotr.stankiewicz@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 2 Jun 2020 18:39:12 +0300
+Message-ID: <CAHp75VfEcm-Mmo7=i40sJ0RqpOgFRpJHxQ9ePWvvqsyRp+=9GA@mail.gmail.com>
+Subject: Re: [PATCH 14/15] net: hns3: use PCI_IRQ_MSI_TYPES where appropriate
+To:     Piotr Stankiewicz <piotr.stankiewicz@intel.com>
+Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/2/20 5:19 PM, Lorenz Bauer wrote:
-> On Tue, 2 Jun 2020 at 15:58, Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> Add a bpf_csum_level() helper which BPF programs can use in combination
->> with bpf_skb_adjust_room() when they pass in BPF_F_ADJ_ROOM_NO_CSUM_RESET
->> flag to the latter to avoid falling back to CHECKSUM_NONE.
->>
->> The bpf_csum_level() allows to adjust CHECKSUM_UNNECESSARY skb->csum_levels
->> via BPF_CSUM_LEVEL_{INC,DEC} which calls __skb_{incr,decr}_checksum_unnecessary()
->> on the skb. The helper also allows a BPF_CSUM_LEVEL_RESET which sets the skb's
->> csum to CHECKSUM_NONE as well as a BPF_CSUM_LEVEL_QUERY to just return the
->> current level. Without this helper, there is no way to otherwise adjust the
->> skb->csum_level. I did not add an extra dummy flags as there is plenty of free
->> bitspace in level argument itself iff ever needed in future.
->>
->> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
->> ---
->>   include/uapi/linux/bpf.h       | 43 +++++++++++++++++++++++++++++++++-
->>   net/core/filter.c              | 38 ++++++++++++++++++++++++++++++
->>   tools/include/uapi/linux/bpf.h | 43 +++++++++++++++++++++++++++++++++-
->>   3 files changed, 122 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 3ba2bbbed80c..46622901cba7 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -3220,6 +3220,38 @@ union bpf_attr {
->>    *             calculation.
->>    *     Return
->>    *             Requested value, or 0, if flags are not recognized.
->> + *
->> + * int bpf_csum_level(struct sk_buff *skb, u64 level)
-> 
-> u64 flags? We can also stuff things into level I guess.
+On Tue, Jun 2, 2020 at 12:26 PM Piotr Stankiewicz
+<piotr.stankiewicz@intel.com> wrote:
+>
+> Seeing as there is shorthand available to use when asking for any type
+> of interrupt, or any type of message signalled interrupt, leverage it.
 
-Yeah, I did mention it in the commit log. There is plenty of bit space to extend
-with flags in there iff ever needed. Originally, helper was called bpf_csum_adjust()
-but then renamed into bpf_csum_level() to be more 'topic specific' (aka do one thing
-and do it well...) and avoid future api overloading, so if necessary level can be
-used since I don't think the enum will be extended much further from what we have
-here anyway.
+...
 
-[...]
-> 
-> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+>         vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
+> -                                       hdev->num_msi,
+> -                                       PCI_IRQ_MSI | PCI_IRQ_MSIX);
+> +                                       hdev->num_msi, PCI_IRQ_MSI_TYPES);
 
-Thanks!
+...
+
+>                 vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
+
+>                                                 hdev->num_msi,
+> -                                               PCI_IRQ_MSI | PCI_IRQ_MSIX);
+> +                                               PCI_IRQ_MSI_TYPES);
+
+One line as above?
+
+-- 
+With Best Regards,
+Andy Shevchenko
