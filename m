@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A90C31EB5A4
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 08:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AD091EB5BC
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 08:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbgFBGI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 02:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbgFBGI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 02:08:58 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D220C061A0E;
-        Mon,  1 Jun 2020 23:08:56 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id f5so1805639wmh.2;
-        Mon, 01 Jun 2020 23:08:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NDGYSbP7uksg9+a4r1iJamlh67Acsz3aGJVeqfoyDV0=;
-        b=o7YovVxEvNBhAdPPNBFaK+JmkxuBB4/xKKIT1qcpOELnjJ/YTf7DUjI3RFuu+qY2+X
-         NITAv3fgVQXIKRMRHSMVeyO6ajyBkf2OOQLpHCRN9pQGs8X+gqhCjaZSxu29v1Tami3u
-         MM7CY2e2hyRLnvqiV6gBifOfQAhqlSALfor+ITJr3qIPIcAJ7na+qMogYTp3rg4fgxwB
-         lfte6gUwulmhd+4FLeZy0Oj1mKnQK73EdD8hRAsDdjg9EDhwHmAt8CLUoiuJ8XJ3SFQl
-         f9D2jZX7IXB5zKvIj9CViLa3mJt4xvarJOhKrnqWawXJzMKY6rFXl91VnuA7v7ongqf9
-         SYYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NDGYSbP7uksg9+a4r1iJamlh67Acsz3aGJVeqfoyDV0=;
-        b=krwVROoxwCV9DpKHbzpHOGVHULNHRF8xnS7Qp9A4InnAZPYFRABLx2qCCsLwYNgyoc
-         FndfbL1L5IR/0Ruz6WydnG40JoVDE3Rj2IT4SNvq6cOSz4awGA1968bZMDHdO8mZooPR
-         pizBs56aCzfq6CbEOq/K+b0nme4HAqsHGX0KjQcpvYnUmnJlOVnSEObNMF2oJUJZ/oPj
-         9E+5ziNxILhJaCBhqsHE8EpIGO9+ekv10KReCMazfRPC8FaCERbSO4soE43z+h2QrRo0
-         0I9N2J+EtgKNOMGrZf2MJUxrqXtJeFlJFW1qVpQGhgSqEEdOa1UWEaEoQWm02IuWwWgE
-         S9fw==
-X-Gm-Message-State: AOAM533LMwqWBoDWlBLgyAnGKqpDxp8wflOA/zEkGLe5b45ARMoTc54o
-        2s7LtbTK4qK3cNyoSghwnZHUPZV4KODjgc7QAP8=
-X-Google-Smtp-Source: ABdhPJxbMW9gOsV6GMtEx1bIdBTWOTc6p9HlxeOtGMzSdOLfpQydLKKu4tsXYDL8918ULpDLfXZBeSLCzLSyoGzPpk8=
-X-Received: by 2002:a7b:cbd9:: with SMTP id n25mr2533226wmi.30.1591078135229;
- Mon, 01 Jun 2020 23:08:55 -0700 (PDT)
+        id S1726163AbgFBGRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 02:17:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725616AbgFBGRT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 02:17:19 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4587B20772;
+        Tue,  2 Jun 2020 06:17:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591078639;
+        bh=ep5l1ExG4gfRIqOhdJgGRgQz5NIwz5nYtmlie8CVHk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BTHW6K9EtYZMHqWIKankCYohBkF5ZQUGzXIM0CeutRMPBUevZalzoyQq0KpjOBcaD
+         qeiETdixprK14YCDQgZZi8fU5rKI5bsfKoWUKChQzkBX9p4SAY97jBGGjch8ww5MfK
+         Jz/83myBFWfGC6X66baOsPAZqwi0hQHXH44PRGIM=
+Date:   Tue, 2 Jun 2020 09:17:15 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Rao Shoaib <rao.shoaib@oracle.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, somasundaram.krishnasamy@oracle.com
+Subject: Re: [PATCH net-next] rds: transport module should be auto loaded
+ when transport is set
+Message-ID: <20200602061715.GA56352@unreal>
+References: <20200527081742.25718-1-rao.shoaib@oracle.com>
+ <20200529.164107.1817677145426311890.davem@davemloft.net>
+ <4f86d778-1f6b-d533-c062-c78daa257829@oracle.com>
 MIME-Version: 1.0
-References: <20200601052633.853874-1-jhubbard@nvidia.com> <20200601052633.853874-3-jhubbard@nvidia.com>
-In-Reply-To: <20200601052633.853874-3-jhubbard@nvidia.com>
-From:   Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date:   Tue, 2 Jun 2020 08:08:44 +0200
-Message-ID: <CAM9Jb+hNSWp-TaQQFg4bs5uR8rYk_POZPT23RYy5V_B9-aOcYg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] vhost: convert get_user_pages() --> pin_user_pages()
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Jan Kara <jack@suse.cz>, Dave Chinner <david@fromorbit.com>,
-        Souptick Joarder <jrdr.linux@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4f86d778-1f6b-d533-c062-c78daa257829@oracle.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This code was using get_user_pages*(), in approximately a "Case 5"
-> scenario (accessing the data within a page), using the categorization
-> from [1]. That means that it's time to convert the get_user_pages*() +
-> put_page() calls to pin_user_pages*() + unpin_user_pages() calls.
+On Mon, Jun 01, 2020 at 09:59:30AM -0700, Rao Shoaib wrote:
 >
-> There is some helpful background in [2]: basically, this is a small
-> part of fixing a long-standing disconnect between pinning pages, and
-> file systems' use of those pages.
+> On 5/29/20 4:41 PM, David Miller wrote:
+> > From: rao.shoaib@oracle.com
+> > Date: Wed, 27 May 2020 01:17:42 -0700
+> >
+> > > diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
+> > > index cba368e55863..7273c681e6c1 100644
+> > > --- a/include/uapi/linux/rds.h
+> > > +++ b/include/uapi/linux/rds.h
+> > > @@ -64,7 +64,7 @@
+> > >   /* supported values for SO_RDS_TRANSPORT */
+> > >   #define	RDS_TRANS_IB	0
+> > > -#define	RDS_TRANS_IWARP	1
+> > > +#define	RDS_TRANS_GAP	1
+> > >   #define	RDS_TRANS_TCP	2
+> > >   #define RDS_TRANS_COUNT	3
+> > >   #define	RDS_TRANS_NONE	(~0)
+> > You can't break user facing UAPI like this, sorry.
 >
-> [1] Documentation/core-api/pin_user_pages.rst
+> I was hoping that this could be considered an exception as IWARP has been
+> deprecated for almost a decade and there is no current product using it.
+> With the change any old binary will continue to work, a new compilation fill
+> fail so that the code can be examined, otherwise we will never be able to
+> reuse this number.
 >
-> [2] "Explicit pinning of user-space pages":
->     https://lwn.net/Articles/807108/
->
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: kvm@vger.kernel.org
-> Cc: virtualization@lists.linux-foundation.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  drivers/vhost/vhost.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 21a59b598ed8..596132a96cd5 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1762,15 +1762,14 @@ static int set_bit_to_user(int nr, void __user *addr)
->         int bit = nr + (log % PAGE_SIZE) * 8;
->         int r;
->
-> -       r = get_user_pages_fast(log, 1, FOLL_WRITE, &page);
-> +       r = pin_user_pages_fast(log, 1, FOLL_WRITE, &page);
->         if (r < 0)
->                 return r;
->         BUG_ON(r != 1);
->         base = kmap_atomic(page);
->         set_bit(bit, base);
->         kunmap_atomic(base);
-> -       set_page_dirty_lock(page);
-> -       put_page(page);
-> +       unpin_user_pages_dirty_lock(&page, 1, true);
->         return 0;
->  }
+> If the above is not acceptable I can revert this part of the change.
 
-Acked-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Nothing prohibits you from adding the following lines:
+
++ /* don't use RDS_TRANS_IWARP - it is deprecated */
++ #define  RDS_TRANS_GAP RDS_TRANS_IWARP
+
+>
+> Shoaib
+>
