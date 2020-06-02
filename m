@@ -2,239 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFB21EC45E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 23:32:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A231EC470
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 23:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728174AbgFBVcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 17:32:53 -0400
-Received: from hs2.cadns.ca ([149.56.24.197]:39421 "EHLO hs2.cadns.ca"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726130AbgFBVcx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 17:32:53 -0400
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-        by hs2.cadns.ca (Postfix) with ESMTPSA id 5DA4F8169D2
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 17:32:16 -0400 (EDT)
-Authentication-Results: hs2.cadns.ca;
-        spf=pass (sender IP is 209.85.208.42) smtp.mailfrom=sriram.chadalavada@mindleap.ca smtp.helo=mail-ed1-f42.google.com
-Received-SPF: pass (hs2.cadns.ca: connection is authenticated)
-Received: by mail-ed1-f42.google.com with SMTP id o26so13444edq.0
- for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 14:32:16 -0700 (PDT)
-X-Gm-Message-State: AOAM533Bq7/uUNOWXF2bI2k1kClmVA2D9zg2fYtwdTs/E75n4D/K8ZFv
- dBSVcMPjzpeEd3/YyoNiTFW8IlMRcj8dJD6+1Nc=
-X-Google-Smtp-Source: ABdhPJwcNHeu0Es1+UeauFvxQvr4Q1wg+jqcqVPdOf4oZ5tUky8kvf4eacv7+ihqVURUZTOhlYgFpenU3f/3yJe3Yhk=
-X-Received: by 2002:aa7:cc84:: with SMTP id p4mr27629545edt.157.1591133535180;
- Tue, 02 Jun 2020 14:32:15 -0700 (PDT)
+        id S1728070AbgFBVkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 17:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgFBVky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 17:40:54 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE41C08C5C0
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 14:40:54 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id y18so12477715iow.3
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 14:40:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mforney-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=Kj7keYGQqsPFUGJ4IspW1DSv529RrBzaS7eq80XqkFk=;
+        b=h8j6mCBLTU5MHednR5EKAgNz08DLxcNHiXfB0YEodroWDk5V8e6wtxcligwq1prLOs
+         Rbr27EZbtguEZZkoQG/O69ZgIldribxkxf5T2vbf5W5dxGWOmaUW0QDEPMpsA0RE/FEb
+         bNswzEH1EDtVgC8R8nG9bltliP3UcEptvp5JfUG/hlKN4XFGGGi00s2nyk+W6doaOkwM
+         VviVdbH6A7ZFscoqTjsMKBwaVyLL0c/HEgv6qnLsPcZSziKXzQNHVyUJj9c+cOZVKgIZ
+         dDeZH6eh/UpuGCgb4eVEBQqrq+2/TFokpNINbukuVAbOObtf+HiYpk05xh84VRQ4qFqt
+         sWUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=Kj7keYGQqsPFUGJ4IspW1DSv529RrBzaS7eq80XqkFk=;
+        b=nbASL97awmiNIF7Qh/0CitB9UO/8xArJRLW6IKW02SsaJKOlH4xVAcM95Ckv36DTBy
+         UcvbbWkuOp01bvKqesEAI0Czxf4Bs6HnSMkiJcB4I+6phXEjdCcrLcReDC9wEDedQjuG
+         1rhh94ot6/+9V5qOwG5aoXfACOFQwwJ5wN5RmmnnrU/nQ7P06RO3gMxNpVrO102NxWSP
+         EYuQxJ8t9wEYQuB0vtb/LLhG0HTUr2c4joBsstmvDSYf77LOwW2G+t2CZr16GiQMz02y
+         EDVnGylskHXJmfqotGZQrqURU1NHSCBn/pE5uA8lWfWSrEjhwngRu0yov2qCJTRUzhUY
+         AkSw==
+X-Gm-Message-State: AOAM530pNPYKXiowfkBkECpOBAVwp/xDpm7e33ArB0ZAWW3+Q7ZYnzvF
+        xBP5ghFQYdxi5g98M/5xLNn9ksiuQN2ujT06eHSiVw==
+X-Google-Smtp-Source: ABdhPJwSqBfeUvIcM8EleUCetNVoR0X++jtArl7ahnXeI6abvXDuoIEXlEE3kaD2V3MqLff3EuTgPpUxx9HGhN89h88=
+X-Received: by 2002:a5d:9a13:: with SMTP id s19mr1193955iol.20.1591134053693;
+ Tue, 02 Jun 2020 14:40:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAOK2joHWb4ha1hv-Pz+we+TKqgJGdQArJsikMBNknc4HvZp4nA@mail.gmail.com>
- <20200527022038.GJ782807@lunn.ch>
- <CAOK2joHQb-ObphUz2e0O6AToZEnXLcV=VBY8jSU9TsLZqVUoTQ@mail.gmail.com>
- <20200527130330.GA793752@lunn.ch>
- <CAOK2joGx6AQLr65=NbP2xbjeLoKqRLEZftacOi0U1QsAS7Z6rQ@mail.gmail.com>
-In-Reply-To: <CAOK2joGx6AQLr65=NbP2xbjeLoKqRLEZftacOi0U1QsAS7Z6rQ@mail.gmail.com>
-From:   Sriram Chadalavada <sriram.chadalavada@mindleap.ca>
-Date:   Tue, 2 Jun 2020 17:32:03 -0400
-X-Gmail-Original-Message-ID: <CAOK2joEXxKizropqhDwnApKM9KsE2NDuYyMnR=VRn_ULwZC+uw@mail.gmail.com>
-Message-ID: <CAOK2joEXxKizropqhDwnApKM9KsE2NDuYyMnR=VRn_ULwZC+uw@mail.gmail.com>
-Subject: Fwd: Debugging DSA networking 5.4.42 kernel crash
-To:     netdev@vger.kernel.org
+Received: by 2002:a05:6638:150:0:0:0:0 with HTTP; Tue, 2 Jun 2020 14:40:52
+ -0700 (PDT)
+X-Originating-IP: [73.70.188.119]
+In-Reply-To: <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
+References: <20200303003233.3496043-1-andriin@fb.com> <20200303003233.3496043-2-andriin@fb.com>
+ <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net> <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
+ <87blpc4g14.fsf@toke.dk> <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
+ <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com> <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
+From:   Michael Forney <mforney@mforney.org>
+Date:   Tue, 2 Jun 2020 14:40:52 -0700
+Message-ID: <CAGw6cBstsD40MMoHg2dGUe7YvR5KdHD8BqQ5xeXoYKLCUFAudg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
+ used from BPF program side to enums
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-X-PPP-Message-ID: <20200602213216.6772.57912@hs2.cadns.ca>
-X-PPP-Vhost: mindleap.ca
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On OpenWRT 5.4.42 kernel on an imx6, I'm seeing a kernel crash when
-loading builtin modules of igb driver and mv88e6xxx driver over PCI
-bus. I've searched for the messages in the kernel code and Google but
-its all over the place. What does this backtrace mean?
+On 2020-06-02, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> It's possible, but I'm not sure what it will fix.
+> Your example is a bit misleading, since it's talking about B
+> which doesn't have type specifier, whereas enums in bpf.h have ULL
+> suffix where necessary.
+> And the one you pointed out BPF_F_CTXLEN_MASK has sizeof == 8 in all cases.
 
- Modules linked in:
-[    2.631594][   T28] CPU: 2 PID: 28 Comm: kworker/u8:1 Not tainted
-5.4.42 #0
-[    2.631599][   T28] Hardware name: Freescale i.MX6 Quad/DualLite
-(Device Tree)
- 2.670498][   T32] Workqueue: events_unbound async_run_entry_fn
-[    2.676560][   T32] [<80016424>] (unwind_backtrace) from
-[<80012a84>] (show_stack+0x10/0x14)
-[    2.685057][   T32] [<80012a84>] (show_stack) from [<8053cb30>]
-(dump_stack+0x90/0xa4)
-[    2.693033][   T32] [<8053cb30>] (dump_stack) from [<800241fc>]
-(__warn+0xbc/0xd8)
-[    2.700636][   T32] [<800241fc>] (__warn) from [<80024268>]
-(warn_slowpath_fmt+0x50/0x94)
-[    2.708849][   T32] [<80024268>] (warn_slowpath_fmt) from
-[<8004331c>] (__request_module+0xac/0x37c)
-[    2.718020][   T32] [<8004331c>] (__request_module) from
-[<802eaeac>] (phy_request_driver_module+0x118/0x158)
-[    2.727967][   T32] [<802eaeac>] (phy_request_driver_module) from
-[<802ec4ac>] (phy_device_create+0x1e4/0x204)
-[    2.737997][   T32] [<802ec4ac>] (phy_device_create) from
-[<802ec628>] (get_phy_device+0x15c/0x1b0)
-[    2.747098][   T32] [<802ec628>] (get_phy_device) from [<803d7ab4>]
-(of_mdiobus_register_phy+0x74/0x170)
-[    2.756615][   T32] [<803d7ab4>] (of_mdiobus_register_phy) from
-[<803d8040>] (of_mdiobus_register+0x120/0x32c)
-[    2.766665][   T32] [<803d8040>] (of_mdiobus_register) from
-[<802ef248>] (mv88e6xxx_mdio_register+0xdc/0x190)
-[    2.776617][   T32] [<802ef248>] (mv88e6xxx_mdio_register) from
-[<802f10ac>] (mv88e6xxx_probe+0x618/0x714)
-[    2.786305][   T32] [<802f10ac>] (mv88e6xxx_probe) from
-[<802edaf8>] (mdio_probe+0x30/0x54)
-[    2.794699][   T32] [<802edaf8>] (mdio_probe) from [<8027a034>]
-(really_probe+0x1f0/0x364)
-[    2.802996][   T32] [<8027a034>] (really_probe) from [<8027a328>]
-(driver_probe_device+0x60/0x170)
-[    2.811986][   T32] [<8027a328>] (driver_probe_device) from
-[<802785c0>] (bus_for_each_drv+0x70/0x94)
-[    2.821231][   T32] [<802785c0>] (bus_for_each_drv) from
-[<80279dd4>] (__device_attach+0xb4/0x11c)
-[    2.830218][   T32] [<80279dd4>] (__device_attach) from
-[<802791d8>] (bus_probe_device+0x84/0x8c)
-[    2.839117][   T32] [<802791d8>] (bus_probe_device) from
-[<802768d0>] (device_add+0x36c/0x614)
-[    2.847759][   T32] [<802768d0>] (device_add) from [<802edb9c>]
-(mdio_device_register+0x24/0x48)
-[    2.856582][   T32] [<802edb9c>] (mdio_device_register) from
-[<803d81b4>] (of_mdiobus_register+0x294/0x32c)
-[    2.866367][   T32] [<803d81b4>] (of_mdiobus_register) from
-[<8032ccc8>] (igb_probe+0x1088/0x13cc)
-[    2.875385][   T32] [<8032ccc8>] (igb_probe) from [<8021f010>]
-(pci_device_probe+0xd4/0x15c)
-[    2.883862][   T32] [<8021f010>] (pci_device_probe) from
-[<8027a034>] (really_probe+0x1f0/0x364)
-[    2.892676][   T32] [<8027a034>] (really_probe) from [<8027a328>]
-(driver_probe_device+0x60/0x170)
-[    2.901663][   T32] [<8027a328>] (driver_probe_device) from
-[<802785c0>] (bus_for_each_drv+0x70/0x94)
-[    2.910910][   T32] [<802785c0>] (bus_for_each_drv) from
-[<80279dd4>] (__device_attach+0xb4/0x11c)
-[    2.919917][   T32] [<80279dd4>] (__device_attach) from
-[<80213bbc>] (pci_bus_add_device+0x44/0x90)
-[    2.928995][   T32] [<80213bbc>] (pci_bus_add_device) from
-[<80213c34>] (pci_bus_add_devices+0x2c/0x70)
-[    2.938420][   T32] [<80213c34>] (pci_bus_add_devices) from
-[<80213c68>] (pci_bus_add_devices+0x60/0x70)
-[    2.948007][   T32] ---[ end trace c8de08d4ca07a3ea ]---
+Apologies if I wasn't clear, I was just trying to explain why this C
+extension can have confusing semantics where the type of an enum
+constant depends on where it is used. You're right that it doesn't
+happen in this particular case.
 
-with this device tree :
-            &pcie {
-        pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_pcie>;
-        reset-gpio =<&reset_ic 0 1>;
-        child-reset-gpios = <&reset_ic 3 1
-                        &reset_ic 2 1
-                        &reset_ic 1 1>;
-        #gpio-cells = <3>;
-        status = "okay";
-        fsl,max-link-speed = <2>;
+The breakage appears with my C compiler, which as I mentioned, only
+implements the extension when the enum constants fit into unsigned int
+to avoid these problems.
 
-        /*
-         * PCI bridge: PLX Technology, Inc. PEX 8605 PCI Express
-4-port Gen2 Switch
-         * Port 0 to CPU, Port 1 to igb and ports 2 and 3 are accessible through
-         * the half and full size mini PCIe slots on the board.
-         */
-        pcie@1,0 {
-                /* Connection to CPU */
-                status = "okay";
-                fsl,max-link-speed = <2>;
-        };
+$ cproc -x c -c - -o /dev/null <<EOF
+> #include <linux/bpf.h>
+> EOF
+<stdin>:420:41: error: enumerator 'BPF_F_CTXLEN_MASK' value cannot be
+represented as 'int' or 'unsigned int'
+cproc: compile: process 3772 exited with status 1
+cproc: preprocess: process signaled: Terminated
+cproc: assemble: process signaled: Terminated
+$
 
-        pcie@2,1 {
-                /* Connection to Intel Gigabit Ethernet Controller*/
-                status = "okay";
-                fsl,max-link-speed = <1>;
-                pcie@3,0 {
-                        /* The igb */
-                        status = "okay";
-                        fsl,max-link-speed = <1>;
-                        eth0: igb0 {
-                                compatible = "intel,igb";
-                                /*pinctrl-names = "default";
-                                pinctrl-0 = <&pinctrl_enet>;*/
-                                phy-mode = "mii";
-                                phy-handle = <&eth0>;
-                                phy-reset-gpios = <&reset_ic 4 GPIO_ACTIVE_LOW>;
-                                phy-reset-duration = <100>;
-                                status = "okay";
+Since the Linux UAPI headers may be used with a variety of compilers,
+I think it's important to stick to the standard as much as possible.
+BPF_F_CTXLEN_MASK is the only enum constant I've encountered in the
+Linux UAPI that has a value outside the range of unsigned int.
 
-                                mdio {
-                                        #address-cells = <1>;
-                                        #size-cells = <0>;
-                                        status = "okay";
+> Also when B is properly annotated like 0x80000000ULL it will have size 8
+> as well.
 
-                                        switch: switch@0 {
-                                                compatible ="marvell,mv88e6085";
-                                                reg = <0>;
-                                                dsa,member = <0 0>;
-                                                eeprom-length = <512>;
-                                                interrupt-parent = <&gpio2>;
-                                                interrupts =
-<31IRQ_TYPE_LEVEL_LOW>;
-                                                interrupt-controller;
-                                                #interrupt-cells = <2>;
+Even with a suffixed integer literal, it still may be the case that an
+annotated constant has a different type inside and outside the enum.
 
-                                                ports {
-                                                        #address-cells = <1>;
-                                                        #size-cells = <0>;
+For example, in
 
-                                                        port@0 {
-                                                                reg = <0>;
-                                                                label = "port0";
+	enum {
+		A = 0x80000000ULL,
+		S1 = sizeof(A),
+	};
+	enum {
+		S2 = sizeof(A),
+	};
 
-phy-handle = <&switchphy0>;
-                                                        };
+we have S1 == 8 and S2 == 4.
 
-                                                        port@1 {
-                                                                reg = <1>;
-                                                                label = "port1";
+>> Also, I'm not sure if it was considered, but using enums also changes
+>> the signedness of these constants. Many of the previous macro
+>> expressions had type unsigned long long, and now they have type int
+>> (the type of the expression specifying the constant value does not
+>> matter). I could see this causing problems if these constants are used
+>> in expressions involving shifts or implicit conversions.
+>
+> It would have been if the enums were not annotated. But that's not the case.
 
-phy-handle = <&switchphy1>;
-                                                        };
+The type of the expression has no relation to the type of the constant
+outside the enum. Take this example from bpf.h:
 
-                                                        port@2 {
-                                                                reg = <2>;
-                                                                label = "port0";
+	enum {
+		BPF_DEVCG_DEV_BLOCK     = (1ULL << 0),
+	 	BPF_DEVCG_DEV_CHAR      = (1ULL << 1),
+	};
 
-phy-handle = <&switchphy2>;
-                                                        };
+Previously, with the defines, they had type unsigned long long. Now,
+they have type int. sizeof(BPF_DEVCG_DEV_BLOCK) == 4 and
+-BPF_DEVCG_DEV_BLOCK < 0 == 1.
 
-                                                        port@5 {
-                                                                reg = <5>;
-                                                                label = "cpu";
-
-ethernet = <&eth0>;
-                                                        };
-                                                };
-
-                                                mdio {
-                                                        #address-cells = <1>;
-                                                        #size-cells = <0>;
-                                                        switchphy0:switchphy@0 {
-                                                                reg = <0>;
-
-interrupt-parent = <&switch>;
-
-interrupts =<0 IRQ_TYPE_LEVEL_HIGH>;
-                                                        };
-
-                                                        switchphy1:switchphy@1 {
-                                                                reg = <1>;
-
-interrupt-parent = <&switch>;
-
-interrupts =<1 IRQ_TYPE_LEVEL_HIGH>;
-                                                        };
-
-                                                        switchphy2:switchphy@2 {
-                                                                reg = <2>;
-
-interrupt-parent = <&switch>;
-
-interrupts =<2 IRQ_TYPE_LEVEL_HIGH>;
-                                                        };
-                                                };
-                                        };
-                                };
+-Michael
