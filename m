@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5971EBED1
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345D61EBEED
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 17:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbgFBPOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 11:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S1726647AbgFBPTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 11:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbgFBPOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:14:07 -0400
-Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBD5C08C5C0
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 08:14:06 -0700 (PDT)
-Received: by mail-oo1-xc42.google.com with SMTP id v3so2233795oot.1
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 08:14:06 -0700 (PDT)
+        with ESMTP id S1725958AbgFBPTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 11:19:14 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E0BC08C5C0
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 08:19:13 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id a137so12348092oii.3
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 08:19:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WM9ZlROIbiUXx7qTgo99BGmB7kDyUeyoS1N3IBC6Bao=;
-        b=atpPG86BmqAUTW1CU9GVZK5KayQYaIiWp5eMiWHphmlE0bCJGM34DmCOqnCQWOiB0+
-         JLhTP2DhKRDFbIKwlOIxkE1EXUvF2VvsLdPnYUh0Jd0i2hKPewf5OW8i4ufXt3hGAZUI
-         HDSmZHFV4EnSE+NrBkasADrktLTvEfmszLOf4=
+        bh=zgxAhZOkKm5efli+X5CzPz1d8nIh8LCSt9ML8CTtXII=;
+        b=xhgTd8QLTCaGyrlcnOWtwpBBoy3uxB/0FGknL9Qx8UhlTGWFeku2QKSLBu7bJKQ9dq
+         Sz2cDXHWNECErn/79Pbp9UGPdzabRlEpuTtx3/QIk+MQmsaEvk4aNGa5Ud2JeBIrDSxl
+         Nbyp/wt9qtatA1qXzp4gcWwWSrrsyyqL+BmzI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WM9ZlROIbiUXx7qTgo99BGmB7kDyUeyoS1N3IBC6Bao=;
-        b=YPjlrNiBGtsPaZ9Q+DlQcC8J5hHBN0m4Mhl4R43a99FyYXOuPbQfHRnQb4FhDqMOWe
-         j/Z7rIQTtGHJMgl2ac6amKLYUZ6c5wYgWfZt1g9ineluGfeTdbacWr+JwReHKpjO3riF
-         B278JUGExWq5Btwn5GPlEFO/7JulCNFMgeqYDzrm325lI0ZDGwAVLFyq41yuaWKrqL3R
-         HkYXy4lwGExQXUBlPZV92HfIF6hoNq3tnAw91PBoeSPqgrkj2YIuWquN/eqYWBS/8dHU
-         pLu1JgVkZrDq/047tB7HEi+YtoXRJKmSe2vyQx6O5gQec2mlrwceeshnMUuHw317tpbH
-         47gQ==
-X-Gm-Message-State: AOAM530Eq1Wq6MDtp24zZ67ImPlCi8NFRw+/VrwqP0kzWJMRgNLvL9Hf
-        7rEtNO0ZCUtfm8ko7vZObnYJHIWvIjrEi7KGJQ0j1g==
-X-Google-Smtp-Source: ABdhPJy//7QeqWW3yefX3QKoJHBC2mUJPXpqn3ZxMe6hisK59hdcGF8hmDIkrMsQNfS4A66v+DuT1PhRsfkst6HQBqQ=
-X-Received: by 2002:a4a:d292:: with SMTP id h18mr11791661oos.80.1591110845414;
- Tue, 02 Jun 2020 08:14:05 -0700 (PDT)
+        bh=zgxAhZOkKm5efli+X5CzPz1d8nIh8LCSt9ML8CTtXII=;
+        b=tac8llSr3J7IEjnTe4xHADR9xGxqcxatyrUhFr4PhuoxI5YFmIvmp/QwCzNxtYOS9B
+         YmuDP1GFBPvZLXQv44xNOOd2FY2AjZ/m1gOvWIuaZWI8l7JPOC2WQB0sEvCj+CxsHZAG
+         7i4p8Y1eG5jWdLr9rdtd3KsGt9lMc2VRDix7YGzj/mINhAeHlkbWI4eiJ0zm61zVhzNa
+         vVnc0WqpV/BUApAtXfz53y+6daZhJnG86zfFClUHdjmKazeWcBSeSeP4Bo2osX3Gtf/O
+         DDPV6k52nbZm1IYOJCsKtwcRyHzU/gsQ/pSzxGBg5i5wBX1PK1q3WsFzwIzOXcxxQQ8Z
+         RCIg==
+X-Gm-Message-State: AOAM5335f4bLEqek9desXO1u3cdo5Kqp8kBikaixqSFOAL+PcebC9oaE
+        AaxJXknee2PZb0NGi+T0NTrhJlVRYwRulFbk+T54pg==
+X-Google-Smtp-Source: ABdhPJzV5weMrqMiSia0ypsfJkPwHZUYo0eGTjrMFmfDI8OrtyzoB+5M38ilTWgC9M3b5qTymlCf6l4e6i2b1iXkqRU=
+X-Received: by 2002:aca:d510:: with SMTP id m16mr3418136oig.13.1591111152271;
+ Tue, 02 Jun 2020 08:19:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1591108731.git.daniel@iogearbox.net> <e7458f10e3f3d795307cbc5ad870112671d9c6f7.1591108731.git.daniel@iogearbox.net>
-In-Reply-To: <e7458f10e3f3d795307cbc5ad870112671d9c6f7.1591108731.git.daniel@iogearbox.net>
+References: <cover.1591108731.git.daniel@iogearbox.net> <279ae3717cb3d03c0ffeb511493c93c450a01e1a.1591108731.git.daniel@iogearbox.net>
+In-Reply-To: <279ae3717cb3d03c0ffeb511493c93c450a01e1a.1591108731.git.daniel@iogearbox.net>
 From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 2 Jun 2020 16:13:54 +0100
-Message-ID: <CACAyw998Yy6NBJbSi+RfUofpKQYjYA78HGmWEqDTm1B+BkvuOw@mail.gmail.com>
-Subject: Re: [PATCH bpf 3/3] bpf, selftests: Adapt cls_redirect to call
- csum_level helper
+Date:   Tue, 2 Jun 2020 16:19:01 +0100
+Message-ID: <CACAyw982WPUfNN_9LD0bhGPTtBSca7t0UV_0UsO3dVGjtEZm9A@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/3] bpf: Add csum_level helper for fixing up csum levels
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Alan Maguire <alan.maguire@oracle.com>,
@@ -60,60 +59,232 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, 2 Jun 2020 at 15:58, Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> Adapt bpf_skb_adjust_room() to pass in BPF_F_ADJ_ROOM_NO_CSUM_RESET flag and
-> use the new bpf_csum_level() helper to inc/dec the checksum level by one after
-> the encap/decap.
-
-Just to be on the safe side: we go from
-    | ETH | IP | UDP | GUE | IP | TCP |
-to
-    | ETH | IP | TCP |
-by cutting | IP | UDP | GUE | after the Ethernet header.
-
-Since IP is never included in csum_level and because GUE is not eligible for
-CHECKSUM_UNNECESSARY we only need to do csum_level-- once, not twice.
-
-If that is correct:
-Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
-
+> Add a bpf_csum_level() helper which BPF programs can use in combination
+> with bpf_skb_adjust_room() when they pass in BPF_F_ADJ_ROOM_NO_CSUM_RESET
+> flag to the latter to avoid falling back to CHECKSUM_NONE.
+>
+> The bpf_csum_level() allows to adjust CHECKSUM_UNNECESSARY skb->csum_levels
+> via BPF_CSUM_LEVEL_{INC,DEC} which calls __skb_{incr,decr}_checksum_unnecessary()
+> on the skb. The helper also allows a BPF_CSUM_LEVEL_RESET which sets the skb's
+> csum to CHECKSUM_NONE as well as a BPF_CSUM_LEVEL_QUERY to just return the
+> current level. Without this helper, there is no way to otherwise adjust the
+> skb->csum_level. I did not add an extra dummy flags as there is plenty of free
+> bitspace in level argument itself iff ever needed in future.
 >
 > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > ---
->  tools/testing/selftests/bpf/progs/test_cls_redirect.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  include/uapi/linux/bpf.h       | 43 +++++++++++++++++++++++++++++++++-
+>  net/core/filter.c              | 38 ++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 43 +++++++++++++++++++++++++++++++++-
+>  3 files changed, 122 insertions(+), 2 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-> index 1668b993eb86..f0b72e86bee5 100644
-> --- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-> +++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-> @@ -380,9 +380,10 @@ static ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *encap)
->         }
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 3ba2bbbed80c..46622901cba7 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3220,6 +3220,38 @@ union bpf_attr {
+>   *             calculation.
+>   *     Return
+>   *             Requested value, or 0, if flags are not recognized.
+> + *
+> + * int bpf_csum_level(struct sk_buff *skb, u64 level)
+
+u64 flags? We can also stuff things into level I guess.
+
+> + *     Description
+> + *             Change the skbs checksum level by one layer up or down, or
+> + *             reset it entirely to none in order to have the stack perform
+> + *             checksum validation. The level is applicable to the following
+> + *             protocols: TCP, UDP, GRE, SCTP, FCOE. For example, a decap of
+> + *             | ETH | IP | UDP | GUE | IP | TCP | into | ETH | IP | TCP |
+> + *             through **bpf_skb_adjust_room**\ () helper with passing in
+> + *             **BPF_F_ADJ_ROOM_NO_CSUM_RESET** flag would require one call
+> + *             to **bpf_csum_level**\ () with **BPF_CSUM_LEVEL_DEC** since
+> + *             the UDP header is removed. Similarly, an encap of the latter
+> + *             into the former could be accompanied by a helper call to
+> + *             **bpf_csum_level**\ () with **BPF_CSUM_LEVEL_INC** if the
+> + *             skb is still intended to be processed in higher layers of the
+> + *             stack instead of just egressing at tc.
+> + *
+> + *             There are three supported level settings at this time:
+> + *
+> + *             * **BPF_CSUM_LEVEL_INC**: Increases skb->csum_level for skbs
+> + *               with CHECKSUM_UNNECESSARY.
+> + *             * **BPF_CSUM_LEVEL_DEC**: Decreases skb->csum_level for skbs
+> + *               with CHECKSUM_UNNECESSARY.
+> + *             * **BPF_CSUM_LEVEL_RESET**: Resets skb->csum_level to 0 and
+> + *               sets CHECKSUM_NONE to force checksum validation by the stack.
+> + *             * **BPF_CSUM_LEVEL_QUERY**: No-op, returns the current
+> + *               skb->csum_level.
+> + *     Return
+> + *             0 on success, or a negative error in case of failure. In the
+> + *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+> + *             is returned or the error code -EACCES in case the skb is not
+> + *             subject to CHECKSUM_UNNECESSARY.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3356,7 +3388,8 @@ union bpf_attr {
+>         FN(ringbuf_reserve),            \
+>         FN(ringbuf_submit),             \
+>         FN(ringbuf_discard),            \
+> -       FN(ringbuf_query),
+> +       FN(ringbuf_query),              \
+> +       FN(csum_level),
 >
->         if (bpf_skb_adjust_room(skb, -encap_overhead, BPF_ADJ_ROOM_MAC,
-> -                               BPF_F_ADJ_ROOM_FIXED_GSO)) {
-> +                               BPF_F_ADJ_ROOM_FIXED_GSO |
-> +                               BPF_F_ADJ_ROOM_NO_CSUM_RESET) ||
-> +           bpf_csum_level(skb, BPF_CSUM_LEVEL_DEC))
->                 return TC_ACT_SHOT;
-> -       }
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> @@ -3433,6 +3466,14 @@ enum {
+>         BPF_F_CURRENT_NETNS             = (-1L),
+>  };
 >
->         return bpf_redirect(skb->ifindex, BPF_F_INGRESS);
->  }
-> @@ -472,7 +473,9 @@ static ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *encap,
->         }
+> +/* BPF_FUNC_csum_level level values. */
+> +enum {
+> +       BPF_CSUM_LEVEL_QUERY,
+> +       BPF_CSUM_LEVEL_INC,
+> +       BPF_CSUM_LEVEL_DEC,
+> +       BPF_CSUM_LEVEL_RESET,
+> +};
+> +
+>  /* BPF_FUNC_skb_adjust_room flags. */
+>  enum {
+>         BPF_F_ADJ_ROOM_FIXED_GSO        = (1ULL << 0),
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 278dcc0af961..d01a244b5087 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2015,6 +2015,40 @@ static const struct bpf_func_proto bpf_csum_update_proto = {
+>         .arg2_type      = ARG_ANYTHING,
+>  };
 >
->         if (bpf_skb_adjust_room(skb, delta, BPF_ADJ_ROOM_NET,
-> -                               BPF_F_ADJ_ROOM_FIXED_GSO)) {
-> +                               BPF_F_ADJ_ROOM_FIXED_GSO |
-> +                               BPF_F_ADJ_ROOM_NO_CSUM_RESET) ||
-> +           bpf_csum_level(skb, BPF_CSUM_LEVEL_INC)) {
->                 metrics->errors_total_encap_adjust_failed++;
->                 return TC_ACT_SHOT;
->         }
+> +BPF_CALL_2(bpf_csum_level, struct sk_buff *, skb, u64, level)
+> +{
+> +       /* The interface is to be used in combination with bpf_skb_adjust_room()
+> +        * for encap/decap of packet headers when BPF_F_ADJ_ROOM_NO_CSUM_RESET
+> +        * is passed as flags, for example.
+> +        */
+> +       switch (level) {
+> +       case BPF_CSUM_LEVEL_INC:
+> +               __skb_incr_checksum_unnecessary(skb);
+> +               break;
+> +       case BPF_CSUM_LEVEL_DEC:
+> +               __skb_decr_checksum_unnecessary(skb);
+> +               break;
+> +       case BPF_CSUM_LEVEL_RESET:
+> +               __skb_reset_checksum_unnecessary(skb);
+> +               break;
+> +       case BPF_CSUM_LEVEL_QUERY:
+> +               return skb->ip_summed == CHECKSUM_UNNECESSARY ?
+> +                      skb->csum_level : -EACCES;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_csum_level_proto = {
+> +       .func           = bpf_csum_level,
+> +       .gpl_only       = false,
+> +       .ret_type       = RET_INTEGER,
+> +       .arg1_type      = ARG_PTR_TO_CTX,
+> +       .arg2_type      = ARG_ANYTHING,
+> +};
+> +
+>  static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
+>  {
+>         return dev_forward_skb(dev, skb);
+> @@ -6280,6 +6314,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return &bpf_csum_diff_proto;
+>         case BPF_FUNC_csum_update:
+>                 return &bpf_csum_update_proto;
+> +       case BPF_FUNC_csum_level:
+> +               return &bpf_csum_level_proto;
+>         case BPF_FUNC_l3_csum_replace:
+>                 return &bpf_l3_csum_replace_proto;
+>         case BPF_FUNC_l4_csum_replace:
+> @@ -6613,6 +6649,8 @@ lwt_xmit_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return &bpf_skb_store_bytes_proto;
+>         case BPF_FUNC_csum_update:
+>                 return &bpf_csum_update_proto;
+> +       case BPF_FUNC_csum_level:
+> +               return &bpf_csum_level_proto;
+>         case BPF_FUNC_l3_csum_replace:
+>                 return &bpf_l3_csum_replace_proto;
+>         case BPF_FUNC_l4_csum_replace:
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 3ba2bbbed80c..46622901cba7 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -3220,6 +3220,38 @@ union bpf_attr {
+>   *             calculation.
+>   *     Return
+>   *             Requested value, or 0, if flags are not recognized.
+> + *
+> + * int bpf_csum_level(struct sk_buff *skb, u64 level)
+> + *     Description
+> + *             Change the skbs checksum level by one layer up or down, or
+> + *             reset it entirely to none in order to have the stack perform
+> + *             checksum validation. The level is applicable to the following
+> + *             protocols: TCP, UDP, GRE, SCTP, FCOE. For example, a decap of
+> + *             | ETH | IP | UDP | GUE | IP | TCP | into | ETH | IP | TCP |
+> + *             through **bpf_skb_adjust_room**\ () helper with passing in
+> + *             **BPF_F_ADJ_ROOM_NO_CSUM_RESET** flag would require one call
+> + *             to **bpf_csum_level**\ () with **BPF_CSUM_LEVEL_DEC** since
+> + *             the UDP header is removed. Similarly, an encap of the latter
+> + *             into the former could be accompanied by a helper call to
+> + *             **bpf_csum_level**\ () with **BPF_CSUM_LEVEL_INC** if the
+> + *             skb is still intended to be processed in higher layers of the
+> + *             stack instead of just egressing at tc.
+> + *
+> + *             There are three supported level settings at this time:
+> + *
+> + *             * **BPF_CSUM_LEVEL_INC**: Increases skb->csum_level for skbs
+> + *               with CHECKSUM_UNNECESSARY.
+> + *             * **BPF_CSUM_LEVEL_DEC**: Decreases skb->csum_level for skbs
+> + *               with CHECKSUM_UNNECESSARY.
+> + *             * **BPF_CSUM_LEVEL_RESET**: Resets skb->csum_level to 0 and
+> + *               sets CHECKSUM_NONE to force checksum validation by the stack.
+> + *             * **BPF_CSUM_LEVEL_QUERY**: No-op, returns the current
+> + *               skb->csum_level.
+> + *     Return
+> + *             0 on success, or a negative error in case of failure. In the
+> + *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+> + *             is returned or the error code -EACCES in case the skb is not
+> + *             subject to CHECKSUM_UNNECESSARY.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3356,7 +3388,8 @@ union bpf_attr {
+>         FN(ringbuf_reserve),            \
+>         FN(ringbuf_submit),             \
+>         FN(ringbuf_discard),            \
+> -       FN(ringbuf_query),
+> +       FN(ringbuf_query),              \
+> +       FN(csum_level),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> @@ -3433,6 +3466,14 @@ enum {
+>         BPF_F_CURRENT_NETNS             = (-1L),
+>  };
+>
+> +/* BPF_FUNC_csum_level level values. */
+> +enum {
+> +       BPF_CSUM_LEVEL_QUERY,
+> +       BPF_CSUM_LEVEL_INC,
+> +       BPF_CSUM_LEVEL_DEC,
+> +       BPF_CSUM_LEVEL_RESET,
+> +};
+> +
+>  /* BPF_FUNC_skb_adjust_room flags. */
+>  enum {
+>         BPF_F_ADJ_ROOM_FIXED_GSO        = (1ULL << 0),
 > --
 > 2.21.0
 >
 
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
 -- 
 Lorenz Bauer  |  Systems Engineer
