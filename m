@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C28A51EC3DA
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 22:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8C31EC3F4
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 22:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgFBUmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 16:42:10 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:33880 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726174AbgFBUmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 16:42:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591130528;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZbzXBMyP2ZV0xb1q05Ewy42EfhDuwN256DhtDnRLuUs=;
-        b=Jd5sMa90xZxiZJYMGwExc1Q3AcEwiZ70WLLiqVmEYQUpxdsMLhlqot3CeDZM/ZWsqq9m9H
-        PaRno97M8J4s1wpH8PZMP+qH4rwZa+2RxLC4tQgXIm2ixB4eeSuuBf8Fnmewwrlo/fcbGt
-        nfX3ZAoG0PoOuceSzH72We7zBmAlDZM=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-327-Vt_kCVqTPZO21wafZEjzJw-1; Tue, 02 Jun 2020 16:42:07 -0400
-X-MC-Unique: Vt_kCVqTPZO21wafZEjzJw-1
-Received: by mail-wr1-f69.google.com with SMTP id j16so22749wre.22
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 13:42:07 -0700 (PDT)
+        id S1728395AbgFBUnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 16:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728070AbgFBUnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 16:43:40 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51F2C08C5C1
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 13:43:39 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id r125so6975755lff.13
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 13:43:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Azl+Ad2Snhfc0xP2HW9Ep94V4yuBccpc/CvQD+kNGgE=;
+        b=bUurhMFsGKldaV/fuSmBFvEu0dq7tRd7XTk2lYRSi7CMt/C6LTxrmwSmxTUVSAUw+R
+         hFe8+ZbhpvMW8p8gN7hIFf7JuzG0jpuk+SD5IcjAuz+qyt7SbCCoAckx1gBtY7EuHg70
+         ph2LYj1CMupe+0MuVxpfesphrjpJYdYSsavyk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZbzXBMyP2ZV0xb1q05Ewy42EfhDuwN256DhtDnRLuUs=;
-        b=PPEBG93l0EtKrBVBNvvJF4vhvnWS3nCM5WYnykfC4vIwEypac1F3AKab3/D7NP4o/1
-         fvfBSVbLFBqZhQET8o5EPtUKUUnoD5YjO1x38k/FTMUesvdAiKJjMrJ9BdhIvLG3NU8Z
-         Gb0hsLa1hJDRKCkmaBWdIlr4SERDSwrfCV4VxW0z14uZY8WmGSt4K5ks3p9TJbtw8v77
-         GEVMlV0Z9HryLldKX3bvIbIsqr3om/y6mEcahXhhAz7yWbjD2ZmwQyUFzO0VgJ5wlW/l
-         KLGBj3/hg+qLCJwbW5OHLj0hw+WNMuFCG6zKfqNNSAmL6whhuPbTOaHOVigpI2wFKpBa
-         7THQ==
-X-Gm-Message-State: AOAM532YSOTSk32G24R7nFmLRh6nA4KGAO2kHpKT6k9BYaODeyDzbnm4
-        AC14nDnPtAnHtKlYTv5u5iS5y+lYdaSDB/EZlVjoZ34yHGkZEB3wwrQ656AIIC11eglnc4uFa4q
-        LkgDFCmv+/HTa07UN
-X-Received: by 2002:a1c:9896:: with SMTP id a144mr4259285wme.75.1591130525945;
-        Tue, 02 Jun 2020 13:42:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzMeM2kEvp4pkvEwdpNO5MlqKjkVW+xipN3ThJjTmbbysJGdPdXbitZwUdNzRZLA11N4P7CNg==
-X-Received: by 2002:a1c:9896:: with SMTP id a144mr4259277wme.75.1591130525725;
-        Tue, 02 Jun 2020 13:42:05 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id p10sm189217wra.78.2020.06.02.13.42.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2020 13:42:05 -0700 (PDT)
-Date:   Tue, 2 Jun 2020 16:42:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
-Message-ID: <20200602163937-mutt-send-email-mst@kernel.org>
-References: <20200602084257.134555-1-mst@redhat.com>
- <20200602163048.GL23230@ZenIV.linux.org.uk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Azl+Ad2Snhfc0xP2HW9Ep94V4yuBccpc/CvQD+kNGgE=;
+        b=c1lt0Azaewfpty++wgHM5AsFI5kWePuFB26sG6In1dVBsdEyrWxhUWG1uQkXazPZx9
+         63SnWPShcWKNdrd2Yv/A3mMhTcBBW+clm+v54fEoissliqQLJRPixha1+uLsvs1Hs6+J
+         43zeXpoHV6WKCIz2iXqXs0yH36caftNDypgVEUNOZ9pHVOYS/zKvZfPZb6bQAJJxINqR
+         USKZclIHSOQ7IQoD0rkgBAQRpdSp8kdtAWRfnt83Tri2o+nJDC6JfvPPe3zSSMwftgtq
+         Inwjooerll5m9sIFGLQhO09tapLaKyLEUUqWi+jhaj/cXGMJ4EThRzKjn7+rjOG5MI1K
+         nK/w==
+X-Gm-Message-State: AOAM5322ejAOX2DxU7uK5Csp70ee1HSpohEZe3J5L2Nf/IzSVsXW3fNN
+        vwirrN2y0TI44YN6CdWkc4ddq1UbpxM=
+X-Google-Smtp-Source: ABdhPJyVFuVyLXzZELtG/2S8aU9RYW1ONkwqSPWivuNHHf0UyWUEg5RytG1I3m2+FDvQjBG6As4NrA==
+X-Received: by 2002:a05:6512:2ed:: with SMTP id m13mr581172lfq.43.1591130617631;
+        Tue, 02 Jun 2020 13:43:37 -0700 (PDT)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
+        by smtp.gmail.com with ESMTPSA id c7sm1386ljj.109.2020.06.02.13.43.36
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jun 2020 13:43:36 -0700 (PDT)
+Received: by mail-lf1-f50.google.com with SMTP id u16so7020095lfl.8
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 13:43:36 -0700 (PDT)
+X-Received: by 2002:a19:d52:: with SMTP id 79mr590629lfn.125.1591130616197;
+ Tue, 02 Jun 2020 13:43:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200602163048.GL23230@ZenIV.linux.org.uk>
+References: <20200602084257.134555-1-mst@redhat.com> <fc204429-7a6e-8214-a66f-bf2676018aae@redhat.com>
+ <20200602163306.GM23230@ZenIV.linux.org.uk> <CAHk-=wjgg0bpD0qjYF=twJNXmRXYPjXqO1EFLL-mS8qUphe0AQ@mail.gmail.com>
+ <20200602162931-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200602162931-mutt-send-email-mst@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 2 Jun 2020 13:43:20 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgYu+qk15_NpUZXwbetEU5eiWppJ=Z_A6dCSCWKxCfDfw@mail.gmail.com>
+Message-ID: <CAHk-=wgYu+qk15_NpUZXwbetEU5eiWppJ=Z_A6dCSCWKxCfDfw@mail.gmail.com>
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Jason Wang <jasowang@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 02, 2020 at 05:30:48PM +0100, Al Viro wrote:
-> On Tue, Jun 02, 2020 at 04:45:05AM -0400, Michael S. Tsirkin wrote:
-> > So vhost needs to poke at userspace *a lot* in a quick succession.  It
-> > is thus benefitial to enable userspace access, do our thing, then
-> > disable. Except access_ok has already been pre-validated with all the
-> > relevant nospec checks, so we don't need that.  Add an API to allow
-> > userspace access after access_ok and barrier_nospec are done.
-> 
-> This is the wrong way to do it, and this API is certain to be abused
-> elsewhere.  NAK - we need to sort out vhost-related problems, but
-> this is not an acceptable solution.  Sorry.
+On Tue, Jun 2, 2020 at 1:33 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> Hmm are you sure we can drop it? access_ok is done in the context
+> of the process. Access itself in the context of a kernel thread
+> that borrows the same mm. IIUC if the process can be 32 bit
+> while the kernel is 64 bit, access_ok in the context of the
+> kernel thread will not DTRT.
 
-OK so summarizing what you and Linus both said, we need at
-least a way to make sure access_ok (and preferably the barrier too)
-is not missed.
+You're historically expected to just "set_fs()" when you do use_mm().
 
-Another comment is about actually checking that performance impact
-is significant and worth the complexity and risk.
+Then we fixed it in commit...
 
-Is that a fair summary?
+Oh, when I look for it, I notice that it still hasn't gotten merged.
+It's still pending, see
 
-I'm actually thinking it's doable with a new __unsafe_user type of
-pointer, sparse will then catch errors for us.
+  https://lore.kernel.org/lkml/20200416053158.586887-4-hch@lst.de/
 
+for the current thing.
 
--- 
-MST
-
+              Linus
