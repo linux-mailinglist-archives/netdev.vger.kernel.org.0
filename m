@@ -2,96 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4E31EB4DF
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:04:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD561EB4E6
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 07:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726032AbgFBFEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 01:04:09 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32892 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725890AbgFBFEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 01:04:08 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05251grT011082
-        for <netdev@vger.kernel.org>; Mon, 1 Jun 2020 22:04:08 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=nAQuVayxGYp7wLT421UePdQLmspE11aR99gEdGM9yx8=;
- b=UaTreZ9viG/drcBUo7WoYOlcA5UMJjTH7N6uaS4Eayp2NrWV6IzDJeBmifTbrC2n6DuW
- uf9470d+iKVjjUMr8SnOuQsUB/N8sX1TINtPggpgI3+BXSc0BvSM8doOY6Nx7x8pgoxX
- HAA2J6GE47zlrrHXxDSu4cxlD3FKCFcfi1E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31c7rvaqmk-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 22:04:08 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 1 Jun 2020 22:04:06 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 36A7C2EC305E; Mon,  1 Jun 2020 22:03:58 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: fix sample_cnt shared between two threads
-Date:   Mon, 1 Jun 2020 22:03:49 -0700
-Message-ID: <20200602050349.215037-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1725927AbgFBFIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 01:08:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23146 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725781AbgFBFIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 01:08:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591074490;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i21+6+jn+AssAfqfuTEOtmF/3IbU/JSkgC0yQOaoU/8=;
+        b=C8c+sS+ra3NNZEBw0tdIPwppA59bo6IpJVzaYZUcw6paD8fCl2XZYIjFCgOF/hFRvH6VzX
+        NJZFQpqWRVtFIgk04tkJYlMGQNbyWwJ9UpILvAFIXBC/DhB2N0jNGHuvs0yEjvaJ/aFaCX
+        +y3Oh9NLDAc/pnsc+XjDRNkneyReg34=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-56-LLJ8snYyNsiHz9eNhHafcg-1; Tue, 02 Jun 2020 01:08:08 -0400
+X-MC-Unique: LLJ8snYyNsiHz9eNhHafcg-1
+Received: by mail-wm1-f70.google.com with SMTP id s15so472942wmc.8
+        for <netdev@vger.kernel.org>; Mon, 01 Jun 2020 22:08:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i21+6+jn+AssAfqfuTEOtmF/3IbU/JSkgC0yQOaoU/8=;
+        b=bubsXrNPiS+aIw34aNXXHcZZc+vOYyCOkgtcwLH0Hrg9rPfOqm7aCXBoo0G1h7LIRv
+         KE22DU6n5OLXcWfdM/lmSvXhJVl++v6T+ZPyCgK3S+SI61XXFg/0q8KELm+oJ9dNrp2J
+         lDpYB2SS4Y9tZKfhD87b1K/ZvI/znpfAJKTkfHrx1RR5GEeRIDnp9YvH7ZDqHAfPy3wE
+         6OqXJ0+isUz1Cvf1I3/n7CzHf+2VjQuOpkYmzeejJ+jUEa/YlhaSr1Ur74b8OfaJ4Owb
+         0jf/1viULE7vlvY5d+mt38exStoTQcAJbLPziKAqtebCJB1a6+C5EzwWfx8Lgci9QCrw
+         vF7g==
+X-Gm-Message-State: AOAM533IySgAfMAqL1wt9yHY8KtqjrBE0rCRqapGZ9NDZdlE1eFnBuVI
+        Bap/nF5pFXTym6rOtg+PwnojAHOWVZ86upT7WyFqR8vIXttjKpwcBiG4gFXi0S1M4SbPetyse1d
+        Shkx+Jed0/Wj+e1xQ
+X-Received: by 2002:a5d:4c81:: with SMTP id z1mr26712881wrs.371.1591074487434;
+        Mon, 01 Jun 2020 22:08:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz7ZFXMW684yAQznwucY1IA0VuesC1zA8zze+z7mJFUahZ6qoJQid59fnWEYmNevYhEMFGybw==
+X-Received: by 2002:a5d:4c81:: with SMTP id z1mr26712868wrs.371.1591074487279;
+        Mon, 01 Jun 2020 22:08:07 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id a126sm1761521wme.28.2020.06.01.22.08.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2020 22:08:06 -0700 (PDT)
+Date:   Tue, 2 Jun 2020 01:08:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rob.miller@broadcom.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com,
+        zhangweining@ruijie.com.cn, eli@mellanox.com
+Subject: Re: [PATCH 5/6] vdpa: introduce virtio pci driver
+Message-ID: <20200602010332-mutt-send-email-mst@kernel.org>
+References: <20200529080303.15449-1-jasowang@redhat.com>
+ <20200529080303.15449-6-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-02_04:2020-06-01,2020-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
- cotscore=-2147483648 impostorscore=0 lowpriorityscore=0 mlxlogscore=968
- bulkscore=0 clxscore=1015 priorityscore=1501 phishscore=0 suspectscore=8
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006020029
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200529080303.15449-6-jasowang@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sample_cnt volatile to fix possible selftests failure due to compile=
-r
-optimization preventing latest sample_cnt value to be visible to main thr=
-ead.
-sample_cnt is incremented in background thread, which is then joined into=
- main
-thread. So in terms of visibility sample_cnt update is ok. But because it=
-'s
-not volatile, compiler might make optimizations that would prevent main t=
-hread
-to see latest updated value. Fix this by marking global variable volatile=
-.
+On Fri, May 29, 2020 at 04:03:02PM +0800, Jason Wang wrote:
+> +static void vp_vdpa_set_vq_ready(struct vdpa_device *vdpa,
+> +				 u16 qid, bool ready)
+> +{
+> +	struct vp_vdpa *vp_vdpa = vdpa_to_vp(vdpa);
+> +
+> +	vp_iowrite16(qid, &vp_vdpa->common->queue_select);
+> +	vp_iowrite16(ready, &vp_vdpa->common->queue_enable);
+> +}
+> +
 
-Fixes: cb1c9ddd5525 ("selftests/bpf: Add BPF ringbuf selftests")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/prog_tests/ringbuf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Looks like this needs to check and just skip the write if
+ready == 0, right? Of course vdpa core then insists on calling
+vp_vdpa_get_vq_ready which will warn. Maybe just drop the
+check from core, move it to drivers which need it?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/tes=
-ting/selftests/bpf/prog_tests/ringbuf.c
-index bb8541f240e2..2bba908dfa63 100644
---- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-@@ -25,7 +25,7 @@ struct sample {
- 	char comm[16];
- };
-=20
--static int sample_cnt;
-+static volatile int sample_cnt;
-=20
- static int process_sample(void *ctx, void *data, size_t len)
- {
---=20
-2.24.1
+...
+
+
+> +static const struct pci_device_id vp_vdpa_id_table[] = {
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_REDHAT_QUMRANET, PCI_ANY_ID) },
+> +	{ 0 }
+> +};
+
+This looks like it'll create a mess with either virtio pci
+or vdpa being loaded at random. Maybe just don't specify
+any IDs for now. Down the road we could get a
+distinct vendor ID or a range of device IDs for this.
+
+> +MODULE_DEVICE_TABLE(pci, vp_vdpa_id_table);
+> +
+> +static struct pci_driver vp_vdpa_driver = {
+> +	.name		= "vp-vdpa",
+> +	.id_table	= vp_vdpa_id_table,
+> +	.probe		= vp_vdpa_probe,
+> +	.remove		= vp_vdpa_remove,
+> +};
+> +
+> +module_pci_driver(vp_vdpa_driver);
+> +
+> +MODULE_AUTHOR("Jason Wang <jasowang@redhat.com>");
+> +MODULE_DESCRIPTION("vp-vdpa");
+> +MODULE_LICENSE("GPL");
+> +MODULE_VERSION("1");
+> -- 
+> 2.20.1
 
