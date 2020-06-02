@@ -2,143 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A231EC470
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 23:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BAF1EC480
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 23:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728070AbgFBVkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 17:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        id S1728070AbgFBVq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 17:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgFBVky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 17:40:54 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE41C08C5C0
-        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 14:40:54 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id y18so12477715iow.3
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 14:40:54 -0700 (PDT)
+        with ESMTP id S1726130AbgFBVqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 17:46:55 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B6DC08C5C0;
+        Tue,  2 Jun 2020 14:46:54 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id z1so300745qtn.2;
+        Tue, 02 Jun 2020 14:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mforney-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Kj7keYGQqsPFUGJ4IspW1DSv529RrBzaS7eq80XqkFk=;
-        b=h8j6mCBLTU5MHednR5EKAgNz08DLxcNHiXfB0YEodroWDk5V8e6wtxcligwq1prLOs
-         Rbr27EZbtguEZZkoQG/O69ZgIldribxkxf5T2vbf5W5dxGWOmaUW0QDEPMpsA0RE/FEb
-         bNswzEH1EDtVgC8R8nG9bltliP3UcEptvp5JfUG/hlKN4XFGGGi00s2nyk+W6doaOkwM
-         VviVdbH6A7ZFscoqTjsMKBwaVyLL0c/HEgv6qnLsPcZSziKXzQNHVyUJj9c+cOZVKgIZ
-         dDeZH6eh/UpuGCgb4eVEBQqrq+2/TFokpNINbukuVAbOObtf+HiYpk05xh84VRQ4qFqt
-         sWUw==
+        bh=HZBhdzLDs2PXaguKhDkAUqdpdv/3VsmhDgLIF4z/qNk=;
+        b=uFl2mH+vSfV7WH3f7e3dpXNpQVMDEemE0lgXSlk2YHzo1gNEF/lPssIxJLBHz8Whyw
+         ocTIBxPUxR2yzH6nYWljqdHQZEoJciOZMyDloNbxyEWlOVkPIde03sDCAqu2mDs75p7O
+         /Z966+Jws7V6CTdmVMd0RVDTm+eQPDKJPY6ObgqZWP6F3Ha9YTbkpdAcP0ZwzP84Hgz0
+         eona3xKhnNXRXWjRPc3ZifI21ylxXbPEf6LWLKzCxrmEsn/Zv6y8idTGdXub7A4uckbr
+         KXQDYva81TCQkkBe0yP7u8DHgjqkLnrxtbSUOjCxCmDFv/3Pg6wx1EltpWwD8fTnv2Ow
+         pPew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Kj7keYGQqsPFUGJ4IspW1DSv529RrBzaS7eq80XqkFk=;
-        b=nbASL97awmiNIF7Qh/0CitB9UO/8xArJRLW6IKW02SsaJKOlH4xVAcM95Ckv36DTBy
-         UcvbbWkuOp01bvKqesEAI0Czxf4Bs6HnSMkiJcB4I+6phXEjdCcrLcReDC9wEDedQjuG
-         1rhh94ot6/+9V5qOwG5aoXfACOFQwwJ5wN5RmmnnrU/nQ7P06RO3gMxNpVrO102NxWSP
-         EYuQxJ8t9wEYQuB0vtb/LLhG0HTUr2c4joBsstmvDSYf77LOwW2G+t2CZr16GiQMz02y
-         EDVnGylskHXJmfqotGZQrqURU1NHSCBn/pE5uA8lWfWSrEjhwngRu0yov2qCJTRUzhUY
-         AkSw==
-X-Gm-Message-State: AOAM530pNPYKXiowfkBkECpOBAVwp/xDpm7e33ArB0ZAWW3+Q7ZYnzvF
-        xBP5ghFQYdxi5g98M/5xLNn9ksiuQN2ujT06eHSiVw==
-X-Google-Smtp-Source: ABdhPJwSqBfeUvIcM8EleUCetNVoR0X++jtArl7ahnXeI6abvXDuoIEXlEE3kaD2V3MqLff3EuTgPpUxx9HGhN89h88=
-X-Received: by 2002:a5d:9a13:: with SMTP id s19mr1193955iol.20.1591134053693;
- Tue, 02 Jun 2020 14:40:53 -0700 (PDT)
+        bh=HZBhdzLDs2PXaguKhDkAUqdpdv/3VsmhDgLIF4z/qNk=;
+        b=HcTiIvsIsRnhGiDiOM0rg+dQExKfrpBmeWpyjNR7k5ZUDmgTqxCXLkTXmmYlK6mc8l
+         FN/KabHoI/2G88C4W2/kY1KzRlj3ZUs60X0HxviW8yU9LX70NoARE3A0JkomcFtcicWi
+         zRV940j8GT6i0CV1UCNTIW7rKqPs6t4b03kpOYPVbI0XbsjpqNYwfcg/gk4sP0C521JK
+         0pN4ALem9V+Twa3UrxNSuJ67e9yaLYKA22p1+ShMi2swFOA0OuVfSvhWKpLpGeL3wUy+
+         209N9NSB7bdJ2khbUs9+CKFor6Fu/PKzt8JFG3OYEJw+XY/h8UJOA+CWoIOcvJLt/OZ+
+         /EZA==
+X-Gm-Message-State: AOAM5310Lpv31B+Lfxxcf0LPDnQ/nAwbh5IuitANsYg11+egPydNhk8a
+        frQ9pwi/T4KQIq4KDPyXBGqfbYUZRPRfM24RhFg=
+X-Google-Smtp-Source: ABdhPJwrAbIa+HQmcyFj8COv5+8BsCiUdBIbR9IVJf9CiUAfxMfmm+moah3sqa2QKdfBLEf4OrhkxHD6LOiABO2ZtPk=
+X-Received: by 2002:ac8:1288:: with SMTP id y8mr29373895qti.208.1591134413412;
+ Tue, 02 Jun 2020 14:46:53 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:150:0:0:0:0 with HTTP; Tue, 2 Jun 2020 14:40:52
- -0700 (PDT)
-X-Originating-IP: [73.70.188.119]
-In-Reply-To: <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
-References: <20200303003233.3496043-1-andriin@fb.com> <20200303003233.3496043-2-andriin@fb.com>
- <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net> <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
- <87blpc4g14.fsf@toke.dk> <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
- <CAGw6cBuCwmbULDq2v76SWqVYL2o8i+pBg7JnDi=F+6Wcq3SDTA@mail.gmail.com> <20200602191703.xbhgy75l7cb537xe@ast-mbp.dhcp.thefacebook.com>
-From:   Michael Forney <mforney@mforney.org>
-Date:   Tue, 2 Jun 2020 14:40:52 -0700
-Message-ID: <CAGw6cBstsD40MMoHg2dGUe7YvR5KdHD8BqQ5xeXoYKLCUFAudg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
- used from BPF program side to enums
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+References: <20200530074608.GA60664@fnst.localdomain>
+In-Reply-To: <20200530074608.GA60664@fnst.localdomain>
+From:   Brenden Blanco <bblanco@gmail.com>
+Date:   Tue, 2 Jun 2020 14:46:41 -0700
+Message-ID: <CAH9hs-JGVYAPqAjx24Qj0J9agFn4Lexn0E_mr48PEyeD0WB9jg@mail.gmail.com>
+Subject: Re: BUG: kernel NULL pointer dereference in __cgroup_bpf_run_filter_skb
+To:     Lu Fengqi <lufq.fnst@cn.fujitsu.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-02, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> It's possible, but I'm not sure what it will fix.
-> Your example is a bit misleading, since it's talking about B
-> which doesn't have type specifier, whereas enums in bpf.h have ULL
-> suffix where necessary.
-> And the one you pointed out BPF_F_CTXLEN_MASK has sizeof == 8 in all cases.
-
-Apologies if I wasn't clear, I was just trying to explain why this C
-extension can have confusing semantics where the type of an enum
-constant depends on where it is used. You're right that it doesn't
-happen in this particular case.
-
-The breakage appears with my C compiler, which as I mentioned, only
-implements the extension when the enum constants fit into unsigned int
-to avoid these problems.
-
-$ cproc -x c -c - -o /dev/null <<EOF
-> #include <linux/bpf.h>
-> EOF
-<stdin>:420:41: error: enumerator 'BPF_F_CTXLEN_MASK' value cannot be
-represented as 'int' or 'unsigned int'
-cproc: compile: process 3772 exited with status 1
-cproc: preprocess: process signaled: Terminated
-cproc: assemble: process signaled: Terminated
-$
-
-Since the Linux UAPI headers may be used with a variety of compilers,
-I think it's important to stick to the standard as much as possible.
-BPF_F_CTXLEN_MASK is the only enum constant I've encountered in the
-Linux UAPI that has a value outside the range of unsigned int.
-
-> Also when B is properly annotated like 0x80000000ULL it will have size 8
-> as well.
-
-Even with a suffixed integer literal, it still may be the case that an
-annotated constant has a different type inside and outside the enum.
-
-For example, in
-
-	enum {
-		A = 0x80000000ULL,
-		S1 = sizeof(A),
-	};
-	enum {
-		S2 = sizeof(A),
-	};
-
-we have S1 == 8 and S2 == 4.
-
->> Also, I'm not sure if it was considered, but using enums also changes
->> the signedness of these constants. Many of the previous macro
->> expressions had type unsigned long long, and now they have type int
->> (the type of the expression specifying the constant value does not
->> matter). I could see this causing problems if these constants are used
->> in expressions involving shifts or implicit conversions.
+On Sat, May 30, 2020 at 12:51 AM Lu Fengqi <lufq.fnst@cn.fujitsu.com> wrote:
 >
-> It would have been if the enums were not annotated. But that's not the case.
+> Hello,
+>
+> I encountered a reproducible NULL pointer dereference using the mainline
+> kernel v5.7-rc7-44-g75caf310d16c(which also happened multiple times on
+> 5.6.14). The machine is installed with archlinux, used as a kubernetes
+> v1.18.3 node, and uses calico v3.13.2 as a cni plugin. I use kdump/crash
+> to see the value of the bpf_prog pointer in cgroup.bpf is 0x0 or 0x800.
+>
+> I am not sure whether this is caused by kernel bpf or calico? If you need
+> me to provide more information, please let me know. Any suggestions are
+> very helpful.
 
-The type of the expression has no relation to the type of the constant
-outside the enum. Take this example from bpf.h:
+I encountered a similar set of crashes. I was able to workaround it by
+disabling the systemd IPAddressDeny feature until the number of
+bpf-progs in use by systemd reached 0 (via lsof inspection). I hit the
+crash in kernels 5.4.43 through 5.7.
 
-	enum {
-		BPF_DEVCG_DEV_BLOCK     = (1ULL << 0),
-	 	BPF_DEVCG_DEV_CHAR      = (1ULL << 1),
-	};
+[40188.268677] BUG: kernel NULL pointer dereference, address: 0000000000000010
+[40188.268736] #PF: supervisor read access in kernel mode
+[40188.268773] #PF: error_code(0x0000) - not-present page
+[40188.268819] PGD 0 P4D 0
+[40188.268842] Oops: 0000 [#1] SMP PTI
+[40188.268871] CPU: 7 PID: 2834 Comm: nfsd Tainted: P           OE
+5.4.43-1-lts #1
+[40188.268915] Hardware name: Supermicro Super Server/X10SRi-F, BIOS
+3.2 11/22/2019
+[40188.268970] RIP: 0010:__cgroup_bpf_run_filter_skb+0x155/0x1d0
+[40188.269013] Code: 48 8b 4c 24 08 4c 01 ab c8 00 00 00 48 89 4b 18
+48 83 c4 10 5b 5d 41 5c 41 5d 41 5e 41 5f c3 31 c0 c3 c3 48 8b 86 38
+06 00 00 <48> 8b 78 10 4c 8d 70 10 48 85 ff 74 5f 31 ed 49 8b 46 08 65
+48 89
+[40188.269115] RSP: 0018:ffffb0c581cf3918 EFLAGS: 00010246
+[40188.269153] RAX: 0000000000000000 RBX: ffff8e32156bfae0 RCX: 0000000000000048
+[40188.269202] RDX: 0000000000000000 RSI: ffff8e31f9d1e000 RDI: ffff8e31f9bc8940
+[40188.269250] RBP: ffff8e31f9bc8940 R08: ffff8e3215c74a40 R09: 0000000000000001
+[40188.269299] R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000000
+[40188.269348] R13: 0000000000000000 R14: 000000000000e400 R15: 0000000000000001
+[40188.269391] FS:  0000000000000000(0000) GS:ffff8e321fbc0000(0000)
+knlGS:0000000000000000
+[40188.269446] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[40188.269481] CR2: 0000000000000010 CR3: 0000000271c0a001 CR4: 00000000001606e0
+[40188.269530] Call Trace:
+[40188.269559]  ip6_finish_output+0x68/0xa0
+[40188.269587]  ip6_output+0x6e/0x130
+[40188.269615]  ? __ip6_finish_output+0x110/0x110
+[40188.269648]  ip6_xmit+0x2cf/0x5e0
+[40188.269675]  ? ipv6_anycast_cleanup+0x50/0x50
+[40188.269711]  inet6_csk_xmit+0xb6/0x100
+[40188.269742]  __tcp_transmit_skb+0x4ff/0xb10
+[40188.269776]  tcp_write_xmit+0x517/0x1030
+[40188.269807]  __tcp_push_pending_frames+0x32/0xf0
+[40188.269843]  do_tcp_sendpages+0x5fa/0x630
+[40188.269875]  tcp_sendpage+0x48/0x80
+[40188.269904]  inet_sendpage+0x52/0x90
+[40188.269931]  kernel_sendpage+0x1a/0x30
+[40188.269989]  svc_send_common+0x136/0x150 [sunrpc]
+[40188.270044]  svc_sendto+0xd7/0x240 [sunrpc]
+[40188.270096]  svc_tcp_sendto+0x36/0x50 [sunrpc]
+[40188.271531]  svc_send+0x7b/0x150 [sunrpc]
+[40188.272961]  nfsd+0xe3/0x140 [nfsd]
+[40188.274381]  ? nfsd_destroy+0x50/0x50 [nfsd]
+[40188.275785]  kthread+0x117/0x130
+[40188.277166]  ? __kthread_bind_mask+0x60/0x60
+[40188.278520]  ret_from_fork+0x35/0x40
+[40188.279820] Modules linked in: netconsole veth macvlan xt_nat
+xt_MASQUERADE nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo
+iptable_nat rpcsec_gss_krb5 nls_iso8859_1 nls_cp437 vfat fat 8021q
+garp mrp twofish_generic twofish_avx_x86_64 twofish_x86_64_3way
+twofish_x86_64 twofish_common intel_rapl_msr intel_rapl_common
+algif_skcipher af_alg zfs(POE) sb_edac x86_pkg_temp_thermal
+intel_powerclamp iTCO_wdt zunicode(POE) ipmi_ssif zavl(POE)
+iTCO_vendor_support icp(POE) coretemp kvm_intel kvm irqbypass
+zcommon(POE) znvpair(POE) intel_cstate spl(OE) intel_uncore zlua(POE)
+intel_rapl_perf ast drm_vram_helper pcspkr ttm ixgbe drm_kms_helper
+i2c_i801 joydev mei_me syscopyarea sysfillrect sysimgblt igb libphy
+fb_sys_fops mousedev ioatdma i2c_algo_bit mdio input_leds lpc_ich mei
+dca ipmi_si ipmi_devintf ipmi_msghandler evdev mac_hid
+acpi_power_meter ip6t_REJECT nf_reject_ipv6 xt_hl ip6t_rt ipt_REJECT
+nf_reject_ipv4 xt_multiport br_netfilter bridge stp llc xt_limit
+xt_addrtype xt_tcpudp xt_physdev
+[40188.279868]  xt_conntrack ip6table_filter ip6_tables
+nf_conntrack_netbios_ns nf_conntrack_broadcast nf_nat_ftp nf_nat
+nf_conntrack_ftp nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c
+iptable_filter nfsd sha256_ssse3 drm sha1_ssse3 auth_rpcgss nfs_acl
+lockd grace agpgart sunrpc ip_tables x_tables ext4 crc32c_generic
+crc16 mbcache jbd2 raid1 md_mod hid_generic usbhid hid sd_mod dm_crypt
+dm_mod crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel
+ahci aesni_intel libahci xhci_pci crypto_simd libata xhci_hcd cryptd
+glue_helper scsi_mod ehci_pci ehci_hcd wmi
+[40188.300047] CR2: 0000000000000010
+[40188.301739] ---[ end trace 44ac77af42fe7195 ]---
 
-Previously, with the defines, they had type unsigned long long. Now,
-they have type int. sizeof(BPF_DEVCG_DEV_BLOCK) == 4 and
--BPF_DEVCG_DEV_BLOCK < 0 == 1.
+I also hit an interesting (related?) warning on one of the iterations
+during boot.
 
--Michael
+[ 8891.070041] ------------[ cut here ]------------
+[ 8891.070093] percpu ref (cgroup_bpf_release_fn) <= 0 (-1) after
+switching to atomic
+[ 8891.070117] WARNING: CPU: 7 PID: 54 at lib/percpu-refcount.c:160
+percpu_ref_switch_to_atomic_rcu+0x12f/0x140
+[ 8891.070178] Modules linked in: netconsole veth macvlan xt_nat
+xt_MASQUERADE nf_conntrack_netlink nfnetlink xfrm_user xfrm_algo
+iptable_nat nls_iso8859_1 nls_cp437 vfat fat 8021q garp mrp
+twofish_generic twofish_avx_x86_64 twofish_x86_64_3way twofish_x86_64
+twofish_common algif_skcipher af_alg intel_rapl_msr intel_rapl_common
+zfs(POE) zunicode(POE) zavl(POE) iTCO_wdt icp(POE) iTCO_vendor_support
+ipmi_ssif sb_edac x86_pkg_temp_thermal zcommon(POE) intel_powerclamp
+znvpair(POE) kvm_intel spl(OE) zlua(POE) kvm irqbypass ast
+intel_cstate intel_uncore drm_vram_helper ttm intel_rapl_perf pcspkr
+drm_kms_helper i2c_i801 syscopyarea joydev lpc_ich sysfillrect
+mousedev input_leds ixgbe sysimgblt fb_sys_fops mei_me igb mei libphy
+ioatdma i2c_algo_bit mdio dca ipmi_si acpi_power_meter ipmi_devintf
+ipmi_msghandler evdev mac_hid ip6t_REJECT nf_reject_ipv6 xt_hl ip6t_rt
+ipt_REJECT nf_reject_ipv4 xt_multiport br_netfilter bridge stp llc
+xt_limit xt_addrtype xt_tcpudp xt_physdev xt_conntrack ip6table_filter
+[ 8891.070220]  ip6_tables nf_conntrack_netbios_ns
+nf_conntrack_broadcast nf_nat_ftp nf_nat nf_conntrack_ftp nf_conntrack
+nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c iptable_filter nfsd
+sha256_ssse3 drm sha1_ssse3 nfs_acl lockd auth_rpcgss grace sunrpc
+agpgart ip_tables x_tables ext4 crc32c_generic crc16 mbcache jbd2
+raid1 hid_generic usbhid hid md_mod sd_mod dm_crypt dm_mod
+crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel ahci
+libahci aesni_intel libata crypto_simd cryptd xhci_pci glue_helper
+ehci_pci xhci_hcd scsi_mod ehci_hcd wmi [last unloaded: coretemp]
+[ 8891.070664] CPU: 7 PID: 54 Comm: ksoftirqd/7 Tainted: P
+OE     5.4.43-1-lts #1
+[ 8891.070691] Hardware name: Supermicro Super Server/X10SRi-F, BIOS
+3.2 11/22/2019
+[ 8891.070721] RIP: 0010:percpu_ref_switch_to_atomic_rcu+0x12f/0x140
+[ 8891.070745] Code: eb 99 80 3d 33 da eb 00 00 0f 85 4d ff ff ff 48
+8b 55 d8 48 8b 75 e8 48 c7 c7 20 1c 50 8a c6 05 17 da eb 00 01 e8 0f
+4c c3 ff <0f> 0b e9 2b ff ff ff 0f 0b eb a2 90 90 90 90 90 90 8d 8c 16
+ef be
+[ 8891.070812] RSP: 0018:ffffbf72c027fe00 EFLAGS: 00010286
+[ 8891.070833] RAX: 0000000000000000 RBX: 8000000000000002 RCX: 0000000000000000
+[ 8891.070857] RDX: 0000000000000046 RSI: ffffffff8acd7b46 RDI: 0000000000000246
+[ 8891.070885] RBP: ffffa0b458b1f8e8 R08: 000008161d131aa4 R09: 0000000000000046
+[ 8891.070913] R10: 0000000080000007 R11: ffffffff8acd7b2b R12: 00003ebe60014fc8
+[ 8891.070938] R13: ffffa0b45fbeb350 R14: ffffa0b45b953c00 R15: ffffa0b45b953c00
+[ 8891.070968] FS:  0000000000000000(0000) GS:ffffa0b45fbc0000(0000)
+knlGS:0000000000000000
+[ 8891.071001] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 8891.071025] CR2: 00007fae6b351e10 CR3: 000000082b21c005 CR4: 00000000001606e0
+[ 8891.071058] Call Trace:
+[ 8891.071075]  rcu_core+0x1ba/0x4e0
+[ 8891.071093]  __do_softirq+0xe9/0x2dc
+[ 8891.071110]  run_ksoftirqd+0x26/0x40
+[ 8891.072222]  smpboot_thread_fn+0xc5/0x160
+[ 8891.073320]  ? smpboot_unregister_percpu_thread+0x60/0x60
+[ 8891.074423]  kthread+0x117/0x130
+[ 8891.075542]  ? __kthread_bind_mask+0x60/0x60
+[ 8891.076672]  ret_from_fork+0x35/0x40
+[ 8891.077815] ---[ end trace 727b9af96c86f011 ]---
+
+Hope this is useful.
+
+>
+> Attachments:
+> kernel_config is the config used to compile the kernel
+> __cgroup_bpf_run_filter_skb is the result of "dis -l __cgroup_bpf_run_filter_skb"
+> log. * is dmesg
+> bt_FF. * is the stack frames when NULL Pointer dereference occurs
+> cgroup.bpf. * is the bpf member of the cgroup structure in the __cgroup_bpf_run_filter_skb function
+> bpf. * is the currently loaded bpf programs
+>
+> --
+> Thanks,
+> Lu
+>
+>
