@@ -2,198 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9451EBC7B
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F103A1EBCF9
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 15:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728471AbgFBNGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 09:06:46 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55058 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728405AbgFBNGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:06:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591103189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uCok80LFYJ4Lm/PMCty2sCIaVjds7Ty5xQFab3NSrrY=;
-        b=IShkhbjnQJMa5w0IGp+5HfAqTh8qDrenQxW0dlKOFJCHX6IfAirU0VZLMjgX+zVgTou5F8
-        H4mzXbFvBIDGJSlJce4rOzWrGE1AWxuuKffviXK6j26XiIcnTVO4gHHbGTL013+7AprYEr
-        f4Ebo2oTodfxB0wUCC9nMVs5cacQQ+o=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-46-tAMdM-byOL-qLqPyTw06jA-1; Tue, 02 Jun 2020 09:06:28 -0400
-X-MC-Unique: tAMdM-byOL-qLqPyTw06jA-1
-Received: by mail-wm1-f69.google.com with SMTP id h6so812671wmb.7
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 06:06:28 -0700 (PDT)
+        id S1726922AbgFBNU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 09:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726648AbgFBNU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 09:20:57 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE369C061A0E
+        for <netdev@vger.kernel.org>; Tue,  2 Jun 2020 06:20:56 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id p30so5056465pgl.11
+        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 06:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N2eicIBnsRhNHTfHua2/6Ykx9jcEXaC9iLm87ntVd2w=;
+        b=WUJTzCgJt9bTExDQSjI1K1fSuJxd0W3AeWCqjpftmUisnT2Xi94XkjFXvLS/QiwxcR
+         J+70uzVL0x7e1ZRNLxU6aoressTR7sn+bUJ240Mkdv4GoCYu25UK8hXJQ3jwt0HEyyNg
+         xRw8jDrbNNluI9eD7FbxG1MmzbEE94ylRUI3hE8E6s6zM2ZomX3GrXsMQ5Hp3KfFQKjh
+         IjeGsqZ+ClXg68ICFFR+VUeThBOGuSbEbiJKRaJYSaveFbfozEiFEkng/OgJyG955dgp
+         iLsLgTy7W0pMYMEinthNs9HsHxtS/zF3dKZgHnEGfcgvoQZD/Icm0b+nhY3sKhZXAU05
+         qOqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uCok80LFYJ4Lm/PMCty2sCIaVjds7Ty5xQFab3NSrrY=;
-        b=lRvCQyhdgoY0XS5z6WT5zMUJ0E35c//BJYJzfyy6GX2ZhOxqUxyBpaSP93x3XeYw0y
-         pAvUOSd1PdlsFSIWcWFr0eyVqWh+uOmuybHxRsUK6x5XBYwbaNvU4S6ueprZ12zu79Oh
-         mu9qD52jCriFAA2jwCkq45rJRPsul9oRFepCjKgALMFfvbAZ1r2yHk0EG83mX4hUJNSa
-         vysrgAch+HxHBu1wu5TZqjtF/TRR5a0ypw9D0zoroRHbYmRFe9dJReoqmDXgXBavNLGx
-         nTj5kHiKv8ncXecMk9Bn+Lrg4Y9ufTJbpavj0XWf6h5XVvzP97ev3hgys99w/JxqEY2v
-         YG/g==
-X-Gm-Message-State: AOAM533oBy3ydI2e21I02EKUSMYClWH/CzyI19hE8o5yTpkVv7DHcFGT
-        HZ7KAL4BIcgqd3NPU970mX4C795JO9njwZRUDfMtergnarP0HEnUXDffGBo//KEPTq9qjmsBwF/
-        17ugI6N6+RZknNKkE
-X-Received: by 2002:adf:a350:: with SMTP id d16mr27202900wrb.237.1591103187036;
-        Tue, 02 Jun 2020 06:06:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSMYsr9uLo9HwO9qp8x9NdNINKCKw+Yq/4jaF7d1uMiQ2jKEDbPOfPn52lZ3rMs5ZJSOurmQ==
-X-Received: by 2002:adf:a350:: with SMTP id d16mr27202884wrb.237.1591103186812;
-        Tue, 02 Jun 2020 06:06:26 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id n23sm3456907wmc.0.2020.06.02.06.06.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2020 06:06:26 -0700 (PDT)
-Date:   Tue, 2 Jun 2020 09:06:25 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH RFC 13/13] vhost: drop head based APIs
-Message-ID: <20200602130543.578420-14-mst@redhat.com>
-References: <20200602130543.578420-1-mst@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N2eicIBnsRhNHTfHua2/6Ykx9jcEXaC9iLm87ntVd2w=;
+        b=OvaErks8OuPtfOivxfky0Sj9fUsPwj4RY07Ad/1gCoF+crnL/u+Ds+ud1CZeIadL+y
+         iYxa3FMCZdvu2Il9chT3SOC8HuZv6mYt8H73Gb1UcTscNbadAffTu0r4ZandfZYy1b4K
+         8uCDgQ1vZP0cRhxr5LxOEyQbG0UKG6bqULAD4yCs4sKHEMwjuh4sOhTL5VhQLPLPxt5I
+         z9ae+EafZYb7n9mpkeu4e648G4+geJYqcmyBXISiVHTtuXPPZ9Ov2EfiJib47EMYl9gH
+         djI+INlad6iXyxQyjBwj7LZMA2ZWt825g4Pnlmdm7UDcsy6zSDcLhZwQBDINvxxGoMb3
+         jR0g==
+X-Gm-Message-State: AOAM531gOmLrg9nkdU0FBqbDQmYnpFC9drv/GklpprSuXTjjSMorotxp
+        rI0XRtxfSS47xUi7sfEDpUw=
+X-Google-Smtp-Source: ABdhPJyPuUQcJ1wxTT9nDKVR5c/kFbXTH0269SVEZ22RDg41cd0oBRZMvwD8TCyV1Olsh5TniO4jQQ==
+X-Received: by 2002:a63:f40f:: with SMTP id g15mr23585094pgi.285.1591104056238;
+        Tue, 02 Jun 2020 06:20:56 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id x190sm2322116pgb.79.2020.06.02.06.20.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jun 2020 06:20:55 -0700 (PDT)
+Subject: Re: [PATCH] seg6: Fix slab-out-of-bounds in fl6_update_dst()
+To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        alex.aring@gmail.com, ahabdels@gmail.com
+Cc:     netdev@vger.kernel.org, Ahmed Abdelsalam <ahabdels@gmail.com>,
+        David Lebrun <david.lebrun@uclouvain.be>
+References: <20200602065155.18272-1-yuehaibing@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e8e9f99e-9123-9a9a-f5b7-123e11800c06@gmail.com>
+Date:   Tue, 2 Jun 2020 06:20:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200602130543.578420-1-mst@redhat.com>
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+In-Reply-To: <20200602065155.18272-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Everyone's using buf APIs, no need for head based ones anymore.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/vhost/vhost.c | 36 ++++++++----------------------------
- drivers/vhost/vhost.h | 12 ------------
- 2 files changed, 8 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index be822f0c9428..412923cc96df 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -2256,12 +2256,12 @@ static int fetch_buf(struct vhost_virtqueue *vq)
- 	return 1;
- }
- 
--/* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
-+/* Revert the effect of fetch_buf. Useful for error handling. */
-+static
- void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
- {
- 	vq->last_avail_idx -= n;
- }
--EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
- 
- /* This function returns a value > 0 if a descriptor was found, or 0 if none were found.
-  * A negative code is returned on error. */
-@@ -2421,8 +2421,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 	return 0;
- }
- 
--/* After we've used one of their buffers, we tell them about it.  We'll then
-- * want to notify the guest, using eventfd. */
-+static
- int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 		     unsigned count)
- {
-@@ -2456,10 +2455,8 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 	}
- 	return r;
- }
--EXPORT_SYMBOL_GPL(vhost_add_used_n);
- 
--/* After we've used one of their buffers, we tell them about it.  We'll then
-- * want to notify the guest, using eventfd. */
-+static
- int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- {
- 	struct vring_used_elem heads = {
-@@ -2469,14 +2466,17 @@ int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- 
- 	return vhost_add_used_n(vq, &heads, 1);
- }
--EXPORT_SYMBOL_GPL(vhost_add_used);
- 
-+/* After we've used one of their buffers, we tell them about it.  We'll then
-+ * want to notify the guest, using vhost_signal. */
- int vhost_put_used_buf(struct vhost_virtqueue *vq, struct vhost_buf *buf)
- {
- 	return vhost_add_used(vq, buf->id, buf->in_len);
- }
- EXPORT_SYMBOL_GPL(vhost_put_used_buf);
- 
-+/* After we've used one of their buffers, we tell them about it.  We'll then
-+ * want to notify the guest, using vhost_signal. */
- int vhost_put_used_n_bufs(struct vhost_virtqueue *vq,
- 			  struct vhost_buf *bufs, unsigned count)
- {
-@@ -2537,26 +2537,6 @@ void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- }
- EXPORT_SYMBOL_GPL(vhost_signal);
- 
--/* And here's the combo meal deal.  Supersize me! */
--void vhost_add_used_and_signal(struct vhost_dev *dev,
--			       struct vhost_virtqueue *vq,
--			       unsigned int head, int len)
--{
--	vhost_add_used(vq, head, len);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal);
--
--/* multi-buffer version of vhost_add_used_and_signal */
--void vhost_add_used_and_signal_n(struct vhost_dev *dev,
--				 struct vhost_virtqueue *vq,
--				 struct vring_used_elem *heads, unsigned count)
--{
--	vhost_add_used_n(vq, heads, count);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
--
- /* return true if we're sure that avaiable ring is empty */
- bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- {
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 6c10e99ff334..4fcf59153fc7 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -195,11 +195,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- bool vhost_vq_access_ok(struct vhost_virtqueue *vq);
- bool vhost_log_access_ok(struct vhost_dev *);
- 
--int vhost_get_vq_desc(struct vhost_virtqueue *,
--		      struct iovec iov[], unsigned int iov_count,
--		      unsigned int *out_num, unsigned int *in_num,
--		      struct vhost_log *log, unsigned int *log_num);
--void vhost_discard_vq_desc(struct vhost_virtqueue *, int n);
- int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- 			struct iovec iov[], unsigned int iov_count,
- 			unsigned int *out_num, unsigned int *in_num,
-@@ -207,13 +202,6 @@ int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- void vhost_discard_avail_bufs(struct vhost_virtqueue *,
- 			      struct vhost_buf *, unsigned count);
- int vhost_vq_init_access(struct vhost_virtqueue *);
--int vhost_add_used(struct vhost_virtqueue *, unsigned int head, int len);
--int vhost_add_used_n(struct vhost_virtqueue *, struct vring_used_elem *heads,
--		     unsigned count);
--void vhost_add_used_and_signal(struct vhost_dev *, struct vhost_virtqueue *,
--			       unsigned int id, int len);
--void vhost_add_used_and_signal_n(struct vhost_dev *, struct vhost_virtqueue *,
--			       struct vring_used_elem *heads, unsigned count);
- int vhost_put_used_buf(struct vhost_virtqueue *, struct vhost_buf *buf);
- int vhost_put_used_n_bufs(struct vhost_virtqueue *,
- 			  struct vhost_buf *bufs, unsigned count);
--- 
-MST
+On 6/1/20 11:51 PM, YueHaibing wrote:
+> When update flowi6 daddr in fl6_update_dst() for srcrt, the used index
+> of segments should be segments_left minus one per RFC8754
+> (section 4.3.1.1) S15 S16. Otherwise it may results in an out-of-bounds
+> read.
+> 
+> Reported-by: syzbot+e8c028b62439eac42073@syzkaller.appspotmail.com
+> Fixes: 0cb7498f234e ("seg6: fix SRH processing to comply with RFC8754")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  net/ipv6/exthdrs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+> index 5a8bbcdcaf2b..f5304bf33ab1 100644
+> --- a/net/ipv6/exthdrs.c
+> +++ b/net/ipv6/exthdrs.c
+> @@ -1353,7 +1353,7 @@ struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
+>  	{
+>  		struct ipv6_sr_hdr *srh = (struct ipv6_sr_hdr *)opt->srcrt;
+>  
+> -		fl6->daddr = srh->segments[srh->segments_left];
+> +		fl6->daddr = srh->segments[srh->segments_left - 1];
+>  		break;
+>  	}
+>  	default:
+> 
+
+1) Any reason you do not cc the author of the buggy patch ?
+   I also cced David Lebrun <david.lebrun@uclouvain.be> to get more eyes.
+
+2) What happens if segments_left == 0 ?
 
