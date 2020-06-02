@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC351EBFD2
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 18:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 491901EBFDE
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 18:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728226AbgFBQSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 12:18:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57356 "EHLO mail.kernel.org"
+        id S1726345AbgFBQVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 12:21:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726380AbgFBQS3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jun 2020 12:18:29 -0400
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1725940AbgFBQVq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jun 2020 12:21:46 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F1A1E20772;
-        Tue,  2 Jun 2020 16:18:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E80232067B;
+        Tue,  2 Jun 2020 16:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591114709;
-        bh=ArZ6umqiHSZfYPmHnJiMNZHFgrWta8wpfvveeNknTmQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bhgt+NOMmVl1Fxs6Jvvmwzj8fcvNejvcPJzWiQH/JJhhUk9mY1fdKlaPQS/ifXgvr
-         CuiDGYQ8r5IykX8DTdBuL0DCNUmYY47BSuBgECS+Glr/lG45UuB5H6BU6JrxBDkka0
-         KvY3TIJN/8D70ZPyvrFOUwUWSRhEUdfNFl+jUou8=
-Received: by mail-lj1-f178.google.com with SMTP id u10so12086291ljj.9;
-        Tue, 02 Jun 2020 09:18:28 -0700 (PDT)
-X-Gm-Message-State: AOAM532sWIc70tw2/Vyzjn1+X7jN19/H7SQ257+gI+09SPa/hGhZdcWg
-        cL/2+NkciUESF6GjIPbYtu1/p8n4p/NlUCCjgzY=
-X-Google-Smtp-Source: ABdhPJzl+VhF4CC9ZMYjRDxd6lcRMoyH/FHhp4+Ze4y2bqt6VOrwRdH00raBrXJmVUHoSofuvnqlnQDbKwTEuDfIftQ=
-X-Received: by 2002:a05:651c:1130:: with SMTP id e16mr13734243ljo.10.1591114707316;
- Tue, 02 Jun 2020 09:18:27 -0700 (PDT)
+        s=default; t=1591114906;
+        bh=F2vboQGojJ3gh//abpbgMHDkoLrYDRcQ4VbSHGwbmDc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sO0MGa09irZsf+kLkQQaFzLcjnnBgP+oyM5WJgLNvzE/n++DhKmClpiz6S50ukkQ8
+         SAKibT1yekv3E0Smo2qAH13RSn5SJaBsXUF/yceVWuiNZyxIxViim+4lUCiWYUK6eN
+         1Ilcj79bkZErAziVXexZ14oFBvZMGHIabe8t3TYg=
+Date:   Tue, 2 Jun 2020 09:21:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Danielle Ratson <danieller@mellanox.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
+        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
+        idosch@mellanox.com, snelson@pensando.io, drivers@pensando.io,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        mlxsw@mellanox.com
+Subject: Re: [RFC PATCH net-next 0/8] Expose devlink port attributes
+Message-ID: <20200602092144.09d3a904@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20200602113119.36665-1-danieller@mellanox.com>
+References: <20200602113119.36665-1-danieller@mellanox.com>
 MIME-Version: 1.0
-References: <20200602050349.215037-1-andriin@fb.com>
-In-Reply-To: <20200602050349.215037-1-andriin@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 2 Jun 2020 09:18:16 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5OH9paDZpG-KfYK3EkwpaQWPOcD6c0kyLQ7+ePs9Xd8g@mail.gmail.com>
-Message-ID: <CAPhsuW5OH9paDZpG-KfYK3EkwpaQWPOcD6c0kyLQ7+ePs9Xd8g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix sample_cnt shared between two threads
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 1, 2020 at 10:04 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Make sample_cnt volatile to fix possible selftests failure due to compiler
-> optimization preventing latest sample_cnt value to be visible to main thread.
-> sample_cnt is incremented in background thread, which is then joined into main
-> thread. So in terms of visibility sample_cnt update is ok. But because it's
-> not volatile, compiler might make optimizations that would prevent main thread
-> to see latest updated value. Fix this by marking global variable volatile.
->
-> Fixes: cb1c9ddd5525 ("selftests/bpf: Add BPF ringbuf selftests")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Tue,  2 Jun 2020 14:31:11 +0300 Danielle Ratson wrote:
+> Currently, user has no way of knowing if a port can be split and into
+> how many ports.
+> 
+> Among other things, it is currently impossible to write generic tests
+> for port split.
+> 
+> In order to be able to expose the information regarding the split
+> capability to user space, set the required attributes and pass them to
+> netlink.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Hi! Looks like patches 3, 5, and 7 add warnings when built with W=1 C=1.
+Unfortunately there are 500 existing warnings I can't figure out which
+ones are new :(
