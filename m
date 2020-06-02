@@ -2,206 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 670F61EC056
-	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 18:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 404CF1EC0A0
+	for <lists+netdev@lfdr.de>; Tue,  2 Jun 2020 19:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728123AbgFBQp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 12:45:56 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56480 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726875AbgFBQpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 12:45:51 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 052GjjgF021918;
-        Tue, 2 Jun 2020 11:45:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1591116345;
-        bh=dRys4SyEsTPUvsxrlOxuMVmtB0m1gpns1jd3eGMUcZw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=CA8o5Q/+56Q5wAWqB7fCFuBvaGyvZkDck5DDZIylrpoIs4qXsMkyl4g0BfIpAmBFa
-         hr6sNiUOCoj++4DT8LvPVa1elvFoKhQItz2+oJ05aaaL4CLDOXH4YhlgywO9wD1j3+
-         fej6x4G/evwG0hCPeiy8u6wP8e/GMcBo23zZcNA0=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 052GjjtZ115511
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 2 Jun 2020 11:45:45 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 2 Jun
- 2020 11:45:44 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 2 Jun 2020 11:45:44 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 052GjiKe105527;
-        Tue, 2 Jun 2020 11:45:44 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v5 4/4] net: dp83869: Add RGMII internal delay configuration
-Date:   Tue, 2 Jun 2020 11:45:22 -0500
-Message-ID: <20200602164522.3276-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200602164522.3276-1-dmurphy@ti.com>
-References: <20200602164522.3276-1-dmurphy@ti.com>
+        id S1726267AbgFBRDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 13:03:20 -0400
+Received: from static-27.netfusion.at ([83.215.238.27]:56268 "EHLO
+        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725969AbgFBRDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 13:03:20 -0400
+Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
+        (Authenticated sender: victor)
+        by mail.inliniac.net (Postfix) with ESMTPSA id A63DD10C;
+        Tue,  2 Jun 2020 19:05:27 +0200 (CEST)
+Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are
+ good
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
+        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alexander Drozdov <al.drozdov@gmail.com>,
+        Tom Herbert <tom@herbertland.com>
+References: <20200602080535.1427-1-victor@inliniac.net>
+ <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
+From:   Victor Julien <victor@inliniac.net>
+Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
+ S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
+ dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
+ Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
+ Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
+ WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
+ YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
+ di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
+ WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
+ SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
+ UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
+ MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
+ M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
+ YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
+ WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
+ SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
+ RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
+ QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
+ RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
+ K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
+ VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
+ enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
+ b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
+ b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
+ dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
+ NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
+ V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
+ ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
+ Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
+ Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
+ eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
+ MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
+ aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
+ MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
+ TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
+ OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
+ L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
+ UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
+ CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
+ UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
+ WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
+ RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
+ b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
+ YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
+ dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
+ djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
+ dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
+ Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
+ aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
+Message-ID: <b0a9d785-9d5e-9897-b051-6d9a1e8f914e@inliniac.net>
+Date:   Tue, 2 Jun 2020 19:03:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RGMII internal delay configuration for Rx and Tx.
+On 02-06-2020 16:29, Willem de Bruijn wrote:
+> On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
+>>
+>> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
+>> that the driver has completely validated the checksums in the packet.
+>>
+>> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
+>> in that the new flag will only be set if all the layers are valid,
+>> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
+> 
+> transport, not ip checksum.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 82 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 79 insertions(+), 3 deletions(-)
+Allow me a n00b question: what does transport refer to here? Things like
+ethernet? It isn't clear to me from the doc.
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index cfb22a21a2e6..ba1e3d599888 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -64,6 +64,10 @@
- #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
- #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
- 
-+/* RGMIIDCTL */
-+#define DP83869_RGMII_CLK_DELAY_SHIFT		4
-+#define DP83869_CLK_DELAY_DEF			7
-+
- /* STRAP_STS1 bits */
- #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
- #define DP83869_STRAP_STS1_RESERVED		BIT(11)
-@@ -78,9 +82,6 @@
- #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
- #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
- 
--/* RGMIIDCTL bits */
--#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
--
- /* IO_MUX_CFG bits */
- #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
- 
-@@ -99,6 +100,10 @@
- #define DP83869_OP_MODE_MII			BIT(5)
- #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
- 
-+static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
-+					     1750, 2000, 2250, 2500, 2750, 3000,
-+					     3250, 3500, 3750, 4000};
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -108,6 +113,8 @@ enum {
- struct dp83869_private {
- 	int tx_fifo_depth;
- 	int rx_fifo_depth;
-+	s32 rx_id_delay;
-+	s32 tx_id_delay;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -232,6 +239,22 @@ static int dp83869_of_init(struct phy_device *phydev)
- 				 &dp83869->tx_fifo_depth))
- 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
- 
-+	ret = of_property_read_u32(of_node, "rx-internal-delay-ps",
-+				   &dp83869->rx_id_delay);
-+	if (ret) {
-+		dp83869->rx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+		ret = 0;
-+	}
-+
-+	ret = of_property_read_u32(of_node, "tx-internal-delay-ps",
-+				   &dp83869->tx_id_delay);
-+	if (ret) {
-+		dp83869->tx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+		ret = 0;
-+	}
-+
- 	return ret;
- }
- #else
-@@ -367,10 +390,35 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- 	return ret;
- }
- 
-+static int dp83869_get_delay(struct phy_device *phydev)
-+{
-+	struct dp83869_private *dp83869 = phydev->priv;
-+	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
-+	int tx_delay;
-+	int rx_delay;
-+
-+	tx_delay = phy_get_delay_index(phydev, &dp83869_internal_delay[0],
-+				       delay_size, dp83869->tx_id_delay);
-+	if (tx_delay < 0) {
-+		phydev_err(phydev, "Tx internal delay is invalid\n");
-+		return tx_delay;
-+	}
-+
-+	rx_delay = phy_get_delay_index(phydev, &dp83869_internal_delay[0],
-+				       delay_size, dp83869->rx_id_delay);
-+	if (rx_delay < 0) {
-+		phydev_err(phydev, "Rx internal delay is invalid\n");
-+		return rx_delay;
-+	}
-+
-+	return rx_delay | tx_delay << DP83869_RGMII_CLK_DELAY_SHIFT;
-+}
-+
- static int dp83869_config_init(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	int ret, val;
-+	int delay;
- 
- 	ret = dp83869_configure_mode(phydev, dp83869);
- 	if (ret)
-@@ -394,6 +442,34 @@ static int dp83869_config_init(struct phy_device *phydev)
- 				     dp83869->clk_output_sel <<
- 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
- 
-+	if (phy_interface_is_rgmii(phydev)) {
-+		delay = dp83869_get_delay(phydev);
-+		if (delay < 0)
-+			return delay;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
-+				    delay);
-+		if (ret)
-+			return ret;
-+
-+		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
-+		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+			 DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
-+			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+				DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
-+				    val);
-+	}
-+
- 	return ret;
- }
- 
+(happy to follow up with a patch to clarify the doc when I understand
+things better)
+
+> But as I understand it drivers set CHECKSUM_COMPLETE if they fill in
+> skb->csum over the full length of the packet. This does not
+> necessarily imply that any of the checksum fields in the packet are
+> valid yet (see also skb->csum_valid). Protocol code later compares
+> checksum fields against this using __skb_checksum_validate_complete and friends.
+> 
+> But packet sockets may be called before any of this, however. So I wonder
+> how valid the checksum really is right now when setting TP_STATUS_CSUM_VALID.
+> I assume it's correct, but don't fully understand where the validation
+> has taken place..
+
+I guess I'm more confused now about what TP_STATUS_CSUM_VALID actually
+means. It sounds almost like the opposite of TP_STATUS_CSUMNOTREADY, but
+I'm not sure I understand what the value would be.
+
+It would be great if someone could help clear this up. Everything I
+thought I knew/understood so far has been proven wrong, so I'm not too
+confident about my patch anymore...
+
+> Similar to commit 682f048bd494 ("af_packet: pass checksum validation
+> status to the user"), please update tpacket_rcv and packet_rcv.
+
+Ah yes, good catch. Will add it there as well.
+
+> Note also that net-next is currently closed.
+
+Should I hold off on sending a v3 until it reopens?
+
+Regards / Groeten,
+Victor
+
+
+> 
+> 
+> 
+>>  for convenience there are also the following defines::
+>>
+>> diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+>> index 3d884d68eb30..76a5c762e2e0 100644
+>> --- a/include/uapi/linux/if_packet.h
+>> +++ b/include/uapi/linux/if_packet.h
+>> @@ -113,6 +113,7 @@ struct tpacket_auxdata {
+>>  #define TP_STATUS_BLK_TMO              (1 << 5)
+>>  #define TP_STATUS_VLAN_TPID_VALID      (1 << 6) /* auxdata has valid tp_vlan_tpid */
+>>  #define TP_STATUS_CSUM_VALID           (1 << 7)
+>> +#define TP_STATUS_CSUM_UNNECESSARY     (1 << 8)
+>>
+>>  /* Tx ring - header status */
+>>  #define TP_STATUS_AVAILABLE          0
+>> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+>> index 29bd405adbbd..94e213537646 100644
+>> --- a/net/packet/af_packet.c
+>> +++ b/net/packet/af_packet.c
+>> @@ -2215,10 +2215,13 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+>>
+>>         if (skb->ip_summed == CHECKSUM_PARTIAL)
+>>                 status |= TP_STATUS_CSUMNOTREADY;
+>> -       else if (skb->pkt_type != PACKET_OUTGOING &&
+>> -                (skb->ip_summed == CHECKSUM_COMPLETE ||
+>> -                 skb_csum_unnecessary(skb)))
+>> -               status |= TP_STATUS_CSUM_VALID;
+>> +       else if (skb->pkt_type != PACKET_OUTGOING) {
+>> +               if (skb->ip_summed == CHECKSUM_UNNECESSARY)
+>> +                       status |= TP_STATUS_CSUM_UNNECESSARY | TP_STATUS_CSUM_VALID;
+>> +               else if (skb->ip_summed == CHECKSUM_COMPLETE ||
+>> +                        skb_csum_unnecessary(skb))
+>> +                       status |= TP_STATUS_CSUM_VALID;
+>> +       }
+>>
+>>         if (snaplen > res)
+>>                 snaplen = res;
+>> --
+>> 2.17.1
+>>
+
+
 -- 
-2.26.2
+---------------------------------------------
+Victor Julien
+http://www.inliniac.net/
+PGP: http://www.inliniac.net/victorjulien.asc
+---------------------------------------------
 
