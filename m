@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 683ED1ED189
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30EB41ED1B5
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726041AbgFCNzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 09:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        id S1726093AbgFCOIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 10:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgFCNzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 09:55:09 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C15C08C5C0
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 06:55:09 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id a80so1119478ybg.1
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 06:55:09 -0700 (PDT)
+        with ESMTP id S1725884AbgFCOIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:08:17 -0400
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62017C08C5C1
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 07:08:15 -0700 (PDT)
+Received: by mail-vs1-xe44.google.com with SMTP id y123so1458081vsb.6
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 07:08:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U8IeDiDoBVmA0QE3oVgedl+zceUqh62Dw2hpb3UyemU=;
-        b=oqrUFNi/IKLm8zr/JkoLEWltOameVg+otBORTPeyDT6K+1vL0RDgZ8MIs6JKhZNwiR
-         z/D8d1I15Y7tEVTunSpxsi7kWcXtbI6Vl8jBO4BTixPuDUkfVBiKGGyQdiOFGnJ+GZfU
-         Q36XNbxDsRzFvH26Hf9zP5Lwb7NrNCsohYHmmBUT+WSCWfhXaroWcs/tDjEn77mte5c4
-         AKhellf9UepiS6Kq2dFe0MMyIUi2jOHBgg3EKbXsOzIhPWfBN8iqEM3L4YPODQ0pU/OR
-         WX7gbyuqBzgHs6Qv0X45wC3efKl40NxhMzMBjvy6bCjibf3VOZWvtCogXFAevrgRU84o
-         +UtA==
+        bh=987vEKH7qwi1mDGdoRAEJ4OXmQS09iP3mdTNwmC8gNc=;
+        b=Q6LEkZfxtDhljoZLLSJB+xKbUuZ/9GorNwDH/PbasIqw8M/FfVqT+36ppVrQYUzf4R
+         ydEpAjtR/2V0a+vx4c5WvX3zvctPafn1B+BPL+HKrFbbLa42MQLwdzPIWtwUvl+UP1vk
+         SUV7FjYGUaLF3w3RPqMkAWg8XAm1AMO8E9egVn5vtXYoRRidPMx1HRT0SqGHvNYdtliB
+         q89+Y+5senbsBhg/sDB1Is+Midy9lfOHEqxIZebsxxqlfWneSVDSoNWXKM3RyV4FVpL0
+         dQySDcrtELfxaGaB1QEFmMNBohPj+lcfAxysuolQ4BaNHN1z4L5d1P5Y7PKjXO2Q9G+W
+         LChQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U8IeDiDoBVmA0QE3oVgedl+zceUqh62Dw2hpb3UyemU=;
-        b=VBpRXTO5p1GEr5vi83pCzpRrF1RKN0e3ouBUjeT1itfkAHxjnS5tE/4tRZApAxCMot
-         0hfdZrFs76qCacllej2csOlGEhpLAhOoYn81OyI5dLnRAL4I1ImNTgAPl3Q28O0V1Jsk
-         zNssxilcwpYeJxHKXiuYnfGrSK49wuEeIyxN3jqkmEqkfxs4TDavqdOlwtoVAJDWBTgs
-         4XhqKcKAGPwgcZzlqVhbV8ZeEjizshSggrM4gRgY8kXifP9WCmakAUHKNaQv6SeQUweg
-         l1CjLb/a2IEcVhFSR6IgyyMOQ/1YaNPVHunInOURm1oe07SEA0Zu0CIg+03DmNns+E67
-         fDRA==
-X-Gm-Message-State: AOAM5319xer2FyWefKbDNIaeCpPr0Gjzn6if5qAerzcYAPQTxeYU06fT
-        TTnM4Nw+1jpVhpEcIMH7g6keKqdyqY2xus9GQc/+3jUxiQk=
-X-Google-Smtp-Source: ABdhPJz9Qw7D5ixsrCkBdUq2WRhpgvzsiAYhD7jodKSpHZnJBlWjCCQ1goHrC+aPtsxXwhA3bm8Dvpk7aSzaaxpcE/0=
-X-Received: by 2002:a25:9a49:: with SMTP id r9mr1089ybo.520.1591192508483;
- Wed, 03 Jun 2020 06:55:08 -0700 (PDT)
+        bh=987vEKH7qwi1mDGdoRAEJ4OXmQS09iP3mdTNwmC8gNc=;
+        b=TeJ30kM8fXHh/omx+4al9lRCI5EmRSWLRKpElDIGo49gYcNCUZ+h77bknDu2zgJm63
+         /mHG3+h/cfpLfKhN6tD7kFto+EaNylhLmPA4hlH1OWEOcaM+SMcpx0Dq6/ekTC/Ibc9r
+         0ovRQ0lVdwTLnm0WtdcTc3Id9KjBZEmf7LdJSSjzVrqq4H8UDUAS5AI+KQ7Xl/VMjdg6
+         Z/X22/sji99or7yhWyQCTtEz00LeRnlVPFP7qQ3qEulnWZCWODB38A6HGBCsXGCZ22xI
+         tXh3E5vx0yuzox1+y74NxUURgcSrVTfldkKur1e3OJf9b2Af/gtCxurMkpY7QzXkYPDn
+         8M/g==
+X-Gm-Message-State: AOAM533Ff1bnf9dnWEzqkGEeekFJIBzZ7x3UlIRg5zSnUXVI/H5kE6vm
+        cDJCdGHbufFP/8b6rJCQKymcb8za10FnCNhRPgieggJq
+X-Google-Smtp-Source: ABdhPJy0hpwTVN8ZLSoKHjsRwOYMVh8eTtLjYBhB7yeOnlKEff6FI7agH/g5zBKnYVkMBWnLIRuf7reWU8NEWJzrE+A=
+X-Received: by 2002:a67:edca:: with SMTP id e10mr21035480vsp.219.1591193294137;
+ Wed, 03 Jun 2020 07:08:14 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
  <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
@@ -51,13 +51,14 @@ References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
  <CAL+tcoDn_=T--uB0CRymfTGvD022PPDk5Yw2yCxvqOOpZ4G_dQ@mail.gmail.com>
  <CANn89i+dPu9=qJowhRVm9d3CesY4p+zzJ0HGiCMc_yJxux6pow@mail.gmail.com>
  <CAL+tcoC2+vYoFbujkLCF7P3evfirNSBQtJ9bPFHiU2FGOnBo+A@mail.gmail.com>
- <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com> <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
-In-Reply-To: <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 3 Jun 2020 06:54:56 -0700
-Message-ID: <CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com>
+ <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com>
+ <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com> <CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com>
+In-Reply-To: <CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 3 Jun 2020 10:07:55 -0400
+Message-ID: <CADVnQynXzE6_6h8w8TDyPjtQjy_uXr-+3weikTDtAbY-xPiDEw@mail.gmail.com>
 Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
-To:     Neal Cardwell <ncardwell@google.com>
+To:     Eric Dumazet <edumazet@google.com>
 Cc:     Jason Xing <kerneljasonxing@gmail.com>,
         David Miller <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -71,122 +72,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 3, 2020 at 5:02 AM Neal Cardwell <ncardwell@google.com> wrote:
+On Wed, Jun 3, 2020 at 9:55 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Wed, Jun 3, 2020 at 1:44 AM Eric Dumazet <edumazet@google.com> wrote:
+> On Wed, Jun 3, 2020 at 5:02 AM Neal Cardwell <ncardwell@google.com> wrote:
 > >
-> > On Tue, Jun 2, 2020 at 10:05 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > On Wed, Jun 3, 2020 at 1:44 AM Eric Dumazet <edumazet@google.com> wrote:
 > > >
-> > > Hi Eric,
+> > > On Tue, Jun 2, 2020 at 10:05 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > > >
+> > > > Hi Eric,
+> > > >
+> > > > I'm still trying to understand what you're saying before. Would this
+> > > > be better as following:
+> > > > 1) discard the tcp_internal_pacing() function.
+> > > > 2) remove where the tcp_internal_pacing() is called in the
+> > > > __tcp_transmit_skb() function.
+> > > >
+> > > > If we do so, we could avoid 'too late to give up pacing'. Meanwhile,
+> > > > should we introduce the tcp_wstamp_ns socket field as commit
+> > > > (864e5c090749) does?
+> > > >
 > > >
-> > > I'm still trying to understand what you're saying before. Would this
-> > > be better as following:
-> > > 1) discard the tcp_internal_pacing() function.
-> > > 2) remove where the tcp_internal_pacing() is called in the
-> > > __tcp_transmit_skb() function.
+> > > Please do not top-post on netdev mailing list.
 > > >
-> > > If we do so, we could avoid 'too late to give up pacing'. Meanwhile,
-> > > should we introduce the tcp_wstamp_ns socket field as commit
-> > > (864e5c090749) does?
 > > >
+> > > I basically suggested double-checking which point in TCP could end up
+> > > calling tcp_internal_pacing()
+> > > while the timer was already armed.
+> > >
+> > > I guess this is mtu probing.
 > >
-> > Please do not top-post on netdev mailing list.
-> >
-> >
-> > I basically suggested double-checking which point in TCP could end up
-> > calling tcp_internal_pacing()
-> > while the timer was already armed.
-> >
-> > I guess this is mtu probing.
+> > Perhaps this could also happen from some of the retransmission code
+> > paths that don't use tcp_xmit_retransmit_queue()? Perhaps
+> > tcp_retransmit_timer() (RTO) and  tcp_send_loss_probe() TLP? It seems
+> > they could indirectly cause a call to __tcp_transmit_skb() and thus
+> > tcp_internal_pacing() without first checking if the pacing timer was
+> > already armed?
 >
-> Perhaps this could also happen from some of the retransmission code
-> paths that don't use tcp_xmit_retransmit_queue()? Perhaps
-> tcp_retransmit_timer() (RTO) and  tcp_send_loss_probe() TLP? It seems
-> they could indirectly cause a call to __tcp_transmit_skb() and thus
-> tcp_internal_pacing() without first checking if the pacing timer was
-> already armed?
-
-I feared this, (see recent commits about very low pacing rates) :/
-
-I am not sure we need to properly fix all these points for old
-kernels, since EDT model got rid of these problems.
-
-Maybe we can try to extend the timer.
-
-Something like :
-
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index cc4ba42052c21b206850594db6751810d8fc72b4..626b9f4f500f7e5270d8d59e6eb16dbfa3efbc7c
-100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -966,6 +966,8 @@ enum hrtimer_restart tcp_pace_kick(struct hrtimer *timer)
-
- static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
- {
-+       struct tcp_sock *tp = tcp_sk(sk);
-+       ktime_t expire, now;
-        u64 len_ns;
-        u32 rate;
-
-@@ -977,12 +979,29 @@ static void tcp_internal_pacing(struct sock *sk,
-const struct sk_buff *skb)
-
-        len_ns = (u64)skb->len * NSEC_PER_SEC;
-        do_div(len_ns, rate);
--       hrtimer_start(&tcp_sk(sk)->pacing_timer,
--                     ktime_add_ns(ktime_get(), len_ns),
-+
-+       now = ktime_get();
-+       /* If hrtimer is already armed, then our caller has not
-+        * used tcp_pacing_check().
-+        */
-+       if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
-+               expire = hrtimer_get_softexpires(&tp->pacing_timer);
-+               if (ktime_after(expire, now))
-+                       now = expire;
-+               if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
-+                       __sock_put(sk);
-+       }
-+       hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
-                      HRTIMER_MODE_ABS_PINNED_SOFT);
-        sock_hold(sk);
- }
-
-+static bool tcp_pacing_check(const struct sock *sk)
-+{
-+       return tcp_needs_internal_pacing(sk) &&
-+              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
-+}
-+
- static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
- {
-        skb->skb_mstamp = tp->tcp_mstamp;
-@@ -2117,6 +2136,9 @@ static int tcp_mtu_probe(struct sock *sk)
-        if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
-                return -1;
-
-+       if (tcp_pacing_check(sk))
-+               return -1;
-+
-        /* We're allowed to probe.  Build it now. */
-        nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
-        if (!nskb)
-@@ -2190,11 +2212,6 @@ static int tcp_mtu_probe(struct sock *sk)
-        return -1;
- }
-
--static bool tcp_pacing_check(const struct sock *sk)
--{
--       return tcp_needs_internal_pacing(sk) &&
--              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
--}
-
- /* TCP Small Queues :
-  * Control number of packets in qdisc/devices to two packets / or ~1 ms.
-
-
-
+> I feared this, (see recent commits about very low pacing rates) :/
 >
-> neal
+> I am not sure we need to properly fix all these points for old
+> kernels, since EDT model got rid of these problems.
+
+Agreed.
+
+> Maybe we can try to extend the timer.
+
+Sounds good.
+
+> Something like :
+>
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index cc4ba42052c21b206850594db6751810d8fc72b4..626b9f4f500f7e5270d8d59e6eb16dbfa3efbc7c
+> 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -966,6 +966,8 @@ enum hrtimer_restart tcp_pace_kick(struct hrtimer *timer)
+>
+>  static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
+>  {
+> +       struct tcp_sock *tp = tcp_sk(sk);
+> +       ktime_t expire, now;
+>         u64 len_ns;
+>         u32 rate;
+>
+> @@ -977,12 +979,29 @@ static void tcp_internal_pacing(struct sock *sk,
+> const struct sk_buff *skb)
+>
+>         len_ns = (u64)skb->len * NSEC_PER_SEC;
+>         do_div(len_ns, rate);
+> -       hrtimer_start(&tcp_sk(sk)->pacing_timer,
+> -                     ktime_add_ns(ktime_get(), len_ns),
+> +
+> +       now = ktime_get();
+> +       /* If hrtimer is already armed, then our caller has not
+> +        * used tcp_pacing_check().
+> +        */
+> +       if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
+> +               expire = hrtimer_get_softexpires(&tp->pacing_timer);
+> +               if (ktime_after(expire, now))
+> +                       now = expire;
+> +               if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
+> +                       __sock_put(sk);
+> +       }
+> +       hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
+>                       HRTIMER_MODE_ABS_PINNED_SOFT);
+>         sock_hold(sk);
+>  }
+>
+> +static bool tcp_pacing_check(const struct sock *sk)
+> +{
+> +       return tcp_needs_internal_pacing(sk) &&
+> +              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
+> +}
+> +
+>  static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
+>  {
+>         skb->skb_mstamp = tp->tcp_mstamp;
+> @@ -2117,6 +2136,9 @@ static int tcp_mtu_probe(struct sock *sk)
+>         if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
+>                 return -1;
+>
+> +       if (tcp_pacing_check(sk))
+> +               return -1;
+> +
+>         /* We're allowed to probe.  Build it now. */
+>         nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
+>         if (!nskb)
+> @@ -2190,11 +2212,6 @@ static int tcp_mtu_probe(struct sock *sk)
+>         return -1;
+>  }
+>
+> -static bool tcp_pacing_check(const struct sock *sk)
+> -{
+> -       return tcp_needs_internal_pacing(sk) &&
+> -              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
+> -}
+>
+>  /* TCP Small Queues :
+>   * Control number of packets in qdisc/devices to two packets / or ~1 ms.
+
+Thanks for your fix, Eric. This fix looks good to me! I agree that
+this fix is good enough for older kernels.
+
+thanks,
+neal
