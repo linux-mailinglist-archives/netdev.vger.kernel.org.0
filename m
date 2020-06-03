@@ -2,132 +2,413 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E985F1ED226
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF3A1ED22F
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:36:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgFCOeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 10:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        id S1726085AbgFCOg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 10:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbgFCOeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:34:13 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC207C08C5C0;
-        Wed,  3 Jun 2020 07:34:13 -0700 (PDT)
-Received: from [5.158.153.53] (helo=debian-buster-darwi.lab.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <a.darwish@linutronix.de>)
-        id 1jgUSu-0001eH-D8; Wed, 03 Jun 2020 16:34:00 +0200
-Date:   Wed, 3 Jun 2020 16:33:58 +0200
-From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 01/25] net: core: device_rename: Use rwsem instead of
- a seqcount
-Message-ID: <20200603143358.GA1121436@debian-buster-darwi.lab.linutronix.de>
-References: <20200519214547.352050-1-a.darwish@linutronix.de>
- <20200519214547.352050-2-a.darwish@linutronix.de>
- <33cec6a9-2f6e-3d3c-99ac-9b2a3304ec26@gmail.com>
- <20200520064246.GA353513@debian-buster-darwi.lab.linutronix.de>
- <1498089b-08bd-d776-1570-d8b34463c702@gmail.com>
+        with ESMTP id S1725810AbgFCOg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:36:27 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37A3C08C5C1
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 07:36:26 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id f185so2337836wmf.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 07:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FOpVDH4BiTRLorEpkAgzDg/6WmANN7Aamz0qZgH0p5E=;
+        b=O4P8ErICiAV0HMQA6Py2q/B2CtSFxsJLz0N4RfK34q7OWw3/t5HNu8/fUeFNeVLW1b
+         IEmhO0mrbg3VMrM55aeVLqlQQSQNzhGPgqhZ6kF3SoB3M8oaUJZa42T3KDpK54goWO/t
+         23YKY0X+6XjXc3oiZ1pjaiz8oiug5EEZUW1twNv5uR8MSFB1iHvxiCKRuaocqvBEb6Nt
+         QW4GMlWlxNU/FEX7117ZevmsvQgmfyHhSZ+1duIodr5NzQPySpGTlMKp8U7D8dIxksU2
+         ZOqCNiO7UEyNmGCgcfKLHMCOGoTuAyXoORMuFjA/TNN0R+nVgzIkobPgD+g6CnUiy7bU
+         B0xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FOpVDH4BiTRLorEpkAgzDg/6WmANN7Aamz0qZgH0p5E=;
+        b=Bf2j1/t4fn1JjaUwTcPByzNnMAiQaddWyUQnF2pKgRCVUCda5+YArgLhLwSwAp2DNV
+         yfb+Lx4zkH3wH/7Li87nRwRqGfXSvNyJlEvpvJoEb5QH9hjwvj6XluOGWiNiNcWCjHo4
+         nls/gnnLukx8Tn/A/CNvyEsBlgh+AeYFBYDcnFC832LSKeAQhkqQldDrYD+rFDKYxgDJ
+         FCGxDHMtiW9ufbhMukFZCHJoe1/auBseajhg8cNuzH4vA0q358HHfJHP1iUsTNHt2813
+         nB1KiXEaBDPx0GxN6frm+kTfbK4QI1qiBOn18+6Bn3xqwxZfIlW1hOsU9mz8E5G2u/WF
+         Kezg==
+X-Gm-Message-State: AOAM532DqbLiHBVVTavxKNeb7824B64CyyI9OBxzncCozr8TL8DIY6YE
+        Dq8iluVwVDMe3/H0pwFAgQh9Qg==
+X-Google-Smtp-Source: ABdhPJxmoQDiarJtX2HTTZ3DjoapQbGSg6RMAYrh8/YxCRpMxajr/xqeqM+FfDm4/kTSKtOjXvh9Vw==
+X-Received: by 2002:a05:600c:146:: with SMTP id w6mr8677844wmm.97.1591194985386;
+        Wed, 03 Jun 2020 07:36:25 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id z22sm3303213wmf.9.2020.06.03.07.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 07:36:24 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 16:36:23 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [net-next 3/6] net: marvell: prestera: Add basic devlink support
+Message-ID: <20200603143623.GB2274@nanopsycho.orion>
+References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
+ <20200528151245.7592-4-vadym.kochan@plvision.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1498089b-08bd-d776-1570-d8b34463c702@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+In-Reply-To: <20200528151245.7592-4-vadym.kochan@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 20, 2020 at 05:51:27AM -0700, Eric Dumazet wrote:
+Thu, May 28, 2020 at 05:12:42PM CEST, vadym.kochan@plvision.eu wrote:
+>Add very basic support for devlink interface:
 >
-> On 5/19/20 11:42 PM, Ahmed S. Darwish wrote:
-> > Hello Eric,
-> >
-> > On Tue, May 19, 2020 at 07:01:38PM -0700, Eric Dumazet wrote:
-> >>
-> >> On 5/19/20 2:45 PM, Ahmed S. Darwish wrote:
-> >>> Sequence counters write paths are critical sections that must never be
-> >>> preempted, and blocking, even for CONFIG_PREEMPTION=n, is not allowed.
-> >>>
-> >>> Commit 5dbe7c178d3f ("net: fix kernel deadlock with interface rename and
-> >>> netdev name retrieval.") handled a deadlock, observed with
-> >>> CONFIG_PREEMPTION=n, where the devnet_rename seqcount read side was
-> >>> infinitely spinning: it got scheduled after the seqcount write side
-> >>> blocked inside its own critical section.
-> >>>
-> >>> To fix that deadlock, among other issues, the commit added a
-> >>> cond_resched() inside the read side section. While this will get the
-> >>> non-preemptible kernel eventually unstuck, the seqcount reader is fully
-> >>> exhausting its slice just spinning -- until TIF_NEED_RESCHED is set.
-> >>>
-> >>> The fix is also still broken: if the seqcount reader belongs to a
-> >>> real-time scheduling policy, it can spin forever and the kernel will
-> >>> livelock.
-> >>>
-> >>> Disabling preemption over the seqcount write side critical section will
-> >>> not work: inside it are a number of GFP_KERNEL allocations and mutex
-> >>> locking through the drivers/base/ :: device_rename() call chain.
-> >>>
-> >>> From all the above, replace the seqcount with a rwsem.
-> >>>
-> >>> Fixes: 5dbe7c178d3f (net: fix kernel deadlock with interface rename and netdev name retrieval.)
-> >>> Fixes: 30e6c9fa93cf (net: devnet_rename_seq should be a seqcount)
-> >>> Fixes: c91f6df2db49 (sockopt: Change getsockopt() of SO_BINDTODEVICE to return an interface name)
-> >>> Cc: <stable@vger.kernel.org>
-> >>> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
-> >>> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> >>> ---
-> >>>  net/core/dev.c | 30 ++++++++++++------------------
-> >>>  1 file changed, 12 insertions(+), 18 deletions(-)
-> >>>
-> >>
-> >> Seems fine to me, assuming rwsem prevent starvation of the writer.
-> >>
-> >
-> > Thanks for the review.
-> >
-> > AFAIK, due to 5cfd92e12e13 ("locking/rwsem: Adaptive disabling of reader
-> > optimistic spinning"), using a rwsem shouldn't lead to writer starvation
-> > in the contended case.
+>    - driver name
+>    - fw version
+>    - devlink ports
 >
-> Hmm this was in linux-5.3, so very recent stuff.
+>Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+>---
+> drivers/net/ethernet/marvell/prestera/Kconfig |   1 +
+> .../net/ethernet/marvell/prestera/Makefile    |   2 +-
+> .../net/ethernet/marvell/prestera/prestera.h  |   4 +
+> .../marvell/prestera/prestera_devlink.c       | 111 ++++++++++++++++++
+> .../marvell/prestera/prestera_devlink.h       |  25 ++++
+> .../ethernet/marvell/prestera/prestera_main.c |  27 ++++-
+> 6 files changed, 165 insertions(+), 5 deletions(-)
+> create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+> create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.h
 >
-> Has this patch been backported to stable releases ?
+>diff --git a/drivers/net/ethernet/marvell/prestera/Kconfig b/drivers/net/ethernet/marvell/prestera/Kconfig
+>index 0848edb272a5..dfd5174d0568 100644
+>--- a/drivers/net/ethernet/marvell/prestera/Kconfig
+>+++ b/drivers/net/ethernet/marvell/prestera/Kconfig
+>@@ -6,6 +6,7 @@
+> config PRESTERA
+> 	tristate "Marvell Prestera Switch ASICs support"
+> 	depends on NET_SWITCHDEV && VLAN_8021Q
+>+	select NET_DEVLINK
+> 	help
+> 	  This driver supports Marvell Prestera Switch ASICs family.
+> 
+>diff --git a/drivers/net/ethernet/marvell/prestera/Makefile b/drivers/net/ethernet/marvell/prestera/Makefile
+>index 2146714eab21..babd71fba809 100644
+>--- a/drivers/net/ethernet/marvell/prestera/Makefile
+>+++ b/drivers/net/ethernet/marvell/prestera/Makefile
+>@@ -1,6 +1,6 @@
+> # SPDX-License-Identifier: GPL-2.0
+> obj-$(CONFIG_PRESTERA)	+= prestera.o
+> prestera-objs		:= prestera_main.o prestera_hw.o prestera_dsa.o \
+>-			   prestera_rxtx.o
+>+			   prestera_rxtx.o prestera_devlink.o
+> 
+> obj-$(CONFIG_PRESTERA_PCI)	+= prestera_pci.o
+>diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+>index 5079d872e18a..f8abaaff5f21 100644
+>--- a/drivers/net/ethernet/marvell/prestera/prestera.h
+>+++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+>@@ -11,6 +11,9 @@
+> #include <linux/notifier.h>
+> #include <uapi/linux/if_ether.h>
+> #include <linux/workqueue.h>
+>+#include <net/devlink.h>
+>+
+>+#define PRESTERA_DRV_NAME	"prestera"
+> 
+> struct prestera_fw_rev {
+> 	u16 maj;
+>@@ -63,6 +66,7 @@ struct prestera_port_caps {
+> struct prestera_port {
+> 	struct net_device *dev;
+> 	struct prestera_switch *sw;
+>+	struct devlink_port dl_port;
+> 	u32 id;
+> 	u32 hw_id;
+> 	u32 dev_id;
+>diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+>new file mode 100644
+>index 000000000000..58021057981b
+>--- /dev/null
+>+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+>@@ -0,0 +1,111 @@
+>+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>+/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+>+
+>+#include <net/devlink.h>
+>+
+>+#include "prestera.h"
+>+#include "prestera_devlink.h"
+>+
+>+static int prestera_dl_info_get(struct devlink *dl,
+>+				struct devlink_info_req *req,
+>+				struct netlink_ext_ack *extack)
+>+{
+>+	struct prestera_switch *sw = devlink_priv(dl);
+>+	char buf[16];
+>+	int err = 0;
+>+
+>+	err = devlink_info_driver_name_put(req, PRESTERA_DRV_NAME);
+>+	if (err)
+>+		return err;
+>+
+>+	snprintf(buf, sizeof(buf), "%d.%d.%d",
+>+		 sw->dev->fw_rev.maj,
+>+		 sw->dev->fw_rev.min,
+>+		 sw->dev->fw_rev.sub);
+>+
+>+	err = devlink_info_version_running_put(req,
+>+					       DEVLINK_INFO_VERSION_GENERIC_FW,
+>+					       buf);
+>+	if (err)
+>+		return err;
+>+
+>+	return 0;
+>+}
+>+
+>+static const struct devlink_ops prestera_dl_ops = {
+>+	.info_get = prestera_dl_info_get,
+>+};
+>+
+>+struct prestera_switch *prestera_devlink_alloc(void)
+>+{
+>+	struct devlink *dl;
+>+
+>+	dl = devlink_alloc(&prestera_dl_ops, sizeof(struct prestera_switch));
+>+
+>+	return devlink_priv(dl);
+>+}
+>+
+>+void prestera_devlink_free(struct prestera_switch *sw)
+>+{
+>+	struct devlink *dl = priv_to_devlink(sw);
+>+
+>+	devlink_free(dl);
+>+}
+>+
+>+int prestera_devlink_register(struct prestera_switch *sw)
+>+{
+>+	struct devlink *dl = priv_to_devlink(sw);
+>+	int err;
+>+
+>+	err = devlink_register(dl, sw->dev->dev);
+>+	if (err) {
+>+		dev_warn(sw->dev->dev, "devlink_register failed: %d\n", err);
+>+		return err;
+>+	}
+>+
+>+	return 0;
+>+}
+>+
+>+void prestera_devlink_unregister(struct prestera_switch *sw)
+>+{
+>+	struct devlink *dl = priv_to_devlink(sw);
+>+
+>+	devlink_unregister(dl);
+>+}
+>+
+>+int prestera_devlink_port_register(struct prestera_port *port)
+>+{
+>+	struct devlink *dl = priv_to_devlink(port->sw);
+>+	struct prestera_switch *sw;
+>+	int err;
+>+
+>+	sw = port->sw;
+>+	dl = priv_to_devlink(sw);
+>+
+>+	devlink_port_attrs_set(&port->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
+>+			       port->fp_id, false, 0,
+>+			       &port->sw->id, sizeof(port->sw->id));
+>+
+>+	err = devlink_port_register(dl, &port->dl_port, port->fp_id);
+>+	if (err)
+>+		dev_err(sw->dev->dev, "devlink_port_register failed: %d\n", err);
+>+
+>+	return 0;
+>+}
+>+
+>+void prestera_devlink_port_unregister(struct prestera_port *port)
+>+{
+>+	devlink_port_unregister(&port->dl_port);
+>+}
+>+
+>+void prestera_devlink_port_type_set(struct prestera_port *port)
+>+{
+>+	devlink_port_type_eth_set(&port->dl_port, port->dev);
+>+}
+>+
+>+struct devlink_port *prestera_devlink_get_port(struct net_device *dev)
+>+{
+>+	struct prestera_port *port = netdev_priv(dev);
+>+
+>+	return &port->dl_port;
+>+}
+>diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.h b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
+>new file mode 100644
+>index 000000000000..b46441d1e758
+>--- /dev/null
+>+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
+>@@ -0,0 +1,25 @@
+>+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>+ *
+>+ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
+>+ *
+>+ */
+>+
+>+#ifndef _PRESTERA_DEVLINK_H_
+>+#define _PRESTERA_DEVLINK_H_
+>+
+>+#include "prestera.h"
+>+
+>+struct prestera_switch *prestera_devlink_alloc(void);
+>+void prestera_devlink_free(struct prestera_switch *sw);
+>+
+>+int prestera_devlink_register(struct prestera_switch *sw);
+>+void prestera_devlink_unregister(struct prestera_switch *sw);
+>+
+>+int prestera_devlink_port_register(struct prestera_port *port);
+>+void prestera_devlink_port_unregister(struct prestera_port *port);
+>+
+>+void prestera_devlink_port_type_set(struct prestera_port *port);
+>+
+>+struct devlink_port *prestera_devlink_get_port(struct net_device *dev);
+>+
+>+#endif /* _PRESTERA_DEVLINK_H_ */
+>diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+>index b5241e9b784a..ddab9422fe5e 100644
+>--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
+>+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+>@@ -14,6 +14,7 @@
+> #include "prestera.h"
+> #include "prestera_hw.h"
+> #include "prestera_rxtx.h"
+>+#include "prestera_devlink.h"
+> 
+> #define PRESTERA_MTU_DEFAULT 1536
+> 
+>@@ -185,6 +186,7 @@ static const struct net_device_ops netdev_ops = {
+> 	.ndo_change_mtu = prestera_port_change_mtu,
+> 	.ndo_get_stats64 = prestera_port_get_stats64,
+> 	.ndo_set_mac_address = prestera_port_set_mac_address,
+>+	.ndo_get_devlink_port = prestera_devlink_get_port,
+> };
+> 
+> static int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
+>@@ -234,9 +236,13 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+> 					&port->hw_id, &port->dev_id);
+> 	if (err) {
+> 		dev_err(prestera_dev(sw), "Failed to get port(%u) info\n", id);
+>-		goto err_port_init;
+>+		goto err_port_info_get;
+> 	}
+> 
+>+	err = prestera_devlink_port_register(port);
+>+	if (err)
+>+		goto err_dl_port_register;
+>+
+> 	dev->features |= NETIF_F_NETNS_LOCAL;
+> 	dev->netdev_ops = &netdev_ops;
+> 
+>@@ -295,11 +301,16 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+> 	if (err)
+> 		goto err_register_netdev;
+> 
+>+	prestera_devlink_port_type_set(port);
+>+
+> 	return 0;
+> 
+> err_register_netdev:
+> 	list_del_rcu(&port->list);
+> err_port_init:
+>+	prestera_devlink_port_unregister(port);
+>+err_dl_port_register:
+>+err_port_info_get:
+> 	free_netdev(dev);
+> 	return err;
+> }
+>@@ -313,6 +324,7 @@ static void prestera_port_destroy(struct prestera_port *port)
+> 
+
+You need to call devlink_port_type_clear() before unregister_netdev()
+call.
+
+
+> 	list_del_rcu(&port->list);
+> 
+>+	prestera_devlink_port_unregister(port);
+> 	free_netdev(dev);
+> }
+> 
+>@@ -435,6 +447,10 @@ static int prestera_switch_init(struct prestera_switch *sw)
+> 	if (err)
+> 		return err;
+> 
+>+	err = prestera_devlink_register(sw);
+>+	if (err)
+>+		goto err_dl_register;
+>+
+> 	err = prestera_create_ports(sw);
+> 	if (err)
+> 		goto err_ports_create;
+>@@ -442,6 +458,8 @@ static int prestera_switch_init(struct prestera_switch *sw)
+> 	return 0;
+> 
+> err_ports_create:
+>+	prestera_devlink_unregister(sw);
+>+err_dl_register:
+> 	prestera_event_handlers_unregister(sw);
+> 
+> 	return err;
+>@@ -450,6 +468,7 @@ static int prestera_switch_init(struct prestera_switch *sw)
+> static void prestera_switch_fini(struct prestera_switch *sw)
+> {
+> 	prestera_destroy_ports(sw);
+>+	prestera_devlink_unregister(sw);
+> 	prestera_event_handlers_unregister(sw);
+> 	prestera_rxtx_switch_fini(sw);
+> }
+>@@ -459,7 +478,7 @@ int prestera_device_register(struct prestera_device *dev)
+> 	struct prestera_switch *sw;
+> 	int err;
+> 
+>-	sw = kzalloc(sizeof(*sw), GFP_KERNEL);
+>+	sw = prestera_devlink_alloc();
+> 	if (!sw)
+> 		return -ENOMEM;
+> 
+>@@ -468,7 +487,7 @@ int prestera_device_register(struct prestera_device *dev)
+> 
+> 	err = prestera_switch_init(sw);
+> 	if (err) {
+>-		kfree(sw);
+>+		prestera_devlink_free(sw);
+> 		return err;
+> 	}
+> 
+>@@ -481,7 +500,7 @@ void prestera_device_unregister(struct prestera_device *dev)
+> 	struct prestera_switch *sw = dev->priv;
+> 
+> 	prestera_switch_fini(sw);
+>-	kfree(sw);
+>+	prestera_devlink_free(sw);
+> }
+> EXPORT_SYMBOL(prestera_device_unregister);
+> 
+>-- 
+>2.17.1
 >
-> With all the Fixes: tags you added, stable teams will backport this
-> networking patch to all stable versions.
->
-> Do we have a way to tune a dedicare rwsem to 'give preference to the
-> (unique in this case) writer" over a myriad of potential readers ?
->
-
-I was wrong in referencing the commit 5cfd92e12e13 above.
-
-Before and after that commit, once a rwsem writer is blocking, all
-subsequent readers will block until that writer makes progress.
-
-Given that behavior, and that the read section is already quite short, I
-don't think there's any danger incurred on writers here.
-
-(a v2 will be sent shortly, fixing the error found Dan/kbuild-bot.)
-
-Thanks,
-
---
-Ahmed S. Darwish
-Linutronix GmbH
