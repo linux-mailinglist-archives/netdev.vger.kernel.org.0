@@ -2,148 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C58B01ED8B5
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 00:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB531ED8CC
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 00:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbgFCWkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 18:40:23 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:60265 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726441AbgFCWkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 18:40:23 -0400
+        id S1726589AbgFCWvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 18:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbgFCWvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 18:51:51 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0CEC08C5C0;
+        Wed,  3 Jun 2020 15:51:51 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g12so1334478pll.10;
+        Wed, 03 Jun 2020 15:51:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1591224022; x=1622760022;
-  h=from:to:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version:subject;
-  bh=Myq6ZV85It0R/N8eLRhclOg1iR9ZpMgAQsNUyFxW00E=;
-  b=piywcRHR6QcRsJn67IKNTa9KWgnwhGS8O6SLcN4CSD3YS4qJqsBLWmFr
-   +I4mcdwpbvRrQUDD9XPKFmMPdJHsiLqEx3m8uudDsGLkuKqvcvUv0mSOL
-   bsKn4e3BgWFeuTdJPX04mpjCgU/FDUewauqrzrykXVl8hw1lno25GYJWX
-   E=;
-IronPort-SDR: HGlszbAaMjRlQSBHjzfb07Sq8D3XcgSehxso6VS97ueiDdkojxtD16vl+YaA7qNIELHPqOLb9F
- PkJE9W82B+IA==
-X-IronPort-AV: E=Sophos;i="5.73,470,1583193600"; 
-   d="scan'208";a="41391349"
-Subject: Re: [PATCH 04/12] x86/xen: add system core suspend and resume callbacks
-Thread-Topic: [PATCH 04/12] x86/xen: add system core suspend and resume callbacks
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-17c49630.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 03 Jun 2020 22:40:18 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-17c49630.us-east-1.amazon.com (Postfix) with ESMTPS id 5F279A179C;
-        Wed,  3 Jun 2020 22:40:16 +0000 (UTC)
-Received: from EX13D05UWB001.ant.amazon.com (10.43.161.181) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 3 Jun 2020 22:40:15 +0000
-Received: from EX13D07UWB001.ant.amazon.com (10.43.161.238) by
- EX13D05UWB001.ant.amazon.com (10.43.161.181) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 3 Jun 2020 22:40:15 +0000
-Received: from EX13D07UWB001.ant.amazon.com ([10.43.161.238]) by
- EX13D07UWB001.ant.amazon.com ([10.43.161.238]) with mapi id 15.00.1497.006;
- Wed, 3 Jun 2020 22:40:15 +0000
-From:   "Agarwal, Anchal" <anchalag@amazon.com>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "Agarwal, Anchal" <anchalag@amazon.com>
-Thread-Index: AQHWLjTkyZyRRrOMA06VZoqhuNYdW6jBUn0AgAXLpQA=
-Date:   Wed, 3 Jun 2020 22:40:15 +0000
-Message-ID: <B966B3A2-4F08-42FA-AF59-B8AA0783C2BA@amazon.com>
-References: <cover.1589926004.git.anchalag@amazon.com>
- <79cf02631dc00e62ebf90410bfbbdb52fe7024cb.1589926004.git.anchalag@amazon.com>
- <4b577564-e4c3-0182-2b9e-5f79004f32a1@oracle.com>
-In-Reply-To: <4b577564-e4c3-0182-2b9e-5f79004f32a1@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.160.48]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FB32A01A0FC73E469E52EFDA0074EE47@amazon.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=75AnbeF25C5PRHxMmWsplju/2l9IUUVHTzTZ0/yQJAc=;
+        b=SDhBGLUJVPcBJbIeW5nwe6+j1yB0umBcNiVJr5B1L82JZptTYzKpKq7oTfaunxCfE2
+         G9m9P3VUA8YordePTB2o7TCUPrDMekcMK8UU8pvuPDF0b2ysRKLEMGi3pXmlzbAwHQ6C
+         ekGLoBBW/9NlIkBg75FRE4d/0ML/VN3C91xIisv1arzlteZiyjg3Sb9lcxptXkdnLffW
+         XsRVegn1omS6cj1eYpAWZR0OFUMBfCGqRIt1er4MnpfWLiiebdXz2152LRxDRWevgOWe
+         /8KB6bUUU7JKFw9pCKsfDER4mp2hWRhzcvKf4y3ToSh8l/q//pmMmh9U+VTeXTok1P/1
+         xXGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=75AnbeF25C5PRHxMmWsplju/2l9IUUVHTzTZ0/yQJAc=;
+        b=YB8Fnc2OPN900iSDmyCadKZgI7A36UCJBpd+qKD9pMqI+wn+YZpqHfRF5KFLEU9HwQ
+         Gspvay5VBr8NmayarUk4qzpV+mOVHjmGdGlkYQ568X8yTdAQCsQoBNnGyH5du5vknr6T
+         4TO9cWDnHQM0uyYOlytuOcjqiXNGzPxJIpEJZ1K6AOFzcoWLfGsi22ykApV1RQoi0lPL
+         1B0urZodKPBThIVfxP1oQ3rgd+n65Lrzm5lTSP5nuU7btE3OSuCaQ0qdMoMY8eBqgLLy
+         S+jyc500mm7athd//fM3AdHbUbLFMcUC3fgKrkB305+XTpCCCdtAChwvSbSJpnzxkKv9
+         IOvw==
+X-Gm-Message-State: AOAM531BZqRBUmlHL6XSG1Yae5uOgsXyXUeADigzDOkZKg/WABPwbsEH
+        XokjVqcohZYp8jBzWAHAO1alsgeEj84=
+X-Google-Smtp-Source: ABdhPJz4pidEV/JBtin0o/PScX4wuDrRQl7WdxdFMqQxZX03oEiDeQKoC2pbF+5b5ImvIGr4w5XPtw==
+X-Received: by 2002:a17:90a:aa8f:: with SMTP id l15mr2626996pjq.156.1591224710358;
+        Wed, 03 Jun 2020 15:51:50 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id k101sm4094947pjb.26.2020.06.03.15.51.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 15:51:49 -0700 (PDT)
+Date:   Wed, 03 Jun 2020 15:51:40 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Message-ID: <5ed8297cbf0fd_6d732af83f96a5c0a5@john-XPS-13-9370.notmuch>
+In-Reply-To: <878sh33mvj.fsf@cloudflare.com>
+References: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower>
+ <6f8bb6d8-bb70-4533-f15b-310db595d334@gmail.com>
+ <87a71k2yje.fsf@cloudflare.com>
+ <5ed7ed7d315bd_36aa2ab64b3c85bcd9@john-XPS-13-9370.notmuch>
+ <878sh33mvj.fsf@cloudflare.com>
+Subject: Re: [bpf PATCH] bpf: sockmap, remove bucket->lock from
+ sock_{hash|map}_free
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ICAgIENBVVRJT046IFRoaXMgZW1haWwgb3JpZ2luYXRlZCBmcm9tIG91dHNpZGUgb2YgdGhlIG9y
-Z2FuaXphdGlvbi4gRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNz
-IHlvdSBjYW4gY29uZmlybSB0aGUgc2VuZGVyIGFuZCBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUu
-DQoNCg0KDQogICAgT24gNS8xOS8yMCA3OjI2IFBNLCBBbmNoYWwgQWdhcndhbCB3cm90ZToNCiAg
-ICA+IEZyb206IE11bmVoaXNhIEthbWF0YSA8a2FtYXRhbUBhbWF6b24uY29tPg0KICAgID4NCiAg
-ICA+IEFkZCBYZW4gUFZIVk0gc3BlY2lmaWMgc3lzdGVtIGNvcmUgY2FsbGJhY2tzIGZvciBQTSBz
-dXNwZW5kIGFuZA0KICAgID4gaGliZXJuYXRpb24gc3VwcG9ydC4gVGhlIGNhbGxiYWNrcyBzdXNw
-ZW5kIGFuZCByZXN1bWUgWGVuDQogICAgPiBwcmltaXRpdmVzLGxpa2Ugc2hhcmVkX2luZm8sIHB2
-Y2xvY2sgYW5kIGdyYW50IHRhYmxlLiBOb3RlIHRoYXQNCiAgICA+IFhlbiBzdXNwZW5kIGNhbiBo
-YW5kbGUgdGhlbSBpbiBhIGRpZmZlcmVudCBtYW5uZXIsIGJ1dCBzeXN0ZW0NCiAgICA+IGNvcmUg
-Y2FsbGJhY2tzIGFyZSBjYWxsZWQgZnJvbSB0aGUgY29udGV4dC4NCg0KDQogICAgSSBkb24ndCB0
-aGluayBJIHVuZGVyc3RhbmQgdGhhdCBsYXN0IHNlbnRlbmNlLg0KDQpMb29rcyBsaWtlIGl0IG1h
-eSBoYXZlIGNyeXB0aWMgbWVhbmluZyBvZiBzdGF0aW5nIHRoYXQgeGVuX3N1c3BlbmQgY2FsbHMg
-c3lzY29yZV9zdXNwZW5kIGZyb20geGVuX3N1c3BlbmQNClNvLCBpZiB0aGVzZSBzeXNjb3JlIG9w
-cyBnZXRzIGNhbGxlZCAgZHVyaW5nIHhlbl9zdXNwZW5kIGRvIG5vdCBkbyBhbnl0aGluZy4gQ2hl
-Y2sgaWYgdGhlIG1vZGUgaXMgaW4geGVuIHN1c3BlbmQgDQphbmQgcmV0dXJuIGZyb20gdGhlcmUu
-IFRoZXNlIHN5c2NvcmVfb3BzIGFyZSBzcGVjaWZpY2FsbHkgZm9yIGRvbVUgaGliZXJuYXRpb24u
-DQpJIG11c3QgYWRtaXQsIEkgbWF5IGhhdmUgb3Zlcmxvb2tlZCBsYWNrIG9mIGV4cGxhbmF0aW9u
-IG9mIHNvbWUgaW1wbGljaXQgZGV0YWlscyBpbiB0aGUgb3JpZ2luYWwgY29tbWl0IG1zZy4gDQoN
-CiAgICA+ICBTbyBpZiB0aGUgY2FsbGJhY2tzDQogICAgPiBhcmUgY2FsbGVkIGZyb20gWGVuIHN1
-c3BlbmQgY29udGV4dCwgcmV0dXJuIGltbWVkaWF0ZWx5Lg0KICAgID4NCg0KDQogICAgPiArDQog
-ICAgPiArc3RhdGljIGludCB4ZW5fc3lzY29yZV9zdXNwZW5kKHZvaWQpDQogICAgPiArew0KICAg
-ID4gKyAgICAgc3RydWN0IHhlbl9yZW1vdmVfZnJvbV9waHlzbWFwIHhyZnA7DQogICAgPiArICAg
-ICBpbnQgcmV0Ow0KICAgID4gKw0KICAgID4gKyAgICAgLyogWGVuIHN1c3BlbmQgZG9lcyBzaW1p
-bGFyIHN0dWZmcyBpbiBpdHMgb3duIGxvZ2ljICovDQogICAgPiArICAgICBpZiAoeGVuX3N1c3Bl
-bmRfbW9kZV9pc194ZW5fc3VzcGVuZCgpKQ0KICAgID4gKyAgICAgICAgICAgICByZXR1cm4gMDsN
-CiAgICA+ICsNCiAgICA+ICsgICAgIHhyZnAuZG9taWQgPSBET01JRF9TRUxGOw0KICAgID4gKyAg
-ICAgeHJmcC5ncGZuID0gX19wYShIWVBFUlZJU09SX3NoYXJlZF9pbmZvKSA+PiBQQUdFX1NISUZU
-Ow0KICAgID4gKw0KICAgID4gKyAgICAgcmV0ID0gSFlQRVJWSVNPUl9tZW1vcnlfb3AoWEVOTUVN
-X3JlbW92ZV9mcm9tX3BoeXNtYXAsICZ4cmZwKTsNCiAgICA+ICsgICAgIGlmICghcmV0KQ0KICAg
-ID4gKyAgICAgICAgICAgICBIWVBFUlZJU09SX3NoYXJlZF9pbmZvID0gJnhlbl9kdW1teV9zaGFy
-ZWRfaW5mbzsNCiAgICA+ICsNCiAgICA+ICsgICAgIHJldHVybiByZXQ7DQogICAgPiArfQ0KICAg
-ID4gKw0KICAgID4gK3N0YXRpYyB2b2lkIHhlbl9zeXNjb3JlX3Jlc3VtZSh2b2lkKQ0KICAgID4g
-K3sNCiAgICA+ICsgICAgIC8qIFhlbiBzdXNwZW5kIGRvZXMgc2ltaWxhciBzdHVmZnMgaW4gaXRz
-IG93biBsb2dpYyAqLw0KICAgID4gKyAgICAgaWYgKHhlbl9zdXNwZW5kX21vZGVfaXNfeGVuX3N1
-c3BlbmQoKSkNCiAgICA+ICsgICAgICAgICAgICAgcmV0dXJuOw0KICAgID4gKw0KICAgID4gKyAg
-ICAgLyogTm8gbmVlZCB0byBzZXR1cCB2Y3B1X2luZm8gYXMgaXQncyBhbHJlYWR5IG1vdmVkIG9m
-ZiAqLw0KICAgID4gKyAgICAgeGVuX2h2bV9tYXBfc2hhcmVkX2luZm8oKTsNCiAgICA+ICsNCiAg
-ICA+ICsgICAgIHB2Y2xvY2tfcmVzdW1lKCk7DQogICAgPiArDQogICAgPiArICAgICBnbnR0YWJf
-cmVzdW1lKCk7DQoNCg0KICAgIERvIHlvdSBjYWxsIGdudHRhYl9zdXNwZW5kKCkgaW4gcG0gc3Vz
-cGVuZCBwYXRoPw0KTm8sIHNpbmNlIGl0IGRvZXMgbm90aGluZyBmb3IgSFZNIGd1ZXN0cy4gVGhl
-IHVubWFwX2ZyYW1lcyBpcyBvbmx5IGFwcGxpY2FibGUgZm9yIFBWIGd1ZXN0cyByaWdodD8NCg0K
-ICAgID4gK30NCiAgICA+ICsNCiAgICA+ICsvKg0KICAgID4gKyAqIFRoZXNlIGNhbGxiYWNrcyB3
-aWxsIGJlIGNhbGxlZCB3aXRoIGludGVycnVwdHMgZGlzYWJsZWQgYW5kIHdoZW4gaGF2aW5nIG9u
-bHkNCiAgICA+ICsgKiBvbmUgQ1BVIG9ubGluZS4NCiAgICA+ICsgKi8NCiAgICA+ICtzdGF0aWMg
-c3RydWN0IHN5c2NvcmVfb3BzIHhlbl9odm1fc3lzY29yZV9vcHMgPSB7DQogICAgPiArICAgICAu
-c3VzcGVuZCA9IHhlbl9zeXNjb3JlX3N1c3BlbmQsDQogICAgPiArICAgICAucmVzdW1lID0geGVu
-X3N5c2NvcmVfcmVzdW1lDQogICAgPiArfTsNCiAgICA+ICsNCiAgICA+ICt2b2lkIF9faW5pdCB4
-ZW5fc2V0dXBfc3lzY29yZV9vcHModm9pZCkNCiAgICA+ICt7DQogICAgPiArICAgICBpZiAoeGVu
-X2h2bV9kb21haW4oKSkNCg0KDQogICAgSGF2ZSB5b3UgdGVzdGVkIHRoaXMgKHRoZSB3aG9sZSBm
-ZWF0dXJlLCBub3QganVzdCB0aGlzIHBhdGNoKSB3aXRoIFBWSA0KICAgIGd1ZXN0IEJUVz8gQW5k
-IFBWSCBkb20wIGZvciB0aGF0IG1hdHRlcj8NCg0KTm8gSSBoYXZlbid0LiBUaGUgd2hvbGUgc2Vy
-aWVzIGlzIGp1c3QgdGVzdGVkIHdpdGggaHZtL3B2aHZtIGd1ZXN0cy4NCg0KICAgIC1ib3Jpcw0K
-VGhhbmtzLA0KQW5jaGFsDQoNCiAgICA+ICsgICAgICAgICAgICAgcmVnaXN0ZXJfc3lzY29yZV9v
-cHMoJnhlbl9odm1fc3lzY29yZV9vcHMpOw0KICAgID4gK30NCg0KDQoNCg0K
+Jakub Sitnicki wrote:
+> On Wed, Jun 03, 2020 at 08:35 PM CEST, John Fastabend wrote:
+> > Jakub Sitnicki wrote:
+> 
+> [...]
+> 
+> >> I'm not sure that the check for map->refcnt when sock is unlinking
+> >> itself from the map will do it. I worry we will then have issues when
+> >> sockhash is unlinking itself from socks (so the other way around) in
+> >> sock_hash_free(). We could no longer assume that the sock & psock
+> >> exists.
+> >>
+> >> What comes to mind is to reintroduce the spin-lock protected critical
+> >> section in sock_hash_free(), but delay the processing of sockets to be
+> >> unlinked from sockhash. We could grab a ref to sk_psock while holding a
+> >> spin-lock and unlink it while no longer in atomic critical section.
+> >
+> > It seems so. In sock_hash_free we logically need,
+> >
+> >  for (i = 0; i < htab->buckets_num; i++) {
+> >   hlist_for_each_entryy_safe(...) {
+> >   	hlist_del_rcu() <- detached from bucket and no longer reachable
+> 
+> Just to confirm - synchronize_rcu() doesn't prevent
+> sock_hash_delete_from_link() from getting as far as hlist_del_rcu(),
+> that is here [0], while on another cpu sock_hash_free() is also
+> performing hlist_del_rcu().
+
+Right.
+
+> 
+> That is, reintroducing the spin-lock is needed, right? Otherwise we have
+> two concurrent updaters that are not synchronized.
+> 
+
+Agree I don't have any better idea.
+
+> >         synchronize_rcu()
+> >         // now element can not be reached from unhash()
+> > 	... sock_map_unref(elem->sk, elem) ...
+> >   }
+> >  }
+> >
+> > We don't actually want to stick a synchronize_rcu() in that loop
+> > so I agree we need to collect the elements do a sync then remove them.
+> 
+> [...]
+> 
+> >>
+> >> John, WDYT?
+> >
+> > Want to give it a try? Or I can draft something.
+> 
+> I can give it a try, as I clearly need to wrap my head better around
+> this code path. But I can only see how to do it with a spin-lock back in
+> place in sock_hash_free(). If you have an idea in mind how to do it
+> locklessly, please go ahead.
+
+No I can't think of anything better.
+
+> 
+> [...]
+> 
+> [0] https://elixir.bootlin.com/linux/latest/source/net/core/sock_map.c#L738
+
+
