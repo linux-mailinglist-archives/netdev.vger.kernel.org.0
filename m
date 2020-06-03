@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A4AB1ED46B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 18:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 062301ED46C
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 18:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726108AbgFCQdl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Jun 2020 12:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
+        id S1726146AbgFCQdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 12:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgFCQdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 12:33:41 -0400
-Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C02C08C5C0;
-        Wed,  3 Jun 2020 09:33:41 -0700 (PDT)
-Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=roelofs-mbp.fritz.box); authenticated
-        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1jgWKX-0000yV-TV; Wed, 03 Jun 2020 18:33:29 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH] lan743x: Added fixed link and RGMII support / debugging
-From:   Roelof Berg <rberg@berg-solutions.de>
-In-Reply-To: <20200603155927.GC869823@lunn.ch>
-Date:   Wed, 3 Jun 2020 18:33:28 +0200
-Cc:     David Miller <davem@davemloft.net>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <42337EA1-C7D1-46C6-815F-C619B27A4E77@berg-solutions.de>
-References: <20200529193003.3717-1-rberg@berg-solutions.de>
- <20200601.115136.1314501977250032604.davem@davemloft.net>
- <D784BC1B-D14C-4FE4-8FD8-76BEBE60A39D@berg-solutions.de>
- <20200603155927.GC869823@lunn.ch>
-To:     Andrew Lunn <andrew@lunn.ch>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1591202021;3b61a3d8;
-X-HE-SMSGID: 1jgWKX-0000yV-TV
+        with ESMTP id S1725961AbgFCQdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 12:33:54 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F4DC08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 09:33:53 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id f185so2771052wmf.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 09:33:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=WK1Dm9kkaYUF6/octhmR4rBS5sG33VkFkNsRP9u2CtA=;
+        b=lw0yAODA0xIWhqgtVB0m+vQc329Cp3pOurs+TCUG/pQ7rxUNanhGGkLVFLxqpau881
+         VD7sMtANuNk+TA40kNWnG+OkLQl6FU0v/baW5GHbpwXaJiET4aubnoMqZun2brMimJhS
+         XEgfDo8XwcWK5Xnp10tFZ1aHj/VAJqMSq38AZAhr6FUrS9DDvastL/zwSDWMJGOhuGmE
+         oe2KA5IusFKv5DzusOY0Dc+UBZXrnnxqfVwaaN8f4tvPN1X4e3wqaShrVhunW2+XeQ8h
+         YDcp4/VPGvJ6W+28DlTlh2Vv8SoQMWQD+ctp39f736dORD+zb0dcqiyxiTIkWsW646Ft
+         i8GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WK1Dm9kkaYUF6/octhmR4rBS5sG33VkFkNsRP9u2CtA=;
+        b=LaEF7UKQC2hujE9waMHTNU3OI7w/mrLtrRbV1Iz1ldsRUkBExAYPPo1RnNQKK7hFD9
+         e8O8XM5McwNkR/4UsEjSrlUtCd8QN7bof8M81MOZ3F/n56vPOsyuRjFzmIHSVyy8Kpfb
+         KwhlDDBoME/bglxy/djcxnr6JI2YxxGlKnI4mQ0z3l5X+0ZhXkMifxMFozrRdBdXVPMC
+         sSrfuj42pbUO/Rl1hd4rJLFIsA8U+WzRfwBHNKhAlxksivVZvFen8KrajGkSkx7ebqYu
+         nJxAYxPRs6FKIQglLKk0DAbwDKFibIXltpQxFIgRsKQwMHyx8wYG/mzcjFkTjYTAkSuB
+         VgFQ==
+X-Gm-Message-State: AOAM530V3lNrLIpFZbTDGmphDXPhyKxU0esZufXza6xhMFRc8snKYkz8
+        ZKYFJ8Afd4ADHWQFbr8dF9QGVhnMUl54vBVHVVrC8g==
+X-Google-Smtp-Source: ABdhPJyNyHsy8njUzRiy5xHTiIUKce0eF75Do+olbf6Ho4kWqL/5IJ6xGgUZAfrqTbVFEfZV0dkw3GzwPoC0woaqid0=
+X-Received: by 2002:a1c:ba0a:: with SMTP id k10mr16425wmf.81.1591202031822;
+ Wed, 03 Jun 2020 09:33:51 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAG_fn=W_BCW5OvP2tayQLcrTuiXCXDBYDYSJ7U6xHftDFyLu3A@mail.gmail.com>
+ <CAADnVQ+GFuDkx+xW42wL60=W4bz5C8Q-pNNP+f2txy_hY-TeUA@mail.gmail.com>
+ <CAG_fn=WfQ4KG5FCwYQPbHX6PJ1f8wvJYq+Q9fBugyCbMBdiB6Q@mail.gmail.com>
+ <CAADnVQLxnjrnxFhXEKDaXBgVZeRauAr8F4N+ZwuKdTnONUkt7A@mail.gmail.com>
+ <CAG_fn=Uvp2HmqHUZqEHtAWj8dG4j5ifqbGFQ2A3Jzv10bf-b9Q@mail.gmail.com>
+ <CAADnVQ+2eLKh-s34ciNue-Jt5yL1MrS=LL8Zjfo0gkUkk8dDug@mail.gmail.com>
+ <984adc13-568e-8195-da1a-05135dbf954f@solarflare.com> <CAG_fn=WaYz5LOyuteF5LAkgFbj8cpgNQyO1ReORTAiCbyGuNQg@mail.gmail.com>
+ <38ff5e15-bf76-2d17-f524-3f943a5b8846@solarflare.com> <CAG_fn=XR_dRG4vpo-jDS1L-LFD8pkuL8yWaTWbJAAQ679C3big@mail.gmail.com>
+ <20200602173216.jrcvzgjhrkvlphew@ast-mbp.dhcp.thefacebook.com> <91a115bb-24d3-3765-a082-555b5999bb42@solarflare.com>
+In-Reply-To: <91a115bb-24d3-3765-a082-555b5999bb42@solarflare.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Wed, 3 Jun 2020 18:33:40 +0200
+Message-ID: <CAG_fn=X-ednJduk3k6JEA9mMw+DrT3uSJ=+WY269gY6p45fJ0w@mail.gmail.com>
+Subject: Re: Self-XORing BPF registers is undefined behavior
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Dmitriy Vyukov <dvyukov@google.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ok, let's proceed :) The code runs well, dmesg looks good, ip addr shows me a link up, speed/duplex looks ok. But it does not transfer any data.
+On Wed, Jun 3, 2020 at 5:37 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 02/06/2020 18:32, Alexei Starovoitov wrote:
+> > The target for bpf codegen is JITs.
+> > bpf interpreter is simulating hw.
+> > For now if you want UB fuzzer running in your environment please add
+> > _out_of_tree_ patch that inits all interpreter registers to zero.
+> +1 to all the above.
 
-Debugging steps (A/B versions):
-- Check clocks with oscilloscope (10/100/1000)
-- Dump actual register settings
-- Trace Phy-Phy autonegotiation and ensure that our patch catches up the result
+Noted, thank you.
 
-Research topic:
-I will also look if in my test hardware uses distinct MDIO traces or in-band MDIO (MDIO via MII). Would inband MDIO need the autosense feature to talk to the phy before phy-phy auto negotiation is complete ? E.g. for triggering phy-phy autoneg ? And is this (inband mdio) maybe the reason why the may-phy autosense feature exists in the silicon ?
+> Also, note that you can still fuzz BPF JITs by building the kernel
+>  without the interpreter: CONFIG_BPF_JIT_ALWAYS_ON.
 
-Thanks,
-Roelof
+Unfortunately KMSAN doesn't play well with JITed code. To be able to
+detect uninit bugs in JIT, we'll need to instrument the generated code
+as well.
 
-> Am 03.06.2020 um 17:59 schrieb Andrew Lunn <andrew@lunn.ch>:
-> 
-> On Wed, Jun 03, 2020 at 04:52:32PM +0200, Roelof Berg wrote:
->> TEST REPORT: BROKEN PATCH
->> 
->> Thanks to everyone for working on the fixed link feature of lan743x eth driver.
->> 
-> 
->> I received more test hardware today, and one piece of hardware
->> (EVBlan7430) becomes incompatible by the patch. We need to roll back
->> for now. Sorry.
-> 
-> Hi Roelof
-> 
-> We have a bit of time to fix this, before it becomes too critical.
-> So lets try to fix it.
-> 
-> How did it break?
-> 
->    Thanks
-> 	Andrew
-> 
 
+--=20
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
