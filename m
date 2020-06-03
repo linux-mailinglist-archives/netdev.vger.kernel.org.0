@@ -2,104 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 794EA1ED17F
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 683ED1ED189
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:55:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725975AbgFCNxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 09:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        id S1726041AbgFCNzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 09:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbgFCNxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 09:53:13 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E563C08C5C0
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 06:53:13 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id z9so2788780ljh.13
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 06:53:13 -0700 (PDT)
+        with ESMTP id S1725890AbgFCNzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 09:55:09 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C15C08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 06:55:09 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id a80so1119478ybg.1
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 06:55:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=lUn2sKBdrDI/gkA5yzAZwcv02QjxWHyFTmmBkj/Vf+4=;
-        b=JmT/jurP0XEvIDAasg/rMoAVcPVM9rWXxFvuhvqDUXOaWEWzU7rSU41OswQCDKKp82
-         ZnHYK/87/5zJgBkdyivGn5Q+J1o0pjzPn16JW3Nk4meaail1nWQJy9Q1uIPAjzX/ZE34
-         4+2IGvEzlim1xISFbGosjEyT9hjsVgP5KHLQy550TdHxqQ5DWq8S8HLfjAKODf7P1xtl
-         5va/nlhTk/AGQP1yoWPENcT36dlLUkjVfs93BnMDCd71+fYateBCbWKiblocvaJ6GEFt
-         EJ3CPN4rpK3xpDJHpM6pvPavaj4Ex8qZayiT0BymgtUiWp5y6e/qgJ5AT6t8c2+67ztJ
-         Xv+g==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U8IeDiDoBVmA0QE3oVgedl+zceUqh62Dw2hpb3UyemU=;
+        b=oqrUFNi/IKLm8zr/JkoLEWltOameVg+otBORTPeyDT6K+1vL0RDgZ8MIs6JKhZNwiR
+         z/D8d1I15Y7tEVTunSpxsi7kWcXtbI6Vl8jBO4BTixPuDUkfVBiKGGyQdiOFGnJ+GZfU
+         Q36XNbxDsRzFvH26Hf9zP5Lwb7NrNCsohYHmmBUT+WSCWfhXaroWcs/tDjEn77mte5c4
+         AKhellf9UepiS6Kq2dFe0MMyIUi2jOHBgg3EKbXsOzIhPWfBN8iqEM3L4YPODQ0pU/OR
+         WX7gbyuqBzgHs6Qv0X45wC3efKl40NxhMzMBjvy6bCjibf3VOZWvtCogXFAevrgRU84o
+         +UtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=lUn2sKBdrDI/gkA5yzAZwcv02QjxWHyFTmmBkj/Vf+4=;
-        b=C9vxGmVc0yeypsx1InmUDaU9VWDUtMhe8DqaXars6k6TDZXpVkiuy/VCQtR+tdImuy
-         tG3oSwzuZzyDjTOYFUug9b0enuWY+nk9rOGU16kv2CsxDA/dE5oDaIfEiipyg+0wmeWY
-         6pa2D8MY5mloGEyNoBLhN2Foa9qFv2Y8qMz2zJ+6b1lAo56Fu73fgQRNxODO9RROFmar
-         rdmum2RpMmCrTNlbsnquvLqwxzc1NcIvJjDeYVdJUpqJR/xnWQtfb9dR/HKm7Gjq/cYv
-         c4nXZyXgDTMjnrZlTJLFGDiMhJYgWBnp8QlvJ3Xy2uaCzHgIPLikbglcoe0dhSxHB3Up
-         RuoA==
-X-Gm-Message-State: AOAM531WGayBJ7rNbxze+ajIR1CLSoPWMYUSOasW3neinC6oMKb6lwWi
-        1qpHv0DHHrh1Fnxx8lwvxLn+cQDUVSA1G9D8Vss=
-X-Google-Smtp-Source: ABdhPJyl3PHDchwLuTbf4+/GGlrJD4/OCIpZTRFglTQuMAvd79xB0Mk/gUoQ5pfQ8QGG+riIIe5bDnUJSPWO06drCYc=
-X-Received: by 2002:a2e:954b:: with SMTP id t11mr2093460ljh.98.1591192391503;
- Wed, 03 Jun 2020 06:53:11 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U8IeDiDoBVmA0QE3oVgedl+zceUqh62Dw2hpb3UyemU=;
+        b=VBpRXTO5p1GEr5vi83pCzpRrF1RKN0e3ouBUjeT1itfkAHxjnS5tE/4tRZApAxCMot
+         0hfdZrFs76qCacllej2csOlGEhpLAhOoYn81OyI5dLnRAL4I1ImNTgAPl3Q28O0V1Jsk
+         zNssxilcwpYeJxHKXiuYnfGrSK49wuEeIyxN3jqkmEqkfxs4TDavqdOlwtoVAJDWBTgs
+         4XhqKcKAGPwgcZzlqVhbV8ZeEjizshSggrM4gRgY8kXifP9WCmakAUHKNaQv6SeQUweg
+         l1CjLb/a2IEcVhFSR6IgyyMOQ/1YaNPVHunInOURm1oe07SEA0Zu0CIg+03DmNns+E67
+         fDRA==
+X-Gm-Message-State: AOAM5319xer2FyWefKbDNIaeCpPr0Gjzn6if5qAerzcYAPQTxeYU06fT
+        TTnM4Nw+1jpVhpEcIMH7g6keKqdyqY2xus9GQc/+3jUxiQk=
+X-Google-Smtp-Source: ABdhPJz9Qw7D5ixsrCkBdUq2WRhpgvzsiAYhD7jodKSpHZnJBlWjCCQ1goHrC+aPtsxXwhA3bm8Dvpk7aSzaaxpcE/0=
+X-Received: by 2002:a25:9a49:: with SMTP id r9mr1089ybo.520.1591192508483;
+ Wed, 03 Jun 2020 06:55:08 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: susanjones.wife@gmail.com
-Received: by 2002:a19:a405:0:0:0:0:0 with HTTP; Wed, 3 Jun 2020 06:53:10 -0700 (PDT)
-From:   "Mrs.Susan Jones" <joneswife.susan@gmail.com>
-Date:   Wed, 3 Jun 2020 14:53:10 +0100
-X-Google-Sender-Auth: mBtVVzdKVb5NbDuw9emYqW97wV0
-Message-ID: <CABGHEP-gX5=Pe1dyBhW8CjTJW8DQ0a-1RsB4MnQ3Byy43fR=uA@mail.gmail.com>
-Subject: HELLO: I AM MRS SUSAN JONES
-To:     undisclosed-recipients:;
+References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
+ <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
+ <CAL+tcoBjjwrkE5QbXDFADRGJfPoniLL1rMFNUkAKBN9L57UGHA@mail.gmail.com>
+ <CANn89iKDKnnW1na_F0ngGh3EEc0quuBB2XWo21oAKaHckdPK4w@mail.gmail.com>
+ <CAL+tcoDn_=T--uB0CRymfTGvD022PPDk5Yw2yCxvqOOpZ4G_dQ@mail.gmail.com>
+ <CANn89i+dPu9=qJowhRVm9d3CesY4p+zzJ0HGiCMc_yJxux6pow@mail.gmail.com>
+ <CAL+tcoC2+vYoFbujkLCF7P3evfirNSBQtJ9bPFHiU2FGOnBo+A@mail.gmail.com>
+ <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com> <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
+In-Reply-To: <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 3 Jun 2020 06:54:56 -0700
+Message-ID: <CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com>
+Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Jason Xing <kerneljasonxing@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, liweishi@kuaishou.com,
+        Shujin Li <lishujin@kuaishou.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+On Wed, Jun 3, 2020 at 5:02 AM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Wed, Jun 3, 2020 at 1:44 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Tue, Jun 2, 2020 at 10:05 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > >
+> > > Hi Eric,
+> > >
+> > > I'm still trying to understand what you're saying before. Would this
+> > > be better as following:
+> > > 1) discard the tcp_internal_pacing() function.
+> > > 2) remove where the tcp_internal_pacing() is called in the
+> > > __tcp_transmit_skb() function.
+> > >
+> > > If we do so, we could avoid 'too late to give up pacing'. Meanwhile,
+> > > should we introduce the tcp_wstamp_ns socket field as commit
+> > > (864e5c090749) does?
+> > >
+> >
+> > Please do not top-post on netdev mailing list.
+> >
+> >
+> > I basically suggested double-checking which point in TCP could end up
+> > calling tcp_internal_pacing()
+> > while the timer was already armed.
+> >
+> > I guess this is mtu probing.
+>
+> Perhaps this could also happen from some of the retransmission code
+> paths that don't use tcp_xmit_retransmit_queue()? Perhaps
+> tcp_retransmit_timer() (RTO) and  tcp_send_loss_probe() TLP? It seems
+> they could indirectly cause a call to __tcp_transmit_skb() and thus
+> tcp_internal_pacing() without first checking if the pacing timer was
+> already armed?
+
+I feared this, (see recent commits about very low pacing rates) :/
+
+I am not sure we need to properly fix all these points for old
+kernels, since EDT model got rid of these problems.
+
+Maybe we can try to extend the timer.
+
+Something like :
 
 
--- 
-OUR GOLDEN OPPORTUNITY
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index cc4ba42052c21b206850594db6751810d8fc72b4..626b9f4f500f7e5270d8d59e6eb16dbfa3efbc7c
+100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -966,6 +966,8 @@ enum hrtimer_restart tcp_pace_kick(struct hrtimer *timer)
 
-Hello Dear Friend,
+ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
+ {
++       struct tcp_sock *tp = tcp_sk(sk);
++       ktime_t expire, now;
+        u64 len_ns;
+        u32 rate;
 
-Complement of the day, i hope you are doing great today. However, I am
-Mrs.Susan Jones, an auditor with one of the new generation banks here
-in Burkina Faso.
+@@ -977,12 +979,29 @@ static void tcp_internal_pacing(struct sock *sk,
+const struct sk_buff *skb)
 
-I am writing you this letter based on the latest development at my
-Department. i discovered some abandoned huge amount of money, Ten
-Million, Five hundred thousand  United States Dollars.($10.500.000).
-Now I am only contacting you as a foreigner because this money cannot
-be approved to a local bank account here, but can only be approved to
-any foreign account and foreign beneficiary because the money is in US
-dollars
+        len_ns = (u64)skb->len * NSEC_PER_SEC;
+        do_div(len_ns, rate);
+-       hrtimer_start(&tcp_sk(sk)->pacing_timer,
+-                     ktime_add_ns(ktime_get(), len_ns),
++
++       now = ktime_get();
++       /* If hrtimer is already armed, then our caller has not
++        * used tcp_pacing_check().
++        */
++       if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
++               expire = hrtimer_get_softexpires(&tp->pacing_timer);
++               if (ktime_after(expire, now))
++                       now = expire;
++               if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
++                       __sock_put(sk);
++       }
++       hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
+                      HRTIMER_MODE_ABS_PINNED_SOFT);
+        sock_hold(sk);
+ }
 
-This will be  a legitimate transaction once you accept to build trust
-with me and follow simple instruction doing the transfer process,
-until the total sum transfer out of the bank here to your own bank
-account any where in the world, and I agreed to share the total money
-50/50 with you once you successful confirmed it in your bank account.
-But any expenses doing the transfer process will be deduct from the
-amount before sharing, If you are interested to work with me and
-provide a good receiving bank account, get back to me as soon as
-possible with the following details below.
++static bool tcp_pacing_check(const struct sock *sk)
++{
++       return tcp_needs_internal_pacing(sk) &&
++              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
++}
++
+ static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
+ {
+        skb->skb_mstamp = tp->tcp_mstamp;
+@@ -2117,6 +2136,9 @@ static int tcp_mtu_probe(struct sock *sk)
+        if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
+                return -1;
 
-Your full name
-Your Profession
-Your direct mobile phone number
-Your Scanned International passport or any of your identity
++       if (tcp_pacing_check(sk))
++               return -1;
++
+        /* We're allowed to probe.  Build it now. */
+        nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
+        if (!nskb)
+@@ -2190,11 +2212,6 @@ static int tcp_mtu_probe(struct sock *sk)
+        return -1;
+ }
 
-NOTE: PLEASE IT YOU ARE NOT INTERESTED DON'T BORDER TO RESPOND BACK TO
-AVOID TIME WASTED.
+-static bool tcp_pacing_check(const struct sock *sk)
+-{
+-       return tcp_needs_internal_pacing(sk) &&
+-              hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
+-}
 
-As soon as I receive these data's, I will forward to you the
-application form which you will send to the bank for the claim and
-transfer of the fund into your bank account as the  new beneficial.
+ /* TCP Small Queues :
+  * Control number of packets in qdisc/devices to two packets / or ~1 ms.
 
-I am waiting to hear from you soon
 
-Yours
-Mrs.Susan Jones
+
+>
+> neal
