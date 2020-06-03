@@ -2,116 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7961ED783
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 22:39:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB281ED797
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 22:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725821AbgFCUjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 16:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbgFCUjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 16:39:16 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8630C08C5C1
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 13:39:15 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id k11so3613711ejr.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 13:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=s9a3sBWiPbLX3OUXd89qCWIIhpbfPNP9FedjZfBx1Ic=;
-        b=bQ+uXBtAdJnAm4Fb+TJk4i3yWvKleFFAhEoXwFL/ZCSiwr7DXDGK2HHdcsEvRABWOr
-         WCcwpowg3ffTOoN0ohUiWPbY7wHQitd8d21cCYAoKgTU10Pw/bOwEBgWRQ9sgE65k9sR
-         gQDttImW2iwzRgLGGJ3GoFy0Vj3XN1t6ZJvkY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=s9a3sBWiPbLX3OUXd89qCWIIhpbfPNP9FedjZfBx1Ic=;
-        b=DUbKbniJ4lW7iCAX48Zhfw7P/J8OECVWEm07kfglEXBb+jGSzUboDu0kE1CZRE4TUh
-         QmNBieGbkpsTGLvgjo8JPmn/HubdRcShNBFywn7+AsUnGY8FyBk+7xMvpsbxJAtcSeK+
-         utqw2tw7hKdqB5U7vOuQk0R47WPubFUCBrP7s6TIwN4HKBTPBYQ3xkg1/4HLQvqYgkh9
-         8au8MslIRjWlKCgopGV0z4DajCIfRxVizuBiJX5EvevkhfXOD56MQZphQA0g6q+6wAy3
-         THAw+Wqn3rdQ4CGSOr0gJr8Fr70iYNvlzR+poq8UhV/ilUF0UKXZEO1MG3kIrb8+3h3G
-         tqHQ==
-X-Gm-Message-State: AOAM533fq+jNRGSgfCiF6caTiJZz4vXbbE+QL23nlviCxLjmh04caK/J
-        6lpzgttktmJgx4RcDrPgy+gZNg==
-X-Google-Smtp-Source: ABdhPJwd6i9/n11XR+AmSb4TS78eKAHg9q+4Xaz3Eys3xNWzjyPQzjeoljht/UJhu2PY2f0YOpvj1Q==
-X-Received: by 2002:a17:907:2052:: with SMTP id pg18mr944564ejb.513.1591216754427;
-        Wed, 03 Jun 2020 13:39:14 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id n25sm353242edo.56.2020.06.03.13.39.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 13:39:13 -0700 (PDT)
-References: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower> <6f8bb6d8-bb70-4533-f15b-310db595d334@gmail.com> <87a71k2yje.fsf@cloudflare.com> <5ed7ed7d315bd_36aa2ab64b3c85bcd9@john-XPS-13-9370.notmuch>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [bpf PATCH] bpf: sockmap, remove bucket->lock from sock_{hash|map}_free
-In-reply-to: <5ed7ed7d315bd_36aa2ab64b3c85bcd9@john-XPS-13-9370.notmuch>
-Date:   Wed, 03 Jun 2020 22:39:12 +0200
-Message-ID: <878sh33mvj.fsf@cloudflare.com>
+        id S1726231AbgFCUpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 16:45:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725922AbgFCUpf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jun 2020 16:45:35 -0400
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 281A620810;
+        Wed,  3 Jun 2020 20:45:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591217134;
+        bh=MaYhkSqTs0brGU+4OYifBjcvgPmRDYUz4IfpHn9sH2Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=v/LEzbm09Eg9EpUnql3JTyzehUogQhp/vIDO4gEAq3S7GBL0XS58N3GSe+lEzMHiN
+         zuj0KGOTkO1inHnfVcJb/IG9HSlHUm1akkYI7dOzqattrcVl20c1wnwCcVUD+SDdeE
+         JIWl2eNwmCitTLL1CjQHCBUNXHGeB5pVFwx9eJ2E=
+Received: by mail-lj1-f181.google.com with SMTP id n23so4508629ljh.7;
+        Wed, 03 Jun 2020 13:45:34 -0700 (PDT)
+X-Gm-Message-State: AOAM533zBEeNlgRDZk3AvfCrtOVF8v+AbQSp5hO6x4INHfxpmCs3HTgL
+        JW0BO0K06Ro9YwT6sPyh93amWUkaxTsZmOtdptg=
+X-Google-Smtp-Source: ABdhPJwEFlFOcKTiaciLhFAqpj8efwYxB2qis8Sw78896hkjvJL6mLLXXOYEeUCNeVsb8Ws+Omndj05xF+8BXjlUCjo=
+X-Received: by 2002:a2e:a377:: with SMTP id i23mr479833ljn.392.1591217132285;
+ Wed, 03 Jun 2020 13:45:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAADnVQ+k7+fQmuNQL=GLLaGUvd5+zZN6GViy-oP7Sfq7aQVG1Q@mail.gmail.com>
+ <20200603190347.2310320-1-matthieu.baerts@tessares.net>
+In-Reply-To: <20200603190347.2310320-1-matthieu.baerts@tessares.net>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 3 Jun 2020 13:45:20 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6HtiLQdvyK8tHEH80xeurvQqdaYpFgdhd=yb5hDkB7VA@mail.gmail.com>
+Message-ID: <CAPhsuW6HtiLQdvyK8tHEH80xeurvQqdaYpFgdhd=yb5hDkB7VA@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] bpf: fix unused-var without NETDEVICES
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>, fejes@inf.elte.hu,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 08:35 PM CEST, John Fastabend wrote:
-> Jakub Sitnicki wrote:
-
-[...]
-
->> I'm not sure that the check for map->refcnt when sock is unlinking
->> itself from the map will do it. I worry we will then have issues when
->> sockhash is unlinking itself from socks (so the other way around) in
->> sock_hash_free(). We could no longer assume that the sock & psock
->> exists.
->>
->> What comes to mind is to reintroduce the spin-lock protected critical
->> section in sock_hash_free(), but delay the processing of sockets to be
->> unlinked from sockhash. We could grab a ref to sk_psock while holding a
->> spin-lock and unlink it while no longer in atomic critical section.
+On Wed, Jun 3, 2020 at 12:05 PM Matthieu Baerts
+<matthieu.baerts@tessares.net> wrote:
 >
-> It seems so. In sock_hash_free we logically need,
+> A recent commit added new variables only used if CONFIG_NETDEVICES is
+> set. A simple fix would be to only declare these variables if the same
+> condition is valid but Alexei suggested an even simpler solution:
 >
->  for (i = 0; i < htab->buckets_num; i++) {
->   hlist_for_each_entryy_safe(...) {
->   	hlist_del_rcu() <- detached from bucket and no longer reachable
-
-Just to confirm - synchronize_rcu() doesn't prevent
-sock_hash_delete_from_link() from getting as far as hlist_del_rcu(),
-that is here [0], while on another cpu sock_hash_free() is also
-performing hlist_del_rcu().
-
-That is, reintroducing the spin-lock is needed, right? Otherwise we have
-two concurrent updaters that are not synchronized.
-
->         synchronize_rcu()
->         // now element can not be reached from unhash()
-> 	... sock_map_unref(elem->sk, elem) ...
->   }
->  }
+>     since CONFIG_NETDEVICES doesn't change anything in .h I think the
+>     best is to remove #ifdef CONFIG_NETDEVICES from net/core/filter.c
+>     and rely on sock_bindtoindex() returning ENOPROTOOPT in the extreme
+>     case of oddly configured kernels.
 >
-> We don't actually want to stick a synchronize_rcu() in that loop
-> so I agree we need to collect the elements do a sync then remove them.
+> Fixes: 70c58997c1e8 ("bpf: Allow SO_BINDTODEVICE opt in bpf_setsockopt")
+> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-[...]
-
->>
->> John, WDYT?
->
-> Want to give it a try? Or I can draft something.
-
-I can give it a try, as I clearly need to wrap my head better around
-this code path. But I can only see how to do it with a spin-lock back in
-place in sock_hash_free(). If you have an idea in mind how to do it
-locklessly, please go ahead.
-
-[...]
-
-[0] https://elixir.bootlin.com/linux/latest/source/net/core/sock_map.c#L738
+Acked-by: Song Liu <songliubraving@fb.com>
