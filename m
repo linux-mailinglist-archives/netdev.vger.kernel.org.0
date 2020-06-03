@@ -2,94 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D67731ECEFF
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 13:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 852511ECF44
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 14:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726360AbgFCLuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 07:50:10 -0400
-Received: from mga14.intel.com ([192.55.52.115]:5625 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725959AbgFCLuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 07:50:09 -0400
-IronPort-SDR: 5n0TzM5hZlLd+qoq2uDEZn6zW0GFs9BYAfnQyufdqc5byc7DcETsNiJkGidmTXO6TGLJRPWHmi
- 3GNlMhlCbo5g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2020 04:50:09 -0700
-IronPort-SDR: rjz6sjJuksB3FUZFHwtSPCFgTQNaTjuyYCffhA9Yy2klRAHJrhXomb/NmttnOhBsQYTp+FpgPr
- R1Bs52peKK2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,467,1583222400"; 
-   d="scan'208";a="416538253"
-Received: from gklab-125-110.igk.intel.com ([10.91.125.110])
-  by orsmga004.jf.intel.com with ESMTP; 03 Jun 2020 04:50:05 -0700
-From:   Piotr Stankiewicz <piotr.stankiewicz@intel.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
-Cc:     Piotr Stankiewicz <piotr.stankiewicz@intel.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Jian Shen <shenjian15@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guojia Liao <liaoguojia@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Weihang Li <liweihang@hisilicon.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/15] net: hns3: Use PCI_IRQ_MSI_TYPES where appropriate
-Date:   Wed,  3 Jun 2020 13:49:59 +0200
-Message-Id: <20200603115002.13874-1-piotr.stankiewicz@intel.com>
-X-Mailer: git-send-email 2.17.2
-In-Reply-To: <20200603114212.12525-1-piotr.stankiewicz@intel.com>
-References: <20200603114212.12525-1-piotr.stankiewicz@intel.com>
+        id S1726390AbgFCMCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 08:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726345AbgFCMCc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 08:02:32 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3CDC08C5C1
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 05:02:31 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id s192so406008vkh.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 05:02:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=amz3ptynYvAUbH138IEG0LpKVjBvo8sPz/3+J+n07a8=;
+        b=vHb999opMIzMza943w3iNjuwx1RH0ULq9DdNFIBNl056bXrXRIJUZCp5ljes0uQYaC
+         309fs8zXNrFuwkmvoCWzKa6rp8w9ceaeFZctOEppExt9mu/tjfs7uxgg3XwTDj17BaCx
+         zuOP9aqU7YiYeUOCR996/cgXzMGIUJiha2Iugh6txTnHMKIbNmP2nYml5bi2zGfpnI95
+         6X/rnhb1zqoT6HuDf6UsdUfLNnVViv0Xht5/UFu06NY4SkwuEPWX8Znuko1EjeNchIYA
+         KD8cWO+wMbh8V0jruPN2A13TRw4dm2Ic+XZt97mUzktOTdnbRmf0ISYUUE7SfY5RQfax
+         Pztg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=amz3ptynYvAUbH138IEG0LpKVjBvo8sPz/3+J+n07a8=;
+        b=fe3QGqJoZOghNXxi9m/hgZ8N2qFfpNa6qRxjUWOzXkE0cA5TmJuCgcpNZHVBNYGTjk
+         ZbhKnTaXLVvRV8LoVo5jn9vaUHorpJUlIr8sefTAyObXMbm9LVz+E96Whtl69pbmsSfn
+         dkx9VcwlTOx8KMt57tYhdkw5Iil06NR6PlDWq+szhnaXaFH20flbCbPl5gr4fDqF+o0A
+         G7xyJFUX7/6aOn6p4wx2XkQWEKru7owLTZRmWc7KGZJSiietLCiw1BjxGmegCHJF6kCA
+         bLyq/XocP38H2tzrgpasdX7ABaXMxYJSMkqcRqq6d1xUEJe7HBCQmzmHMVinWdq+GW7X
+         cOGw==
+X-Gm-Message-State: AOAM5316m0jph9FH4g8DFaxStpfsuySil+ekSawZ6pgFjWqYSSX2u39c
+        R3VYT7vppNmiWf1RAf8lQJjW4Qwc1IU9fhsnYXTXbQ==
+X-Google-Smtp-Source: ABdhPJxDaY9hHU9C9cqqrvDdwtLQXU+4TVbmTzqYFpSK6jRNSb3vAPXpIT+DTQmUBmYd1hclvqBGerS3oaC4/gGhIBw=
+X-Received: by 2002:a05:6122:34:: with SMTP id q20mr7714782vkd.66.1591185750265;
+ Wed, 03 Jun 2020 05:02:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
+ <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
+ <CAL+tcoBjjwrkE5QbXDFADRGJfPoniLL1rMFNUkAKBN9L57UGHA@mail.gmail.com>
+ <CANn89iKDKnnW1na_F0ngGh3EEc0quuBB2XWo21oAKaHckdPK4w@mail.gmail.com>
+ <CAL+tcoDn_=T--uB0CRymfTGvD022PPDk5Yw2yCxvqOOpZ4G_dQ@mail.gmail.com>
+ <CANn89i+dPu9=qJowhRVm9d3CesY4p+zzJ0HGiCMc_yJxux6pow@mail.gmail.com>
+ <CAL+tcoC2+vYoFbujkLCF7P3evfirNSBQtJ9bPFHiU2FGOnBo+A@mail.gmail.com> <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com>
+In-Reply-To: <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 3 Jun 2020 08:02:13 -0400
+Message-ID: <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
+Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jason Xing <kerneljasonxing@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, liweishi@kuaishou.com,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seeing as there is shorthand available to use when asking for any type
-of interrupt, or any type of message signalled interrupt, leverage it.
+On Wed, Jun 3, 2020 at 1:44 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Jun 2, 2020 at 10:05 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> >
+> > Hi Eric,
+> >
+> > I'm still trying to understand what you're saying before. Would this
+> > be better as following:
+> > 1) discard the tcp_internal_pacing() function.
+> > 2) remove where the tcp_internal_pacing() is called in the
+> > __tcp_transmit_skb() function.
+> >
+> > If we do so, we could avoid 'too late to give up pacing'. Meanwhile,
+> > should we introduce the tcp_wstamp_ns socket field as commit
+> > (864e5c090749) does?
+> >
+>
+> Please do not top-post on netdev mailing list.
+>
+>
+> I basically suggested double-checking which point in TCP could end up
+> calling tcp_internal_pacing()
+> while the timer was already armed.
+>
+> I guess this is mtu probing.
 
-Signed-off-by: Piotr Stankiewicz <piotr.stankiewicz@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 3 +--
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+Perhaps this could also happen from some of the retransmission code
+paths that don't use tcp_xmit_retransmit_queue()? Perhaps
+tcp_retransmit_timer() (RTO) and  tcp_send_loss_probe() TLP? It seems
+they could indirectly cause a call to __tcp_transmit_skb() and thus
+tcp_internal_pacing() without first checking if the pacing timer was
+already armed?
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index a758f9ae32be..c49313e87170 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2334,8 +2334,7 @@ static int hclge_init_msi(struct hclge_dev *hdev)
- 	int i;
- 
- 	vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
--					hdev->num_msi,
--					PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+					hdev->num_msi, PCI_IRQ_MSI_TYPES);
- 	if (vectors < 0) {
- 		dev_err(&pdev->dev,
- 			"failed(%d) to allocate MSI/MSI-X vectors\n",
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index e02d427131ee..2b02024bd00a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2341,8 +2341,7 @@ static int hclgevf_init_msi(struct hclgevf_dev *hdev)
- 						PCI_IRQ_MSIX);
- 	else
- 		vectors = pci_alloc_irq_vectors(pdev, HNAE3_MIN_VECTOR_NUM,
--						hdev->num_msi,
--						PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+						hdev->num_msi, PCI_IRQ_MSI_TYPES);
- 
- 	if (vectors < 0) {
- 		dev_err(&pdev->dev,
--- 
-2.17.2
-
+neal
