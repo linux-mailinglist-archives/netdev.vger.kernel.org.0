@@ -2,172 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CAF91ED329
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 17:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 931821ED365
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 17:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbgFCPRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 11:17:31 -0400
-Received: from mail-eopbgr80088.outbound.protection.outlook.com ([40.107.8.88]:8067
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726013AbgFCPRa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 11:17:30 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MAhfIlKLpk4j2orFClVgEnfEAkjRFKmW+nCjddZQ9TbonkxFiDrY7r3j7sTNxsWdfd3wisq3Kr7+N7LP8rdghGmGCIajvrpDx/TXxnFKd+RcAmPsRtEjZasnXrlkFU1805XK7NXIsHfOxZZehwGg5xdUNw+RF6M8AQpGHjRDaEx2YLoJmf3xi4JWo7A4h3FkUI8htPsiP+J7HLsueZLmlrAFqOEs8XZQ+qTsaz1sw2gdiyJVAsC1KmVY74PF4U5CYggTtsZc+LajqmpVM080SdmMVGSuhLgmCCg8Ew3hrxM3aafWdq7Yg9PQOSnp+M1g0ql06Rnqu7BVS644gba/4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XQl5Dd9cNVtpH3GwK3CJj0f7wAiIggTfpTciukStjoE=;
- b=HQen1g6jz9petRDTrBYwhZcfNcSR+/HKDgp5qu5vQZaRYPSdGB7kpa9hbz1656bzbxtDrQc6fYRPv3dYV0+EYYDRw8yhQLi69T6C2YyzwI6fhWFIDVCVZkeFscsO8ihhloufr58hx/kDm17Fy/IzZaI4XS2x6zdOSLfY/vB9WcASPd3CbiiNtClNGAj1lrXaCB5nc1aVeNlKC13xiByM8ceMyUHA21SAuXWZyxdz/1ONGceL9RWhXABBBB7YX2DKWOmiCcvLcLGzVTyMHFP1znvia/oIvsQGRms5DqoM8ehGQyg8qJugoXIZU0YSjaO86Y8dsIe0pmEMIOCMuatwkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=orolia.com; dmarc=pass action=none header.from=orolia.com;
- dkim=pass header.d=orolia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orolia.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XQl5Dd9cNVtpH3GwK3CJj0f7wAiIggTfpTciukStjoE=;
- b=h5+AzUvIbZkhHKl1fHivgUotuL1JzBiL+w2Yx5Lz16M67+LlaLe9NLcK72hPuc2cue40KVBPi9Rid+zpoc93mlbNDnKE++twU+3rk9P9vwydbdOHe0826f3JlljViGPWNMBlf7iLUYmH7JI9fmjGQP9yxSfdvel2N7Z22YKlQg0=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=orolia.com;
-Received: from VI1PR06MB3919.eurprd06.prod.outlook.com (2603:10a6:802:69::28)
- by VI1PR06MB4637.eurprd06.prod.outlook.com (2603:10a6:803:a9::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.22; Wed, 3 Jun
- 2020 15:17:27 +0000
-Received: from VI1PR06MB3919.eurprd06.prod.outlook.com
- ([fe80::d0db:5378:505c:873c]) by VI1PR06MB3919.eurprd06.prod.outlook.com
- ([fe80::d0db:5378:505c:873c%4]) with mapi id 15.20.3045.024; Wed, 3 Jun 2020
- 15:17:27 +0000
-Date:   Wed, 3 Jun 2020 17:17:19 +0200
-From:   Olivier Dautricourt <olivier.dautricourt@orolia.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Julien Beraud <julien.beraud@orolia.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/3] Patch series for a PTP Grandmaster use case using
- stmmac/gmac3 ptp clock
-Message-ID: <20200603151719.GA21184@orolia.com>
-References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
- <20200514135325.GB18838@localhost>
- <20200514150900.GA12924@orolia.com>
- <20200515003706.GB18192@localhost>
- <3a14f417-1ae1-9434-5532-4b3387f25d18@orolia.com>
- <20200527040551.GB18483@localhost>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200527040551.GB18483@localhost>
-X-ClientProxiedBy: AM0PR10CA0096.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:15::49) To VI1PR06MB3919.eurprd06.prod.outlook.com
- (2603:10a6:802:69::28)
+        id S1726232AbgFCPcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 11:32:17 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:39984 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726138AbgFCPcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 11:32:16 -0400
+Received: by mail-il1-f197.google.com with SMTP id s4so1772020ilc.7
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 08:32:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=hCfKtti0OOVEwdCy57euieZ5015RvD0tBSXcPV4JeNE=;
+        b=aVwoqmO2DgcInI5RF2UtdOLjDp255T529LD0eO4vHNRlq0F3Kd6LRKbWjKzTkFvvre
+         4Rnd30LYIqdOqdx1CB2748pJaL3qGCwRj8QIInF7u570QY80Vv/7zrXawV1/1/9GIGD9
+         C+/NOTrGthr7GsrzYQTW5rnFzVMt53rMEGJb4iyTsr6/WrDmV4+sbgFx0jntta7DBIek
+         zIEbeihzwvOoTMyt/omN3rK22PceUVhGcxMDQeAXJJTIBh8s6vYoQGlTYCGLO9iRYclZ
+         +j5z4KIvECCSgXIJ5jNCVN9ckz6iXIjzir+ri6QXkE+HTSUOgrXFK+ZViM3KRaEUhu/P
+         Mm9w==
+X-Gm-Message-State: AOAM532oefFh7IjYVv19vJAWPWGP4V0BCwlWgsFV5UlGL/XBydhZ6SQu
+        ZVrvlR2mgErrhUvjHJwW5a4LWkbaZ0fCHWfrvTtihvYDNBYX
+X-Google-Smtp-Source: ABdhPJx4U0590dX2/3irztPqwY6mlmIxvcKI04nXLzNoErep5Repsw38p7vnSr+V9eNu+fWjmsmu1UaYe9DvHSmLOtLJCVAOP6C6
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from orolia.com (2a01:e35:1390:8ba0:9022:c6c:b638:21f8) by AM0PR10CA0096.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:15::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.19 via Frontend Transport; Wed, 3 Jun 2020 15:17:26 +0000
-X-Originating-IP: [2a01:e35:1390:8ba0:9022:c6c:b638:21f8]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 219a3812-bbc4-424f-b9e3-08d807d139c5
-X-MS-TrafficTypeDiagnostic: VI1PR06MB4637:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR06MB4637575A923C6FDCA1DCEFB38F880@VI1PR06MB4637.eurprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 04238CD941
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VkB6KPNUFPQWg03+qj6sTxf7PitxXVl33bh6It0nTKpxNJ3Fn+lmdeYwEd7SZqZfKY2n2pM0mx2IY81wBSx8+1kymU7MYg2epjQy1FHnAekxcOmqhT/xjxRNaqJfFIPUKMUiS/OqNmSISRxy1alSMkOLjTlq9lBR4iImS3yk0ePesdGnM57DVHwvXPt68qRWs3YMaJGN98rkliQ5K4cVYtdhaM7BqTAY0a4UYwY/P3LW20PGqBQfOP96PEfLDVR6XuqSodCWEplMJ4eKD0VdL3yPAu7dQGCq45g5/qyXq/Ibz3hSK1GVnev27lTzdr+vSgM7w4C1DTEUxQLpcJArQA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR06MB3919.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39850400004)(366004)(136003)(346002)(376002)(6916009)(55016002)(52116002)(66476007)(66946007)(8936002)(8676002)(8886007)(54906003)(7696005)(66556008)(186003)(83380400001)(316002)(1076003)(16526019)(5660300002)(33656002)(86362001)(4326008)(44832011)(478600001)(6666004)(2906002)(2616005)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: fis8mfB7DBTuaPNFzva9knOjePLbINRXBn16tUBx+jxSx6qsd0Bl6SmZV6w9rTsehZ7Y9SD/kBpbibjV8Zj6UaHp08S4cJK5fKLR8ewprgbEhpO6sq1X7EzUrlSIO4P5ETqflR7Xl4MusLIa+sW2VvbmumLOT37EYcPH5owx6VdJiM0x5qjw7ZPfh96H4BEZ7yARKM+FpsRvhgOJcwdOY8lORRTNEOGPlW9ohSxQgACH1JJ8et/bPCb+qIhlRXsWEAD72VNkdIrSSa2Req1vkPJlLR1jYnX0pX4ORBCGOtuiF+FjoQsGKUfqsAw+4Oka56iDVcWQjAO96jWilkD+Xa9DN4kx1yh8+UX1bPAZckFZ84gHTCky/l++r6ojPrrvl9grgSD9cnpeykQ3Oy6AarWT30zYcmkYXxeCvSf1TQ299r4Ktk7ftRABTFbdQXPvzy0lnRtKRqOt0C/xKpibjnldzoWrmXElFrKxmxpW9MV42X7rx/ID55Z2u5DaOnxwEVUOxmzsHrql3SfHvJvbvz84cpbKa+4mqfk9NqugLis=
-X-OriginatorOrg: orolia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 219a3812-bbc4-424f-b9e3-08d807d139c5
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2020 15:17:27.4322
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a263030c-9c1b-421f-9471-1dec0b29c664
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: emEZroHLvhoKtzNMBCic6OM744fcmqc5I3OG0aIA2RJ0uQkXQcHsKunEZCQi86WifQCVIUHkj2XTLIQDQDgf7if8147fX700Exk62QHx0dw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR06MB4637
+X-Received: by 2002:a02:3f58:: with SMTP id c24mr458448jaf.16.1591198334553;
+ Wed, 03 Jun 2020 08:32:14 -0700 (PDT)
+Date:   Wed, 03 Jun 2020 08:32:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007f94e205a72fbb2f@google.com>
+Subject: WARNING: locking bug in ath9k_htc_wait_for_target
+From:   syzbot <syzbot+644c73760fbf6c60a6c4@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
+        davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 05/26/2020 21:05, Richard Cochran wrote:
-> On Fri, May 15, 2020 at 03:26:47PM +0200, Julien Beraud wrote:
-> > The frequency adjustments of the mac's clock are done by changing the value of
-> > addend, so that the number of clock cycles that make the accumulator overflow
-> > slightly change.
-> 
-> This is typical.
-> 
-> > The value of sub-second-increment is set to 2 / ptp_clk_freq, because using an
-> > accumulator with the same number of bits as the addend register makes it
-> > impossible to overflow at every addition.
-> >
-> > This mode allows to implement a PTP Slave, constantly adjusting the clock's freq
-> > to match the master.
-> 
-> Right.  And I would stick with this.  With the ts2phc program
-> (linuxptp master branch) you can use the EXTTS to discipline the clock
-> to match the external time source.
+Hello,
 
-The advantage for us here is that the coarse mode allows to set the
-sub-second-increment to 1 / ptp_clk_freq and increase the precision of
-the timestamps in that mode. Because we don't have to deal with the accumulator
-overflow anymore.
+syzbot found the following crash on:
 
-> 
-> > -> In coarse mode, the accumulator and the addend register are not used and the
-> > value of sub-second-increment is added to the clock at every ptp_ref_clock
-> > cycle.
-> 
-> That sounds like simply configuring a fixed rate.
+HEAD commit:    2089c6ed usb: core: kcov: collect coverage from usb comple..
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=12576bd6100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b7479d3935864b1b
+dashboard link: https://syzkaller.appspot.com/bug?extid=644c73760fbf6c60a6c4
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=179a24fe100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16576bd6100000
 
-Yes it is. But we want that rate not to be the same that in fine mode, by
-configuring it at runtime.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+644c73760fbf6c60a6c4@syzkaller.appspotmail.com
 
-> 
-> > This mode allows to implement a Grand Master where we can feed the stmmac's ptp
-> > ref clock input with a frequency that's controlled externally, making it
-> > useless to do frequency adjustments with the MAC.
-> >
-> > We want our devices to be able to switch from Master to Slave at runtime.
-> 
-> If I understand correctly, what you are really asking for is the
-> ability to switch clock sources.  This normally done through the
-> device tree, and changing the device tree at run time is done with
-> overlays (which I think is still a WIP).
+usb 1-1: ath9k_htc: Firmware ath9k_htc/htc_9271-1.4.0.fw requested
+usb 1-1: ath9k_htc: Transferred FW: ath9k_htc/htc_9271-1.4.0.fw, size: 51008
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(1)
+WARNING: CPU: 0 PID: 5 at kernel/locking/lockdep.c:183 hlock_class kernel/locking/lockdep.c:183 [inline]
+WARNING: CPU: 0 PID: 5 at kernel/locking/lockdep.c:183 hlock_class kernel/locking/lockdep.c:172 [inline]
+WARNING: CPU: 0 PID: 5 at kernel/locking/lockdep.c:183 check_wait_context kernel/locking/lockdep.c:4029 [inline]
+WARNING: CPU: 0 PID: 5 at kernel/locking/lockdep.c:183 __lock_acquire+0x2194/0x6650 kernel/locking/lockdep.c:4305
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.7.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xef/0x16e lib/dump_stack.c:118
+ panic+0x2aa/0x6e1 kernel/panic.c:221
+ __warn.cold+0x2f/0x30 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:175 [inline]
+ fixup_bug arch/x86/kernel/traps.c:170 [inline]
+ do_error_trap+0x12b/0x1e0 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:hlock_class kernel/locking/lockdep.c:183 [inline]
+RIP: 0010:hlock_class kernel/locking/lockdep.c:172 [inline]
+RIP: 0010:check_wait_context kernel/locking/lockdep.c:4029 [inline]
+RIP: 0010:__lock_acquire+0x2194/0x6650 kernel/locking/lockdep.c:4305
+Code: d2 0f 85 91 33 00 00 44 8b 35 38 f2 c1 06 45 85 f6 0f 85 b8 fb ff ff 48 c7 c6 c0 fa e6 85 48 c7 c7 00 fb e6 85 e8 84 6b ed ff <0f> 0b e9 9e fb ff ff e8 f0 89 c0 00 85 c0 0f 84 db fb ff ff 48 c7
+RSP: 0018:ffff8881da1d7748 EFLAGS: 00010086
+RAX: 0000000000000000 RBX: bd37a6f4de9bd740 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff812a339d RDI: ffffed103b43aedb
+RBP: ffff8881da19ebd0 R08: ffff8881da19e300 R09: fffffbfff0e20bd1
+R10: ffffffff87105e83 R11: fffffbfff0e20bd0 R12: ffff8881da19e300
+R13: ffff8881c679e460 R14: 0000000000000000 R15: 0000000000000000
+ lock_acquire+0x18b/0x7c0 kernel/locking/lockdep.c:4934
+ __raw_spin_lock_irq include/linux/spinlock_api_smp.h:128 [inline]
+ _raw_spin_lock_irq+0x2d/0x40 kernel/locking/spinlock.c:167
+ do_wait_for_common kernel/sched/completion.c:86 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion_timeout+0x172/0x280 kernel/sched/completion.c:157
+ ath9k_htc_wait_for_target.isra.0+0xb9/0x1b0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:89
+ ath9k_htc_probe_device+0x1a4/0x1da0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:949
+ ath9k_htc_hw_init+0x31/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:501
+ ath9k_hif_usb_firmware_cb+0x274/0x510 drivers/net/wireless/ath/ath9k/hif_usb.c:1187
+ request_firmware_work_func+0x126/0x242 drivers/base/firmware_loader/main.c:1005
+ process_one_work+0x965/0x1630 kernel/workqueue.c:2268
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2414
+ kthread+0x326/0x430 kernel/kthread.c:268
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-In our setup the source clock switch is actually done in an fpga, so the
-device tree node is still the same in both cases and we configure the input clock
-through a gpio control from the ptp client.
 
-> > So the question is what interface could we use to configure a timestamping
-> > clock that has more than one functioning mode and which mode can be changed at
-> > runtime, but not while timestamping is running ?
-> 
-> I think this must be decided at boot time using the DTS.  In any case,
-> the PHC time stamping API is not the right place for this.  If you end
-> up making a custom method (via debugfs for example), then your PHC
-> should then return an error when user space attempts to adjust it.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-I think the problem here relies on the fact that the configuration of the mac
-is done in the stmmac_hwstamp_set function while what we are really
-configuring is the time stamping + ptp_clock functionning.
-In the end there is only one register where both are configured
-(Control register). But this also makes sense because if there is no
-active timestamping the ptp clock can't work. Also as Julien explained
-it in his previous mail, the mode switch (writing 2 registers) needs
-the timestamping to be reinitialized in any case.
-
-So for something upstreamable i'm kind of stuck here.
-This kind of mode configuration does not seems to fit in the current kernel API
-because it affects both timestamping (sub-second-increment value) and the ptp clock
-functionning (no fine adjustment possible while in coarse mode).
-
-If we don't find a solution i'll at least resubmit my first patch
-which is independent of the other two.
-
-Thanks,
--- 
-Olivier Dautricourt
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
