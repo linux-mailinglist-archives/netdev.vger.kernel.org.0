@@ -2,833 +2,506 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8921ECC7F
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 11:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC891ECCE4
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 11:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726337AbgFCJYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 05:24:05 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:57499 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgFCJYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 05:24:04 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BBED05801C5;
-        Wed,  3 Jun 2020 05:24:01 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 03 Jun 2020 05:24:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=UR0I4Q
-        CMoLiMU6pIEsiStrIm037Un+/01YcygpOZItk=; b=fm5nVMtkHwSsiVcyEhCsQI
-        fu9XTd8vpOudJY0TrSa2GNCIkan+QqW2vb7ceRemcwpsa4ThCtC2v9gNx+Ru5QyQ
-        htuybz6lCjPr0TvIApCKKW1uM4h8Pr50UE/0BM1ALR21iEiKK2f3xSD+sr7m8VSB
-        AE5EOaSjTK+wdREeixUELup0yMc1w+RgpPozdkj+Le4Nr2B4h+sztb7/q/oM3wx/
-        ikMfxxRt8qgdDt/sP5Bbma2BZIprmgP1pvaHwsw8jZVe7yh1sWIG0N8knGFJ7DGE
-        FMXh7toxixIMgj3wR4zIxG3tCaQQubS2IKWfoxZdY3oQVpk/5pvrNBCvNJE8+d3A
-        ==
-X-ME-Sender: <xms:MGzXXn_lJ-ulgwLRkoGYgcK6Vx4fOkDlQ0vUQWQ9PgAj-CnjW7tgWg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudefledguddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:MGzXXjvtNvNUNGe7mfLBnAExQ-jPl4BdOrhXKgLqkbOu7gSWk3ifeA>
-    <xmx:MGzXXlBcSrsrzZFEjXEoL8_ADyBxeYpYEnhB1qL4dW8syv7tK5q6OQ>
-    <xmx:MGzXXjeaPEzMcQd_sp1z0gREtG0MtfT9i5XYf0B2_AFb4T2SnBsvzw>
-    <xmx:MWzXXtHgenB6D9aji1_IRx2T2mVLETMZ3OfGcVnaHv3L-cw4_AlH0Q>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2B6DA30618C1;
-        Wed,  3 Jun 2020 05:24:00 -0400 (EDT)
-Date:   Wed, 3 Jun 2020 12:23:58 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>
-Subject: Re: [net-next 1/6] net: marvell: prestera: Add driver for Prestera
- family ASIC devices
-Message-ID: <20200603092358.GA1841966@splinter>
-References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
- <20200528151245.7592-2-vadym.kochan@plvision.eu>
- <20200530154801.GB1624759@splinter>
- <20200601105013.GB25323@plvision.eu>
+        id S1726678AbgFCJs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 05:48:27 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21755 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726645AbgFCJs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 05:48:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591177703;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Blty4RVM0OxHJL/NHjqx9UuA9b/L4at0MlN2/CeoZr4=;
+        b=OS2BHdu8MC6Cn59s0JK+e4Ew/go7foDKKY8Pcy8OosD6sXtRhy//Jd1R1m2NjVGYGK5xGo
+        y5YX4FOpHjoq1Y/IF6QG6tUGIB3zg3FgTJRRowoZ/u9gfaGYcNRdV/YFVX31jYaXP/e7Xd
+        UYMVZyxtRTPsKPIBA9WdW7XwOenSllI=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-226-nShajKwHOfaYRAYVYXCaRg-1; Wed, 03 Jun 2020 05:48:16 -0400
+X-MC-Unique: nShajKwHOfaYRAYVYXCaRg-1
+Received: by mail-wr1-f69.google.com with SMTP id m14so873906wrj.12
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 02:48:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Blty4RVM0OxHJL/NHjqx9UuA9b/L4at0MlN2/CeoZr4=;
+        b=n2ilmRkejGfvVqp0ZmipvNigSXLw0Z6oelz3Pz25cY6IKrYBn76uhA4aoANt4domIP
+         TZnNAh8mOfYCTezoGAGZYVZo22tYQM5Y1EloJ67+nxcHO3veZYmXUVWEs1a9txbBI5ES
+         Y7UDpyYnK7yNJv7TstofZEWd6dRW8u/rR+MgN0n0ZSa3b+eqA0EBAr2Y2Cjuy1R5AJPZ
+         3VoHhM/9G00anY0wZVhQK9Azt1NPBes2hnZhlnjya0RIql7lqUTL6aSG/5eIg9NmTPVJ
+         aAG3bfFR45MSPoRsGs9XEkiJdnOq67yRI72jZFbifNn7k+3Y5tN9dMYvKilq8g77xveK
+         /4yA==
+X-Gm-Message-State: AOAM532ww9ph60M7Vr3jLg4q4ZtF5Bvvi1ntSlnS0yd8KCO3yJ9TBlDy
+        Mgz9N82XUMU5s1WuRzmZy4VBCTByIMsA7Sa9k7w1t6TsMLO1yaDsgU4SSfOMSfVpXtEWci5PXxj
+        63lnEKk4l4O2bwAZc
+X-Received: by 2002:a1c:9cd4:: with SMTP id f203mr8439981wme.26.1591177695444;
+        Wed, 03 Jun 2020 02:48:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyfygPXTzT3jlnnMIv3AVTzzWqChecsI6GLyTj6JKK3NwUH3ya9JANLBbS0lchM4XLuAkjDw==
+X-Received: by 2002:a1c:9cd4:: with SMTP id f203mr8439923wme.26.1591177694742;
+        Wed, 03 Jun 2020 02:48:14 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id d18sm2487469wrn.34.2020.06.03.02.48.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 02:48:13 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 05:48:11 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH RFC 01/13] vhost: option to fetch descriptors through an
+ independent struct
+Message-ID: <20200603045825-mutt-send-email-mst@kernel.org>
+References: <20200602130543.578420-1-mst@redhat.com>
+ <20200602130543.578420-2-mst@redhat.com>
+ <e35e5df9-7e36-227e-7981-232a62b06607@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200601105013.GB25323@plvision.eu>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e35e5df9-7e36-227e-7981-232a62b06607@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 01, 2020 at 01:50:13PM +0300, Vadym Kochan wrote:
-> Hi Ido,
+On Wed, Jun 03, 2020 at 03:13:56PM +0800, Jason Wang wrote:
 > 
-> On Sat, May 30, 2020 at 06:48:01PM +0300, Ido Schimmel wrote:
-> > On Thu, May 28, 2020 at 06:12:40PM +0300, Vadym Kochan wrote:
+> On 2020/6/2 下午9:05, Michael S. Tsirkin wrote:
+> > The idea is to support multiple ring formats by converting
+> > to a format-independent array of descriptors.
 > > 
+> > This costs extra cycles, but we gain in ability
+> > to fetch a batch of descriptors in one go, which
+> > is good for code cache locality.
+> > 
+> > When used, this causes a minor performance degradation,
+> > it's been kept as simple as possible for ease of review.
+> > A follow-up patch gets us back the performance by adding batching.
+> > 
+> > To simplify benchmarking, I kept the old code around so one can switch
+> > back and forth between old and new code. This will go away in the final
+> > submission.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+> > Link: https://lore.kernel.org/r/20200401183118.8334-2-eperezma@redhat.com
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> >   drivers/vhost/vhost.c | 297 +++++++++++++++++++++++++++++++++++++++++-
+> >   drivers/vhost/vhost.h |  16 +++
+> >   2 files changed, 312 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index 96d9871fa0cb..105fc97af2c8 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -298,6 +298,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+> >   			   struct vhost_virtqueue *vq)
+> >   {
+> >   	vq->num = 1;
+> > +	vq->ndescs = 0;
+> >   	vq->desc = NULL;
+> >   	vq->avail = NULL;
+> >   	vq->used = NULL;
+> > @@ -368,6 +369,9 @@ static int vhost_worker(void *data)
+> >   static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+> >   {
+> > +	kfree(vq->descs);
+> > +	vq->descs = NULL;
+> > +	vq->max_descs = 0;
+> >   	kfree(vq->indirect);
+> >   	vq->indirect = NULL;
+> >   	kfree(vq->log);
+> > @@ -384,6 +388,10 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+> >   	for (i = 0; i < dev->nvqs; ++i) {
+> >   		vq = dev->vqs[i];
+> > +		vq->max_descs = dev->iov_limit;
+> > +		vq->descs = kmalloc_array(vq->max_descs,
+> > +					  sizeof(*vq->descs),
+> > +					  GFP_KERNEL);
+> >   		vq->indirect = kmalloc_array(UIO_MAXIOV,
+> >   					     sizeof(*vq->indirect),
+> >   					     GFP_KERNEL);
+> > @@ -391,7 +399,7 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+> >   					GFP_KERNEL);
+> >   		vq->heads = kmalloc_array(dev->iov_limit, sizeof(*vq->heads),
+> >   					  GFP_KERNEL);
+> > -		if (!vq->indirect || !vq->log || !vq->heads)
+> > +		if (!vq->indirect || !vq->log || !vq->heads || !vq->descs)
+> >   			goto err_nomem;
+> >   	}
+> >   	return 0;
+> > @@ -2277,6 +2285,293 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
+> >   }
+> >   EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
+> > +static struct vhost_desc *peek_split_desc(struct vhost_virtqueue *vq)
+> > +{
+> > +	BUG_ON(!vq->ndescs);
+> > +	return &vq->descs[vq->ndescs - 1];
+> > +}
+> > +
+> > +static void pop_split_desc(struct vhost_virtqueue *vq)
+> > +{
+> > +	BUG_ON(!vq->ndescs);
+> > +	--vq->ndescs;
+> > +}
+> > +
+> > +#define VHOST_DESC_FLAGS (VRING_DESC_F_INDIRECT | VRING_DESC_F_WRITE | \
+> > +			  VRING_DESC_F_NEXT)
+> > +static int push_split_desc(struct vhost_virtqueue *vq, struct vring_desc *desc, u16 id)
+> > +{
+> > +	struct vhost_desc *h;
+> > +
+> > +	if (unlikely(vq->ndescs >= vq->max_descs))
+> > +		return -EINVAL;
+> > +	h = &vq->descs[vq->ndescs++];
+> > +	h->addr = vhost64_to_cpu(vq, desc->addr);
+> > +	h->len = vhost32_to_cpu(vq, desc->len);
+> > +	h->flags = vhost16_to_cpu(vq, desc->flags) & VHOST_DESC_FLAGS;
+> > +	h->id = id;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int fetch_indirect_descs(struct vhost_virtqueue *vq,
+> > +				struct vhost_desc *indirect,
+> > +				u16 head)
+> > +{
+> > +	struct vring_desc desc;
+> > +	unsigned int i = 0, count, found = 0;
+> > +	u32 len = indirect->len;
+> > +	struct iov_iter from;
+> > +	int ret;
+> > +
+> > +	/* Sanity check */
+> > +	if (unlikely(len % sizeof desc)) {
+> > +		vq_err(vq, "Invalid length in indirect descriptor: "
+> > +		       "len 0x%llx not multiple of 0x%zx\n",
+> > +		       (unsigned long long)len,
+> > +		       sizeof desc);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = translate_desc(vq, indirect->addr, len, vq->indirect,
+> > +			     UIO_MAXIOV, VHOST_ACCESS_RO);
+> > +	if (unlikely(ret < 0)) {
+> > +		if (ret != -EAGAIN)
+> > +			vq_err(vq, "Translation failure %d in indirect.\n", ret);
+> > +		return ret;
+> > +	}
+> > +	iov_iter_init(&from, READ, vq->indirect, ret, len);
+> > +
+> > +	/* We will use the result as an address to read from, so most
+> > +	 * architectures only need a compiler barrier here. */
+> > +	read_barrier_depends();
+> > +
+> > +	count = len / sizeof desc;
+> > +	/* Buffers are chained via a 16 bit next field, so
+> > +	 * we can have at most 2^16 of these. */
+> > +	if (unlikely(count > USHRT_MAX + 1)) {
+> > +		vq_err(vq, "Indirect buffer length too big: %d\n",
+> > +		       indirect->len);
+> > +		return -E2BIG;
+> > +	}
+> > +	if (unlikely(vq->ndescs + count > vq->max_descs)) {
+> > +		vq_err(vq, "Too many indirect + direct descs: %d + %d\n",
+> > +		       vq->ndescs, indirect->len);
+> > +		return -E2BIG;
+> > +	}
+> > +
+> > +	do {
+> > +		if (unlikely(++found > count)) {
+> > +			vq_err(vq, "Loop detected: last one at %u "
+> > +			       "indirect size %u\n",
+> > +			       i, count);
+> > +			return -EINVAL;
+> > +		}
+> > +		if (unlikely(!copy_from_iter_full(&desc, sizeof(desc), &from))) {
+> > +			vq_err(vq, "Failed indirect descriptor: idx %d, %zx\n",
+> > +			       i, (size_t)indirect->addr + i * sizeof desc);
+> > +			return -EINVAL;
+> > +		}
+> > +		if (unlikely(desc.flags & cpu_to_vhost16(vq, VRING_DESC_F_INDIRECT))) {
+> > +			vq_err(vq, "Nested indirect descriptor: idx %d, %zx\n",
+> > +			       i, (size_t)indirect->addr + i * sizeof desc);
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		push_split_desc(vq, &desc, head);
 > 
-> [...]
 > 
-> > Nit: "From" ?
-> > 
-> > > +	PRESTERA_DSA_CMD_FROM_CPU,
-> > > +};
-> > > +
-> > > +struct prestera_dsa_vlan {
-> > > +	u16 vid;
-> > > +	u8 vpt;
-> > > +	u8 cfi_bit;
-> > > +	bool is_tagged;
-> > > +};
-> > > +
-> > > +struct prestera_dsa {
-> > > +	struct prestera_dsa_vlan vlan;
-> > > +	u32 hw_dev_num;
-> > > +	u32 port_num;
-> > > +};
-> > > +
-> > > +int prestera_dsa_parse(struct prestera_dsa *dsa, const u8 *dsa_buf);
-> > > +int prestera_dsa_build(const struct prestera_dsa *dsa, u8 *dsa_buf);
-> > > +
-> > > +#endif /* _PRESTERA_DSA_H_ */
-> > > diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> > > new file mode 100644
-> > > index 000000000000..3aa3974f957a
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> > > @@ -0,0 +1,610 @@
-> > > +// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-> > > +/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
-> > > +
-> > > +#include <linux/etherdevice.h>
-> > > +#include <linux/ethtool.h>
-> > > +#include <linux/netdevice.h>
-> > > +#include <linux/list.h>
-> > > +
-> > > +#include "prestera.h"
-> > > +#include "prestera_hw.h"
-> > > +
-> > > +#define PRESTERA_SWITCH_INIT_TIMEOUT 30000000	/* 30sec */
-> > 
-> > Out of curiosity, how long does it actually take you to initialize the
-> > hardware?
-> > 
-> > Also, I find it useful to note the units in the name, so:
-> > 
-> > #define PRESTERA_SWITCH_INIT_TIMEOUT_US (30 * 1000 * 1000)
-> > 
-> > BTW, it says 30 seconds in comment, but the call chain where it is used
-> > is:
-> > 
-> > prestera_cmd_ret_wait(, PRESTERA_SWITCH_INIT_TIMEOUT)
-> >   __prestera_cmd_ret(..., wait)
-> >     prestera_fw_send_req(..., waitms)
-> >       prestera_fw_cmd_send(..., waitms)
-> >         prestera_fw_wait_reg32(..., waitms)
-> > 	  readl_poll_timeout(..., waitms * 1000)
-> > 
-> > So I think you should actually define it as:
-> > 
-> > #define PRESTERA_SWITCH_INIT_TIMEOUT_MS (30 * 1000)
-> > 
-> > And rename all these 'wait' arguments to 'waitms' so it's clearer which
-> > unit they expect.
-> > 
-> [...]
-> > > +static int __prestera_cmd_ret(struct prestera_switch *sw,
-> > > +			      enum prestera_cmd_type_t type,
-> > > +			      struct prestera_msg_cmd *cmd, size_t clen,
-> > > +			      struct prestera_msg_ret *ret, size_t rlen,
-> > > +			      int wait)
-> > > +{
-> > > +	struct prestera_device *dev = sw->dev;
-> > > +	int err;
-> > > +
-> > > +	cmd->type = type;
-> > > +
-> > > +	err = dev->send_req(dev, (u8 *)cmd, clen, (u8 *)ret, rlen, wait);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	if (ret->cmd.type != PRESTERA_CMD_TYPE_ACK)
-> > > +		return -EBADE;
-> > > +	if (ret->status != PRESTERA_CMD_ACK_OK)
-> > 
-> > You don't have more states here other than OK / FAIL ? It might help you
-> > in debugging if you include them. You might find trace_devlink_hwerr()
-> > useful.
-> Thanks, I will consider this.
-> 
-> > 
-> > > +		return -EINVAL;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static int prestera_cmd_ret(struct prestera_switch *sw,
-> > > +			    enum prestera_cmd_type_t type,
-> > > +			    struct prestera_msg_cmd *cmd, size_t clen,
-> > > +			    struct prestera_msg_ret *ret, size_t rlen)
-> > > +{
-> > > +	return __prestera_cmd_ret(sw, type, cmd, clen, ret, rlen, 0);
-> > > +}
-> > > +
-> > > +static int prestera_cmd_ret_wait(struct prestera_switch *sw,
-> > > +				 enum prestera_cmd_type_t type,
-> > > +				 struct prestera_msg_cmd *cmd, size_t clen,
-> > > +				 struct prestera_msg_ret *ret, size_t rlen,
-> > > +				 int wait)
-> > > +{
-> > > +	return __prestera_cmd_ret(sw, type, cmd, clen, ret, rlen, wait);
-> > > +}
-> > > +
-> > > +static int prestera_cmd(struct prestera_switch *sw,
-> > > +			enum prestera_cmd_type_t type,
-> > > +			struct prestera_msg_cmd *cmd, size_t clen)
-> > > +{
-> > > +	struct prestera_msg_common_resp resp;
-> > > +
-> > > +	return prestera_cmd_ret(sw, type, cmd, clen, &resp.ret, sizeof(resp));
-> > > +}
-> > > +
-> > > +static int prestera_fw_parse_port_evt(u8 *msg, struct prestera_event *evt)
-> > > +{
-> > > +	struct prestera_msg_event_port *hw_evt;
-> > > +
-> > > +	hw_evt = (struct prestera_msg_event_port *)msg;
-> > > +
-> > > +	evt->port_evt.port_id = hw_evt->port_id;
-> > > +
-> > > +	if (evt->id == PRESTERA_PORT_EVENT_STATE_CHANGED)
-> > > +		evt->port_evt.data.oper_state = hw_evt->param.oper_state;
-> > > +	else
-> > > +		return -EINVAL;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static struct prestera_fw_evt_parser {
-> > > +	int (*func)(u8 *msg, struct prestera_event *evt);
-> > > +} fw_event_parsers[PRESTERA_EVENT_TYPE_MAX] = {
-> > > +	[PRESTERA_EVENT_TYPE_PORT] = {.func = prestera_fw_parse_port_evt},
-> > > +};
-> > > +
-> > > +static struct prestera_fw_event_handler *
-> > > +__find_event_handler(const struct prestera_switch *sw,
-> > > +		     enum prestera_event_type type)
-> > > +{
-> > > +	struct prestera_fw_event_handler *eh;
-> > > +
-> > > +	list_for_each_entry_rcu(eh, &sw->event_handlers, list) {
-> > 
-> > It does not look that this is always called under RCU which will result
-> > in various splats. For example in the following call path:
-> > 
-> > prestera_device_register()
-> >   prestera_switch_init()
-> >     prestera_event_handlers_register()
-> >       prestera_hw_event_handler_register()
-> >         __find_event_handler()
-> > 
-> > You want to make sure that you are testing with various debug options.
-> > For example:
-> So, right. Currently this prestera_hw_event_handler_register is called
-> synchronously and as I understand does not require additional locking
-> when use list rcu API. I will check with these options which you
-> suggested.
-> 
-> > 
-> > # Debug options
-> > ## General debug options
-> > config_enable CONFIG_PREEMPT
-> > config_enable CONFIG_DEBUG_PREEMPT
-> > config_enable CONFIG_DEBUG_INFO
-> > config_enable CONFIG_UNWINDER_ORC
-> > config_enable CONFIG_DYNAMIC_DEBUG
-> > config_enable CONFIG_DEBUG_NOTIFIERS
-> > ## Lock debugging
-> > config_enable CONFIG_LOCKDEP
-> > config_enable CONFIG_PROVE_LOCKING
-> > config_enable CONFIG_DEBUG_ATOMIC_SLEEP
-> > config_enable CONFIG_PROVE_RCU
-> > config_enable CONFIG_DEBUG_MUTEXES
-> > config_enable CONFIG_DEBUG_SPINLOCK
-> > config_enable CONFIG_LOCK_STAT
-> > ## Memory debugging
-> > config_enable CONFIG_DEBUG_VM
-> > config_enable CONFIG_FORTIFY_SOURCE
-> > config_enable CONFIG_KASAN
-> > config_enable CONFIG_KASAN_EXTRA
-> > config_enable CONFIG_KASAN_INLINE
-> > ## Reference counting debugging
-> > config_enable CONFIG_REFCOUNT_FULL
-> > ## Lockups debugging
-> > config_enable CONFIG_LOCKUP_DETECTOR
-> > config_enable CONFIG_SOFTLOCKUP_DETECTOR
-> > config_enable CONFIG_HARDLOCKUP_DETECTOR
-> > config_enable CONFIG_DETECT_HUNG_TASK
-> > config_enable CONFIG_WQ_WATCHDOG
-> > config_enable CONFIG_DETECT_HUNG_TASK
-> > config_set_val CONFIG_DEFAULT_HUNG_TASK_TIMEOUT 120
-> > ## Undefined behavior debugging
-> > config_enable CONFIG_UBSAN
-> > config_enable CONFIG_UBSAN_SANITIZE_ALL
-> > config_disable CONFIG_UBSAN_ALIGNMENT
-> > config_disable CONFIG_UBSAN_NULL
-> > ## Memory debugging
-> > config_enable CONFIG_SLUB_DEBUG
-> > config_enable CONFIG_SLUB_DEBUG_ON
-> > config_enable CONFIG_DEBUG_PAGEALLOC
-> > config_enable CONFIG_DEBUG_KMEMLEAK
-> > config_disable CONFIG_DEBUG_KMEMLEAK_DEFAULT_OFF
-> > config_set_val CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE 8192
-> > config_enable CONFIG_DEBUG_STACKOVERFLOW
-> > config_enable CONFIG_DEBUG_LIST
-> > config_enable CONFIG_DEBUG_PER_CPU_MAPS
-> > config_set_val CONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT 1
-> > config_enable CONFIG_DEBUG_OBJECTS
-> > config_enable CONFIG_DEBUG_OBJECTS_FREE
-> > config_enable CONFIG_DEBUG_OBJECTS_TIMERS
-> > config_enable CONFIG_DEBUG_OBJECTS_WORK
-> > config_enable CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER
-> > config_enable CONFIG_DMA_API_DEBUG
-> > ## Lock debugging
-> > config_enable CONFIG_DEBUG_LOCK_ALLOC
-> > config_enable CONFIG_PROVE_LOCKING
-> > config_enable CONFIG_LOCK_STAT
-> > config_enable CONFIG_DEBUG_OBJECTS_RCU_HEAD
-> > config_enable CONFIG_SPARSE_RCU_POINTER
-> > 
-> > > +		if (eh->type == type)
-> > > +			return eh;
-> > > +	}
-> > > +
-> > > +	return NULL;
-> > > +}
-> > > +
-> > > +static int prestera_find_event_handler(const struct prestera_switch *sw,
-> > > +				       enum prestera_event_type type,
-> > > +				       struct prestera_fw_event_handler *eh)
-> > > +{
-> > > +	struct prestera_fw_event_handler *tmp;
-> > > +	int err = 0;
-> > > +
-> > > +	rcu_read_lock();
-> > > +	tmp = __find_event_handler(sw, type);
-> > > +	if (tmp)
-> > > +		*eh = *tmp;
-> > > +	else
-> > > +		err = -EEXIST;
-> > > +	rcu_read_unlock();
-> > > +
-> > > +	return err;
-> > > +}
-> > > +
-> > > +static int prestera_evt_recv(struct prestera_device *dev, u8 *buf, size_t size)
-> > > +{
-> > > +	struct prestera_msg_event *msg = (struct prestera_msg_event *)buf;
-> > > +	struct prestera_switch *sw = dev->priv;
-> > > +	struct prestera_fw_event_handler eh;
-> > > +	struct prestera_event evt;
-> > > +	int err;
-> > > +
-> > > +	if (msg->type >= PRESTERA_EVENT_TYPE_MAX)
-> > > +		return -EINVAL;
-> > > +
-> > > +	err = prestera_find_event_handler(sw, msg->type, &eh);
-> > > +
-> > > +	if (err || !fw_event_parsers[msg->type].func)
-> > > +		return 0;
-> > > +
-> > > +	evt.id = msg->id;
-> > > +
-> > > +	err = fw_event_parsers[msg->type].func(buf, &evt);
-> > > +	if (!err)
-> > > +		eh.func(sw, &evt, eh.arg);
-> > > +
-> > > +	return err;
-> > > +}
-> > > +
-> > > +static void prestera_pkt_recv(struct prestera_device *dev)
-> > > +{
-> > > +	struct prestera_switch *sw = dev->priv;
-> > > +	struct prestera_fw_event_handler eh;
-> > > +	struct prestera_event ev;
-> > > +	int err;
-> > > +
-> > > +	ev.id = PRESTERA_RXTX_EVENT_RCV_PKT;
-> > > +
-> > > +	err = prestera_find_event_handler(sw, PRESTERA_EVENT_TYPE_RXTX, &eh);
-> > > +	if (err)
-> > > +		return;
-> > > +
-> > > +	eh.func(sw, &ev, eh.arg);
-> > > +}
-> > > +
-> > > +int prestera_hw_port_info_get(const struct prestera_port *port,
-> > > +			      u16 *fp_id, u32 *hw_id, u32 *dev_id)
-> > > +{
-> > > +	struct prestera_msg_port_info_resp resp;
-> > > +	struct prestera_msg_port_info_req req = {
-> > > +		.port = port->id
-> > > +	};
-> > > +	int err;
-> > > +
-> > > +	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_INFO_GET,
-> > > +			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	*hw_id = resp.hw_id;
-> > > +	*dev_id = resp.dev_id;
-> > > +	*fp_id = resp.fp_id;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +int prestera_hw_switch_mac_set(struct prestera_switch *sw, char *mac)
-> > > +{
-> > > +	struct prestera_msg_switch_attr_req req = {
-> > > +		.attr = PRESTERA_CMD_SWITCH_ATTR_MAC,
-> > > +	};
-> > > +
-> > > +	memcpy(req.param.mac, mac, sizeof(req.param.mac));
-> > > +
-> > > +	return prestera_cmd(sw, PRESTERA_CMD_TYPE_SWITCH_ATTR_SET,
-> > > +			    &req.cmd, sizeof(req));
-> > > +}
-> > > +
-> > > +int prestera_hw_switch_init(struct prestera_switch *sw)
-> > > +{
-> > > +	struct prestera_msg_switch_init_resp resp;
-> > > +	struct prestera_msg_common_req req;
-> > > +	int err;
-> > > +
-> > > +	INIT_LIST_HEAD(&sw->event_handlers);
-> > > +
-> > > +	err = prestera_cmd_ret_wait(sw, PRESTERA_CMD_TYPE_SWITCH_INIT,
-> > > +				    &req.cmd, sizeof(req),
-> > > +				    &resp.ret, sizeof(resp),
-> > > +				    PRESTERA_SWITCH_INIT_TIMEOUT);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	sw->id = resp.switch_id;
-> > > +	sw->port_count = resp.port_count;
-> > > +	sw->mtu_min = PRESTERA_MIN_MTU;
-> > > +	sw->mtu_max = resp.mtu_max;
-> > > +	sw->dev->recv_msg = prestera_evt_recv;
-> > > +	sw->dev->recv_pkt = prestera_pkt_recv;
-> > > +
-> > > +	return 0;
-> > > +}
-> > 
-> > Consider adding prestera_hw_switch_fini() that verifies that
-> > '&sw->event_handlers' is empty.
-> > 
-> As I see it can just warn on if list is not empty, right ?
+> The error is ignored.
 
-Yes, something like:
+See above:
 
-WARN_ON(!list_empty(&sw->event_handlers));
+     	if (unlikely(vq->ndescs + count > vq->max_descs)) 
+
+So it can't fail here, we never fetch unless there's space.
+
+I guess we can add a WARN_ON here.
 
 > 
-> > > +
-> > > +int prestera_hw_port_state_set(const struct prestera_port *port,
-> > > +			       bool admin_state)
-> > > +{
-> > > +	struct prestera_msg_port_attr_req req = {
-> > > +		.attr = PRESTERA_CMD_PORT_ATTR_ADMIN_STATE,
-> > > +		.port = port->hw_id,
-> > > +		.dev = port->dev_id,
-> > > +		.param = {.admin_state = admin_state}
-> > > +	};
-> > > +
-> > > +	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
-> > > +			    &req.cmd, sizeof(req));
-> > > +}
-> > > +
+> > +	} while ((i = next_desc(vq, &desc)) != -1);
+> > +	return 0;
+> > +}
+> > +
+> > +static int fetch_descs(struct vhost_virtqueue *vq)
+> > +{
+> > +	unsigned int i, head, found = 0;
+> > +	struct vhost_desc *last;
+> > +	struct vring_desc desc;
+> > +	__virtio16 avail_idx;
+> > +	__virtio16 ring_head;
+> > +	u16 last_avail_idx;
+> > +	int ret;
+> > +
+> > +	/* Check it isn't doing very strange things with descriptor numbers. */
+> > +	last_avail_idx = vq->last_avail_idx;
+> > +
+> > +	if (vq->avail_idx == vq->last_avail_idx) {
+> > +		if (unlikely(vhost_get_avail_idx(vq, &avail_idx))) {
+> > +			vq_err(vq, "Failed to access avail idx at %p\n",
+> > +				&vq->avail->idx);
+> > +			return -EFAULT;
+> > +		}
+> > +		vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
+> > +
+> > +		if (unlikely((u16)(vq->avail_idx - last_avail_idx) > vq->num)) {
+> > +			vq_err(vq, "Guest moved used index from %u to %u",
+> > +				last_avail_idx, vq->avail_idx);
+> > +			return -EFAULT;
+> > +		}
+> > +
+> > +		/* If there's nothing new since last we looked, return
+> > +		 * invalid.
+> > +		 */
+> > +		if (vq->avail_idx == last_avail_idx)
+> > +			return vq->num;
+> > +
+> > +		/* Only get avail ring entries after they have been
+> > +		 * exposed by guest.
+> > +		 */
+> > +		smp_rmb();
+> > +	}
+> > +
+> > +	/* Grab the next descriptor number they're advertising */
+> > +	if (unlikely(vhost_get_avail_head(vq, &ring_head, last_avail_idx))) {
+> > +		vq_err(vq, "Failed to read head: idx %d address %p\n",
+> > +		       last_avail_idx,
+> > +		       &vq->avail->ring[last_avail_idx % vq->num]);
+> > +		return -EFAULT;
+> > +	}
+> > +
+> > +	head = vhost16_to_cpu(vq, ring_head);
+> > +
+> > +	/* If their number is silly, that's an error. */
+> > +	if (unlikely(head >= vq->num)) {
+> > +		vq_err(vq, "Guest says index %u > %u is available",
+> > +		       head, vq->num);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	i = head;
+> > +	do {
+> > +		if (unlikely(i >= vq->num)) {
+> > +			vq_err(vq, "Desc index is %u > %u, head = %u",
+> > +			       i, vq->num, head);
+> > +			return -EINVAL;
+> > +		}
+> > +		if (unlikely(++found > vq->num)) {
+> > +			vq_err(vq, "Loop detected: last one at %u "
+> > +			       "vq size %u head %u\n",
+> > +			       i, vq->num, head);
+> > +			return -EINVAL;
+> > +		}
+> > +		ret = vhost_get_desc(vq, &desc, i);
+> > +		if (unlikely(ret)) {
+> > +			vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
+> > +			       i, vq->desc + i);
+> > +			return -EFAULT;
+> > +		}
+> > +		ret = push_split_desc(vq, &desc, head);
+> > +		if (unlikely(ret)) {
+> > +			vq_err(vq, "Failed to save descriptor: idx %d\n", i);
+> > +			return -EINVAL;
+> > +		}
+> > +	} while ((i = next_desc(vq, &desc)) != -1);
+> > +
+> > +	last = peek_split_desc(vq);
+> > +	if (unlikely(last->flags & VRING_DESC_F_INDIRECT)) {
+> > +		pop_split_desc(vq);
+> > +		ret = fetch_indirect_descs(vq, last, head);
 > 
-> [...]
 > 
-> > > +
-> > > +struct prestera_port *prestera_port_find_by_hwid(struct prestera_switch *sw,
-> > > +						 u32 dev_id, u32 hw_id)
-> > > +{
-> > > +	struct prestera_port *port;
-> > > +
-> > > +	rcu_read_lock();
-> > > +
-> > > +	list_for_each_entry_rcu(port, &sw->port_list, list) {
-> > > +		if (port->dev_id == dev_id && port->hw_id == hw_id) {
-> > > +			rcu_read_unlock();
-> > > +			return port;
-> > 
-> > This does not look correct. You call rcu_read_unlock(), but do not take
-> > a reference on the object, so nothing prevents it from being freed. 
-> > 
-> Currently there is no logic which can dynamically create/delete the
-> port, so how do you think may I just use synchronize_rcu() when freeing
-> the port instance on module unlolad ?
+> Note that this means we don't supported chained indirect descriptors which
+> complies the spec but we support this in vhost_get_vq_desc().
 
-I don't understand what RCU is meant to protect here. You call
-rcu_read_unlock() and then return the port. Calling synchronize_rcu()
-before freeing the port will not prevent the caller of
-prestera_port_find_by_hwid() from accessing freed memory.
+Well the spec says:
+	A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT in flags.
 
-> 
-> > > +		}
-> > > +	}
-> > > +
-> > > +	rcu_read_unlock();
-> > > +
-> > > +	return NULL;
-> > > +}
-> > > +
-> > > +static struct prestera_port *prestera_find_port(struct prestera_switch *sw,
-> > > +						u32 port_id)
-> > > +{
-> > > +	struct prestera_port *port;
-> > > +
-> > > +	rcu_read_lock();
-> > > +
-> > > +	list_for_each_entry_rcu(port, &sw->port_list, list) {
-> > > +		if (port->id == port_id)
-> > > +			break;
-> > > +	}
-> > > +
-> > > +	rcu_read_unlock();
-> > > +
-> > > +	return port;
-> > 
-> > Same here.
-> > 
-> > > +}
-> > > +
-> > > +static int prestera_port_state_set(struct net_device *dev, bool is_up)
-> > > +{
-> > > +	struct prestera_port *port = netdev_priv(dev);
-> > > +	int err;
-> > > +
-> > > +	if (!is_up)
-> > > +		netif_stop_queue(dev);
-> > > +
-> > > +	err = prestera_hw_port_state_set(port, is_up);
-> > > +
-> > > +	if (is_up && !err)
-> > > +		netif_start_queue(dev);
-> > > +
-> > > +	return err;
-> > > +}
-> > > +
-> 
-> [...]
-> 
-> > > +static void prestera_port_destroy(struct prestera_port *port)
-> > > +{
-> > > +	struct net_device *dev = port->dev;
-> > > +
-> > > +	cancel_delayed_work_sync(&port->cached_hw_stats.caching_dw);
-> > > +	unregister_netdev(dev);
-> > > +
-> > > +	list_del_rcu(&port->list);
-> > > +
-> > 
-> > I'm not sure what is the point of these blank lines. Best to remove
-> > them.
-> Will fix it.
-> 
-> > 
-> > > +	free_netdev(dev);
-> > > +}
-> > > +
-> > > +static void prestera_destroy_ports(struct prestera_switch *sw)
-> > > +{
-> > > +	struct prestera_port *port, *tmp;
-> > > +	struct list_head remove_list;
-> > > +
-> > > +	INIT_LIST_HEAD(&remove_list);
-> > > +
-> > > +	list_splice_init(&sw->port_list, &remove_list);
-> > > +
-> > > +	list_for_each_entry_safe(port, tmp, &remove_list, list)
-> > > +		prestera_port_destroy(port);
-> > > +}
-> > > +
-> > > +static int prestera_create_ports(struct prestera_switch *sw)
-> > > +{
-> > > +	u32 port;
-> > > +	int err;
-> > > +
-> > > +	for (port = 0; port < sw->port_count; port++) {
-> > > +		err = prestera_port_create(sw, port);
-> > > +		if (err)
-> > > +			goto err_ports_init;
-> > 
-> > err_port_create ?
-> > 
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +
-> > > +err_ports_init:
-> > > +	prestera_destroy_ports(sw);
-> > 
-> > I'm not a fan of this construct. I find it best to always do proper
-> > rollback in the error path. Then you can always maintain init() being
-> > followed by fini() which is much easier to review.
-> As I understand you meant to move this destroy_ports() recovery to the
-> error path in xxx_switch_init() ?
+Did I miss anything?
 
-No, I mean do proper rollback in this error path by calling
-prestera_port_destroy() for each port you created thus far.
 
-Then move prestera_destroy_ports() after prestera_create_ports(),
-instead of before it.
 
-> 
-> > 
-> > > +	return err;
-> > > +}
-> > > +
-> > > +static void prestera_port_handle_event(struct prestera_switch *sw,
-> > > +				       struct prestera_event *evt, void *arg)
-> > > +{
-> > > +	struct delayed_work *caching_dw;
-> > > +	struct prestera_port *port;
-> > > +
-> > > +	port = prestera_find_port(sw, evt->port_evt.port_id);
-> > > +	if (!port)
-> > > +		return;
-> > > +
-> > > +	caching_dw = &port->cached_hw_stats.caching_dw;
-> > > +
-> > > +	if (evt->id == PRESTERA_PORT_EVENT_STATE_CHANGED) {
-> > > +		if (evt->port_evt.data.oper_state) {
-> > > +			netif_carrier_on(port->dev);
-> > > +			if (!delayed_work_pending(caching_dw))
-> > > +				queue_delayed_work(prestera_wq, caching_dw, 0);
-> > > +		} else {
-> > > +			netif_carrier_off(port->dev);
-> > > +			if (delayed_work_pending(caching_dw))
-> > > +				cancel_delayed_work(caching_dw);
-> > > +		}
-> > > +	}
-> > > +}
-> > > +
-> > > +static void prestera_event_handlers_unregister(struct prestera_switch *sw)
-> > > +{
-> > > +	prestera_hw_event_handler_unregister(sw, PRESTERA_EVENT_TYPE_PORT,
-> > > +					     prestera_port_handle_event);
-> > > +}
-> > 
-> > Please reverse the order so that register() is first.
-> > 
-> > > +
-> > > +static int prestera_event_handlers_register(struct prestera_switch *sw)
-> > > +{
-> > > +	return prestera_hw_event_handler_register(sw, PRESTERA_EVENT_TYPE_PORT,
-> > > +						  prestera_port_handle_event,
-> > > +						  NULL);
-> > > +}
-> > > +
-> > > +static int prestera_switch_set_base_mac_addr(struct prestera_switch *sw)
-> > > +{
-> > > +	struct device_node *base_mac_np;
-> > > +	struct device_node *np;
-> > > +
-> > > +	np = of_find_compatible_node(NULL, NULL, "marvell,prestera");
-> > > +	if (np) {
-> > > +		base_mac_np = of_parse_phandle(np, "base-mac-provider", 0);
-> > > +		if (base_mac_np) {
-> > > +			const char *base_mac;
-> > > +
-> > > +			base_mac = of_get_mac_address(base_mac_np);
-> > > +			of_node_put(base_mac_np);
-> > > +			if (!IS_ERR(base_mac))
-> > > +				ether_addr_copy(sw->base_mac, base_mac);
-> > > +		}
-> > > +	}
-> > > +
-> > > +	if (!is_valid_ether_addr(sw->base_mac)) {
-> > > +		eth_random_addr(sw->base_mac);
-> > > +		dev_info(sw->dev->dev, "using random base mac address\n");
-> > > +	}
-> > > +
-> > > +	return prestera_hw_switch_mac_set(sw, sw->base_mac);
-> > > +}
-> > > +
-> > > +static int prestera_switch_init(struct prestera_switch *sw)
-> > > +{
-> > > +	int err;
-> > > +
-> > > +	err = prestera_hw_switch_init(sw);
-> > > +	if (err) {
-> > > +		dev_err(prestera_dev(sw), "Failed to init Switch device\n");
-> > > +		return err;
-> > > +	}
-> > > +
-> > > +	INIT_LIST_HEAD(&sw->port_list);
-> > > +
-> > > +	err = prestera_switch_set_base_mac_addr(sw);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	err = prestera_rxtx_switch_init(sw);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	err = prestera_event_handlers_register(sw);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	err = prestera_create_ports(sw);
-> > > +	if (err)
-> > > +		goto err_ports_create;
-> > > +
-> > > +	return 0;
-> > > +
-> > > +err_ports_create:
-> > > +	prestera_event_handlers_unregister(sw);
-> > > +
-> > 
-> > You are missing prestera_rxtx_switch_fini() here... With init() always
-> > followed by fini() you can easily tell that the error path is not
-> > symmetric with fini().
-> Yeah, for some reason I mixed this fix with Switchdev patch, I will fix
-> this.
-> 
-> > 
-> > > +	return err;
-> > > +}
-> > > +
-> > > +static void prestera_switch_fini(struct prestera_switch *sw)
-> > > +{
-> > > +	prestera_destroy_ports(sw);
-> > > +	prestera_event_handlers_unregister(sw);
-> > > +	prestera_rxtx_switch_fini(sw);
-> > > +}
-> > > +
-> > > +int prestera_device_register(struct prestera_device *dev)
-> > > +{
-> > > +	struct prestera_switch *sw;
-> > > +	int err;
-> > > +
-> > > +	sw = kzalloc(sizeof(*sw), GFP_KERNEL);
-> > > +	if (!sw)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	dev->priv = sw;
-> > > +	sw->dev = dev;
-> > > +
-> > > +	err = prestera_switch_init(sw);
-> > > +	if (err) {
-> > > +		kfree(sw);
-> > > +		return err;
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +EXPORT_SYMBOL(prestera_device_register);
-> > > +
-> > > +void prestera_device_unregister(struct prestera_device *dev)
-> > > +{
-> > > +	struct prestera_switch *sw = dev->priv;
-> > > +
-> > > +	prestera_switch_fini(sw);
-> > > +	kfree(sw);
-> > > +}
-> 
-> [...]
-> 
-> > > +int prestera_rxtx_port_init(struct prestera_port *port)
-> > > +{
-> > > +	int err;
-> > > +
-> > > +	err = prestera_hw_rxtx_port_init(port);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	port->dev->needed_headroom = PRESTERA_DSA_HLEN + ETH_FCS_LEN;
-> > 
-> > Why do you need headroom for FCS?
-> > 
-> I had issue when the SKB did not have additional bytes for the FCS, so I
-> thought to added this to the needed_headroom to be sure.
 
-But FCS is at the end of the frame. 'needed_headroom' is for headers you
-need to prepend to each frame.
-
-Which issues did you have? In mlxsw FCS is computed in hardware and we
-pass the length of the frame without the FCS when posting the frame to
-hardware.
-
+> We probably need either fail early or just support that.
 > 
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +netdev_tx_t prestera_rxtx_xmit(struct prestera_port *port, struct sk_buff *skb)
-> > > +{
-> > > +	struct prestera_dsa dsa;
-> > > +
-> > > +	dsa.hw_dev_num = port->dev_id;
-> > > +	dsa.port_num = port->hw_id;
-> > > +
-> > > +	if (skb_cow_head(skb, PRESTERA_DSA_HLEN) < 0)
-> > > +		return NET_XMIT_DROP;
-> > > +
-> > > +	skb_push(skb, PRESTERA_DSA_HLEN);
-> > > +	memmove(skb->data, skb->data + PRESTERA_DSA_HLEN, 2 * ETH_ALEN);
-> > > +
-> > > +	if (prestera_dsa_build(&dsa, skb->data + 2 * ETH_ALEN) != 0)
-> > > +		return NET_XMIT_DROP;
-> > > +
-> > > +	return prestera_sdma_xmit(&port->sw->rxtx->sdma, skb);
-> > > +}
-> > > diff --git a/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
-> > > new file mode 100644
-> > > index 000000000000..bbbadfa5accf
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
-> > > @@ -0,0 +1,21 @@
-> > > +/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-> > > + *
-> > > + * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
-> > > + *
-> > > + */
-> > > +
-> > > +#ifndef _PRESTERA_RXTX_H_
-> > > +#define _PRESTERA_RXTX_H_
-> > > +
-> > > +#include <linux/netdevice.h>
-> > > +
-> > > +#include "prestera.h"
-> > > +
-> > > +int prestera_rxtx_switch_init(struct prestera_switch *sw);
-> > > +void prestera_rxtx_switch_fini(struct prestera_switch *sw);
-> > > +
-> > > +int prestera_rxtx_port_init(struct prestera_port *port);
-> > > +
-> > > +netdev_tx_t prestera_rxtx_xmit(struct prestera_port *port, struct sk_buff *skb);
-> > > +
-> > > +#endif /* _PRESTERA_RXTX_H_ */
-> > > -- 
-> > > 2.17.1
-> > > 
+> Thanks
 > 
-> Thank you for review.
+> 
+> > +		if (unlikely(ret < 0)) {
+> > +			if (ret != -EAGAIN)
+> > +				vq_err(vq, "Failure detected "
+> > +				       "in indirect descriptor at idx %d\n", head);
+> > +			return ret;
+> > +		}
+> > +	}
+> > +
+> > +	/* Assume notifications from guest are disabled at this point,
+> > +	 * if they aren't we would need to update avail_event index. */
+> > +	BUG_ON(!(vq->used_flags & VRING_USED_F_NO_NOTIFY));
+> > +
+> > +	/* On success, increment avail index. */
+> > +	vq->last_avail_idx++;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +/* This looks in the virtqueue and for the first available buffer, and converts
+> > + * it to an iovec for convenient access.  Since descriptors consist of some
+> > + * number of output then some number of input descriptors, it's actually two
+> > + * iovecs, but we pack them into one and note how many of each there were.
+> > + *
+> > + * This function returns the descriptor number found, or vq->num (which is
+> > + * never a valid descriptor number) if none was found.  A negative code is
+> > + * returned on error. */
+> > +int vhost_get_vq_desc_batch(struct vhost_virtqueue *vq,
+> > +		      struct iovec iov[], unsigned int iov_size,
+> > +		      unsigned int *out_num, unsigned int *in_num,
+> > +		      struct vhost_log *log, unsigned int *log_num)
+> > +{
+> > +	int ret = fetch_descs(vq);
+> > +	int i;
+> > +
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	/* Now convert to IOV */
+> > +	/* When we start there are none of either input nor output. */
+> > +	*out_num = *in_num = 0;
+> > +	if (unlikely(log))
+> > +		*log_num = 0;
+> > +
+> > +	for (i = 0; i < vq->ndescs; ++i) {
+> > +		unsigned iov_count = *in_num + *out_num;
+> > +		struct vhost_desc *desc = &vq->descs[i];
+> > +		int access;
+> > +
+> > +		if (desc->flags & ~VHOST_DESC_FLAGS) {
+> > +			vq_err(vq, "Unexpected flags: 0x%x at descriptor id 0x%x\n",
+> > +			       desc->flags, desc->id);
+> > +			ret = -EINVAL;
+> > +			goto err;
+> > +		}
+> > +		if (desc->flags & VRING_DESC_F_WRITE)
+> > +			access = VHOST_ACCESS_WO;
+> > +		else
+> > +			access = VHOST_ACCESS_RO;
+> > +		ret = translate_desc(vq, desc->addr,
+> > +				     desc->len, iov + iov_count,
+> > +				     iov_size - iov_count, access);
+> > +		if (unlikely(ret < 0)) {
+> > +			if (ret != -EAGAIN)
+> > +				vq_err(vq, "Translation failure %d descriptor idx %d\n",
+> > +					ret, i);
+> > +			goto err;
+> > +		}
+> > +		if (access == VHOST_ACCESS_WO) {
+> > +			/* If this is an input descriptor,
+> > +			 * increment that count. */
+> > +			*in_num += ret;
+> > +			if (unlikely(log && ret)) {
+> > +				log[*log_num].addr = desc->addr;
+> > +				log[*log_num].len = desc->len;
+> > +				++*log_num;
+> > +			}
+> > +		} else {
+> > +			/* If it's an output descriptor, they're all supposed
+> > +			 * to come before any input descriptors. */
+> > +			if (unlikely(*in_num)) {
+> > +				vq_err(vq, "Descriptor has out after in: "
+> > +				       "idx %d\n", i);
+> > +				ret = -EINVAL;
+> > +				goto err;
+> > +			}
+> > +			*out_num += ret;
+> > +		}
+> > +
+> > +		ret = desc->id;
+> > +	}
+> > +
+> > +	vq->ndescs = 0;
+> > +
+> > +	return ret;
+> > +
+> > +err:
+> > +	vhost_discard_vq_desc(vq, 1);
+> > +	vq->ndescs = 0;
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vhost_get_vq_desc_batch);
+> > +
+> >   /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
+> >   void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
+> >   {
+> > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > index 60cab4c78229..0976a2853935 100644
+> > --- a/drivers/vhost/vhost.h
+> > +++ b/drivers/vhost/vhost.h
+> > @@ -60,6 +60,13 @@ enum vhost_uaddr_type {
+> >   	VHOST_NUM_ADDRS = 3,
+> >   };
+> > +struct vhost_desc {
+> > +	u64 addr;
+> > +	u32 len;
+> > +	u16 flags; /* VRING_DESC_F_WRITE, VRING_DESC_F_NEXT */
+> > +	u16 id;
+> > +};
+> > +
+> >   /* The virtqueue structure describes a queue attached to a device. */
+> >   struct vhost_virtqueue {
+> >   	struct vhost_dev *dev;
+> > @@ -71,6 +78,11 @@ struct vhost_virtqueue {
+> >   	vring_avail_t __user *avail;
+> >   	vring_used_t __user *used;
+> >   	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+> > +
+> > +	struct vhost_desc *descs;
+> > +	int ndescs;
+> > +	int max_descs;
+> > +
+> >   	struct file *kick;
+> >   	struct eventfd_ctx *call_ctx;
+> >   	struct eventfd_ctx *error_ctx;
+> > @@ -175,6 +187,10 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+> >   bool vhost_vq_access_ok(struct vhost_virtqueue *vq);
+> >   bool vhost_log_access_ok(struct vhost_dev *);
+> > +int vhost_get_vq_desc_batch(struct vhost_virtqueue *,
+> > +		      struct iovec iov[], unsigned int iov_count,
+> > +		      unsigned int *out_num, unsigned int *in_num,
+> > +		      struct vhost_log *log, unsigned int *log_num);
+> >   int vhost_get_vq_desc(struct vhost_virtqueue *,
+> >   		      struct iovec iov[], unsigned int iov_count,
+> >   		      unsigned int *out_num, unsigned int *in_num,
+
