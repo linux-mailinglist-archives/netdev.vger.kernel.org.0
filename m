@@ -2,100 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AE81ED5EC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:13:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C2F21ED5F0
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgFCSNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 14:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        id S1726416AbgFCSPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 14:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbgFCSNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:13:00 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C93C08C5C0
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 11:12:59 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id x13so3391638wrv.4
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 11:12:59 -0700 (PDT)
+        with ESMTP id S1725821AbgFCSPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:15:02 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2C6C08C5C0;
+        Wed,  3 Jun 2020 11:15:01 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r10so2278715pgv.8;
+        Wed, 03 Jun 2020 11:15:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JqtDpDFI1LWe2aNE+QdlEKbAzw7vqAaPQ3M+TSzYxOE=;
-        b=ZFBnnFkzGR9EKMc2L9ZP/IaWyj5NFMkPDWC/tAud8dbYNhScYv4dF7UvYUJMQuKxfN
-         2iG2qQD5xaWMdejhqtPA5/GkS/om9eltTJcT8yfqdnA5lLQm2kVt5lmgWjWORKDtZeRE
-         p/n9Bci+5zxrPrJ9fsH107A8H+rJTFHBthpMXN9AII7v+C1FirB7n5kEgWI8jkuq4li8
-         zdxJtLcHDkwvRaqEiR5Lr9ld/HsMwBN/3h0uKIqoVH27QWQkqX1EOMGpYfA4xlPNdze2
-         RDxi5XdX6ibXULyz6HJPxV0HLN572Xpq5GCELyzqmwhbZLKfTRuZQkrTGmpmRrllheRh
-         FhvQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Y69G6uVVBfPw/o8oXR0qs1ud5Tbzu38pJnxMfLYq0Zg=;
+        b=T6Bb0DGHdWeRunRSRpTFJD9nczhjYVDqrbWKvP7mSI/1MDORYQd9cKqOo+MYzk73re
+         NR4ToNHCa7a2fqfKkG7IZ4jjHTeZBCr8Uf7MHNQfMiZSHm8ZlWXWn0meaC5DzSoJP8OK
+         NT+OgCXwEosGY3+ncSHB7dO0XijwUzNQxNC70zeLRUf5aTLStCu/HeBaUup03ebcY+NT
+         L+QxhKz9Tc2xWdfXGbWAarUkDhSCs+EXBN0Vu2N3GADVXXLadSzQnst5GSooVAcC33YP
+         fnYDrYkGQ3aAQMh7q3kmkHck70Tx71gNEFT5oFE0eqLwSn3DNrqYDKxwmN9nfVcSbafN
+         GTYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JqtDpDFI1LWe2aNE+QdlEKbAzw7vqAaPQ3M+TSzYxOE=;
-        b=i9S1P0W8Wtn7RcC96V0U9RHbUqFipPcjE1gH7URGt9vpJAmkgN7bnXQQaH7DdOV114
-         a083ucVWOSOzXeheOv1275t0oUcVUDjQNxpNi1MDfvGa14AO0efvTyncQafXU3qumZOs
-         uyrni0MEHpSELUjZ3Us2rb6x4/pGMVfujRuX7arnHvzGYtxIsSmayA2YKfZqSdz09hp6
-         syzfLIOOXHwmPvAQkMk6hgnbDZuMsMnkuRBx8DZ7gGSu28md4mYLC8KCpy6k0+jIMNJu
-         7okNcNc8Af9FgzMZtAqwzzWa35xOpAIEvUYNGd16yT+QTU1JwPo6Bd4r/Fd1VcDzt4Tt
-         nEcQ==
-X-Gm-Message-State: AOAM530ppqDHcGRE0+FB6iyVvG84He0wvixWrW+ELCTxDY9DXFfIGzHx
-        Sct28/m/kXp95tLSJaFw1fs=
-X-Google-Smtp-Source: ABdhPJx+2yc3csM6ovSLyU3EEZ16NdjEE/PKX2nUmZdfn9imS1JF/9maB0IGGcQxAcIukh+XUkGYyw==
-X-Received: by 2002:adf:e2c9:: with SMTP id d9mr630493wrj.227.1591207978446;
-        Wed, 03 Jun 2020 11:12:58 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id h74sm4695409wrh.76.2020.06.03.11.12.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Jun 2020 11:12:57 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 8/8] selftests: net: Add port split test
-To:     Danielle Ratson <danieller@mellanox.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, michael.chan@broadcom.com, kuba@kernel.org,
-        jeffrey.t.kirsher@intel.com, saeedm@mellanox.com, leon@kernel.org,
-        jiri@mellanox.com, idosch@mellanox.com, snelson@pensando.io,
-        drivers@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
-        mlxsw@mellanox.com, Petr Machata <petrm@mellanox.com>
-References: <20200602113119.36665-1-danieller@mellanox.com>
- <20200602113119.36665-9-danieller@mellanox.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <619b71e5-57c2-0368-f1b6-8b052819cd22@gmail.com>
-Date:   Wed, 3 Jun 2020 11:12:51 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Y69G6uVVBfPw/o8oXR0qs1ud5Tbzu38pJnxMfLYq0Zg=;
+        b=bSzGSK7L3p7IHyDurkIkJoaE10i9skSgyOmrUzOZuzwXq9ChlWy3Oetbj6LQ2Dw/3W
+         YSzdBmGSmAJhjhKCIiue0DzpU8QVraZRVyB79DXgRQXnxK0kYGM+C/eqgKt24zAZDP5N
+         0mWtZMcIpvPCslJo2+KIGsBedbu+Umo7BVR3Y+sbQiIlpQhxAHs61v+p8tFsnbWAjaDL
+         qbBZrXQ6h5ykC0zQHp3QC9kMCX6D+1/Ld3T1KGy26gh2euSe3qweFPo6KPbUOV434Wl8
+         ngu7xW0+5P2zLBvNNjavbOvApCGPNpr7AIghoDmXGIg5N+T/y9H89Bbv7SE84pbXgyFK
+         ExNQ==
+X-Gm-Message-State: AOAM532fSYW8gMW0ntvtqgsLm1N/wOdg6pRXsXwqqIA8SDdfe1rpMhCA
+        JWxf+FQpt7kBHvyw6FTss74=
+X-Google-Smtp-Source: ABdhPJyBJ9u4ZhaM6mHxPwDDrYVO2bMrMWY65A9M5JPMF9jetO5zs8mkBFXfQunbXlFTgdUNFdcLmw==
+X-Received: by 2002:a63:eb03:: with SMTP id t3mr643201pgh.222.1591208100418;
+        Wed, 03 Jun 2020 11:15:00 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:514a])
+        by smtp.gmail.com with ESMTPSA id h11sm3296290pjk.20.2020.06.03.11.14.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 11:14:58 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 11:14:55 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     Ferenc Fejes <fejes@inf.elte.hu>, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf] bpf: fix unused-var without NETDEVICES
+Message-ID: <20200603181455.4sajgdyat7rkxxnf@ast-mbp.dhcp.thefacebook.com>
+References: <20200603081124.1627600-1-matthieu.baerts@tessares.net>
+ <CAAej5NZZNg+0EbZsa-SrP0S_sOPMqdzgQ9hS8z6DYpQp9G+yhw@mail.gmail.com>
+ <1cb3266c-7c8c-ebe6-0b6e-6d970e0adbd1@tessares.net>
 MIME-Version: 1.0
-In-Reply-To: <20200602113119.36665-9-danieller@mellanox.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1cb3266c-7c8c-ebe6-0b6e-6d970e0adbd1@tessares.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 03, 2020 at 11:12:01AM +0200, Matthieu Baerts wrote:
+> Hi Ferenc,
+> 
+> On 03/06/2020 10:56, Ferenc Fejes wrote:
+> > Matthieu Baerts <matthieu.baerts@tessares.net> ezt írta (időpont:
+> > 2020. jún. 3., Sze, 10:11):
+> > > 
+> > > A recent commit added new variables only used if CONFIG_NETDEVICES is
+> > > set.
+> > 
+> > Thank you for noticing and fixed this!
+> > 
+> > > A simple fix is to only declare these variables if the same
+> > > condition is valid.
+> > > 
+> > > Other solutions could be to move the code related to SO_BINDTODEVICE
+> > > option from _bpf_setsockopt() function to a dedicated one or only
+> > > declare these variables in the related "case" section.
+> > 
+> > Yes thats indeed a cleaner way to approach this. I will prepare a fix for that.
+> 
+> I should have maybe added that I didn't take this approach because in the
+> rest of the code, I don't see that variables are declared only in a "case"
+> section (no "{" ... "}" after "case") and code is generally not moved into a
+> dedicated function in these big switch/cases. But maybe it makes sense here
+> because of the #ifdef!
+> At the end, I took the simple approach because it is for -net.
+> 
+> In other words, I don't know what maintainers would prefer here but I am
+> happy to see any another solutions implemented to remove these compiler
+> warnings :)
 
-
-On 6/2/2020 4:31 AM, Danielle Ratson wrote:
-> Test port split configuration using previously added number of port lanes
-> attribute.
-> 
-> Check that all the splittable ports are successfully split to their maximum
-> number of lanes and below, and that those which are not splittable fail to
-> be split.
-> 
-> Test output example:
-> 
-> TEST: swp4 is unsplittable                                         [ OK ]
-> TEST: split port swp53 into 4                                      [ OK ]
-> TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
-> TEST: split port swp53 into 2                                      [ OK ]
-> TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
-> 
-> Signed-off-by: Danielle Ratson <danieller@mellanox.com>
-> Reviewed-by: Petr Machata <petrm@mellanox.com>
-> ---
->  tools/testing/selftests/net/Makefile          |   1 +
->  .../selftests/net/devlink_port_split.py       | 259 ++++++++++++++++++
-
-Any reason why this is written in python versus shell?
--- 
-Florian
+since CONFIG_NETDEVICES doesn't change anything in .h
+I think the best is to remove #ifdef CONFIG_NETDEVICES from net/core/filter.c
+and rely on sock_bindtoindex() returning ENOPROTOOPT
+in the extreme case of oddly configured kernels.
