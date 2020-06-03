@@ -2,114 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B02761ECBE1
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 10:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC69B1ECBED
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 10:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726516AbgFCIun (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 04:50:43 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:46228 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgFCIum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 04:50:42 -0400
+        id S1726123AbgFCIyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 04:54:22 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:34144 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbgFCIyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 04:54:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1591174240; x=1622710240;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aWg2wHAsXXZWyrc0Q/DrGtgOnINn0Ktk67+M6MRF80Q=;
-  b=LWDUPotz1E0Lcwwnq1GcSioZGj87doYRnLCUK9RVfX1KPsyT+nsQRbvM
-   DawrZsUVJIM7M+hgqcilXrNhkqTsJ0tX13RdlfoYsxBOfJ2pG9fjqYerX
-   SuZo2k3hTaAKfTBk9onqsw1FBZrmr1CIgETPTSURwzGs6ryilHwGlAv8t
-   4=;
-IronPort-SDR: Te5Q9Jau8wA90/kbZUz9we5ZiEoMazH7zh0S1vEjp6QnjTTFq5yp0xCY+q9tEe2/ZnsVrl40BQ
- qiBMDOEtueHQ==
+  t=1591174461; x=1622710461;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=oAeYtcn9n6Di1Xvx0m8SYWMYa4erzQPpWXB2AKpSnTg=;
+  b=pC0VYxbBSEYPZymn6UcWeVorLGfDHqJfxuSAndtDeHGS/NMV1Qpg8aWs
+   sNGhJIjKT4xh6ei+H6I+loSyOnoafzblKxE8YA0FKPjT9+vvHl//FuthM
+   PjN0AvEO8GUxqPo+/0C6prD/6qfdvErwwXZ2bOjVCtJDHR8Xs0uKhVx4p
+   8=;
+IronPort-SDR: 7WjtOrd6Ub0H6gSLivqUnWi17z9G+VtO91VRPr5OTDiHyFGdv6wQJTDJioGhU/LQErf8glwEMg
+ Z3O8a3/o/x4g==
 X-IronPort-AV: E=Sophos;i="5.73,467,1583193600"; 
-   d="scan'208";a="34214966"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 03 Jun 2020 08:50:27 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com (Postfix) with ESMTPS id 1E289A277B;
-        Wed,  3 Jun 2020 08:50:27 +0000 (UTC)
-Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 3 Jun 2020 08:50:26 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 3 Jun 2020 08:50:26 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 3 Jun 2020 08:50:26 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 200D5816BD; Wed,  3 Jun 2020 08:50:26 +0000 (UTC)
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net 2/2] net: ena: xdp: update napi budget for DROP and ABORTED
-Date:   Wed, 3 Jun 2020 08:50:23 +0000
-Message-ID: <20200603085023.24221-3-sameehj@amazon.com>
-X-Mailer: git-send-email 2.24.1.AMZN
-In-Reply-To: <20200603085023.24221-1-sameehj@amazon.com>
-References: <20200603085023.24221-1-sameehj@amazon.com>
+   d="scan'208";a="41181029"
+Subject: RE: [PATCH V1 net 0/2] Fix xdp in ena driver
+Thread-Topic: [PATCH V1 net 0/2] Fix xdp in ena driver
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 03 Jun 2020 08:54:19 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 78A1C2433AA;
+        Wed,  3 Jun 2020 08:54:18 +0000 (UTC)
+Received: from EX13D17EUB001.ant.amazon.com (10.43.166.85) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 3 Jun 2020 08:54:18 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D17EUB001.ant.amazon.com (10.43.166.85) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 3 Jun 2020 08:54:17 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
+ Wed, 3 Jun 2020 08:54:17 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+Thread-Index: AQHWOODIEj0iY8dpX0qtUA9NRDGJcajFgo+AgABqTYCAAKmCQA==
+Date:   Wed, 3 Jun 2020 08:54:10 +0000
+Deferred-Delivery: Wed, 3 Jun 2020 08:52:12 +0000
+Message-ID: <ff194834997e4ac4a44d1828adf88eb2@EX13D11EUB003.ant.amazon.com>
+References: <20200602132151.366-1-sameehj@amazon.com>
+        <20200602092333.53d88bb5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20200602.154401.977499738191444566.davem@davemloft.net>
+In-Reply-To: <20200602.154401.977499738191444566.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.137]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
 
-This patch fixes two issues with XDP:
 
-1. If the XDP verdict is XDP_ABORTED we break the loop, which results in
-   us handling one buffer per napi cycle instead of the total budget
-   (usually 64). To overcome this simply change the xdp_verdict check to
-   != XDP_PASS. When the verdict is XDP_PASS, the skb is not expected to
-   be NULL.
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Wednesday, June 3, 2020 1:44 AM
+> To: kuba@kernel.org
+> Cc: Jubran, Samih <sameehj@amazon.com>; netdev@vger.kernel.org;
+> Woodhouse, David <dwmw@amazon.co.uk>; Machulsky, Zorik
+> <zorik@amazon.com>; Matushevsky, Alexander <matua@amazon.com>;
+> Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>;
+> Liguori, Anthony <aliguori@amazon.com>; Bshara, Nafea
+> <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal,
+> Netanel <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>;
+> Herrenschmidt, Benjamin <benh@amazon.com>; Kiyanovski, Arthur
+> <akiyano@amazon.com>; Dagan, Noam <ndagan@amazon.com>
+> Subject: RE: [EXTERNAL] [PATCH V1 net 0/2] Fix xdp in ena driver
+>=20
+> CAUTION: This email originated from outside of the organization. Do not c=
+lick
+> links or open attachments unless you can confirm the sender and know the
+> content is safe.
+>=20
+>=20
+>=20
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Tue, 2 Jun 2020 09:23:33 -0700
+>=20
+> > On Tue, 2 Jun 2020 13:21:49 +0000 sameehj@amazon.com wrote:
+> >> From: Sameeh Jubran <sameehj@amazon.com>
+> >>
+> >> This patchset includes 2 XDP related bug fixes.
+> >
+> > Both of them have this problem
+> >
+> > Fixes tag: Fixes: cad451dd2427 ("net: ena: Implement XDP_TX action")
+> > Has these problem(s):
+> >       - Subject does not match target commit subject
+> >         Just use
+> >               git log -1 --format=3D'Fixes: %h ("%s")'
+>=20
+> Whoops, I'll revert, please fix this up.
 
-2. Update the residual budget for XDP_DROP and XDP_ABORTED, since
-   packets are handled in these cases.
-
-Fixes: 548c4940b9f1 ("net: ena: Implement XDP_TX action")
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index ec115b753..2beccda7e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1638,11 +1638,9 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 					 &next_to_clean);
- 
- 		if (unlikely(!skb)) {
--			if (xdp_verdict == XDP_TX) {
-+			if (xdp_verdict == XDP_TX)
- 				ena_free_rx_page(rx_ring,
- 						 &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id]);
--				res_budget--;
--			}
- 			for (i = 0; i < ena_rx_ctx.descs; i++) {
- 				rx_ring->free_ids[next_to_clean] =
- 					rx_ring->ena_bufs[i].req_id;
-@@ -1650,8 +1648,10 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 					ENA_RX_RING_IDX_NEXT(next_to_clean,
- 							     rx_ring->ring_size);
- 			}
--			if (xdp_verdict == XDP_TX || xdp_verdict == XDP_DROP)
-+			if (xdp_verdict != XDP_PASS) {
-+				res_budget--;
- 				continue;
-+			}
- 			break;
- 		}
- 
--- 
-2.24.1.AMZN
-
+Sorry, fixed in V2.
