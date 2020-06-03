@@ -2,166 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9011EC9A3
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 08:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC8B1EC9C9
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 08:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726042AbgFCGiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 02:38:05 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46631 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725881AbgFCGiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 02:38:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591166283;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9YIEZphT4WQWpLHR5u5cJhoz+kzmhXmqU3aAWshGKzY=;
-        b=YOXBuK+UmeWuKoDuuSW6sPMjKUiWmry64iCd0DsUoktlfG7wpcAuuTUewe4rnCV3Fz1eCp
-        q0Yqo0ggTqVR0f1JnaLhdV7C/V5wg1rCXAE04DKM9sSG4Rwk89K5nwuvfPviDdyFtG03OV
-        hZCxTLmPdzDa/+nocuke0hmk3jQm2UY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-128-s9_v9VnYMJaEfh0m8hUAHw-1; Wed, 03 Jun 2020 02:38:01 -0400
-X-MC-Unique: s9_v9VnYMJaEfh0m8hUAHw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9DAC0C7441;
-        Wed,  3 Jun 2020 06:37:59 +0000 (UTC)
-Received: from [10.72.12.214] (ovpn-12-214.pek2.redhat.com [10.72.12.214])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 121E35D9CD;
-        Wed,  3 Jun 2020 06:37:52 +0000 (UTC)
-Subject: Re: [PATCH 4/6] vhost_vdpa: support doorbell mapping via mmap
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        id S1726156AbgFCGyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 02:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgFCGyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 02:54:51 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB73C05BD43;
+        Tue,  2 Jun 2020 23:54:51 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id p5so1050706wrw.9;
+        Tue, 02 Jun 2020 23:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iUBsdEKJAkfjHMo0uDdBH4dW4uh7o5mZZx0Dc9KTBTk=;
+        b=AwNfjjxS1cUD55/h3hOFycmoypbBI5X42YF3aEolsLoOBplbESjY1f12w174bq7K14
+         uzbbtQb+IbyDyQi9SllYzG2/Qw5+QRPMfty5hRTW0/c392B7NG0iMGO3qxnV8UP8qYU/
+         xYyQ2K85Q0IS+XVwwqLaqWZzIxHp+zgkrHe5BnexKPewHtWaBDXv3JrSrtCK9s8KxPui
+         /ELfDJrRtJGUcsEbeW9q11mKZQ76f94zBLYMMOOFdtYDnui8UAnXmmbrBNQCrzCeG6Gt
+         b1E8Zfo6d8LNgebsyC/3C1hjsAqmhcMhGifsS6Z5SmE49JihAMcSbsMHioH03fGWDP7I
+         h9xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iUBsdEKJAkfjHMo0uDdBH4dW4uh7o5mZZx0Dc9KTBTk=;
+        b=FPvoJhJsc5datV9lNKxiqTL6a3thq6qIJWA05U3DXWxKdkGFKDt/TRxuLa0L4wbRHr
+         KKFz/cWJ/Wkpf1/FUXxmX5zcpIEjnfGuLpDCypEFifT7jhokSVev0Nnc7feA3qapvHLB
+         0a7rHCJdUk8lNpFRBJo+dolTVlEIDrIF1vSyj9BFlDy0AAL35ASS73IQIt4QUYSzuE4r
+         2k6pRJUvYdqAsP06DJTTmwY+MHoiRhP9dDfvOEF8EGfzBj3nX7G4uhJmMpRaIFbDGvCs
+         x1OroMsswmcD/JboOK5vKyPrr3acc7ZDF/drSMYehnb5MJnIkzSPNlLwve7e/5xMpcKY
+         4yrQ==
+X-Gm-Message-State: AOAM531PtcMqX+eIsQ3i7uwHWqbYnb387e55v/66ZA+rN+LR/FWtxF5z
+        XuGgWRgsfLc/LA5Qgr+SRpg=
+X-Google-Smtp-Source: ABdhPJzcGV71nUSVwGdwK4D4aesXZdcFTXhroW1sMX+bF3SzZMFFR6bPKV/wD7lQn77gMkS415BE7Q==
+X-Received: by 2002:adf:9d8e:: with SMTP id p14mr28717754wre.236.1591167290482;
+        Tue, 02 Jun 2020 23:54:50 -0700 (PDT)
+Received: from ubuntu18_2.cisco.com ([173.38.220.42])
+        by smtp.gmail.com with ESMTPSA id r7sm1494357wmb.32.2020.06.02.23.54.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 23:54:49 -0700 (PDT)
+From:   Ahmed Abdelsalam <ahabdels@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, ahabdels@gmail.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rob.miller@broadcom.com, lingshan.zhu@intel.com,
-        eperezma@redhat.com, lulu@redhat.com
-References: <20200529080303.15449-5-jasowang@redhat.com>
- <202006020308.kLXTHt4n%lkp@intel.com>
- <20200602005007-mutt-send-email-mst@kernel.org>
- <bd7dde11-b726-ee08-4e80-71fb784fa549@redhat.com>
- <20200602093025-mutt-send-email-mst@kernel.org>
- <5db6b413-cb6c-a566-2f2d-ad580d8e165b@redhat.com>
- <20200603023429-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <3c4ed3de-00e9-2e3d-854e-4bd47063820b@redhat.com>
-Date:   Wed, 3 Jun 2020 14:37:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        bpf@vger.kernel.org, yuehaibing@huawei.com, eric.dumazet@gmail.com,
+        david.lebrun@uclouvain.be
+Subject: [net] seg6: fix seg6_validate_srh() to avoid slab-out-of-bounds
+Date:   Wed,  3 Jun 2020 06:54:42 +0000
+Message-Id: <20200603065442.2745-1-ahabdels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200603023429-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The seg6_validate_srh() is used to validate SRH for three cases:
 
-On 2020/6/3 下午2:34, Michael S. Tsirkin wrote:
-> On Wed, Jun 03, 2020 at 12:18:44PM +0800, Jason Wang wrote:
->> On 2020/6/2 下午9:31, Michael S. Tsirkin wrote:
->>> On Tue, Jun 02, 2020 at 02:49:38PM +0800, Jason Wang wrote:
->>>> On 2020/6/2 下午12:56, Michael S. Tsirkin wrote:
->>>>> On Tue, Jun 02, 2020 at 03:22:49AM +0800, kbuild test robot wrote:
->>>>>> Hi Jason,
->>>>>>
->>>>>> I love your patch! Yet something to improve:
->>>>>>
->>>>>> [auto build test ERROR on vhost/linux-next]
->>>>>> [also build test ERROR on linus/master v5.7 next-20200529]
->>>>>> [if your patch is applied to the wrong git tree, please drop us a note to help
->>>>>> improve the system. BTW, we also suggest to use '--base' option to specify the
->>>>>> base tree in git format-patch, please seehttps://stackoverflow.com/a/37406982]
->>>>>>
->>>>>> url:https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-doorbell-mapping/20200531-070834
->>>>>> base:https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git   linux-next
->>>>>> config: m68k-randconfig-r011-20200601 (attached as .config)
->>>>>> compiler: m68k-linux-gcc (GCC) 9.3.0
->>>>>> reproduce (this is a W=1 build):
->>>>>>            wgethttps://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross  -O ~/bin/make.cross
->>>>>>            chmod +x ~/bin/make.cross
->>>>>>            # save the attached .config to linux build tree
->>>>>>            COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k
->>>>>>
->>>>>> If you fix the issue, kindly add following tag as appropriate
->>>>>> Reported-by: kbuild test robot<lkp@intel.com>
->>>>>>
->>>>>> All errors (new ones prefixed by >>, old ones prefixed by <<):
->>>>>>
->>>>>> drivers/vhost/vdpa.c: In function 'vhost_vdpa_fault':
->>>>>>>> drivers/vhost/vdpa.c:754:22: error: implicit declaration of function 'pgprot_noncached' [-Werror=implicit-function-declaration]
->>>>>> 754 |  vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
->>>>>> |                      ^~~~~~~~~~~~~~~~
->>>>>>>> drivers/vhost/vdpa.c:754:22: error: incompatible types when assigning to type 'pgprot_t' {aka 'struct <anonymous>'} from type 'int'
->>>>>> cc1: some warnings being treated as errors
->>>>>>
->>>>>> vim +/pgprot_noncached +754 drivers/vhost/vdpa.c
->>>>>>
->>>>>>       742	
->>>>>>       743	static vm_fault_t vhost_vdpa_fault(struct vm_fault *vmf)
->>>>>>       744	{
->>>>>>       745		struct vhost_vdpa *v = vmf->vma->vm_file->private_data;
->>>>>>       746		struct vdpa_device *vdpa = v->vdpa;
->>>>>>       747		const struct vdpa_config_ops *ops = vdpa->config;
->>>>>>       748		struct vdpa_notification_area notify;
->>>>>>       749		struct vm_area_struct *vma = vmf->vma;
->>>>>>       750		u16 index = vma->vm_pgoff;
->>>>>>       751	
->>>>>>       752		notify = ops->get_vq_notification(vdpa, index);
->>>>>>       753	
->>>>>>     > 754		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
->>>>>>       755		if (remap_pfn_range(vma, vmf->address & PAGE_MASK,
->>>>>>       756				    notify.addr >> PAGE_SHIFT, PAGE_SIZE,
->>>>>>       757				    vma->vm_page_prot))
->>>>>>       758			return VM_FAULT_SIGBUS;
->>>>>>       759	
->>>>>>       760		return VM_FAULT_NOPAGE;
->>>>>>       761	}
->>>>>>       762	
->>>>> Yes well, all this remapping clearly has no chance to work
->>>>> on systems without CONFIG_MMU.
->>>> It looks to me mmap can work according to Documentation/nommu-mmap.txt. But
->>>> I'm not sure it's worth to bother.
->>>>
->>>> Thanks
->>> Well
->>>
->>> int remap_pfn_range(struct vm_area_struct *vma, unsigned long addr,
->>>                   unsigned long pfn, unsigned long size, pgprot_t prot)
->>> {
->>>           if (addr != (pfn << PAGE_SHIFT))
->>>                   return -EINVAL;
->>>
->>>           vma->vm_flags |= VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP;
->>>           return 0;
->>> }
->>> EXPORT_SYMBOL(remap_pfn_range);
->>>
->>>
->>> So things aren't going to work if you have a fixed PFN
->>> which is the case of the hardware device.
->> Looking at the implementation of some drivers e.g mtd_char. If I read the
->> code correctly, we can do this by providing get_unmapped_area method and use
->> physical address directly.
->>
->> But start form CONFIG_MMU should be fine.  Do you prefer making vhost_vdpa
->> depends on CONFIG_MMU or just fail mmap when CONFIG_MMU is not configured?
->>
->> Thanks
-> I'd just not specify the mmap callback at all.
+case1: SRH of data-plane SRv6 packets to be processed by the Linux kernel.
+Case2: SRH of the netlink message received  from user-space (iproute2)
+Case3: SRH injected into packets through setsockopt
 
+In case1, the SRH can be encoded in the Reduced way (i.e., first SID is
+carried in DA only and not represented as SID in the SRH) and the
+seg6_validate_srh() now handles this case correctly.
 
-Ok, will do.
+In case2 and case3, the SRH shouldn’t be encoded in the Reduced way
+otherwise we lose the first segment (i.e., the first hop).
 
-Thanks
+The current implementation of the seg6_validate_srh() allow SRH of case2
+and case3 to be encoded in the Reduced way. This leads a slab-out-of-bounds
+problem.
 
+This patch verifies SRH of case1, case2 and case3. Allowing case1 to be
+reduced while preventing SRH of case2 and case3 from being reduced .
 
->
+Reported-by: syzbot+e8c028b62439eac42073@syzkaller.appspotmail.com
+Reported-by: YueHaibing <yuehaibing@huawei.com>
+Fixes: 0cb7498f234e ("seg6: fix SRH processing to comply with RFC8754")
+Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
+---
+ include/net/seg6.h       |  2 +-
+ net/core/filter.c        |  2 +-
+ net/ipv6/ipv6_sockglue.c |  2 +-
+ net/ipv6/seg6.c          | 16 ++++++++++------
+ net/ipv6/seg6_iptunnel.c |  2 +-
+ net/ipv6/seg6_local.c    |  6 +++---
+ 6 files changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/include/net/seg6.h b/include/net/seg6.h
+index 640724b35273..9d19c15e8545 100644
+--- a/include/net/seg6.h
++++ b/include/net/seg6.h
+@@ -57,7 +57,7 @@ extern void seg6_iptunnel_exit(void);
+ extern int seg6_local_init(void);
+ extern void seg6_local_exit(void);
+ 
+-extern bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len);
++extern bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len, bool reduced);
+ extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
+ 			     int proto);
+ extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ae82bcb03124..472bdb75849f 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5012,7 +5012,7 @@ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len
+ 	int err;
+ 	struct ipv6_sr_hdr *srh = (struct ipv6_sr_hdr *)hdr;
+ 
+-	if (!seg6_validate_srh(srh, len))
++	if (!seg6_validate_srh(srh, len, false))
+ 		return -EINVAL;
+ 
+ 	switch (type) {
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index 2c843ff5e3a9..20576e87a5f7 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -493,7 +493,7 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 				struct ipv6_sr_hdr *srh = (struct ipv6_sr_hdr *)
+ 							  opt->srcrt;
+ 
+-				if (!seg6_validate_srh(srh, optlen))
++				if (!seg6_validate_srh(srh, optlen, false))
+ 					goto sticky_done;
+ 				break;
+ 			}
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 37b434293bda..cd43e831de3e 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -25,7 +25,7 @@
+ #include <net/seg6_hmac.h>
+ #endif
+ 
+-bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
++bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len, bool reduced)
+ {
+ 	unsigned int tlv_offset;
+ 	int max_last_entry;
+@@ -37,13 +37,17 @@ bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
+ 	if (((srh->hdrlen + 1) << 3) != len)
+ 		return false;
+ 
+-	max_last_entry = (srh->hdrlen / 2) - 1;
+-
+-	if (srh->first_segment > max_last_entry)
++	if (!reduced && srh->segments_left > srh->first_segment) {
+ 		return false;
++	} else {
++		max_last_entry = (srh->hdrlen / 2) - 1;
+ 
+-	if (srh->segments_left > srh->first_segment + 1)
+-		return false;
++		if (srh->first_segment > max_last_entry)
++			return false;
++
++		if (srh->segments_left > srh->first_segment + 1)
++			return false;
++	}
+ 
+ 	tlv_offset = sizeof(*srh) + ((srh->first_segment + 1) << 4);
+ 
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index c7cbfeae94f5..e0e9f48ab14f 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -426,7 +426,7 @@ static int seg6_build_state(struct net *net, struct nlattr *nla,
+ 	}
+ 
+ 	/* verify that SRH is consistent */
+-	if (!seg6_validate_srh(tuninfo->srh, tuninfo_len - sizeof(*tuninfo)))
++	if (!seg6_validate_srh(tuninfo->srh, tuninfo_len - sizeof(*tuninfo), false))
+ 		return -EINVAL;
+ 
+ 	newts = lwtunnel_state_alloc(tuninfo_len + sizeof(*slwt));
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 52493423f329..eba23279912d 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -87,7 +87,7 @@ static struct ipv6_sr_hdr *get_srh(struct sk_buff *skb)
+ 	 */
+ 	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
+ 
+-	if (!seg6_validate_srh(srh, len))
++	if (!seg6_validate_srh(srh, len, true))
+ 		return NULL;
+ 
+ 	return srh;
+@@ -495,7 +495,7 @@ bool seg6_bpf_has_valid_srh(struct sk_buff *skb)
+ 			return false;
+ 
+ 		srh->hdrlen = (u8)(srh_state->hdrlen >> 3);
+-		if (!seg6_validate_srh(srh, (srh->hdrlen + 1) << 3))
++		if (!seg6_validate_srh(srh, (srh->hdrlen + 1) << 3, true))
+ 			return false;
+ 
+ 		srh_state->valid = true;
+@@ -670,7 +670,7 @@ static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 	if (len < sizeof(*srh) + sizeof(struct in6_addr))
+ 		return -EINVAL;
+ 
+-	if (!seg6_validate_srh(srh, len))
++	if (!seg6_validate_srh(srh, len, false))
+ 		return -EINVAL;
+ 
+ 	slwt->srh = kmemdup(srh, len, GFP_KERNEL);
+-- 
+2.17.1
 
