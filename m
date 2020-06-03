@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A711ED281
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:51:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953DB1ED2A0
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgFCOur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 10:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        id S1726167AbgFCOwq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Jun 2020 10:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbgFCOuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:50:22 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF3FC08C5C0;
-        Wed,  3 Jun 2020 07:50:22 -0700 (PDT)
-Received: from [5.158.153.53] (helo=debian-buster-darwi.lab.linutronix.de.)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <a.darwish@linutronix.de>)
-        id 1jgUiZ-0001yp-5A; Wed, 03 Jun 2020 16:50:11 +0200
-From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v2 4/6] net: mdiobus: Disable preemption upon u64_stats update
-Date:   Wed,  3 Jun 2020 16:49:47 +0200
-Message-Id: <20200603144949.1122421-5-a.darwish@linutronix.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200603144949.1122421-1-a.darwish@linutronix.de>
-References: <20200603144949.1122421-1-a.darwish@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        with ESMTP id S1725930AbgFCOwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:52:46 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977F3C08C5C0;
+        Wed,  3 Jun 2020 07:52:45 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=roelofs-mbp.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1jgUkr-0002jQ-92; Wed, 03 Jun 2020 16:52:33 +0200
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] lan743x: Added fixed link and RGMII support / BROKEN
+ PATCH
+From:   Roelof Berg <rberg@berg-solutions.de>
+In-Reply-To: <20200601.115136.1314501977250032604.davem@davemloft.net>
+Date:   Wed, 3 Jun 2020 16:52:32 +0200
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <D784BC1B-D14C-4FE4-8FD8-76BEBE60A39D@berg-solutions.de>
+References: <20200529193003.3717-1-rberg@berg-solutions.de>
+ <20200601.115136.1314501977250032604.davem@davemloft.net>
+To:     David Miller <davem@davemloft.net>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1591195965;eb131c3d;
+X-HE-SMSGID: 1jgUkr-0002jQ-92
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The u64_stats mechanism uses sequence counters to protect against 64-bit
-values tearing on 32-bit architectures. Updating u64_stats is thus a
-sequence counter write side critical section where preemption must be
-disabled.
+TEST REPORT: BROKEN PATCH
 
-For mdiobus_stats_acct(), disable preemption upon the u64_stats update.
-It is called from process context through mdiobus_read() and
-mdiobus_write().
+Thanks to everyone for working on the fixed link feature of lan743x eth driver.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
-Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/net/phy/mdio_bus.c | 2 ++
- 1 file changed, 2 insertions(+)
+I received more test hardware today, and one piece of hardware (EVBlan7430) becomes incompatible by the patch. We need to roll back for now. Sorry.
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 7a4eb3f2cb74..a1a4dee2a033 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -757,6 +757,7 @@ EXPORT_SYMBOL(mdiobus_scan);
- 
- static void mdiobus_stats_acct(struct mdio_bus_stats *stats, bool op, int ret)
- {
-+	preempt_disable();
- 	u64_stats_update_begin(&stats->syncp);
- 
- 	u64_stats_inc(&stats->transfers);
-@@ -771,6 +772,7 @@ static void mdiobus_stats_acct(struct mdio_bus_stats *stats, bool op, int ret)
- 		u64_stats_inc(&stats->writes);
- out:
- 	u64_stats_update_end(&stats->syncp);
-+	preempt_enable();
- }
- 
- /**
--- 
-2.20.1
+I’ll discuss about options of how to proceed in a second e-mail.
+
+Thank you and best regards,
+Roelof
+
+
+> David Miller <davem@davemloft.net>:
+> 
+>> Microchip lan7431 is frequently connected to a phy. However, it
+>> can also be directly connected to a MII remote peer without
+>> any phy in between. For supporting such a phyless hardware setup
+>> in Linux we utilized phylib, which supports a fixed-link
+>> configuration via the device tree. And we added support for
+>> defining the connection type R/GMII in the device tree.
+> ...
+> 
+> Applied, thank you.
+> 
 
