@@ -2,117 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6671ECC3E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 11:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 982ED1ECC42
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 11:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbgFCJMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 05:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726469AbgFCJMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 05:12:06 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F24C05BD1E
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 02:12:04 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id k11so1349516ejr.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 02:12:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nTJKg7NFlS/kS/+rvsgLEsS0PyK1+J6045eIfGo40yo=;
-        b=D4oYPOKO9hTNajgIR15Wn+4k++eP7IRGRfB9Mdcs4CqYquTmsDLhyZwWHShZO4LQlO
-         ARASZr0P7WffkVXLMcy5tTs4hD8C1iBppLHnIISE1f7f5T1Co90qv0WXIyWbP1QSP0FW
-         vvWk3EIt4TlqN5RZpd1AiIFnPFWqDY/hEyoLaDx+oj7ZD9JWMiFAHxkpNbjg6kBfrG0H
-         ZWyf04x7R1Zr57A9Vb6i6St4/5YwC0jV7UKpJOidW5MMOPKCmKdFg5rYiJJrLGVIIwWw
-         TtDwZVO06ZBNE/CSmzHfB/+bAID/X+W7iGHJKeIJBmNq18Uy0m7vwAa2OcxBJlqOktCx
-         X28g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nTJKg7NFlS/kS/+rvsgLEsS0PyK1+J6045eIfGo40yo=;
-        b=t67bAqamEMGTkm/1sPrcYVDDsBjquzzgl5aUkAzb3BwJ8O3I/5JHNZVU/FTMIT8rUL
-         GAa3bp4FgWEDwxkOFPVqGg2ewWbSv6lSZppVQZeAYIC6xCCJS8jy0P1fjxDZ/IHqD/jB
-         /lz/7yQv1j5rDMRBMKQdjK8urmnEyv42DCbBcR6+9w8X+vrn8sN7boSzah46f2i+Y3+e
-         HstPP+Eqehmw++RAuPD0+uc/6l8ul+p0tAgkyKZGMHVfZgtAxeonb9jlN9fPSRNRmoAY
-         au/Wl5rkn/REABuNGDfFUdn1Rr6HxDAbfIiz5VRsqR0jMXA/6V4YOEK8X8/TDEwrBzqw
-         E79Q==
-X-Gm-Message-State: AOAM532XhRX7T7kxRF+oUCmud1UQ8iApDb7XOtWEhKLKm7gIS9qFc97P
-        HVLN/SOG+A+VmzJm08F7OYm6yg==
-X-Google-Smtp-Source: ABdhPJyfTBPk1JryAQQvMhD39g9OljlrjBk4NcoU/yS6cmG3yen98ftBcC9QYnjCKhKv/hikEK41bQ==
-X-Received: by 2002:a17:906:f8f:: with SMTP id q15mr28143238ejj.389.1591175523317;
-        Wed, 03 Jun 2020 02:12:03 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id dj26sm857510edb.4.2020.06.03.02.12.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Jun 2020 02:12:02 -0700 (PDT)
-Subject: Re: [PATCH bpf] bpf: fix unused-var without NETDEVICES
-To:     Ferenc Fejes <fejes@inf.elte.hu>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200603081124.1627600-1-matthieu.baerts@tessares.net>
- <CAAej5NZZNg+0EbZsa-SrP0S_sOPMqdzgQ9hS8z6DYpQp9G+yhw@mail.gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <1cb3266c-7c8c-ebe6-0b6e-6d970e0adbd1@tessares.net>
-Date:   Wed, 3 Jun 2020 11:12:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <CAAej5NZZNg+0EbZsa-SrP0S_sOPMqdzgQ9hS8z6DYpQp9G+yhw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+        id S1726606AbgFCJM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 05:12:26 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:22054 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725877AbgFCJM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 05:12:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591175545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc; bh=hKkgqcuE0bLXUgu+w+sntJ1W5FE/jZVw53E18zFTKcs=;
+        b=UZyYzdDCxQL8fUn/wQ5qB8pSrxZUx2VuayM1qheycVNWHIDgi0w7/gY46JIuPCdcWUWhUt
+        KQMwLlJcLX6k7aSJzub5iQ56tY5TmVmNUVeLK9QjzjvY2zOO2dnIvW5yui8EzCGtQnnoFY
+        pTSxAJCr6tK6h+InnodsfFBaRlqSHCk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-143-YSrle9TKNC26kvgUuRh4_A-1; Wed, 03 Jun 2020 05:12:23 -0400
+X-MC-Unique: YSrle9TKNC26kvgUuRh4_A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B409018FE861
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 09:12:22 +0000 (UTC)
+Received: from griffin.upir.cz (unknown [10.40.194.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 321CA7F4C5
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 09:12:22 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net] geneve: change from tx_error to tx_dropped on missing metadata
+Date:   Wed,  3 Jun 2020 11:12:14 +0200
+Message-Id: <66009f71a08cba878fbdf86ca8dd137cdf19eaac.1591175373.git.jbenc@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ferenc,
+If the geneve interface is in collect_md (external) mode, it can't send any
+packets submitted directly to its net interface, as such packets won't have
+metadata attached. This is expected.
 
-On 03/06/2020 10:56, Ferenc Fejes wrote:
-> Matthieu Baerts <matthieu.baerts@tessares.net> ezt írta (időpont:
-> 2020. jún. 3., Sze, 10:11):
->>
->> A recent commit added new variables only used if CONFIG_NETDEVICES is
->> set.
-> 
-> Thank you for noticing and fixed this!
-> 
->> A simple fix is to only declare these variables if the same
->> condition is valid.
->>
->> Other solutions could be to move the code related to SO_BINDTODEVICE
->> option from _bpf_setsockopt() function to a dedicated one or only
->> declare these variables in the related "case" section.
-> 
-> Yes thats indeed a cleaner way to approach this. I will prepare a fix for that.
+However, the kernel itself sends some packets to the interface, most
+notably, IPv6 DAD, IPv6 multicast listener reports, etc. This is not wrong,
+as tunnel metadata can be specified in routing table (although technically,
+that has never worked for IPv6, but hopefully will be fixed eventually) and
+then the interface must correctly participate in IPv6 housekeeping.
 
-I should have maybe added that I didn't take this approach because in 
-the rest of the code, I don't see that variables are declared only in a 
-"case" section (no "{" ... "}" after "case") and code is generally not 
-moved into a dedicated function in these big switch/cases. But maybe it 
-makes sense here because of the #ifdef!
-At the end, I took the simple approach because it is for -net.
+The problem is that any such attempt increases the tx_error counter. Just
+bringing up a geneve interface with IPv6 enabled is enough to see a number
+of tx_errors. That causes confusion among users, prompting them to find
+a network error where there is none.
 
-In other words, I don't know what maintainers would prefer here but I am 
-happy to see any another solutions implemented to remove these compiler 
-warnings :)
+Change the counter used to tx_dropped. That better conveys the meaning
+(there's nothing wrong going on, just some packets are getting dropped) and
+hopefully will make admins panic less.
 
-Cheers,
-Matt
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+---
+ drivers/net/geneve.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 6b461be1820b..75266580b586 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -987,9 +987,10 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (geneve->collect_md) {
+ 		info = skb_tunnel_info(skb);
+ 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
+-			err = -EINVAL;
+ 			netdev_dbg(dev, "no tunnel metadata\n");
+-			goto tx_error;
++			dev_kfree_skb(skb);
++			dev->stats.tx_dropped++;
++			return NETDEV_TX_OK;
+ 		}
+ 	} else {
+ 		info = &geneve->info;
+@@ -1006,7 +1007,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	if (likely(!err))
+ 		return NETDEV_TX_OK;
+-tx_error:
++
+ 	dev_kfree_skb(skb);
+ 
+ 	if (err == -ELOOP)
 -- 
-Matthieu Baerts | R&D Engineer
-matthieu.baerts@tessares.net
-Tessares SA | Hybrid Access Solutions
-www.tessares.net
-1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
+2.18.1
+
