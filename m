@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9205C1ECDAB
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 12:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B476A1ECDC9
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 12:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725934AbgFCKhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 06:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        id S1725888AbgFCKpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 06:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgFCKhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 06:37:03 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9939FC08C5C0;
-        Wed,  3 Jun 2020 03:37:03 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id b5so1333720pfp.9;
-        Wed, 03 Jun 2020 03:37:03 -0700 (PDT)
+        with ESMTP id S1725828AbgFCKpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 06:45:07 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C8EC08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 03:45:07 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id j10so1808736wrw.8
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 03:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nVD95UqH77JMAWDNsd0PmgMJkNd8f0kxry6BDs2oz4E=;
-        b=G8yRAz6Anu24jKjhLCcyWcAHoXa7Kb8tJkH2E8wuENj9S4jdN33ltae2Ok5J23MxIK
-         8t3+fqbsYr8IX6hDoSB+EaDz/ZhEKTG5zczojKocgAi+ufJyUAM6ffey9/zWT/KvVLiz
-         nrEwj+gziOtYhgdzeGbUHJ21cc0gdfHQuvdAAO/wlgMAj3jpSBKjbvDLJNl6/rTlfrzC
-         qPhSrY3Jus3HsVn2mpyGPWXJHNmpDODN4nIb4FD9hSNjkViAGVYHe7Q7UmKw4ggJHQXL
-         gIPZHExMy6HA3HVx5D7XlB87JCjW33QhsWJ6c23zitUsfGWd17/ZtyFImtqWHOjIrPG3
-         SQAg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/YnE0O+Q12VSUWojSIFNw1I9cYzl9U/HVnxg1X2NGA0=;
+        b=2Qph+gGfG/3dNJgiz7i+J0pAtm8+aGqgmRjwWPgb3lNQ7UhzZcD4p8Mpj9spc60UQh
+         ugmlpfceiKTVKsQ2AT4hNFAMca5C0ANx3n4EdNFvqz9CL3/rp8w7r0dzVOeqryy3dyGd
+         wAxVSP85qLZnKKTcdZqjmOhxgiXIBxBZJaoAUFjVB/wXNKfEVJG6T/OcKxSWbf09UY0I
+         R3txs/BvI7H6OIGlIfsyFunEei8XElqX5Gn+I5t8jlWmRbXvdvMeoA2LG49s+hEWRbWG
+         e+rd+z7Ygk2NF7Jbtp0y7HuoyD2hybLdsWCrbmg1+ZKX1EWn2nlkisxyGpDtjQPQ/bsJ
+         8x6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nVD95UqH77JMAWDNsd0PmgMJkNd8f0kxry6BDs2oz4E=;
-        b=pkeqjSN/pLJnINcZdbQIBjAo0zeMmHOFoQhrlY4sA/XQqlEYnUxQWP1j8tJ02MgS4H
-         WmTz1xdHBMvDct89Zo0b99nOAvKrx3QAWzWrC6W9eYgTJCeOU0pgk1KfAtPBKxrtu0HG
-         fOvI/xi04nnJwrKx34g7sThlGVey7jBi5Wswp105aDziOq1pz1iAlsjnEOur9MLR4bDN
-         O0D9tAR65lBwPjNsbq/vW+zfvpeslsQshI9wM2VuqE9qtD94dOMOB2kaGKkDbY8JoYk9
-         AI0Xq3Q0/aTlV3aTYoz5hReqG5A8jdX9h6t6YuoJumj1vHJro8MdIuVclxIMOcLz4aXI
-         7BKA==
-X-Gm-Message-State: AOAM5306tA6CMR7l/4tNx/y2ukcgtYdpOMY4Zbb19fEcb/HmzEbUk9k1
-        APHiO6Vibe8YJLglynS2IgWSrF7BhIExpbPk5hk=
-X-Google-Smtp-Source: ABdhPJxVeySC5xkIJDLVVD1Z0A6TnKDtg3SyLYNUw2j09vjKGAyAlKEQckD0tHeWTW/G9Ebbr/Mz/kUCRa/5d2lrhmU=
-X-Received: by 2002:a17:90a:1704:: with SMTP id z4mr4865792pjd.181.1591180623108;
- Wed, 03 Jun 2020 03:37:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/YnE0O+Q12VSUWojSIFNw1I9cYzl9U/HVnxg1X2NGA0=;
+        b=lZ21G5HtpJxHt9JKxBaa09ulHYm4Jf2Qh7+8ONKHRwbIH5BuV1jfIlDC/W0mArckIH
+         ERsMKJ5tw/FFZVSAtLP32piS2zVJPeLiXEGZHw0r/QxhoJgDRSvR8Y7jXXKVQ4PJKjmb
+         MtDzZltXqGFD0XWwt4iOi+EHvhunw9palqgtsNJNsshhgEryGsod5p3e+oig5oSFHd/9
+         6B93WG+lkAyk9aoTnM/lwoAG736ZguhdmGNIXOisg9lzlLUlFsa5YH7jCVcsL9Qu1Vpj
+         tLJpqp0tUvpNzlQeUaQDeJ0DDx/YeSdQxm51U1tN7YAGTz1Jx0zj3rX3+Lbcrdegfvhb
+         3JRQ==
+X-Gm-Message-State: AOAM533g/xf2AWdHBbUZhp758lUJyHi9/wEGQbqY3L4i8TR4AgxZ+Cd7
+        /AneD7vAPmfquJZUwPzuE5Zy0g==
+X-Google-Smtp-Source: ABdhPJyT0oq9FDVtbQtst2hNWfGwBVlSwILzjXYduhDqD8qInf6Rb59PirLbNm6Kxz4xiZ0hQpcOnQ==
+X-Received: by 2002:a5d:6cce:: with SMTP id c14mr29060838wrc.377.1591181105698;
+        Wed, 03 Jun 2020 03:45:05 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id x186sm2396262wmg.8.2020.06.03.03.45.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 03:45:04 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 12:45:04 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Danielle Ratson <danieller@mellanox.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, michael.chan@broadcom.com,
+        jeffrey.t.kirsher@intel.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com, snelson@pensando.io,
+        drivers@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, mlxsw@mellanox.com
+Subject: Re: [RFC PATCH net-next 0/8] Expose devlink port attributes
+Message-ID: <20200603104504.GA2165@nanopsycho>
+References: <20200602113119.36665-1-danieller@mellanox.com>
+ <20200602123311.32bb062c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-References: <20200602092118.32283-1-piotr.stankiewicz@intel.com>
- <CAHp75VfEcm-Mmo7=i40sJ0RqpOgFRpJHxQ9ePWvvqsyRp+=9GA@mail.gmail.com> <CY4PR11MB15287ACFF4C55F84D43433E9F9880@CY4PR11MB1528.namprd11.prod.outlook.com>
-In-Reply-To: <CY4PR11MB15287ACFF4C55F84D43433E9F9880@CY4PR11MB1528.namprd11.prod.outlook.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Jun 2020 13:36:51 +0300
-Message-ID: <CAHp75Vd7k--sDBXOBNPkBhC1fAOL25D3Q9N=tesi0mLxzXRA0A@mail.gmail.com>
-Subject: Re: [PATCH 14/15] net: hns3: use PCI_IRQ_MSI_TYPES where appropriate
-To:     "Stankiewicz, Piotr" <piotr.stankiewicz@intel.com>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200602123311.32bb062c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 3, 2020 at 11:50 AM Stankiewicz, Piotr
-<piotr.stankiewicz@intel.com> wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Sent: Tuesday, June 2, 2020 5:39 PM
-> > On Tue, Jun 2, 2020 at 12:26 PM Piotr Stankiewicz
-> > <piotr.stankiewicz@intel.com> wrote:
-
-...
-
-> > >                                                 hdev->num_msi,
-> > > -                                               PCI_IRQ_MSI | PCI_IRQ_MSIX);
-> > > +                                               PCI_IRQ_MSI_TYPES);
-> >
-> > One line as above?
-> >
+Tue, Jun 02, 2020 at 09:33:11PM CEST, kuba@kernel.org wrote:
+>On Tue,  2 Jun 2020 14:31:11 +0300 Danielle Ratson wrote:
+>> Currently, user has no way of knowing if a port can be split and into
+>> how many ports.
+>> 
+>> Among other things, it is currently impossible to write generic tests
+>> for port split.
+>> 
+>> In order to be able to expose the information regarding the split
+>> capability to user space, set the required attributes and pass them to
+>> netlink.
+>> 
+>> Patch 1: Move set attribute from devlink_port_attrs to devlink_port.
+>> Patch 2: Move switch_port attribute from devlink_port_attrs to devlink_port
+>> Patch 3: Replace devlink_port_attrs_set parameters with a struct.
+>> Patch 4: Set and initialize lanes attribute in the driver.
+>> Patch 5: Add lanes attribute to devlink port and pass to netlink.
+>> Patch 6: Set and initialize splittable attribute in the driver.
+>> Patch 7: Add splittable attribute to devlink port and pass them to netlink.
+>> Patch 8: Add a split port test.
 >
-> It would push the line above 80 characters.
+>Since we have the splitability and number of lanes now understood by
+>the core - can the code also start doing more input checking?
 
-It's now relaxed limit, but if it is only few characters, I wouldn't care.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Yep, that should certainly be done so some of the checks can move from
+the drivers. Do you want to have this done as a part of this patchset or
+a separate one?
