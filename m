@@ -2,116 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92701ED232
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBAF1ED26A
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 16:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbgFCOgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 10:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S1726312AbgFCOuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 10:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726015AbgFCOgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:36:50 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D46C08C5C1
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 07:36:50 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id j10so2625606wrw.8
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 07:36:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pl3xDnNmt1VQENcPAj+d3FJJVE2TWWyVWxTE2VGNl20=;
-        b=ebsBmXcJKaW/yR42AsepxbZW/pr/LYJzRJKFJ0qCvO/qb3T75kr+kuoII+cb0LqWvK
-         yTbj0P560zdX1jvYQ3U7/gfSKpOSogASuLAvb6ca8uM2zuAznJGLHw8Q1ZSWud6mrdZS
-         2ksKDtiqL07scaq/cyC9aURjOTB0gRp2GWTOOn1EoyTNNmVmM7353iL492ED3Z9fvn31
-         5qQrHhGQnEZuodlPNy6qZsuXAnr6kDo0L9F/SXVz9iXMZPFEYP2CE61HxTg+8CZ2ZXIk
-         lwDRdnWG5SDpZUMqNPFC0CWISkOUKKYL7BLua0/sixpUAJ7aM/1laR0ZLKjYeejxbBob
-         Vi4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pl3xDnNmt1VQENcPAj+d3FJJVE2TWWyVWxTE2VGNl20=;
-        b=EFMNNl46O5x1oxaDLTNMAzalYn2qmAXKargjEAnTr5+wIOLgkWpYk5YmouUNI1MLSy
-         HTyKRjz+FCbnB5qmcv6VISBZXxEpslw0gw2S/XZxw3QtS76dO1nqxniCkZIUWRs8EFv5
-         xyIhb6M/odPOWvhCNGirm0O1OZlr4p9iFsa6dNpUF5AqxHe2zQqNvaL6M4x8naqpZlv8
-         mQKxKuChObxekM/06mTwsq2jvnPhBEi7EEeGZuRJZXp/YolpF05bJ55JiqiqmYOZs8sw
-         1uBYKi3OlpEE5b4sB/li4r2zvgW5UFYWA0YJXoya9qUCKc3v35EGWUqWXR+s5QHZfR3G
-         pOHw==
-X-Gm-Message-State: AOAM530hlU0Vo+HzCl4OB6ut/98kCI6cdZDJH7CcQkqQcu1nIivL+LBS
-        ARGfkwNxf3PGdSHYx5sHBi7K1Q==
-X-Google-Smtp-Source: ABdhPJyMb5U3ggl5KDn66BeTGb2QgmEVbyyru5dmqQeyyCdB/WWCY7uGGgPTbJlL4GItXeBfgSOj+w==
-X-Received: by 2002:a5d:608d:: with SMTP id w13mr30920857wrt.298.1591195008863;
-        Wed, 03 Jun 2020 07:36:48 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a81sm3587325wmd.25.2020.06.03.07.36.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 07:36:48 -0700 (PDT)
-Date:   Wed, 3 Jun 2020 16:36:47 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1726294AbgFCOuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 10:50:06 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAA2C08C5C2;
+        Wed,  3 Jun 2020 07:50:06 -0700 (PDT)
+Received: from [5.158.153.53] (helo=debian-buster-darwi.lab.linutronix.de.)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <a.darwish@linutronix.de>)
+        id 1jgUiJ-0001vC-NA; Wed, 03 Jun 2020 16:49:55 +0200
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>
-Subject: Re: [net-next 1/6] net: marvell: prestera: Add driver for Prestera
- family ASIC devices
-Message-ID: <20200603143647.GC2274@nanopsycho.orion>
-References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
- <20200528151245.7592-2-vadym.kochan@plvision.eu>
- <20200603142944.GA5892@nanopsycho.orion>
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 1/6] net: core: device_rename: Use rwsem instead of a seqcount
+Date:   Wed,  3 Jun 2020 16:49:44 +0200
+Message-Id: <20200603144949.1122421-2-a.darwish@linutronix.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200603144949.1122421-1-a.darwish@linutronix.de>
+References: <20200603144949.1122421-1-a.darwish@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200603142944.GA5892@nanopsycho.orion>
+Content-Transfer-Encoding: 8bit
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jun 03, 2020 at 04:29:44PM CEST, jiri@resnulli.us wrote:
->Thu, May 28, 2020 at 05:12:40PM CEST, vadym.kochan@plvision.eu wrote:
->
->[...]
->
->>+static int prestera_port_create(struct prestera_switch *sw, u32 id)
->>+{
->>+	struct prestera_port *port;
->>+	struct net_device *dev;
->>+	int err;
->>+
->>+	dev = alloc_etherdev(sizeof(*port));
->>+	if (!dev)
->>+		return -ENOMEM;
->>+
->>+	port = netdev_priv(dev);
->>+
->>+	port->dev = dev;
->>+	port->id = id;
->>+	port->sw = sw;
->>+
->>+	err = prestera_hw_port_info_get(port, &port->fp_id,
->>+					&port->hw_id, &port->dev_id);
->>+	if (err) {
->>+		dev_err(prestera_dev(sw), "Failed to get port(%u) info\n", id);
->>+		goto err_port_init;
->>+	}
->>+
->>+	dev->features |= NETIF_F_NETNS_LOCAL;
->>+	dev->netdev_ops = &netdev_ops;
->>+
->>+	netif_carrier_off(dev);
->
->No need.
+Sequence counters write paths are critical sections that must never be
+preempted, and blocking, even for CONFIG_PREEMPTION=n, is not allowed.
 
-Actually, it is. Sorry :)
+Commit 5dbe7c178d3f ("net: fix kernel deadlock with interface rename and
+netdev name retrieval.") handled a deadlock, observed with
+CONFIG_PREEMPTION=n, where the devnet_rename seqcount read side was
+infinitely spinning: it got scheduled after the seqcount write side
+blocked inside its own critical section.
+
+To fix that deadlock, among other issues, the commit added a
+cond_resched() inside the read side section. While this will get the
+non-preemptible kernel eventually unstuck, the seqcount reader is fully
+exhausting its slice just spinning -- until TIF_NEED_RESCHED is set.
+
+The fix is also still broken: if the seqcount reader belongs to a
+real-time scheduling policy, it can spin forever and the kernel will
+livelock.
+
+Disabling preemption over the seqcount write side critical section will
+not work: inside it are a number of GFP_KERNEL allocations and mutex
+locking through the drivers/base/ :: device_rename() call chain.
+
+From all the above, replace the seqcount with a rwsem.
+
+Fixes: 5dbe7c178d3f (net: fix kernel deadlock with interface rename and netdev name retrieval.)
+Fixes: 30e6c9fa93cf (net: devnet_rename_seq should be a seqcount)
+Fixes: c91f6df2db49 (sockopt: Change getsockopt() of SO_BINDTODEVICE to return an interface name)
+Cc: <stable@vger.kernel.org>
+Reported-by: kbuild test robot <lkp@intel.com> [ v1 missing up_read() on error exit ]
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com> [ v1 missing up_read() on error exit ]
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ net/core/dev.c | 40 ++++++++++++++++++----------------------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2d8aceee4284..93a279ab4e97 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -79,6 +79,7 @@
+ #include <linux/sched.h>
+ #include <linux/sched/mm.h>
+ #include <linux/mutex.h>
++#include <linux/rwsem.h>
+ #include <linux/string.h>
+ #include <linux/mm.h>
+ #include <linux/socket.h>
+@@ -194,7 +195,7 @@ static DEFINE_SPINLOCK(napi_hash_lock);
+ static unsigned int napi_gen_id = NR_CPUS;
+ static DEFINE_READ_MOSTLY_HASHTABLE(napi_hash, 8);
+ 
+-static seqcount_t devnet_rename_seq;
++static DECLARE_RWSEM(devnet_rename_sem);
+ 
+ static inline void dev_base_seq_inc(struct net *net)
+ {
+@@ -930,33 +931,28 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
+  *	@net: network namespace
+  *	@name: a pointer to the buffer where the name will be stored.
+  *	@ifindex: the ifindex of the interface to get the name from.
+- *
+- *	The use of raw_seqcount_begin() and cond_resched() before
+- *	retrying is required as we want to give the writers a chance
+- *	to complete when CONFIG_PREEMPTION is not set.
+  */
+ int netdev_get_name(struct net *net, char *name, int ifindex)
+ {
+ 	struct net_device *dev;
+-	unsigned int seq;
++	int ret;
+ 
+-retry:
+-	seq = raw_seqcount_begin(&devnet_rename_seq);
++	down_read(&devnet_rename_sem);
+ 	rcu_read_lock();
++
+ 	dev = dev_get_by_index_rcu(net, ifindex);
+ 	if (!dev) {
+-		rcu_read_unlock();
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto out;
+ 	}
+ 
+ 	strcpy(name, dev->name);
+-	rcu_read_unlock();
+-	if (read_seqcount_retry(&devnet_rename_seq, seq)) {
+-		cond_resched();
+-		goto retry;
+-	}
+ 
+-	return 0;
++	ret = 0;
++out:
++	rcu_read_unlock();
++	up_read(&devnet_rename_sem);
++	return ret;
+ }
+ 
+ /**
+@@ -1228,10 +1224,10 @@ int dev_change_name(struct net_device *dev, const char *newname)
+ 	    likely(!(dev->priv_flags & IFF_LIVE_RENAME_OK)))
+ 		return -EBUSY;
+ 
+-	write_seqcount_begin(&devnet_rename_seq);
++	down_write(&devnet_rename_sem);
+ 
+ 	if (strncmp(newname, dev->name, IFNAMSIZ) == 0) {
+-		write_seqcount_end(&devnet_rename_seq);
++		up_write(&devnet_rename_sem);
+ 		return 0;
+ 	}
+ 
+@@ -1239,7 +1235,7 @@ int dev_change_name(struct net_device *dev, const char *newname)
+ 
+ 	err = dev_get_valid_name(net, dev, newname);
+ 	if (err < 0) {
+-		write_seqcount_end(&devnet_rename_seq);
++		up_write(&devnet_rename_sem);
+ 		return err;
+ 	}
+ 
+@@ -1254,11 +1250,11 @@ int dev_change_name(struct net_device *dev, const char *newname)
+ 	if (ret) {
+ 		memcpy(dev->name, oldname, IFNAMSIZ);
+ 		dev->name_assign_type = old_assign_type;
+-		write_seqcount_end(&devnet_rename_seq);
++		up_write(&devnet_rename_sem);
+ 		return ret;
+ 	}
+ 
+-	write_seqcount_end(&devnet_rename_seq);
++	up_write(&devnet_rename_sem);
+ 
+ 	netdev_adjacent_rename_links(dev, oldname);
+ 
+@@ -1279,7 +1275,7 @@ int dev_change_name(struct net_device *dev, const char *newname)
+ 		/* err >= 0 after dev_alloc_name() or stores the first errno */
+ 		if (err >= 0) {
+ 			err = ret;
+-			write_seqcount_begin(&devnet_rename_seq);
++			down_write(&devnet_rename_sem);
+ 			memcpy(dev->name, oldname, IFNAMSIZ);
+ 			memcpy(oldname, newname, IFNAMSIZ);
+ 			dev->name_assign_type = old_assign_type;
+-- 
+2.20.1
 
