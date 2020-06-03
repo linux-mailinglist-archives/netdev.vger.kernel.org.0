@@ -2,92 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D663E1ED0AA
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 414681ED10B
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:41:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgFCNV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 09:21:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34926 "EHLO vps0.lunn.ch"
+        id S1725973AbgFCNl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 09:41:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34952 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbgFCNV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 09:21:56 -0400
+        id S1725834AbgFCNl2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jun 2020 09:41:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=kq7XlYCYEvDPrzu5OEp1VNG25HMp75SUwW8RLaDeDds=; b=0RIydBKRLRzJCLHAX6Qlhaj13F
-        WWj4KSywK7CM6GMMs3NmnwVUJaVyTYQbhm7S47EVT05BJS13vifLWmh15qdWLyC8ixoqQLV/HUmn4
-        NcqQmQD5Vxu+ytgHqySPCWPmJ2YG2Wj2fPUMiZFYVZpp55VBDbgL8ZeahawTwd98icUU=;
+        bh=CyFG2ru7bk1mj/fhXW2oMAxCVTuoHvvxgw+JJUxkA58=; b=p0AlNxI8ltu2LoKOPfJIcRx66u
+        XgYz2RIKrNkdlAQ63W7em0FJIEhS88woZHuRJhCxfwfoZfE2f0NSs1M5TtcfAoTN+oSTv0UpfdUhz
+        QA86WONXgj7Wt5FrBW4CRnXAwvSiX0zdC3pank2nedQ7lWk8qWuUchiUuGjDpF3oYOF8=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jgTL1-0043W9-Ev; Wed, 03 Jun 2020 15:21:47 +0200
-Date:   Wed, 3 Jun 2020 15:21:47 +0200
+        id 1jgTdx-0043cL-Io; Wed, 03 Jun 2020 15:41:21 +0200
+Date:   Wed, 3 Jun 2020 15:41:21 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+To:     Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: Enable autoneg bypass for
- 1000BaseX/2500BaseX ports
-Message-ID: <20200603132147.GW869823@lunn.ch>
-References: <20200528135608.GU1551@shell.armlinux.org.uk>
- <20200528163335.8f730b5a3ddc8cd9beab367f@suse.de>
- <20200528144805.GW1551@shell.armlinux.org.uk>
- <20200528204312.df9089425162a22e89669cf1@suse.de>
- <20200528220420.GY1551@shell.armlinux.org.uk>
- <20200529130539.3fe944fed7228e2b061a1e46@suse.de>
- <20200529145928.GF869823@lunn.ch>
- <20200529175225.a3be1b4faaa0408e165435ad@suse.de>
- <20200529163340.GI869823@lunn.ch>
- <20200602225016.GX1551@shell.armlinux.org.uk>
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: qca8k: Fix "Unexpected gfp" kernel
+ exception
+Message-ID: <20200603134121.GX869823@lunn.ch>
+References: <1591183899-24987-1-git-send-email-michal.vokac@ysoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200602225016.GX1551@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1591183899-24987-1-git-send-email-michal.vokac@ysoft.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 02, 2020 at 11:50:17PM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, May 29, 2020 at 06:33:40PM +0200, Andrew Lunn wrote:
-> > Given the current code, you cannot. Now we understand the
-> > requirements, we can come up with some ideas how to do this properly.
+On Wed, Jun 03, 2020 at 01:31:39PM +0200, Michal Vokáč wrote:
+> Commit 7e99e3470172 ("net: dsa: remove dsa_switch_alloc helper")
+> replaced the dsa_switch_alloc helper by devm_kzalloc in all DSA
+> drivers. Unfortunately it introduced a typo in qca8k.c driver and
+> wrong argument is passed to the devm_kzalloc function.
 > 
-> Okay, I've been a little quiet because of sorting out the ARM tree
-> for merging with Linus (now done) and I've been working on a solution
-> to this problem.
+> This fix mitigates the following kernel exception:
 > 
-> The good news is, I have an implementation in phylink to use the sync
-> status reported from a PCS, and to appropriately enable sync status
-> reporting.  I'm quite nervous about having that enabled as a matter of
-> routine as I've seen some Marvell hardware end up with interrupt storms
-> from it - presumably due to noise pickup on the serdes lines being
-> interpreted as an intermittently valid signal.
+>   Unexpected gfp: 0x6 (__GFP_HIGHMEM|GFP_DMA32). Fixing up to gfp: 0x101 (GFP_DMA|__GFP_ZERO). Fix your code!
+>   CPU: 1 PID: 44 Comm: kworker/1:1 Not tainted 5.5.9-yocto-ua #1
+>   Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+>   Workqueue: events deferred_probe_work_func
+>   [<c0014924>] (unwind_backtrace) from [<c00123bc>] (show_stack+0x10/0x14)
+>   [<c00123bc>] (show_stack) from [<c04c8fb4>] (dump_stack+0x90/0xa4)
+>   [<c04c8fb4>] (dump_stack) from [<c00e1b10>] (new_slab+0x20c/0x214)
+>   [<c00e1b10>] (new_slab) from [<c00e1cd0>] (___slab_alloc.constprop.0+0x1b8/0x540)
+>   [<c00e1cd0>] (___slab_alloc.constprop.0) from [<c00e2074>] (__slab_alloc.constprop.0+0x1c/0x24)
+>   [<c00e2074>] (__slab_alloc.constprop.0) from [<c00e4538>] (__kmalloc_track_caller+0x1b0/0x298)
+>   [<c00e4538>] (__kmalloc_track_caller) from [<c02cccac>] (devm_kmalloc+0x24/0x70)
+>   [<c02cccac>] (devm_kmalloc) from [<c030d888>] (qca8k_sw_probe+0x94/0x1ac)
+>   [<c030d888>] (qca8k_sw_probe) from [<c0304788>] (mdio_probe+0x30/0x54)
+>   [<c0304788>] (mdio_probe) from [<c02c93bc>] (really_probe+0x1e0/0x348)
+>   [<c02c93bc>] (really_probe) from [<c02c9884>] (driver_probe_device+0x60/0x16c)
+>   [<c02c9884>] (driver_probe_device) from [<c02c7fb0>] (bus_for_each_drv+0x70/0x94)
+>   [<c02c7fb0>] (bus_for_each_drv) from [<c02c9708>] (__device_attach+0xb4/0x11c)
+>   [<c02c9708>] (__device_attach) from [<c02c8148>] (bus_probe_device+0x84/0x8c)
+>   [<c02c8148>] (bus_probe_device) from [<c02c8cec>] (deferred_probe_work_func+0x64/0x90)
+>   [<c02c8cec>] (deferred_probe_work_func) from [<c0033c14>] (process_one_work+0x1d4/0x41c)
+>   [<c0033c14>] (process_one_work) from [<c00340a4>] (worker_thread+0x248/0x528)
+>   [<c00340a4>] (worker_thread) from [<c0039148>] (kthread+0x124/0x150)
+>   [<c0039148>] (kthread) from [<c00090d8>] (ret_from_fork+0x14/0x3c)
+>   Exception stack(0xee1b5fb0 to 0xee1b5ff8)
+>   5fa0:                                     00000000 00000000 00000000 00000000
+>   5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+>   5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+>   qca8k 2188000.ethernet-1:0a: Using legacy PHYLIB callbacks. Please migrate to PHYLINK!
+>   qca8k 2188000.ethernet-1:0a eth2 (uninitialized): PHY [2188000.ethernet-1:01] driver [Generic PHY]
+>   qca8k 2188000.ethernet-1:0a eth1 (uninitialized): PHY [2188000.ethernet-1:02] driver [Generic PHY]
+> 
+> Fixes: 7e99e3470172 ("net: dsa: remove dsa_switch_alloc helper")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
 
-Hi Russell
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-I have seen similar with an SFP without link. I think squelch is
-optional, so noise gets passed through, which is enough to get and
-loose sync.
-
-I think we probably need to only enable the interrupt when the LOS
-signal indicates there is at least some power coming into the SFP.
-
-> However, I think we need to think about:
-> 1) how we classify Thomas' problem - does it count as a regression
->    given that support for his platform is not part of mainline, and
->    the use of in-band-status in his unreviewed DT is clearly incorrect?
-
-I would say no, it is not a regression.
-
-> 2) if we deem it to be a regression, then how do we intend to solve
->    this for stable kernels?
-
-I think this new code should go into net-next, when it opens. I
-suspect it is going to be a big change, once we consider LOS.
-
-	Andrew
+    Andrew
