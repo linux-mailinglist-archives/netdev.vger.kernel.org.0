@@ -2,419 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F651ECD30
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 12:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD13C1ECD32
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 12:08:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgFCKH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 06:07:56 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54667 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725943AbgFCKHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 06:07:55 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 97E42580171;
-        Wed,  3 Jun 2020 06:07:53 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 03 Jun 2020 06:07:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=kiZMMi
-        VW28mqXcVOHneQa9SiH1xMLLzOdM96VKl6Yl0=; b=1xJCX2Kimb/wBxLX6VllTJ
-        NFwxuJGvqGvIn/St+VyoqIs3nA2qO+MuzyHsDiJmcdZcZK4KFhw9/DOI/3mdI2c8
-        OJQYflZKWpaKyVZ7W0FOj/WjfOIwvs/HvcEh/3Ap6Pc2cCnCu8c/Dk6+/QsjmtEj
-        bGurvzGjCARW6S6k7WUZDKztXPjaDFa0258V0XYxijr2+9kFjBrej3gJJfI1Hpy5
-        Vesk03NZOXlPwdnnBjNNBcZk/grDOeRa/wnPbjviU/1s598KPvxLjuXnbTxIQ+55
-        gcqUdp5Ap/MUuOrI97/8ABSWO97uUsFhFfsBg2+oPyLVXeVXiJEg/AgsGaoN/N1w
-        ==
-X-ME-Sender: <xms:d3bXXgaoBF3B_pMKpFlnDpLSBdbnP1DTa85PCMHh7EYFJy5AjLQv3w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudefledgudeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:d3bXXrYKbyvwwlGdBP0o_285xcqK_hxDm-2IMtuUbEq7CuR9jo5ACg>
-    <xmx:d3bXXq9rD-3oeqp7PGa35DCoHx50u8qxkJaW2c4D0QMfNaKj4ETkQw>
-    <xmx:d3bXXqp_hxanzE-tPjlXn5HKTlAag3t_IDK9eOZr6sciWPrT4uP0_A>
-    <xmx:eXbXXojQvKWUraDchj-Cs4uuE4LXXtNqXNCt2bRAfS6r7RH08YabSQ>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 52D8030618C1;
-        Wed,  3 Jun 2020 06:07:51 -0400 (EDT)
-Date:   Wed, 3 Jun 2020 13:07:49 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1726846AbgFCKIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 06:08:10 -0400
+Received: from mail-eopbgr60077.outbound.protection.outlook.com ([40.107.6.77]:12363
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725943AbgFCKIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jun 2020 06:08:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kgAiflROW6Z7bWa8b9qM4RDAuLqAL0aclBK+uGGYD8MtHC/jo0rvPMsdXMoP4oS8AMIYuPVb2PF2dper2aEi5kVNS342qg/RLug7qjV87516dCRRSjVEhEncnC/meTigO9iEaVpLP5oi51jI6jMG+y2t63EvZQ2EvnbGnX6lpCmU7uBJVY+rPLCvwfyyxj1mBzJmuuufIFjRafNaNeC1JE9bTuTXT4KbO5mOxXigkBoDv6jqjtHSO2SSl5SxJz23mo4+260ClvmJL7hC6T0tOFPIxuoaPF4noiiyR6H/V/+OKZLJNh1/9OKP4bFguOGLlY2XhgIR9VyARN5FSRDAyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=um816ZEGAitQzUF4eb5opsan7fhs8EUbZDc3jhD7T38=;
+ b=N5Y6GQPL8R5/mRaA4JzzHQTdXtckCxjf/B5yMNx+JJ27EK7jYCOQ/XKM1GxYX3d2cz4Vg78UMXHqdubQKL69uCGDRtCQmpE/YH3GUYqw5FczAXA5MWpgXT/BeSA/bhph65nxKqy9Zw2JO8/Ln4ze2M2SfWRpCn5pDqZtGlc+MplpE2PVYuVxOUKQ/hiXEZpdn6GDHMvRvhrJ9VDlhmB8s7a8hzgXF1YlJEfIzqQC2ab5Tl37sPo61FidfFkk/ETpZ/6UbMOWBJ0I+JRBRea92JnHT1MXN7Muif0I2u5vXf7OS59g8cAdQ2p6W2uec+5k+jdrjwTj8ZdyMP44CBfBDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=um816ZEGAitQzUF4eb5opsan7fhs8EUbZDc3jhD7T38=;
+ b=EozgC7165QCdSwvtcQtpIMWM7VbQpD5s2thzLabkY3aGZxV89PSa6KW1ELdfm8hfebF/tiZufD9VDydCV/hJv3UrrKTQxAHu/z0BDah3cVUFbrSn3d4uNcqTnJuvkoHQniPMUystH1HmruwEE4jewiMtLUnSlN7uz6mpxHO+E9U=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR05MB3305.eurprd05.prod.outlook.com (2603:10a6:7:35::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3066.18; Wed, 3 Jun 2020 10:08:04 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3066.018; Wed, 3 Jun 2020
+ 10:08:03 +0000
+References: <cover.1590512901.git.petrm@mellanox.com> <CAM_iQpW8NcZy=ayJ49iY-pCix+HFusTfoOpoD_oMOR6+LeGy1g@mail.gmail.com> <20200601134023.GQ2282@nanopsycho> <CAM_iQpXTWK+-_42CsVsL==XOSZO1tGeSDCz=BkgAaRsJvZL6TQ@mail.gmail.com> <20200602060555.GR2282@nanopsycho> <CAM_iQpWw81SqpWHFMLz=rxM8CwFW77796=Cf9x+tERd6gK6nrg@mail.gmail.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>
-Subject: Re: [net-next 3/6] net: marvell: prestera: Add basic devlink support
-Message-ID: <20200603100749.GB1847993@splinter>
-References: <20200528151245.7592-1-vadym.kochan@plvision.eu>
- <20200528151245.7592-4-vadym.kochan@plvision.eu>
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [RFC PATCH net-next 0/3] TC: Introduce qevents
+Message-ID: <87r1uw31nt.fsf@mellanox.com>
+In-reply-to: <CAM_iQpWw81SqpWHFMLz=rxM8CwFW77796=Cf9x+tERd6gK6nrg@mail.gmail.com>
+Date:   Wed, 03 Jun 2020 12:08:01 +0200
+Content-Type: text/plain
+X-ClientProxiedBy: AM0P190CA0021.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::31) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200528151245.7592-4-vadym.kochan@plvision.eu>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM0P190CA0021.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Wed, 3 Jun 2020 10:08:02 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3d2a7429-88d1-4bb4-4818-08d807a600ec
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3305:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB330508EA092F1E939566C55ADB880@HE1PR05MB3305.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 04238CD941
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uySzIYaC/hT4v2FZ7PvgyWel8GyxKZZFW8Fjw4uUYbRBDpBTD/EQRCXR4WOIfUClztZfMeDHgHaLsm3SpSmaKcX/4twOmKz9saTjr8c3aP1kzQaRsXeh902mOX104+ftBULzsM8KclmjgxYo5PQm+oNsb0nUslep6kCrVLTuQEqROOg6QwPPZmbSw1kd8d2g6Fuu52Khr0E0Cj94f9sV/X66gPeBkSsH579q9OckrzL7agZ0IS1rlxF+oH0s+W6w19sa2cEopHzIEOUYVC0nzHv5iyFBxXYX3pJaaiN2+27UhBkyUjNkUsLbXa9Hlzi7IbDWSCL3shVAt3cPRUqwCQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(6486002)(478600001)(8676002)(83380400001)(6916009)(52116002)(8936002)(6496006)(2906002)(36756003)(5660300002)(107886003)(66946007)(26005)(186003)(2616005)(16526019)(956004)(4326008)(54906003)(86362001)(316002)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: ie5kIY1O1rHbCQfVQ8ZtzF5Oe+j+WfUWxj5EuwCngUfCS0N/a3U5E7yZ7VERw3W8yMrYYvQSlOr0b9MDLAtJ/xlmKaIyYVqA3atw0a/HH57Q0roOwn2iTszsIzLy2nIbyelZVTbMWJddkR9EjpMQnmLEdHnmLdZaMMsD+YG50st/9IPDj5booHwcI3pYLPN3dS6NBoiLspu3nMtaXmxlbmGJGoLEJa1qKjw9iMNxM3Wqgy4HNGZm4C37mb6Ohdeh6IfvKEdHLh8hjAMiJWNv8SSUJIRnN0mG5SJ/U/+vHrmmusuzNSPiAgwTWqHNzFdxktgHMT1Og7okdELo5kPumN36u3n9fVBYqSj9kmDLvLhcvgweQmUj4U3axJWUH1ii+6hkYpWRTliERl+sQ+66jT0kZZ70TGndSQGTwggLQLboR7L1qjiVs7xm+BVaGBOGCJSfyguHV3XSMO+o975jb1lu+W+wlIZjsUul0jnT6bxMKkBkDh7Zx85kvZZL05EO
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d2a7429-88d1-4bb4-4818-08d807a600ec
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2020 10:08:03.7124
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: L0kiRB94dksYuYvf4nrFCPKyKC4M3jz9kxXHV54oI14L8ytPrAp/cC/MAab+P7zEv8R5K0zRXsllmbgAgEh29w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3305
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 06:12:42PM +0300, Vadym Kochan wrote:
-> Add very basic support for devlink interface:
-> 
->     - driver name
->     - fw version
->     - devlink ports
 
-I suggest adding support for reload while the driver is still simple. I
-use it all the time because I run with modules built-in. It's also used
-in FIB offload tests to relocate the netdevs to a different namespace
-where the test is performed
+Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-> 
-> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
-> ---
->  drivers/net/ethernet/marvell/prestera/Kconfig |   1 +
->  .../net/ethernet/marvell/prestera/Makefile    |   2 +-
->  .../net/ethernet/marvell/prestera/prestera.h  |   4 +
->  .../marvell/prestera/prestera_devlink.c       | 111 ++++++++++++++++++
->  .../marvell/prestera/prestera_devlink.h       |  25 ++++
->  .../ethernet/marvell/prestera/prestera_main.c |  27 ++++-
->  6 files changed, 165 insertions(+), 5 deletions(-)
->  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.c
->  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-> 
-> diff --git a/drivers/net/ethernet/marvell/prestera/Kconfig b/drivers/net/ethernet/marvell/prestera/Kconfig
-> index 0848edb272a5..dfd5174d0568 100644
-> --- a/drivers/net/ethernet/marvell/prestera/Kconfig
-> +++ b/drivers/net/ethernet/marvell/prestera/Kconfig
-> @@ -6,6 +6,7 @@
->  config PRESTERA
->  	tristate "Marvell Prestera Switch ASICs support"
->  	depends on NET_SWITCHDEV && VLAN_8021Q
-> +	select NET_DEVLINK
->  	help
->  	  This driver supports Marvell Prestera Switch ASICs family.
->  
-> diff --git a/drivers/net/ethernet/marvell/prestera/Makefile b/drivers/net/ethernet/marvell/prestera/Makefile
-> index 2146714eab21..babd71fba809 100644
-> --- a/drivers/net/ethernet/marvell/prestera/Makefile
-> +++ b/drivers/net/ethernet/marvell/prestera/Makefile
-> @@ -1,6 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->  obj-$(CONFIG_PRESTERA)	+= prestera.o
->  prestera-objs		:= prestera_main.o prestera_hw.o prestera_dsa.o \
-> -			   prestera_rxtx.o
-> +			   prestera_rxtx.o prestera_devlink.o
->  
->  obj-$(CONFIG_PRESTERA_PCI)	+= prestera_pci.o
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-> index 5079d872e18a..f8abaaff5f21 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera.h
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-> @@ -11,6 +11,9 @@
->  #include <linux/notifier.h>
->  #include <uapi/linux/if_ether.h>
->  #include <linux/workqueue.h>
-> +#include <net/devlink.h>
-> +
-> +#define PRESTERA_DRV_NAME	"prestera"
->  
->  struct prestera_fw_rev {
->  	u16 maj;
-> @@ -63,6 +66,7 @@ struct prestera_port_caps {
->  struct prestera_port {
->  	struct net_device *dev;
->  	struct prestera_switch *sw;
-> +	struct devlink_port dl_port;
->  	u32 id;
->  	u32 hw_id;
->  	u32 dev_id;
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-> new file mode 100644
-> index 000000000000..58021057981b
-> --- /dev/null
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-> @@ -0,0 +1,111 @@
-> +// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-> +/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
-> +
-> +#include <net/devlink.h>
-> +
-> +#include "prestera.h"
-> +#include "prestera_devlink.h"
-> +
-> +static int prestera_dl_info_get(struct devlink *dl,
-> +				struct devlink_info_req *req,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	struct prestera_switch *sw = devlink_priv(dl);
-> +	char buf[16];
-> +	int err = 0;
-> +
-> +	err = devlink_info_driver_name_put(req, PRESTERA_DRV_NAME);
-> +	if (err)
-> +		return err;
-> +
-> +	snprintf(buf, sizeof(buf), "%d.%d.%d",
-> +		 sw->dev->fw_rev.maj,
-> +		 sw->dev->fw_rev.min,
-> +		 sw->dev->fw_rev.sub);
-> +
-> +	err = devlink_info_version_running_put(req,
-> +					       DEVLINK_INFO_VERSION_GENERIC_FW,
-> +					       buf);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct devlink_ops prestera_dl_ops = {
-> +	.info_get = prestera_dl_info_get,
-> +};
-> +
-> +struct prestera_switch *prestera_devlink_alloc(void)
-> +{
-> +	struct devlink *dl;
-> +
-> +	dl = devlink_alloc(&prestera_dl_ops, sizeof(struct prestera_switch));
-> +
-> +	return devlink_priv(dl);
-> +}
-> +
-> +void prestera_devlink_free(struct prestera_switch *sw)
-> +{
-> +	struct devlink *dl = priv_to_devlink(sw);
-> +
-> +	devlink_free(dl);
-> +}
-> +
-> +int prestera_devlink_register(struct prestera_switch *sw)
-> +{
-> +	struct devlink *dl = priv_to_devlink(sw);
-> +	int err;
-> +
-> +	err = devlink_register(dl, sw->dev->dev);
-> +	if (err) {
-> +		dev_warn(sw->dev->dev, "devlink_register failed: %d\n", err);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void prestera_devlink_unregister(struct prestera_switch *sw)
-> +{
-> +	struct devlink *dl = priv_to_devlink(sw);
-> +
-> +	devlink_unregister(dl);
-> +}
-> +
-> +int prestera_devlink_port_register(struct prestera_port *port)
-> +{
-> +	struct devlink *dl = priv_to_devlink(port->sw);
-> +	struct prestera_switch *sw;
-> +	int err;
-> +
-> +	sw = port->sw;
-> +	dl = priv_to_devlink(sw);
-> +
-> +	devlink_port_attrs_set(&port->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-> +			       port->fp_id, false, 0,
-> +			       &port->sw->id, sizeof(port->sw->id));
-> +
-> +	err = devlink_port_register(dl, &port->dl_port, port->fp_id);
-> +	if (err)
-> +		dev_err(sw->dev->dev, "devlink_port_register failed: %d\n", err);
+> I imagine we could introduce multiple blocks for a qdisc.
 
-Return the error?
+Yes, and that's what the patchset does. If you look at struct
+tcf_qevent, it is just some block bookkeeping and an attribute name.
 
-> +
-> +	return 0;
-> +}
-> +
-> +void prestera_devlink_port_unregister(struct prestera_port *port)
-> +{
-> +	devlink_port_unregister(&port->dl_port);
-> +}
-> +
-> +void prestera_devlink_port_type_set(struct prestera_port *port)
-> +{
-> +	devlink_port_type_eth_set(&port->dl_port, port->dev);
-> +}
-> +
-> +struct devlink_port *prestera_devlink_get_port(struct net_device *dev)
-> +{
-> +	struct prestera_port *port = netdev_priv(dev);
-> +
-> +	return &port->dl_port;
-> +}
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.h b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-> new file mode 100644
-> index 000000000000..b46441d1e758
-> --- /dev/null
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-> @@ -0,0 +1,25 @@
-> +/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-> + *
-> + * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
-> + *
-> + */
-> +
-> +#ifndef _PRESTERA_DEVLINK_H_
-> +#define _PRESTERA_DEVLINK_H_
-> +
-> +#include "prestera.h"
-> +
-> +struct prestera_switch *prestera_devlink_alloc(void);
-> +void prestera_devlink_free(struct prestera_switch *sw);
-> +
-> +int prestera_devlink_register(struct prestera_switch *sw);
-> +void prestera_devlink_unregister(struct prestera_switch *sw);
-> +
-> +int prestera_devlink_port_register(struct prestera_port *port);
-> +void prestera_devlink_port_unregister(struct prestera_port *port);
-> +
-> +void prestera_devlink_port_type_set(struct prestera_port *port);
-> +
-> +struct devlink_port *prestera_devlink_get_port(struct net_device *dev);
-> +
-> +#endif /* _PRESTERA_DEVLINK_H_ */
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> index b5241e9b784a..ddab9422fe5e 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> @@ -14,6 +14,7 @@
->  #include "prestera.h"
->  #include "prestera_hw.h"
->  #include "prestera_rxtx.h"
-> +#include "prestera_devlink.h"
->  
->  #define PRESTERA_MTU_DEFAULT 1536
->  
-> @@ -185,6 +186,7 @@ static const struct net_device_ops netdev_ops = {
->  	.ndo_change_mtu = prestera_port_change_mtu,
->  	.ndo_get_stats64 = prestera_port_get_stats64,
->  	.ndo_set_mac_address = prestera_port_set_mac_address,
-> +	.ndo_get_devlink_port = prestera_devlink_get_port,
->  };
->  
->  static int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
-> @@ -234,9 +236,13 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
->  					&port->hw_id, &port->dev_id);
->  	if (err) {
->  		dev_err(prestera_dev(sw), "Failed to get port(%u) info\n", id);
-> -		goto err_port_init;
-> +		goto err_port_info_get;
+> Currently we have:
+>
+> struct some_qdisc_data {
+>   struct tcf_block *block;
+> };
+>
+> Maybe we can extend it to:
+>
+> struct some_qdisc_data {
+>   struct tcf_block *blocks[3];
 
-Seems like an unrelated change
+Yeah, except not all qdiscs will implement all qevents, so let's instead
+make it a handful of fields, like in the patchset.
 
->  	}
->  
-> +	err = prestera_devlink_port_register(port);
-> +	if (err)
-> +		goto err_dl_port_register;
-> +
->  	dev->features |= NETIF_F_NETNS_LOCAL;
->  	dev->netdev_ops = &netdev_ops;
->  
-> @@ -295,11 +301,16 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
->  	if (err)
->  		goto err_register_netdev;
->  
-> +	prestera_devlink_port_type_set(port);
-> +
->  	return 0;
->  
->  err_register_netdev:
->  	list_del_rcu(&port->list);
->  err_port_init:
-> +	prestera_devlink_port_unregister(port);
-> +err_dl_port_register:
-> +err_port_info_get:
->  	free_netdev(dev);
->  	return err;
->  }
-> @@ -313,6 +324,7 @@ static void prestera_port_destroy(struct prestera_port *port)
+> };
+>
+> #define ENQUEUE 0
+> #define DEQUEUE 1
+> #define DROP 2
+>
+> static struct tcf_block *foo_tcf_block(struct Qdisc *sch, unsigned long cl,
+>                                             struct netlink_ext_ack
+> *extack, int position)
+> {
+>         struct some_qdisc_data *q = qdisc_priv(sch);
+>
+>         if (cl)
+>                 return NULL;
+>         return q->block[position];
+> }
 
-Shouldn't you call devlink_port_type_clear() here?
+Interestingly, this is close to my original approach, pre-RFC. But there
+needs to be this global list of all existing qevents. On its own, that's
+a negative--at least it's an extra uAPI to maintain. What does it bring?
 
->  
->  	list_del_rcu(&port->list);
->  
-> +	prestera_devlink_port_unregister(port);
->  	free_netdev(dev);
->  }
->  
-> @@ -435,6 +447,10 @@ static int prestera_switch_init(struct prestera_switch *sw)
->  	if (err)
->  		return err;
->  
-> +	err = prestera_devlink_register(sw);
-> +	if (err)
-> +		goto err_dl_register;
-> +
->  	err = prestera_create_ports(sw);
->  	if (err)
->  		goto err_ports_create;
-> @@ -442,6 +458,8 @@ static int prestera_switch_init(struct prestera_switch *sw)
->  	return 0;
->  
->  err_ports_create:
-> +	prestera_devlink_unregister(sw);
-> +err_dl_register:
->  	prestera_event_handlers_unregister(sw);
->  
->  	return err;
-> @@ -450,6 +468,7 @@ static int prestera_switch_init(struct prestera_switch *sw)
->  static void prestera_switch_fini(struct prestera_switch *sw)
->  {
->  	prestera_destroy_ports(sw);
-> +	prestera_devlink_unregister(sw);
->  	prestera_event_handlers_unregister(sw);
->  	prestera_rxtx_switch_fini(sw);
->  }
-> @@ -459,7 +478,7 @@ int prestera_device_register(struct prestera_device *dev)
->  	struct prestera_switch *sw;
->  	int err;
->  
-> -	sw = kzalloc(sizeof(*sw), GFP_KERNEL);
-> +	sw = prestera_devlink_alloc();
->  	if (!sw)
->  		return -ENOMEM;
->  
-> @@ -468,7 +487,7 @@ int prestera_device_register(struct prestera_device *dev)
->  
->  	err = prestera_switch_init(sw);
->  	if (err) {
-> -		kfree(sw);
-> +		prestera_devlink_free(sw);
->  		return err;
->  	}
->  
-> @@ -481,7 +500,7 @@ void prestera_device_unregister(struct prestera_device *dev)
->  	struct prestera_switch *sw = dev->priv;
->  
->  	prestera_switch_fini(sw);
-> -	kfree(sw);
-> +	prestera_devlink_free(sw);
->  }
->  EXPORT_SYMBOL(prestera_device_unregister);
->  
-> -- 
-> 2.17.1
-> 
+It theoretically allows one to refer to blocks symbolically, through
+binding point coordinates (dev D parent P qevent Q) not by indices
+(block B). But then one block could be referenced by several different
+coordinates, which is confusing. That is the reason TC disallows editing
+filters on shared blocks. Qevents should be the same.
+
+What else is there?
