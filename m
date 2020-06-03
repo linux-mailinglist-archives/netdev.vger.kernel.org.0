@@ -2,187 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D31F1ED635
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E6451ED649
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:41:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725944AbgFCSfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 14:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
+        id S1725936AbgFCSla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 14:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbgFCSfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:35:52 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A096C08C5C0;
-        Wed,  3 Jun 2020 11:35:52 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id m7so1112773plt.5;
-        Wed, 03 Jun 2020 11:35:52 -0700 (PDT)
+        with ESMTP id S1725884AbgFCSl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:41:29 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2745BC08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 11:41:29 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id z5so3283673ejb.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 11:41:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=EtKStJaR8AXyeEPFCQyFQM617jISNhk6yPBdUrn+8kQ=;
-        b=ieQKZqde+kGAvKZ9Aeg/iwGIPFra+dmPi4X10XIZpbCBVcd/RQA4mXBknV/6qEm8MJ
-         ehN9qIfkIfAqOEhsciYN1ALm0URxtOCGlf//v7qtepIOBo8HlGYgSqv2FN3yaoex1Puq
-         sOYY7ulbG+pAga0boLM4qw8y3ieQkb9cbysJBE93rOf3RJnfE/nsxoq74CUznP6rpCiq
-         gst2BdVifXkD93yoGVH9uQ6UFtaU22QFXRDVgG27yk9LlBF9xtRv98Bl/Y1B1kyrEi1m
-         AFIuL3PJGDbGv0H6AmEUre5etn1AukTzdmS7O+1Ha+EXp22Yv8ahggB9dPGev7B4EyrZ
-         F+4g==
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=S0TgVRaqXvLo/zqjh6Bua71lJw4suwzv026W+P/Naw8=;
+        b=C0+b3DJ7FfEDQKaieP18CwiGEkvjteY8TXKD0hCkYxGC6+7gm7AmFxZW15fIQkRLIM
+         Kh5Jm7ok0fzu9poY7ZLIhZ58/u5sJAzW/bQRxIwpy3VQkbCpomTVIyqSRH154MdLzXX5
+         YK/+gOw8xoGKlM2oPEYWWp+ER6BVIWaY9o4JNWbYF9snmgSbjVOjxeEIbCRpEK+ieMsn
+         dNHlym5awwcmUDb/tuJ5D309AkhWFct4ouZ0rQ28LCNE2tcZduzokMTHY+TUJim9+DBc
+         fQj29FDGhJlHjJsvspR0d0qb+Sk70NpBKh87gEJiND8QB+0g8SxdDuGN/LadFwZH0YLO
+         wpLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=EtKStJaR8AXyeEPFCQyFQM617jISNhk6yPBdUrn+8kQ=;
-        b=oTP/KT8+xLXn0La0AY7h8jETZ5LOqJmEqdV3LemT90Ccpr0Oy+dGhvFRZaMhDOYcmD
-         Cuk2vObaZfSEct+MTFSQwkbbqwpy5elUR+bvarulCFGI82U5mLjLvgt03dmmfFWGwZhQ
-         uOKnFTruFBFo1HH84L6MzZtVBP54VI8TDFafD73ReV0J77Xxrbo7JtVfFcCzj18L1Vaq
-         uqcyL7L8WmmFwvyKfOpgkXAqgrFzxHmJWBURjRM9GRjSIMzhlAE2lPNVpVWns0rPm/ca
-         UHO1nh1Jf40hMH8v4Ms8cgLLFCv927BfUoh/YjIktfR4CeN1T+wJTfqc/7gjDLBVlEF2
-         oozA==
-X-Gm-Message-State: AOAM533Rk97sPFtXFOkKNwDh8t68qa4K0al8/U45cRVBmrkIRzRswbN7
-        VYoroCoJKs/KivVtFL5KAig=
-X-Google-Smtp-Source: ABdhPJylSnZgNvV8pBUo7zgOP3lK0Nni8ORKb3jzFcXVy/Sk6lYzvESfpZwitod2LlZPzrnRocokdg==
-X-Received: by 2002:a17:902:9e0c:: with SMTP id d12mr1160144plq.29.1591209351492;
-        Wed, 03 Jun 2020 11:35:51 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i22sm2433759pfo.92.2020.06.03.11.35.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 11:35:50 -0700 (PDT)
-Date:   Wed, 03 Jun 2020 11:35:41 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <5ed7ed7d315bd_36aa2ab64b3c85bcd9@john-XPS-13-9370.notmuch>
-In-Reply-To: <87a71k2yje.fsf@cloudflare.com>
-References: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower>
- <6f8bb6d8-bb70-4533-f15b-310db595d334@gmail.com>
- <87a71k2yje.fsf@cloudflare.com>
-Subject: Re: [bpf PATCH] bpf: sockmap, remove bucket->lock from
- sock_{hash|map}_free
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=S0TgVRaqXvLo/zqjh6Bua71lJw4suwzv026W+P/Naw8=;
+        b=CpJF7BIkXRYvaKXufQerY1vlXNBSJfVETqDue04GPR5t+tQQ2LVLZl4oGkYRor1xB3
+         4ecNbdcWJxBb1ALouLuX95cVNSexyWNrbbiJolI2wL3GRVG9epxsR1zqWZut5SN5MwZ1
+         F4VPcQIuC/JlGQykNNUf91f6lPRwfR+YZJ5IN8ebi2nBq51Ir3I4hFqvjhMfafkhL2ok
+         8+wUEa5WzFodtG8EZRMFfi0z5o0zn1GjPqwkQwXpxwTbbaoN8NJ1jCj9OGJH6qBmnGa9
+         4cKLJL1cDRwh8KNVjSKj4f663IxpEwZoHjdjSL++nQZV3qHr34Y4ilPWkUe06sgziPOR
+         4b4A==
+X-Gm-Message-State: AOAM530zBpjqfwTSMzr/inFYDwTcqNlVr2epJp1nov32HzOaJC1lMUqN
+        ZaBSLgahEgPZUhpNMbPz+ebRmQ==
+X-Google-Smtp-Source: ABdhPJyIkqyDZdhScRe/cVgZz1DArjOSJB1ZOuF91yiG6bL5ZYJWLlB1HCb8yyyo1znlBZLda+63rg==
+X-Received: by 2002:a17:907:2162:: with SMTP id rl2mr522768ejb.365.1591209687728;
+        Wed, 03 Jun 2020 11:41:27 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
+        by smtp.gmail.com with ESMTPSA id l18sm196629eds.46.2020.06.03.11.41.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jun 2020 11:41:27 -0700 (PDT)
+Subject: Re: [PATCH bpf] bpf: fix unused-var without NETDEVICES
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Ferenc Fejes <fejes@inf.elte.hu>, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200603081124.1627600-1-matthieu.baerts@tessares.net>
+ <CAAej5NZZNg+0EbZsa-SrP0S_sOPMqdzgQ9hS8z6DYpQp9G+yhw@mail.gmail.com>
+ <1cb3266c-7c8c-ebe6-0b6e-6d970e0adbd1@tessares.net>
+ <20200603181455.4sajgdyat7rkxxnf@ast-mbp.dhcp.thefacebook.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <3573c0dd-baa8-5313-067a-eec6b04f0f36@tessares.net>
+Date:   Wed, 3 Jun 2020 20:41:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
+MIME-Version: 1.0
+In-Reply-To: <20200603181455.4sajgdyat7rkxxnf@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Wed, Jun 03, 2020 at 08:13 AM CEST, Eric Dumazet wrote:
-> > On 3/10/20 9:41 AM, John Fastabend wrote:
-> >> The bucket->lock is not needed in the sock_hash_free and sock_map_free
-> >> calls, in fact it is causing a splat due to being inside rcu block.
-> >>
+Hi Alexei,
 
-[...]
-
->> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> >> index 085cef5..b70c844 100644
-> >> --- a/net/core/sock_map.c
-> >> +++ b/net/core/sock_map.c
-> >> @@ -233,8 +233,11 @@ static void sock_map_free(struct bpf_map *map)
-> >>  	struct bpf_stab *stab = container_of(map, struct bpf_stab, map);
-> >>  	int i;
-> >>
-> >> +	/* After the sync no updates or deletes will be in-flight so it
-> >> +	 * is safe to walk map and remove entries without risking a race
-> >> +	 * in EEXIST update case.
-> >
-> >
-> > What prevents other cpus from deleting stuff in sock_hash_delete_elem() ?
-> >
-> > What state has been changed before the synchronize_rcu() call here,
-> > that other cpus check before attempting a delete ?
-> >
-> > Typically, synchronize_rcu() only makes sense if readers can not start a new cycle.
-> >
-> > A possible fix would be to check in sock_hash_delete_elem() (and possibly others methods)
-> > if map->refcnt is not zero.
-> >
-> > syzbot found : (no repro yet)
-> >
-> > general protection fault, probably for non-canonical address 0xfbd59c0000000024: 0000 [#1] PREEMPT SMP KASAN
-> > KASAN: maybe wild-memory-access in range [0xdead000000000120-0xdead000000000127]
-> > CPU: 2 PID: 14305 Comm: kworker/2:3 Not tainted 5.7.0-syzkaller #0
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> > Workqueue: events bpf_map_free_deferred
-> > RIP: 0010:__write_once_size include/linux/compiler.h:279 [inline]
-> > RIP: 0010:__hlist_del include/linux/list.h:811 [inline]
-> > RIP: 0010:hlist_del_rcu include/linux/rculist.h:485 [inline]
-> > RIP: 0010:sock_hash_free+0x202/0x4a0 net/core/sock_map.c:1021
-> > Code: 0f 85 15 02 00 00 4c 8d 7b 28 4c 8b 63 20 4c 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 47 02 00 00 4c 8b 6b 28 4c 89 e8 48 c1 e8 03 <80> 3c 28 00 0f 85 25 02 00 00 4d 85 e4 4d 89 65 00 74 20 e8 f6 82
-
-[...]
-
-Thanks Eric.
-
-> My initial reasoning behind the change was that sock_hash_delete_elem()
-> callers hold a ref to sockhash [0]. Either because there is an open FD
-> for the map, or the map is in use by loaded BPF program. The same
-> applies to updates.
+On 03/06/2020 20:14, Alexei Starovoitov wrote:
+> On Wed, Jun 03, 2020 at 11:12:01AM +0200, Matthieu Baerts wrote:
+>> Hi Ferenc,
+>>
+>> On 03/06/2020 10:56, Ferenc Fejes wrote:
+>>> Matthieu Baerts <matthieu.baerts@tessares.net> ezt írta (időpont:
+>>> 2020. jún. 3., Sze, 10:11):
+>>>>
+>>>> A recent commit added new variables only used if CONFIG_NETDEVICES is
+>>>> set.
+>>>
+>>> Thank you for noticing and fixed this!
+>>>
+>>>> A simple fix is to only declare these variables if the same
+>>>> condition is valid.
+>>>>
+>>>> Other solutions could be to move the code related to SO_BINDTODEVICE
+>>>> option from _bpf_setsockopt() function to a dedicated one or only
+>>>> declare these variables in the related "case" section.
+>>>
+>>> Yes thats indeed a cleaner way to approach this. I will prepare a fix for that.
+>>
+>> I should have maybe added that I didn't take this approach because in the
+>> rest of the code, I don't see that variables are declared only in a "case"
+>> section (no "{" ... "}" after "case") and code is generally not moved into a
+>> dedicated function in these big switch/cases. But maybe it makes sense here
+>> because of the #ifdef!
+>> At the end, I took the simple approach because it is for -net.
+>>
+>> In other words, I don't know what maintainers would prefer here but I am
+>> happy to see any another solutions implemented to remove these compiler
+>> warnings :)
 > 
-> If that holds, map->refcnt is > 0, and we should not see the map being
-> freed at the same time as sock_hash_delete_elem() happens.
-> 
-> But then there is also sock_hash_delete_from_link() that deletes from
-> sockhash when a sock/psock unlinks itself from the map. This operation
-> happens without holding a ref to the map, so that sockets won't keep the
-> map "alive". There is no corresponding *_update_from_link() for updates
-> without holding a ref.
+> since CONFIG_NETDEVICES doesn't change anything in .h
+> I think the best is to remove #ifdef CONFIG_NETDEVICES from net/core/filter.c
+> and rely on sock_bindtoindex() returning ENOPROTOOPT
+> in the extreme case of oddly configured kernels.
 
-Yep we missed this case :/
+Good idea, thank you!
+I can send a patch implementing that.
 
-> 
-> Sadly, I can't spot anything preventing list mutation, hlist_del_rcu(),
-> from happening both in sock_hash_delete_elem() and sock_hash_free()
-> concurrently, now that the bucket spin-lock doesn't protect it any
-> more. That is what I understand syzbot is reporting.
+And sorry for the oddly configured kernels :)
+It's just used to test the compilation of the code related to MPTCP.
 
-Agreed.
-
-> 
-> synchronize_rcu() before we walk the htable doesn't rule it out, because
-> as you point out, new readers can start a new cycle, and we don't change
-> any state that would signal that the map is going away.
-> 
-> I'm not sure that the check for map->refcnt when sock is unlinking
-> itself from the map will do it. I worry we will then have issues when
-> sockhash is unlinking itself from socks (so the other way around) in
-> sock_hash_free(). We could no longer assume that the sock & psock
-> exists.
-> 
-> What comes to mind is to reintroduce the spin-lock protected critical
-> section in sock_hash_free(), but delay the processing of sockets to be
-> unlinked from sockhash. We could grab a ref to sk_psock while holding a
-> spin-lock and unlink it while no longer in atomic critical section.
-
-It seems so. In sock_hash_free we logically need,
-
- for (i = 0; i < htab->buckets_num; i++) {
-  hlist_for_each_entryy_safe(...) {
-  	hlist_del_rcu() <- detached from bucket and no longer reachable
-        synchronize_rcu()
-        // now element can not be reached from unhash()
-	... sock_map_unref(elem->sk, elem) ...
-  }
- } 
-
-We don't actually want to stick a synchronize_rcu() in that loop
-so I agree we need to collect the elements do a sync then remove them.
-
-> 
-> Either way, Eric, thank you for the report and the pointers.
-
-+1
-
-> 
-> John, WDYT?
-
-Want to give it a try? Or I can draft something.
-
-> 
-> [0] https://lore.kernel.org/netdev/8736boor55.fsf@cloudflare.com/
-
-[...]
+Cheers,
+Matt
+-- 
+Matthieu Baerts | R&D Engineer
+matthieu.baerts@tessares.net
+Tessares SA | Hybrid Access Solutions
+www.tessares.net
+1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
