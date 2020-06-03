@@ -2,105 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 852511ECF44
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 14:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460C81ECF5E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 14:05:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726390AbgFCMCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 08:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgFCMCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 08:02:32 -0400
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3CDC08C5C1
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 05:02:31 -0700 (PDT)
-Received: by mail-vk1-xa44.google.com with SMTP id s192so406008vkh.3
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 05:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=amz3ptynYvAUbH138IEG0LpKVjBvo8sPz/3+J+n07a8=;
-        b=vHb999opMIzMza943w3iNjuwx1RH0ULq9DdNFIBNl056bXrXRIJUZCp5ljes0uQYaC
-         309fs8zXNrFuwkmvoCWzKa6rp8w9ceaeFZctOEppExt9mu/tjfs7uxgg3XwTDj17BaCx
-         zuOP9aqU7YiYeUOCR996/cgXzMGIUJiha2Iugh6txTnHMKIbNmP2nYml5bi2zGfpnI95
-         6X/rnhb1zqoT6HuDf6UsdUfLNnVViv0Xht5/UFu06NY4SkwuEPWX8Znuko1EjeNchIYA
-         KD8cWO+wMbh8V0jruPN2A13TRw4dm2Ic+XZt97mUzktOTdnbRmf0ISYUUE7SfY5RQfax
-         Pztg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=amz3ptynYvAUbH138IEG0LpKVjBvo8sPz/3+J+n07a8=;
-        b=fe3QGqJoZOghNXxi9m/hgZ8N2qFfpNa6qRxjUWOzXkE0cA5TmJuCgcpNZHVBNYGTjk
-         ZbhKnTaXLVvRV8LoVo5jn9vaUHorpJUlIr8sefTAyObXMbm9LVz+E96Whtl69pbmsSfn
-         dkx9VcwlTOx8KMt57tYhdkw5Iil06NR6PlDWq+szhnaXaFH20flbCbPl5gr4fDqF+o0A
-         G7xyJFUX7/6aOn6p4wx2XkQWEKru7owLTZRmWc7KGZJSiietLCiw1BjxGmegCHJF6kCA
-         bLyq/XocP38H2tzrgpasdX7ABaXMxYJSMkqcRqq6d1xUEJe7HBCQmzmHMVinWdq+GW7X
-         cOGw==
-X-Gm-Message-State: AOAM5316m0jph9FH4g8DFaxStpfsuySil+ekSawZ6pgFjWqYSSX2u39c
-        R3VYT7vppNmiWf1RAf8lQJjW4Qwc1IU9fhsnYXTXbQ==
-X-Google-Smtp-Source: ABdhPJxDaY9hHU9C9cqqrvDdwtLQXU+4TVbmTzqYFpSK6jRNSb3vAPXpIT+DTQmUBmYd1hclvqBGerS3oaC4/gGhIBw=
-X-Received: by 2002:a05:6122:34:: with SMTP id q20mr7714782vkd.66.1591185750265;
- Wed, 03 Jun 2020 05:02:30 -0700 (PDT)
+        id S1726062AbgFCME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 08:04:57 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:43705 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725855AbgFCME5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 08:04:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591185895;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I1hAyly7NhesZ77QwDd9STwcXrPYKxChvgkxKRkQ9hs=;
+        b=AdFRxCnTY55kr19C0XbsRvYziO3o+KYWOcai1JbuJTCOSlMnFu3oB8qPZK6kOZMjgr0EWO
+        x9n5McygfQ1HSAQsGpRJ+mLovzF9ffL6s2PHrQ4Yb5AfdXmvAQp7NebVLfa0ERazk9nP58
+        5+ODqB8TIxbxY7aeocllUKY+fwrEpyY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-219-XUmdhkusMDq-jhTXjwZ9aA-1; Wed, 03 Jun 2020 08:04:53 -0400
+X-MC-Unique: XUmdhkusMDq-jhTXjwZ9aA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72AFD8018A5;
+        Wed,  3 Jun 2020 12:04:52 +0000 (UTC)
+Received: from [10.72.12.129] (ovpn-12-129.pek2.redhat.com [10.72.12.129])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 32ECD10013D7;
+        Wed,  3 Jun 2020 12:04:46 +0000 (UTC)
+Subject: Re: [PATCH RFC 01/13] vhost: option to fetch descriptors through an
+ independent struct
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20200602130543.578420-1-mst@redhat.com>
+ <20200602130543.578420-2-mst@redhat.com>
+ <e35e5df9-7e36-227e-7981-232a62b06607@redhat.com>
+ <20200603045825-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <48e6d644-c4aa-2754-9d06-22133987b3be@redhat.com>
+Date:   Wed, 3 Jun 2020 20:04:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
- <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
- <CAL+tcoBjjwrkE5QbXDFADRGJfPoniLL1rMFNUkAKBN9L57UGHA@mail.gmail.com>
- <CANn89iKDKnnW1na_F0ngGh3EEc0quuBB2XWo21oAKaHckdPK4w@mail.gmail.com>
- <CAL+tcoDn_=T--uB0CRymfTGvD022PPDk5Yw2yCxvqOOpZ4G_dQ@mail.gmail.com>
- <CANn89i+dPu9=qJowhRVm9d3CesY4p+zzJ0HGiCMc_yJxux6pow@mail.gmail.com>
- <CAL+tcoC2+vYoFbujkLCF7P3evfirNSBQtJ9bPFHiU2FGOnBo+A@mail.gmail.com> <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com>
-In-Reply-To: <CANn89iJfLM2Hz69d9qOZoRKwzzCCpgVRZ1zbTTbg4vGvSAEZ-w@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 3 Jun 2020 08:02:13 -0400
-Message-ID: <CADVnQy=RJfmzHR15DyWdydFAqSqVmFhaW4_cgYYAgnixEa5DNQ@mail.gmail.com>
-Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jason Xing <kerneljasonxing@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, liweishi@kuaishou.com,
-        Shujin Li <lishujin@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200603045825-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 3, 2020 at 1:44 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Jun 2, 2020 at 10:05 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
-> >
-> > Hi Eric,
-> >
-> > I'm still trying to understand what you're saying before. Would this
-> > be better as following:
-> > 1) discard the tcp_internal_pacing() function.
-> > 2) remove where the tcp_internal_pacing() is called in the
-> > __tcp_transmit_skb() function.
-> >
-> > If we do so, we could avoid 'too late to give up pacing'. Meanwhile,
-> > should we introduce the tcp_wstamp_ns socket field as commit
-> > (864e5c090749) does?
-> >
->
-> Please do not top-post on netdev mailing list.
->
->
-> I basically suggested double-checking which point in TCP could end up
-> calling tcp_internal_pacing()
-> while the timer was already armed.
->
-> I guess this is mtu probing.
 
-Perhaps this could also happen from some of the retransmission code
-paths that don't use tcp_xmit_retransmit_queue()? Perhaps
-tcp_retransmit_timer() (RTO) and  tcp_send_loss_probe() TLP? It seems
-they could indirectly cause a call to __tcp_transmit_skb() and thus
-tcp_internal_pacing() without first checking if the pacing timer was
-already armed?
+On 2020/6/3 下午5:48, Michael S. Tsirkin wrote:
+> On Wed, Jun 03, 2020 at 03:13:56PM +0800, Jason Wang wrote:
+>> On 2020/6/2 下午9:05, Michael S. Tsirkin wrote:
 
-neal
+
+[...]
+
+
+>>> +
+>>> +static int fetch_indirect_descs(struct vhost_virtqueue *vq,
+>>> +				struct vhost_desc *indirect,
+>>> +				u16 head)
+>>> +{
+>>> +	struct vring_desc desc;
+>>> +	unsigned int i = 0, count, found = 0;
+>>> +	u32 len = indirect->len;
+>>> +	struct iov_iter from;
+>>> +	int ret;
+>>> +
+>>> +	/* Sanity check */
+>>> +	if (unlikely(len % sizeof desc)) {
+>>> +		vq_err(vq, "Invalid length in indirect descriptor: "
+>>> +		       "len 0x%llx not multiple of 0x%zx\n",
+>>> +		       (unsigned long long)len,
+>>> +		       sizeof desc);
+>>> +		return -EINVAL;
+>>> +	}
+>>> +
+>>> +	ret = translate_desc(vq, indirect->addr, len, vq->indirect,
+>>> +			     UIO_MAXIOV, VHOST_ACCESS_RO);
+>>> +	if (unlikely(ret < 0)) {
+>>> +		if (ret != -EAGAIN)
+>>> +			vq_err(vq, "Translation failure %d in indirect.\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +	iov_iter_init(&from, READ, vq->indirect, ret, len);
+>>> +
+>>> +	/* We will use the result as an address to read from, so most
+>>> +	 * architectures only need a compiler barrier here. */
+>>> +	read_barrier_depends();
+>>> +
+>>> +	count = len / sizeof desc;
+>>> +	/* Buffers are chained via a 16 bit next field, so
+>>> +	 * we can have at most 2^16 of these. */
+>>> +	if (unlikely(count > USHRT_MAX + 1)) {
+>>> +		vq_err(vq, "Indirect buffer length too big: %d\n",
+>>> +		       indirect->len);
+>>> +		return -E2BIG;
+>>> +	}
+>>> +	if (unlikely(vq->ndescs + count > vq->max_descs)) {
+>>> +		vq_err(vq, "Too many indirect + direct descs: %d + %d\n",
+>>> +		       vq->ndescs, indirect->len);
+>>> +		return -E2BIG;
+>>> +	}
+>>> +
+>>> +	do {
+>>> +		if (unlikely(++found > count)) {
+>>> +			vq_err(vq, "Loop detected: last one at %u "
+>>> +			       "indirect size %u\n",
+>>> +			       i, count);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		if (unlikely(!copy_from_iter_full(&desc, sizeof(desc), &from))) {
+>>> +			vq_err(vq, "Failed indirect descriptor: idx %d, %zx\n",
+>>> +			       i, (size_t)indirect->addr + i * sizeof desc);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		if (unlikely(desc.flags & cpu_to_vhost16(vq, VRING_DESC_F_INDIRECT))) {
+>>> +			vq_err(vq, "Nested indirect descriptor: idx %d, %zx\n",
+>>> +			       i, (size_t)indirect->addr + i * sizeof desc);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +
+>>> +		push_split_desc(vq, &desc, head);
+>>
+>> The error is ignored.
+> See above:
+>
+>       	if (unlikely(vq->ndescs + count > vq->max_descs))
+>
+> So it can't fail here, we never fetch unless there's space.
+>
+> I guess we can add a WARN_ON here.
+
+
+Yes.
+
+
+>
+>>> +	} while ((i = next_desc(vq, &desc)) != -1);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int fetch_descs(struct vhost_virtqueue *vq)
+>>> +{
+>>> +	unsigned int i, head, found = 0;
+>>> +	struct vhost_desc *last;
+>>> +	struct vring_desc desc;
+>>> +	__virtio16 avail_idx;
+>>> +	__virtio16 ring_head;
+>>> +	u16 last_avail_idx;
+>>> +	int ret;
+>>> +
+>>> +	/* Check it isn't doing very strange things with descriptor numbers. */
+>>> +	last_avail_idx = vq->last_avail_idx;
+>>> +
+>>> +	if (vq->avail_idx == vq->last_avail_idx) {
+>>> +		if (unlikely(vhost_get_avail_idx(vq, &avail_idx))) {
+>>> +			vq_err(vq, "Failed to access avail idx at %p\n",
+>>> +				&vq->avail->idx);
+>>> +			return -EFAULT;
+>>> +		}
+>>> +		vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
+>>> +
+>>> +		if (unlikely((u16)(vq->avail_idx - last_avail_idx) > vq->num)) {
+>>> +			vq_err(vq, "Guest moved used index from %u to %u",
+>>> +				last_avail_idx, vq->avail_idx);
+>>> +			return -EFAULT;
+>>> +		}
+>>> +
+>>> +		/* If there's nothing new since last we looked, return
+>>> +		 * invalid.
+>>> +		 */
+>>> +		if (vq->avail_idx == last_avail_idx)
+>>> +			return vq->num;
+>>> +
+>>> +		/* Only get avail ring entries after they have been
+>>> +		 * exposed by guest.
+>>> +		 */
+>>> +		smp_rmb();
+>>> +	}
+>>> +
+>>> +	/* Grab the next descriptor number they're advertising */
+>>> +	if (unlikely(vhost_get_avail_head(vq, &ring_head, last_avail_idx))) {
+>>> +		vq_err(vq, "Failed to read head: idx %d address %p\n",
+>>> +		       last_avail_idx,
+>>> +		       &vq->avail->ring[last_avail_idx % vq->num]);
+>>> +		return -EFAULT;
+>>> +	}
+>>> +
+>>> +	head = vhost16_to_cpu(vq, ring_head);
+>>> +
+>>> +	/* If their number is silly, that's an error. */
+>>> +	if (unlikely(head >= vq->num)) {
+>>> +		vq_err(vq, "Guest says index %u > %u is available",
+>>> +		       head, vq->num);
+>>> +		return -EINVAL;
+>>> +	}
+>>> +
+>>> +	i = head;
+>>> +	do {
+>>> +		if (unlikely(i >= vq->num)) {
+>>> +			vq_err(vq, "Desc index is %u > %u, head = %u",
+>>> +			       i, vq->num, head);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		if (unlikely(++found > vq->num)) {
+>>> +			vq_err(vq, "Loop detected: last one at %u "
+>>> +			       "vq size %u head %u\n",
+>>> +			       i, vq->num, head);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		ret = vhost_get_desc(vq, &desc, i);
+>>> +		if (unlikely(ret)) {
+>>> +			vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
+>>> +			       i, vq->desc + i);
+>>> +			return -EFAULT;
+>>> +		}
+>>> +		ret = push_split_desc(vq, &desc, head);
+>>> +		if (unlikely(ret)) {
+>>> +			vq_err(vq, "Failed to save descriptor: idx %d\n", i);
+>>> +			return -EINVAL;
+>>> +		}
+>>> +	} while ((i = next_desc(vq, &desc)) != -1);
+>>> +
+>>> +	last = peek_split_desc(vq);
+>>> +	if (unlikely(last->flags & VRING_DESC_F_INDIRECT)) {
+>>> +		pop_split_desc(vq);
+>>> +		ret = fetch_indirect_descs(vq, last, head);
+>>
+>> Note that this means we don't supported chained indirect descriptors which
+>> complies the spec but we support this in vhost_get_vq_desc().
+> Well the spec says:
+> 	A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT in flags.
+>
+> Did I miss anything?
+>
+
+No, but I meant current vhost_get_vq_desc() supports chained indirect 
+descriptor. Not sure if there's an application that depends on this 
+silently.
+
+Thanks
+
+
