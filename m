@@ -2,115 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4871ED17B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794EA1ED17F
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 15:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbgFCNwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 09:52:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34978 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725882AbgFCNwq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 09:52:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CjJrBLLGDjJJFbdq98VPVt7HGTKXttT7jLG8SR4YksM=; b=jVHhPxb4D/PkHML7Kdzscnkv6e
-        I1wladEdRWrrc+iB1VFMU6NXqlXZekT5V32LgauWEyHJnpHG+uxAyXTJA/XBXj77EdowZRL2HsoIt
-        swKkZ1obbTX6aswbYx95jT30F9LRhNndeekovhZK+eD48ddBJ87lC6N/qdohvTuVF5GU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jgToy-0043gu-Ig; Wed, 03 Jun 2020 15:52:44 +0200
-Date:   Wed, 3 Jun 2020 15:52:44 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [net-next PATCH 1/5] net: dsa: tag_rtl4_a: Implement Realtek 4
- byte A tag
-Message-ID: <20200603135244.GA869823@lunn.ch>
-References: <20200602205456.2392024-1-linus.walleij@linaro.org>
+        id S1725975AbgFCNxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 09:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbgFCNxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 09:53:13 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E563C08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 06:53:13 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id z9so2788780ljh.13
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 06:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=lUn2sKBdrDI/gkA5yzAZwcv02QjxWHyFTmmBkj/Vf+4=;
+        b=JmT/jurP0XEvIDAasg/rMoAVcPVM9rWXxFvuhvqDUXOaWEWzU7rSU41OswQCDKKp82
+         ZnHYK/87/5zJgBkdyivGn5Q+J1o0pjzPn16JW3Nk4meaail1nWQJy9Q1uIPAjzX/ZE34
+         4+2IGvEzlim1xISFbGosjEyT9hjsVgP5KHLQy550TdHxqQ5DWq8S8HLfjAKODf7P1xtl
+         5va/nlhTk/AGQP1yoWPENcT36dlLUkjVfs93BnMDCd71+fYateBCbWKiblocvaJ6GEFt
+         EJ3CPN4rpK3xpDJHpM6pvPavaj4Ex8qZayiT0BymgtUiWp5y6e/qgJ5AT6t8c2+67ztJ
+         Xv+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=lUn2sKBdrDI/gkA5yzAZwcv02QjxWHyFTmmBkj/Vf+4=;
+        b=C9vxGmVc0yeypsx1InmUDaU9VWDUtMhe8DqaXars6k6TDZXpVkiuy/VCQtR+tdImuy
+         tG3oSwzuZzyDjTOYFUug9b0enuWY+nk9rOGU16kv2CsxDA/dE5oDaIfEiipyg+0wmeWY
+         6pa2D8MY5mloGEyNoBLhN2Foa9qFv2Y8qMz2zJ+6b1lAo56Fu73fgQRNxODO9RROFmar
+         rdmum2RpMmCrTNlbsnquvLqwxzc1NcIvJjDeYVdJUpqJR/xnWQtfb9dR/HKm7Gjq/cYv
+         c4nXZyXgDTMjnrZlTJLFGDiMhJYgWBnp8QlvJ3Xy2uaCzHgIPLikbglcoe0dhSxHB3Up
+         RuoA==
+X-Gm-Message-State: AOAM531WGayBJ7rNbxze+ajIR1CLSoPWMYUSOasW3neinC6oMKb6lwWi
+        1qpHv0DHHrh1Fnxx8lwvxLn+cQDUVSA1G9D8Vss=
+X-Google-Smtp-Source: ABdhPJyl3PHDchwLuTbf4+/GGlrJD4/OCIpZTRFglTQuMAvd79xB0Mk/gUoQ5pfQ8QGG+riIIe5bDnUJSPWO06drCYc=
+X-Received: by 2002:a2e:954b:: with SMTP id t11mr2093460ljh.98.1591192391503;
+ Wed, 03 Jun 2020 06:53:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200602205456.2392024-1-linus.walleij@linaro.org>
+Reply-To: susanjones.wife@gmail.com
+Received: by 2002:a19:a405:0:0:0:0:0 with HTTP; Wed, 3 Jun 2020 06:53:10 -0700 (PDT)
+From:   "Mrs.Susan Jones" <joneswife.susan@gmail.com>
+Date:   Wed, 3 Jun 2020 14:53:10 +0100
+X-Google-Sender-Auth: mBtVVzdKVb5NbDuw9emYqW97wV0
+Message-ID: <CABGHEP-gX5=Pe1dyBhW8CjTJW8DQ0a-1RsB4MnQ3Byy43fR=uA@mail.gmail.com>
+Subject: HELLO: I AM MRS SUSAN JONES
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
-> +				     struct net_device *dev,
-> +				     struct packet_type *pt)
-> +{
-> +	u16 protport;
-> +	__be16 *p;
-> +	u16 etype;
-> +	u8 flags;
-> +	u8 *tag;
-> +	u8 prot;
-> +	u8 port;
-> +
-> +	if (unlikely(!pskb_may_pull(skb, RTL4_A_HDR_LEN)))
-> +		return NULL;
-> +
-> +	/* The RTL4 header has its own custom Ethertype 0x8899 and that
-> +	 * starts right at the beginning of the packet, after the src
-> +	 * ethernet addr. Apparantly skb->data always points 2 bytes in,
-> +	 * behind the Ethertype.
-> +	 */
-> +	tag = skb->data - 2;
-> +	p = (__be16 *)tag;
-> +	etype = ntohs(*p);
-> +	if (etype != RTL4_A_ETHERTYPE) {
-> +		/* Not custom, just pass through */
-> +		netdev_dbg(dev, "non-realtek ethertype 0x%04x\n", etype);
-> +		return skb;
-> +	}
-> +	p = (__be16 *)(tag + 2);
-> +	protport = ntohs(*p);
-> +	/* The 4 upper bits are the protocol */
-> +	prot = (protport >> RTL4_A_PROTOCOL_SHIFT) & 0x0f;
-> +	if (prot != RTL4_A_PROTOCOL_RTL8366RB) {
-> +		netdev_err(dev, "unknown realtek protocol 0x%01x\n", prot);
-> +		return NULL;
-> +	}
-> +	netdev_dbg(dev, "realtek protocol 0x%02x\n", prot);
-> +	port = protport & 0xff;
-> +	netdev_dbg(dev, "realtek port origin 0x%02x\n", port);
-> +
-> +	/* Remove RTL4 tag and recalculate checksum */
-> +	skb_pull_rcsum(skb, RTL4_A_HDR_LEN);
-> +
-> +	/* Move ethernet DA and SA in front of the data */
-> +	memmove(skb->data - ETH_HLEN,
-> +		skb->data - ETH_HLEN - RTL4_A_HDR_LEN,
-> +		2 * ETH_ALEN);
-> +
-> +	skb->dev = dsa_master_find_slave(dev, 0, port);
-> +	if (!skb->dev) {
-> +		netdev_dbg(dev, "could not find slave for port %d\n", port);
-> +		return NULL;
-> +	}
-> +	netdev_dbg(skb->dev, "forwarded packet to slave port %d\n", port);
-> +
-> +	skb->offload_fwd_mark = 1;
-> +
-> +	return skb;
-> +}
+-- 
 
-Hi Linus
 
-Do you think you are passed basic debug/reverse engineering? There are
-a lot of netdev_dbg() statements here. It would be nice to remove most
-of them, if you think the code is stable.
+-- 
+OUR GOLDEN OPPORTUNITY
 
-Is there any hint in OpenRRPC that tags can be used in the other
-direction? Where is spanning tree performed? In the switch, or by the
-host? That is one example where the host needs to be able to
-send/receive frames on specific ports.
+Hello Dear Friend,
 
-       Andrew
+Complement of the day, i hope you are doing great today. However, I am
+Mrs.Susan Jones, an auditor with one of the new generation banks here
+in Burkina Faso.
+
+I am writing you this letter based on the latest development at my
+Department. i discovered some abandoned huge amount of money, Ten
+Million, Five hundred thousand  United States Dollars.($10.500.000).
+Now I am only contacting you as a foreigner because this money cannot
+be approved to a local bank account here, but can only be approved to
+any foreign account and foreign beneficiary because the money is in US
+dollars
+
+This will be  a legitimate transaction once you accept to build trust
+with me and follow simple instruction doing the transfer process,
+until the total sum transfer out of the bank here to your own bank
+account any where in the world, and I agreed to share the total money
+50/50 with you once you successful confirmed it in your bank account.
+But any expenses doing the transfer process will be deduct from the
+amount before sharing, If you are interested to work with me and
+provide a good receiving bank account, get back to me as soon as
+possible with the following details below.
+
+Your full name
+Your Profession
+Your direct mobile phone number
+Your Scanned International passport or any of your identity
+
+NOTE: PLEASE IT YOU ARE NOT INTERESTED DON'T BORDER TO RESPOND BACK TO
+AVOID TIME WASTED.
+
+As soon as I receive these data's, I will forward to you the
+application form which you will send to the bank for the claim and
+transfer of the fund into your bank account as the  new beneficial.
+
+I am waiting to hear from you soon
+
+Yours
+Mrs.Susan Jones
