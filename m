@@ -2,119 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DCFC1ED48B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 18:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AB661ED49D
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 19:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbgFCQwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 12:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
+        id S1726154AbgFCRAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 13:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgFCQwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 12:52:09 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206ADC08C5C0;
-        Wed,  3 Jun 2020 09:52:08 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.93 #3 (Red Hat Linux))
-        id 1jgWcX-002Z8R-Io; Wed, 03 Jun 2020 16:52:05 +0000
-Date:   Wed, 3 Jun 2020 17:52:05 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
-Message-ID: <20200603165205.GU23230@ZenIV.linux.org.uk>
-References: <20200602084257.134555-1-mst@redhat.com>
- <20200603014815.GR23230@ZenIV.linux.org.uk>
- <20200603011810-mutt-send-email-mst@kernel.org>
+        with ESMTP id S1725854AbgFCRAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 13:00:03 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0D6C08C5C0
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 10:00:02 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id m18so3657361ljo.5
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 10:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=APVAZ6BopJEJQVKxT8HV10LaM8dvMHhexq6dbc0PE90=;
+        b=Eig+FTwLcNcSvtBuWzcBuSSILGcKWy5mB84khF/UDAFWj/4A6nXrIKyt4WVzf7CLzs
+         /xg2DLTm/6zP/bW0Y6ygl82J+uKf0YswcwbGfTXMDaQnc+Ed2HWw38uRZ3lfrjQJFVJZ
+         qtHKQkjRYABmpfzrrSiq1hKDvO6NpsmL+cKMo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=APVAZ6BopJEJQVKxT8HV10LaM8dvMHhexq6dbc0PE90=;
+        b=e9e656PhOLRGuaw0wQTa6tVwoqy2+b7LRgh/uuYOVtmbcenvDjReVv/JhHFh7n6IE+
+         WGnJJXaurQRmyJhL5T8LYeClQw+lNaL5aXS5YFg3Q1S8U7tFNrB42NQ8S4bZUQFVAFSq
+         sZokTFc+uEWQ+pyOAjEsaU2AfbyQbdOzrXdKsCSWq78f+rUkza1/pkx+2PFItoeqw8CA
+         AHwu+be4GL7IbxDMFPQytobfLdETHxsW1Id4ZzX70mGg59xV1NZXRM4ZvDXIouIVBikn
+         TSWncE+7SO0kR0z/NH49rDWwblleayV2yjyzQc0qOzyAiiHjzlGM3DJv6R05juuN6sSa
+         Sj0g==
+X-Gm-Message-State: AOAM532/1Vtk2t/hi40JnbpL+QIUA9s8SlkkUnAnzqgOz8bM/KZViC3F
+        nu12STm9m0wrzFl2p4xDHjoMA8s/WQA=
+X-Google-Smtp-Source: ABdhPJxZfz4uYpSxy+0b906Tp2SHBUGZejurPKraRU24dDwBxGZoYklz+UF3X4zciph7HVP6i0Un4g==
+X-Received: by 2002:a2e:8944:: with SMTP id b4mr71580ljk.247.1591203600616;
+        Wed, 03 Jun 2020 10:00:00 -0700 (PDT)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
+        by smtp.gmail.com with ESMTPSA id q17sm789295lfa.28.2020.06.03.09.59.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jun 2020 09:59:59 -0700 (PDT)
+Received: by mail-lf1-f50.google.com with SMTP id u16so1775813lfl.8
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 09:59:59 -0700 (PDT)
+X-Received: by 2002:a19:ae0f:: with SMTP id f15mr248686lfc.142.1591203599026;
+ Wed, 03 Jun 2020 09:59:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200603011810-mutt-send-email-mst@kernel.org>
+References: <20200602084257.134555-1-mst@redhat.com> <fc204429-7a6e-8214-a66f-bf2676018aae@redhat.com>
+ <20200602163306.GM23230@ZenIV.linux.org.uk> <CAHk-=wjgg0bpD0qjYF=twJNXmRXYPjXqO1EFLL-mS8qUphe0AQ@mail.gmail.com>
+ <20200602162931-mutt-send-email-mst@kernel.org> <CAHk-=wgYu+qk15_NpUZXwbetEU5eiWppJ=Z_A6dCSCWKxCfDfw@mail.gmail.com>
+ <20200603014944-mutt-send-email-mst@kernel.org> <CAHk-=wi3=QuD30fRq8fYYTj9WmkgeZ0VR_Sh3DQHU+nmwj-jMg@mail.gmail.com>
+In-Reply-To: <CAHk-=wi3=QuD30fRq8fYYTj9WmkgeZ0VR_Sh3DQHU+nmwj-jMg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 3 Jun 2020 09:59:43 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjA6S1LEOLoL5X0+YVBJPy2tnTYbf-JqvqdjXezy8=wEA@mail.gmail.com>
+Message-ID: <CAHk-=wjA6S1LEOLoL5X0+YVBJPy2tnTYbf-JqvqdjXezy8=wEA@mail.gmail.com>
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Jason Wang <jasowang@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 01:29:00AM -0400, Michael S. Tsirkin wrote:
-> On Wed, Jun 03, 2020 at 02:48:15AM +0100, Al Viro wrote:
-> > On Tue, Jun 02, 2020 at 04:45:05AM -0400, Michael S. Tsirkin wrote:
-> > > So vhost needs to poke at userspace *a lot* in a quick succession.  It
-> > > is thus benefitial to enable userspace access, do our thing, then
-> > > disable. Except access_ok has already been pre-validated with all the
-> > > relevant nospec checks, so we don't need that.  Add an API to allow
-> > > userspace access after access_ok and barrier_nospec are done.
-> > 
-> > BTW, what are you going to do about vq->iotlb != NULL case?  Because
-> > you sure as hell do *NOT* want e.g. translate_desc() under STAC.
-> > Disable it around the calls of translate_desc()?
-> > 
-> > How widely do you hope to stretch the user_access areas, anyway?
-> 
-> So ATM I'm looking at adding support for the packed ring format.
-> That does something like:
-> 
-> get_user(flags, desc->flags)
-> smp_rmb()
-> if (flags & VALID)
-> copy_from_user(&adesc, desc, sizeof adesc);
-> 
-> this would be a good candidate I think.
+[ Just a re-send without html and a few fixes for mobile editing,
+since that email got eaten by the mailing list Gods ]
 
-Perhaps, once we get stac/clac out of raw_copy_from_user() (coming cycle,
-probably).  BTW, how large is the structure and how is it aligned?
+On Tue, Jun 2, 2020, 23:02 Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> Right and we do that, but that still sets the segment according to the
+> current thread's flags, right?
 
-> > BTW, speaking of possible annotations: looks like there's a large
-> > subset of call graph that can be reached only from vhost_worker()
-> > or from several ioctls, with all uaccess limited to that subgraph
-> > (thankfully).  Having that explicitly marked might be a good idea...
-> 
-> Sure. What's a good way to do that though? Any examples to follow?
-> Or do you mean code comments?
+But that shouldn't matter.
 
-Not sure...  FWIW, the part of call graph from "known to be only
-used by vhost_worker" (->handle_kick/vhost_work_init callback/
-vhost_poll_init callback) and "part of ->ioctl()" to actual uaccess
-primitives is fairly large - the longest chain is
-handle_tx_net ->
-  handle_tx ->
-    handle_tx_zerocopy ->
-      get_tx_bufs ->
-	vhost_net_tx_get_vq_desc ->
-	  vhost_tx_batch ->
-	    vhost_net_signal_used ->
-	      vhost_add_used_and_signal_n ->
-		vhost_signal ->
-		  vhost_notify ->
-		    vhost_get_avail_flags ->
-		      vhost_get_avail ->
-			vhost_get_user ->
-			  __get_user()
-i.e. 14 levels deep and the graph doesn't factorize well...
+Sure, the limit might be for a 64-bit task, but it's not like anybody
+really cares for the access. The "good address but I should limit user
+space mappings to 32-bit" only matters for creating new mappings, not
+for normal accesses to user space.
 
-Something along the lines of "all callers of thus annotated function
-must be annotated the same way themselves, any implicit conversion
-of pointers to such functions to anything other than boolean yields
-a warning, explicit cast is allowed only with __force", perhaps?
-Then slap such annotations on vhost_{get,put,copy_to,copy_from}_user(),
-on ->handle_kick(), a force-cast in the only caller of ->handle_kick()
-and force-casts in the 3 callers in ->ioctl().
+In fact, your very quotes show this effect:
 
-And propagate the annotations until the warnings stop, basically...
+> #define USER_DS         MAKE_MM_SEG(TASK_SIZE_MAX)
 
-Shouldn't be terribly hard to teach sparse that kind of stuff and it
-might be useful elsewhere.  It would act as a qualifier on function
-pointers, with syntax ultimately expanding to __attribute__((something)).
-I'll need to refresh my memories of the parser, but IIRC that shouldn't
-require serious modifications.  Most of the work would be in
-evaluate_call(), just before calling evaluate_symbol_call()...
-I'll look into that; not right now, though.
+Look, to above is what set_fs(USER_DS) will use: always the max address.
 
-BTW, __vhost_get_user() might be better off expanded in both callers -
-that would get their structure similar to vhost_copy_{to,from}_user(),
-especially if you expand __vhost_get_user_slow() as well.
+Because access_ok() doesn't care. It just checks that it's any user
+address at all, and the "is this mapped" is then encoded in the
+existing page tables and vma lists.
 
-Not sure I understand what's going with ->meta_iotlb[] - what are the
-lifetime rules for struct vhost_iotlb_map and what prevents the pointers
-from going stale?
+So no, the current threads flags shouldn't matter for
+usrr_access_begin() and unsafe_get/put_user() at all.
 
+Where do you see them mattering?
 
+In contrast, some things then do take the "I'm a 32-bit app" into
+account, and they may use TASK_SIZE for limit checking, but on the
+whole they should be very very rare. Things like "mmap()" etc, but
+that's irrelevant for this discussion. But that's why you then have:
+
+> #define TASK_SIZE               (test_thread_flag(TIF_ADDR32) ? \
+>                                         IA32_PAGE_OFFSET : TASK_SIZE_MAX)
+
+Which actually makes that choice.
+
+(Admittedly that's a horrible horrible hack, and we should long since
+have stopped doing that hiding inside the #define, but nobody has had
+the energy to make it explicit in the mmap paths, I think)
+
+> so if this is run from a kernel thread on a 64 bit kernel, we get
+> TASK_SIZE_MAX even if we got the pointer from a 32 bit userspace
+> address.
+
+But that's what *normal* access_ok() does too. TASK_SIZE_MAX is fine.
+All it needs to check is that it isn't a kernel address.
+
+> Maybe kthread_use_mm should also get the fs, not just mm.
+> Then we can just use access_ok directly before the access.
+
+I'm entirely missing why you think we should care about the fs side.
+
+Again, an access shouldn't care, either at access_ok() time, at
+user_access_begin() time, or at actual user access itself. We've got
+everything set up in the page tables and the vma information.
+
+Can you point to what I'm missing in this discussion?
+
+          Linus
