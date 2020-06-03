@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D561EC967
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 08:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BDEC1EC962
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 08:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbgFCGVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 02:21:52 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:55926 "EHLO huawei.com"
+        id S1726036AbgFCGVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 02:21:38 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55886 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725992AbgFCGVh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 02:21:37 -0400
+        id S1725836AbgFCGVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jun 2020 02:21:35 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6ECA491E2447AFE10F18;
+        by Forcepoint Email with ESMTP id 51363FCC5D884C57325D;
         Wed,  3 Jun 2020 14:21:33 +0800 (CST)
 Received: from localhost.localdomain (10.175.118.36) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 3 Jun 2020 14:21:23 +0800
+ 14.3.487.0; Wed, 3 Jun 2020 14:21:24 +0800
 From:   Luo bin <luobin9@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <luoxianjun@huawei.com>, <chiqijun@huawei.com>,
         <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: [PATCH net-next 2/5] hinic: add support to set and get irq coalesce
-Date:   Wed, 3 Jun 2020 14:20:12 +0800
-Message-ID: <20200603062015.12640-3-luobin9@huawei.com>
+Subject: [PATCH net-next 3/5] hinic: add self test support
+Date:   Wed, 3 Jun 2020 14:20:13 +0800
+Message-ID: <20200603062015.12640-4-luobin9@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200603062015.12640-1-luobin9@huawei.com>
 References: <20200603062015.12640-1-luobin9@huawei.com>
@@ -37,689 +37,516 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add support to set TX/RX irq coalesce params with ethtool -C and
-get these params with ethtool -c.
+add support to excute internal and external loopback test with
+ethtool -t cmd.
 
 Signed-off-by: Luo bin <luobin9@huawei.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_dev.h |   8 +
- .../net/ethernet/huawei/hinic/hinic_ethtool.c | 294 ++++++++++++++++++
- .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |  62 ++++
- .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  21 ++
- .../net/ethernet/huawei/hinic/hinic_hw_mgmt.h |   3 +
- .../net/ethernet/huawei/hinic/hinic_main.c    |  56 ++++
- drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  19 +-
- drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  19 ++
- 8 files changed, 481 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h |   6 +
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c | 178 ++++++++++++++++++
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |   3 +
+ .../net/ethernet/huawei/hinic/hinic_port.c    |  30 +++
+ .../net/ethernet/huawei/hinic/hinic_port.h    |  16 ++
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  39 ++++
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  61 ++++++
+ drivers/net/ethernet/huawei/hinic/hinic_tx.h  |   2 +
+ 8 files changed, 335 insertions(+)
 
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-index 48b40be3e84d..75d6dee948f5 100644
+index 75d6dee948f5..9adb755f0820 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-@@ -49,6 +49,12 @@ enum hinic_rss_hash_type {
- 	HINIC_RSS_HASH_ENGINE_TYPE_MAX,
- };
+@@ -20,11 +20,14 @@
  
-+struct hinic_intr_coal_info {
-+	u8	pending_limt;
-+	u8	coalesce_timer_cfg;
-+	u8	resend_timer_cfg;
-+};
+ #define HINIC_DRV_NAME          "hinic"
+ 
++#define LP_PKT_CNT		64
 +
- struct hinic_dev {
- 	struct net_device               *netdev;
- 	struct hinic_hwdev              *hwdev;
-@@ -82,6 +88,8 @@ struct hinic_dev {
- 	struct hinic_rss_type		rss_type;
- 	u8				*rss_hkey_user;
- 	s32				*rss_indir_user;
-+	struct hinic_intr_coal_info	*rx_intr_coalesce;
-+	struct hinic_intr_coal_info	*tx_intr_coalesce;
- 	struct hinic_sriov_info sriov_info;
+ enum hinic_flags {
+ 	HINIC_LINK_UP = BIT(0),
+ 	HINIC_INTF_UP = BIT(1),
+ 	HINIC_RSS_ENABLE = BIT(2),
+ 	HINIC_LINK_DOWN = BIT(3),
++	HINIC_LP_TEST = BIT(4),
  };
  
+ struct hinic_rx_mode_work {
+@@ -91,6 +94,9 @@ struct hinic_dev {
+ 	struct hinic_intr_coal_info	*rx_intr_coalesce;
+ 	struct hinic_intr_coal_info	*tx_intr_coalesce;
+ 	struct hinic_sriov_info sriov_info;
++	int				lb_test_rx_idx;
++	int				lb_pkt_len;
++	u8				*lb_test_rx_buf;
+ };
+ 
+ #endif
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-index a21078a6f5b1..753fc36f926c 100644
+index 753fc36f926c..5d6278cf74ad 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-@@ -49,6 +49,30 @@
- #define ETHTOOL_ADD_ADVERTISED_LINK_MODE(ecmd, mode)	\
- 				((ecmd)->advertising |= ADVERTISED_##mode)
+@@ -150,6 +150,16 @@ static struct hw2ethtool_link_mode
+ 	},
+ };
  
-+#define COALESCE_PENDING_LIMIT_UNIT	8
-+#define	COALESCE_TIMER_CFG_UNIT		9
-+#define COALESCE_ALL_QUEUE		0xFFFF
-+#define COALESCE_MAX_PENDING_LIMIT	(255 * COALESCE_PENDING_LIMIT_UNIT)
-+#define COALESCE_MAX_TIMER_CFG		(255 * COALESCE_TIMER_CFG_UNIT)
-+#define OBJ_STR_MAX_LEN			32
++#define LP_DEFAULT_TIME                 5 /* seconds */
++#define LP_PKT_LEN                      1514
 +
-+#define CHECK_COALESCE_ALIGN(coal, item, unit)				\
-+do {									\
-+	if ((coal)->item % (unit))					\
-+		netif_warn(nic_dev, drv, netdev,			\
-+			   "%s in %d units, change to %d\n",		\
-+			   #item, (unit), (((coal)->item / (unit)) * (unit)));\
-+} while (0)
++#define PORT_DOWN_ERR_IDX		0
++enum diag_test_index {
++	INTERNAL_LP_TEST = 0,
++	EXTERNAL_LP_TEST = 1,
++	DIAG_TEST_MAX = 2,
++};
 +
-+#define CHECK_COALESCE_CHANGED(coal, item, unit, ori_val, obj_str)	\
-+do {									\
-+	if (((coal)->item / (unit)) != (ori_val))			\
-+		netif_info(nic_dev, drv, netdev,			\
-+			   "Change %s from %d to %d %s\n",		\
-+			   #item, (ori_val) * (unit),			\
-+			   (((coal)->item / (unit)) * (unit)), (obj_str));\
-+} while (0)
+ static void set_link_speed(struct ethtool_link_ksettings *link_ksettings,
+ 			   enum hinic_speed speed)
+ {
+@@ -1318,6 +1328,11 @@ static struct hinic_stats hinic_function_stats[] = {
+ 	HINIC_FUNC_STAT(rx_err_vport),
+ };
+ 
++static char hinic_test_strings[][ETH_GSTRING_LEN] = {
++	"Internal lb test  (on/offline)",
++	"External lb test (external_lb)",
++};
 +
- struct hw2ethtool_link_mode {
- 	enum ethtool_link_mode_bit_indices link_mode_bit;
- 	u32 speed;
-@@ -614,6 +638,258 @@ static int hinic_set_ringparam(struct net_device *netdev,
- 	return 0;
+ #define HINIC_PORT_STAT(_stat_item) { \
+ 	.name = #_stat_item, \
+ 	.size = sizeof_field(struct hinic_phy_port_stats, _stat_item), \
+@@ -1527,6 +1542,8 @@ static int hinic_get_sset_count(struct net_device *netdev, int sset)
+ 	int count, q_num;
+ 
+ 	switch (sset) {
++	case ETH_SS_TEST:
++		return ARRAY_LEN(hinic_test_strings);
+ 	case ETH_SS_STATS:
+ 		q_num = nic_dev->num_qps;
+ 		count = ARRAY_LEN(hinic_function_stats) +
+@@ -1549,6 +1566,9 @@ static void hinic_get_strings(struct net_device *netdev,
+ 	u16 i, j;
+ 
+ 	switch (stringset) {
++	case ETH_SS_TEST:
++		memcpy(data, *hinic_test_strings, sizeof(hinic_test_strings));
++		return;
+ 	case ETH_SS_STATS:
+ 		for (i = 0; i < ARRAY_LEN(hinic_function_stats); i++) {
+ 			memcpy(p, hinic_function_stats[i].name,
+@@ -1582,6 +1602,163 @@ static void hinic_get_strings(struct net_device *netdev,
+ 	}
  }
  
-+static int __hinic_get_coalesce(struct net_device *netdev,
-+				struct ethtool_coalesce *coal, u16 queue)
++static int hinic_run_lp_test(struct hinic_dev *nic_dev, u32 test_time)
 +{
-+	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+	struct hinic_intr_coal_info *rx_intr_coal_info;
-+	struct hinic_intr_coal_info *tx_intr_coal_info;
-+
-+	if (queue == COALESCE_ALL_QUEUE) {
-+		/* get tx/rx irq0 as default parameters */
-+		rx_intr_coal_info = &nic_dev->rx_intr_coalesce[0];
-+		tx_intr_coal_info = &nic_dev->tx_intr_coalesce[0];
-+	} else {
-+		if (queue >= nic_dev->num_qps) {
-+			netif_err(nic_dev, drv, netdev,
-+				  "Invalid queue_id: %d\n", queue);
-+			return -EINVAL;
-+		}
-+		rx_intr_coal_info = &nic_dev->rx_intr_coalesce[queue];
-+		tx_intr_coal_info = &nic_dev->tx_intr_coalesce[queue];
-+	}
-+
-+	/* coalesce_timer is in unit of 9us */
-+	coal->rx_coalesce_usecs = rx_intr_coal_info->coalesce_timer_cfg *
-+			COALESCE_TIMER_CFG_UNIT;
-+	/* coalesced_frames is in unit of 8 */
-+	coal->rx_max_coalesced_frames = rx_intr_coal_info->pending_limt *
-+			COALESCE_PENDING_LIMIT_UNIT;
-+	coal->tx_coalesce_usecs = tx_intr_coal_info->coalesce_timer_cfg *
-+			COALESCE_TIMER_CFG_UNIT;
-+	coal->tx_max_coalesced_frames = tx_intr_coal_info->pending_limt *
-+			COALESCE_PENDING_LIMIT_UNIT;
-+
-+	return 0;
-+}
-+
-+static int is_coalesce_exceed_limit(struct net_device *netdev,
-+				    const struct ethtool_coalesce *coal)
-+{
-+	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+
-+	if (coal->rx_coalesce_usecs > COALESCE_MAX_TIMER_CFG) {
-+		netif_err(nic_dev, drv, netdev,
-+			  "Rx_coalesce_usecs out of range[%d-%d]\n", 0,
-+			  COALESCE_MAX_TIMER_CFG);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (coal->rx_max_coalesced_frames > COALESCE_MAX_PENDING_LIMIT) {
-+		netif_err(nic_dev, drv, netdev,
-+			  "Rx_max_coalesced_frames out of range[%d-%d]\n", 0,
-+			  COALESCE_MAX_PENDING_LIMIT);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (coal->tx_coalesce_usecs > COALESCE_MAX_TIMER_CFG) {
-+		netif_err(nic_dev, drv, netdev,
-+			  "Tx_coalesce_usecs out of range[%d-%d]\n", 0,
-+			  COALESCE_MAX_TIMER_CFG);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (coal->tx_max_coalesced_frames > COALESCE_MAX_PENDING_LIMIT) {
-+		netif_err(nic_dev, drv, netdev,
-+			  "Tx_max_coalesced_frames out of range[%d-%d]\n", 0,
-+			  COALESCE_MAX_PENDING_LIMIT);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int set_queue_coalesce(struct hinic_dev *nic_dev, u16 q_id,
-+			      struct hinic_intr_coal_info *coal,
-+			      bool set_rx_coal)
-+{
-+	struct hinic_intr_coal_info *intr_coal = NULL;
-+	struct hinic_msix_config interrupt_info = {0};
++	u8 *lb_test_rx_buf = nic_dev->lb_test_rx_buf;
 +	struct net_device *netdev = nic_dev->netdev;
-+	u16 msix_idx;
-+	int err;
++	struct sk_buff *skb_tmp = NULL;
++	struct sk_buff *skb = NULL;
++	u32 cnt = test_time * 5;
++	u8 *test_data = NULL;
++	u32 i;
++	u8 j;
 +
-+	intr_coal = set_rx_coal ? &nic_dev->rx_intr_coalesce[q_id] :
-+		    &nic_dev->tx_intr_coalesce[q_id];
++	skb_tmp = alloc_skb(LP_PKT_LEN, GFP_ATOMIC);
++	if (!skb_tmp)
++		return -ENOMEM;
 +
-+	intr_coal->coalesce_timer_cfg = coal->coalesce_timer_cfg;
-+	intr_coal->pending_limt = coal->pending_limt;
++	test_data = __skb_put(skb_tmp, LP_PKT_LEN);
 +
-+	/* netdev not running or qp not in using,
-+	 * don't need to set coalesce to hw
-+	 */
-+	if (!(nic_dev->flags & HINIC_INTF_UP) ||
-+	    q_id >= nic_dev->num_qps)
-+		return 0;
++	memset(test_data, 0xFF, 2 * ETH_ALEN);
++	test_data[ETH_ALEN] = 0xFE;
++	test_data[2 * ETH_ALEN] = 0x08;
++	test_data[2 * ETH_ALEN + 1] = 0x0;
 +
-+	msix_idx = set_rx_coal ? nic_dev->rxqs[q_id].rq->msix_entry :
-+		   nic_dev->txqs[q_id].sq->msix_entry;
-+	interrupt_info.msix_index = msix_idx;
-+	interrupt_info.coalesce_timer_cnt = intr_coal->coalesce_timer_cfg;
-+	interrupt_info.pending_cnt = intr_coal->pending_limt;
-+	interrupt_info.resend_timer_cnt = intr_coal->resend_timer_cfg;
++	for (i = ETH_HLEN; i < LP_PKT_LEN; i++)
++		test_data[i] = i & 0xFF;
 +
-+	err = hinic_set_interrupt_cfg(nic_dev->hwdev, &interrupt_info);
-+	if (err)
-+		netif_warn(nic_dev, drv, netdev,
-+			   "Failed to set %s queue%d coalesce",
-+			   set_rx_coal ? "rx" : "tx", q_id);
++	skb_tmp->queue_mapping = 0;
++	skb_tmp->ip_summed = CHECKSUM_COMPLETE;
++	skb_tmp->dev = netdev;
++
++	for (i = 0; i < cnt; i++) {
++		nic_dev->lb_test_rx_idx = 0;
++		memset(lb_test_rx_buf, 0, LP_PKT_CNT * LP_PKT_LEN);
++
++		for (j = 0; j < LP_PKT_CNT; j++) {
++			skb = pskb_copy(skb_tmp, GFP_ATOMIC);
++			if (!skb) {
++				dev_kfree_skb_any(skb_tmp);
++				netif_err(nic_dev, drv, netdev,
++					  "Copy skb failed for loopback test\n");
++				return -ENOMEM;
++			}
++
++			/* mark index for every pkt */
++			skb->data[LP_PKT_LEN - 1] = j;
++
++			if (hinic_lb_xmit_frame(skb, netdev)) {
++				dev_kfree_skb_any(skb);
++				dev_kfree_skb_any(skb_tmp);
++				netif_err(nic_dev, drv, netdev,
++					  "Xmit pkt failed for loopback test\n");
++				return -EBUSY;
++			}
++		}
++
++		/* wait till all pkts received to RX buffer */
++		msleep(200);
++
++		for (j = 0; j < LP_PKT_CNT; j++) {
++			if (memcmp(lb_test_rx_buf + j * LP_PKT_LEN,
++				   skb_tmp->data, LP_PKT_LEN - 1) ||
++			    (*(lb_test_rx_buf + j * LP_PKT_LEN +
++			     LP_PKT_LEN - 1) != j)) {
++				dev_kfree_skb_any(skb_tmp);
++				netif_err(nic_dev, drv, netdev,
++					  "Compare pkt failed in loopback test(index=0x%02x, data[%d]=0x%02x)\n",
++					  j + i * LP_PKT_CNT,
++					  LP_PKT_LEN - 1,
++					  *(lb_test_rx_buf + j * LP_PKT_LEN +
++					    LP_PKT_LEN - 1));
++				return -EIO;
++			}
++		}
++	}
++
++	dev_kfree_skb_any(skb_tmp);
++	netif_info(nic_dev, drv, netdev, "Loopback test succeed.\n");
++	return 0;
++}
++
++static int do_lp_test(struct hinic_dev *nic_dev, u32 flags, u32 test_time,
++		      enum diag_test_index *test_index)
++{
++	struct net_device *netdev = nic_dev->netdev;
++	u8 *lb_test_rx_buf = NULL;
++	int err = 0;
++
++	if (!(flags & ETH_TEST_FL_EXTERNAL_LB)) {
++		*test_index = INTERNAL_LP_TEST;
++		if (hinic_set_loopback_mode(nic_dev->hwdev,
++					    HINIC_INTERNAL_LP_MODE, true)) {
++			netif_err(nic_dev, drv, netdev,
++				  "Failed to set port loopback mode before loopback test\n");
++			return -EIO;
++		}
++	} else {
++		*test_index = EXTERNAL_LP_TEST;
++	}
++
++	lb_test_rx_buf = vmalloc(LP_PKT_CNT * LP_PKT_LEN);
++	if (!lb_test_rx_buf) {
++		err = -ENOMEM;
++	} else {
++		nic_dev->lb_test_rx_buf = lb_test_rx_buf;
++		nic_dev->lb_pkt_len = LP_PKT_LEN;
++		nic_dev->flags |= HINIC_LP_TEST;
++		err = hinic_run_lp_test(nic_dev, test_time);
++		nic_dev->flags &= ~HINIC_LP_TEST;
++		msleep(100);
++		vfree(lb_test_rx_buf);
++		nic_dev->lb_test_rx_buf = NULL;
++	}
++
++	if (!(flags & ETH_TEST_FL_EXTERNAL_LB)) {
++		if (hinic_set_loopback_mode(nic_dev->hwdev,
++					    HINIC_INTERNAL_LP_MODE, false)) {
++			netif_err(nic_dev, drv, netdev,
++				  "Failed to cancel port loopback mode after loopback test\n");
++			err = -EIO;
++		}
++	}
 +
 +	return err;
 +}
 +
-+static int __set_hw_coal_param(struct hinic_dev *nic_dev,
-+			       struct hinic_intr_coal_info *intr_coal,
-+			       u16 queue, bool set_rx_coal)
++static void hinic_diag_test(struct net_device *netdev,
++			    struct ethtool_test *eth_test, u64 *data)
 +{
-+	int err;
-+	u16 i;
-+
-+	if (queue == COALESCE_ALL_QUEUE) {
-+		for (i = 0; i < nic_dev->max_qps; i++) {
-+			err = set_queue_coalesce(nic_dev, i, intr_coal,
-+						 set_rx_coal);
-+			if (err)
-+				return err;
-+		}
-+	} else {
-+		if (queue >= nic_dev->num_qps) {
-+			netif_err(nic_dev, drv, nic_dev->netdev,
-+				  "Invalid queue_id: %d\n", queue);
-+			return -EINVAL;
-+		}
-+		err = set_queue_coalesce(nic_dev, queue, intr_coal,
-+					 set_rx_coal);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int __hinic_set_coalesce(struct net_device *netdev,
-+				struct ethtool_coalesce *coal, u16 queue)
-+{
-+	struct hinic_intr_coal_info *ori_rx_intr_coal = NULL;
-+	struct hinic_intr_coal_info *ori_tx_intr_coal = NULL;
 +	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+	struct hinic_intr_coal_info rx_intr_coal = {0};
-+	struct hinic_intr_coal_info tx_intr_coal = {0};
-+	char obj_str[OBJ_STR_MAX_LEN] = {0};
-+	bool set_rx_coal = false;
-+	bool set_tx_coal = false;
-+	int err;
++	enum hinic_port_link_state link_state;
++	enum diag_test_index test_index = 0;
++	int err = 0;
 +
-+	err = is_coalesce_exceed_limit(netdev, coal);
-+	if (err)
-+		return err;
++	memset(data, 0, DIAG_TEST_MAX * sizeof(u64));
 +
-+	CHECK_COALESCE_ALIGN(coal, rx_coalesce_usecs, COALESCE_TIMER_CFG_UNIT);
-+	CHECK_COALESCE_ALIGN(coal, rx_max_coalesced_frames,
-+			     COALESCE_PENDING_LIMIT_UNIT);
-+	CHECK_COALESCE_ALIGN(coal, tx_coalesce_usecs, COALESCE_TIMER_CFG_UNIT);
-+	CHECK_COALESCE_ALIGN(coal, tx_max_coalesced_frames,
-+			     COALESCE_PENDING_LIMIT_UNIT);
-+
-+	if (coal->rx_coalesce_usecs || coal->rx_max_coalesced_frames) {
-+		rx_intr_coal.coalesce_timer_cfg =
-+		(u8)(coal->rx_coalesce_usecs / COALESCE_TIMER_CFG_UNIT);
-+		rx_intr_coal.pending_limt = (u8)(coal->rx_max_coalesced_frames /
-+				COALESCE_PENDING_LIMIT_UNIT);
-+		set_rx_coal = true;
++	/* don't support loopback test when netdev is closed. */
++	if (!(nic_dev->flags & HINIC_INTF_UP)) {
++		netif_err(nic_dev, drv, netdev,
++			  "Do not support loopback test when netdev is closed\n");
++		eth_test->flags |= ETH_TEST_FL_FAILED;
++		data[PORT_DOWN_ERR_IDX] = 1;
++		return;
 +	}
 +
-+	if (coal->tx_coalesce_usecs || coal->tx_max_coalesced_frames) {
-+		tx_intr_coal.coalesce_timer_cfg =
-+		(u8)(coal->tx_coalesce_usecs / COALESCE_TIMER_CFG_UNIT);
-+		tx_intr_coal.pending_limt = (u8)(coal->tx_max_coalesced_frames /
-+		COALESCE_PENDING_LIMIT_UNIT);
-+		set_tx_coal = true;
++	netif_carrier_off(netdev);
++
++	err = do_lp_test(nic_dev, eth_test->flags, LP_DEFAULT_TIME,
++			 &test_index);
++	if (err) {
++		eth_test->flags |= ETH_TEST_FL_FAILED;
++		data[test_index] = 1;
 +	}
 +
-+	if (queue == COALESCE_ALL_QUEUE) {
-+		ori_rx_intr_coal = &nic_dev->rx_intr_coalesce[0];
-+		ori_tx_intr_coal = &nic_dev->tx_intr_coalesce[0];
-+		err = snprintf(obj_str, OBJ_STR_MAX_LEN, "for netdev");
-+	} else {
-+		ori_rx_intr_coal = &nic_dev->rx_intr_coalesce[queue];
-+		ori_tx_intr_coal = &nic_dev->tx_intr_coalesce[queue];
-+		err = snprintf(obj_str, OBJ_STR_MAX_LEN, "for queue %d", queue);
-+	}
-+	if (err <= 0 || err >= OBJ_STR_MAX_LEN) {
-+		netif_err(nic_dev, drv, netdev, "Failed to snprintf string, function return(%d) and dest_len(%d)\n",
-+			  err, OBJ_STR_MAX_LEN);
-+		return -EFAULT;
-+	}
-+
-+	CHECK_COALESCE_CHANGED(coal, rx_coalesce_usecs, COALESCE_TIMER_CFG_UNIT,
-+			       ori_rx_intr_coal->coalesce_timer_cfg, obj_str);
-+	CHECK_COALESCE_CHANGED(coal, rx_max_coalesced_frames,
-+			       COALESCE_PENDING_LIMIT_UNIT,
-+			       ori_rx_intr_coal->pending_limt, obj_str);
-+	CHECK_COALESCE_CHANGED(coal, tx_coalesce_usecs, COALESCE_TIMER_CFG_UNIT,
-+			       ori_tx_intr_coal->coalesce_timer_cfg, obj_str);
-+	CHECK_COALESCE_CHANGED(coal, tx_max_coalesced_frames,
-+			       COALESCE_PENDING_LIMIT_UNIT,
-+			       ori_tx_intr_coal->pending_limt, obj_str);
-+
-+	/* setting coalesce timer or pending limit to zero will disable
-+	 * coalesce
-+	 */
-+	if (set_rx_coal && (!rx_intr_coal.coalesce_timer_cfg ||
-+			    !rx_intr_coal.pending_limt))
-+		netif_warn(nic_dev, drv, netdev, "RX coalesce will be disabled\n");
-+	if (set_tx_coal && (!tx_intr_coal.coalesce_timer_cfg ||
-+			    !tx_intr_coal.pending_limt))
-+		netif_warn(nic_dev, drv, netdev, "TX coalesce will be disabled\n");
-+
-+	if (set_rx_coal) {
-+		err = __set_hw_coal_param(nic_dev, &rx_intr_coal, queue, true);
-+		if (err)
-+			return err;
-+	}
-+	if (set_tx_coal) {
-+		err = __set_hw_coal_param(nic_dev, &tx_intr_coal, queue, false);
-+		if (err)
-+			return err;
-+	}
-+	return 0;
++	err = hinic_port_link_state(nic_dev, &link_state);
++	if (!err && link_state == HINIC_LINK_STATE_UP)
++		netif_carrier_on(netdev);
 +}
 +
-+static int hinic_get_coalesce(struct net_device *netdev,
-+			      struct ethtool_coalesce *coal)
-+{
-+	return __hinic_get_coalesce(netdev, coal, COALESCE_ALL_QUEUE);
-+}
-+
-+static int hinic_set_coalesce(struct net_device *netdev,
-+			      struct ethtool_coalesce *coal)
-+{
-+	return __hinic_set_coalesce(netdev, coal, COALESCE_ALL_QUEUE);
-+}
-+
-+static int hinic_get_per_queue_coalesce(struct net_device *netdev, u32 queue,
-+					struct ethtool_coalesce *coal)
-+{
-+	return __hinic_get_coalesce(netdev, coal, queue);
-+}
-+
-+static int hinic_set_per_queue_coalesce(struct net_device *netdev, u32 queue,
-+					struct ethtool_coalesce *coal)
-+{
-+	return __hinic_set_coalesce(netdev, coal, queue);
-+}
-+
- static void hinic_get_pauseparam(struct net_device *netdev,
- 				 struct ethtool_pauseparam *pause)
- {
-@@ -1307,12 +1583,21 @@ static void hinic_get_strings(struct net_device *netdev,
- }
- 
  static const struct ethtool_ops hinic_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
-+				     ETHTOOL_COALESCE_RX_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_TX_USECS |
-+				     ETHTOOL_COALESCE_TX_MAX_FRAMES,
-+
- 	.get_link_ksettings = hinic_get_link_ksettings,
- 	.set_link_ksettings = hinic_set_link_ksettings,
- 	.get_drvinfo = hinic_get_drvinfo,
- 	.get_link = ethtool_op_get_link,
- 	.get_ringparam = hinic_get_ringparam,
- 	.set_ringparam = hinic_set_ringparam,
-+	.get_coalesce = hinic_get_coalesce,
-+	.set_coalesce = hinic_set_coalesce,
-+	.get_per_queue_coalesce = hinic_get_per_queue_coalesce,
-+	.set_per_queue_coalesce = hinic_set_per_queue_coalesce,
- 	.get_pauseparam = hinic_get_pauseparam,
- 	.set_pauseparam = hinic_set_pauseparam,
- 	.get_channels = hinic_get_channels,
-@@ -1329,11 +1614,20 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
+ 				     ETHTOOL_COALESCE_RX_MAX_FRAMES |
+@@ -1611,6 +1788,7 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 	.get_sset_count = hinic_get_sset_count,
+ 	.get_ethtool_stats = hinic_get_ethtool_stats,
+ 	.get_strings = hinic_get_strings,
++	.self_test = hinic_diag_test,
  };
  
  static const struct ethtool_ops hinicvf_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
-+				     ETHTOOL_COALESCE_RX_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_TX_USECS |
-+				     ETHTOOL_COALESCE_TX_MAX_FRAMES,
-+
- 	.get_link_ksettings = hinic_get_link_ksettings,
- 	.get_drvinfo = hinic_get_drvinfo,
- 	.get_link = ethtool_op_get_link,
- 	.get_ringparam = hinic_get_ringparam,
- 	.set_ringparam = hinic_set_ringparam,
-+	.get_coalesce = hinic_get_coalesce,
-+	.set_coalesce = hinic_set_coalesce,
-+	.get_per_queue_coalesce = hinic_get_per_queue_coalesce,
-+	.set_per_queue_coalesce = hinic_set_per_queue_coalesce,
- 	.get_channels = hinic_get_channels,
- 	.set_channels = hinic_set_channels,
- 	.get_rxnfc = hinic_get_rxnfc,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 747d50b841ba..4de50e4ba4df 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -705,6 +705,68 @@ static int hinic_l2nic_reset(struct hinic_hwdev *hwdev)
- 	return 0;
- }
- 
-+int hinic_get_interrupt_cfg(struct hinic_hwdev *hwdev,
-+			    struct hinic_msix_config *interrupt_info)
-+{
-+	u16 out_size = sizeof(*interrupt_info);
-+	struct hinic_pfhwdev *pfhwdev;
-+	int err;
-+
-+	if (!hwdev || !interrupt_info)
-+		return -EINVAL;
-+
-+	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
-+
-+	interrupt_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
-+
-+	err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
-+				HINIC_COMM_CMD_MSI_CTRL_REG_RD_BY_UP,
-+				interrupt_info, sizeof(*interrupt_info),
-+				interrupt_info, &out_size, HINIC_MGMT_MSG_SYNC);
-+	if (err || !out_size || interrupt_info->status) {
-+		dev_err(&hwdev->hwif->pdev->dev, "Failed to get interrupt config, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, interrupt_info->status, out_size);
-+		return -EIO;
-+	}
-+
-+	return 0;
-+}
-+
-+int hinic_set_interrupt_cfg(struct hinic_hwdev *hwdev,
-+			    struct hinic_msix_config *interrupt_info)
-+{
-+	u16 out_size = sizeof(*interrupt_info);
-+	struct hinic_msix_config temp_info;
-+	struct hinic_pfhwdev *pfhwdev;
-+	int err;
-+
-+	if (!hwdev)
-+		return -EINVAL;
-+
-+	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
-+
-+	interrupt_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
-+
-+	err = hinic_get_interrupt_cfg(hwdev, &temp_info);
-+	if (err)
-+		return -EINVAL;
-+
-+	interrupt_info->lli_credit_cnt = temp_info.lli_timer_cnt;
-+	interrupt_info->lli_timer_cnt = temp_info.lli_timer_cnt;
-+
-+	err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
-+				HINIC_COMM_CMD_MSI_CTRL_REG_WR_BY_UP,
-+				interrupt_info, sizeof(*interrupt_info),
-+				interrupt_info, &out_size, HINIC_MGMT_MSG_SYNC);
-+	if (err || !out_size || interrupt_info->status) {
-+		dev_err(&hwdev->hwif->pdev->dev, "Failed to get interrupt config, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, interrupt_info->status, out_size);
-+		return -EIO;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * hinic_init_hwdev - Initialize the NIC HW
-  * @pdev: the NIC pci device
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-index cc776ca2d737..ed3cc154ce18 100644
+index ed3cc154ce18..c92c39a50b81 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-@@ -285,6 +285,21 @@ struct hinic_cmd_l2nic_reset {
- 	u16	reset_flag;
- };
+@@ -97,6 +97,9 @@ enum hinic_port_cmd {
  
-+struct hinic_msix_config {
-+	u8	status;
-+	u8	version;
-+	u8	rsvd0[6];
+ 	HINIC_PORT_CMD_FWCTXT_INIT      = 69,
+ 
++	HINIC_PORT_CMD_GET_LOOPBACK_MODE = 72,
++	HINIC_PORT_CMD_SET_LOOPBACK_MODE,
 +
-+	u16	func_id;
-+	u16	msix_index;
-+	u8	pending_cnt;
-+	u8	coalesce_timer_cnt;
-+	u8	lli_timer_cnt;
-+	u8	lli_credit_cnt;
-+	u8	resend_timer_cnt;
-+	u8	rsvd1[3];
-+};
-+
- struct hinic_hwdev {
- 	struct hinic_hwif               *hwif;
- 	struct msix_entry               *msix_entries;
-@@ -378,4 +393,10 @@ int hinic_hwdev_hw_ci_addr_set(struct hinic_hwdev *hwdev, struct hinic_sq *sq,
- void hinic_hwdev_set_msix_state(struct hinic_hwdev *hwdev, u16 msix_index,
- 				enum hinic_msix_state flag);
+ 	HINIC_PORT_CMD_ENABLE_SPOOFCHK = 78,
  
-+int hinic_get_interrupt_cfg(struct hinic_hwdev *hwdev,
-+			    struct hinic_msix_config *interrupt_info);
-+
-+int hinic_set_interrupt_cfg(struct hinic_hwdev *hwdev,
-+			    struct hinic_msix_config *interrupt_info);
-+
- #endif
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
-index c2b142c08b0e..a3349ae30ff3 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
-@@ -78,6 +78,9 @@ enum hinic_comm_cmd {
+ 	HINIC_PORT_CMD_GET_MGMT_VERSION = 88,
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 8b007a268675..53ea2740ba9f 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -1241,3 +1241,33 @@ int hinic_dcb_set_pfc(struct hinic_hwdev *hwdev, u8 pfc_en, u8 pfc_bitmap)
  
- 	HINIC_COMM_CMD_CEQ_CTRL_REG_WR_BY_UP = 0x33,
- 
-+	HINIC_COMM_CMD_MSI_CTRL_REG_WR_BY_UP,
-+	HINIC_COMM_CMD_MSI_CTRL_REG_RD_BY_UP,
-+
- 	HINIC_COMM_CMD_L2NIC_RESET		= 0x4b,
- 
- 	HINIC_COMM_CMD_PAGESIZE_SET	= 0x50,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index e69edb01fd9b..e328effd12d2 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -69,6 +69,10 @@ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
- 
- #define HINIC_WAIT_SRIOV_CFG_TIMEOUT	15000
- 
-+#define HINIC_DEAULT_TXRX_MSIX_PENDING_LIMIT		2
-+#define HINIC_DEAULT_TXRX_MSIX_COALESC_TIMER_CFG	32
-+#define HINIC_DEAULT_TXRX_MSIX_RESEND_TIMER_CFG		7
-+
- static int change_mac_addr(struct net_device *netdev, const u8 *addr);
- 
- static int set_features(struct hinic_dev *nic_dev,
-@@ -1008,6 +1012,48 @@ static int set_features(struct hinic_dev *nic_dev,
- 	return hinic_dcb_set_pfc(nic_dev->hwdev, 0, 0);
+ 	return 0;
  }
- 
-+static int hinic_init_intr_coalesce(struct hinic_dev *nic_dev)
++
++int hinic_set_loopback_mode(struct hinic_hwdev *hwdev, u32 mode, u32 enable)
 +{
-+	u64 size;
-+	u16 i;
++	struct hinic_port_loopback lb = {0};
++	u16 out_size = sizeof(lb);
++	int err;
 +
-+	size = sizeof(struct hinic_intr_coal_info) * nic_dev->max_qps;
-+	nic_dev->rx_intr_coalesce = kzalloc(size, GFP_KERNEL);
-+	if (!nic_dev->rx_intr_coalesce) {
-+		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Failed to alloc rx intr coalesce\n");
-+		return -ENOMEM;
-+	}
-+	nic_dev->tx_intr_coalesce = kzalloc(size, GFP_KERNEL);
-+	if (!nic_dev->tx_intr_coalesce) {
-+		kfree(nic_dev->rx_intr_coalesce);
-+		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Failed to alloc tx intr coalesce\n");
-+		return -ENOMEM;
++	lb.mode = mode;
++	lb.en = enable;
++
++	if (mode < LOOP_MODE_MIN || mode > LOOP_MODE_MAX) {
++		dev_err(&hwdev->hwif->pdev->dev,
++			"Invalid loopback mode %d to set\n", mode);
++		return -EINVAL;
 +	}
 +
-+	for (i = 0; i < nic_dev->max_qps; i++) {
-+		nic_dev->rx_intr_coalesce[i].pending_limt =
-+			HINIC_DEAULT_TXRX_MSIX_PENDING_LIMIT;
-+		nic_dev->rx_intr_coalesce[i].coalesce_timer_cfg =
-+			HINIC_DEAULT_TXRX_MSIX_COALESC_TIMER_CFG;
-+		nic_dev->rx_intr_coalesce[i].resend_timer_cfg =
-+			HINIC_DEAULT_TXRX_MSIX_RESEND_TIMER_CFG;
-+		nic_dev->tx_intr_coalesce[i].pending_limt =
-+			HINIC_DEAULT_TXRX_MSIX_PENDING_LIMIT;
-+		nic_dev->tx_intr_coalesce[i].coalesce_timer_cfg =
-+			HINIC_DEAULT_TXRX_MSIX_COALESC_TIMER_CFG;
-+		nic_dev->tx_intr_coalesce[i].resend_timer_cfg =
-+			HINIC_DEAULT_TXRX_MSIX_RESEND_TIMER_CFG;
++	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_LOOPBACK_MODE,
++				 &lb, sizeof(lb), &lb, &out_size);
++	if (err || !out_size || lb.status) {
++		dev_err(&hwdev->hwif->pdev->dev,
++			"Failed to set loopback mode %d en %d, err: %d, status: 0x%x, out size: 0x%x\n",
++			mode, enable, err, lb.status, out_size);
++		return -EIO;
 +	}
++
++	dev_info(&hwdev->hwif->pdev->dev,
++		 "Set loopback mode %d en %d succeed\n", mode, enable);
 +
 +	return 0;
 +}
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+index 7b17460d4e2c..b21956d7232e 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+@@ -652,6 +652,20 @@ struct hinic_set_pfc {
+ 	u8	rsvd1[4];
+ };
+ 
++/* get or set loopback mode, need to modify by base API */
++#define HINIC_INTERNAL_LP_MODE			5
++#define LOOP_MODE_MIN				1
++#define LOOP_MODE_MAX				6
 +
-+static void hinic_free_intr_coalesce(struct hinic_dev *nic_dev)
++struct hinic_port_loopback {
++	u8	status;
++	u8	version;
++	u8	rsvd[6];
++
++	u32	mode;
++	u32	en;
++};
++
+ int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
+ 		       u16 vlan_id);
+ 
+@@ -749,6 +763,8 @@ int hinic_set_hw_pause_info(struct hinic_hwdev *hwdev,
+ 
+ int hinic_dcb_set_pfc(struct hinic_hwdev *hwdev, u8 pfc_en, u8 pfc_bitmap);
+ 
++int hinic_set_loopback_mode(struct hinic_hwdev *hwdev, u32 mode, u32 enable);
++
+ int hinic_open(struct net_device *netdev);
+ 
+ int hinic_close(struct net_device *netdev);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+index c9a65a1f0347..5bee951fe9d4 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+@@ -316,6 +316,39 @@ static int rx_recv_jumbo_pkt(struct hinic_rxq *rxq, struct sk_buff *head_skb,
+ 	return num_wqes;
+ }
+ 
++static void hinic_copy_lp_data(struct hinic_dev *nic_dev,
++			       struct sk_buff *skb)
 +{
-+	kfree(nic_dev->tx_intr_coalesce);
-+	kfree(nic_dev->rx_intr_coalesce);
++	struct net_device *netdev = nic_dev->netdev;
++	u8 *lb_buf = nic_dev->lb_test_rx_buf;
++	int lb_len = nic_dev->lb_pkt_len;
++	int pkt_offset, frag_len, i;
++	void *frag_data = NULL;
++
++	if (nic_dev->lb_test_rx_idx == LP_PKT_CNT) {
++		nic_dev->lb_test_rx_idx = 0;
++		netif_warn(nic_dev, drv, netdev, "Loopback test warning, receive too more test pkts\n");
++	}
++
++	if (skb->len != nic_dev->lb_pkt_len) {
++		netif_warn(nic_dev, drv, netdev, "Wrong packet length\n");
++		nic_dev->lb_test_rx_idx++;
++		return;
++	}
++
++	pkt_offset = nic_dev->lb_test_rx_idx * lb_len;
++	frag_len = (int)skb_headlen(skb);
++	memcpy(lb_buf + pkt_offset, skb->data, frag_len);
++	pkt_offset += frag_len;
++	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
++		frag_data = skb_frag_address(&skb_shinfo(skb)->frags[i]);
++		frag_len = (int)skb_frag_size(&skb_shinfo(skb)->frags[i]);
++		memcpy((lb_buf + pkt_offset), frag_data, frag_len);
++		pkt_offset += frag_len;
++	}
++	nic_dev->lb_test_rx_idx++;
 +}
 +
  /**
-  * nic_dev_init - Initialize the NIC device
-  * @pdev: the NIC pci device
-@@ -1144,8 +1190,16 @@ static int nic_dev_init(struct pci_dev *pdev)
- 		goto err_reg_netdev;
- 	}
- 
-+	err = hinic_init_intr_coalesce(nic_dev);
-+	if (err) {
-+		netif_err(nic_dev, drv, netdev, "Failed to init_intr_coalesce\n");
-+		goto err_init_intr;
-+	}
-+
- 	return 0;
- 
-+err_init_intr:
-+	unregister_netdev(netdev);
- err_reg_netdev:
- err_set_features:
- 	hinic_hwdev_cb_unregister(nic_dev->hwdev,
-@@ -1258,6 +1312,8 @@ static void hinic_remove(struct pci_dev *pdev)
- 		hinic_pci_sriov_disable(pdev);
- 	}
- 
-+	hinic_free_intr_coalesce(nic_dev);
-+
- 	unregister_netdev(netdev);
- 
- 	hinic_port_del_mac(nic_dev, netdev->dev_addr, 0);
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-index af20d0dd6de7..c9a65a1f0347 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-@@ -478,11 +478,15 @@ static irqreturn_t rx_irq(int irq, void *data)
- static int rx_request_irq(struct hinic_rxq *rxq)
- {
- 	struct hinic_dev *nic_dev = netdev_priv(rxq->netdev);
-+	struct hinic_msix_config interrupt_info = {0};
-+	struct hinic_intr_coal_info *intr_coal = NULL;
- 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+  * rxq_recv - Rx handler
+  * @rxq: rx queue
+@@ -330,6 +363,7 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 	u64 pkt_len = 0, rx_bytes = 0;
  	struct hinic_rq *rq = rxq->rq;
- 	struct hinic_qp *qp;
- 	int err;
+ 	struct hinic_rq_wqe *rq_wqe;
++	struct hinic_dev *nic_dev;
+ 	unsigned int free_wqebbs;
+ 	struct hinic_rq_cqe *cqe;
+ 	int num_wqes, pkts = 0;
+@@ -342,6 +376,8 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 	u32 vlan_len;
+ 	u16 vid;
  
-+	qp = container_of(rq, struct hinic_qp, rq);
++	nic_dev = netdev_priv(netdev);
 +
- 	rx_add_napi(rxq);
+ 	while (pkts < budget) {
+ 		num_wqes = 0;
  
- 	hinic_hwdev_msix_set(hwdev, rq->msix_entry,
-@@ -490,13 +494,26 @@ static int rx_request_irq(struct hinic_rxq *rxq)
- 			     RX_IRQ_NO_LLI_TIMER, RX_IRQ_NO_CREDIT,
- 			     RX_IRQ_NO_RESEND_TIMER);
+@@ -384,6 +420,9 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
+ 		}
  
-+	intr_coal = &nic_dev->rx_intr_coalesce[qp->q_id];
-+	interrupt_info.msix_index = rq->msix_entry;
-+	interrupt_info.coalesce_timer_cnt = intr_coal->coalesce_timer_cfg;
-+	interrupt_info.pending_cnt = intr_coal->pending_limt;
-+	interrupt_info.resend_timer_cnt = intr_coal->resend_timer_cfg;
++		if (unlikely(nic_dev->flags & HINIC_LP_TEST))
++			hinic_copy_lp_data(nic_dev, skb);
 +
-+	err = hinic_set_interrupt_cfg(hwdev, &interrupt_info);
-+	if (err) {
-+		netif_err(nic_dev, drv, rxq->netdev,
-+			  "Failed to set RX interrupt coalescing attribute\n");
-+		rx_del_napi(rxq);
-+		return err;
-+	}
-+
- 	err = request_irq(rq->irq, rx_irq, 0, rxq->irq_name, rxq);
- 	if (err) {
- 		rx_del_napi(rxq);
- 		return err;
- 	}
+ 		skb_record_rx_queue(skb, qp->q_id);
+ 		skb->protocol = eth_type_trans(skb, rxq->netdev);
  
--	qp = container_of(rq, struct hinic_qp, rq);
- 	cpumask_set_cpu(qp->q_id % num_online_cpus(), &rq->affinity_mask);
- 	return irq_set_affinity_hint(rq->irq, &rq->affinity_mask);
- }
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-index 4c66a0bc1b28..0f6d27f29de5 100644
+index 0f6d27f29de5..a97498ee6914 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-@@ -718,12 +718,17 @@ static irqreturn_t tx_irq(int irq, void *data)
- static int tx_request_irq(struct hinic_txq *txq)
- {
- 	struct hinic_dev *nic_dev = netdev_priv(txq->netdev);
-+	struct hinic_msix_config interrupt_info = {0};
-+	struct hinic_intr_coal_info *intr_coal = NULL;
- 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
- 	struct hinic_hwif *hwif = hwdev->hwif;
- 	struct pci_dev *pdev = hwif->pdev;
- 	struct hinic_sq *sq = txq->sq;
+@@ -459,6 +459,67 @@ static int hinic_tx_offload(struct sk_buff *skb, struct hinic_sq_task *task,
+ 	return 0;
+ }
+ 
++netdev_tx_t hinic_lb_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
++{
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	u16 prod_idx, q_id = skb->queue_mapping;
++	struct netdev_queue *netdev_txq;
++	int nr_sges, err = NETDEV_TX_OK;
++	struct hinic_sq_wqe *sq_wqe;
++	unsigned int wqe_size;
++	struct hinic_txq *txq;
 +	struct hinic_qp *qp;
- 	int err;
- 
-+	qp = container_of(sq, struct hinic_qp, sq);
 +
- 	tx_napi_add(txq, nic_dev->tx_weight);
- 
- 	hinic_hwdev_msix_set(nic_dev->hwdev, sq->msix_entry,
-@@ -731,6 +736,20 @@ static int tx_request_irq(struct hinic_txq *txq)
- 			     TX_IRQ_NO_LLI_TIMER, TX_IRQ_NO_CREDIT,
- 			     TX_IRQ_NO_RESEND_TIMER);
- 
-+	intr_coal = &nic_dev->tx_intr_coalesce[qp->q_id];
-+	interrupt_info.msix_index = sq->msix_entry;
-+	interrupt_info.coalesce_timer_cnt = intr_coal->coalesce_timer_cfg;
-+	interrupt_info.pending_cnt = intr_coal->pending_limt;
-+	interrupt_info.resend_timer_cnt = intr_coal->resend_timer_cfg;
++	txq = &nic_dev->txqs[q_id];
++	qp = container_of(txq->sq, struct hinic_qp, sq);
++	nr_sges = skb_shinfo(skb)->nr_frags + 1;
 +
-+	err = hinic_set_interrupt_cfg(hwdev, &interrupt_info);
-+	if (err) {
-+		netif_err(nic_dev, drv, txq->netdev,
-+			  "Failed to set TX interrupt coalescing attribute\n");
-+		tx_napi_del(txq);
-+		return err;
++	err = tx_map_skb(nic_dev, skb, txq->sges);
++	if (err)
++		goto skb_error;
++
++	wqe_size = HINIC_SQ_WQE_SIZE(nr_sges);
++
++	sq_wqe = hinic_sq_get_wqe(txq->sq, wqe_size, &prod_idx);
++	if (!sq_wqe) {
++		netif_stop_subqueue(netdev, qp->q_id);
++
++		sq_wqe = hinic_sq_get_wqe(txq->sq, wqe_size, &prod_idx);
++		if (sq_wqe) {
++			netif_wake_subqueue(nic_dev->netdev, qp->q_id);
++			goto process_sq_wqe;
++		}
++
++		tx_unmap_skb(nic_dev, skb, txq->sges);
++
++		u64_stats_update_begin(&txq->txq_stats.syncp);
++		txq->txq_stats.tx_busy++;
++		u64_stats_update_end(&txq->txq_stats.syncp);
++		err = NETDEV_TX_BUSY;
++		wqe_size = 0;
++		goto flush_skbs;
 +	}
 +
- 	err = request_irq(sq->irq, tx_irq, 0, txq->irq_name, txq);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to request Tx irq\n");
++process_sq_wqe:
++	hinic_sq_prepare_wqe(txq->sq, prod_idx, sq_wqe, txq->sges, nr_sges);
++	hinic_sq_write_wqe(txq->sq, prod_idx, sq_wqe, skb, wqe_size);
++
++flush_skbs:
++	netdev_txq = netdev_get_tx_queue(netdev, q_id);
++	if ((!netdev_xmit_more()) || (netif_xmit_stopped(netdev_txq)))
++		hinic_sq_write_db(txq->sq, prod_idx, wqe_size, 0);
++
++	return err;
++
++skb_error:
++	dev_kfree_skb_any(skb);
++	u64_stats_update_begin(&txq->txq_stats.syncp);
++	txq->txq_stats.tx_dropped++;
++	u64_stats_update_end(&txq->txq_stats.syncp);
++
++	return NETDEV_TX_OK;
++}
++
+ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
+ {
+ 	struct hinic_dev *nic_dev = netdev_priv(netdev);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.h b/drivers/net/ethernet/huawei/hinic/hinic_tx.h
+index f158b7db7fb8..b3c8657774a7 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_tx.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.h
+@@ -44,6 +44,8 @@ void hinic_txq_clean_stats(struct hinic_txq *txq);
+ 
+ void hinic_txq_get_stats(struct hinic_txq *txq, struct hinic_txq_stats *stats);
+ 
++netdev_tx_t hinic_lb_xmit_frame(struct sk_buff *skb, struct net_device *netdev);
++
+ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev);
+ 
+ int hinic_init_txq(struct hinic_txq *txq, struct hinic_sq *sq,
 -- 
 2.17.1
 
