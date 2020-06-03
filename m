@@ -2,129 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CACD1EC782
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 04:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0E41EC785
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 04:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbgFCClI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jun 2020 22:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        id S1725967AbgFCCmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jun 2020 22:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726051AbgFCClG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 22:41:06 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6C3C08C5C0;
-        Tue,  2 Jun 2020 19:41:05 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id w20so690100pga.6;
-        Tue, 02 Jun 2020 19:41:05 -0700 (PDT)
+        with ESMTP id S1725794AbgFCCmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jun 2020 22:42:20 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA37C08C5C0;
+        Tue,  2 Jun 2020 19:42:19 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id a25so786343ljp.3;
+        Tue, 02 Jun 2020 19:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=EB75bi8QTeVzqrx9jwWk4wz772Z05AX+1WdlpDKhHNo=;
-        b=KuoK74s/E/VLnN5y3HutWbMf6OeGxNP0wJfX/55F4KC3WWYexpSFh2oULh0X3AN5OG
-         Sr+cKm4gNgdOtHq49ubNwFVqoTWlMjt71bld3no5nn0/UtoJvqfNly9xuhOUegKbFbzo
-         4Kzj6UMwi61P11r0NA1CZxvF9OgvJ9SYMeVBDuotcbwmY0sDoRjc1//QZD04MTp38jBw
-         8nI8bmh0/edUCJn6qgjKGMjpYh0jJOZ0318fWAYZ9wjHpRXbElhSQy3cRohaVZMaxsrN
-         GagaCUCU/EH9j1D3D1VD+a8drJGnjZibKcNwng4SUekB7YAiz8jbEW0+HxjV1T6Qya7w
-         kNhA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CFI1m1bXGZYKZMu3ppASc24ioDiu36YQQGgUMSxsWQI=;
+        b=c9WYIlS6PxKJJ2EHnd7jvE8gIGL2qlHjjyJRJqsFW73FDRISPapGPm0n74iGH/I4BU
+         BOXAPIcDN6qJr0qSGyzl6+8oMsT/KkwWX5jwqCDzBQJGaCkLX4G3tfe80xrRw5j80mlk
+         hzK6BK48EzBqJoAnYOyIFixwCozmdGOhNwMLYeR3DYPJAIhJVniL8FyKoOhXbOBLjZb4
+         DmjKSaXgs89smvy8HhmU874l0UAIG+junoxNOS7b9FPQd6+Prwk/Xvam6+MXOHMZu3BP
+         lCl0QHMTfFhYGdnZDvd8UTzJprcJON1qgei9L33eU857V4TmXKOiarWKlZV20k9Sj1w4
+         B9QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EB75bi8QTeVzqrx9jwWk4wz772Z05AX+1WdlpDKhHNo=;
-        b=J36EplU+5+YjpCB63Rxyz4UJ7FCDVjo2FhJr9U3S1Dsfe5NHMYipy/I3M696u8q2J6
-         YF4DYV1T9BqeL0ZExCowyQ7GnbawAlYGJk2cndQie7fPTlVXAvYLj9XqQI94NsVIfkwx
-         RYSIQ0OZMTW+nYLphyMWgy4S/OHFdCPBtgrDcwfWWIqaksCsIkwmYZoQAeFIjW1So8la
-         OB1WiwE5A7oksHhM4SqA3qus2hKnxCLAxH3hHYZUzWtmEc6nfTFJc0CgXMkbC16MYULe
-         kEfD621qpe2GME4JobOuCGsQXF7FFdqM229z1LsOYfMxOD07qBRhZex2IMjimZJJiaJf
-         +5Rg==
-X-Gm-Message-State: AOAM533Bv0lQtNDAMJNLkfkLcnvBNaI3Ybe+4mZgLqzrcMxikf/uyWUS
-        d2oIhcd86uK0Nn2IVvaR9NQ=
-X-Google-Smtp-Source: ABdhPJzRdgif90NB2MPa1c8Oo6UyryMehTj1voTNyEQ50nY1t/+htMLnKqYCILHLu0IG97LXz31GXQ==
-X-Received: by 2002:a63:b10b:: with SMTP id r11mr25502461pgf.27.1591152065420;
-        Tue, 02 Jun 2020 19:41:05 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 207sm386461pfw.190.2020.06.02.19.41.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2020 19:41:04 -0700 (PDT)
-Date:   Wed, 3 Jun 2020 10:40:54 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200603024054.GK102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
- <87zh9t1xvh.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CFI1m1bXGZYKZMu3ppASc24ioDiu36YQQGgUMSxsWQI=;
+        b=mb8mUKHT3pQRmod/Gh9sS4pof60qbcdIzDdLCm/7aGXm+PNEG/9rqIjdWfkiETBYB5
+         aQ4c5B221QnunFwGG2gIAzAnhLt4LTmJEhvp8iTI7eTJhplTJIyF/1RTIT6E3CuJrzAx
+         zBKbDhFXgAAJYubCG/U0wuFEb7AtkV5Nx0J+7NwQvxpDZCyiCidM/hFEUwSzPlwB2lQo
+         CqHD20kICKEx3Fj2Hwq3n1M91ainprzbHkxwr/R4T03m7Z5sgZiyy9cFHFh6AsRxBkEN
+         8noTUkL4b/jMWtbSw/Qx/oihhkQikqbGu7dCfoprgPUiS4UFMyanBOy5kljB5K+0xwXf
+         VaHA==
+X-Gm-Message-State: AOAM530R4TmAiHNaG/iEo7zZq0P/qNNHmE5NrO/JiLhkPCBmKvMJHiIr
+        8n9mKXm7iLQSgep8WsfTmASCW8GvM211Vvo/PrE=
+X-Google-Smtp-Source: ABdhPJxG/g7d0SUPOlZylX53KWmJNDyAVmymN8J4HcFlAbXLbRDKEHmAsJ988BdjbI452PhbZv7i4Lvt8WifPjLg50o=
+X-Received: by 2002:a2e:750d:: with SMTP id q13mr892413ljc.448.1591152137654;
+ Tue, 02 Jun 2020 19:42:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87zh9t1xvh.fsf@toke.dk>
+References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
+ <CANn89iLNCDuXAhj4By0PDKbuFvneVfwmwkLbRCEKLBF+pmNEPg@mail.gmail.com>
+ <CAL+tcoBjjwrkE5QbXDFADRGJfPoniLL1rMFNUkAKBN9L57UGHA@mail.gmail.com> <CANn89iKDKnnW1na_F0ngGh3EEc0quuBB2XWo21oAKaHckdPK4w@mail.gmail.com>
+In-Reply-To: <CANn89iKDKnnW1na_F0ngGh3EEc0quuBB2XWo21oAKaHckdPK4w@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Wed, 3 Jun 2020 10:41:41 +0800
+Message-ID: <CAL+tcoDn_=T--uB0CRymfTGvD022PPDk5Yw2yCxvqOOpZ4G_dQ@mail.gmail.com>
+Subject: Re: [PATCH] tcp: fix TCP socks unreleased in BBR mode
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, liweishi@kuaishou.com,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 27, 2020 at 12:21:54PM +0200, Toke Høiland-Jørgensen wrote:
-> > The example in patch 2 is functional, but not a lot of effort
-> > has been made on performance optimisation. I did a simple test(pkt size 64)
-> > with pktgen. Here is the test result with BPF_MAP_TYPE_DEVMAP_HASH
-> > arrays:
+I agree with you. The upstream has already dropped and optimized this
+part (commit 864e5c090749), so it would not happen like that. However
+the old kernels like LTS still have the problem which causes
+large-scale crashes on our thousands of machines after running for a
+long while. I will send the fix to the correct tree soon :)
+
+Thanks again,
+Jason
+
+On Wed, Jun 3, 2020 at 10:29 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Jun 2, 2020 at 6:53 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
 > >
-> > bpf_redirect_map() with 1 ingress, 1 egress:
-> > generic path: ~1600k pps
-> > native path: ~980k pps
+> > Hi Eric,
 > >
-> > bpf_redirect_map_multi() with 1 ingress, 3 egress:
-> > generic path: ~600k pps
-> > native path: ~480k pps
+> > I'm sorry that I didn't write enough clearly. We're running the
+> > pristine 4.19.125 linux kernel (the latest LTS version) and have been
+> > haunted by such an issue. This patch is high-important, I think. So
+> > I'm going to resend this email with the [patch 4.19] on the headline
+> > and cc Greg.
+>
+> Yes, please always give for which tree a patch is meant for.
+>
+> Problem is that your patch is not correct.
+> In these old kernels, tcp_internal_pacing() is called _after_ the
+> packet has been sent.
+> It is too late to 'give up pacing'
+>
+> The packet should not have been sent if the pacing timer is queued
+> (otherwise this means we do not respect pacing)
+>
+> So the bug should be caught earlier. check where tcp_pacing_check()
+> calls are missing.
+>
+>
+>
 > >
-> > bpf_redirect_map_multi() with 1 ingress, 9 egress:
-> > generic path: ~125k pps
-> > native path: ~100k pps
 > >
-> > The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
-> > the arrays and do clone skb/xdpf. The native path is slower than generic
-> > path as we send skbs by pktgen. So the result looks reasonable.
-> 
-> How are you running these tests? Still on virtual devices? We really
-> need results from a physical setup in native mode to assess the impact
-> on the native-XDP fast path. The numbers above don't tell much in this
-> regard. I'd also like to see a before/after patch for straight
-> bpf_redirect_map(), since you're messing with the fast path, and we want
-> to make sure it's not causing a performance regression for regular
-> redirect.
-> 
-> Finally, since the overhead seems to be quite substantial: A comparison
-> with a regular network stack bridge might make sense? After all we also
-> want to make sure it's a performance win over that :)
-
-Hi Toke,
-
-Here is the result I tested with 2 i40e 10G ports on physical machine.
-The pktgen pkt_size is 64.
-
-Bridge forwarding(I use sample/bpf/xdp1 to count the PPS, so there are two modes data):
-generic mode: 1.32M PPS
-driver mode: 1.66M PPS
-
-xdp_redirect_map:
-generic mode: 1.88M PPS
-driver mode: 2.74M PPS
-
-xdp_redirect_map_multi:
-generic mode: 1.38M PPS
-driver mode: 2.73M PPS
-
-So what do you think about the data. If you are OK, I will update
-my patch and re-post it.
-
-Thanks
-Hangbin
+> > Thanks,
+> > Jason
+> >
+> > On Tue, Jun 2, 2020 at 9:05 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Tue, Jun 2, 2020 at 1:05 AM <kerneljasonxing@gmail.com> wrote:
+> > > >
+> > > > From: Jason Xing <kerneljasonxing@gmail.com>
+> > > >
+> > > > TCP socks cannot be released because of the sock_hold() increasing the
+> > > > sk_refcnt in the manner of tcp_internal_pacing() when RTO happens.
+> > > > Therefore, this situation could increase the slab memory and then trigger
+> > > > the OOM if the machine has beening running for a long time. This issue,
+> > > > however, can happen on some machine only running a few days.
+> > > >
+> > > > We add one exception case to avoid unneeded use of sock_hold if the
+> > > > pacing_timer is enqueued.
+> > > >
+> > > > Reproduce procedure:
+> > > > 0) cat /proc/slabinfo | grep TCP
+> > > > 1) switch net.ipv4.tcp_congestion_control to bbr
+> > > > 2) using wrk tool something like that to send packages
+> > > > 3) using tc to increase the delay in the dev to simulate the busy case.
+> > > > 4) cat /proc/slabinfo | grep TCP
+> > > > 5) kill the wrk command and observe the number of objects and slabs in TCP.
+> > > > 6) at last, you could notice that the number would not decrease.
+> > > >
+> > > > Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
+> > > > Signed-off-by: liweishi <liweishi@kuaishou.com>
+> > > > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> > > > ---
+> > > >  net/ipv4/tcp_output.c | 3 ++-
+> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> > > > index cc4ba42..5cf63d9 100644
+> > > > --- a/net/ipv4/tcp_output.c
+> > > > +++ b/net/ipv4/tcp_output.c
+> > > > @@ -969,7 +969,8 @@ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
+> > > >         u64 len_ns;
+> > > >         u32 rate;
+> > > >
+> > > > -       if (!tcp_needs_internal_pacing(sk))
+> > > > +       if (!tcp_needs_internal_pacing(sk) ||
+> > > > +           hrtimer_is_queued(&tcp_sk(sk)->pacing_timer))
+> > > >                 return;
+> > > >         rate = sk->sk_pacing_rate;
+> > > >         if (!rate || rate == ~0U)
+> > > > --
+> > > > 1.8.3.1
+> > > >
+> > >
+> > > Hi Jason.
+> > >
+> > > Please do not send patches that do not apply to current upstream trees.
+> > >
+> > > Instead, backport to your kernels the needed fixes.
+> > >
+> > > I suspect that you are not using a pristine linux kernel, but some
+> > > heavily modified one and something went wrong in your backports.
+> > > Do not ask us to spend time finding what went wrong.
+> > >
+> > > Thank you.
