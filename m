@@ -2,39 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D93A1ECEFA
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 13:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 188011ECEFD
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 13:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgFCLtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 07:49:35 -0400
-Received: from mga14.intel.com ([192.55.52.115]:5555 "EHLO mga14.intel.com"
+        id S1726328AbgFCLtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 07:49:52 -0400
+Received: from mga12.intel.com ([192.55.52.136]:38743 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726084AbgFCLtd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 07:49:33 -0400
-IronPort-SDR: pkBmDH6Lh5c/BfbK372q975zKEn3O0EGP358uofZZElXzQG0fHmVtiU8VwVq1vA+6WDgyVaEnm
- Av7dn1nGdaog==
+        id S1725959AbgFCLtw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jun 2020 07:49:52 -0400
+IronPort-SDR: F28dNjG7/B2wjhlQTFb6sRuK8wZnPCjW8NykKWlSgST3ypCJeDbjzqNaQSMAvmRWGTPzGCZh+L
+ X6XkYBkhYmeA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2020 04:49:33 -0700
-IronPort-SDR: nPxzuBUZbHQWLxtcEGnSgrGBDV8wzTM/pV+RSw0f7UOv6UpMkpEV8ogLbXHQYHkq5lpCK00hqS
- Wlq7vc1r/Z3A==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2020 04:49:51 -0700
+IronPort-SDR: UOzt/GAaTVyn/Wq7RF/jvJhSWnGgRgsYbOgSu9mkKJfktXQyYIUWYF856Xm+qFTzcr6sUHKhnw
+ PZcY7fzIplvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,467,1583222400"; 
-   d="scan'208";a="304582926"
+   d="scan'208";a="293942607"
 Received: from gklab-125-110.igk.intel.com ([10.91.125.110])
-  by orsmga008.jf.intel.com with ESMTP; 03 Jun 2020 04:49:30 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 03 Jun 2020 04:49:48 -0700
 From:   Piotr Stankiewicz <piotr.stankiewicz@intel.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
 Cc:     Piotr Stankiewicz <piotr.stankiewicz@intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Nikita Danilov <ndanilov@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
         Andy Shevchenko <andriy.shevchenko@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 12/15] amd-xgbe: Use PCI_IRQ_MSI_TYPES where appropriate
-Date:   Wed,  3 Jun 2020 13:49:24 +0200
-Message-Id: <20200603114925.13706-1-piotr.stankiewicz@intel.com>
+        Pavel Belous <pbelous@marvell.com>,
+        Egor Pomozov <epomozov@marvell.com>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 13/15] aquantia: atlantic: Use PCI_IRQ_ALL_TYPES where appropriate
+Date:   Wed,  3 Jun 2020 13:49:44 +0200
+Message-Id: <20200603114945.13790-1-piotr.stankiewicz@intel.com>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20200603114212.12525-1-piotr.stankiewicz@intel.com>
 References: <20200603114212.12525-1-piotr.stankiewicz@intel.com>
@@ -49,22 +54,24 @@ of interrupt, or any type of message signalled interrupt, leverage it.
 Signed-off-by: Piotr Stankiewicz <piotr.stankiewicz@intel.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-index 7b86240ecd5f..903bc5ef2518 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-@@ -133,7 +133,7 @@ static int xgbe_config_multi_msi(struct xgbe_prv_data *pdata)
- 			    pdata->tx_ring_count);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 8a70ffe1d326..2a0ebf296478 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -277,9 +277,7 @@ static int aq_pci_probe(struct pci_dev *pdev,
+ 	numvecs += AQ_HW_SERVICE_IRQS;
+ 	/*enable interrupts */
+ #if !AQ_CFG_FORCE_LEGACY_INT
+-	err = pci_alloc_irq_vectors(self->pdev, 1, numvecs,
+-				    PCI_IRQ_MSIX | PCI_IRQ_MSI |
+-				    PCI_IRQ_LEGACY);
++	err = pci_alloc_irq_vectors(self->pdev, 1, numvecs, PCI_IRQ_ALL_TYPES);
  
- 	ret = pci_alloc_irq_vectors(pdata->pcidev, XGBE_MSI_MIN_COUNT,
--				    vector_count, PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+				    vector_count, PCI_IRQ_MSI_TYPES);
- 	if (ret < 0) {
- 		dev_info(pdata->dev, "multi MSI/MSI-X enablement failed\n");
- 		return ret;
+ 	if (err < 0)
+ 		goto err_hwinit;
 -- 
 2.17.2
 
