@@ -2,120 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB141EC8A6
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 07:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 598AC1EC8AC
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 07:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725878AbgFCFRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 01:17:53 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45377 "EHLO
+        id S1725927AbgFCFTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 01:19:04 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37198 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725275AbgFCFRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 01:17:53 -0400
+        with ESMTP id S1725792AbgFCFTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 01:19:04 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591161471;
+        s=mimecast20190719; t=1591161543;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9zb23GOwMdeuO409vFKEhupNpLymoL466WEUGj0SSmg=;
-        b=RmMOvriMWs8yA0uojFx0ZznFPPCvPlIf01dt6bZdnPKoNVx41ISTXNR/tcXkArFum7r50X
-        0z6Nz/ejPynE56m12gJO4ttA+Y3W0o9yZOzyWIkQq2NrtbKXCKJHNolCCujDaq2xre3mLJ
-        QpmNIjl1Xcm2YXwwHYf6iqbP5rUqUZY=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-178-REFz1FlaNrOZNk_9IBwyxw-1; Wed, 03 Jun 2020 01:17:49 -0400
-X-MC-Unique: REFz1FlaNrOZNk_9IBwyxw-1
-Received: by mail-wr1-f72.google.com with SMTP id c14so589289wrw.11
-        for <netdev@vger.kernel.org>; Tue, 02 Jun 2020 22:17:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9zb23GOwMdeuO409vFKEhupNpLymoL466WEUGj0SSmg=;
-        b=qW3iUKulPkkvXwLhCL1dJID5tkP9Ium7BpighPW5lKHaUNDiwOKBfpepi8o3+CTOnk
-         pedyA/2R16bXTdNw+neiD232uysCjf8jyUSKQZPxZm823VDVe41f6NCVIDHq0piVEt4S
-         vxfiWogyI1DkmdwkyDu01SeFxVpNSoUY2Z+RkIVLm9YkPGfRGgaHp0phk0k7rraNiy+P
-         Le4nZo8XREi/cDvR60E+j5zOESuvKJxJbzhbhctWyrKUHJOhaIH3jDXEo3mm9KmOe+MJ
-         gJ21R1vWmLF4akQiOQIhvPmijyzpKhmQ5JD54qs1YPy50EqsBOGDK4zq/iHspSsQQook
-         +xiw==
-X-Gm-Message-State: AOAM533Jw/pLN2CA1SoCKbiqooLHYKOHL22RC1TgHZs1YuN84O6qk4Pe
-        7Ks8nlqhw8BQmGEX3YNgh8jdWIaVrMHTuRA49FhJ5ewwdsLlcpn/F0KZ6rNqRdIyAuaFTF6gkTN
-        tuXt9j8nrcDPaAIH6
-X-Received: by 2002:a7b:c158:: with SMTP id z24mr7422329wmi.12.1591161468608;
-        Tue, 02 Jun 2020 22:17:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJEou6ul/0ePHl0Sxjd9yTiJzg78VX6HFkFw1rv8Xk3wqLdc+7XBJv21QaaCDP6N70D59EvQ==
-X-Received: by 2002:a7b:c158:: with SMTP id z24mr7422312wmi.12.1591161468380;
-        Tue, 02 Jun 2020 22:17:48 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id 1sm1180009wms.25.2020.06.02.22.17.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2020 22:17:47 -0700 (PDT)
-Date:   Wed, 3 Jun 2020 01:17:45 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        netdev@vger.kernel.org
+        bh=U4y5ym32341HQo9X5npUFfOgiDvZZD5UKodHu1egMPM=;
+        b=fm+zQzqMfl+l/RfKgX1oojkd1a7xulycB6Tt140yYBAMId0WoZt8hygAAFCMoNkhY1QXK1
+        T3o1F+P5amKVQjrsbX3o9TDYPxe0yG3wwfsPpmPzTZB7VRNuNphjYvtBLygZ62bacH24Mb
+        gOLht/FL9E95M2pmcXToS1dwBlJ/o5U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-43-yh5avZzhNiCbBSHTL9WXfw-1; Wed, 03 Jun 2020 01:19:01 -0400
+X-MC-Unique: yh5avZzhNiCbBSHTL9WXfw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B09239347;
+        Wed,  3 Jun 2020 05:19:00 +0000 (UTC)
+Received: from [10.72.12.214] (ovpn-12-214.pek2.redhat.com [10.72.12.214])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E2B019C4F;
+        Wed,  3 Jun 2020 05:18:56 +0000 (UTC)
 Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
-Message-ID: <20200603010645-mutt-send-email-mst@kernel.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 References: <20200602084257.134555-1-mst@redhat.com>
- <20200602163048.GL23230@ZenIV.linux.org.uk>
- <20200602163937-mutt-send-email-mst@kernel.org>
- <20200602221057.GQ23230@ZenIV.linux.org.uk>
+ <20200603014815.GR23230@ZenIV.linux.org.uk>
+ <3358ae96-abb6-6be9-346a-0e971cb84dcd@redhat.com>
+ <20200603041849.GT23230@ZenIV.linux.org.uk>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3e723db8-0d55-fae6-288e-9d95905592db@redhat.com>
+Date:   Wed, 3 Jun 2020 13:18:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200602221057.GQ23230@ZenIV.linux.org.uk>
+In-Reply-To: <20200603041849.GT23230@ZenIV.linux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 02, 2020 at 11:10:57PM +0100, Al Viro wrote:
-> On Tue, Jun 02, 2020 at 04:42:03PM -0400, Michael S. Tsirkin wrote:
-> > On Tue, Jun 02, 2020 at 05:30:48PM +0100, Al Viro wrote:
-> > > On Tue, Jun 02, 2020 at 04:45:05AM -0400, Michael S. Tsirkin wrote:
-> > > > So vhost needs to poke at userspace *a lot* in a quick succession.  It
-> > > > is thus benefitial to enable userspace access, do our thing, then
-> > > > disable. Except access_ok has already been pre-validated with all the
-> > > > relevant nospec checks, so we don't need that.  Add an API to allow
-> > > > userspace access after access_ok and barrier_nospec are done.
-> > > 
-> > > This is the wrong way to do it, and this API is certain to be abused
-> > > elsewhere.  NAK - we need to sort out vhost-related problems, but
-> > > this is not an acceptable solution.  Sorry.
-> > 
-> > OK so summarizing what you and Linus both said, we need at
-> > least a way to make sure access_ok (and preferably the barrier too)
-> > is not missed.
-> > 
-> > Another comment is about actually checking that performance impact
-> > is significant and worth the complexity and risk.
-> > 
-> > Is that a fair summary?
-> > 
-> > I'm actually thinking it's doable with a new __unsafe_user type of
-> > pointer, sparse will then catch errors for us.
-> 
-> Er... how would sparse keep track of the range?
 
-Using types. So you start with a user pointer:
-
-struct foo __user *up;
-
-Now you validate it, including a speculation barrier:
-
-struct foo __valdated_user *p = user_access_validate(up, sizeof *up);
-
-and you can save it and use it with something like unsafe_get_user and unsafe_put_user
-that gets __valdated_user pointers:
-
-user_access_begin_validated(p, sizeof *p)
-valiated_get_user(bar, foo->bar, err_fault)
-valiated_put_user(baz, foo->baz, err_fault)
-user_access_end()
+On 2020/6/3 下午12:18, Al Viro wrote:
+> On Wed, Jun 03, 2020 at 11:57:11AM +0800, Jason Wang wrote:
+>
+>>> How widely do you hope to stretch the user_access areas, anyway?
+>>
+>> To have best performance for small packets like 64B, if possible, we want to
+>> disable STAC not only for the metadata access done by vhost accessors but
+>> also the data access via iov iterator.
+> If you want to try and convince Linus to go for that, make sure to Cc
+> me on that thread.  Always liked quality flame...
+>
+> The same goes for interval tree lookups with uaccess allowed.  IOW, I _really_
+> doubt that it's a good idea.
 
 
+I see. We are just seeking an approach to perform better in order to 
+compete with userspace dpdk backends.
+
+I tried another approach of using direct mapping + mmu notifier [1] but 
+the synchronization with MMU notifier is not easy to perform well.
+
+[1] https://patchwork.kernel.org/patch/11133009/
 
 
--- 
-MST
+>
+>>> Incidentally, who had come up with the name __vhost_get_user?
+>>> Makes for lovey WTF moment for readers - esp. in vhost_put_user()...
+>>
+>> I think the confusion comes since it does not accept userspace pointer (when
+>> IOTLB is enabled).
+>>
+>> How about renaming it as vhost_read()/vhost_write() ?
+> Huh?
+>
+> __vhost_get_user() is IOTLB remapping of userland pointer.  It does not access
+> userland memory.  Neither for read, nor for write.  It is used by vhost_get_user()
+> and vhost_put_user().
+>
+> Why would you want to rename it into vhost_read _or_ vhost_write, and in any case,
+> how do you give one function two names?  IDGI...
+
+
+I get you know, I thought you're concerning the names of 
+vhost_get_user()/vhost_put_user() but actually __vhost_get_user().
+
+Maybe something like __vhost_fetch_uaddr() is better.
+
+Thanks
+
+
+>
 
