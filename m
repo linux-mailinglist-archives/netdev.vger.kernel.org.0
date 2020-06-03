@@ -2,144 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 930CA1ED634
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D31F1ED635
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 20:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbgFCSel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 14:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
+        id S1725944AbgFCSfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 14:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbgFCSek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:34:40 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8018FC08C5C0;
-        Wed,  3 Jun 2020 11:34:40 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id p70so2687771oic.12;
-        Wed, 03 Jun 2020 11:34:40 -0700 (PDT)
+        with ESMTP id S1725821AbgFCSfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 14:35:52 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A096C08C5C0;
+        Wed,  3 Jun 2020 11:35:52 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id m7so1112773plt.5;
+        Wed, 03 Jun 2020 11:35:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oQUJgJ3YOiG5bkxRQ655KQgPRUZx1ajq2wCUvcTmv/c=;
-        b=WAuK+Ys4wPxnPwWzJG2fRvdNtZJjBr4K/jg49UPIPCKSt+9sa5yYh2ukyBQ19K5QRN
-         6IbRW3HIcQUNedisO6iKxoDVBAvTxmzPedTlAe2BD2Vl73q/FGkauRLoKFZY4ein/Jfn
-         2zNcAuxC7YLlUldKmdRnMINbfN/BTSomKKhVKFuXIBpB4XCs3/o8EOQExzD0JUeXSJc0
-         y5WWicPjR9YLg/WSMLHHhSxvQUg0W15woHoyDgBFgzXieH9Pd+LgmqGcaP8oIvVdBfJo
-         GENv80MVWA0MIFfSTaErFWogUix7tgMJo6E4JsJvB2jK6FyLFCjn7sRFG3zhDNp7e+FB
-         9DBQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=EtKStJaR8AXyeEPFCQyFQM617jISNhk6yPBdUrn+8kQ=;
+        b=ieQKZqde+kGAvKZ9Aeg/iwGIPFra+dmPi4X10XIZpbCBVcd/RQA4mXBknV/6qEm8MJ
+         ehN9qIfkIfAqOEhsciYN1ALm0URxtOCGlf//v7qtepIOBo8HlGYgSqv2FN3yaoex1Puq
+         sOYY7ulbG+pAga0boLM4qw8y3ieQkb9cbysJBE93rOf3RJnfE/nsxoq74CUznP6rpCiq
+         gst2BdVifXkD93yoGVH9uQ6UFtaU22QFXRDVgG27yk9LlBF9xtRv98Bl/Y1B1kyrEi1m
+         AFIuL3PJGDbGv0H6AmEUre5etn1AukTzdmS7O+1Ha+EXp22Yv8ahggB9dPGev7B4EyrZ
+         F+4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oQUJgJ3YOiG5bkxRQ655KQgPRUZx1ajq2wCUvcTmv/c=;
-        b=X4a7WuFF4b2ElHazBR67440zuRXbN94HZjEfImz5nYJTKMOLgNAIURzbokgWOaEenX
-         Csb3sVdvynwXfaC/YT9ktwRggyONQNUK+VxejS+pmeUXJaKeFcLhkU2mp55vm5KjHgu5
-         hzqlwf3PLbNQAiJU/r/eQzRxcaeqDcA/+K95L3+K2lgg80RWvgZ01zcWp9OOP9RKNWB7
-         XCYvHcPtemRihvF5npPGSxUyaBrRj1IL0HTDJHLsKG4FRB210LYRH5lTpWAn+p4yNmSg
-         Af/jfuEaqHeiqMununX4RmfTf3ACm0hA6afKmRc7le32m8JLuN145PJA0DN7eNeRpXpw
-         Cmww==
-X-Gm-Message-State: AOAM530f2hhoOUEC9887qHSXdDdVPwcovr2YTv3BtFRZxNDDj8bduLm5
-        yHPBBPh1dwhhf4QmYFM7s0vcrGjK
-X-Google-Smtp-Source: ABdhPJxyWSU1KggVyvQ8xOq73tL2jiUpI3axcd3BWGgYnVx8RsEFahEsfmiTrCdexw6rtnJnlXwwfw==
-X-Received: by 2002:aca:1e0f:: with SMTP id m15mr763445oic.23.1591209279813;
-        Wed, 03 Jun 2020 11:34:39 -0700 (PDT)
-Received: from ubuntu-n2-xlarge-x86 ([2604:1380:4111:8b00::3])
-        by smtp.gmail.com with ESMTPSA id m18sm693585ooe.12.2020.06.03.11.34.38
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=EtKStJaR8AXyeEPFCQyFQM617jISNhk6yPBdUrn+8kQ=;
+        b=oTP/KT8+xLXn0La0AY7h8jETZ5LOqJmEqdV3LemT90Ccpr0Oy+dGhvFRZaMhDOYcmD
+         Cuk2vObaZfSEct+MTFSQwkbbqwpy5elUR+bvarulCFGI82U5mLjLvgt03dmmfFWGwZhQ
+         uOKnFTruFBFo1HH84L6MzZtVBP54VI8TDFafD73ReV0J77Xxrbo7JtVfFcCzj18L1Vaq
+         uqcyL7L8WmmFwvyKfOpgkXAqgrFzxHmJWBURjRM9GRjSIMzhlAE2lPNVpVWns0rPm/ca
+         UHO1nh1Jf40hMH8v4Ms8cgLLFCv927BfUoh/YjIktfR4CeN1T+wJTfqc/7gjDLBVlEF2
+         oozA==
+X-Gm-Message-State: AOAM533Rk97sPFtXFOkKNwDh8t68qa4K0al8/U45cRVBmrkIRzRswbN7
+        VYoroCoJKs/KivVtFL5KAig=
+X-Google-Smtp-Source: ABdhPJylSnZgNvV8pBUo7zgOP3lK0Nni8ORKb3jzFcXVy/Sk6lYzvESfpZwitod2LlZPzrnRocokdg==
+X-Received: by 2002:a17:902:9e0c:: with SMTP id d12mr1160144plq.29.1591209351492;
+        Wed, 03 Jun 2020 11:35:51 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id i22sm2433759pfo.92.2020.06.03.11.35.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 11:34:38 -0700 (PDT)
-Date:   Wed, 3 Jun 2020 11:34:36 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        clang-built-linux@googlegroups.com, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Vu Pham <vuhuong@mellanox.com>
-Subject: Re: [PATCH net] net/mlx5: Don't fail driver on failure to create
- debugfs
-Message-ID: <20200603183436.GA2565136@ubuntu-n2-xlarge-x86>
-References: <20200602122837.161519-1-leon@kernel.org>
- <20200602192724.GA672@Ryzen-9-3900X.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200602192724.GA672@Ryzen-9-3900X.localdomain>
+        Wed, 03 Jun 2020 11:35:50 -0700 (PDT)
+Date:   Wed, 03 Jun 2020 11:35:41 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <5ed7ed7d315bd_36aa2ab64b3c85bcd9@john-XPS-13-9370.notmuch>
+In-Reply-To: <87a71k2yje.fsf@cloudflare.com>
+References: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower>
+ <6f8bb6d8-bb70-4533-f15b-310db595d334@gmail.com>
+ <87a71k2yje.fsf@cloudflare.com>
+Subject: Re: [bpf PATCH] bpf: sockmap, remove bucket->lock from
+ sock_{hash|map}_free
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 02, 2020 at 12:27:24PM -0700, Nathan Chancellor wrote:
-> On Tue, Jun 02, 2020 at 03:28:37PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> > 
-> > Clang warns:
-> > 
-> > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:6: warning: variable
-> > 'err' is used uninitialized whenever 'if' condition is true
-> > [-Wsometimes-uninitialized]
-> >         if (!priv->dbg_root) {
-> >             ^~~~~~~~~~~~~~~
-> > drivers/net/ethernet/mellanox/mlx5/core/main.c:1303:9: note:
-> > uninitialized use occurs here
-> >         return err;
-> >                ^~~
-> > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:2: note: remove the
-> > 'if' if its condition is always false
-> >         if (!priv->dbg_root) {
-> >         ^~~~~~~~~~~~~~~~~~~~~~
-> > drivers/net/ethernet/mellanox/mlx5/core/main.c:1259:9: note: initialize
-> > the variable 'err' to silence this warning
-> >         int err;
-> >                ^
-> >                 = 0
-> > 1 warning generated.
-> > 
-> > The check of returned value of debugfs_create_dir() is wrong because
-> > by the design debugfs failures should never fail the driver and the
-> > check itself was wrong too. The kernel compiled without CONFIG_DEBUG_FS
-> > will return ERR_PTR(-ENODEV) and not NULL as expected.
-> > 
-> > Fixes: 11f3b84d7068 ("net/mlx5: Split mdev init and pci init")
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/1042
-> > Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> 
-> Thanks! That's what I figured it should be.
-> 
-> Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
-> 
-> > ---
-> > Original discussion:
-> > https://lore.kernel.org/lkml/20200530055447.1028004-1-natechancellor@gmail.com
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/main.c | 5 -----
-> >  1 file changed, 5 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > index df46b1fce3a7..110e8d277d15 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > @@ -1275,11 +1275,6 @@ static int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
-> > 
-> >  	priv->dbg_root = debugfs_create_dir(dev_name(dev->device),
-> >  					    mlx5_debugfs_root);
-> > -	if (!priv->dbg_root) {
-> > -		dev_err(dev->device, "mlx5_core: error, Cannot create debugfs dir, aborting\n");
-> > -		goto err_dbg_root;
+Jakub Sitnicki wrote:
+> On Wed, Jun 03, 2020 at 08:13 AM CEST, Eric Dumazet wrote:
+> > On 3/10/20 9:41 AM, John Fastabend wrote:
+> >> The bucket->lock is not needed in the sock_hash_free and sock_map_free
+> >> calls, in fact it is causing a splat due to being inside rcu block.
+> >>
 
-Actually, this removes the only use of err_dbg_root, so that should be
-removed at the same time.
+[...]
 
-Cheers,
-Nathan
+>> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> >> index 085cef5..b70c844 100644
+> >> --- a/net/core/sock_map.c
+> >> +++ b/net/core/sock_map.c
+> >> @@ -233,8 +233,11 @@ static void sock_map_free(struct bpf_map *map)
+> >>  	struct bpf_stab *stab = container_of(map, struct bpf_stab, map);
+> >>  	int i;
+> >>
+> >> +	/* After the sync no updates or deletes will be in-flight so it
+> >> +	 * is safe to walk map and remove entries without risking a race
+> >> +	 * in EEXIST update case.
+> >
+> >
+> > What prevents other cpus from deleting stuff in sock_hash_delete_elem() ?
+> >
+> > What state has been changed before the synchronize_rcu() call here,
+> > that other cpus check before attempting a delete ?
+> >
+> > Typically, synchronize_rcu() only makes sense if readers can not start a new cycle.
+> >
+> > A possible fix would be to check in sock_hash_delete_elem() (and possibly others methods)
+> > if map->refcnt is not zero.
+> >
+> > syzbot found : (no repro yet)
+> >
+> > general protection fault, probably for non-canonical address 0xfbd59c0000000024: 0000 [#1] PREEMPT SMP KASAN
+> > KASAN: maybe wild-memory-access in range [0xdead000000000120-0xdead000000000127]
+> > CPU: 2 PID: 14305 Comm: kworker/2:3 Not tainted 5.7.0-syzkaller #0
+> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+> > Workqueue: events bpf_map_free_deferred
+> > RIP: 0010:__write_once_size include/linux/compiler.h:279 [inline]
+> > RIP: 0010:__hlist_del include/linux/list.h:811 [inline]
+> > RIP: 0010:hlist_del_rcu include/linux/rculist.h:485 [inline]
+> > RIP: 0010:sock_hash_free+0x202/0x4a0 net/core/sock_map.c:1021
+> > Code: 0f 85 15 02 00 00 4c 8d 7b 28 4c 8b 63 20 4c 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 47 02 00 00 4c 8b 6b 28 4c 89 e8 48 c1 e8 03 <80> 3c 28 00 0f 85 25 02 00 00 4d 85 e4 4d 89 65 00 74 20 e8 f6 82
 
-> > -	}
-> > -
-> >  	err = mlx5_health_init(dev);
-> >  	if (err)
-> >  		goto err_health_init;
-> > --
-> > 2.26.2
-> > 
+[...]
+
+Thanks Eric.
+
+> My initial reasoning behind the change was that sock_hash_delete_elem()
+> callers hold a ref to sockhash [0]. Either because there is an open FD
+> for the map, or the map is in use by loaded BPF program. The same
+> applies to updates.
+> 
+> If that holds, map->refcnt is > 0, and we should not see the map being
+> freed at the same time as sock_hash_delete_elem() happens.
+> 
+> But then there is also sock_hash_delete_from_link() that deletes from
+> sockhash when a sock/psock unlinks itself from the map. This operation
+> happens without holding a ref to the map, so that sockets won't keep the
+> map "alive". There is no corresponding *_update_from_link() for updates
+> without holding a ref.
+
+Yep we missed this case :/
+
+> 
+> Sadly, I can't spot anything preventing list mutation, hlist_del_rcu(),
+> from happening both in sock_hash_delete_elem() and sock_hash_free()
+> concurrently, now that the bucket spin-lock doesn't protect it any
+> more. That is what I understand syzbot is reporting.
+
+Agreed.
+
+> 
+> synchronize_rcu() before we walk the htable doesn't rule it out, because
+> as you point out, new readers can start a new cycle, and we don't change
+> any state that would signal that the map is going away.
+> 
+> I'm not sure that the check for map->refcnt when sock is unlinking
+> itself from the map will do it. I worry we will then have issues when
+> sockhash is unlinking itself from socks (so the other way around) in
+> sock_hash_free(). We could no longer assume that the sock & psock
+> exists.
+> 
+> What comes to mind is to reintroduce the spin-lock protected critical
+> section in sock_hash_free(), but delay the processing of sockets to be
+> unlinked from sockhash. We could grab a ref to sk_psock while holding a
+> spin-lock and unlink it while no longer in atomic critical section.
+
+It seems so. In sock_hash_free we logically need,
+
+ for (i = 0; i < htab->buckets_num; i++) {
+  hlist_for_each_entryy_safe(...) {
+  	hlist_del_rcu() <- detached from bucket and no longer reachable
+        synchronize_rcu()
+        // now element can not be reached from unhash()
+	... sock_map_unref(elem->sk, elem) ...
+  }
+ } 
+
+We don't actually want to stick a synchronize_rcu() in that loop
+so I agree we need to collect the elements do a sync then remove them.
+
+> 
+> Either way, Eric, thank you for the report and the pointers.
+
++1
+
+> 
+> John, WDYT?
+
+Want to give it a try? Or I can draft something.
+
+> 
+> [0] https://lore.kernel.org/netdev/8736boor55.fsf@cloudflare.com/
+
+[...]
