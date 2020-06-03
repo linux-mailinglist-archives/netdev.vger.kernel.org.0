@@ -2,71 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99CB51ED80F
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 23:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7D21ED831
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 23:55:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbgFCV21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 17:28:27 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39729 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgFCV21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 17:28:27 -0400
-Received: by mail-wr1-f66.google.com with SMTP id t18so3905552wru.6
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 14:28:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yqk0FVZ/D5PwLrGDFJgkdVnK/uadJaMYeZjNAeD1XNo=;
-        b=Q/ldZnyQRKgob/c67jt7nvyZfgRQ3S4hb7fsIjtwJPQ+L0eepjNGgH5wW70rAi9/PD
-         Eysg2K37ZrSgh2b/TP9rvjHK2dPTnWbweizad48FbJa7sUoMtOw/QO3ucW8lHJpiESgd
-         rRV+ow5ylTb9OgJ1S37io+2o3nvEkbXl5+Y/RiazBGfJ/xryBx+belIKdVGHg10olVtd
-         bR4bMCVGeSW60lx1JOb8T5jKz+8vJqTunYPz5wDPd+LRNqo1AxCfTw0W09SYuuBaULRb
-         Z7si83VrZSHY5uNj0QjQLv0YbWK84Zil5c/sIO04A4JSNjRiqSqb5y/TLjCa0pfCPkXK
-         ynvw==
-X-Gm-Message-State: AOAM5338VC32tFF6wf+smqdicVfJJBe8gg5q9ewFg5EQiQxi9XgF2W6N
-        v5LqpNtV4fMGBloJitizoTtaPiJwd3tS0OjC
-X-Google-Smtp-Source: ABdhPJwVyVWtHeupxCIKvT11fO03o9CCm5TElNLYwioF9aqGQeDDtJoTfowJt0QAmVHmFalhOy4eaw==
-X-Received: by 2002:a5d:4b47:: with SMTP id w7mr1209655wrs.234.1591219705444;
-        Wed, 03 Jun 2020 14:28:25 -0700 (PDT)
-Received: from zenbook-val.localdomain (bbcs-65-74.pub.wingo.ch. [144.2.65.74])
-        by smtp.gmail.com with ESMTPSA id z9sm4364583wmi.41.2020.06.03.14.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 14:28:24 -0700 (PDT)
-From:   Valentin Longchamp <valentin@longchamp.me>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, kuba@kernel.org, leoyang.li@nxp.com,
-        Valentin Longchamp <valentin@longchamp.me>
-Subject: [PATCH] net: ethernet: freescale: remove unneeded include for ucc_geth
-Date:   Wed,  3 Jun 2020 23:28:23 +0200
-Message-Id: <20200603212823.12501-1-valentin@longchamp.me>
+        id S1726533AbgFCVzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 17:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725922AbgFCVzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 17:55:35 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C20C08C5C0;
+        Wed,  3 Jun 2020 14:55:35 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=pengu.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1jgbM1-0005tH-Io; Wed, 03 Jun 2020 23:55:21 +0200
+From:   Roelof Berg <rberg@berg-solutions.de>
+Cc:     andrew@lunn.ch, rberg@berg-solutions.de,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] lan743x: Use correct MAC_CR configuration for 1 GBit speed
+Date:   Wed,  3 Jun 2020 23:54:14 +0200
+Message-Id: <20200603215414.3606-1-rberg@berg-solutions.de>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1591221335;66a411b9;
+X-HE-SMSGID: 1jgbM1-0005tH-Io
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net/sch_generic.h does not need to be included, remove it.
+Corrected the MAC_CR configuration bits for 1 GBit operation. The data
+sheet allows MAC_CR(2:1) to be 10 and also 11 for 1 GBit/s speed, but
+only 10 works correctly.
 
-Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+Devices tested:
+Microchip Lan7431, fixed-phy mode
+Microchip Lan7430, normal phy mode
+
+Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
 ---
- drivers/net/ethernet/freescale/ucc_geth.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-index 552e7554a9f8..db791f60b884 100644
---- a/drivers/net/ethernet/freescale/ucc_geth.c
-+++ b/drivers/net/ethernet/freescale/ucc_geth.c
-@@ -42,7 +42,6 @@
- #include <soc/fsl/qe/ucc.h>
- #include <soc/fsl/qe/ucc_fast.h>
- #include <asm/machdep.h>
--#include <net/sch_generic.h>
- 
- #include "ucc_geth.h"
- 
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 36624e3c633b..c5c5c688b7e2 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -985,7 +985,7 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+ 		break;
+ 		case SPEED_1000:
+ 			data |= MAC_CR_CFG_H_;
+-			data |= MAC_CR_CFG_L_;
++			data &= ~MAC_CR_CFG_L_;
+ 		break;
+ 		}
+ 		lan743x_csr_write(adapter, MAC_CR, data);
 -- 
 2.25.1
 
