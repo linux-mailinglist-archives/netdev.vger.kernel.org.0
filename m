@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB281ED797
-	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 22:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 752881ED7F1
+	for <lists+netdev@lfdr.de>; Wed,  3 Jun 2020 23:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726231AbgFCUpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 16:45:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725922AbgFCUpf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 16:45:35 -0400
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 281A620810;
-        Wed,  3 Jun 2020 20:45:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591217134;
-        bh=MaYhkSqTs0brGU+4OYifBjcvgPmRDYUz4IfpHn9sH2Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=v/LEzbm09Eg9EpUnql3JTyzehUogQhp/vIDO4gEAq3S7GBL0XS58N3GSe+lEzMHiN
-         zuj0KGOTkO1inHnfVcJb/IG9HSlHUm1akkYI7dOzqattrcVl20c1wnwCcVUD+SDdeE
-         JIWl2eNwmCitTLL1CjQHCBUNXHGeB5pVFwx9eJ2E=
-Received: by mail-lj1-f181.google.com with SMTP id n23so4508629ljh.7;
-        Wed, 03 Jun 2020 13:45:34 -0700 (PDT)
-X-Gm-Message-State: AOAM533zBEeNlgRDZk3AvfCrtOVF8v+AbQSp5hO6x4INHfxpmCs3HTgL
-        JW0BO0K06Ro9YwT6sPyh93amWUkaxTsZmOtdptg=
-X-Google-Smtp-Source: ABdhPJwEFlFOcKTiaciLhFAqpj8efwYxB2qis8Sw78896hkjvJL6mLLXXOYEeUCNeVsb8Ws+Omndj05xF+8BXjlUCjo=
-X-Received: by 2002:a2e:a377:: with SMTP id i23mr479833ljn.392.1591217132285;
- Wed, 03 Jun 2020 13:45:32 -0700 (PDT)
+        id S1726429AbgFCVPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 17:15:54 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40996 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725922AbgFCVPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 17:15:53 -0400
+Received: by mail-wr1-f68.google.com with SMTP id j10so3860101wrw.8;
+        Wed, 03 Jun 2020 14:15:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1AAqNWRyI08l0kT8Gtp4hoHt7qUcLSvra3ne0ZubVvo=;
+        b=SwhWGVEp0YIMknwlFxG2RBQTeAm+gF5HnkjFWvSXDiNrNbpHJE+sAQJscQlFKY86Iy
+         xAzqx7V89T0/UrVEDa/TT868bo7iDohDguQUYb5FzsbPTqL9ZkKAjefSrdORH8VglhNE
+         TWWusueEb0TFzfjxfrQEaGNip+YmLtOqBLgtpKXCr+9CwM7BJHHs0wywV8yNUbfdBayH
+         23U2slK243XKiElPddSx+xYhdJdkHy/DwdcmHnD59zQX2y9AVgnFRDo0emBTeyXNGseL
+         jHmTqkCHsQz+Lw+S3uwxIRCO6bhRjrYWUNT7Jncce33ZBGcK4LyzHh6RJnDJu7TZCr+8
+         sndQ==
+X-Gm-Message-State: AOAM533sp6n8UYsM7MwaZsxfNiNMEWMtOJR7ttqDm1NEC5KCZTH3JLQ+
+        PUJX/Po/voaoRTulB8RhPBIgWURxT3Tnu7RP
+X-Google-Smtp-Source: ABdhPJy8zdQIFQVZHiWJsowk8ZuBbdYOzWhiQnw15NbX0eTerIZwdIvyh15YOt2pFkxcaOkHLEzKkw==
+X-Received: by 2002:adf:9ccf:: with SMTP id h15mr1206044wre.275.1591218950249;
+        Wed, 03 Jun 2020 14:15:50 -0700 (PDT)
+Received: from zenbook-val.localdomain (bbcs-65-74.pub.wingo.ch. [144.2.65.74])
+        by smtp.gmail.com with ESMTPSA id s8sm5291668wrg.50.2020.06.03.14.15.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 14:15:49 -0700 (PDT)
+From:   Valentin Longchamp <valentin@longchamp.me>
+To:     netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, xiyou.wangcong@gmail.com, jhs@mojatatu.com,
+        Valentin Longchamp <valentin@longchamp.me>,
+        stable@vger.kernel.org
+Subject: [PATCH] net: sched: export __netdev_watchdog_up()
+Date:   Wed,  3 Jun 2020 23:15:27 +0200
+Message-Id: <20200603211527.11389-1-valentin@longchamp.me>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAADnVQ+k7+fQmuNQL=GLLaGUvd5+zZN6GViy-oP7Sfq7aQVG1Q@mail.gmail.com>
- <20200603190347.2310320-1-matthieu.baerts@tessares.net>
-In-Reply-To: <20200603190347.2310320-1-matthieu.baerts@tessares.net>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 3 Jun 2020 13:45:20 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6HtiLQdvyK8tHEH80xeurvQqdaYpFgdhd=yb5hDkB7VA@mail.gmail.com>
-Message-ID: <CAPhsuW6HtiLQdvyK8tHEH80xeurvQqdaYpFgdhd=yb5hDkB7VA@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] bpf: fix unused-var without NETDEVICES
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>, fejes@inf.elte.hu,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 3, 2020 at 12:05 PM Matthieu Baerts
-<matthieu.baerts@tessares.net> wrote:
->
-> A recent commit added new variables only used if CONFIG_NETDEVICES is
-> set. A simple fix would be to only declare these variables if the same
-> condition is valid but Alexei suggested an even simpler solution:
->
->     since CONFIG_NETDEVICES doesn't change anything in .h I think the
->     best is to remove #ifdef CONFIG_NETDEVICES from net/core/filter.c
->     and rely on sock_bindtoindex() returning ENOPROTOOPT in the extreme
->     case of oddly configured kernels.
->
-> Fixes: 70c58997c1e8 ("bpf: Allow SO_BINDTODEVICE opt in bpf_setsockopt")
-> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Since the quiesce/activate rework, __netdev_watchdog_up() is directly
+called in the ucc_geth driver.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Unfortunately, this function is not available for modules and thus
+ucc_geth cannot be built as a module anymore. Fix it by exporting
+__netdev_watchdog_up().
+
+Since the commit introducing the regression was backported to stable
+branches, this one should ideally be as well.
+
+Fixes: 79dde73cf9bc ("net/ethernet/freescale: rework quiesce/activate for ucc_geth")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+---
+ net/sched/sch_generic.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 2efd5b61acef..f1816516f638 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -464,6 +464,7 @@ void __netdev_watchdog_up(struct net_device *dev)
+ 			dev_hold(dev);
+ 	}
+ }
++EXPORT_SYMBOL(__netdev_watchdog_up);
+ 
+ static void dev_watchdog_up(struct net_device *dev)
+ {
+-- 
+2.25.1
+
