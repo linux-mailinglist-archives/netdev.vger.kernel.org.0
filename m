@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84A9E1ED92C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 01:32:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 257221ED981
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 01:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbgFCXcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 19:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
+        id S1725986AbgFCXeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 19:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgFCXcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 19:32:18 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD8BC008633
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 16:32:16 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id e9so2643743pgo.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 16:32:16 -0700 (PDT)
+        with ESMTP id S1726083AbgFCXcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 19:32:16 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBDDC08C5C1
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 16:32:14 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z64so2504665pfb.1
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 16:32:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z79mte9tXyXKJqcwg2to640Wx2Eg5qdbPrxISPqquNw=;
-        b=oLglV2NFfWcYacYEWd+TtydM20VTgwWe1gq21Fthy+SgsdpnjxFQ4Ga6u1Qy8QOuhq
-         1+c/7ALdx0vchA5G8glRAPu5IZRrjlpO6MXFnSd1l4xnQge821R1YpyaThNWtUXXRQkZ
-         BdWautw1YEzJ6ceFFpGiknqeHem+S3a8xUfFg=
+        bh=mP7HDY2ZN5ivM9lomEi6uc16BWfE9HMAWk/tyOctczk=;
+        b=VUpMlsS8luWYC3XyHHaZc+nRVPBUhMgVRgY7r6ereTmxJ2CV63CmoY9G8LrGOkuSTQ
+         K47uNjixFZ1fYU9L0oHIXbtPGyL3X2bOpWgIhpXRvnlBLqW0qd3WjT492H4d1foUpJxP
+         H25ReL/ps5emEFx5QusYD9+rH0F1unUcjPs5k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z79mte9tXyXKJqcwg2to640Wx2Eg5qdbPrxISPqquNw=;
-        b=BU5G4KJEzPww0ovru3EytX7gC9RDM8nTaG5qeP1lvvtWNdI75vhFsiAwaODFH46Lp7
-         bDZl9LOKrmc3Iz+TllAe7r1Bv/HdqaoxhTz5Nxn3Bi8+QYKN2HJTnCljGf9PqsSxXKqm
-         Gvct9ZJP4gWIFziqZ+levJxQijluaF9lGfyLUxyhBnbVliRrDAlZ2tA3GLRusTCpBV+/
-         /yl3ckTfJXRALeeJBCASX86Q3Y8ETbC3MTFFvP+98B13XBKm436x8VFK8uk+8AAUAIQl
-         B8ukgIkjAyKF5o+FI4ZsVIP9rTNilLjhaIpK0+ihtDN/xqw7qUGm7M3Tb/RCurykxSoL
-         jR4A==
-X-Gm-Message-State: AOAM531SIK3nYHBTF1EnFIPbXAYQgxLl+RLLLsIaMCcnJzOJ7Imj/4Ul
-        R5PXQkRsIZK/qEAiTtKVLLcIuQ==
-X-Google-Smtp-Source: ABdhPJzEnF0voBtIhVxbXIY3ed6bQ+lYw39TPSGZER6ztQVM7GNLumS6Ixq11iEOXvbkyysEKAiNmA==
-X-Received: by 2002:aa7:9a93:: with SMTP id w19mr1488633pfi.155.1591227136432;
-        Wed, 03 Jun 2020 16:32:16 -0700 (PDT)
+        bh=mP7HDY2ZN5ivM9lomEi6uc16BWfE9HMAWk/tyOctczk=;
+        b=p7rQ8U2GZO18PL5amhf75vGhruhibL40DCOGzsBlqtKZQLNmyNS18UVcPcYB2Oa95g
+         TExEoz3wcWgcLNap6ykv2S4/ZGePU0k5+RIFYRJ5mVCEjaexv5NrwDe3XrlCtxsL4DDn
+         /lpkoNgpbhyUQccEzRmA+dG31NL0G8baAxf4jI844xqdCq65/qCSsr1QTr8xtHSw3J7X
+         ZKuuiImTXY+gxeVjTYt1jjfUC1NEzGzAgusVOf36DtxgNraBOYw0+kjnVMb3ObYUOVdl
+         54mk1xmvEoh0uDD2QlDM445VzMvpXchWz5qK29QdLzjpqypFCZLm8CKZuzRejMZP1jGI
+         /MuA==
+X-Gm-Message-State: AOAM531l8JzRXTOvaUgE/p5Zh4tesZKmu0lElRiA2bG2dhuKoGGaF+YG
+        Azt+S42bN9vsNceJBMI6Bry0/w==
+X-Google-Smtp-Source: ABdhPJx7JrP50eeA2KfLnLeonR3ATTZL4fgn8xfVLKyPbfOSa9aQRBoHTRs7znIl54UHsuA1YKgyUQ==
+X-Received: by 2002:a63:6541:: with SMTP id z62mr1735576pgb.320.1591227133920;
+        Wed, 03 Jun 2020 16:32:13 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j8sm3442213pjw.11.2020.06.03.16.32.12
+        by smtp.gmail.com with ESMTPSA id x77sm2799667pfc.4.2020.06.03.16.32.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 03 Jun 2020 16:32:12 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -57,9 +57,9 @@ Cc:     Kees Cook <keescook@chromium.org>,
         linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
         linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-mm@kvack.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 03/10] b43: Remove uninitialized_var() usage
-Date:   Wed,  3 Jun 2020 16:31:56 -0700
-Message-Id: <20200603233203.1695403-4-keescook@chromium.org>
+Subject: [PATCH 04/10] rtlwifi: rtl8192cu: Remove uninitialized_var() usage
+Date:   Wed,  3 Jun 2020 16:31:57 -0700
+Message-Id: <20200603233203.1695403-5-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200603233203.1695403-1-keescook@chromium.org>
 References: <20200603233203.1695403-1-keescook@chromium.org>
@@ -75,7 +75,7 @@ Using uninitialized_var() is dangerous as it papers over real bugs[1]
 "unused variable"). If the compiler thinks it is uninitialized, either
 simply initialize the variable or make compiler changes. As a precursor
 to removing[2] this[3] macro[4], just initialize this variable to NULL,
-and make the (unreachable!) code do a conditional test.
+and avoid sending garbage by returning.
 
 [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
 [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
@@ -84,38 +84,31 @@ and make the (unreachable!) code do a conditional test.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index d3c001fa8eb4..88cdcea10d61 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -4222,7 +4222,7 @@ static void b43_nphy_tx_gain_table_upload(struct b43_wldev *dev)
- 	u32 rfpwr_offset;
- 	u8 pga_gain, pad_gain;
- 	int i;
--	const s16 *uninitialized_var(rf_pwr_offset_table);
-+	const s16 *rf_pwr_offset_table = NULL;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
+index f070f25bb735..5b071b70bc08 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
+@@ -592,7 +592,7 @@ static void _rtl92cu_init_chipn_one_out_ep_priority(struct ieee80211_hw *hw,
+ 						    bool wmm_enable,
+ 						    u8 queue_sel)
+ {
+-	u16 uninitialized_var(value);
++	u16 value;
  
- 	table = b43_nphy_get_tx_gain_table(dev);
- 	if (!table)
-@@ -4256,9 +4256,13 @@ static void b43_nphy_tx_gain_table_upload(struct b43_wldev *dev)
- 			pga_gain = (table[i] >> 24) & 0xf;
- 			pad_gain = (table[i] >> 19) & 0x1f;
- 			if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ)
--				rfpwr_offset = rf_pwr_offset_table[pad_gain];
-+				rfpwr_offset = rf_pwr_offset_table
-+						? rf_pwr_offset_table[pad_gain]
-+						: 0;
- 			else
--				rfpwr_offset = rf_pwr_offset_table[pga_gain];
-+				rfpwr_offset = rf_pwr_offset_table
-+						? rf_pwr_offset_table[pga_gain]
-+						: 0;
- 		} else {
- 			pga_gain = (table[i] >> 24) & 0xF;
- 			if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ)
+ 	switch (queue_sel) {
+ 	case TX_SELE_HQ:
+@@ -606,7 +606,7 @@ static void _rtl92cu_init_chipn_one_out_ep_priority(struct ieee80211_hw *hw,
+ 		break;
+ 	default:
+ 		WARN_ON(1); /* Shall not reach here! */
+-		break;
++		return;
+ 	}
+ 	_rtl92c_init_chipn_reg_priority(hw, value, value, value, value,
+ 					value, value);
 -- 
 2.25.1
 
