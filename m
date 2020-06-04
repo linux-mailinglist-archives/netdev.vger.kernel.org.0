@@ -2,88 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 101DD1EEDAD
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 00:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CD71EEDB8
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 00:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbgFDWXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 18:23:15 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:40712 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgFDWXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 18:23:14 -0400
-Received: by mail-io1-f66.google.com with SMTP id q8so8154411iow.7;
-        Thu, 04 Jun 2020 15:23:14 -0700 (PDT)
+        id S1728041AbgFDWbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 18:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728014AbgFDWbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 18:31:32 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75C8C08C5C0
+        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 15:31:31 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id h129so9452504ybc.3
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 15:31:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=tEqdbAS6ONuHBbIUsfUCXf+9mr+o3WQlFUIgfiUHXaU=;
+        b=K+lDtnxVk7mR38vMVKmIdpPeoQYNhxQCRBrLtuSQRuBj1D1BLEa+5OuFLHStCbC1bL
+         XY2nYzJIo6EIVlZjvsqOnKNqO3DMHiuhjQCCiJH9k2fDz7GkRiR4MrBzxAV3WtsuSbBN
+         lbIPL5BoV422L3U60CmkWItYjvSn1OgJl8AmOxoAMmniHHKmTmTmCxn4vGyUSG1EaGXY
+         d4Gdmg/iFNDuHPyl4CBWRSccZ8r2iNnpULJeT5l71JinRqEOhjEtGFdbJnH5rnEJGMaS
+         ZzXzbQIYCH3031zfP22N94/iKsr3S2sdyh1ULwXAg7WrMZamZ6gJD9G7zoBkHn/dsgtS
+         DFOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8n1ml5PEUVdbXeAwFS38cbuqEwnnmmDCmubjqkKfwRU=;
-        b=KRG/+sQCaE+2ygYN4lBL5jMqeGiw1kOQR6QPK1xFk+Z1nytTLBk3iGgtwoQLxxCeK1
-         tC/IihOgRB7NDD+FxWuyH5rKR0JGxNmp+Md1vMiJg8kQspW1HgHoEXZTz8Qbr4gnQg4A
-         cSlx+nMPsphxH8l0FuyWIhbEiBh4tPrE6Kya7pfoEhOb/EB3XkB7c3myE87SzEFSrSyK
-         dd9bP2591OXoBIr07n6EM6GLj5S27Nv4/DHmx8FheHrW6IS6VUp1gInTnRr0pTmBgk6L
-         +bndm2Jm7HRIYQOlMqwO2gSB018I201Qw+8/m82DvzMDqeNTPLY+YgqM2H6OrPF/7E+U
-         fmSA==
-X-Gm-Message-State: AOAM530lLZkCFMT2BCLozgRJNrxHrHeb6VzgvYQAK3y7AvZf1eK16DkZ
-        mQDY2pEfmciOTksrBJcDXQ==
-X-Google-Smtp-Source: ABdhPJzKPNv71wCvaiJlPwIdg9InlDA/KS8LEZRO8xjpPMq3wbHc7c9Gx/NeNCcR4s81LqHK05++Rg==
-X-Received: by 2002:a05:6602:1204:: with SMTP id y4mr6033750iot.44.1591309393781;
-        Thu, 04 Jun 2020 15:23:13 -0700 (PDT)
-Received: from xps15 ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id c20sm431897iot.33.2020.06.04.15.23.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 15:23:12 -0700 (PDT)
-Received: (nullmailer pid 4151873 invoked by uid 1000);
-        Thu, 04 Jun 2020 22:23:11 -0000
-Date:   Thu, 4 Jun 2020 16:23:11 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     "Ooi, Joyce" <joyce.ooi@intel.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thor Thayer <thor.thayer@linux.intel.com>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        See Chin Liang <chin.liang.see@intel.com>,
-        linux-kernel@vger.kernel.org, Dinh Nguyen <dinh.nguyen@intel.com>,
-        Dalon Westergreen <dalon.westergreen@intel.com>,
-        devicetree@vger.kernel.org,
-        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
-        Tan Ley Foon <ley.foon.tan@intel.com>
-Subject: Re: [PATCH v3 10/10] net: eth: altera: update devicetree bindings
- documentation
-Message-ID: <20200604222311.GA4151468@bogus>
-References: <20200604073256.25702-1-joyce.ooi@intel.com>
- <20200604073256.25702-11-joyce.ooi@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200604073256.25702-11-joyce.ooi@intel.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=tEqdbAS6ONuHBbIUsfUCXf+9mr+o3WQlFUIgfiUHXaU=;
+        b=UrLP9XAxbudb41z/2v61E8RRfrxKg6eJyeL4P7LggVlRQgrbpySFriDh1pFXuqOx8+
+         Upca3rC61fNVBOD2at8LJx4sO8HCWeoC41YUYVFB4LJwFrhjLAMKzSN278B44ai1MIdi
+         oc4ryxyM6Mz/bKHhX+kk8v50orBPiqQey0XuQrWCyXl8Q7M+sptC0hvGdL+a5ppibKV2
+         hOXHZxxjtNlNS6dDbDbWWprVjiZtAbMl/8g9Ge+TD2skQxgtAoO6LMVhNer1cfjf3hlK
+         asyIqSvUhKHnMo6Prlfnf+ozseIyl0nfNmAtPCKtgTK+XjenFWmb2FEfNaNNNEegiW1T
+         doYw==
+X-Gm-Message-State: AOAM5319saXD35J47myyGdterhGNkOwrTN4UprmuzgXeTRpwtC8aEYbe
+        /UBGFs3EwEUB2hQ4vsVj9RzRXCFPxIIGm+SrmcezFQpqwFl2DEHitHD2EtpUWA725m6GYrXEZa7
+        rbNMzVJSombV8XVITOtPyadiEyY1PZ5dU2j9+/CABTKpyF7W5O9KDjQ==
+X-Google-Smtp-Source: ABdhPJwDqr0Vi2rWDXqhoSxldBN6tjCiHy/wEB/wKOtSXkehsauwS/YToZxFvv+Xf3M4OE5NxEttxjc=
+X-Received: by 2002:a25:4cc6:: with SMTP id z189mr1999878yba.153.1591309890935;
+ Thu, 04 Jun 2020 15:31:30 -0700 (PDT)
+Date:   Thu,  4 Jun 2020 15:31:29 -0700
+Message-Id: <20200604223129.46555-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
+Subject: [PATCH bpf] bpf: increase {get,set}sockopt optval size limit
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 04 Jun 2020 15:32:56 +0800, Ooi, Joyce wrote:
-> From: Dalon Westergreen <dalon.westergreen@intel.com>
-> 
-> Update devicetree bindings documentation to include msgdma
-> prefetcher and ptp bindings.
-> 
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
-> Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
-> ---
-> v2: no change
-> v3: no change
-> ---
->  .../devicetree/bindings/net/altera_tse.txt         | 103 +++++++++++++++++----
->  1 file changed, 84 insertions(+), 19 deletions(-)
-> 
+Attaching to these hooks can break iptables because its optval is
+usually quite big, or at least bigger than the current PAGE_SIZE limit.
 
+There are two possible ways to fix it:
+1. Increase the limit to match iptables max optval.
+2. Implement some way to bypass the value if it's too big and trigger
+   BPF only with level/optname so BPF can still decide whether
+   to allow/deny big sockopts.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+I went with #1 which means we are potentially increasing the
+amount of data we copy from the userspace from PAGE_SIZE to 512M.
 
-If a tag was not added on purpose, please state why and what changed.
+Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ kernel/bpf/cgroup.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index fdf7836750a3..17988cacac50 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -1276,7 +1276,13 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+ 
+ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+ {
+-	if (unlikely(max_optlen > PAGE_SIZE) || max_optlen < 0)
++	// The user with the largest known setsockopt optvals is iptables.
++	// Allocate enough space to accommodate it.
++	//
++	// See XT_MAX_TABLE_SIZE and sizeof(struct ipt_replace).
++	const int max_supported_optlen = 512 * 1024 * 1024 + 128;
++
++	if (unlikely(max_optlen > max_supported_optlen) || max_optlen < 0)
+ 		return -EINVAL;
+ 
+ 	ctx->optval = kzalloc(max_optlen, GFP_USER);
+-- 
+2.27.0.278.ge193c7cf3a9-goog
 
