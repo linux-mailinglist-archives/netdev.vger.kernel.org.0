@@ -2,172 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBAF11EE31C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 13:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D84E1EE358
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 13:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgFDLOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 07:14:23 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:52574 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726446AbgFDLOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 07:14:21 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 054BED4j039112;
-        Thu, 4 Jun 2020 06:14:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1591269253;
-        bh=sgtW79HiUB/IYbIQdwVgNlZtG2gnFZnYkjyftZWduLU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=pF2Po7Ue7m3KRcnK6WY4WBk9Of34E8opz5xbBvF0x55QlQwzrnDWZ6upoBqfgdkfX
-         sNQ6iMPrNgK5sic7TgIsHmPJIuG4lKgLoz8zkBYsSHqSY4gphaf2Bnbxf7NK4uHUD9
-         /G8UJ9AuxYyWhLrDgUGcY8VbvyUdEtmKDH2FXXu4=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 054BEDvB126043;
-        Thu, 4 Jun 2020 06:14:13 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 4 Jun
- 2020 06:14:12 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 4 Jun 2020 06:14:12 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 054BEC06112941;
-        Thu, 4 Jun 2020 06:14:12 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v6 4/4] net: dp83869: Add RGMII internal delay configuration
-Date:   Thu, 4 Jun 2020 06:14:10 -0500
-Message-ID: <20200604111410.17918-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200604111410.17918-1-dmurphy@ti.com>
-References: <20200604111410.17918-1-dmurphy@ti.com>
+        id S1726809AbgFDLXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 07:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbgFDLXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 07:23:03 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C102C03E96D
+        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 04:23:02 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id ce8so4371986edb.8
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 04:23:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s41I+pF4otPkoKhqX4c6nJ9IRCbLy4ku+zVntETS7Wg=;
+        b=tNk4F6eCONuZfFWYsS7Zk9UaLpmXXsfmQpB3/dg4F7MRkEQu7A3VxfcYu/V6MAwo1H
+         38raiRvkN3HsjUe1vsLz3zQ0RArLzweT3iURK6102AcpBEAK55cYKyCuZustM2xxFZEO
+         H5hTWmbrMe9EI1jeU1la8dM7QFQ6tmb44mTAY/L4tUkzyXKAeb5rmaAq9owb5bPYS00P
+         1efYUPdU/1b3IbOusGIxCUe3cMeAhLRql65ExAgtU/jx5R74fc9Eqo6/pRNpxWfhQSGo
+         Y2mR7FkDZ+HJc/y+zCjz5GMLkjGm6QKIwJHre0bmcKgS5ie86gSBwtOjd+ua+uBlLPyy
+         rsMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s41I+pF4otPkoKhqX4c6nJ9IRCbLy4ku+zVntETS7Wg=;
+        b=RaE94QUidmHzSgyGFU9RdA6Iqex9On5SSazXfgU1cRETPrHHcCUljHLPZYTeTFnW1g
+         2EVbPXvLRjXypnxRVlAcGJyHal2OUlAwTKJkRzRip6dW2NZCeUPLd+gVsmHWU8xobdHi
+         lpJCbcz3cfuqLjnjvS3FSdpYK5R709GKMC1YeqWYlGAgJAc45wjf1kV8Obz9EJCjWbOp
+         6uSFNENNVaiZXO7LyY+9vEHKwpoF7pT1dbFL7Zw9XgNeL7wD4UUbBXKngM/tAEef7IhB
+         8mYnJ30zazSV33Uw5MM36Ghh6grMjSF9k7bXPgTyjpBTU2do0/FOPKAnDogl9jm590Hj
+         cCRQ==
+X-Gm-Message-State: AOAM530A9RUuqTJckrZbfLf83JlzEz5atI9Vp2ELjmN5pkw3g+lSQOx5
+        kjT35so5SHgiMe6J9eV8uDSqWhlE8O6bU3vrfwA=
+X-Google-Smtp-Source: ABdhPJzQgJElkHScqS0KAHsALvrD5rdDZ2UGbhEBF1HoemPk6qmPnQ2+7xCnb94GIhqYo5TDiccYqJETIPjPfVD+FCc=
+X-Received: by 2002:a05:6402:362:: with SMTP id s2mr3851321edw.337.1591269780945;
+ Thu, 04 Jun 2020 04:23:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20200602205456.2392024-1-linus.walleij@linaro.org>
+ <20200603135244.GA869823@lunn.ch> <CACRpkdbu4O_6SvgTU3A5mYVrAn-VWpr9=0LD+M+LduuqVnjsnA@mail.gmail.com>
+ <20200604005407.GA977471@lunn.ch> <CACRpkdZvf4qnhQK=dqF4Shv0Q0nkVqTFcZS_5Zg8PrO+iCjxoQ@mail.gmail.com>
+In-Reply-To: <CACRpkdZvf4qnhQK=dqF4Shv0Q0nkVqTFcZS_5Zg8PrO+iCjxoQ@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 4 Jun 2020 14:22:49 +0300
+Message-ID: <CA+h21hqNq6Xk5bMBsB884GZdH9h4pALr7nkn8yG+a16cXqfJsg@mail.gmail.com>
+Subject: Re: [net-next PATCH 1/5] net: dsa: tag_rtl4_a: Implement Realtek 4
+ byte A tag
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>, DENG Qingfang <dqfext@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RGMII internal delay configuration for Rx and Tx.
+Hi Linus,
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 53 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 50 insertions(+), 3 deletions(-)
+On Thu, 4 Jun 2020 at 12:17, Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Thu, Jun 4, 2020 at 2:54 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > If spanning tree is performed in the ASIC, i don't see why there would
+> > be registers to control the port status. It would do it all itself,
+> > and not export these controls.
+> >
+> > So i would not give up on spanning tree as a way to reverse engineer
+> > this.
+>
+> Hm I guess I have to take out the textbooks and refresh my lacking
+> knowledge about spanning tree :)
+>
+> What I have for "documentation" is the code drop inside DD Wrt:
+> https://svn.dd-wrt.com//browser/src/linux/universal/linux-3.2/drivers/net/ethernet/raeth/rb
+>
+> The code is a bit messy and seems hacked up by Realtek, also
+> at one point apparently the ASIC was closely related to  RTL8368s
+> and then renamed to RTL8366RB...
+>
+> The code accessing the ASIC is here (under the name RTL8368s):
+> https://svn.dd-wrt.com/browser/src/linux/universal/linux-3.2/drivers/net/ethernet/raeth/rb/rtl8368s_asicdrv.c
+>
+> I'm hacking on it but a bit stuck :/
+>
+> Yours,
+> Linus Walleij
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index cfb22a21a2e6..801341edbe31 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -64,6 +64,10 @@
- #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
- #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
- 
-+/* RGMIIDCTL */
-+#define DP83869_RGMII_CLK_DELAY_SHIFT		4
-+#define DP83869_CLK_DELAY_DEF			7
-+
- /* STRAP_STS1 bits */
- #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
- #define DP83869_STRAP_STS1_RESERVED		BIT(11)
-@@ -78,9 +82,6 @@
- #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
- #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
- 
--/* RGMIIDCTL bits */
--#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
--
- /* IO_MUX_CFG bits */
- #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
- 
-@@ -99,6 +100,10 @@
- #define DP83869_OP_MODE_MII			BIT(5)
- #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
- 
-+static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
-+					     1750, 2000, 2250, 2500, 2750, 3000,
-+					     3250, 3500, 3750, 4000};
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -108,6 +113,8 @@ enum {
- struct dp83869_private {
- 	int tx_fifo_depth;
- 	int rx_fifo_depth;
-+	s32 rx_id_delay;
-+	s32 tx_id_delay;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -182,6 +189,7 @@ static int dp83869_of_init(struct phy_device *phydev)
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	struct device *dev = &phydev->mdio.dev;
- 	struct device_node *of_node = dev->of_node;
-+	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
- 	int ret;
- 
- 	if (!of_node)
-@@ -232,6 +240,20 @@ static int dp83869_of_init(struct phy_device *phydev)
- 				 &dp83869->tx_fifo_depth))
- 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
- 
-+	dp83869->rx_id_delay = phy_get_internal_delay(phydev, dev,
-+						     &dp83869_internal_delay[0],
-+						      delay_size, true);
-+	if (dp83869->rx_id_delay < 0)
-+		dp83869->rx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+
-+	dp83869->tx_id_delay = phy_get_internal_delay(phydev, dev,
-+						     &dp83869_internal_delay[0],
-+						      delay_size, false);
-+	if (dp83869->tx_id_delay < 0)
-+		dp83869->tx_id_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+
- 	return ret;
- }
- #else
-@@ -394,6 +416,31 @@ static int dp83869_config_init(struct phy_device *phydev)
- 				     dp83869->clk_output_sel <<
- 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
- 
-+	if (phy_interface_is_rgmii(phydev)) {
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
-+				    dp83869->rx_id_delay |
-+			dp83869->tx_id_delay << DP83869_RGMII_CLK_DELAY_SHIFT);
-+		if (ret)
-+			return ret;
-+
-+		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
-+		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+			 DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
-+			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+				DP83869_RGMII_RX_CLK_DELAY_EN);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
-+				    val);
-+	}
-+
- 	return ret;
- }
- 
--- 
-2.26.2
+In the code you pointed to, there is a potentially relevant comment:
 
+1532//CPU tag: Realtek Ethertype==0x8899(2 bytes)+protocol==0x9(4
+MSB)+priority(2 bits)+reserved(4 bits)+portmask(6 LSB)
+
+https://svn.dd-wrt.com/browser/src/linux/universal/linux-3.2/drivers/net/ethernet/raeth/rb/rtl_multicast_snooping.c#L1527
+https://svn.dd-wrt.com/browser/src/linux/universal/linux-3.2/drivers/net/ethernet/raeth/rb/rtl_multicast_snooping.c#L5224
+
+This strongly indicates to me that the insertion tag is the same as
+the extraction tag.
+It is completely opaque to me why in patch "[net-next PATCH 2/5] net:
+dsa: rtl8366rb: Support the CPU DSA tag" you are _disabling_ the
+injection of these tags via RTL8368RB_CPU_INSTAG. I think it's natural
+that the switch drops these packets when CPU tag insertion is
+disabled.
+
+Thanks,
+-Vladimir
