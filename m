@@ -2,56 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577AF1EE287
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 12:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC91B1EE2A4
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 12:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgFDKeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 06:34:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36528 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgFDKeU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jun 2020 06:34:20 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2436B206C3;
-        Thu,  4 Jun 2020 10:34:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591266859;
-        bh=rjZlYPQX8+7WuJlTYc7K8S4AaWWC63MoQ5lnQqgQ0Uc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ADsvpQbM0IbvLDKQtUXimWcx0vuht5cCwa9xpPJNU1y2muJb/f6lTtGmaAsSAipob
-         EN0ojuuLT+Yb/x3ia9bPxxDQcp0/gcTvYT0rEfYikwQbVuD6OmVQPuxQHFWpEDH9dp
-         1wiKkgOVjQ0VwG1YQzIYy7Xoh1drl3WsBJFQv1pw=
-Date:   Thu, 4 Jun 2020 13:34:16 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-rdma@vger.kernel.org, Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5: Improve tuple ID allocation
-Message-ID: <20200604103416.GB8834@unreal>
-References: <20200603152901.17985-1-willy@infradead.org>
+        id S1726087AbgFDKiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 06:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgFDKiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 06:38:18 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B22C03E96D;
+        Thu,  4 Jun 2020 03:38:17 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1jgnGJ-0004iw-Iy; Thu, 04 Jun 2020 12:38:15 +0200
+Date:   Thu, 4 Jun 2020 12:38:15 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     dwilder <dwilder@us.ibm.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, wilder@us.ibm.com,
+        mkubecek@suse.com
+Subject: Re: [(RFC) PATCH ] NULL pointer dereference on rmmod iptable_mangle.
+Message-ID: <20200604103815.GE28263@breakpoint.cc>
+References: <20200603212516.22414-1-dwilder@us.ibm.com>
+ <20200603220502.GD28263@breakpoint.cc>
+ <72692f32471b5d2eeef9514bb2c9ba51@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200603152901.17985-1-willy@infradead.org>
+In-Reply-To: <72692f32471b5d2eeef9514bb2c9ba51@linux.vnet.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 08:29:01AM -0700, Matthew Wilcox wrote:
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
-> There's no need to use a temporary variable; the XArray is designed to
-> write directly into the object being allocated.
->
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-t
+dwilder <dwilder@us.ibm.com> wrote:
+> > Since the netns core already does an unconditional synchronize_rcu after
+> > the pre_exit hooks this would avoid the problem as well.
+> 
+> Something like this?  (un-tested)
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+Yes.
+
+> diff --git a/net/ipv4/netfilter/iptable_mangle.c
+> b/net/ipv4/netfilter/iptable_mangle.c
+> index bb9266ea3785..0d448e4d5213 100644
+> --- a/net/ipv4/netfilter/iptable_mangle.c
+> +++ b/net/ipv4/netfilter/iptable_mangle.c
+> @@ -100,15 +100,26 @@ static int __net_init iptable_mangle_table_init(struct
+> net *net)
+>         return ret;
+>  }
+> 
+> +static void __net_exit iptable_mangle_net_pre_exit(struct net *net)
+> +{
+> +       struct xt_table *table = net->ipv4.iptable_mangle;
+> +
+> +       if (mangle_ops)
+> +               nf_unregister_net_hooks(net, mangle_ops,
+> +                       hweight32(table->valid_hooks));
+> +}
+
+You probably need if (table) here, not mangle_ops.
+I'm not sure if it makes sense to add a new
+
+xt_unregister_table_hook() helper, I guess one would have to try
+and see if that reduces copy&paste programming or not.
+
+>  static void __net_exit iptable_mangle_net_exit(struct net *net)
+>  {
+>         if (!net->ipv4.iptable_mangle)
+>                 return;
+> -       ipt_unregister_table(net, net->ipv4.iptable_mangle, mangle_ops);
+> +       ipt_unregister_table(net, net->ipv4.iptable_mangle, NULL);
+
+I guess the 3rd arg could be removed from the helper.
+
+But yes, this looks like what I had in mind.
