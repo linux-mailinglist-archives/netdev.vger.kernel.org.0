@@ -2,139 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 238681EE6CE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 16:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B24981EE6D1
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 16:42:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729079AbgFDOl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 10:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729025AbgFDOl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 10:41:57 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FF3C08C5C0;
-        Thu,  4 Jun 2020 07:41:57 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id n9so2272214plk.1;
-        Thu, 04 Jun 2020 07:41:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Uk6PJ7Nzre4spAUUPUK7CAc4Akdbq548HfhSI26hbYI=;
-        b=T0W+FRGOkYgkgG1NjbzAb2a6EANsfDB27gmlYxY/6fcea/KothkheSzJJNXQZqOahg
-         zhIO2Qdv0YtQcTK6bs0t49VXuQsOlVShKwc2fjVd2sgt7RBABcWvVodP8U5nf8w7WXW8
-         2OGWdy6a5TMS8DVEayp5mIcjB/wlJNHK40WtZ0KDiqakJtcEVA1jLmfPVcAlqVRnyU7n
-         l1V6OMGAIZ+Nt8k8z5g0Wh6zWCKJo2v10JJEHGSTKHJQsnAOUzlkghzHwE++/H3hvEot
-         RE3Tbk+KbjrzSXOOQ1BC0P/nbISieqOuriId5FZofSVGJs+Kda77RnaZToTJI2yPnpgf
-         sAJg==
+        id S1729094AbgFDOmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 10:42:19 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:53653 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729016AbgFDOmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 10:42:19 -0400
+Received: by mail-il1-f197.google.com with SMTP id c29so4101252ilf.20
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 07:42:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Uk6PJ7Nzre4spAUUPUK7CAc4Akdbq548HfhSI26hbYI=;
-        b=Zz/zOghxEFd+O0ETzj8Z3ZpGUKxUihpIoDfoI8p0tX7N2DYJjCLiGDJOJhxafoj5kx
-         pg5g5vSguHetRA/oJ1Ey+BBKiwXnKBxHYCvkmyJQK8sumQDo+a/w6Axx3db8kfvEavLx
-         uheX+BBQzzl4jaF4HORH56dNOIxNV8UfIHJ4m93hb3fZPAs4PBVc1yjDZ3QSFccdVi1L
-         itbXFqk+YXmaGlBLsWd9kU6L/rXI2IamfZD6qq3ZUYL8wCz+IyHIDWJsVcZgWFh7Q+GI
-         yK2g18PzMEVleJEJGaPUD6MAEp6DKGDuCGwLhXvx8Mdq/7y3xXcI3Ij66U2VexEacmh6
-         qTEg==
-X-Gm-Message-State: AOAM530fd5K5NcWjNpnLY0FJ41kxO2IiTNG7wfhY9cdrzLw01cATkQdL
-        wWUEjThAebjT1btFg/FeIEE=
-X-Google-Smtp-Source: ABdhPJw88RUGSpxEWmM4vBP4fPfOwYnZpQ/PPO96LJiYNYAS1w/xPF72Xfkc8aftyigEe2EjLQVm2g==
-X-Received: by 2002:a17:902:8303:: with SMTP id bd3mr5245705plb.217.1591281716861;
-        Thu, 04 Jun 2020 07:41:56 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x1sm4617525pfn.76.2020.06.04.07.41.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 07:41:56 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 22:41:45 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200604144145.GN102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
- <87zh9t1xvh.fsf@toke.dk>
- <20200603024054.GK102436@dhcp-12-153.nay.redhat.com>
- <87img8l893.fsf@toke.dk>
- <20200604040940.GL102436@dhcp-12-153.nay.redhat.com>
- <871rmvkvwn.fsf@toke.dk>
- <20200604121212.GM102436@dhcp-12-153.nay.redhat.com>
- <87bllzj9bw.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ty3XY6GL9r1bw8IROJoQjoG/PwaIJU5wQYUR1R0AF9E=;
+        b=lndLX4PHDDdui3e7iTuFcFO19rwoxs9UnwBspvbs6tSKNEactVuzTPipbecAbwsPMq
+         RoTWeclitivAqxeEIzRjatcLNOwuaMAcHXDo1PSHzu3pu393fuL7QZI6gkK+ZpUWfxH6
+         RTwrrh6A/nCBuE9LcpEDnCmUOztqCghAtxMIjBo/yRiMYriLcjro/fNl6dYOPdnUXmuh
+         v2wIqLOc7WU1O/cHuucnokGEwdNXtYCHbzF3p7GdtU0i/Xu7rsTkYr/jh5d2awHFe2in
+         9UdLVN5ZXNHpCyoggOANvkdpGSz0x+YHlFdo7b4USRiquH88aND73t8IONNX5JhxmHhc
+         dSQw==
+X-Gm-Message-State: AOAM530+Id1oRAxTCY27yg2AMky8sZXUAtl22kczNjCwoyiDAzY4PJgJ
+        /zbjVN2OHFbXX8dn2MEmIdSIvkJ2YDsVQ0AHJNJzXj/gGd/n
+X-Google-Smtp-Source: ABdhPJzVkH0XgWUDVL0NQdNqdP6kI3aHVAOGVvYm/VtUnXmD5vmefM3RowqsYWjLFMeFWhHkqMhfRabPFQGMnkJdG4V8HtcDsfcB
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87bllzj9bw.fsf@toke.dk>
+X-Received: by 2002:a92:5b99:: with SMTP id c25mr4404840ilg.42.1591281738622;
+ Thu, 04 Jun 2020 07:42:18 -0700 (PDT)
+Date:   Thu, 04 Jun 2020 07:42:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c4abec05a7432666@google.com>
+Subject: BUG: using smp_processor_id() in preemptible code in debug_smp_processor_id
+From:   syzbot <syzbot+9e0b179ae55eaf7a307a@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 02:37:23PM +0200, Toke Høiland-Jørgensen wrote:
-> > Now I use the ethtool_stats.pl to count forwarding speed and here is the result:
-> >
-> > With kernel 5.7(ingress i40e, egress i40e)
-> > XDP:
-> > bridge: 1.8M PPS
-> > xdp_redirect_map:
-> >   generic mode: 1.9M PPS
-> >   driver mode: 10.4M PPS
-> 
-> Ah, now we're getting somewhere! :)
-> 
-> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
-> > bridge: 1.8M
-> > xdp_redirect_map:
-> >   generic mode: 1.86M PPS
-> >   driver mode: 10.17M PPS
-> 
-> Right, so this corresponds to a ~2ns overhead (10**9/10400000 -
-> 10**9/10170000). This is not too far from being in the noise, I suppose;
-> is the difference consistent?
+Hello,
 
-Sorry, I didn't get, what different consistent do you mean?
+syzbot found the following crash on:
 
-> 
-> > xdp_redirect_map_multi:
-> >   generic mode: 1.53M PPS
-> >   driver mode: 7.22M PPS
-> >
-> > Kernel 5.7 + my patch(ingress i40e, egress veth)
-> > xdp_redirect_map:
-> >   generic mode: 1.38M PPS
-> >   driver mode: 4.15M PPS
-> > xdp_redirect_map_multi:
-> >   generic mode: 1.13M PPS
-> >   driver mode: 3.55M PPS
+HEAD commit:    065fcfd4 selftests: net: ip_defrag: ignore EPERM
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15c3e516100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d89141553e61b775
+dashboard link: https://syzkaller.appspot.com/bug?extid=9e0b179ae55eaf7a307a
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=131b5cf2100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=176dfcf2100000
 
-With XDP_DROP in veth perr, the number looks much better
+The bug was bisected to:
 
-xdp_redirect_map:
-  generic mode: 1.64M PPS
-  driver mode: 13.3M PPS
-xdp_redirect_map_multi:
-  generic mode: 1.29M PPS
-  driver mode: 8.5M PPS
+commit e42671084361302141a09284fde9bbc14fdd16bf
+Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Date:   Thu May 7 12:53:06 2020 +0000
 
-> >
-> > Kernel 5.7 + my patch(ingress i40e, egress i40e + veth)
-> > xdp_redirect_map_multi:
-> >   generic mode: 1.13M PPS
-> >   driver mode: 3.47M PPS
+    net: qrtr: Do not depend on ARCH_QCOM
 
-But I don't know why this one get even a little slower..
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1295eb91100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1195eb91100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1695eb91100000
 
-xdp_redirect_map_multi:
-  generic mode: 0.96M PPS
-  driver mode: 3.14M PPS
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+9e0b179ae55eaf7a307a@syzkaller.appspotmail.com
+Fixes: e42671084361 ("net: qrtr: Do not depend on ARCH_QCOM")
 
-Thanks
-Hangbin
+RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000004
+RBP: 00000000006cb018 R08: 0000000000000001 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401e90
+R13: 0000000000401f20 R14: 0000000000000000 R15: 0000000000000000
+BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor013/7182
+caller is radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:264
+CPU: 0 PID: 7182 Comm: syz-executor013 Not tainted 5.7.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+ debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
+ radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:264
+ radix_tree_extend+0x234/0x4a0 lib/radix-tree.c:426
+ idr_get_free+0x60c/0x8e0 lib/radix-tree.c:1494
+ idr_alloc_u32+0x170/0x2d0 lib/idr.c:46
+ idr_alloc+0xc2/0x130 lib/idr.c:87
+ qrtr_port_assign net/qrtr/qrtr.c:703 [inline]
+ __qrtr_bind.isra.0+0x12e/0x5c0 net/qrtr/qrtr.c:756
+ qrtr_autobind net/qrtr/qrtr.c:787 [inline]
+ qrtr_autobind+0xaf/0xf0 net/qrtr/qrtr.c:775
+ qrtr_sendmsg+0x1d6/0x770 net/qrtr/qrtr.c:895
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x4405a9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 5b 14 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe905331b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004a1bd8 RCX: 00000000004405a9
+RDX: 0000000000000000 RSI: 00000000
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
