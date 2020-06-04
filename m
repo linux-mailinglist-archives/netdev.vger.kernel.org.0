@@ -2,114 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2DC1EEBCC
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 22:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE91A1EEBD8
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 22:24:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgFDUUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 16:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729653AbgFDUUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 16:20:03 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72292C08C5C6
-        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 13:20:02 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id 5so1714904pjd.0
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 13:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gz66RqxXF5KGuRHQ0GYBuygtpEJiPzNI0sTLh4Vu69Y=;
-        b=jAmWlkIQJZzKdLIy24SnHWINuzTVOS3/wjvm2cU2AFi5wGPpwqQkjWfOwBraDHgs8k
-         bMHElbdbRxBbtC27xZm6mEe99uDc96pKouYmbV/dc0+e2MIiE2jcwrdVq98w16mgeguV
-         2DhLtfyu1wmL1bs6o/3S7BQ/OXA9/tFItMGTU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gz66RqxXF5KGuRHQ0GYBuygtpEJiPzNI0sTLh4Vu69Y=;
-        b=CLIi8g6NIwe4zaLS+N3h/ytBrme39R0FXcUiChdWo/Hfz63wIobvUI56fIk6KW75ks
-         IB88gsRHzoLIy+BPPHMcSCtvlNYm5LTiSkOroQCuIRcOz1zrQ4nl1SeF8xvG+upFZ+4O
-         H4k7jw4WtNhw/6uGo5P1cMPgXySe3v8OzCDANmARJMLxSULE2Kk6Bp+OstSvmctaBl2i
-         mCW4XNl/CvvCJy34Gk7dDGfsImhgBWfR7Q2t3kEmNlXaenHKMPI9ZO0GUz7SeeOTFD9k
-         rG0w1uF4pMHXFN+daCMpNIcxVkjNNFFzWr5PJio9d0ryCWoZ8Uq2qcJPXWvNPY9aMT7m
-         68iA==
-X-Gm-Message-State: AOAM530rW2p/Dy/nhiPEagyW/pQIumT+vEEhVHSLzY7bm5DBwHjm2zPq
-        9cRcxrWcvM6OLhwBCrEBPvarsQ==
-X-Google-Smtp-Source: ABdhPJxkV30NNQPml+L5dx48JHt30SosyvH9CeJOsvPeKMxl1Di1uyDaJOg4t+7npffgj0Ki2XTH3Q==
-X-Received: by 2002:a17:90a:7043:: with SMTP id f61mr7838452pjk.140.1591302001916;
-        Thu, 04 Jun 2020 13:20:01 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g17sm1432553pju.11.2020.06.04.13.20.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 13:20:01 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 13:20:00 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 05/10] ide: Remove uninitialized_var() usage
-Message-ID: <202006041318.B0EA9059C7@keescook>
-References: <20200603233203.1695403-1-keescook@chromium.org>
- <20200603233203.1695403-6-keescook@chromium.org>
- <CAKwvOdm5zDide5RuppY_jG=r46=UMdVJBrkBqD5x=dOMTG9cZg@mail.gmail.com>
+        id S1729093AbgFDUYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 16:24:36 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:18372 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726026AbgFDUYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 16:24:36 -0400
+Received: from localhost.localdomain (cyclone.blr.asicdesigners.com [10.193.186.206])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 054KOH5q010281;
+        Thu, 4 Jun 2020 13:24:17 -0700
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     edumazet@google.com, borisp@mellanox.com, secdev@chelsio.com,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Subject: [PATCH net-next,v2] crypto/chtls:Fix compile error when CONFIG_IPV6 is disabled
+Date:   Fri,  5 Jun 2020 01:53:44 +0530
+Message-Id: <20200604202344.7728-1-vinay.yadav@chelsio.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdm5zDide5RuppY_jG=r46=UMdVJBrkBqD5x=dOMTG9cZg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 12:29:17PM -0700, Nick Desaulniers wrote:
-> On Wed, Jun 3, 2020 at 4:32 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> > (or can in the future), and suppresses unrelated compiler warnings (e.g.
-> > "unused variable"). If the compiler thinks it is uninitialized, either
-> > simply initialize the variable or make compiler changes. As a precursor
-> > to removing[2] this[3] macro[4], just remove this variable since it was
-> > actually unused:
-> >
-> > drivers/ide/ide-taskfile.c:232:34: warning: unused variable 'flags' [-Wunused-variable]
-> >         unsigned long uninitialized_var(flags);
-> >                                         ^
-> >
-> > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
-> > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
-> > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
-> > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
-> >
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> 
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fix compile errors,warnings when CONFIG_IPV6 is disabled and
+inconsistent indenting.
 
-Thanks for the reviews!
+v1->v2:
+- Corrected errors/warnings reported when used newer gcc version,
+  unused array.
 
-> Fixes ce1e518190ea ("ide: don't disable interrupts during kmap_atomic()")
+Fixes: 6abde0b24122 ("crypto/chtls: IPv6 support for inline TLS")
+Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+---
+ drivers/crypto/chelsio/chcr_algo.h        |  4 --
+ drivers/crypto/chelsio/chtls/chtls_cm.c   | 46 +++++++++++++++++------
+ drivers/crypto/chelsio/chtls/chtls_main.c |  2 +
+ 3 files changed, 36 insertions(+), 16 deletions(-)
 
-I originally avoided adding Fixes tags because I didn't want these
-changes backported into a -stable without -Wmaybe-uninitialized
-disabled, but in these cases (variable removal), that actually does make
-sense. Thanks!
-
--Kees
-
+diff --git a/drivers/crypto/chelsio/chcr_algo.h b/drivers/crypto/chelsio/chcr_algo.h
+index f58c2b5c7fc5..d4f6e010dc79 100644
+--- a/drivers/crypto/chelsio/chcr_algo.h
++++ b/drivers/crypto/chelsio/chcr_algo.h
+@@ -389,10 +389,6 @@ static inline void copy_hash_init_values(char *key, int digestsize)
+ 	}
+ }
+ 
+-static const u8 sgl_lengths[20] = {
+-	0, 1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15
+-};
+-
+ /* Number of len fields(8) * size of one addr field */
+ #define PHYSDSGL_MAX_LEN_SIZE 16
+ 
+diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.c b/drivers/crypto/chelsio/chtls/chtls_cm.c
+index 9a642c79a657..f200fae6f7cb 100644
+--- a/drivers/crypto/chelsio/chtls/chtls_cm.c
++++ b/drivers/crypto/chelsio/chtls/chtls_cm.c
+@@ -93,8 +93,10 @@ static struct net_device *chtls_find_netdev(struct chtls_dev *cdev,
+ 					    struct sock *sk)
+ {
+ 	struct net_device *ndev = cdev->ports[0];
++#if IS_ENABLED(CONFIG_IPV6)
+ 	struct net_device *temp;
+ 	int addr_type;
++#endif
+ 
+ 	switch (sk->sk_family) {
+ 	case PF_INET:
+@@ -102,19 +104,21 @@ static struct net_device *chtls_find_netdev(struct chtls_dev *cdev,
+ 			return ndev;
+ 		ndev = ip_dev_find(&init_net, inet_sk(sk)->inet_rcv_saddr);
+ 		break;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	case PF_INET6:
+ 		addr_type = ipv6_addr_type(&sk->sk_v6_rcv_saddr);
+ 		if (likely(addr_type == IPV6_ADDR_ANY))
+ 			return ndev;
+ 
+-	for_each_netdev_rcu(&init_net, temp) {
+-		if (ipv6_chk_addr(&init_net, (struct in6_addr *)
+-				  &sk->sk_v6_rcv_saddr, temp, 1)) {
+-			ndev = temp;
+-			break;
++		for_each_netdev_rcu(&init_net, temp) {
++			if (ipv6_chk_addr(&init_net, (struct in6_addr *)
++					  &sk->sk_v6_rcv_saddr, temp, 1)) {
++				ndev = temp;
++				break;
++			}
+ 		}
+-	}
+ 	break;
++#endif
+ 	default:
+ 		return NULL;
+ 	}
+@@ -476,8 +480,10 @@ void chtls_destroy_sock(struct sock *sk)
+ 	csk->cdev = NULL;
+ 	if (sk->sk_family == AF_INET)
+ 		sk->sk_prot = &tcp_prot;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	else
+ 		sk->sk_prot = &tcpv6_prot;
++#endif
+ 	sk->sk_prot->destroy(sk);
+ }
+ 
+@@ -629,14 +635,15 @@ static void chtls_reset_synq(struct listen_ctx *listen_ctx)
+ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
+ {
+ 	struct net_device *ndev;
++#if IS_ENABLED(CONFIG_IPV6)
++	bool clip_valid = false;
++#endif
+ 	struct listen_ctx *ctx;
+ 	struct adapter *adap;
+ 	struct port_info *pi;
+-	bool clip_valid;
++	int ret = 0;
+ 	int stid;
+-	int ret;
+ 
+-	clip_valid = false;
+ 	rcu_read_lock();
+ 	ndev = chtls_find_netdev(cdev, sk);
+ 	rcu_read_unlock();
+@@ -674,6 +681,7 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
+ 					  inet_sk(sk)->inet_rcv_saddr,
+ 					  inet_sk(sk)->inet_sport, 0,
+ 					  cdev->lldi->rxq_ids[0]);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		int addr_type;
+ 
+@@ -689,6 +697,7 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
+ 					   &sk->sk_v6_rcv_saddr,
+ 					   inet_sk(sk)->inet_sport,
+ 					   cdev->lldi->rxq_ids[0]);
++#endif
+ 	}
+ 	if (ret > 0)
+ 		ret = net_xmit_errno(ret);
+@@ -696,8 +705,10 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
+ 		goto del_hash;
+ 	return 0;
+ del_hash:
++#if IS_ENABLED(CONFIG_IPV6)
+ 	if (clip_valid)
+ 		cxgb4_clip_release(ndev, (const u32 *)&sk->sk_v6_rcv_saddr, 1);
++#endif
+ 	listen_hash_del(cdev, sk);
+ free_stid:
+ 	cxgb4_free_stid(cdev->tids, stid, sk->sk_family);
+@@ -711,8 +722,6 @@ int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
+ void chtls_listen_stop(struct chtls_dev *cdev, struct sock *sk)
+ {
+ 	struct listen_ctx *listen_ctx;
+-	struct chtls_sock *csk;
+-	int addr_type = 0;
+ 	int stid;
+ 
+ 	stid = listen_hash_del(cdev, sk);
+@@ -725,7 +734,11 @@ void chtls_listen_stop(struct chtls_dev *cdev, struct sock *sk)
+ 	cxgb4_remove_server(cdev->lldi->ports[0], stid,
+ 			    cdev->lldi->rxq_ids[0], sk->sk_family == PF_INET6);
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ 	if (sk->sk_family == PF_INET6) {
++		struct chtls_sock *csk;
++		int addr_type = 0;
++
+ 		csk = rcu_dereference_sk_user_data(sk);
+ 		addr_type = ipv6_addr_type((const struct in6_addr *)
+ 					  &sk->sk_v6_rcv_saddr);
+@@ -733,6 +746,7 @@ void chtls_listen_stop(struct chtls_dev *cdev, struct sock *sk)
+ 			cxgb4_clip_release(csk->egress_dev, (const u32 *)
+ 					   &sk->sk_v6_rcv_saddr, 1);
+ 	}
++#endif
+ 	chtls_disconnect_acceptq(sk);
+ }
+ 
+@@ -941,9 +955,11 @@ static unsigned int chtls_select_mss(const struct chtls_sock *csk,
+ 	tp = tcp_sk(sk);
+ 	tcpoptsz = 0;
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ 	if (sk->sk_family == AF_INET6)
+ 		iphdrsz = sizeof(struct ipv6hdr) + sizeof(struct tcphdr);
+ 	else
++#endif
+ 		iphdrsz = sizeof(struct iphdr) + sizeof(struct tcphdr);
+ 	if (req->tcpopt.tstamp)
+ 		tcpoptsz += round_up(TCPOLEN_TIMESTAMP, 4);
+@@ -1091,13 +1107,13 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 				    const struct cpl_pass_accept_req *req,
+ 				    struct chtls_dev *cdev)
+ {
++	struct neighbour *n = NULL;
+ 	struct inet_sock *newinet;
+ 	const struct iphdr *iph;
+ 	struct tls_context *ctx;
+ 	struct net_device *ndev;
+ 	struct chtls_sock *csk;
+ 	struct dst_entry *dst;
+-	struct neighbour *n;
+ 	struct tcp_sock *tp;
+ 	struct sock *newsk;
+ 	u16 port_id;
+@@ -1115,6 +1131,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 			goto free_sk;
+ 
+ 		n = dst_neigh_lookup(dst, &iph->saddr);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		const struct ipv6hdr *ip6h;
+ 		struct flowi6 fl6;
+@@ -1131,6 +1148,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 		if (IS_ERR(dst))
+ 			goto free_sk;
+ 		n = dst_neigh_lookup(dst, &ip6h->saddr);
++#endif
+ 	}
+ 	if (!n)
+ 		goto free_sk;
+@@ -1158,6 +1176,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 		newinet->inet_daddr = iph->saddr;
+ 		newinet->inet_rcv_saddr = iph->daddr;
+ 		newinet->inet_saddr = iph->daddr;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		struct tcp6_sock *newtcp6sk = (struct tcp6_sock *)newsk;
+ 		struct inet_request_sock *treq = inet_rsk(oreq);
+@@ -1175,6 +1194,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 		newinet->inet_opt = NULL;
+ 		newinet->inet_daddr = LOOPBACK4_IPV6;
+ 		newinet->inet_saddr = LOOPBACK4_IPV6;
++#endif
+ 	}
+ 
+ 	oreq->ts_recent = PASS_OPEN_TID_G(ntohl(req->tos_stid));
+@@ -1337,10 +1357,12 @@ static void chtls_pass_accept_request(struct sock *sk,
+ 	if (iph->version == 0x4) {
+ 		chtls_set_req_addr(oreq, iph->daddr, iph->saddr);
+ 		ip_dsfield = ipv4_get_dsfield(iph);
++#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		inet_rsk(oreq)->ir_v6_rmt_addr = ipv6_hdr(skb)->saddr;
+ 		inet_rsk(oreq)->ir_v6_loc_addr = ipv6_hdr(skb)->daddr;
+ 		ip_dsfield = ipv6_get_dsfield(ipv6_hdr(skb));
++#endif
+ 	}
+ 	if (req->tcpopt.wsf <= 14 &&
+ 	    sock_net(sk)->ipv4.sysctl_tcp_window_scaling) {
+diff --git a/drivers/crypto/chelsio/chtls/chtls_main.c b/drivers/crypto/chelsio/chtls/chtls_main.c
+index 7dfffdde9593..d98b89d0fa6e 100644
+--- a/drivers/crypto/chelsio/chtls/chtls_main.c
++++ b/drivers/crypto/chelsio/chtls/chtls_main.c
+@@ -608,9 +608,11 @@ static void __init chtls_init_ulp_ops(void)
+ 	chtls_cpl_prot.recvmsg		= chtls_recvmsg;
+ 	chtls_cpl_prot.setsockopt	= chtls_setsockopt;
+ 	chtls_cpl_prot.getsockopt	= chtls_getsockopt;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	chtls_cpl_protv6		= chtls_cpl_prot;
+ 	chtls_init_rsk_ops(&chtls_cpl_protv6, &chtls_rsk_opsv6,
+ 			   &tcpv6_prot, PF_INET6);
++#endif
+ }
+ 
+ static int __init chtls_register(void)
 -- 
-Kees Cook
+2.25.4
+
