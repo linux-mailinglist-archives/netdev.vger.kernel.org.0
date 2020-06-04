@@ -2,289 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 272661EE1C1
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 11:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 169BC1EE221
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 12:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgFDJq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 05:46:56 -0400
-Received: from static-27.netfusion.at ([83.215.238.27]:56910 "EHLO
-        mail.inliniac.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbgFDJq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 05:46:56 -0400
-Received: from [192.168.0.36] (a212-238-163-105.adsl.xs4all.nl [212.238.163.105])
-        (Authenticated sender: victor)
-        by mail.inliniac.net (Postfix) with ESMTPSA id AE78010C;
-        Thu,  4 Jun 2020 11:49:04 +0200 (CEST)
-Subject: Re: [PATCH net-next v2] af-packet: new flag to indicate all csums are
- good
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Mao Wenan <maowenan@huawei.com>, Arnd Bergmann <arnd@arndb.de>,
-        Neil Horman <nhorman@tuxdriver.com>, linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Alexander Drozdov <al.drozdov@gmail.com>,
-        Tom Herbert <tom@herbertland.com>
-References: <20200602080535.1427-1-victor@inliniac.net>
- <CA+FuTSfD2-eF0H=Qu09=JXK6WTiWKNtcqRXqv3TfMfB-=0GiMg@mail.gmail.com>
- <b0a9d785-9d5e-9897-b051-6d9a1e8f914e@inliniac.net>
- <CA+FuTSd07inNysGhx088hq_jybrikSQdxw8HYjmP84foXhnXOA@mail.gmail.com>
- <06479df9-9da4-dbda-5bd1-f6e4d61471d0@inliniac.net>
- <CA+FuTSci29=W89CLweZcW=RTKwEXpUdPjsLGTB95iSNcnpU_Lw@mail.gmail.com>
- <6a3dcce9-4635-28e9-d78e-1c7f1f7874da@inliniac.net>
- <CA+FuTSdmtC4+0cnC2K1gwRLksXgb4hffUpyRbHjjGZbOJOfL0w@mail.gmail.com>
- <21a2224a-65f2-6375-589d-9cadb4fab840@inliniac.net>
- <CA+FuTSdczH+i8+FO+eQ+OT4-bsRAKG+jacPiuRu3jMszpV_2XA@mail.gmail.com>
-From:   Victor Julien <victor@inliniac.net>
-Autocrypt: addr=victor@inliniac.net; prefer-encrypt=mutual; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUVOQkZBamQvUUJDQURY
- S3FvR0xmclhGTDB5R2k3cHozdjU5dG5TN3hsVTl0NHVSUnd6YThrN3piVW9oTFlJCkFNVkp1
- dFk5Mm9BRDYrOTJtSVNIZDNDZkU0bGZuRlFBNHY1MllXOUUvRHBTaVQzWnFMZ0RHcmdVMHRs
- Qm1OUG8Kd0tJMjZyUnVCejBER3dVZkdocjlud3dTbVRDM213NU80cFlYR0wyd3ludHA0THZ2
- Q1lTdFJDVkZIMEhWL0lDVwozT2d6ejQzNGdtelU2N2xOaXpxMDdmL1R2SWtkd3ZHL1ZGVU5u
- WTZLQXRzUysrRTZZdzl5MEo5SStVYktFUDl4CnkySHl3RFFLRVVqck9FMCtlREtoblRXVGhX
- YnZEZm5CTGZJUGNla3dYbXVPYjVycGFXblE1MTkwNXVETTFzcm8KUGFZK015NEQ3b3N2ZUFN
- di9SbmhuN1VuVlg5M3JUS05RRUhaQUJFQkFBRzBJMVpwWTNSdmNpQktkV3hwWlc0ZwpQSFpw
- WTNSdmNrQnBibXhwYm1saFl5NXVaWFEraVFFN0JCTUJBZ0FsQWhzREJnc0pDQWNEQWdZVkNB
- SUpDZ3NFCkZnSURBUUllQVFJWGdBVUNVQ045WWdJWkFRQUtDUkRCOUpYamttaFd0SlFOQi85
- UVhwOXZCbnlwbm1RaDlHb2cKNE0vR2V6TERWbFJoVnQxL2FnYXByWDFhR09kZ29uRHd4WFR1
- MUs3Wnk5RkcrZysrb3lkRzdaYzFaT3JwSEtjTQp4dWxGams2MUEvODVMLzg1ZktHM0hlTFpX
- M2szR0p1OUhCRnZqNllrbXdmbHdTRk9KWmdkT3k5SGh0b3hTQnVwCmI4WTlKL0Q5MVB5Vi91
- YWdaa21ITjRuQmJldGNkSU9PNXdudWV0VnNrNGJsVjdhVk1kU2JEVXNrbU9Nc0hWTDcKRDN2
- WGFwSG1MbGhWSXZNQjBPTndQQVY5MHV6WUtNRlQ0SWdFbm04VXBFT0hsL0tFNWJyWlAzQkU4
- SXRJajUrZwpJRkNMNTRrdVphMWY5MUlDMzNocUJaNUZQNitNamt3ZmswOVdyQURsVmt4S3NP
- RkgyMHQ2NVVLT2EyeTNLM3pyCnhaYll0Q05XYVdOMGIzSWdTblZzYVdWdUlEeDJhV04wYjNK
- QWRuVjFjbTExZFhJdWIzSm5Qb2tCT0FRVEFRSUEKSWdVQ1VDTjVwZ0liQXdZTENRZ0hBd0lH
- RlFnQ0NRb0xCQllDQXdFQ0hnRUNGNEFBQ2drUXdmU1Y0NUpvVnJSawpxZ2dBa01pODdnZzNT
- K3FkQlVjSjVXd3VLTERPL1M0MTNzR09FaEU0SzU3YXpUVTNOVWNPVnVOZW5mNDB1L3F3Ckt4
- VitEUDJuSzE4Rk9CdDdwcVdyQzRrNThaUWMxTm9SR0VWQjY4elhieVI5L2xIMWNocXB5Mmhv
- enoyL0xhRG4KT0ptUWgvWUorYUhZbVdETGVuK3BtNWc5NzFJTUE5bUdiK3FrMTQ4aFBBMTBn
- b0h0ZHIyNzNPeXpQaldzU0JnVwp4bVU2amhNOE1Ld0tSSkFsTmxoMTVSbFpWNEM5Rmhkdi9V
- b01LZXhpaWltbGZIY1hVR1dtZ2I2RXBnVW5ab2piCklYQlNsYk5FMVZFTk5IcDVaeEhYNUU5
- dmQxV3BiMFV0Zmd2ZCtqaWo5VEtuMHpSSDlFTHFTYmxtUTFTamF4bEsKVnhhUDd1ejRpUHpJ
- NFk0RDVxMHJERHhTVmJRcGEyVjVZbUZ6WlM1cGJ5OXBibXhwYm1saFl5QThhVzVzYVc1cApZ
- V05BYTJWNVltRnpaUzVwYno2SkFTMEVFd0VLQUJjRkFsQWpkL1FDR3dNREN3a0hBeFVLQ0FJ
- ZUFRSVhnQUFLCkNSREI5Slhqa21oV3RKdndCLzlNdDZCWXkzTlZMUU1WQ05YSjRzZm95eUJJ
- Q1p2ODNnN3lpQzVEako2dUxXUE0KVFl2M0ZLRDFWa2tUQ2hWOHNXaDhvMkhHUGduUVk5eisx
- Q1hQM1dSUFdkWG9MNTFha3lPd3pFdEZVRG5JaHBtMApkWFhxQlJ3Qi90WExXN3R0VnkxR3VF
- eExkaDNaaDkwOHZ3SU1xVU51NC83ODB1VTZiRFpLQW9rZmZKekcxbzZMCm45dVF3bEx1WmNH
- MnhnTTZiN0RaN2MvNHZ5ejM1ak9jWUozWkREb25xR3BETTNvZFdnWXp4UHN4a0JVRnlKeFkK
- aDA4MHhzdHR0MFVJMWlmODRyVmdtQXRHblZFQjJ3YklsSktTa3d5ZXI0NGFTQ201WTEyNXNn
- MUtIZFQwMEREQgpWTTRNZ3k0NTJJYUZJVndpNHcwdVdZR09nblQ1MWx2VTY4NmV3VHh2dVFF
- TkJGQWpkL1FCQ0FEVkFoU08wR1YwCkxHdnh0a0hWQ1hzaGdSR2srNmdTSFpRVzc4a3F2V0dM
- OU95UDhzK0ZpUS8vQWFMa1NETzNpSVZTbWVrZVhiZlkKNkcxa2l2aDJLN0NaYlBTMzdDVGVL
- L0p0L2ZFbzY1bTJvcWtMWStDTnZVeElvYVdhMitQY1Z4UXNLem1aZ0hDRApDRVdzN21rK01Z
- UUxNZnluanVoVVorWmlaa2Y1U2ZBY1hQTEQ5emRkTFlSdUJtOTgwRDN1UVJsbXlqRTVOZTJa
- CkRZVEMwU1ZLNDFRMVVDdDFoZFdNOUlWczg2UXEybUU5Y21KWkthUUNRc1ZEMVlMZUdxYTJk
- UVdLYnIyc2EyRHUKd2pCbEhzWk83NFZjTHR2L2lQV1Nad2FxNkdBZTJGZXB0TFhJQWd2Y3lB
- WDlxOHczWDBjdWtsa1RTWFUwbU5ISQpuWHFnRHRBRGtOVnRBQkVCQUFHSkFSOEVHQUVDQUFr
- RkFsQWpkL1FDR3d3QUNna1F3ZlNWNDVKb1ZyU01od2dBCmlicHNMNUtnaEhnK0h2TktocXpV
- b0JGTDMya2xNS1R5Ums0ekhzbzZDNHBKVDNvbjRqOVF2dnJLU2tsaUJ4a1IKM2ZMdVFOVWE5
- YlVYeDNmeUFheVF2ekxnV1FycVc3eTU1Z1dCRUZPQTVQQXdFU1pDdTNYKzNGODZPK2w0N1k0
- dwpOZTRDRDJLYTRLKzlXTHQvR3RlUnBQQU5lVldNUHRRQktqc3BFSFBSeWNidnJGV20xMUJI
- djV2eC9GYVNXN2tICjdkaHFkRHNxMFlJaWYwUkdjUVNySlBBQm00ZHkva1hrcFJQUEFHSGdN
- dVMvejZwY3c0RFVsaTZQVE1aTzNyT0oKbVJQQUlFRUNTVngvRlZERjJXeVREQUlWanBuMENN
- Zjl1dnliVEU4Q25CNEQxcDZLNkgyZ0d0YVRlRlhJUVkraAoxcmNDY0JVNE9zZlQvWFkwZXZO
- aWpnPT0KPWFWT0YKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
-Message-ID: <904a4ad6-650b-8097-deff-989f1936064b@inliniac.net>
-Date:   Thu, 4 Jun 2020 11:46:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1727082AbgFDKKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 06:10:32 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:23823 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726248AbgFDKKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 06:10:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591265430;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zGlJ8O4yA/W7bete/cF7FQcgVbI9QLdgYqKnnIFMKJ0=;
+        b=WeEuDoa8OiPxB16TXP+9ii33NDIdKJKthW+81pVi63d1Gu3bBhjtkQCVEHMxBX5ruZfkzh
+        iL+wV4K/QUInfOseiPHOlaYvUQ/dCn0wI2o0Pbpt3XUqo/UhoI66JYw7jrPGYAioW1lOQW
+        7OfhJUwj1M1Q9EeR6G/Yq0pRXqLk454=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-227-daJWBcSuOVKJpy30EPFn4w-1; Thu, 04 Jun 2020 06:10:28 -0400
+X-MC-Unique: daJWBcSuOVKJpy30EPFn4w-1
+Received: by mail-wr1-f70.google.com with SMTP id t5so2208090wro.20
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 03:10:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zGlJ8O4yA/W7bete/cF7FQcgVbI9QLdgYqKnnIFMKJ0=;
+        b=S8MU+eKRK9lHpSM0x+a4ZjT8dY8GRQMlkw8jK17XRpvneWUNs+ey2ZVANS0M0N3RXF
+         jtf5C1WrWMiQ0WTC9hb/Wbc4kdVZ9SL7UIVyLlrdMIde2VvCuZRoj59MebhTNun732jc
+         yC02DqHmo2pSsrdELYZhAw5HLeTMn7Y/K1u6qvyUNC8vAb23X/tGdbvomJzEyochPQlC
+         AQTMZ09hLUNDmNAZm++1y/iOv6rxb1XXlV1TKV6FJKdTotHRdcR5qdOFdK9iAiYk3QwV
+         pcqlZqe1GUiLbMdA95UucNmaTZRCM1td9YdhRbDz2tm7ub6Ftau+jTaJFZDnWis4b0He
+         N7bg==
+X-Gm-Message-State: AOAM532ri8SG4BIOwwy6ZXxOs07TWKOuNyLnxYgeG8cOOlZ4MW6+RiFN
+        edtZhvg5rWWkjG+A7ZibMWk1kCUkva6K7nhMnSIMZKxU8I7Y/z0aTLw4RWyr2B0HrKBf8DNBiGC
+        YAjJL9J/cSDKPQHK5
+X-Received: by 2002:adf:a491:: with SMTP id g17mr3959304wrb.132.1591265427234;
+        Thu, 04 Jun 2020 03:10:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzijAVv5VHzZzhMi12UtVYg+WDrXlw/h6wDpYasdoiFD2bcBzxkW4hQDmgITXHqbv7FeNCrHw==
+X-Received: by 2002:adf:a491:: with SMTP id g17mr3959287wrb.132.1591265426992;
+        Thu, 04 Jun 2020 03:10:26 -0700 (PDT)
+Received: from redhat.com ([2a00:a040:185:f65:9a3b:8fff:fed3:ad8d])
+        by smtp.gmail.com with ESMTPSA id b187sm7095817wmd.26.2020.06.04.03.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Jun 2020 03:10:26 -0700 (PDT)
+Date:   Thu, 4 Jun 2020 06:10:23 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+Message-ID: <20200604054516-mutt-send-email-mst@kernel.org>
+References: <20200602084257.134555-1-mst@redhat.com>
+ <20200603014815.GR23230@ZenIV.linux.org.uk>
+ <20200603011810-mutt-send-email-mst@kernel.org>
+ <20200603165205.GU23230@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSdczH+i8+FO+eQ+OT4-bsRAKG+jacPiuRu3jMszpV_2XA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200603165205.GU23230@ZenIV.linux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02-06-2020 22:18, Willem de Bruijn wrote:
-> On Tue, Jun 2, 2020 at 4:05 PM Victor Julien <victor@inliniac.net> wrote:
->>
->> On 02-06-2020 21:38, Willem de Bruijn wrote:
->>> On Tue, Jun 2, 2020 at 3:22 PM Victor Julien <victor@inliniac.net> wrote:
->>>>
->>>> On 02-06-2020 21:03, Willem de Bruijn wrote:
->>>>> On Tue, Jun 2, 2020 at 2:31 PM Victor Julien <victor@inliniac.net> wrote:
->>>>>> On 02-06-2020 19:37, Willem de Bruijn wrote:
->>>>>>> On Tue, Jun 2, 2020 at 1:03 PM Victor Julien <victor@inliniac.net> wrote:
->>>>>>>>
->>>>>>>> On 02-06-2020 16:29, Willem de Bruijn wrote:
->>>>>>>>> On Tue, Jun 2, 2020 at 4:05 AM Victor Julien <victor@inliniac.net> wrote:
->>>>>>>>>>
->>>>>>>>>> Introduce a new flag (TP_STATUS_CSUM_UNNECESSARY) to indicate
->>>>>>>>>> that the driver has completely validated the checksums in the packet.
->>>>>>>>>>
->>>>>>>>>> The TP_STATUS_CSUM_UNNECESSARY flag differs from TP_STATUS_CSUM_VALID
->>>>>>>>>> in that the new flag will only be set if all the layers are valid,
->>>>>>>>>> while TP_STATUS_CSUM_VALID is set as well if only the IP layer is valid.
->>>>>>>>>
->>>>>>>>> transport, not ip checksum.
->>>>>>>>
->>>>>>>> Allow me a n00b question: what does transport refer to here? Things like
->>>>>>>> ethernet? It isn't clear to me from the doc.
->>>>>>>
->>>>>>> The TCP/UDP/.. transport protocol checksum.
->>>>>>
->>>>>> Hmm that is what I thought originally, but then it didn't seem to work.
->>>>>> Hence my patch.
->>>>>>
->>>>>> However I just redid my testing. I took the example tpacketv3 program
->>>>>> and added the status flag checks to the 'display()' func:
->>>>>>
->>>>>>                 if (ppd->tp_status & TP_STATUS_CSUM_VALID) {
->>>>>>                         printf("TP_STATUS_CSUM_VALID, ");
->>>>>>                 }
->>>>>>                 if (ppd->tp_status & (1<<8)) {
->>>>>>                         printf("TP_STATUS_CSUM_UNNECESSARY, ");
->>>>>>
->>>>>>                 }
->>>>>>
->>>>>> Then using scapy sent some packets in 2 variants:
->>>>>> - default (good csums)
->>>>>> - deliberately bad csums
->>>>>> (then also added a few things like ip6 over ip)
->>>>>>
->>>>>>
->>>>>> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(),
->>>>>> iface="enp1s0") // good csums
->>>>>>
->>>>>> srp1(Ether()/IP(src="1.2.3.4", dst="5.6.7.8")/IPv6()/TCP(chksum=1),
->>>>>> iface="enp1s0") //bad tcp
->>>>>
->>>>> Is this a test between two machines? What is the device driver of the
->>>>> machine receiving and printing the packet? It would be helpful to know
->>>>> whether this uses CHECKSUM_COMPLETE or CHECKSUM_UNNECESSARY.
->>>>
->>>> Yes 2 machines, or actually 2 machines and a VM. The receiving Linux
->>>> sits in a kvm vm with network pass through and uses the virtio driver
->>>> (host uses e1000e). Based on a quick 'git grep CHECKSUM_UNNECESSARY'
->>>> virtio seems to support that.
->>>>
->>>> I've done some more tests. In a pcap replay that I know contains packet
->>>> with bad TCP csums (but good IP csums for those pkts), to a physical
->>>> host running Ubuntu Linux kernel 5.3:
->>>>
->>>> - receiver uses nfp (netronome) driver: TP_STATUS_CSUM_VALID set for
->>>> every packet, including the bad TCP ones
->>>> - receiver uses ixgbe driver: TP_STATUS_CSUM_VALID not set for the bad
->>>> packets.
->>>
->>> Great. Thanks a lot for running all these experiments.
->>>
->>> We might have to drop the TP_STATUS_CSUM_VALID with CHECKSUM_COMPLETE
->>> unless skb->csum_valid.
->>>
->>> For packets with multiple transport layer checksums,
->>> CHECKSUM_UNNECESSARY should mean that all have been verified.
->>>
->>> I believe that in the case of multiple transport headers, csum_valid
->>> similarly ensures all checksums up to csum_start are valid. Will need
->>> to double check.
->>>
->>> If so, there probably is no need for a separate new TP_STATUS.
->>> TP_STATUS_CSUM_VALID is reported only when all checksums are valid.
->>
->> So if I understand you correctly the key may be in the call to
->> `skb_csum_unnecessary`:
->>
->> That reads:
->>
->> static inline int skb_csum_unnecessary(const struct sk_buff *skb)
->> {
->>         return ((skb->ip_summed == CHECKSUM_UNNECESSARY) ||
->>                 skb->csum_valid ||
->>                 (skb->ip_summed == CHECKSUM_PARTIAL &&
->>                  skb_checksum_start_offset(skb) >= 0));
->> }
->>
->> But really only the first 2 conditions are reachable
+On Wed, Jun 03, 2020 at 05:52:05PM +0100, Al Viro wrote:
+> On Wed, Jun 03, 2020 at 01:29:00AM -0400, Michael S. Tsirkin wrote:
+> > On Wed, Jun 03, 2020 at 02:48:15AM +0100, Al Viro wrote:
+> > > On Tue, Jun 02, 2020 at 04:45:05AM -0400, Michael S. Tsirkin wrote:
+> > > > So vhost needs to poke at userspace *a lot* in a quick succession.  It
+> > > > is thus benefitial to enable userspace access, do our thing, then
+> > > > disable. Except access_ok has already been pre-validated with all the
+> > > > relevant nospec checks, so we don't need that.  Add an API to allow
+> > > > userspace access after access_ok and barrier_nospec are done.
+> > > 
+> > > BTW, what are you going to do about vq->iotlb != NULL case?  Because
+> > > you sure as hell do *NOT* want e.g. translate_desc() under STAC.
+> > > Disable it around the calls of translate_desc()?
+> > > 
+> > > How widely do you hope to stretch the user_access areas, anyway?
+> > 
+> > So ATM I'm looking at adding support for the packed ring format.
+> > That does something like:
+> > 
+> > get_user(flags, desc->flags)
+> > smp_rmb()
+> > if (flags & VALID)
+> > copy_from_user(&adesc, desc, sizeof adesc);
+> > 
+> > this would be a good candidate I think.
 > 
-> .. from this codepath. That function is called in other codepaths as well.
+> Perhaps, once we get stac/clac out of raw_copy_from_user() (coming cycle,
+> probably).
+
+That sounds good. Presumably raw_copy_from_user will be smart enough
+to optimize aligned 2 byte accesses for flags above?
+
+>  BTW, how large is the structure and how is it aligned?
+
+It's a batch of 16 byte structures, aligned to 16 bytes.
+At the moment I used batch size of 64 which seems enough.
+Ideally we'd actually read the whole batch like this
+without stac/clac back and forth. E.g.
+
+	struct vring_desc adesc[64] = {};
+
+	stac()
+	for (i = 0; i < 64; ++i) {
+	 get_user(flags, desc[i].flags)
+	 smp_rmb()
+	 if (!(flags & VALID))
+		break;
+	 copy_from_user(&adesc[i], desc + i, sizeof adesc[i]);
+	}
+	clac()
+
+
+
+
+> > > BTW, speaking of possible annotations: looks like there's a large
+> > > subset of call graph that can be reached only from vhost_worker()
+> > > or from several ioctls, with all uaccess limited to that subgraph
+> > > (thankfully).  Having that explicitly marked might be a good idea...
+> > 
+> > Sure. What's a good way to do that though? Any examples to follow?
+> > Or do you mean code comments?
 > 
->> , as we already know
->> skb->ip_summed is not CHECKSUM_PARTIAL when we call it.
->>
->> So our unmodified check is:
->>
->>         else if (skb->pkt_type != PACKET_OUTGOING &&
->>                 (skb->ip_summed == CHECKSUM_COMPLETE ||
->>                  skb->ip_summed == CHECKSUM_UNNECESSARY ||
->>                  skb->csum_valid))
->>
->> Should this become something like:
->>
->>         else if (skb->pkt_type != PACKET_OUTGOING &&
->>                 (skb->ip_summed == CHECKSUM_COMPLETE &&
->>                  skb->csum_valid) ||
->>                  skb->ip_summed == CHECKSUM_UNNECESSARY)
->>
->> Is this what you had in mind?
+> Not sure...  FWIW, the part of call graph from "known to be only
+> used by vhost_worker" (->handle_kick/vhost_work_init callback/
+> vhost_poll_init callback) and "part of ->ioctl()" to actual uaccess
+> primitives is fairly large - the longest chain is
+> handle_tx_net ->
+>   handle_tx ->
+>     handle_tx_zerocopy ->
+>       get_tx_bufs ->
+> 	vhost_net_tx_get_vq_desc ->
+> 	  vhost_tx_batch ->
+> 	    vhost_net_signal_used ->
+> 	      vhost_add_used_and_signal_n ->
+> 		vhost_signal ->
+> 		  vhost_notify ->
+> 		    vhost_get_avail_flags ->
+> 		      vhost_get_avail ->
+> 			vhost_get_user ->
+> 			  __get_user()
+> i.e. 14 levels deep and the graph doesn't factorize well...
 > 
-> I don't suggest modifying skb_csum_unnecessary probably. Certainly not
-> until I've looked at all other callers of it.
+> Something along the lines of "all callers of thus annotated function
+> must be annotated the same way themselves, any implicit conversion
+> of pointers to such functions to anything other than boolean yields
+> a warning, explicit cast is allowed only with __force", perhaps?
+> Then slap such annotations on vhost_{get,put,copy_to,copy_from}_user(),
+> on ->handle_kick(), a force-cast in the only caller of ->handle_kick()
+> and force-casts in the 3 callers in ->ioctl().
 > 
-> But in case of packet sockets, yes, adding that csum_valid check is my
-> first rough approximation.
+> And propagate the annotations until the warnings stop, basically...
 > 
-> That said, first let's give others more familiar with
-> TP_STATUS_CSUM_VALID some time to comment.
-> 
+> Shouldn't be terribly hard to teach sparse that kind of stuff and it
+> might be useful elsewhere.  It would act as a qualifier on function
+> pointers, with syntax ultimately expanding to __attribute__((something)).
+> I'll need to refresh my memories of the parser, but IIRC that shouldn't
+> require serious modifications.  Most of the work would be in
+> evaluate_call(), just before calling evaluate_symbol_call()...
+> I'll look into that; not right now, though.
 
-I did some more experiments, on real hw this time. I made the following
-change to 5.7.0 (wasn't brave enough to remote upgrade a box to netnext):
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 29bd405adbbd..3afb1913837a 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2216,8 +2216,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct
-net_device *dev,
-        if (skb->ip_summed == CHECKSUM_PARTIAL)
-                status |= TP_STATUS_CSUMNOTREADY;
-        else if (skb->pkt_type != PACKET_OUTGOING &&
--                (skb->ip_summed == CHECKSUM_COMPLETE ||
--                 skb_csum_unnecessary(skb)))
-+                ((skb->ip_summed == CHECKSUM_COMPLETE &&
-skb->csum_valid) ||
-+                  skb->ip_summed == CHECKSUM_UNNECESSARY))
-                status |= TP_STATUS_CSUM_VALID;
+Thanks, that does sound useful!
 
-        if (snaplen > res)
+> BTW, __vhost_get_user() might be better off expanded in both callers -
+> that would get their structure similar to vhost_copy_{to,from}_user(),
+> especially if you expand __vhost_get_user_slow() as well.
 
-With this change it seems the TP_STATUS_CSUM_VALID flag is *never* set
-for the nfp driver.
+I agree, that does sound like a good cleanup.
 
-The capture on the ixgbe driver looks unchanged, but that seems to make
-sense as I think it uses CHECKSUM_UNNECESSARY and not CHECKSUM_COMPLETE.
+> Not sure I understand what's going with ->meta_iotlb[] - what are the
+> lifetime rules for struct vhost_iotlb_map and what prevents the pointers
+> from going stale?
 
-For the nfp driver I have these settings:
-
-root@z820:~# ethtool -k ens3np0|grep rx
-rx-checksumming: on
-rx-vlan-offload: off [fixed]
-rx-vlan-filter: off [fixed]
-rx-fcs: off [fixed]
-rx-all: off [fixed]
-rx-vlan-stag-hw-parse: off [fixed]
-rx-vlan-stag-filter: off [fixed]
-rx-udp_tunnel-port-offload: on
-tls-hw-rx-offload: off [fixed]
-rx-gro-hw: off [fixed]
-rx-gro-list: off
-
-Since the driver suggests 'rx-checksumming' is enabled, I'm wondering
-how we can actually get a result from it? Jakub, do you know?
-
--- 
----------------------------------------------
-Victor Julien
-http://www.inliniac.net/
-PGP: http://www.inliniac.net/victorjulien.asc
----------------------------------------------
+It can be zeroed at any point.
+We just try to call __vhost_vq_meta_reset whenever anything can go
+stale.
 
