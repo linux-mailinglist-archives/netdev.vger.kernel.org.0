@@ -2,163 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 268691EEBE1
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 22:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A001F1EEBF7
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 22:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729797AbgFDUZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 16:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729806AbgFDUZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 16:25:30 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203B0C08C5C6
-        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 13:25:29 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id bh7so2654809plb.11
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 13:25:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TblIMkzhKEVNZyPa1dQf8kFQ+MgYlpgsesY6pOK1xME=;
-        b=eTUIYqIrq5sxbgWQO/3JauOnTYpVr1lxYINDt5nKOAMkJOKF9ufyGFqb5XSmsRi3m+
-         Uksx9+kJJ0xBVvvMTZtWdGvFYckH9URWghdJ/VSzZBwwBmizmaE949JntUM6qTfFIrip
-         3zzyVfVtH7B2Lzj4WQ8kAWj65+Txwm/2hs5XFlhCKdRU1uedTRsD04P49ZgSRY5QBLTc
-         CQBCbVHZuVCB29pP2Co0mZAOf0TgkJUljtb0VB8CHI8VhuigYp30PE+r/D7MHanlVYxK
-         BKS8ooZdHaU0PWi8nTHb08bOMRG7dMr/qLVaTlH87DKKqIpufZxi7ZRUHWNmW4PpK4km
-         2vlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TblIMkzhKEVNZyPa1dQf8kFQ+MgYlpgsesY6pOK1xME=;
-        b=QaXbSW2q1+Aca8F9YA4viisGHj8GFELOUyREQ40nlQ3IU77fDl1xO1LgxILDN712x/
-         GfQJrzT2wCnYMmGebY0C4W3B+/DXWPFc8jzwRucqEj7y+ZbH+6jpSBvHV7T8/4DFCFBW
-         a9A1dV6JT0atIm+Ws/kg1I4XUQBxgB9b8yUH2MdApdAfw7agGbawJNtxMFIq2b2nAUjC
-         oTexOTuS7ESwII35OxDanQRfUCskE6RgI8F+DNasLfCW0z0BnC4VYzU64H5n2Nsv9low
-         KVkIADVRqSJ2rNAX9yMjImkkWjj1TrbAlD7tT8XL2O4jNB4c2VyKe+B8QrVwtPJdnofu
-         kzGw==
-X-Gm-Message-State: AOAM531KO994KUzaNwhJtXSp1KDN5TFY/3LHwnk+P+X72xByoOqOPxmH
-        tQC7wAJ7+lLB7tIq5UGGdBvYt76W9C5/KH2ClFfcqw==
-X-Google-Smtp-Source: ABdhPJzjhN/4pCp12TIV+9JXZmAnmqzfEHd9/r8jgURCikDTNzP/FuiRKg13zAi0ZiROLKM3I1SNYAlTdBzPgSsKmW0=
-X-Received: by 2002:a17:902:341:: with SMTP id 59mr6129425pld.119.1591302328252;
- Thu, 04 Jun 2020 13:25:28 -0700 (PDT)
+        id S1729929AbgFDU1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 16:27:48 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:49544 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726026AbgFDU1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 16:27:48 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 054KRead089425;
+        Thu, 4 Jun 2020 15:27:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1591302460;
+        bh=N+QJzUFxIrA5/MuRXT6M2TS2TtMFDYT1CkUkUKyL2nU=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=wKDoW0axSiLqJ/3p1Y1FMpNfJBXHSmXvlTIXVBMhohSyAZ0nwUFtYWXkSp921FGmW
+         X12njTBRLnsnK1ZZQnfcQR1rw08Gv8JUz8a+PFJ4eX4SQW3R6eqjNmjSbfA4lHVJxU
+         t8p36EM92491GlrWIaIWvGOicyeLBb7VDz2FkjSo=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 054KReI6123953
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 4 Jun 2020 15:27:40 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 4 Jun
+ 2020 15:27:40 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 4 Jun 2020 15:27:40 -0500
+Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 054KReJw121027;
+        Thu, 4 Jun 2020 15:27:40 -0500
+Subject: Re: [PATCH net-next v6 4/4] net: dp83869: Add RGMII internal delay
+ configuration
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+References: <20200604111410.17918-1-dmurphy@ti.com>
+ <20200604111410.17918-5-dmurphy@ti.com>
+ <20200604092545.40c85fce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <63a53dad-4f0a-31ca-ad1a-361b633c28bf@ti.com>
+ <20200604094829.0d7d5df7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <8a844e26-3a5a-ac61-1c4a-e60fbebf6341@ti.com>
+Date:   Thu, 4 Jun 2020 15:27:35 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200603233203.1695403-1-keescook@chromium.org>
- <20200603233203.1695403-4-keescook@chromium.org> <CAKwvOdnNuFySqAMk7s_cXqFM=dPX4JfvqNVLCuj90Gn4tzciAw@mail.gmail.com>
- <202006041316.A15D952@keescook>
-In-Reply-To: <202006041316.A15D952@keescook>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 4 Jun 2020 13:25:16 -0700
-Message-ID: <CAKwvOdk9e19MqJNhGYV5mJisLOcjK+ba2sYzLgf7cvNerqNuwA@mail.gmail.com>
-Subject: Re: [PATCH 03/10] b43: Remove uninitialized_var() usage
-To:     Kees Cook <keescook@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200604094829.0d7d5df7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 4, 2020 at 1:18 PM Kees Cook <keescook@chromium.org> wrote:
+Jakub
+
+On 6/4/20 11:48 AM, Jakub Kicinski wrote:
+> On Thu, 4 Jun 2020 11:38:14 -0500 Dan Murphy wrote:
+>> Jakub
+>>
+>> On 6/4/20 11:25 AM, Jakub Kicinski wrote:
+>>> On Thu, 4 Jun 2020 06:14:10 -0500 Dan Murphy wrote:
+>>>> Add RGMII internal delay configuration for Rx and Tx.
+>>>>
+>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>> Hi Dan, please make sure W=1 C=1 build is clean:
+>>>
+>>> drivers/net/phy/dp83869.c:103:18: warning: â€˜dp83869_internal_delayâ€™ defined but not used [-Wunused-const-variable=]
+>>>     103 | static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
+>>>         |                  ^~~~~~~~~~~~~~~~~~~~~~
+>> I built with W=1 and C=1 and did not see this warning.
+>>
+>> What defconfig are you using?
+> allmodconfig with gcc-10
 >
-> On Thu, Jun 04, 2020 at 01:08:44PM -0700, Nick Desaulniers wrote:
-> > On Wed, Jun 3, 2020 at 4:32 PM Kees Cook <keescook@chromium.org> wrote:
-> > >
-> > > Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> > > (or can in the future), and suppresses unrelated compiler warnings (e.g.
-> > > "unused variable"). If the compiler thinks it is uninitialized, either
-> > > simply initialize the variable or make compiler changes. As a precursor
-> > > to removing[2] this[3] macro[4], just initialize this variable to NULL,
-> > > and make the (unreachable!) code do a conditional test.
-> > >
-> > > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
-> > > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
-> > > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
-> > > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
-> > >
-> > > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > > ---
-> > >  drivers/net/wireless/broadcom/b43/phy_n.c | 10 +++++++---
-> > >  1 file changed, 7 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > index d3c001fa8eb4..88cdcea10d61 100644
-> > > --- a/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > @@ -4222,7 +4222,7 @@ static void b43_nphy_tx_gain_table_upload(struct b43_wldev *dev)
-> >
-> > The TODOs and `#if 0` in this function are concerning.  It looks like
-> > `rf_pwr_offset_table` is only used when `phy->rev` is >=7 && < 19.
-> >
-> > Further, the loop has a case for `phy->rev >= 19` but we would have
-> > returned earlier if that was the case.
+>> Can you check if CONFIG_OF_MDIO is set or not?  That would be the only
+>> way that warning would come up.
+> Hm. I don't have the config from this particular build but just running
+> allmodconfig makes it CONFIG_OF_MDIO=m
 
-oh, and there's an early return for `phy->rev < 3` I just noticed.
+OK that makes sense then.  That is an existing bug that shows up because 
+of this.
 
+#ifdef CONFIG_OF_MDIO
+
+So the addition of the array exposed an existing issue.
+
+That bug fix can go to net then.
+>>> Also net-next is closed right now, you can post RFCs but normal patches
+>>> should be deferred until after net-next reopens.
+>> I know net-next is closed.
+>>
+>> I pinged David M when it was open about what is meant by "new" patches
+>> in the net-dev FAQ.  So I figured I would send the patches to see what
+>> the response was.
+>>
+>> To me these are not new they are in process patches.  My understand is
+>> New is v1 patchesets.
+>>
+>> But now I have the answer.
+> Oh sorry, I may be wrong in this case, I haven't tracked this series.
 >
-> Yeah, that's why I put the "(unreachable!)" note in the commit log. ;)
+It says v6 in $subject.
 
-I don't think that note is correct.
+But still you may be correct I don't know
 
->
-> >
-> > >         u32 rfpwr_offset;
-> > >         u8 pga_gain, pad_gain;
-> > >         int i;
-> > > -       const s16 *uninitialized_var(rf_pwr_offset_table);
-> > > +       const s16 *rf_pwr_offset_table = NULL;
-> > >
-> > >         table = b43_nphy_get_tx_gain_table(dev);
-> > >         if (!table)
-> > > @@ -4256,9 +4256,13 @@ static void b43_nphy_tx_gain_table_upload(struct b43_wldev *dev)
-> > >                         pga_gain = (table[i] >> 24) & 0xf;
-> > >                         pad_gain = (table[i] >> 19) & 0x1f;
-> > >                         if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ)
-> > > -                               rfpwr_offset = rf_pwr_offset_table[pad_gain];
-> > > +                               rfpwr_offset = rf_pwr_offset_table
-> > > +                                               ? rf_pwr_offset_table[pad_gain]
-> > > +                                               : 0;
-> > >                         else
-> > > -                               rfpwr_offset = rf_pwr_offset_table[pga_gain];
-> > > +                               rfpwr_offset = rf_pwr_offset_table
-> > > +                                               ? rf_pwr_offset_table[pga_gain]
-> > > +                                               : 0;
-> >
-> >
-> > The code is trying to check `phy->rev >= 7 && phy->rev < 19` once
-> > before the loop, then set `rf_pwr_offset_table`, so having another
-> > conditional on `rf_pwr_offset_table` in the loop is unnecessary. I'm
-> > ok with initializing it to `NULL`, but I'm not sure the conditional
-> > check is necessary.  Do you get a compiler warning otherwise?
->
-> I mean, sort of the best thing to do is just remove nearly everything
-> here since it's actually unreachable. But it is commented as "when
+Dan
 
-This code is reachable. Consider `phy->rev >= 7 && phy->rev < 19`.  If
-`rf_pwr_offset_table` was NULL, it would have returned early on L4246,
-so the checks added in this patch are unnecessary.  Forgive me if
-there's some other control flow I'm not considering.
-
-> supported ..." etc, so I figured I'd leave it. As part of that I didn't
-> want to leave any chance of a NULL deref, so I added the explicit tests
-> just for robustness.
->
-> *shrug*
--- 
-Thanks,
-~Nick Desaulniers
