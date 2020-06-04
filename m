@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4A21EDE8D
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 09:35:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A1D1EDE8E
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 09:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbgFDHfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 03:35:21 -0400
-Received: from mga04.intel.com ([192.55.52.120]:55327 "EHLO mga04.intel.com"
+        id S1728314AbgFDHfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 03:35:31 -0400
+Received: from mga06.intel.com ([134.134.136.31]:31680 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727944AbgFDHfU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jun 2020 03:35:20 -0400
-IronPort-SDR: CUmplpLpTF+CJ9s5CbFQjGVkPpMck/oUhg9GCAU11k7ci37sELXlHxJKCg8gWD7xcI3nzsZpF2
- 4vDcQ8WCTDeg==
+        id S1727916AbgFDHfb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jun 2020 03:35:31 -0400
+IronPort-SDR: HUOKDfsyLOmjjsqPgJ06wgNNDMA6uclP9GvbqEjuTSEOdn6uAgAcAUvJZfZtsiPB3G87tko7JO
+ p6WqkE49Wdxg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2020 00:35:20 -0700
-IronPort-SDR: 4mtNFICZz/ZPrbQFWLvBIbCUHOHYpY3OAZaaC71w6XpNZAiOLpaY8FFEIDE0tEHYb8JAb6No8E
- v/66O/yA4GnA==
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2020 00:35:30 -0700
+IronPort-SDR: nBAjqdTvC6ma4zDetuflNWpqzFagi16kYk6qrgPCfQ+eZ/0NeHbifKk1H0zqLNEc/ObLyfhN0q
+ VwtzcD0uk9yg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,471,1583222400"; 
-   d="scan'208";a="348021703"
+   d="scan'208";a="348021727"
 Received: from pg-nxl3.altera.com ([10.142.129.93])
-  by orsmga001.jf.intel.com with ESMTP; 04 Jun 2020 00:35:16 -0700
+  by orsmga001.jf.intel.com with ESMTP; 04 Jun 2020 00:35:27 -0700
 From:   "Ooi, Joyce" <joyce.ooi@intel.com>
 To:     Thor Thayer <thor.thayer@linux.intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -34,11 +34,10 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Tan Ley Foon <ley.foon.tan@intel.com>,
         See Chin Liang <chin.liang.see@intel.com>,
         Dinh Nguyen <dinh.nguyen@intel.com>,
-        Dalon Westergreen <dalon.westergreen@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH v3 08/10] net: eth: altera: add support for ptp and timestamping
-Date:   Thu,  4 Jun 2020 15:32:54 +0800
-Message-Id: <20200604073256.25702-9-joyce.ooi@intel.com>
+        Dalon Westergreen <dalon.westergreen@intel.com>
+Subject: [PATCH v3 09/10] net: eth: altera: add msgdma prefetcher
+Date:   Thu,  4 Jun 2020 15:32:55 +0800
+Message-Id: <20200604073256.25702-10-joyce.ooi@intel.com>
 X-Mailer: git-send-email 2.13.0
 In-Reply-To: <20200604073256.25702-1-joyce.ooi@intel.com>
 References: <20200604073256.25702-1-joyce.ooi@intel.com>
@@ -49,743 +48,732 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dalon Westergreen <dalon.westergreen@intel.com>
 
-Add support for the ptp clock used with the tse, and update
-the driver to support timestamping when enabled.  We also
-enable debugfs entries for the ptp clock to allow some user
-control and interaction with the ptp clock.
+Add support for the mSGDMA prefetcher.  The prefetcher adds support
+for a linked list of descriptors in system memory.  The prefetcher
+feeds these to the mSGDMA dispatcher.
 
-Cc: Richard Cochran <richardcochran@gmail.com>
+The prefetcher is configured to poll for the next descriptor in the
+list to be owned by hardware, then pass the descriptor to the
+dispatcher.  It will then poll the next descriptor until it is
+owned by hardware.
+
+The dispatcher responses are written back to the appropriate
+descriptor, and the owned by hardware bit is cleared.
+
+The driver sets up a linked list twice the tx and rx ring sizes,
+with the last descriptor pointing back to the first.  This ensures
+that the ring of descriptors will always have inactive descriptors
+preventing the prefetcher from looping over and reusing descriptors
+inappropriately.  The prefetcher will continuously loop over these
+descriptors.  The driver modifies descriptors as required to update
+the skb address and length as well as the owned by hardware bit.
+
+In addition to the above, the mSGDMA prefetcher can be used to
+handle rx and tx timestamps coming from the ethernet ip.  These
+can be included in the prefetcher response in the descriptor.
+
 Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
 Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
 ---
-v2: this patch is added in patch version 2
-v3: no change
+v2: minor fixes and suggested edits
+v3: queue is stopped before returning NETDEV_TX_BUSY
 ---
- drivers/net/ethernet/altera/Kconfig              |   1 +
- drivers/net/ethernet/altera/Makefile             |   3 +-
- drivers/net/ethernet/altera/altera_tse.h         |   8 +
- drivers/net/ethernet/altera/altera_tse_ethtool.c |  28 ++
- drivers/net/ethernet/altera/altera_tse_main.c    | 118 +++++++-
- drivers/net/ethernet/altera/intel_fpga_tod.c     | 358 +++++++++++++++++++++++
- drivers/net/ethernet/altera/intel_fpga_tod.h     |  56 ++++
- 7 files changed, 570 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/altera/intel_fpga_tod.c
- create mode 100644 drivers/net/ethernet/altera/intel_fpga_tod.h
+ drivers/net/ethernet/altera/Makefile               |   2 +-
+ .../net/ethernet/altera/altera_msgdma_prefetcher.c | 431 +++++++++++++++++++++
+ .../net/ethernet/altera/altera_msgdma_prefetcher.h |  30 ++
+ .../ethernet/altera/altera_msgdmahw_prefetcher.h   |  87 +++++
+ drivers/net/ethernet/altera/altera_tse.h           |  14 +
+ drivers/net/ethernet/altera/altera_tse_main.c      |  51 +++
+ 6 files changed, 614 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/altera/altera_msgdma_prefetcher.c
+ create mode 100644 drivers/net/ethernet/altera/altera_msgdma_prefetcher.h
+ create mode 100644 drivers/net/ethernet/altera/altera_msgdmahw_prefetcher.h
 
-diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
-index 2690c398d2b2..6dec7094cb4b 100644
---- a/drivers/net/ethernet/altera/Kconfig
-+++ b/drivers/net/ethernet/altera/Kconfig
-@@ -3,6 +3,7 @@ config ALTERA_TSE
- 	tristate "Altera Triple-Speed Ethernet MAC support"
- 	depends on HAS_DMA
- 	select PHYLIB
-+	imply PTP_1588_CLOCK
- 	---help---
- 	  This driver supports the Altera Triple-Speed (TSE) Ethernet MAC.
- 
 diff --git a/drivers/net/ethernet/altera/Makefile b/drivers/net/ethernet/altera/Makefile
-index a52db80aee9f..fc2e460926b3 100644
+index fc2e460926b3..4834e972e906 100644
 --- a/drivers/net/ethernet/altera/Makefile
 +++ b/drivers/net/ethernet/altera/Makefile
-@@ -5,4 +5,5 @@
- 
+@@ -6,4 +6,4 @@
  obj-$(CONFIG_ALTERA_TSE) += altera_tse.o
  altera_tse-objs := altera_tse_main.o altera_tse_ethtool.o \
--altera_msgdma.o altera_sgdma.o altera_utils.o
-+		   altera_msgdma.o altera_sgdma.o altera_utils.o \
-+		   intel_fpga_tod.o
-diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
-index 79d02748c89d..b7c176a808ac 100644
---- a/drivers/net/ethernet/altera/altera_tse.h
-+++ b/drivers/net/ethernet/altera/altera_tse.h
-@@ -28,6 +28,8 @@
- #include <linux/netdevice.h>
- #include <linux/phy.h>
- 
-+#include "intel_fpga_tod.h"
+ 		   altera_msgdma.o altera_sgdma.o altera_utils.o \
+-		   intel_fpga_tod.o
++		   intel_fpga_tod.o altera_msgdma_prefetcher.o
+diff --git a/drivers/net/ethernet/altera/altera_msgdma_prefetcher.c b/drivers/net/ethernet/altera/altera_msgdma_prefetcher.c
+new file mode 100644
+index 000000000000..e8cd4d04730d
+--- /dev/null
++++ b/drivers/net/ethernet/altera/altera_msgdma_prefetcher.c
+@@ -0,0 +1,431 @@
++// SPDX-License-Identifier: GPL-2.0
++/* MSGDMA Prefetcher driver for Altera ethernet devices
++ *
++ * Copyright (C) 2020 Intel Corporation. All rights reserved.
++ * Author(s):
++ *   Dalon Westergreen <dalon.westergreen@intel.com>
++ */
 +
- #define ALTERA_TSE_SW_RESET_WATCHDOG_CNTR	10000
- #define ALTERA_TSE_MAC_FIFO_WIDTH		4	/* TX/RX FIFO width in
- 							 * bytes
-@@ -417,6 +419,12 @@ struct altera_tse_private {
- 	/* TSE Revision */
- 	u32	revision;
- 
-+	/* Shared PTP structure */
-+	struct intel_fpga_tod_private ptp_priv;
-+	int hwts_tx_en;
-+	int hwts_rx_en;
-+	u32 ptp_enable;
-+
- 	/* mSGDMA Rx Dispatcher address space */
- 	void __iomem *rx_dma_csr;
- 	void __iomem *rx_dma_desc;
-diff --git a/drivers/net/ethernet/altera/altera_tse_ethtool.c b/drivers/net/ethernet/altera/altera_tse_ethtool.c
-index 420d77f00eab..cec41a2c7b00 100644
---- a/drivers/net/ethernet/altera/altera_tse_ethtool.c
-+++ b/drivers/net/ethernet/altera/altera_tse_ethtool.c
-@@ -19,6 +19,7 @@
- #include <linux/ethtool.h>
- #include <linux/kernel.h>
- #include <linux/netdevice.h>
++#include <linux/list.h>
++#include <linux/netdevice.h>
 +#include <linux/net_tstamp.h>
- #include <linux/phy.h>
- 
- #include "altera_tse.h"
-@@ -222,6 +223,32 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
- 		buf[i] = csrrd32(priv->mac_dev, i * 4);
- }
- 
-+static int tse_get_ts_info(struct net_device *dev,
-+			   struct ethtool_ts_info *info)
++#include "altera_tse.h"
++#include "altera_msgdma.h"
++#include "altera_msgdmahw.h"
++#include "altera_msgdma_prefetcher.h"
++#include "altera_msgdmahw_prefetcher.h"
++#include "altera_utils.h"
++
++int msgdma_pref_initialize(struct altera_tse_private *priv)
 +{
-+	struct altera_tse_private *priv = netdev_priv(dev);
++	int i;
++	struct msgdma_pref_extended_desc *rx_descs;
++	struct msgdma_pref_extended_desc *tx_descs;
++	dma_addr_t rx_descsphys;
++	dma_addr_t tx_descsphys;
 +
-+	if (priv->ptp_enable) {
-+		if (priv->ptp_priv.ptp_clock)
-+			info->phc_index =
-+				ptp_clock_index(priv->ptp_priv.ptp_clock);
++	priv->pref_rxdescphys = (dma_addr_t)0;
++	priv->pref_txdescphys = (dma_addr_t)0;
 +
-+		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-+					SOF_TIMESTAMPING_RX_HARDWARE |
-+					SOF_TIMESTAMPING_RAW_HARDWARE;
++	/* we need to allocate more pref descriptors than ringsize to
++	 * prevent all of the descriptors being owned by hw.  To do this
++	 * we just allocate twice ring_size descriptors.
++	 * rx_ring_size = priv->rx_ring_size * 2
++	 * tx_ring_size = priv->tx_ring_size * 2
++	 */
 +
-+		info->tx_types = (1 << HWTSTAMP_TX_OFF) |
-+						 (1 << HWTSTAMP_TX_ON);
++	/* The prefetcher requires the descriptors to be aligned to the
++	 * descriptor read/write master's data width which worst case is
++	 * 512 bits.  Currently we DO NOT CHECK THIS and only support 32-bit
++	 * prefetcher masters.
++	 */
 +
-+		info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-+						   (1 << HWTSTAMP_FILTER_ALL);
++	/* allocate memory for rx descriptors */
++	priv->pref_rxdesc =
++		dma_alloc_coherent(priv->device,
++				   sizeof(struct msgdma_pref_extended_desc)
++				   * priv->rx_ring_size * 2,
++				   &priv->pref_rxdescphys, GFP_KERNEL);
 +
-+		return 0;
-+	} else {
-+		return ethtool_op_get_ts_info(dev, info);
++	if (!priv->pref_rxdesc)
++		goto err_rx;
++
++	/* allocate memory for tx descriptors */
++	priv->pref_txdesc =
++		dma_alloc_coherent(priv->device,
++				   sizeof(struct msgdma_pref_extended_desc)
++				   * priv->tx_ring_size * 2,
++				   &priv->pref_txdescphys, GFP_KERNEL);
++
++	if (!priv->pref_txdesc)
++		goto err_tx;
++
++	/* setup base descriptor ring for tx & rx */
++	rx_descs = (struct msgdma_pref_extended_desc *)priv->pref_rxdesc;
++	tx_descs = (struct msgdma_pref_extended_desc *)priv->pref_txdesc;
++	tx_descsphys = priv->pref_txdescphys;
++	rx_descsphys = priv->pref_rxdescphys;
++
++	/* setup RX descriptors */
++	priv->pref_rx_prod = 0;
++	for (i = 0; i < priv->rx_ring_size * 2; i++) {
++		rx_descsphys = priv->pref_rxdescphys +
++			(((i + 1) % (priv->rx_ring_size * 2)) *
++			sizeof(struct msgdma_pref_extended_desc));
++		rx_descs[i].next_desc_lo = lower_32_bits(rx_descsphys);
++		rx_descs[i].next_desc_hi = upper_32_bits(rx_descsphys);
++		rx_descs[i].stride = MSGDMA_DESC_RX_STRIDE;
++		/* burst set to 0 so it defaults to max configured */
++		/* set seq number to desc number */
++		rx_descs[i].burst_seq_num = i;
++	}
++
++	/* setup TX descriptors */
++	for (i = 0; i < priv->tx_ring_size * 2; i++) {
++		tx_descsphys = priv->pref_txdescphys +
++			(((i + 1) % (priv->tx_ring_size * 2)) *
++			sizeof(struct msgdma_pref_extended_desc));
++		tx_descs[i].next_desc_lo = lower_32_bits(tx_descsphys);
++		tx_descs[i].next_desc_hi = upper_32_bits(tx_descsphys);
++		tx_descs[i].stride = MSGDMA_DESC_TX_STRIDE;
++		/* burst set to 0 so it defaults to max configured */
++		/* set seq number to desc number */
++		tx_descs[i].burst_seq_num = i;
++	}
++
++	if (netif_msg_ifup(priv))
++		netdev_info(priv->dev, "%s: RX Desc mem at 0x%x\n", __func__,
++			    priv->pref_rxdescphys);
++
++	if (netif_msg_ifup(priv))
++		netdev_info(priv->dev, "%s: TX Desc mem at 0x%x\n", __func__,
++			    priv->pref_txdescphys);
++
++	return 0;
++
++err_tx:
++	dma_free_coherent(priv->device,
++			  sizeof(struct msgdma_pref_extended_desc)
++			  * priv->rx_ring_size * 2,
++			  priv->pref_rxdesc, priv->pref_rxdescphys);
++err_rx:
++	return -ENOMEM;
++}
++
++void msgdma_pref_uninitialize(struct altera_tse_private *priv)
++{
++	if (priv->pref_rxdesc)
++		dma_free_coherent(priv->device,
++				  sizeof(struct msgdma_pref_extended_desc)
++				  * priv->rx_ring_size * 2,
++				  priv->pref_rxdesc, priv->pref_rxdescphys);
++
++	if (priv->pref_txdesc)
++		dma_free_coherent(priv->device,
++				  sizeof(struct msgdma_pref_extended_desc)
++				  * priv->tx_ring_size * 2,
++				  priv->pref_txdesc, priv->pref_txdescphys);
++}
++
++void msgdma_pref_enable_txirq(struct altera_tse_private *priv)
++{
++	tse_set_bit(priv->tx_pref_csr, msgdma_pref_csroffs(control),
++		    MSGDMA_PREF_CTL_GLOBAL_INTR);
++}
++
++void msgdma_pref_disable_txirq(struct altera_tse_private *priv)
++{
++	tse_clear_bit(priv->tx_pref_csr, msgdma_pref_csroffs(control),
++		      MSGDMA_PREF_CTL_GLOBAL_INTR);
++}
++
++void msgdma_pref_clear_txirq(struct altera_tse_private *priv)
++{
++	csrwr32(MSGDMA_PREF_STAT_IRQ, priv->tx_pref_csr,
++		msgdma_pref_csroffs(status));
++}
++
++void msgdma_pref_enable_rxirq(struct altera_tse_private *priv)
++{
++	tse_set_bit(priv->rx_pref_csr, msgdma_pref_csroffs(control),
++		    MSGDMA_PREF_CTL_GLOBAL_INTR);
++}
++
++void msgdma_pref_disable_rxirq(struct altera_tse_private *priv)
++{
++	tse_clear_bit(priv->rx_pref_csr, msgdma_pref_csroffs(control),
++		      MSGDMA_PREF_CTL_GLOBAL_INTR);
++}
++
++void msgdma_pref_clear_rxirq(struct altera_tse_private *priv)
++{
++	csrwr32(MSGDMA_PREF_STAT_IRQ, priv->rx_pref_csr,
++		msgdma_pref_csroffs(status));
++}
++
++static u64 timestamp_to_ns(struct msgdma_pref_extended_desc *desc)
++{
++	u64 ns = 0;
++	u64 second;
++	u32 tmp;
++
++	tmp = desc->timestamp_96b[0] >> 16;
++	tmp |= (desc->timestamp_96b[1] << 16);
++
++	second = desc->timestamp_96b[2];
++	second <<= 16;
++	second |= ((desc->timestamp_96b[1] & 0xffff0000) >> 16);
++
++	ns = second * NSEC_PER_SEC + tmp;
++
++	return ns;
++}
++
++/* Setup TX descriptor
++ *   -> this should never be called when a descriptor isn't available
++ */
++
++netdev_tx_t msgdma_pref_tx_buffer(struct altera_tse_private *priv,
++				  struct tse_buffer *buffer)
++{
++	u32 desc_entry = priv->tx_prod % (priv->tx_ring_size * 2);
++	struct msgdma_pref_extended_desc *tx_descs = priv->pref_txdesc;
++
++	/* if for some reason the descriptor is still owned by hardware */
++	if (unlikely(tx_descs[desc_entry].desc_control
++		     & MSGDMA_PREF_DESC_CTL_OWNED_BY_HW)) {
++		if (!netif_queue_stopped(priv->dev))
++			netif_stop_queue(priv->dev);
++		return NETDEV_TX_BUSY;
++	}
++
++	/* write descriptor entries */
++	tx_descs[desc_entry].len = buffer->len;
++	tx_descs[desc_entry].read_addr_lo = lower_32_bits(buffer->dma_addr);
++	tx_descs[desc_entry].read_addr_hi = upper_32_bits(buffer->dma_addr);
++
++	/* set the control bits and set owned by hw */
++	tx_descs[desc_entry].desc_control = (MSGDMA_DESC_CTL_TX_SINGLE
++			| MSGDMA_PREF_DESC_CTL_OWNED_BY_HW);
++
++	if (netif_msg_tx_queued(priv))
++		netdev_info(priv->dev, "%s: cons: %d prod: %d",
++			    __func__, priv->tx_cons, priv->tx_prod);
++
++	return NETDEV_TX_OK;
++}
++
++u32 msgdma_pref_tx_completions(struct altera_tse_private *priv)
++{
++	u32 control;
++	u32 ready = 0;
++	u32 cons = priv->tx_cons;
++	u32 desc_ringsize = priv->tx_ring_size * 2;
++	u32 ringsize = priv->tx_ring_size;
++	u64 ns = 0;
++	struct msgdma_pref_extended_desc *cur;
++	struct tse_buffer *tx_buff;
++	struct skb_shared_hwtstamps shhwtstamp;
++	int i;
++
++	if (netif_msg_tx_done(priv))
++		for (i = 0; i < desc_ringsize; i++)
++			netdev_info(priv->dev, "%s: desc: %d control 0x%x\n",
++				    __func__, i,
++				    priv->pref_txdesc[i].desc_control);
++
++	cur = &priv->pref_txdesc[cons % desc_ringsize];
++	control = cur->desc_control;
++	tx_buff = &priv->tx_ring[cons % ringsize];
++
++	while (!(control & MSGDMA_PREF_DESC_CTL_OWNED_BY_HW) &&
++	       (priv->tx_prod != (cons + ready)) && control) {
++		if (skb_shinfo(tx_buff->skb)->tx_flags & SKBTX_IN_PROGRESS) {
++			/* Timestamping is enabled, pass timestamp back */
++			ns = timestamp_to_ns(cur);
++			memset(&shhwtstamp, 0,
++			       sizeof(struct skb_shared_hwtstamps));
++			shhwtstamp.hwtstamp = ns_to_ktime(ns);
++			skb_tstamp_tx(tx_buff->skb, &shhwtstamp);
++		}
++
++		if (netif_msg_tx_done(priv))
++			netdev_info(priv->dev, "%s: cur: %d ts: %lld ns\n",
++				    __func__,
++				    ((cons + ready) % desc_ringsize), ns);
++
++		/* clear data */
++		cur->desc_control = 0;
++		cur->timestamp_96b[0] = 0;
++		cur->timestamp_96b[1] = 0;
++		cur->timestamp_96b[2] = 0;
++
++		ready++;
++		cur = &priv->pref_txdesc[(cons + ready) % desc_ringsize];
++		tx_buff = &priv->tx_ring[(cons + ready) % ringsize];
++		control = cur->desc_control;
++	}
++
++	return ready;
++}
++
++void msgdma_pref_reset(struct altera_tse_private *priv)
++{
++	int counter;
++
++	/* turn off polling */
++	tse_clear_bit(priv->rx_pref_csr, msgdma_pref_csroffs(control),
++		      MSGDMA_PREF_CTL_DESC_POLL_EN);
++	tse_clear_bit(priv->tx_pref_csr, msgdma_pref_csroffs(control),
++		      MSGDMA_PREF_CTL_DESC_POLL_EN);
++
++	/* Reset the RX Prefetcher */
++	csrwr32(MSGDMA_PREF_STAT_IRQ, priv->rx_pref_csr,
++		msgdma_pref_csroffs(status));
++	csrwr32(MSGDMA_PREF_CTL_RESET, priv->rx_pref_csr,
++		msgdma_pref_csroffs(control));
++
++	counter = 0;
++	while (counter++ < ALTERA_TSE_SW_RESET_WATCHDOG_CNTR) {
++		if (tse_bit_is_clear(priv->rx_pref_csr,
++				     msgdma_pref_csroffs(control),
++				     MSGDMA_PREF_CTL_RESET))
++			break;
++		udelay(1);
++	}
++
++	if (counter >= ALTERA_TSE_SW_RESET_WATCHDOG_CNTR)
++		netif_warn(priv, drv, priv->dev,
++			   "TSE Rx Prefetcher reset bit never cleared!\n");
++
++	/* Reset the TX Prefetcher */
++	csrwr32(MSGDMA_PREF_STAT_IRQ, priv->tx_pref_csr,
++		msgdma_pref_csroffs(status));
++	csrwr32(MSGDMA_PREF_CTL_RESET, priv->tx_pref_csr,
++		msgdma_pref_csroffs(control));
++
++	counter = 0;
++	while (counter++ < ALTERA_TSE_SW_RESET_WATCHDOG_CNTR) {
++		if (tse_bit_is_clear(priv->tx_pref_csr,
++				     msgdma_pref_csroffs(control),
++				     MSGDMA_PREF_CTL_RESET))
++			break;
++		udelay(1);
++	}
++
++	if (counter >= ALTERA_TSE_SW_RESET_WATCHDOG_CNTR)
++		netif_warn(priv, drv, priv->dev,
++			   "TSE Tx Prefetcher reset bit never cleared!\n");
++
++	/* clear all status bits */
++	csrwr32(MSGDMA_PREF_STAT_IRQ, priv->tx_pref_csr,
++		msgdma_pref_csroffs(status));
++
++	/* Reset mSGDMA dispatchers*/
++	msgdma_reset(priv);
++}
++
++/* Setup the RX and TX prefetchers to poll the descriptor chain */
++void msgdma_pref_start_rxdma(struct altera_tse_private *priv)
++{
++	csrwr32(priv->rx_poll_freq, priv->rx_pref_csr,
++		msgdma_pref_csroffs(desc_poll_freq));
++	csrwr32(lower_32_bits(priv->pref_rxdescphys), priv->rx_pref_csr,
++		msgdma_pref_csroffs(next_desc_lo));
++	csrwr32(upper_32_bits(priv->pref_rxdescphys), priv->rx_pref_csr,
++		msgdma_pref_csroffs(next_desc_hi));
++	tse_set_bit(priv->rx_pref_csr, msgdma_pref_csroffs(control),
++		    MSGDMA_PREF_CTL_DESC_POLL_EN | MSGDMA_PREF_CTL_RUN);
++}
++
++void msgdma_pref_start_txdma(struct altera_tse_private *priv)
++{
++	csrwr32(priv->tx_poll_freq, priv->tx_pref_csr,
++		msgdma_pref_csroffs(desc_poll_freq));
++	csrwr32(lower_32_bits(priv->pref_txdescphys), priv->tx_pref_csr,
++		msgdma_pref_csroffs(next_desc_lo));
++	csrwr32(upper_32_bits(priv->pref_txdescphys), priv->tx_pref_csr,
++		msgdma_pref_csroffs(next_desc_hi));
++	tse_set_bit(priv->tx_pref_csr, msgdma_pref_csroffs(control),
++		    MSGDMA_PREF_CTL_DESC_POLL_EN | MSGDMA_PREF_CTL_RUN);
++}
++
++/* Add MSGDMA Prefetcher Descriptor to descriptor list
++ *   -> This should never be called when a descriptor isn't available
++ */
++void msgdma_pref_add_rx_desc(struct altera_tse_private *priv,
++			     struct tse_buffer *rxbuffer)
++{
++	struct msgdma_pref_extended_desc *rx_descs = priv->pref_rxdesc;
++	u32 desc_entry = priv->pref_rx_prod % (priv->rx_ring_size * 2);
++
++	/* write descriptor entries */
++	rx_descs[desc_entry].len = priv->rx_dma_buf_sz;
++	rx_descs[desc_entry].write_addr_lo = lower_32_bits(rxbuffer->dma_addr);
++	rx_descs[desc_entry].write_addr_hi = upper_32_bits(rxbuffer->dma_addr);
++
++	/* set the control bits and set owned by hw */
++	rx_descs[desc_entry].desc_control = (MSGDMA_DESC_CTL_END_ON_EOP
++			| MSGDMA_DESC_CTL_END_ON_LEN
++			| MSGDMA_DESC_CTL_TR_COMP_IRQ
++			| MSGDMA_DESC_CTL_EARLY_IRQ
++			| MSGDMA_DESC_CTL_TR_ERR_IRQ
++			| MSGDMA_DESC_CTL_GO
++			| MSGDMA_PREF_DESC_CTL_OWNED_BY_HW);
++
++	/* we need to keep a separate one for rx as RX_DESCRIPTORS are
++	 * pre-configured at startup
++	 */
++	priv->pref_rx_prod++;
++
++	if (netif_msg_rx_status(priv)) {
++		netdev_info(priv->dev, "%s: desc: %d buf: %d control 0x%x\n",
++			    __func__, desc_entry,
++			    priv->rx_prod % priv->rx_ring_size,
++			    priv->pref_rxdesc[desc_entry].desc_control);
 +	}
 +}
 +
- static const struct ethtool_ops tse_ethtool_ops = {
- 	.get_drvinfo = tse_get_drvinfo,
- 	.get_regs_len = tse_reglen,
-@@ -234,6 +261,7 @@ static const struct ethtool_ops tse_ethtool_ops = {
- 	.set_msglevel = tse_set_msglevel,
- 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_ts_info = tse_get_ts_info,
- };
++u32 msgdma_pref_rx_status(struct altera_tse_private *priv)
++{
++	u32 rxstatus = 0;
++	u32 pktlength;
++	u32 pktstatus;
++	u64 ns = 0;
++	u32 entry = priv->rx_cons % priv->rx_ring_size;
++	u32 desc_entry = priv->rx_prod % (priv->rx_ring_size * 2);
++	struct msgdma_pref_extended_desc *rx_descs = priv->pref_rxdesc;
++	struct skb_shared_hwtstamps *shhwtstamp = NULL;
++	struct tse_buffer *rx_buff = priv->rx_ring;
++
++	/* if the current entry is not owned by hardware, process it */
++	if (!(rx_descs[desc_entry].desc_control
++	      & MSGDMA_PREF_DESC_CTL_OWNED_BY_HW) &&
++	      rx_descs[desc_entry].desc_control) {
++		pktlength = rx_descs[desc_entry].bytes_transferred;
++		pktstatus = rx_descs[desc_entry].desc_status;
++		rxstatus = pktstatus;
++		rxstatus = rxstatus << 16;
++		rxstatus |= (pktlength & 0xffff);
++
++		/* get the timestamp */
++		if (priv->hwts_rx_en) {
++			ns = timestamp_to_ns(&rx_descs[desc_entry]);
++			shhwtstamp = skb_hwtstamps(rx_buff[entry].skb);
++			memset(shhwtstamp, 0,
++			       sizeof(struct skb_shared_hwtstamps));
++			shhwtstamp->hwtstamp = ns_to_ktime(ns);
++		}
++
++		/* clear data */
++		rx_descs[desc_entry].desc_control = 0;
++		rx_descs[desc_entry].timestamp_96b[0] = 0;
++		rx_descs[desc_entry].timestamp_96b[1] = 0;
++		rx_descs[desc_entry].timestamp_96b[2] = 0;
++
++		if (netif_msg_rx_status(priv))
++			netdev_info(priv->dev, "%s: desc: %d buf: %d ts: %lld ns",
++				    __func__, desc_entry, entry, ns);
++	}
++	return rxstatus;
++}
+diff --git a/drivers/net/ethernet/altera/altera_msgdma_prefetcher.h b/drivers/net/ethernet/altera/altera_msgdma_prefetcher.h
+new file mode 100644
+index 000000000000..6507c2805a05
+--- /dev/null
++++ b/drivers/net/ethernet/altera/altera_msgdma_prefetcher.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* MSGDMA Prefetcher driver for Altera ethernet devices
++ *
++ * Copyright (C) 2020 Intel Corporation. All rights reserved.
++ * Author(s):
++ *   Dalon Westergreen <dalon.westergreen@intel.com>
++ */
++
++#ifndef __ALTERA_PREF_MSGDMA_H__
++#define __ALTERA_PREF_MSGDMA_H__
++
++void msgdma_pref_reset(struct altera_tse_private *priv);
++void msgdma_pref_enable_txirq(struct altera_tse_private *priv);
++void msgdma_pref_enable_rxirq(struct altera_tse_private *priv);
++void msgdma_pref_disable_rxirq(struct altera_tse_private *priv);
++void msgdma_pref_disable_txirq(struct altera_tse_private *priv);
++void msgdma_pref_clear_rxirq(struct altera_tse_private *priv);
++void msgdma_pref_clear_txirq(struct altera_tse_private *priv);
++u32 msgdma_pref_tx_completions(struct altera_tse_private *priv);
++void msgdma_pref_add_rx_desc(struct altera_tse_private *priv,
++			     struct tse_buffer *buffer);
++netdev_tx_t msgdma_pref_tx_buffer(struct altera_tse_private *priv,
++				  struct tse_buffer *buffer);
++u32 msgdma_pref_rx_status(struct altera_tse_private *priv);
++int msgdma_pref_initialize(struct altera_tse_private *priv);
++void msgdma_pref_uninitialize(struct altera_tse_private *priv);
++void msgdma_pref_start_rxdma(struct altera_tse_private *priv);
++void msgdma_pref_start_txdma(struct altera_tse_private *priv);
++
++#endif /*  __ALTERA_PREF_MSGDMA_H__ */
+diff --git a/drivers/net/ethernet/altera/altera_msgdmahw_prefetcher.h b/drivers/net/ethernet/altera/altera_msgdmahw_prefetcher.h
+new file mode 100644
+index 000000000000..efda31e491ca
+--- /dev/null
++++ b/drivers/net/ethernet/altera/altera_msgdmahw_prefetcher.h
+@@ -0,0 +1,87 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* MSGDMA Prefetcher driver for Altera ethernet devices
++ *
++ * Copyright (C) 2020 Intel Corporation.
++ * Contributors:
++ *   Dalon Westergreen
++ *   Thomas Chou
++ *   Ian Abbott
++ *   Yuriy Kozlov
++ *   Tobias Klauser
++ *   Andriy Smolskyy
++ *   Roman Bulgakov
++ *   Dmytro Mytarchuk
++ *   Matthew Gerlach
++ */
++
++#ifndef __ALTERA_MSGDMAHW_PREFETCHER_H__
++#define __ALTERA_MSGDMAHW_PREFETCHER_H__
++
++/* mSGDMA prefetcher extended prefectcher descriptor format
++ */
++struct msgdma_pref_extended_desc {
++	/* data buffer source address low bits */
++	u32 read_addr_lo;
++	/* data buffer destination address low bits */
++	u32 write_addr_lo;
++	/* the number of bytes to transfer */
++	u32 len;
++	/* next descriptor low address */
++	u32 next_desc_lo;
++	/* number of bytes transferred */
++	u32 bytes_transferred;
++	u32 desc_status;
++	u32 reserved_18;
++	/* bit 31:24 write burst */
++	/* bit 23:16 read burst */
++	/* bit 15:0  sequence number */
++	u32 burst_seq_num;
++	/* bit 31:16 write stride */
++	/* bit 15:0  read stride */
++	u32 stride;
++	/* data buffer source address high bits */
++	u32 read_addr_hi;
++	/* data buffer destination address high bits */
++	u32 write_addr_hi;
++	/* next descriptor high address */
++	u32 next_desc_hi;
++	/* prefetcher mod now writes these reserved bits*/
++	/* Response bits [191:160] */
++	u32 timestamp_96b[3];
++	/* desc_control */
++	u32 desc_control;
++};
++
++/* mSGDMA Prefetcher Descriptor Status bits */
++#define MSGDMA_PREF_DESC_STAT_STOPPED_ON_EARLY		BIT(8)
++#define MSGDMA_PREF_DESC_STAT_MASK			0xFF
++
++/* mSGDMA Prefetcher Descriptor Control bits */
++/* bit 31 and bits 29-0 are the same as the normal dispatcher ctl flags */
++#define MSGDMA_PREF_DESC_CTL_OWNED_BY_HW		BIT(30)
++
++/* mSGDMA Prefetcher CSR */
++struct msgdma_prefetcher_csr {
++	u32 control;
++	u32 next_desc_lo;
++	u32 next_desc_hi;
++	u32 desc_poll_freq;
++	u32 status;
++};
++
++/* mSGDMA Prefetcher Control */
++#define MSGDMA_PREF_CTL_PARK				BIT(4)
++#define MSGDMA_PREF_CTL_GLOBAL_INTR			BIT(3)
++#define MSGDMA_PREF_CTL_RESET				BIT(2)
++#define MSGDMA_PREF_CTL_DESC_POLL_EN			BIT(1)
++#define MSGDMA_PREF_CTL_RUN				BIT(0)
++
++#define MSGDMA_PREF_POLL_FREQ_MASK			0xFFFF
++
++/* mSGDMA Prefetcher Status */
++#define MSGDMA_PREF_STAT_IRQ				BIT(0)
++
++#define msgdma_pref_csroffs(a) (offsetof(struct msgdma_prefetcher_csr, a))
++#define msgdma_pref_descroffs(a) (offsetof(struct msgdma_pref_extended_desc, a))
++
++#endif /* __ALTERA_MSGDMAHW_PREFETCHER_H__*/
+diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
+index b7c176a808ac..35f99bfce4ef 100644
+--- a/drivers/net/ethernet/altera/altera_tse.h
++++ b/drivers/net/ethernet/altera/altera_tse.h
+@@ -382,6 +382,7 @@ struct altera_tse_private;
  
- void altera_tse_set_ethtool_ops(struct net_device *netdev)
+ #define ALTERA_DTYPE_SGDMA 1
+ #define ALTERA_DTYPE_MSGDMA 2
++#define ALTERA_DTYPE_MSGDMA_PREF 3
+ 
+ /* standard DMA interface for SGDMA and MSGDMA */
+ struct altera_dmaops {
+@@ -434,6 +435,19 @@ struct altera_tse_private {
+ 	void __iomem *tx_dma_csr;
+ 	void __iomem *tx_dma_desc;
+ 
++	/* mSGDMA Rx Prefecher address space */
++	void __iomem *rx_pref_csr;
++	struct msgdma_pref_extended_desc *pref_rxdesc;
++	dma_addr_t pref_rxdescphys;
++	u32 pref_rx_prod;
++
++	/* mSGDMA Tx Prefecher address space */
++	void __iomem *tx_pref_csr;
++	struct msgdma_pref_extended_desc *pref_txdesc;
++	dma_addr_t pref_txdescphys;
++	u32 rx_poll_freq;
++	u32 tx_poll_freq;
++
+ 	/* Rx buffers queue */
+ 	struct tse_buffer *rx_ring;
+ 	u32 rx_cons;
 diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index 24a1d30c6780..c874b8c1dd48 100644
+index c874b8c1dd48..d061381bd545 100644
 --- a/drivers/net/ethernet/altera/altera_tse_main.c
 +++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -18,14 +18,17 @@
-  */
- 
- #include <linux/atomic.h>
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/etherdevice.h>
-+#include <linux/if_ether.h>
- #include <linux/if_vlan.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mii.h>
-+#include <linux/net_tstamp.h>
- #include <linux/netdevice.h>
- #include <linux/of_device.h>
- #include <linux/of_mdio.h>
-@@ -40,6 +43,7 @@
- #include "altera_tse.h"
+@@ -44,6 +44,7 @@
  #include "altera_sgdma.h"
  #include "altera_msgdma.h"
-+#include "intel_fpga_tod.h"
+ #include "intel_fpga_tod.h"
++#include "altera_msgdma_prefetcher.h"
  
  static atomic_t instance_count = ATOMIC_INIT(~0);
  /* Module parameters */
-@@ -598,7 +602,11 @@ static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (ret)
- 		goto out;
+@@ -1500,6 +1501,34 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 		priv->rxdescmem = resource_size(dma_res);
+ 		priv->rxdescmem_busaddr = dma_res->start;
  
--	skb_tx_timestamp(skb);
-+	if (unlikely((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+		     priv->hwts_tx_en))
-+		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-+	else
-+		skb_tx_timestamp(skb);
- 
- 	priv->tx_prod++;
- 	dev->stats.tx_bytes += skb->len;
-@@ -1238,6 +1246,13 @@ static int tse_open(struct net_device *dev)
- 	if (dev->phydev)
- 		phy_start(dev->phydev);
- 
-+	ret = intel_fpga_tod_init(&priv->ptp_priv);
-+	if (ret)
-+		netdev_warn(dev, "Failed PTP initialization\n");
++	} else if (priv->dmaops &&
++			   priv->dmaops->altera_dtype ==
++			   ALTERA_DTYPE_MSGDMA_PREF) {
++		/* mSGDMA Rx Prefetcher address space */
++		ret = request_and_map(pdev, "rx_pref", &dma_res,
++				      &priv->rx_pref_csr);
++		if (ret)
++			goto err_free_netdev;
 +
-+	priv->hwts_tx_en = 0;
-+	priv->hwts_rx_en = 0;
++		/* mSGDMA Tx Prefetcher address space */
++		ret = request_and_map(pdev, "tx_pref", &dma_res,
++				      &priv->tx_pref_csr);
++		if (ret)
++			goto err_free_netdev;
 +
- 	napi_enable(&priv->napi);
- 	netif_start_queue(dev);
- 
-@@ -1309,6 +1324,83 @@ static int tse_shutdown(struct net_device *dev)
- 	return 0;
- }
- 
-+/* ioctl to configure timestamping */
-+static int tse_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	struct altera_tse_private *priv = netdev_priv(dev);
-+	struct hwtstamp_config config;
-+
-+	if (!netif_running(dev))
-+		return -EINVAL;
-+
-+	if (!priv->ptp_enable)	{
-+		netdev_alert(priv->dev, "Timestamping not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (cmd == SIOCSHWTSTAMP) {
-+		if (copy_from_user(&config, ifr->ifr_data,
-+				   sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+
-+		if (config.flags)
-+			return -EINVAL;
-+
-+		switch (config.tx_type) {
-+		case HWTSTAMP_TX_OFF:
-+			priv->hwts_tx_en = 0;
-+			break;
-+		case HWTSTAMP_TX_ON:
-+			priv->hwts_tx_en = 1;
-+			break;
-+		default:
-+			return -ERANGE;
++		/* get prefetcher rx poll frequency from device tree */
++		if (of_property_read_u32(pdev->dev.of_node, "rx-poll-freq",
++					 &priv->rx_poll_freq)) {
++			dev_info(&pdev->dev, "Defaulting RX Poll Frequency to 128\n");
++			priv->rx_poll_freq = 128;
 +		}
 +
-+		switch (config.rx_filter) {
-+		case HWTSTAMP_FILTER_NONE:
-+			priv->hwts_rx_en = 0;
-+			config.rx_filter = HWTSTAMP_FILTER_NONE;
-+			break;
-+		default:
-+			priv->hwts_rx_en = 1;
-+			config.rx_filter = HWTSTAMP_FILTER_ALL;
-+			break;
++		/* get prefetcher rx poll frequency from device tree */
++		if (of_property_read_u32(pdev->dev.of_node, "tx-poll-freq",
++					 &priv->tx_poll_freq)) {
++			dev_info(&pdev->dev, "Defaulting TX Poll Frequency to 128\n");
++			priv->tx_poll_freq = 128;
 +		}
-+
-+		if (copy_to_user(ifr->ifr_data, &config,
-+				 sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+		else
-+			return 0;
-+	}
-+
-+	if (cmd == SIOCGHWTSTAMP) {
-+		config.flags = 0;
-+
-+		if (priv->hwts_tx_en)
-+			config.tx_type = HWTSTAMP_TX_ON;
-+		else
-+			config.tx_type = HWTSTAMP_TX_OFF;
-+
-+		if (priv->hwts_rx_en)
-+			config.rx_filter = HWTSTAMP_FILTER_ALL;
-+		else
-+			config.rx_filter = HWTSTAMP_FILTER_NONE;
-+
-+		if (copy_to_user(ifr->ifr_data, &config,
-+				 sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+		else
-+			return 0;
-+	}
-+
-+	if (!dev->phydev)
-+		return -EINVAL;
-+
-+	return phy_mii_ioctl(dev->phydev, ifr, cmd);
-+}
-+
- static struct net_device_ops altera_tse_netdev_ops = {
- 	.ndo_open		= tse_open,
- 	.ndo_stop		= tse_shutdown,
-@@ -1317,6 +1409,7 @@ static struct net_device_ops altera_tse_netdev_ops = {
- 	.ndo_set_rx_mode	= tse_set_rx_mode,
- 	.ndo_change_mtu		= tse_change_mtu,
- 	.ndo_validate_addr	= eth_validate_addr,
-+	.ndo_do_ioctl		= tse_do_ioctl,
+ 	} else {
+ 		goto err_free_netdev;
+ 	}
+@@ -1758,7 +1787,29 @@ static const struct altera_dmaops altera_dtype_msgdma = {
+ 	.start_txdma = NULL,
  };
  
- /* Probe Altera TSE MAC device
-@@ -1568,6 +1661,27 @@ static int altera_tse_probe(struct platform_device *pdev)
- 		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
- 		goto err_init_phy;
- 	}
-+
-+	priv->ptp_enable = of_property_read_bool(pdev->dev.of_node,
-+						 "altr,has-ptp");
-+	dev_info(&pdev->dev, "PTP Enable: %d\n", priv->ptp_enable);
-+
-+	if (priv->ptp_enable) {
-+		/* MAP PTP */
-+		ret = intel_fpga_tod_probe(pdev, &priv->ptp_priv);
-+		if (ret) {
-+			dev_err(&pdev->dev, "cannot map PTP\n");
-+			goto err_init_phy;
-+		}
-+		ret = intel_fpga_tod_register(&priv->ptp_priv,
-+					      priv->device);
-+		if (ret) {
-+			dev_err(&pdev->dev, "Failed to register PTP clock\n");
-+			ret = -ENXIO;
-+			goto err_init_phy;
-+		}
-+	}
-+
- 	return 0;
- 
- err_init_phy:
-@@ -1595,6 +1709,8 @@ static int altera_tse_remove(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, NULL);
-+	if (priv->ptp_enable)
-+		intel_fpga_tod_unregister(&priv->ptp_priv);
- 	altera_tse_mdio_destroy(ndev);
- 	unregister_netdev(ndev);
- 	free_netdev(ndev);
-diff --git a/drivers/net/ethernet/altera/intel_fpga_tod.c b/drivers/net/ethernet/altera/intel_fpga_tod.c
-new file mode 100644
-index 000000000000..3771597642da
---- /dev/null
-+++ b/drivers/net/ethernet/altera/intel_fpga_tod.c
-@@ -0,0 +1,358 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Intel FPGA ToD PTP Hardware Clock (PHC) Linux driver
-+ * Copyright (C) 2015-2016 Altera Corporation. All rights reserved.
-+ * Copyright (C) 2017-2020 Intel Corporation. All rights reserved.
-+ *
-+ * Author(s):
-+ *	Dalon Westergreen <dalon.westergreen@intel.com>
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/gcd.h>
-+#include <linux/module.h>
-+#include <linux/math64.h>
-+#include <linux/net_tstamp.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+
-+#include "altera_utils.h"
-+#include "intel_fpga_tod.h"
-+
-+#define NOMINAL_PPB			1000000000ULL
-+#define TOD_PERIOD_MAX			0xfffff
-+#define TOD_PERIOD_MIN			0
-+#define TOD_DRIFT_ADJUST_FNS_MAX	0xffff
-+#define TOD_DRIFT_ADJUST_RATE_MAX	0xffff
-+#define TOD_ADJUST_COUNT_MAX		0xfffff
-+#define TOD_ADJUST_MS_MAX		(((((TOD_PERIOD_MAX) >> 16) + 1) * \
-+					  ((TOD_ADJUST_COUNT_MAX) + 1)) /  \
-+					 1000000UL)
-+
-+/* A fine ToD HW clock offset adjustment.
-+ * To perform the fine offset adjustment the AdjustPeriod register is used
-+ * to replace the Period register for AdjustCount clock cycles in hardware.
-+ */
-+static int fine_adjust_tod_clock(struct intel_fpga_tod_private *priv,
-+				 u32 adjust_period, u32 adjust_count)
-+{
-+	int limit;
-+
-+	csrwr32(adjust_period, priv->tod_ctrl, tod_csroffs(adjust_period));
-+	csrwr32(adjust_count, priv->tod_ctrl, tod_csroffs(adjust_count));
-+
-+	/* Wait for present offset adjustment update to complete */
-+	limit = TOD_ADJUST_MS_MAX;
-+	while (limit--) {
-+		if (!csrrd32(priv->tod_ctrl, tod_csroffs(adjust_count)))
-+			break;
-+		mdelay(1);
-+	}
-+	if (limit < 0)
-+		return -EBUSY;
-+
-+	return 0;
-+}
-+
-+/* A coarse ToD HW clock offset adjustment.
-+ * The coarse time adjustment performs by adding or subtracting the delta value
-+ * from the current ToD HW clock time.
-+ */
-+static int coarse_adjust_tod_clock(struct intel_fpga_tod_private *priv,
-+				   s64 delta)
-+{
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	u64 seconds, now;
-+
-+	if (delta == 0)
-+		goto out;
-+
-+	/* Get current time */
-+	nanosec = csrrd32(priv->tod_ctrl, tod_csroffs(nanosec));
-+	seconds_lsb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	seconds_msb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_msb));
-+
-+	/* Calculate new time */
-+	seconds = (((u64)(seconds_msb & 0x0000ffff)) << 32) | seconds_lsb;
-+	now = seconds * NSEC_PER_SEC + nanosec + delta;
-+
-+	seconds = div_u64_rem(now, NSEC_PER_SEC, &nanosec);
-+	seconds_msb = upper_32_bits(seconds) & 0x0000ffff;
-+	seconds_lsb = lower_32_bits(seconds);
-+
-+	/* Set corrected time */
-+	csrwr32(seconds_msb, priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	csrwr32(seconds_lsb, priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	csrwr32(nanosec, priv->tod_ctrl, tod_csroffs(nanosec));
-+
-+out:
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_adjust_fine(struct ptp_clock_info *ptp,
-+				      long scaled_ppm)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 tod_period, tod_rem, tod_drift_adjust_fns, tod_drift_adjust_rate;
-+	unsigned long flags;
-+	unsigned long rate;
-+	int ret = 0;
-+	u64 ppb;
-+
-+	rate = clk_get_rate(priv->tod_clk);
-+
-+	/* From scaled_ppm_to_ppb */
-+	ppb = 1 + scaled_ppm;
-+	ppb *= 125;
-+	ppb >>= 13;
-+
-+	ppb += NOMINAL_PPB;
-+
-+	tod_period = div_u64_rem(ppb << 16, rate, &tod_rem);
-+	if (tod_period > TOD_PERIOD_MAX) {
-+		ret = -ERANGE;
-+		goto out;
-+	}
-+
-+	/* The drift of ToD adjusted periodically by adding a drift_adjust_fns
-+	 * correction value every drift_adjust_rate count of clock cycles.
-+	 */
-+	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
-+	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
-+
-+	while ((tod_drift_adjust_fns > TOD_DRIFT_ADJUST_FNS_MAX) |
-+		(tod_drift_adjust_rate > TOD_DRIFT_ADJUST_RATE_MAX)) {
-+		tod_drift_adjust_fns = tod_drift_adjust_fns >> 1;
-+		tod_drift_adjust_rate = tod_drift_adjust_rate >> 1;
-+	}
-+
-+	if (tod_drift_adjust_fns == 0)
-+		tod_drift_adjust_rate = 0;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	csrwr32(tod_period, priv->tod_ctrl, tod_csroffs(period));
-+	csrwr32(0, priv->tod_ctrl, tod_csroffs(adjust_period));
-+	csrwr32(0, priv->tod_ctrl, tod_csroffs(adjust_count));
-+	csrwr32(tod_drift_adjust_fns, priv->tod_ctrl,
-+		tod_csroffs(drift_adjust));
-+	csrwr32(tod_drift_adjust_rate, priv->tod_ctrl,
-+		tod_csroffs(drift_adjust_rate));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+out:
-+	return ret;
-+}
-+
-+static int intel_fpga_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	unsigned long flags;
-+	u32 period, diff, rem, rem_period, adj_period;
-+	u64 count;
-+	int neg_adj = 0, ret = 0;
-+
-+	if (delta < 0) {
-+		neg_adj = 1;
-+		delta = -delta;
-+	}
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+
-+	/* Get the maximum possible value of the Period register offset
-+	 * adjustment in nanoseconds scale. This depends on the current
-+	 * Period register setting and the maximum and minimum possible
-+	 * values of the Period register.
-+	 */
-+	period = csrrd32(priv->tod_ctrl, tod_csroffs(period));
-+
-+	if (neg_adj)
-+		diff = (period - TOD_PERIOD_MIN) >> 16;
-+	else
-+		diff = (TOD_PERIOD_MAX - period) >> 16;
-+
-+	/* Find the number of cycles required for the
-+	 * time adjustment
-+	 */
-+	count = div_u64_rem(delta, diff, &rem);
-+
-+	if (neg_adj) {
-+		adj_period = period - (diff << 16);
-+		rem_period = period - (rem << 16);
-+	} else {
-+		adj_period = period + (diff << 16);
-+		rem_period = period + (rem << 16);
-+	}
-+
-+	/* If count is larger than the maximum count,
-+	 * just set the time.
-+	 */
-+	if (count > TOD_ADJUST_COUNT_MAX) {
-+		/* Perform the coarse time offset adjustment */
-+		ret = coarse_adjust_tod_clock(priv, delta);
-+	} else {
-+		/* Adjust the period for count cycles to adjust
-+		 * the time.
-+		 */
-+		if (count)
-+			ret = fine_adjust_tod_clock(priv, adj_period, count);
-+
-+		/* If there is a remainder, adjust the period for an
-+		 * additional cycle
-+		 */
-+		if (rem)
-+			ret = fine_adjust_tod_clock(priv, rem_period, 1);
-+	}
-+
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	return ret;
-+}
-+
-+static int intel_fpga_tod_get_time(struct ptp_clock_info *ptp,
-+				   struct timespec64 *ts)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	unsigned long flags;
-+	u64 seconds;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	nanosec = csrrd32(priv->tod_ctrl, tod_csroffs(nanosec));
-+	seconds_lsb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	seconds_msb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	seconds = (((u64)(seconds_msb & 0x0000ffff)) << 32) | seconds_lsb;
-+
-+	ts->tv_nsec = nanosec;
-+	ts->tv_sec = (__kernel_old_time_t)seconds;
-+
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_set_time(struct ptp_clock_info *ptp,
-+				   const struct timespec64 *ts)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 seconds_msb = upper_32_bits(ts->tv_sec) & 0x0000ffff;
-+	u32 seconds_lsb = lower_32_bits(ts->tv_sec);
-+	u32 nanosec = lower_32_bits(ts->tv_nsec);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	csrwr32(seconds_msb, priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	csrwr32(seconds_lsb, priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	csrwr32(nanosec, priv->tod_ctrl, tod_csroffs(nanosec));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_enable_feature(struct ptp_clock_info *ptp,
-+					 struct ptp_clock_request *request,
-+					 int on)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static struct ptp_clock_info intel_fpga_tod_clock_ops = {
-+	.owner = THIS_MODULE,
-+	.name = "intel_fpga_tod",
-+	.max_adj = 500000000,
-+	.n_alarm = 0,
-+	.n_ext_ts = 0,
-+	.n_per_out = 0,
-+	.pps = 0,
-+	.adjfine = intel_fpga_tod_adjust_fine,
-+	.adjtime = intel_fpga_tod_adjust_time,
-+	.gettime64 = intel_fpga_tod_get_time,
-+	.settime64 = intel_fpga_tod_set_time,
-+	.enable = intel_fpga_tod_enable_feature,
++static const struct altera_dmaops altera_dtype_prefetcher = {
++	.altera_dtype = ALTERA_DTYPE_MSGDMA_PREF,
++	.dmamask = 64,
++	.reset_dma = msgdma_pref_reset,
++	.enable_txirq = msgdma_pref_enable_txirq,
++	.enable_rxirq = msgdma_pref_enable_rxirq,
++	.disable_txirq = msgdma_pref_disable_txirq,
++	.disable_rxirq = msgdma_pref_disable_rxirq,
++	.clear_txirq = msgdma_pref_clear_txirq,
++	.clear_rxirq = msgdma_pref_clear_rxirq,
++	.tx_buffer = msgdma_pref_tx_buffer,
++	.tx_completions = msgdma_pref_tx_completions,
++	.add_rx_desc = msgdma_pref_add_rx_desc,
++	.get_rx_status = msgdma_pref_rx_status,
++	.init_dma = msgdma_pref_initialize,
++	.uninit_dma = msgdma_pref_uninitialize,
++	.start_rxdma = msgdma_pref_start_rxdma,
++	.start_txdma = msgdma_pref_start_txdma,
 +};
 +
-+/* Initialize PTP control block registers */
-+int intel_fpga_tod_init(struct intel_fpga_tod_private *priv)
-+{
-+	struct timespec64 now;
-+	int ret = 0;
-+
-+	ret = intel_fpga_tod_adjust_fine(&priv->ptp_clock_ops, 0l);
-+	if (ret != 0)
-+		goto out;
-+
-+	/* Initialize the hardware clock to the system time */
-+	ktime_get_real_ts64(&now);
-+	intel_fpga_tod_set_time(&priv->ptp_clock_ops, &now);
-+
-+	spin_lock_init(&priv->tod_lock);
-+
-+out:
-+	return ret;
-+}
-+
-+/* Register the PTP clock driver to kernel */
-+int intel_fpga_tod_register(struct intel_fpga_tod_private *priv,
-+			    struct device *device)
-+{
-+	int ret = 0;
-+
-+	priv->ptp_clock_ops = intel_fpga_tod_clock_ops;
-+
-+	priv->ptp_clock = ptp_clock_register(&priv->ptp_clock_ops, device);
-+	if (IS_ERR(priv->ptp_clock)) {
-+		priv->ptp_clock = NULL;
-+		ret = -ENODEV;
-+	}
-+
-+	if (priv->tod_clk)
-+		ret = clk_prepare_enable(priv->tod_clk);
-+
-+	return ret;
-+}
-+
-+/* Remove/unregister the ptp clock driver from the kernel */
-+void intel_fpga_tod_unregister(struct intel_fpga_tod_private *priv)
-+{
-+	if (priv->ptp_clock) {
-+		ptp_clock_unregister(priv->ptp_clock);
-+		priv->ptp_clock = NULL;
-+	}
-+
-+	if (priv->tod_clk)
-+		clk_disable_unprepare(priv->tod_clk);
-+}
-+
-+/* Common PTP probe function */
-+int intel_fpga_tod_probe(struct platform_device *pdev,
-+			 struct intel_fpga_tod_private *priv)
-+{
-+	struct resource *ptp_res;
-+	int ret = -ENODEV;
-+
-+	priv->dev = (struct net_device *)platform_get_drvdata(pdev);
-+
-+	/* Time-of-Day (ToD) Clock address space */
-+	ret = request_and_map(pdev, "tod_ctrl", &ptp_res,
-+			      (void __iomem **)&priv->tod_ctrl);
-+	if (ret)
-+		goto err;
-+
-+	dev_info(&pdev->dev, "\tTOD Ctrl at 0x%08lx\n",
-+		 (unsigned long)ptp_res->start);
-+
-+	/* Time-of-Day (ToD) Clock period clock */
-+	priv->tod_clk = devm_clk_get(&pdev->dev, "tod_clk");
-+	if (IS_ERR(priv->tod_clk)) {
-+		dev_err(&pdev->dev, "cannot obtain ToD period clock\n");
-+		ret = -ENXIO;
-+		goto err;
-+	}
-+err:
-+	return ret;
-+}
-+
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/altera/intel_fpga_tod.h b/drivers/net/ethernet/altera/intel_fpga_tod.h
-new file mode 100644
-index 000000000000..064b97c2bf38
---- /dev/null
-+++ b/drivers/net/ethernet/altera/intel_fpga_tod.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Altera PTP Hardware Clock (PHC) Linux driver
-+ * Copyright (C) 2015-2016 Altera Corporation. All rights reserved.
-+ * Copyright (C) 2017-2020 Intel Corporation. All rights reserved.
-+ *
-+ * Author(s):
-+ *	Dalon Westergreen <dalon.westergreen@intel.com>
-+ */
-+
-+#ifndef __INTEL_FPGA_TOD_H__
-+#define __INTEL_FPGA_TOD_H__
-+
-+#include <linux/debugfs.h>
-+#include <linux/netdevice.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/mutex.h>
-+
-+/* Altera Time-of-Day (ToD) clock register space. */
-+struct intel_fpga_tod {
-+	u32 seconds_msb;
-+	u32 seconds_lsb;
-+	u32 nanosec;
-+	u32 reserved1[0x1];
-+	u32 period;
-+	u32 adjust_period;
-+	u32 adjust_count;
-+	u32 drift_adjust;
-+	u32 drift_adjust_rate;
-+};
-+
-+#define tod_csroffs(a)	(offsetof(struct intel_fpga_tod, a))
-+
-+struct intel_fpga_tod_private {
-+	struct net_device *dev;
-+
-+	struct ptp_clock_info ptp_clock_ops;
-+	struct ptp_clock *ptp_clock;
-+
-+	/* Time-of-Day (ToD) Clock address space */
-+	struct intel_fpga_tod __iomem *tod_ctrl;
-+	struct clk *tod_clk;
-+
-+	/* ToD clock registers protection */
-+	spinlock_t tod_lock;
-+};
-+
-+int intel_fpga_tod_init(struct intel_fpga_tod_private *priv);
-+void intel_fpga_tod_uinit(struct intel_fpga_tod_private *priv);
-+int intel_fpga_tod_register(struct intel_fpga_tod_private *priv,
-+			    struct device *device);
-+void intel_fpga_tod_unregister(struct intel_fpga_tod_private *priv);
-+int intel_fpga_tod_probe(struct platform_device *pdev,
-+			 struct intel_fpga_tod_private *priv);
-+
-+#endif /* __INTEL_FPGA_TOD_H__ */
+ static const struct of_device_id altera_tse_ids[] = {
++	{ .compatible = "altr,tse-msgdma-2.0",
++		.data = &altera_dtype_prefetcher, },
+ 	{ .compatible = "altr,tse-msgdma-1.0", .data = &altera_dtype_msgdma, },
+ 	{ .compatible = "altr,tse-1.0", .data = &altera_dtype_sgdma, },
+ 	{ .compatible = "ALTR,tse-1.0", .data = &altera_dtype_sgdma, },
 -- 
 2.13.0
 
