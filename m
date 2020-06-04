@@ -2,134 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A24B41EDB43
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 04:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97D581EDB52
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 04:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgFDCgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 22:36:33 -0400
-Received: from mail-eopbgr70071.outbound.protection.outlook.com ([40.107.7.71]:10691
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726047AbgFDCgd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 22:36:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D1DudB4SCL3zmp/xWIPaEkzrRVxU8QNLQCTqrbXNlUr3uZm8p+rWvXwl2Urpr58OCVIBVeSZ6fYRxr5GxcF1fmU+C20QIMKEhjZtUKycYW3K3qW5aM2mcBEkaylwWyb46NtaXyeL8qWpN3QR5ussamXG61ZX3/xlOteG633STyrXKmquvHH0Y6sYeSYkFv44B7AAmz5p4+5BJeOB40vhhhoWTz6DI93A2bBrUtRbUQtoms1SC3krBVPRMKEG6UFZrzw4TgCgGf59B3UDATeesjLtws9Sw1M6fxqnmgaFVHh49ynvtyeDvox24ikqptCEMZnN5r7IRFRPykxe2GA/yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oDQHXDsTaick5RedFb6PCmFYQJtR4hT2nG/MVl0FtVU=;
- b=EhmXd57WVGtjl7tJbcwQCaWikQwKwjXTKE2zpWHOYM30C0ySMkdS0Bei1+PT+ikLu+VbriNfJmBIxgUnUhN+xws62TkI5ZM1XxyUsB0GHPOjASPb8jzqC9atvMUYp0LUkeFqZ9faAhg1sJ6PpgfaO85zS5WIkZuWggk/3qJEjJta4YbU9Bis+aZQRuZpRW9If+xUaLZovIUNkEIsWpSwTX1fYNFQ36iWergIs7Sm3SDrmObvVT3/vS/AMnvg/ejnbKPsD6bDhmmIMldwguIWsI6bl0SLWnGaSriI2rbdqMRI7QRq02c6nOhcjd5tB5uh/sPEcRM9kvEQZmxKh7yqZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oDQHXDsTaick5RedFb6PCmFYQJtR4hT2nG/MVl0FtVU=;
- b=ZMnMWrESqKNAtpr7jhmVOvXoL8FocX+0/ozfZPWcZP0w0FlqPPgPxCVXKd6TNB/E6lzw6T/yF/qE4lTPyCdLpp0jYznTaizKjJ5n8bqfk9otx/216fNxzcZRySyqWgfRqfwhK29ZFeUYW5HjXOr8urIg1gjvoxHejS1pTCrNq0U=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM6PR0402MB3527.eurprd04.prod.outlook.com
- (2603:10a6:209:6::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18; Thu, 4 Jun
- 2020 02:36:28 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3045.024; Thu, 4 Jun 2020
- 02:36:28 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-CC:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: RE: [EXT] [PATCH net-next] net: ethernet: dwmac: Fix an error code in
- imx_dwmac_probe()
-Thread-Topic: [EXT] [PATCH net-next] net: ethernet: dwmac: Fix an error code
- in imx_dwmac_probe()
-Thread-Index: AQHWOc+DMpUVYvKlDkqH243mKsxfkajHvadQ
-Date:   Thu, 4 Jun 2020 02:36:28 +0000
-Message-ID: <AM6PR0402MB360703C2D2EAC8A58D7BEF2DFF890@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <20200603175025.GA19353@mwanda>
-In-Reply-To: <20200603175025.GA19353@mwanda>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: oracle.com; dkim=none (message not signed)
- header.d=none;oracle.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f5f4fb41-2853-45ca-5c84-08d8083015a2
-x-ms-traffictypediagnostic: AM6PR0402MB3527:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR0402MB352784D14FA0CAE7DB218D6CFF890@AM6PR0402MB3527.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:785;
-x-forefront-prvs: 04244E0DC5
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zxDnyBf+NUawQ0u8MzlYPZp6WLeaQUwu0x+BK7H4EncOtOdcdoV2KEb4eQasLs9Li6eOIwwUh8JEkqjnPPj5548No1N6JmvNuehcIT4+hRoWct5Q682JyAi2AmnHgJGoyxyPVJgxSgQ3iA2zm9Hd5YXipMxKSsBr0ImRaWy8GVXQtNp0PKdOYH2+tqSIPbWZbJLOCU0ehKd7IJXPkK2pPFadG3jCNSrTd2P70vvz8eZEeMrT+3bpYUfZbgp9ce4EEKxG9ougyJciZLOXHwkK+r5W+PYY1AK0zYauJXTwXSEz1qSRkAkGU3J6xSnn3/+F
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(376002)(396003)(366004)(136003)(54906003)(76116006)(5660300002)(83380400001)(66476007)(64756008)(66446008)(66556008)(66946007)(8676002)(110136005)(8936002)(4326008)(52536014)(2906002)(316002)(33656002)(7696005)(6506007)(7416002)(478600001)(71200400001)(86362001)(9686003)(55016002)(26005)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: GWsgkfonioMnefdd5KJY2OFWrYYD4rGij2UmuvM1K/NzsmOYxxVN0W2piPlumTwXiiPDonAkfKu3AmZAm+AnPIRSCDSHRG7qzPOv5ks3eodIklvpnTBPDZAV/eRTA+/8ojZME1yRo2dEsvLWQlCeLtJma0y7kSqjeFTi2EOQEwIzznTpsBsxcW0rfMb9yPbFeor+dFfvlQG3/A5HRabmpynDYRHai2QyFfSDkeTnvwvTWxUJE60Y/VfbgxrvK4wF1DMOLAB4FTVhRzugkP9VMVp2arkGzlDWS/i/F1X6aMCY2xNlBUPrXmnRhwt2kiHwRQ7SYq/USClJ/IKVBwR6h1qFH9I1HXFMqK7MSUFyTpjx6qmG4Gowc4sAhg37+3f0d85YDs1fFadtSGgQgZLu/JaFJPXk/vG//CZfYQaoz3hNiwd4eUKPXmGokJPaQKzgsHJlGwSGDueHWhi4ephvfA338kdmAJL27rxSbK4g73k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726874AbgFDCo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 22:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgFDCo4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 22:44:56 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177A5C03E96D
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 19:44:56 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id m2so446540pjv.2
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 19:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NJuDdLVQU9WLVc7Nj2WL3ekqw3GERe/Y3vOpHmHCX0Q=;
+        b=OAFQ8jI87ZswNf70zyd8MKAqfVTIv4fRHLBkUjQMzBpQKKSwhTPoeh+eTEftSsoQ3Z
+         HAfupEeEgEm2Pz8TJLNYEZLBTGUokCA2YuqCmi90nZNcwF3edAJEhQH1SzU247DcPAha
+         17bHofqx0OK4rg5aVzrI04rDxImgVclAv6egg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NJuDdLVQU9WLVc7Nj2WL3ekqw3GERe/Y3vOpHmHCX0Q=;
+        b=sVIESWuCIw0l0vXh+HDzL7Amx6GpeqWo1HkRly5dM+lNAkphyySxYJqFEFHe/qVVRV
+         FpAwO7r4s2Jc4G2dr9QrB2Dgo8odn3Hak+QwPOQXqzW0gog9f29UnFDI+LYzivL5NqAX
+         fbBt+xNAqfgPFcAmesvRN7JE8kru+LxI5BWZq6BXXwhRTJC7sSPC7r45O7ARU0SmbzVf
+         Ylh3TAO3IFbMeAqx2HILNAnsAwct1KigZp9gICvwNngIpAxT1s+s4/WUk7XUmboOi+90
+         MavgiYkKnP7LXoohnD5ooz8rU4f1nqBMAFOLOgglOwuwZUXT8aEd6o5OBjOY8T0sl1sm
+         eVKg==
+X-Gm-Message-State: AOAM530hOyEIK4KmtuEsHOOkQtL+goy7w1tgooaRlQWW5eBVRc+6ddQz
+        DpzFIv7EcSSCiTq5nVqZRA8gcQ==
+X-Google-Smtp-Source: ABdhPJySxWma3GbjobWM5fu0OzUyfUL6/aSJ2YRQ1+d5LPdQ7FnjaDErNGW25ctBsWEbTRZ3ftZi5w==
+X-Received: by 2002:a17:902:848a:: with SMTP id c10mr2705871plo.124.1591238695641;
+        Wed, 03 Jun 2020 19:44:55 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id x18sm2934984pfr.106.2020.06.03.19.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 19:44:54 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 19:44:53 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mm@kvack.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 08/10] checkpatch: Remove awareness of
+ uninitialized_var() macro
+Message-ID: <202006031944.9551FAA68E@keescook>
+References: <20200603233203.1695403-1-keescook@chromium.org>
+ <20200603233203.1695403-9-keescook@chromium.org>
+ <ff9087b0571e1fc499bd8a4c9fd99bfc0357f245.camel@perches.com>
+ <202006031838.55722640DC@keescook>
+ <6f921002478544217903ee4bfbe3c400e169687f.camel@perches.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5f4fb41-2853-45ca-5c84-08d8083015a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2020 02:36:28.6101
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YMBSPYuwXPA8Vy3GErwgJDqweN1TjuHxE35YIwmtDy9kNaHAoBMg59xB4SyCJ5DIU07YRv2aF2y53tzUiIPDnw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3527
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f921002478544217903ee4bfbe3c400e169687f.camel@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com> Sent: Thursday, June 4, 2020=
- 1:50 AM
-> The code is return PTR_ERR(NULL) which is zero or success.  We should
-> return -ENOMEM instead.
->=20
-> Fixes: 94abdad6974a5 ("net: ethernet: dwmac: add ethernet glue logic for
-> NXP imx8 chip")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+On Wed, Jun 03, 2020 at 06:47:13PM -0700, Joe Perches wrote:
+> On Wed, 2020-06-03 at 18:40 -0700, Kees Cook wrote:
+> > On Wed, Jun 03, 2020 at 05:02:29PM -0700, Joe Perches wrote:
+> > > On Wed, 2020-06-03 at 16:32 -0700, Kees Cook wrote:
+> > > > Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> > > > (or can in the future), and suppresses unrelated compiler warnings
+> > > > (e.g. "unused variable"). If the compiler thinks it is uninitialized,
+> > > > either simply initialize the variable or make compiler changes.
+> > > > 
+> > > > In preparation for removing[2] the[3] macro[4], effectively revert
+> > > > commit 16b7f3c89907 ("checkpatch: avoid warning about uninitialized_var()")
+> > > > and remove all remaining mentions of uninitialized_var().
+> > > > 
+> > > > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> > > > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> > > > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> > > > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+> > > 
+> > > nack.  see below.
+> > > 
+> > > I'd prefer a simple revert, but it shouldn't
+> > > be done here.
+> > 
+> > What do you mean? (I can't understand this and "fine by me" below?)
+> 
+> I did write "other than that"...
+> 
+> I mean that the original commit fixed 2 issues,
+> one with the uninitialized_var addition, and
+> another with the missing void function declaration.
+> 
+> I think I found the missing void function bit because
+> the uninitialized_var use looked like a function so I
+> fixed both things at the same time.
+> 
+> If you change it, please just remove the bit that
+> checks for uninitialized_var.
 
-Thanks!
+Ah! Gotcha. Thanks; I will update it.
 
-Acked-by: Fugang Duan <fugang.duan@nxp.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-> b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-> index 5010af7dab4af..3c5df5eeed6c8 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-> @@ -225,7 +225,7 @@ static int imx_dwmac_probe(struct platform_device
-> *pdev)
->=20
->         dwmac =3D devm_kzalloc(&pdev->dev, sizeof(*dwmac),
-> GFP_KERNEL);
->         if (!dwmac)
-> -               return PTR_ERR(dwmac);
-> +               return -ENOMEM;
->=20
->         plat_dat =3D stmmac_probe_config_dt(pdev, &stmmac_res.mac);
->         if (IS_ERR(plat_dat))
-> --
-> 2.26.2
+-Kees
 
+> 
+> Thanks, Joe
+> 
+> > > > diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> > > []
+> > > > @@ -4075,7 +4074,7 @@ sub process {
+> > > >  		}
+> > > >  
+> > > >  # check for function declarations without arguments like "int foo()"
+> > > > -		if ($line =~ /(\b$Type\s*$Ident)\s*\(\s*\)/) {
+> > > > +		if ($line =~ /(\b$Type\s+$Ident)\s*\(\s*\)/) {
+> > > 
+> > > This isn't right because $Type includes a possible trailing *
+> > > where there isn't a space between $Type and $Ident
+> > 
+> > Ah, hm, that was changed in the mentioned commit:
+> > 
+> > -               if ($line =~ /(\b$Type\s+$Ident)\s*\(\s*\)/) {
+> > +               if ($line =~ /(\b$Type\s*$Ident)\s*\(\s*\)/) {
+> > 
+> > > e.g.:	int *bar(void);
+> > > 
+> > > Other than that, fine by me...
+> > 
+> > Thanks for looking it over! I'll adjust it however you'd like. :)
+> > 
+> 
+
+-- 
+Kees Cook
