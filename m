@@ -2,170 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BB01EDCDC
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 08:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D161EDCF5
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 08:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbgFDGAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 02:00:30 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35992 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726244AbgFDGA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 02:00:29 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0545WV5l143199;
-        Thu, 4 Jun 2020 02:00:22 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31efd5b57r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Jun 2020 02:00:22 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0545xxLt022852;
-        Thu, 4 Jun 2020 06:00:21 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma04dal.us.ibm.com with ESMTP id 31bf4ar9ct-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Jun 2020 06:00:21 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05460KJS10879774
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 4 Jun 2020 06:00:21 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C7B5EB2068;
-        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5888DB206A;
-        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
+        id S1726939AbgFDGKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 02:10:42 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47384 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726683AbgFDGKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 02:10:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591251039;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=spuln8OM2+pVMSm6QcNLxZDaud+7HSx0EW1bt/tNWEk=;
+        b=MCijP08ima0bYx5d+bBh2AR3YSjBepOxdOX9B5wCWUscALsBlQ1T38vJhbCYWA4IKjdil0
+        TMrehH75DzWUnoCVyIFfvLogLodL6znq8+FCX5OgGmTYQK/XGIC6KFqgwZf8WE/X7BV6ly
+        Ol7kYt2HfoGPWYfAIXO9tFoZbncm4qY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-346-U7aO9fZrPSCuhDk-WhhKeA-1; Thu, 04 Jun 2020 02:10:38 -0400
+X-MC-Unique: U7aO9fZrPSCuhDk-WhhKeA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3AA0B108BD0D;
+        Thu,  4 Jun 2020 06:10:37 +0000 (UTC)
+Received: from [10.72.13.104] (ovpn-13-104.pek2.redhat.com [10.72.13.104])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C5D234DA21;
+        Thu,  4 Jun 2020 06:10:28 +0000 (UTC)
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20200602084257.134555-1-mst@redhat.com>
+ <20200603014815.GR23230@ZenIV.linux.org.uk>
+ <20200603011810-mutt-send-email-mst@kernel.org>
+ <20200603165205.GU23230@ZenIV.linux.org.uk>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ec086f7b-be01-5ffd-6fc3-f865d26b0daf@redhat.com>
+Date:   Thu, 4 Jun 2020 14:10:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 03 Jun 2020 23:00:18 -0700
-From:   dwilder <dwilder@us.ibm.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        wilder@us.ibm.com, mkubecek@suse.com
-In-Reply-To: <20200603220502.GD28263@breakpoint.cc>
-References: <20200603212516.22414-1-dwilder@us.ibm.com>
- <20200603220502.GD28263@breakpoint.cc>
-Message-ID: <72692f32471b5d2eeef9514bb2c9ba51@linux.vnet.ibm.com>
-X-Sender: dwilder@us.ibm.com
-User-Agent: Roundcube Webmail/1.0.1
-X-TM-AS-GCONF: 00
-Subject: RE: [(RFC) PATCH ] NULL pointer dereference on rmmod iptable_mangle.
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-04_01:2020-06-02,2020-06-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- mlxlogscore=999 phishscore=0 cotscore=-2147483648 malwarescore=0
- adultscore=0 spamscore=0 clxscore=1011 impostorscore=0 priorityscore=1501
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006040033
+In-Reply-To: <20200603165205.GU23230@ZenIV.linux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-03 15:05, Florian Westphal wrote:
-> David Wilder <dwilder@us.ibm.com> wrote:
->> This crash happened on a ppc64le system running ltp network tests when 
->> ltp script ran "rmmod iptable_mangle".
->> 
->> [213425.602369] BUG: Kernel NULL pointer dereference at 0x00000010
->> [213425.602388] Faulting instruction address: 0xc008000000550bdc
-> [..]
-> 
->> In the crash we find in iptable_mangle_hook() that 
->> state->net->ipv4.iptable_mangle=NULL causing a NULL pointer 
->> dereference. net->ipv4.iptable_mangle is set to NULL in 
->> iptable_mangle_net_exit() and called when ip_mangle modules is 
->> unloaded. A rmmod task was found in the crash dump.  A 2nd crash 
->> showed the same problem when running "rmmod iptable_filter" 
->> (net->ipv4.iptable_filter=NULL).
->> 
->> Once a hook is registered packets will picked up a pointer from: 
->> net->ipv4.iptable_$table. The patch adds a call to synchronize_net() 
->> in ipt_unregister_table() to insure no packets are in flight that have 
->> picked up the pointer before completing the un-register.
->> 
->> This change has has prevented the problem in our testing.  However, we 
->> have concerns with this change as it would mean that on netns cleanup, 
->> we would need one synchronize_net() call for every table in use. Also, 
->> on module unload, there would be one synchronize_net() for every 
->> existing netns.
-> 
-> Yes, I agree with the analysis.
-> 
->> Signed-off-by: David Wilder <dwilder@us.ibm.com>
->> ---
->>  net/ipv4/netfilter/ip_tables.c | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->> 
->> diff --git a/net/ipv4/netfilter/ip_tables.c 
->> b/net/ipv4/netfilter/ip_tables.c
->> index c2670ea..97c4121 100644
->> --- a/net/ipv4/netfilter/ip_tables.c
->> +++ b/net/ipv4/netfilter/ip_tables.c
->> @@ -1800,8 +1800,10 @@ int ipt_register_table(struct net *net, const 
->> struct xt_table *table,
->>  void ipt_unregister_table(struct net *net, struct xt_table *table,
->>  			  const struct nf_hook_ops *ops)
->>  {
->> -	if (ops)
->> +	if (ops) {
->>  		nf_unregister_net_hooks(net, ops, hweight32(table->valid_hooks));
->> +		synchronize_net();
->> +	}
-> 
-> I'd wager ebtables, arptables and ip6tables have the same bug.
-> 
-> The extra synchronize_net() isn't ideal.  We could probably do it this
-> way and then improve in a second patch.
-> 
-> One way to fix this without a new synchronize_net() is to switch all
-> iptable_foo.c to use ".pre_exit" hook as well.
-> 
-> pre_exit would unregister the underlying hook and .exit would to the
-> table freeing.
-> 
-> Since the netns core already does an unconditional synchronize_rcu 
-> after
-> the pre_exit hooks this would avoid the problem as well.
 
-Something like this?  (un-tested)
+On 2020/6/4 上午12:52, Al Viro wrote:
+> On Wed, Jun 03, 2020 at 01:29:00AM -0400, Michael S. Tsirkin wrote:
+>> On Wed, Jun 03, 2020 at 02:48:15AM +0100, Al Viro wrote:
+>>> On Tue, Jun 02, 2020 at 04:45:05AM -0400, Michael S. Tsirkin wrote:
+>>>> So vhost needs to poke at userspace *a lot* in a quick succession.  It
+>>>> is thus benefitial to enable userspace access, do our thing, then
+>>>> disable. Except access_ok has already been pre-validated with all the
+>>>> relevant nospec checks, so we don't need that.  Add an API to allow
+>>>> userspace access after access_ok and barrier_nospec are done.
+>>> BTW, what are you going to do about vq->iotlb != NULL case?  Because
+>>> you sure as hell do *NOT* want e.g. translate_desc() under STAC.
+>>> Disable it around the calls of translate_desc()?
+>>>
+>>> How widely do you hope to stretch the user_access areas, anyway?
+>> So ATM I'm looking at adding support for the packed ring format.
+>> That does something like:
+>>
+>> get_user(flags, desc->flags)
+>> smp_rmb()
+>> if (flags & VALID)
+>> copy_from_user(&adesc, desc, sizeof adesc);
+>>
+>> this would be a good candidate I think.
+> Perhaps, once we get stac/clac out of raw_copy_from_user() (coming cycle,
+> probably).  BTW, how large is the structure and how is it aligned?
 
-diff --git a/net/ipv4/netfilter/iptable_mangle.c 
-b/net/ipv4/netfilter/iptable_mangle.c
-index bb9266ea3785..0d448e4d5213 100644
---- a/net/ipv4/netfilter/iptable_mangle.c
-+++ b/net/ipv4/netfilter/iptable_mangle.c
-@@ -100,15 +100,26 @@ static int __net_init 
-iptable_mangle_table_init(struct net *net)
-         return ret;
-  }
 
-+static void __net_exit iptable_mangle_net_pre_exit(struct net *net)
-+{
-+       struct xt_table *table = net->ipv4.iptable_mangle;
-+
-+       if (mangle_ops)
-+               nf_unregister_net_hooks(net, mangle_ops,
-+                       hweight32(table->valid_hooks));
-+}
-+
-+
-  static void __net_exit iptable_mangle_net_exit(struct net *net)
-  {
-         if (!net->ipv4.iptable_mangle)
-                 return;
--       ipt_unregister_table(net, net->ipv4.iptable_mangle, mangle_ops);
-+       ipt_unregister_table(net, net->ipv4.iptable_mangle, NULL);
-         net->ipv4.iptable_mangle = NULL;
-  }
+Each descriptor is 16 bytes, and 16 bytes aligned.
 
-  static struct pernet_operations iptable_mangle_net_ops = {
-+       .pre_exit = iptable_mangle_net_pre_exit,
-         .exit = iptable_mangle_net_exit,
-  };
+
+>
+>>> BTW, speaking of possible annotations: looks like there's a large
+>>> subset of call graph that can be reached only from vhost_worker()
+>>> or from several ioctls, with all uaccess limited to that subgraph
+>>> (thankfully).  Having that explicitly marked might be a good idea...
+>> Sure. What's a good way to do that though? Any examples to follow?
+>> Or do you mean code comments?
+> Not sure...  FWIW, the part of call graph from "known to be only
+> used by vhost_worker" (->handle_kick/vhost_work_init callback/
+> vhost_poll_init callback) and "part of ->ioctl()" to actual uaccess
+> primitives is fairly large - the longest chain is
+> handle_tx_net ->
+>    handle_tx ->
+>      handle_tx_zerocopy ->
+>        get_tx_bufs ->
+> 	vhost_net_tx_get_vq_desc ->
+> 	  vhost_tx_batch ->
+> 	    vhost_net_signal_used ->
+> 	      vhost_add_used_and_signal_n ->
+> 		vhost_signal ->
+> 		  vhost_notify ->
+> 		    vhost_get_avail_flags ->
+> 		      vhost_get_avail ->
+> 			vhost_get_user ->
+> 			  __get_user()
+> i.e. 14 levels deep and the graph doesn't factorize well...
+>
+> Something along the lines of "all callers of thus annotated function
+> must be annotated the same way themselves, any implicit conversion
+> of pointers to such functions to anything other than boolean yields
+> a warning, explicit cast is allowed only with __force", perhaps?
+> Then slap such annotations on vhost_{get,put,copy_to,copy_from}_user(),
+> on ->handle_kick(), a force-cast in the only caller of ->handle_kick()
+> and force-casts in the 3 callers in ->ioctl().
+>
+> And propagate the annotations until the warnings stop, basically...
+>
+> Shouldn't be terribly hard to teach sparse that kind of stuff and it
+> might be useful elsewhere.  It would act as a qualifier on function
+> pointers, with syntax ultimately expanding to __attribute__((something)).
+> I'll need to refresh my memories of the parser, but IIRC that shouldn't
+> require serious modifications.  Most of the work would be in
+> evaluate_call(), just before calling evaluate_symbol_call()...
+> I'll look into that; not right now, though.
+>
+> BTW, __vhost_get_user() might be better off expanded in both callers -
+> that would get their structure similar to vhost_copy_{to,from}_user(),
+> especially if you expand __vhost_get_user_slow() as well.
+>
+> Not sure I understand what's going with ->meta_iotlb[] - what are the
+> lifetime rules for struct vhost_iotlb_map
+
+
+It used to cache the translation for virtqueue address which. Vhost will 
+try to get those addresses from IOTLB and store them in meta_iotlb, and 
+it will be invalidated when userspace update or invalidate a new mapping.
+
+
+> and what prevents the pointers
+> from going stale?
+>
+>
+
+The vq->mutex is used to synchronize between the invalidation and vhost 
+workers.
+
+Thanks
+
 
