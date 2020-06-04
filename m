@@ -2,98 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FE81EDC8A
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 06:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9AFA1EDC95
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 06:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbgFDErR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 00:47:17 -0400
-Received: from mail-eopbgr150054.outbound.protection.outlook.com ([40.107.15.54]:8928
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725950AbgFDErQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jun 2020 00:47:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W4mzbMxzLVvDxEWq0AEBTMayIsaMSNNRK+mZbyv4xG5oEpOSl/iULstFQto7JJu12EKh7AIQDXXKCsBeUO94BtyLz/YFM5BYMU3DO2Zm3U5XU7dPctKFtAX4KHP/Z2yfFsiox5XajM8TNvFRwIN0vlCU2V4SOR5x4VcHcFlu7Axbyutwwukd01vsewninpVx7/vYaRXThp/1pqc9h+9PAlPFfZKqRE6Zkqd3Lssz+vp+8pO69fX72Sbs4xQJH4VMR7uWDjanPh3zlTnuqOHg6emUaap9O2KEJBfO/waO5DSTodTq1t46DKU2kRn1zZxTjc6WTu5Orgep98Tw83bjaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=noaHx6GA4sE4qeUfjrXWLwrGBpPZ5dHA5aXa4jYsxnM=;
- b=IiqIZE0lg8re64RbTul7O4zn1gZuM/bq/XP05HtDkjRj/sdVMuoOIMPonGQYLVQ4A9VrT4fILzqJ2GXhDxMfZAOoAkYu7HFAmThIs3nmdNCL1Zv+z+G0gTRIFgfpSDWybPYPp7yK2+2vvPG5NVwmJMpBkW4SFQ+vwYX8twkvBiYqdxM4agqUxuv+QP30VRwQFS+IgKj4MZt/B+3tUDV/2Pm8mq/y/sxDblNL3WY94ltUZ0yxBr/M0xBrbIRLVuzTJmNp0PedrYdb+EI+tFPvTr2Ey6rtKRS24J7BYKR57134HT0cFVtjIbHvdsC4qDMs3nFJ79OHurwJuuOu0xjFBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=noaHx6GA4sE4qeUfjrXWLwrGBpPZ5dHA5aXa4jYsxnM=;
- b=XpSqX/okyK1pY4VS1QASa0xHk6vWzMX3c5zCvEseeDR+pEWG8/jakF08VLO3Vesd0OkoSAjQL0GZd1vSghw9WlvD4tODUT4wG/9jMNoYGKU0nidltR91yPYuDC6Gd2qVC8y0DwN2s2K74AJ8ksMptz6Nbw4N8mpaWyJFbCgBcUs=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB6688.eurprd05.prod.outlook.com (2603:10a6:800:131::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18; Thu, 4 Jun
- 2020 04:47:13 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3045.024; Thu, 4 Jun 2020
- 04:47:13 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "efremov@linux.com" <efremov@linux.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Alex Vesker <valex@mellanox.com>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5: DR, Fix freeing in dr_create_rc_qp()
-Thread-Topic: [PATCH] net/mlx5: DR, Fix freeing in dr_create_rc_qp()
-Thread-Index: AQHWODQW08Et5AyQukqYq107OQeR4qjH5gKA
-Date:   Thu, 4 Jun 2020 04:47:13 +0000
-Message-ID: <71eddd29fce960fed5556083548d68368315f6c3.camel@mellanox.com>
-References: <20200601164526.19430-1-efremov@linux.com>
-In-Reply-To: <20200601164526.19430-1-efremov@linux.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.2 (3.36.2-1.fc32) 
-authentication-results: linux.com; dkim=none (message not signed)
- header.d=none;linux.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f599eb7f-4e5b-4dd7-18ed-08d8084259ba
-x-ms-traffictypediagnostic: VI1PR05MB6688:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6688861F81343A19710EA2ADBE890@VI1PR05MB6688.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 04244E0DC5
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: a4prBYqFb+5pssA7glNlr8ux+Ayz6VsdKYGua+ZBmdtETiR5TRzvwZOJOxsZG3CBQXGzRH7OW3NptBiCxLrXauKLUkQ4Ioryd066mAeqojrwTTTPrBgEh32HHkcx5Zz7o0D0Z/krN8wD8dd603zC9W6EmoyjNp5Nf70hJP+xDRdsAroKKIyeDF0RXJxw4sEcpvBDVeWWyBf1QoG57g2rUfFsGV2a0BqL1djaeiT+sT7OZb/2Vzq+EmRvs0uid3rbeMZNrJSYzFLXgBI/L2sAp8JJKkc61VDMFvrqITCAoMQWAGyWMicFKkd2/yHXWHyAfB2pSvsIFoYk8t6r0kgXSA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(396003)(376002)(39860400002)(76116006)(6486002)(5660300002)(478600001)(71200400001)(4744005)(2906002)(8676002)(8936002)(36756003)(6636002)(26005)(110136005)(4326008)(6506007)(91956017)(6512007)(186003)(66476007)(64756008)(66946007)(54906003)(86362001)(2616005)(66446008)(66556008)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: q727Na69tJDNxZUCAthSHI77Qw21KIViDB+TuTaYP04Qi2LxiucFelHkkGxdrdWrq+UpCGJMeZC8hoAcELbSj0loxlDlIXzlQ5sEvVZ/xxKpYQR1QHW0Aumb+8Q6OYrL2gGrJ48tsujSwL36HXq29p0lCOG6VMUwNRKHjU6dGD0idLQqFQpA3FHTqj5OO8hB+O/FBbJahy2sWLYDhYg5bGP4Y8nOUCfS4NMXX/rrJdOmqaqlcgj04+EAKRob5ZXaGDFWjHFw6UYKdxfo9cUqApgMHTIESB4Ys7TMubKxxe4VJR0lficdEO/bES8PJRODaNy9LdyDvUZaKVCmMrU+wxp3ENLmwQEnyhSLc/3VYQ3LqSwzwbXoboLuuz3nqzFOnCur8+zlmQobAHSCOWhRj4OtPSNXIwjVAb8haq3SSvfrmOSIJkikk3gOew4LR8UatdJ3SuQ++hMvu2wtBhmGjL4r5d3WMjol7WuAcz90XVM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D670B1CD12B599478A49F8D3DCB91643@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726363AbgFDEwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 00:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbgFDEwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 00:52:49 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F08C05BD43
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 21:52:49 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id w3so4811264qkb.6
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 21:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pumpkinnet-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=/0ZiOVJeJYR3beybSQLkUOQhQ/JD5VQFmTppL80KkH8=;
+        b=Q3hqeKuU8XTd4jw0aTLt+jjQE/ABuDnRXRQsUy0D3r76R6h+hpAXsZgm/JNebU3D5/
+         q4iSrCPPkjpjNU8XanC6egzmhN9RMSRo2ASiVjxY8E7lkQxHmk8YaH0U89chlQ4jFbF4
+         gqntpRuZChvpuxlVLYN9vY05t7SuLq4FgOo+xVS96LVN5llv71iK+0j8n/prtY+nm6Ah
+         Bf8IHe+gJphHmtOc8mZFJhu0G9k+NEPjFx5UmXuz4w2jHCfWVopVXEHCDi92lqcrxH64
+         NoR4BMqZqkEXNKX2gWYD5FVKRCbT58wOgLVOz5twKQ0TnMqnwJ/9rnH6KHPOTrgr7cEn
+         YqKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=/0ZiOVJeJYR3beybSQLkUOQhQ/JD5VQFmTppL80KkH8=;
+        b=KGdDS9Q+1HsIBpHS7zFkcqO9TQsoF0vhcljt7AEdpYegkEZlUqmBeTm1pHd52iF3pJ
+         o+tmxjOPQ095Pm+q0dUqk+k9qzJ6aVTorFdgFQH8PcyLimlmTjXsidxhFpGWxqog1iq7
+         LmawwVs6itBvm8EW7E5zEKSfVRyXXa6lxk/9mmESAvxMo0EjkeZSIafJG4uPtUzL6FDz
+         eZFVfdOyS+JyHsIStu4DQCJIj3r63LltKC5A3y1lbPGSty5v6jceEznxrL2E/j7C2kDO
+         BMM9EsklVGW01wY6MilzQQ0/zN+zazA0yTn7QD/XgIAmQgfuOSb3JGtAaq+iq0uEus5q
+         s+TA==
+X-Gm-Message-State: AOAM530/10MnIyVXboKNJMIbuF5DGtQBWUPP5Lyq1HoLhKf8IuNHRCfw
+        fIu8WMTJ70WtM379GHWFw6HMWgZns5kMvoMi8ff40i5Wf8k=
+X-Google-Smtp-Source: ABdhPJxOHXdaNLVVEcCr9XlWTrnr7VkWtSa77f9LOIsksbjIgzJ/wX+UbgcIFCGa+QDI63d5k/JMM5dl7LyaY98HdKs=
+X-Received: by 2002:a05:620a:49c:: with SMTP id 28mr3185262qkr.168.1591246367909;
+ Wed, 03 Jun 2020 21:52:47 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f599eb7f-4e5b-4dd7-18ed-08d8084259ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2020 04:47:13.6598
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nrYTWcJ9EiYoHogJnnjB04U63p5XRd9CfiGFXTYH0dPriHW3jdflOLZHoHqBJL7a6CD1QZlKHbeenMUmrmd/Mg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6688
+From:   =?UTF-8?B?6rCV7Jyg6rG0?= <yugun819@pumpkinnet.com>
+Date:   Thu, 4 Jun 2020 13:52:37 +0900
+Message-ID: <CALMTMJKSAOmFWupKnh62Hu_h43MM-x=2T7sU4Sw+Wqf9B7m5xA@mail.gmail.com>
+Subject: Question about ICMPv6 parameter problem
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?B?6rmA7KO87Jew?= <joykim@pumpkinnet.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTA2LTAxIGF0IDE5OjQ1ICswMzAwLCBEZW5pcyBFZnJlbW92IHdyb3RlOg0K
-PiBWYXJpYWJsZSAiaW4iIGluIGRyX2NyZWF0ZV9yY19xcCgpIGlzIGFsbG9jYXRlZCB3aXRoIGt2
-emFsbG9jKCkgYW5kDQo+IHNob3VsZCBiZSBmcmVlZCB3aXRoIGt2ZnJlZSgpLg0KPiANCj4gRml4
-ZXM6IDI5N2NjY2ViZGM1YSAoIm5ldC9tbHg1OiBEUiwgRXhwb3NlIGFuIGludGVybmFsIEFQSSB0
-byBpc3N1ZQ0KPiBSRE1BIG9wZXJhdGlvbnMiKQ0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9y
-Zw0KPiBTaWduZWQtb2ZmLWJ5OiBEZW5pcyBFZnJlbW92IDxlZnJlbW92QGxpbnV4LmNvbT4NCj4g
-DQoNCkFwcGxpZWQgdG8gbmV0LW1seDUsDQpUaGFua3MsDQpTYWVlZC4NCg==
+Hi
+
+I'm testing linux kernels(v5.7, v4.19, ...) to get ipv6ready logo certifica=
+te.
+
+The reason why I am writing this mail is to inquire about the failed test c=
+ase.
+
+In the test case, It appears to be verifying the following clause.
+
+RFC8200/page-21
+( https://tools.ietf.org/html/rfc8200#page-21 )
+      o  If the first fragment does not include all headers through an
+         Upper-Layer header, then that fragment should be discarded and
+         an ICMP Parameter Problem, Code 3, message should be sent to
+         the source of the fragment, with the Pointer field set to zero.
+
+And it failed because the kernel does not send a parameter problem.
+
+I checked that only codes 0, 1, and 2 are defined for the parameter
+problem in RFC4443 and header directory.
+( https://tools.ietf.org/html/rfc4443#page-12
+/include/uapi/linux/icmpv6.h )
+
+And I found that the code for the parameter problem is defined from 0
+to 10 on the IANA website.
+( https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtm=
+l#icmpv6-parameters-codes-5
+)
+
+
+In conclusion my question is as follows.
+Why are the codes on IANA not implemented? Is it under discussion?
+If it's being implemented, can you tell me when it will be completed?
+
+Thank you!
+
+-- Yugeon Kang
+
+
+=EA=B0=95 =EC=9C=A0 =EA=B1=B4 =EC=82=AC=EC=9B=90
+
+=ED=8E=8C=ED=82=A8=EB=84=A4=ED=8A=B8=EC=9B=8D=EC=8A=A4=E3=88=9C =EA=B0=9C=
+=EB=B0=9C1=ED=8C=80
+
+08380 =EC=84=9C=EC=9A=B8=EC=8B=9C =EA=B5=AC=EB=A1=9C=EA=B5=AC =EB=94=94=EC=
+=A7=80=ED=84=B8=EB=A1=9C31=EA=B8=B8 20 =EC=97=90=EC=9D=B4=EC=8A=A4=ED=85=8C=
+=ED=81=AC=EB=85=B8=ED=83=80=EC=9B=8C 5=EC=B0=A8 405=ED=98=B8
+
+Direct: 070-4263-9937
+
+Mobile: 010-9887-3517
+
+E-mail: yugun819@pumpkinnet.com
+
+Tel: 02-863-9380, Fax: 02-2109-6675
+
+www.pumpkinnet.co.kr
