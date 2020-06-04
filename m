@@ -2,116 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AFA1EDC95
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 06:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1BB01EDCDC
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 08:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgFDEwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 00:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbgFDEwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 00:52:49 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F08C05BD43
-        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 21:52:49 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id w3so4811264qkb.6
-        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 21:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pumpkinnet-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=/0ZiOVJeJYR3beybSQLkUOQhQ/JD5VQFmTppL80KkH8=;
-        b=Q3hqeKuU8XTd4jw0aTLt+jjQE/ABuDnRXRQsUy0D3r76R6h+hpAXsZgm/JNebU3D5/
-         q4iSrCPPkjpjNU8XanC6egzmhN9RMSRo2ASiVjxY8E7lkQxHmk8YaH0U89chlQ4jFbF4
-         gqntpRuZChvpuxlVLYN9vY05t7SuLq4FgOo+xVS96LVN5llv71iK+0j8n/prtY+nm6Ah
-         Bf8IHe+gJphHmtOc8mZFJhu0G9k+NEPjFx5UmXuz4w2jHCfWVopVXEHCDi92lqcrxH64
-         NoR4BMqZqkEXNKX2gWYD5FVKRCbT58wOgLVOz5twKQ0TnMqnwJ/9rnH6KHPOTrgr7cEn
-         YqKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=/0ZiOVJeJYR3beybSQLkUOQhQ/JD5VQFmTppL80KkH8=;
-        b=KGdDS9Q+1HsIBpHS7zFkcqO9TQsoF0vhcljt7AEdpYegkEZlUqmBeTm1pHd52iF3pJ
-         o+tmxjOPQ095Pm+q0dUqk+k9qzJ6aVTorFdgFQH8PcyLimlmTjXsidxhFpGWxqog1iq7
-         LmawwVs6itBvm8EW7E5zEKSfVRyXXa6lxk/9mmESAvxMo0EjkeZSIafJG4uPtUzL6FDz
-         eZFVfdOyS+JyHsIStu4DQCJIj3r63LltKC5A3y1lbPGSty5v6jceEznxrL2E/j7C2kDO
-         BMM9EsklVGW01wY6MilzQQ0/zN+zazA0yTn7QD/XgIAmQgfuOSb3JGtAaq+iq0uEus5q
-         s+TA==
-X-Gm-Message-State: AOAM530/10MnIyVXboKNJMIbuF5DGtQBWUPP5Lyq1HoLhKf8IuNHRCfw
-        fIu8WMTJ70WtM379GHWFw6HMWgZns5kMvoMi8ff40i5Wf8k=
-X-Google-Smtp-Source: ABdhPJxOHXdaNLVVEcCr9XlWTrnr7VkWtSa77f9LOIsksbjIgzJ/wX+UbgcIFCGa+QDI63d5k/JMM5dl7LyaY98HdKs=
-X-Received: by 2002:a05:620a:49c:: with SMTP id 28mr3185262qkr.168.1591246367909;
- Wed, 03 Jun 2020 21:52:47 -0700 (PDT)
+        id S1726980AbgFDGAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 02:00:30 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35992 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726244AbgFDGA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 02:00:29 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0545WV5l143199;
+        Thu, 4 Jun 2020 02:00:22 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31efd5b57r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Jun 2020 02:00:22 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0545xxLt022852;
+        Thu, 4 Jun 2020 06:00:21 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma04dal.us.ibm.com with ESMTP id 31bf4ar9ct-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Jun 2020 06:00:21 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05460KJS10879774
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 4 Jun 2020 06:00:21 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C7B5EB2068;
+        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5888DB206A;
+        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu,  4 Jun 2020 06:00:19 +0000 (GMT)
 MIME-Version: 1.0
-From:   =?UTF-8?B?6rCV7Jyg6rG0?= <yugun819@pumpkinnet.com>
-Date:   Thu, 4 Jun 2020 13:52:37 +0900
-Message-ID: <CALMTMJKSAOmFWupKnh62Hu_h43MM-x=2T7sU4Sw+Wqf9B7m5xA@mail.gmail.com>
-Subject: Question about ICMPv6 parameter problem
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?B?6rmA7KO87Jew?= <joykim@pumpkinnet.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 03 Jun 2020 23:00:18 -0700
+From:   dwilder <dwilder@us.ibm.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        wilder@us.ibm.com, mkubecek@suse.com
+In-Reply-To: <20200603220502.GD28263@breakpoint.cc>
+References: <20200603212516.22414-1-dwilder@us.ibm.com>
+ <20200603220502.GD28263@breakpoint.cc>
+Message-ID: <72692f32471b5d2eeef9514bb2c9ba51@linux.vnet.ibm.com>
+X-Sender: dwilder@us.ibm.com
+User-Agent: Roundcube Webmail/1.0.1
+X-TM-AS-GCONF: 00
+Subject: RE: [(RFC) PATCH ] NULL pointer dereference on rmmod iptable_mangle.
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-04_01:2020-06-02,2020-06-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ mlxlogscore=999 phishscore=0 cotscore=-2147483648 malwarescore=0
+ adultscore=0 spamscore=0 clxscore=1011 impostorscore=0 priorityscore=1501
+ bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006040033
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On 2020-06-03 15:05, Florian Westphal wrote:
+> David Wilder <dwilder@us.ibm.com> wrote:
+>> This crash happened on a ppc64le system running ltp network tests when 
+>> ltp script ran "rmmod iptable_mangle".
+>> 
+>> [213425.602369] BUG: Kernel NULL pointer dereference at 0x00000010
+>> [213425.602388] Faulting instruction address: 0xc008000000550bdc
+> [..]
+> 
+>> In the crash we find in iptable_mangle_hook() that 
+>> state->net->ipv4.iptable_mangle=NULL causing a NULL pointer 
+>> dereference. net->ipv4.iptable_mangle is set to NULL in 
+>> iptable_mangle_net_exit() and called when ip_mangle modules is 
+>> unloaded. A rmmod task was found in the crash dump.  A 2nd crash 
+>> showed the same problem when running "rmmod iptable_filter" 
+>> (net->ipv4.iptable_filter=NULL).
+>> 
+>> Once a hook is registered packets will picked up a pointer from: 
+>> net->ipv4.iptable_$table. The patch adds a call to synchronize_net() 
+>> in ipt_unregister_table() to insure no packets are in flight that have 
+>> picked up the pointer before completing the un-register.
+>> 
+>> This change has has prevented the problem in our testing.  However, we 
+>> have concerns with this change as it would mean that on netns cleanup, 
+>> we would need one synchronize_net() call for every table in use. Also, 
+>> on module unload, there would be one synchronize_net() for every 
+>> existing netns.
+> 
+> Yes, I agree with the analysis.
+> 
+>> Signed-off-by: David Wilder <dwilder@us.ibm.com>
+>> ---
+>>  net/ipv4/netfilter/ip_tables.c | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/net/ipv4/netfilter/ip_tables.c 
+>> b/net/ipv4/netfilter/ip_tables.c
+>> index c2670ea..97c4121 100644
+>> --- a/net/ipv4/netfilter/ip_tables.c
+>> +++ b/net/ipv4/netfilter/ip_tables.c
+>> @@ -1800,8 +1800,10 @@ int ipt_register_table(struct net *net, const 
+>> struct xt_table *table,
+>>  void ipt_unregister_table(struct net *net, struct xt_table *table,
+>>  			  const struct nf_hook_ops *ops)
+>>  {
+>> -	if (ops)
+>> +	if (ops) {
+>>  		nf_unregister_net_hooks(net, ops, hweight32(table->valid_hooks));
+>> +		synchronize_net();
+>> +	}
+> 
+> I'd wager ebtables, arptables and ip6tables have the same bug.
+> 
+> The extra synchronize_net() isn't ideal.  We could probably do it this
+> way and then improve in a second patch.
+> 
+> One way to fix this without a new synchronize_net() is to switch all
+> iptable_foo.c to use ".pre_exit" hook as well.
+> 
+> pre_exit would unregister the underlying hook and .exit would to the
+> table freeing.
+> 
+> Since the netns core already does an unconditional synchronize_rcu 
+> after
+> the pre_exit hooks this would avoid the problem as well.
 
-I'm testing linux kernels(v5.7, v4.19, ...) to get ipv6ready logo certifica=
-te.
+Something like this?  (un-tested)
 
-The reason why I am writing this mail is to inquire about the failed test c=
-ase.
+diff --git a/net/ipv4/netfilter/iptable_mangle.c 
+b/net/ipv4/netfilter/iptable_mangle.c
+index bb9266ea3785..0d448e4d5213 100644
+--- a/net/ipv4/netfilter/iptable_mangle.c
++++ b/net/ipv4/netfilter/iptable_mangle.c
+@@ -100,15 +100,26 @@ static int __net_init 
+iptable_mangle_table_init(struct net *net)
+         return ret;
+  }
 
-In the test case, It appears to be verifying the following clause.
++static void __net_exit iptable_mangle_net_pre_exit(struct net *net)
++{
++       struct xt_table *table = net->ipv4.iptable_mangle;
++
++       if (mangle_ops)
++               nf_unregister_net_hooks(net, mangle_ops,
++                       hweight32(table->valid_hooks));
++}
++
++
+  static void __net_exit iptable_mangle_net_exit(struct net *net)
+  {
+         if (!net->ipv4.iptable_mangle)
+                 return;
+-       ipt_unregister_table(net, net->ipv4.iptable_mangle, mangle_ops);
++       ipt_unregister_table(net, net->ipv4.iptable_mangle, NULL);
+         net->ipv4.iptable_mangle = NULL;
+  }
 
-RFC8200/page-21
-( https://tools.ietf.org/html/rfc8200#page-21 )
-      o  If the first fragment does not include all headers through an
-         Upper-Layer header, then that fragment should be discarded and
-         an ICMP Parameter Problem, Code 3, message should be sent to
-         the source of the fragment, with the Pointer field set to zero.
+  static struct pernet_operations iptable_mangle_net_ops = {
++       .pre_exit = iptable_mangle_net_pre_exit,
+         .exit = iptable_mangle_net_exit,
+  };
 
-And it failed because the kernel does not send a parameter problem.
-
-I checked that only codes 0, 1, and 2 are defined for the parameter
-problem in RFC4443 and header directory.
-( https://tools.ietf.org/html/rfc4443#page-12
-/include/uapi/linux/icmpv6.h )
-
-And I found that the code for the parameter problem is defined from 0
-to 10 on the IANA website.
-( https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtm=
-l#icmpv6-parameters-codes-5
-)
-
-
-In conclusion my question is as follows.
-Why are the codes on IANA not implemented? Is it under discussion?
-If it's being implemented, can you tell me when it will be completed?
-
-Thank you!
-
--- Yugeon Kang
-
-
-=EA=B0=95 =EC=9C=A0 =EA=B1=B4 =EC=82=AC=EC=9B=90
-
-=ED=8E=8C=ED=82=A8=EB=84=A4=ED=8A=B8=EC=9B=8D=EC=8A=A4=E3=88=9C =EA=B0=9C=
-=EB=B0=9C1=ED=8C=80
-
-08380 =EC=84=9C=EC=9A=B8=EC=8B=9C =EA=B5=AC=EB=A1=9C=EA=B5=AC =EB=94=94=EC=
-=A7=80=ED=84=B8=EB=A1=9C31=EA=B8=B8 20 =EC=97=90=EC=9D=B4=EC=8A=A4=ED=85=8C=
-=ED=81=AC=EB=85=B8=ED=83=80=EC=9B=8C 5=EC=B0=A8 405=ED=98=B8
-
-Direct: 070-4263-9937
-
-Mobile: 010-9887-3517
-
-E-mail: yugun819@pumpkinnet.com
-
-Tel: 02-863-9380, Fax: 02-2109-6675
-
-www.pumpkinnet.co.kr
