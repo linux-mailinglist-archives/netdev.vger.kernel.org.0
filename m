@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 451081EE976
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 19:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0251EE99F
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 19:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730218AbgFDRdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 13:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
+        id S1730125AbgFDRn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 13:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730213AbgFDRdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 13:33:45 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E38C08C5C0;
-        Thu,  4 Jun 2020 10:33:45 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id q16so2473971plr.2;
-        Thu, 04 Jun 2020 10:33:45 -0700 (PDT)
+        with ESMTP id S1729998AbgFDRn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 13:43:57 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A376C08C5C0
+        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 10:43:56 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id q24so1511129pjd.1
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 10:43:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=T+6H1+9Hc5xNAJNMrtQes/xq+kxehbavBD4hX3343tc=;
-        b=iG5gsumFGxrHozrLYw1FZsfw0QE6p6Gu+15o8yVaiX4tnxixG9Qt2T9FBU0s953Dti
-         NBukuJ7gc4HmmlhSqQGOR/2MfnNOlxajLMWxzhnCx1YmUuAkViDfWhz9XUt5xX5Y3Hgd
-         /QmDT76vAMAa3S6kUS83NyfHw6HnVAa+reQaXYrNviTgze25w4J9yZzRWG4OUCzI062t
-         npntV62shwKD0YJrH93Cf7aakUFEVfIw8ju36Tv5f47XD8tH1SQ8s+itoMfTFGcmM2sB
-         UGRwW3G5QYv4/1h7M9N/YRXNE1uHOMpJFbMl3kbBpJZUgnNQv8Z6JGSYxlu63pt/LWOx
-         ymBw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kMXzMIUAiF2KBwUn80Ub9Qepg0sLmzMPpxPNW/vT4dw=;
+        b=jdNLXOAfgdwer44TQXjXvQAXBrBG23AriFtRN+QXipdbulomSfckr+Uy/SZYnv0I1F
+         V1w1zSqOpqobHfG+v2397MiMX+jsbOiMmybhkWbfYS1qehxwvVfN3FALg4N3L0KYlu2H
+         u8Nj4gOSmiAM/08S8Ha4H8POzMJ+v7GlbMXXu9rh7uVz18X1a2Bjv8ZbVBNAiIlsKj2M
+         tUJsDjEVBucHZk2XJMUSyqP/5vADuPaArJKYBY1o2QvpvDVzJ7AIpXc8ChozQkfylT1y
+         fQJioy0tk00KTgri+Qw3KcGPOMzybDBggLg3c8+5GuXEtGK2TufbGdx3zuCKhMfAX3Ac
+         hIBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T+6H1+9Hc5xNAJNMrtQes/xq+kxehbavBD4hX3343tc=;
-        b=iHZh5PCr9fSgc0mYbR8M549lAxOBtQsnmqIA1cxLpebKqTMG46exCEaQTyvI+n63JT
-         qmT9ePmLPXJNbLHiLjJf/389gULEnehs4Y2IPha5VtOenEYHiFAS7u3CekAlbK3yreXo
-         V6rgs4lPcIV7Nf1FtS1OYjYncry0qOGnYLU5w2ItfpkcGIv3acmA0vU1besWrqy4+e17
-         3z92ERujsVTIvIyFEKFg7HvRMhy6Vp2Pz3br7XISlrSrxOYQSgbuJXzT/l9cW/MuHsYn
-         3ZYvUg0soCjlimzpdRdNDbGkAx+gFDXcPVoUxzl70p3qK6BEH73IPard6FSFaxeWSGxq
-         dBdA==
-X-Gm-Message-State: AOAM533rYY4fJL2/4gjBtlKKCfobutqWk5evOJ5OW7+80skKbFn9WH4b
-        Q9SLmfkdXzcnToxPwj0SmP2xuN/F
-X-Google-Smtp-Source: ABdhPJx4aXokw4cruyLTjv2VAzhwa96dczxbYm7egnoAc3Aj6nRkORGY+72mpY5agCz4kLX8aaJ4pg==
-X-Received: by 2002:a17:902:7045:: with SMTP id h5mr5917653plt.108.1591292024612;
-        Thu, 04 Jun 2020 10:33:44 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3d39])
-        by smtp.gmail.com with ESMTPSA id a2sm4537851pgh.81.2020.06.04.10.33.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 10:33:43 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 10:33:41 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
- BTF
-Message-ID: <20200604173341.rvfrjmt433knl3uv@ast-mbp.dhcp.thefacebook.com>
-References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
- <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
- <20200604174806.29130b81@carbon>
- <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kMXzMIUAiF2KBwUn80Ub9Qepg0sLmzMPpxPNW/vT4dw=;
+        b=CDwGlWeZ5rDVKl349vEESUYfupSZ8RsksCU4QguMggdqpCjE/O29FemrDSFy4FkPAX
+         FjgDvZ6NuomZzSnum6+ovW2iwXr8RK4h9XkM7bGqZc2nspUeLnXlex5miJcu06AUvJbe
+         vP/0J9WOi/2ouuPaq3Hl+ugOIEXOv14QH6EdFEzEIfKsqcy+eLr0cexfObj93DRDIduH
+         7zq3eAEJRB0jsxqhz5S4ZFPVJM86UKFg6jFNTUgXtBbIX4/UO9eVmoUQoYfyVl2X9+kQ
+         R8sc8KWPEcyse95j6eB5L341o0AmLWjgLFuBBTjq8unfaBD3tWLD5UZ+REIketq0qp9w
+         FVVQ==
+X-Gm-Message-State: AOAM530B8mQAr56g+517K9+gxxOROPWvjdByi3kwL4vzHqAUMnvr/+9D
+        39XUt+667ljWyZ6d8zV8uIo=
+X-Google-Smtp-Source: ABdhPJw6ulU7O8TnWN9rsSaoXNxLM72dQx5YHnKuJ692zrnmmIyOUFoW7cxdL60pMKyx4G4GdZSvFA==
+X-Received: by 2002:a17:902:b706:: with SMTP id d6mr6040874pls.304.1591292635543;
+        Thu, 04 Jun 2020 10:43:55 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id u17sm4714397pgo.90.2020.06.04.10.43.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Jun 2020 10:43:54 -0700 (PDT)
+Subject: Re: [PATCH net] inet_connection_sock: clear inet_num out of destroy
+ helper
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        Eric Dumazet <edumazet@google.com>,
+        Christoph Paasch <cpaasch@apple.com>
+References: <cc2adbd7dcc17c44e2858e550302906760b38a0b.1591289527.git.pabeni@redhat.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <5b3af1f4-c1f4-5f60-21e0-9b52f186f328@gmail.com>
+Date:   Thu, 4 Jun 2020 10:43:52 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
+In-Reply-To: <cc2adbd7dcc17c44e2858e550302906760b38a0b.1591289527.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 10:40:06AM -0600, David Ahern wrote:
-> On 6/4/20 9:48 AM, Jesper Dangaard Brouer wrote:
-> > I will NOT send a patch that expose this in uapi/bpf.h.  As I explained
-> > before, this caused the issues for my userspace application, that
-> > automatically picked-up struct bpf_devmap_val, and started to fail
-> > (with no code changes), because it needed minus-1 as input.  I fear
-> > that this will cause more work for me later, when I have to helpout and
-> > support end-users on e.g. xdp-newbies list, as it will not be obvious
-> > to end-users why their programs map-insert start to fail.  I have given
-> > up, so I will not NACK anyone sending such a patch.
 
-Jesper,
 
-you gave wrong direction to David during development of the patches and
-now the devmap uapi is suffering the consequences.
-
-> > 
-> > Why is it we need to support file-descriptor zero as a valid
-> > file-descriptor for a bpf-prog?
+On 6/4/20 9:55 AM, Paolo Abeni wrote:
+> Clearing the 'inet_num' field is necessary and safe if and
+> only if the socket is not bound. The MPTCP protocol calls
+> the destroy helper on bound sockets, as tcp_v{4,6}_syn_recv_sock
+> completed successfully.
 > 
-> That was a nice property of using the id instead of fd. And the init to
-> -1 is not unique to this; adopters of the bpf_set_link_xdp_fd_opts for
-> example have to do the same.
+> Move the clearing of such field out of the common code, otherwise
+> the MPTCP MP_JOIN error path will find the wrong 'inet_num' value
+> on socket disposal, __inet_put_port() will acquire the wrong lock
+> and bind_node removal could race with other modifiers possibly
+> corrupting the bind hash table.
+> 
+> Reported-and-tested-by: Christoph Paasch <cpaasch@apple.com>
+> Fixes: 729cd6436f35 ("mptcp: cope better with MP_JOIN failure")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
 
-I think it's better to adopt "fd==0 -> invalid" approach.
-It won't be unique here. We're already using it in other places in bpf syscall.
-I agree with Jesper that requiring -1 init of 2nd field is quite ugly
-and inconvenient.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+Thanks.
+
