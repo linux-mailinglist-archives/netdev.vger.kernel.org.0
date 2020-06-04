@@ -2,138 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7EF1EDA72
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 03:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D5A1EDA87
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 03:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727034AbgFDB3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 21:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        id S1727921AbgFDBkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 21:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbgFDB3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 21:29:44 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14680C03E96D;
-        Wed,  3 Jun 2020 18:29:44 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49cp9K3xn0z9sRN;
-        Thu,  4 Jun 2020 11:29:41 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1591234182;
-        bh=2KHuzZQ+RXbR0wHAx6Mzf1ntNTqMB1evvaLV+unE6SM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jInMOd/bs3ql88HiEtcxMyYGci1n6EP7ak52X5WJuc344KUNT+yIXWESxV9YGuUBL
-         aSOm5Pif+/q8OnkPV/A2iQxuob9cqpF+OoQBHfsWgLglWyM62xyzLyuSjva2HZ1b1n
-         WeOFGacVn5TifZHHq2SD7135PwKju7o23dCdehUjUSLbr6GWOlvBTMurY8DkoNE8nz
-         v7wKyM7Ub/p4LX1pMTtWdeFjDhczLwAQS/tbqA7jgpId1DddsGHu/PCWRq1pZkv5P/
-         +t5xiSYCmnJj72VZxPUqPZEd52dcm42J/pNBJN9w/4EX3JkUU9IkjA9QtlZR8+Otr1
-         lk1QLSm7TGnCg==
-Date:   Thu, 4 Jun 2020 11:29:40 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mike Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the clk tree
-Message-ID: <20200604112940.560978f3@canb.auug.org.au>
-In-Reply-To: <20200602120957.1351bda0@canb.auug.org.au>
-References: <20200602120957.1351bda0@canb.auug.org.au>
+        with ESMTP id S1727909AbgFDBkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 21:40:13 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D135C08C5C3
+        for <netdev@vger.kernel.org>; Wed,  3 Jun 2020 18:40:12 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id n9so1496775plk.1
+        for <netdev@vger.kernel.org>; Wed, 03 Jun 2020 18:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RZTkgHwXnV/Mmq7iR84jWoY6DwZ1rOj4qUQ+qrZYDwc=;
+        b=D25kXdKhWQJ/MUHuNLgCYDZUO7VYifzgRU57sW3cCgSotuT36cS0gwMFjJehcx+vT7
+         Qo+Rryfzbt2dW0wLdUcGj9Q0InUDL3Kms87BacBCRrJrfyyPbeQNxvn25asBf8woO+z3
+         +P77gIynfVAOQsI2dG7+NHySk/5WZ7LfsfFJE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RZTkgHwXnV/Mmq7iR84jWoY6DwZ1rOj4qUQ+qrZYDwc=;
+        b=ulmtJv5/QJmBqlJBPY7M2h/0YsNYxWShK5Bbm/m1cE5c7yjKo1QVKsHlx0zIH6qGNS
+         A2IsTKbLaQDDQ+J0dtQ+e/LMhlqBUP3bAGLLo97Kfdfllwc/lpPy/3g7ULMQqqsU8EH3
+         Mx++Jp1wzUHIOJ15Ca8Hu6yPLm4sxhl/EA0cso4QCPtUmjbBUPpTj14Bp7AdK42oAE4E
+         +AI/ktNJClwKiKaVrL+xrh4WjRhB/j36mUP0Ufc4A1wIqxLwnZQxM4WcQW2bBg7+8g8F
+         BXvHFIOlG8TewbKT7/mRnVVW6zjWOyzO1fLpxCgAT3hT6TgVpSzqk+qdS8DpE4FqhEhb
+         x/tw==
+X-Gm-Message-State: AOAM533UJVQyqsJIJTC7+8eO8xbv9Hr1ZNa/Owf/exBrG1hHQL1+SfnQ
+        niw9xH87bQi+4Mn/i9K7pu0PVA==
+X-Google-Smtp-Source: ABdhPJyG3cK5GuU0RarjdGROX8AagUDp+h912sluu+H/wdjYIyX1M3u7CAMpBcEf90rpTZQM3JGTsw==
+X-Received: by 2002:a17:90a:dd44:: with SMTP id u4mr2890350pjv.132.1591234811278;
+        Wed, 03 Jun 2020 18:40:11 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id o13sm2589124pgs.82.2020.06.03.18.40.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 18:40:10 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 18:40:09 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mm@kvack.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 08/10] checkpatch: Remove awareness of
+ uninitialized_var() macro
+Message-ID: <202006031838.55722640DC@keescook>
+References: <20200603233203.1695403-1-keescook@chromium.org>
+ <20200603233203.1695403-9-keescook@chromium.org>
+ <ff9087b0571e1fc499bd8a4c9fd99bfc0357f245.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/G52KOylxla=mZaaf.Z88kBx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ff9087b0571e1fc499bd8a4c9fd99bfc0357f245.camel@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/G52KOylxla=mZaaf.Z88kBx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jun 03, 2020 at 05:02:29PM -0700, Joe Perches wrote:
+> On Wed, 2020-06-03 at 16:32 -0700, Kees Cook wrote:
+> > Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> > (or can in the future), and suppresses unrelated compiler warnings
+> > (e.g. "unused variable"). If the compiler thinks it is uninitialized,
+> > either simply initialize the variable or make compiler changes.
+> > 
+> > In preparation for removing[2] the[3] macro[4], effectively revert
+> > commit 16b7f3c89907 ("checkpatch: avoid warning about uninitialized_var()")
+> > and remove all remaining mentions of uninitialized_var().
+> > 
+> > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+> 
+> nack.  see below.
+> 
+> I'd prefer a simple revert, but it shouldn't
+> be done here.
 
-Hi all,
+What do you mean? (I can't understand this and "fine by me" below?)
 
-On Tue, 2 Jun 2020 12:09:57 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> Hi all,
->=20
-> Today's linux-next merge of the net-next tree got a conflict in:
->=20
->   Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt
->=20
-> between commit:
->=20
->   7b9e111a5216 ("dt-bindings: clock: mediatek: document clk bindings for =
-Mediatek MT6765 SoC")
->=20
-> from the clk tree and commit:
->=20
->   9f9d1e63dc55 ("dt-bindings: convert the binding document for mediatek P=
-ERICFG to yaml")
->=20
-> from the net-next tree.
->=20
-> I fixed it up (I deleted the file and added the following patch) and
-> can carry the fix as necessary. This is now fixed as far as linux-next
-> is concerned, but any non trivial conflicts should be mentioned to your
-> upstream maintainer when your tree is submitted for merging.  You may
-> also want to consider cooperating with the maintainer of the conflicting
-> tree to minimise any particularly complex conflicts.
->=20
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 2 Jun 2020 12:07:03 +1000
-> Subject: [PATCH] dt-bindings: fix up for "dt-bindings: clock: mediatek:
->  document clk bindings for Mediatek MT6765 SoC"
->=20
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  .../devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml       | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,peri=
-cfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.=
-yaml
-> index 55209a2baedc..e271c4682ebc 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
-> @@ -20,6 +20,7 @@ properties:
->          - enum:
->            - mediatek,mt2701-pericfg
->            - mediatek,mt2712-pericfg
-> +          - mediatek,mt6765-pericfg
->            - mediatek,mt7622-pericfg
->            - mediatek,mt7629-pericfg
->            - mediatek,mt8135-pericfg
-> --=20
-> 2.26.2
+> 
+> > diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> []
+> > @@ -4075,7 +4074,7 @@ sub process {
+> >  		}
+> >  
+> >  # check for function declarations without arguments like "int foo()"
+> > -		if ($line =~ /(\b$Type\s*$Ident)\s*\(\s*\)/) {
+> > +		if ($line =~ /(\b$Type\s+$Ident)\s*\(\s*\)/) {
+> 
+> This isn't right because $Type includes a possible trailing *
+> where there isn't a space between $Type and $Ident
 
-This merge resolution patch is now needed when the clk tree merges with
-Linus' tree
+Ah, hm, that was changed in the mentioned commit:
 
---=20
-Cheers,
-Stephen Rothwell
+-               if ($line =~ /(\b$Type\s+$Ident)\s*\(\s*\)/) {
++               if ($line =~ /(\b$Type\s*$Ident)\s*\(\s*\)/) {
 
---Sig_/G52KOylxla=mZaaf.Z88kBx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+> 
+> e.g.:	int *bar(void);
+> 
+> Other than that, fine by me...
 
------BEGIN PGP SIGNATURE-----
+Thanks for looking it over! I'll adjust it however you'd like. :)
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7YToQACgkQAVBC80lX
-0Gxv/Af+K9A0Q6zKBH6ugExa7GwKENxQJT/iToQ98ZH8PoinDOXsdp1Cqo1scS+l
-RmUg1EHf1c5OgbB0w5YK722d9rXtI9CW83Si97cJIUoqjVJjT05i+F78c2x0i5dk
-dmfsCxW2k36av9D4ecWJL8isD9qF0DLTs3cueEuzx/0dH1vvgNEOoXS7d3ESEDtm
-3vHjWh0uYNIQG33VBJ5YBNGHfAj4Cgg0wat7eailhEuDLODnemCLQj4c6IxLV7rN
-5taHLd7I8m8nVVda80GoHePv44CsQ5qC6zFHmGgp0uyyfsRWptyivmOkTxBYHX9T
-UNdzwMD2rAFPAii7fNomWZ83ukawIg==
-=iPus
------END PGP SIGNATURE-----
-
---Sig_/G52KOylxla=mZaaf.Z88kBx--
+-- 
+Kees Cook
