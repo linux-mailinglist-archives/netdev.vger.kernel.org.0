@@ -2,98 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42271EE8AE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929AA1EE8B9
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729856AbgFDQi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 12:38:26 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:52488 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729582AbgFDQi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:38:26 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 054GcKHF027568;
-        Thu, 4 Jun 2020 11:38:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1591288700;
-        bh=vJwfnPNsDW10qGjBVrg/CcyYGe7pIosmHJH5uBXXtM8=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=QYcyKHprrCdougNHZgK9/S9X65VMDx3mo+KqQHXacswEaFCEjv/nFI3Q3nciMwkVo
-         SxdzOP6FRRZ7oPIXwcqnwsY6Ddnh+yRYSX9VSXdnLD8GWCUIyl71Mdat3J+2aL1YSy
-         GadSGYh8lW40j79lDcjJ6K2QUDLpMTAkrfvbw1ak=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 054GcKs4071393
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 4 Jun 2020 11:38:20 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 4 Jun
- 2020 11:38:20 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 4 Jun 2020 11:38:20 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 054GcJ1c055968;
-        Thu, 4 Jun 2020 11:38:19 -0500
-Subject: Re: [PATCH net-next v6 4/4] net: dp83869: Add RGMII internal delay
- configuration
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200604111410.17918-1-dmurphy@ti.com>
- <20200604111410.17918-5-dmurphy@ti.com>
- <20200604092545.40c85fce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <63a53dad-4f0a-31ca-ad1a-361b633c28bf@ti.com>
-Date:   Thu, 4 Jun 2020 11:38:14 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1729907AbgFDQkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 12:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729657AbgFDQkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:40:09 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD065C08C5C1;
+        Thu,  4 Jun 2020 09:40:09 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id 205so6700692qkg.3;
+        Thu, 04 Jun 2020 09:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vpxoaRlLXXL6dqAlRHJzpCpNRDw8gKnVpEUqcTzIN4U=;
+        b=CH3D4RTtX7stOh46iK+yDuN8h4X1qoxSO/LxA96+iL70npx4lW9WRsnnsGrzf8m8Xy
+         wb2ql6FxZVGoTqtIzTdeilT5xeJAkmJ2Ml2r+3OXoF8SoRvc1cLmn3MhEHkyotT9qbnA
+         l70iPRZMQ+8kGYSDMnvWuTAh3XvIxntlpURP1ctCO67Dmx2T8x8YzIThvtcPHldZe4YY
+         HZDiD6QFouABaMBMDbspJaj2qGlMrzjfoiBWAb28xcUSU0/4Dkz/qCTacC0r19LP7JGE
+         kghXRkEwEBrvBT9Y7UlkTsD1uEteuBtjkEku4pS+TxnvOrFgs5CjLNmyHGVxq0yaA8n6
+         GFTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vpxoaRlLXXL6dqAlRHJzpCpNRDw8gKnVpEUqcTzIN4U=;
+        b=NY9SH+BDHyu8nCHh4xIo5vZWbdJFvMmQfRk/cm7bmIrR/QITwyC1fAy+9ZG7xgauIy
+         7gXCPfG3pwVAebjkm8cTi+/ZH2Otwx71pbq/u15/rDpgeZLLDF0C9FQVxaBi6E8PMhkH
+         vsqh9qdS2tTuOf1Pn7eHg4qGVUtaLFG62CIi4pNe6Q0qyu6cy0B0PREK8VX0tThZgEId
+         uIJCaWBGt8SXZY0NDPAikLur8yM9vtcHqgDH6L0m7LpAkSXT4ngTWRWhKeGFIFXW3/87
+         04Sh8aWHbVIuSRNq7UOyzoj7WAwxpil6/ni/7xIADxHqi8+JWnRPsFPW1P1j1xqE7vyz
+         M5UA==
+X-Gm-Message-State: AOAM530dOkxfOZL2BCOBigGTjJTKSIlIQw7OadUjTXSAH1EAtu9+qWGO
+        ICU75vNXRQDdolq8QRB6UTk=
+X-Google-Smtp-Source: ABdhPJw+p61FGscolshg2xTDrDkUydnbiQ915+ENHYBNmmlyHixI5pUez6hX8yzYkPpdkL4KHt999w==
+X-Received: by 2002:a05:620a:158d:: with SMTP id d13mr5636884qkk.327.1591288808968;
+        Thu, 04 Jun 2020 09:40:08 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:6c0b:a591:6e4c:f8f6? ([2601:282:803:7700:6c0b:a591:6e4c:f8f6])
+        by smtp.googlemail.com with ESMTPSA id x13sm3896454qtq.60.2020.06.04.09.40.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Jun 2020 09:40:08 -0700 (PDT)
+Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
+ BTF
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
+ <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
+ <20200604174806.29130b81@carbon>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
+Date:   Thu, 4 Jun 2020 10:40:06 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <20200604092545.40c85fce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200604174806.29130b81@carbon>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub
+On 6/4/20 9:48 AM, Jesper Dangaard Brouer wrote:
+> I will NOT send a patch that expose this in uapi/bpf.h.  As I explained
+> before, this caused the issues for my userspace application, that
+> automatically picked-up struct bpf_devmap_val, and started to fail
+> (with no code changes), because it needed minus-1 as input.  I fear
+> that this will cause more work for me later, when I have to helpout and
+> support end-users on e.g. xdp-newbies list, as it will not be obvious
+> to end-users why their programs map-insert start to fail.  I have given
+> up, so I will not NACK anyone sending such a patch.
+> 
+> Why is it we need to support file-descriptor zero as a valid
+> file-descriptor for a bpf-prog?
 
-On 6/4/20 11:25 AM, Jakub Kicinski wrote:
-> On Thu, 4 Jun 2020 06:14:10 -0500 Dan Murphy wrote:
->> Add RGMII internal delay configuration for Rx and Tx.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> Hi Dan, please make sure W=1 C=1 build is clean:
->
-> drivers/net/phy/dp83869.c:103:18: warning: â€˜dp83869_internal_delayâ€™ defined but not used [-Wunused-const-variable=]
->    103 | static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
->        |                  ^~~~~~~~~~~~~~~~~~~~~~
-
-I built with W=1 and C=1 and did not see this warning.
-
-What defconfig are you using?
-
-Can you check if CONFIG_OF_MDIO is set or not?  That would be the only 
-way that warning would come up.
-
-> Also net-next is closed right now, you can post RFCs but normal patches
-> should be deferred until after net-next reopens.
-
-I know net-next is closed.
-
-I pinged David M when it was open about what is meant by "new" patches 
-in the net-dev FAQ.  So I figured I would send the patches to see what 
-the response was.
-
-To me these are not new they are in process patches.  My understand is 
-New is v1 patchesets.
-
-But now I have the answer.
-
-Dan
-
+That was a nice property of using the id instead of fd. And the init to
+-1 is not unique to this; adopters of the bpf_set_link_xdp_fd_opts for
+example have to do the same.
