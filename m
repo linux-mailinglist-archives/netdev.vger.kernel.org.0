@@ -2,98 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 232731EEDD1
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 00:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA521EEDDB
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 00:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgFDWjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 18:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S1727928AbgFDWkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 18:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726565AbgFDWjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 18:39:31 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B659C08C5C3
-        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 15:39:31 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fs4so1734586pjb.5
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 15:39:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zP55TDVJhIIf3D70exLW80PJ5Fxq6s8zGifToJ/Z0dc=;
-        b=STEhsSBGd7DFiZ3UGgyOyWz0+OZ9/KhsvcAnzAOd8JPwZ+zr9/aF/KViUCztgCBy92
-         FatcX4M5pGBoOm8c8fRwdwYT3SzCZxJMA26B6VZq+yhs3wn+33OYZkPO81JIjxz9C4lx
-         SscwjwS9vUKhcxU5a1rLbY73RBqedLSon2/zw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zP55TDVJhIIf3D70exLW80PJ5Fxq6s8zGifToJ/Z0dc=;
-        b=IpVUe52q3IE9T9tIDe3F6+KCWMLSQjVR5EcPOvtaRMYYke4iLfzn3gaEYeD3DCat5O
-         76qLtwhYNZTppxVADQZ54xq67eId30CiQHryaFdRgx2Z8L96SqjOtbXczUxtPahwKuol
-         XbxIhkJI+snNtSjygCLOIJC8iTp2VgCj9VUI9oMHqnhhrLS0tvvkDHx3We3XLYrNPJfT
-         a+yFyYX2eo1V3w6QXa/o/VgAbPR01ZgYBcs7fct9Y01aVGye3ZOErIv1TrK6adoKm4nv
-         0YnKf7claHPwJrMsz9+9ATUZj8QGmMNnAZ4e32O1mGltEsAQml8ZSTc8gkh85xu8YMUY
-         /vBw==
-X-Gm-Message-State: AOAM532gSUQkO0B48gbMmtkN0PitsDA1mLzxGr6z2+HUzeZXRO/jFYoO
-        CFILVSo9MKaJ+IgcMRY8hh7bfQ==
-X-Google-Smtp-Source: ABdhPJz5rSeyZzVAkY37cQQqAUZMY9xHYrA838IOdkb8jskKkK6guA0WdZONNuWfyJeZYfJH5ZIBCw==
-X-Received: by 2002:a17:90a:c293:: with SMTP id f19mr8170642pjt.91.1591310370635;
-        Thu, 04 Jun 2020 15:39:30 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id nl8sm7407988pjb.13.2020.06.04.15.39.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 15:39:29 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 15:39:28 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-mm@kvack.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 01/10] x86/mm/numa: Remove uninitialized_var() usage
-Message-ID: <202006041539.B8C0C768@keescook>
-References: <20200603233203.1695403-2-keescook@chromium.org>
- <874krr8dps.fsf@nanos.tec.linutronix.de>
- <202006040728.8797FAA4@keescook>
- <87zh9i7bpi.fsf@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87zh9i7bpi.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1726062AbgFDWkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 18:40:22 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39986C08C5C0;
+        Thu,  4 Jun 2020 15:40:22 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2874511F5F8D1;
+        Thu,  4 Jun 2020 15:40:21 -0700 (PDT)
+Date:   Thu, 04 Jun 2020 15:40:20 -0700 (PDT)
+Message-Id: <20200604.154020.1609247845922031946.davem@davemloft.net>
+To:     ahabdels@gmail.com
+Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, yuehaibing@huawei.com, eric.dumazet@gmail.com,
+        david.lebrun@uclouvain.be
+Subject: Re: [net] seg6: fix seg6_validate_srh() to avoid slab-out-of-bounds
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200603065442.2745-1-ahabdels@gmail.com>
+References: <20200603065442.2745-1-ahabdels@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 04 Jun 2020 15:40:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 11:39:05PM +0200, Thomas Gleixner wrote:
-> Kees Cook <keescook@chromium.org> writes:
-> >> > -#define NODE_NOT_IN_PAGE_FLAGS
-> >> > +#define NODE_NOT_IN_PAGE_FLAGS 1
-> >> 
-> >> but if we ever lose the 1 then the above will silently compile the code
-> >> within the IS_ENABLED() section out.
-> >
-> > That's true, yes. I considered two other ways to do this:
-> >
-> > 1) smallest patch, but more #ifdef:
-> > 2) medium size, weird style:
-> >
-> > and 3 is what I sent: biggest, but removes #ifdef
-> >
-> > Any preference?
-> 
-> From a readbility POV I surely prefer #3. i"m just wary. Add a big fat
-> comment to the define might mitigate that, hmm?
-
-Sure! I'll add it.
-
--- 
-Kees Cook
+RnJvbTogQWhtZWQgQWJkZWxzYWxhbSA8YWhhYmRlbHNAZ21haWwuY29tPg0KRGF0ZTogV2VkLCAg
+MyBKdW4gMjAyMCAwNjo1NDo0MiArMDAwMA0KDQo+IFRoZSBzZWc2X3ZhbGlkYXRlX3NyaCgpIGlz
+IHVzZWQgdG8gdmFsaWRhdGUgU1JIIGZvciB0aHJlZSBjYXNlczoNCj4gDQo+IGNhc2UxOiBTUkgg
+b2YgZGF0YS1wbGFuZSBTUnY2IHBhY2tldHMgdG8gYmUgcHJvY2Vzc2VkIGJ5IHRoZSBMaW51eCBr
+ZXJuZWwuDQo+IENhc2UyOiBTUkggb2YgdGhlIG5ldGxpbmsgbWVzc2FnZSByZWNlaXZlZCAgZnJv
+bSB1c2VyLXNwYWNlIChpcHJvdXRlMikNCj4gQ2FzZTM6IFNSSCBpbmplY3RlZCBpbnRvIHBhY2tl
+dHMgdGhyb3VnaCBzZXRzb2Nrb3B0DQo+IA0KPiBJbiBjYXNlMSwgdGhlIFNSSCBjYW4gYmUgZW5j
+b2RlZCBpbiB0aGUgUmVkdWNlZCB3YXkgKGkuZS4sIGZpcnN0IFNJRCBpcw0KPiBjYXJyaWVkIGlu
+IERBIG9ubHkgYW5kIG5vdCByZXByZXNlbnRlZCBhcyBTSUQgaW4gdGhlIFNSSCkgYW5kIHRoZQ0K
+PiBzZWc2X3ZhbGlkYXRlX3NyaCgpIG5vdyBoYW5kbGVzIHRoaXMgY2FzZSBjb3JyZWN0bHkuDQo+
+IA0KPiBJbiBjYXNlMiBhbmQgY2FzZTMsIHRoZSBTUkggc2hvdWxkbqJ0IGJlIGVuY29kZWQgaW4g
+dGhlIFJlZHVjZWQgd2F5DQo+IG90aGVyd2lzZSB3ZSBsb3NlIHRoZSBmaXJzdCBzZWdtZW50IChp
+LmUuLCB0aGUgZmlyc3QgaG9wKS4NCj4gDQo+IFRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIG9m
+IHRoZSBzZWc2X3ZhbGlkYXRlX3NyaCgpIGFsbG93IFNSSCBvZiBjYXNlMg0KPiBhbmQgY2FzZTMg
+dG8gYmUgZW5jb2RlZCBpbiB0aGUgUmVkdWNlZCB3YXkuIFRoaXMgbGVhZHMgYSBzbGFiLW91dC1v
+Zi1ib3VuZHMNCj4gcHJvYmxlbS4NCj4gDQo+IFRoaXMgcGF0Y2ggdmVyaWZpZXMgU1JIIG9mIGNh
+c2UxLCBjYXNlMiBhbmQgY2FzZTMuIEFsbG93aW5nIGNhc2UxIHRvIGJlDQo+IHJlZHVjZWQgd2hp
+bGUgcHJldmVudGluZyBTUkggb2YgY2FzZTIgYW5kIGNhc2UzIGZyb20gYmVpbmcgcmVkdWNlZCAu
+DQo+IA0KPiBSZXBvcnRlZC1ieTogc3l6Ym90K2U4YzAyOGI2MjQzOWVhYzQyMDczQHN5emthbGxl
+ci5hcHBzcG90bWFpbC5jb20NCj4gUmVwb3J0ZWQtYnk6IFl1ZUhhaWJpbmcgPHl1ZWhhaWJpbmdA
+aHVhd2VpLmNvbT4NCj4gRml4ZXM6IDBjYjc0OThmMjM0ZSAoInNlZzY6IGZpeCBTUkggcHJvY2Vz
+c2luZyB0byBjb21wbHkgd2l0aCBSRkM4NzU0IikNCj4gU2lnbmVkLW9mZi1ieTogQWhtZWQgQWJk
+ZWxzYWxhbSA8YWhhYmRlbHNAZ21haWwuY29tPg0KDQpBcHBsaWVkLCB0aGFua3MuDQo=
