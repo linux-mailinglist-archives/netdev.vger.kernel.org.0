@@ -2,218 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8519A1EDDCC
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 09:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7B31EDE05
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 09:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgFDHNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 03:13:09 -0400
-Received: from esa1.hc3370-68.iphmx.com ([216.71.145.142]:65395 "EHLO
-        esa1.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbgFDHNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 03:13:09 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Thu, 04 Jun 2020 03:13:08 EDT
-Authentication-Results: esa1.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
-IronPort-SDR: 9zAhf83GSgEwVQAlNLIU0pGVdGDAshbC0Sjobq4FVFCviv2UJIg1ceYEsq+Yy0UQBCh1NFfEVy
- iMLTX3yV7vbF6Waw25yG9y+zEinLLz1zR9Lro1huou6GtYPZBtzM7yyyrAbkeV8wwEgZAesGPR
- 9t4kRazxWGZKk+HF81fNvmBeezr3rFw/eWaf2A0imOXifNpt7cl+sNxzIbSZAhzYx7lP3DUvFq
- UuLfxFcBZb2rPfRlU+omrackTfSfGDW1cThP56PbO0AyoTGYXRLwTK9XnJksPbOfMd9H9U2L+p
- U9U=
-X-SBRS: 2.7
-X-MesageID: 19486747
-X-Ironport-Server: esa1.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.73,471,1583211600"; 
-   d="scan'208";a="19486747"
-Date:   Thu, 4 Jun 2020 09:05:48 +0200
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     "Agarwal, Anchal" <anchalag@amazon.com>
-CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
- hibernation]
-Message-ID: <20200604070548.GH1195@Air-de-Roger>
-References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
+        id S1727973AbgFDH1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 03:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727909AbgFDH1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 03:27:11 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A71C05BD1E;
+        Thu,  4 Jun 2020 00:27:10 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id q8so5209892iow.7;
+        Thu, 04 Jun 2020 00:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=mGOxjTCdefrrnR0hBKEqLE+5+y5wUx6BcOT52JEiO/w=;
+        b=ZS4bR5ylkA3qMyDfT9teREVYO+h3tibjnXyMJoJVX+G5mJ13iGtF5nRneHn2y4BXKk
+         lbuA38DH8PUg7+NnR/cRrvaPdec+9VbV7j8bpXSIvpgF1JXXQjjbiwoR4VphfuiGExJt
+         hLAd/KpHYlSGyG+SYPS4B4UqdSRoUABVvzmUhM84xdRr3+M7Ejw5zRXRHI9S7C4ge69w
+         pHHApPVvaksuEjuQWJYGIZ58KDToZLKr1OfN8O/H8RmdIn0p+KhbEW4AU6+9mOsYqoG0
+         i4HZ9VdbrqFEIkfk7P5p1r/q/z2DKw42yvXNm3xth1WgLu9BQ1Leo+hkaKoCcnQ7shWy
+         D+2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=mGOxjTCdefrrnR0hBKEqLE+5+y5wUx6BcOT52JEiO/w=;
+        b=WBkGpG1JIPkpiRgZ/zPYX4aOJd0rsTgI+A8sH52mYb8Y6itTIY2Dbq3LbG0CVvyK8d
+         7yeRCbcN+rivF4csTFIXvbi+gr7hWPpzyfZwL2PxM04ycVCFXbtpxNPt4h2V2bzuXUE8
+         PcaY//RmkERKRY/6jh26rxI7sZw6to9isozf/71MdKKcD1M1LlulxXv46yL35S9B8QwG
+         +ltyiwm2ubKPo+Bssw0jrCZRhzlbUTp2MPPgk5kL+KUU6gls5pUnyzui9mVhHqB5mkZ/
+         Egk+dmWoRKME3fyNxQ4jD5e7XhDP2GPHYiAzaBxED/iW4KvGHMjKOKc5jHL/14+49F0F
+         VQ/w==
+X-Gm-Message-State: AOAM532k0J3AmCTtfrEaXOWyQ3SiwDSc5kEctZRh8wd4btl+fWuEuPla
+        szJlYdGSIuS73EwThbuD14hmIlwjsOMYhoPwmgFg1/y3
+X-Google-Smtp-Source: ABdhPJwrHY2BsggDHErpO1Iuf0ec8cSLwXn1wO03W9qrRj259eIfuSS5XQEsDKLZy/A8Pd7aPUbrd6qaIHCM8QmxBFo=
+X-Received: by 2002:a5d:91cc:: with SMTP id k12mr2896278ior.135.1591255630008;
+ Thu, 04 Jun 2020 00:27:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
- AMSPEX02CL02.citrite.net (10.69.22.126)
+References: <20200603233203.1695403-1-keescook@chromium.org> <20200604033347.GA3962068@ubuntu-n2-xlarge-x86>
+In-Reply-To: <20200604033347.GA3962068@ubuntu-n2-xlarge-x86>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 4 Jun 2020 09:26:58 +0200
+Message-ID: <CA+icZUU4Re5g3rRJ=WF3_KiCEc3CUmbH_PibTunuK_E1QskEjQ@mail.gmail.com>
+Subject: Re: [PATCH 00/10] Remove uninitialized_var() macro
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mm@kvack.org,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Jun 4, 2020 at 5:33 AM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
+>
+> On Wed, Jun 03, 2020 at 04:31:53PM -0700, Kees Cook wrote:
+> > Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> > (or can in the future), and suppresses unrelated compiler warnings
+> > (e.g. "unused variable"). If the compiler thinks it is uninitialized,
+> > either simply initialize the variable or make compiler changes.
+> >
+> > As recommended[2] by[3] Linus[4], remove the macro.
+> >
+> > Most of the 300 uses don't cause any warnings on gcc 9.3.0, so they're in
+> > a single treewide commit in this series. A few others needed to actually
+> > get cleaned up, and I broke those out into individual patches.
+> >
+> > -Kees
+> >
+> > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+> >
+> > Kees Cook (10):
+> >   x86/mm/numa: Remove uninitialized_var() usage
+> >   drbd: Remove uninitialized_var() usage
+> >   b43: Remove uninitialized_var() usage
+> >   rtlwifi: rtl8192cu: Remove uninitialized_var() usage
+> >   ide: Remove uninitialized_var() usage
+> >   clk: st: Remove uninitialized_var() usage
+> >   spi: davinci: Remove uninitialized_var() usage
+> >   checkpatch: Remove awareness of uninitialized_var() macro
+> >   treewide: Remove uninitialized_var() usage
+> >   compiler: Remove uninitialized_var() macro
+>
+> I applied all of these on top of cb8e59cc8720 and ran a variety of
+> builds with clang for arm32, arm64, mips, powerpc, s390, and x86_64 [1]
+> and only saw one warning pop up (which was about a variable being
+> unused, commented on patch 9 about it). No warnings about uninitialized
+> variables came up; clang's -Wuninitialized was not impacted by
+> 78a5255ffb6a ("Stop the ad-hoc games with -Wno-maybe-initialized") so it
+> should have caught anything egregious.
+>
+> [1]: https://github.com/nathanchance/llvm-kernel-testing
+>
+> For the series, consider it:
+>
+> Tested-by: Nathan Chancellor <natechancellor@gmail.com> [build]
+>
 
-On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
->  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
->     On Tue, May 19, 2020 at 11:27:50PM +0000, Anchal Agarwal wrote:
->     > From: Munehisa Kamata <kamatam@amazon.com>
->     > 
->     > S4 power transition states are much different than xen
->     > suspend/resume. Former is visible to the guest and frontend drivers should
->     > be aware of the state transitions and should be able to take appropriate
->     > actions when needed. In transition to S4 we need to make sure that at least
->     > all the in-flight blkif requests get completed, since they probably contain
->     > bits of the guest's memory image and that's not going to get saved any
->     > other way. Hence, re-issuing of in-flight requests as in case of xen resume
->     > will not work here. This is in contrast to xen-suspend where we need to
->     > freeze with as little processing as possible to avoid dirtying RAM late in
->     > the migration cycle and we know that in-flight data can wait.
->     > 
->     > Add freeze, thaw and restore callbacks for PM suspend and hibernation
->     > support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
->     > events, need to implement these xenbus_driver callbacks. The freeze handler
->     > stops block-layer queue and disconnect the frontend from the backend while
->     > freeing ring_info and associated resources. Before disconnecting from the
->     > backend, we need to prevent any new IO from being queued and wait for existing
->     > IO to complete. Freeze/unfreeze of the queues will guarantee that there are no
->     > requests in use on the shared ring. However, for sanity we should check
->     > state of the ring before disconnecting to make sure that there are no
->     > outstanding requests to be processed on the ring. The restore handler
->     > re-allocates ring_info, unquiesces and unfreezes the queue and re-connect to
->     > the backend, so that rest of the kernel can continue to use the block device
->     > transparently.
->     > 
->     > Note:For older backends,if a backend doesn't have commit'12ea729645ace'
->     > xen/blkback: unmap all persistent grants when frontend gets disconnected,
->     > the frontend may see massive amount of grant table warning when freeing
->     > resources.
->     > [   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
->     > [   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
->     > 
->     > In this case, persistent grants would need to be disabled.
->     > 
->     > [Anchal Changelog: Removed timeout/request during blkfront freeze.
->     > Reworked the whole patch to work with blk-mq and incorporate upstream's
->     > comments]
-> 
->     Please tag versions using vX and it would be helpful if you could list
->     the specific changes that you performed between versions. There where
->     3 RFC versions IIRC, and there's no log of the changes between them.
-> 
-> I will elaborate on "upstream's comments" in my changelog in my next round of patches.
+Hi Kees,
 
-Sorry for being picky, but can you please make sure your email client
-properly quotes previous emails on reply. Note the lack of '>' added
-to the quoted parts of your reply.
+I tried with updated version (checkpatch) of your tree and see no
+(new) warnings in my build-log.
 
->     > +                     }
->     > +
->     >                       break;
->     > +             }
->     > +
->     > +             /*
->     > +              * We may somehow receive backend's Closed again while thawing
->     > +              * or restoring and it causes thawing or restoring to fail.
->     > +              * Ignore such unexpected state regardless of the backend state.
->     > +              */
->     > +             if (info->connected == BLKIF_STATE_FROZEN) {
-> 
->     I think you can join this with the previous dev->state == XenbusStateClosed?
-> 
->     Also, won't the device be in the Closed state already if it's in state
->     frozen?
-> Yes but I think this mostly due to a hypothetical case if during thawing backend switches to Closed state.
-> I am not entirely sure if that could happen. Could use some expertise here.
+Feel free to add my...
 
-I think the frontend seeing the backend in the closed state during
-restore would be a bug that should prevent the frontend from
-resuming.
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
 
->     > +     /* Kick the backend to disconnect */
->     > +     xenbus_switch_state(dev, XenbusStateClosing);
->     > +
->     > +     /*
->     > +      * We don't want to move forward before the frontend is diconnected
->     > +      * from the backend cleanly.
->     > +      */
->     > +     timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
->     > +                                           timeout);
->     > +     if (!timeout) {
->     > +             err = -EBUSY;
-> 
->     Note err is only used here, and I think could just be dropped.
-> 
-> This err is what's being returned from the function. Am I missing anything?
+Thanks.
 
-Just 'return -EBUSY;' directly, and remove the top level variable. You
-can also use -EBUSY directly in the xenbus_dev_error call. Anyway, not
-that important.
-
->     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
->     > +                              "the device may become inconsistent state");
-> 
->     Leaving the device in this state is quite bad, as it's in a closed
->     state and with the queues frozen. You should make an attempt to
->     restore things to a working state.
-> 
-> You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to 
-> leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
-> Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why 
-> I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
-
-You can manually force this state, and then check that it will behave
-correctly. I would expect that on a failure to disconnect from the
-backend you should switch the frontend to the 'Init' state in order to
-try to reconnect to the backend when possible.
-
->     > +     }
->     > +
->     > +     return err;
->     > +}
->     > +
->     > +static int blkfront_restore(struct xenbus_device *dev)
->     > +{
->     > +     struct blkfront_info *info = dev_get_drvdata(&dev->dev);
->     > +     int err = 0;
->     > +
->     > +     err = talk_to_blkback(dev, info);
->     > +     blk_mq_unquiesce_queue(info->rq);
->     > +     blk_mq_unfreeze_queue(info->rq);
->     > +     if (!err)
->     > +         blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
-> 
->     Bad indentation. Also shouldn't you first update the queues and then
->     unfreeze them?
-> Please correct me if I am wrong, blk_mq_update_nr_hw_queues freezes the queue
-> So I don't think the order could be reversed.
-
-Regardless of what blk_mq_update_nr_hw_queues does, I don't think it's
-correct to unfreeze the queues without having updated them. Also the
-freezing/unfreezing uses a refcount, so I think it's perfectly fine to
-call blk_mq_update_nr_hw_queues first and then unfreeze the queues.
-
-Also note that talk_to_blkback returning an error should likely
-prevent any unfreezing, as the queues won't be updated to match the
-parameters of the backend.
-
-Thanks, Roger.
+Regards,
+- Sedat -
