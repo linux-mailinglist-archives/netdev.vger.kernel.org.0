@@ -2,110 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C681EE539
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 15:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5D71EE59C
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 15:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728563AbgFDNXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 09:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        id S1728673AbgFDNsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 09:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728376AbgFDNXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 09:23:08 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC521C08C5C0
-        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 06:23:08 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id q14so5125722qtr.9
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 06:23:08 -0700 (PDT)
+        with ESMTP id S1728447AbgFDNsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 09:48:15 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674F2C08C5C0;
+        Thu,  4 Jun 2020 06:48:14 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id e125so3650206lfd.1;
+        Thu, 04 Jun 2020 06:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zd56CSP9N2M4FrfN9ySWd7Nzjr+sOLOVU8sX9ZsvxYk=;
-        b=Z1SifWi8Glj9s1ZlViEQIoOzrtW4kQqhJPAuBmH8BuAfTlSORzOP5/aBkVIpDCF065
-         4tet6nf/xexKbX9HERYTEiH7bvvMa7jEzJZJ+Y9NbTVNdXZMe5cuQGHU5U8XYpc6rEpA
-         0M5eGOL/GQzV1R+AsSeBTDbzXk+YExg+XOlZLmxAbhKhBOAjkHQZ06AbVHRZdzvZiU7w
-         cHe+L3V8vNXxybekuzSoIvOp1xxWvK8SbdjJVplyLz5vYnbOtUIAIDcZULCyq5qUdBWf
-         hegDa8ghfSlITKfZUXou8d2OJHz3pI/kZh5/E9mjrrfnPUc08cS9ulbxQPmbEBYY1pID
-         +u9g==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iMMF10Nxs4oc2EJJanF54FJNWM4D4Wwm1OdBu2wm4Z4=;
+        b=sFXZR15/LjqG5bpCkxOk37qC9tElVU94FDwkLLfN9UCkQU3wR4HPwpJalmClK0WYId
+         TK6qeC9VmQi1kN/fYn2uo77S6U3dVSlwcJhXWqOrCD8+8PeohG7Xn6gEW02z9J9azgjI
+         LjIhE9h/6nc/czWT+jayLqT96lT+joKTedEpgQuS0967kKFH6QY5aV5KRxzexUCmlutV
+         //C8VFzwL9ddcQVIX3sYK4MI86YxL9Sgu4FZXcZZOv4FFhhtxjlr2srMXtRo63T7hImF
+         WtwQr/H1MPKmgaEzFCK3eUmei3ieS5j+8orUdaYCy6Ex+4mlhdW9tGzjg4AXi0M8CA6d
+         +GUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zd56CSP9N2M4FrfN9ySWd7Nzjr+sOLOVU8sX9ZsvxYk=;
-        b=UaLobfX2efqhEiPM+SjKtXeYNleokoViQtBGFuVIGv+gHOcLIu/nJ3P7WZikG+fXnw
-         RzR/ev2vn3yPxighpX/ITVRHi9PjId6x5JRZ08KeUdbrs909zY+XWhq/FKQEssv+5lUr
-         D8o6CC3vX/16YWrOLgTTvq5l863v7vlFffcLO3JIxOCdKgugn1MmpgMef3VhcE2fA/tG
-         ALDxC/+JsnPaE/iN266e8jtwytj2tH4Pbvu7faik8/fNjT0+FlV+GjgwuvlnxCgvKEeO
-         lqtauASluuEFljgkC2IpSN/MJ2w/kFmRAigInI8po7F0PXAFq8Isv0XYQf09oSEZaL+q
-         I96g==
-X-Gm-Message-State: AOAM531fjK3aJ3Jmt4ELeMLj5vPw7T9JggSC4ZPYOA8mUamEHu9bHhZg
-        9riAePrpGAZF92KoO+UGbzDevTBA3QI=
-X-Google-Smtp-Source: ABdhPJxRZn/pXIUEkZhANETiTogTGf06kqn6Gs1x5NZFGFUPmFe5McyxpBqwN0tWHmbj+GOZ4kP/eQ==
-X-Received: by 2002:aed:3fa5:: with SMTP id s34mr4444014qth.343.1591276988114;
-        Thu, 04 Jun 2020 06:23:08 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id 126sm4330150qkj.89.2020.06.04.06.23.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 06:23:07 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.93)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jgppq-001CIj-Sr; Thu, 04 Jun 2020 10:23:06 -0300
-Date:   Thu, 4 Jun 2020 10:23:06 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-mm@kvack.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 09/10] treewide: Remove uninitialized_var() usage
-Message-ID: <20200604132306.GO6578@ziepe.ca>
-References: <20200603233203.1695403-1-keescook@chromium.org>
- <20200603233203.1695403-10-keescook@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iMMF10Nxs4oc2EJJanF54FJNWM4D4Wwm1OdBu2wm4Z4=;
+        b=YTT/oiJ6TG5j1stJX+o4rMZogz0rgHW1Uyz8onUU0AwddOi8C2RLnYMrcmlkwlikRp
+         oXuBqFz7+dYl3eFUsGv9bQ3HOdPKSPhqZNkViiLphBcvFWXpVNTvRBU63QXdFNc/H1Yd
+         X6in6E8hrSJOwTzADAse//Af/jOxt/RnYpXezZkKSPmrEvQDL93EbvdlzfQ20TubCa/0
+         5JgzLr0fwQ3jQa0B4Jrox9bQaCsPKmvsBqyKCseThsRLftSGP9xTMEDM+RAgQVRGXoXS
+         64Ox/00BdozijCYyU95ba0Gb+hdj6u2HXxx6sm8EEtpc3VU4J7VFGI25faZysLCa2Kvv
+         Ie3Q==
+X-Gm-Message-State: AOAM532s/gHVlxeceNj4SXIF9C6kt3qa3zNvIhjwqPPjxwl9ZP+0YuTZ
+        FA7mT3oSxFbXm2QGMHarQjYyaLBlpnhVJUPG2go=
+X-Google-Smtp-Source: ABdhPJwIR6Q2Naj2V+WJIUcSDZdWNqsRdct/J8jlK8ybr+qXkoX6RREh9lcQJkoOOoeN0FxBfO3Sew2nuLo6o95L/B0=
+X-Received: by 2002:a19:2358:: with SMTP id j85mr2654922lfj.182.1591278492760;
+ Thu, 04 Jun 2020 06:48:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200603233203.1695403-10-keescook@chromium.org>
+References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
+ <20200604090014.23266-1-kerneljasonxing@gmail.com> <CANn89iKt=3iDZM+vUbCvO_aGuedXFhzdC6OtQMeVTMDxyp9bAg@mail.gmail.com>
+In-Reply-To: <CANn89iKt=3iDZM+vUbCvO_aGuedXFhzdC6OtQMeVTMDxyp9bAg@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Thu, 4 Jun 2020 21:47:36 +0800
+Message-ID: <CAL+tcoCU157eGmMMabT5icdFJTMEWymNUNxHBbxY1OTir0=0FQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4.19] tcp: fix TCP socks unreleased in BBR mode
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        liweishi <liweishi@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 04:32:02PM -0700, Kees Cook wrote:
-> Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> (or can in the future), and suppresses unrelated compiler warnings
-> (e.g. "unused variable"). If the compiler thinks it is uninitialized,
-> either simply initialize the variable or make compiler changes.
-> 
-> I preparation for removing[2] the[3] macro[4], remove all remaining
-> needless uses with the following script:
-> 
-> git grep '\buninitialized_var\b' | cut -d: -f1 | sort -u | \
-> 	xargs perl -pi -e \
-> 		's/\buninitialized_var\(([^\)]+)\)/\1/g;
-> 		 s:\s*/\* (GCC be quiet|to make compiler happy) \*/$::g;'
-> 
-> drivers/video/fbdev/riva/riva_hw.c was manually tweaked to avoid
-> pathological white-space.
-> 
-> No outstanding warnings were found building allmodconfig with GCC 9.3.0
-> for x86_64, i386, arm64, arm, powerpc, powerpc64le, s390x, mips, sparc64,
-> alpha, and m68k.
+On Thu, Jun 4, 2020 at 9:10 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Thu, Jun 4, 2020 at 2:01 AM <kerneljasonxing@gmail.com> wrote:
+> >
+> > From: Jason Xing <kerneljasonxing@gmail.com>
+> >
+> > When using BBR mode, too many tcp socks cannot be released because of
+> > duplicate use of the sock_hold() in the manner of tcp_internal_pacing()
+> > when RTO happens. Therefore, this situation maddly increases the slab
+> > memory and then constantly triggers the OOM until crash.
+> >
+> > Besides, in addition to BBR mode, if some mode applies pacing function,
+> > it could trigger what we've discussed above,
+> >
+> > Reproduce procedure:
+> > 0) cat /proc/slabinfo | grep TCP
+> > 1) switch net.ipv4.tcp_congestion_control to bbr
+> > 2) using wrk tool something like that to send packages
+> > 3) using tc to increase the delay and loss to simulate the RTO case.
+> > 4) cat /proc/slabinfo | grep TCP
+> > 5) kill the wrk command and observe the number of objects and slabs in
+> > TCP.
+> > 6) at last, you could notice that the number would not decrease.
+> >
+> > v2: extend the timer which could cover all those related potential risks
+> > (suggested by Eric Dumazet and Neal Cardwell)
+> >
+> > Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
+> > Signed-off-by: liweishi <liweishi@kuaishou.com>
+> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+>
+> That is not how things work really.
+>
+> I will submit this properly so that stable teams do not have to guess
+> how to backport this to various kernels.
+>
+> Changelog is misleading, this has nothing to do with BBR, we need to be precise.
+>
 
-At least in the infiniband part I'm confident that old gcc versions
-will print warnings after this patch.
+Thanks for your help. I can finally apply this patch into my kernel.
 
-As the warnings are wrong, do we care? Should old gcc maybe just -Wno-
-the warning?
-
-Otherwise the IB bits look ok to me
-
-Acked-by: Jason Gunthorpe <jgg@mellanox.com>
+Looking forward to your patchset :)
 
 Jason
+
+> Thank you.
