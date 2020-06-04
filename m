@@ -2,106 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 722BF1EE9FF
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 20:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD8A1EEA54
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 20:34:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730457AbgFDR7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 13:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730400AbgFDR7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 13:59:24 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5CBC08C5C0
-        for <netdev@vger.kernel.org>; Thu,  4 Jun 2020 10:59:24 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id n23so3791225pgb.12
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 10:59:24 -0700 (PDT)
+        id S1730461AbgFDSeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 14:34:00 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:56834 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730348AbgFDSeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 14:34:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2qJ1KmR7n31K99rmmaGKTiex9LAFKCkmBxAmhTYhJxo=;
-        b=O25wYAeOqYLKutlDyi60xIlbTuDdCOT5e2XYNOsNGhC4B+NaMg3VxpH/LIFlYcKegJ
-         T2d7Nsibm7xBSN7jaERDrF77NKlRLBhUJZhYCNyaOF8giEp3RryXOHyVxA+KlQtlUkqU
-         MR3J/581kbOBBRQlO36Kq+wpxgAQjeV+sg00s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2qJ1KmR7n31K99rmmaGKTiex9LAFKCkmBxAmhTYhJxo=;
-        b=bg08psLifMtNZvh0zaFUXIaQtjrjDEcY+2Kg03bap6PLBMCbKdYOTr0WlWDSh1x8fZ
-         UadNrhEdSWUPd2Pzc7FZDP2vfCWw5yZYdmBhguaaVuAkqpmzXOff3jgYp0ORhUn2zE17
-         LMEMNEgtQNNBR2RBmTaYfJH/JkfhFWACYNBPliCCFTxL83hFEFA7N2eA1Uh+97dz7OjQ
-         BunoS2QEx6yPOJEcXukuoHLUsPLzG+wZFMLmLqspV9vHvXFRNTU+lzClkgeUhfB78dZb
-         Hf5Yj3YaCiY4s3IwUfZpsXdCHGqlohSkqu9nEbFMnUBWBLEEjLwhOG2/Cyzqv0m8iI5J
-         HLdA==
-X-Gm-Message-State: AOAM532T5gLB8D+N5nxfP6G17jgFvvakMinP5xNxaRijh02NLW6gt+S+
-        GVL1x+QxKXVZPQdEFr3rqKY40A==
-X-Google-Smtp-Source: ABdhPJy8aqjpj6isz3vL3kGOUE53Wgd2Jl+2f1JtJGfWBzh0MNQ1ovSw5R16ThJEKXvXpFgxlTMkiA==
-X-Received: by 2002:a63:454c:: with SMTP id u12mr5625732pgk.153.1591293563926;
-        Thu, 04 Jun 2020 10:59:23 -0700 (PDT)
-Received: from evgreen-glaptop.cheshire.ch ([2601:646:c780:1404:1c5a:73fa:6d5a:5a3c])
-        by smtp.gmail.com with ESMTPSA id q13sm2568927pfk.8.2020.06.04.10.59.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 04 Jun 2020 10:59:23 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     kuabhs@google.com.org, sujitka@chromium.org,
-        Evan Green <evgreen@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Govind Singh <govinds@qti.qualcomm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Kazior <michal.kazior@tieto.com>,
-        ath10k@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] ath10k: Acquire tx_lock in tx error paths
-Date:   Thu,  4 Jun 2020 10:59:11 -0700
-Message-Id: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
-X-Mailer: git-send-email 2.24.1
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1591295640; x=1622831640;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=HTqcTU628wYZT8oBd+ArbsC8bAoTC8fUsqm9xVXgmro=;
+  b=Xp9f4OPOff8jKD9jEy1DjSHAIcs2lzAnVrlmF0AHlIJCv2t4VyR2I90N
+   W2uPj+W/Lk5RB/+9ORMMpEcESt24L93jfYkl583RKiRRNFX49bmz4ONaR
+   B2P/P6uydCs3Meo0yV8sS5exYbOWuUKhWhAxbnRfUk0jqI/ddyiyO3P8K
+   0=;
+IronPort-SDR: Bp9sXjz5OL6Qmgdn1t2NjI2Ij78oRPs1ANk1UfVNxYHuSJrPGMGuWQ5o01KOARrU4ThWIT/DpG
+ g10L4tLv3oVA==
+X-IronPort-AV: E=Sophos;i="5.73,472,1583193600"; 
+   d="scan'208";a="41639696"
+Subject: Re: [PATCH 09/12] x86/xen: save and restore steal clock
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 04 Jun 2020 18:33:58 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 2AEAAA22B6;
+        Thu,  4 Jun 2020 18:33:56 +0000 (UTC)
+Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 4 Jun 2020 18:33:36 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 4 Jun 2020 18:33:36 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Thu, 4 Jun 2020 18:33:36 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 5663D403BB; Thu,  4 Jun 2020 18:33:36 +0000 (UTC)
+Date:   Thu, 4 Jun 2020 18:33:36 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
+        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
+        <kamatam@amazon.com>, <sstabellini@kernel.org>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>,
+        <anchalag@amazon.com>
+Message-ID: <20200604183336.GA25251@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1589926004.git.anchalag@amazon.com>
+ <6f39a1594a25ab5325f34e1e297900d699cd92bf.1589926004.git.anchalag@amazon.com>
+ <5edb4147-af12-3a0e-e8f7-5b72650209ac@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <5edb4147-af12-3a0e-e8f7-5b72650209ac@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ath10k_htt_tx_free_msdu_id() has a lockdep assertion that htt->tx_lock
-is held. Acquire the lock in a couple of error paths when calling that
-function to ensure this condition is met.
+On Sat, May 30, 2020 at 07:44:06PM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On 5/19/20 7:28 PM, Anchal Agarwal wrote:
+> > From: Munehisa Kamata <kamatam@amazon.com>
+> >
+> > Save steal clock values of all present CPUs in the system core ops
+> > suspend callbacks. Also, restore a boot CPU's steal clock in the system
+> > core resume callback. For non-boot CPUs, restore after they're brought
+> > up, because runstate info for non-boot CPUs are not active until then.
+> >
+> > Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+> > Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> > ---
+> >  arch/x86/xen/suspend.c | 13 ++++++++++++-
+> >  arch/x86/xen/time.c    |  3 +++
+> >  2 files changed, 15 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+> > index 784c4484100b..dae0f74f5390 100644
+> > --- a/arch/x86/xen/suspend.c
+> > +++ b/arch/x86/xen/suspend.c
+> > @@ -91,12 +91,20 @@ void xen_arch_suspend(void)
+> >  static int xen_syscore_suspend(void)
+> >  {
+> >       struct xen_remove_from_physmap xrfp;
+> > -     int ret;
+> > +     int cpu, ret;
+> >
+> >       /* Xen suspend does similar stuffs in its own logic */
+> >       if (xen_suspend_mode_is_xen_suspend())
+> >               return 0;
+> >
+> > +     for_each_present_cpu(cpu) {
+> > +             /*
+> > +              * Nonboot CPUs are already offline, but the last copy of
+> > +              * runstate info is still accessible.
+> > +              */
+> > +             xen_save_steal_clock(cpu);
+> > +     }
+> > +
+> >       xrfp.domid = DOMID_SELF;
+> >       xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
+> >
+> > @@ -118,6 +126,9 @@ static void xen_syscore_resume(void)
+> >
+> >       pvclock_resume();
+> 
+> 
+> Doesn't make any difference but I think since this patch is where you
+> are dealing with clock then pvclock_resume() should be added here and
+> not in the earlier patch.
+> 
+> 
+> -boris
+I think the reason it may be in previous patch because it was a part
+of syscore_resume and steal clock fix came in later. 
+It could me moved to this patch that deals with all clock stuff.
 
-Fixes: 6421969f248fd ("ath10k: refactor tx pending management")
-Fixes: e62ee5c381c59 ("ath10k: Add support for htt_data_tx_desc_64
-descriptor")
-Signed-off-by: Evan Green <evgreen@chromium.org>
----
+-Anchal
+> 
+> 
 
- drivers/net/wireless/ath/ath10k/htt_tx.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index e9d12ea708b62..e8c00af2cce1d 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -1545,7 +1545,9 @@ static int ath10k_htt_tx_32(struct ath10k_htt *htt,
- err_unmap_msdu:
- 	dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
- err_free_msdu_id:
-+	spin_lock_bh(&htt->tx_lock);
- 	ath10k_htt_tx_free_msdu_id(htt, msdu_id);
-+	spin_unlock_bh(&htt->tx_lock);
- err:
- 	return res;
- }
-@@ -1752,7 +1754,9 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
- err_unmap_msdu:
- 	dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
- err_free_msdu_id:
-+	spin_lock_bh(&htt->tx_lock);
- 	ath10k_htt_tx_free_msdu_id(htt, msdu_id);
-+	spin_unlock_bh(&htt->tx_lock);
- err:
- 	return res;
- }
--- 
-2.24.1
-
+> >
+> > +     /* Nonboot CPUs will be resumed when they're brought up */
+> > +     xen_restore_steal_clock(smp_processor_id());
+> > +
+> >       gnttab_resume();
+> >  }
+> >
+> > diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+> > index c8897aad13cd..33d754564b09 100644
+> > --- a/arch/x86/xen/time.c
+> > +++ b/arch/x86/xen/time.c
+> > @@ -545,6 +545,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
+> >  {
+> >       int cpu = smp_processor_id();
+> >       xen_setup_runstate_info(cpu);
+> > +     if (cpu)
+> > +             xen_restore_steal_clock(cpu);
+> > +
+> >       /*
+> >        * xen_setup_timer(cpu) - snprintf is bad in atomic context. Hence
+> >        * doing it xen_hvm_cpu_notify (which gets called by smp_init during
+> 
+> 
+> 
