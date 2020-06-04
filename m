@@ -2,170 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29AAC1EDB9F
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 05:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154EB1EDBAD
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 05:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbgFDD2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 23:28:51 -0400
-Received: from mga03.intel.com ([134.134.136.65]:55413 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725959AbgFDD2v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 23:28:51 -0400
-IronPort-SDR: QWSl6jwIUcMp4j7uw45TC8lDXLVoz2ATULRlKYwEIgWM7klw6W9Ayhbq8fEkKUeiSh5sV6sOxp
- AoUPwet4Nc1Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2020 20:28:50 -0700
-IronPort-SDR: MH7Od14Rrt4PYD/v/UL97A1EhvZiI0nFAd/A7WiZELVw1O3FO4ZAEng/TIwFS1J6w9d9h59jh3
- QQOThTqlgFjg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,470,1583222400"; 
-   d="scan'208";a="471389436"
-Received: from lkp-server01.sh.intel.com (HELO 8bb2cd163565) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Jun 2020 20:28:48 -0700
-Received: from kbuild by 8bb2cd163565 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1jggYh-0000Le-NB; Thu, 04 Jun 2020 03:28:47 +0000
-Date:   Thu, 4 Jun 2020 11:28:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     kbuild-all@lists.01.org, edumazet@google.com, borisp@mellanox.com,
-        secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Subject: Re: [PATCH net-next] crypto/chtls: Fix compile error when
- CONFIG_IPV6 is disabled
-Message-ID: <202006041135.KHGZmEJm%lkp@intel.com>
-References: <20200603103317.653-1-vinay.yadav@chelsio.com>
+        id S1726814AbgFDDdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 23:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgFDDdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 23:33:21 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EDFC03E96D;
+        Wed,  3 Jun 2020 20:33:19 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id 25so2927725oiy.13;
+        Wed, 03 Jun 2020 20:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8Faii11PvSo51bdsAemmq3+A0d7oNRL4/GLZ67cBSMg=;
+        b=An50kzaFvA39pC4h/8bP4oIWOqTSG046GlYB5+emgXeZszQTtbXKqSjDjHWmw8n8um
+         VXpLlrq83m2ZAS8J26v56FTDUjfbdw4fWaYAjEK9Ox20DjsyL1kabqtQvJ0qaNA6AN6x
+         WQHzqT/rIk17+lobg6a1Qz4niujZV9KifIFoGU6CnMcUxFKQqfbbxVvC4XVpIL5SSTtt
+         6xGwnGkCkYTcRnL3OaIoBi5ReA1N/8hWVCv9k4QJ2ieUjD5HXDXWHDv6XZ9+0M+W+p2j
+         GHjogeet/zLPYDJFnvbD/NGsLeEzoRiqyu6IiidyEX/Bv9x5fa84lURyrkrcSmOp3voL
+         uKqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8Faii11PvSo51bdsAemmq3+A0d7oNRL4/GLZ67cBSMg=;
+        b=cn5EHlwGGW1f0zzJWjK8IWiC7Lmx1BXuDjrrN0yry05CPX4ek3L8XW0g6ab1ocQBEx
+         0zjQyciDKeOlbMZPq/+zIW7fuW7Sq33+ysMevEPLRuaN6BUxzgCTBjkAjTdCNSSzuWb+
+         nkyGJBgAG7gZ6oCEUF38dqhSlYINOADbPtFqlCdfuBdf7bbFX6nJJcV2MFvYFYGTCsXC
+         qxYJ3ow6VrLBeYuXk7erXVqJD2W8TjhPF+niUS/qPy7d8TYP6djnPBB42v9kDeW2efdZ
+         +gAfZwEjYjERAfA/EiKWjMVXKOqTIGHpXwJ0V/VWHNKAQXfEsTpipuN8zULdnwIqmxPC
+         BT5w==
+X-Gm-Message-State: AOAM531Rbdbx0Ogow2ZEFqMSf/nWIypRlEeTYf54IlA/P8H+rHX8ZbbW
+        jvTkTs6lxpcmTiAfCXTjhOs=
+X-Google-Smtp-Source: ABdhPJwnzfVVb4uCTFG1lxg30QZrwlILRC7pC1WmnFYGEgON5rzpjMpDI7aYXPTUb98IobrtcgZC+g==
+X-Received: by 2002:aca:b707:: with SMTP id h7mr1938490oif.174.1591241599191;
+        Wed, 03 Jun 2020 20:33:19 -0700 (PDT)
+Received: from ubuntu-n2-xlarge-x86 ([2604:1380:4111:8b00::3])
+        by smtp.gmail.com with ESMTPSA id n60sm327816otn.75.2020.06.03.20.33.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2020 20:33:17 -0700 (PDT)
+Date:   Wed, 3 Jun 2020 20:33:15 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mm@kvack.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 09/10] treewide: Remove uninitialized_var() usage
+Message-ID: <20200604033315.GA1131596@ubuntu-n2-xlarge-x86>
+References: <20200603233203.1695403-1-keescook@chromium.org>
+ <20200603233203.1695403-10-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200603103317.653-1-vinay.yadav@chelsio.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200603233203.1695403-10-keescook@chromium.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinay,
+On Wed, Jun 03, 2020 at 04:32:02PM -0700, Kees Cook wrote:
+> Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> (or can in the future), and suppresses unrelated compiler warnings
+> (e.g. "unused variable"). If the compiler thinks it is uninitialized,
+> either simply initialize the variable or make compiler changes.
+> 
+> I preparation for removing[2] the[3] macro[4], remove all remaining
+> needless uses with the following script:
+> 
+> git grep '\buninitialized_var\b' | cut -d: -f1 | sort -u | \
+> 	xargs perl -pi -e \
+> 		's/\buninitialized_var\(([^\)]+)\)/\1/g;
+> 		 s:\s*/\* (GCC be quiet|to make compiler happy) \*/$::g;'
+> 
+> drivers/video/fbdev/riva/riva_hw.c was manually tweaked to avoid
+> pathological white-space.
+> 
+> No outstanding warnings were found building allmodconfig with GCC 9.3.0
+> for x86_64, i386, arm64, arm, powerpc, powerpc64le, s390x, mips, sparc64,
+> alpha, and m68k.
+> 
+> [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-I love your patch! Perhaps something to improve:
+<snip>
 
-[auto build test WARNING on net-next/master]
+> diff --git a/arch/powerpc/kvm/book3s_pr.c b/arch/powerpc/kvm/book3s_pr.c
+> index a0f6813f4560..a71fa7204882 100644
+> --- a/arch/powerpc/kvm/book3s_pr.c
+> +++ b/arch/powerpc/kvm/book3s_pr.c
+> @@ -1829,7 +1829,7 @@ static int kvmppc_vcpu_run_pr(struct kvm_run *kvm_run, struct kvm_vcpu *vcpu)
+>  {
+>  	int ret;
+>  #ifdef CONFIG_ALTIVEC
+> -	unsigned long uninitialized_var(vrsave);
+> +	unsigned long vrsave;
+>  #endif
 
-url:    https://github.com/0day-ci/linux/commits/Vinay-Kumar-Yadav/crypto-chtls-Fix-compile-error-when-CONFIG_IPV6-is-disabled/20200603-184315
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 065fcfd49763ec71ae345bb5c5a74f961031e70e
-compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+This variable is actually unused:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+../arch/powerpc/kvm/book3s_pr.c:1832:16: warning: unused variable 'vrsave' [-Wunused-variable]
+        unsigned long vrsave;
+                      ^
+1 warning generated.
 
+It has been unused since commit 99dae3bad28d ("KVM: PPC: Load/save
+FP/VMX/VSX state directly to/from vcpu struct").
 
-cppcheck warnings: (new ones prefixed by >>)
+$ git grep vrsave 99dae3bad28d8fdd32b7bfdd5e2ec7bb2d4d019d arch/powerpc/kvm/book3s_pr.c
+99dae3bad28d8fdd32b7bfdd5e2ec7bb2d4d019d:arch/powerpc/kvm/book3s_pr.c:  unsigned long uninitialized_var(vrsave);
 
->> drivers/crypto/chelsio/chtls/chtls_cm.c:700:6: warning: Uninitialized variable: ret [uninitvar]
-    if (ret > 0)
-        ^
->> drivers/crypto/chelsio/chtls/chtls_cm.c:1151:7: warning: Uninitialized variable: n [uninitvar]
-    if (!n)
-         ^
+I would nuke the whole '#ifdef' block.
 
-vim +700 drivers/crypto/chelsio/chtls/chtls_cm.c
-
-cc35c88ae4db21 Atul Gupta        2018-03-31  633  
-cc35c88ae4db21 Atul Gupta        2018-03-31  634  int chtls_listen_start(struct chtls_dev *cdev, struct sock *sk)
-cc35c88ae4db21 Atul Gupta        2018-03-31  635  {
-cc35c88ae4db21 Atul Gupta        2018-03-31  636  	struct net_device *ndev;
-cc35c88ae4db21 Atul Gupta        2018-03-31  637  	struct listen_ctx *ctx;
-cc35c88ae4db21 Atul Gupta        2018-03-31  638  	struct adapter *adap;
-cc35c88ae4db21 Atul Gupta        2018-03-31  639  	struct port_info *pi;
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  640  	bool clip_valid;
-cc35c88ae4db21 Atul Gupta        2018-03-31  641  	int stid;
-cc35c88ae4db21 Atul Gupta        2018-03-31  642  	int ret;
-cc35c88ae4db21 Atul Gupta        2018-03-31  643  
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  644  	clip_valid = false;
-cc35c88ae4db21 Atul Gupta        2018-03-31  645  	rcu_read_lock();
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  646  	ndev = chtls_find_netdev(cdev, sk);
-cc35c88ae4db21 Atul Gupta        2018-03-31  647  	rcu_read_unlock();
-cc35c88ae4db21 Atul Gupta        2018-03-31  648  	if (!ndev)
-cc35c88ae4db21 Atul Gupta        2018-03-31  649  		return -EBADF;
-cc35c88ae4db21 Atul Gupta        2018-03-31  650  
-cc35c88ae4db21 Atul Gupta        2018-03-31  651  	pi = netdev_priv(ndev);
-cc35c88ae4db21 Atul Gupta        2018-03-31  652  	adap = pi->adapter;
-80f61f19e542ae Arjun Vynipadath  2019-03-04  653  	if (!(adap->flags & CXGB4_FULL_INIT_DONE))
-cc35c88ae4db21 Atul Gupta        2018-03-31  654  		return -EBADF;
-cc35c88ae4db21 Atul Gupta        2018-03-31  655  
-cc35c88ae4db21 Atul Gupta        2018-03-31  656  	if (listen_hash_find(cdev, sk) >= 0)   /* already have it */
-cc35c88ae4db21 Atul Gupta        2018-03-31  657  		return -EADDRINUSE;
-cc35c88ae4db21 Atul Gupta        2018-03-31  658  
-cc35c88ae4db21 Atul Gupta        2018-03-31  659  	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
-cc35c88ae4db21 Atul Gupta        2018-03-31  660  	if (!ctx)
-cc35c88ae4db21 Atul Gupta        2018-03-31  661  		return -ENOMEM;
-cc35c88ae4db21 Atul Gupta        2018-03-31  662  
-cc35c88ae4db21 Atul Gupta        2018-03-31  663  	__module_get(THIS_MODULE);
-cc35c88ae4db21 Atul Gupta        2018-03-31  664  	ctx->lsk = sk;
-cc35c88ae4db21 Atul Gupta        2018-03-31  665  	ctx->cdev = cdev;
-cc35c88ae4db21 Atul Gupta        2018-03-31  666  	ctx->state = T4_LISTEN_START_PENDING;
-cc35c88ae4db21 Atul Gupta        2018-03-31  667  	skb_queue_head_init(&ctx->synq);
-cc35c88ae4db21 Atul Gupta        2018-03-31  668  
-cc35c88ae4db21 Atul Gupta        2018-03-31  669  	stid = cxgb4_alloc_stid(cdev->tids, sk->sk_family, ctx);
-cc35c88ae4db21 Atul Gupta        2018-03-31  670  	if (stid < 0)
-cc35c88ae4db21 Atul Gupta        2018-03-31  671  		goto free_ctx;
-cc35c88ae4db21 Atul Gupta        2018-03-31  672  
-cc35c88ae4db21 Atul Gupta        2018-03-31  673  	sock_hold(sk);
-cc35c88ae4db21 Atul Gupta        2018-03-31  674  	if (!listen_hash_add(cdev, sk, stid))
-cc35c88ae4db21 Atul Gupta        2018-03-31  675  		goto free_stid;
-cc35c88ae4db21 Atul Gupta        2018-03-31  676  
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  677  	if (sk->sk_family == PF_INET) {
-cc35c88ae4db21 Atul Gupta        2018-03-31  678  		ret = cxgb4_create_server(ndev, stid,
-cc35c88ae4db21 Atul Gupta        2018-03-31  679  					  inet_sk(sk)->inet_rcv_saddr,
-cc35c88ae4db21 Atul Gupta        2018-03-31  680  					  inet_sk(sk)->inet_sport, 0,
-cc35c88ae4db21 Atul Gupta        2018-03-31  681  					  cdev->lldi->rxq_ids[0]);
-015ca7982064b6 Vinay Kumar Yadav 2020-06-03  682  #if IS_ENABLED(CONFIG_IPV6)
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  683  	} else {
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  684  		int addr_type;
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  685  
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  686  		addr_type = ipv6_addr_type(&sk->sk_v6_rcv_saddr);
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  687  		if (addr_type != IPV6_ADDR_ANY) {
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  688  			ret = cxgb4_clip_get(ndev, (const u32 *)
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  689  					     &sk->sk_v6_rcv_saddr, 1);
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  690  			if (ret)
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  691  				goto del_hash;
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  692  			clip_valid = true;
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  693  		}
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  694  		ret = cxgb4_create_server6(ndev, stid,
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  695  					   &sk->sk_v6_rcv_saddr,
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  696  					   inet_sk(sk)->inet_sport,
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  697  					   cdev->lldi->rxq_ids[0]);
-015ca7982064b6 Vinay Kumar Yadav 2020-06-03  698  #endif
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  699  	}
-cc35c88ae4db21 Atul Gupta        2018-03-31 @700  	if (ret > 0)
-cc35c88ae4db21 Atul Gupta        2018-03-31  701  		ret = net_xmit_errno(ret);
-cc35c88ae4db21 Atul Gupta        2018-03-31  702  	if (ret)
-cc35c88ae4db21 Atul Gupta        2018-03-31  703  		goto del_hash;
-cc35c88ae4db21 Atul Gupta        2018-03-31  704  	return 0;
-cc35c88ae4db21 Atul Gupta        2018-03-31  705  del_hash:
-015ca7982064b6 Vinay Kumar Yadav 2020-06-03  706  #if IS_ENABLED(CONFIG_IPV6)
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  707  	if (clip_valid)
-6abde0b2412243 Vinay Kumar Yadav 2020-06-02  708  		cxgb4_clip_release(ndev, (const u32 *)&sk->sk_v6_rcv_saddr, 1);
-015ca7982064b6 Vinay Kumar Yadav 2020-06-03  709  #endif
-cc35c88ae4db21 Atul Gupta        2018-03-31  710  	listen_hash_del(cdev, sk);
-cc35c88ae4db21 Atul Gupta        2018-03-31  711  free_stid:
-cc35c88ae4db21 Atul Gupta        2018-03-31  712  	cxgb4_free_stid(cdev->tids, stid, sk->sk_family);
-cc35c88ae4db21 Atul Gupta        2018-03-31  713  	sock_put(sk);
-cc35c88ae4db21 Atul Gupta        2018-03-31  714  free_ctx:
-cc35c88ae4db21 Atul Gupta        2018-03-31  715  	kfree(ctx);
-cc35c88ae4db21 Atul Gupta        2018-03-31  716  	module_put(THIS_MODULE);
-cc35c88ae4db21 Atul Gupta        2018-03-31  717  	return -EBADF;
-cc35c88ae4db21 Atul Gupta        2018-03-31  718  }
-cc35c88ae4db21 Atul Gupta        2018-03-31  719  
-
-:::::: The code at line 700 was first introduced by commit
-:::::: cc35c88ae4db219611e204375d6a4248bc0e84d6 crypto : chtls - CPL handler definition
-
-:::::: TO: Atul Gupta <atul.gupta@chelsio.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Cheers,
+Nathan
