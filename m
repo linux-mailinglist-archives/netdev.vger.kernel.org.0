@@ -2,93 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07BB91EE8CE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647F31EE8D5
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:48:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbgFDQrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 12:47:39 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54453 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728587AbgFDQrj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:47:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591289257;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Ar15+z0tlu8GE0Wg5KZSeq2GZEzeqWT+aUmm+wx7x4=;
-        b=JKDlcDidL2Gw8r+tRUM3Q1eDKDdgbwOHBOW+NFJWNDo2S2UHrwVUFtcBllNb1uqXQPWiFj
-        mjgwom8Px1AZNOAVZP6vEXTxij7e4+Y1OKg8hZJzN4rLxAPOwmI19135gmq9PLP7JUSX1C
-        b4UqU9gz6EdGUTanr84/QSQPYNuvTi4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-X1YOkOV6OlqrVF6jr_Psbw-1; Thu, 04 Jun 2020 12:47:35 -0400
-X-MC-Unique: X1YOkOV6OlqrVF6jr_Psbw-1
-Received: by mail-wm1-f69.google.com with SMTP id y202so1972524wmd.0
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 09:47:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0Ar15+z0tlu8GE0Wg5KZSeq2GZEzeqWT+aUmm+wx7x4=;
-        b=jxjwZCJFnTPYWm7qQX/qQx09ksQnpo1QgsY1WIfeRnBbjIB2+rXh2aPEa9+IuL0Lqi
-         rn2nWg+enOYc4edl/iqfh4QVpK1PFeXR+wJ+uus6NsCSA0llrQW778SUmK44e3BhKS9i
-         sv9OrDB7KhGiKIXe6BqlRhWfvpi4VahQaz4z0MHLyh24A0dPH9JZ19/8dSW/oZ2cxoak
-         ndg4A9Oy/tYguILi5vqprJBqFTl8hpz2qx3ennc+9v4XldbvkH/kjCo3nqf11GXGV9u3
-         L+zYvTbMukDPXiSPSQUljTOrRRQrqGer0wj3w0Ug65hiptG8qm+yrAq0I9W29lNt0tHE
-         jazw==
-X-Gm-Message-State: AOAM532eeO0NlvfV9uz0d5/eiJztCMYiP3cwURkObgJnf3OnBKAhCAKI
-        PmYxdMLTstQ/NqpITQoqXzRlAPs/j8fwXLXgxQNrOSGytK2LSxUKWH0wQpyxLwF7T9I3FvQpQG+
-        CyIO0AzkpwG76q3o6
-X-Received: by 2002:a5d:40d0:: with SMTP id b16mr5209774wrq.218.1591289254184;
-        Thu, 04 Jun 2020 09:47:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz/oB1XkJnvn++j/58MNAY5P5qdvPGtsdrzBj0W/ri36XSP6zrbEREeugPFE4b1qeLilItQwQ==
-X-Received: by 2002:a5d:40d0:: with SMTP id b16mr5209770wrq.218.1591289254041;
-        Thu, 04 Jun 2020 09:47:34 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id v6sm118202wrf.61.2020.06.04.09.47.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 09:47:33 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 12:47:31 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
-Message-ID: <20200604124703-mutt-send-email-mst@kernel.org>
-References: <20200602084257.134555-1-mst@redhat.com>
- <20200603014815.GR23230@ZenIV.linux.org.uk>
- <20200603011810-mutt-send-email-mst@kernel.org>
- <20200603165205.GU23230@ZenIV.linux.org.uk>
- <20200604054516-mutt-send-email-mst@kernel.org>
- <20200604150335.GG23230@ZenIV.linux.org.uk>
+        id S1729949AbgFDQsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 12:48:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58528 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729860AbgFDQsc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jun 2020 12:48:32 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C4D820738;
+        Thu,  4 Jun 2020 16:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591289312;
+        bh=1tvXkKNxw2IZ812QyeEYAT+Bv1CjvnZY+yuGta1P37s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=zUHDWalXh8BlYCBZXK69+PCY4h+MaDXE97U23oyjhD9FX6R2AmkK4UD4xXgpuel1i
+         zZhC2owU17wv9cpNz545bWkwqd0qLB1md6urDAs/3DzpshMAwO9053xWewynWaAIed
+         BbNcM2yenFgubVooLYNB9EILAa+k7ZiY20P/DOck=
+Date:   Thu, 4 Jun 2020 09:48:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v6 4/4] net: dp83869: Add RGMII internal delay
+ configuration
+Message-ID: <20200604094829.0d7d5df7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <63a53dad-4f0a-31ca-ad1a-361b633c28bf@ti.com>
+References: <20200604111410.17918-1-dmurphy@ti.com>
+        <20200604111410.17918-5-dmurphy@ti.com>
+        <20200604092545.40c85fce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <63a53dad-4f0a-31ca-ad1a-361b633c28bf@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200604150335.GG23230@ZenIV.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 04:03:35PM +0100, Al Viro wrote:
-> On Thu, Jun 04, 2020 at 06:10:23AM -0400, Michael S. Tsirkin wrote:
-> 
-> > 	stac()
-> > 	for (i = 0; i < 64; ++i) {
-> > 	 get_user(flags, desc[i].flags)
-> unsafe_get_user(), please.
-> > 	 smp_rmb()
-> > 	 if (!(flags & VALID))
-> > 		break;
-> > 	 copy_from_user(&adesc[i], desc + i, sizeof adesc[i]);
-> ... and that would raw_copy_from_user() (or unsafe_copy_from_user(),
-> for wrapper that would take a label to bugger off to)
-> > 	}
-> > 	clac()
+On Thu, 4 Jun 2020 11:38:14 -0500 Dan Murphy wrote:
+> Jakub
+>=20
+> On 6/4/20 11:25 AM, Jakub Kicinski wrote:
+> > On Thu, 4 Jun 2020 06:14:10 -0500 Dan Murphy wrote: =20
+> >> Add RGMII internal delay configuration for Rx and Tx.
+> >>
+> >> Signed-off-by: Dan Murphy <dmurphy@ti.com> =20
+> > Hi Dan, please make sure W=3D1 C=3D1 build is clean:
+> >
+> > drivers/net/phy/dp83869.c:103:18: warning: =C3=A2=E2=82=AC=CB=9Cdp83869=
+_internal_delay=C3=A2=E2=82=AC=E2=84=A2 defined but not used [-Wunused-cons=
+t-variable=3D]
+> >    103 | static const int dp83869_internal_delay[] =3D {250, 500, 750, =
+1000, 1250, 1500,
+> >        |                  ^~~~~~~~~~~~~~~~~~~~~~ =20
+>=20
+> I built with W=3D1 and C=3D1 and did not see this warning.
+>=20
+> What defconfig are you using?
 
-Absolutely, that's all just pseudo-code.
+allmodconfig with gcc-10
 
--- 
-MST
+> Can you check if CONFIG_OF_MDIO is set or not?=C2=A0 That would be the on=
+ly=20
+> way that warning would come up.
+
+Hm. I don't have the config from this particular build but just running
+allmodconfig makes it CONFIG_OF_MDIO=3Dm
+
+> > Also net-next is closed right now, you can post RFCs but normal patches
+> > should be deferred until after net-next reopens. =20
+>=20
+> I know net-next is closed.
+>=20
+> I pinged David M when it was open about what is meant by "new" patches=20
+> in the net-dev FAQ.=C2=A0 So I figured I would send the patches to see wh=
+at=20
+> the response was.
+>=20
+> To me these are not new they are in process patches.=C2=A0 My understand =
+is=20
+> New is v1 patchesets.
+>=20
+> But now I have the answer.
+
+Oh sorry, I may be wrong in this case, I haven't tracked this series.
 
