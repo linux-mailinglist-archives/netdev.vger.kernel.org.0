@@ -2,129 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC4A1EE8D9
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06CB91EE8EF
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbgFDQt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 12:49:27 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49172 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729115AbgFDQt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:49:27 -0400
+        id S1729925AbgFDQ4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 12:56:07 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31254 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729115AbgFDQ4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:56:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591289366;
+        s=mimecast20190719; t=1591289766;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4OyLW1fac7NAPSEDPillI/dC2V76rxOcNx4vyXYfjc8=;
-        b=eGu0qCkSURsJ8P3ylYtAXpPSXNVI2dLXOQoG0resCQY9eKrVdRw5hlSJzI4DFyy8ZiIIS9
-        OEcogmOgwg9I+pMDHCREQH2EnroMZK0IHW36OaJEh2y+9GLuIW4ug63W5FfxIQiNMAs4AK
-        Fl0GHMPYCMinyFE0qTFQQQ4jFtxOhgI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-141-Rrmhv1J8PZ6KMDqxYGj4pQ-1; Thu, 04 Jun 2020 12:49:24 -0400
-X-MC-Unique: Rrmhv1J8PZ6KMDqxYGj4pQ-1
-Received: by mail-wr1-f72.google.com with SMTP id d6so2655163wrn.1
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 09:49:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4OyLW1fac7NAPSEDPillI/dC2V76rxOcNx4vyXYfjc8=;
-        b=uPFHJ5ti1/t7nQv20K2Jb88HTEoHAqKdGWplQwDwhtGRL1swIS0V/S9LrWjv9Hly/M
-         fUTqV8ZM0LycuDNuf+U+OFdIHvtITHu9ZYWLhj2LUQFybaXoSVtNaAbCgg3t24w5M+o0
-         HVZXe8fncFcaW0jwRAU6kh+O2GVa9qWm5+DQ5ZZrF8x/3wS0dNYUVLjj6GedVDGn010a
-         I13FqkEket5pRWTmCK/pgYgodm2+q9UO8sx9dungytY8ue07z43Nur4NKgB1+X/XNOe2
-         sZ6QmiWJ3mmA25MlKShTFR7rIZWm+tNkiNTZCJ2h/jOYePiL2GNnkdGVxd7rT7Ndnlfw
-         cBvw==
-X-Gm-Message-State: AOAM5316SgcwVDsz30wnYk0+a014Qc7v4uwGmmz0jkj8Khc7u7E1bqy8
-        jd4Jd/STwqjahhea92z8Drw/OUYrzvSVlzBlPp25f0u/IM6ZY268oAajbzfd5wmJ3P+8qseiIGa
-        3G+bvMrC6ElTXIJos
-X-Received: by 2002:a5d:6750:: with SMTP id l16mr5253168wrw.295.1591289363284;
-        Thu, 04 Jun 2020 09:49:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzVBDu1CM90gAbOMzZLoWqlTv+bJxu4SVKEUrZgDNQq6aXeykhZDiXa7/pj91dzrPxrz7r/xA==
-X-Received: by 2002:a5d:6750:: with SMTP id l16mr5253133wrw.295.1591289362681;
-        Thu, 04 Jun 2020 09:49:22 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id j11sm8559836wru.69.2020.06.04.09.49.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 09:49:22 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 12:49:19 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
-Message-ID: <20200604124759-mutt-send-email-mst@kernel.org>
-References: <20200602084257.134555-1-mst@redhat.com>
- <20200603014815.GR23230@ZenIV.linux.org.uk>
- <3358ae96-abb6-6be9-346a-0e971cb84dcd@redhat.com>
- <20200603041849.GT23230@ZenIV.linux.org.uk>
- <3e723db8-0d55-fae6-288e-9d95905592db@redhat.com>
- <20200603013600-mutt-send-email-mst@kernel.org>
- <b7de29fa-33f2-bbc1-08dc-d73b28e3ded5@redhat.com>
- <20200603022935-mutt-send-email-mst@kernel.org>
- <f0573536-e6cc-3f68-5beb-a53c8e1d0620@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Ic9chV3qlsicmKxZDeN+UQKJUnIq9nEV6lAatrjd5vU=;
+        b=Yf48K6XOO/QWMl1pMjX0hRsUQHn/PSeQ2fPKW7iLI2bzOU0nTSyB1tX267g7bCpUuE6tBS
+        q6giCjDDvdHrN3Mhv0yMAN7SyGIwdArszmjT0xH3McCnT4mjl3wxHetiVBmzbUX8X7eg6N
+        rfJWYTKUZoz43dTezVpI8Yop010PcUc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-473-L-ome2JbOXqcRDANW5mYTQ-1; Thu, 04 Jun 2020 12:56:04 -0400
+X-MC-Unique: L-ome2JbOXqcRDANW5mYTQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7BCD1902EA4;
+        Thu,  4 Jun 2020 16:56:02 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.40.192.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7814110002A6;
+        Thu,  4 Jun 2020 16:56:00 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        Eric Dumazet <edumazet@google.com>,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: [PATCH net] inet_connection_sock: clear inet_num out of destroy helper
+Date:   Thu,  4 Jun 2020 18:55:45 +0200
+Message-Id: <cc2adbd7dcc17c44e2858e550302906760b38a0b.1591289527.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f0573536-e6cc-3f68-5beb-a53c8e1d0620@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 02:36:46PM +0800, Jason Wang wrote:
-> 
-> On 2020/6/3 下午2:30, Michael S. Tsirkin wrote:
-> > On Wed, Jun 03, 2020 at 02:23:08PM +0800, Jason Wang wrote:
-> > > > BTW now I re-read it I don't understand __vhost_get_user_slow:
-> > > > 
-> > > > 
-> > > > static void __user *__vhost_get_user_slow(struct vhost_virtqueue *vq,
-> > > >                                             void __user *addr, unsigned int size,
-> > > >                                             int type)
-> > > > {
-> > > >           int ret;
-> > > > 
-> > > >           ret = translate_desc(vq, (u64)(uintptr_t)addr, size, vq->iotlb_iov,
-> > > >                                ARRAY_SIZE(vq->iotlb_iov),
-> > > >                                VHOST_ACCESS_RO);
-> > > > 
-> > > > ..
-> > > > }
-> > > > 
-> > > > how does this work? how can we cast a pointer to guest address without
-> > > > adding any offsets?
-> > > 
-> > > I'm not sure I get you here. What kind of offset did you mean?
-> > > 
-> > > Thanks
-> > OK so points:
-> > 
-> > 1. type argument seems unused. Right?
-> 
-> 
-> Yes, we can remove that.
-> 
-> 
-> > 2. Second argument to translate_desc is a GPA, isn't it?
-> 
-> 
-> No, it's IOVA, this function will be called only when IOTLB is enabled.
-> 
-> Thanks
+Clearing the 'inet_num' field is necessary and safe if and
+only if the socket is not bound. The MPTCP protocol calls
+the destroy helper on bound sockets, as tcp_v{4,6}_syn_recv_sock
+completed successfully.
 
-Right IOVA. Point stands how does it make sense to cast
-a userspace pointer to an IOVA? I guess it's just
-because it's talking to qemu actually, so it's abusing
-the notation a bit ...
+Move the clearing of such field out of the common code, otherwise
+the MPTCP MP_JOIN error path will find the wrong 'inet_num' value
+on socket disposal, __inet_put_port() will acquire the wrong lock
+and bind_node removal could race with other modifiers possibly
+corrupting the bind hash table.
 
-> 
-> >     Here we cast a userspace address to this type. What if it
-> >     matches a valid GPA by mistake?
-> > 
+Reported-and-tested-by: Christoph Paasch <cpaasch@apple.com>
+Fixes: 729cd6436f35 ("mptcp: cope better with MP_JOIN failure")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ include/net/inet_connection_sock.h | 1 -
+ net/ipv4/inet_connection_sock.c    | 1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index 2f1f8c3efb26..e5b388f5fa20 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -292,7 +292,6 @@ static inline void inet_csk_prepare_for_destroy_sock(struct sock *sk)
+ 	/* The below has to be done to allow calling inet_csk_destroy_sock */
+ 	sock_set_flag(sk, SOCK_DEAD);
+ 	percpu_counter_inc(sk->sk_prot->orphan_count);
+-	inet_sk(sk)->inet_num = 0;
+ }
+ 
+ void inet_csk_destroy_sock(struct sock *sk);
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index f40b1b72f979..afaf582a5aa9 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -902,6 +902,7 @@ void inet_csk_prepare_forced_close(struct sock *sk)
+ 	bh_unlock_sock(sk);
+ 	sock_put(sk);
+ 	inet_csk_prepare_for_destroy_sock(sk);
++	inet_sk(sk)->inet_num = 0;
+ }
+ EXPORT_SYMBOL(inet_csk_prepare_forced_close);
+ 
+-- 
+2.21.3
 
