@@ -2,92 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 929AA1EE8B9
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC74D1EE8C9
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 18:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbgFDQkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 12:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729657AbgFDQkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:40:09 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD065C08C5C1;
-        Thu,  4 Jun 2020 09:40:09 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id 205so6700692qkg.3;
-        Thu, 04 Jun 2020 09:40:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vpxoaRlLXXL6dqAlRHJzpCpNRDw8gKnVpEUqcTzIN4U=;
-        b=CH3D4RTtX7stOh46iK+yDuN8h4X1qoxSO/LxA96+iL70npx4lW9WRsnnsGrzf8m8Xy
-         wb2ql6FxZVGoTqtIzTdeilT5xeJAkmJ2Ml2r+3OXoF8SoRvc1cLmn3MhEHkyotT9qbnA
-         l70iPRZMQ+8kGYSDMnvWuTAh3XvIxntlpURP1ctCO67Dmx2T8x8YzIThvtcPHldZe4YY
-         HZDiD6QFouABaMBMDbspJaj2qGlMrzjfoiBWAb28xcUSU0/4Dkz/qCTacC0r19LP7JGE
-         kghXRkEwEBrvBT9Y7UlkTsD1uEteuBtjkEku4pS+TxnvOrFgs5CjLNmyHGVxq0yaA8n6
-         GFTQ==
+        id S1729882AbgFDQq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 12:46:56 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44665 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729789AbgFDQqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 12:46:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591289214;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rYFGtIC552gLkUpERPIGUzsoKzT9woC/5boahqlmcS4=;
+        b=YOmVYOUCyyEKE2aJXm4+5+D2vg03XY556FQA9SI4ZkiI5Jps76QesjY+jEe6oBl08lpOiJ
+        LH3WeyX6jggRO/3p03lvatUhINnDHoyMz7x5R5fg2lR6jvRNyigmUQcoZBegICwTFpsrlh
+        Gm5SYK9U4d5rBtY0TkZEvmbSwQqCsWs=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-355-SrSrd51WPYK5l-iJ8aQDyA-1; Thu, 04 Jun 2020 12:46:53 -0400
+X-MC-Unique: SrSrd51WPYK5l-iJ8aQDyA-1
+Received: by mail-wr1-f72.google.com with SMTP id s7so2654441wrm.16
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 09:46:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vpxoaRlLXXL6dqAlRHJzpCpNRDw8gKnVpEUqcTzIN4U=;
-        b=NY9SH+BDHyu8nCHh4xIo5vZWbdJFvMmQfRk/cm7bmIrR/QITwyC1fAy+9ZG7xgauIy
-         7gXCPfG3pwVAebjkm8cTi+/ZH2Otwx71pbq/u15/rDpgeZLLDF0C9FQVxaBi6E8PMhkH
-         vsqh9qdS2tTuOf1Pn7eHg4qGVUtaLFG62CIi4pNe6Q0qyu6cy0B0PREK8VX0tThZgEId
-         uIJCaWBGt8SXZY0NDPAikLur8yM9vtcHqgDH6L0m7LpAkSXT4ngTWRWhKeGFIFXW3/87
-         04Sh8aWHbVIuSRNq7UOyzoj7WAwxpil6/ni/7xIADxHqi8+JWnRPsFPW1P1j1xqE7vyz
-         M5UA==
-X-Gm-Message-State: AOAM530dOkxfOZL2BCOBigGTjJTKSIlIQw7OadUjTXSAH1EAtu9+qWGO
-        ICU75vNXRQDdolq8QRB6UTk=
-X-Google-Smtp-Source: ABdhPJw+p61FGscolshg2xTDrDkUydnbiQ915+ENHYBNmmlyHixI5pUez6hX8yzYkPpdkL4KHt999w==
-X-Received: by 2002:a05:620a:158d:: with SMTP id d13mr5636884qkk.327.1591288808968;
-        Thu, 04 Jun 2020 09:40:08 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:6c0b:a591:6e4c:f8f6? ([2601:282:803:7700:6c0b:a591:6e4c:f8f6])
-        by smtp.googlemail.com with ESMTPSA id x13sm3896454qtq.60.2020.06.04.09.40.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jun 2020 09:40:08 -0700 (PDT)
-Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
- BTF
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
- <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
- <20200604174806.29130b81@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
-Date:   Thu, 4 Jun 2020 10:40:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rYFGtIC552gLkUpERPIGUzsoKzT9woC/5boahqlmcS4=;
+        b=r5qRc8+yDx+jcVQh6X2LvcPI/klxYhtOY8ZD39GLZVlKZ2aPT7wQAosRaqRd5F4YC5
+         aJzgFWcvQP8SOrZ5KXsl++GVXes+WLglWB5hd+KvdDmipQfnxPzLnM1wRI58qMUCrdVK
+         fWBjGqqMvGYnlC0W9v/Ffebe5nubMD/RPgmOLLYIVkyF9vhFS1egVQ7CvbHJQEe5ruOo
+         IhsWZ3tmI+ztusgBQyi4XEikvJlttEy2vpzGKVzlyYzZhcB1RC5NvO1WrF+lAoRtkQjp
+         wRlwWhH398SV2h+aiJH04a/Sn3qCFvMBpEBrSrCpw936VQE/tEBhja89FpfbLmcRqjlU
+         ZjUw==
+X-Gm-Message-State: AOAM531EGKidvhoKYVL+bpl7XiCi/TMYF7rzcT7T841vnITfS4mokKFg
+        X2I2kyMj/sIxr7+ClzCNwNlXOi7nZA/cLl5We14P+44PAMih03BLaGnmyprE5WIQEwsSRHhps9+
+        DEziRGV0wi3od0syx
+X-Received: by 2002:a7b:c0d9:: with SMTP id s25mr5089891wmh.175.1591289212191;
+        Thu, 04 Jun 2020 09:46:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz9dODiYy5HcsVQeCdjVQOA6jF0pYa9ZPQQTKb/equwgut+prFilWfFwLf9io2WRO1UvoUCSQ==
+X-Received: by 2002:a7b:c0d9:: with SMTP id s25mr5089876wmh.175.1591289211954;
+        Thu, 04 Jun 2020 09:46:51 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id d17sm7757908wme.43.2020.06.04.09.46.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Jun 2020 09:46:51 -0700 (PDT)
+Date:   Thu, 4 Jun 2020 12:46:48 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+Message-ID: <20200604124332-mutt-send-email-mst@kernel.org>
+References: <20200602084257.134555-1-mst@redhat.com>
+ <20200603014815.GR23230@ZenIV.linux.org.uk>
+ <20200603011810-mutt-send-email-mst@kernel.org>
+ <20200603165205.GU23230@ZenIV.linux.org.uk>
+ <ec086f7b-be01-5ffd-6fc3-f865d26b0daf@redhat.com>
+ <20200604145924.GF23230@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200604174806.29130b81@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200604145924.GF23230@ZenIV.linux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/4/20 9:48 AM, Jesper Dangaard Brouer wrote:
-> I will NOT send a patch that expose this in uapi/bpf.h.  As I explained
-> before, this caused the issues for my userspace application, that
-> automatically picked-up struct bpf_devmap_val, and started to fail
-> (with no code changes), because it needed minus-1 as input.  I fear
-> that this will cause more work for me later, when I have to helpout and
-> support end-users on e.g. xdp-newbies list, as it will not be obvious
-> to end-users why their programs map-insert start to fail.  I have given
-> up, so I will not NACK anyone sending such a patch.
+On Thu, Jun 04, 2020 at 03:59:24PM +0100, Al Viro wrote:
+> On Thu, Jun 04, 2020 at 02:10:27PM +0800, Jason Wang wrote:
 > 
-> Why is it we need to support file-descriptor zero as a valid
-> file-descriptor for a bpf-prog?
+> > > > get_user(flags, desc->flags)
+> > > > smp_rmb()
+> > > > if (flags & VALID)
+> > > > copy_from_user(&adesc, desc, sizeof adesc);
+> > > > 
+> > > > this would be a good candidate I think.
+> > > Perhaps, once we get stac/clac out of raw_copy_from_user() (coming cycle,
+> > > probably).  BTW, how large is the structure and how is it aligned?
+> > 
+> > 
+> > Each descriptor is 16 bytes, and 16 bytes aligned.
+> 
+> Won't it be cheaper to grap the entire thing unconditionally?
 
-That was a nice property of using the id instead of fd. And the init to
--1 is not unique to this; adopters of the bpf_set_link_xdp_fd_opts for
-example have to do the same.
+Yes but we must read the rest of descriptor after the flags are valid.
+If it's read before then the value we get might be the invalid one -
+the one it had before another thread gave up control.
+
+>  And what does
+> that rmb order, while we are at it - won't all coherency work in terms of
+> entire cachelines anyway?
+
+Would be great to know that, but it's hardly guaranteed on all architectures, is it?
+
+> Confused...
+
+
