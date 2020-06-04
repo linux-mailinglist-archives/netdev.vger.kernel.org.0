@@ -2,122 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 909701EE7EF
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 17:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D541EE7FF
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 17:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729579AbgFDPkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 11:40:03 -0400
-Received: from mail-co1nam11on2132.outbound.protection.outlook.com ([40.107.220.132]:33601
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729216AbgFDPkD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jun 2020 11:40:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jLBU5A9nOz82Mn7TuQuBMdMps71jK1gKOvqDhSr0qSiHqPoGnc0zGNHmUyF440tF2woZ8w6QN/G8ESPlZge3OJImTDj7d89t1UA+IHJJtKaREs5UG7Gv3bX9FfRWjwlGcpiCfeSye/zS7H5ockGbtOV9sd1ck8jGoBN4Iz1ITmdbWIybsHADamkbVrO/KnmCKUXGIKrKql5IRJuhXh0AyOqUq2JTRw8zKajH7GtXGrog6OL0TUrA30pJ+09liZ+1XGd7PMNz2fTzhPb031j3Xyw2Fa7OA0PY+IXoWGIhn4eLV6GUVltRS+2qYETtfYUNae8emd59JtK903ZtlzRmSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KvO0mHkFtYlOnztwjTuyGm9c0c16yyFGlaSZBgmsFOQ=;
- b=OU2dLyX03DEF3ozB/YGpeK+Tk17qY/abJe7NDnrf7eP65LzRtR8GHAsgerIy4NL1iN2lVJGG+jI+OUaR2O7np1GyellmtbhDDju/WCTYe6SuYLibqipe756TFdxa6pJgxJNxTrCM5xjDwXmHcK+5udp2J/az19r/09D+F0yo8q5xmLx0gfK9xIQHhKV1R4A3zM8Bld24jdpQpXnV5fuYLvhRnxUI0aTfifQTAL5nj2fC/J80YaAeYRBX6OOAxMmXmGqACFe+eqNXTvJh7qSpv9nnyezOgS24+ifPnWXkrulLS/ofy73XvYt65+L9q+05Oup+tGojfFQGQPfQxFoJ7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hammerspace.com; dmarc=pass action=none
- header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KvO0mHkFtYlOnztwjTuyGm9c0c16yyFGlaSZBgmsFOQ=;
- b=M7akBFm6I30nVkFbG0yT6E6NA4BAqoJCpM0YFXdWXCycio1GPJ41iXbmqYIfYlOYaqtcK21vT+sjcD1Djow+o07X8+5kWKJDnLuMqE6UR4lf3IwkjisV+A+3bOYClOabq1xlI8dByJuOsE6jM/j5M0Sm6ZWe0iUES1YpixN2uW8=
-Received: from CH2PR13MB3398.namprd13.prod.outlook.com (2603:10b6:610:2a::33)
- by CH2PR13MB3734.namprd13.prod.outlook.com (2603:10b6:610:9b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.9; Thu, 4 Jun
- 2020 15:39:59 +0000
-Received: from CH2PR13MB3398.namprd13.prod.outlook.com
- ([fe80::49f6:ce9b:9803:2493]) by CH2PR13MB3398.namprd13.prod.outlook.com
- ([fe80::49f6:ce9b:9803:2493%6]) with mapi id 15.20.3066.016; Thu, 4 Jun 2020
- 15:39:59 +0000
-From:   Trond Myklebust <trondmy@hammerspace.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "zhengbin13@huawei.com" <zhengbin13@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>
-CC:     "yuehaibing@huawei.com" <yuehaibing@huawei.com>,
-        "weiyongjun1@huawei.com" <weiyongjun1@huawei.com>
-Subject: Re: [PATCH] sunrpc: need delete xprt->timer in xs_destroy
-Thread-Topic: [PATCH] sunrpc: need delete xprt->timer in xs_destroy
-Thread-Index: AQHWOn5Zh6+x4WmBK0y1uFEnW2D2E6jIl84A
-Date:   Thu, 4 Jun 2020 15:39:58 +0000
-Message-ID: <bc4755e6c5cee7a326cf06f983907a3170be1649.camel@hammerspace.com>
-References: <20200604144910.133756-1-zhengbin13@huawei.com>
-In-Reply-To: <20200604144910.133756-1-zhengbin13@huawei.com>
-Accept-Language: en-US, en-GB
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=hammerspace.com;
-x-originating-ip: [68.36.133.222]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 22ffc3e9-ad5f-4412-54c5-08d8089d8a0c
-x-ms-traffictypediagnostic: CH2PR13MB3734:
-x-microsoft-antispam-prvs: <CH2PR13MB37346EF5F1CE3031C0B95FC3B8890@CH2PR13MB3734.namprd13.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1850;
-x-forefront-prvs: 04244E0DC5
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9FfO6/F99J0nqdbbB2XhqwipV0e5+OLyW3aWLoYJips6TcvfPVI7ulEJEH41rs5nQTYox4ckr9ZDrJev4gk6Pmoe8UL3jifrPFCAKmhps2ecY8cH/5JOif3SVna/7q4AK3Jdxtib1zg1TWHdzA0KQu5UNAtdjm5PllK2qfU0aSm7TAxeG9uw1JVVy58oaQ5A7ITqjdXpoxYr0wiutP3IaQiYrw/SPjjyOx7bsu+dIvoyk/T92C2aL9CdjpldBrCdXzjj6cKf24hNwgJ59Hf71164kCgz2vPvhvwRD5M4JvgWA7qiZOwos/kJnceMrAT2uJvcmMALSMKsPmA2US2SNQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR13MB3398.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(376002)(39830400003)(396003)(136003)(478600001)(54906003)(66946007)(316002)(71200400001)(83380400001)(8936002)(110136005)(2616005)(36756003)(66476007)(64756008)(66556008)(7416002)(26005)(2906002)(4326008)(6506007)(86362001)(76116006)(5660300002)(66446008)(186003)(8676002)(6512007)(6486002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: o4f3n/L+S+bikfqwe342VlVjdTNdxqy6BfyC0Pt4UW8G+CVpTHjCJkN9sB4m7YjAGkD+FpbObcWjkZUYyYWvrz8vMd/UtHJa8ndAAc+1FZYGZPMiTatUuIyGv4SWjaGmgmNzDPNUmNErL8sdrcTAfC49b6E0hzdRcURrbt0r1obstYpzl69p04SQ+WXnwvikKPyn9Ihs4tU7LBqXF1Szr1dMLP7Az6710vEUSzRlAvSPOre+B+KOPxEfVQqf4xCSTAp51x/zWH4ZDSOD3zbyZMBrnL8Ur8216fVt+soo4eFrmpUi3TpMmIPXfOhBWRuHZrQ1s4dCkBoP6LjFBPo7wsaeflrItlhri72OEQ86bJAwDHJxftFo2FoLbNK0Ff73Eg5V97Tp/pviZg0bWUUtZiHbTFzM7qJi3s+RYBivbbY4LW7nCULeSBDquXVqlbzrtGxoXej6jROcPiRo+ZQkUGJkQ+vKL75LBjG/EGWGeT8=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <945FD89B176D7F41AF882BEDE92E40B7@namprd13.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729500AbgFDPsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 11:48:22 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38707 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729293AbgFDPsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 11:48:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591285700;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2ypX2HGAenFX8CiIHs612J9G7sHpnxozjQSK2LUFU94=;
+        b=E3YO8ZtMIx1w5+OTtUfk2+gnboHOAlNcHDDmmzk1lN+mvpx+KvFSv+DA2QoiogUaXrUDpg
+        MceHNhDvzfS7eKDqSPgZGe4iBWm5cBdvLLkO3eT4VCVWU7aeT+4T0fvhCsRfid9K1x7F73
+        vpsulUQKmg513uA0c4v2XqbFen6dObs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-19-2xERtY5CNseVKVVlwHds8Q-1; Thu, 04 Jun 2020 11:48:17 -0400
+X-MC-Unique: 2xERtY5CNseVKVVlwHds8Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B0D0107ACCD;
+        Thu,  4 Jun 2020 15:48:16 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97B1978FAC;
+        Thu,  4 Jun 2020 15:48:07 +0000 (UTC)
+Date:   Thu, 4 Jun 2020 17:48:06 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, brouer@redhat.com,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
+ BTF
+Message-ID: <20200604174806.29130b81@carbon>
+In-Reply-To: <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
+References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
+        <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: hammerspace.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22ffc3e9-ad5f-4412-54c5-08d8089d8a0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2020 15:39:59.1407
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: U1Gvd45wt2jb2UQgoN73b0lVSRpS7pbbx/1o0h0K+lfikz0VlpsiIRInyPLtjyMCyfY1nXdOgr//ZcxhQZD5eQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3734
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA2LTA0IGF0IDIyOjQ5ICswODAwLCBaaGVuZyBCaW4gd3JvdGU6DQo+IElm
-IFJQQyB1c2UgdWRwIGFzIGl0J3MgdHJhbnNwb3J0IHByb3RvY29sLCB0cmFuc3BvcnQtPmNvbm5l
-Y3Rfd29ya2VyDQo+IHdpbGwgY2FsbCB4c191ZHBfc2V0dXBfc29ja2V0Lg0KPiB4c191ZHBfc2V0
-dXBfc29ja2V0DQo+ICAgc29jayA9IHhzX2NyZWF0ZV9zb2NrDQo+ICAgaWYgKElTX0VSUihzb2Nr
-KSkNCj4gICAgIGdvdG8gb3V0Ow0KPiAgIG91dDoNCj4gICAgIHhwcnRfdW5sb2NrX2Nvbm5lY3QN
-Cj4gICAgICAgeHBydF9zY2hlZHVsZV9hdXRvZGlzY29ubmVjdA0KPiAgICAgICAgIG1vZF90aW1l
-cg0KPiAgICAgICAgICAgaW50ZXJuYWxfYWRkX3RpbWVyICAtLT5pbnNlcnQgeHBydC0+dGltZXIg
-dG8gYmFzZSB0aW1lcg0KPiBsaXN0DQo+IA0KPiB4c19kZXN0cm95DQo+ICAgY2FuY2VsX2RlbGF5
-ZWRfd29ya19zeW5jKCZ0cmFuc3BvcnQtPmNvbm5lY3Rfd29ya2VyKQ0KPiAgIHhzX3hwcnRfZnJl
-ZSh4cHJ0KSAgICAgICAgICAgLS0+ZnJlZSB4cHJ0DQo+IA0KPiBUaHVzIHVzZS1hZnRlci1mcmVl
-IHdpbGwgaGFwcGVuLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogWmhlbmcgQmluIDx6aGVuZ2JpbjEz
-QGh1YXdlaS5jb20+DQo+IC0tLQ0KPiAgbmV0L3N1bnJwYy94cHJ0c29jay5jIHwgMSArDQo+ICAx
-IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykNCj4gDQo+IGRpZmYgLS1naXQgYS9uZXQvc3Vu
-cnBjL3hwcnRzb2NrLmMgYi9uZXQvc3VucnBjL3hwcnRzb2NrLmMNCj4gaW5kZXggODQ1ZDBiZTgw
-NWVjLi5jNzk2ODA4ZTdmN2EgMTAwNjQ0DQo+IC0tLSBhL25ldC9zdW5ycGMveHBydHNvY2suYw0K
-PiArKysgYi9uZXQvc3VucnBjL3hwcnRzb2NrLmMNCj4gQEAgLTEyNDIsNiArMTI0Miw3IEBAIHN0
-YXRpYyB2b2lkIHhzX2Rlc3Ryb3koc3RydWN0IHJwY194cHJ0ICp4cHJ0KQ0KPiAgCWRwcmludGso
-IlJQQzogICAgICAgeHNfZGVzdHJveSB4cHJ0ICVwXG4iLCB4cHJ0KTsNCj4gDQo+ICAJY2FuY2Vs
-X2RlbGF5ZWRfd29ya19zeW5jKCZ0cmFuc3BvcnQtPmNvbm5lY3Rfd29ya2VyKTsNCj4gKwlkZWxf
-dGltZXJfc3luYygmeHBydC0+dGltZXIpOw0KPiAgCXhzX2Nsb3NlKHhwcnQpOw0KPiAgCWNhbmNl
-bF93b3JrX3N5bmMoJnRyYW5zcG9ydC0+cmVjdl93b3JrZXIpOw0KPiAgCWNhbmNlbF93b3JrX3N5
-bmMoJnRyYW5zcG9ydC0+ZXJyb3Jfd29ya2VyKTsNCj4gLS0NCj4gMi4yNi4wLjEwNi5nOWZhZGVk
-ZA0KPiANCg0KSSdtIGNvbmZ1c2VkLiBIb3cgY2FuIHRoaXMgaGFwcGVuIGdpdmVuIHRoYXQgeHBy
-dF9kZXN0cm95KCkgZmlyc3QgdGFrZXMNCnRoZSBYUFJUX0xPQ0ssIGFuZCB0aGVuIGRlbGV0ZXMg
-eHBydC0+dGltZXI/DQoNClJpZ2h0IG5vdywgdGhlIHNvY2tldCBjb2RlIGtub3dzIG5vdGhpbmcg
-YWJvdXQgdGhlIGRldGFpbHMgb2YgeHBydC0NCj50aW1lciBhbmQgd2hhdCBpdCBpcyB1c2VkIGZv
-ci4gSSdkIHByZWZlciB0byBrZWVwIGl0IHRoYXQgd2F5IGlmDQpwb3NzaWJsZS4NCg0KLS0gDQpU
-cm9uZCBNeWtsZWJ1c3QNCkxpbnV4IE5GUyBjbGllbnQgbWFpbnRhaW5lciwgSGFtbWVyc3BhY2UN
-CnRyb25kLm15a2xlYnVzdEBoYW1tZXJzcGFjZS5jb20NCg0KDQo=
+On Wed, 3 Jun 2020 09:22:57 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> On Wed, Jun 03, 2020 at 05:44:43PM +0200, Jesper Dangaard Brouer wrote:
+> > The recent commit fbee97feed9b ("bpf: Add support to attach bpf program to a
+> > devmap entry"), introduced ability to attach (and run) a separate XDP
+> > bpf_prog for each devmap entry. A bpf_prog is added via a file-descriptor,
+> > thus not using the feature requires using value minus-1. The UAPI is
+> > extended via tail-extending struct bpf_devmap_val and using map->value_size
+> > to determine the feature set.
+> > 
+> > There is a specific problem with dev_map_can_have_prog() check, which is
+> > called from net/core/dev.c in generic_xdp_install() to refuse usage of
+> > devmap's from generic-XDP that support these bpf_prog's. The check is size
+> > based. This means that all newer features will be blocked from being use by
+> > generic-XDP.
+> > 
+> > This patch allows userspace to skip handling of 'bpf_prog' on map-inserts.
+> > The feature can be skipped, via not including the member 'bpf_prog' in the
+> > map-value struct, which is propagated/described via BTF.
+> > 
+> > Fixes: fbee97feed9b ("bpf: Add support to attach bpf program to a devmap entry")
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com  
+> 
+> The patch makes no sense to me.
+
+Hmm, that is not a very constructive answer, and it doesn't help me
+to improve and move forward with the code.  I interpret that you think
+my approach is completely wrong, but it would have been nice to
+understand why.  I will give up on this approach, also given bpf-next
+is closed now.
+
+
+> please expose 'struct struct bpf_devmap_val' in uapi/bpf.h
+> That's what it is whether you want to acknowledge that or not.
+
+I will NOT send a patch that expose this in uapi/bpf.h.  As I explained
+before, this caused the issues for my userspace application, that
+automatically picked-up struct bpf_devmap_val, and started to fail
+(with no code changes), because it needed minus-1 as input.  I fear
+that this will cause more work for me later, when I have to helpout and
+support end-users on e.g. xdp-newbies list, as it will not be obvious
+to end-users why their programs map-insert start to fail.  I have given
+up, so I will not NACK anyone sending such a patch.
+
+Why is it we need to support file-descriptor zero as a valid
+file-descriptor for a bpf-prog?
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
