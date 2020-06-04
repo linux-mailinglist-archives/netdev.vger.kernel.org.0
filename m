@@ -2,62 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9291EDA3B
-	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 03:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CC01EDA55
+	for <lists+netdev@lfdr.de>; Thu,  4 Jun 2020 03:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730550AbgFDBBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jun 2020 21:01:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35668 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730536AbgFDBBL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jun 2020 21:01:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=qgig+QxxR7tPUl/kgxOiJyYJNdXdDbQx8cvEheiz77E=; b=JuXnc4Ix6ThrhF8KQYwgDcCUPc
-        G+0U/tE9RGfPTNKOlLp90SorYLvbKThHUywkJIh99TyKQcF6AiuimcAamPs0GAaoPHVjAas9R4ca0
-        DnnS3PBL7zG6AEacjqNwrIjP5QaDPAzLF2PUq1rjvtLpspYj+VjHw2cSJJzbJTjY2Qxg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jgeFj-0046MS-1L; Thu, 04 Jun 2020 03:01:03 +0200
-Date:   Thu, 4 Jun 2020 03:01:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Roelof Berg <rberg@berg-solutions.de>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lan743x: Use correct MAC_CR configuration for 1 GBit
- speed
-Message-ID: <20200604010103.GB977471@lunn.ch>
-References: <20200603215414.3606-1-rberg@berg-solutions.de>
+        id S1727017AbgFDBWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jun 2020 21:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgFDBWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jun 2020 21:22:47 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA52C03E96D;
+        Wed,  3 Jun 2020 18:22:47 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49cp1G4XLKz9sRN;
+        Thu,  4 Jun 2020 11:22:41 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1591233764;
+        bh=wXh6sMuV3RWs7MfhnDG4HbkOXO1FCrXgpCD6I81G640=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iEIi1vpjoC58WhDP9YUvXAzBVmFKs3Ip+53YsriZSkk2aO0eeKiLyOxcDaI/N9Q4s
+         vqX571PtUl0tpqs48UFcbd8A+Lem0gfy7hCE30QXgIHpMPZjo4Ru0kGqe5p5J0fkYQ
+         weQz3kZBSD2/s77jALTqfAgWQGOhsSFLm028qXZwluisO7wTlBq3lUgjvkCzFVL64O
+         Vt3vbdi/RGAwlmUyIHuP3ORGFzUAdaQ74iTa8SLqz5cJlgHDfm27cezKsDAvU8FPS2
+         Gb/4Qem9LezYVIm06SJEXKW6TMDPYpfNrZJElX1VyFX8qW7Z+Pxy+BXIkwe0CEqa+t
+         ylRnebHnn1ILw==
+Date:   Thu, 4 Jun 2020 11:22:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+Message-ID: <20200604112240.19c4168a@canb.auug.org.au>
+In-Reply-To: <20200602121735.1a2e5d0f@canb.auug.org.au>
+References: <20200602121735.1a2e5d0f@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200603215414.3606-1-rberg@berg-solutions.de>
+Content-Type: multipart/signed; boundary="Sig_/2_/vz9Nvsrtp786S7FYg8lr";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 11:54:14PM +0200, Roelof Berg wrote:
-> Corrected the MAC_CR configuration bits for 1 GBit operation. The data
-> sheet allows MAC_CR(2:1) to be 10 and also 11 for 1 GBit/s speed, but
-> only 10 works correctly.
-> 
-> Devices tested:
-> Microchip Lan7431, fixed-phy mode
-> Microchip Lan7430, normal phy mode
-> 
-> Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
+--Sig_/2_/vz9Nvsrtp786S7FYg8lr
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 6f197fb63850 ("lan743x: Added fixed link and RGMII support")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hi all,
 
-This was probably in the pull request for the merge window.
+On Tue, 2 Jun 2020 12:17:35 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+>
+> Hi all,
+>=20
+> After merging the net-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) produced this warning:
+>=20
+> drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c:666:13: warning: 'cxgb4_ul=
+d_in_use' defined but not used [-Wunused-function]
+>   666 | static bool cxgb4_uld_in_use(struct adapter *adap)
+>       |             ^~~~~~~~~~~~~~~~
+>=20
+> Introduced by commit
+>=20
+>   a3ac249a1ab5 ("cxgb4/chcr: Enable ktls settings at run time")
+>=20
+> CONFIG_CHELSIO_TLS_DEVICE is not set for this build.
 
-     Andrew
+I am still getting this warning.
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/2_/vz9Nvsrtp786S7FYg8lr
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7YTOAACgkQAVBC80lX
+0GwV1Qf/baFyd+yCb4LwWnarTKmY5IZvDMDkB98BK0GfCWbiT1ZXsHTnOxJUPINW
+kpNfuUYSwu3SW+iroXI25T37B1QX0y4+2gSI3/BqAUobcUHKj81k0EIL4/++3IwN
+ljeNNW1C6QETsJLlIbwo4fH8W4lAD1g1FpDgaYfACQSkLeMPQVkPWj/MqCiz8cHp
+tT4Z2w2r0Stg+f7Z8rEUp2yjK0d3ynS5K5ZDNxZN0rSoQrD9POpRU0t0Td9QFKUP
+f211LCKU073wSvRFZRNYfNVKMXVy4lEDlFpEDCIa9kDrYeWjc+ej+n5Egeh0nueD
+d9x9C9syTWvA+leNEi+QXgFHEAYW5w==
+=blgk
+-----END PGP SIGNATURE-----
+
+--Sig_/2_/vz9Nvsrtp786S7FYg8lr--
