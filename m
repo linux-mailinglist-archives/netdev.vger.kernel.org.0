@@ -2,129 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 166281EF00B
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 05:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 087621EF01B
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 05:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728008AbgFEDk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 23:40:28 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36649 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726088AbgFEDk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 23:40:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591328426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W+XRm7Fs7zNlH2EKv4SYh8NMSzGAObCRW7/zCrf8kTM=;
-        b=bMinaiappCB0rQc0Seywa3/cVkuzqVzgZOHZhSWQYCSkZ81iRslS8kNSRBSGKgQPcCx3Eu
-        gHHK9CiCuq2raB5URMZCpac6lqycim7AIT742YFDBVZhE+poHPc5vekg0QfB/DIc6sNCgl
-        vs8r/qfW+iKVf6IEabXSwJEbgFg5uds=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-WjnfLQgyPAadytx9KbfT2Q-1; Thu, 04 Jun 2020 23:40:24 -0400
-X-MC-Unique: WjnfLQgyPAadytx9KbfT2Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726114AbgFEDz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 23:55:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725883AbgFEDz6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jun 2020 23:55:58 -0400
+Received: from sol.localdomain (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD756100960F;
-        Fri,  5 Jun 2020 03:40:23 +0000 (UTC)
-Received: from [10.72.12.233] (ovpn-12-233.pek2.redhat.com [10.72.12.233])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D3AE45C290;
-        Fri,  5 Jun 2020 03:40:18 +0000 (UTC)
-Subject: Re: [PATCH RFC 03/13] vhost: batching fetches
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org
-References: <20200602130543.578420-1-mst@redhat.com>
- <20200602130543.578420-4-mst@redhat.com>
- <3323daa2-19ed-02de-0ff7-ab150f949fff@redhat.com>
- <20200604045830-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <6c2e6cc7-27c5-445b-f252-0356ff8a83f3@redhat.com>
-Date:   Fri, 5 Jun 2020 11:40:17 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        by mail.kernel.org (Postfix) with ESMTPSA id E89D52074B;
+        Fri,  5 Jun 2020 03:55:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591329357;
+        bh=6t0M3zFZVF+jZAsXowaGuunNSqX7ly6WswrQPRMr1Bw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yneYV/PRIdEyxazGndKrJSWENlyqxOjFhyvutnMSdyLbNmqPQzScN/o1F5ArFJcyS
+         I42pKIMoQruGkhM2bkEcaGvr8BmLKhLEBRfxqTxyU4EvXaH/TOgxUWpWloWrFjjIwa
+         AUxixT0aEIw5HVPy8FK0guOa2jU7ZioTGJZDb9hw=
+Date:   Thu, 4 Jun 2020 20:55:55 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     syzbot <syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com>,
+        bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: BUG: using smp_processor_id() in preemptible code in
+ radix_tree_node_alloc
+Message-ID: <20200605035555.GA2667@sol.localdomain>
+References: <000000000000a363b205a74ca6a2@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20200604045830-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000a363b205a74ca6a2@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[+Cc Matthew Wilcox]
 
-On 2020/6/4 下午4:59, Michael S. Tsirkin wrote:
-> On Wed, Jun 03, 2020 at 03:27:39PM +0800, Jason Wang wrote:
->> On 2020/6/2 下午9:06, Michael S. Tsirkin wrote:
->>> With this patch applied, new and old code perform identically.
->>>
->>> Lots of extra optimizations are now possible, e.g.
->>> we can fetch multiple heads with copy_from/to_user now.
->>> We can get rid of maintaining the log array.  Etc etc.
->>>
->>> Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
->>> Signed-off-by: Eugenio Pérez<eperezma@redhat.com>
->>> Link:https://lore.kernel.org/r/20200401183118.8334-4-eperezma@redhat.com
->>> Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
->>> ---
->>>    drivers/vhost/test.c  |  2 +-
->>>    drivers/vhost/vhost.c | 47 ++++++++++++++++++++++++++++++++++++++-----
->>>    drivers/vhost/vhost.h |  5 ++++-
->>>    3 files changed, 47 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
->>> index 9a3a09005e03..02806d6f84ef 100644
->>> --- a/drivers/vhost/test.c
->>> +++ b/drivers/vhost/test.c
->>> @@ -119,7 +119,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
->>>    	dev = &n->dev;
->>>    	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
->>>    	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
->>> -	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
->>> +	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
->>>    		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
->>>    	f->private_data = n;
->>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->>> index 8f9a07282625..aca2a5b0d078 100644
->>> --- a/drivers/vhost/vhost.c
->>> +++ b/drivers/vhost/vhost.c
->>> @@ -299,6 +299,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
->>>    {
->>>    	vq->num = 1;
->>>    	vq->ndescs = 0;
->>> +	vq->first_desc = 0;
->>>    	vq->desc = NULL;
->>>    	vq->avail = NULL;
->>>    	vq->used = NULL;
->>> @@ -367,6 +368,11 @@ static int vhost_worker(void *data)
->>>    	return 0;
->>>    }
->>> +static int vhost_vq_num_batch_descs(struct vhost_virtqueue *vq)
->>> +{
->>> +	return vq->max_descs - UIO_MAXIOV;
->>> +}
->> 1 descriptor does not mean 1 iov, e.g userspace may pass several 1 byte
->> length memory regions for us to translate.
->>
-> Yes but I don't see the relevance. This tells us how many descriptors to
-> batch, not how many IOVs.
+Possibly a bug in lib/radix-tree.c?  this_cpu_ptr() in radix_tree_node_alloc()
+can be reached without a prior preempt_disable().  Or is the caller of
+idr_alloc() doing something wrong?
 
-
-Yes, but questions are:
-
-- this introduce another obstacle to support more than 1K queue size
-- if we support 1K queue size, does it mean we need to cache 1K 
-descriptors, which seems a large stress on the cache
-
-Thanks
-
-
->
-
+On Thu, Jun 04, 2020 at 07:02:18PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    acf25aa6 Merge tag 'Smack-for-5.8' of git://github.com/csc..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13d6307a100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=5263d9b5bce03c67
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3eec59e770685e3dc879
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15bd4c1e100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1520c9de100000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
+> 
+> RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
+> RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+> RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
+> R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
+> BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor036/6796
+> caller is radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
+> CPU: 0 PID: 6796 Comm: syz-executor036 Not tainted 5.7.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x188/0x20d lib/dump_stack.c:118
+>  check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+>  debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
+>  radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
+>  radix_tree_extend+0x256/0x4e0 lib/radix-tree.c:424
+>  idr_get_free+0x60c/0x8e0 lib/radix-tree.c:1492
+>  idr_alloc_u32+0x170/0x2d0 lib/idr.c:46
+>  idr_alloc+0xc2/0x130 lib/idr.c:87
+>  qrtr_port_assign net/qrtr/qrtr.c:703 [inline]
+>  __qrtr_bind.isra.0+0x12e/0x5c0 net/qrtr/qrtr.c:756
+>  qrtr_autobind net/qrtr/qrtr.c:787 [inline]
+>  qrtr_autobind+0xaf/0xf0 net/qrtr/qrtr.c:775
+>  qrtr_sendmsg+0x1d6/0x770 net/qrtr/qrtr.c:895
+>  sock_sendmsg_nosec net/socket.c:652 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:672
+>  ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
+>  ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+>  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+>  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> RIP: 0033:0x4406c9
+> Code: 25 02 00 85 c0 b8 00 00 00 00 48 0f 44 c3 5b c3 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007ffdf01d56c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
+> RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+> RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
+> R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
+> 
+> 
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+> 
