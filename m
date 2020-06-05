@@ -2,106 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB071EF9D6
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 16:01:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBDD1EFADC
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 16:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgFEOBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 10:01:50 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:54342 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727883AbgFEOBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 10:01:38 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 055E1F0R087473;
-        Fri, 5 Jun 2020 09:01:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1591365675;
-        bh=Uw7BIq/8aR9Eby9v1Y+LhVEoYd4l2NcHHo9Wdi4yC9w=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=UvyPXv7dH0v1H0oaAYmVABSKzPaZv+S2b4xGup5btzf/u9Sgvrn3kcu1lMNkLDxPh
-         /RvaAkGtCY7tTZGHaqaMTCAJmUuWbdt3K/LRAOn4qzqN/teMCTi+Zt0H21sj36X6P6
-         27kxBMkkRcBrZmQxeH9pEiDYAmkAmLf9bougRIYY=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 055E1FRI120261;
-        Fri, 5 Jun 2020 09:01:15 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 5 Jun
- 2020 09:01:14 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 5 Jun 2020 09:01:14 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 055E1En0030217;
-        Fri, 5 Jun 2020 09:01:14 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <michael@walle.cc>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net 4/4] net: mscc: Fix OF_MDIO config check
-Date:   Fri, 5 Jun 2020 09:01:07 -0500
-Message-ID: <20200605140107.31275-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200605140107.31275-1-dmurphy@ti.com>
-References: <20200605140107.31275-1-dmurphy@ti.com>
+        id S1728498AbgFEOVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 10:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729027AbgFEOVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 10:21:24 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A1DC08C5C3
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 07:21:24 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 64so4964893pfg.8
+        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 07:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=yGP/Kfk+N8F8iZAeQuKesLiAArFiMOYLOk6KSc6Id+U=;
+        b=mM0dkv5fgPUEDI5+Ig/8tYdMEQmoq5Dzw8QTDcSds5R0+fQNHXb4dUYu1nC+79LLo5
+         AASqF7MxiF78fW0sLSHZTi7h9+wBVO8sWFHgviQ/Eb398TEPl1k94wIUW4Oxz2pozRcS
+         qXcKXSCrV1kTgEZCQM4OOzAsC2tk6MzytRuZo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=yGP/Kfk+N8F8iZAeQuKesLiAArFiMOYLOk6KSc6Id+U=;
+        b=h6aThlID7x1zuWaAD0P7G5N7nJWyEE4m8+xCXxL9iK31Rv/gDnH9hPa83aAWBV7Civ
+         qtPjSHy0PfPTsXBY2EixlSZ/28CW+osNNJTXZX8tl+2f6y1kwjHcUEenGDko38nMsBOP
+         iRwB1E9pttGhOKPJudkIjSOe5srOw1G4LAqh+yUBw0mPO8zXuoKALbb9YYqRucq7k+e1
+         0yeb4XJgJ+1oaL3glJkqCSwGDsuUIyJ9kGF2yl93BbfmxCjYMz+U7pUFbg08jEirVw4K
+         hJC/oVKw98jcVKXggxu1jurnBuvbRrb9wccomL7YtkEoq8qjRt2LtyScIUNGy1ba3ZrT
+         gHZA==
+X-Gm-Message-State: AOAM533r/In+t86E3ztWAgsirPlBQbOToTlHY5GlpQP1iLVMCwuD6YO0
+        TuvWvbeEH6FC0HprNhI+Qvao6oOik9/9Nw==
+X-Google-Smtp-Source: ABdhPJwKFbHKpewYCO4uc2+sCQtwLv9h6tPVlXqTY10U5LySFMOcXvTJZbnlv1WBth8q9WueJjPOZw==
+X-Received: by 2002:a63:3347:: with SMTP id z68mr10089302pgz.61.1591366883923;
+        Fri, 05 Jun 2020 07:21:23 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id x191sm7750890pfd.37.2020.06.05.07.21.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jun 2020 07:21:23 -0700 (PDT)
+Date:   Fri, 5 Jun 2020 07:21:22 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Joe Perches <joe@perches.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ethtool: Fix comment mentioning typo in IS_ENABLED()
+Message-ID: <202006050720.D741B4C@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_OF_MDIO is set to be a module the code block is not
-compiled. Use the IS_ENABLED macro that checks for both built in as
-well as module.
+This has no code changes, but it's a typo noticed in other clean-ups,
+so we might as well fix it. IS_ENABLED() takes full names, and should
+have the "CONFIG_" prefix.
 
-Fixes: 4f58e6dceb0e4 ("net: phy: Cleanup the Edge-Rate feature in Microsemi PHYs.")
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
+Reported-by: Joe Perches <joe@perches.com>
+Link: https://lore.kernel.org/lkml/b08611018fdb6d88757c6008a5c02fa0e07b32fb.camel@perches.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/phy/mscc/mscc.h      | 2 +-
- drivers/net/phy/mscc/mscc_main.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ include/linux/ethtool_netlink.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index f828c917b9f7..fbcee5fce7b2 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -374,7 +374,7 @@ struct vsc8531_private {
- #endif
- };
- 
--#ifdef CONFIG_OF_MDIO
-+#if IS_ENABLED(CONFIG_OF_MDIO)
- struct vsc8531_edge_rate_table {
- 	u32 vddmac;
- 	u32 slowdown[8];
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 7ed0285206d0..b9d60bc8b6b2 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -98,7 +98,7 @@ static const struct vsc85xx_hw_stat vsc8584_hw_stats[] = {
- 	},
- };
- 
--#ifdef CONFIG_OF_MDIO
-+#if IS_ENABLED(CONFIG_OF_MDIO)
- static const struct vsc8531_edge_rate_table edge_table[] = {
- 	{MSCC_VDDMAC_3300, { 0, 2,  4,  7, 10, 17, 29, 53} },
- 	{MSCC_VDDMAC_2500, { 0, 3,  6, 10, 14, 23, 37, 63} },
-@@ -382,7 +382,7 @@ static void vsc85xx_wol_get(struct phy_device *phydev,
- 	mutex_unlock(&phydev->lock);
- }
- 
--#ifdef CONFIG_OF_MDIO
-+#if IS_ENABLED(CONFIG_OF_MDIO)
- static int vsc85xx_edge_rate_magic_get(struct phy_device *phydev)
+diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
+index 8fbe4f97ffad..1e7bf78cb382 100644
+--- a/include/linux/ethtool_netlink.h
++++ b/include/linux/ethtool_netlink.h
+@@ -67,5 +67,5 @@ static inline int ethnl_cable_test_step(struct phy_device *phydev, u32 first,
  {
- 	u32 vdd, sd;
+ 	return -EOPNOTSUPP;
+ }
+-#endif /* IS_ENABLED(ETHTOOL_NETLINK) */
++#endif /* IS_ENABLED(CONFIG_ETHTOOL_NETLINK) */
+ #endif /* _LINUX_ETHTOOL_NETLINK_H_ */
 -- 
-2.26.2
+2.25.1
 
+
+-- 
+Kees Cook
