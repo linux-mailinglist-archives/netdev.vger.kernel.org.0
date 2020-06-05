@@ -2,163 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 235D31EF6AB
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E441EF6EC
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbgFELqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 07:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        id S1726480AbgFEMAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726328AbgFELqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:46:25 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D86C08C5C3
-        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 04:46:25 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id f18so9321645qkh.1
-        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 04:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iyGf3V6jAp5ZNIZ09j882B9dYRBoDmMZI6f6MZVzSqU=;
-        b=PPOKqK1Mpp1wrmMjN+yqaRbT6z7r3EbGxtrRFajNTMt9PHMghgqNzgL9pGdQcpHIAE
-         0DVMbOU2kxL1hC3qy0dUltajv7QTaaRhIaIDwAd0xvf5qwhubpZC0LZf/blrdwznW5vV
-         I5XYwvA1jJFNaC4w6Ns/6D7fIbAKpHOfbNx5BptFa0gROoRg83qrhwRMkocv2Xiyl0kI
-         lbzVrYFpT/kspqvvPQ1fRWpEe3ujBlMvcxQpLda++SrxtrN201HXdNM8ky1CMcKaTCyT
-         7YzqzI7JgDDeQfY5pZZf3tpuVoboTpFNbtiVmQWftEylQBkFZ8HwfqUz6yJZx6Hqbu68
-         9qEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iyGf3V6jAp5ZNIZ09j882B9dYRBoDmMZI6f6MZVzSqU=;
-        b=O7i7R4e8t4Oa0fkN7wvVwaQuOw9Ic4NBWO58iDzKpjfkL1Mc409qn5Hqr/RMoQiItp
-         eoYSpe/NtemLTLzNSvVxyrAe1KtDRvee/X66q0M5MifFU+ckM4g2KCn1Tx0NzngkFx7i
-         dOze9Lz6sWcpDCmZ1LN30TCuqrpZRf46a5X4dMYT5EeV9ojc3GxL0jQGKCg412n8imU0
-         dvqZiPEurtclk9ARkpuZ621+DwNaEI+LpbO0/bwomEH7Lj07lH4ySPngtQFIKlOvsvKi
-         SZN9meFyPtSgclrgPqyqUKr0Yx1AmXS4xvcV1/q1DDlFleh0wOsWVNqlU49cMn1kWePt
-         u9cw==
-X-Gm-Message-State: AOAM531A4QKVl4qUCjED0fIggAcL7xisjCdvIXri/d87qxFgP2An946M
-        mKnFjXWxV/rXpvJ1PTxpVGI3Xw==
-X-Google-Smtp-Source: ABdhPJzIzM5xjqCh9INfMzgN+usRKZ0PzGsWKSBI2t8KUOcihpgbikJjYflnI1YUSO8zpQZgiZW9hA==
-X-Received: by 2002:a05:620a:1525:: with SMTP id n5mr9426712qkk.328.1591357584373;
-        Fri, 05 Jun 2020 04:46:24 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id 195sm6645125qkg.74.2020.06.05.04.46.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2020 04:46:23 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.93)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jhAnm-0025SU-D8; Fri, 05 Jun 2020 08:46:22 -0300
-Date:   Fri, 5 Jun 2020 08:46:22 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-rdma@vger.kernel.org, Doug Ledford <dledford@redhat.com>,
-        syzbot <syzbot+407fd358a932bbf639c6@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, syzkaller-bugs@googlegroups.com,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: general protection fault in kobject_get (2)
-Message-ID: <20200605114622.GR6578@ziepe.ca>
-References: <0000000000009a6d4305a60d2c6b@google.com>
- <20200520055641.GA2242221@kroah.com>
- <20200605042648.GP2667@sol.localdomain>
+        with ESMTP id S1726364AbgFEMAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 08:00:40 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10F7C08C5C2
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 05:00:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=ZkydSh6STLYZRXDoU5zzN5Mscgf9Pq50DgNGZkD80cs=; b=jh9ZJa4UpIAU5ifJGejq24wd9U
+        OdARNRU067AHWfb5VvFQ9qQsDVgFchvtroqMwcB2VzVLKlt6n2E4kuD4IXfCojjLBT7d/G/ZSFqAt
+        8C2H7Jcrvixzved/tOvVi/pr+dXhtPKcnq6Dt32DtwHNcXffeBYV+kuo4RyOCZpG3GJK7BkxJ0HT6
+        qEAoHXSPu9FLKeCjpogng7KVcPnmweA7UXFeE1QGh0lCnsqifsAN+yvQAiMqrNafILLdxbEOKjiP9
+        PweaujFTpsQ+3IP4piQOvSpGennMuVMmI6wSkFwr/+qD0+jYIC698t2NFFazYD+XAWqkbTRKEgDVx
+        IWrdxaKg==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jhB1b-0006yb-1v; Fri, 05 Jun 2020 12:00:39 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
+Date:   Fri,  5 Jun 2020 05:00:37 -0700
+Message-Id: <20200605120037.17427-1-willy@infradead.org>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200605042648.GP2667@sol.localdomain>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 09:26:48PM -0700, Eric Biggers wrote:
-> On Wed, May 20, 2020 at 07:56:41AM +0200, Greg KH wrote:
-> > On Tue, May 19, 2020 at 09:53:16PM -0700, syzbot wrote:
-> > > Hello,
-> > > 
-> > > syzbot found the following crash on:
-> > > 
-> > > HEAD commit:    d00f26b6 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-> > > git tree:       net-next
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1316343c100000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=26d0bd769afe1a2c
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=407fd358a932bbf639c6
-> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > 
-> > > Unfortunately, I don't have any reproducer for this crash yet.
-> > > 
-> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > Reported-by: syzbot+407fd358a932bbf639c6@syzkaller.appspotmail.com
-> > > 
-> > > general protection fault, probably for non-canonical address 0xdffffc0000000013: 0000 [#1] PREEMPT SMP KASAN
-> > > KASAN: null-ptr-deref in range [0x0000000000000098-0x000000000000009f]
-> > > CPU: 1 PID: 16682 Comm: syz-executor.3 Not tainted 5.7.0-rc4-syzkaller #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > > RIP: 0010:kobject_get+0x30/0x150 lib/kobject.c:640
-> > > Code: 53 e8 d4 7e c6 fd 4d 85 e4 0f 84 a2 00 00 00 e8 c6 7e c6 fd 49 8d 7c 24 3c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 e7 00 00 00
-> > > RSP: 0018:ffffc9000772f240 EFLAGS: 00010203
-> > > RAX: dffffc0000000000 RBX: ffffffff85acfca0 RCX: ffffc9000fc67000
-> > > RDX: 0000000000000013 RSI: ffffffff83acadfa RDI: 000000000000009c
-> > > RBP: 0000000000000060 R08: ffff8880a8dfa4c0 R09: ffffed100a03f403
-> > > R10: ffff8880501fa017 R11: ffffed100a03f402 R12: 0000000000000060
-> > > R13: ffffc9000772f3c0 R14: ffff88805d1ec4e8 R15: ffff88805d1ec580
-> > > FS:  00007f1ebed26700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 00000000004d88f0 CR3: 00000000a86c4000 CR4: 00000000001406e0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > >  get_device+0x20/0x30 drivers/base/core.c:2620
-> > >  __ib_get_client_nl_info+0x1d4/0x2a0 drivers/infiniband/core/device.c:1863
-> > >  ib_get_client_nl_info+0x30/0x180 drivers/infiniband/core/device.c:1883
-> > >  nldev_get_chardev+0x52b/0xa40 drivers/infiniband/core/nldev.c:1625
-> > >  rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
-> > >  rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
-> > >  rdma_nl_rcv+0x586/0x900 drivers/infiniband/core/netlink.c:259
-> > >  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
-> > >  netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
-> > >  netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
-> > >  sock_sendmsg_nosec net/socket.c:652 [inline]
-> > >  sock_sendmsg+0xcf/0x120 net/socket.c:672
-> > >  ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
-> > >  ___sys_sendmsg+0x100/0x170 net/socket.c:2406
-> > >  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
-> > >  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-> > >  entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> > > RIP: 0033:0x45c829
-> > > Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> > > RSP: 002b:00007f1ebed25c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> > > RAX: ffffffffffffffda RBX: 00000000004ff720 RCX: 000000000045c829
-> > > RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-> > > RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-> > > R13: 00000000000009ad R14: 00000000004d5f10 R15: 00007f1ebed266d4
-> > > Modules linked in:
-> > > RIP: 0010:kobject_get+0x30/0x150 lib/kobject.c:640
-> > > Code: 53 e8 d4 7e c6 fd 4d 85 e4 0f 84 a2 00 00 00 e8 c6 7e c6 fd 49 8d 7c 24 3c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 e7 00 00 00
-> > > RSP: 0018:ffffc9000772f240 EFLAGS: 00010203
-> > > RAX: dffffc0000000000 RBX: ffffffff85acfca0 RCX: ffffc9000fc67000
-> > > RDX: 0000000000000013 RSI: ffffffff83acadfa RDI: 000000000000009c
-> > > RBP: 0000000000000060 R08: ffff8880a8dfa4c0 R09: ffffed100a03f403
-> > > R10: ffff8880501fa017 R11: ffffed100a03f402 R12: 0000000000000060
-> > > R13: ffffc9000772f3c0 R14: ffff88805d1ec4e8 R15: ffff88805d1ec580
-> > > FS:  00007f1ebed26700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 000000000073fad4 CR3: 00000000a86c4000 CR4: 00000000001406e0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > 
-> > Looks like an IB/rdma issue, poke those developers please :)
-> > 
-> 
-> If you want people to receive your email, you need to send it to them.
-> 
-> +Cc linux-rdma and maintainers of drivers/infiniband/.
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-I think this is probably fixed by commit 11a0ae4c4bff ("RDMA: Allow
-ib_client's to fail when add() is called")
+The XArray interface is easier for this driver to use.  Also fixes a
+bug reported by the improper use of GFP_ATOMIC.
 
-#syz fix: RDMA: Allow ib_client's to fail when add() is called
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+---
+ net/qrtr/qrtr.c | 39 +++++++++++++--------------------------
+ 1 file changed, 13 insertions(+), 26 deletions(-)
 
-Jason
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 2d8d6131bc5f..488f8f326ee5 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -20,6 +20,7 @@
+ /* auto-bind range */
+ #define QRTR_MIN_EPH_SOCKET 0x4000
+ #define QRTR_MAX_EPH_SOCKET 0x7fff
++#define QRTR_PORT_RANGE	XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
+ 
+ /**
+  * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
+@@ -106,8 +107,7 @@ static LIST_HEAD(qrtr_all_nodes);
+ static DEFINE_MUTEX(qrtr_node_lock);
+ 
+ /* local port allocation management */
+-static DEFINE_IDR(qrtr_ports);
+-static DEFINE_MUTEX(qrtr_port_lock);
++static DEFINE_XARRAY_ALLOC(qrtr_ports);
+ 
+ /**
+  * struct qrtr_node - endpoint node
+@@ -623,7 +623,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
+ 		port = 0;
+ 
+ 	rcu_read_lock();
+-	ipc = idr_find(&qrtr_ports, port);
++	ipc = xa_load(&qrtr_ports, port);
+ 	if (ipc)
+ 		sock_hold(&ipc->sk);
+ 	rcu_read_unlock();
+@@ -665,9 +665,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+ 
+ 	__sock_put(&ipc->sk);
+ 
+-	mutex_lock(&qrtr_port_lock);
+-	idr_remove(&qrtr_ports, port);
+-	mutex_unlock(&qrtr_port_lock);
++	xa_erase(&qrtr_ports, port);
+ 
+ 	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
+ 	 * wait for it to up increment the refcount */
+@@ -688,25 +686,18 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ {
+ 	int rc;
+ 
+-	mutex_lock(&qrtr_port_lock);
+ 	if (!*port) {
+-		rc = idr_alloc(&qrtr_ports, ipc,
+-			       QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
+-			       GFP_ATOMIC);
+-		if (rc >= 0)
+-			*port = rc;
++		rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_PORT_RANGE,
++				GFP_KERNEL);
+ 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
+ 		rc = -EACCES;
+ 	} else if (*port == QRTR_PORT_CTRL) {
+-		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
++		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
+ 	} else {
+-		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
+-		if (rc >= 0)
+-			*port = rc;
++		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
+ 	}
+-	mutex_unlock(&qrtr_port_lock);
+ 
+-	if (rc == -ENOSPC)
++	if (rc == -EBUSY)
+ 		return -EADDRINUSE;
+ 	else if (rc < 0)
+ 		return rc;
+@@ -720,20 +711,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ static void qrtr_reset_ports(void)
+ {
+ 	struct qrtr_sock *ipc;
+-	int id;
+-
+-	mutex_lock(&qrtr_port_lock);
+-	idr_for_each_entry(&qrtr_ports, ipc, id) {
+-		/* Don't reset control port */
+-		if (id == 0)
+-			continue;
++	unsigned long index;
+ 
++	rcu_read_lock();
++	xa_for_each_start(&qrtr_ports, index, ipc, 1) {
+ 		sock_hold(&ipc->sk);
+ 		ipc->sk.sk_err = ENETRESET;
+ 		ipc->sk.sk_error_report(&ipc->sk);
+ 		sock_put(&ipc->sk);
+ 	}
+-	mutex_unlock(&qrtr_port_lock);
++	rcu_read_unlock();
+ }
+ 
+ /* Bind socket to address.
+-- 
+2.26.2
+
