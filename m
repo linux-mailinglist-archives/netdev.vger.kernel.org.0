@@ -2,161 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB791F0083
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 21:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44EE41F00A4
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 21:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgFETsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 15:48:08 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:51994 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727010AbgFETsI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 15:48:08 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 055JllY1009376;
-        Fri, 5 Jun 2020 22:47:49 +0300
-Date:   Fri, 5 Jun 2020 22:47:47 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Christoph Paasch <christoph.paasch@gmail.com>
-cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Wayne Badger <badger@yahoo-inc.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Leif Hedstrom <lhedstrom@apple.com>
-Subject: Re: TCP_DEFER_ACCEPT wakes up without data
-In-Reply-To: <CALMXkpYBMN5VR9v+xL0fOC6srABYd38x5tGJG5od+VNMS+BSAw@mail.gmail.com>
-Message-ID: <alpine.LFD.2.22.394.2006052206190.3874@ja.home.ssi.bg>
-References: <538FB666.9050303@yahoo-inc.com> <alpine.LFD.2.11.1406071441260.2287@ja.home.ssi.bg> <5397A98F.2030206@yahoo-inc.com> <58a4abb51fe9411fbc7b1a58a2a6f5da@UCL-MBX03.OASIS.UCLOUVAIN.BE>
- <CALMXkpYBMN5VR9v+xL0fOC6srABYd38x5tGJG5od+VNMS+BSAw@mail.gmail.com>
+        id S1728158AbgFET5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 15:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727863AbgFET5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 15:57:18 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9796C08C5C2;
+        Fri,  5 Jun 2020 12:57:17 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id 5so3282423pjd.0;
+        Fri, 05 Jun 2020 12:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=smVLscndUtcWIRf1BUBIrZ8L43w9eNyfqzYmsNy1U90=;
+        b=tG9yM4X0n4Sj0dzcSzE1E9fhSOml70QBV5f2ujB8mXAoe3tNSs/GA77dwFICRpe7fc
+         7GudSoCRk+469e/fRE7TK8QKX0EEtdnTcQz7NZUZxPxqfCoHw1uQTAydtdqUTvkINBsv
+         7GfmCxAKmLx+li3RT29ncAHpPEIkWYC2oAkCGBenxBm6RqdV5p85B1zu2ngB/zNN4KFM
+         SwwFmMsrAYtDvIi1lbv/9GJA0EA50n6OGG92fiw5S0bRvhBURrIyNURmbJ7AIPLnaaA6
+         MCUXwRnQkG5Umbk923aZjUTq3uD/pe9u0MU/F20cwJ4ge0mqpoxNqhAPU5PrBYM0CjOq
+         i5Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=smVLscndUtcWIRf1BUBIrZ8L43w9eNyfqzYmsNy1U90=;
+        b=b/D8GRDTzsRKhmbjgVNsElpm3Iigh8rK6T3xb8ckPvDF7CYt5hRiJoAz9Ur7P8EGln
+         lHLGPsuVicAlFcnP6QRVLjlNnqSkyP3EfNHyIYaBFV1tzUmHpi5sXF1l4LMQvxW9BDrj
+         M45YhEOrEMSB2wMmHr7qDeJOkphO/6HgrHj2cIsjaa/Mr54f5qTDQg+H/R4T4SHfNSja
+         fDu9HD2K8I3bmj7eICbLoH0qUbgPCGNzsWC0uiERthfpzGnawZM6HLD/7/bTSE++93wF
+         lW4n9AcsXPqdFGcEmXeaBq3Gx3QDDw5N0Bk2NG6POGP2aZhovKFYNnhtbSlVhfaYyzxZ
+         XXWw==
+X-Gm-Message-State: AOAM533wOhS+JpM7S9GwauxYbVoFaXJgbShnCEzLnpB4LuCLWJBVdLgw
+        FxNZXTWjPLjeqtM8Jk8O/IjXQ7s7
+X-Google-Smtp-Source: ABdhPJx5EDz7GQ03t3fgg5ewaTRinFEZc1l3wNG+RU71+4I4Cx1t8+RAFslb0CxNhsjFjJcvQj7cgA==
+X-Received: by 2002:a17:90a:9d8b:: with SMTP id k11mr4958176pjp.10.1591387037105;
+        Fri, 05 Jun 2020 12:57:17 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id x1sm358759pfn.76.2020.06.05.12.57.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Jun 2020 12:57:16 -0700 (PDT)
+Subject: Re: [PATCH] net/mlx5: Use kfree(ft->g) in arfs_create_groups()
+To:     Denis Efremov <efremov@linux.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200605192235.79241-1-efremov@linux.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <1cd5f60d-4a42-f7ba-1d0b-2303470a1f73@gmail.com>
+Date:   Fri, 5 Jun 2020 12:57:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200605192235.79241-1-efremov@linux.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-	Hello,
 
-On Thu, 4 Jun 2020, Christoph Paasch wrote:
-
-> On Wed, Jun 11, 2014 at 11:05 PM Julian Anastasov <ja@ssi.bg> wrote:
-> >
-> >
-> > > The behavior that we want is for the receipt of the duplicate bare
-> > > ACK to not result in waking up user space.  The socket still hasn't
-> > > received any data, so there's no point in the process accepting the
-> > > socket since there's nothing the process can do.
-> >
-> >         One problem with this behavior is that after first ACK
-> > more ACKs are not expected. Your RST logic still relies on the
-> > last SYN+ACK we sent to trigger additional ACK. I guess,
-> > we can live with this because for firewalls it is not worse
-> > than current behavior. We replace accept() with RST.
-> >
-> > > I would prefer that we send a RST upon receipt of a bare ACK for a
-> > > socket that has completed the 3way handshake, waited the
-> > > TCP_DEFER_ACCEPT timeout and has never received any
-> > > data.  If it has timed out, then the server should be done with the
-> > > connection request.
-> >
-> >         I'm ok with this idea.
+On 6/5/20 12:22 PM, Denis Efremov wrote:
+> Use kfree() instead of kvfree() on ft->g in arfs_create_groups() because
+> the memory is allocated with kcalloc().
 > 
-> Is there any specific reason as to why we would not want to do this?
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> API-breakage does not seem to me to be a concern here. Apps that are
-> setting DEFER_ACCEPT probably would not expect to get a socket that
-> does not have data to read.
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+> index 014639ea06e3..c4c9d6cda7e6 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+> @@ -220,7 +220,7 @@ static int arfs_create_groups(struct mlx5e_flow_table *ft,
+>  			sizeof(*ft->g), GFP_KERNEL);
+>  	in = kvzalloc(inlen, GFP_KERNEL);
+>  	if  (!in || !ft->g) {
+> -		kvfree(ft->g);
+> +		kfree(ft->g);
+>  		kvfree(in);
+>  		return -ENOMEM;
+>  	}
+> 
 
-	There are older threads that explain why we create sockets
-on bare ACK:
+This is slow path, kvfree() is perfectly able to free memory that was kmalloc()ed
 
-https://marc.info/?t=125541062900001&r=1&w=2
-
-	Starting message:
-
-https://marc.info/?l=linux-netdev&m=125541058019459&w=2
-
-	In short, it is better for firewalls when we
-do not drop silently the request socket. For now we
-do not have a way to specify that we do not want
-child sockets without DATA.
-
-TL;DR
-
-Here is how TCP_DEFER_ACCEPT works for server, with
-pseudo-states.
-
-TCP_DEFER_ACCEPT for server uses:
-- num_timeout: increments when it is time to send SYN+ACK
-- num_retrans: increments when SYN+ACK is sent
-
-- TCP_DEFER_ACCEPT (seconds) is converted to retransmission
-periods. The possible time for SYN+ACK retransmissions is
-calculated as the maximum of SYNCNT/tcp_synack_retries and
-the TCP_DEFER_ACCEPT periods, see reqsk_timer_handler().
-
-- when bare ACK is received we avoid resending SYN+ACKs, we
-start to resend just when the last TCP_DEFER_ACCEPT period
-is started, see syn_ack_recalc().
-
-Pseudo States for SYN_RECV:
-
-WAIT_AND_RESEND:
-	- when:
-		- SYN is received
-	- [re]send SYN+ACK depending on SYNCNT (at least for
-	TCP_DEFER_ACCEPT time, if set), the retransmission
-	period is max-of(TCP_DEFER_ACCEPT periods, SYNCNT)
-	- on received DATA => create socket
-	- on received bare ACK:
-		- if using TCP_DEFER_ACCEPT => enter WAIT_SILENTLY
-		- if not using TCP_DEFER_ACCEPT => create socket
-
-WAIT_SILENTLY:
-	- when:
-		- using TCP_DEFER_ACCEPT
-		- bare ACK received (indicates that client received
-		our SYN+ACK, so no need to resend anymore)
-	- do not send SYN+ACK
-	- on received DATA => create socket
-	- on received bare ACK: drop it (do not resend on packet)
-	- when the last TCP_DEFER_ACCEPT period starts enter
-	REFRESH_STATE
-
-REFRESH_STATE:
-	- when:
-		- last TCP_DEFER_ACCEPT period starts after bare ACK
-	- resend depending on SYNCNT to update the connection state
-	in client and stateful firewalls. Such packets will trigger
-	DATA (hopefully), ACK, FIN, RST, etc. When SYNCNT is less
-	than the TCP_DEFER_ACCEPT period, we will send single
-	SYN+ACK, otherwise more SYN+ACKs will be sent (up to SYNCNT).
-	- on received DATA => create socket
-	- on received bare ACK: create socket
-	- no more resends (SYNCNT) => Drop req.
-
-Programming hints for servers:
-
-1. TCP_DEFER_ACCEPT controlled with TCP_SYNCNT
-	- set TCP_DEFER_ACCEPT (defer period) to 1 (used as flag=Enabled)
-	- tune the possible retransmission period with TCP_SYNCNT
-	- PRO:
-		- more control on the sent packets
-	- CON:
-		- time depends on TCP_TIMEOUT_INIT value
-		- server is not silent after bare ACK because
-		defer period is small
-
-2. Use just seconds in TCP_DEFER_ACCEPT
-	- PRO:
-		- defer period is specified in seconds
-		- no SYN+ACKs are sent in defer period after bare ACK
-		- can send more SYN+ACKs when TCP_SYNCNT is greater,
-		to avoid losses
-
-- In both cases be ready to accept sockets without data
-after the defer period
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+net-next is closed, can we avoid these patches during merge window ?
