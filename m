@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8511F013C
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 22:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 988B81F0158
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 23:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728201AbgFEUvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 16:51:24 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:33452 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbgFEUvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 16:51:23 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 055KpBnl035088;
-        Fri, 5 Jun 2020 15:51:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1591390271;
-        bh=jUzHNLbPf81riWeo8eVPKgNd4GT0yaOWof+Kk6oh2ds=;
-        h=From:To:CC:Subject:Date;
-        b=ilwZxlO9voUaOt9E7uJLygZCrEXd+dXc5SpSXm/M1pLNnXk++FwaJHaflq6fRh6BN
-         KiH/hfVoVFBVaj48GCiA6IXAGbmyXgJtCn6F7aafBdjrDy+vYj5VBhb5CZO2V3Y/TV
-         VyEqgpJTbdOfCxIRlhRlHaYbwPjp2Xg25MugSQFs=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 055KpBx6016456
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 5 Jun 2020 15:51:11 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 5 Jun
- 2020 15:51:09 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 5 Jun 2020 15:51:09 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 055Kp9BC033433;
-        Fri, 5 Jun 2020 15:51:09 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net] net: dp83869: Reset return variable if PHY strap is read
-Date:   Fri, 5 Jun 2020 15:51:03 -0500
-Message-ID: <20200605205103.29663-1-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728257AbgFEVMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 17:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728013AbgFEVMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 17:12:37 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6BFC08C5C2;
+        Fri,  5 Jun 2020 14:12:36 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id p5so11065981wrw.9;
+        Fri, 05 Jun 2020 14:12:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Z57OiC3abxqcwvsTdrXlAuG1Pt+MVExsqKpBN7y2tGg=;
+        b=QeVsaMBREePnhYZZok+uHuWDSZGOGhmn0FF7HULJQSNq/qfHdwayo9BW6J+CERVEdp
+         22qDNQ+Jl10f3Tq/t8bL1U1+YGAme52zs4//Xp0H+zjTWKQ4sDq9wFb0j+RnZkZnjgxi
+         vM5dVQnEJW6nTABnmb5KUbTh/K2USb42/14i9KZQ/RU+SZXHgTgnqzCTVxZ6MLUsG+Ea
+         RBhIPj32rmX27bIdrTYo3O2bngl72OaDRb2U+BJBX2S+5EWrGhklWpH4AUb9Eegu+AvI
+         8kT2IaZs2/Wjx5oud0IhrTkAtrxzYOwKYrryi4eOT8UJVDwP4Yz4mCtYfUKE753KvKlo
+         b0QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Z57OiC3abxqcwvsTdrXlAuG1Pt+MVExsqKpBN7y2tGg=;
+        b=rEuMurArh7zEtPobqyaezfY/E87EB+sog5F1nrbopNGoLcG/5/kwbR78feQgHjdEgy
+         mJ35JJRRJhfXsC4j9cIIyQO0/EI12YVHFAkhAxOduahNTlKXMGw4ckB0v7PtLNWjzKs8
+         RcYdpvAfwla5MKN041Nb4knKV0NkIhH5v4AtDnlC+ouuX0bdEgbvhU+OVVNFY6HUnhK0
+         CtgITY+s/OGM816IwP6i8ZhLEhRzNa+QxybWAees7czh8fUZeG5RpEcuTnzpLFwhgN5s
+         rbxJRt81qYvQfezHHClRqGD8rwCGW5VIxCkqaW83HvfJCbsfFHjA5PZckdvaRfQdic45
+         Huzw==
+X-Gm-Message-State: AOAM531VMKdnVrVMUw3iRdxovOFiHyx1tC4AizDVnt0Ta0sjd9Mv7xaN
+        p2pkzuWlzymR86IIPl4eGv2buYA+
+X-Google-Smtp-Source: ABdhPJybQF1DNlFXHUS02W4gM9Rh6/hUWIWrgpCRmr88n1ycqMPsteKGHAqInCADev72CWBk7mdZIA==
+X-Received: by 2002:a5d:6802:: with SMTP id w2mr11504873wru.68.1591391554189;
+        Fri, 05 Jun 2020 14:12:34 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id x8sm13493342wrs.43.2020.06.05.14.12.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Jun 2020 14:12:33 -0700 (PDT)
+Subject: Re: [PATCH net] net: dp83869: Reset return variable if PHY strap is
+ read
+To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200605205103.29663-1-dmurphy@ti.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c137e0f0-b236-47cc-eb4e-954daf193f76@gmail.com>
+Date:   Fri, 5 Jun 2020 14:12:29 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20200605205103.29663-1-dmurphy@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the PHY's strap register is read to determine if lane swapping is
-needed the phy_read_mmd returns the value back into the ret variable.
 
-If the call to read the strap fails the failed value is returned.  If
-the call to read the strap is successful then ret is possibly set to a
-non-zero positive number. Without reseting the ret value to 0 this will
-cause the parse DT function to return a failure.
 
-Fixes: c4566aec6e808 ("net: phy: dp83869: Update port-mirroring to read straps")
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 3 +++
- 1 file changed, 3 insertions(+)
+On 6/5/2020 1:51 PM, Dan Murphy wrote:
+> When the PHY's strap register is read to determine if lane swapping is
+> needed the phy_read_mmd returns the value back into the ret variable.
+> 
+> If the call to read the strap fails the failed value is returned.  If
+> the call to read the strap is successful then ret is possibly set to a
+> non-zero positive number. Without reseting the ret value to 0 this will
+> cause the parse DT function to return a failure.
+> 
+> Fixes: c4566aec6e808 ("net: phy: dp83869: Update port-mirroring to read straps")
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index df85ae5b79e4..53ed3abc26c9 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -218,10 +218,13 @@ static int dp83869_of_init(struct phy_device *phydev)
- 		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
- 		if (ret < 0)
- 			return ret;
-+
- 		if (ret & DP83869_STRAP_MIRROR_ENABLED)
- 			dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
- 		else
- 			dp83869->port_mirroring = DP83869_PORT_MIRRORING_DIS;
-+
-+		ret = 0;
- 	}
- 
- 	if (of_property_read_u32(of_node, "rx-fifo-depth",
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.26.2
-
+Florian
