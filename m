@@ -2,125 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 335851EF600
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C5661EF61D
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbgFELBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 07:01:09 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:28986 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726966AbgFELBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:01:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591354865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=99VNPYJGoMPl79e21WOZdb+KAZocUbilTfddS29tBis=;
-        b=EMrUf8eV50QDlKmjTPF7TXEYpAZTcj2nGGcteieg1bOQG+SMrL2cXnK9/gUyNRjkbp0AC/
-        eW/VLrhxyPKbZrRHneuCuqMZpNbQZBiRYua+qQ+q6tmjM1ZQRjz2hBbYt47ncitDZYBccR
-        QBXF8ZY5DqcFR4v8AWe9QNoCd0Mnyio=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-424-cVJQIMRMMruv2oa7zOgvpw-1; Fri, 05 Jun 2020 07:01:04 -0400
-X-MC-Unique: cVJQIMRMMruv2oa7zOgvpw-1
-Received: by mail-ej1-f69.google.com with SMTP id a20so3434482ejt.19
-        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 04:01:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=99VNPYJGoMPl79e21WOZdb+KAZocUbilTfddS29tBis=;
-        b=OPgpMwRBWsJC4SMq4FXk7dzWaIcD7BiGn2sIF6VuPLLLbhjETTTAv0iI8rA0zDgJj+
-         ZAoxBHx3RknDHhoUrMHfR/chbL+uOFViQCiqc1TWA4t1HPxfn2CM+KpqIpmUPXnBQ+n3
-         VRnTo/V9V0xaWINMKSgCojeg/fjpKksf8ROuuF8jt0yrhWHNpHTqVspbCasu8dGEuhif
-         Pm56GX3n7pzYI33lMxumtWMGq4QmvqHExBns+sAh+MS6hGQGrVKCIhdZ+7hfBrpRzmyn
-         QcOyeH8wqbOyYoMpA+rP5C7v7a9oj9uFNvJ0N+w50rnOwpytNxFz/NbkPosmheYXZTCn
-         qrVg==
-X-Gm-Message-State: AOAM532DAD78h4/Atq3HrQYbmsZtjcDj4C80oy27u2qH3mqEkxVAgYdF
-        jgThL/Xt0W/mV6JlT+MSLoCAiR1lIayOnLQK8T4rCa18NaVOTPPofswewv7Q0vaNuuqwGj4mIY6
-        +zETqjjzMdwJUmjAH
-X-Received: by 2002:aa7:d158:: with SMTP id r24mr8533238edo.272.1591354862326;
-        Fri, 05 Jun 2020 04:01:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx3FkyT1V4vxoO2SrH/qvQCMvKtyEkE41uXCPhuRSVuJBMRq0wXuv5atvbNLgcHzJTRm/uNKA==
-X-Received: by 2002:aa7:d158:: with SMTP id r24mr8533193edo.272.1591354861927;
-        Fri, 05 Jun 2020 04:01:01 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id h8sm4703487edk.72.2020.06.05.04.01.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2020 04:01:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9910818200D; Fri,  5 Jun 2020 13:01:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Miller <davem@davemloft.net>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on BTF
-In-Reply-To: <20200605102323.15c2c06c@carbon>
-References: <159119908343.1649854.17264745504030734400.stgit@firesoul> <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com> <20200604174806.29130b81@carbon> <205b3716-e571-b38f-614f-86819d153c4e@gmail.com> <20200604173341.rvfrjmt433knl3uv@ast-mbp.dhcp.thefacebook.com> <20200605102323.15c2c06c@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 05 Jun 2020 13:01:00 +0200
-Message-ID: <87y2p1dbf7.fsf@toke.dk>
+        id S1726940AbgFELGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 07:06:41 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:33084 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbgFELGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:06:39 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 055B2AtD151356;
+        Fri, 5 Jun 2020 11:06:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=nWl+y+0wUhQoIBqwp6wGjPeAe8E7npemEWVmDlHdQYI=;
+ b=BvSNvoCGgYwdTHuUKGZvrMSZhQjFdHEs4prRA/Kc48QX+FMiqYJl5ltRDvvP/pcUroO1
+ HKaq5mf9OPQrGeIuq0exUBfgvalthF1pJvIypWcXX2TH4Nem4yk5bo54qfEMDs9SEAWx
+ CNNoXbdd+Fupaljh1oc8BlksG6WEyOxu5MEHhh99TuKWPD2fGgKi6m2Q8Bys/MhOUcXo
+ cvPh+agHw17yBk+SizpIzqFO2dYiH+Rt1EGpRGaapjQLgPHz5k5Nen6kIQrRI+poeYs4
+ ri7T06rEpI+GY2sCbMd0qK32F88UQshim7JN0du7eTidv7PaXRtqvhGiSVWJKcDV8ZXt wg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 31f9242asx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 05 Jun 2020 11:06:24 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 055B4BCh137758;
+        Fri, 5 Jun 2020 11:04:24 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 31f9272v0c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 05 Jun 2020 11:04:24 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 055B4Mip031238;
+        Fri, 5 Jun 2020 11:04:23 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 05 Jun 2020 04:04:21 -0700
+Date:   Fri, 5 Jun 2020 14:04:13 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] ethtool: linkinfo: remove an unnecessary NULL check
+Message-ID: <20200605110413.GF978434@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9642 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0
+ mlxlogscore=999 bulkscore=0 suspectscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2006050085
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9642 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1015 impostorscore=0
+ adultscore=0 priorityscore=1501 mlxlogscore=999 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 cotscore=-2147483648 phishscore=0 spamscore=0
+ malwarescore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006050085
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+This code generates a Smatch warning:
 
-> On Thu, 4 Jun 2020 10:33:41 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
->> On Thu, Jun 04, 2020 at 10:40:06AM -0600, David Ahern wrote:
->> > On 6/4/20 9:48 AM, Jesper Dangaard Brouer wrote:  
->> > > I will NOT send a patch that expose this in uapi/bpf.h.  As I explained
->> > > before, this caused the issues for my userspace application, that
->> > > automatically picked-up struct bpf_devmap_val, and started to fail
->> > > (with no code changes), because it needed minus-1 as input.  I fear
->> > > that this will cause more work for me later, when I have to helpout and
->> > > support end-users on e.g. xdp-newbies list, as it will not be obvious
->> > > to end-users why their programs map-insert start to fail.  I have given
->> > > up, so I will not NACK anyone sending such a patch.  
->> 
->> Jesper,
->> 
->> you gave wrong direction to David during development of the patches and
->> now the devmap uapi is suffering the consequences.
->> 
->> > > 
->> > > Why is it we need to support file-descriptor zero as a valid
->> > > file-descriptor for a bpf-prog?  
->> > 
->> > That was a nice property of using the id instead of fd. And the init to
->> > -1 is not unique to this; adopters of the bpf_set_link_xdp_fd_opts for
->> > example have to do the same.  
->> 
->> I think it's better to adopt "fd==0 -> invalid" approach.
->> It won't be unique here. We're already using it in other places in bpf syscall.
->> I agree with Jesper that requiring -1 init of 2nd field is quite ugly
->> and inconvenient.
->
-> Great. If we can remove this requirement of -1 init (and let zero mean
-> feature isn't used), then I'm all for exposing expose in uapi/bpf.h.
+    net/ethtool/linkinfo.c:143 ethnl_set_linkinfo()
+    warn: variable dereferenced before check 'info' (see line 119)
 
-If we're going to officially deprecate fd 0 as a valid BPF fd, we should
-at least make sure users don't end up with such an fd after opening a
-BPF object. Not sure how the fd number assignment works, but could we
-make sure that the kernel never returns fd 0 for a BPF program/map?
+Fortunately, the "info" pointer is never NULL so the check can be
+removed.
 
-Alternatively, we could add a check in libbpf and either reject the
-call, or just call dup() before passing the fd to the kernel.
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ net/ethtool/linkinfo.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Right now it's quite trivial to get a BPF program ref with fd0 - all you
-have to do is open a BPF program is the first thing you do after closing
-stdin (like a daemon might). I'd really rather not have to help anyone
-debug that...
-
--Toke
+diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
+index 677068deb68c0..5eaf173eaaca5 100644
+--- a/net/ethtool/linkinfo.c
++++ b/net/ethtool/linkinfo.c
+@@ -140,8 +140,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
+ 	if (ret < 0) {
+-		if (info)
+-			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
++		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+ 		goto out_ops;
+ 	}
+ 	lsettings = &ksettings.base;
+-- 
+2.26.2
 
