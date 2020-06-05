@@ -2,102 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56EB31EF7E6
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D631EF806
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgFEM3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 08:29:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57452 "EHLO mail.kernel.org"
+        id S1726953AbgFEMb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:31:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40140 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726939AbgFEMZq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:25:46 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F17072075B;
-        Fri,  5 Jun 2020 12:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591359945;
-        bh=pLoF6CctGEQJ++vNC1sEPzcqQMNSpnwUdvyBSVNNa/A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=viD7xH2llsmyz3vCEfzjxxucc9KKYU3dixjNeBDFKWKNPbaCZYRUVCjb1SEES2SVJ
-         cqwKfi6ckI8BRSM7MOxUeDhHpic765XX4gfsxGddDrTx8sROe/102bWh5KakRbxCiw
-         fsFUwOEfgedxEPQI+hoSpNEgSAH8dPkV5z40zISY=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 04/14] net: stmmac: enable timestamp snapshot for required PTP packets in dwmac v5.10a
-Date:   Fri,  5 Jun 2020 08:25:30 -0400
-Message-Id: <20200605122540.2882539-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200605122540.2882539-1-sashal@kernel.org>
-References: <20200605122540.2882539-1-sashal@kernel.org>
+        id S1726727AbgFEMb4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 08:31:56 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4E8B5ABCF;
+        Fri,  5 Jun 2020 12:31:58 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 6AF5C60302; Fri,  5 Jun 2020 14:31:54 +0200 (CEST)
+Date:   Fri, 5 Jun 2020 14:31:54 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] ethtool: linkinfo: remove an unnecessary NULL check
+Message-ID: <20200605123154.vwhlbnqthvtciauj@lion.mk-sys.cz>
+References: <20200605110413.GF978434@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uhia6p2wxxyz4zql"
+Content-Disposition: inline
+In-Reply-To: <20200605110413.GF978434@mwanda>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
 
-[ Upstream commit f2fb6b6275eba9d312957ca44c487bd780da6169 ]
+--uhia6p2wxxyz4zql
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-For rx filter 'HWTSTAMP_FILTER_PTP_V2_EVENT', it should be
-PTP v2/802.AS1, any layer, any kind of event packet, but HW only
-take timestamp snapshot for below PTP message: sync, Pdelay_req,
-Pdelay_resp.
+On Fri, Jun 05, 2020 at 02:04:13PM +0300, Dan Carpenter wrote:
+> This code generates a Smatch warning:
+>=20
+>     net/ethtool/linkinfo.c:143 ethnl_set_linkinfo()
+>     warn: variable dereferenced before check 'info' (see line 119)
+>=20
+> Fortunately, the "info" pointer is never NULL so the check can be
+> removed.
+>=20
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Then it causes below issue when test E2E case:
-ptp4l[2479.534]: port 1: received DELAY_REQ without timestamp
-ptp4l[2481.423]: port 1: received DELAY_REQ without timestamp
-ptp4l[2481.758]: port 1: received DELAY_REQ without timestamp
-ptp4l[2483.524]: port 1: received DELAY_REQ without timestamp
-ptp4l[2484.233]: port 1: received DELAY_REQ without timestamp
-ptp4l[2485.750]: port 1: received DELAY_REQ without timestamp
-ptp4l[2486.888]: port 1: received DELAY_REQ without timestamp
-ptp4l[2487.265]: port 1: received DELAY_REQ without timestamp
-ptp4l[2487.316]: port 1: received DELAY_REQ without timestamp
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
-Timestamp snapshot dependency on register bits in received path:
-SNAPTYPSEL TSMSTRENA TSEVNTENA 	PTP_Messages
-01         x         0          SYNC, Follow_Up, Delay_Req,
-                                Delay_Resp, Pdelay_Req, Pdelay_Resp,
-                                Pdelay_Resp_Follow_Up
-01         0         1          SYNC, Pdelay_Req, Pdelay_Resp
+The same useless check is also in ethnl_set_linkmodes(), I'll send
+a patch for that one.
 
-For dwmac v5.10a, enabling all events by setting register
-DWC_EQOS_TIME_STAMPING[SNAPTYPSEL] to 2’b01, clearing bit [TSEVNTENA]
-to 0’b0, which can support all required events.
+Michal
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> ---
+>  net/ethtool/linkinfo.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
+> index 677068deb68c0..5eaf173eaaca5 100644
+> --- a/net/ethtool/linkinfo.c
+> +++ b/net/ethtool/linkinfo.c
+> @@ -140,8 +140,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct ge=
+nl_info *info)
+> =20
+>  	ret =3D __ethtool_get_link_ksettings(dev, &ksettings);
+>  	if (ret < 0) {
+> -		if (info)
+> -			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+> +		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+>  		goto out_ops;
+>  	}
+>  	lsettings =3D &ksettings.base;
+> --=20
+> 2.26.2
+>=20
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 1623516efb17..982be75fde83 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -630,7 +630,8 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- 			config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
- 			ptp_v2 = PTP_TCR_TSVER2ENA;
- 			snap_type_sel = PTP_TCR_SNAPTYPSEL_1;
--			ts_event_en = PTP_TCR_TSEVNTENA;
-+			if (priv->synopsys_id != DWMAC_CORE_5_10)
-+				ts_event_en = PTP_TCR_TSEVNTENA;
- 			ptp_over_ipv4_udp = PTP_TCR_TSIPV4ENA;
- 			ptp_over_ipv6_udp = PTP_TCR_TSIPV6ENA;
- 			ptp_over_ethernet = PTP_TCR_TSIPENA;
--- 
-2.25.1
+--uhia6p2wxxyz4zql
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl7aOzMACgkQ538sG/LR
+dpWtJAgAg7nxLCgCxy8aVU/plaBV1h4dISFI4ZZPMCIrk57iyqIOcw+uqYarz3+6
+ngBikC4JL4Z2hBKEjTegiKs9KpfQlvJdAR5sqRjgp1oboPcT61tz0wPM9xEKy1EN
+cT8MOWzwkickK7wOE8wxGbI+uHuG0rIjL6vS6cUk2gxdH13Wa1K4oVtlOUcZOSj/
+qMCr2FK0l4ESQGr/JI1lzCGYv1KH9cklysr7tvXftATpuXglL/4I4Hb8o85iPYCM
+XGMxZ4UnqdcaYEo0aj4xBK3GYKX1kAU2KpUKjR/Xtu8xPB0Ztdtvz99tBM1+KLfR
+1FB22+DQ/Vrcp6aQ3el6MaRaxHAiJA==
+=oOVc
+-----END PGP SIGNATURE-----
+
+--uhia6p2wxxyz4zql--
