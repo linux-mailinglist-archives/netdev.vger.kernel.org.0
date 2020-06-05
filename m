@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DBB01EF3DC
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 11:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D2581EF3E6
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 11:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgFEJRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 05:17:16 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:45250 "EHLO a.mx.secunet.com"
+        id S1726293AbgFEJTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 05:19:04 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:29903 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726177AbgFEJRP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 05:17:15 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 470602052E;
-        Fri,  5 Jun 2020 11:17:14 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id G759m0awl_Pp; Fri,  5 Jun 2020 11:17:13 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726259AbgFEJTD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 05:19:03 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1591348742; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=rOuMTfuZSakOmsFGGhwcSiyz0vHtYC8PrlCFy1ZsKyw=; b=DTOvJycemhf2lpqbKqPS30Tdi8D0mzg8mUQ3qPGj/shCE89vaX6xwzc4+WwMRPe7a3JqHV2S
+ Yr/fpduM0FPioQf1HZgwloPhRZSBEPtuMOBHNg/KH4A00zY7N+nEWx41mKSSE+VEMhNYWT0P
+ qgyaBNm4XQY/WYr2Pu4mNxfDYVg=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
+ 5eda0df6c0031c71c2438ccf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 05 Jun 2020 09:18:46
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1EAEEC433B2; Fri,  5 Jun 2020 09:18:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 137AD2051F;
-        Fri,  5 Jun 2020 11:17:13 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 5 Jun 2020 11:17:12 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 5 Jun 2020
- 11:17:12 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 3EB9D31801FA; Fri,  5 Jun 2020 11:17:12 +0200 (CEST)
-Date:   Fri, 5 Jun 2020 11:17:12 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Huy Nguyen <huyn@mellanox.com>
-CC:     <davem@davemloft.net>, <saeedm@mellanox.com>,
-        <borisp@mellanox.com>, <raeds@mellanox.com>,
-        <netdev@vger.kernel.org>, <huyn@nvidia.com>
-Subject: Re: [PATCH] xfrm: Fix double ESP trailer insertion in IPsec crypto
- offload.
-Message-ID: <20200605091712.GC19286@gauss3.secunet.de>
-References: <6d0d27dceb774236d79d16e44a3b9406ac8a767b.camel@mellanox.com>
- <1591047577-18113-1-git-send-email-huyn@mellanox.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B846EC43387;
+        Fri,  5 Jun 2020 09:18:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B846EC43387
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mm@kvack.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 04/10] rtlwifi: rtl8192cu: Remove uninitialized_var() usage
+References: <20200603233203.1695403-1-keescook@chromium.org>
+        <20200603233203.1695403-5-keescook@chromium.org>
+Date:   Fri, 05 Jun 2020 12:18:22 +0300
+In-Reply-To: <20200603233203.1695403-5-keescook@chromium.org> (Kees Cook's
+        message of "Wed, 3 Jun 2020 16:31:57 -0700")
+Message-ID: <87h7vpg9b5.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1591047577-18113-1-git-send-email-huyn@mellanox.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 01, 2020 at 04:39:37PM -0500, Huy Nguyen wrote:
-> During IPsec performance testing, we see bad ICMP checksum. The error packet
-> has duplicated ESP trailer due to double validate_xmit_xfrm calls. The first call
-> is from ip_output, but the packet cannot be sent because
-> netif_xmit_frozen_or_stopped is true and the packet gets dev_requeue_skb. The second
-> call is from NET_TX softirq. However after the first call, the packet already
-> has the ESP trailer.
-> 
-> Fix by marking the skb with XFRM_XMIT bit after the packet is handled by
-> validate_xmit_xfrm to avoid duplicate ESP trailer insertion.
-> 
-> Fixes: f6e27114a60a ("net: Add a xfrm validate function to validate_xmit_skb")
-> Signed-off-by: Huy Nguyen <huyn@mellanox.com>
-> Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-> Reviewed-by: Raed Salem <raeds@mellanox.com>
-> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+Kees Cook <keescook@chromium.org> writes:
 
-Applied, thanks a lot!
+> Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> (or can in the future), and suppresses unrelated compiler warnings (e.g.
+> "unused variable"). If the compiler thinks it is uninitialized, either
+> simply initialize the variable or make compiler changes. As a precursor
+> to removing[2] this[3] macro[4], just initialize this variable to NULL,
+> and avoid sending garbage by returning.
+>
+> [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+
+To which tree should this go? If something else than wireless-drivers
+tree:
+
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+
+But let me know if you want me to take this.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
