@@ -2,116 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B891EF09C
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 06:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686801EF0B7
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 06:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726039AbgFEEfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 00:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725280AbgFEEfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 00:35:22 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81ECC08C5C0;
-        Thu,  4 Jun 2020 21:35:21 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x207so4339720pfc.5;
-        Thu, 04 Jun 2020 21:35:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S8fxU/b+hS/02z8/Fi2fuN6b1XahhU46dgpE3JjTWdw=;
-        b=q6LUs1q43BaRPunaLR8cgeHcbOGvNDJTVTrG51Opr4lczr9I0UPNqUh+yfyjOllRPq
-         RL4e5MTJK6HcM2nW0LM9gu6ItiUChLizx9KGWKiWTCWEWBOU4wAUE7siXDe0uWkHMqlf
-         Py11lfZZ8S8Fh1Vpwt2pU2mkQYmBXzKfyYdDFhXSp4ynjyybtXe/4ap409iZQYp3z53O
-         J9gBWctlYraiNpj9PAM2Qfs60Rfj0iItPwcJsU8kdYccQyMKNLeQi/K7zbEoV6HdR+gz
-         hzhFXM/5hkisv9pQgEZMrvxWh2iYms4KiNYgoBVkdSv34efvB66KHnJAP/Uvn/VMTD97
-         bQOg==
+        id S1726054AbgFEEwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 00:52:50 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54032 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725280AbgFEEwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 00:52:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id l26so7159910wme.3
+        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 21:52:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S8fxU/b+hS/02z8/Fi2fuN6b1XahhU46dgpE3JjTWdw=;
-        b=WhllyytVdBzS9ndbKofhmV0U6A6c5gfQvDxU6Z9tJ/3G1AfnIrnuphAyQ8xYw86oDp
-         RYPSKyukv3g1SrTsUVZhGK1MVIiWOCZ0jatHA9aaEtDaDLC7h2D04I1IZK4G3YeiU/uV
-         v9TZjueimMQtCQ7i7CDmerZ79Gr7KPDCVvKZiWDVCyrweVzh9rJW6MuoZ2fqeJvNS62t
-         eZwVj2946rChyXtg0xrAmKCGQbs0GU/8dXjFsskdyYIP2klvBQLwGZalAXF56xnVf1xk
-         siZCBw7foYBeNjPMgq4t+nfd1ZcrqPMbsyCnBqaIFYFO1s5R2CghLk4cCrNzz3zHKVnj
-         BOBQ==
-X-Gm-Message-State: AOAM532TfsESDuWhwGIZJZQbYOgDwntvpw6ry/Fs9lWVnN/u6+2UsWSW
-        zaKqUOjtwyhMRS7m/mrZtY0=
-X-Google-Smtp-Source: ABdhPJz8uwa3sOcOIG/9w7ggQ81aRt+bkWfd4oIdqdxA+yK9iwkxvGbH/fFLYOFcwbq6y49nPIHBAQ==
-X-Received: by 2002:a63:4182:: with SMTP id o124mr7518049pga.195.1591331721105;
-        Thu, 04 Jun 2020 21:35:21 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3d39])
-        by smtp.gmail.com with ESMTPSA id x2sm5936850pfj.142.2020.06.04.21.35.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 21:35:20 -0700 (PDT)
-Date:   Thu, 4 Jun 2020 21:35:17 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net
-Subject: Re: [PATCH bpf v2] bpf: increase {get,set}sockopt optval size limit
-Message-ID: <20200605043517.cupb77gzytqhanyk@ast-mbp.dhcp.thefacebook.com>
-References: <20200605002155.93267-1-sdf@google.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=/a3q9oJ/+Q5ffliIOcEjfwRPLXfx4yLmntpdJIKRnC4=;
+        b=DxkcHfSFJPtTIBddqFv1QTqU8vM7gD/grkSjI9HCrV2Em65aG4gqJCzVD41O5DFoKt
+         9aISTZNPtJScZLna5yFdiajuwnWaw/8d//HOFccKDVBxwuf5ELd9aJuaHbfCR8yi2r8X
+         Hmttkos4kA0qhw0M2PmnZmiej2kJ5Jb5+AUNlqHWgOTaJBuRp4S/Gtaq/u40tsWXjQtF
+         DKFCack5DTVdKRO4vZaeTbSVps93Mdgd3kRDkTfWiCxFhA/MzofZCvyQ/+O4RbEs/ul5
+         RH4SsmQu/pOtIUtvdhosdFYHvDAfb9MhXxCkY5vjDL/7SFryM8a20KLFTZSu7rs7A+uj
+         QdbA==
+X-Gm-Message-State: AOAM530anbHpMoQoQCkxFIAB2tdbDQFSHZ2CgQQo+7yu7L0cDXMXXjbC
+        BbBgss6e3lAjsJ5Z9cmdbak=
+X-Google-Smtp-Source: ABdhPJxL2wzHvBMIKeVYvp/inGbD214wjZJ77k/7XpRXOkQtHc28x63owtZ3kXJ6ECGE3zOMfq7FqA==
+X-Received: by 2002:a1c:e914:: with SMTP id q20mr698002wmc.145.1591332768428;
+        Thu, 04 Jun 2020 21:52:48 -0700 (PDT)
+Received: from ?IPv6:2a02:21b0:9002:414a:d51e:6f07:7e6f:fcfa? ([2a02:21b0:9002:414a:d51e:6f07:7e6f:fcfa])
+        by smtp.gmail.com with ESMTPSA id z12sm11454807wrg.9.2020.06.04.21.52.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Jun 2020 21:52:47 -0700 (PDT)
+Reply-To: valentin@longchamp.me
+Subject: Re: [PATCH] net: sched: make the watchdog functions more coherent
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com
+References: <20200603212113.11801-1-valentin@longchamp.me>
+ <20200604.155512.1355727491425437227.davem@davemloft.net>
+From:   Valentin Longchamp <valentin@longchamp.me>
+Message-ID: <24d3d43f-8b69-c4e1-9c42-89202705c542@longchamp.me>
+Date:   Fri, 5 Jun 2020 06:52:47 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200605002155.93267-1-sdf@google.com>
+In-Reply-To: <20200604.155512.1355727491425437227.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 05:21:55PM -0700, Stanislav Fomichev wrote:
-> Attaching to these hooks can break iptables because its optval is
-> usually quite big, or at least bigger than the current PAGE_SIZE limit.
+Le 05.06.2020 à 00:55, David Miller a écrit :
+> From: Valentin Longchamp <valentin@longchamp.me>
+> Date: Wed,  3 Jun 2020 23:21:13 +0200
 > 
-> There are two possible ways to fix it:
-> 1. Increase the limit to match iptables max optval.
-> 2. Implement some way to bypass the value if it's too big and trigger
->    BPF only with level/optname so BPF can still decide whether
->    to allow/deny big sockopts.
+>> Remove dev_watchdog_up() that directly called __netdev_watchdog_up() and
+>> rename dev_watchdog_down() to __netdev_watchdog_down() for symmetry.
+>>
+>> Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+>> ---
+>>   net/sched/sch_generic.c | 11 +++--------
+>>   1 file changed, 3 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>> index 2efd5b61acef..f3cb740a2941 100644
+>> --- a/net/sched/sch_generic.c
+>> +++ b/net/sched/sch_generic.c
+>> @@ -465,12 +465,7 @@ void __netdev_watchdog_up(struct net_device *dev)
+>>   	}
+>>   }
+>>   
+>> -static void dev_watchdog_up(struct net_device *dev)
+>> -{
+>> -	__netdev_watchdog_up(dev);
+>> -}
+>> -
+>> -static void dev_watchdog_down(struct net_device *dev)
+>> +static void __netdev_watchdog_down(struct net_device *dev)
 > 
-> I went with #1 which means we are potentially increasing the
-> amount of data we copy from the userspace from PAGE_SIZE to 512M.
+> This patch will not apply if I apply your symbol export patch because
+> the context above this function will be different.
 > 
-> v2:
-> * proper comments formatting (Jakub Kicinski)
+> Please don't do this.
 > 
-> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  kernel/bpf/cgroup.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index fdf7836750a3..fb786b0f0f88 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -1276,7 +1276,14 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
->  
->  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
->  {
-> -	if (unlikely(max_optlen > PAGE_SIZE) || max_optlen < 0)
-> +	/* The user with the largest known setsockopt optvals is iptables.
-> +	 * Allocate enough space to accommodate it.
-> +	 *
-> +	 * See XT_MAX_TABLE_SIZE and sizeof(struct ipt_replace).
-> +	 */
-> +	const int max_supported_optlen = 512 * 1024 * 1024 + 128;
 
-looks like arbitrary number. Why did you pick this one?
-Also it won't work with kzalloc() below.
-May be trim it to some number instead of hard failing ?
-bpf prog cannot really examine more than few kbytes.
+Yeah, I didn't know how to handle this properly: I kept both patches 
+separated because the symbol export should go to stable and this one not.
 
-> +
-> +	if (unlikely(max_optlen > max_supported_optlen) || max_optlen < 0)
->  		return -EINVAL;
->  
->  	ctx->optval = kzalloc(max_optlen, GFP_USER);
-> -- 
-> 2.27.0.278.ge193c7cf3a9-goog
-> 
+Is that OK to have only a ("initial") subset of a series aimed for stable ?
