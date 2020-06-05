@@ -2,151 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D91841F0138
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 22:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8511F013C
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 22:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgFEUuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 16:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728170AbgFEUuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 16:50:23 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0525FC08C5C3
-        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 13:50:22 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id j1so5356156pfe.4
-        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 13:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nOiKknFW8NZXsdzDqOG6mcYAn5/jYpz6ewpTk+cA3EU=;
-        b=dfwQ7fK2Xky7i0j86o9Lh3WLEhaSimawUnAPO83BlEeX3Ub6v3sq67ZLvBVxJHD3vP
-         BxHfnJCIXhewm5tjT3dmjJZOEExpl0d0SdQH93CanTMt43MM+S7qQvkOytNlhWp8oISy
-         1KwcRIbn4xMkCiB8szpJGuAeGKNR/Q4fi2qFk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nOiKknFW8NZXsdzDqOG6mcYAn5/jYpz6ewpTk+cA3EU=;
-        b=iuRW/1I555Ut5TMYflIQbJEtPsM9TMW0Xw/LbvS/fInVihhCOmLmUq59VqFYMLQW8n
-         +BSqUKdbge91vRS2y9z0iBXJMsbmp9O0hwbst1VUex5kHxRza0fmbGSy6yHPrwmRxt4A
-         pyRbAwUWxKTIiweZgSKPn+LjpFWDiv6pzCuFJ/N+ZqXol1iFKx8o33p6bp2hq8LARb1U
-         7QSLrYoXpse1QItaEo3R7OgcDEoCJ39shXwA051qmOtrk4bq/QKjTYtFvEZqRCltPd7x
-         I8KTuTF8LWgjELWrJ1edQ4Kt8RISvLtlPLcBheGwOboFgrtzHYZbAdIwaQCJunSZkDji
-         i84g==
-X-Gm-Message-State: AOAM532BFUKJGFmCDkPa3clm3lcRt5OW7DidF8r3w9hCDc31wB6M3rfc
-        xRMWcMMcfU3/H1ygOwB/+VagAA==
-X-Google-Smtp-Source: ABdhPJwkvhK/NCswQ2V0KmJYDz4etb37wiRdKTHEc7kLc+BeGNkI0CMyUBfbt6cb0bbVGeuLoC50/g==
-X-Received: by 2002:a63:658:: with SMTP id 85mr10808736pgg.181.1591390222418;
-        Fri, 05 Jun 2020 13:50:22 -0700 (PDT)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id 63sm445152pfd.65.2020.06.05.13.50.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2020 13:50:21 -0700 (PDT)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
-Cc:     len.brown@intel.com, chromeos-bluetooth-upstreaming@chromium.org,
-        linux-pm@vger.kernel.org, rafael@kernel.org,
-        todd.e.brandt@linux.intel.com, rui.zhang@intel.com,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v3] Bluetooth: Allow suspend even when preparation has failed
-Date:   Fri,  5 Jun 2020 13:50:15 -0700
-Message-Id: <20200605135009.v3.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
-X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
+        id S1728201AbgFEUvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 16:51:24 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33452 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726154AbgFEUvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 16:51:23 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 055KpBnl035088;
+        Fri, 5 Jun 2020 15:51:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1591390271;
+        bh=jUzHNLbPf81riWeo8eVPKgNd4GT0yaOWof+Kk6oh2ds=;
+        h=From:To:CC:Subject:Date;
+        b=ilwZxlO9voUaOt9E7uJLygZCrEXd+dXc5SpSXm/M1pLNnXk++FwaJHaflq6fRh6BN
+         KiH/hfVoVFBVaj48GCiA6IXAGbmyXgJtCn6F7aafBdjrDy+vYj5VBhb5CZO2V3Y/TV
+         VyEqgpJTbdOfCxIRlhRlHaYbwPjp2Xg25MugSQFs=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 055KpBx6016456
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 5 Jun 2020 15:51:11 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 5 Jun
+ 2020 15:51:09 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 5 Jun 2020 15:51:09 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 055Kp9BC033433;
+        Fri, 5 Jun 2020 15:51:09 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net] net: dp83869: Reset return variable if PHY strap is read
+Date:   Fri, 5 Jun 2020 15:51:03 -0500
+Message-ID: <20200605205103.29663-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is preferable to allow suspend even when Bluetooth has problems
-preparing for sleep. When Bluetooth fails to finish preparing for
-suspend, log the error and allow the suspend notifier to continue
-instead.
+When the PHY's strap register is read to determine if lane swapping is
+needed the phy_read_mmd returns the value back into the ret variable.
 
-To also make it clearer why suspend failed, change bt_dev_dbg to
-bt_dev_err when handling the suspend timeout.
+If the call to read the strap fails the failed value is returned.  If
+the call to read the strap is successful then ret is possibly set to a
+non-zero positive number. Without reseting the ret value to 0 this will
+cause the parse DT function to return a failure.
 
-Fixes: dd522a7429b07e ("Bluetooth: Handle LE devices during suspend")
-Reported-by: Len Brown <len.brown@intel.com>
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Fixes: c4566aec6e808 ("net: phy: dp83869: Update port-mirroring to read straps")
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
-To verify this is properly working, I added an additional change to
-hci_suspend_wait_event to always return -16. This validates that suspend
-continues even when an error has occurred during the suspend
-preparation.
+ drivers/net/phy/dp83869.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Example on Chromebook:
-[   55.834524] PM: Syncing filesystems ... done.
-[   55.841930] PM: Preparing system for sleep (s2idle)
-[   55.940492] Bluetooth: hci_core.c:hci_suspend_notifier() hci0: Suspend notifier action (3) failed: -16
-[   55.940497] Freezing user space processes ... (elapsed 0.001 seconds) done.
-[   55.941692] OOM killer disabled.
-[   55.941693] Freezing remaining freezable tasks ... (elapsed 0.000 seconds) done.
-[   55.942632] PM: Suspending system (s2idle)
-
-I ran this through a suspend_stress_test in the following scenarios:
-* Peer classic device connected: 50+ suspends
-* No devices connected: 100 suspends
-* With the above test case returning -EBUSY: 50 suspends
-
-I also ran this through our automated testing for suspend and wake on
-BT from suspend continues to work.
-
-
-Changes in v3:
-- Changed printf format for unsigned long
-
-Changes in v2:
-- Added fixes and reported-by tags
-
- net/bluetooth/hci_core.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index dbe2d79f233fba..83ce665d3cbfb0 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3289,10 +3289,10 @@ static int hci_suspend_wait_event(struct hci_dev *hdev)
- 				     WAKE_COND, SUSPEND_NOTIFIER_TIMEOUT);
- 
- 	if (ret == 0) {
--		bt_dev_dbg(hdev, "Timed out waiting for suspend");
-+		bt_dev_err(hdev, "Timed out waiting for suspend events");
- 		for (i = 0; i < __SUSPEND_NUM_TASKS; ++i) {
- 			if (test_bit(i, hdev->suspend_tasks))
--				bt_dev_dbg(hdev, "Bit %d is set", i);
-+				bt_dev_err(hdev, "Suspend timeout bit: %d", i);
- 			clear_bit(i, hdev->suspend_tasks);
- 		}
- 
-@@ -3360,12 +3360,15 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 		ret = hci_change_suspend_state(hdev, BT_RUNNING);
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index df85ae5b79e4..53ed3abc26c9 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -218,10 +218,13 @@ static int dp83869_of_init(struct phy_device *phydev)
+ 		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
+ 		if (ret < 0)
+ 			return ret;
++
+ 		if (ret & DP83869_STRAP_MIRROR_ENABLED)
+ 			dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
+ 		else
+ 			dp83869->port_mirroring = DP83869_PORT_MIRRORING_DIS;
++
++		ret = 0;
  	}
  
--	/* If suspend failed, restore it to running */
--	if (ret && action == PM_SUSPEND_PREPARE)
--		hci_change_suspend_state(hdev, BT_RUNNING);
--
- done:
--	return ret ? notifier_from_errno(-EBUSY) : NOTIFY_STOP;
-+	/* We always allow suspend even if suspend preparation failed and
-+	 * attempt to recover in resume.
-+	 */
-+	if (ret)
-+		bt_dev_err(hdev, "Suspend notifier action (%lu) failed: %d",
-+			   action, ret);
-+
-+	return NOTIFY_STOP;
- }
- 
- /* Alloc HCI device */
+ 	if (of_property_read_u32(of_node, "rx-fifo-depth",
 -- 
-2.27.0.278.ge193c7cf3a9-goog
+2.26.2
 
