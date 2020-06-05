@@ -2,121 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC6E1EF405
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 11:25:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106CC1EF49B
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 11:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbgFEJZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 05:25:38 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:26584 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726217AbgFEJZh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 05:25:37 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1591349136; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=4DMYxLsLHIEhVdnqccTaMZxujDa7ILXa6vhA3dmslLM=; b=SvjBYyWJ9LA/5JwxYqsiFGlS2pSwhnfSAK6QmLGk1Ni3pmlqDB7HDzDhpZtjy1zFwQYTbtYZ
- /TXRGWqiWNo1+jJnyS5uUB+iRl9qJGHYwwuG3HNQ2YJHqMku/t1gNQR7epLH1ppZgrIyZDKP
- XniV6AQiye28RFrPD/IFpSduQfU=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5eda0f792738686126653d56 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 05 Jun 2020 09:25:13
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 3E72CC433A0; Fri,  5 Jun 2020 09:25:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EA82AC433C6;
-        Fri,  5 Jun 2020 09:25:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EA82AC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-mm@kvack.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 09/10] treewide: Remove uninitialized_var() usage
-References: <20200603233203.1695403-1-keescook@chromium.org>
-        <20200603233203.1695403-10-keescook@chromium.org>
-Date:   Fri, 05 Jun 2020 12:25:05 +0300
-In-Reply-To: <20200603233203.1695403-10-keescook@chromium.org> (Kees Cook's
-        message of "Wed, 3 Jun 2020 16:32:02 -0700")
-Message-ID: <878sh1g8zy.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1726324AbgFEJt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 05:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbgFEJt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 05:49:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9D8C08C5C2
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 02:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=jsZILS7s/QI6lfvYAG4qWMoUES37ftZyNlT7z9dOv5o=; b=KdqhcsBRf9dmj+s5G5hJUNhLA
+        AGcxYfyMiEHyE/WH74rg5bYdytAv9L/GMcY1BST1D0cpB1YeCClQskCNlpdxehBR1FrQoI7U39443
+        X/xseXa7unCrnH1yXFiVrMPKjhX+ZdZ9PICZMe4fnk2/DPKs1Va99mkf+RzBF2d9JtA2leyKgRZUD
+        rWhLGu1cpPncHQ+lDv/P+XaJ9gfdLvnB4WNqOkO6719IA36EOkrgP07rQL/OJGoFzeD2pZ5O1e0CG
+        H2/YQ/3ZvysL9kfrkga8cVAuJTUKxjgMDrZU6X7FcRZJRVHBXfWZP9iukjm1+91ihqlhJ9g/rCCGw
+        POJCQSgwg==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:49640)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jh8yS-0001na-Ik; Fri, 05 Jun 2020 10:49:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jh8yM-0007MV-CG; Fri, 05 Jun 2020 10:49:10 +0100
+Date:   Fri, 5 Jun 2020 10:49:10 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Daniel =?iso-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] net: mvneta: only do WoL speed down if the PHY is valid
+Message-ID: <20200605094910.GI1551@shell.armlinux.org.uk>
+References: <3268996.Ej3Lftc7GC@tool>
+ <20200521151916.GC677363@lunn.ch>
+ <20200521152656.GU1551@shell.armlinux.org.uk>
+ <CABwr4_vdWWRBMXeK9uGLnuK++9uuM_FBygypv_2PhCRnsOEcEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABwr4_vdWWRBMXeK9uGLnuK++9uuM_FBygypv_2PhCRnsOEcEA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+On Thu, May 21, 2020 at 05:55:19PM +0200, Daniel González Cabanelas wrote:
+> Thanks for the comments.
+> 
+> I'll look for a better approach.
 
-> Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> (or can in the future), and suppresses unrelated compiler warnings
-> (e.g. "unused variable"). If the compiler thinks it is uninitialized,
-> either simply initialize the variable or make compiler changes.
->
-> I preparation for removing[2] the[3] macro[4], remove all remaining
-> needless uses with the following script:
->
-> git grep '\buninitialized_var\b' | cut -d: -f1 | sort -u | \
-> 	xargs perl -pi -e \
-> 		's/\buninitialized_var\(([^\)]+)\)/\1/g;
-> 		 s:\s*/\* (GCC be quiet|to make compiler happy) \*/$::g;'
->
-> drivers/video/fbdev/riva/riva_hw.c was manually tweaked to avoid
-> pathological white-space.
->
-> No outstanding warnings were found building allmodconfig with GCC 9.3.0
-> for x86_64, i386, arm64, arm, powerpc, powerpc64le, s390x, mips, sparc64,
-> alpha, and m68k.
->
-> [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
-> [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
-> [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
-> [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
->
-> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-[...]
+Hi Daniel,
 
->  drivers/net/wireless/ath/ath10k/core.c           |  2 +-
->  drivers/net/wireless/ath/ath6kl/init.c           |  2 +-
->  drivers/net/wireless/ath/ath9k/init.c            |  2 +-
->  drivers/net/wireless/broadcom/b43/debugfs.c      |  2 +-
->  drivers/net/wireless/broadcom/b43/dma.c          |  2 +-
->  drivers/net/wireless/broadcom/b43/lo.c           |  2 +-
->  drivers/net/wireless/broadcom/b43/phy_n.c        |  2 +-
->  drivers/net/wireless/broadcom/b43/xmit.c         | 12 ++++++------
->  .../net/wireless/broadcom/b43legacy/debugfs.c    |  2 +-
->  drivers/net/wireless/broadcom/b43legacy/main.c   |  2 +-
->  drivers/net/wireless/intel/iwlegacy/3945.c       |  2 +-
->  drivers/net/wireless/intel/iwlegacy/4965-mac.c   |  2 +-
->  .../net/wireless/realtek/rtlwifi/rtl8192cu/hw.c  |  4 ++--
+I've just pushed out phylink a patch adding this functionality. I'm
+intending to submit it when net-next re-opens. See:
 
-For wireless drivers:
-
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+http://git.armlinux.org.uk/cgit/linux-arm.git/patch/?id=58c81223e17e39433895cfaf3dbf401134334779
 
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
