@@ -2,154 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5EBF1EF155
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 08:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E761EF168
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 08:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbgFEG0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 02:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726024AbgFEG0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 02:26:20 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973B8C08C5C2;
-        Thu,  4 Jun 2020 23:26:17 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id a45so2973582pje.1;
-        Thu, 04 Jun 2020 23:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=IRof0b1rFrwWWRJN8qOBPwgfMe6X5AOkvuliLGw1Vsc=;
-        b=Bpjpe/8wXy/86s9EMI49DGRC48mS4AsGUndLn4M2QmXE/p6pyfOWJ2xokWLZru/Zxl
-         RV9DgGKCKrzwwwqI/VwiiNCq0vhUvkLFOrJk6rnJBRzGNph8bZRdYx8PV9xj92ogaKTW
-         3LzZiYdJ56SHYaIn46r4y+HjeWsJ9SRMKEYi3zDIEqh71uHsNDKNPLMywngZhfO2Pizg
-         4O3pjuVx75qVFNru/BebhxPOYb8CVgWq1ZEQpLBrlkaci3eb3s5N4DOG8mPOm5FTP7tK
-         an2NKelMynAJEt17swvuotgmpS08qzgO/hk/UNYMph3TtoyRjVk3nYD2wmuHYjVokgpe
-         fNoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=IRof0b1rFrwWWRJN8qOBPwgfMe6X5AOkvuliLGw1Vsc=;
-        b=dZrrRi1vVVN23U/x+tjC3M5yqAsjbsUiwYW+6sOf8Pxw8ocWt6pILJiTVVveD1vRX0
-         aGH5Ncr+X2kS1eTVzw2Nsxn1PbdY6jv6qencAW8NWI9Jd9tc9ZVCheZQmu7E+6ogBYic
-         9j4XAr9poPr772hWNB1MYfsIw/fRLs97aPsT+Ys3mOmG4MniwV06LBDbbSdG2Ldhpr8l
-         cI5BK2WVsm0SRsqQroqDJi5r46JR/Ls6TGyZKlRpiRS1J6M2og732rPHLm5FIpIeCkas
-         +2IaluwAspPTVy4p4C8+HbuJ7uRWYJ10mbYdyyIwIJtYpnYkagMTZIqL07i5ARZdtanF
-         8tvA==
-X-Gm-Message-State: AOAM533p/QRgcrKcFoX1g0jVrY4COc2pi/N8vSQhxXoYb9ZUvWvt3F5E
-        vaRgAEGcb6k1ewEBiwP9J+A=
-X-Google-Smtp-Source: ABdhPJyZ7wEAW9kU4s+T6lyF/Are+J1ZDJ6DeV43NRnom9K8PcISpZOuCuz6luwDSQPACrUchs3Gug==
-X-Received: by 2002:a17:90a:d104:: with SMTP id l4mr1229681pju.25.1591338377072;
-        Thu, 04 Jun 2020 23:26:17 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u128sm1852679pfu.148.2020.06.04.23.26.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 23:26:16 -0700 (PDT)
-Date:   Fri, 5 Jun 2020 14:26:06 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200605062606.GO102436@dhcp-12-153.nay.redhat.com>
-References: <20200526140539.4103528-1-liuhangbin@gmail.com>
- <87zh9t1xvh.fsf@toke.dk>
- <20200603024054.GK102436@dhcp-12-153.nay.redhat.com>
- <87img8l893.fsf@toke.dk>
- <20200604040940.GL102436@dhcp-12-153.nay.redhat.com>
- <871rmvkvwn.fsf@toke.dk>
- <20200604121212.GM102436@dhcp-12-153.nay.redhat.com>
- <87bllzj9bw.fsf@toke.dk>
- <20200604144145.GN102436@dhcp-12-153.nay.redhat.com>
- <87d06ees41.fsf@toke.dk>
+        id S1726181AbgFEGgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 02:36:47 -0400
+Received: from mga17.intel.com ([192.55.52.151]:60820 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbgFEGgr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 02:36:47 -0400
+IronPort-SDR: d7ckQZGBK6ARJaOgyvemrRoVpiDkO+W5MIqqyYOgzMcxow9ri4sjMXwHf2yUg3PT/LSPEOWCX0
+ LcbomDW6UzwA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2020 23:36:46 -0700
+IronPort-SDR: TXA1OSg/gf9Ggbb0Lk1H5U2fuXPLgicKdO6MwxsvyNza6YhEaIienQNHlw5xRWF/CHBUgbBlBW
+ m2c1lmNyd7Yg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,475,1583222400"; 
+   d="scan'208";a="257950045"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by fmsmga007.fm.intel.com with ESMTP; 04 Jun 2020 23:36:46 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 4 Jun 2020 23:36:45 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 4 Jun 2020 23:36:45 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 4 Jun 2020 23:36:45 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 4 Jun 2020 23:36:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZF6IYp2VuNSNTIXQMCEZM2C9HaQm7XG8GKnaa9hcUohbTB65PFa875ql5O7VoOnOVowqS8DM3Syv2dmnhiAOzKqmuR3HOQ/63bMr2sxiOm28/qDhNivIz2mGvkIZ2exDfMs6zS1x0IWLZ9TO2//3KAPL5Rqg8QaMZ/r8CVM7igoZSPzkQ390PnpI2JDXNWcuTxpO1yB3rpFE37CJcnJuIAbfcgsRbNx/yHwaYoH2YWHMUGCv4cNB/oHAZxgKIPfZ+a2f+2hRDBucSduZulQK8Szh8lSY6fKQKYM+CFDDuVajVg42Hl65d0PET6TgrhU2ylyMFWAmrHhV6sYIVNp/YA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bt6igjb9YpZy4lfUbuKwdkSyqn2SH3AHUOe06JV9j50=;
+ b=Hsj2Vj50gzQOL/0cF515jxLwH68lHoone1Jyi7goXLioQjEWZj+p83leXreoaK27oTc7GAxQudEs+4DhOMDeeTUU7rlB8a8g6CtoCI9bwlGwV9XEaTes59gJCmbVacace8OqFJUL4fLWktIL6TX+JubWLFRJ+o8+VSKxHidfLPya52nJawYF6JPlJLRZtfe+Os075ZkEVBBXjnLWkc8/c/rzGRsKFMV16WoruOTJRi4BBvxpzqO4yNRQWa/9BkiKwBqaOfsnlZrDPj4ydbQ83f72CcE9IFxdX5p44TuRYhGoFFku+QroNrnzgoYjt8iWDdw+DwPY+HIrzmPheMoBpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bt6igjb9YpZy4lfUbuKwdkSyqn2SH3AHUOe06JV9j50=;
+ b=QYOVtlB1kArdwpay5raNnbRevJZEAuPEofdBRsqQkvaWwheUm9Wk+xdiwYZsR/pT/wxn6L9oepnPDitJAAj+YMrRCRa2L9FhUhQNxuSmfHLclnQiDYDnJgsnaNChko5FwaajzLF4D/9ugDYivQImSbg4EZPuQ8M2lyxA2Cxx7QQ=
+Received: from BN6PR11MB1939.namprd11.prod.outlook.com (2603:10b6:404:ff::18)
+ by BN6PR11MB1747.namprd11.prod.outlook.com (2603:10b6:404:102::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.19; Fri, 5 Jun
+ 2020 06:36:42 +0000
+Received: from BN6PR11MB1939.namprd11.prod.outlook.com
+ ([fe80::28d8:4c35:7dcb:4e20]) by BN6PR11MB1939.namprd11.prod.outlook.com
+ ([fe80::28d8:4c35:7dcb:4e20%6]) with mapi id 15.20.3066.019; Fri, 5 Jun 2020
+ 06:36:42 +0000
+From:   "Ooi, Joyce" <joyce.ooi@intel.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thor Thayer <thor.thayer@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "See, Chin Liang" <chin.liang.see@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Nguyen, Dinh" <dinh.nguyen@intel.com>,
+        "Westergreen, Dalon" <dalon.westergreen@intel.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
+        "Tan, Ley Foon" <ley.foon.tan@intel.com>
+Subject: RE: [PATCH v3 10/10] net: eth: altera: update devicetree bindings
+ documentation
+Thread-Topic: [PATCH v3 10/10] net: eth: altera: update devicetree bindings
+ documentation
+Thread-Index: AQHWOkLNBKZdtzZwnESIhu+vAPDAqqjJCPCAgAB7o1A=
+Date:   Fri, 5 Jun 2020 06:36:42 +0000
+Message-ID: <BN6PR11MB1939E6BAE4121A5D0340BAB0F2860@BN6PR11MB1939.namprd11.prod.outlook.com>
+References: <20200604073256.25702-1-joyce.ooi@intel.com>
+ <20200604073256.25702-11-joyce.ooi@intel.com>
+ <20200604222311.GA4151468@bogus>
+In-Reply-To: <20200604222311.GA4151468@bogus>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [42.189.134.147]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 83a29671-bb51-4d02-0cae-08d8091acf8f
+x-ms-traffictypediagnostic: BN6PR11MB1747:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR11MB1747C996D78838FED7B30D54F2860@BN6PR11MB1747.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 0425A67DEF
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Eu/gJaCoO9o41Hv1InbCbU2FB5lqDdU92QRTd4rpwJ+7ecMzB4CpiJuHbyYnREyunaArDgLFXC60fPQCKL5PRefmIyU6M97JKPEfTcn+ePGxGnEU5pUq2FyDMbXG5B0pB+fbtK5wBHZt8N+/XQy2pKATKZBDYr+A/UbXGG3AppUHvRHHQYe0vOyERunhHilEpsme60gAREuhd2B7GW2RomBG0UQ/qyLsC4tDrqcuLiNQFAQHt66rG3/GFb9kPpMCgBnP6aLwNlFPRoa6QcSLRflhPEtl7Gd2YTw65TnXEnGZMEZO2o29NzLaNaN3X4j+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB1939.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(136003)(39860400002)(376002)(366004)(396003)(4326008)(186003)(478600001)(6506007)(66946007)(26005)(33656002)(66476007)(15650500001)(2906002)(53546011)(5660300002)(83380400001)(52536014)(8676002)(316002)(54906003)(71200400001)(66556008)(55016002)(86362001)(64756008)(66446008)(6916009)(7696005)(8936002)(9686003)(76116006);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: MJIVCkqdjQSv9kwEJ9LWEfpJsrQWAleaU4/qAWr2llhRe0i9vgaoQ0AMXMQ6yXkO0IFXV+mukIAaujYfbqxAx/TQZ62gbyvtX/PJ+QUELGHXdU6Am43X2XzzkZCl4z0oNr9TQhv2B21fI/e4LFZraqwJd9WE+zARzFkof+BYy74ctgK/LNnSNMwTEGCsn4dC7045icx/youCZDZiTUzWgkZiINXoELTzzI0ZYAsxTRYTMYdoLx7LR/tgJZRwawlijLaBANfTAq32GJmojECYYG5J/9O61XfxZSBl6MRe4FIe82JLDCa/sa8+JK74VQzW4tsHHee3qMnP1+v4RiyAU052wglKbr5PAszHcfSqsxMrssUc/DM86bWurFPtHaMsN2H8nFiXh5pt/5KrmYN5/AU5qFP73fXbfJJRvMAyT4y6WlUc/jmxwoNN8gZK3h/Zf8bOe4wDH/7VHTsRJnKZ3p6J3uQa0XaLnyip+FWn9Bn+ehlwuuZJOO9W/9oRuVU8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87d06ees41.fsf@toke.dk>
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83a29671-bb51-4d02-0cae-08d8091acf8f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2020 06:36:42.7354
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9FTttcEEAZpE4goQU0wg0VmzHh7FjmoXWONT/LoRsJ4LA9pcCeArwikiq797wpGrslWXnBQ7lPvfgd5DM8YmzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1747
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 06:02:54PM +0200, Toke Høiland-Jørgensen wrote:
-> Hangbin Liu <liuhangbin@gmail.com> writes:
-> 
-> > On Thu, Jun 04, 2020 at 02:37:23PM +0200, Toke HÃƒÂ¸iland-JÃƒÂ¸rgensen wrote:
-> >> > Now I use the ethtool_stats.pl to count forwarding speed and here is the result:
-> >> >
-> >> > With kernel 5.7(ingress i40e, egress i40e)
-> >> > XDP:
-> >> > bridge: 1.8M PPS
-> >> > xdp_redirect_map:
-> >> >   generic mode: 1.9M PPS
-> >> >   driver mode: 10.4M PPS
-> >> 
-> >> Ah, now we're getting somewhere! :)
-> >> 
-> >> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
-> >> > bridge: 1.8M
-> >> > xdp_redirect_map:
-> >> >   generic mode: 1.86M PPS
-> >> >   driver mode: 10.17M PPS
-> >> 
-> >> Right, so this corresponds to a ~2ns overhead (10**9/10400000 -
-> >> 10**9/10170000). This is not too far from being in the noise, I suppose;
-> >> is the difference consistent?
+> -----Original Message-----
+> From: Rob Herring <robh@kernel.org>
+> Sent: Friday, June 5, 2020 6:23 AM
+> To: Ooi, Joyce <joyce.ooi@intel.com>
+> Cc: David S . Miller <davem@davemloft.net>; Jakub Kicinski
+> <kuba@kernel.org>; Thor Thayer <thor.thayer@linux.intel.com>;
+> netdev@vger.kernel.org; Rob Herring <robh+dt@kernel.org>; See, Chin
+> Liang <chin.liang.see@intel.com>; linux-kernel@vger.kernel.org; Nguyen,
+> Dinh <dinh.nguyen@intel.com>; Westergreen, Dalon
+> <dalon.westergreen@intel.com>; devicetree@vger.kernel.org; Dalon
+> Westergreen <dalon.westergreen@linux.intel.com>; Tan, Ley Foon
+> <ley.foon.tan@intel.com>
+> Subject: Re: [PATCH v3 10/10] net: eth: altera: update devicetree binding=
+s
+> documentation
+>=20
+> On Thu, 04 Jun 2020 15:32:56 +0800, Ooi, Joyce wrote:
+> > From: Dalon Westergreen <dalon.westergreen@intel.com>
 > >
-> > Sorry, I didn't get, what different consistent do you mean?
-> 
-> I meant, how much do the numbers vary between each test run?
+> > Update devicetree bindings documentation to include msgdma prefetcher
+> > and ptp bindings.
+> >
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > Cc: devicetree@vger.kernel.org
+> > Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
+> > Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
+> > ---
+> > v2: no change
+> > v3: no change
+> > ---
+> >  .../devicetree/bindings/net/altera_tse.txt         | 103
+> +++++++++++++++++----
+> >  1 file changed, 84 insertions(+), 19 deletions(-)
+> >
+>=20
+>=20
+> Please add Acked-by/Reviewed-by tags when posting new versions.
+> However, there's no need to repost patches *only* to add the tags. The
+> upstream maintainer will do that for acks received on the version they ap=
+ply.
+>=20
+> If a tag was not added on purpose, please state why and what changed.
 
-Oh, when run it at the same period, the number is stable, the range is about
-~0.05M PPS. But after a long time or reboot, the speed may changed a little.
-Here is the new test result after I reboot the system:
+Noted, will do that next time.
 
-Kernel 5.7 + my patch(ingress i40e, egress i40e)
-xdp_redirect_map:
-  generic mode: 1.9M PPS
-  driver mode: 10.2M PPS
-
-xdp_redirect_map_multi:
-  generic mode: 1.58M PPS
-  driver mode: 7.16M PPS
-
-Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(No XDP on peer))
-xdp_redirect_map:
-  generic mode: 2.2M PPS
-  driver mode: 14.2M PPS
-
-xdp_redirect_map_multi:
-  generic mode: 1.6M PPS
-  driver mode: 9.9M PPS
-
-Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(with XDP_DROP on peer))
-xdp_redirect_map:
-  generic mode: 1.6M PPS
-  driver mode: 13.6M PPS
-
-xdp_redirect_map_multi:
-  generic mode: 1.3M PPS
-  driver mode: 8.7M PPS
-
-Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(No XDP on peer))
-xdp_redirect_map_multi:
-  generic mode: 1.15M PPS
-  driver mode: 3.48M PPS
-
-Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(with XDP_DROP on peer))
-xdp_redirect_map_multi:
-  generic mode: 0.98M PPS
-  driver mode: 3.15M PPS
-
-This time the number looks more reasonable.
-
-Thanks
-Hangbin
