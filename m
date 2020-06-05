@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 466BB1EFE00
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 18:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 646941EFE02
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 18:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbgFEQaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 12:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
+        id S1728243AbgFEQaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 12:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbgFEQaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 12:30:03 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3558C08C5C2;
-        Fri,  5 Jun 2020 09:30:03 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id r10so5344001pgv.8;
-        Fri, 05 Jun 2020 09:30:03 -0700 (PDT)
+        with ESMTP id S1727887AbgFEQaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 12:30:14 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7863C08C5C2;
+        Fri,  5 Jun 2020 09:30:14 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id b16so5119946pfi.13;
+        Fri, 05 Jun 2020 09:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jp+khy4Vp8GGvY8bqZxPwhAW/ULre+6+z57jAzVL3Rw=;
-        b=GZyTh3aA/LcvC8yvPdlgRzqmKfPYtofKcQx/FQG4U827xjARIiLSFMXiZrw3i/aKKZ
-         3Me1m2ly3uuxLPHjGvX6TAd3stkgKgJYiQtzrwiWCR28XaNwvL6yCZqEQaA1fyQkoXs9
-         KPIJ+WUjqPeLRaU2axFDYD1+3NTV5Z0K+npNZwT5gJghRfsAcRXmqEze+wILLn8jVKKt
-         J1dCcP8sP69zrylG8lm/0TcSWf62GWQMKLEkS9ffO3SoxSmS8RxzS4d0VQ0CTuGkyjHG
-         vGqumUVhgHHXVuy2xgG6zPOA7Q8ImVFc3krlz/9YQYJOD+UawvzAQxWIP3QheMSkUTQh
-         zQkQ==
+        bh=yOY+RGQ0y8NLKWiTC9Vwmd3IeabzmeWUib2nuwEKtQY=;
+        b=ikKSZJTJ0fRqF55OzXDBeGk+ozI4yYISs2QJE+MyHK9OZerySw2NkPIl3WouPPqCFn
+         zHBM6tGtcPHj4p10MZ6qntjbfdi1wI/V8l809nuxg3uQ7ev+KDsCEUH+zZYSMSznaG4g
+         cF4BNUXjOks7vDt/oSgNwSSf14Z4oNaE7sHb2qyI5b+pUUPWnX474diGEn0hhevtJqaC
+         GMR7mYMVZoVnGPq5T1wicOLkxr9jcOyhX1bt4YdDFtTSCiXkVxqcisH0b1fn9mV61krI
+         Iprvljjj/vMCgkiBO7L/69PjE3H5it3dQ2UxL9gWBUJiqM5gz26rUwN5kZma8bB2UB4+
+         U4Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jp+khy4Vp8GGvY8bqZxPwhAW/ULre+6+z57jAzVL3Rw=;
-        b=nWdmA0ykaljvnniI//3lb262jYvaPe5jXb7LnxF+vvjjgVMMzsBYOkjh23oMMTfQ/S
-         OEVZR3ja48pciq93ZOmnYuceoCkuHQmdLtX0+YIfeoorimUZlwrUM40qt1hwtKLLOxPb
-         +s29KI8mGm0oEQqZUxxI5d3mbzLHW4E08/pXsOPQLfcVg2QjzXMlpzUvboigNajIpdpP
-         7MhkRHgQKrvK+ghhQjsGC8tbQ1819YOg+Y7Ko1dShvV/wvecu4QKbKF3b+LGGBT6g1R2
-         YoVO2eOQ7V+uv44hcUHTXZJ64ZH3OZDo/tNxC+rTKpx3PD73/G3q99y6Rr+RgxssDhok
-         TJMw==
-X-Gm-Message-State: AOAM530+eegs70H7dzRci7MuyDjlcTtTR5YEXriVz3ORDo+NoN1ttUWI
-        MGL5KSS+wxRxsimKROBV+2A=
-X-Google-Smtp-Source: ABdhPJzuqr4892KcwVWXDf3CTv6Q3Gu6P33N/sWh8wtfqRU3R4dkh7iKT1p8XGVoxwUux/mq3iNDiw==
-X-Received: by 2002:a63:6f04:: with SMTP id k4mr10390354pgc.313.1591374603313;
-        Fri, 05 Jun 2020 09:30:03 -0700 (PDT)
+        bh=yOY+RGQ0y8NLKWiTC9Vwmd3IeabzmeWUib2nuwEKtQY=;
+        b=NBWn0uLtiYXMQJOMFVqm94IW9NG6kjkKKN7Ldc24IxS6u6Qp33LNqL4+tpNasDp/iC
+         xwrSZDnvubdkGYxNKC04/m4M8G+1LvAX2t1QGMmel9XSxE9vjVA6o+ShS0GploCdU8pk
+         2QcR1Qql29xAnYSftPliNYSQBSbTtXkN8OMbP2otfkjk8FzFIQ1/hTgcaCCkEiYqz9PX
+         t02I9JQBIMlkMDwtoHTcMHM+jlTi87GrU4jxvndQPkHRijz91ocoIG8vXiWzNOhwdPrU
+         yzfQ9GRQRCLtWUS9czrpYRuZZw4mReHVs5l2uyUtxfnK684sjHWVtA8jGkrTdnH2IqF9
+         64Kg==
+X-Gm-Message-State: AOAM533Ijdmr4ybVQPB3HY76ydRNTgn0/jSa3/A4B8pNZwvt2rkONXbu
+        /fERoNhjf2roJio7najfrNE=
+X-Google-Smtp-Source: ABdhPJw+O3YvGEeP1Pg8F+acLN4e1QkI016yU12VHsBPYunFa517MHjfu4mNtwoahu4GX47rCjHuwQ==
+X-Received: by 2002:aa7:9edc:: with SMTP id r28mr10058759pfq.139.1591374614357;
+        Fri, 05 Jun 2020 09:30:14 -0700 (PDT)
 Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e25sm119363pfd.17.2020.06.05.09.30.01
+        by smtp.gmail.com with ESMTPSA id f29sm85786pgf.63.2020.06.05.09.30.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Jun 2020 09:30:02 -0700 (PDT)
-Subject: Re: [PATCH net 1/4] net: dp83869: Fix OF_MDIO config check
+        Fri, 05 Jun 2020 09:30:13 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] net: dp83867: Fix OF_MDIO config check
 To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, hkallweit1@gmail.com,
         davem@davemloft.net, kuba@kernel.org
 Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, michael@walle.cc
 References: <20200605140107.31275-1-dmurphy@ti.com>
- <20200605140107.31275-2-dmurphy@ti.com>
+ <20200605140107.31275-3-dmurphy@ti.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6b2ae90e-45d9-e744-53d7-59f9242c3d52@gmail.com>
-Date:   Fri, 5 Jun 2020 09:30:00 -0700
+Message-ID: <b64b10df-80d5-c862-ab30-2991fe76335f@gmail.com>
+Date:   Fri, 5 Jun 2020 09:30:10 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <20200605140107.31275-2-dmurphy@ti.com>
+In-Reply-To: <20200605140107.31275-3-dmurphy@ti.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,7 +77,7 @@ On 6/5/2020 7:01 AM, Dan Murphy wrote:
 > compiled. Use the IS_ENABLED macro that checks for both built in as
 > well as module.
 > 
-> Fixes: 01db923e83779 ("net: phy: dp83869: Add TI dp83869 phy")
+> Fixes: 2a10154abcb75 ("net: phy: dp83867: Add TI dp83867 phy")
 > Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
