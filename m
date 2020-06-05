@@ -2,116 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF281EEFFA
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 05:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 166281EF00B
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 05:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgFEDcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 23:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727988AbgFEDcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 23:32:47 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52980C08C5C0;
-        Thu,  4 Jun 2020 20:32:46 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id d7so8792594ioq.5;
-        Thu, 04 Jun 2020 20:32:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=IJPenuFpVQx0seln/2dhfFsuGNNRm+UZljRAm/AqGEU=;
-        b=MiErTzzaT/PL3m/OS3OyrwrC6z+MwypmJk0i8+CZtkeIpwIXb7dASWDz86qGp6MT3G
-         FJvG3eA5rF2AYahvF/mv6FgxBmKfg8+qVxthXvdCfEHFxx+PEvmgH6PG1LOUmNnsNDdO
-         K3R/oh7eckba8nnLxO1cRHHHxzX5U1T3lUJxurEp87Vs/UMKzL1VIFFIbUCgxHxaLgMG
-         iOzoi+A5aN8b69VblICG9RmWlASoQWhTFoK9BPj5zFfcKROqMe/EYFIdIeLZFMqN3ej7
-         krWP1MD9yZ3dT5ECXByCFKtdNm/m0W/pH0zCzRfbz5JS7Er8Dr1mygmBzN4dFGhMxxdo
-         E2lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IJPenuFpVQx0seln/2dhfFsuGNNRm+UZljRAm/AqGEU=;
-        b=pemwabohi3DmsBiPuqrJsICyos5WLcDERDAbxr9DsTsqAR7956ezWoqi8PkBxtyBU5
-         xhCW4GDueiUJM6Dn5wire6sHG+/bkSMu1RH4VUv4lfTyMEcgnLAK9y+pEl0QZ9QmzvMi
-         IzTDJR7pdn2tDBr8eswJ135JgiLDIOw18J13iuwdcUe4zteQyThAcP402uFRV5suGBB5
-         1QFZKPajh6mNx1iVUyHWno5KzZ3pFB+wiO5vo/2Rwxtrxw6WE19TSwSmv4sYxblso4kP
-         L07RwdS99scb++++X9o3UOFm+nCvgj0DvX+01eH5P6vI/iHjzDCtgEA5oYIHnaScm3z1
-         IN2A==
-X-Gm-Message-State: AOAM531grXGrk88lGCJ5B7XAXfC0QtzAnQZ9SY3ucB1tFCoqJtYWM/Db
-        RRoOM0/Sa0bbrAmaTma1AH8=
-X-Google-Smtp-Source: ABdhPJwRa2Z/m55HcVea1dDNvCKek/cSG6DIqGXdC4XhaAbVQRT83cYwoF0le9D7FEU0ikAN8oZ0TQ==
-X-Received: by 2002:a6b:39c3:: with SMTP id g186mr6519042ioa.91.1591327965688;
-        Thu, 04 Jun 2020 20:32:45 -0700 (PDT)
-Received: from cs-u-kase.dtc.umn.edu (cs-u-kase.cs.umn.edu. [160.94.64.2])
-        by smtp.googlemail.com with ESMTPSA id c72sm2464004ilg.3.2020.06.04.20.32.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2020 20:32:45 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     emamd001@umn.edu, wu000273@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>
-Subject: [PATCH] can: xilinx_can: handle failure cases of pm_runtime_get_sync
-Date:   Thu,  4 Jun 2020 22:32:39 -0500
-Message-Id: <20200605033239.60664-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728008AbgFEDk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 23:40:28 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36649 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726088AbgFEDk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 23:40:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591328426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W+XRm7Fs7zNlH2EKv4SYh8NMSzGAObCRW7/zCrf8kTM=;
+        b=bMinaiappCB0rQc0Seywa3/cVkuzqVzgZOHZhSWQYCSkZ81iRslS8kNSRBSGKgQPcCx3Eu
+        gHHK9CiCuq2raB5URMZCpac6lqycim7AIT742YFDBVZhE+poHPc5vekg0QfB/DIc6sNCgl
+        vs8r/qfW+iKVf6IEabXSwJEbgFg5uds=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-257-WjnfLQgyPAadytx9KbfT2Q-1; Thu, 04 Jun 2020 23:40:24 -0400
+X-MC-Unique: WjnfLQgyPAadytx9KbfT2Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD756100960F;
+        Fri,  5 Jun 2020 03:40:23 +0000 (UTC)
+Received: from [10.72.12.233] (ovpn-12-233.pek2.redhat.com [10.72.12.233])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D3AE45C290;
+        Fri,  5 Jun 2020 03:40:18 +0000 (UTC)
+Subject: Re: [PATCH RFC 03/13] vhost: batching fetches
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20200602130543.578420-1-mst@redhat.com>
+ <20200602130543.578420-4-mst@redhat.com>
+ <3323daa2-19ed-02de-0ff7-ab150f949fff@redhat.com>
+ <20200604045830-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <6c2e6cc7-27c5-445b-f252-0356ff8a83f3@redhat.com>
+Date:   Fri, 5 Jun 2020 11:40:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200604045830-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Calling pm_runtime_get_sync increments the counter even in case of
-failure, causing incorrect ref count. Call pm_runtime_put if
-pm_runtime_get_sync fails.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- drivers/net/can/xilinx_can.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 2020/6/4 下午4:59, Michael S. Tsirkin wrote:
+> On Wed, Jun 03, 2020 at 03:27:39PM +0800, Jason Wang wrote:
+>> On 2020/6/2 下午9:06, Michael S. Tsirkin wrote:
+>>> With this patch applied, new and old code perform identically.
+>>>
+>>> Lots of extra optimizations are now possible, e.g.
+>>> we can fetch multiple heads with copy_from/to_user now.
+>>> We can get rid of maintaining the log array.  Etc etc.
+>>>
+>>> Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
+>>> Signed-off-by: Eugenio Pérez<eperezma@redhat.com>
+>>> Link:https://lore.kernel.org/r/20200401183118.8334-4-eperezma@redhat.com
+>>> Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
+>>> ---
+>>>    drivers/vhost/test.c  |  2 +-
+>>>    drivers/vhost/vhost.c | 47 ++++++++++++++++++++++++++++++++++++++-----
+>>>    drivers/vhost/vhost.h |  5 ++++-
+>>>    3 files changed, 47 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+>>> index 9a3a09005e03..02806d6f84ef 100644
+>>> --- a/drivers/vhost/test.c
+>>> +++ b/drivers/vhost/test.c
+>>> @@ -119,7 +119,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
+>>>    	dev = &n->dev;
+>>>    	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
+>>>    	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
+>>> -	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
+>>> +	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+>>>    		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
+>>>    	f->private_data = n;
+>>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>>> index 8f9a07282625..aca2a5b0d078 100644
+>>> --- a/drivers/vhost/vhost.c
+>>> +++ b/drivers/vhost/vhost.c
+>>> @@ -299,6 +299,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>>>    {
+>>>    	vq->num = 1;
+>>>    	vq->ndescs = 0;
+>>> +	vq->first_desc = 0;
+>>>    	vq->desc = NULL;
+>>>    	vq->avail = NULL;
+>>>    	vq->used = NULL;
+>>> @@ -367,6 +368,11 @@ static int vhost_worker(void *data)
+>>>    	return 0;
+>>>    }
+>>> +static int vhost_vq_num_batch_descs(struct vhost_virtqueue *vq)
+>>> +{
+>>> +	return vq->max_descs - UIO_MAXIOV;
+>>> +}
+>> 1 descriptor does not mean 1 iov, e.g userspace may pass several 1 byte
+>> length memory regions for us to translate.
+>>
+> Yes but I don't see the relevance. This tells us how many descriptors to
+> batch, not how many IOVs.
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index c1dbab8c896d..748ff70f6a7b 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1391,7 +1391,7 @@ static int xcan_open(struct net_device *ndev)
- 	if (ret < 0) {
- 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
- 			   __func__, ret);
--		return ret;
-+		goto err;
- 	}
- 
- 	ret = request_irq(ndev->irq, xcan_interrupt, priv->irq_flags,
-@@ -1475,6 +1475,7 @@ static int xcan_get_berr_counter(const struct net_device *ndev,
- 	if (ret < 0) {
- 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
- 			   __func__, ret);
-+		pm_runtime_put(priv->dev);
- 		return ret;
- 	}
- 
-@@ -1789,7 +1790,7 @@ static int xcan_probe(struct platform_device *pdev)
- 	if (ret < 0) {
- 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
- 			   __func__, ret);
--		goto err_pmdisable;
-+		goto err_disableclks;
- 	}
- 
- 	if (priv->read_reg(priv, XCAN_SR_OFFSET) != XCAN_SR_CONFIG_MASK) {
-@@ -1824,7 +1825,6 @@ static int xcan_probe(struct platform_device *pdev)
- 
- err_disableclks:
- 	pm_runtime_put(priv->dev);
--err_pmdisable:
- 	pm_runtime_disable(&pdev->dev);
- err_free:
- 	free_candev(ndev);
--- 
-2.17.1
+
+Yes, but questions are:
+
+- this introduce another obstacle to support more than 1K queue size
+- if we support 1K queue size, does it mean we need to cache 1K 
+descriptors, which seems a large stress on the cache
+
+Thanks
+
+
+>
 
