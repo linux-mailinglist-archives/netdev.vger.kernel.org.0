@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 794AF1EFE29
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 18:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 773121EFE32
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 18:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbgFEQna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 12:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        id S1726265AbgFEQsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 12:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbgFEQna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 12:43:30 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96D2C08C5C2
-        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 09:43:29 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id s10so5437282pgm.0
-        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 09:43:29 -0700 (PDT)
+        with ESMTP id S1725961AbgFEQsv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 12:48:51 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A558C08C5C2
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 09:48:51 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d8so689747plo.12
+        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 09:48:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=0ejkDDgC1ptVP6tIC68TfOgCwch5hBfnFFCcljdYyEs=;
-        b=m6r8nCIeQuRJGGb6ifJbf7jeC4lJCAevIAGU8HaxY7NrpkmLNA+Yww+KEO6Z76u8zw
-         3uAXHVGHqHw6gAeg6Sn6GOwcEuIKVk6V4sPtFd+7AzJoC7ou9YrYGD4C8zZFgQjJC4nC
-         4MRf6hV+xTD0iQxCRVAJkXCXbfThsqwQ0/OID30ABPqdBJfN6UAMdN8WXrYbCbecxc4o
-         PALK7RGkS5UfzkRCy+sfn7qvO53Don1lJb3fin+QdMhkXYsWGRd0Py794ssmrCofFF7P
-         wrogH5jZqFV/rjmpGFEGRKEd5jv6JrfEBB60PdV2lC6JYQBn4eEau8ROl/Xc0CpM5YTg
-         osSw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JkO9jWEk3mPmuBJgeHUNv1PhPeZMVmnow62Budkdjso=;
+        b=qlcTsmK/tEc0xZlaz0qH3XuhZROct2NrgveOpapZfmcVZ5hfla2Kr46LgDQlvfhA7F
+         yLW+7ss/3xoI2YJFAkXGd/IV/QagcjXpAx5YA1J3EvrVLXlR9mgyK8wRLhwQDdpAgX0e
+         Lea4EbyfPEZDoqo9zMVKbBCZzkVCdecbVOCxU3E6RH/R8GvbZtqFBNp8anCo4HBcycXG
+         PBgk3L1KkJWBpGBj0vMw47rNJYmv/PnYrD7w+adckgr6cywNvN35qIqMXUCgLJq6WHxV
+         84AmrGIcgBnDxRsutG+Sde+DBRMZbLMSklmakodCOofzU8IttFu6FnwZy378rSbju7vB
+         67Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0ejkDDgC1ptVP6tIC68TfOgCwch5hBfnFFCcljdYyEs=;
-        b=HdpOt1KdIdY6OUpFgAKD4aC+V0hswIJY7oX11dkYNRUK80XEUUyS9Q9PuH2NuZN4Th
-         VxtvmWWJbd4WVOWUSBQca3/W9yvzDTtljDkpclDaAxYrX6WcuiSva0Mx+5WJYRN7nqYf
-         Z7WX+SqRhEtQBZB2bNVklXDEQvI8dxekKfPd1EN1dqXxcXuBeR/4aJIfP7XS8o2cTza/
-         8x7yimLewqa0N7Nv8zOz23sVErtcix7QGsYV3rROQj38SGELtCra8UhBOhma6BmGmLiX
-         Ed5n9xyNbDdiPj6zqk7kS7/F3yhUeYcBcqrJzTi+8Rhcpq8i8GOboAzKGHryPg6ezaFI
-         32Sg==
-X-Gm-Message-State: AOAM532ChY9hmQ3ofvy0VDT5rIT5JjdU0+KcodeIscWHN9XdclZQWndN
-        n55lEmUF8oMioHfmakcjc1XJOg3J
-X-Google-Smtp-Source: ABdhPJwWWNDPZkG4V6YNnS1Cf1/oB7y4fYlMKdNLXWWPWO5LseNAsnjSznU4otxxAm//3muVyPP60A==
-X-Received: by 2002:a63:7c5a:: with SMTP id l26mr9515148pgn.397.1591375409219;
-        Fri, 05 Jun 2020 09:43:29 -0700 (PDT)
+        bh=JkO9jWEk3mPmuBJgeHUNv1PhPeZMVmnow62Budkdjso=;
+        b=b+r7nM6EmFC1wuFv4LPTCCT9bumrQVrbwJCPTgFjNU5/Tra2W8Mnj2kCV6XcKWmtfP
+         2NR6B9t7921ik0t2kbk8IpJ7+3RJaIOYXdOgw0qQhpGfNb5sEHbWehx8oYuqplT1Z9VV
+         hzb7/mFBOzRrxYcpNDewrZB6PcNQJvMdlc2cYvq4EBY/KhQuQk4gufY9pJ7ySP8F8/cd
+         4por1MphEUVMjsvKeuVXAGC5OYopvwUY40Y6LRPwVlLvGJ94seNpx8i/jM+t7c4jpTak
+         ML0TneHq6QLmUKllqiAZWG13U79wa7/JjWx+gSBWeMgRX81DPSIYeaZuPbGBbBSYdXsO
+         2wrA==
+X-Gm-Message-State: AOAM532Veg4qXaclDblO+FRom61LSGXDjF5mbVujYbLVIksT3TfPqh+h
+        +41/7Y/BNTyqx6Hrm1vmzosC/P1N
+X-Google-Smtp-Source: ABdhPJy1e3fLWM0xZ3gLdoMTWSS9psOBJllG1ZrH1VyWcth+ZuWmTT8PaMMjpTcUN3w0OJ2PEQGrbA==
+X-Received: by 2002:a17:90b:3793:: with SMTP id mz19mr3922897pjb.12.1591375730835;
+        Fri, 05 Jun 2020 09:48:50 -0700 (PDT)
 Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 207sm102999pfw.190.2020.06.05.09.43.27
+        by smtp.gmail.com with ESMTPSA id b16sm129349pfd.111.2020.06.05.09.48.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Jun 2020 09:43:28 -0700 (PDT)
-Subject: Re: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
-To:     Matthew Wilcox <willy@infradead.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eric Biggers <ebiggers@google.com>
-References: <20200605120037.17427-1-willy@infradead.org>
+        Fri, 05 Jun 2020 09:48:49 -0700 (PDT)
+Subject: Re: TCP_DEFER_ACCEPT wakes up without data
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Julian Anastasov <ja@ssi.bg>, Wayne Badger <badger@yahoo-inc.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Leif Hedstrom <lhedstrom@apple.com>
+References: <538FB666.9050303@yahoo-inc.com>
+ <alpine.LFD.2.11.1406071441260.2287@ja.home.ssi.bg>
+ <5397A98F.2030206@yahoo-inc.com>
+ <58a4abb51fe9411fbc7b1a58a2a6f5da@UCL-MBX03.OASIS.UCLOUVAIN.BE>
+ <CALMXkpYBMN5VR9v+xL0fOC6srABYd38x5tGJG5od+VNMS+BSAw@mail.gmail.com>
+ <878029e5-b2b2-544c-f4b5-ff4c76fd6bd3@gmail.com>
+ <CALMXkpbNeRCrOnQFWAWR8BzX4yRgDveDMPZgS6NupjXrHFX1pg@mail.gmail.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9aa67df2-a539-29eb-c9e9-4dddcb73ec19@gmail.com>
-Date:   Fri, 5 Jun 2020 09:43:25 -0700
+Message-ID: <b520b541-9013-3095-2e3b-37ec835e4ff8@gmail.com>
+Date:   Fri, 5 Jun 2020 09:48:48 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200605120037.17427-1-willy@infradead.org>
+In-Reply-To: <CALMXkpbNeRCrOnQFWAWR8BzX4yRgDveDMPZgS6NupjXrHFX1pg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,126 +78,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/5/20 5:00 AM, Matthew Wilcox wrote:
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+On 6/5/20 7:57 AM, Christoph Paasch wrote:
+> On Thu, Jun 4, 2020 at 6:28 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 6/4/20 4:18 PM, Christoph Paasch wrote:
+>>> +Eric & Leif
+>>>
+>>> Hello,
+>>>
+>>>
+>>> (digging out an old thread ... ;-) )
+>>>
+>>
+>> Is there a tldr; ?
 > 
-> The XArray interface is easier for this driver to use.  Also fixes a
-> bug reported by the improper use of GFP_ATOMIC.
+> Sure! TCP_DEFER_ACCEPT delays the creation of the socket until data
+> has been sent by the client *or* the specified time has expired upon
+> which a last SYN/ACK is sent and if the client replies with an ACK the
+> socket will be created and presented to the accept()-call. In the
+> latter case it means that the app gets a socket that does not have any
+> data to be read - which goes against the intention of TCP_DEFER_ACCEPT
+> (man-page says: "Allow a listener to be awakened only when data
+> arrives on the socket.").
 > 
-
-This does not look stable candidate.
-
-If you try to add a Fixes: tag, you might discover that this bug is old,
-and I do not believe XArray has been backported to stable branches ?
-
-
-Please submit a fix suitable for old kernels (as old as v4.7)
-
-Then when net-next is open in ~2 weeks, the Xarray stuff can be proposed.
-
-Thanks.
-
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  net/qrtr/qrtr.c | 39 +++++++++++++--------------------------
->  1 file changed, 13 insertions(+), 26 deletions(-)
+> In the original thread the proposal was to kill the connection with a
+> TCP-RST when the specified timeout expired (after the final SYN/ACK).
 > 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index 2d8d6131bc5f..488f8f326ee5 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -20,6 +20,7 @@
->  /* auto-bind range */
->  #define QRTR_MIN_EPH_SOCKET 0x4000
->  #define QRTR_MAX_EPH_SOCKET 0x7fff
-> +#define QRTR_PORT_RANGE	XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
->  
->  /**
->   * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
-> @@ -106,8 +107,7 @@ static LIST_HEAD(qrtr_all_nodes);
->  static DEFINE_MUTEX(qrtr_node_lock);
->  
->  /* local port allocation management */
-> -static DEFINE_IDR(qrtr_ports);
-> -static DEFINE_MUTEX(qrtr_port_lock);
-> +static DEFINE_XARRAY_ALLOC(qrtr_ports);
->  
->  /**
->   * struct qrtr_node - endpoint node
-> @@ -623,7 +623,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
->  		port = 0;
->  
->  	rcu_read_lock();
-> -	ipc = idr_find(&qrtr_ports, port);
-> +	ipc = xa_load(&qrtr_ports, port);
->  	if (ipc)
->  		sock_hold(&ipc->sk);
->  	rcu_read_unlock();
-> @@ -665,9 +665,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
->  
->  	__sock_put(&ipc->sk);
->  
-> -	mutex_lock(&qrtr_port_lock);
-> -	idr_remove(&qrtr_ports, port);
-> -	mutex_unlock(&qrtr_port_lock);
-> +	xa_erase(&qrtr_ports, port);
->  
->  	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
->  	 * wait for it to up increment the refcount */
-> @@ -688,25 +686,18 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
->  {
->  	int rc;
->  
-> -	mutex_lock(&qrtr_port_lock);
->  	if (!*port) {
-> -		rc = idr_alloc(&qrtr_ports, ipc,
-> -			       QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
-> -			       GFP_ATOMIC);
-> -		if (rc >= 0)
-> -			*port = rc;
-> +		rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_PORT_RANGE,
-> +				GFP_KERNEL);
->  	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
->  		rc = -EACCES;
->  	} else if (*port == QRTR_PORT_CTRL) {
-> -		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
-> +		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
->  	} else {
-> -		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
-> -		if (rc >= 0)
-> -			*port = rc;
-> +		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
->  	}
-> -	mutex_unlock(&qrtr_port_lock);
->  
-> -	if (rc == -ENOSPC)
-> +	if (rc == -EBUSY)
->  		return -EADDRINUSE;
->  	else if (rc < 0)
->  		return rc;
-> @@ -720,20 +711,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
->  static void qrtr_reset_ports(void)
->  {
->  	struct qrtr_sock *ipc;
-> -	int id;
-> -
-> -	mutex_lock(&qrtr_port_lock);
-> -	idr_for_each_entry(&qrtr_ports, ipc, id) {
-> -		/* Don't reset control port */
-> -		if (id == 0)
-> -			continue;
-> +	unsigned long index;
->  
-> +	rcu_read_lock();
-> +	xa_for_each_start(&qrtr_ports, index, ipc, 1) {
->  		sock_hold(&ipc->sk);
->  		ipc->sk.sk_err = ENETRESET;
->  		ipc->sk.sk_error_report(&ipc->sk);
->  		sock_put(&ipc->sk);
->  	}
-> -	mutex_unlock(&qrtr_port_lock);
-> +	rcu_read_unlock();
->  }
->  
->  /* Bind socket to address.
+> Thus, my question in my first email whether there is a specific reason
+> to not do this.
+> 
+> API-breakage does not seem to me to be a concern here. Apps that are
+> setting DEFER_ACCEPT probably would not expect to get a socket that
+> does not have data to read.
+
+Thanks for the summary ;)
+
+I disagree.
+
+A server might have two modes :
+
+1) A fast path, expecting data from user in a small amount of time, from peers not too far away.
+
+2) A slow path, for clients far away. Server can implement strategies to control number of sockets
+that have been accepted() but not yet active (no data yet received).
+
+I have attended many conferences with bad wifi networks to pretend that 3WHS + headers can always
+be completed in X seconds.
+
+> 
+> 
+> Thanks,
+> Christoph
 > 
