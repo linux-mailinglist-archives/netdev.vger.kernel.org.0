@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E401EF7F9
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF0B1EF7DC
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbgFEMa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 08:30:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56830 "EHLO mail.kernel.org"
+        id S1726812AbgFEMZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:25:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726727AbgFEMZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:25:29 -0400
+        id S1726753AbgFEMZb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 08:25:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 319D1206DC;
-        Fri,  5 Jun 2020 12:25:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 964A3207D0;
+        Fri,  5 Jun 2020 12:25:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591359929;
-        bh=h1LcBw55r4LP8d1ELU0w81ims4oDlKhJhKPLveqyyLk=;
+        s=default; t=1591359930;
+        bh=XSED5VucqbaIM9KAXQKYBziYyqoyqr+tNkKG5o4T0yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYVti2W2nsO3hTHidSapypTsL6+b9Pbha09eZs4cyMsqdwwgrXai63DsHbRZofCF+
-         hF60cZH3jGVU2vJS6jEJbpU6+Ulo5H5MrnQpteTIWNaKrv9ENspmt4gLJJ4yH4Db1F
-         WN3Cy30slrV1aIthVGciRpgNzcwOghcqU5fUaDSo=
+        b=To0fcKyoFzQ1W0f4gED+kaquygOKLRayC0HmKGL8ZaBvR98LKq27l97RPoKdRWsBl
+         1gEUGv7DRnEtAmD22lVD3V4nVUmdNIGMJ6AEv6M0PXzQZZELK1NI18+/kmNJxtOK7D
+         FfHZ9MaqUZVgOcBTYPoNFgyz8RBc2EKIQ0MAIx1Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heinrich Kuhn <heinrich.kuhn@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 09/17] nfp: flower: fix used time of merge flow statistics
-Date:   Fri,  5 Jun 2020 08:25:08 -0400
-Message-Id: <20200605122517.2882338-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 10/17] net: dsa: felix: send VLANs on CPU port as egress-tagged
+Date:   Fri,  5 Jun 2020 08:25:09 -0400
+Message-Id: <20200605122517.2882338-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200605122517.2882338-1-sashal@kernel.org>
 References: <20200605122517.2882338-1-sashal@kernel.org>
@@ -45,44 +44,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heinrich Kuhn <heinrich.kuhn@netronome.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 5b186cd60f033110960a3db424ffbd6de4cee528 ]
+[ Upstream commit 183be6f967fe37c3154bfac39e913c3bafe89d1b ]
 
-Prior to this change the correct value for the used counter is calculated
-but not stored nor, therefore, propagated to user-space. In use-cases such
-as OVS use-case at least this results in active flows being removed from
-the hardware datapath. Which results in both unnecessary flow tear-down
-and setup, and packet processing on the host.
+As explained in other commits before (b9cd75e66895 and 87b0f983f66f),
+ocelot switches have a single egress-untagged VLAN per port, and the
+driver would deny adding a second one while an egress-untagged VLAN
+already exists.
 
-This patch addresses the problem by saving the calculated used value
-which allows the value to propagate to user-space.
+But on the CPU port (where the VLAN configuration is implicit, because
+there is no net device for the bridge to control), the DSA core attempts
+to add a VLAN using the same flags as were used for the front-panel
+port. This would make adding any untagged VLAN fail due to the CPU port
+rejecting the configuration:
 
-Found by inspection.
+bridge vlan add dev swp0 vid 100 pvid untagged
+[ 1865.854253] mscc_felix 0000:00:00.5: Port already has a native VLAN: 1
+[ 1865.860824] mscc_felix 0000:00:00.5: Failed to add VLAN 100 to port 5: -16
 
-Fixes: aa6ce2ea0c93 ("nfp: flower: support stats update for merge flows")
-Signed-off-by: Heinrich Kuhn <heinrich.kuhn@netronome.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
+(note that port 5 is the CPU port and not the front-panel swp0).
+
+So this hardware will send all VLANs as tagged towards the CPU.
+
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 7ca5c1becfcf..c5dcfdd69773 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1440,7 +1440,8 @@ __nfp_flower_update_merge_stats(struct nfp_app *app,
- 		ctx_id = be32_to_cpu(sub_flow->meta.host_ctx_id);
- 		priv->stats[ctx_id].pkts += pkts;
- 		priv->stats[ctx_id].bytes += bytes;
--		max_t(u64, priv->stats[ctx_id].used, used);
-+		priv->stats[ctx_id].used = max_t(u64, used,
-+						 priv->stats[ctx_id].used);
- 	}
- }
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index b74580e87be8..5d9db8d042c1 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -100,13 +100,17 @@ static void felix_vlan_add(struct dsa_switch *ds, int port,
+ 			   const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct ocelot *ocelot = ds->priv;
++	u16 flags = vlan->flags;
+ 	u16 vid;
+ 	int err;
  
++	if (dsa_is_cpu_port(ds, port))
++		flags &= ~BRIDGE_VLAN_INFO_UNTAGGED;
++
+ 	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
+ 		err = ocelot_vlan_add(ocelot, port, vid,
+-				      vlan->flags & BRIDGE_VLAN_INFO_PVID,
+-				      vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
++				      flags & BRIDGE_VLAN_INFO_PVID,
++				      flags & BRIDGE_VLAN_INFO_UNTAGGED);
+ 		if (err) {
+ 			dev_err(ds->dev, "Failed to add VLAN %d to port %d: %d\n",
+ 				vid, port, err);
 -- 
 2.25.1
 
