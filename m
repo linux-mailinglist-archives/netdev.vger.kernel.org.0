@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2376D1EF7F3
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B931EF7E0
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728009AbgFEMa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 08:30:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57036 "EHLO mail.kernel.org"
+        id S1726888AbgFEMZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:25:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57080 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726825AbgFEMZg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:25:36 -0400
+        id S1726862AbgFEMZh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 08:25:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BFC0C206DC;
-        Fri,  5 Jun 2020 12:25:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 219E2207D5;
+        Fri,  5 Jun 2020 12:25:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591359935;
-        bh=YlJD6YMMhL+i0hLnJJh5R5tyM7+o3K7d6jXSpkPPa7c=;
+        s=default; t=1591359936;
+        bh=54typoRF8Tvny5IH0PE2zsAGMMhiZ4Tyavp4nm8Gvm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FrOC/K5UVGtKmdbU1t6USEevian+kaDJCceGQk5O4voOq4hcvKUzRWMXgKyS1wq3T
-         iJZrKJxU7yDcn3OlDSz+Wo/ZElhowdCDJlaD1kD/Jba4KthTJwIqx20IRRB0YIRsLL
-         EtcdnvowPt1liZZA57veMV6pDo1TW4YWXOoA0mqE=
+        b=k+pLiW3niA2DhswkT2MlbzTB9q9sAk1sVP5F9RNWgBvchOSVKOpZOV11pkk3Ci84m
+         x7aRo9yR23bekoLxVrODzWJTEQ1NGEF+6Lq+BjaCrJHs5PslzHT5Nix5U8gJOjcCFC
+         U0orxi5JPrPR/il7XvksOVouI0uB/QQ8u1rgWd14=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 14/17] net/mlx5e: replace EINVAL in mlx5e_flower_parse_meta()
-Date:   Fri,  5 Jun 2020 08:25:13 -0400
-Message-Id: <20200605122517.2882338-14-sashal@kernel.org>
+Cc:     Chuhong Yuan <hslester96@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 15/17] NFC: st21nfca: add missed kfree_skb() in an error path
+Date:   Fri,  5 Jun 2020 08:25:14 -0400
+Message-Id: <20200605122517.2882338-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200605122517.2882338-1-sashal@kernel.org>
 References: <20200605122517.2882338-1-sashal@kernel.org>
@@ -44,51 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Chuhong Yuan <hslester96@gmail.com>
 
-[ Upstream commit a683012a8e77675a1947cc8f11f97cdc1d5bb769 ]
+[ Upstream commit 3decabdc714ca56c944f4669b4cdec5c2c1cea23 ]
 
-The drivers reports EINVAL to userspace through netlink on invalid meta
-match. This is confusing since EINVAL is usually reserved for malformed
-netlink messages. Replace it by more meaningful codes.
+st21nfca_tm_send_atr_res() misses to call kfree_skb() in an error path.
+Add the missed function call to fix it.
 
-Fixes: 6d65bc64e232 ("net/mlx5e: Add mlx5e_flower_parse_meta support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/nfc/st21nfca/dep.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 4659c205cc01..46ff83408d05 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1824,7 +1824,7 @@ static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
- 	flow_rule_match_meta(rule, &match);
- 	if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
--		return -EINVAL;
-+		return -EOPNOTSUPP;
+diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
+index 60acdfd1cb8c..856a10c293f8 100644
+--- a/drivers/nfc/st21nfca/dep.c
++++ b/drivers/nfc/st21nfca/dep.c
+@@ -173,8 +173,10 @@ static int st21nfca_tm_send_atr_res(struct nfc_hci_dev *hdev,
+ 		memcpy(atr_res->gbi, atr_req->gbi, gb_len);
+ 		r = nfc_set_remote_general_bytes(hdev->ndev, atr_res->gbi,
+ 						  gb_len);
+-		if (r < 0)
++		if (r < 0) {
++			kfree_skb(skb);
+ 			return r;
++		}
  	}
  
- 	ingress_dev = __dev_get_by_index(dev_net(filter_dev),
-@@ -1832,13 +1832,13 @@ static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
- 	if (!ingress_dev) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Can't find the ingress port to match on");
--		return -EINVAL;
-+		return -ENOENT;
- 	}
- 
- 	if (ingress_dev != filter_dev) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Can't match on the ingress filter port");
--		return -EINVAL;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	return 0;
+ 	info->dep_info.curr_nfc_dep_pni = 0;
 -- 
 2.25.1
 
