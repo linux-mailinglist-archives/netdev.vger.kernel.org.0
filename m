@@ -2,108 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F2E1F0122
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 22:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91841F0138
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 22:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728320AbgFEUo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 16:44:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43364 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728091AbgFEUoz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 16:44:55 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C628D206E6;
-        Fri,  5 Jun 2020 20:44:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591389894;
-        bh=Oe2SqUQG6Vs6CnaCrquxEUt+KbCPVfOurKKst0W+Dqo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a/w24oA4KqrULBrTUpZPPy6pAAO20NJcrlQFxPIETz4ZB9z6E2TKNkM3Gl0D8AW2p
-         ipRHmyU1Mtd98HzARoAzxRoh4vohVKjLMsC7hmBCaA1u1GWUulXxT3M3rosXglVul0
-         zBtZku4y/8I3tiO7aqNpVt0zHiuN0VwrAMsGxiAU=
-Date:   Fri, 5 Jun 2020 13:44:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org,
-        len.brown@intel.com, chromeos-bluetooth-upstreaming@chromium.org,
+        id S1728348AbgFEUuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 16:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728170AbgFEUuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 16:50:23 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0525FC08C5C3
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 13:50:22 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id j1so5356156pfe.4
+        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 13:50:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nOiKknFW8NZXsdzDqOG6mcYAn5/jYpz6ewpTk+cA3EU=;
+        b=dfwQ7fK2Xky7i0j86o9Lh3WLEhaSimawUnAPO83BlEeX3Ub6v3sq67ZLvBVxJHD3vP
+         BxHfnJCIXhewm5tjT3dmjJZOEExpl0d0SdQH93CanTMt43MM+S7qQvkOytNlhWp8oISy
+         1KwcRIbn4xMkCiB8szpJGuAeGKNR/Q4fi2qFk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nOiKknFW8NZXsdzDqOG6mcYAn5/jYpz6ewpTk+cA3EU=;
+        b=iuRW/1I555Ut5TMYflIQbJEtPsM9TMW0Xw/LbvS/fInVihhCOmLmUq59VqFYMLQW8n
+         +BSqUKdbge91vRS2y9z0iBXJMsbmp9O0hwbst1VUex5kHxRza0fmbGSy6yHPrwmRxt4A
+         pyRbAwUWxKTIiweZgSKPn+LjpFWDiv6pzCuFJ/N+ZqXol1iFKx8o33p6bp2hq8LARb1U
+         7QSLrYoXpse1QItaEo3R7OgcDEoCJ39shXwA051qmOtrk4bq/QKjTYtFvEZqRCltPd7x
+         I8KTuTF8LWgjELWrJ1edQ4Kt8RISvLtlPLcBheGwOboFgrtzHYZbAdIwaQCJunSZkDji
+         i84g==
+X-Gm-Message-State: AOAM532BFUKJGFmCDkPa3clm3lcRt5OW7DidF8r3w9hCDc31wB6M3rfc
+        xRMWcMMcfU3/H1ygOwB/+VagAA==
+X-Google-Smtp-Source: ABdhPJwkvhK/NCswQ2V0KmJYDz4etb37wiRdKTHEc7kLc+BeGNkI0CMyUBfbt6cb0bbVGeuLoC50/g==
+X-Received: by 2002:a63:658:: with SMTP id 85mr10808736pgg.181.1591390222418;
+        Fri, 05 Jun 2020 13:50:22 -0700 (PDT)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
+        by smtp.gmail.com with ESMTPSA id 63sm445152pfd.65.2020.06.05.13.50.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jun 2020 13:50:21 -0700 (PDT)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
+Cc:     len.brown@intel.com, chromeos-bluetooth-upstreaming@chromium.org,
         linux-pm@vger.kernel.org, rafael@kernel.org,
         todd.e.brandt@linux.intel.com, rui.zhang@intel.com,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Bluetooth: Allow suspend even when preparation has
- failed
-Message-ID: <20200605134452.4a91695a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200604212842.v2.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
-References: <20200604212842.v2.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v3] Bluetooth: Allow suspend even when preparation has failed
+Date:   Fri,  5 Jun 2020 13:50:15 -0700
+Message-Id: <20200605135009.v3.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
+X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  4 Jun 2020 21:28:50 -0700 Abhishek Pandit-Subedi wrote:
-> It is preferable to allow suspend even when Bluetooth has problems
-> preparing for sleep. When Bluetooth fails to finish preparing for
-> suspend, log the error and allow the suspend notifier to continue
-> instead.
->=20
-> To also make it clearer why suspend failed, change bt_dev_dbg to
-> bt_dev_err when handling the suspend timeout.
->=20
-> Fixes: dd522a7429b07e ("Bluetooth: Handle LE devices during suspend")
-> Reported-by: Len Brown <len.brown@intel.com>
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> ---
-> To verify this is properly working, I added an additional change to
-> hci_suspend_wait_event to always return -16. This validates that suspend
-> continues even when an error has occurred during the suspend
-> preparation.
->=20
-> Example on Chromebook:
-> [   55.834524] PM: Syncing filesystems ... done.
-> [   55.841930] PM: Preparing system for sleep (s2idle)
-> [   55.940492] Bluetooth: hci_core.c:hci_suspend_notifier() hci0: Suspend=
- notifier action (3) failed: -16
-> [   55.940497] Freezing user space processes ... (elapsed 0.001 seconds) =
-done.
-> [   55.941692] OOM killer disabled.
-> [   55.941693] Freezing remaining freezable tasks ... (elapsed 0.000 seco=
-nds) done.
-> [   55.942632] PM: Suspending system (s2idle)
->=20
-> I ran this through a suspend_stress_test in the following scenarios:
-> * Peer classic device connected: 50+ suspends
-> * No devices connected: 100 suspends
-> * With the above test case returning -EBUSY: 50 suspends
->=20
-> I also ran this through our automated testing for suspend and wake on
-> BT from suspend continues to work.
->=20
->=20
-> Changes in v2:
-> - Added fixes and reported-by tags
+It is preferable to allow suspend even when Bluetooth has problems
+preparing for sleep. When Bluetooth fails to finish preparing for
+suspend, log the error and allow the suspend notifier to continue
+instead.
 
-Building W=3D1 C=3D1 gcc-10:
+To also make it clearer why suspend failed, change bt_dev_dbg to
+bt_dev_err when handling the suspend timeout.
 
-In file included from ../net/bluetooth/hci_core.c:38:
-../net/bluetooth/hci_core.c: In function =C3=A2=E2=82=AC=CB=9Chci_suspend_n=
-otifier=C3=A2=E2=82=AC=E2=84=A2:
-../include/net/bluetooth/bluetooth.h:182:9: warning: format =C3=A2=E2=82=AC=
-=CB=9C%x=C3=A2=E2=82=AC=E2=84=A2 expects argument of type =C3=A2=E2=82=AC=
-=CB=9Cunsigned int=C3=A2=E2=82=AC=E2=84=A2, but argument 3 has type =C3=A2=
-=E2=82=AC=CB=9Clong unsigned int=C3=A2=E2=82=AC=E2=84=A2 [-Wformat=3D]
-  182 |  BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-      |         ^~~~~~
-../include/net/bluetooth/bluetooth.h:169:33: note: in definition of macro =
-=C3=A2=E2=82=AC=CB=9CBT_ERR=C3=A2=E2=82=AC=E2=84=A2
-  169 | #define BT_ERR(fmt, ...) bt_err(fmt "\n", ##__VA_ARGS__)
-      |                                 ^~~
-../net/bluetooth/hci_core.c:3368:3: note: in expansion of macro =C3=A2=E2=
-=82=AC=CB=9Cbt_dev_err=C3=A2=E2=82=AC=E2=84=A2
- 3368 |   bt_dev_err(hdev, "Suspend notifier action (%x) failed: %d",
-      |   ^~~~~~~~~~
+Fixes: dd522a7429b07e ("Bluetooth: Handle LE devices during suspend")
+Reported-by: Len Brown <len.brown@intel.com>
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+---
+To verify this is properly working, I added an additional change to
+hci_suspend_wait_event to always return -16. This validates that suspend
+continues even when an error has occurred during the suspend
+preparation.
+
+Example on Chromebook:
+[   55.834524] PM: Syncing filesystems ... done.
+[   55.841930] PM: Preparing system for sleep (s2idle)
+[   55.940492] Bluetooth: hci_core.c:hci_suspend_notifier() hci0: Suspend notifier action (3) failed: -16
+[   55.940497] Freezing user space processes ... (elapsed 0.001 seconds) done.
+[   55.941692] OOM killer disabled.
+[   55.941693] Freezing remaining freezable tasks ... (elapsed 0.000 seconds) done.
+[   55.942632] PM: Suspending system (s2idle)
+
+I ran this through a suspend_stress_test in the following scenarios:
+* Peer classic device connected: 50+ suspends
+* No devices connected: 100 suspends
+* With the above test case returning -EBUSY: 50 suspends
+
+I also ran this through our automated testing for suspend and wake on
+BT from suspend continues to work.
+
+
+Changes in v3:
+- Changed printf format for unsigned long
+
+Changes in v2:
+- Added fixes and reported-by tags
+
+ net/bluetooth/hci_core.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index dbe2d79f233fba..83ce665d3cbfb0 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3289,10 +3289,10 @@ static int hci_suspend_wait_event(struct hci_dev *hdev)
+ 				     WAKE_COND, SUSPEND_NOTIFIER_TIMEOUT);
+ 
+ 	if (ret == 0) {
+-		bt_dev_dbg(hdev, "Timed out waiting for suspend");
++		bt_dev_err(hdev, "Timed out waiting for suspend events");
+ 		for (i = 0; i < __SUSPEND_NUM_TASKS; ++i) {
+ 			if (test_bit(i, hdev->suspend_tasks))
+-				bt_dev_dbg(hdev, "Bit %d is set", i);
++				bt_dev_err(hdev, "Suspend timeout bit: %d", i);
+ 			clear_bit(i, hdev->suspend_tasks);
+ 		}
+ 
+@@ -3360,12 +3360,15 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
+ 		ret = hci_change_suspend_state(hdev, BT_RUNNING);
+ 	}
+ 
+-	/* If suspend failed, restore it to running */
+-	if (ret && action == PM_SUSPEND_PREPARE)
+-		hci_change_suspend_state(hdev, BT_RUNNING);
+-
+ done:
+-	return ret ? notifier_from_errno(-EBUSY) : NOTIFY_STOP;
++	/* We always allow suspend even if suspend preparation failed and
++	 * attempt to recover in resume.
++	 */
++	if (ret)
++		bt_dev_err(hdev, "Suspend notifier action (%lu) failed: %d",
++			   action, ret);
++
++	return NOTIFY_STOP;
+ }
+ 
+ /* Alloc HCI device */
+-- 
+2.27.0.278.ge193c7cf3a9-goog
+
