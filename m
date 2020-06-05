@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39571EFF89
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 20:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D461EFFA3
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 20:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbgFESA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 14:00:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57616 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726245AbgFESAZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 14:00:25 -0400
-Received: from sol.localdomain (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 17943206FA;
-        Fri,  5 Jun 2020 18:00:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591380025;
-        bh=nUoGQJJatWp2zZsQPPYM/lEeI2R8ERs7apdKRZESNIQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uGwjudMG8Mnv3QwJTyhGKPOlTDjCG18+q8zDsf+ChbCmQPR5qZUaSPBUYkvHyqXL2
-         I0cUcqgicbHdSU35lCOYDbeeTvoHcp0CeI7iIbnsTJIn2FSMsMZrrHueL92jQ4gsoC
-         udNI+gOlqgp1gEVMRurCBuHj570Q5kLRGsiTSzqs=
-Date:   Fri, 5 Jun 2020 11:00:23 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-crypto@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH net v2] esp: select CRYPTO_SEQIV when useful
-Message-ID: <20200605180023.GF1373@sol.localdomain>
-References: <20200605064748.GA595@gondor.apana.org.au>
- <20200605173931.241085-1-ebiggers@kernel.org>
+        id S1726294AbgFESIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 14:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbgFESIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 14:08:21 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DB6C08C5C2
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 11:08:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=C1WaD4u8dSWiD2OTqxYUX1JCHGsuLkwhAIOFAnwRrdc=; b=tsXZDblMeJCX7uNPaQ9txmjsRZ
+        EVkLWftqLYzfCxfuiXBk1lqe5wvV94+8w5OyCgPrwYEu/Erioc0JpOO1LufoF5r9WEo8KV1xrvRLf
+        QlYCoiNcjvSuVH1rhJX1n7J6bhG7Q/OiRZfs+4yy2C/y4AtrZQ6flWspjJ6mR6mmonSrVtNO9duHa
+        tFdnIl7yMWiGk0s/4M/NflN1wkTv1oGuu69CxWSkSjV/YZ/utpy6x/2DnMHv3AhFCXdzhMgnI/fQ7
+        1OESG7WoGVns2P7evomrG1DymR+yGHPISoKZNChAWX/EW+xIyVxgC5LqDLwmvfx15o5NkxMSusIHW
+        NTho/qOA==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jhGlR-0001TK-3x; Fri, 05 Jun 2020 18:08:21 +0000
+Date:   Fri, 5 Jun 2020 11:08:21 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Use of RCU in qrtr
+Message-ID: <20200605180821.GA5421@bombadil.infradead.org>
+References: <20200605121205.GE19604@bombadil.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200605173931.241085-1-ebiggers@kernel.org>
+In-Reply-To: <20200605121205.GE19604@bombadil.infradead.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 05, 2020 at 10:39:31AM -0700, Eric Biggers wrote:
-> From: Eric Biggers <ebiggers@google.com>
+
+[I meant to cc netdev on this originally.  Added now, preserving entire
+message below for context]
+
+On Fri, Jun 05, 2020 at 05:12:05AM -0700, Matthew Wilcox wrote:
+> While doing the XArray conversion, I came across your commit
+> f16a4b26f31f95dddb12cf3c2390906a735203ae
 > 
-> CRYPTO_CTR no longer selects CRYPTO_SEQIV, which breaks IPsec for users
-> who need any of the algorithms that use seqiv.  These users now would
-> need to explicitly enable CRYPTO_SEQIV.
+> synchronize_rcu() is kind of expensive on larger systems.  Is there a
+> reason to call it instead of using RCU to free the socket?
 > 
-> There doesn't seem to be a clear rule on what algorithms the IPsec
-> options (INET_ESP and INET6_ESP) actually select, as apparently none is
-> *always* required.  They currently select just a particular subset,
-> along with CRYPTO_ECHAINIV which is the other IV generator template.
+> I don't know whether I've set the flag in the right place, but maybe
+> something like this would be a good idea?
 > 
-> As a compromise between too many and too few selections, select
-> CRYPTO_SEQIV if either CRYPTO_CTR or CRYPTO_CHACHA20POLY1305 is enabled.
-> These are the algorithms that can use seqiv for IPsec.  (Note: GCM and
-> CCM can too, but those both use CTR.)
-> 
-> Fixes: f23efcbcc523 ("crypto: ctr - no longer needs CRYPTO_SEQIV")
-> Cc: Corentin Labbe <clabbe@baylibre.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Signed-off-by: Eric Biggers <ebiggers@google.com>
-> ---
-> 
-> v2: added the 'if' condition and updated commit message
-> 
->  net/ipv4/Kconfig | 1 +
->  net/ipv6/Kconfig | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-> index 23ba5045e3d3..6520b30883cf 100644
-> --- a/net/ipv4/Kconfig
-> +++ b/net/ipv4/Kconfig
-> @@ -361,6 +361,7 @@ config INET_ESP
->  	select CRYPTO_SHA1
->  	select CRYPTO_DES
->  	select CRYPTO_ECHAINIV
-> +	select CRYPTO_SEQIV if CRYPTO_CTR || CRYPTO_CHACHA20POLY1305
->  	---help---
->  	  Support for IPsec ESP.
+> @@ -663,13 +663,8 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+>         if (port == QRTR_PORT_CTRL)
+>                 port = 0;
 >  
+> -       __sock_put(&ipc->sk);
+> -
+>         xa_erase(&qrtr_ports, port);
+> -
+> -       /* Ensure that if qrtr_port_lookup() did enter the RCU read section we
+> -        * wait for it to up increment the refcount */
+> -       synchronize_rcu();
+> +       __sock_put(&ipc->sk);
+>  }
+>  
+>  /* Assign port number to socket.
+> @@ -749,6 +744,7 @@ static int __qrtr_bind(struct socket *sock,
+>                 qrtr_port_remove(ipc);
+>         ipc->us.sq_port = port;
+>  
+> +       sock_set_flag(sk, SOCK_RCU_FREE);
+>         sock_reset_flag(sk, SOCK_ZAPPED);
+>  
+>         /* Notify all open ports about the new controller */
 
-Oops, this doesn't actually work:
+I realised this isn't sufficient.  If we want to eliminate the
+synchronize_rcu() call, we need to have a 'try' variant of sock_hold().
+It would look something like this:
 
-scripts/kconfig/conf  --olddefconfig Kconfig
-crypto/Kconfig:1799:error: recursive dependency detected!
-crypto/Kconfig:1799:	symbol CRYPTO_DRBG_MENU is selected by CRYPTO_RNG_DEFAULT
-crypto/Kconfig:83:	symbol CRYPTO_RNG_DEFAULT is selected by CRYPTO_SEQIV
-crypto/Kconfig:330:	symbol CRYPTO_SEQIV is selected by CRYPTO_CTR
-crypto/Kconfig:370:	symbol CRYPTO_CTR is selected by CRYPTO_DRBG_CTR
-crypto/Kconfig:1819:	symbol CRYPTO_DRBG_CTR depends on CRYPTO_DRBG_MENU
-For a resolution refer to Documentation/kbuild/kconfig-language.rst
-subsection "Kconfig recursive dependency limitations"
+static inline __must_check bool sock_try_get(struct sock *sk)
+{
+	return refcount_inc_not_zero(&sk->sk_refcnt);
+}
 
+and then ...
 
-I guess we need to go with v1 (which just had 'select CRYPTO_SEQIV'),
-or else make users explicitly select CRYPTO_SEQIV?
+        rcu_read_lock();
+        ipc = xa_load(&qrtr_ports, port);
+        if (ipc && !sock_try_get(&ipc->sk))
+		ipc = NULL;
+        rcu_read_unlock();
 
-- Eric
+If we wanted to be able to atomically replace a pointer in the qrtr_ports
+array with another without ever seeing NULL in between, we'd want to
+make this:
+
+	rcu_read_lock():
+	do {
+		ipc = xa_load(&qrtr_ports, port);
+	} while (ipc && !sock_try_get(&ipc->sk));
+	rcu_read_unlock();
+
+but as far as I can tell, we don't need to do that for qrtr.
