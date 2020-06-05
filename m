@@ -2,77 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD25B1EFFA5
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 20:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4EA71EFFA9
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 20:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbgFESIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 14:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57008 "EHLO
+        id S1726989AbgFESKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 14:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbgFESIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 14:08:36 -0400
+        with ESMTP id S1726077AbgFESKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 14:10:10 -0400
 Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20426C08C5C2;
-        Fri,  5 Jun 2020 11:08:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10A4C08C5C2;
+        Fri,  5 Jun 2020 11:10:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender
-        :Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=qOWKSN6fy8i1wsii+C9kQcUD/H3uhG0+JUSv3RW0hT8=; b=EDGj7zDa0TosrsbOciky1SiUJp
-        hH5AbltKRt7XwbyothGG3DvtRN5/x8PcufbF4rTxO1RvJkDXpt5juFNR0pgzaRqAtBvK6KYRlAHm7
-        Kx30rPWd7H71ZMLfPQfuyY+rxZOI1hF0TfFQd403uzctnlHu86hrmm5oE40bqaIhfohWWfVt+KmT7
-        Utv38QoYMznVK1t/o2+p+iZLlB9JDc6t6r3U1UHQNoytKfdF7BaToc1aWs7nbZbcb5Mak6uraC29h
-        2aP++vY/IOw78Vnqbum7SqfKF+pEWeXs9cl29thqP4VaVLMDx0mAmGDVE5wF50NSiJGKEJpTIfNcO
-        lhTQpTkw==;
+        bh=uX7WkPPY5DHynO/kH95BbeRu3QRcHZ3RT6LKeg6R+k0=; b=LxfpePMGvwk9Hyci3o22CrWB8f
+        e7a+sb2Wmh8g0jqcKTPAywOHbaxyy0yxzEQwFJ5tS50zNMRIrz8wn6tID27Nwr23Hs8cZrFUBCpiK
+        2qv2iFaR1gTfIHmdg4YOY/RojDX8uvWUsCuoobdK/oZ0yXNspTJMvKM/qM0QQ0N8UBLpZoZTZKBVT
+        3eN3/rBYXEPvkepqKXVEnTvKTn2ztfISyMilYPUK/ZOj7EBzOXaWzRNOcsjjcfHkOX7JYVBAdY0Vc
+        fPGdcFgmdjAcHsD59cxaqZt8fGpalQdiJpJMFaVWvOik+JC2qZbIgpSDq4tXxpK8tjM3DusiBHZyo
+        3SsKK73g==;
 Received: from [2001:4d48:ad59:1409:4::2] (helo=youmian.o362.us)
         by the.earth.li with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <noodles@earth.li>)
-        id 1jhGlZ-00037H-Ea; Fri, 05 Jun 2020 19:08:29 +0100
-Date:   Fri, 5 Jun 2020 19:08:24 +0100
+        id 1jhGn8-0003Cr-ST; Fri, 05 Jun 2020 19:10:06 +0100
+Date:   Fri, 5 Jun 2020 19:10:02 +0100
 From:   Jonathan McDowell <noodles@earth.li>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
-Subject: [PATCH 0/2] net: dsa: qca8k: Add SGMII configuration options
-Message-ID: <cover.1591380105.git.noodles@earth.li>
+Subject: [PATCH 1/2] dt-bindings: net: dsa: qca8k: document SGMII properties
+Message-ID: <ca767d2dd00280f7c0826c133d1ff6f262b6736d.1591380105.git.noodles@earth.li>
+References: <cover.1591380105.git.noodles@earth.li>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <cover.1591380105.git.noodles@earth.li>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This pair of patches adds some SGMII device tree configuration options
-for the QCA8K switch driver, and the associated documentation.
+This patch documents the qca8k's SGMII related properties that allow
+configuration of the SGMII port.
 
-At present the driver does no configuration of the SGMII port, even if
-it is selected. These changes allow configuration of how it is connected
-up (i.e. connected to an external phy, or to a CPU, or to an SFP cage)
-as well as allowing for autonegotiation to be disabled and a delay
-configured.
+Signed-off-by: Jonathan McDowell <noodles@earth.li>
+---
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Tested on a MikroTik RB3011; the second switch is connected to the CPU
-via SGMII.
-
-Jonathan McDowell (2):
-  dt-bindings: net: dsa: qca8k: document SGMII properties
-  net: dsa: qca8k: introduce SGMII configuration options
-
- .../devicetree/bindings/net/dsa/qca8k.txt     |  4 ++
- drivers/net/dsa/qca8k.c                       | 44 ++++++++++++++++++-
- drivers/net/dsa/qca8k.h                       | 12 +++++
- 3 files changed, 59 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index ccbc6d89325d..9e7d74a248ad 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -11,7 +11,11 @@ Required properties:
+ 
+ Optional properties:
+ 
++- disable-serdes-autoneg: Boolean, disables auto-negotiation on the SerDes
+ - reset-gpios: GPIO to be used to reset the whole device
++- sgmii-delay: Boolean, presence delays SGMII clock by 2ns
++- sgmii-mode: String, operation mode of the SGMII interface.
++  Supported values are: "basex", "mac", "phy".
+ 
+ Subnodes:
+ 
 -- 
 2.20.1
 
