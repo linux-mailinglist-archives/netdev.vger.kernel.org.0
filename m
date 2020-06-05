@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C5661EF61D
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B9C81EF658
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbgFELGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 07:06:41 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:33084 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbgFELGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:06:39 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 055B2AtD151356;
-        Fri, 5 Jun 2020 11:06:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=nWl+y+0wUhQoIBqwp6wGjPeAe8E7npemEWVmDlHdQYI=;
- b=BvSNvoCGgYwdTHuUKGZvrMSZhQjFdHEs4prRA/Kc48QX+FMiqYJl5ltRDvvP/pcUroO1
- HKaq5mf9OPQrGeIuq0exUBfgvalthF1pJvIypWcXX2TH4Nem4yk5bo54qfEMDs9SEAWx
- CNNoXbdd+Fupaljh1oc8BlksG6WEyOxu5MEHhh99TuKWPD2fGgKi6m2Q8Bys/MhOUcXo
- cvPh+agHw17yBk+SizpIzqFO2dYiH+Rt1EGpRGaapjQLgPHz5k5Nen6kIQrRI+poeYs4
- ri7T06rEpI+GY2sCbMd0qK32F88UQshim7JN0du7eTidv7PaXRtqvhGiSVWJKcDV8ZXt wg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 31f9242asx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 05 Jun 2020 11:06:24 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 055B4BCh137758;
-        Fri, 5 Jun 2020 11:04:24 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 31f9272v0c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 05 Jun 2020 11:04:24 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 055B4Mip031238;
-        Fri, 5 Jun 2020 11:04:23 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 05 Jun 2020 04:04:21 -0700
-Date:   Fri, 5 Jun 2020 14:04:13 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net] ethtool: linkinfo: remove an unnecessary NULL check
-Message-ID: <20200605110413.GF978434@mwanda>
+        id S1726419AbgFELTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 07:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbgFELTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:19:00 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FD4C08C5C2
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 04:19:00 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id n11so9236445qkn.8
+        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 04:19:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=xKdIBK6vh4VrwRo6cjMZDF/++YitYxEh+O1ta8sFAX4=;
+        b=J/5nO8J8aaJCA1OnfhlDWFWOO0giSgmnxwbUiwQi3BJLrGDhnZjG4OL+dx03rlhet3
+         wEmGnXRe+JToSrrbUe+LVLxJfyPQ1N8FXK/arFqWGrV+vt/qkn9EJM++81aijnNsCzz8
+         s6CRAIjvVEaz1jiz/BhTyka+rZUOplNEvohthX35NLIatoRPxh0AM9ufyc3htFeK4n+Q
+         Q5wdPJ2H08JRWP8PR+l5WB2JmMdAVgG3WRbnPpcR2IGQtQaRYGjmfDUu35tGu7myR63h
+         lBGu9SdDu0wH6LGAN/pOIgbIxmFZj8PxnggQPWmioglEEnaxfWudSjSlK4pBeiXQDh1Y
+         CIHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=xKdIBK6vh4VrwRo6cjMZDF/++YitYxEh+O1ta8sFAX4=;
+        b=Ck5Nqi7bi8FPMWh6Xucx14EPzV9VmUzLos1/HNBFGF2KNk0sgJTKkeS3fkYsfVVV/r
+         5NoWGgOgCvfyIolL7h3GAwaUl9meX3/5k8aVgCtIotmtBY1b3PWhycQ7kE5i/Qxv28WN
+         3FV7O/gdTJpLZAtxvMvIgzew+bVZli8anTuVKxYw0fLPCmWvkk9gkTUP1KXvPz2ob6+O
+         C33qbX5fUinzHz9Jq0mCPMKS8+y+Ky6abmdIap0sAj+V/kKgG4Z77pmV/68xuO7EUKR1
+         0vnCJ1dEsG1rDA6i1rpncmOMmNTfRFwPyQt6pXV7QgHSewoKKO483GnCxGusNxQOujtc
+         3RSA==
+X-Gm-Message-State: AOAM5330Ttt6djiSLq6AlZ8O+mUF4/Vj5BJnDV1Is9mmbof8Vgbsxkdi
+        j7ZYQXOsznzw/CJbx+DbqPBRoyAzCx3R5sLixb+drx9RTbs=
+X-Google-Smtp-Source: ABdhPJz/A8QiAlYMGPMyHDI/afZkGU7/ekTUJK8zlwR/wWh1AqC4BotbO4+uB+zikL/nBNrzygmIEAWFOTo7OtIPxJw=
+X-Received: by 2002:a37:a789:: with SMTP id q131mr8956849qke.19.1591355939499;
+ Fri, 05 Jun 2020 04:18:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9642 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 suspectscore=0 adultscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006050085
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9642 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1015 impostorscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=999 mlxscore=0 bulkscore=0
- lowpriorityscore=0 cotscore=-2147483648 phishscore=0 spamscore=0
- malwarescore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006050085
+From:   "Alexander E. Patrakov" <patrakov@gmail.com>
+Date:   Fri, 5 Jun 2020 16:18:48 +0500
+Message-ID: <CAN_LGv1uTo2MNso8nT0adWXJ_wGbX5VoiNn9xKoJDR1q04g6FQ@mail.gmail.com>
+Subject: VLAN-aware bridge and i40e driver problem
+To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Alexander Duyck <aduyck@mirantis.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code generates a Smatch warning:
+Hello,
 
-    net/ethtool/linkinfo.c:143 ethnl_set_linkinfo()
-    warn: variable dereferenced before check 'info' (see line 119)
+We have some new servers with this kind of dual-port 40GbE network
+cards, supported by the in-tree i40e driver:
 
-Fortunately, the "info" pointer is never NULL so the check can be
-removed.
+21:00.0 Ethernet controller [0200]: Intel Corporation Ethernet
+Controller XL710 for 40GbE QSFP+ [8086:1583] (rev 02)
+21:00.1 Ethernet controller [0200]: Intel Corporation Ethernet
+Controller XL710 for 40GbE QSFP+ [8086:1583] (rev 02)
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- net/ethtool/linkinfo.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On each server, the two network ports (exposed as enp33s0f0 and
+enp33s0f1) are used as slaves of the "bond0" interface, which is
+itself used as a port of a vlan-aware bridge (vmbr0). There are tap
+interfaces for KVM virtual machines that are also in this bridge, and
+assigned to different VLANs as needed. The bond0 interface carries all
+VLANs, and is essentially used as a "trunk port".
 
-diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
-index 677068deb68c0..5eaf173eaaca5 100644
---- a/net/ethtool/linkinfo.c
-+++ b/net/ethtool/linkinfo.c
-@@ -140,8 +140,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
- 
- 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
- 	if (ret < 0) {
--		if (info)
--			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
-+		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
- 		goto out_ops;
- 	}
- 	lsettings = &ksettings.base;
+This is Proxmox (a Debian-based system), so the VLANs are added to the
+bond0 interface at boot time via the /etc/network/if-up.d/bridgevlan
+script, which runs essentially this:
+
+    port=bond0
+    bridge vlan add dev $port vid 2-4094
+
+And here is why this behaves badly.
+
+The "bridge" command does send the whole "add vids" request as a
+single netlink message, so there are no inefficiencies at this step.
+Then, the bond driver attempts to pass down the VLAN filter down to
+the underlying hardware (i.e. to the i40e driver), and that's where
+things go downhill.
+
+Apparently the driver attempts to add the VIDs to the hardware filter
+one-by-one. And then, after adding 256 VIDs, it hits the hardware
+limit and complains:
+
+    i40e 0000:21:00.0: Error I40E_AQ_RC_ENOSPC, forcing overflow
+promiscuous on PF
+
+And then goes on to process the next VID, also noticing that it is
+beyond the hardware limit, and so on. Result: 3839 lines of log spam
+from each network port, and more than 1 minute spent fighting with the
+hardware (i.e. slow boot). After that, VLAN filtering and dispatching
+of packets to VMs are done in software, and done correctly.
+
+In this setup, the hardware VLAN filtering capability of the card is
+useless, because there is actually nothing to filter out from the
+wire. However, the slow boot and the log spam annoy sysadmins here. It
+would have been better if the i40e driver somehow saw beforehand that
+the whole VLAN filtering request is beyond the abilities of the
+hardware, and did not attempt to add, fruitlessly, the VID entries
+one-by-one. After all, on other servers, with "Mellanox Technologies
+MT27700 Family [ConnectX-4] [15b3:1013]" (mlx5_core driver), it takes
+less than 1 second to add these VLANs to bond0. Is it because the
+Mellanox card is somehow better, or is it just a gross inefficiency of
+the i40e driver? Could anyone familiar with the card please try to fix
+the i40e driver?
+
+I have tried to force the VLAN filtering in software, via ethtool:
+
+    ethtool -K enp33s0f0 rx-vlan-filter off
+
+But it doesn't work, because (since at least commit
+b0fe3306432796c8f7adbede8ccd479bb7b53d0a, which adds it to
+netdev->features but not netdev->hw_features) this is not a
+user-changeable option on i40e. Question to the driver maintainers:
+why is it so?
+
+P.S. We have finally found and adopted this workaround:
+
+    ethtool -K bond0 rx-vlan-filter off
+
+...and things work reasonably well: fast boot, no log spam, okay-ish
+performance (14.5 Gbps per CPU core).
+
+P.P.S. I suspect that it would have been better to use macvlan instead
+of the VLAN-aware bridge, but for legacy reasons we can't do that.
+
 -- 
-2.26.2
-
+Alexander E. Patrakov
+CV: http://pc.cd/PLz7
