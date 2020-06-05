@@ -2,158 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9199E1EF666
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235D31EF6AB
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 13:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbgFEL30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 07:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        id S1726399AbgFELqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 07:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgFEL3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:29:25 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78BC08C5C2;
-        Fri,  5 Jun 2020 04:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rZem03oAMdNWUhBZ6CZrdIFIDXPK1/y9NBQ0iiUcplQ=; b=CG8N5gSksZQ3f+8Oa2Z+u1lkF4
-        4dwK4SW3Sx+8CLV/jpXCx6DkCpe4oz5V7rz8eekwF2gKnc5xKvUyU+WOsKXro4hlMI1KATqv0CcUc
-        Y2kpb7XBEVLhKK0TVRD49MMwQiHhT4M2hAkCv12f3KFHCNCWXu+A+xG8QqS2WiHba1Qs8dD3ZMJjU
-        0iGgOc2sw/V9mafQakFKd1DsDrSZx5BpSuTkK6Dd9xtz3LMZVJ+T3bO6xnYJkxMhAp+xtc1AdEPx9
-        B86GSu803akmnw8krXCJE5p5tZOtn5r4SjoxPh71ObZUwUgaWiWdCzeknhnYPJsMW9T4WfH4tHqej
-        AfdfGllg==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jhAXK-00034v-3B; Fri, 05 Jun 2020 11:29:22 +0000
-Date:   Fri, 5 Jun 2020 04:29:22 -0700
-From:   Matthew Wilcox <willy@infradead.org>
+        with ESMTP id S1726328AbgFELqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 07:46:25 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D86C08C5C3
+        for <netdev@vger.kernel.org>; Fri,  5 Jun 2020 04:46:25 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id f18so9321645qkh.1
+        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 04:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iyGf3V6jAp5ZNIZ09j882B9dYRBoDmMZI6f6MZVzSqU=;
+        b=PPOKqK1Mpp1wrmMjN+yqaRbT6z7r3EbGxtrRFajNTMt9PHMghgqNzgL9pGdQcpHIAE
+         0DVMbOU2kxL1hC3qy0dUltajv7QTaaRhIaIDwAd0xvf5qwhubpZC0LZf/blrdwznW5vV
+         I5XYwvA1jJFNaC4w6Ns/6D7fIbAKpHOfbNx5BptFa0gROoRg83qrhwRMkocv2Xiyl0kI
+         lbzVrYFpT/kspqvvPQ1fRWpEe3ujBlMvcxQpLda++SrxtrN201HXdNM8ky1CMcKaTCyT
+         7YzqzI7JgDDeQfY5pZZf3tpuVoboTpFNbtiVmQWftEylQBkFZ8HwfqUz6yJZx6Hqbu68
+         9qEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iyGf3V6jAp5ZNIZ09j882B9dYRBoDmMZI6f6MZVzSqU=;
+        b=O7i7R4e8t4Oa0fkN7wvVwaQuOw9Ic4NBWO58iDzKpjfkL1Mc409qn5Hqr/RMoQiItp
+         eoYSpe/NtemLTLzNSvVxyrAe1KtDRvee/X66q0M5MifFU+ckM4g2KCn1Tx0NzngkFx7i
+         dOze9Lz6sWcpDCmZ1LN30TCuqrpZRf46a5X4dMYT5EeV9ojc3GxL0jQGKCg412n8imU0
+         dvqZiPEurtclk9ARkpuZ621+DwNaEI+LpbO0/bwomEH7Lj07lH4ySPngtQFIKlOvsvKi
+         SZN9meFyPtSgclrgPqyqUKr0Yx1AmXS4xvcV1/q1DDlFleh0wOsWVNqlU49cMn1kWePt
+         u9cw==
+X-Gm-Message-State: AOAM531A4QKVl4qUCjED0fIggAcL7xisjCdvIXri/d87qxFgP2An946M
+        mKnFjXWxV/rXpvJ1PTxpVGI3Xw==
+X-Google-Smtp-Source: ABdhPJzIzM5xjqCh9INfMzgN+usRKZ0PzGsWKSBI2t8KUOcihpgbikJjYflnI1YUSO8zpQZgiZW9hA==
+X-Received: by 2002:a05:620a:1525:: with SMTP id n5mr9426712qkk.328.1591357584373;
+        Fri, 05 Jun 2020 04:46:24 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id 195sm6645125qkg.74.2020.06.05.04.46.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jun 2020 04:46:23 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.93)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jhAnm-0025SU-D8; Fri, 05 Jun 2020 08:46:22 -0300
+Date:   Fri, 5 Jun 2020 08:46:22 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
 To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     syzbot <syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com>,
-        bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: BUG: using smp_processor_id() in preemptible code in
- radix_tree_node_alloc
-Message-ID: <20200605112922.GB19604@bombadil.infradead.org>
-References: <000000000000a363b205a74ca6a2@google.com>
- <20200605035555.GA2667@sol.localdomain>
+Cc:     linux-rdma@vger.kernel.org, Doug Ledford <dledford@redhat.com>,
+        syzbot <syzbot+407fd358a932bbf639c6@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        rafael@kernel.org, syzkaller-bugs@googlegroups.com,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: general protection fault in kobject_get (2)
+Message-ID: <20200605114622.GR6578@ziepe.ca>
+References: <0000000000009a6d4305a60d2c6b@google.com>
+ <20200520055641.GA2242221@kroah.com>
+ <20200605042648.GP2667@sol.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200605035555.GA2667@sol.localdomain>
+In-Reply-To: <20200605042648.GP2667@sol.localdomain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 08:55:55PM -0700, Eric Biggers wrote:
-> Possibly a bug in lib/radix-tree.c?  this_cpu_ptr() in radix_tree_node_alloc()
-> can be reached without a prior preempt_disable().  Or is the caller of
-> idr_alloc() doing something wrong?
+On Thu, Jun 04, 2020 at 09:26:48PM -0700, Eric Biggers wrote:
+> On Wed, May 20, 2020 at 07:56:41AM +0200, Greg KH wrote:
+> > On Tue, May 19, 2020 at 09:53:16PM -0700, syzbot wrote:
+> > > Hello,
+> > > 
+> > > syzbot found the following crash on:
+> > > 
+> > > HEAD commit:    d00f26b6 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+> > > git tree:       net-next
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1316343c100000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=26d0bd769afe1a2c
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=407fd358a932bbf639c6
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > 
+> > > Unfortunately, I don't have any reproducer for this crash yet.
+> > > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+407fd358a932bbf639c6@syzkaller.appspotmail.com
+> > > 
+> > > general protection fault, probably for non-canonical address 0xdffffc0000000013: 0000 [#1] PREEMPT SMP KASAN
+> > > KASAN: null-ptr-deref in range [0x0000000000000098-0x000000000000009f]
+> > > CPU: 1 PID: 16682 Comm: syz-executor.3 Not tainted 5.7.0-rc4-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > RIP: 0010:kobject_get+0x30/0x150 lib/kobject.c:640
+> > > Code: 53 e8 d4 7e c6 fd 4d 85 e4 0f 84 a2 00 00 00 e8 c6 7e c6 fd 49 8d 7c 24 3c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 e7 00 00 00
+> > > RSP: 0018:ffffc9000772f240 EFLAGS: 00010203
+> > > RAX: dffffc0000000000 RBX: ffffffff85acfca0 RCX: ffffc9000fc67000
+> > > RDX: 0000000000000013 RSI: ffffffff83acadfa RDI: 000000000000009c
+> > > RBP: 0000000000000060 R08: ffff8880a8dfa4c0 R09: ffffed100a03f403
+> > > R10: ffff8880501fa017 R11: ffffed100a03f402 R12: 0000000000000060
+> > > R13: ffffc9000772f3c0 R14: ffff88805d1ec4e8 R15: ffff88805d1ec580
+> > > FS:  00007f1ebed26700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00000000004d88f0 CR3: 00000000a86c4000 CR4: 00000000001406e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  get_device+0x20/0x30 drivers/base/core.c:2620
+> > >  __ib_get_client_nl_info+0x1d4/0x2a0 drivers/infiniband/core/device.c:1863
+> > >  ib_get_client_nl_info+0x30/0x180 drivers/infiniband/core/device.c:1883
+> > >  nldev_get_chardev+0x52b/0xa40 drivers/infiniband/core/nldev.c:1625
+> > >  rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
+> > >  rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
+> > >  rdma_nl_rcv+0x586/0x900 drivers/infiniband/core/netlink.c:259
+> > >  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+> > >  netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+> > >  netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+> > >  sock_sendmsg_nosec net/socket.c:652 [inline]
+> > >  sock_sendmsg+0xcf/0x120 net/socket.c:672
+> > >  ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
+> > >  ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+> > >  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+> > >  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+> > >  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> > > RIP: 0033:0x45c829
+> > > Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> > > RSP: 002b:00007f1ebed25c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > > RAX: ffffffffffffffda RBX: 00000000004ff720 RCX: 000000000045c829
+> > > RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+> > > RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+> > > R13: 00000000000009ad R14: 00000000004d5f10 R15: 00007f1ebed266d4
+> > > Modules linked in:
+> > > RIP: 0010:kobject_get+0x30/0x150 lib/kobject.c:640
+> > > Code: 53 e8 d4 7e c6 fd 4d 85 e4 0f 84 a2 00 00 00 e8 c6 7e c6 fd 49 8d 7c 24 3c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 e7 00 00 00
+> > > RSP: 0018:ffffc9000772f240 EFLAGS: 00010203
+> > > RAX: dffffc0000000000 RBX: ffffffff85acfca0 RCX: ffffc9000fc67000
+> > > RDX: 0000000000000013 RSI: ffffffff83acadfa RDI: 000000000000009c
+> > > RBP: 0000000000000060 R08: ffff8880a8dfa4c0 R09: ffffed100a03f403
+> > > R10: ffff8880501fa017 R11: ffffed100a03f402 R12: 0000000000000060
+> > > R13: ffffc9000772f3c0 R14: ffff88805d1ec4e8 R15: ffff88805d1ec580
+> > > FS:  00007f1ebed26700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 000000000073fad4 CR3: 00000000a86c4000 CR4: 00000000001406e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > 
+> > Looks like an IB/rdma issue, poke those developers please :)
+> > 
+> 
+> If you want people to receive your email, you need to send it to them.
+> 
+> +Cc linux-rdma and maintainers of drivers/infiniband/.
 
-Yes, the idr_alloc() call is plainly wrong:
+I think this is probably fixed by commit 11a0ae4c4bff ("RDMA: Allow
+ib_client's to fail when add() is called")
 
-        mutex_lock(&qrtr_port_lock);
-        if (!*port) {
-                rc = idr_alloc(&qrtr_ports, ipc,
-                               QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
-                               GFP_ATOMIC);
+#syz fix: RDMA: Allow ib_client's to fail when add() is called
 
-If we can take a mutex lock, there's no excuse to be using GFP_ATOMIC.
-That (and the call slightly lower in the function) should be GFP_KERNEL
-as the minimal fix (below).  I'll send a followup patch which converts
-this IDR to the XArray instead.
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index 2d8d6131bc5f..d2547711d20c 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -692,15 +692,15 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
- 	if (!*port) {
- 		rc = idr_alloc(&qrtr_ports, ipc,
- 			       QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
--			       GFP_ATOMIC);
-+			       GFP_KERNEL);
- 		if (rc >= 0)
- 			*port = rc;
- 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
- 		rc = -EACCES;
- 	} else if (*port == QRTR_PORT_CTRL) {
--		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
-+		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_KERNEL);
- 	} else {
--		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
-+		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_KERNEL);
- 		if (rc >= 0)
- 			*port = rc;
- 	}
-
-> On Thu, Jun 04, 2020 at 07:02:18PM -0700, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following crash on:
-> > 
-> > HEAD commit:    acf25aa6 Merge tag 'Smack-for-5.8' of git://github.com/csc..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=13d6307a100000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=5263d9b5bce03c67
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3eec59e770685e3dc879
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15bd4c1e100000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1520c9de100000
-> > 
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-> > 
-> > RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
-> > RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-> > RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
-> > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
-> > R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
-> > BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor036/6796
-> > caller is radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
-> > CPU: 0 PID: 6796 Comm: syz-executor036 Not tainted 5.7.0-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x188/0x20d lib/dump_stack.c:118
-> >  check_preemption_disabled lib/smp_processor_id.c:47 [inline]
-> >  debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
-> >  radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
-> >  radix_tree_extend+0x256/0x4e0 lib/radix-tree.c:424
-> >  idr_get_free+0x60c/0x8e0 lib/radix-tree.c:1492
-> >  idr_alloc_u32+0x170/0x2d0 lib/idr.c:46
-> >  idr_alloc+0xc2/0x130 lib/idr.c:87
-> >  qrtr_port_assign net/qrtr/qrtr.c:703 [inline]
-> >  __qrtr_bind.isra.0+0x12e/0x5c0 net/qrtr/qrtr.c:756
-> >  qrtr_autobind net/qrtr/qrtr.c:787 [inline]
-> >  qrtr_autobind+0xaf/0xf0 net/qrtr/qrtr.c:775
-> >  qrtr_sendmsg+0x1d6/0x770 net/qrtr/qrtr.c:895
-> >  sock_sendmsg_nosec net/socket.c:652 [inline]
-> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
-> >  ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
-> >  ___sys_sendmsg+0x100/0x170 net/socket.c:2406
-> >  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
-> >  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-> >  entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> > RIP: 0033:0x4406c9
-> > Code: 25 02 00 85 c0 b8 00 00 00 00 48 0f 44 c3 5b c3 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> > RSP: 002b:00007ffdf01d56c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> > RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
-> > RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-> > RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
-> > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
-> > R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
-> > 
-> > 
-> > ---
-> > This bug is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> > 
-> > syzbot will keep track of this bug report. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > syzbot can test patches for this bug, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
-> > 
+Jason
