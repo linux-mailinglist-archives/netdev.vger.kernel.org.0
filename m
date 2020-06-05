@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C63F1EF7EC
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56EB31EF7E6
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgFEMaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 08:30:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57164 "EHLO mail.kernel.org"
+        id S1727935AbgFEM3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:29:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726875AbgFEMZk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:25:40 -0400
+        id S1726939AbgFEMZq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 08:25:46 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99216207D0;
-        Fri,  5 Jun 2020 12:25:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F17072075B;
+        Fri,  5 Jun 2020 12:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591359939;
-        bh=LSh1+GupV2pKz+d4OidsvMNQT+xAZ6AUoy6Hh6bd47s=;
+        s=default; t=1591359945;
+        bh=pLoF6CctGEQJ++vNC1sEPzcqQMNSpnwUdvyBSVNNa/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Trn4oO8CsWxvo5rX+pQNJrqtxEoe21p0/4i7Y4d7PljKMASejtLloU/IStrfdfN8i
-         Zo1h9nUKp3AQFPQuIF31TkeZKBGNxfd0suyWyuAPXsWE3jA+0OM4bpvpYd7ocuvys+
-         0IeRFzljpiYq/8YqYY1z7rhi5qpT3/o6K0EM8C38=
+        b=viD7xH2llsmyz3vCEfzjxxucc9KKYU3dixjNeBDFKWKNPbaCZYRUVCjb1SEES2SVJ
+         cqwKfi6ckI8BRSM7MOxUeDhHpic765XX4gfsxGddDrTx8sROe/102bWh5KakRbxCiw
+         fsFUwOEfgedxEPQI+hoSpNEgSAH8dPkV5z40zISY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        James Chapman <jchapman@katalix.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com,
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 17/17] l2tp: do not use inet_hash()/inet_unhash()
-Date:   Fri,  5 Jun 2020 08:25:16 -0400
-Message-Id: <20200605122517.2882338-17-sashal@kernel.org>
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 04/14] net: stmmac: enable timestamp snapshot for required PTP packets in dwmac v5.10a
+Date:   Fri,  5 Jun 2020 08:25:30 -0400
+Message-Id: <20200605122540.2882539-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200605122517.2882338-1-sashal@kernel.org>
-References: <20200605122517.2882338-1-sashal@kernel.org>
+In-Reply-To: <20200605122540.2882539-1-sashal@kernel.org>
+References: <20200605122540.2882539-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,206 +46,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Fugang Duan <fugang.duan@nxp.com>
 
-[ Upstream commit 02c71b144c811bcdd865e0a1226d0407d11357e8 ]
+[ Upstream commit f2fb6b6275eba9d312957ca44c487bd780da6169 ]
 
-syzbot recently found a way to crash the kernel [1]
+For rx filter 'HWTSTAMP_FILTER_PTP_V2_EVENT', it should be
+PTP v2/802.AS1, any layer, any kind of event packet, but HW only
+take timestamp snapshot for below PTP message: sync, Pdelay_req,
+Pdelay_resp.
 
-Issue here is that inet_hash() & inet_unhash() are currently
-only meant to be used by TCP & DCCP, since only these protocols
-provide the needed hashinfo pointer.
+Then it causes below issue when test E2E case:
+ptp4l[2479.534]: port 1: received DELAY_REQ without timestamp
+ptp4l[2481.423]: port 1: received DELAY_REQ without timestamp
+ptp4l[2481.758]: port 1: received DELAY_REQ without timestamp
+ptp4l[2483.524]: port 1: received DELAY_REQ without timestamp
+ptp4l[2484.233]: port 1: received DELAY_REQ without timestamp
+ptp4l[2485.750]: port 1: received DELAY_REQ without timestamp
+ptp4l[2486.888]: port 1: received DELAY_REQ without timestamp
+ptp4l[2487.265]: port 1: received DELAY_REQ without timestamp
+ptp4l[2487.316]: port 1: received DELAY_REQ without timestamp
 
-L2TP uses a single list (instead of a hash table)
+Timestamp snapshot dependency on register bits in received path:
+SNAPTYPSEL TSMSTRENA TSEVNTENA 	PTP_Messages
+01         x         0          SYNC, Follow_Up, Delay_Req,
+                                Delay_Resp, Pdelay_Req, Pdelay_Resp,
+                                Pdelay_Resp_Follow_Up
+01         0         1          SYNC, Pdelay_Req, Pdelay_Resp
 
-This old bug became an issue after commit 610236587600
-("bpf: Add new cgroup attach type to enable sock modifications")
-since after this commit, sk_common_release() can be called
-while the L2TP socket is still considered 'hashed'.
+For dwmac v5.10a, enabling all events by setting register
+DWC_EQOS_TIME_STAMPING[SNAPTYPSEL] to 2’b01, clearing bit [TSEVNTENA]
+to 0’b0, which can support all required events.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 7063 Comm: syz-executor654 Not tainted 5.7.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
-Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
-RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
-RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
-RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
-R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
-R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
-FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- sk_common_release+0xba/0x370 net/core/sock.c:3210
- inet_create net/ipv4/af_inet.c:390 [inline]
- inet_create+0x966/0xe00 net/ipv4/af_inet.c:248
- __sock_create+0x3cb/0x730 net/socket.c:1428
- sock_create net/socket.c:1479 [inline]
- __sys_socket+0xef/0x200 net/socket.c:1521
- __do_sys_socket net/socket.c:1530 [inline]
- __se_sys_socket net/socket.c:1528 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1528
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x441e29
-Code: e8 fc b3 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdce184148 EFLAGS: 00000246 ORIG_RAX: 0000000000000029
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441e29
-RDX: 0000000000000073 RSI: 0000000000000002 RDI: 0000000000000002
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000402c30 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 23b6578228ce553e ]---
-RIP: 0010:inet_unhash+0x11f/0x770 net/ipv4/inet_hashtables.c:600
-Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e dd 04 00 00 48 8d 7d 08 44 8b 73 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 55 05 00 00 48 8d 7d 14 4c 8b 6d 08 48 b8 00 00
-RSP: 0018:ffffc90001777d30 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88809a6df940 RCX: ffffffff8697c242
-RDX: 0000000000000001 RSI: ffffffff8697c251 RDI: 0000000000000008
-RBP: 0000000000000000 R08: ffff88809f3ae1c0 R09: fffffbfff1514cc1
-R10: ffffffff8a8a6607 R11: fffffbfff1514cc0 R12: ffff88809a6df9b0
-R13: 0000000000000007 R14: 0000000000000000 R15: ffffffff873a4d00
-FS:  0000000001d2b880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000006cd090 CR3: 000000009403a000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: 0d76751fad77 ("l2tp: Add L2TPv3 IP encapsulation (no UDP) support")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: James Chapman <jchapman@katalix.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Reported-by: syzbot+3610d489778b57cc8031@syzkaller.appspotmail.com
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip.c  | 29 ++++++++++++++++++++++-------
- net/l2tp/l2tp_ip6.c | 30 ++++++++++++++++++++++--------
- 2 files changed, 44 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
-index 0d7c887a2b75..955662a6dee7 100644
---- a/net/l2tp/l2tp_ip.c
-+++ b/net/l2tp/l2tp_ip.c
-@@ -20,7 +20,6 @@
- #include <net/icmp.h>
- #include <net/udp.h>
- #include <net/inet_common.h>
--#include <net/inet_hashtables.h>
- #include <net/tcp_states.h>
- #include <net/protocol.h>
- #include <net/xfrm.h>
-@@ -209,15 +208,31 @@ static int l2tp_ip_recv(struct sk_buff *skb)
- 	return 0;
- }
- 
--static int l2tp_ip_open(struct sock *sk)
-+static int l2tp_ip_hash(struct sock *sk)
- {
--	/* Prevent autobind. We don't have ports. */
--	inet_sk(sk)->inet_num = IPPROTO_L2TP;
-+	if (sk_unhashed(sk)) {
-+		write_lock_bh(&l2tp_ip_lock);
-+		sk_add_node(sk, &l2tp_ip_table);
-+		write_unlock_bh(&l2tp_ip_lock);
-+	}
-+	return 0;
-+}
- 
-+static void l2tp_ip_unhash(struct sock *sk)
-+{
-+	if (sk_unhashed(sk))
-+		return;
- 	write_lock_bh(&l2tp_ip_lock);
--	sk_add_node(sk, &l2tp_ip_table);
-+	sk_del_node_init(sk);
- 	write_unlock_bh(&l2tp_ip_lock);
-+}
-+
-+static int l2tp_ip_open(struct sock *sk)
-+{
-+	/* Prevent autobind. We don't have ports. */
-+	inet_sk(sk)->inet_num = IPPROTO_L2TP;
- 
-+	l2tp_ip_hash(sk);
- 	return 0;
- }
- 
-@@ -594,8 +609,8 @@ static struct proto l2tp_ip_prot = {
- 	.sendmsg	   = l2tp_ip_sendmsg,
- 	.recvmsg	   = l2tp_ip_recvmsg,
- 	.backlog_rcv	   = l2tp_ip_backlog_recv,
--	.hash		   = inet_hash,
--	.unhash		   = inet_unhash,
-+	.hash		   = l2tp_ip_hash,
-+	.unhash		   = l2tp_ip_unhash,
- 	.obj_size	   = sizeof(struct l2tp_ip_sock),
- #ifdef CONFIG_COMPAT
- 	.compat_setsockopt = compat_ip_setsockopt,
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index d148766f40d1..0fa694bd3f6a 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -20,8 +20,6 @@
- #include <net/icmp.h>
- #include <net/udp.h>
- #include <net/inet_common.h>
--#include <net/inet_hashtables.h>
--#include <net/inet6_hashtables.h>
- #include <net/tcp_states.h>
- #include <net/protocol.h>
- #include <net/xfrm.h>
-@@ -222,15 +220,31 @@ static int l2tp_ip6_recv(struct sk_buff *skb)
- 	return 0;
- }
- 
--static int l2tp_ip6_open(struct sock *sk)
-+static int l2tp_ip6_hash(struct sock *sk)
- {
--	/* Prevent autobind. We don't have ports. */
--	inet_sk(sk)->inet_num = IPPROTO_L2TP;
-+	if (sk_unhashed(sk)) {
-+		write_lock_bh(&l2tp_ip6_lock);
-+		sk_add_node(sk, &l2tp_ip6_table);
-+		write_unlock_bh(&l2tp_ip6_lock);
-+	}
-+	return 0;
-+}
- 
-+static void l2tp_ip6_unhash(struct sock *sk)
-+{
-+	if (sk_unhashed(sk))
-+		return;
- 	write_lock_bh(&l2tp_ip6_lock);
--	sk_add_node(sk, &l2tp_ip6_table);
-+	sk_del_node_init(sk);
- 	write_unlock_bh(&l2tp_ip6_lock);
-+}
-+
-+static int l2tp_ip6_open(struct sock *sk)
-+{
-+	/* Prevent autobind. We don't have ports. */
-+	inet_sk(sk)->inet_num = IPPROTO_L2TP;
- 
-+	l2tp_ip6_hash(sk);
- 	return 0;
- }
- 
-@@ -728,8 +742,8 @@ static struct proto l2tp_ip6_prot = {
- 	.sendmsg	   = l2tp_ip6_sendmsg,
- 	.recvmsg	   = l2tp_ip6_recvmsg,
- 	.backlog_rcv	   = l2tp_ip6_backlog_recv,
--	.hash		   = inet6_hash,
--	.unhash		   = inet_unhash,
-+	.hash		   = l2tp_ip6_hash,
-+	.unhash		   = l2tp_ip6_unhash,
- 	.obj_size	   = sizeof(struct l2tp_ip6_sock),
- #ifdef CONFIG_COMPAT
- 	.compat_setsockopt = compat_ipv6_setsockopt,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 1623516efb17..982be75fde83 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -630,7 +630,8 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
+ 			config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+ 			ptp_v2 = PTP_TCR_TSVER2ENA;
+ 			snap_type_sel = PTP_TCR_SNAPTYPSEL_1;
+-			ts_event_en = PTP_TCR_TSEVNTENA;
++			if (priv->synopsys_id != DWMAC_CORE_5_10)
++				ts_event_en = PTP_TCR_TSEVNTENA;
+ 			ptp_over_ipv4_udp = PTP_TCR_TSIPV4ENA;
+ 			ptp_over_ipv6_udp = PTP_TCR_TSIPV6ENA;
+ 			ptp_over_ethernet = PTP_TCR_TSIPENA;
 -- 
 2.25.1
 
