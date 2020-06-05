@@ -2,141 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D133D1EF56A
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 12:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E7A1EF59F
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 12:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgFEKbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 06:31:22 -0400
-Received: from mga18.intel.com ([134.134.136.126]:57119 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbgFEKbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 06:31:17 -0400
-IronPort-SDR: sXaWKxSFYYfNT7jmkvjSDQ1pVRkH1t0Ol/nl9ELK0sxC5gKaqPqMqM2tC8j2C5aI9LlVTe9Teu
- 8uh/RM1ls4JQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2020 03:31:15 -0700
-IronPort-SDR: 0bnmV3ZfwMXxA2zLksdHpWARfLlbGjwdubLD8bLlPGSTLXWzssphfZ5b3Q4oRgssZCY8EbyV4l
- 28ztewRd4jMg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,476,1583222400"; 
-   d="scan'208";a="305024968"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Jun 2020 03:31:13 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jasowang@redhat.com
-Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH RESEND 5/5] ifcvf: implement config interrupt in IFCVF
-Date:   Fri,  5 Jun 2020 18:27:15 +0800
-Message-Id: <1591352835-22441-6-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1591352835-22441-1-git-send-email-lingshan.zhu@intel.com>
-References: <1591352835-22441-1-git-send-email-lingshan.zhu@intel.com>
+        id S1726776AbgFEKrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 06:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726465AbgFEKrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 06:47:19 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2CFC08C5C2;
+        Fri,  5 Jun 2020 03:47:19 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1jh9sa-0003Hd-EX; Fri, 05 Jun 2020 12:47:16 +0200
+Date:   Fri, 5 Jun 2020 12:47:16 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     netfilter-devel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, netfilter@vger.kernel.org,
+        netfilter-announce@lists.netfilter.org
+Subject: [ANNOUNCE] libnetfilter_queue 1.0.4 release
+Message-ID: <20200605104716.GJ28263@breakpoint.cc>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="6c2NcOVqGQ03X4Wi"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements config interrupt support
-in IFC VF
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.c |  3 +++
- drivers/vdpa/ifcvf/ifcvf_base.h |  4 ++++
- drivers/vdpa/ifcvf/ifcvf_main.c | 23 ++++++++++++++++++++++-
- 3 files changed, 29 insertions(+), 1 deletion(-)
+--6c2NcOVqGQ03X4Wi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index e24371d..94bf032 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -185,6 +185,9 @@ void ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
- 
- void ifcvf_reset(struct ifcvf_hw *hw)
- {
-+	hw->config_cb.callback = NULL;
-+	hw->config_cb.private = NULL;
-+
- 	ifcvf_set_status(hw, 0);
- 	/* flush set_status, make sure VF is stopped, reset */
- 	ifcvf_get_status(hw);
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index e803070..f455441 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,6 +27,7 @@
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
- 		 (1ULL << VIRTIO_F_VERSION_1)			| \
-+		 (1ULL << VIRTIO_NET_F_STATUS)			| \
- 		 (1ULL << VIRTIO_F_ORDER_PLATFORM)		| \
- 		 (1ULL << VIRTIO_F_IOMMU_PLATFORM)		| \
- 		 (1ULL << VIRTIO_NET_F_MRG_RXBUF))
-@@ -81,6 +82,9 @@ struct ifcvf_hw {
- 	void __iomem *net_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
- 	void __iomem * const *base;
-+	char config_msix_name[256];
-+	struct vdpa_callback config_cb;
-+
- };
- 
- struct ifcvf_adapter {
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 63a6366..f5a60c1 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -18,6 +18,16 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+static irqreturn_t ifcvf_config_changed(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+
-+	if (vf->config_cb.callback)
-+		return vf->config_cb.callback(vf->config_cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- {
- 	struct vring_info *vring = arg;
-@@ -59,6 +69,14 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- 		return ret;
- 	}
- 
-+	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
-+		 pci_name(pdev));
-+	vector = 0;
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_config_changed, 0,
-+			       vf->config_msix_name, vf);
-+
- 	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
- 		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
- 			 pci_name(pdev), i);
-@@ -328,7 +346,10 @@ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
- static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
- 				     struct vdpa_callback *cb)
- {
--	/* We don't support config interrupt */
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+
-+	vf->config_cb.callback = cb->callback;
-+	vf->config_cb.private = cb->private;
- }
- 
- /*
--- 
-1.8.3.1
+Hi!
 
+The Netfilter project proudly presents:
+
+        libnetfilter_queue 1.0.4
+
+Major changes in this version:
+ * major updates to documentation, from Duncan Roe.
+ * allow building with clan, also from Duncan.
+ * add new nfq_get_skbinfo() helper.  This allows to detect when
+   packet checksums have been validated already or if they will
+   be filled in by tx checksum offload on transmit later on.
+
+Notable bug fixes:
+ checksum calculation fixes for UDP checksum helpers and on big endian arches,
+ from Pablo Neira and Alin Nastac.
+
+See ChangeLog that comes attached to this email for more details.
+
+You can download it from:
+
+https://www.netfilter.org/projects/libnetfilter_queue/downloads.html
+
+Have fun!
+
+--6c2NcOVqGQ03X4Wi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="changes-libnetfilter_queue-1.0.4.txt"
+
+Alin Nastac (1):
+      checksum: Fix TCP/UDP checksum computation on big endian arches
+
+Duncan Roe (40):
+      src: Update UDP header length field after mangling
+      src: doc: Miscellaneous updates
+      src: Enable clang build
+      src: Fix invalid conversion specifier
+      src: doc: Minor fix
+      src: doc: Document nfq_nlmsg_verdict_put_mark() and nfq_nlmsg_verdict_put_pkt()
+      src: Eliminate useless spaces before tabs
+      src: doc: Update the Main Page to be nft-focussed
+      src: doc: Fix spelling of CTA_LABELS in examples/nf-queue.c
+      src: doc: Eliminate doxygen warnings from ipv{4,6}.c
+      src: pktb_trim() was not updating tail after updating len
+      src: Make sure pktb_alloc() works for AF_INET6 since we document that it does
+      src: Make sure pktb_alloc() works for IPv6 over AF_BRIDGE
+      src: Fix IPv4 checksum calculation in AF_BRIDGE packet buffer
+      examples: Delete code not needed since Linux 3.8
+      src: Fix test for IPv6 header
+      src: doc: Major re-work of user packet buffer documentation
+      Minor tweak to pktb_len function description
+      src: doc: Update sample code to agree with documentation
+      src: doc: Fully document available verdicts
+      src: Fix value returned by nfq_udp_get_payload_len()
+      src: doc: udp.c: rename 1 more formal pkt arg to pktb
+      src: doc: Eliminate doxygen warnings from udp.c
+      src: more IPv6 checksum fixes
+      src: add mangle functions for IPv6, IPv6/TCP and IPv6/UDP
+      src: pktb_mangle has signed offset arg so can mangle MAC header with -ve one
+      doc: whitespace: Remove trailing spaces from doxygen.cfg.in
+      doc: doxygen.cfg.in: Eliminate 20 doxygen warnings
+      src: doc: tcp.c: fix remaining doxygen warnings
+      src: checksum.c: remove redundant 0xFFFF mask of uint16_t
+      src: libnetfilter_queue.c: whitespace: remove trailing spaces
+      src: doc: Eliminate doxygen warnings from libnetfilter_queue.c
+      src: Always use pktb as formal arg of type struct pkt_buff
+      src: doc: Final polish for current round
+      src: Fix value returned by nfq_tcp_get_payload_len()
+      src: Fix indenting weirdness is pktbuff.c w/out changing indent
+      src: Simplify struct pkt_buff: remove head
+      Simplify struct pkt_buff: remove tail
+      build: doc: "make" builds & installs a full set of man pages
+      src: expose nfq_nlmsg_put
+
+Florian Westphal (3):
+      src: add nfq_get_skbinfo()
+      configure: fix doxygen check
+      configure: prepare for 1.0.4 release
+
+Pablo Neira Ayuso (2):
+      checksum: Fix UDP checksum calculation
+      doxygen: remove EXPORT_SYMBOL from the output
+
+
+--6c2NcOVqGQ03X4Wi--
