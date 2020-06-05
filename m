@@ -2,111 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241A71EEF48
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 04:02:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4651EEF4B
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 04:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726076AbgFECCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jun 2020 22:02:23 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:46700 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgFECCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jun 2020 22:02:20 -0400
-Received: by mail-io1-f70.google.com with SMTP id w2so4804733iom.13
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 19:02:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=szPEl64cpoHvhxXlR5lo+T/AwMKKhjIH6u2ObmlDQ8E=;
-        b=BeSg6kpBAlfUc1Ubl2k04qEBT+4ICIi4lIe6qb/9lkHGF5it/nSeUmcK+c9an14mdl
-         5FFQ5hosCoNaw26kBu+UM9Z8iOeS35OFxFK6skQz1ZNwK/x6iRXHCXoa/PkibaK3YVb7
-         G2D5BFP38wTcwHaWmavzvlcEv1vXpzwlX60gAevb9/jVREhC/DMynmM9iYDOWstMW5rl
-         PFvrcA6m/LpRterZqHRDrillwRftTP53zdZ7MLFASV9TBe7RN5yrFQ37RVikpgfeZlMV
-         MmoIqu4a7MWtISh+EVEn/mBp1pqSphx78A2WvmU/VGfhVNLekHNkK7ltoLNmEGsoz8N+
-         RPRg==
-X-Gm-Message-State: AOAM532AkxFWAv8RfC3syp59r5/O3ccZcx790MHlkuUKRmHGIw3qrlwK
-        3hvtQ1F06YRmq6YGkuKS8NiuSQlNuNTNWf26o516bCtGBXbs
-X-Google-Smtp-Source: ABdhPJy35sGcsK5T99oV/Miqd0MTFmMIRGWwz7NG7KYR7p84q6J2DjC+KVRxWgwyPqvZlI1/vg6BarUMynCMXcFO+QudDyc1gEy4
+        id S1726021AbgFECGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jun 2020 22:06:19 -0400
+Received: from mail-vi1eur05on2081.outbound.protection.outlook.com ([40.107.21.81]:32640
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725883AbgFECGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jun 2020 22:06:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LYtXYjiebBer9c4KtMt7mFAMle8hXEW4uouSy1hdcfkfmBrOLdwNQd/W8JvWmcQ3clAp8SzBoVYlPFmio3qdSEZ5Km8PVBGYBXuGzZeyRVUEQ/CKaaSuetlXclBFQ52OZrHZbHRM8bsW6QtXXel3iwKtgN5p8s3IlDvZ+F6jBsr7nUSoM0nT/qZEGmDrH/vsw35BkmRjFo04FVliL73IHcHgwLkQrYx25Za8t8mxCE4pCgL8Yd6Pv6zKD59JS7mETwn6H3sugEMAzJ0VWcWsK3OyITSliVBHbk/w4glPsljEWPH6vNe8qwXw3+Puz97pBc2gBKIdpMe+E08iJUbr3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xfJ7EJ4gbq7IK4kVbrnIC5vn6Jr813fCp0IZxx46sLQ=;
+ b=QNuzdEWbJBzHgNIAtgrCMTu/wS7LdSR48zBvbLj269Lmap0ONdQ2aU0aH0aH8tPhGQU5TgmLtnRC92HUZ0nCBxbILeI/YfnMJhRJumlECSdC2NFxbgmJpVd69Y+FtMowVxCo3BvKuEp+NSA6Ga3iZDRvdXQLOavwLwwyVfUYF06IKWd343JmTqurp9nC+crdiOkRI27UB1A4em8W/Y6tGPQtc2d5iXCy7u4/9CYgtTPGYM+ead1ZDAE+KOnCniXymAzlQRRmp7OAOwrAewZYxbCTIypiT+rs4tG2oLVMKs8YsmOEaTUeoYl0Fh6HUx0lbU9DmWgbOaY+8ql19YvvCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xfJ7EJ4gbq7IK4kVbrnIC5vn6Jr813fCp0IZxx46sLQ=;
+ b=IUs+gNRpaQQzHkhD8u+QJkmOKQ0n2aIku3g2CydVdHbgqfMsuovdA9sgvODQvJS44fPSDgD9etaXvi50x4gF/a0h6BqVqjlI03d0nR7CLlc+21/KfWVir0SMH9uINsHfI4JX2p/gTzZsc+WUsVk4mkUafrZFgWIGTTpHw5HYD/0=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR0402MB3928.eurprd04.prod.outlook.com
+ (2603:10a6:209:1a::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.19; Fri, 5 Jun
+ 2020 02:06:14 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3045.024; Fri, 5 Jun 2020
+ 02:06:14 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net,stable 1/1] net: ethernet: stmmac: free tx skb buffer
+ in stmmac_resume()
+Thread-Topic: [PATCH net,stable 1/1] net: ethernet: stmmac: free tx skb buffer
+ in stmmac_resume()
+Thread-Index: AQHWOLSWclUv/VcTx0GEq1TzaGMl+6jJSjfg
+Date:   Fri, 5 Jun 2020 02:06:14 +0000
+Message-ID: <AM6PR0402MB360722C28396BD995A4AD2FDFF860@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <20200602075826.20673-1-fugang.duan@nxp.com>
+In-Reply-To: <20200602075826.20673-1-fugang.duan@nxp.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bcf0fed5-107f-43d8-e458-08d808f506ce
+x-ms-traffictypediagnostic: AM6PR0402MB3928:
+x-microsoft-antispam-prvs: <AM6PR0402MB392837F4E40CBF83F5DF4221FF860@AM6PR0402MB3928.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-forefront-prvs: 0425A67DEF
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DTzUYxfncV7PTK3f6UfW+An/XkdaZQsdHicY8chknsbpN0phLrRqvCkTCxtPTn3DJsjdB/jILgnRH6YDImiC6DG6vvFzNx5/xZnjnA/nROEANUfRZ6qJdbVtN+VAipZa0RqTAE3BVCfhqRnTeyGvuFRLcQXL/OFArV+5U7lMMu5bUYPQm391SwXIIrRpjERqPiZIThOGsN5v+lruzDlcg/WC6duRLQbIw9XhmenqSBcEvokmflEd3Unn2ScaW1uZQl62c8HSE65zbytthHUCLNXvV9CausTULyRsZBBMwczACrr0vwFSZNiczHowNWsGqNm46+IoLcrDBO9qOMTPxQDz+aqDPgLMXsJa3J6lqsUz26Hu0EuxZPIjPtQWChA8
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(346002)(39860400002)(376002)(396003)(9686003)(26005)(55016002)(54906003)(4326008)(316002)(71200400001)(8936002)(2906002)(8676002)(45080400002)(110136005)(52536014)(5660300002)(6506007)(33656002)(186003)(478600001)(76116006)(66446008)(66476007)(83380400001)(66556008)(7696005)(86362001)(64756008)(66946007)(142933001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: JjJSfx9DZ9ovuHOVPrOlJFuLYNuVHiv6YMaEaWzv/GOBQGlwfQSPQSF2kTsS2w7eDJNLyxrGq11AlzQZ2x2U+xmdqrJNaaav9EGKlE97iuND3ZBmsFPnM9JIDSxuXrA5ACk8ObfTCqayDz8ztb0TYQNVBTz1xkdu9rvUO05+H0gTXbXhufEqrSTrEyUHfyUZ0c6oOqe4m/JhPYbhrFKRJquGfLFLuOWnpHaw9xL91QEkgOUJvBTTtPLKKZbDPtl873fZf0YlAg1pw2jyJhFH+ZdYMFKM6BwJDtGp4pMS9NuLFwy/NClv6ReGduuO2ogXBj61vjTFyfc7Qa6oskMuCuNLnfs7NLaJMeUcyDZFjKJpxtp7pYnAXKmVD/m557flLb34wwoAWih1fXFjp79Li7F/To0v9CXh3K1BKbKfxleCFrEi5mXNWH7sqIrOG0hfOOsLHgqSZ94cBERT1KmRPwfssh7Iq3xM43aggQ6f4uo=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a92:cc4e:: with SMTP id t14mr4239598ilq.138.1591322538629;
- Thu, 04 Jun 2020 19:02:18 -0700 (PDT)
-Date:   Thu, 04 Jun 2020 19:02:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a363b205a74ca6a2@google.com>
-Subject: BUG: using smp_processor_id() in preemptible code in radix_tree_node_alloc
-From:   syzbot <syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bcf0fed5-107f-43d8-e458-08d808f506ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2020 02:06:14.5505
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S9Tp0oFy/HtzgLS6pylqhlcxvTw/fLfY36zuP8RMSut7Dzbxik8A+eK3zRFzG9mQ7GMXb7gerth0ivmajN0J9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3928
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Ping...
 
-syzbot found the following crash on:
+From: Andy Duan <fugang.duan@nxp.com> Sent: Tuesday, June 2, 2020 3:58 PM
+> From: Fugang Duan <fugang.duan@nxp.com>
+>=20
+> When do suspend/resume test, there have WARN_ON() log dump from
+> stmmac_xmit() funciton, the code logic:
+> 	entry =3D tx_q->cur_tx;
+> 	first_entry =3D entry;
+> 	WARN_ON(tx_q->tx_skbuff[first_entry]);
+>=20
+> In normal case, tx_q->tx_skbuff[txq->cur_tx] should be NULL because the s=
+kb
+> should be processed and freed in stmmac_tx_clean().
+>=20
+> But stmmac_resume() reset queue parameters like below, skb buffers may no=
+t
+> be freed.
+> 	tx_q->cur_tx =3D 0;
+> 	tx_q->dirty_tx =3D 0;
+>=20
+> So free tx skb buffer in stmmac_resume() to avoid warning and memory leak=
+.
+>=20
+> log:
+> [   46.139824] ------------[ cut here ]------------
+> [   46.144453] WARNING: CPU: 0 PID: 0 at
+> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3235
+> stmmac_xmit+0x7a0/0x9d0
+> [   46.154969] Modules linked in: crct10dif_ce vvcam(O) flexcan can_dev
+> [   46.161328] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           O
+> 5.4.24-2.1.0+g2ad925d15481 #1
+> [   46.170369] Hardware name: NXP i.MX8MPlus EVK board (DT)
+> [   46.175677] pstate: 80000005 (Nzcv daif -PAN -UAO)
+> [   46.180465] pc : stmmac_xmit+0x7a0/0x9d0
+> [   46.184387] lr : dev_hard_start_xmit+0x94/0x158
+> [   46.188913] sp : ffff800010003cc0
+> [   46.192224] x29: ffff800010003cc0 x28: ffff000177e2a100
+> [   46.197533] x27: ffff000176ef0840 x26: ffff000176ef0090
+> [   46.202842] x25: 0000000000000000 x24: 0000000000000000
+> [   46.208151] x23: 0000000000000003 x22: ffff8000119ddd30
+> [   46.213460] x21: ffff00017636f000 x20: ffff000176ef0cc0
+> [   46.218769] x19: 0000000000000003 x18: 0000000000000000
+> [   46.224078] x17: 0000000000000000 x16: 0000000000000000
+> [   46.229386] x15: 0000000000000079 x14: 0000000000000000
+> [   46.234695] x13: 0000000000000003 x12: 0000000000000003
+> [   46.240003] x11: 0000000000000010 x10: 0000000000000010
+> [   46.245312] x9 : ffff00017002b140 x8 : 0000000000000000
+> [   46.250621] x7 : ffff00017636f000 x6 : 0000000000000010
+> [   46.255930] x5 : 0000000000000001 x4 : ffff000176ef0000
+> [   46.261238] x3 : 0000000000000003 x2 : 00000000ffffffff
+> [   46.266547] x1 : ffff000177e2a000 x0 : 0000000000000000
+> [   46.271856] Call trace:
+> [   46.274302]  stmmac_xmit+0x7a0/0x9d0
+> [   46.277874]  dev_hard_start_xmit+0x94/0x158
+> [   46.282056]  sch_direct_xmit+0x11c/0x338
+> [   46.285976]  __qdisc_run+0x118/0x5f0
+> [   46.289549]  net_tx_action+0x110/0x198
+> [   46.293297]  __do_softirq+0x120/0x23c
+> [   46.296958]  irq_exit+0xb8/0xd8
+> [   46.300098]  __handle_domain_irq+0x64/0xb8
+> [   46.304191]  gic_handle_irq+0x5c/0x148
+> [   46.307936]  el1_irq+0xb8/0x180
+> [   46.311076]  cpuidle_enter_state+0x84/0x360
+> [   46.315256]  cpuidle_enter+0x34/0x48
+> [   46.318829]  call_cpuidle+0x18/0x38
+> [   46.322314]  do_idle+0x1e0/0x280
+> [   46.325539]  cpu_startup_entry+0x24/0x40
+> [   46.329460]  rest_init+0xd4/0xe0
+> [   46.332687]  arch_call_rest_init+0xc/0x14
+> [   46.336695]  start_kernel+0x420/0x44c
+> [   46.340353] ---[ end trace bc1ee695123cbacd ]---
+>=20
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 73677c3b33b6..3c0a2d8765f9 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1548,6 +1548,15 @@ static void dma_free_tx_skbufs(struct
+> stmmac_priv *priv, u32 queue)
+>  		stmmac_free_tx_buffer(priv, queue, i);  }
+>=20
+> +static void stmmac_free_tx_skbufs(struct stmmac_priv *priv) {
+> +	u32 tx_queue_cnt =3D priv->plat->tx_queues_to_use;
+> +	u32 queue;
+> +
+> +	for (queue =3D 0; queue < tx_queue_cnt; queue++)
+> +		dma_free_tx_skbufs(priv, queue);
+> +}
+> +
+>  /**
+>   * free_dma_rx_desc_resources - free RX dma desc resources
+>   * @priv: private structure
+> @@ -5186,6 +5195,7 @@ int stmmac_resume(struct device *dev)
+>=20
+>  	stmmac_reset_queues_param(priv);
+>=20
+> +	stmmac_free_tx_skbufs(priv);
+>  	stmmac_clear_descriptors(priv);
+>=20
+>  	stmmac_hw_setup(ndev, false);
+> --
+> 2.17.1
 
-HEAD commit:    acf25aa6 Merge tag 'Smack-for-5.8' of git://github.com/csc..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d6307a100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5263d9b5bce03c67
-dashboard link: https://syzkaller.appspot.com/bug?extid=3eec59e770685e3dc879
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15bd4c1e100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1520c9de100000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-
-RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
-RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
-R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor036/6796
-caller is radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
-CPU: 0 PID: 6796 Comm: syz-executor036 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- radix_tree_node_alloc.constprop.0+0x200/0x330 lib/radix-tree.c:262
- radix_tree_extend+0x256/0x4e0 lib/radix-tree.c:424
- idr_get_free+0x60c/0x8e0 lib/radix-tree.c:1492
- idr_alloc_u32+0x170/0x2d0 lib/idr.c:46
- idr_alloc+0xc2/0x130 lib/idr.c:87
- qrtr_port_assign net/qrtr/qrtr.c:703 [inline]
- __qrtr_bind.isra.0+0x12e/0x5c0 net/qrtr/qrtr.c:756
- qrtr_autobind net/qrtr/qrtr.c:787 [inline]
- qrtr_autobind+0xaf/0xf0 net/qrtr/qrtr.c:775
- qrtr_sendmsg+0x1d6/0x770 net/qrtr/qrtr.c:895
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
- ___sys_sendmsg+0x100/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x4406c9
-Code: 25 02 00 85 c0 b8 00 00 00 00 48 0f 44 c3 5b c3 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdf01d56c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007ffdf01d56d0 RCX: 00000000004406c9
-RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 0000000000000005 R08: 0000000000000001 R09: 0000000000000031
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f50
-R13: 0000000000401fe0 R14: 0000000000000000 R15: 0000000000000000
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
