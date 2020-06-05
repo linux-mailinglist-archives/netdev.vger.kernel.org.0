@@ -2,95 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 686801EF0B7
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 06:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 109D51EF0D0
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 07:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726054AbgFEEwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 00:52:50 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54032 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725280AbgFEEwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Jun 2020 00:52:50 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l26so7159910wme.3
-        for <netdev@vger.kernel.org>; Thu, 04 Jun 2020 21:52:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=/a3q9oJ/+Q5ffliIOcEjfwRPLXfx4yLmntpdJIKRnC4=;
-        b=DxkcHfSFJPtTIBddqFv1QTqU8vM7gD/grkSjI9HCrV2Em65aG4gqJCzVD41O5DFoKt
-         9aISTZNPtJScZLna5yFdiajuwnWaw/8d//HOFccKDVBxwuf5ELd9aJuaHbfCR8yi2r8X
-         Hmttkos4kA0qhw0M2PmnZmiej2kJ5Jb5+AUNlqHWgOTaJBuRp4S/Gtaq/u40tsWXjQtF
-         DKFCack5DTVdKRO4vZaeTbSVps93Mdgd3kRDkTfWiCxFhA/MzofZCvyQ/+O4RbEs/ul5
-         RH4SsmQu/pOtIUtvdhosdFYHvDAfb9MhXxCkY5vjDL/7SFryM8a20KLFTZSu7rs7A+uj
-         QdbA==
-X-Gm-Message-State: AOAM530anbHpMoQoQCkxFIAB2tdbDQFSHZ2CgQQo+7yu7L0cDXMXXjbC
-        BbBgss6e3lAjsJ5Z9cmdbak=
-X-Google-Smtp-Source: ABdhPJxL2wzHvBMIKeVYvp/inGbD214wjZJ77k/7XpRXOkQtHc28x63owtZ3kXJ6ECGE3zOMfq7FqA==
-X-Received: by 2002:a1c:e914:: with SMTP id q20mr698002wmc.145.1591332768428;
-        Thu, 04 Jun 2020 21:52:48 -0700 (PDT)
-Received: from ?IPv6:2a02:21b0:9002:414a:d51e:6f07:7e6f:fcfa? ([2a02:21b0:9002:414a:d51e:6f07:7e6f:fcfa])
-        by smtp.gmail.com with ESMTPSA id z12sm11454807wrg.9.2020.06.04.21.52.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jun 2020 21:52:47 -0700 (PDT)
-Reply-To: valentin@longchamp.me
-Subject: Re: [PATCH] net: sched: make the watchdog functions more coherent
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        jhs@mojatatu.com
-References: <20200603212113.11801-1-valentin@longchamp.me>
- <20200604.155512.1355727491425437227.davem@davemloft.net>
-From:   Valentin Longchamp <valentin@longchamp.me>
-Message-ID: <24d3d43f-8b69-c4e1-9c42-89202705c542@longchamp.me>
-Date:   Fri, 5 Jun 2020 06:52:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1726027AbgFEFJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 01:09:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49816 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725280AbgFEFJL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 01:09:11 -0400
+Received: from sol.localdomain (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72612207D5;
+        Fri,  5 Jun 2020 05:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591333751;
+        bh=UzyDlahrvzCn5RxpxYl+m85rQsa0HCgoF/xHBV+f4j0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TKh1NKbROLLp3vX6PmXrzkE1rDwcwsFbSe5Uud+LufF6E+qldnJPBWfWT5czJbw9i
+         qSIvkZ7swPo6k02ohRf0Ax+mLYUjFFOKUE+qNbeN/XDe07To5TmfM4UPQLXtAn/t3S
+         B2SAJnNLi5Y6y5J9T24xtdetUL0+HESHpNMqamf4=
+Date:   Thu, 4 Jun 2020 22:09:10 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH net] esp: select CRYPTO_SEQIV
+Message-ID: <20200605050910.GS2667@sol.localdomain>
+References: <20200604192322.22142-1-ebiggers@kernel.org>
+ <20200605002858.GB31846@gondor.apana.org.au>
+ <20200605002956.GA31947@gondor.apana.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20200604.155512.1355727491425437227.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200605002956.GA31947@gondor.apana.org.au>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 05.06.2020 à 00:55, David Miller a écrit :
-> From: Valentin Longchamp <valentin@longchamp.me>
-> Date: Wed,  3 Jun 2020 23:21:13 +0200
+On Fri, Jun 05, 2020 at 10:29:56AM +1000, Herbert Xu wrote:
+> On Fri, Jun 05, 2020 at 10:28:58AM +1000, Herbert Xu wrote:
+> >
+> > Hmm, the selection list doesn't include CTR so just adding SEQIV
+> > per se makes no sense.  I'm not certain that we really want to
+> > include every algorithm under the sun.  Steffen, what do you think?
 > 
->> Remove dev_watchdog_up() that directly called __netdev_watchdog_up() and
->> rename dev_watchdog_down() to __netdev_watchdog_down() for symmetry.
->>
->> Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
->> ---
->>   net/sched/sch_generic.c | 11 +++--------
->>   1 file changed, 3 insertions(+), 8 deletions(-)
->>
->> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->> index 2efd5b61acef..f3cb740a2941 100644
->> --- a/net/sched/sch_generic.c
->> +++ b/net/sched/sch_generic.c
->> @@ -465,12 +465,7 @@ void __netdev_watchdog_up(struct net_device *dev)
->>   	}
->>   }
->>   
->> -static void dev_watchdog_up(struct net_device *dev)
->> -{
->> -	__netdev_watchdog_up(dev);
->> -}
->> -
->> -static void dev_watchdog_down(struct net_device *dev)
->> +static void __netdev_watchdog_down(struct net_device *dev)
+> Or how about
 > 
-> This patch will not apply if I apply your symbol export patch because
-> the context above this function will be different.
+> 	select CRYPTO_SEQIV if CRYPTO_CTR
 > 
-> Please don't do this.
+> That would make more sense.
 > 
+> Cheers,
 
-Yeah, I didn't know how to handle this properly: I kept both patches 
-separated because the symbol export should go to stable and this one not.
+There's also a case where "seqiv" is used without counter mode:
 
-Is that OK to have only a ("initial") subset of a series aimed for stable ?
+net/xfrm/xfrm_algo.c:
+
+{
+        .name = "rfc7539esp(chacha20,poly1305)",
+
+        .uinfo = {
+                .aead = {
+                        .geniv = "seqiv",
+                        .icv_truncbits = 128,
+                }
+        },
+
+        .pfkey_supported = 0,
+},
+
+
+FWIW, we make CONFIG_FS_ENCRYPTION select only the algorithms that we consider
+the "default", and any "non-default" algorithms need to be explicitly enabled.
+
+Is something similar going on here with INET_ESP and INET_ESP6?  Should "seqiv"
+be considered a "default" for IPsec?
+
+- Eric
