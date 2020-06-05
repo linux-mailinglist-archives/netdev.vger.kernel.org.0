@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9901EF794
-	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D40891EF793
+	for <lists+netdev@lfdr.de>; Fri,  5 Jun 2020 14:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbgFEM1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Jun 2020 08:27:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58738 "EHLO mail.kernel.org"
+        id S1727973AbgFEM1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Jun 2020 08:27:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727811AbgFEM00 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:26:26 -0400
+        id S1727822AbgFEM01 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Jun 2020 08:26:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1259C207F9;
-        Fri,  5 Jun 2020 12:26:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2006020897;
+        Fri,  5 Jun 2020 12:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591359985;
-        bh=j8orNAunIxSQ9ASqeWQkBMcYcmKFIItuzSrFfN+nvrk=;
+        s=default; t=1591359986;
+        bh=h7BgepuHnXaWIEWlZfzGLvyiFhjoq/sM4o/0P6qHDWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqJZw8eHNKlT5i8DP8FXkO5qGhrc7IRFRiaoHAyezFeuQkE8dTMMFgS0TnalHdZAv
-         t//71hJ2dq7Ew4BToFobry/FEM4wBRWuTS2QIUbjzUzACIN+9mUvfpUJULjZA5dWjD
-         XcCZ8rHZjXIFUahkAIh9leIEPovs9hFCIgbLtgBU=
+        b=nRTU7peaFN8lg6Pyy1vOSYUnhiHO1L8uMi9YIRCchPEAe97Z1Pj1FJcr8VYAJPfyH
+         WaYV3+79hYdtM1sV/AGftSfctAsIr5W30oGnuwD8V4ZvcIw/w+jTP9BztpEsXIDI09
+         +eyKuQYgc7NMzibk+bXYOBCt4k6P/F0namDuE86w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuhong Yuan <hslester96@gmail.com>,
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 4/6] NFC: st21nfca: add missed kfree_skb() in an error path
-Date:   Fri,  5 Jun 2020 08:26:18 -0400
-Message-Id: <20200605122620.2882962-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.9 5/6] drivers/net/ibmvnic: Update VNIC protocol version reporting
+Date:   Fri,  5 Jun 2020 08:26:19 -0400
+Message-Id: <20200605122620.2882962-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200605122620.2882962-1-sashal@kernel.org>
 References: <20200605122620.2882962-1-sashal@kernel.org>
@@ -43,37 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
+From: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-[ Upstream commit 3decabdc714ca56c944f4669b4cdec5c2c1cea23 ]
+[ Upstream commit 784688993ebac34dffe44a9f2fabbe126ebfd4db ]
 
-st21nfca_tm_send_atr_res() misses to call kfree_skb() in an error path.
-Add the missed function call to fix it.
+VNIC protocol version is reported in big-endian format, but it
+is not byteswapped before logging. Fix that, and remove version
+comparison as only one protocol version exists at this time.
 
-Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/st21nfca/dep.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-index 798a32bbac5d..e023a679bdea 100644
---- a/drivers/nfc/st21nfca/dep.c
-+++ b/drivers/nfc/st21nfca/dep.c
-@@ -184,8 +184,10 @@ static int st21nfca_tm_send_atr_res(struct nfc_hci_dev *hdev,
- 		memcpy(atr_res->gbi, atr_req->gbi, gb_len);
- 		r = nfc_set_remote_general_bytes(hdev->ndev, atr_res->gbi,
- 						  gb_len);
--		if (r < 0)
-+		if (r < 0) {
-+			kfree_skb(skb);
- 			return r;
-+		}
- 	}
- 
- 	info->dep_info.curr_nfc_dep_pni = 0;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 897a87ae8655..20f7ab4aa2f1 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -3362,12 +3362,10 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
+ 			dev_err(dev, "Error %ld in VERSION_EXCHG_RSP\n", rc);
+ 			break;
+ 		}
+-		dev_info(dev, "Partner protocol version is %d\n",
+-			 crq->version_exchange_rsp.version);
+-		if (be16_to_cpu(crq->version_exchange_rsp.version) <
+-		    ibmvnic_version)
+-			ibmvnic_version =
++		ibmvnic_version =
+ 			    be16_to_cpu(crq->version_exchange_rsp.version);
++		dev_info(dev, "Partner protocol version is %d\n",
++			 ibmvnic_version);
+ 		send_cap_queries(adapter);
+ 		break;
+ 	case QUERY_CAPABILITY_RSP:
 -- 
 2.25.1
 
