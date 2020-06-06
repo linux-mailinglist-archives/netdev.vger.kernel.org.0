@@ -2,123 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B4DE1F05A0
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 09:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A261F05A2
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 09:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728609AbgFFHtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 03:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
+        id S1728611AbgFFH41 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 6 Jun 2020 03:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgFFHtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 03:49:24 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04371C08C5C2;
-        Sat,  6 Jun 2020 00:49:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=xL+G4GsW94/ggK5JfU33JmEGYUmeoXOu9t2Nxi5lgnY=; b=bjusGVWuo6H9lsUp6/2Jur4gzM
-        uYQtLAOctf16HA6m4aU/6EAEfqy0jo+pwzk3yEvk4YjkNA9RRR/1Na1MqZbs8DqqLkIJVCUp6dNr7
-        4lxV7ePJo9Uvo47yKuedn0fa5Kjw6Inwg0VFA1bhXxQaMAbHiR0G2f07XS3PBG/267lcy5kUlYYc3
-        x26fm/A3VaoOKh6BHKFjzyj1yUIbTutkcrNLx+YHB9xXgdavB21Tok0P7rNQwaxB7MDwV1l54MZkG
-        HVzNpDCTFlG83GCTLg+7L53YqMggjYoEu2oUxvGsrknG0B1IKfSgeF1SlvwP6bYR+qLGqyH9fXR/W
-        TjLww1iQ==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1jhTZs-0003Od-7f; Sat, 06 Jun 2020 08:49:16 +0100
-Date:   Sat, 6 Jun 2020 08:49:16 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: dsa: qca8k: introduce SGMII configuration
- options
-Message-ID: <20200606074916.GM311@earth.li>
-References: <cover.1591380105.git.noodles@earth.li>
- <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
- <20200605183843.GB1006885@lunn.ch>
+        with ESMTP id S1725283AbgFFH41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 03:56:27 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160A3C08C5C2;
+        Sat,  6 Jun 2020 00:56:27 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jhTgZ-00BZ4i-T7; Sat, 06 Jun 2020 09:56:11 +0200
+Date:   Sat, 06 Jun 2020 09:56:09 +0200
+In-Reply-To: <CAHk-=wj0QUaYcLHKG=_fw65NqhGbqvnU958SkHak9mg9qNwR+A@mail.gmail.com> (sfid-20200606_004147_502343_4CEEBC12)
+References: <CAHk-=wj0QUaYcLHKG=_fw65NqhGbqvnU958SkHak9mg9qNwR+A@mail.gmail.com> (sfid-20200606_004147_502343_4CEEBC12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200605183843.GB1006885@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Subject: Re: Hang on wireless removal..
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From:   Johannes Berg <johannes@sipsolutions.net>
+Message-ID: <5DD82C75-5868-4F2D-B90F-F6205CA85C66@sipsolutions.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 05, 2020 at 08:38:43PM +0200, Andrew Lunn wrote:
-> On Fri, Jun 05, 2020 at 07:10:58PM +0100, Jonathan McDowell wrote:
-> > The QCA8337(N) has an SGMII port which can operate in MAC, PHY or BASE-X
-> > mode depending on what it's connected to (e.g. CPU vs external PHY or
-> > SFP). At present the driver does no configuration of this port even if
-> > it is selected.
-> > 
-> > Add support for making sure the SGMII is enabled if it's in use, and
-> > device tree support for configuring the connection details.
-> 
-> It is good to include Russell King in Cc: for patches like this.
+Hi, sorry for the top post, on my phone. 
 
-No problem, I can keep him in the thread; I used get_maintainer for the
-initial set of people/lists to copy.
+Yes, your analysis is spot on I think. I've got a fix for this in my jberg/mac80211 tree, there's a deadlock with a work struct and the rtnl.
 
-> Also, netdev is closed at the moment, so please post patches as RFC.
+Sorry about that. My testing should've caught it, but that exact scenario didn't happen, and lockdep for disabled due to some unrelated issues at early boot,so this didn't show up... (I also sent fixes for the other issue in user mode Linux) 
 
-"closed"? If you mean this won't get into 5.8 then I wasn't expecting it
-to, I'm aware the merge window for that is already open.
+Johannes
 
-> It sounds like the hardware has a PCS which can support SGMII or
-> 1000BaseX. phylink will tell you what mode to configure it to. e.g. A
-> fibre SFP module will want 1000BaseX. A copper SFP module will want
-> SGMII. A switch is likely to want 1000BaseX. A PHY is likely to want
-> SGMII. So remove the "sgmii-mode" property and configure it as phylink
-> is requesting.
-
-It's more than SGMII or 1000BaseX as I read it. The port can act as if
-it's talking to an SGMII MAC, i.e. a CPU, or an SGMII PHY, i.e. an
-external PHY, or in BaseX mode for an SFP. I couldn't figure out a way
-in the current framework to automatically work out if I wanted PHY or
-MAC mode. For the port tagged CPU I can assume MAC mode, but a port that
-doesn't have that might still be attached to the CPU rather than an
-external PHY.
-
-> What exactly does sgmii-delay do?
-
-As per the device tree documentation update I sent it delays the SGMII
-clock by 2ns. From the data sheet:
-
-SGMII_SEL_CLK125M	sgmii_clk125m_rx_delay is delayed by 2ns
-
-> > +#define QCA8K_REG_SGMII_CTRL				0x0e0
-> > +#define   QCA8K_SGMII_EN_PLL				BIT(1)
-> > +#define   QCA8K_SGMII_EN_RX				BIT(2)
-> > +#define   QCA8K_SGMII_EN_TX				BIT(3)
-> > +#define   QCA8K_SGMII_EN_SD				BIT(4)
-> > +#define   QCA8K_SGMII_CLK125M_DELAY			BIT(7)
-> > +#define   QCA8K_SGMII_MODE_CTRL_MASK			(BIT(22) | BIT(23))
-> > +#define   QCA8K_SGMII_MODE_CTRL_BASEX			0
-> > +#define   QCA8K_SGMII_MODE_CTRL_PHY			BIT(22)
-> > +#define   QCA8K_SGMII_MODE_CTRL_MAC			BIT(23)
-> 
-> I guess these are not really bits. You cannot combine
-> QCA8K_SGMII_MODE_CTRL_MAC and QCA8K_SGMII_MODE_CTRL_PHY. So it makes
-> more sense to have:
-> 
-> #define   QCA8K_SGMII_MODE_CTRL_BASEX			(0x0 << 22)
-> #define   QCA8K_SGMII_MODE_CTRL_PHY			(0x1 << 22)
-> #define   QCA8K_SGMII_MODE_CTRL_MAC			(0x2 << 22)
-
-Sure; given there's no 0x3 choice I just went for the bits that need
-set, but that works too.
-
-J.
+On 6 June 2020 00:41:27 CEST, Linus Torvalds <torvalds@linux-foundation.org> wrote:
+>So I think there's something wrong with wireless networking, and
+>(likely) in particular turning off wireless. And I think the problem
+>came in this merge window, because now my machine hangs on shutdown.
+>
+>My new desktop is otherwise working fine, but it has some unnecessary
+>wireless capability on the motherboard, in the form of a Intel Wi-Fi 6
+>AX200 module that I don't use (since I end up using wired gig ethernet
+>instead).
+>
+>And while debugging the shutdown hang (symptom: systemd waits forever
+>for NetworkManager and WPA supplicant), I turned off the WiFi.
+>
+>And what do you know, things went all sideways.
+>
+>They went sideways because everything that wants the rtnl lock seems
+>to just hang.
+>
+>Example:
+>
+>  kworker/57:2    D    0  1592      2 0x80004080
+>  Workqueue: events_power_efficient reg_check_chans_work [cfg80211]
+>  Call Trace:
+>   __schedule+0x30b/0x4b0
+>   ? schedule+0x77/0xa0
+>   ? schedule_preempt_disabled+0xa/0x10
+>   ? __mutex_lock+0x264/0x410
+>   ? psi_group_change+0x44/0x260
+>   ? reg_check_chans_work+0x1d/0x300 [cfg80211]
+>   ? __switch_to_asm+0x42/0x70
+>   ? process_one_work+0x1fa/0x3f0
+>   ? worker_thread+0x25d/0x480
+>   ? kthread+0x121/0x130
+>   ? process_one_work+0x3f0/0x3f0
+>   ? kthread_blkcg+0x30/0x30
+>   ? ret_from_fork+0x22/0x30
+>  kworker/60:2    D    0  1926      2 0x80004000
+>  Workqueue: ipv6_addrconf addrconf_verify_work
+>  Call Trace:
+>   __schedule+0x30b/0x4b0
+>   ? schedule+0x77/0xa0
+>   ? schedule_preempt_disabled+0xa/0x10
+>   ? __mutex_lock+0x264/0x410
+>   ? addrconf_verify_work+0xa/0x20
+>   ? process_one_work+0x1fa/0x3f0
+>   ? worker_thread+0x25d/0x480
+>   ? kthread+0x121/0x130
+>   ? process_one_work+0x3f0/0x3f0
+>   ? kthread_blkcg+0x30/0x30
+>   ? ret_from_fork+0x22/0x30
+>  NetworkManager  D    0  4329      1 0x00004000
+>  Call Trace:
+>   __schedule+0x30b/0x4b0
+>   ? schedule+0x77/0xa0
+>   ? schedule_preempt_disabled+0xa/0x10
+>   ? __mutex_lock+0x264/0x410
+>   ? __netlink_dump_start+0xa7/0x300
+>   ? rtnl_dellink+0x3c0/0x3c0
+>   ? rtnetlink_rcv_msg+0x375/0x3d0
+>   ? poll_freewait+0x35/0xa0
+>   ? do_sys_poll+0x58f/0x5f0
+>   ? rtnl_dellink+0x3c0/0x3c0
+>   ? __ia32_compat_sys_ppoll_time64+0x120/0x120
+>   ? ip_output+0x6a/0xd0
+>   ? ip_mc_finish_output+0x120/0x120
+>   ? avc_has_perm+0x34/0xa0
+>   ? rtnetlink_bind+0x30/0x30
+>   ? netlink_rcv_skb+0xfb/0x130
+>   ? netlink_unicast+0x1bf/0x2e0
+>   ? netlink_sendmsg+0x385/0x410
+>   ? __sys_sendto+0x21f/0x230
+>   ? move_addr_to_user+0x97/0xc0
+>   ? alloc_file_pseudo+0x9b/0xd0
+>   ? sock_alloc_file+0xc4/0x100
+>   ? __x64_sys_sendto+0x22/0x30
+>   ? do_syscall_64+0x5e/0xd0
+>   ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+>and perhaps most interestingly, wpa_supplicant is waiting for some of
+>those workqueues that are waiting for the lock:
+>
+>  wpa_supplicant  D    0  2162      1 0x00004000
+>  Call Trace:
+>   __schedule+0x30b/0x4b0
+>   ? schedule+0x77/0xa0
+>   ? schedule_timeout+0x22/0x150
+>   ? ttwu_queue+0xf4/0x120
+>   ? wait_for_common+0xac/0x110
+>   ? __flush_work+0x200/0x230
+>   ? put_pwq+0x70/0x70
+>   ? __cfg80211_unregister_wdev+0x95/0x130 [cfg80211]
+>   ? ieee80211_if_remove+0xa3/0xe0 [mac80211]
+>   ? ieee80211_del_iface+0xe/0x20 [mac80211]
+>   ? rdev_del_virtual_intf+0x2b/0xc0 [cfg80211]
+>   ? genl_rcv_msg+0x451/0x570
+>   ? genl_unbind+0xb0/0xb0
+>   ? netlink_rcv_skb+0xfb/0x130
+>   ? genl_rcv+0x24/0x40
+>   ? netlink_unicast+0x1bf/0x2e0
+>   ? netlink_sendmsg+0x385/0x410
+>   ? ____sys_sendmsg+0x26b/0x290
+>   ? __sys_sendmsg+0x128/0x180
+>   ? selinux_socket_setsockopt+0xc3/0xd0
+>   ? __cgroup_bpf_run_filter_setsockopt+0x99/0x290
+>   ? netlink_setsockopt+0x38/0x4d0
+>   ? __sys_setsockopt+0x11b/0x1b0
+>   ? do_syscall_64+0x5e/0xd0
+>   ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+>which explains why systemd waits for that one too.
+>
+>So something seems to have never released the rtnl lock.
+>
+>In fact, I suspect it's exactly that wpa_supplicant itself that
+>deadlocks on it and holds the rntl lock while it does that
+>"flush_work()". Which in turn waits for things to go away, but they'll
+>never go away because they need the rtnl lock. That wpa_supplicant is
+>holding.
+>
+>If I were a betting man, I'd suspect it's due to commit 6cd536fe62ef
+>("cfg80211: change internal management frame registration API"), which
+>seems to move that
+>
+>        flush_work(&wdev->mgmt_registrations_update_wk);
+>
+>into __cfg80211_unregister_wdev(). But honestly, that's just a guess.
+>
+>I'd bisect this and verify things, but I'm really hoping I don't have
+>to.
+>
+>I still have a number of pull requests for the merge window, so
+>instead I'm sending this email out with my current guesses, and I hope
+>someody will say "Yeah, you're right, the fix is already pending", or
+>"No Linus, you're barking up completely the wrong tree, but I think I
+>know what the problem is".
+>
+>Btw, I'm not a networking person, but I have to say, I've seen rtnl
+>lock problems enough over time even as an outsider to have grown to
+>really hate that thing. Am I wrong? It really seems to get involved
+>much too much, and held in really awkward places.
+>
+>Am I wrong?
+>
+>             Linus
 
 -- 
-Mistakes aren't always regrets.
+Sent from my phone. 
