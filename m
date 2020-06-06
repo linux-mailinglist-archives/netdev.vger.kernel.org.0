@@ -2,295 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E35241F0653
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 13:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C35D91F0693
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 14:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728751AbgFFLVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 07:21:31 -0400
-Received: from correo.us.es ([193.147.175.20]:44744 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728712AbgFFLV3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Jun 2020 07:21:29 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 8B69BF2D40
-        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 13:21:27 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7631EDA722
-        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 13:21:27 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6B551DA78A; Sat,  6 Jun 2020 13:21:27 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C2679DA73D;
-        Sat,  6 Jun 2020 13:21:24 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 06 Jun 2020 13:21:24 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A3FF542EE38E;
-        Sat,  6 Jun 2020 13:21:24 +0200 (CEST)
-Date:   Sat, 6 Jun 2020 13:21:24 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org
-Subject: [ANNOUNCE] nftables 0.9.5 release
-Message-ID: <20200606112124.GA4622@salvia>
+        id S1728796AbgFFMtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 08:49:11 -0400
+Received: from mail-eopbgr150095.outbound.protection.outlook.com ([40.107.15.95]:33374
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728732AbgFFMtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Jun 2020 08:49:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jyl593S0ScEb/8REN7eXjSr7uS2ocFU7qBQZScg7RZ1M/jkf7joUsoevCY7NxliHJqRCdY/459CHnV5g/h6ixjVRowx3wFJ7fz/EcyOsBn3MDjxzKdpUVrufmvAuQnN6fcUIqGcERc4Y8wvYcvw76iBVD9q1IIZA+VRJuQPxHn414mz7qKtAwD2EyK5YC1amKkq9x08UNe8DExdOSHd5d5o4z+snfX2pvzeWwxNKuH5csScLifgsgrVtFtsYHZSQPZbubIZ+cnCW0oWzKEbV1nCbHh1oCniCD6cV+enSCCJXmc0xpoUMalTittpAcIPQgks+Wcqvo9D4wJVEQPnlBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vdG7XHEFem4zh8B4h3Gu9RvLv3YFXm5g8918qfftPYw=;
+ b=Lv1towMckwNLcqJxpAw/aKQ1hdS+ltsYr6ip17wo03zTRbFeI97HpelVy3GRFpptypihc3tIDM7MyWMTsaH6QVJnCt+RlTlqmedVjRInVt/VdtSi4UCDhq8LySmuqfKuKkyYJegauiJgHmvjqrHpRFAPGNTiQe30CQcTr4NX0P/j/+AabRYz2O/7b2cHiXLcf4Hn7GHTuBkMVGxUe+44WwdZpbBO625OvXJhAbTKXbSTL5sqix64xE/XGFVY0dtKXdduNAS2Ir4RXhC9HKu1zqW8Q7b3UMpRt9qZJaruJlADK3WcFyt/VnXAF5XlH1TC8NLDjs7u542t+yOoUnyXww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vdG7XHEFem4zh8B4h3Gu9RvLv3YFXm5g8918qfftPYw=;
+ b=o/c33j+qu432YvAKV+ehnNP0rpw6YJaR17RxchtQKGwLxLEA/6TrokF1RSWrGsxRnipq0vfEkBw7T4bD/3vs6eYZagdbl9mfW6dzR4+JieBNHDDMZyeEj3+K1wsNA0TuH9BAlMwBT5l12CuqYyIva2STmmms0YbgZE24fh/uEFY=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=virtuozzo.com;
+Received: from AM0PR08MB5140.eurprd08.prod.outlook.com (2603:10a6:208:162::17)
+ by AM0PR08MB3442.eurprd08.prod.outlook.com (2603:10a6:208:d7::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18; Sat, 6 Jun
+ 2020 12:49:07 +0000
+Received: from AM0PR08MB5140.eurprd08.prod.outlook.com
+ ([fe80::b8a9:edfd:bfd6:a1a2]) by AM0PR08MB5140.eurprd08.prod.outlook.com
+ ([fe80::b8a9:edfd:bfd6:a1a2%6]) with mapi id 15.20.3066.022; Sat, 6 Jun 2020
+ 12:49:07 +0000
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH] ethtool: remove extra checks
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Message-ID: <6d90f9b2-9bdd-d813-ef4e-ed0a7d1acaf2@virtuozzo.com>
+Date:   Sat, 6 Jun 2020 15:49:05 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM4PR0202CA0020.eurprd02.prod.outlook.com
+ (2603:10a6:200:89::30) To AM0PR08MB5140.eurprd08.prod.outlook.com
+ (2603:10a6:208:162::17)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="17pEHd4RhPHOinZp"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [172.16.24.21] (185.231.240.5) by AM4PR0202CA0020.eurprd02.prod.outlook.com (2603:10a6:200:89::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Sat, 6 Jun 2020 12:49:06 +0000
+X-Originating-IP: [185.231.240.5]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d82f7b2c-e93c-4ea6-6ca3-08d80a17fffa
+X-MS-TrafficTypeDiagnostic: AM0PR08MB3442:
+X-Microsoft-Antispam-PRVS: <AM0PR08MB3442D94DE803B0488838FFFFAA870@AM0PR08MB3442.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:510;
+X-Forefront-PRVS: 04267075BD
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DhJZzYyZaqEGryhvrgMBiqTShwbWGhon1bTbJKsYR18sUq+8RYgNlpYY/iaezSi3irgI0L2B1r0LRdoVOJedtTRaREJ9Uadot0FIpZPV03a4s1P32wYuk9+7cSzEzB41AJIYKOxAqrTKIqV8Q/nk210Xzm0PcmmjE9Kr+/nJTNMiimxBtG7XlpJuHp45Nc0ihilPKzEwLmMB12M0KSAg+OiviRJcDxhHqlupZJwl6lmEk3M1MOjQmgy/j5SQT5eXU+Tudo8zZigPWxsWrZ1qZ1rgo+lXsTEW9b8nOYiItdjhgGOT+fQsYPWzc3KCkEfo8nCzGbb0o5IE7f0rM8HpIdPTi2OJFFfPWCZHScotk08VoqjHx6gMgkXnHeprAUbq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR08MB5140.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(346002)(396003)(39840400004)(366004)(478600001)(4326008)(86362001)(31696002)(8676002)(8936002)(956004)(2616005)(83380400001)(52116002)(16526019)(66476007)(186003)(66946007)(26005)(5660300002)(66556008)(316002)(31686004)(16576012)(36756003)(54906003)(6486002)(6916009)(2906002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: Ucfs4bVnLhAscoRmgy9J31UAgm21HtGIXke1brZSsoC8kRJ123i5+DBksTTAa7OExs8Jr6qZDKFkI3xBns0jifwbOuvAIpWgPtpmYVztsDqI5nadavEaeKOlzNeGFgBAwinw9JxZ0jjZbUna/03aYMn2sOZ0/idrTR+8ruwfDTK8B7hE3Si56wGIkY1rLCubhSNuU37mg0/hQMiueeDqp1A6wzXDI6DUsLdWJ0npWdHz16JAQPRugrMXOfAXKyOGS1I2YeDT7apK6wvFzkT5UcRNKhzL7ySXqLMcJV7spdPKpjpiNEM9aiZx4a9hZEwNwUW3/KUe6gogn4Kp/Pbe81at1MqYWcw4rvJh6aKsD42FpggklamUezLkqb0Ju8CNSKg1ScoVYbYmeHs8Z6o9Sv6hLhBWwfbaTrcMv8Ge35CKrG8a3g94EJcfwt8hHcPMYbjJTeyBm8cP2/4SoHc/uZSvOIPMtvNkrsWrAeXxt6M=
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d82f7b2c-e93c-4ea6-6ca3-08d80a17fffa
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2020 12:49:06.9631
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IDqZ4QmrRqpp5gtTN9DzNzZTUSAyUAUF0pSoeMp+0mvk2IliawR+3fWTrzewNM8Ym1UKGDjfhHV5UGJx7IY9vg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB3442
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Found by smatch:
+net/ethtool/linkmodes.c:356 ethnl_set_linkmodes() warn:
+ variable dereferenced before check 'info' (see line 332)
+net/ethtool/linkinfo.c:143 ethnl_set_linkinfo() warn:
+ variable dereferenced before check 'info' (see line 119
 
---17pEHd4RhPHOinZp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In both cases non-zero 'info' is always provided by caller.
 
-Hi!
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+---
+ net/ethtool/linkinfo.c  | 3 +--
+ net/ethtool/linkmodes.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-The Netfilter project proudly presents:
+diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
+index 677068d..5eaf173 100644
+--- a/net/ethtool/linkinfo.c
++++ b/net/ethtool/linkinfo.c
+@@ -140,8 +140,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
+ 	if (ret < 0) {
+-		if (info)
+-			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
++		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+ 		goto out_ops;
+ 	}
+ 	lsettings = &ksettings.base;
+diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+index 452608c..b759133 100644
+--- a/net/ethtool/linkmodes.c
++++ b/net/ethtool/linkmodes.c
+@@ -353,8 +353,7 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
+ 	if (ret < 0) {
+-		if (info)
+-			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
++		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+ 		goto out_ops;
+ 	}
+ 
+-- 
+1.8.3.1
 
-        nftables 0.9.5
-
-This release contains fixes and new features available up to the Linux
-kernel 5.7 release.
-
-* Support for set counters:
-
-  table ip x {
-            set y {
-                    typeof ip saddr
-                    counter
-                    elements = { 192.168.10.35, 192.168.10.101, 192.168.10.135 }
-            }
-
-            chain z {
-                    type filter hook output priority filter; policy accept;
-                    ip daddr @y
-            }
-  }
-
-  The counter statement in the set `y' definition turns on counters.
-
-* Support for restoring set element counters via nft -f.
-
-  # cat ruleset.nft
-  table ip x {
-        set y {
-                typeof ip saddr
-                counter
-                elements = { 192.168.10.35 counter packets 1 bytes 84, 192.168.10.101 counter p
-                             192.168.10.135 counter packets 0 bytes 0 }
-        }
-
-        chain z {
-                type filter hook output priority filter; policy accept;
-                ip daddr @y
-        }
-  }
-  # nft -f ruleset.nft
-  # nft list ruleset
-  table ip x {
-        set y {
-                typeof ip saddr
-                counter
-                elements = { 192.168.10.35 counter packets 1 bytes 84, 192.168.10.101 counter p
-                             192.168.10.135 counter packets 0 bytes 0 }
-        }
-
-        chain z {
-                type filter hook output priority filter; policy accept;
-                ip daddr @y
-        }
-  }
-
-* Counters support for flowtables:
-
-     table ip foo {
-            flowtable bar {
-                    hook ingress priority -100
-                    devices = { eth0, eth1 }
-                    counter
-            }
-
-            chain forward {
-                    type filter hook forward priority filter;
-                    flow add @bar counter
-            }
-     }
-
-  You can list the counters via `conntrack -L':
-
-  tcp      6 src=192.168.10.2 dst=10.0.1.2 sport=47278 dport=5201 packets=9 bytes=608 src=10.0.1.2 dst=10.0.1.1 sport=5201 dport=47278 packets=8 bytes=428 [OFFLOAD] mark=0 secctx=null use=2
-  tcp      6 src=192.168.10.2 dst=10.0.1.2 sport=47280 dport=5201 packets=1005763 bytes=44075714753 src=10.0.1.2 dst=10.0.1.1 sport=5201 dport=47280 packets=967505 bytes=50310268 [OFFLOAD] mark=0 secctx=null use=2
-
-  The [OFFLOAD] status bit specifies that this flow is exercising the
-  flowtable fast datapath.
-
-* typeof concatenations support for sets. You can use typeof to specify the
-  datatype of the selector in sets, e.g.
-
-     table ip foo {
-            set whitelist {
-                    typeof ip saddr . tcp dport
-                    elements = { 192.168.10.35 . 80, 192.168.10.101 . 80 }
-            }
-
-            chain bar {
-                    type filter hook prerouting priority filter; policy drop;
-                    ip daddr . tcp dport @whitelist accept
-            }
-     }
-
-  You can also use typeof concatenations in maps:
-
-     table ip foo {
-            map addr2mark {
-                typeof ip saddr . tcp dport : meta mark
-                elements = { 192.168.10.35 . 80 : 0x00000001,
-                             192.168.10.135 . 80 : 0x00000002 }
-            }
-
-            chain bar {
-                    type filter hook prerouting priority filter; policy drop;
-                    meta mark set ip daddr . tcp dport map @addr2mark accept
-            }
-     }
-
-* Support for concatenated ranges in anonymous sets.
-
-  # nft add rule inet filter input ip daddr . tcp dport \
-       { 10.0.0.0/8 . 10-23, 192.168.1.1-192.168.3.8 . 80-443 } accept
-
-* Allow to reject packets with 802.1q from the bridge family.
-
-  # nft add rule bridge foo bar ether type vlan reject with tcp reset
-
-* Support for matching on the conntrack ID
-
-  You can fetch the conntrack ID via `--output id':
-
-  # conntrack -L --output id
-  udp      17 18 src=192.168.2.118 dst=192.168.2.1 sport=36424 dport=53 packets=2 bytes=122 src=192.168.2.1 dst=192.168.2.118 sport=53 dport=36424 packets=2 bytes=320 [ASSURED] mark=0 use=1 id=2779986232
-
-  Then, a very simple single rule to update counters for packets
-  matching this conntrack ID.
-
-  # nft add rule foo bar ct id 2779986232 counter
-
-  You can combine this new selector with the existing set and map features
-  to build more advanced rules.
-
-You can download this new release from:
-
-http://www.netfilter.org/projects/nftables/downloads.html#nftables-0.9.5
-ftp://ftp.netfilter.org/pub/nftables/
-
-To build the code, libnftnl 1.1.7 and libmnl >= 1.0.4 are required:
-
-* http://netfilter.org/projects/libnftnl/index.html
-* http://netfilter.org/projects/libmnl/index.html
-
-Visit our wikipage for user documentation at:
-
-* http://wiki.nftables.org
-
-For the manpage reference, check man(8) nft.
-
-In case of bugs and feature request, file them via:
-
-* https://bugzilla.netfilter.org
-
-Have fun.
-
---17pEHd4RhPHOinZp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="changes-nftables-0.9.5.txt"
-
-Brett Mastbergen (1):
-      ct: Add support for the 'id' key
-
-Florian Westphal (1):
-      concat: provide proper dtype when parsing typeof udata
-
-Laura Garcia Liebana (2):
-      doc: add hashing expressions description
-      build: fix tentative generation of nft.8 after disabled doc
-
-Matt Turner (2):
-      build: Include generated man pages in dist tarball
-      build: Allow building from tarballs without yacc/lex
-
-Michael Braun (7):
-      main: fix ASAN -fsanitize=address error in get_optstring()
-      utils: fix UBSAN warning in fls
-      datatype: fix double-free resulting in use-after-free in datatype_free
-      tests: dump generated use new nft tool
-      main: fix get_optstring truncating output
-      datatype: add frag-needed (ipv4) to reject options
-      evaluate: enable reject with 802.1q
-
-Pablo Neira Ayuso (32):
-      segtree: broken error reporting with mappings
-      parser_bison: proper ct timeout list initialization
-      src: NAT support for intervals in maps
-      include: resync nf_nat.h kernel header
-      src: add netmap support
-      src: add STMT_NAT_F_CONCAT flag and use it
-      evaluate: fix crash when handling concatenation without map
-      tests: py: concatenation, netmap and nat mappings
-      mnl: restore --debug=netlink output with sets
-      tests: py: remove range test with service names
-      tests: shell: add NAT mappings tests
-      evaluate: incorrect byteorder with typeof and integer_datatype
-      nat: transform range to prefix expression when possible
-      rule: memleak in __do_add_setelems()
-      rule: fix element cache update in __do_add_setelems()
-      src: add rule_stmt_insert_at() and use it
-      src: add rule_stmt_append() and use it
-      parser_bison: release extended priority string after parsing
-      parser_bison: release helper type string after parsing
-      src: ct_timeout: release policy string and state list
-      src: fix netlink_get_setelem() memleaks
-      evaluate: fix memleak in stmt_evaluate_reject_icmp()
-      mnl: fix error rule reporting with missing table/chain and anonymous sets
-      src: rename CMD_OBJ_SETELEM to CMD_OBJ_ELEMENTS
-      libnftables: call nft_cmd_expand() only with CMD_ADD
-      src: add CMD_OBJ_SETELEMS
-      src: remove empty file
-      mnl: add function to convert flowtable device list to array
-      src: add devices to an existing flowtable
-      src: delete devices to an existing flowtable
-      src: allow flowtable definitions with no devices
-      build: Bump version to v0.9.5
-
-Phil Sutter (5):
-      segtree: Fix missing expires value in prefixes
-      segtree: Use expr_clone in get_set_interval_*()
-      segtree: Merge get_set_interval_find() and get_set_interval_end()
-      segtree: Fix get element command with prefixes
-      JSON: Improve performance of json_events_cb()
-
-Stefano Brivio (6):
-      include: Resync nf_tables.h cache copy
-      src: Set NFT_SET_CONCAT flag for sets with concatenated ranges
-      build: Fix doc build, restore A2X assignment for doc/Makefile
-      tests: py: Actually use all available hooks in bridge/chains.t
-      evaluate: Perform set evaluation on implicitly declared (anonymous) sets
-      tests: py: Enable anonymous set rule with concatenated ranges in inet/sets.t
-
-
---17pEHd4RhPHOinZp--
