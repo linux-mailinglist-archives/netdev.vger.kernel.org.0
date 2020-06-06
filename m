@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85FB71F06DF
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 16:03:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE00E1F06E2
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 16:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727910AbgFFODF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 10:03:05 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:37634 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgFFODE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 10:03:04 -0400
-Received: by mail-il1-f198.google.com with SMTP id n2so8501559ilq.4
-        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 07:03:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=LJZAuGgzfSnkvHTmE00Iff6jeeP1gMLsIve5vPXs9J8=;
-        b=QG/Yf3o6D1wGX0X3lWV+P8jm9s7RF+281SaN6uvLlaWFiNxBP/lDZfAX7vdRx0cqVg
-         BycHtUuF+VByfDI24USRwsi9BuauISGcuHrN+CMIOTrwVIGOVcD6J/opFGJo6zvFLRYW
-         Vmp5O7aIOnyHYgSpEwCHS4z1jARjLBsATLdyQGN+Dit5ODYLWFzPvpG6QjV40NHrUuTl
-         /2Ws8Vd5VViRceudoiF134vzZmIKLuSMjbuLyEzHKvmghPCsYA15uGi+0Nk09dMr6xOM
-         Sh9WwokuZJrrSZnsGjwasMDDHzPTsk7amGizRpGqXoE34eviyp/JLlE0U/00fmwS62Do
-         +N8g==
-X-Gm-Message-State: AOAM530ZYzUhtS/X+/6rTIkSQY3xVswnW8PRueleoLRwyK3aILuOGvdd
-        kh8+FpwXMwBeqnLLCH+924Jkpz6ALqOzQxyqciZcaaqYjXmg
-X-Google-Smtp-Source: ABdhPJzqn+ZSrIp0x1Uvpzv2NUn6zmkiotwyelbnzRpg0vI/I0Hdz20BOyamVd6Xl18toENqbikwZsxqDbgImYnWA1pkJU5UCXOc
+        id S1728611AbgFFOEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 10:04:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38218 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726524AbgFFOD7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Jun 2020 10:03:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+GLDGkGSSXJ5sFh/B5qrHIUtFsI6eNlKq6JhHGjqvmk=; b=M025LXJ0AdmMNsbV76HS8Yi/WV
+        ch9scZkObMebp6sTTIfeGYrMnpfZSVTcYiC6wbk/WnnNVGcNjI4qsLiYGQCg6Z5qnghpdISgzsgTY
+        9WTu4OL/T+0U0/ViEjWNst8pfV0H1V2ebIE1l0gDMUosmoB1j/fAaTIkSsfoC53xS1uQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jhZQG-004HTo-J7; Sat, 06 Jun 2020 16:03:44 +0200
+Date:   Sat, 6 Jun 2020 16:03:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jonathan McDowell <noodles@earth.li>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: dsa: qca8k: introduce SGMII configuration
+ options
+Message-ID: <20200606140344.GA1013547@lunn.ch>
+References: <cover.1591380105.git.noodles@earth.li>
+ <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
+ <20200605183843.GB1006885@lunn.ch>
+ <20200606074916.GM311@earth.li>
+ <20200606083741.GK1551@shell.armlinux.org.uk>
+ <20200606105909.GN311@earth.li>
 MIME-Version: 1.0
-X-Received: by 2002:a02:998b:: with SMTP id a11mr13290455jal.117.1591452183421;
- Sat, 06 Jun 2020 07:03:03 -0700 (PDT)
-Date:   Sat, 06 Jun 2020 07:03:03 -0700
-In-Reply-To: <000000000000c54420059e4f08ff@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000011eb1705a76ad69d@google.com>
-Subject: Re: WARNING in dev_change_net_namespace
-From:   syzbot <syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@gmail.com,
-        ebiederm@xmission.com, edumazet@google.com, eric.dumazet@gmail.com,
-        hawk@kernel.org, jiri@mellanox.com, johannes.berg@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
-        mkubecek@suse.cz, netdev@vger.kernel.org,
-        saiprakash.ranjan@codeaurora.org, songliubraving@fb.com,
-        suzuki.poulose@arm.com, syzkaller-bugs@googlegroups.com,
-        will@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200606105909.GN311@earth.li>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+> > > > Also, netdev is closed at the moment, so please post patches as RFC.
+> > > 
+> > > "closed"? If you mean this won't get into 5.8 then I wasn't expecting it
+> > > to, I'm aware the merge window for that is already open.
+> > 
+> > See https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+> > "How often do changes from these trees make it to the mainline Linus
+> > tree?"
+> 
+> Ta. I'll hold off on a v2 until after -rc1 drops.
 
-commit 13dc4d836179444f0ca90188cfccd23f9cd9ff05
-Author: Will Deacon <will@kernel.org>
-Date:   Tue Apr 21 14:29:18 2020 +0000
+You can post at the moment, but you need to put RFC in the subject
+line, just to make it clear you are only interested in comments.
 
-    arm64: cpufeature: Remove redundant call to id_aa64pfr0_32bit_el0()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=109aa3b1100000
-start commit:   7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=129aa3b1100000
-console output: https://syzkaller.appspot.com/x/log.txt?x=149aa3b1100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=be4578b3f1083656
-dashboard link: https://syzkaller.appspot.com/bug?extid=830c6dbfc71edc4f0b8f
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12032832100000
-
-Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
-Fixes: 13dc4d836179 ("arm64: cpufeature: Remove redundant call to id_aa64pfr0_32bit_el0()")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+      Andrew
