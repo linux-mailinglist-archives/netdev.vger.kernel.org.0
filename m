@@ -2,117 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7971F0614
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 12:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE171F063D
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 12:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728721AbgFFKVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 06:21:21 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:53110 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728684AbgFFKVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 06:21:15 -0400
-Received: by mail-io1-f72.google.com with SMTP id p8so7419651ios.19
-        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 03:21:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=5llyKwgac1RV4GHcH6sNotvtbMJH/GHvawCDDDtVVVY=;
-        b=K19/8NELCASPXJZWkeofbaB8bJdA8ZV7PnXs90G+A083D6DaIIO8/eZ1VsiZE3eYb/
-         LBx7tteLjBXGu1Y2BF3dfPYQg7MAcQbCunqAbL2PvqW92gonSQ7J70vQc1nn6eUki7LE
-         0Elkck5+HFsdbhHEDNoPLPBkMrtzXGypmBp6dq6Q7G1IhAPA5xyVQZb5VSmm2wjbUeMq
-         VSNM4H41psqeF5w0Fzml1He8GtIUp4uIiaJdNo/0EecXeYEH3J12hSqsr/Gv0IcmGv4M
-         2VCM2+zJPyparCrOgLN6eF31E38e56ZxeFfMT8xGyxHcw2vMRBV/mrbGqOU61KxpkuaY
-         G2/w==
-X-Gm-Message-State: AOAM532ysz/YqcShewraEmolwoPm8haO7Pj8J5nCOIIKQFI1i6we51Ng
-        6157QHx3zWH7LCM+Jo1O2sySMiE4XCT9sbgA4Yn9xQkt4wN1
-X-Google-Smtp-Source: ABdhPJy2wQdSX4U9JnHz3jgAq+SYVz2kyDq20YwgfCwPYUHc2n7KidBmNInXz5IBNXh7+Yczxa8nJJ0TymHJbsxhL/VZwm8r8WZC
+        id S1728734AbgFFK7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 06:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728696AbgFFK7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 06:59:17 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70106C03E96A;
+        Sat,  6 Jun 2020 03:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=TSmHMgStkMJ5gRMIvy+b9qTii6HmC3HhhWZPLLxufvs=; b=bnM7ioyTVd4u3AnsSt/NVBmEYp
+        OLY3XHFizopfFrRxPGrIjrcgfoWXL9x+5R1m7Jzom51OEsClzJGKLm+i2udv4wK0/RtKZvu2Uhrfh
+        kXKaLhZ/ThvFyFtgeBp1Y+l65umqaxj2kF9yTG3qq/s8fy1tNzvQq0LgpCXjUw+pDhjmbB3RK5NyC
+        lZcErKsHZYrMu6pELRPJPivL0Ij2x4XdqcGHc1zB2TxkCXK8i3pgA80NpUkbeCsWyJjPbApfmB8D3
+        /DY73Gnp1+pfwFYpZHWESZfAtSaCuVf5gW7D4VR+DYeuSgq5+eaL4OobiNoHpMKoogdYZiqC37/DI
+        uD9il7BQ==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jhWXd-0001Ke-J2; Sat, 06 Jun 2020 11:59:09 +0100
+Date:   Sat, 6 Jun 2020 11:59:09 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: dsa: qca8k: introduce SGMII configuration
+ options
+Message-ID: <20200606105909.GN311@earth.li>
+References: <cover.1591380105.git.noodles@earth.li>
+ <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
+ <20200605183843.GB1006885@lunn.ch>
+ <20200606074916.GM311@earth.li>
+ <20200606083741.GK1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-Received: by 2002:a02:958e:: with SMTP id b14mr12940395jai.126.1591438874365;
- Sat, 06 Jun 2020 03:21:14 -0700 (PDT)
-Date:   Sat, 06 Jun 2020 03:21:14 -0700
-In-Reply-To: <000000000000c54420059e4f08ff@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c9d3c205a767bc10@google.com>
-Subject: Re: WARNING in dev_change_net_namespace
-From:   syzbot <syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@gmail.com,
-        ebiederm@xmission.com, edumazet@google.com, eric.dumazet@gmail.com,
-        hawk@kernel.org, jiri@mellanox.com, johannes.berg@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, mkubecek@suse.cz,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200606083741.GK1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On Sat, Jun 06, 2020 at 09:37:41AM +0100, Russell King - ARM Linux admin wrote:
+> On Sat, Jun 06, 2020 at 08:49:16AM +0100, Jonathan McDowell wrote:
+> > On Fri, Jun 05, 2020 at 08:38:43PM +0200, Andrew Lunn wrote:
+> > > On Fri, Jun 05, 2020 at 07:10:58PM +0100, Jonathan McDowell wrote:
+> > > > The QCA8337(N) has an SGMII port which can operate in MAC, PHY or BASE-X
+> > > > mode depending on what it's connected to (e.g. CPU vs external PHY or
+> > > > SFP). At present the driver does no configuration of this port even if
+> > > > it is selected.
+> > > > 
+> > > > Add support for making sure the SGMII is enabled if it's in use, and
+> > > > device tree support for configuring the connection details.
+> > > 
+> > > It is good to include Russell King in Cc: for patches like this.
+> > 
+> > No problem, I can keep him in the thread; I used get_maintainer for the
+> > initial set of people/lists to copy.
+> 
+> get_maintainer is not always "good" at selecting the right people,
+> especially when your patches don't match the criteria; MAINTAINERS
+> contains everything that is sensible, but Andrew is suggesting that
+> you copy me because in his opinion, you should be using phylink -
+> and that's something that you can't encode into a program.
 
-HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10112212100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=be4578b3f1083656
-dashboard link: https://syzkaller.appspot.com/bug?extid=830c6dbfc71edc4f0b8f
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12032832100000
+Sure, and I appreciate the pointer to appropriate people who might
+provide helpful comments.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> Note that I haven't seen your patches.
 
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000006
-R13: 0000000000000a04 R14: 00000000004cce0c R15: 00007f9ea16a16d4
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8201 at net/core/dev.c:10239 dev_change_net_namespace+0x15bb/0x1710 net/core/dev.c:10239
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 8201 Comm: syz-executor.0 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1e9/0x30e lib/dump_stack.c:118
- panic+0x264/0x7a0 kernel/panic.c:221
- __warn+0x209/0x210 kernel/panic.c:582
- report_bug+0x1ac/0x2d0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:105 [inline]
- do_error_trap+0xca/0x1c0 arch/x86/kernel/traps.c:197
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:216
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:dev_change_net_namespace+0x15bb/0x1710 net/core/dev.c:10239
-Code: 5f 00 03 01 48 c7 c7 2c 28 e9 88 48 c7 c6 6f 6d 07 89 ba a8 27 00 00 31 c0 e8 c1 76 de fa 0f 0b e9 f5 ea ff ff e8 85 b0 0c fb <0f> 0b e9 fb fd ff ff e8 79 b0 0c fb 0f 0b e9 1b fe ff ff e8 6d b0
-RSP: 0018:ffffc9000a3f7160 EFLAGS: 00010293
-RAX: ffffffff8667f2ab RBX: 00000000fffffff4 RCX: ffff88808f6d43c0
-RDX: 0000000000000000 RSI: 00000000fffffff4 RDI: 0000000000000000
-RBP: ffffc9000a3f7270 R08: ffffffff8667f096 R09: ffffed1015d270fc
-R10: ffffed1015d270fc R11: 0000000000000000 R12: ffff8880888600b8
-R13: ffff888088860b90 R14: dffffc0000000000 R15: dffffc0000000000
- do_setlink+0x196/0x3900 net/core/rtnetlink.c:2510
- __rtnl_newlink net/core/rtnetlink.c:3273 [inline]
- rtnl_newlink+0x1509/0x1c00 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45ca69
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f9ea16a0c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000500f80 RCX: 000000000045ca69
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000006
-R13: 0000000000000a04 R14: 00000000004cce0c R15: 00007f9ea16a16d4
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+I'll make sure to copy you on v2.
 
+> > > Also, netdev is closed at the moment, so please post patches as RFC.
+> > 
+> > "closed"? If you mean this won't get into 5.8 then I wasn't expecting it
+> > to, I'm aware the merge window for that is already open.
+> 
+> See https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+> "How often do changes from these trees make it to the mainline Linus
+> tree?"
+
+Ta. I'll hold off on a v2 until after -rc1 drops.
+
+> > > It sounds like the hardware has a PCS which can support SGMII or
+> > > 1000BaseX. phylink will tell you what mode to configure it to. e.g. A
+> > > fibre SFP module will want 1000BaseX. A copper SFP module will want
+> > > SGMII. A switch is likely to want 1000BaseX. A PHY is likely to want
+> > > SGMII. So remove the "sgmii-mode" property and configure it as phylink
+> > > is requesting.
+> > 
+> > It's more than SGMII or 1000BaseX as I read it. The port can act as if
+> > it's talking to an SGMII MAC, i.e. a CPU, or an SGMII PHY, i.e. an
+> > external PHY, or in BaseX mode for an SFP. I couldn't figure out a way
+> > in the current framework to automatically work out if I wanted PHY or
+> > MAC mode. For the port tagged CPU I can assume MAC mode, but a port that
+> > doesn't have that might still be attached to the CPU rather than an
+> > external PHY.
+> 
+> That depends what you're connected to. Some people call the two sides
+> of SGMII "System side" and "Media side". System side is where you're
+> receiving the results of AN from a PHY. Media side is where you're
+> telling the partner what you want it to do.
+> 
+> Media side is only useful if you're connected to another MAC, and
+> unless you have a requirement for it, I would suggest not implementing
+> that - you could come up with something using fixed-link, or it may
+> need some other model if the settings need to change.  That depends on
+> the application.
+
+So the device in question is a 7 port stand alone switch chip. There's a
+single SGMII port which is configurable between port 0 + 6 (they can
+also be configure up as RGMII, while the remaining 5 ports have their
+own phys).
+
+It sounds like there's a strong preference to try and auto configure
+things as much as possible, so I should assume the CPU port is in MAC
+mode, and anything not tagged as a CPU port is talking to a PHY/BASEX.
+
+I assume I can use PHY_INTERFACE_MODE_1000BASEX on the
+phylink_mac_config call to choose BASEX?
+
+> > > What exactly does sgmii-delay do?
+> > 
+> > As per the device tree documentation update I sent it delays the SGMII
+> > clock by 2ns. From the data sheet:
+> > 
+> > SGMII_SEL_CLK125M	sgmii_clk125m_rx_delay is delayed by 2ns
+> 
+> This sounds like a new world of RGMII delay pain but for SGMII. There
+> is no mention of "delay" in the SGMII v1.8 specification, so I guess
+> it's something the vendor is doing. Is this device capable of
+> recovering the clock from a single serdes pair carrying the data,
+> or does it always require the separate clock?
+
+Pass, but I think I might be able to get away without having to
+configure that for the moment.
+
+I'll go away and roll a v2 moving qca8k over to phylink and then using
+that to auto select the appropriate SGMII mode. Thanks for the feedback.
+
+J.
+
+-- 
+I started out with nothing & still have most of it left.
