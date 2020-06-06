@@ -2,122 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E341F0580
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 08:53:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B4DE1F05A0
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 09:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728477AbgFFGxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 02:53:17 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:42008 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgFFGxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 02:53:17 -0400
-Received: by mail-il1-f200.google.com with SMTP id j71so7987011ilg.9
-        for <netdev@vger.kernel.org>; Fri, 05 Jun 2020 23:53:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=YHGzKlRr1x6wwe8+Xsd7XnVO9fRZA3zp66TEx6YNRM4=;
-        b=UBANlLnPcrRtREMGE5K81eEaDind/Uolf7+gkqb0i4ZzaNA/rjeHxUMsJ1YkQ6E6C3
-         w0vPbUMvh9ISYqLKjMnMs1NMU2ln/aMJousONtJ7iZOCmCLWqUWBpre6I43SjQplsfJx
-         kol9Wbth7L+g+4zhSB/a0E/42SGReg49jNwADd/2Mva7obG+9PjrCJvS7b8JSZujUrXq
-         5XG6SqWPO3F4J8cXrn+xfFTA8H7Ylz0eFFJp9XYJq6081HvGLUDOAsvy/qEcWwYeFctW
-         uZxSSJuBfa4qbVebUmk6yzNz0OJPDcY50hA9edTST+VC7c6pKsJpG0D0qVBDrBl5Ruv/
-         cI+w==
-X-Gm-Message-State: AOAM533vMtWxNFbggZ/6mF4PPErzHzOAphGtJLzHqJ4zzTgzr7DQHhaE
-        +ku6H9DNO4felb+Rh9FcOyrYv5csvey0LB8fncpnK2iJgDOq
-X-Google-Smtp-Source: ABdhPJy4/P7iEG0CqThevVgFExOxhIMriL6fmbiKTYRSFhBPA3ikqmu7n9qIyuu6SkDU5iXOEunr4/hu0K4ghkGSOdOC/h1Kyoqc
+        id S1728609AbgFFHtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 03:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgFFHtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 03:49:24 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04371C08C5C2;
+        Sat,  6 Jun 2020 00:49:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=xL+G4GsW94/ggK5JfU33JmEGYUmeoXOu9t2Nxi5lgnY=; b=bjusGVWuo6H9lsUp6/2Jur4gzM
+        uYQtLAOctf16HA6m4aU/6EAEfqy0jo+pwzk3yEvk4YjkNA9RRR/1Na1MqZbs8DqqLkIJVCUp6dNr7
+        4lxV7ePJo9Uvo47yKuedn0fa5Kjw6Inwg0VFA1bhXxQaMAbHiR0G2f07XS3PBG/267lcy5kUlYYc3
+        x26fm/A3VaoOKh6BHKFjzyj1yUIbTutkcrNLx+YHB9xXgdavB21Tok0P7rNQwaxB7MDwV1l54MZkG
+        HVzNpDCTFlG83GCTLg+7L53YqMggjYoEu2oUxvGsrknG0B1IKfSgeF1SlvwP6bYR+qLGqyH9fXR/W
+        TjLww1iQ==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jhTZs-0003Od-7f; Sat, 06 Jun 2020 08:49:16 +0100
+Date:   Sat, 6 Jun 2020 08:49:16 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: dsa: qca8k: introduce SGMII configuration
+ options
+Message-ID: <20200606074916.GM311@earth.li>
+References: <cover.1591380105.git.noodles@earth.li>
+ <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
+ <20200605183843.GB1006885@lunn.ch>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:8d44:: with SMTP id p65mr11887540iod.24.1591426395917;
- Fri, 05 Jun 2020 23:53:15 -0700 (PDT)
-Date:   Fri, 05 Jun 2020 23:53:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000003d19705a764d5ee@google.com>
-Subject: KMSAN: uninit-value in slhc_compress (2)
-From:   syzbot <syzbot+801c60509310ac8083dd@syzkaller.appspotmail.com>
-To:     adobriyan@gmail.com, davem@davemloft.net, edumazet@google.com,
-        glider@google.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200605183843.GB1006885@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jun 05, 2020 at 08:38:43PM +0200, Andrew Lunn wrote:
+> On Fri, Jun 05, 2020 at 07:10:58PM +0100, Jonathan McDowell wrote:
+> > The QCA8337(N) has an SGMII port which can operate in MAC, PHY or BASE-X
+> > mode depending on what it's connected to (e.g. CPU vs external PHY or
+> > SFP). At present the driver does no configuration of this port even if
+> > it is selected.
+> > 
+> > Add support for making sure the SGMII is enabled if it's in use, and
+> > device tree support for configuring the connection details.
+> 
+> It is good to include Russell King in Cc: for patches like this.
 
-syzbot found the following crash on:
+No problem, I can keep him in the thread; I used get_maintainer for the
+initial set of people/lists to copy.
 
-HEAD commit:    f0d5ec90 kmsan: apply __no_sanitize_memory to dotraplinkag..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a3dcca100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=86e4f8af239686c6
-dashboard link: https://syzkaller.appspot.com/bug?extid=801c60509310ac8083dd
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> Also, netdev is closed at the moment, so please post patches as RFC.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+"closed"? If you mean this won't get into 5.8 then I wasn't expecting it
+to, I'm aware the merge window for that is already open.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+801c60509310ac8083dd@syzkaller.appspotmail.com
+> It sounds like the hardware has a PCS which can support SGMII or
+> 1000BaseX. phylink will tell you what mode to configure it to. e.g. A
+> fibre SFP module will want 1000BaseX. A copper SFP module will want
+> SGMII. A switch is likely to want 1000BaseX. A PHY is likely to want
+> SGMII. So remove the "sgmii-mode" property and configure it as phylink
+> is requesting.
 
-=====================================================
-BUG: KMSAN: uninit-value in slhc_compress+0x2c5/0x2fb0 drivers/net/slip/slhc.c:251
-CPU: 0 PID: 18018 Comm: syz-executor.3 Not tainted 5.7.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- slhc_compress+0x2c5/0x2fb0 drivers/net/slip/slhc.c:251
- ppp_send_frame drivers/net/ppp/ppp_generic.c:1637 [inline]
- __ppp_xmit_process+0x1902/0x2970 drivers/net/ppp/ppp_generic.c:1495
- ppp_xmit_process+0x147/0x2f0 drivers/net/ppp/ppp_generic.c:1516
- ppp_write+0x6bb/0x790 drivers/net/ppp/ppp_generic.c:512
- do_loop_readv_writev fs/read_write.c:718 [inline]
- do_iter_write+0xa0a/0xdc0 fs/read_write.c:1001
- vfs_writev fs/read_write.c:1072 [inline]
- do_pwritev+0x487/0x7d0 fs/read_write.c:1169
- __do_sys_pwritev fs/read_write.c:1216 [inline]
- __se_sys_pwritev+0xc6/0xe0 fs/read_write.c:1211
- __x64_sys_pwritev+0x62/0x80 fs/read_write.c:1211
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45ca69
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f1e75341c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000128
-RAX: ffffffffffffffda RBX: 00000000004facc0 RCX: 000000000045ca69
-RDX: 1000000000000021 RSI: 00000000200003c0 RDI: 0000000000000006
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000879 R14: 00000000004cb58e R15: 00007f1e753426d4
+It's more than SGMII or 1000BaseX as I read it. The port can act as if
+it's talking to an SGMII MAC, i.e. a CPU, or an SGMII PHY, i.e. an
+external PHY, or in BaseX mode for an SFP. I couldn't figure out a way
+in the current framework to automatically work out if I wanted PHY or
+MAC mode. For the port tagged CPU I can assume MAC mode, but a port that
+doesn't have that might still be attached to the CPU rather than an
+external PHY.
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
- slab_alloc_node mm/slub.c:2802 [inline]
- __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4436
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1083 [inline]
- ppp_write+0x115/0x790 drivers/net/ppp/ppp_generic.c:500
- do_loop_readv_writev fs/read_write.c:718 [inline]
- do_iter_write+0xa0a/0xdc0 fs/read_write.c:1001
- vfs_writev fs/read_write.c:1072 [inline]
- do_pwritev+0x487/0x7d0 fs/read_write.c:1169
- __do_sys_pwritev fs/read_write.c:1216 [inline]
- __se_sys_pwritev+0xc6/0xe0 fs/read_write.c:1211
- __x64_sys_pwritev+0x62/0x80 fs/read_write.c:1211
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
+> What exactly does sgmii-delay do?
 
+As per the device tree documentation update I sent it delays the SGMII
+clock by 2ns. From the data sheet:
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+SGMII_SEL_CLK125M	sgmii_clk125m_rx_delay is delayed by 2ns
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > +#define QCA8K_REG_SGMII_CTRL				0x0e0
+> > +#define   QCA8K_SGMII_EN_PLL				BIT(1)
+> > +#define   QCA8K_SGMII_EN_RX				BIT(2)
+> > +#define   QCA8K_SGMII_EN_TX				BIT(3)
+> > +#define   QCA8K_SGMII_EN_SD				BIT(4)
+> > +#define   QCA8K_SGMII_CLK125M_DELAY			BIT(7)
+> > +#define   QCA8K_SGMII_MODE_CTRL_MASK			(BIT(22) | BIT(23))
+> > +#define   QCA8K_SGMII_MODE_CTRL_BASEX			0
+> > +#define   QCA8K_SGMII_MODE_CTRL_PHY			BIT(22)
+> > +#define   QCA8K_SGMII_MODE_CTRL_MAC			BIT(23)
+> 
+> I guess these are not really bits. You cannot combine
+> QCA8K_SGMII_MODE_CTRL_MAC and QCA8K_SGMII_MODE_CTRL_PHY. So it makes
+> more sense to have:
+> 
+> #define   QCA8K_SGMII_MODE_CTRL_BASEX			(0x0 << 22)
+> #define   QCA8K_SGMII_MODE_CTRL_PHY			(0x1 << 22)
+> #define   QCA8K_SGMII_MODE_CTRL_MAC			(0x2 << 22)
+
+Sure; given there's no 0x3 choice I just went for the bits that need
+set, but that works too.
+
+J.
+
+-- 
+Mistakes aren't always regrets.
