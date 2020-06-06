@@ -2,121 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DADB1F0870
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 22:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3221F087A
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 22:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728891AbgFFUBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 16:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728432AbgFFUB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 16:01:29 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37C7C08C5C2
-        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 13:01:29 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id n141so13431151qke.2
-        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 13:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+Pq6RzQqJCNvdcxNmu8B5Dj+UAbb2+P92x9klLCwkTg=;
-        b=snyxI1RFz4ks9PuyfJj3AxurO0chMruanXZ4FnuGVI+PtJ8+px+72zjIAOr27ekn0D
-         XraBfMx3R5YFIXc+cr9zw/rejrQL8CWlZ0zjvmMv4l4UWQay4UWiUC0IlVINrxGJKUDE
-         VFuKWUUtwEetvUMSTSW6J/SBJGIgCMxpuZ6vMAETDsC2fT9gY+G0B2gwP76MwCRxhRvh
-         /8XNqPoimET0t01e5gPHwEi95jaPxlulGpbcGkM/IK0mG/CGlfX7o+uaapqaUCoEvchF
-         4no8e2CQFkig7qtwEXrh0zgYaVsVXM1Ahiu7llTifsB69tg6rTxIcI5y0N6FZOBfXnKE
-         pLyw==
+        id S1728553AbgFFUIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 16:08:36 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48470 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728197AbgFFUIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 16:08:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591474113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I3vo96oJCGr914y5mhSidy9wAMihpQEenpV5SRACxSM=;
+        b=AxImsgBJiIPxtr6kX6B4KBfGa/bglStmGbfL0c5bVtmpiEYXCQET/Rh5JS3+O5ft0qdnhu
+        vOGBJ77ruVoHLJy/N0hmH+ipcGqfsSU9Wq1Yi+gikNC4ToEyH2hH1vDxv9olq7fsAIWP/J
+        4F2SXIduB5brR3uKueghBTB5WzOf/eA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-506-U6mTjncpPH2_Bzf83xRRvQ-1; Sat, 06 Jun 2020 16:08:31 -0400
+X-MC-Unique: U6mTjncpPH2_Bzf83xRRvQ-1
+Received: by mail-wr1-f70.google.com with SMTP id n6so5362964wrv.6
+        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 13:08:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+Pq6RzQqJCNvdcxNmu8B5Dj+UAbb2+P92x9klLCwkTg=;
-        b=GtiREQc7tMVHqvKhG84mUoh4QmQ1cKoPQLCnFS8HJWkTFmKBFSALQyE8wUXHlGM4B4
-         +OpXNwJbNHbnkRihlVc3E7W6Io77on6kBMfRJ8jY/vlAGah2kdd/kmrfFDVfd8ZKLFZ/
-         wlriJORVGrUXwn8f0GRRWSFuZ28fx3HMLpw4G2c2o2K52CDZfFVvGv1nmh/Ro+3GzrnC
-         RISGVzHovKwOAWxP0EwS9gyuCHxns65g9gRsaM/tWpXz8ASjrFoWtmp9E2NVvrVodPS6
-         sXKELQTlRXvDxwq7q+Cx31ueRsxEmdG55J7vA07yWaYP9+WzAJQXQcQMe4U8HAtqqQjZ
-         3I3g==
-X-Gm-Message-State: AOAM531C9dCDPAkygfTpB8JQCU5DJoBvilpHaLukzKwOwcv+89nhTsBg
-        jJ8MeXnRFw4D6u1fubGPzCJ+OQ==
-X-Google-Smtp-Source: ABdhPJxaj9ZWumNwHhmlL7/HI4iCEPKtVDD/DQlVN8Qr2cveSXoE+w30VfvYEcyRHG62uRqGgA9R8Q==
-X-Received: by 2002:a37:4595:: with SMTP id s143mr16482248qka.449.1591473688461;
-        Sat, 06 Jun 2020 13:01:28 -0700 (PDT)
-Received: from ovpn-112-93.phx2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
-        by smtp.gmail.com with ESMTPSA id e1sm3170960qto.51.2020.06.06.13.01.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 06 Jun 2020 13:01:27 -0700 (PDT)
-From:   Qian Cai <cai@lca.pw>
-To:     jeffrey.t.kirsher@intel.com
-Cc:     sergey.nemov@intel.com, davem@davemloft.net,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
-Subject: [PATCH] i40e: silence an UBSAN false positive
-Date:   Sat,  6 Jun 2020 16:01:16 -0400
-Message-Id: <20200606200116.1398-1-cai@lca.pw>
-X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=I3vo96oJCGr914y5mhSidy9wAMihpQEenpV5SRACxSM=;
+        b=cqWtFihrXbUlTy1Tjb6412a7aNIkg/kJaFPHH8W3eHcJvo03Q5RtAB18Yf3Obo0Bb5
+         5QLspOqJfrzOLZU6kMEj/1BjcC6Sld9BnpwqP9bXu/dDOlAsmGGwhi4Wjhwc1830Ud6f
+         KTnJ1MAx1O6r1DKYieoj8T49sVNrCsovELUVLAyycptapEWPyKVihZuVc1u05bqV5Pj2
+         o6kJySOC8uqE80zW7QtiW6uh93AUUyubCG2naysAg8vEg89hRWIWnuBjNDMf5fOMchmE
+         4vPFQrvFFNjdwDs/jPlrNaKIE/syrB4FYHNKq0v9sV7DdMpvYj2V+DFVdgX8gsibVju+
+         45Jg==
+X-Gm-Message-State: AOAM5309o2BLyC5owuKPWNkT79CkZ19HjSPakIzFmuQLPc6pF9zZGWP1
+        mXjvT2Jyilfh0vt/VVnjimTHBzcesA7ARmI7j1DDlP6TglYlKMg/DKujR0OUPVeeEPoBBa7Bnpp
+        Q2tlndZBzRw0kujZ1
+X-Received: by 2002:adf:ef50:: with SMTP id c16mr15276937wrp.161.1591474110576;
+        Sat, 06 Jun 2020 13:08:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx0SbwsNKKsOSlo/OYcuuvmM2xPp+M+9Ct36WZUV5Yngc7zJm9tOIPYCV68GGyxEnn/rpfZ/Q==
+X-Received: by 2002:adf:ef50:: with SMTP id c16mr15276923wrp.161.1591474110326;
+        Sat, 06 Jun 2020 13:08:30 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id z9sm16153180wmi.41.2020.06.06.13.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Jun 2020 13:08:29 -0700 (PDT)
+Date:   Sat, 6 Jun 2020 16:08:27 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] uaccess: user_access_begin_after_access_ok()
+Message-ID: <20200606160524-mutt-send-email-mst@kernel.org>
+References: <20200603014815.GR23230@ZenIV.linux.org.uk>
+ <3358ae96-abb6-6be9-346a-0e971cb84dcd@redhat.com>
+ <20200603041849.GT23230@ZenIV.linux.org.uk>
+ <3e723db8-0d55-fae6-288e-9d95905592db@redhat.com>
+ <20200603013600-mutt-send-email-mst@kernel.org>
+ <b7de29fa-33f2-bbc1-08dc-d73b28e3ded5@redhat.com>
+ <20200603022935-mutt-send-email-mst@kernel.org>
+ <f0573536-e6cc-3f68-5beb-a53c8e1d0620@redhat.com>
+ <20200604124759-mutt-send-email-mst@kernel.org>
+ <55b50859-a71b-c57e-e26b-5fc8659eac22@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <55b50859-a71b-c57e-e26b-5fc8659eac22@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtchnl_rss_lut.lut is used for the RSS lookup table, but in
-i40e_vc_config_rss_lut(), it is indexed by subscript results in a false
-positive.
+On Fri, Jun 05, 2020 at 06:03:38PM +0800, Jason Wang wrote:
+> 
+> On 2020/6/5 上午12:49, Michael S. Tsirkin wrote:
+> > > > 2. Second argument to translate_desc is a GPA, isn't it?
+> > > No, it's IOVA, this function will be called only when IOTLB is enabled.
+> > > 
+> > > Thanks
+> > Right IOVA. Point stands how does it make sense to cast
+> > a userspace pointer to an IOVA? I guess it's just
+> > because it's talking to qemu actually, so it's abusing
+> > the notation a bit ...
+> > 
+> 
+> Yes, but the issues are:
+> 
+> 1) VHOST_SET_VRING_ADDR is used for iotlb and !iotlb
+> 2) so did the memory accessors
+> 
+> Unless we differ separate IOTLB datapath out, there's probably not easy to
+> have another notation.
+> 
+> Thanks
 
- UBSAN: array-index-out-of-bounds in drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:2983:15
- index 1 is out of range for type 'u8 [1]'
- CPU: 34 PID: 871 Comm: kworker/34:2 Not tainted 5.7.0-next-20200605+ #5
- Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40 03/09/2018
- Workqueue: i40e i40e_service_task [i40e]
- Call Trace:
-  dump_stack+0xa7/0xea
-  ubsan_epilogue+0x9/0x45
-  __ubsan_handle_out_of_bounds+0x6f/0x80
-  i40e_vc_process_vf_msg+0x457c/0x4660 [i40e]
-  i40e_service_task+0x96c/0x1ab0 [i40e]
-  process_one_work+0x57d/0xbd0
-  worker_thread+0x63/0x5b0
-  kthread+0x20c/0x230
-  ret_from_fork+0x22/0x30
+With the batching/format independence rework, it might be possible to
+separate that down the road. We'll see.
 
-Fixes: d510497b8397 ("i40e: add input validation for virtchnl handlers")
-Signed-off-by: Qian Cai <cai@lca.pw>
----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 56b9e445732b..d5a959d91ba9 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -2971,6 +2971,7 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
- 	struct i40e_vsi *vsi = NULL;
- 	i40e_status aq_ret = 0;
- 	u16 i;
-+	u8 *lut = vrl->lut;
- 
- 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
- 	    !i40e_vc_isvalid_vsi_id(vf, vrl->vsi_id) ||
-@@ -2980,13 +2981,13 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
- 	}
- 
- 	for (i = 0; i < vrl->lut_entries; i++)
--		if (vrl->lut[i] >= vf->num_queue_pairs) {
-+		if (lut[i] >= vf->num_queue_pairs) {
- 			aq_ret = I40E_ERR_PARAM;
- 			goto err;
- 		}
- 
- 	vsi = pf->vsi[vf->lan_vsi_idx];
--	aq_ret = i40e_config_rss(vsi, NULL, vrl->lut, I40E_VF_HLUT_ARRAY_SIZE);
-+	aq_ret = i40e_config_rss(vsi, NULL, lut, I40E_VF_HLUT_ARRAY_SIZE);
- 	/* send the response to the VF */
- err:
- 	return i40e_vc_send_resp_to_vf(vf, VIRTCHNL_OP_CONFIG_RSS_LUT,
 -- 
-2.21.0 (Apple Git-122.2)
+MST
 
