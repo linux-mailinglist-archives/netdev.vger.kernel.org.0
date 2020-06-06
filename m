@@ -2,110 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9A81F06D4
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 15:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D0B21F06D6
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 15:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbgFFNoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 09:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
+        id S1726466AbgFFNsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 09:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbgFFNoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 09:44:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0D5C03E96A;
-        Sat,  6 Jun 2020 06:44:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=vozlHdf9KLuw8QLuy6Exnt1trvwv2FE24skv0EkmY5k=; b=mUH728r7zwGBlIvp2uCjOU3mX
-        CQiRiWQ/jVofdPufbya+44rAPdc/CLynbPpiQYOKFquKevYKj8eB8TlOyHxOEYTpU6slfNZ/sQZ6F
-        91qNUFzD1f9DRerSSnMKHWBU0LuuuCBLkE8B5eQ6UU+ItLuEupbm565+QvKB6nT5oUeBFxy2sUfx3
-        Hc00plYurfpoGGr1GTXl50b/e4R/x99UOPJzHIkWDS60bVcDK1yvRFHGuRxie+2X2p6WU4QQrrtt9
-        Z/Ekh7c8oPX8zLh6s99KLPI+KKEDSkazk2X/pm3e6OJU0ZQa6Tk6FiHOzQbIghsKnCRPpf0Yxg9Qf
-        JruJuFsbA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42072)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jhZ7C-0004Xy-Ln; Sat, 06 Jun 2020 14:44:02 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jhZ77-00005S-0G; Sat, 06 Jun 2020 14:43:57 +0100
-Date:   Sat, 6 Jun 2020 14:43:56 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jonathan McDowell <noodles@earth.li>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: dsa: qca8k: introduce SGMII configuration
- options
-Message-ID: <20200606134356.GM1551@shell.armlinux.org.uk>
-References: <cover.1591380105.git.noodles@earth.li>
- <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
- <20200605183843.GB1006885@lunn.ch>
- <20200606074916.GM311@earth.li>
- <20200606083741.GK1551@shell.armlinux.org.uk>
- <20200606105909.GN311@earth.li>
+        with ESMTP id S1726078AbgFFNsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 09:48:04 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF335C03E96A
+        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 06:48:04 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id k8so1223133iol.13
+        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 06:48:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WmBBTtlQXF1epClnu85CZOA2p0/GnLnPtjrpIYAu2NY=;
+        b=dALzad2BsM16joH8ihFBpjTUBdQG9CJD6WjxVhKfDZeEn2c8ObEx13d6/TSegkmXzv
+         yhGhiYGX4Kw22C3i35Ca+804iV5GYDysFUkt9M8czyc0BCvQ3GHgDeCm0gvplCLR3pv7
+         8stIuFCyJhObl6e2zWmpXx5CGQovX/MPNoMvjqMvqjucG0+RDEyvRSaxVVJNJNxWny13
+         gu3qVnxPFKOdm1i0pZThkIcvb3BOJhhBRCMZc7h0bDsUoRW30S2jxEbsCLRQazoC4YKb
+         tA01BPTgKqY8mCtufTH2jo2RBOzykf+4SiUwlbHFPLJAC1cMbVcs2ZncwSVM60/kZOtb
+         i+zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WmBBTtlQXF1epClnu85CZOA2p0/GnLnPtjrpIYAu2NY=;
+        b=FRI26wxHFaTSg6TER51a7Bv8NIhj5J0OECJ9AQ3gnlTnU/iGNPHa3JlYsRRByPxAg+
+         yDG1lUzv7NsfJO5yohiD5pmVitv+/IRNJMjuYEk9zB0S62pwA3TH/hMD+d6B5aKjEQhY
+         4Kk/q9m/e5gjpZ3uSjfZi1/txjCqLKvQRQuwklusCgjIKgi+Yjdt4f8IsCtaIOFBmdQg
+         oB07VUCeDopr7sefUXw6O5epXAdeQp6tQa4tYNx6QKkzhqDvb4Szim6Bxl5SkVWJ9wDW
+         Z58gZH/MZX1vQr4JpqIPh6j6aYeEgextuWAT2aVN1yHIqXMjtJ3BBXLqRJbfdqY8dvtt
+         Qr9A==
+X-Gm-Message-State: AOAM533yRnECMHPENvlEKGgy1uzZApGE6DPdQ1z8VwXwDT5H1HwKMkr+
+        NkgkSKCfO2VqJfkDSbjLVJ/LzdZfR923vg1WYIc=
+X-Google-Smtp-Source: ABdhPJx5DTMf4b16NpoTPo5HfcnfmElF2HdrXPhRD0hJYeGezm7TtVd93sT7u6lm1qorjFoiTuWqpviW3ocTtiFxuwg=
+X-Received: by 2002:a02:9f84:: with SMTP id a4mr13654364jam.0.1591451283072;
+ Sat, 06 Jun 2020 06:48:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200606105909.GN311@earth.li>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CAEyMn7a5SwQtMxrrJ-C0Jy6THZcCCPXp5ouC+jRLH4ySK-8p_A@mail.gmail.com>
+ <20200606134314.kphjg6mkdbcjsx6l@lion.mk-sys.cz>
+In-Reply-To: <20200606134314.kphjg6mkdbcjsx6l@lion.mk-sys.cz>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Sat, 6 Jun 2020 15:47:52 +0200
+Message-ID: <CAEyMn7Y2BHT24cwBMKG5sTDek5MP2pcn+WKrn3OUkJtCsz4epw@mail.gmail.com>
+Subject: Re: ethtool build failure
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 06, 2020 at 11:59:09AM +0100, Jonathan McDowell wrote:
-> So the device in question is a 7 port stand alone switch chip. There's a
-> single SGMII port which is configurable between port 0 + 6 (they can
-> also be configure up as RGMII, while the remaining 5 ports have their
-> own phys).
-> 
-> It sounds like there's a strong preference to try and auto configure
-> things as much as possible, so I should assume the CPU port is in MAC
-> mode, and anything not tagged as a CPU port is talking to a PHY/BASEX.
-> 
-> I assume I can use PHY_INTERFACE_MODE_1000BASEX on the
-> phylink_mac_config call to choose BASEX?
+Hi Michal,
 
-Yes, but from what you've mentioned above, I think I need to ensure that
-there's a proper understanding here.
+Am Sa., 6. Juni 2020 um 15:43 Uhr schrieb Michal Kubecek <mkubecek@suse.cz>:
+>
+> On Sat, Jun 06, 2020 at 03:24:22PM +0200, Heiko Thiery wrote:
+> > Hi Michael et all,
+> >
+> > I'm digging in the reason for a failure when building ethtool with
+> > buildroot [1].
+> >
+> > I see the following error:
+> > ---
+> > data/buildroot/buildroot-test/instance-0/output/host/bin/i686-linux-gcc
+> > -DHAVE_CONFIG_H -I.  -I./uapi  -D_LARGEFILE_SOURCE
+> > -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -D_LARGEFILE_SOURCE
+> > -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os   -static -c -o
+> > netlink/desc-rtnl.o netlink/desc-rtnl.c
+> > In file included from ./uapi/linux/ethtool_netlink.h:12,
+> >                  from netlink/desc-ethtool.c:7:
+> > ./uapi/linux/ethtool.h:1294:19: warning: implicit declaration of
+> > function '__KERNEL_DIV_ROUND_UP' [-Wimplicit-function-declaration]
+> >   __u32 queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+> >                    ^~~~~~~~~~~~~~~~~~~~~
+> > ./uapi/linux/ethtool.h:1294:8: error: variably modified 'queue_mask'
+> > at file scope
+> >   __u32 queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+> >         ^~~~~~~~~~
+> > ---
+>
+> Thank you for the report. This is fixed by first part of this patch:
+>
+>   https://patchwork.ozlabs.org/project/netdev/patch/bb60cbfe99071fca4b0ea9e62d67a2341d8dd652.1590707335.git.mkubecek@suse.cz/
+>
+> I'm going to apply it (with the rest of the series) this weekend.
 
-1000BASE-X is the IEEE 802.3 defined 1G single lane Serdes protocol.
-SGMII is different; it's a vendor derivative of 1000BASE-X which has
-become a de-facto standard.
+I will try to apply this patch and check if the failure is gone.
 
-Both are somewhat compatible with each other; SGMII brings with it
-additional data replication to achieve 100M and 10M speeds, while
-keeping the link running at 1.25Gbaud.  In both cases, there is a
-16-bit "configuration" word that is passed between the partners.
+>
+> > The problems seems to be injected by the "warning: implicit
+> > declaration of function".
+> >
+> > When I move the __KERNEL_DIV_ROUND_UP macro right beside usage in
+> > "uapi/linux/ethtool.h" the failure is gone.
+> >
+> > ---
+> > diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+> > index d3dcb45..6710fa0 100644
+> > --- a/uapi/linux/ethtool.h
+> > +++ b/uapi/linux/ethtool.h
+> > @@ -1288,6 +1288,11 @@ enum ethtool_sfeatures_retval_bits {
+> >   * @queue_mask: Bitmap of the queues which sub command apply to
+> >   * @data: A complete command structure following for each of the
+> > queues addressed
+> >   */
+> > +/* ethtool.h epxects __KERNEL_DIV_ROUND_UP to be defined by <linux/kernel.h> */
+> > +#include <linux/kernel.h>
+> > +#ifndef __KERNEL_DIV_ROUND_UP
+> > +#define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+> > +#endif
+> >  struct ethtool_per_queue_op {
+> >         __u32   cmd;
+> >         __u32   sub_command;
+> > ---
+>
+> This would fix the warning and error too but uapi/linux/ethtool.h is
+> a sanitized copy of a kernel header which we import and do not apply
+> further changes. Moreover, there is no need to have multiple definitions
+> of the same macro and there is already one in internal.h.
 
-1000BASE-X uses this configuration word to advertise the abilities of
-each end, which is limited to duplex and pause modes only.  This you
-get by specifying the phy-mode="1000base-x" and
-managed="in-band-status" in DT.
+I saw that the definition is already done in internal.h. I just did a
+quick hackaround to check if the failure is gone.
 
-SGMII uses this configuration word for the media side to inform the
-system side which mode it wishes to operate the link: the speed and
-duplex.  Some vendors extend it to include EEE parameters as well,
-or pause modes.  You get this via phy-mode="sgmii" and
-managed="in-band-status" in DT.
-
-Then there are variants where the configuration word is not present.
-In this case, the link has to be manually configured, and without the
-configuration word, SGMII operating at 1G is compatible with
-1000base-X operating at 1G.  Fixed-link can be used for this, although
-fixed-link will always report that the link is up at the moment; that
-may change in the future, it's something that is being looked into at
-the moment.
+Thanks!
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+Heiko
