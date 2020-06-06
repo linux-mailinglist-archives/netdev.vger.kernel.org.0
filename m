@@ -2,128 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35D91F0693
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 14:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BBD1F06BC
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 15:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728796AbgFFMtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 08:49:11 -0400
-Received: from mail-eopbgr150095.outbound.protection.outlook.com ([40.107.15.95]:33374
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728732AbgFFMtK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Jun 2020 08:49:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jyl593S0ScEb/8REN7eXjSr7uS2ocFU7qBQZScg7RZ1M/jkf7joUsoevCY7NxliHJqRCdY/459CHnV5g/h6ixjVRowx3wFJ7fz/EcyOsBn3MDjxzKdpUVrufmvAuQnN6fcUIqGcERc4Y8wvYcvw76iBVD9q1IIZA+VRJuQPxHn414mz7qKtAwD2EyK5YC1amKkq9x08UNe8DExdOSHd5d5o4z+snfX2pvzeWwxNKuH5csScLifgsgrVtFtsYHZSQPZbubIZ+cnCW0oWzKEbV1nCbHh1oCniCD6cV+enSCCJXmc0xpoUMalTittpAcIPQgks+Wcqvo9D4wJVEQPnlBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vdG7XHEFem4zh8B4h3Gu9RvLv3YFXm5g8918qfftPYw=;
- b=Lv1towMckwNLcqJxpAw/aKQ1hdS+ltsYr6ip17wo03zTRbFeI97HpelVy3GRFpptypihc3tIDM7MyWMTsaH6QVJnCt+RlTlqmedVjRInVt/VdtSi4UCDhq8LySmuqfKuKkyYJegauiJgHmvjqrHpRFAPGNTiQe30CQcTr4NX0P/j/+AabRYz2O/7b2cHiXLcf4Hn7GHTuBkMVGxUe+44WwdZpbBO625OvXJhAbTKXbSTL5sqix64xE/XGFVY0dtKXdduNAS2Ir4RXhC9HKu1zqW8Q7b3UMpRt9qZJaruJlADK3WcFyt/VnXAF5XlH1TC8NLDjs7u542t+yOoUnyXww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
- header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vdG7XHEFem4zh8B4h3Gu9RvLv3YFXm5g8918qfftPYw=;
- b=o/c33j+qu432YvAKV+ehnNP0rpw6YJaR17RxchtQKGwLxLEA/6TrokF1RSWrGsxRnipq0vfEkBw7T4bD/3vs6eYZagdbl9mfW6dzR4+JieBNHDDMZyeEj3+K1wsNA0TuH9BAlMwBT5l12CuqYyIva2STmmms0YbgZE24fh/uEFY=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=virtuozzo.com;
-Received: from AM0PR08MB5140.eurprd08.prod.outlook.com (2603:10a6:208:162::17)
- by AM0PR08MB3442.eurprd08.prod.outlook.com (2603:10a6:208:d7::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18; Sat, 6 Jun
- 2020 12:49:07 +0000
-Received: from AM0PR08MB5140.eurprd08.prod.outlook.com
- ([fe80::b8a9:edfd:bfd6:a1a2]) by AM0PR08MB5140.eurprd08.prod.outlook.com
- ([fe80::b8a9:edfd:bfd6:a1a2%6]) with mapi id 15.20.3066.022; Sat, 6 Jun 2020
- 12:49:07 +0000
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH] ethtool: remove extra checks
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Message-ID: <6d90f9b2-9bdd-d813-ef4e-ed0a7d1acaf2@virtuozzo.com>
-Date:   Sat, 6 Jun 2020 15:49:05 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM4PR0202CA0020.eurprd02.prod.outlook.com
- (2603:10a6:200:89::30) To AM0PR08MB5140.eurprd08.prod.outlook.com
- (2603:10a6:208:162::17)
+        id S1726504AbgFFNYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 09:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbgFFNYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 09:24:34 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0BDC03E96A
+        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 06:24:33 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id c8so13499895iob.6
+        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 06:24:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=4kHz6DIcE9s1bm/+u+Nln01YonlT3quEnpLnCSk6xZ8=;
+        b=VMZUrL9UBIol/2UIzAaK/2J4+g83iX6OJ9o0FDgX7J2xMBwlPi+oJkxTM2Ts4IKEYo
+         zoldWnyEqyyz8QtsSN87k7nZMJH3LATdLvbJ7nnwThKR0q1VAn/lBGGbETX7O5Nn/iVh
+         Wqk5fXmtSKoyllT7TTvmwlTy66Dh8U0jhLE6AkUH5DlEcq8XlmIrizymlBqflmA11AIf
+         m5qWVtqLm2k5Ilqn0h/fB5wVZ5FZ/6UTGtxZAzR6K0bkx6+w1Y+2kBdVjfNKK2IoVFkH
+         Osb8qvc5ItHhxr1WzOBRl6dwhxhNHRoOiKpc8uw3ArqVMd9dcWnnFfFX+dV4AYE7i1PY
+         qGTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=4kHz6DIcE9s1bm/+u+Nln01YonlT3quEnpLnCSk6xZ8=;
+        b=H67WW7voXJ8a5j+nG+htD0StVOaiJSV18V42rBs9sKPk/BRShkezH8O//G5ohadEph
+         oB5nB9dCYDvyYaF8csqqSZ3BkfmYTop6gHrU4U63AgtIgLuD2CYv1lbVgIdy+RQ1K5c7
+         7wGwtgTX2ppJm0s6YHkp1tNhwm5lE931oSiQpBMd7zOvnKI08GItwWRnyPKhvm0pjpoQ
+         gcwMDafbnHTGyDzRXNZuTd7WF6Yc4R2xVA/Z24vHtyJ4PL/TC6g2LEH0efe+Wuu111tn
+         IGZ+xiOgdCy3PRmbt7jC0o82+gRIOeBSfFFSJqXyR9sDyVT8Ow0/bxut3kElY6eVXaok
+         SFBA==
+X-Gm-Message-State: AOAM533tKZf5P0krU+Lf8V4lqep/kAeYbsd1sMO/UvakzBy9eM08McUr
+        h9IDBa8okZ8EQJLUT95CeTG+vBLnhSlOmL6UaxQ6oRH3
+X-Google-Smtp-Source: ABdhPJz8EuRPWHwAFLHchaI71DofS9PicmHc45OG2lTbc/KY46QT0TnUc1+FSvz5xxQbEG/WTwMPsDJrFM+a6AD6hdA=
+X-Received: by 2002:a6b:6709:: with SMTP id b9mr13285725ioc.108.1591449873069;
+ Sat, 06 Jun 2020 06:24:33 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.16.24.21] (185.231.240.5) by AM4PR0202CA0020.eurprd02.prod.outlook.com (2603:10a6:200:89::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Sat, 6 Jun 2020 12:49:06 +0000
-X-Originating-IP: [185.231.240.5]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d82f7b2c-e93c-4ea6-6ca3-08d80a17fffa
-X-MS-TrafficTypeDiagnostic: AM0PR08MB3442:
-X-Microsoft-Antispam-PRVS: <AM0PR08MB3442D94DE803B0488838FFFFAA870@AM0PR08MB3442.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:510;
-X-Forefront-PRVS: 04267075BD
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DhJZzYyZaqEGryhvrgMBiqTShwbWGhon1bTbJKsYR18sUq+8RYgNlpYY/iaezSi3irgI0L2B1r0LRdoVOJedtTRaREJ9Uadot0FIpZPV03a4s1P32wYuk9+7cSzEzB41AJIYKOxAqrTKIqV8Q/nk210Xzm0PcmmjE9Kr+/nJTNMiimxBtG7XlpJuHp45Nc0ihilPKzEwLmMB12M0KSAg+OiviRJcDxhHqlupZJwl6lmEk3M1MOjQmgy/j5SQT5eXU+Tudo8zZigPWxsWrZ1qZ1rgo+lXsTEW9b8nOYiItdjhgGOT+fQsYPWzc3KCkEfo8nCzGbb0o5IE7f0rM8HpIdPTi2OJFFfPWCZHScotk08VoqjHx6gMgkXnHeprAUbq
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR08MB5140.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(346002)(396003)(39840400004)(366004)(478600001)(4326008)(86362001)(31696002)(8676002)(8936002)(956004)(2616005)(83380400001)(52116002)(16526019)(66476007)(186003)(66946007)(26005)(5660300002)(66556008)(316002)(31686004)(16576012)(36756003)(54906003)(6486002)(6916009)(2906002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: Ucfs4bVnLhAscoRmgy9J31UAgm21HtGIXke1brZSsoC8kRJ123i5+DBksTTAa7OExs8Jr6qZDKFkI3xBns0jifwbOuvAIpWgPtpmYVztsDqI5nadavEaeKOlzNeGFgBAwinw9JxZ0jjZbUna/03aYMn2sOZ0/idrTR+8ruwfDTK8B7hE3Si56wGIkY1rLCubhSNuU37mg0/hQMiueeDqp1A6wzXDI6DUsLdWJ0npWdHz16JAQPRugrMXOfAXKyOGS1I2YeDT7apK6wvFzkT5UcRNKhzL7ySXqLMcJV7spdPKpjpiNEM9aiZx4a9hZEwNwUW3/KUe6gogn4Kp/Pbe81at1MqYWcw4rvJh6aKsD42FpggklamUezLkqb0Ju8CNSKg1ScoVYbYmeHs8Z6o9Sv6hLhBWwfbaTrcMv8Ge35CKrG8a3g94EJcfwt8hHcPMYbjJTeyBm8cP2/4SoHc/uZSvOIPMtvNkrsWrAeXxt6M=
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d82f7b2c-e93c-4ea6-6ca3-08d80a17fffa
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2020 12:49:06.9631
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IDqZ4QmrRqpp5gtTN9DzNzZTUSAyUAUF0pSoeMp+0mvk2IliawR+3fWTrzewNM8Ym1UKGDjfhHV5UGJx7IY9vg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB3442
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Sat, 6 Jun 2020 15:24:22 +0200
+Message-ID: <CAEyMn7a5SwQtMxrrJ-C0Jy6THZcCCPXp5ouC+jRLH4ySK-8p_A@mail.gmail.com>
+Subject: ethtool build failure
+To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Found by smatch:
-net/ethtool/linkmodes.c:356 ethnl_set_linkmodes() warn:
- variable dereferenced before check 'info' (see line 332)
-net/ethtool/linkinfo.c:143 ethnl_set_linkinfo() warn:
- variable dereferenced before check 'info' (see line 119
+Hi Michael et all,
 
-In both cases non-zero 'info' is always provided by caller.
+I'm digging in the reason for a failure when building ethtool with
+buildroot [1].
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+I see the following error:
 ---
- net/ethtool/linkinfo.c  | 3 +--
- net/ethtool/linkmodes.c | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+data/buildroot/buildroot-test/instance-0/output/host/bin/i686-linux-gcc
+-DHAVE_CONFIG_H -I.  -I./uapi  -D_LARGEFILE_SOURCE
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -D_LARGEFILE_SOURCE
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os   -static -c -o
+netlink/desc-rtnl.o netlink/desc-rtnl.c
+In file included from ./uapi/linux/ethtool_netlink.h:12,
+                 from netlink/desc-ethtool.c:7:
+./uapi/linux/ethtool.h:1294:19: warning: implicit declaration of
+function '__KERNEL_DIV_ROUND_UP' [-Wimplicit-function-declaration]
+  __u32 queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+                   ^~~~~~~~~~~~~~~~~~~~~
+./uapi/linux/ethtool.h:1294:8: error: variably modified 'queue_mask'
+at file scope
+  __u32 queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+        ^~~~~~~~~~
+---
 
-diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
-index 677068d..5eaf173 100644
---- a/net/ethtool/linkinfo.c
-+++ b/net/ethtool/linkinfo.c
-@@ -140,8 +140,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
- 
- 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
- 	if (ret < 0) {
--		if (info)
--			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
-+		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
- 		goto out_ops;
- 	}
- 	lsettings = &ksettings.base;
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index 452608c..b759133 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -353,8 +353,7 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
- 
- 	ret = __ethtool_get_link_ksettings(dev, &ksettings);
- 	if (ret < 0) {
--		if (info)
--			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
-+		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
- 		goto out_ops;
- 	}
- 
+The problems seems to be injected by the "warning: implicit
+declaration of function".
+
+When I move the __KERNEL_DIV_ROUND_UP macro right beside usage in
+"uapi/linux/ethtool.h" the failure is gone.
+
+---
+diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+index d3dcb45..6710fa0 100644
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -1288,6 +1288,11 @@ enum ethtool_sfeatures_retval_bits {
+  * @queue_mask: Bitmap of the queues which sub command apply to
+  * @data: A complete command structure following for each of the
+queues addressed
+  */
++/* ethtool.h epxects __KERNEL_DIV_ROUND_UP to be defined by <linux/kernel.h> */
++#include <linux/kernel.h>
++#ifndef __KERNEL_DIV_ROUND_UP
++#define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
++#endif
+ struct ethtool_per_queue_op {
+        __u32   cmd;
+        __u32   sub_command;
+---
+
+Has anyone an idea what goes wrong?
+
+[1] http://autobuild.buildroot.net/results/23dffe2f9766c12badb6e42bf3f0356c6df0cbfb/build-end.log
+
 -- 
-1.8.3.1
-
+Thanks,
+Heiko
