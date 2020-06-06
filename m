@@ -2,62 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 244571F0839
-	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 21:10:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DADB1F0870
+	for <lists+netdev@lfdr.de>; Sat,  6 Jun 2020 22:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728884AbgFFTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Jun 2020 15:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35584 "EHLO
+        id S1728891AbgFFUBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Jun 2020 16:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728553AbgFFTKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 15:10:10 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7F8C03E96A;
-        Sat,  6 Jun 2020 12:10:09 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id e5so10386375ote.11;
-        Sat, 06 Jun 2020 12:10:09 -0700 (PDT)
+        with ESMTP id S1728432AbgFFUB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Jun 2020 16:01:29 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37C7C08C5C2
+        for <netdev@vger.kernel.org>; Sat,  6 Jun 2020 13:01:29 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id n141so13431151qke.2
+        for <netdev@vger.kernel.org>; Sat, 06 Jun 2020 13:01:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=lca.pw; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cTw5dVSMwgnbi7FFVWG6b2nkWHLOFqVz8oS6c47Yp3w=;
-        b=D7RuLr42OlAzuzZ6e5hiRKdIJxPHCuyazV70MOrCLNoIB3U2Lm7VIfR/naHeeJOatj
-         oMuA6nFGWJv0DfkXT+TlntrHAJM7yivM9FLuQSk5o7PQb+45+B7Qu5/OJBjiNnPxgqaL
-         ADza4HhEk0dfNfhbZwqomd4X8SVxP3+6wjPSxwC0DsQrzXg59xc4PfvAvZdhIZqHStal
-         KJc85wps8HsFTTmf0XwAzylVUnaC58gU+d0OW5Wei2peBWc8FkGrVT+g5o1UkeRCmkja
-         DZU5A2iamFEwrnSYFmMh/PpxbGNTMh2hNYicQGqys1FSTPzrBkkljWJD7CnBZ7U2ImoV
-         ax4A==
+        bh=+Pq6RzQqJCNvdcxNmu8B5Dj+UAbb2+P92x9klLCwkTg=;
+        b=snyxI1RFz4ks9PuyfJj3AxurO0chMruanXZ4FnuGVI+PtJ8+px+72zjIAOr27ekn0D
+         XraBfMx3R5YFIXc+cr9zw/rejrQL8CWlZ0zjvmMv4l4UWQay4UWiUC0IlVINrxGJKUDE
+         VFuKWUUtwEetvUMSTSW6J/SBJGIgCMxpuZ6vMAETDsC2fT9gY+G0B2gwP76MwCRxhRvh
+         /8XNqPoimET0t01e5gPHwEi95jaPxlulGpbcGkM/IK0mG/CGlfX7o+uaapqaUCoEvchF
+         4no8e2CQFkig7qtwEXrh0zgYaVsVXM1Ahiu7llTifsB69tg6rTxIcI5y0N6FZOBfXnKE
+         pLyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cTw5dVSMwgnbi7FFVWG6b2nkWHLOFqVz8oS6c47Yp3w=;
-        b=cZNxIagtzcuJrm8gdecqC/oX3tqhDvnEvDKBYMahkaRqH6LUdfWxkZerMs0F/kpuoe
-         pywEeRoYZ0d3Ik1Mg6Rn14+CSF/ZraTNkDDNcYg6f6qfar+RqVJ1e4nezp2A5bqgZfIn
-         g8qN+EaP1RJPdOlI1v2ryQHCUGK5whN8RP2mF66Lhu9kVSKPC7TPbzDy7R/G6uzDIU94
-         xvyZhgjVWp8wSB1DwhuEnlZTERJBesgEROBqdZcF/cAJsYmVRFOPO2oP4416QPgEf1iR
-         IRJEgB2d4QBuusm53svY7Jov2gd7TRa/XLzVLrGhLlkfizWFOO3LSWKtLP/yBmEUuG2L
-         9Ipg==
-X-Gm-Message-State: AOAM532K5QHTu4/n7RKs24Q93QwWms/vcE/YB5V5jRs2uEflubqyjVHO
-        J2E0AovmJ5JmzGllrwBdkjvKEQ50B2g=
-X-Google-Smtp-Source: ABdhPJy61MvJ4C7cH913G/3NwYmTMNxge9YrVXCAqiNk6ZiFMinuObbHq0uWZE5pIaIty5cGQOmycA==
-X-Received: by 2002:a9d:d83:: with SMTP id 3mr11719097ots.365.1591470606991;
-        Sat, 06 Jun 2020 12:10:06 -0700 (PDT)
-Received: from proxmox.local.lan ([2605:6000:1b0c:4825:226:b9ff:fe41:ba6b])
-        by smtp.googlemail.com with ESMTPSA id m83sm1397207oig.51.2020.06.06.12.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Jun 2020 12:10:06 -0700 (PDT)
-From:   Tom Seewald <tseewald@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     tseewald@gmail.com, Christoph Hellwig <hch@lst.de>,
-        netdev@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>
-Subject: [PATCH] Fix build failure of OCFS2 when TCP/IP is disabled
-Date:   Sat,  6 Jun 2020 14:08:26 -0500
-Message-Id: <20200606190827.23954-1-tseewald@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        bh=+Pq6RzQqJCNvdcxNmu8B5Dj+UAbb2+P92x9klLCwkTg=;
+        b=GtiREQc7tMVHqvKhG84mUoh4QmQ1cKoPQLCnFS8HJWkTFmKBFSALQyE8wUXHlGM4B4
+         +OpXNwJbNHbnkRihlVc3E7W6Io77on6kBMfRJ8jY/vlAGah2kdd/kmrfFDVfd8ZKLFZ/
+         wlriJORVGrUXwn8f0GRRWSFuZ28fx3HMLpw4G2c2o2K52CDZfFVvGv1nmh/Ro+3GzrnC
+         RISGVzHovKwOAWxP0EwS9gyuCHxns65g9gRsaM/tWpXz8ASjrFoWtmp9E2NVvrVodPS6
+         sXKELQTlRXvDxwq7q+Cx31ueRsxEmdG55J7vA07yWaYP9+WzAJQXQcQMe4U8HAtqqQjZ
+         3I3g==
+X-Gm-Message-State: AOAM531C9dCDPAkygfTpB8JQCU5DJoBvilpHaLukzKwOwcv+89nhTsBg
+        jJ8MeXnRFw4D6u1fubGPzCJ+OQ==
+X-Google-Smtp-Source: ABdhPJxaj9ZWumNwHhmlL7/HI4iCEPKtVDD/DQlVN8Qr2cveSXoE+w30VfvYEcyRHG62uRqGgA9R8Q==
+X-Received: by 2002:a37:4595:: with SMTP id s143mr16482248qka.449.1591473688461;
+        Sat, 06 Jun 2020 13:01:28 -0700 (PDT)
+Received: from ovpn-112-93.phx2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id e1sm3170960qto.51.2020.06.06.13.01.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 06 Jun 2020 13:01:27 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     sergey.nemov@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
+Subject: [PATCH] i40e: silence an UBSAN false positive
+Date:   Sat,  6 Jun 2020 16:01:16 -0400
+Message-Id: <20200606200116.1398-1-cai@lca.pw>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,43 +63,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 12abc5ee7873 ("tcp: add tcp_sock_set_nodelay") and
-commit c488aeadcbd0 ("tcp: add tcp_sock_set_user_timeout"), building the
-kernel with OCFS2_FS=y but without INET=y causes it to fail with:
+virtchnl_rss_lut.lut is used for the RSS lookup table, but in
+i40e_vc_config_rss_lut(), it is indexed by subscript results in a false
+positive.
 
-ld: fs/ocfs2/cluster/tcp.o: in function `o2net_accept_many':
-tcp.c:(.text+0x21b1): undefined reference to `tcp_sock_set_nodelay'
-ld: tcp.c:(.text+0x21c1): undefined reference to `tcp_sock_set_user_timeout
-'
-ld: fs/ocfs2/cluster/tcp.o: in function `o2net_start_connect':
-tcp.c:(.text+0x2633): undefined reference to `tcp_sock_set_nodelay'
-ld: tcp.c:(.text+0x2643): undefined reference to `tcp_sock_set_user_timeout
-'
+ UBSAN: array-index-out-of-bounds in drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:2983:15
+ index 1 is out of range for type 'u8 [1]'
+ CPU: 34 PID: 871 Comm: kworker/34:2 Not tainted 5.7.0-next-20200605+ #5
+ Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40 03/09/2018
+ Workqueue: i40e i40e_service_task [i40e]
+ Call Trace:
+  dump_stack+0xa7/0xea
+  ubsan_epilogue+0x9/0x45
+  __ubsan_handle_out_of_bounds+0x6f/0x80
+  i40e_vc_process_vf_msg+0x457c/0x4660 [i40e]
+  i40e_service_task+0x96c/0x1ab0 [i40e]
+  process_one_work+0x57d/0xbd0
+  worker_thread+0x63/0x5b0
+  kthread+0x20c/0x230
+  ret_from_fork+0x22/0x30
 
-This is due to tcp_sock_set_nodelay() and tcp_sock_set_user_timeout() being
-declared in linux/tcp.h and defined in net/ipv4/tcp.c, which depend on
-TCP/IP being enabled.
-
-To fix this, make OCFS2_FS depend on INET=y which already requires NET=y.
-
-Signed-off-by: Tom Seewald <tseewald@gmail.com>
+Fixes: d510497b8397 ("i40e: add input validation for virtchnl handlers")
+Signed-off-by: Qian Cai <cai@lca.pw>
 ---
- fs/ocfs2/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ocfs2/Kconfig b/fs/ocfs2/Kconfig
-index 1177c33df895..aca16624b370 100644
---- a/fs/ocfs2/Kconfig
-+++ b/fs/ocfs2/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config OCFS2_FS
- 	tristate "OCFS2 file system support"
--	depends on NET && SYSFS && CONFIGFS_FS
-+	depends on INET && SYSFS && CONFIGFS_FS
- 	select JBD2
- 	select CRC32
- 	select QUOTA
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 56b9e445732b..d5a959d91ba9 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2971,6 +2971,7 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
+ 	struct i40e_vsi *vsi = NULL;
+ 	i40e_status aq_ret = 0;
+ 	u16 i;
++	u8 *lut = vrl->lut;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+ 	    !i40e_vc_isvalid_vsi_id(vf, vrl->vsi_id) ||
+@@ -2980,13 +2981,13 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
+ 	}
+ 
+ 	for (i = 0; i < vrl->lut_entries; i++)
+-		if (vrl->lut[i] >= vf->num_queue_pairs) {
++		if (lut[i] >= vf->num_queue_pairs) {
+ 			aq_ret = I40E_ERR_PARAM;
+ 			goto err;
+ 		}
+ 
+ 	vsi = pf->vsi[vf->lan_vsi_idx];
+-	aq_ret = i40e_config_rss(vsi, NULL, vrl->lut, I40E_VF_HLUT_ARRAY_SIZE);
++	aq_ret = i40e_config_rss(vsi, NULL, lut, I40E_VF_HLUT_ARRAY_SIZE);
+ 	/* send the response to the VF */
+ err:
+ 	return i40e_vc_send_resp_to_vf(vf, VIRTCHNL_OP_CONFIG_RSS_LUT,
 -- 
-2.20.1
+2.21.0 (Apple Git-122.2)
 
