@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551631F0DF3
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 20:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE411F0DFF
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 20:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729917AbgFGSWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 14:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S1728065AbgFGSZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 14:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726850AbgFGSWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 14:22:32 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BF6C061A0E;
-        Sun,  7 Jun 2020 11:22:31 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 64so645554pfv.11;
-        Sun, 07 Jun 2020 11:22:31 -0700 (PDT)
+        with ESMTP id S1726818AbgFGSZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 14:25:38 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015A6C061A0E;
+        Sun,  7 Jun 2020 11:25:39 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id m1so7734536pgk.1;
+        Sun, 07 Jun 2020 11:25:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vry3kzQSZSZj1GOjJrxz4ScnVqaIH12RaFaPASZek+U=;
-        b=iDzebIJHJf7odh4e8QzMcRtoVRsRZtinz4k4LNRZmVdpGdFgXQbz1B5/M8g+8kEY/+
-         UVflb0WRTyAPyo+LhE8eXj05VuDbEflwtJ+tTJEpEo5CjJLY9bIlgJ892AM5HVsz85jR
-         Goyi7rV/ehudyuPH61Bba4O/QkJGBkn/ayxyl7uNegRqHACuceY9NxV3tbwSFBBbjomW
-         u0lB1CxY2OD++3iRSA8gkItw5Aw9gItuFNjjc7X/DNyjceHv0fo4orjaI1JEUTBZtOJ1
-         qnN96mZbregCg5TDHehDy9fqxXAZTVDirVquZSeFHVWcW/4p1VZwhp3Fm6hn70/miIoD
-         mqCQ==
+        bh=0Ph49GcY3aIPW6rucwTefkRQZ2djxmUWpfLK/Y1wBdY=;
+        b=bZiMoy6kE8AOKBmfjDDSx3b8RSH/CoKQJ3U6FaV/6euMuTF9VfzDCIJiC6daTxsUEq
+         Xx+EI5zBYSjTyzNv8PLm1xwPM6c/NAcL8ZnfYqIIJzrnIrPjGhQEr+pDRYMdFK7eYdJC
+         HOnxKO11v4E9XtN2bTatUlr/UaYd1pq1sEfB3tS+HEYS8YnX7uPsLjQY81+2E3qkG/HZ
+         l5HTrBtE/glH6dmKbT44UnyTLRHWeYAm0xl5sheWXSAIQDXHdY0CYdCyc4BPc4yMtfmY
+         Gc0I1ztodg0No6BUZLe7aINqz3x65bTyfM9tc3vWKPUvVFWBdTjfSZyO1G8JVB75dLQE
+         zuLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=vry3kzQSZSZj1GOjJrxz4ScnVqaIH12RaFaPASZek+U=;
-        b=CnPIiOUNjnvz7Mb0gTuH9evgYtVbTOd/Xuvr5lZWTi3jNSqetg2O6y0dqEoLGzk59a
-         AffiwkOmJnR9BqdXojy8P6C5Vr4mxynriLQoLosbdy7eYoq/v2qHOuWJAAeCLm49QuL7
-         Cvdcm0WI5lhSk25bqQUrtAadMzQBPJs9tzpMvkzf1MXfQ/9c0SZv9VQactOWysthVZwR
-         E5ta52A78Y/rHVk62sdW/rQyvuVs1pznXkn48bSKYsbXOj9ikDeuW60k4c2XMgDoOT7x
-         NOmLSej/fL2iCw5Ktezy+2iSzxMz8Dri1le5Lg1Nzp+/rnVbj1vA7gFHtv+DsaurkHRv
-         +7rQ==
-X-Gm-Message-State: AOAM533bJjEXEFC9CUylLfX1PTurGmNzZpJHrlgGdEOGkp4DwoDZ7u0C
-        jmh9NM9KKulHeVAkYl+zTlCYzSWi
-X-Google-Smtp-Source: ABdhPJy62jH7j/cIfMv/xxnE67SJzE20yiddf/xsFbMbZdC0Xm/vseQLRubcLTYxqOMe+CR53mblLQ==
-X-Received: by 2002:a63:f143:: with SMTP id o3mr18292135pgk.453.1591554150235;
-        Sun, 07 Jun 2020 11:22:30 -0700 (PDT)
+        bh=0Ph49GcY3aIPW6rucwTefkRQZ2djxmUWpfLK/Y1wBdY=;
+        b=XnEkqhVlYGlZ7tayD0I6pJmcFHQQLhpUOX7mDC+Tm+gH0VlrgTDddJCQsl2KIfE7lP
+         /yiXQrC11HjN6nCkT6h4JAksV4gLljaP6zokKzvlxCYSHHQC2/Co7OEcbbWwl7N2J3/e
+         3Ivrt3LFlEh2m1Rqx7D3iZVvkzLVl/ZCDpNyA0zf7px2eusSfLO6i5RqQ0KxFQlMsVdY
+         e90tXEpCb5hT1ck2z8gpOoZE2CzyMZ6q+/+H+p2oKW0F2gL6BMkZzqw9rqMV8ACIujGo
+         o9YcXlKfvsOp8dqDkEujMY7v5cU+VV4EmL12ztwUMOAiV3JI6rw5aogkAxXyykuCop5b
+         YSbA==
+X-Gm-Message-State: AOAM533tS4xyNRkbt4SlC1LaTc0NZEY0X9AEj3pW3Qng2MW3lTXkk/M3
+        86XOoTa967zGL53wzN3VqoS2cK/M
+X-Google-Smtp-Source: ABdhPJyR0Ptywo8mEVWAEG7PRsAnOjIpK+XM4lmTbKb4kdj9deD1RS8C3KpBLVVJ5YjWChTqJGcyBw==
+X-Received: by 2002:a63:550d:: with SMTP id j13mr5858163pgb.139.1591554338198;
+        Sun, 07 Jun 2020 11:25:38 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id h3sm4132323pgd.0.2020.06.07.11.22.27
+        by smtp.gmail.com with ESMTPSA id o11sm6040967pjq.54.2020.06.07.11.25.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jun 2020 11:22:29 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 10/10] selftests: forwarding: Add tests for
- ethtool extended state
+        Sun, 07 Jun 2020 11:25:37 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 07/10] mlxsw: spectrum_ethtool: Add link
+ extended state
 To:     Amit Cohen <amitc@mellanox.com>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
         jiri@mellanox.com, idosch@mellanox.com, shuah@kernel.org,
@@ -60,14 +60,14 @@ Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
         liuhangbin@gmail.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
 References: <20200607145945.30559-1-amitc@mellanox.com>
- <20200607145945.30559-11-amitc@mellanox.com>
+ <20200607145945.30559-8-amitc@mellanox.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <35598572-df37-75cf-9f58-ad387af2f245@gmail.com>
-Date:   Sun, 7 Jun 2020 11:22:27 -0700
+Message-ID: <7dcb004e-7bab-3026-7863-af16c1a4d556@gmail.com>
+Date:   Sun, 7 Jun 2020 11:25:35 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <20200607145945.30559-11-amitc@mellanox.com>
+In-Reply-To: <20200607145945.30559-8-amitc@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,19 +79,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 6/7/2020 7:59 AM, Amit Cohen wrote:
-> Add tests to check ethtool report about extended state.
-> The tests configure several states and verify that the correct extended
-> state is reported by ethtool.
+> Implement .get_down_ext_state() as part of ethtool_ops.
+> Query link down reason from PDDR register and convert it to ethtool
+> ext_state.
 > 
-> Check extended state with substate (Autoneg) and extended state without
-> substate (No cable).
+> In case that more information than common ext_state is provided,
+> fill ext_substate also with the appropriate value.
 > 
 > Signed-off-by: Amit Cohen <amitc@mellanox.com>
 > Reviewed-by: Petr Machata <petrm@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-The delays you have chosen make sense, and if we need to change them
-later on, we could always do that.
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Is the firmware smart enough to report
+ETHTOOL_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED only when using a *KR
+link mode for instance, or do you need to sanitize that against the
+supported/advertised mode?
 -- 
 Florian
