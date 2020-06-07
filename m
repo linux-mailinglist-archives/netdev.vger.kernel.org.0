@@ -2,131 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C641F0F7D
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3DB81F0F90
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbgFGUUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 16:20:06 -0400
-Received: from ma1-aaemail-dr-lapp02.apple.com ([17.171.2.68]:59474 "EHLO
-        ma1-aaemail-dr-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726093AbgFGUUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 16:20:06 -0400
-X-Greylist: delayed 18882 seconds by postgrey-1.27 at vger.kernel.org; Sun, 07 Jun 2020 16:20:05 EDT
-Received: from pps.filterd (ma1-aaemail-dr-lapp02.apple.com [127.0.0.1])
-        by ma1-aaemail-dr-lapp02.apple.com (8.16.0.42/8.16.0.42) with SMTP id 057F5ASw052032;
-        Sun, 7 Jun 2020 08:05:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=content-type :
- content-transfer-encoding : from : mime-version : subject : date :
- message-id : references : cc : in-reply-to : to; s=20180706;
- bh=UpqliiXl5KaKQLZ37R9GOKp78V9WxNMXXrX5tn0kxjs=;
- b=a7miLHC/SpyesNl+5XuQpyPz1V+8fQcMcDhsmvL3pcjpDaFOeHlBGAzvWkrSfGhBefu3
- B0tkU1j9h7tymhW2I8ukdFtpQSJPMGJLJVgwj0l1p/GjaruJy+2QTHTGJwXY2mpmWSiA
- s6fUgwlWVNntfZhCiUlKpV0mAvpibNafZBfGKqmSsY4RHkWTHX/j0J1Luj/mmV9NQMoS
- rztpfQ4MX7zKwiW6m2XWQYwKd3D38R+ED0mUfFxHRbUbbrO1Ihw9YAE+XV9Tpf231MoO
- +3saQ+71ABOyGtId48HQnwYkbgr8TS9LcRwm0+dBfKG/gQUoxb5ruo1rxVqJXvrxrL9T SA== 
-Received: from ma-mailsvcp-mta-lapp02.corp.apple.com (ma-mailsvcp-mta-lapp02.corp.apple.com [10.226.18.134])
-        by ma1-aaemail-dr-lapp02.apple.com with ESMTP id 31g7tqqsx5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Sun, 07 Jun 2020 08:05:10 -0700
-Received: from ma-mailsvcp-mmp-lapp03.apple.com
- (ma-mailsvcp-mmp-lapp03.apple.com [17.32.222.16])
- by ma-mailsvcp-mta-lapp02.corp.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020))
- with ESMTPS id <0QBK00X339WGVF30@ma-mailsvcp-mta-lapp02.corp.apple.com>; Sun,
- 07 Jun 2020 08:05:04 -0700 (PDT)
-Received: from process_milters-daemon.ma-mailsvcp-mmp-lapp03.apple.com by
- ma-mailsvcp-mmp-lapp03.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) id <0QBK00H006HXXW00@ma-mailsvcp-mmp-lapp03.apple.com>; Sun,
- 07 Jun 2020 08:05:04 -0700 (PDT)
-X-Va-A: 
-X-Va-T-CD: 5faae600979887376ed7757753b2aa2e
-X-Va-E-CD: 44b32e0474d3676ebde8a7ec63c75f85
-X-Va-R-CD: e62f469bd84af01fa9bf229ba26e340c
-X-Va-CD: 0
-X-Va-ID: 8edbdc8e-755c-4fe8-a569-d846ad8b0ac6
-X-V-A:  
-X-V-T-CD: 5faae600979887376ed7757753b2aa2e
-X-V-E-CD: 44b32e0474d3676ebde8a7ec63c75f85
-X-V-R-CD: e62f469bd84af01fa9bf229ba26e340c
-X-V-CD: 0
-X-V-ID: f39d7803-4501-4c14-aab5-553c5c9b4280
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-07_09:2020-06-04,2020-06-07 signatures=0
-Received: from [17.232.37.52] (unknown [17.232.37.52])
- by ma-mailsvcp-mmp-lapp03.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) with ESMTPSA id <0QBK011109WF0E00@ma-mailsvcp-mmp-lapp03.apple.com>;
- Sun, 07 Jun 2020 08:05:04 -0700 (PDT)
-Content-type: text/plain; charset=utf-8
-Content-transfer-encoding: quoted-printable
-From:   Leif Hedstrom <lhedstrom@apple.com>
-MIME-version: 1.0 (1.0)
-Subject: Re: TCP_DEFER_ACCEPT wakes up without data
-Date:   Sun, 07 Jun 2020 09:05:03 -0600
-Message-id: <D38E6A8A-5B3F-4C26-9A2F-D6FEF2D8763B@apple.com>
-References: <20200607100049.GM28263@breakpoint.cc>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        Julian Anastasov <ja@ssi.bg>,
-        Wayne Badger <badger@yahoo-inc.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-In-reply-to: <20200607100049.GM28263@breakpoint.cc>
-To:     Florian Westphal <fw@strlen.de>
-X-Mailer: iPhone Mail (17F80)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-07_09:2020-06-04,2020-06-07 signatures=0
+        id S1727896AbgFGUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 16:24:58 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60100 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727065AbgFGUY6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jun 2020 16:24:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 95E8AAC4A;
+        Sun,  7 Jun 2020 20:24:58 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 3F05F602EB; Sun,  7 Jun 2020 22:24:52 +0200 (CEST)
+Date:   Sun, 7 Jun 2020 22:24:52 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>,
+        Amit Cohen <amitc@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATCH v2 3/3] netlink: add LINKSTATE SQI support
+Message-ID: <20200607202452.md4nnp47cfjetylp@lion.mk-sys.cz>
+References: <20200528115414.11516-1-o.rempel@pengutronix.de>
+ <20200528115414.11516-4-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6rexytvx3x3wksna"
+Content-Disposition: inline
+In-Reply-To: <20200528115414.11516-4-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--6rexytvx3x3wksna
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Jun 7, 2020, at 04:01, Florian Westphal <fw@strlen.de> wrote:
+On Thu, May 28, 2020 at 01:54:14PM +0200, Oleksij Rempel wrote:
+> Some PHYs provide Signal Quality Index (SQI) if the link is in active
+> state. This information can help to diagnose cable and system design
+> related issues.
 >=20
-> =EF=BB=BFEric Dumazet <eric.dumazet@gmail.com> wrote:
->>> Sure! TCP_DEFER_ACCEPT delays the creation of the socket until data
->>> has been sent by the client *or* the specified time has expired upon
->>> which a last SYN/ACK is sent and if the client replies with an ACK the
->>> socket will be created and presented to the accept()-call. In the
->>> latter case it means that the app gets a socket that does not have any
->>> data to be read - which goes against the intention of TCP_DEFER_ACCEPT
->>> (man-page says: "Allow a listener to be awakened only when data
->>> arrives on the socket.").
->>>=20
->>> In the original thread the proposal was to kill the connection with a
->>> TCP-RST when the specified timeout expired (after the final SYN/ACK).
->>>=20
->>> Thus, my question in my first email whether there is a specific reason
->>> to not do this.
->>>=20
->>> API-breakage does not seem to me to be a concern here. Apps that are
->>> setting DEFER_ACCEPT probably would not expect to get a socket that
->>> does not have data to read.
->>=20
->> Thanks for the summary ;)
->>=20
->> I disagree.
->>=20
->> A server might have two modes :
->>=20
->> 1) A fast path, expecting data from user in a small amount of time, from p=
-eers not too far away.
->>=20
->> 2) A slow path, for clients far away. Server can implement strategies to c=
-ontrol number of sockets
->> that have been accepted() but not yet active (no data yet received).
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+
+> ---
+>  netlink/desc-ethtool.c |  2 ++
+>  netlink/settings.c     | 16 ++++++++++++++++
+>  2 files changed, 18 insertions(+)
 >=20
-> So we can't change DEFER_ACCEPT behaviour.
-> Any objections to adding TCP_DEFER_ACCEPT2 with the behaviour outlined
-> by Christoph?
+> diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
+> index b0a793c..8f4c36b 100644
+> --- a/netlink/desc-ethtool.c
+> +++ b/netlink/desc-ethtool.c
+> @@ -93,6 +93,8 @@ static const struct pretty_nla_desc __linkstate_desc[] =
+=3D {
+>  	NLATTR_DESC_INVALID(ETHTOOL_A_LINKSTATE_UNSPEC),
+>  	NLATTR_DESC_NESTED(ETHTOOL_A_LINKSTATE_HEADER, header),
+>  	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
+> +	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI),
+> +	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI_MAX),
+>  };
+> =20
+>  static const struct pretty_nla_desc __debug_desc[] =3D {
+> diff --git a/netlink/settings.c b/netlink/settings.c
+> index 851de15..cd4b9a7 100644
+> --- a/netlink/settings.c
+> +++ b/netlink/settings.c
+> @@ -638,6 +638,22 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr,=
+ void *data)
+>  		printf("\tLink detected: %s\n", val ? "yes" : "no");
+>  	}
+> =20
+> +	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
+> +		uint32_t val =3D mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI]);
+> +
+> +		print_banner(nlctx);
+> +		printf("\tSQI: %u", val);
+> +
+> +		if (tb[ETHTOOL_A_LINKSTATE_SQI_MAX]) {
+> +			uint32_t max;
+> +
+> +			max =3D mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI_MAX]);
+> +			printf("/%u\n", max);
+> +		} else {
+> +			printf("\n");
+> +		}
+> +	}
+> +
+>  	return MNL_CB_OK;
+>  }
+> =20
+> --=20
+> 2.26.2
+>=20
 
+--6rexytvx3x3wksna
+Content-Type: application/pgp-signature; name="signature.asc"
 
-I think that would be useful, although ideally a better, more descriptive na=
-me ?
+-----BEGIN PGP SIGNATURE-----
 
-Cheers,
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl7dTRQACgkQ538sG/LR
+dpXMcgf/aGnDZaDpaT7K8y35E0CVbPgFarkAgkDcEFirAQpugKWj/EUo93DXoMor
+5q5vy72IpW4R2tZvGYDQ42hltd2n2Y1vOFs13ElgUTqfk7UGUFpBzKXfuLCGY1yN
+rd+BWgWTK02dSqHyF7Vb+2FVfxNfo27n21btYa7iCMAxFWyDm6xrbONPP/lcu/+O
+8wRmAG+51q4rbc9pETQ1KwQc9EZ58hQglXPeUQzzQR+aiCVSP7gud6IXiUOVhmah
+w/MWl8SRIU1sOjwTkXQha5TDXDq7KxG8Gc4YdmtNQFjW8wz3+msVfjNeeCtFK14u
+GVB1itG2veq/GAEcSN4X5imlvEFkFA==
+=Qh5H
+-----END PGP SIGNATURE-----
 
-=E2=80=94 Leif=20=
+--6rexytvx3x3wksna--
