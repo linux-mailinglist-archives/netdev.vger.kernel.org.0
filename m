@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 278241F0F9C
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:28:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58F541F0FD4
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727786AbgFGU2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 16:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbgFGU2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 16:28:44 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A538C08C5C3;
-        Sun,  7 Jun 2020 13:28:44 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id x18so1446779lji.1;
-        Sun, 07 Jun 2020 13:28:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:user-agent:mime-version;
-        bh=iFVK6T7mzGjOxx/JmauiHPsqIRO2z2WuG+ZMZIcwVqo=;
-        b=lx7xbUmKVNZ6m3ubB0bjZkaMvbGlZCjUfViAnzvxo/HI7FAF5Xvc6Byo/ewVl7h1qw
-         n8RFIa4uKuvPs4EiIGjP0Cv6sABrElT4ke9CxAu0J4qMJxP7yTOnyQQKL6u6vqcfZ7Uz
-         ZmjlJi5TThxOy4lz04H9/1nVSLMh/swG7jJCTPsAfJOBltRv62K7NGW6KSH6CbzgEAfl
-         1ywC2KtDSM7Umfvy7ln4NAuHieVu6PRyCYefo6oPvO47BeiI8zES69fUABrsaXqw/sY2
-         ogLaqngnSePlQjl45aajdpn36fM+PiyXd9caLV0MVLZNHUuhtFptxcP7bENXfHZn/wY7
-         oDKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:user-agent
-         :mime-version;
-        bh=iFVK6T7mzGjOxx/JmauiHPsqIRO2z2WuG+ZMZIcwVqo=;
-        b=CQkO3TpnfTAAx9EYiKuNBhnN9CP53UvR3fFeun3xqJKf5mYSLuHsi9zm8CQbCIjHnq
-         gGDByoFQpz3pnVfK7B68t6eNBngculW/56lM4gTLA69kr1yyPWZ+Yh1m/rPoVqJFJgD0
-         7bi4mP8stRpmA+fHXPg+keO6znHNf2kYZ0dxcoNBe38TxVVIbrfO3bZTK1qUNIFEoQmt
-         vqxc3Fvqgz1nPkhW8lYSKJr26y9YPOjFX9F0J1GVA1yjqAmFANqNyxdALz8aF2NDmd7m
-         LJTzPkRXu+PBo9sVzhIlxOG6V4ly0svf8UbwZC8pSYs6eLW0ZukqVT9UeXV5/w0V+hIH
-         kytw==
-X-Gm-Message-State: AOAM5338MCDdPlVzA36N0+dukKjV8Uz8mVkUog/aNvJvaOYkDs1Dxec1
-        1Ft64HAR0Yj7eqnv+AEK6453DC5L
-X-Google-Smtp-Source: ABdhPJxvJ7ov+tMzMbbwiPZ3dCyV2yFPVYR6dLmPbgpVyHjoeiPAy2+ePLym3GRhyJ3ZNyHo8yhwqA==
-X-Received: by 2002:a2e:b88e:: with SMTP id r14mr9070233ljp.197.1591561722546;
-        Sun, 07 Jun 2020 13:28:42 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id r9sm1685046ljj.127.2020.06.07.13.28.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2020 13:28:41 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, "NXP Linux Team" <linux-imx@nxp.com>
-Subject: iMX 6SX FEC: broken hardware timestamping using external PTP PHY
-Date:   Sun, 07 Jun 2020 23:28:40 +0300
-Message-ID: <87r1uqtybr.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        id S1727817AbgFGUjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 16:39:45 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34018 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726823AbgFGUjo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jun 2020 16:39:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 21CEDABCE;
+        Sun,  7 Jun 2020 20:39:45 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id A7FA8602EB; Sun,  7 Jun 2020 22:39:40 +0200 (CEST)
+Date:   Sun, 7 Jun 2020 22:39:40 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>,
+        Amit Cohen <amitc@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATCH v2 2/3] netlink: add master/slave configuration support
+Message-ID: <20200607203940.7ayqe4otoop7mpuw@lion.mk-sys.cz>
+References: <20200528115414.11516-1-o.rempel@pengutronix.de>
+ <20200528115414.11516-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="l7kwu7ebk7fahgx4"
+Content-Disposition: inline
+In-Reply-To: <20200528115414.11516-3-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-I'm using DP83640 PTP PHY connected to builtin fec1 (that
-has its own PTP support) of the iMX 6SX microcontroller.
+--l7kwu7ebk7fahgx4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Almost everything works fine out of the box, except hardware
-timestamping. The problems are that I apparently get timestamps from fec
-built-in PTP instead of external PHY, and that
+On Thu, May 28, 2020 at 01:54:13PM +0200, Oleksij Rempel wrote:
+> This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
+> auto-negotiation support, we needed to be able to configure the
+> MASTER-SLAVE role of the port manually or from an application in user
+> space.
+>=20
+> The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
+> force MASTER or SLAVE role. See IEEE 802.3-2018:
+> 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
+> 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
+> 40.5.2 MASTER-SLAVE configuration resolution
+> 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
+> 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
+>=20
+> The MASTER-SLAVE role affects the clock configuration:
+>=20
+> -------------------------------------------------------------------------=
+------
+> When the  PHY is configured as MASTER, the PMA Transmit function shall
+> source TX_TCLK from a local clock source. When configured as SLAVE, the
+> PMA Transmit function shall source TX_TCLK from the clock recovered from
+> data stream provided by MASTER.
+>=20
+> iMX6Q                     KSZ9031                XXX
+> ------\                /-----------\        /------------\
+>       |                |           |        |            |
+>  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
+>       |<--- 125 MHz ---+-<------/  |        | \          |
+> ------/                \-----------/        \------------/
+>                                                ^
+>                                                 \-TX_TCLK
+>=20
+> -------------------------------------------------------------------------=
+------
+>=20
+> Since some clock or link related issues are only reproducible in a
+> specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
+> to provide generic (not 100BASE-T1 specific) interface to the user space
+> for configuration flexibility and trouble shooting.
+>=20
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
-  ioctl(fd, SIOCSHWTSTAMP, &ifr)
+The patch looks good from technical point of view but I don't like the
+inconsistency of user interface:
 
-ends up being executed by fec1 built-in PTP code instead of being
-forwarded to the external PHY, and that this happens despite the call to
+1. Similar to what we discussed earlier on kernel side, you use "Port
+mode" in "ethtool <dev>" output but the corresponding command line
+argument for "ethtool -s <dev> ..." is "master-slave". Even if it's
+documented, it's rather confusing for users.
 
-   info.cmd = ETHTOOL_GET_TS_INFO;                                                                             
-   ioctl(fd, SIOCETHTOOL, &ifr);                                                                     
+2. The values for "master-slave" parameter are "master-preferred" and
+"master-force" (and the same for "slave"). Please use the same form for
+both, i.e. either "prefer / force" or "preferred / forced". Also, it
+would be friendlier to users to make the values consistent with
+"ethtool <dev>" output, e.g. if it says "preferred Master", setting
+should use something as close as possible, i.e. "preferred-master".
 
-returning phc_index = 1 that corresponds to external PHY, and reports
-features of the external PHY, leading to major inconsistency as seen
-from user-space.
+Michal
 
-I chased the ioctl() problem down to the fec_enet_ioctl() function in
+--l7kwu7ebk7fahgx4
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  drivers/net/ethernet/freescale/fec_main.c:2722
+-----BEGIN PGP SIGNATURE-----
 
-that specifically for SIOCSHWTSTAMP (and SIOCGHWTSTAMP) explicitly
-calls
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl7dUIwACgkQ538sG/LR
+dpUmpQgAwWvl06RefAuj2JRXHp/zqo4YSDZo1qtI7EshQfSeZJ2v0q+aHpTXbxfd
+QSDSqyDAYHWB1W5jpcnylaRBzASWzeeHLuOf7JHkud5WqnM+tj/gpOkDNWcZVn7Z
+KbanU+3GqZwSbtwHue9SaYS+FAPX/W38GZ8Jdc6PJdq0kkqmGSpwse61IdcMc2oD
+2ovpaRibYqvhsyAdRTNIAbksSO2jbIubnNsscqoeRti3PwNbsldmIiLIOEv3CZ36
+h/WQOTNOlYfCcQ9nK6S/ZBpDhEVR1UckoyhNFQfkZl6yj34QUchADiRZD2bsAOTA
+Q1Ri0Bo3iWaEfGqHDmt+uFsBxf/cEQ==
+=+bKp
+-----END PGP SIGNATURE-----
 
-  fec_ptp_set() (and fec_ptp_get())
-
-instead of delegating to phy_mii_ioctl() as it does for the rest of
-ioctls.
-
-I've then commented-out this fec_ptp_set() calling code, and now ioctls
-go to the external PHY, but I'd like to have proper fix instead of 
-quick'n'dirty hack.
-
-I checked DTS documentation, but didn't find a way to disable fec
-builtin PTP support (nor would I actually like to, as it could be
-useful as a hardware PPS source), or its timestamping feature.
-
-I need to fix this, and, being newbie to the codebase, I don't even know
-where to start, as I can't figure what's the supposed way of selecting
-which unit should be used for hardware timestamping when there are two
-of them on the current active path of newtork packets. I mean,
-configuring PTP clocks is OK, as they are accessible separately through
-'/dev/ptpX' interface, but hardware timestamping is to be configured
-through (single) if-name, and there doesn't seem to be a way to address
-different hardware timestamping units.
-
-I'm using rather old 4.9.146 kernel, so I checked the tip of the git
-master, and the code there still looks the same. I also didn't notice
-any relevant commits in the recent git history.
-
-Could somebody please help me implement (or point me to) proper fix to
-reliably use external PHY to timestamp network packets?
-
--- Sergey
+--l7kwu7ebk7fahgx4--
