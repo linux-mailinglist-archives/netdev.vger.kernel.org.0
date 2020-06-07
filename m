@@ -2,132 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3DB81F0F90
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:25:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 278241F0F9C
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 22:28:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727896AbgFGUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 16:24:58 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60100 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727065AbgFGUY6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Jun 2020 16:24:58 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 95E8AAC4A;
-        Sun,  7 Jun 2020 20:24:58 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 3F05F602EB; Sun,  7 Jun 2020 22:24:52 +0200 (CEST)
-Date:   Sun, 7 Jun 2020 22:24:52 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>,
-        Amit Cohen <amitc@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: Re: [PATCH v2 3/3] netlink: add LINKSTATE SQI support
-Message-ID: <20200607202452.md4nnp47cfjetylp@lion.mk-sys.cz>
-References: <20200528115414.11516-1-o.rempel@pengutronix.de>
- <20200528115414.11516-4-o.rempel@pengutronix.de>
+        id S1727786AbgFGU2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 16:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726823AbgFGU2o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 16:28:44 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A538C08C5C3;
+        Sun,  7 Jun 2020 13:28:44 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id x18so1446779lji.1;
+        Sun, 07 Jun 2020 13:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:user-agent:mime-version;
+        bh=iFVK6T7mzGjOxx/JmauiHPsqIRO2z2WuG+ZMZIcwVqo=;
+        b=lx7xbUmKVNZ6m3ubB0bjZkaMvbGlZCjUfViAnzvxo/HI7FAF5Xvc6Byo/ewVl7h1qw
+         n8RFIa4uKuvPs4EiIGjP0Cv6sABrElT4ke9CxAu0J4qMJxP7yTOnyQQKL6u6vqcfZ7Uz
+         ZmjlJi5TThxOy4lz04H9/1nVSLMh/swG7jJCTPsAfJOBltRv62K7NGW6KSH6CbzgEAfl
+         1ywC2KtDSM7Umfvy7ln4NAuHieVu6PRyCYefo6oPvO47BeiI8zES69fUABrsaXqw/sY2
+         ogLaqngnSePlQjl45aajdpn36fM+PiyXd9caLV0MVLZNHUuhtFptxcP7bENXfHZn/wY7
+         oDKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:user-agent
+         :mime-version;
+        bh=iFVK6T7mzGjOxx/JmauiHPsqIRO2z2WuG+ZMZIcwVqo=;
+        b=CQkO3TpnfTAAx9EYiKuNBhnN9CP53UvR3fFeun3xqJKf5mYSLuHsi9zm8CQbCIjHnq
+         gGDByoFQpz3pnVfK7B68t6eNBngculW/56lM4gTLA69kr1yyPWZ+Yh1m/rPoVqJFJgD0
+         7bi4mP8stRpmA+fHXPg+keO6znHNf2kYZ0dxcoNBe38TxVVIbrfO3bZTK1qUNIFEoQmt
+         vqxc3Fvqgz1nPkhW8lYSKJr26y9YPOjFX9F0J1GVA1yjqAmFANqNyxdALz8aF2NDmd7m
+         LJTzPkRXu+PBo9sVzhIlxOG6V4ly0svf8UbwZC8pSYs6eLW0ZukqVT9UeXV5/w0V+hIH
+         kytw==
+X-Gm-Message-State: AOAM5338MCDdPlVzA36N0+dukKjV8Uz8mVkUog/aNvJvaOYkDs1Dxec1
+        1Ft64HAR0Yj7eqnv+AEK6453DC5L
+X-Google-Smtp-Source: ABdhPJxvJ7ov+tMzMbbwiPZ3dCyV2yFPVYR6dLmPbgpVyHjoeiPAy2+ePLym3GRhyJ3ZNyHo8yhwqA==
+X-Received: by 2002:a2e:b88e:: with SMTP id r14mr9070233ljp.197.1591561722546;
+        Sun, 07 Jun 2020 13:28:42 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id r9sm1685046ljj.127.2020.06.07.13.28.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Jun 2020 13:28:41 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, "NXP Linux Team" <linux-imx@nxp.com>
+Subject: iMX 6SX FEC: broken hardware timestamping using external PTP PHY
+Date:   Sun, 07 Jun 2020 23:28:40 +0300
+Message-ID: <87r1uqtybr.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6rexytvx3x3wksna"
-Content-Disposition: inline
-In-Reply-To: <20200528115414.11516-4-o.rempel@pengutronix.de>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
---6rexytvx3x3wksna
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm using DP83640 PTP PHY connected to builtin fec1 (that
+has its own PTP support) of the iMX 6SX microcontroller.
 
-On Thu, May 28, 2020 at 01:54:14PM +0200, Oleksij Rempel wrote:
-> Some PHYs provide Signal Quality Index (SQI) if the link is in active
-> state. This information can help to diagnose cable and system design
-> related issues.
->=20
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Almost everything works fine out of the box, except hardware
+timestamping. The problems are that I apparently get timestamps from fec
+built-in PTP instead of external PHY, and that
 
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+  ioctl(fd, SIOCSHWTSTAMP, &ifr)
 
-> ---
->  netlink/desc-ethtool.c |  2 ++
->  netlink/settings.c     | 16 ++++++++++++++++
->  2 files changed, 18 insertions(+)
->=20
-> diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-> index b0a793c..8f4c36b 100644
-> --- a/netlink/desc-ethtool.c
-> +++ b/netlink/desc-ethtool.c
-> @@ -93,6 +93,8 @@ static const struct pretty_nla_desc __linkstate_desc[] =
-=3D {
->  	NLATTR_DESC_INVALID(ETHTOOL_A_LINKSTATE_UNSPEC),
->  	NLATTR_DESC_NESTED(ETHTOOL_A_LINKSTATE_HEADER, header),
->  	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
-> +	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI),
-> +	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI_MAX),
->  };
-> =20
->  static const struct pretty_nla_desc __debug_desc[] =3D {
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index 851de15..cd4b9a7 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -638,6 +638,22 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr,=
- void *data)
->  		printf("\tLink detected: %s\n", val ? "yes" : "no");
->  	}
-> =20
-> +	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
-> +		uint32_t val =3D mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI]);
-> +
-> +		print_banner(nlctx);
-> +		printf("\tSQI: %u", val);
-> +
-> +		if (tb[ETHTOOL_A_LINKSTATE_SQI_MAX]) {
-> +			uint32_t max;
-> +
-> +			max =3D mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI_MAX]);
-> +			printf("/%u\n", max);
-> +		} else {
-> +			printf("\n");
-> +		}
-> +	}
-> +
->  	return MNL_CB_OK;
->  }
-> =20
-> --=20
-> 2.26.2
->=20
+ends up being executed by fec1 built-in PTP code instead of being
+forwarded to the external PHY, and that this happens despite the call to
 
---6rexytvx3x3wksna
-Content-Type: application/pgp-signature; name="signature.asc"
+   info.cmd = ETHTOOL_GET_TS_INFO;                                                                             
+   ioctl(fd, SIOCETHTOOL, &ifr);                                                                     
 
------BEGIN PGP SIGNATURE-----
+returning phc_index = 1 that corresponds to external PHY, and reports
+features of the external PHY, leading to major inconsistency as seen
+from user-space.
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl7dTRQACgkQ538sG/LR
-dpXMcgf/aGnDZaDpaT7K8y35E0CVbPgFarkAgkDcEFirAQpugKWj/EUo93DXoMor
-5q5vy72IpW4R2tZvGYDQ42hltd2n2Y1vOFs13ElgUTqfk7UGUFpBzKXfuLCGY1yN
-rd+BWgWTK02dSqHyF7Vb+2FVfxNfo27n21btYa7iCMAxFWyDm6xrbONPP/lcu/+O
-8wRmAG+51q4rbc9pETQ1KwQc9EZ58hQglXPeUQzzQR+aiCVSP7gud6IXiUOVhmah
-w/MWl8SRIU1sOjwTkXQha5TDXDq7KxG8Gc4YdmtNQFjW8wz3+msVfjNeeCtFK14u
-GVB1itG2veq/GAEcSN4X5imlvEFkFA==
-=Qh5H
------END PGP SIGNATURE-----
+I chased the ioctl() problem down to the fec_enet_ioctl() function in
 
---6rexytvx3x3wksna--
+  drivers/net/ethernet/freescale/fec_main.c:2722
+
+that specifically for SIOCSHWTSTAMP (and SIOCGHWTSTAMP) explicitly
+calls
+
+  fec_ptp_set() (and fec_ptp_get())
+
+instead of delegating to phy_mii_ioctl() as it does for the rest of
+ioctls.
+
+I've then commented-out this fec_ptp_set() calling code, and now ioctls
+go to the external PHY, but I'd like to have proper fix instead of 
+quick'n'dirty hack.
+
+I checked DTS documentation, but didn't find a way to disable fec
+builtin PTP support (nor would I actually like to, as it could be
+useful as a hardware PPS source), or its timestamping feature.
+
+I need to fix this, and, being newbie to the codebase, I don't even know
+where to start, as I can't figure what's the supposed way of selecting
+which unit should be used for hardware timestamping when there are two
+of them on the current active path of newtork packets. I mean,
+configuring PTP clocks is OK, as they are accessible separately through
+'/dev/ptpX' interface, but hardware timestamping is to be configured
+through (single) if-name, and there doesn't seem to be a way to address
+different hardware timestamping units.
+
+I'm using rather old 4.9.146 kernel, so I checked the tip of the git
+master, and the code there still looks the same. I also didn't notice
+any relevant commits in the recent git history.
+
+Could somebody please help me implement (or point me to) proper fix to
+reliably use external PHY to timestamp network packets?
+
+-- Sergey
