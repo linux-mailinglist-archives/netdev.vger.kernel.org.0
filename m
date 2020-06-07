@@ -2,198 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0411F0BC5
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 16:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A33D1F0C2B
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 17:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgFGOMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 10:12:15 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41504 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726997AbgFGOL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 10:11:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591539116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BdT/NVEYKIP5krUx3MbnbeOT2Gkkz8v5cdPwDSMfuzw=;
-        b=EQDwV0mobcDsgEqgAWZITbPyPU1dwr3Hm6EmRdsUqh/DydzMCOq8jh0SGl5zHdOD33YAM1
-        IXjmQ8FZGEL0XtwXuMUkBOMYiUhZ6PLc9z/fWh1n6V37cRa725gH00Ubm8vz5x5RWETlt0
-        t6cdfCTDcGnccd5zYCCGp1fNMYzKJdo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-251-SF0Crm1sOkiro6x9qs-eaw-1; Sun, 07 Jun 2020 10:11:54 -0400
-X-MC-Unique: SF0Crm1sOkiro6x9qs-eaw-1
-Received: by mail-wm1-f72.google.com with SMTP id t145so4298433wmt.2
-        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 07:11:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BdT/NVEYKIP5krUx3MbnbeOT2Gkkz8v5cdPwDSMfuzw=;
-        b=rFzq5N/vfxgfTvksk+R82pRrgQHkvQXP7tXoJHgmbLdDhDQhj/ePTSiTlLNMY4vFTn
-         Dt7xC2j1MK9p4cNy3f2SKnL9s66RdbYkA8Wl0A9p3HbS6wq7loACOxrpY/6IyIA4m/S2
-         W3av4FiQak40BRwfl/V5Sn2JyLoEp428sM4ma5qOTmHQ1PjoMVIVZ4HMlxYOAD5qRVq2
-         Hu9Ih1MR4cQH4/xEJGObRM0XQt/AEtS7piUsK56W7C2hDEB40yCLwQQtbviuumtheVUr
-         ZhjRxFyV7N5iJNu3BYp8Qretakcg6FufQK0I7x02cXmjl/Laj+qxtzlYyROeaVrMvfLd
-         qnJQ==
-X-Gm-Message-State: AOAM530yQhU56gzJgmw3PRjMkw0umuwGG/UjuT1Y/nhuPoy3jBpuHP7x
-        ifC3yp75fzlY52kds5df367/lqHDgiyNudHAgorhXSF1TyxcLRq7dbnzAyFGu8sIPu1x9kIvaGr
-        /WWXP0QO+7Tk0UPv3
-X-Received: by 2002:adf:aa42:: with SMTP id q2mr20101721wrd.360.1591539113490;
-        Sun, 07 Jun 2020 07:11:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxEuiY3dY5m3J+lc+g7iAjevWjCfgDBijLQ0kLevfltCIsWHMIGkkxV9D36m8hDgKdaJ2qeiA==
-X-Received: by 2002:adf:aa42:: with SMTP id q2mr20101707wrd.360.1591539113282;
-        Sun, 07 Jun 2020 07:11:53 -0700 (PDT)
-Received: from redhat.com (bzq-82-81-31-23.red.bezeqint.net. [82.81.31.23])
-        by smtp.gmail.com with ESMTPSA id c70sm8895722wme.32.2020.06.07.07.11.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2020 07:11:52 -0700 (PDT)
-Date:   Sun, 7 Jun 2020 10:11:51 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        eperezma@redhat.com
-Subject: [PATCH RFC v5 13/13] vhost: drop head based APIs
-Message-ID: <20200607141057.704085-14-mst@redhat.com>
-References: <20200607141057.704085-1-mst@redhat.com>
+        id S1726653AbgFGPAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 11:00:11 -0400
+Received: from mail-am6eur05on2089.outbound.protection.outlook.com ([40.107.22.89]:48904
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726528AbgFGPAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jun 2020 11:00:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AbrNYNAYSN34ytYPjzX1Sh4cVh1i7y9yUHTZM9UFtf84q3EK+aibo2J3959yBnrkR/bqdJ1fcQaWeS8roFYF2Wn4hLrPbv9fHn/6cXHANLzplSL+eJRQvRH8ihWKOXmMft36B3MI4ADWhglMjS3UW47CUHkRPUnInQhERkfqDe0xxgxGkWrSdXsiB4n8hSRM7eR7GcrkTTGw1IJxSij8yGdeqYPIl25mIq6O6+AVckRxbLgf8uS54IBgbf0/vtMyAcC9LJu3aIAWVN//h2LFvjhmBlaPBqEmXdg3RHJeZdzm45DKRgDoIOOVEhS1hXFgPjMxyMfRpUS6v/KGbxFIuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4H3ZYKBD0d8wSPg3602TbYTzd2fx+MyhEmZNwptvcF0=;
+ b=Pq+vxI32ODa0Na+SKXJPx6RwD8quVkOwNXh7ohYneH2IarLUlTVjvEmjKLt4axq16yiqQsyYsfQIsMq1XNq/wtAgRkUEEWYmSQPJlhndthtJfy20qp7nS5FF6taIiFC7bWiBhVRaaVRsIh/TGeRy/uL8AkZYnORiciXAsN5Oq3UD/iOoXxFsuQsJhuLpfqoxsT+9cfcZfsDEo7T40NZ44ATKTGKN6034Z72ujurU3uHlIDLOixLs6SwsqdNUklcrlqV/U6YEdJ4ra+0qNv704s9HTjno8xtrGo5omfZ6SCwwfy8UPmDAulogEzcYhcKIUJ+Ih2ZAZgyoWiIp2xEdQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4H3ZYKBD0d8wSPg3602TbYTzd2fx+MyhEmZNwptvcF0=;
+ b=NRypGVuT5+WL1Uk9a9Q6dswAl9FTaYg8XRvvVHM2Uq+x8V9DH6Ssm1BwGrlGOOFNHMRziRrgIZBeJIXdd3GGU+KQ3JuYckx7pUBAKgm4iPDWNXtrObFepL9Apfxo4qqcB7Ywl22Um1JPekAwfwbFGpu7J6imdOURyKHNFuY/e3Y=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25) by AM0PR0502MB4003.eurprd05.prod.outlook.com
+ (2603:10a6:208:2::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.23; Sun, 7 Jun
+ 2020 15:00:05 +0000
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3066.023; Sun, 7 Jun 2020
+ 15:00:05 +0000
+From:   Amit Cohen <amitc@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        jiri@mellanox.com, idosch@mellanox.com, shuah@kernel.org,
+        mkubecek@suse.cz, gustavo@embeddedor.com, amitc@mellanox.com,
+        cforno12@linux.vnet.ibm.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        linux@rempel-privat.de, alexandru.ardelean@analog.com,
+        ayal@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        liuhangbin@gmail.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [RFC PATCH net-next 00/10] Add extended state
+Date:   Sun,  7 Jun 2020 17:59:35 +0300
+Message-Id: <20200607145945.30559-1-amitc@mellanox.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:17c::25) To AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200607141057.704085-1-mst@redhat.com>
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Sun, 7 Jun 2020 15:00:03 +0000
+X-Mailer: git-send-email 2.20.1
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: b30a47bb-2987-4403-fca6-08d80af3767a
+X-MS-TrafficTypeDiagnostic: AM0PR0502MB4003:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB40035F250984EF19CA155D49D7840@AM0PR0502MB4003.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 04270EF89C
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gW3RjIla2duUG6hmSylELTC2O6rgHUwNmW51bnqtDMNrZ14dioM2PRyGm/Z+SbKqpvZRUOq9jU2RbCq2t54KOJ+yEZbpmnpJ4MEol7G4gQuBeX1f5Tjzic4k7owvbprrHHROg+VL32atKo5cx+eAIbolCF4TE0xbizOwx0TNWLLMu2TWE+yCnlB53x396pqq48xUAbpI0eoYYng3ZL3wpm0lne9+zSa8IfwTYLz1AyyJ+vMZlNdlSKB6+R71jucGQ4Nwa17V32SjhaQaYi+X0RCsbjB0Ufxi2AFbWBq1ykjrTu7+oEJCdNCIJ3A57P+6X/Qpy0ftebwUdjF5x9380A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(346002)(136003)(39860400002)(66476007)(66946007)(66556008)(1076003)(186003)(8936002)(16526019)(26005)(52116002)(478600001)(6506007)(36756003)(2906002)(6666004)(7416002)(5660300002)(8676002)(4326008)(83380400001)(6486002)(316002)(86362001)(6916009)(2616005)(956004)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: XaVXTVBnwVv4dzgwqMfkqcWVeClQsqtmMClljLKhv63X3BCPzbIUiZyHw9WuBIxe8Z8T9ZPnRww2Ib76EGyXaIxu6LK4Vs5VbR0FlZUmRhkdor8En1CGv9snX/RBDArA8uLqu/YGiN6oT4J1Kym0Yynllgm1K+2s8Ys2uKVVlhvVwPF8cXRZ9qwwYnnK8NOdz9Pu3KPQx0CGn2bMR9dJabMdpS9jf/Om0+E99fxvNp+At5kugQDUJ+DfhnGpDRbJC4dmPYMrg0/Pw7HL/gTEBVjVOtLH7glR49EYoZn8eiiRyMAfXq4Atzg6ORbEoIocwSc7++Hjq3LWDlMiXaLgI7h8qAy5wvMF+ADxcE8JfOMY9/H+f2To9LPNVC2hrmHYdwhRdX690A6r4SHiBYt54s1aLBU8/jK5nk6IzNYNnC9VrysMY4GQrpywmg/uyrliLK4orqKusjEk1SQaxN7zUppd50p/PuQAeu8R+JA5v9U=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b30a47bb-2987-4403-fca6-08d80af3767a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2020 15:00:05.6735
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y2HrzcMKhN68ByauLRWJ6NjZ6ZbGhss5ex2Y2BITizoicgQSlhMSl92FMZJGSitc9VWFKzlbhE0vJG0LxYSDWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4003
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Everyone's using buf APIs, no need for head based ones anymore.
+Currently, drivers can only tell whether the link is up/down,
+but no additional information is given.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/vhost/vhost.c | 36 ++++++++----------------------------
- drivers/vhost/vhost.h | 12 ------------
- 2 files changed, 8 insertions(+), 40 deletions(-)
+This patch set provides an infrastructure that allows drivers to expose
+to the user more information in addition to the link state.
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 72ee55c810c4..e6931b760b61 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -2299,12 +2299,12 @@ static int fetch_buf(struct vhost_virtqueue *vq)
- 	return 1;
- }
- 
--/* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
-+/* Revert the effect of fetch_buf. Useful for error handling. */
-+static
- void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
- {
- 	vq->last_avail_idx -= n;
- }
--EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
- 
- /* This function returns a value > 0 if a descriptor was found, or 0 if none were found.
-  * A negative code is returned on error. */
-@@ -2464,8 +2464,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 	return 0;
- }
- 
--/* After we've used one of their buffers, we tell them about it.  We'll then
-- * want to notify the guest, using eventfd. */
-+static
- int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 		     unsigned count)
- {
-@@ -2499,10 +2498,8 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 	}
- 	return r;
- }
--EXPORT_SYMBOL_GPL(vhost_add_used_n);
- 
--/* After we've used one of their buffers, we tell them about it.  We'll then
-- * want to notify the guest, using eventfd. */
-+static
- int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- {
- 	struct vring_used_elem heads = {
-@@ -2512,14 +2509,17 @@ int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- 
- 	return vhost_add_used_n(vq, &heads, 1);
- }
--EXPORT_SYMBOL_GPL(vhost_add_used);
- 
-+/* After we've used one of their buffers, we tell them about it.  We'll then
-+ * want to notify the guest, using vhost_signal. */
- int vhost_put_used_buf(struct vhost_virtqueue *vq, struct vhost_buf *buf)
- {
- 	return vhost_add_used(vq, buf->id, buf->in_len);
- }
- EXPORT_SYMBOL_GPL(vhost_put_used_buf);
- 
-+/* After we've used one of their buffers, we tell them about it.  We'll then
-+ * want to notify the guest, using vhost_signal. */
- int vhost_put_used_n_bufs(struct vhost_virtqueue *vq,
- 			  struct vhost_buf *bufs, unsigned count)
- {
-@@ -2580,26 +2580,6 @@ void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- }
- EXPORT_SYMBOL_GPL(vhost_signal);
- 
--/* And here's the combo meal deal.  Supersize me! */
--void vhost_add_used_and_signal(struct vhost_dev *dev,
--			       struct vhost_virtqueue *vq,
--			       unsigned int head, int len)
--{
--	vhost_add_used(vq, head, len);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal);
--
--/* multi-buffer version of vhost_add_used_and_signal */
--void vhost_add_used_and_signal_n(struct vhost_dev *dev,
--				 struct vhost_virtqueue *vq,
--				 struct vring_used_elem *heads, unsigned count)
--{
--	vhost_add_used_n(vq, heads, count);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
--
- /* return true if we're sure that avaiable ring is empty */
- bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- {
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 28eea0155efb..264a2a2fae97 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -197,11 +197,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- bool vhost_vq_access_ok(struct vhost_virtqueue *vq);
- bool vhost_log_access_ok(struct vhost_dev *);
- 
--int vhost_get_vq_desc(struct vhost_virtqueue *,
--		      struct iovec iov[], unsigned int iov_count,
--		      unsigned int *out_num, unsigned int *in_num,
--		      struct vhost_log *log, unsigned int *log_num);
--void vhost_discard_vq_desc(struct vhost_virtqueue *, int n);
- int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- 			struct iovec iov[], unsigned int iov_count,
- 			unsigned int *out_num, unsigned int *in_num,
-@@ -209,13 +204,6 @@ int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- void vhost_discard_avail_bufs(struct vhost_virtqueue *,
- 			      struct vhost_buf *, unsigned count);
- int vhost_vq_init_access(struct vhost_virtqueue *);
--int vhost_add_used(struct vhost_virtqueue *, unsigned int head, int len);
--int vhost_add_used_n(struct vhost_virtqueue *, struct vring_used_elem *heads,
--		     unsigned count);
--void vhost_add_used_and_signal(struct vhost_dev *, struct vhost_virtqueue *,
--			       unsigned int id, int len);
--void vhost_add_used_and_signal_n(struct vhost_dev *, struct vhost_virtqueue *,
--			       struct vring_used_elem *heads, unsigned count);
- int vhost_put_used_buf(struct vhost_virtqueue *, struct vhost_buf *buf);
- int vhost_put_used_n_bufs(struct vhost_virtqueue *,
- 			  struct vhost_buf *bufs, unsigned count);
+This information can save users time which will not be wasted
+trying to understand why the link is not up for example.
+
+Expand the existing LINKSTATE_GET command with attributes for extended
+state.
+
+From userspace, user can see the extended state like:
+$ ethtool ethX
+...
+Link detected: no (No cable)
+
+In addition, when drivers have another information about the general
+extended state, it can be passed also using substate field.
+
+From userspace:
+$ ethtool ethX
+...
+Link detected: no (Autoneg failure, No partner detected)
+
+In the future the infrastructure can be used for example by PHY drivers to
+report whether a downshift to a lower speed occurred, something like:
+$ ethtool ethX
+...
+Link detected: yes (downshifted)
+
+Patches #1-#3 Move mlxsw ethtool code to separate file
+Patches #4-#5 Add infrastructure in ethtool
+Patches #6-#7 Add support of extended state in mlxsw driver
+Patches #8-#10 Add tests cases
+
+Amit Cohen (10):
+  mlxsw: spectrum_dcb: Rename mlxsw_sp_port_headroom_set()
+  mlxsw: Move ethtool_ops to spectrum_ethtool.c
+  mlxsw: spectrum_ethtool: Move mlxsw_sp_port_type_speed_ops structs
+  ethtool: Add link extended state
+  Documentation: networking: ethtool-netlink: Add link extended state
+  mlxsw: reg: Port Diagnostics Database Register
+  mlxsw: spectrum_ethtool: Add link extended state
+  selftests: forwarding: ethtool: Move different_speeds_get() to
+    ethtool_lib
+  selftests: forwarding: forwarding.config.sample: Add port with no
+    cable connected
+  selftests: forwarding: Add tests for ethtool extended state
+
+ Documentation/networking/ethtool-netlink.rst  |   56 +-
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |    3 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |   51 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 1540 +---------------
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   45 +
+ .../ethernet/mellanox/mlxsw/spectrum_dcb.c    |    6 +-
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 1641 +++++++++++++++++
+ include/linux/ethtool.h                       |   22 +
+ include/uapi/linux/ethtool.h                  |   70 +
+ include/uapi/linux/ethtool_netlink.h          |    2 +
+ net/ethtool/linkstate.c                       |   40 +
+ .../selftests/net/forwarding/ethtool.sh       |   17 -
+ .../net/forwarding/ethtool_extended_state.sh  |  103 ++
+ .../selftests/net/forwarding/ethtool_lib.sh   |   17 +
+ .../net/forwarding/forwarding.config.sample   |    3 +
+ 15 files changed, 2057 insertions(+), 1559 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+ create mode 100755 tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
+
 -- 
-MST
+2.20.1
 
