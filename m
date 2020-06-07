@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B571F0BCE
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 16:13:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 732711F0BBD
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 16:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgFGOMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 10:12:52 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:29768 "EHLO
+        id S1727001AbgFGOL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 10:11:57 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:54822 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726762AbgFGOLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 10:11:49 -0400
+        by vger.kernel.org with ESMTP id S1726840AbgFGOLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 10:11:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591539107;
+        s=mimecast20190719; t=1591539109;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=8yeTF/4xoJH8JkJEZ+aqTMVrfSsZomUNfl5tfcaaPRM=;
-        b=aSvRuJRDwZN0P760tlt/8JqHTuIupkQJfd6ntM4ACM0Zt4/lhCkAhGygx6pjOeyCCqBE7F
-        vXASTvptrpnqzElUZ/GsZoBNEHmSGAMR0hwe7JugtCm1I+SlD4Gk4Q33BJtXuVhtK7WKDx
-        jiUF0lwO3k6zbrdLprkKADXHSnmnKPc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-200-r5CO-28OMFmO4PGvdd0Z5A-1; Sun, 07 Jun 2020 10:11:45 -0400
-X-MC-Unique: r5CO-28OMFmO4PGvdd0Z5A-1
-Received: by mail-wr1-f70.google.com with SMTP id o1so6011487wrm.17
-        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 07:11:45 -0700 (PDT)
+        bh=LkIC7lu04RjihR3CHtt6ay4K/Xfv1eAdqmqMBhW1nUc=;
+        b=KClBS+4StlfbF/xhh1Xsa+8ZofIAwN4Csgy1OuU5MWFcVXP+KiBoc/D+7Ulm4LldWcpHyK
+        OpAxpKZLXq1gtj/ZKUmnyAqTqllcGajFqTqwZ0GuusxWvjZM3y67PvidQnJostOo389zYR
+        4gjtd/sWcQSLjg3I0SS4CnixbPPLs9o=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-285-2b-qahe-NE6Bj6rgsPYz4w-1; Sun, 07 Jun 2020 10:11:48 -0400
+X-MC-Unique: 2b-qahe-NE6Bj6rgsPYz4w-1
+Received: by mail-wr1-f69.google.com with SMTP id o1so6011504wrm.17
+        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 07:11:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=8yeTF/4xoJH8JkJEZ+aqTMVrfSsZomUNfl5tfcaaPRM=;
-        b=Emv16sEW6w/WFpwblF6J7ni6lGdvSDRHsyu8/W/rZog/h02I5yqCGDYlKHjjxE840T
-         u0xAlXaOCuuGIseLFL+t0AGQfBOuPGXFE+k32E98jZXxfE813WWJ7hEIVSbV1YW+lCZl
-         Wet/437DT0Ttp5t4nPv+F3vPzsS2uddkrWvXv88q6b46NuwC1bYoSJSJveuL5oTEnU8M
-         htISbaOA+VdeLZo+mdrGTZpya9p6M4Nhsx0cJy/h7IYBjY5i6iuniz9a0gNTGteEbP2M
-         Tghvi71tfkS4DoH3b3O9OfIBG91uKDUQMILs7UlhQkq25ImK0QI4OWy4QuX9WnD6mYW7
-         n8nw==
-X-Gm-Message-State: AOAM532x2bz4JGTsofr3ryGrl3O8yyeid6a8q/kztlEFR4sUx18YHeVG
-        5PpMif7FFkTwZRovZeVM46H1sL1dX4oYdYKeDS8WjPOwPASPC30QnSK9oF9QaVQZeCkK0EiiMNF
-        Xi8zr7mRBevyY4QBe
-X-Received: by 2002:a7b:cb93:: with SMTP id m19mr12417401wmi.165.1591539104515;
-        Sun, 07 Jun 2020 07:11:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw57J09cTKbeRmJVX90+N+R46OyNEvndsO7VwU1Ip6tS22b7zKgKAjdQddCV5K1/YT0vuS/Pg==
-X-Received: by 2002:a7b:cb93:: with SMTP id m19mr12417393wmi.165.1591539104370;
-        Sun, 07 Jun 2020 07:11:44 -0700 (PDT)
+        bh=LkIC7lu04RjihR3CHtt6ay4K/Xfv1eAdqmqMBhW1nUc=;
+        b=bSqRG5YaYfJg55XIdFdrZ8u/ovyYqZmb5BzLo/tJDwG9gknI5Uv4pY5kPXZs931mNm
+         WHOrpnswao9DtUEz1HhhjII6fUSY0E97PukMmGp3kD3IFiA+EEjMpTtOFnjrp/s+y1ar
+         tVnsfv8gdqtY9smydKSpCoAZW0ZMCh+Gn/hZ/CdS/u/M5YAiCv/kcJFDPC+JgBKsN6Kp
+         Raq7C0J6cps6IXJG/qTJ9ePAArNo/yc8nf1wT8hqCHz8Fil5tVeaRS76myWo5yNkQFu/
+         yu0wEdScl3cMqDFwqeJFCA8vsV/iPpgNzHaYAf18diFkRqeJ+mO1c9TuIvYx69V/Q18h
+         G9eQ==
+X-Gm-Message-State: AOAM530YWuNE9dA+l7mxjJ4TVOPvLxE9rqDO84aFyFo027ENthCkEkko
+        Fw73kKQ2JYp6avOqZXDfVZws5n5+9yvuDs6EXI2cBtmeGjNmndAslFHE1D6AcLz7AOE6KJOUv3/
+        ZmWOJ5uL61hy9Ij7L
+X-Received: by 2002:a1c:7215:: with SMTP id n21mr10409314wmc.10.1591539106886;
+        Sun, 07 Jun 2020 07:11:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCfLPmb9+BZnCuC5u2jfWuqmXeqMS8Ihho5hEhJLUW08ori7QKr5nyQ1D2eMu4yFMhmwKabg==
+X-Received: by 2002:a1c:7215:: with SMTP id n21mr10409289wmc.10.1591539106521;
+        Sun, 07 Jun 2020 07:11:46 -0700 (PDT)
 Received: from redhat.com (bzq-82-81-31-23.red.bezeqint.net. [82.81.31.23])
-        by smtp.gmail.com with ESMTPSA id h5sm20290400wrw.85.2020.06.07.07.11.43
+        by smtp.gmail.com with ESMTPSA id a81sm20684853wmd.25.2020.06.07.07.11.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2020 07:11:44 -0700 (PDT)
-Date:   Sun, 7 Jun 2020 10:11:42 -0400
+        Sun, 07 Jun 2020 07:11:46 -0700 (PDT)
+Date:   Sun, 7 Jun 2020 10:11:44 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
         eperezma@redhat.com
-Subject: [PATCH RFC v5 09/13] vhost/net: avoid iov length math
-Message-ID: <20200607141057.704085-10-mst@redhat.com>
+Subject: [PATCH RFC v5 10/13] vhost/test: convert to the buf API
+Message-ID: <20200607141057.704085-11-mst@redhat.com>
 References: <20200607141057.704085-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -69,49 +69,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that API exposes buffer length, we no longer need to
-scan IOVs to figure it out.
-
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- drivers/vhost/net.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/vhost/test.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 830fe84912a5..0b509be8d7b1 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -607,11 +607,9 @@ static bool vhost_exceeds_maxpend(struct vhost_net *net)
- }
- 
- static size_t init_iov_iter(struct vhost_virtqueue *vq, struct iov_iter *iter,
--			    size_t hdr_size, int out)
-+			    size_t len, size_t hdr_size, int out)
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index 02806d6f84ef..251fd2bf74a3 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -44,9 +44,10 @@ static void handle_vq(struct vhost_test *n)
  {
- 	/* Skip header. TODO: support TSO. */
--	size_t len = iov_length(vq->iov, out);
--
- 	iov_iter_init(iter, WRITE, vq->iov, out, len);
- 	iov_iter_advance(iter, hdr_size);
+ 	struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
+ 	unsigned out, in;
+-	int head;
++	int ret;
+ 	size_t len, total_len = 0;
+ 	void *private;
++	struct vhost_buf buf;
  
-@@ -640,7 +638,7 @@ static int get_tx_bufs(struct vhost_net *net,
- 	}
+ 	mutex_lock(&vq->mutex);
+ 	private = vhost_vq_get_backend(vq);
+@@ -58,15 +59,15 @@ static void handle_vq(struct vhost_test *n)
+ 	vhost_disable_notify(&n->dev, vq);
  
- 	/* Sanity check */
--	*len = init_iov_iter(vq, &msg->msg_iter, nvq->vhost_hlen, *out);
-+	*len = init_iov_iter(vq, &msg->msg_iter, buf->out_len, nvq->vhost_hlen, *out);
- 	if (*len == 0) {
- 		vq_err(vq, "Unexpected header len for TX: %zd expected %zd\n",
- 			*len, nvq->vhost_hlen);
-@@ -1080,7 +1078,7 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
- 			nlogs += *log_num;
- 			log += *log_num;
+ 	for (;;) {
+-		head = vhost_get_vq_desc(vq, vq->iov,
+-					 ARRAY_SIZE(vq->iov),
+-					 &out, &in,
+-					 NULL, NULL);
++		ret = vhost_get_avail_buf(vq, vq->iov, &buf,
++					  ARRAY_SIZE(vq->iov),
++					  &out, &in,
++					  NULL, NULL);
+ 		/* On error, stop handling until the next kick. */
+-		if (unlikely(head < 0))
++		if (unlikely(ret < 0))
+ 			break;
+ 		/* Nothing new?  Wait for eventfd to tell us they refilled. */
+-		if (head == vq->num) {
++		if (!ret) {
+ 			if (unlikely(vhost_enable_notify(&n->dev, vq))) {
+ 				vhost_disable_notify(&n->dev, vq);
+ 				continue;
+@@ -78,13 +79,14 @@ static void handle_vq(struct vhost_test *n)
+ 			       "out %d, int %d\n", out, in);
+ 			break;
  		}
--		len = iov_length(vq->iov + seg, in);
-+		len = bufs[bufcount].in_len;
- 		datalen -= len;
- 		++bufcount;
- 		seg += in;
+-		len = iov_length(vq->iov, out);
++		len = buf.out_len;
+ 		/* Sanity check */
+ 		if (!len) {
+ 			vq_err(vq, "Unexpected 0 len for TX\n");
+ 			break;
+ 		}
+-		vhost_add_used_and_signal(&n->dev, vq, head, 0);
++		vhost_put_used_buf(vq, &buf);
++		vhost_signal(&n->dev, vq);
+ 		total_len += len;
+ 		if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
+ 			break;
 -- 
 MST
 
