@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85F21F0EE3
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 21:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CFA1F0F0C
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 21:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbgFGTLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 15:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        id S1727776AbgFGTOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 15:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726780AbgFGTLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 15:11:05 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300A3C061A0E;
-        Sun,  7 Jun 2020 12:11:06 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id k2so4834819pjs.2;
-        Sun, 07 Jun 2020 12:11:06 -0700 (PDT)
+        with ESMTP id S1726844AbgFGTOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 15:14:01 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59620C061A0E;
+        Sun,  7 Jun 2020 12:14:01 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id bh7so5775296plb.11;
+        Sun, 07 Jun 2020 12:14:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Fx8ZDPbjLqrJ/ye5aLr7B04mOPqMqfhQ6CkJiC2rhAg=;
-        b=KU5ygKCSnowH1AJviUI0XGU5GaDvMhRlNCgUKT1heLzjBtixM4v4k10UX3e8hR1zAx
-         Jyp2bGWgQ+r3lNixViN11j6vHxZGecV8sPORl+hGbICEA3iB4AEYuetecCGl2RLUN0oU
-         RjKSxwNGuzbTrKd51oQ9VMF9Pxdm1zJcJCenchPMcsoXbmQypK2A3/CKzXj51q3z8/xL
-         bwMEYHaE10KADmFUAZB5kRuqiGwqBKTPpndIq4kbtytRCCiy0FgOOlkCzofgZ3X7724k
-         8Ar8xSpUCAqdBTwatXmCN/V6JbcoHvCYQQsg/4L9T6BjyFfSDEFRzGWmZBI2P6hUJZBH
-         fkQQ==
+        bh=4JHYoeZ0JntHyeIl9Uizp+UAT3c4yx4ISWQLG4fjhIo=;
+        b=gMvyWNyLJWENt8iHIRJX+5zrIixKEZssTChJpyzGotKNrq4T2MJgg5ko1+ZLrctNa8
+         gLJ2bmLgGpd+cLuxeQnk1wWHdx3S4pGaZqrGzsTbdj4VINXc4w6PIyh7aET6ksYmhobL
+         VZ5LBdGFWOTz5o0l5X2NtjItooHrmQ/Gp7cjrSUH0evyAxXIpN8AIrkQMJIfC/rnNj1g
+         Ysb+amNK/31r/E6g4tqbu2wcB7M+QwKSa/UuxnWSUZC2rc8NmwluCt+eAewp22YqM0T9
+         SW9Fi60CwAWji/dKw4npTURuGX7Cj9asXrif8PueCAdr4VnnlBsuR8vltb0GmTaSczgZ
+         S7kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Fx8ZDPbjLqrJ/ye5aLr7B04mOPqMqfhQ6CkJiC2rhAg=;
-        b=WSYf9CHLQ/bXZMCJ2obqCTMz7uhnb/yWR2hD/5yzylv5wH/Hf1onY5ENU3Lpi8cV2l
-         myfOuScUjw0HUA+SPLcTJV8H6SUGQMjK7AYqacw6vq9lq868iMb9himqwpvWLvPNoKmp
-         WZ0J8YIdzQxdsz0NG6h8xP9Z7UW/d04q8aCaV1O9EqkxXYLlWWiJXlhO3p66hG//wbv1
-         rNKl+PEr8zk1D6eoMxc4jKkysXbiFLPAYIjXVgFOsJcIzlwS4h1NgTCmxbUUC8PNkLlT
-         lE8BUUU1OP3SaLRyK0wHoJwjp66jY0M5l9yTat9I+5D8HSKNLJS1f52g8dFDAQCvZ46N
-         z2sQ==
-X-Gm-Message-State: AOAM5334t8tq5c1KG8U6L82bZ4gqNaM6vSQJUweIK2WmL6KBBbbz04rf
-        rjuvJKg9nn2dUrfqubtx6HIfYVUq
-X-Google-Smtp-Source: ABdhPJzsJEIFZrU0c5F0lzlp8839oXC7BcdruIb3QnRVKkfjFEJLqd6iAU/LHK18eGZWM4XXjMdZgw==
-X-Received: by 2002:a17:902:bc84:: with SMTP id bb4mr5993404plb.55.1591557065013;
-        Sun, 07 Jun 2020 12:11:05 -0700 (PDT)
+        bh=4JHYoeZ0JntHyeIl9Uizp+UAT3c4yx4ISWQLG4fjhIo=;
+        b=jArN0qxUZOGwys3axFt0wkZZuyA5yUHUCBO0Q31/uVMK4uoBeaXg2+vnOjgVz/5p0P
+         QaK/78/RBxGEpEoFnS8hsjGMJrVxOrjFk10dNotr2ut3y9ztTAWjG94RVYhwgrxESsFL
+         TpsOo8/aCA0I5U93uRkxA+sM0YaHNgtb9UQzEC9bUF1Dw/8bU5H9MoaTZDZ5AjKVXpEX
+         WuqC4dpws4jxbS88sGyi6ajjvnqUElIVDOhfZte/wWExqD3laDnnK2TLFsBZI3tOcb96
+         oihPdyEm5mRBg8Dd0dwDG23Q1dL18HIelitSGHDP5EKO8pZK9FiyUTC7tZ0q1eZgqbXH
+         kpjw==
+X-Gm-Message-State: AOAM532eig7uN7rGIlaVWWtUyMHYU4fGU6pMqcecA9j2TOCeD6FESQSR
+        U9cQ/LsxDx7ckRuxull0ESfIBxvA
+X-Google-Smtp-Source: ABdhPJy0W29uRaeqKP1ce+z2LmXNRunGLITUjD6fGcROi7UeIPdpLoMREHIocA9Cgt22zsuQH34fsw==
+X-Received: by 2002:a17:902:7204:: with SMTP id ba4mr17880305plb.137.1591557240395;
+        Sun, 07 Jun 2020 12:14:00 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 9sm13129803pju.1.2020.06.07.12.11.02
+        by smtp.gmail.com with ESMTPSA id a17sm4981971pfi.203.2020.06.07.12.13.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jun 2020 12:11:04 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 05/10] Documentation: networking:
- ethtool-netlink: Add link extended state
+        Sun, 07 Jun 2020 12:13:59 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 01/10] mlxsw: spectrum_dcb: Rename
+ mlxsw_sp_port_headroom_set()
 To:     Amit Cohen <amitc@mellanox.com>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
         jiri@mellanox.com, idosch@mellanox.com, shuah@kernel.org,
@@ -60,14 +60,14 @@ Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
         liuhangbin@gmail.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
 References: <20200607145945.30559-1-amitc@mellanox.com>
- <20200607145945.30559-6-amitc@mellanox.com>
+ <20200607145945.30559-2-amitc@mellanox.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <de5a37cd-df07-4912-6928-f1c3effba01b@gmail.com>
-Date:   Sun, 7 Jun 2020 12:11:02 -0700
+Message-ID: <89936628-6871-8c21-142b-48fa9d7070c0@gmail.com>
+Date:   Sun, 7 Jun 2020 12:13:57 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.1
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200607145945.30559-6-amitc@mellanox.com>
+In-Reply-To: <20200607145945.30559-2-amitc@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,67 +79,18 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 6/7/2020 7:59 AM, Amit Cohen wrote:
-> Add link extended state attributes.
+> mlxsw_sp_port_headroom_set() is defined twice - in spectrum.c and in
+> spectrum_dcb.c, with different arguments and different implementation
+> but the name is same.
+> 
+> Rename mlxsw_sp_port_headroom_set() to mlxsw_sp_port_headroom_ets_set()
+> in order to allow using the second function in several files, and not
+> only as static function in spectrum.c.
 > 
 > Signed-off-by: Amit Cohen <amitc@mellanox.com>
 > Reviewed-by: Petr Machata <petrm@mellanox.com>
 > Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-If you need to resubmit, I would swap the order of patches #4 and #5
-such that the documentation comes first.
-
-[snip]
-
->  
-> +Link extended states:
-> +
-> +  ============================    =============================================
-> +  ``Autoneg failure``             Failure during auto negotiation mechanism
-> +
-> +  ``Link training failure``       Failure during link training
-> +
-> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
-> +                                  or forward error correction sublayer
-> +
-> +  ``Bad signal integrity``        Signal integrity issues
-> +
-> +  ``No cable``                    No cable connected
-> +
-> +  ``Cable issue``                 Failure is related to cable,
-> +                                  e.g., unsupported cable
-> +
-> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
-> +                                  during reading or parsing the data
-> +
-> +  ``Calibration failure``         Failure during calibration algorithm
-> +
-> +  ``Power budget exceeded``       The hardware is not able to provide the
-> +                                  power required from cable or module
-> +
-> +  ``Overheat``                    The module is overheated
-> +  ============================    =============================================
-> +
-> +Many of the substates are obvious, or terms that someone working in the
-> +particular area will be familiar with. The following table summarizes some
-> +that are not:
-
-Not sure this comment is helping that much, how about documenting each
-of the sub-states currently defined, even if this is just paraphrasing
-their own name? Being able to quickly go to the documentation rather
-than looking at the header is appreciable.
-
-Thank you!
-
-> +
-> +Link extended substates:
-> +
-> +  ============================    =============================================
-> +  ``Unsupported rate``            The system attempted to operate the cable at
-> +                                  a rate that is not formally supported, which
-> +                                  led to signal integrity issues
-
-Do you have examples? Would you consider a 4-pair copper cable for
-Gigabit that has a damaged pair and would downshift somehow fall in that
-category?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
