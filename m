@@ -2,80 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE2C1F104E
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 00:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA381F1083
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 01:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgFGW4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 18:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
+        id S1727977AbgFGXgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 19:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726764AbgFGW4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 18:56:17 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A690C061A0E
-        for <netdev@vger.kernel.org>; Sun,  7 Jun 2020 15:56:17 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id w9so13333826qtv.3
-        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 15:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=RFjST6WTWl2HErgo/MFlw9oz3Ck4pyxWRgkJWzlGF00=;
-        b=Shaxe9wdJCYLtgKuStGcAjk6fDhzbfX9YjI79jywcVcnag/UNdm8xJAVlzhJfBZ1m2
-         2NQabYPssbl2p+wFGtN8ZIFxqYMvDZLT2QJAKFT0W5X059DSNIbA5/F7isWcG7pRH8xI
-         d8+uvRquMhfXs3GISy8Z/9+/FM7GzvNWrgdfsj8dQpxfwtdlEjaoU4M9oyE48S3KMBmD
-         0yy+OD/xd19Bd1nDRnNKVC/63zi3LHuZhrJn0ryKSyjQI9RrZpxfx236Q1qbRjw6+5uE
-         9yA6L9nOGX/ZXioKhurn2F+twjiMNhmNlpFy/r4/ZzunBoowbz5gWsNIJa2EPxhpJOOT
-         BF1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=RFjST6WTWl2HErgo/MFlw9oz3Ck4pyxWRgkJWzlGF00=;
-        b=oR/Zlv0YE8nKc62NUt6upfBEhCX8EhWRs08iTyb8N+dQdJ6Qx91zsZZDlGrAl37478
-         eBU1/8E8WIpNR/I6Y5mFi3MgL7mU/Lh6MTmoklVNO03+WD+FAVyekxjIqGyNy7PwWnQb
-         iRp4vnGIPNYu49nHQSAa6OQmNlTeet9OA3RXxpN8d5Em/njiSE/gSeTIQkalzW0nqZCV
-         6p6oiu9RQPel7VqK3EXDtjeVt4Vf81ZGJN8SRduEL3EQX4SKhNtQRAxPu770Y2PogSk8
-         bAk/cmRip87rTS+SKhQGrLSC6evkx/KLQZfy9yUvqi8z/KnUkiXQT5nVTf1OjrToQwQd
-         DxgQ==
-X-Gm-Message-State: AOAM533FsFBmLMGi7h7sUk0q0seP8f/UaxNQ1LotyD/diNff8bY067yK
-        HFlBc8Kqr9Tj64qzBauLHa5LkEwQhjxh/zDFZjc=
-X-Google-Smtp-Source: ABdhPJxoRSYD0zQVnCSAM2F/5QKvqZaan4Z1H9p4vsfjBTp30L4tLYdpcNbuguIsgZNwxzNkwJpItj28l05t5OPmsOk=
-X-Received: by 2002:ac8:7303:: with SMTP id x3mr2685267qto.44.1591570576493;
- Sun, 07 Jun 2020 15:56:16 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ac8:3f2a:0:0:0:0:0 with HTTP; Sun, 7 Jun 2020 15:56:15 -0700 (PDT)
-Reply-To: dunawattara96@outlook.com
-From:   Mr Duna Wattara <drhajiuga003@gmail.com>
-Date:   Sun, 7 Jun 2020 15:56:15 -0700
-Message-ID: <CALpYtwC8COE6oMFSPw7-+iezz5708ijR-qF8BQr9YbQqvfMxFA@mail.gmail.com>
-Subject: with due respect
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1727786AbgFGXgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 19:36:54 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47723C061A0E;
+        Sun,  7 Jun 2020 16:36:54 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7593B127385D2;
+        Sun,  7 Jun 2020 16:36:51 -0700 (PDT)
+Date:   Sun, 07 Jun 2020 16:36:48 -0700 (PDT)
+Message-Id: <20200607.163648.1680419872557863264.davem@davemloft.net>
+To:     xianfengting221@163.com
+Cc:     leon@kernel.org, saeedm@mellanox.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5: Add a missing macro undefinition
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <c96f7991-3858-4351-9804-4482e7689cd7@163.com>
+References: <20200607051241.5375-1-xianfengting221@163.com>
+        <20200607063635.GD164174@unreal>
+        <c96f7991-3858-4351-9804-4482e7689cd7@163.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 07 Jun 2020 16:36:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+From: Hu Haowen <xianfengting221@163.com>
+Date: Sun, 7 Jun 2020 14:55:33 +0800
 
-I know that this mail will come to you as a surprise as we have never
-met before, but need not to worry as I am contacting you independently
-of my investigation and no one is informed of this communication.
+> 
+> On 2020/6/7 2:36 PM, Leon Romanovsky wrote:
+>> On Sun, Jun 07, 2020 at 01:12:40PM +0800, Hu Haowen wrote:
+>>> The macro ODP_CAP_SET_MAX is only used in function
+>>> handle_hca_cap_odp()
+>>> in file main.c, so it should be undefined when there are no more uses
+>>> of it.
+>>>
+>>> Signed-off-by: Hu Haowen <xianfengting221@163.com>
+>>> ---
+>>>   drivers/net/ethernet/mellanox/mlx5/core/main.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>> "should be undefined" is s little bit over statement, but overall
+>> the patch is good.
+> 
+> 
+> Sorry for my strong tone, but my idea is that every macro which is
+> defined and used just in a single function, is supposed to be
+> undefined
+> at the end of its final use, so that you won't get into trouble next
+> time if you define a macro with the same name as this one.
 
-I need your urgent assistance in transferring the sum of $11.3million
-immediately to your private account.The money has been here in our
-Bank lying dormant for years now without anybody coming for the claim of it.
+The compiler would generate an error if that happened, so you would
+not get into "trouble".
 
-I want to release the money to you as the relative to our deceased
-customer (the account owner) who died a long with his supposed NEXT OF
-KIN since 16th October 2005. The Banking laws here does not allow such
-money to stay more than 15 years, because the money will be recalled
-to the Bank treasury account as unclaimed fund.
+I fail to see the value in this change at all, sorry.
 
-By indicating your interest I will send you the full details on how
-the business will be executed.
+Really, what's the point?
 
-Please respond urgently and delete if you are not interested.
+Does it make the code harder to read?  No.
 
-Best Regards,
-Mr. Duna Wattara.
+Does it cause problems if you accidently want to use that macro name
+again in the same compilation unit?  No.
+
+So I have yet to hear a valid "why" to make this kind of change and
+I'd like to stop this set of cleanups before it gets out of control
+and we have these ugly #undef statements all over the tree.
+
+Thank you.
