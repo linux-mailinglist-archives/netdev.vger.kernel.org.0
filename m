@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61DC71F0C42
-	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 17:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFC21F0C49
+	for <lists+netdev@lfdr.de>; Sun,  7 Jun 2020 17:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbgFGPAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 11:00:55 -0400
-Received: from mail-am6eur05on2089.outbound.protection.outlook.com ([40.107.22.89]:48904
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S1727787AbgFGPBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 11:01:05 -0400
+Received: from mail-eopbgr140053.outbound.protection.outlook.com ([40.107.14.53]:5605
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726928AbgFGPAt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Jun 2020 11:00:49 -0400
+        id S1727008AbgFGPAx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jun 2020 11:00:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QvRkbTn2/AT5o64w82NYRfi305T5R4oGn2u92toVoIZAo0VMYnMa2bUjdtJ4i8+KJYtBZBU6JmAcgkS9tYIs8+du6BFbTqkfZWOgKy1q7DObda3gBrgWW6LkqskHOiZiiwtvSArmqT1L9QxukaiGYvMmp2YG+7WA1PoaPEoEwrPIgMnTG08CM12a5GPbupEmlOt0egtCsDJ1Fa/8A7sYo6EFUmlKajhuKDPw1CQja7DUK8uscOG2A6rwjbA2br8JUEH6ayxhQcwRV5D4oWF3RkB+z+uLAM2McdEPzLhzQWfKG2GfnXfO24kqHTly0K/8BZroED/HNEzEjjqL0PnwEg==
+ b=W0fM2tQhA8oSUdJwP5Q6qrShro0PdynzzRR3Yba+rMFu9m3AsVWbtU12ONwu6F7/M5tpjwirGc+1Sizw2EQHvgwvbKKGlN6gfY7T1lg8Ou3psTaWyjNYKD1QVTQh0lgnWCy8+pLnwhtc7/WLSaxc3BJawtnCrtBGhtoWSlsYuIQUZe97Ag7YOLx8AAQuusrg9wJIydfDtcFKdq4f30Tr07mYUMYDRuD8+uAC5ClVjX2IkriJbpQXEksrMNALsSd5SAQNf1xUb4Jraxnz+ucsCWITLnKe7XfsckIAnv42fsd/Vv6ektyWdK9zJUR+hYgI89sdaOdHhOe6I8T68aybUA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hp5nHoxAB2etTgp1gkPiEkPSwS+hgt9gr9sT1pfMMDg=;
- b=TAlVfynmTvSAikotRs1klnyeW9DKSQDUpfiXKxOs+696Vn1sNZAwc/1CiS8MsOXCJy+OFBKqYavnUod6PA6exPTKGaGqbz+iX4kHdynff349c1opGN1H4PWJeOTfo4ZylXKOXdWcLc9BQ0xpN+STX1s7uARoikKGBpy8mXpZnxuVgrbsBes/dGLCOBPDjsy/sybv91n63Cmpxi88Jg9cxrUNz6nWpwJn5q9wwfeQAq62fK+aSzE8weFouWo51oGfVHqmHLR/3aBUbWG/LAPWSE4D9YSVOkM+/vvl/0/8NtxFvhK/L+tlC5dGaF3YH7AvzbROUXEO6koqCVSXHpKPhw==
+ bh=Uk/YNl7s4xscDIwwX7hP4qIoXMNewIxH9ycPpnJyumA=;
+ b=lsHTaTXtWxALgPOw5XFkolZNGI/xCd4g5YTtCEaSkbVsJnr8+R3h+q9gttmfd3P/Bguiu5WZlNG/CD8jmp5jLs1XV9Ib8j31qOIdAQ2Dx6xQV5ttjM/mHyaWxFpUaYWEXqitpcWFo/uP61U1Tjnnh8hcOWP32M10hxcychN/JVtG97++Zs/jdSD/1sHIjAav5yJvPDbkMebn2zUmT7K1tLSq7HxZ2Cxkav4Pvro2iR9ulQ2nJbnnCOgSodNg5QyV3qAJXBfNcvJE/FaIg+nWCCl+YOBOZsMs3nNbGUKNUHuJxtqb6Xloe714SwGZuYyfekoYpWufAEu9+M9Algtrbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hp5nHoxAB2etTgp1gkPiEkPSwS+hgt9gr9sT1pfMMDg=;
- b=E33VpT65SF8kKgIqBq++WsilIPAE1kcAuu5RNXnxBtksbHFChUlQpWOBx2zZs03Tcr6Tt7MG51/4qLZo9Tf9cqwY364qa2+xnR2xgJ49Nod0DMqaqtsYf0cviifVRT2wOvEIOjmeYsUvnDJ0SrIbcdQGjHe/qZP0Ln5m1j1ZscU=
+ bh=Uk/YNl7s4xscDIwwX7hP4qIoXMNewIxH9ycPpnJyumA=;
+ b=QW59QE/QEfANkzqWxidgh0FTYetCvNfe7aib2W0087pQ+W7VVM29wt1nmirCOh10iU5I2nby7xrqNiqz/Rs9pFbzQktmugkWv2YDRuWG3yWR0LSOt6Ce3JnsC12HiKXfntnDnROhrPho9UqlmqlsbFooxNOtZpM5Im46IoO6+YI=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
@@ -34,11 +34,11 @@ Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
  (2603:10a6:208:1b::25) by AM0PR0502MB4003.eurprd05.prod.outlook.com
  (2603:10a6:208:2::26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.23; Sun, 7 Jun
- 2020 15:00:27 +0000
+ 2020 15:00:29 +0000
 Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
  ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
  ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3066.023; Sun, 7 Jun 2020
- 15:00:27 +0000
+ 15:00:29 +0000
 From:   Amit Cohen <amitc@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
@@ -49,9 +49,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
         ayal@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
         liuhangbin@gmail.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [RFC PATCH net-next 09/10] selftests: forwarding: forwarding.config.sample: Add port with no cable connected
-Date:   Sun,  7 Jun 2020 17:59:44 +0300
-Message-Id: <20200607145945.30559-10-amitc@mellanox.com>
+Subject: [RFC PATCH net-next 10/10] selftests: forwarding: Add tests for ethtool extended state
+Date:   Sun,  7 Jun 2020 17:59:45 +0300
+Message-Id: <20200607145945.30559-11-amitc@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200607145945.30559-1-amitc@mellanox.com>
 References: <20200607145945.30559-1-amitc@mellanox.com>
@@ -62,64 +62,159 @@ X-ClientProxiedBy: AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:208:1b::25)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Sun, 7 Jun 2020 15:00:25 +0000
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Sun, 7 Jun 2020 15:00:27 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4b8813d8-82b3-4de0-41f8-08d80af3835d
+X-MS-Office365-Filtering-Correlation-Id: e3c69734-e052-4d05-c90d-08d80af384c3
 X-MS-TrafficTypeDiagnostic: AM0PR0502MB4003:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR0502MB40031A1D46A46E5F583833ECD7840@AM0PR0502MB4003.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1360;
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB4003474094BBFB8D87EE2293D7840@AM0PR0502MB4003.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:163;
 X-Forefront-PRVS: 04270EF89C
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MhcTmegCPvtzUYx7tmasy5fdgzHp5si5+0fIQa8IcsGukaeK0E+estpfe08/Aqt9beHRqjIOI1YfyTIaLJb7rAOzzaSpaxE7uWJv4uHqQ083V7DCTleZy23aDocaejkOd+SGv1Rtec2CFYzA/jrdltI/58hWlBBBnYl1aCZ9UViBgVLDvRJlT187e8mXZJS2v2o5ZuXjy6tey/ECc178jisJpQ8p/vFneyJKiwtPXzaMFaNL8cgWItW0P/BTwhbSp8As2zSSF8WCD60k50msy7YeAFgNEyBhIfZykrMwv/UI3yVrFNmmHFJVfhfb5tQZYwveukfEXartgP39Cxd7aQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(346002)(136003)(39860400002)(66476007)(66946007)(66556008)(1076003)(186003)(8936002)(16526019)(26005)(52116002)(478600001)(6506007)(36756003)(2906002)(6666004)(7416002)(5660300002)(8676002)(4326008)(6486002)(316002)(86362001)(6916009)(2616005)(4744005)(956004)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: C4+pOv8UUx2MOzc7jZQYt5l+wFUBxKomEF1wl1tVUZTSTtgMwkvPORsAt8mTA5X2+eLAFDVzWHAfFVj1qwVkOyxJa2G6Q54Zst5A8pVwDWPgX9NRINvC7E0nd9h44AOOt/ufXArDZ07y3ZTkk8CC/F7iyzFjB1vgx58n4LmNfE+GSAlhKJFM5D5y2iOQqXH4HHcALMD0UQstYHZIvektEXXMtgYU03Giwz5IKPt0+T7NvEUnYlc85dOJPyQi7JrLBY4/samWNZcNIlh5oMc0co669rULXYOjJPQvMbu2R4I8/HwamF0vvqL8hNaSYKY39Lt1UV5bIUlY7q4XnDpUHDTm8Xxc8RYkecrBZIBWw94D8bIbIvuMfKVTY4GoJSGyplYkpXmI2iHUH70Ng9qGW8hhu1yZO/G7+k+p4DgXRp5iy6DjHA7UJjDrrmeeg/nVfxCtCvWOMXQFK7Pbsi8c68PQWlllvh+2qKt7YhE0a5Q=
+X-Microsoft-Antispam-Message-Info: AZrksZ+qFJk6Wz07SbLZo7YS2dzdJW0H4Gn5zt7z08623gawKKCF9cmibay7DrWdQm4LYce45f7hqr3z/ncOdrmOMHbZmCOalvFeTxn/wHnAJ/Skg8GfY9hk6xDAt/mNssKmahnRO3NUTa6ypyzwzot3KjJvB6oxGoT+2cTrtJ0v+JdtW20NJ+GwcgPZYNdvTnfZXAOQrb+8krLgbhMHj3dWAaBmWRNeYrINioEY88xwy95FVKG09xOp3fw626esYAxKZuIbgmhzc3k7zsj2xm7ERYvHQ/i7PMcVsgq+p1j4N7hbtLEWSbm2NTOAB8ML3PspNYACrfW+OE7Wgg/jbg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(346002)(136003)(39860400002)(66476007)(66946007)(66556008)(1076003)(186003)(8936002)(16526019)(26005)(52116002)(478600001)(6506007)(36756003)(2906002)(6666004)(7416002)(5660300002)(8676002)(4326008)(83380400001)(6486002)(316002)(86362001)(6916009)(2616005)(956004)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: u2eW14qaW5lNn5Q0FHxwIoghedRDQI91BARTmSnc7Rsmxl0m5WQDoZYBsuxMt4aiLQXJDklXwqQ4fWsO3lov8DF3R58/A1Ncro7oCnfVZnBhmhYpyCGNP/vc62LPbMABKLt0jUFcATiP9wUP2vWJLB5clOuXSLYIxAs9uIYDvVo89NbzaEw9+OEhAqROXfiVLydyYnZz6JhkabQxlv+hmcuLuUG3X3R/HKCoTOL8Tl/8mK1zOIMQn4JXoNhSzRo3szWT1ObHyk/dF8Xqh4qb8+FHJVagzkj4DmpPO9flvQYXldOv5I9Q3HFnt4nxfuBL60/ZjbiXnUMS8JdsmC4mPOYXlc16Ch8YGktu1/or+KYJ9G1+NjfW2CPQ1+NLSjRZDfSYAqvJNh1JChnCtkPRzUHJGYB0VfHh0Lr75Tugj8uebgktEZhHy4oLhngSlYmcEiPsWHKAZG3pAyGMEDY3Xf0cjjOG4M3ubICr5hpOvOU=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b8813d8-82b3-4de0-41f8-08d80af3835d
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2020 15:00:27.2841
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3c69734-e052-4d05-c90d-08d80af384c3
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2020 15:00:29.7157
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: C27X59T5fL92b1RBZZKSJ2EngLZGWHgiu7RrbQbhaaJhKjPXI61YPUjnXy/kvSVqfQm24dc6y4hRLsEHqh5bDw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 619hGefJOtoWmj2Za1llkS0bKjBgsGoyrKaJYp65bHwKp/hsoBgw3LSFxZf6JAQ/e5qlD1PzwjShSu//AG0zbg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4003
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add NETIF_NO_CABLE port to tests topology.
+Add tests to check ethtool report about extended state.
+The tests configure several states and verify that the correct extended
+state is reported by ethtool.
 
-The port can also be declared as an environment variable and tests can be
-run like that:
-NETIF_NO_CABLE=eth9 ./test.sh eth{1..8}
-
-The NETIF_NO_CABLE port will be used by ethtool_extended_state test.
+Check extended state with substate (Autoneg) and extended state without
+substate (No cable).
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Reviewed-by: Petr Machata <petrm@mellanox.com>
 ---
- .../testing/selftests/net/forwarding/forwarding.config.sample  | 3 +++
- 1 file changed, 3 insertions(+)
+ .../net/forwarding/ethtool_extended_state.sh  | 103 ++++++++++++++++++
+ 1 file changed, 103 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/forwarding.config.sample b/tools/testing/selftests/net/forwarding/forwarding.config.sample
-index e2adb533c8fc..b802c14d2950 100644
---- a/tools/testing/selftests/net/forwarding/forwarding.config.sample
-+++ b/tools/testing/selftests/net/forwarding/forwarding.config.sample
-@@ -14,6 +14,9 @@ NETIFS[p6]=veth5
- NETIFS[p7]=veth6
- NETIFS[p8]=veth7
- 
-+# Port that does not have a cable connected.
-+NETIF_NO_CABLE=eth8
+diff --git a/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh b/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
+new file mode 100755
+index 000000000000..dd7f256296c1
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
+@@ -0,0 +1,103 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- ##############################################################################
- # Defines
- 
++ALL_TESTS="
++	autoneg_failure
++	autoneg_failure_force_mode
++	no_cable
++"
++
++NUM_NETIFS=2
++source lib.sh
++source ethtool_lib.sh
++
++setup_prepare()
++{
++	swp1=${NETIFS[p1]}
++	swp2=${NETIFS[p2]}
++	swp3=$NETIF_NO_CABLE
++}
++
++ethtool_extended_state_check()
++{
++	local dev=$1; shift
++	local expected_ext_state=$1; shift
++	local expected_ext_substate=${1:-""}; shift
++
++	local ext_state=$(ethtool $dev | grep "Link detected" \
++		| cut -d "(" -f2 | cut -d ")" -f1)
++	local ext_substate=$(echo $ext_state | cut -sd "," -f2 \
++		| sed -e 's/^[[:space:]]*//')
++	ext_state=$(echo $ext_state | cut -d "," -f1)
++
++	[[ $ext_state == $expected_ext_state ]]
++	check_err $? "Expected \"$expected_ext_state\", got \"$ext_state\""
++
++	[[ $ext_substate == $expected_ext_substate ]]
++	check_err $? "Expected \"$expected_ext_substate\", got \"$ext_substate\""
++}
++
++autoneg_failure()
++{
++	RET=0
++
++	ip link set dev $swp1 up
++
++	sleep 4
++	ethtool_extended_state_check $swp1 "Autoneg failure" \
++		"No partner detected"
++
++	log_test "Autoneg failure, No partner detected"
++
++	ip link set dev $swp1 down
++}
++
++autoneg_failure_force_mode()
++{
++	RET=0
++
++	ip link set dev $swp1 up
++	ip link set dev $swp2 up
++
++	local -a speeds_arr=($(different_speeds_get $swp1 $swp2 0 0))
++	local speed1=${speeds_arr[0]}
++	local speed2=${speeds_arr[1]}
++
++	ethtool_set $swp1 speed $speed1 autoneg off
++	ethtool_set $swp2 speed $speed2 autoneg off
++
++	sleep 4
++	ethtool_extended_state_check $swp1 "Autoneg failure" \
++		"No partner detected during force mode"
++
++	ethtool_extended_state_check $swp2 "Autoneg failure" \
++		"No partner detected during force mode"
++
++	log_test "Autoneg failure, No partner detected during force mode"
++
++	ethtool -s $swp2 autoneg on
++	ethtool -s $swp1 autoneg on
++
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++}
++
++no_cable()
++{
++	RET=0
++
++	ip link set dev $swp3 up
++
++	sleep 1
++	ethtool_extended_state_check $swp3 "No cable"
++
++	log_test "No cable"
++
++	ip link set dev $swp3 down
++}
++
++setup_prepare
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.20.1
 
