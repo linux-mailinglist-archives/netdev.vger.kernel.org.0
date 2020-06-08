@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A781F265F
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:38:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9BAD1F2655
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731816AbgFHXiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:38:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58220 "EHLO mail.kernel.org"
+        id S1732247AbgFHX2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:28:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58400 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732224AbgFHX2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:28:34 -0400
+        id S1732237AbgFHX2j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:28:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7B4120814;
-        Mon,  8 Jun 2020 23:28:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C58420897;
+        Mon,  8 Jun 2020 23:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658913;
-        bh=iZlanTZ3hDfaOIjivh2KFVLaFqpJCYaQSMincLpUqoc=;
+        s=default; t=1591658918;
+        bh=eqFjqFU3qXiE3XO3dLPjq9Xs//ztRq5SoN7u/f5nz7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HnNmuDiWGy9WCzEFJa0ig1XRRJZyf3TTJExJPfaREd9N16P6wEePDbbPpOHBC8aY+
-         IzCg+d5X0hF75+LHn43MWgYJZ6K7z/4gSpvrQtbRzuATtQk9hMBOwQRgnx5mzJ7oKl
-         +xXrLOpW88TfAaHVAuM+PoZvn0sYtdClz/znZ6Y4=
+        b=BjfRFuqj3ELI4wLucLnj8Fp310sVKBwFY59REBg1HKlyyqKMIv3rYBsztOJvPgzjN
+         +0dQeTDRw27QKfI6L4FL9utJy8FCZNtnmQI34Hy8371AQfIYIYOQRLwCAD+vNTkumy
+         GeYfb/TIungKJPde9B/tOi2q1GgVwC76KXwGg3Ds=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 30/37] macvlan: Skip loopback packets in RX handler
-Date:   Mon,  8 Jun 2020 19:27:42 -0400
-Message-Id: <20200608232750.3370747-30-sashal@kernel.org>
+Cc:     Xie XiuQi <xiexiuqi@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 34/37] ixgbe: fix signed-integer-overflow warning
+Date:   Mon,  8 Jun 2020 19:27:46 -0400
+Message-Id: <20200608232750.3370747-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232750.3370747-1-sashal@kernel.org>
 References: <20200608232750.3370747-1-sashal@kernel.org>
@@ -43,100 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+From: Xie XiuQi <xiexiuqi@huawei.com>
 
-[ Upstream commit 81f3dc9349ce0bf7b8447f147f45e70f0a5b36a6 ]
+[ Upstream commit 3b70683fc4d68f5d915d9dc7e5ba72c732c7315c ]
 
-Ignore loopback-originatig packets soon enough and don't try to process L2
-header where it doesn't exist. The very similar br_handle_frame() in bridge
-code performs exactly the same check.
+ubsan report this warning, fix it by adding a unsigned suffix.
 
-This is an example of such ICMPv6 packet:
+UBSAN: signed-integer-overflow in
+drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:2246:26
+65535 * 65537 cannot be represented in type 'int'
+CPU: 21 PID: 7 Comm: kworker/u256:0 Not tainted 5.7.0-rc3-debug+ #39
+Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 03/27/2020
+Workqueue: ixgbe ixgbe_service_task [ixgbe]
+Call trace:
+ dump_backtrace+0x0/0x3f0
+ show_stack+0x28/0x38
+ dump_stack+0x154/0x1e4
+ ubsan_epilogue+0x18/0x60
+ handle_overflow+0xf8/0x148
+ __ubsan_handle_mul_overflow+0x34/0x48
+ ixgbe_fc_enable_generic+0x4d0/0x590 [ixgbe]
+ ixgbe_service_task+0xc20/0x1f78 [ixgbe]
+ process_one_work+0x8f0/0xf18
+ worker_thread+0x430/0x6d0
+ kthread+0x218/0x238
+ ret_from_fork+0x10/0x18
 
-skb len=96 headroom=40 headlen=96 tailroom=56
-mac=(40,0) net=(40,40) trans=80
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0xae2e9a2f ip_summed=1 complete_sw=0 valid=0 level=0)
-hash(0xc97ebd88 sw=1 l4=1) proto=0x86dd pkttype=5 iif=24
-dev name=etha01.212 feat=0x0x0000000040005000
-skb headroom: 00000000: 00 7c 86 52 84 88 ff ff 00 00 00 00 00 00 08 00
-skb headroom: 00000010: 45 00 00 9e 5d 5c 40 00 40 11 33 33 00 00 00 01
-skb headroom: 00000020: 02 40 43 80 00 00 86 dd
-skb linear:   00000000: 60 09 88 bd 00 38 3a ff fe 80 00 00 00 00 00 00
-skb linear:   00000010: 00 40 43 ff fe 80 00 00 ff 02 00 00 00 00 00 00
-skb linear:   00000020: 00 00 00 00 00 00 00 01 86 00 61 00 40 00 00 2d
-skb linear:   00000030: 00 00 00 00 00 00 00 00 03 04 40 e0 00 00 01 2c
-skb linear:   00000040: 00 00 00 78 00 00 00 00 fd 5f 42 68 23 87 a8 81
-skb linear:   00000050: 00 00 00 00 00 00 00 00 01 01 02 40 43 80 00 00
-skb tailroom: 00000000: ...
-skb tailroom: 00000010: ...
-skb tailroom: 00000020: ...
-skb tailroom: 00000030: ...
-
-Call Trace, how it happens exactly:
- ...
- macvlan_handle_frame+0x321/0x425 [macvlan]
- ? macvlan_forward_source+0x110/0x110 [macvlan]
- __netif_receive_skb_core+0x545/0xda0
- ? enqueue_task_fair+0xe5/0x8e0
- ? __netif_receive_skb_one_core+0x36/0x70
- __netif_receive_skb_one_core+0x36/0x70
- process_backlog+0x97/0x140
- net_rx_action+0x1eb/0x350
- ? __hrtimer_run_queues+0x136/0x2e0
- __do_softirq+0xe3/0x383
- do_softirq_own_stack+0x2a/0x40
- </IRQ>
- do_softirq.part.4+0x4e/0x50
- netif_rx_ni+0x60/0xd0
- dev_loopback_xmit+0x83/0xf0
- ip6_finish_output2+0x575/0x590 [ipv6]
- ? ip6_cork_release.isra.1+0x64/0x90 [ipv6]
- ? __ip6_make_skb+0x38d/0x680 [ipv6]
- ? ip6_output+0x6c/0x140 [ipv6]
- ip6_output+0x6c/0x140 [ipv6]
- ip6_send_skb+0x1e/0x60 [ipv6]
- rawv6_sendmsg+0xc4b/0xe10 [ipv6]
- ? proc_put_long+0xd0/0xd0
- ? rw_copy_check_uvector+0x4e/0x110
- ? sock_sendmsg+0x36/0x40
- sock_sendmsg+0x36/0x40
- ___sys_sendmsg+0x2b6/0x2d0
- ? proc_dointvec+0x23/0x30
- ? addrconf_sysctl_forward+0x8d/0x250 [ipv6]
- ? dev_forward_change+0x130/0x130 [ipv6]
- ? _raw_spin_unlock+0x12/0x30
- ? proc_sys_call_handler.isra.14+0x9f/0x110
- ? __call_rcu+0x213/0x510
- ? get_max_files+0x10/0x10
- ? trace_hardirqs_on+0x2c/0xe0
- ? __sys_sendmsg+0x63/0xa0
- __sys_sendmsg+0x63/0xa0
- do_syscall_64+0x6c/0x1e0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xie XiuQi <xiexiuqi@huawei.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvlan.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 0c4e1ef80355..73061bee35cd 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -420,6 +420,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 	int ret;
- 	rx_handler_result_t handle_res;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index cd2afe92f1da..e10808b3d118 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -2185,7 +2185,7 @@ s32 ixgbe_fc_enable_generic(struct ixgbe_hw *hw)
+ 	}
  
-+	/* Packets from dev_loopback_xmit() do not have L2 header, bail out */
-+	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))
-+		return RX_HANDLER_PASS;
-+
- 	port = macvlan_port_get_rcu(skb->dev);
- 	if (is_multicast_ether_addr(eth->h_dest)) {
- 		skb = ip_check_defrag(dev_net(skb->dev), skb, IP_DEFRAG_MACVLAN);
+ 	/* Configure pause time (2 TCs per register) */
+-	reg = hw->fc.pause_time * 0x00010001;
++	reg = hw->fc.pause_time * 0x00010001U;
+ 	for (i = 0; i < (MAX_TRAFFIC_CLASS / 2); i++)
+ 		IXGBE_WRITE_REG(hw, IXGBE_FCTTV(i), reg);
+ 
 -- 
 2.25.1
 
