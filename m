@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 759771F2D8A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688E91F2FE1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733164AbgFIAeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:34:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35110 "EHLO mail.kernel.org"
+        id S1731537AbgFIAy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:54:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729860AbgFHXOk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:14:40 -0400
+        id S1728426AbgFHXJd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:09:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 240F220B80;
-        Mon,  8 Jun 2020 23:14:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2562C208FE;
+        Mon,  8 Jun 2020 23:09:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658080;
-        bh=rrjn21lIwbVsYMAky8QjM0Drt8vWHEafCQYkuckifaw=;
+        s=default; t=1591657773;
+        bh=IAdVph0fG5ogOIukRAnscPJyX0P9LSD/fmItIjoQA6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zb7FJYs55fFUxCLo+hv1nZucmhoVxk8NW8oChDs23eKIKvetgoKaNsbbHjZOUNcSA
-         LN4yunzAQjmko5/beefzUZJpYwuVcmnG+JTpY+qCIZVkt6OOXnM934DbhYM+zc7yS9
-         wJSroqLDXNWWs5nFPCLPnppCUhHd30Ym0DVgzTPw=
+        b=sQfSHCDrQL6b7JgP2w1D5u+3u7UgUrMstqS62Z4xg44YjmKC5ZjZPrtG5Ku8vC8Ny
+         3dxmczQP6TeUeou2TXLtHMSFMDBvtWg8ZCpQ4ucEB1GOhrPbBWzDdvyd+Ae2rtQnO7
+         Y+KJMyk2Kp4NhQO4mPQsx9TKzRo6mys1w6JShqPw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Petrov <mmrmaximuzz@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.6 124/606] stmmac: fix pointer check after utilization in stmmac_interrupt
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 156/274] ath10k: fix possible memory leak in ath10k_bmi_lz_data_large()
 Date:   Mon,  8 Jun 2020 19:04:09 -0400
-Message-Id: <20200608231211.3363633-124-sashal@kernel.org>
+Message-Id: <20200608230607.3361041-156-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
-References: <20200608231211.3363633-1-sashal@kernel.org>
+In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
+References: <20200608230607.3361041-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,49 +44,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Petrov <mmrmaximuzz@gmail.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit f42234ffd531ca6b13d9da02faa60b72eccf8334 ]
+[ Upstream commit 2326aa011967f0afbcba7fe1a005d01f8b12900b ]
 
-The paranoidal pointer check in IRQ handler looks very strange - it
-really protects us only against bogus drivers which request IRQ line
-with null pointer dev_id. However, the code fragment is incorrect
-because the dev pointer is used before the actual check which leads
-to undefined behavior. Remove the check to avoid confusing people
-with incorrect code.
+'cmd' is malloced in ath10k_bmi_lz_data_large() and should be freed
+before leaving from the error handling cases, otherwise it will cause
+memory leak.
 
-Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d58f466a5dee ("ath10k: add large size for BMI download data for SDIO")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200427104348.13570-1-weiyongjun1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/wireless/ath/ath10k/bmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 7da18c9afa01..d564459290ce 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3988,7 +3988,7 @@ static int stmmac_set_features(struct net_device *netdev,
- /**
-  *  stmmac_interrupt - main ISR
-  *  @irq: interrupt number.
-- *  @dev_id: to pass the net device pointer.
-+ *  @dev_id: to pass the net device pointer (must be valid).
-  *  Description: this is the main driver interrupt service routine.
-  *  It can call:
-  *  o DMA service routine (to manage incoming frame reception and transmission
-@@ -4012,11 +4012,6 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 	if (priv->irq_wake)
- 		pm_wakeup_event(priv->device, 0);
+diff --git a/drivers/net/wireless/ath/ath10k/bmi.c b/drivers/net/wireless/ath/ath10k/bmi.c
+index ea908107581d..5b6db6e66f65 100644
+--- a/drivers/net/wireless/ath/ath10k/bmi.c
++++ b/drivers/net/wireless/ath/ath10k/bmi.c
+@@ -380,6 +380,7 @@ static int ath10k_bmi_lz_data_large(struct ath10k *ar, const void *buffer, u32 l
+ 						  NULL, NULL);
+ 		if (ret) {
+ 			ath10k_warn(ar, "unable to write to the device\n");
++			kfree(cmd);
+ 			return ret;
+ 		}
  
--	if (unlikely(!dev)) {
--		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
--		return IRQ_NONE;
--	}
--
- 	/* Check if adapter is up */
- 	if (test_bit(STMMAC_DOWN, &priv->state))
- 		return IRQ_HANDLED;
 -- 
 2.25.1
 
