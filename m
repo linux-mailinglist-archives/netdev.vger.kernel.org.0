@@ -2,95 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF541F1CF3
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18611F1D1A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730511AbgFHQIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 12:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730357AbgFHQIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:08:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB631C08C5C2;
-        Mon,  8 Jun 2020 09:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=7VoRl6qQlPxAENq4swBjnhUVEexaLc0WppnAtA1JmcY=; b=0WRHvJzJToSgd8Xjgr1TW5lNh
-        f6sbLcPfQYlR930Di+98noAUh6OtZQe7W6tdF6mQgk3nI3Of8xrxCVr8ots3PjNSAuSaGxDPlB5+a
-        UZ3dzCTg/NReHWAwOA/J1G49dKJtwWy8u0XbEGN/XncsysEekP+B5WOP0+96wJ2SmnwIWBov2+QLY
-        PeEfH4tSH0f4AZfr8n16AhQaXDXP/8lpYc4QjE+MpNYTG5fygyCk4ISApJJ/VXtWutflbFMcbPhoB
-        WYDkjXyaopMoJI+WASx25CpQynsHz75ghL4IRBZmFlCn/uV1SkeUnMCGTxjsge7bQRG4NsdRY9ZhC
-        dOQyVdQhQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:51000)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jiKJf-0000c8-OJ; Mon, 08 Jun 2020 17:08:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jiKJd-0002CW-W7; Mon, 08 Jun 2020 17:08:02 +0100
-Date:   Mon, 8 Jun 2020 17:08:01 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] net: ethernet: mvneta: add support for 2.5G DRSGMII mode
-Message-ID: <20200608160801.GO1551@shell.armlinux.org.uk>
-References: <20200608074716.9975-1-s.hauer@pengutronix.de>
+        id S1730434AbgFHQSo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jun 2020 12:18:44 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:21592 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730267AbgFHQSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:18:44 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-252-mqGdXTzJN4mqnAaD_WReKg-1; Mon, 08 Jun 2020 17:18:40 +0100
+X-MC-Unique: mqGdXTzJN4mqnAaD_WReKg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 8 Jun 2020 17:18:39 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 8 Jun 2020 17:18:39 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     =?iso-8859-1?Q?=27Ivan_Skytte_J=F8rgensen=27?= <isj-sctp@i1.dk>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: packed structures used in socket options
+Thread-Topic: packed structures used in socket options
+Thread-Index: AQHWPLpUTq2nADe9c02l9PzEMhJDA6jNLBzwgAAGoICAAC9ugP//9FcAgABAGeCAAAZCgIABR3tg
+Date:   Mon, 8 Jun 2020 16:18:39 +0000
+Message-ID: <cd3793726252407f8e80aa8d0025d44f@AcuMS.aculab.com>
+References: <CBFEFEF1-127A-4ADA-B438-B171B9E26282@lurchi.franken.de>
+ <B69695A1-F45B-4375-B9BB-1E50D1550C6D@lurchi.franken.de>
+ <23a14b44bd5749a6b1b51150c7f3c8ba@AcuMS.aculab.com>
+ <2213135.ChUyxVVRYb@isjsys>
+In-Reply-To: <2213135.ChUyxVVRYb@isjsys>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200608074716.9975-1-s.hauer@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 09:47:16AM +0200, Sascha Hauer wrote:
-> The Marvell MVNETA Ethernet controller supports a 2.5 Gbps SGMII mode
-> called DRSGMII.
-> 
-> This patch adds a corresponding phy-mode string 'drsgmii' and parses it
-> from DT. The MVNETA then configures the SERDES protocol value
-> accordingly.
-> 
-> It was successfully tested on a MV78460 connected to a FPGA.
+From: Ivan Skytte Jørgensen
+> Sent: 07 June 2020 22:35
+...
+> > > >>>> contains:
+> > > >>>>
+> > > >>>> struct sctp_paddrparams {
+> > > >>>> 	sctp_assoc_t		spp_assoc_id;
+> > > >>>> 	struct sockaddr_storage	spp_address;
+> > > >>>> 	__u32			spp_hbinterval;
+> > > >>>> 	__u16			spp_pathmaxrxt;
+> > > >>>> 	__u32			spp_pathmtu;
+> > > >>>> 	__u32			spp_sackdelay;
+> > > >>>> 	__u32			spp_flags;
+> > > >>>> 	__u32			spp_ipv6_flowlabel;
+> > > >>>> 	__u8			spp_dscp;
+> > > >>>> } __attribute__((packed, aligned(4)));
+> > > >>>>
+> > > >>>> This structure is only used in the IPPROTO_SCTP level socket option SCTP_PEER_ADDR_PARAMS.
+> > > >>>> Why is it packed?
+...
+> I was involved. At that time (September 2005) the SCTP API was still evolving (first finalized in
+> 2011), and one of the major users of the API was 32-bit programs running on 64-bit kernel (on powerpc
+> as I recall). When we realized that the structures were different between 32bit and 64bit we had to
+> break the least number of programs, and the result were those ((packed)) structs so 32-bit programs
+> wouldn't be broken and we didn't need a xxx_compat translation layer in the kernel.
 
-Digging around, this is Armada XP?  Which SoCs is this mode supported?
-There's no mention of DRSGMII in the A38x nor A37xx documentation which
-are later than Armada XP.
+I was also looking at all the __u16 in that header - borked.
 
-What exactly is "drsgmii"?  It can't be "double-rate" SGMII because that
-would give you 2Gbps max instead of the 1Gbps, but this gives 2.5Gbps,
-so I'm really not sure using "drsgmii" is a good idea.  It may be what
-Marvell call it, but we really need to know if there's some vendor
-neutral way to refer to it.
+Ok, so the intention was to avoid padding caused by the alignment
+of sockaddr_storage rather than around the '__u16 spp_flags'.
 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
->  .../devicetree/bindings/net/ethernet-controller.yaml       | 1 +
->  drivers/net/ethernet/marvell/mvneta.c                      | 7 ++++++-
->  include/linux/phy.h                                        | 3 +++
->  3 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> This patch has already been sent 3 years ago here:
-> https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20170123142206.5390-1-jlu@pengutronix.de/
-> Since then the driver has evolved a lot. 2.5Gbps is properly configured in the
-> MAC now.
+I'd have to look up what (packed, aligned(4)) actually means.
+It could force the structure to be fully packed (no holes)
+but always have an overall alignment of 4.
 
-Nevertheless, adding a new interface mode needs properly documenting to
-describe exactly what it is - see Documentation/networking/phy.rst, the
-section "PHY interface modes".  The above point about "what is this"
-illustrates why we need these documented.
+It might have been clearer to put an 'aligned(4)' attribute
+on the spp_address field itself.
+Or even wonder whether sockaddr_storage should actually
+have 8 byte alignment.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 424kbps up
+If it has 16 byte alignment then you cannot cast an IPv4
+socket buffer address (which will be at most 4 byte aligned)
+to sockaddr_storage and expect the compiler not to generate
+code that will crash and burn on sparc64.
+
+ISTR that the NetBSD view was that 'sockaddr_storage' should
+never actually be instantiated - it only existed as a typed
+pointer.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
