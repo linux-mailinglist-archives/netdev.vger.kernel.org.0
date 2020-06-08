@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F411F3159
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E850B1F314C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732032AbgFIBIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 21:08:21 -0400
+        id S2388194AbgFIBHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:07:43 -0400
 Received: from mail.kernel.org ([198.145.29.99]:50204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727068AbgFHXGr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:06:47 -0400
+        id S1727088AbgFHXGw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:06:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D5C3D20870;
-        Mon,  8 Jun 2020 23:06:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4AC920820;
+        Mon,  8 Jun 2020 23:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657606;
-        bh=lg0K0W/aYAUtFjJepmp4AK6Gf1LVgkJTHCed3bKP0mQ=;
+        s=default; t=1591657612;
+        bh=VYWenzQ8i2lLQM7eSA2bTGMvfrUBJTLf4bOKdgHsOGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFxbsYJA9VZTAxKBjQ2141nT7rrKv3Y97/qrZDnhRcUydnJxcvn1Hh+T+eCw6WKKc
-         7TlBrcWWYXIbaMH8kOq74DVaHswYos4UieSzRBZF/n5rXG65sJY5EQJN6daEYhrMJm
-         CrcDSCVJjwzi6J2F5OgisYQbceCazmM75HnNxgUY=
+        b=rgKodUlOOq6h5Df8UQp+9PzVQTaXFRpiKBgGZQk8K3tImYRDjRTvkI+eswaHW725y
+         pkcUXWWJtBFv22zLgVE2xrnXLN0TvpyCASV4JRFPdRIgLoOnYoqdDd2qD3CBArGbCx
+         zC9dLdztHN7UmPdkOR3Hsq4h6RwFi46LYy++hRQQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+Cc:     Dejin Zheng <zhengdejin5@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 031/274] ath10k: remove the max_sched_scan_reqs value
-Date:   Mon,  8 Jun 2020 19:02:04 -0400
-Message-Id: <20200608230607.3361041-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 035/274] rtw88: fix an issue about leak system resources
+Date:   Mon,  8 Jun 2020 19:02:08 -0400
+Message-Id: <20200608230607.3361041-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -43,49 +46,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Dejin Zheng <zhengdejin5@gmail.com>
 
-[ Upstream commit d431f8939c1419854dfe89dd345387f5397c6edd ]
+[ Upstream commit 191f6b08bfef24e1a9641eaac96ed030a7be4599 ]
 
-The struct cfg80211_wowlan of NET_DETECT WoWLAN feature share the same
-struct cfg80211_sched_scan_request together with scheduled scan request
-feature, and max_sched_scan_reqs of wiphy is only used for sched scan,
-and ath10k does not support scheduled scan request feature, so ath10k
-does not set flag NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR, but ath10k
-set max_sched_scan_reqs of wiphy to a non zero value 1, then function
-nl80211_add_commands_unsplit of cfg80211 will set it support command
-NL80211_CMD_START_SCHED_SCAN because max_sched_scan_reqs is a non zero
-value, but actually ath10k not support it, then it leads a mismatch result
-for sched scan of cfg80211, then application shill found the mismatch and
-stop running case of MAC random address scan and then the case fail.
+the related system resources were not released when pci_iomap() return
+error in the rtw_pci_io_mapping() function. add pci_release_regions() to
+fix it.
 
-After remove max_sched_scan_reqs value, it keeps match for sched scan and
-case of MAC random address scan pass.
-
-Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
-Tested with QCA6174 PCIe with firmware WLAN.RM.4.4.1-00110-QCARMSWP-1.
-
-Fixes: ce834e280f2f875 ("ath10k: support NET_DETECT WoWLAN feature")
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Fixes: e3037485c68ec1a ("rtw88: new Realtek 802.11ac driver")
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+Acked-by: Yan-Hsuan Chuang <yhchuang@realtek.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20191114050001.4658-1-wgong@codeaurora.org
+Link: https://lore.kernel.org/r/20200504083442.3033-1-zhengdejin5@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 2d03b8dd3b8c..7c4ba17a0b68 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -8919,7 +8919,6 @@ int ath10k_mac_register(struct ath10k *ar)
- 	ar->hw->wiphy->max_scan_ie_len = WLAN_SCAN_PARAMS_MAX_IE_LEN;
- 
- 	if (test_bit(WMI_SERVICE_NLO, ar->wmi.svc_map)) {
--		ar->hw->wiphy->max_sched_scan_reqs = 1;
- 		ar->hw->wiphy->max_sched_scan_ssids = WMI_PNO_MAX_SUPP_NETWORKS;
- 		ar->hw->wiphy->max_match_sets = WMI_PNO_MAX_SUPP_NETWORKS;
- 		ar->hw->wiphy->max_sched_scan_ie_len = WMI_PNO_MAX_IE_LENGTH;
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 1af87eb2e53a..d735f3127fe8 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -1091,6 +1091,7 @@ static int rtw_pci_io_mapping(struct rtw_dev *rtwdev,
+ 	len = pci_resource_len(pdev, bar_id);
+ 	rtwpci->mmap = pci_iomap(pdev, bar_id, len);
+ 	if (!rtwpci->mmap) {
++		pci_release_regions(pdev);
+ 		rtw_err(rtwdev, "failed to map pci memory\n");
+ 		return -ENOMEM;
+ 	}
 -- 
 2.25.1
 
