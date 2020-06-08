@@ -2,136 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D6E1F1C26
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 17:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2DF11F1C8B
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 17:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730264AbgFHPdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 11:33:04 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20576 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729754AbgFHPdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 11:33:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591630382;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ejRzmIfo/YStbmem6OtL2DwKFhnwBSwtvJjwxXmGTAs=;
-        b=Zzxr7LTFdlnX4ZO+ZLNjcTZ2dsZI0lBLrT74ZFKg9kQb8SDFR8I7SljuzBHtLf6Dc3XmLh
-        B/Nywn3Md6tQXgy6pKQmW4kZg1iVZXW79MHvpNeZvISS75Gxz02+dVBeroSpUfuEfyTC0s
-        D+g297r5oT+N3PC6Tbx024svMxvuam0=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-43-yPmYY2QQOR-nLKu_U05F7g-1; Mon, 08 Jun 2020 11:33:00 -0400
-X-MC-Unique: yPmYY2QQOR-nLKu_U05F7g-1
-Received: by mail-ej1-f71.google.com with SMTP id t4so6178763ejj.12
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 08:33:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=ejRzmIfo/YStbmem6OtL2DwKFhnwBSwtvJjwxXmGTAs=;
-        b=mYNeyPO+Rf6kPYaND0omg6ZyoDU6P/CPJQPDbFk+rmhF16XDaFRdY5amnE6Tvhr0Gu
-         J//b/0QnDtHepWdXYZBtvG6UCFNXROl0ThvryFer8bpOQ51C7dgunHn5my4eWuThorp6
-         FgedMlMvLk8ZXdMUUz0X6lUjfMSfaTE5vBHpiBWtogIByMKONrQ48SlQCuLlDeBX5FR2
-         Z1DJ51HyPhD8xyHrLAU5cUet1seLE804AZFaSQqzT7M21kKoL+MShPOfQmr3BtNL425v
-         HHk3VN3yuqv2Ytdpx4faidlapfnvXSoTvIbdbbxavEsMzhgdm4t5Qt5oM8yHcuSzLarR
-         BXSg==
-X-Gm-Message-State: AOAM531CSXMVyuY5YG9LbmftdkCcFP+HrjpV33aUOfR60DdE3rbskZUc
-        G3hvvzqQTARilJVvD55xbOqxkcOp+hv9rVwjoKAgu7PyuP0HS73MOVkLhHvpjJuoCAUJE7sj/PW
-        jBNAnG4civIMRYQWP
-X-Received: by 2002:a17:906:b7cd:: with SMTP id fy13mr20807845ejb.443.1591630379389;
-        Mon, 08 Jun 2020 08:32:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx6+Rh+weLJ3CfNdx8kMK8oyTWU8xcp2vBI8ombCs1CQg+t4iJHtD4AMWJQ7Wb0figtNT0EXQ==
-X-Received: by 2002:a17:906:b7cd:: with SMTP id fy13mr20807831ejb.443.1591630379191;
-        Mon, 08 Jun 2020 08:32:59 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id sa19sm11467045ejb.15.2020.06.08.08.32.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 08:32:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 916E818200D; Mon,  8 Jun 2020 17:32:54 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-In-Reply-To: <20200605062606.GO102436@dhcp-12-153.nay.redhat.com>
-References: <20200526140539.4103528-1-liuhangbin@gmail.com> <87zh9t1xvh.fsf@toke.dk> <20200603024054.GK102436@dhcp-12-153.nay.redhat.com> <87img8l893.fsf@toke.dk> <20200604040940.GL102436@dhcp-12-153.nay.redhat.com> <871rmvkvwn.fsf@toke.dk> <20200604121212.GM102436@dhcp-12-153.nay.redhat.com> <87bllzj9bw.fsf@toke.dk> <20200604144145.GN102436@dhcp-12-153.nay.redhat.com> <87d06ees41.fsf@toke.dk> <20200605062606.GO102436@dhcp-12-153.nay.redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 08 Jun 2020 17:32:54 +0200
-Message-ID: <878sgxd13t.fsf@toke.dk>
-MIME-Version: 1.0
+        id S1730394AbgFHP7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 11:59:45 -0400
+Received: from mail-eopbgr70058.outbound.protection.outlook.com ([40.107.7.58]:6228
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730231AbgFHP7o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 11:59:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DgiVubfLuwyePKy8lbkcchHrrCnMOAmKuF6ZVUvxk+BH13iU05bNeux7i1wDtTTZDp0bpg4xeC1Udx9oJSRbV3U0bXRhKrjf8LItieRaA5YkRVdBM1iBIumvhjVumpoyA+TtGTYcjRJafHqTzy243Vw5nDI99jfiJrWQ1oG3P8tHDvSBk5ttCuAhrqgAf3gJ4YKWjVpEdi9AVCenPgjqIPWCLncLyToOpggKQMQnKbsBixYcZOjGMjvGnWQiy0Qnt9Qtj3B9vc/JWDFJZ5v/xUkjnIYjyloMldJYx15U4ytgEw73EcXwL23bQPiQhbYgPmpZK2ow3+n0gYZzPstc9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cQeVuWMrxJv9rWbmIQYRQOMNIbLCkE1hW8H3vyg8e+c=;
+ b=N67HaBbecM30DXkImqr+lhZIROr4Oor5pbxZkUjp/JDQECOMH9mN9OjicX/E6AO4QTuXd86/RazdRuna3wTfp67Ec7l4hBuux+9SAEMVcp87jprYphyx5PyaqscbuYsxHHHGSrCvcCV+JwEVna4PFpNtjp6MYUH+YwtkzewRJrzTcEhQEADx8HmMAd1NYjp7S8zOkuYkk8ktMTmX8lgyfomnHotZdg820ng0y+aF7zA6Ike/X7zjrC0NaC4kMpbjst3weV2YQ0aBHZxUTHytErvBK9cValSMdLusdJlDHeEJ47ujjTF684q2O02/YQoJ3VTdvJXYCkxuq/DDt9YUPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cQeVuWMrxJv9rWbmIQYRQOMNIbLCkE1hW8H3vyg8e+c=;
+ b=k1kRHG1C15kC/gsA5zmWsdv6JVQ7gI6g+TcbIXPLzLu5x055G97kntDbmy0jmOsnx6kTKlT87R0rbmNwzFteksBgkDXPqNRSqP5nb0db7thFNUlX5aRd9PrG102EpA9YfXcDlH7ONP2d83qcDuLM8yFx1mIOzj3zPFSmGqonHcA=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25) by AM0PR0502MB3971.eurprd05.prod.outlook.com
+ (2603:10a6:208:11::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.20; Mon, 8 Jun
+ 2020 15:59:37 +0000
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3066.023; Mon, 8 Jun 2020
+ 15:59:37 +0000
+Subject: Re: [RFC PATCH net-next 05/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        jiri@mellanox.com, idosch@mellanox.com, shuah@kernel.org,
+        mkubecek@suse.cz, gustavo@embeddedor.com,
+        cforno12@linux.vnet.ibm.com, andrew@lunn.ch,
+        linux@rempel-privat.de, alexandru.ardelean@analog.com,
+        ayal@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        liuhangbin@gmail.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <20200607145945.30559-1-amitc@mellanox.com>
+ <20200607145945.30559-6-amitc@mellanox.com>
+ <de5a37cd-df07-4912-6928-f1c3effba01b@gmail.com>
+From:   Amit Cohen <amitc@mellanox.com>
+Message-ID: <8096f9ba-4fa9-bbad-7501-6c8e3d4dd1ac@mellanox.com>
+Date:   Mon, 8 Jun 2020 18:59:17 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+In-Reply-To: <de5a37cd-df07-4912-6928-f1c3effba01b@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR04CA0041.eurprd04.prod.outlook.com
+ (2603:10a6:208:1::18) To AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.7] (87.68.150.248) by AM0PR04CA0041.eurprd04.prod.outlook.com (2603:10a6:208:1::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Mon, 8 Jun 2020 15:59:35 +0000
+X-Originating-IP: [87.68.150.248]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a538ecbd-fa05-45d9-9b64-08d80bc4f1f8
+X-MS-TrafficTypeDiagnostic: AM0PR0502MB3971:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB397159DDBE7D4F3F325AAC93D7850@AM0PR0502MB3971.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 042857DBB5
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /HaknT/j6xMnTkjAbES4WVmkXP9ZaOWKdNph4ofH0oH5R7y0yVkCy5Je3XSOivkbXY2WAuahSuvkTeKwb8BpY9BR+YPrWkREQVY2eohXi3oQjFx2oRKv+NJPRfP7Jd3KBIKDB/ykjXHi5dsbi2G0oGLPwDP01GMVUzUAn1esl0rCgpQKoeoMCMwnSmE1WiIc7HiyJwRW8eofESHHvrffE5xBuiPsuzoMdcsNrlAjPfaF6pHTQ4Ypiint8SJGshg8Wh9cYubxwFBPus+jopVoXzTkwMHxGXt//9VA1Y8mxTkK1Vsba/Avl9mEAikLpjfl3dw2Gz2NmnlNCDdghSLVNlREaDQh1Rg+EIDTty4iZe+NiWdjvo5ZCOIyAhRBoLrp
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(366004)(376002)(39860400002)(346002)(16576012)(316002)(5660300002)(66556008)(6666004)(31696002)(66946007)(2616005)(956004)(53546011)(2906002)(36756003)(6486002)(66476007)(52116002)(8936002)(7416002)(8676002)(4326008)(186003)(26005)(16526019)(478600001)(83380400001)(86362001)(31686004)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Mv7r3ut4qEn+WMnlppE57VWNZxXlo/baRItxIkZnZrzPhpjgxt2X5JcfeDpfYO0aRCPSzISZ1Mw3q0vgXvcLH7jjQqNNwMimk5LXYJPIQbBO58pPyw/9G7saoWwg1KN3ncN0VfRcGN14wEkzjvg/i9gUXdRK+QrsMAiunVvMpQMycto+5UIFTZWDB0IDeoZMYUVWflc3upGBZsgW3kG1BAOKCilGuOMYIwKS/4y+YS0L4hSumLpIVbr6NSR59xvGZuUofwHSGGz4TKoKYOfipAY2D12abZ1ENjLsNbfrx+eM41gmRQi1SHp0EP3QCphq/AHyVyZEsrkyuG9HSheK3Arxzz7jx94jRgomxSk+SoA8S/Laq6yCQQHjRSJ21tIXn7PbEe1i4hRhUnM7oXACvK01vilRh9+fFSeROrBZrx4NTUzWfS17m5DnTIhcFmjb+uQDuFp2yON+fbAe9r6laYRixlMc4+FL+7C0eyHp06I=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a538ecbd-fa05-45d9-9b64-08d80bc4f1f8
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2020 15:59:37.7680
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6YcSiqs4GwZ9CJUNr8eTPxrm95RUxd4s91+m+h/ERtZzPxhdktEz2jzLDBbE0hpU6nqtn721mWuxSQ5HcMEOFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3971
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
+On 07-Jun-20 22:11, Florian Fainelli wrote:
+> 
+> 
+> On 6/7/2020 7:59 AM, Amit Cohen wrote:
+>> Add link extended state attributes.
+>>
+>> Signed-off-by: Amit Cohen <amitc@mellanox.com>
+>> Reviewed-by: Petr Machata <petrm@mellanox.com>
+>> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> 
+> If you need to resubmit, I would swap the order of patches #4 and #5
+> such that the documentation comes first.
+> 
+> [snip]
 
-> On Thu, Jun 04, 2020 at 06:02:54PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Hangbin Liu <liuhangbin@gmail.com> writes:
->>=20
->> > On Thu, Jun 04, 2020 at 02:37:23PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
-=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
->> >> > Now I use the ethtool_stats.pl to count forwarding speed and here i=
-s the result:
->> >> >
->> >> > With kernel 5.7(ingress i40e, egress i40e)
->> >> > XDP:
->> >> > bridge: 1.8M PPS
->> >> > xdp_redirect_map:
->> >> >   generic mode: 1.9M PPS
->> >> >   driver mode: 10.4M PPS
->> >>=20
->> >> Ah, now we're getting somewhere! :)
->> >>=20
->> >> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
->> >> > bridge: 1.8M
->> >> > xdp_redirect_map:
->> >> >   generic mode: 1.86M PPS
->> >> >   driver mode: 10.17M PPS
->> >>=20
->> >> Right, so this corresponds to a ~2ns overhead (10**9/10400000 -
->> >> 10**9/10170000). This is not too far from being in the noise, I suppo=
-se;
->> >> is the difference consistent?
->> >
->> > Sorry, I didn't get, what different consistent do you mean?
->>=20
->> I meant, how much do the numbers vary between each test run?
->
-> Oh, when run it at the same period, the number is stable, the range is ab=
-out
-> ~0.05M PPS. But after a long time or reboot, the speed may changed a litt=
-le.
-> Here is the new test result after I reboot the system:
->
-> Kernel 5.7 + my patch(ingress i40e, egress i40e)
-> xdp_redirect_map:
->   generic mode: 1.9M PPS
->   driver mode: 10.2M PPS
->
-> xdp_redirect_map_multi:
->   generic mode: 1.58M PPS
->   driver mode: 7.16M PPS
->
-> Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(No XDP on peer))
-> xdp_redirect_map:
->   generic mode: 2.2M PPS
->   driver mode: 14.2M PPS
+ok
 
-This looks wrong - why is performance increasing when adding another
-target? How are you even adding another target to regular
-xdp_redirect_map?
+> 
+>>  
+>> +Link extended states:
+>> +
+>> +  ============================    =============================================
+>> +  ``Autoneg failure``             Failure during auto negotiation mechanism
+>> +
+>> +  ``Link training failure``       Failure during link training
+>> +
+>> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
+>> +                                  or forward error correction sublayer
+>> +
+>> +  ``Bad signal integrity``        Signal integrity issues
+>> +
+>> +  ``No cable``                    No cable connected
+>> +
+>> +  ``Cable issue``                 Failure is related to cable,
+>> +                                  e.g., unsupported cable
+>> +
+>> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
+>> +                                  during reading or parsing the data
+>> +
+>> +  ``Calibration failure``         Failure during calibration algorithm
+>> +
+>> +  ``Power budget exceeded``       The hardware is not able to provide the
+>> +                                  power required from cable or module
+>> +
+>> +  ``Overheat``                    The module is overheated
+>> +  ============================    =============================================
+>> +
+>> +Many of the substates are obvious, or terms that someone working in the
+>> +particular area will be familiar with. The following table summarizes some
+>> +that are not:
+> 
+> Not sure this comment is helping that much, how about documenting each
+> of the sub-states currently defined, even if this is just paraphrasing
+> their own name? Being able to quickly go to the documentation rather
+> than looking at the header is appreciable.
+> 
+> Thank you!
 
--Toke
+np, I'll add.
+> 
+>> +
+>> +Link extended substates:
+>> +
+>> +  ============================    =============================================
+>> +  ``Unsupported rate``            The system attempted to operate the cable at
+>> +                                  a rate that is not formally supported, which
+>> +                                  led to signal integrity issues
+> 
+> Do you have examples? Would you consider a 4-pair copper cable for
+> Gigabit that has a damaged pair and would downshift somehow fall in that
+> category?
+> 
+
+For example, this statement might appear when an 100G OPTICs (not copper) which is used in 40G rate and sees high BER (when using Parallel Detect).
+In this situation we recommend to  see the other end configuration and understand why it is configured to lower speed.
+
+Regarding your example, if it stays on the same speed and have high BER you should expect a different BAD SI statement.
 
