@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB9E1F30FE
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFDBA1F30D8
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388182AbgFIBEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 21:04:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51128 "EHLO mail.kernel.org"
+        id S2388136AbgFIBDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:03:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727859AbgFHXHV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:07:21 -0400
+        id S1727955AbgFHXHj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:07:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03E972085B;
-        Mon,  8 Jun 2020 23:07:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 681F420872;
+        Mon,  8 Jun 2020 23:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657640;
-        bh=Nzj33yMcNsTqDcHz96UKV5DTW8bq53Qh/4LF7am2yZs=;
+        s=default; t=1591657659;
+        bh=gumFx8A5m9fNWLYnCaEu3mPXlkEB5qOQe53IV6HBUdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UnbpEERKzr8KWN1tBeNv1TSHL4So/5lBQPL+M4FCwJ1E6T2qBFhWqsXr1HCaf35pG
-         JoXPGBASqZG/mzhC+JUuUR02X03+Sr1M3BhiUXfScYDRYDzagi3U+Nxjt0j3aDLs/E
-         GBCurttr626f806QYBCHi7UYYaSPLfDo/qvrhowk=
+        b=iofGzeyDknde6/RtOsP1/LBRNvBoC4KPuuKCtiR4QMJxHx6S+pbisToUxaJ2l2WUa
+         J9eJvBlHyA/A8xsqd6vw4GNHcHV75+b6AA3UoYZKSYTIOJUY5V1qw9cMl6c03uOGVW
+         iTFHNJKbTPJfYOHwe7ZUIR0is15QWxp+U/a1FOvc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 058/274] ath11k: Fix some resource leaks in error path in 'ath11k_thermal_register()'
-Date:   Mon,  8 Jun 2020 19:02:31 -0400
-Message-Id: <20200608230607.3361041-58-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        Matthias Schiffer <mschiffer@universe-factory.net>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 071/274] batman-adv: Revert "disable ethtool link speed detection when auto negotiation off"
+Date:   Mon,  8 Jun 2020 19:02:44 -0400
+Message-Id: <20200608230607.3361041-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,55 +45,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 25ca180ad380a0c7286442a922e7fbcc6a9f6083 ]
+[ Upstream commit 9ad346c90509ebd983f60da7d082f261ad329507 ]
 
-If 'thermal_cooling_device_register()' fails, we must undo what has been
-allocated so far. So we must go to 'err_thermal_destroy' instead of
-returning directly
+The commit 8c46fcd78308 ("batman-adv: disable ethtool link speed detection
+when auto negotiation off") disabled the usage of ethtool's link_ksetting
+when auto negotation was enabled due to invalid values when used with
+tun/tap virtual net_devices. According to the patch, automatic measurements
+should be used for these kind of interfaces.
 
-In case of error in 'ath11k_thermal_register()', the previous
-'thermal_cooling_device_register()' call must also be undone. Move the
-'ar->thermal.cdev = cdev' a few lines above in order for this to be done
-in 'ath11k_thermal_unregister()' which is called in the error handling
-path.
+But there are major flaws with this argumentation:
 
-Fixes: 2a63bbca06b2 ("ath11k: add thermal cooling device support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200513201454.258111-1-christophe.jaillet@wanadoo.fr
+* automatic measurements are not implemented
+* auto negotiation has nothing to do with the validity of the retrieved
+  values
+
+The first point has to be fixed by a longer patch series. The "validity"
+part of the second point must be addressed in the same patch series by
+dropping the usage of ethtool's link_ksetting (thus always doing automatic
+measurements over ethernet).
+
+Drop the patch again to have more default values for various net_device
+types/configurations. The user can still overwrite them using the
+batadv_hardif's BATADV_ATTR_THROUGHPUT_OVERRIDE.
+
+Reported-by: Matthias Schiffer <mschiffer@universe-factory.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/thermal.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/batman-adv/bat_v_elp.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/thermal.c b/drivers/net/wireless/ath/ath11k/thermal.c
-index 259dddbda2c7..5a7e150c621b 100644
---- a/drivers/net/wireless/ath/ath11k/thermal.c
-+++ b/drivers/net/wireless/ath/ath11k/thermal.c
-@@ -174,9 +174,12 @@ int ath11k_thermal_register(struct ath11k_base *sc)
- 		if (IS_ERR(cdev)) {
- 			ath11k_err(sc, "failed to setup thermal device result: %ld\n",
- 				   PTR_ERR(cdev));
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto err_thermal_destroy;
- 		}
- 
-+		ar->thermal.cdev = cdev;
-+
- 		ret = sysfs_create_link(&ar->hw->wiphy->dev.kobj, &cdev->device.kobj,
- 					"cooling_device");
- 		if (ret) {
-@@ -184,7 +187,6 @@ int ath11k_thermal_register(struct ath11k_base *sc)
- 			goto err_thermal_destroy;
- 		}
- 
--		ar->thermal.cdev = cdev;
- 		if (!IS_REACHABLE(CONFIG_HWMON))
- 			return 0;
- 
+diff --git a/net/batman-adv/bat_v_elp.c b/net/batman-adv/bat_v_elp.c
+index 1e3172db7492..955e0b8960d6 100644
+--- a/net/batman-adv/bat_v_elp.c
++++ b/net/batman-adv/bat_v_elp.c
+@@ -127,20 +127,7 @@ static u32 batadv_v_elp_get_throughput(struct batadv_hardif_neigh_node *neigh)
+ 	rtnl_lock();
+ 	ret = __ethtool_get_link_ksettings(hard_iface->net_dev, &link_settings);
+ 	rtnl_unlock();
+-
+-	/* Virtual interface drivers such as tun / tap interfaces, VLAN, etc
+-	 * tend to initialize the interface throughput with some value for the
+-	 * sake of having a throughput number to export via ethtool. This
+-	 * exported throughput leaves batman-adv to conclude the interface
+-	 * throughput is genuine (reflecting reality), thus no measurements
+-	 * are necessary.
+-	 *
+-	 * Based on the observation that those interface types also tend to set
+-	 * the link auto-negotiation to 'off', batman-adv shall check this
+-	 * setting to differentiate between genuine link throughput information
+-	 * and placeholders installed by virtual interfaces.
+-	 */
+-	if (ret == 0 && link_settings.base.autoneg == AUTONEG_ENABLE) {
++	if (ret == 0) {
+ 		/* link characteristics might change over time */
+ 		if (link_settings.base.duplex == DUPLEX_FULL)
+ 			hard_iface->bat_v.flags |= BATADV_FULL_DUPLEX;
 -- 
 2.25.1
 
