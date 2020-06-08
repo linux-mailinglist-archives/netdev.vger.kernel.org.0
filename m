@@ -2,176 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9358B1F1E24
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 19:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B941F1E2C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 19:10:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730490AbgFHRI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 13:08:59 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:44217 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730688AbgFHRI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 13:08:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591636136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sI72Ms6GymnWW5IgfsQfm5B7QZQFkpb/EFt5z5NFsqI=;
-        b=a3zt1FSTcUwIg6j2RNHCiPtjW8XDZYn77TXgFs2aJ1cGgeMKKkoeYzuGLXQrrto6Zpmf4B
-        BAyFBy7wr5an87xwoVunXpit9BnvXGmAn/MRByv7DRoW7PGu8J0/OlZkOKFWcMN0DE5bOf
-        sgTM17Kogu004BCUonji1OxO8qzlE8E=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-160--53fF0miMEerc-TAqA_Nfg-1; Mon, 08 Jun 2020 13:08:54 -0400
-X-MC-Unique: -53fF0miMEerc-TAqA_Nfg-1
-Received: by mail-wr1-f70.google.com with SMTP id a4so7412721wrp.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 10:08:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sI72Ms6GymnWW5IgfsQfm5B7QZQFkpb/EFt5z5NFsqI=;
-        b=OunzByc3/y4Vtk9Yq3ogPrkikEHkmu1N9Y4/cGNpTkDsTyZGprC3MZ0Lxg9BEa3jV4
-         WigvdWa6iXh43TiGd3Qcm2hSjMYM+fjUuN/j9EsPoYT+e00dOqCUCLqvHyDLSxyCbC7J
-         AeieFG108MQ1KhGSucmTmgbrdj4yUmMNDTvlh5zCLFI9/rtKqyMSsS7Y3BEkQLe0ojFq
-         S0f1zXeQ7+OrlA4pXrbDjBpA7t4qKmHre1dQL+T+lYDxhQwbZamPp86EaFj5EUPDYhsG
-         dsTdmbJxISLKZdoXqYnKo0bFkyNKUHjM/unZ1DY2BvqhTKTNWCEQNZDfvJyrzm/Q99eh
-         TcmQ==
-X-Gm-Message-State: AOAM532hv72KAz3SzeMn+dGmL1xeWIy0RxiFFB18Lfxhv9TOspjqhwsv
-        XwUXt4/R1MJmp4yYgowBalwq66Z9xxdEu6n2VR4YRP4Z5dwwHyUUoY43x0CJ0NXUVXZAJSTlAd0
-        xVm9/9tCgNWLgiDiW
-X-Received: by 2002:a1c:3b43:: with SMTP id i64mr339439wma.112.1591636132899;
-        Mon, 08 Jun 2020 10:08:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4dUf9x3rgVZHJRvrEuMPKhxm/lCre/+sG86XOaArTyYsFZli8wP4z+s74imLE54MU9CeoNw==
-X-Received: by 2002:a1c:3b43:: with SMTP id i64mr339413wma.112.1591636132598;
-        Mon, 08 Jun 2020 10:08:52 -0700 (PDT)
-Received: from steredhat ([79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id l2sm342741wru.58.2020.06.08.10.08.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 10:08:51 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 19:08:49 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH RFC v6 10/11] vhost/vsock: switch to the buf API
-Message-ID: <20200608170849.udaxzmfzmhbonoi7@steredhat>
-References: <20200608125238.728563-1-mst@redhat.com>
- <20200608125238.728563-11-mst@redhat.com>
+        id S2387504AbgFHRK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 13:10:28 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:62208 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730696AbgFHRK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 13:10:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1591636226; x=1623172226;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=t5Ht9pQ/L15OhRjsj3oBdWbi3godPK4J8lNDSU8Sric=;
+  b=h7W5QzygyIq9kvN2MXSsz8d2kdwog+IbguIPcpOcwHFxk4ZfUhoy3VYU
+   v38Ybr+IdaQPH88f0HS1mGGClX6F04gM3GQNi6w95YpSflTOWLj2fefu1
+   BrX8Ww8aTcmVeGu1pg5Ca1tqXgKTILyD1UIVTd2PBcOLCx9/tsUcEp/MY
+   c=;
+IronPort-SDR: S8JB7UWD4QsekyIBB/T3lttKcrT1Ne/0DCTZfl8uIv+BINZ1G4WVygkiGFpts8j2A2qHCjsFIu
+ YrHU8J2n5sQQ==
+X-IronPort-AV: E=Sophos;i="5.73,487,1583193600"; 
+   d="scan'208";a="49364832"
+Subject: Re: [PATCH 04/12] x86/xen: add system core suspend and resume callbacks
+Received: from sea32-co-svc-lb4-vlan2.sea.corp.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.47.23.34])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Jun 2020 17:10:17 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id C791814168C;
+        Mon,  8 Jun 2020 17:10:08 +0000 (UTC)
+Received: from EX13D05UWC001.ant.amazon.com (10.43.162.82) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 8 Jun 2020 17:09:48 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D05UWC001.ant.amazon.com (10.43.162.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 8 Jun 2020 17:09:48 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Mon, 8 Jun 2020 17:09:47 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id F15BC40832; Mon,  8 Jun 2020 17:09:47 +0000 (UTC)
+Date:   Mon, 8 Jun 2020 17:09:47 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Message-ID: <20200608170947.GA4392@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1589926004.git.anchalag@amazon.com>
+ <79cf02631dc00e62ebf90410bfbbdb52fe7024cb.1589926004.git.anchalag@amazon.com>
+ <4b577564-e4c3-0182-2b9e-5f79004f32a1@oracle.com>
+ <B966B3A2-4F08-42FA-AF59-B8AA0783C2BA@amazon.com>
+ <e2073aa4-2410-4630-fee6-4e4abc172876@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200608125238.728563-11-mst@redhat.com>
+In-Reply-To: <e2073aa4-2410-4630-fee6-4e4abc172876@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 08:53:13AM -0400, Michael S. Tsirkin wrote:
-> A straight-forward conversion.
+On Fri, Jun 05, 2020 at 05:24:37PM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
-
-I ran the vsock tests again with this new series and everything seems
-to go well:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Tested-by: Stefano Garzarella <sgarzare@redhat.com>
-
+> 
+> 
+> On 6/3/20 6:40 PM, Agarwal, Anchal wrote:
+> >     CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> >
+> >
+> >
+> >     On 5/19/20 7:26 PM, Anchal Agarwal wrote:
+> >     > From: Munehisa Kamata <kamatam@amazon.com>
+> >     >
+> >     > Add Xen PVHVM specific system core callbacks for PM suspend and
+> >     > hibernation support. The callbacks suspend and resume Xen
+> >     > primitives,like shared_info, pvclock and grant table. Note that
+> >     > Xen suspend can handle them in a different manner, but system
+> >     > core callbacks are called from the context.
+> >
+> >
+> >     I don't think I understand that last sentence.
+> >
+> > Looks like it may have cryptic meaning of stating that xen_suspend calls syscore_suspend from xen_suspend
+> > So, if these syscore ops gets called  during xen_suspend do not do anything. Check if the mode is in xen suspend
+> > and return from there. These syscore_ops are specifically for domU hibernation.
+> > I must admit, I may have overlooked lack of explanation of some implicit details in the original commit msg.
+> >
+> >     >  So if the callbacks
+> >     > are called from Xen suspend context, return immediately.
+> >     >
+> >
+> >
+> >     > +
+> >     > +static int xen_syscore_suspend(void)
+> >     > +{
+> >     > +     struct xen_remove_from_physmap xrfp;
+> >     > +     int ret;
+> >     > +
+> >     > +     /* Xen suspend does similar stuffs in its own logic */
+> >     > +     if (xen_suspend_mode_is_xen_suspend())
+> >     > +             return 0;
+> 
+> 
+> With your explanation now making this clearer, is this check really
+> necessary? From what I see we are in XEN_SUSPEND mode when
+> lock_system_sleep() lock is taken, meaning that we can't initialize
+> hibernation.
+> 
+I see. Sounds plausible. I will fix both the code and commit message
+for better readability. Thanks for catching this.
+> 
+> >     > +
+> >     > +     xrfp.domid = DOMID_SELF;
+> >     > +     xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
+> >     > +
+> >     > +     ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
+> >     > +     if (!ret)
+> >     > +             HYPERVISOR_shared_info = &xen_dummy_shared_info;
+> >     > +
+> >     > +     return ret;
+> >     > +}
+> >     > +
+> >     > +static void xen_syscore_resume(void)
+> >     > +{
+> >     > +     /* Xen suspend does similar stuffs in its own logic */
+> >     > +     if (xen_suspend_mode_is_xen_suspend())
+> >     > +             return;
+> >     > +
+> >     > +     /* No need to setup vcpu_info as it's already moved off */
+> >     > +     xen_hvm_map_shared_info();
+> >     > +
+> >     > +     pvclock_resume();
+> >     > +
+> >     > +     gnttab_resume();
+> >
+> >
+> >     Do you call gnttab_suspend() in pm suspend path?
+> > No, since it does nothing for HVM guests. The unmap_frames is only applicable for PV guests right?
+> 
+> 
+> You should call it nevertheless. It will decide whether or not anything
+> needs to be done.
+Will fix it in V2.
+> 
+> 
+> -boris
+> 
 Thanks,
-Stefano
-
+Anchal
 > 
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index a483cec31d5c..61c6d3dd2ae3 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -103,7 +103,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		unsigned out, in;
->  		size_t nbytes;
->  		size_t iov_len, payload_len;
-> -		int head;
-> +		struct vhost_buf buf;
-> +		int ret;
->  
->  		spin_lock_bh(&vsock->send_pkt_list_lock);
->  		if (list_empty(&vsock->send_pkt_list)) {
-> @@ -117,16 +118,17 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		list_del_init(&pkt->list);
->  		spin_unlock_bh(&vsock->send_pkt_list_lock);
->  
-> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> -					 &out, &in, NULL, NULL);
-> -		if (head < 0) {
-> +		ret = vhost_get_avail_buf(vq, &buf,
-> +					  vq->iov, ARRAY_SIZE(vq->iov),
-> +					  &out, &in, NULL, NULL);
-> +		if (ret < 0) {
->  			spin_lock_bh(&vsock->send_pkt_list_lock);
->  			list_add(&pkt->list, &vsock->send_pkt_list);
->  			spin_unlock_bh(&vsock->send_pkt_list_lock);
->  			break;
->  		}
->  
-> -		if (head == vq->num) {
-> +		if (!ret) {
->  			spin_lock_bh(&vsock->send_pkt_list_lock);
->  			list_add(&pkt->list, &vsock->send_pkt_list);
->  			spin_unlock_bh(&vsock->send_pkt_list_lock);
-> @@ -186,7 +188,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		 */
->  		virtio_transport_deliver_tap_pkt(pkt);
->  
-> -		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
-> +		buf.in_len = sizeof(pkt->hdr) + payload_len;
-> +		vhost_put_used_buf(vq, &buf);
->  		added = true;
->  
->  		pkt->off += payload_len;
-> @@ -440,7 +443,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
->  						 dev);
->  	struct virtio_vsock_pkt *pkt;
-> -	int head, pkts = 0, total_len = 0;
-> +	int ret, pkts = 0, total_len = 0;
-> +	struct vhost_buf buf;
->  	unsigned int out, in;
->  	bool added = false;
->  
-> @@ -461,12 +465,13 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  			goto no_more_replies;
->  		}
->  
-> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> -					 &out, &in, NULL, NULL);
-> -		if (head < 0)
-> +		ret = vhost_get_avail_buf(vq, &buf,
-> +					  vq->iov, ARRAY_SIZE(vq->iov),
-> +					  &out, &in, NULL, NULL);
-> +		if (ret < 0)
->  			break;
->  
-> -		if (head == vq->num) {
-> +		if (!ret) {
->  			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
->  				vhost_disable_notify(&vsock->dev, vq);
->  				continue;
-> @@ -494,7 +499,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  			virtio_transport_free_pkt(pkt);
->  
->  		len += sizeof(pkt->hdr);
-> -		vhost_add_used(vq, head, len);
-> +		buf.in_len = len;
-> +		vhost_put_used_buf(vq, &buf);
->  		total_len += len;
->  		added = true;
->  	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
-> -- 
-> MST
-> 
-
