@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AE01F2C6C
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2AC1F2CBC
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730309AbgFHXQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:16:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37990 "EHLO mail.kernel.org"
+        id S1732925AbgFIA1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:27:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730272AbgFHXQf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:35 -0400
+        id S1730289AbgFHXQh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:16:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F2EEF2083E;
-        Mon,  8 Jun 2020 23:16:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2157120823;
+        Mon,  8 Jun 2020 23:16:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658195;
-        bh=BllGiQowdWfc/9MF8P9IN9Fo7/HBXLoDGNo0wcpxFiM=;
+        s=default; t=1591658197;
+        bh=OK2NHAg48HW6FBRqhKzU70isoJaQpL16CRC437CTNJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kITkeSXzbT/SR1/4ROeE1LcZa3Q56hRcR3fJKRgaaIwHmodptzdxO4RSLpkMQ3Zb5
-         kS393C6d9Zz/o328O2p4+phWUOF7tU++0MPvsaC2NPuibdSK439lk0GMAuHD48X23o
-         oSSXtLqedCmwZvCFKcx6pl2uVjkAHEx5xuAk/3Lo=
+        b=AZE7ufmSPo4bmnctMUxwghaIQ1PdCWmkZ2ik1q1tXmwcZRnraHRE/Hsq04x7p5rhV
+         Br62OCY4SwBPLKa1xW+WSP/RtfLCveDAkJ3ouzBWUoqtCGkiX7Oky0hhjTweEChEzQ
+         pFlZUjk25yn3/72It/+jKZgsDVeGaGWDfkFRN4pI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 216/606] net: ipip: fix wrong address family in init error path
-Date:   Mon,  8 Jun 2020 19:05:41 -0400
-Message-Id: <20200608231211.3363633-216-sashal@kernel.org>
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 217/606] net/mlx5: Add command entry handling completion
+Date:   Mon,  8 Jun 2020 19:05:42 -0400
+Message-Id: <20200608231211.3363633-217-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -44,34 +45,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Fedorenko <vfedorenko@novek.ru>
+From: Moshe Shemesh <moshe@mellanox.com>
 
-[ Upstream commit 57ebc8f08504f176eb0f25b3e0fde517dec61a4f ]
+[ Upstream commit 17d00e839d3b592da9659c1977d45f85b77f986a ]
 
-In case of error with MPLS support the code is misusing AF_INET
-instead of AF_MPLS.
+When FW response to commands is very slow and all command entries in
+use are waiting for completion we can have a race where commands can get
+timeout before they get out of the queue and handled. Timeout
+completion on uninitialized command will cause releasing command's
+buffers before accessing it for initialization and then we will get NULL
+pointer exception while trying access it. It may also cause releasing
+buffers of another command since we may have timeout completion before
+even allocating entry index for this command.
+Add entry handling completion to avoid this race.
 
-Fixes: 1b69e7e6c4da ("ipip: support MPLS over IPv4")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
+Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ipip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 14 ++++++++++++++
+ include/linux/mlx5/driver.h                   |  1 +
+ 2 files changed, 15 insertions(+)
 
-diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 2f01cf6fa0de..678575adaf3b 100644
---- a/net/ipv4/ipip.c
-+++ b/net/ipv4/ipip.c
-@@ -698,7 +698,7 @@ static int __init ipip_init(void)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index cede5bdfd598..d695b75bc0af 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -861,6 +861,7 @@ static void cmd_work_handler(struct work_struct *work)
+ 	int alloc_ret;
+ 	int cmd_mode;
  
- rtnl_link_failed:
- #if IS_ENABLED(CONFIG_MPLS)
--	xfrm4_tunnel_deregister(&mplsip_handler, AF_INET);
-+	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
- xfrm_tunnel_mplsip_failed:
++	complete(&ent->handling);
+ 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
+ 	down(sem);
+ 	if (!ent->page_queue) {
+@@ -978,6 +979,11 @@ static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
+ 	struct mlx5_cmd *cmd = &dev->cmd;
+ 	int err;
  
- #endif
++	if (!wait_for_completion_timeout(&ent->handling, timeout) &&
++	    cancel_work_sync(&ent->work)) {
++		ent->ret = -ECANCELED;
++		goto out_err;
++	}
+ 	if (cmd->mode == CMD_MODE_POLLING || ent->polling) {
+ 		wait_for_completion(&ent->done);
+ 	} else if (!wait_for_completion_timeout(&ent->done, timeout)) {
+@@ -985,12 +991,17 @@ static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
+ 		mlx5_cmd_comp_handler(dev, 1UL << ent->idx, true);
+ 	}
+ 
++out_err:
+ 	err = ent->ret;
+ 
+ 	if (err == -ETIMEDOUT) {
+ 		mlx5_core_warn(dev, "%s(0x%x) timeout. Will cause a leak of a command resource\n",
+ 			       mlx5_command_str(msg_to_opcode(ent->in)),
+ 			       msg_to_opcode(ent->in));
++	} else if (err == -ECANCELED) {
++		mlx5_core_warn(dev, "%s(0x%x) canceled on out of queue timeout.\n",
++			       mlx5_command_str(msg_to_opcode(ent->in)),
++			       msg_to_opcode(ent->in));
+ 	}
+ 	mlx5_core_dbg(dev, "err %d, delivery status %s(%d)\n",
+ 		      err, deliv_status_to_str(ent->status), ent->status);
+@@ -1026,6 +1037,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+ 	ent->token = token;
+ 	ent->polling = force_polling;
+ 
++	init_completion(&ent->handling);
+ 	if (!callback)
+ 		init_completion(&ent->done);
+ 
+@@ -1045,6 +1057,8 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+ 	err = wait_func(dev, ent);
+ 	if (err == -ETIMEDOUT)
+ 		goto out;
++	if (err == -ECANCELED)
++		goto out_free;
+ 
+ 	ds = ent->ts2 - ent->ts1;
+ 	op = MLX5_GET(mbox_in, in->first.data, opcode);
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 277a51d3ec40..b596353a3a12 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -761,6 +761,7 @@ struct mlx5_cmd_work_ent {
+ 	struct delayed_work	cb_timeout_work;
+ 	void		       *context;
+ 	int			idx;
++	struct completion	handling;
+ 	struct completion	done;
+ 	struct mlx5_cmd        *cmd;
+ 	struct work_struct	work;
 -- 
 2.25.1
 
