@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3032E1F2CEA
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C711F2CE5
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733039AbgFIA3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:29:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37566 "EHLO mail.kernel.org"
+        id S1732810AbgFIA2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:28:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729546AbgFHXQP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:15 -0400
+        id S1727961AbgFHXQR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:16:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 70A1C2085B;
-        Mon,  8 Jun 2020 23:16:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AF3D220870;
+        Mon,  8 Jun 2020 23:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658175;
-        bh=RjmHMWWe8YXSrJwNZvIfEJBZB1lX6YjjRZ3JJxhnAPI=;
+        s=default; t=1591658176;
+        bh=SCfhZTIaHqAp/kDN9R0eV/qpGB7J/zlJUu4kD5LbpR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+AwPl7sFXa84HUzLn/HMKrHySf/UhQCaUlBfCXqX9V8GJ4cdqQgWTT10zKKJYYFM
-         Rw6OfiVPiBS8+L1H29vKdlNNAZ1xJ/UHcloa7MtKdR3hZrivL05uSuM+aen/EYdR7g
-         J0SJhXlZAf8c46/Z8qtZ7dTZhmyMDHzQKGtw5BbA=
+        b=NlDhpgY3zdcxammlDi8Szyi/2zvJ7gXCxtW6Sj36eBLjcVLWP8V0YZzSg+3m1gA9m
+         CSVMqQGDB3WdER5VEAm3VKPmQ6SogVBPMEi5POAlcXYptnXQ1GPLA8WJLD3LHNm6Oa
+         BMON3MP4ROd0jd18g6uM9jR/fV13LPqWfQ5QsVZg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Dave Botsch <botsch@cnf.cornell.edu>,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 201/606] rxrpc: Fix ack discard
-Date:   Mon,  8 Jun 2020 19:05:26 -0400
-Message-Id: <20200608231211.3363633-201-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Jann Horn <jannh@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 202/606] bpf: Prevent mmap()'ing read-only maps as writable
+Date:   Mon,  8 Jun 2020 19:05:27 -0400
+Message-Id: <20200608231211.3363633-202-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -44,155 +44,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit 441fdee1eaf050ef0040bde0d7af075c1c6a6d8b ]
+[ Upstream commit dfeb376dd4cb2c5004aeb625e2475f58a5ff2ea7 ]
 
-The Rx protocol has a "previousPacket" field in it that is not handled in
-the same way by all protocol implementations.  Sometimes it contains the
-serial number of the last DATA packet received, sometimes the sequence
-number of the last DATA packet received and sometimes the highest sequence
-number so far received.
+As discussed in [0], it's dangerous to allow mapping BPF map, that's meant to
+be frozen and is read-only on BPF program side, because that allows user-space
+to actually store a writable view to the page even after it is frozen. This is
+exacerbated by BPF verifier making a strong assumption that contents of such
+frozen map will remain unchanged. To prevent this, disallow mapping
+BPF_F_RDONLY_PROG mmap()'able BPF maps as writable, ever.
 
-AF_RXRPC is using this to weed out ACKs that are out of date (it's possible
-for ACK packets to get reordered on the wire), but this does not work with
-OpenAFS which will just stick the sequence number of the last packet seen
-into previousPacket.
+  [0] https://lore.kernel.org/bpf/CAEf4BzYGWYhXdp6BJ7_=9OQPJxQpgug080MMjdSB72i9R+5c6g@mail.gmail.com/
 
-The issue being seen is that big AFS FS.StoreData RPC (eg. of ~256MiB) are
-timing out when partly sent.  A trace was captured, with an additional
-tracepoint to show ACKs being discarded in rxrpc_input_ack().  Here's an
-excerpt showing the problem.
-
- 52873.203230: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 0002449c q=00024499 fl=09
-
-A DATA packet with sequence number 00024499 has been transmitted (the "q="
-field).
-
- ...
- 52873.243296: rxrpc_rx_ack: c=000004ae 00012a2b DLY r=00024499 f=00024497 p=00024496 n=0
- 52873.243376: rxrpc_rx_ack: c=000004ae 00012a2c IDL r=0002449b f=00024499 p=00024498 n=0
- 52873.243383: rxrpc_rx_ack: c=000004ae 00012a2d OOS r=0002449d f=00024499 p=0002449a n=2
-
-The Out-Of-Sequence ACK indicates that the server didn't see DATA sequence
-number 00024499, but did see seq 0002449a (previousPacket, shown as "p=",
-skipped the number, but firstPacket, "f=", which shows the bottom of the
-window is set at that point).
-
- 52873.252663: rxrpc_retransmit: c=000004ae q=24499 a=02 xp=14581537
- 52873.252664: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244bc q=00024499 fl=0b *RETRANS*
-
-The packet has been retransmitted.  Retransmission recurs until the peer
-says it got the packet.
-
- 52873.271013: rxrpc_rx_ack: c=000004ae 00012a31 OOS r=000244a1 f=00024499 p=0002449e n=6
-
-More OOS ACKs indicate that the other packets that are already in the
-transmission pipeline are being received.  The specific-ACK list is up to 6
-ACKs and NAKs.
-
- ...
- 52873.284792: rxrpc_rx_ack: c=000004ae 00012a49 OOS r=000244b9 f=00024499 p=000244b6 n=30
- 52873.284802: rxrpc_retransmit: c=000004ae q=24499 a=0a xp=63505500
- 52873.284804: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244c2 q=00024499 fl=0b *RETRANS*
- 52873.287468: rxrpc_rx_ack: c=000004ae 00012a4a OOS r=000244ba f=00024499 p=000244b7 n=31
- 52873.287478: rxrpc_rx_ack: c=000004ae 00012a4b OOS r=000244bb f=00024499 p=000244b8 n=32
-
-At this point, the server's receive window is full (n=32) with presumably 1
-NAK'd packet and 31 ACK'd packets.  We can't transmit any more packets.
-
- 52873.287488: rxrpc_retransmit: c=000004ae q=24499 a=0a xp=61327980
- 52873.287489: rxrpc_tx_data: c=000004ae DATA ed1a3584:00000002 000244c3 q=00024499 fl=0b *RETRANS*
- 52873.293850: rxrpc_rx_ack: c=000004ae 00012a4c DLY r=000244bc f=000244a0 p=00024499 n=25
-
-And now we've received an ACK indicating that a DATA retransmission was
-received.  7 packets have been processed (the occupied part of the window
-moved, as indicated by f= and n=).
-
- 52873.293853: rxrpc_rx_discard_ack: c=000004ae r=00012a4c 000244a0<00024499 00024499<000244b8
-
-However, the DLY ACK gets discarded because its previousPacket has gone
-backwards (from p=000244b8, in the ACK at 52873.287478 to p=00024499 in the
-ACK at 52873.293850).
-
-We then end up in a continuous cycle of retransmit/discard.  kafs fails to
-update its window because it's discarding the ACKs and can't transmit an
-extra packet that would clear the issue because the window is full.
-OpenAFS doesn't change the previousPacket value in the ACKs because no new
-DATA packets are received with a different previousPacket number.
-
-Fix this by altering the discard check to only discard an ACK based on
-previousPacket if there was no advance in the firstPacket.  This allows us
-to transmit a new packet which will cause previousPacket to advance in the
-next ACK.
-
-The check, however, needs to allow for the possibility that previousPacket
-may actually have had the serial number placed in it instead - in which
-case it will go outside the window and we should ignore it.
-
-Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
-Reported-by: Dave Botsch <botsch@cnf.cornell.edu>
-Signed-off-by: David Howells <dhowells@redhat.com>
+Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
+Suggested-by: Jann Horn <jannh@google.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Jann Horn <jannh@google.com>
+Link: https://lore.kernel.org/bpf/20200519053824.1089415-1-andriin@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/input.c | 30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
+ kernel/bpf/syscall.c                          | 17 ++++++++++++++---
+ tools/testing/selftests/bpf/prog_tests/mmap.c | 13 ++++++++++++-
+ tools/testing/selftests/bpf/progs/test_mmap.c |  8 ++++++++
+ 3 files changed, 34 insertions(+), 4 deletions(-)
 
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 2f22f082a66c..3be4177baf70 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -802,6 +802,30 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
- 	}
- }
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e04ea4c8f935..c0ab9bfdf28a 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -629,9 +629,20 @@ static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
  
-+/*
-+ * Return true if the ACK is valid - ie. it doesn't appear to have regressed
-+ * with respect to the ack state conveyed by preceding ACKs.
-+ */
-+static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
-+			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
-+{
-+	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
-+
-+	if (after(first_pkt, base))
-+		return true; /* The window advanced */
-+
-+	if (before(first_pkt, base))
-+		return false; /* firstPacket regressed */
-+
-+	if (after_eq(prev_pkt, call->ackr_prev_seq))
-+		return true; /* previousPacket hasn't regressed. */
-+
-+	/* Some rx implementations put a serial number in previousPacket. */
-+	if (after_eq(prev_pkt, base + call->tx_winsize))
-+		return false;
-+	return true;
-+}
-+
- /*
-  * Process an ACK packet.
-  *
-@@ -865,8 +889,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 	mutex_lock(&map->freeze_mutex);
+ 
+-	if ((vma->vm_flags & VM_WRITE) && map->frozen) {
+-		err = -EPERM;
+-		goto out;
++	if (vma->vm_flags & VM_WRITE) {
++		if (map->frozen) {
++			err = -EPERM;
++			goto out;
++		}
++		/* map is meant to be read-only, so do not allow mapping as
++		 * writable, because it's possible to leak a writable page
++		 * reference and allows user-space to still modify it after
++		 * freezing, while verifier will assume contents do not change
++		 */
++		if (map->map_flags & BPF_F_RDONLY_PROG) {
++			err = -EACCES;
++			goto out;
++		}
  	}
  
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
--	if (before(first_soft_ack, call->ackr_first_seq) ||
--	    before(prev_pkt, call->ackr_prev_seq)) {
-+	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, sp->hdr.serial,
- 					   first_soft_ack, call->ackr_first_seq,
- 					   prev_pkt, call->ackr_prev_seq);
-@@ -882,8 +905,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	spin_lock(&call->input_lock);
+ 	/* set default open/close callbacks */
+diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testing/selftests/bpf/prog_tests/mmap.c
+index b0e789678aa4..5495b669fccc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/mmap.c
++++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
+@@ -19,7 +19,7 @@ void test_mmap(void)
+ 	const size_t map_sz = roundup_page(sizeof(struct map_data));
+ 	const int zero = 0, one = 1, two = 2, far = 1500;
+ 	const long page_size = sysconf(_SC_PAGE_SIZE);
+-	int err, duration = 0, i, data_map_fd;
++	int err, duration = 0, i, data_map_fd, rdmap_fd;
+ 	struct bpf_map *data_map, *bss_map;
+ 	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp1, *tmp2;
+ 	struct test_mmap__bss *bss_data;
+@@ -36,6 +36,17 @@ void test_mmap(void)
+ 	data_map = skel->maps.data_map;
+ 	data_map_fd = bpf_map__fd(data_map);
  
- 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
--	if (before(first_soft_ack, call->ackr_first_seq) ||
--	    before(prev_pkt, call->ackr_prev_seq)) {
-+	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, sp->hdr.serial,
- 					   first_soft_ack, call->ackr_first_seq,
- 					   prev_pkt, call->ackr_prev_seq);
++	rdmap_fd = bpf_map__fd(skel->maps.rdonly_map);
++	tmp1 = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, rdmap_fd, 0);
++	if (CHECK(tmp1 != MAP_FAILED, "rdonly_write_mmap", "unexpected success\n")) {
++		munmap(tmp1, 4096);
++		goto cleanup;
++	}
++	/* now double-check if it's mmap()'able at all */
++	tmp1 = mmap(NULL, 4096, PROT_READ, MAP_SHARED, rdmap_fd, 0);
++	if (CHECK(tmp1 == MAP_FAILED, "rdonly_read_mmap", "failed: %d\n", errno))
++		goto cleanup;
++
+ 	bss_mmaped = mmap(NULL, bss_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
+ 			  bpf_map__fd(bss_map), 0);
+ 	if (CHECK(bss_mmaped == MAP_FAILED, "bss_mmap",
+diff --git a/tools/testing/selftests/bpf/progs/test_mmap.c b/tools/testing/selftests/bpf/progs/test_mmap.c
+index 6239596cd14e..4eb42cff5fe9 100644
+--- a/tools/testing/selftests/bpf/progs/test_mmap.c
++++ b/tools/testing/selftests/bpf/progs/test_mmap.c
+@@ -7,6 +7,14 @@
+ 
+ char _license[] SEC("license") = "GPL";
+ 
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 4096);
++	__uint(map_flags, BPF_F_MMAPABLE | BPF_F_RDONLY_PROG);
++	__type(key, __u32);
++	__type(value, char);
++} rdonly_map SEC(".maps");
++
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY);
+ 	__uint(max_entries, 512 * 4); /* at least 4 pages of data */
 -- 
 2.25.1
 
