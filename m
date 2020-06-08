@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D64681F2C68
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4921F2C62
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732864AbgFIAYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:24:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38406 "EHLO mail.kernel.org"
+        id S1732542AbgFIAXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:23:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38480 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729979AbgFHXRL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:17:11 -0400
+        id S1730410AbgFHXRM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:17:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3052E2078D;
-        Mon,  8 Jun 2020 23:17:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4104C20842;
+        Mon,  8 Jun 2020 23:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658231;
-        bh=2yd/yHxwxoWbnp4z/oeQpkoW63o4SqIYFSieOWHEH28=;
+        s=default; t=1591658232;
+        bh=zLNT7SPsUqLxsj5GoZDza4/dGVqh4mhuzg2E7jcmtn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U6QvUgUH5EDSSXJCRVRWnMf+928dAMAxiAdW5q0qPJyJVZjOZrOIqLEnptDZNWEKK
-         HqfvYnLnanlvHCFKzbOHfpCnmJ7eKUKZ84kg/8bTiq9aYz3DcmkXUD9wY6edEUAptC
-         knUg3bEzRVZHz9CjAD5SN4wTiPVYsK4JPZakDQdY=
+        b=JLwMw7QBke1+c/2PYvAG0aOCL6/KG+cbEsZF2qygx2flU3Vu8z9tqnPAwH4WCDojO
+         1yqxD6VnGd4AIgFyEc8LEQBfqCDsLhEoa4uV0BfZYqL1hI93hEiWMYkktJriTpMY7e
+         uyZCMftnfHRZxHdMxvWR46cqm1qaomQRE/+Moa5A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+Cc:     Qiushi Wu <wu000273@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 244/606] net/tls: free record only on encryption error
-Date:   Mon,  8 Jun 2020 19:06:09 -0400
-Message-Id: <20200608231211.3363633-244-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 245/606] net: sun: fix missing release regions in cas_init_one().
+Date:   Mon,  8 Jun 2020 19:06:10 -0400
+Message-Id: <20200608231211.3363633-245-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,50 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Fedorenko <vfedorenko@novek.ru>
+From: Qiushi Wu <wu000273@umn.edu>
 
-commit 635d9398178659d8ddba79dd061f9451cec0b4d1 upstream.
+commit 5a730153984dd13f82ffae93d7170d76eba204e9 upstream.
 
-We cannot free record on any transient error because it leads to
-losing previos data. Check socket error to know whether record must
-be freed or not.
+In cas_init_one(), "pdev" is requested by "pci_request_regions", but it
+was not released after a call of the function “pci_write_config_byte”
+failed. Thus replace the jump target “err_write_cacheline” by
+"err_out_free_res".
 
-Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Fixes: 1f26dac32057 ("[NET]: Add Sun Cassini driver.")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tls/tls_sw.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sun/cassini.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 34684b98c792..8c2763eb6aae 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -800,9 +800,10 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
- 	psock = sk_psock_get(sk);
- 	if (!psock || !policy) {
- 		err = tls_push_record(sk, flags, record_type);
--		if (err && err != -EINPROGRESS) {
-+		if (err && sk->sk_err == EBADMSG) {
- 			*copied -= sk_msg_free(sk, msg);
- 			tls_free_open_rec(sk);
-+			err = -sk->sk_err;
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index 6ec9163e232c..b716f188188e 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -4971,7 +4971,7 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 					  cas_cacheline_size)) {
+ 			dev_err(&pdev->dev, "Could not set PCI cache "
+ 			       "line size\n");
+-			goto err_write_cacheline;
++			goto err_out_free_res;
  		}
- 		if (psock)
- 			sk_psock_put(sk, psock);
-@@ -828,9 +829,10 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
- 	switch (psock->eval) {
- 	case __SK_PASS:
- 		err = tls_push_record(sk, flags, record_type);
--		if (err && err != -EINPROGRESS) {
-+		if (err && sk->sk_err == EBADMSG) {
- 			*copied -= sk_msg_free(sk, msg);
- 			tls_free_open_rec(sk);
-+			err = -sk->sk_err;
- 			goto out_err;
- 		}
- 		break;
+ 	}
+ #endif
+@@ -5144,7 +5144,6 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ err_out_free_res:
+ 	pci_release_regions(pdev);
+ 
+-err_write_cacheline:
+ 	/* Try to restore it in case the error occurred after we
+ 	 * set it.
+ 	 */
 -- 
 2.25.1
 
