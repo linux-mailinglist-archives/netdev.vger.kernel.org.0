@@ -2,117 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6FC1F15ED
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 11:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3D81F15F3
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 11:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729287AbgFHJzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 05:55:08 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:25000 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729227AbgFHJzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 05:55:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591610106;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zwRQYwEhlzI9fhHIuV2ZDsHSs0DHTOaRaWRbv3sTP+c=;
-        b=d/12E/PTZZOS/m71x9FcAvx0JclAsrIKYJnZ3jHZtixotEEjN547/6UBhSSmi41G0KUuPB
-        pqZqIjVfdUC7xacohLVbGSNhF9IjRUTWyr5NnKCVoACZ6rqu96iLbqaQpntQFBXeKK0npj
-        wXTsg66DIgitT1UHYMUPnFhY9jeC4gI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468--dj-sFyfMSaPYjuOYYFXTA-1; Mon, 08 Jun 2020 05:55:04 -0400
-X-MC-Unique: -dj-sFyfMSaPYjuOYYFXTA-1
-Received: by mail-wm1-f71.google.com with SMTP id 11so3743884wmj.6
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 02:55:04 -0700 (PDT)
+        id S1729265AbgFHJ5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 05:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728745AbgFHJ5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 05:57:17 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FE6C08C5C3;
+        Mon,  8 Jun 2020 02:57:16 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id q11so16702956wrp.3;
+        Mon, 08 Jun 2020 02:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=irlh/DAmGezzFSz/ZBwka7zqE6vVCqBDs6ozHXOIxqY=;
+        b=EngZ9vYwjWfjJRgmP5bX1bo/qHbsxx85LLqxWUmO8c7u3d+JbZn5DNJCLIZ+i84LnX
+         H3diKX8V9KBpQOv8CPJ8GRwqJf93FpaocP5msBC+L+erbYF55mdnYYpMN17bvAdj389D
+         Yd0mrpJkTb8eRXVqqFa8GZbqY5m4h0ZNW7SpZz6Yj0OU2ol93aoVsIa73q1xzXpJU+cv
+         +7nLuX/sRwV4BMPDPLLdF5mMZZouXn64XQy9RANABnhLwaAFAW6gY5p70M9lnil07N/G
+         E1eZ0d3g5aAMPySs8MpXyZ798UDZVAo603is4axZif/QLMA3Kexo9en9GYOUBSJL6Rz5
+         7rsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=zwRQYwEhlzI9fhHIuV2ZDsHSs0DHTOaRaWRbv3sTP+c=;
-        b=T3Hx+Gjl2r9FimSUmwGgUCTj24/+8TSw145ndqsZjdBAdc2lTYfdKSn5SaNltiwS5N
-         1JdlO7Dq/B2kWap1T0naJkQjDYlJ7VaRy5B1jL1ATW1xPmvwd8FRNgQspx1ZEgPSRsZi
-         IUGNoDal6jKc0JLvDy06IVffMNH8bC+Gb35riGfwBZkngz9AJur49ljY64lXtvFMKzX9
-         SoQTHQTeMUOAd/PsK0ZQGYiTLyfo++fMu61I5mY/jbKdTuEF4VB6Y9xP9OyW7lS2n2f6
-         AsZmWJMkAtJoYJkuQCCyYAORVoUE3S9+LVDQIyEXPeGt702/rs9Wmjcs/7NieHyITbER
-         Bhig==
-X-Gm-Message-State: AOAM530qspUaCjziwCQNAVlyZcMoClMxTMUwrscQLEafD8JmXj9uLPso
-        7mNRDPmGyqggbRXZdl8O4BhWw7mDzmVuHHwoPUf5RrNRrStKKLlc68P4OYNCHj5yREjBn2Lr4gW
-        NoBe6jjbCPwAecfLx
-X-Received: by 2002:a7b:cf06:: with SMTP id l6mr15633408wmg.63.1591610103134;
-        Mon, 08 Jun 2020 02:55:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyikeAcTqFLpMRWXI7wepdD3aO0/ujjV4fOTEz+k46ZIFoeVHzdsv1BhrAhul2cvz6zw90caQ==
-X-Received: by 2002:a7b:cf06:: with SMTP id l6mr15633384wmg.63.1591610102957;
-        Mon, 08 Jun 2020 02:55:02 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id o15sm23160537wrv.48.2020.06.08.02.55.00
+         :mime-version:content-disposition:in-reply-to;
+        bh=irlh/DAmGezzFSz/ZBwka7zqE6vVCqBDs6ozHXOIxqY=;
+        b=VfA54iIHG+Zojy/cjjLKneiICLM/NLa6U2xUYGEvPsljqtjJSbHjOVPCfHKzWref5z
+         m565yk4hzTWmFO7MGASYqKLqK2epXAzBuKDqYjtTWTwvDVRIm6RfEw/8c23LEv8fEqVa
+         9cCdxnbnnjR1jJCRMCTsX3VmspuIRKkhEJm7u1+mA8irGE+/Hsq1wbzWh5ftK+vmkxhL
+         hU47/0I850ifzXb1N7HD9B1B/YLJWlQ7M/jPij93WcgmHH7GFsFmg/fNc6EU3T3Ur49A
+         39VpbxeotztpQCI2wEMSnDDPsf6cYjlJT+BwdI4EXdJ3RuqXHnLlssctmawwqKS9s4bT
+         UQsQ==
+X-Gm-Message-State: AOAM533YqwXy8TcwpO34RExeiWwrZThNbEEe52dvNUTT01OOYWX9q5ZR
+        83xn8RYRlexTaGQzdvb4VKA=
+X-Google-Smtp-Source: ABdhPJwM5am6ET01ZHpQxOXqWgs/YmeMFbTYTcVvDiGZDZOutBBcV+gGDbCKng83YgT4N3gVfVuOLw==
+X-Received: by 2002:adf:d852:: with SMTP id k18mr22928605wrl.177.1591610234965;
+        Mon, 08 Jun 2020 02:57:14 -0700 (PDT)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id c70sm11547618wme.32.2020.06.08.02.57.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 02:55:02 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 05:54:59 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rob.miller@broadcom.com, lingshan.zhu@intel.com,
-        eperezma@redhat.com, lulu@redhat.com, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
-        saugatm@xilinx.com, vmireyno@marvell.com,
-        zhangweining@ruijie.com.cn, eli@mellanox.com
-Subject: Re: [PATCH 5/6] vdpa: introduce virtio pci driver
-Message-ID: <20200608055331-mutt-send-email-mst@kernel.org>
-References: <5dbb0386-beeb-5bf4-d12e-fb5427486bb8@redhat.com>
- <6b1d1ef3-d65e-08c2-5b65-32969bb5ecbc@redhat.com>
- <20200607095012-mutt-send-email-mst@kernel.org>
- <9b1abd2b-232c-aa0f-d8bb-03e65fd47de2@redhat.com>
- <20200608021438-mutt-send-email-mst@kernel.org>
- <a1b1b7fb-b097-17b7-2e3a-0da07d2e48ae@redhat.com>
- <20200608052041-mutt-send-email-mst@kernel.org>
- <9d2571b6-0b95-53b3-6989-b4d801eeb623@redhat.com>
- <20200608054453-mutt-send-email-mst@kernel.org>
- <bc27064c-2309-acf3-ccd8-6182bfa2a4cd@redhat.com>
+        Mon, 08 Jun 2020 02:57:14 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 10:57:12 +0100
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        eperezma@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH RFC v5 11/13] vhost/scsi: switch to buf APIs
+Message-ID: <20200608095712.GD83191@stefanha-x1.localdomain>
+References: <20200607141057.704085-1-mst@redhat.com>
+ <20200607141057.704085-12-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3Gf/FFewwPeBMqCJ"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <bc27064c-2309-acf3-ccd8-6182bfa2a4cd@redhat.com>
+In-Reply-To: <20200607141057.704085-12-mst@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 05:46:52PM +0800, Jason Wang wrote:
-> 
-> On 2020/6/8 下午5:45, Michael S. Tsirkin wrote:
-> > On Mon, Jun 08, 2020 at 05:43:58PM +0800, Jason Wang wrote:
-> > > > > Looking at
-> > > > > pci_match_one_device() it checks both subvendor and subdevice there.
-> > > > > 
-> > > > > Thanks
-> > > > But IIUC there is no guarantee that driver with a specific subvendor
-> > > > matches in presence of a generic one.
-> > > > So either IFC or virtio pci can win, whichever binds first.
-> > > 
-> > > I'm not sure I get there. But I try manually bind IFCVF to qemu's
-> > > virtio-net-pci, and it fails.
-> > > 
-> > > Thanks
-> > Right but the reverse can happen: virtio-net can bind to IFCVF first.
-> 
-> 
-> That's kind of expected. The PF is expected to be bound to virtio-pci to
-> create VF via sysfs.
-> 
-> Thanks
-> 
-> 
-> 
 
-Once VFs are created, don't we want IFCVF to bind rather than
-virtio-pci?
+--3Gf/FFewwPeBMqCJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-MST
+On Sun, Jun 07, 2020 at 10:11:46AM -0400, Michael S. Tsirkin wrote:
+> Switch to buf APIs. Doing this exposes a spec violation in vhost scsi:
+> all used bufs are marked with length 0.
+> Fix that is left for another day.
+>=20
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  drivers/vhost/scsi.c | 73 ++++++++++++++++++++++++++------------------
+>  1 file changed, 44 insertions(+), 29 deletions(-)
 
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+--3Gf/FFewwPeBMqCJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7eC3gACgkQnKSrs4Gr
+c8jC3Af+LPXirMBmRcs7FQbxFSgLfLDjpnub+fLUo+dN0CH5ElfkoqGW6HJ8d7er
+qlDKL+3ZPm1i0cRsqnN+xg6qZ2UKbC83RHrZ1z12NzkrluuFD4knW3/gjyyQPXvw
+N8QQvguhNCO6DJ5yj8njHLuaAi44jkigVA5kFA5e8EFjsGHSQhoamQH23M/89rey
+FOot5VmlwGfXtL216ALh6oIoLPuVvrQlQA6iVZGxXP4hgv+z7mJXzLmfJ7l2UnkB
+OrdaqlvJcy4ZpKXZtVl5kfLbvRMuuv6a1OeLKW/FU2pJKxa5gn8WGdek5o5XrmpP
+Uf/M6MvauUK5c9F369S2pWsEv+mqag==
+=6nV4
+-----END PGP SIGNATURE-----
+
+--3Gf/FFewwPeBMqCJ--
