@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CA21F2CC2
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96BF31F2CC1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730267AbgFHXQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:16:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37864 "EHLO mail.kernel.org"
+        id S1730286AbgFHXQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:16:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730245AbgFHXQa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:30 -0400
+        id S1729724AbgFHXQb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:16:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF0CB20774;
-        Mon,  8 Jun 2020 23:16:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 47A7820775;
+        Mon,  8 Jun 2020 23:16:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658189;
-        bh=Pl6/OwYMuFQSJin0eDP55gHkwKVndJdJlhJr9bBUni0=;
+        s=default; t=1591658191;
+        bh=a2CY6OgccZ/MzILBCK547icbIFs4kUmhLQzNXn32fNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mw/+hVL5GPbwt0CIx+Y9bX4dxIQlknOOsDtHvuBnIADNE9ToaOuwJxaEgJzXO1DhB
-         6OcaNzdsOTui8O+iquXUhg2S48VQoZGWdsUg0ZCozMYKq+aqinq8lZx7TrHbrPYeog
-         oN0VmcZRiIH4L/4U8/76UXJhl+0V0P6CbxY12+Mo=
+        b=Gg4LnPOzpTeTZEmL1xc5tTFuJSlxzOybO/N0RKq6EFBzx98iqEKoVnv0ELvO6dO4Y
+         pxZJOFlWDBxlvxPrKqaf0CXD9vqLI5p+gdDVBtLBdTZzoVfiCDR/AvW++taGP1RMwa
+         ynG+6Jqtj7T4mHMxnPC7qFJ24Q4vf/LMVePLYl7M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        David Ahern <dsahern@gmail.com>,
+Cc:     DENG Qingfang <dqfext@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 211/606] net: don't return invalid table id error when we fall back to PF_UNSPEC
-Date:   Mon,  8 Jun 2020 19:05:36 -0400
-Message-Id: <20200608231211.3363633-211-sashal@kernel.org>
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.6 212/606] net: dsa: mt7530: fix roaming from DSA user ports
+Date:   Mon,  8 Jun 2020 19:05:37 -0400
+Message-Id: <20200608231211.3363633-212-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -45,130 +45,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: DENG Qingfang <dqfext@gmail.com>
 
-[ Upstream commit 41b4bd986f86331efc599b9a3f5fb86ad92e9af9 ]
+[ Upstream commit 5e5502e012b8129e11be616acb0f9c34bc8f8adb ]
 
-In case we can't find a ->dumpit callback for the requested
-(family,type) pair, we fall back to (PF_UNSPEC,type). In effect, we're
-in the same situation as if userspace had requested a PF_UNSPEC
-dump. For RTM_GETROUTE, that handler is rtnl_dump_all, which calls all
-the registered RTM_GETROUTE handlers.
+When a client moves from a DSA user port to a software port in a bridge,
+it cannot reach any other clients that connected to the DSA user ports.
+That is because SA learning on the CPU port is disabled, so the switch
+ignores the client's frames from the CPU port and still thinks it is at
+the user port.
 
-The requested table id may or may not exist for all of those
-families. commit ae677bbb4441 ("net: Don't return invalid table id
-error when dumping all families") fixed the problem when userspace
-explicitly requests a PF_UNSPEC dump, but missed the fallback case.
+Fix it by enabling SA learning on the CPU port.
 
-For example, when we pass ipv6.disable=1 to a kernel with
-CONFIG_IP_MROUTE=y and CONFIG_IP_MROUTE_MULTIPLE_TABLES=y,
-the (PF_INET6, RTM_GETROUTE) handler isn't registered, so we end up in
-rtnl_dump_all, and listing IPv6 routes will unexpectedly print:
+To prevent the switch from learning from flooding frames from the CPU
+port, set skb->offload_fwd_mark to 1 for unicast and broadcast frames,
+and let the switch flood them instead of trapping to the CPU port.
+Multicast frames still need to be trapped to the CPU port for snooping,
+so set the SA_DIS bit of the MTK tag to 1 when transmitting those frames
+to disable SA learning.
 
-  # ip -6 r
-  Error: ipv4: MR table does not exist.
-  Dump terminated
-
-commit ae677bbb4441 introduced the dump_all_families variable, which
-gets set when userspace requests a PF_UNSPEC dump. However, we can't
-simply set the family to PF_UNSPEC in rtnetlink_rcv_msg in the
-fallback case to get dump_all_families == true, because some messages
-types (for example RTM_GETRULE and RTM_GETNEIGH) only register the
-PF_UNSPEC handler and use the family to filter in the kernel what is
-dumped to userspace. We would then export more entries, that userspace
-would have to filter. iproute does that, but other programs may not.
-
-Instead, this patch removes dump_all_families and updates the
-RTM_GETROUTE handlers to check if the family that is being dumped is
-their own. When it's not, which covers both the intentional PF_UNSPEC
-dumps (as dump_all_families did) and the fallback case, ignore the
-missing table id error.
-
-Fixes: cb167893f41e ("net: Plumb support for filtering ipv4 and ipv6 multicast route dumps")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ip_fib.h    | 1 -
- net/ipv4/fib_frontend.c | 3 +--
- net/ipv4/ipmr.c         | 2 +-
- net/ipv6/ip6_fib.c      | 2 +-
- net/ipv6/ip6mr.c        | 2 +-
- 5 files changed, 4 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c |  9 ++-------
+ drivers/net/dsa/mt7530.h |  1 +
+ net/dsa/tag_mtk.c        | 15 +++++++++++++++
+ 3 files changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 6a1ae49809de..a89c0885fd2a 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -257,7 +257,6 @@ struct fib_dump_filter {
- 	u32			table_id;
- 	/* filter_set is an optimization that an entry is set */
- 	bool			filter_set;
--	bool			dump_all_families;
- 	bool			dump_routes;
- 	bool			dump_exceptions;
- 	unsigned char		protocol;
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 213be9c050ad..1bf9da3a75f9 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -918,7 +918,6 @@ int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
- 	else
- 		filter->dump_exceptions = false;
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 0123498242b9..b95425a63a13 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -639,11 +639,8 @@ mt7530_cpu_port_enable(struct mt7530_priv *priv,
+ 	mt7530_write(priv, MT7530_PVC_P(port),
+ 		     PORT_SPEC_TAG);
  
--	filter->dump_all_families = (rtm->rtm_family == AF_UNSPEC);
- 	filter->flags    = rtm->rtm_flags;
- 	filter->protocol = rtm->rtm_protocol;
- 	filter->rt_type  = rtm->rtm_type;
-@@ -990,7 +989,7 @@ static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
- 	if (filter.table_id) {
- 		tb = fib_get_table(net, filter.table_id);
- 		if (!tb) {
--			if (filter.dump_all_families)
-+			if (rtnl_msg_family(cb->nlh) != PF_INET)
- 				return skb->len;
+-	/* Disable auto learning on the cpu port */
+-	mt7530_set(priv, MT7530_PSC_P(port), SA_DIS);
+-
+-	/* Unknown unicast frame fordwarding to the cpu port */
+-	mt7530_set(priv, MT7530_MFC, UNU_FFP(BIT(port)));
++	/* Unknown multicast frame forwarding to the cpu port */
++	mt7530_rmw(priv, MT7530_MFC, UNM_FFP_MASK, UNM_FFP(BIT(port)));
  
- 			NL_SET_ERR_MSG(cb->extack, "ipv4: FIB table does not exist");
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 6e68def66822..2508b4c37af3 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -2611,7 +2611,7 @@ static int ipmr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+ 	/* Set CPU port number */
+ 	if (priv->id == ID_MT7621)
+@@ -1247,8 +1244,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
  
- 		mrt = ipmr_get_table(sock_net(skb->sk), filter.table_id);
- 		if (!mrt) {
--			if (filter.dump_all_families)
-+			if (rtnl_msg_family(cb->nlh) != RTNL_FAMILY_IPMR)
- 				return skb->len;
+-	mt7530_clear(priv, MT7530_MFC, UNU_FFP_MASK);
+-
+ 	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+ 		/* Disable forwarding by default on all ports */
+ 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 756140b7dfd5..0e7e36d8f994 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -31,6 +31,7 @@ enum {
+ #define MT7530_MFC			0x10
+ #define  BC_FFP(x)			(((x) & 0xff) << 24)
+ #define  UNM_FFP(x)			(((x) & 0xff) << 16)
++#define  UNM_FFP_MASK			UNM_FFP(~0)
+ #define  UNU_FFP(x)			(((x) & 0xff) << 8)
+ #define  UNU_FFP_MASK			UNU_FFP(~0)
+ #define  CPU_EN				BIT(7)
+diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+index b5705cba8318..d6619edd53e5 100644
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -15,6 +15,7 @@
+ #define MTK_HDR_XMIT_TAGGED_TPID_8100	1
+ #define MTK_HDR_RECV_SOURCE_PORT_MASK	GENMASK(2, 0)
+ #define MTK_HDR_XMIT_DP_BIT_MASK	GENMASK(5, 0)
++#define MTK_HDR_XMIT_SA_DIS		BIT(6)
  
- 			NL_SET_ERR_MSG(cb->extack, "ipv4: MR table does not exist");
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 72abf892302f..9a53590ef79c 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -664,7 +664,7 @@ static int inet6_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
- 	if (arg.filter.table_id) {
- 		tb = fib6_get_table(net, arg.filter.table_id);
- 		if (!tb) {
--			if (arg.filter.dump_all_families)
-+			if (rtnl_msg_family(cb->nlh) != PF_INET6)
- 				goto out;
+ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+ 				    struct net_device *dev)
+@@ -22,6 +23,9 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	u8 *mtk_tag;
+ 	bool is_vlan_skb = true;
++	unsigned char *dest = eth_hdr(skb)->h_dest;
++	bool is_multicast_skb = is_multicast_ether_addr(dest) &&
++				!is_broadcast_ether_addr(dest);
  
- 			NL_SET_ERR_MSG_MOD(cb->extack, "FIB table does not exist");
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index bfa49ff70531..2ddb7c513e54 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -2501,7 +2501,7 @@ static int ip6mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+ 	/* Build the special tag after the MAC Source Address. If VLAN header
+ 	 * is present, it's required that VLAN header and special tag is
+@@ -47,6 +51,10 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+ 		     MTK_HDR_XMIT_UNTAGGED;
+ 	mtk_tag[1] = (1 << dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
  
- 		mrt = ip6mr_get_table(sock_net(skb->sk), filter.table_id);
- 		if (!mrt) {
--			if (filter.dump_all_families)
-+			if (rtnl_msg_family(cb->nlh) != RTNL_FAMILY_IP6MR)
- 				return skb->len;
++	/* Disable SA learning for multicast frames */
++	if (unlikely(is_multicast_skb))
++		mtk_tag[1] |= MTK_HDR_XMIT_SA_DIS;
++
+ 	/* Tag control information is kept for 802.1Q */
+ 	if (!is_vlan_skb) {
+ 		mtk_tag[2] = 0;
+@@ -61,6 +69,9 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ {
+ 	int port;
+ 	__be16 *phdr, hdr;
++	unsigned char *dest = eth_hdr(skb)->h_dest;
++	bool is_multicast_skb = is_multicast_ether_addr(dest) &&
++				!is_broadcast_ether_addr(dest);
  
- 			NL_SET_ERR_MSG_MOD(cb->extack, "MR table does not exist");
+ 	if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
+ 		return NULL;
+@@ -86,6 +97,10 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (!skb->dev)
+ 		return NULL;
+ 
++	/* Only unicast or broadcast frames are offloaded */
++	if (likely(!is_multicast_skb))
++		skb->offload_fwd_mark = 1;
++
+ 	return skb;
+ }
+ 
 -- 
 2.25.1
 
