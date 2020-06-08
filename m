@@ -2,101 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2438A1F16F4
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A06591F172A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 13:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729386AbgFHKuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 06:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        id S1729547AbgFHLBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 07:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729310AbgFHKuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 06:50:08 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609F2C08C5C3;
-        Mon,  8 Jun 2020 03:50:08 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id v24so6506231plo.6;
-        Mon, 08 Jun 2020 03:50:08 -0700 (PDT)
+        with ESMTP id S1729425AbgFHLBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 07:01:45 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FE7C08C5C2;
+        Mon,  8 Jun 2020 04:01:45 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id o8so8580939pgm.7;
+        Mon, 08 Jun 2020 04:01:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=NUd8A6vcpiLm3Fha7fxltwZ2oWSxMEZrVjYYnaHST5Y=;
-        b=Z47IlzAy8zUjnEOmvVwz/YjfhEhWL91Yty/f2I8YlXBpa88Q9oEo+qUmfD2rOIyjHA
-         Ic8GrMABy2ZHgEDQYvbsuvhPAPSIxJhZl54mSgRNKDfyRl6JM6Q0CVlxj72AGkI/98e2
-         nyiCuGUoF/WzHuflKDJzqZvLo2voqVnPddWShFehzuozeoMQT469uSBfIBL1Z/qmBDq1
-         502TJt38bK04jHKBDXxxB1l/B9FJqNyWpgV3WRfnqCFkvQxxPlLMRNjz6WOiOHFBrfpi
-         XXk53WW/4tpodJ5V/HOUb3EK+A1Zogleq3HgkviRzNctMpQLzFpYdCj+muiZCYpAs1ib
-         OtBg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=l1OyezJKsfAVEn8ZVy6btGksNrrO6qZZSqmY/a2YBUc=;
+        b=sHYjPvNZ05Y/2voOPYUDydKiKVm3AEujp2Am7yigeXijOCK3nHmkUB9ETSi50Frpze
+         /1NIcSkfY4GZn01Aj1nlxUBBiGS4yaAaR8VcYZXt90tqadFm7EfQV294OlKIBjNfKwNY
+         PAncwq0xfIcsWUJh2PaFx6Jzcgk9SI8DHFg9gltk/Qg2hHQ1Db8uRlbc95AVyFK6APst
+         ZXWrfeW3F3QqZE0/kN0Wqu4wwTDcaGe4pYbQ9EidQ2J6H6NEfxZmbUH5DZKhZ6lDl0oa
+         wH7xpxM2LE/lDFILbY600U9PCCjyfNb4ZOPDSltM2sEify+sLdNG18pZxLxBvJ7Bm6Rv
+         CClQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=NUd8A6vcpiLm3Fha7fxltwZ2oWSxMEZrVjYYnaHST5Y=;
-        b=cXICLmUt+JS60xwZlOVvgcwqrnVAWNvS6dHSZdj18/K1LOHWq53CMrqmcKzmHmh16G
-         kZAn5azZaPfVON2Aj5IlEq7g0d+kz14ohm4I5SlPhKTiYzJb6t4qzP6N6g/9Xd7FLoUW
-         W/P/kR7T5RuBSZ3hds9hIAFAKtC1w+/V6NmkNi5v6u5SEV08a1PuPsowKLWsbkmHYcAh
-         8EK6s/bKPzUZLysJWGkaQ6GyhDBY2J5pCFAWoqUBisVrl588pm0XTKWoqglm0YI0sI9N
-         /diXRyqrzgfSad8T02HzmotnSjK4Yt0rKkXFZEae0RifIGXT55cEZGPrt44snNrcTyh2
-         LgOw==
-X-Gm-Message-State: AOAM531kgyxilpYluyoP7DZ5hXkl48xUhnhfJXe1HAYiXIwK1TVr4Gke
-        jd9Z/ziHO9dVGzK0J2X3H1A=
-X-Google-Smtp-Source: ABdhPJwH25TOm/mEYVKU6qSJi3ieHiz8AkVsZWZ9rifRyIACYvlgRiNZn2C0Ix/YWTzb6vK6cwW2LA==
-X-Received: by 2002:a17:90a:2686:: with SMTP id m6mr16696003pje.11.1591613407856;
-        Mon, 08 Jun 2020 03:50:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=l1OyezJKsfAVEn8ZVy6btGksNrrO6qZZSqmY/a2YBUc=;
+        b=C0yg4oeiuN8qa1yHOCnDTZJoo8zG13CKqmnewrcL6LJNbihyBJUJmeCqBCFbfnOTCp
+         tBH/8o145DC0pULINVkz+zokywcgEF2fT57gTBKYpUiZLc4t6yX05bZXb4OxyRr0K4RQ
+         uKA1NDHPoPFqInWVmQsynuirhjbC0DXMNvABR6KAJsQiPUlce6oBTGYxcuO026DUKuAm
+         ZteswtVI9jSFNm6FRGYspYClCUjwUBfkAOuuPT/6xAZlQ6DO/yXnx2PSWNhCB12njKmi
+         caFOl5qP8MppHm+9l1htr0RgDgsf0wz4TXKpLdN7v5n/gg+VRdhTalS7p6A0MIq4sBep
+         lsVw==
+X-Gm-Message-State: AOAM533dzhJZXRnsAi0Dpj6shZHSyUaSqUrmGyvcfZKa4N5TFDHvUbse
+        uQLCzd95JxktxeU9cQ3ePgE=
+X-Google-Smtp-Source: ABdhPJxCYt/AwRjjLIaHsFCJMLRDxuD9W2rADpDuuZ96/9B4/FmnLmax2ISPRgxvEnwAR0LixiqoCw==
+X-Received: by 2002:a63:1312:: with SMTP id i18mr20063902pgl.142.1591614104413;
+        Mon, 08 Jun 2020 04:01:44 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id 145sm7043277pfa.53.2020.06.08.03.50.06
+        by smtp.gmail.com with ESMTPSA id m9sm6957125pfo.200.2020.06.08.04.01.42
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jun 2020 03:50:06 -0700 (PDT)
+        Mon, 08 Jun 2020 04:01:43 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 18:59:29 +0800
 From:   Geliang Tang <geliangtang@gmail.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Peter Krystad <peter.krystad@linux.intel.com>
-Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] mptcp: bugfix for RM_ADDR option parsing
-Date:   Mon,  8 Jun 2020 18:47:54 +0800
-Message-Id: <5ec9759a19d4eba5f7f9006354da2cfeb39fa839.1591612830.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Peter Krystad <peter.krystad@linux.intel.com>,
+        netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mptcp: bugfix for RM_ADDR option parsing
+Message-ID: <20200608105929.GA24487@OptiPlex>
+References: <904e4ae90b94d679d9877d3c48bd277cb9b39f5f.1591601587.git.geliangtang@gmail.com>
+ <41246875-febc-e88d-304b-2a6692f590ac@tessares.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <41246875-febc-e88d-304b-2a6692f590ac@tessares.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In MPTCPOPT_RM_ADDR option parsing, the pointer "ptr" pointed to the
-"Subtype" octet, the pointer "ptr+1" pointed to the "Address ID" octet:
+On Mon, Jun 08, 2020 at 12:10:23PM +0200, Matthieu Baerts wrote:
+> Hi Geliang,
+> 
+> On 08/06/2020 09:48, Geliang Tang wrote:
+> > In MPTCPOPT_RM_ADDR option parsing, the pointer "ptr" pointed to the
+> > "Subtype" octet, the pointer "ptr+1" pointed to the "Address ID" octet:
+> > 
+> >    +-------+-------+---------------+
+> >    |Subtype|(resvd)|   Address ID  |
+> >    +-------+-------+---------------+
+> >    |               |
+> >   ptr            ptr+1
+> > 
+> > We should set mp_opt->rm_id to the value of "ptr+1", not "ptr". This patch
+> > will fix this bug.
+> 
+> Thank you for the patch, good catch!
+> Indeed "ptr" should be incremented.
+> 
+> Because this is a bug-fix for net, may you clearly indicate that in the
+> subject to help -net maintainers please? [PATCH net v2]
+> 
+> Also, may you add a "Fixes" tag as well as it is for -net ? I guess it
+> should be:
+> 
+>     Fixes: 3df523ab582c ("mptcp: Add ADD_ADDR handling")
+> 
+> The rest is good!
+> 
+> Cheers,
+> Matt
+> -- 
+> Matthieu Baerts | R&D Engineer
+> matthieu.baerts@tessares.net
+> Tessares SA | Hybrid Access Solutions
+> www.tessares.net
+> 1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
 
-  +-------+-------+---------------+
-  |Subtype|(resvd)|   Address ID  |
-  +-------+-------+---------------+
-  |               |
- ptr            ptr+1
+Hi Matt,
 
-We should set mp_opt->rm_id to the value of "ptr+1", not "ptr". This patch
-will fix this bug.
+Thanks for your reply.
 
-Fixes: 3df523ab582c ("mptcp: Add ADD_ADDR handling")
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- Changes in v2:
-  - Add "-net" subject and "Fixes" tag as Matt suggested.
----
- net/mptcp/options.c | 2 ++
- 1 file changed, 2 insertions(+)
+I have already resend patch v2 to you.
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 01f1f4cf4902..490b92534afc 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -273,6 +273,8 @@ static void mptcp_parse_option(const struct sk_buff *skb,
- 		if (opsize != TCPOLEN_MPTCP_RM_ADDR_BASE)
- 			break;
- 
-+		ptr++;
-+
- 		mp_opt->rm_addr = 1;
- 		mp_opt->rm_id = *ptr++;
- 		pr_debug("RM_ADDR: id=%d", mp_opt->rm_id);
--- 
-2.17.1
-
+-Geliang
