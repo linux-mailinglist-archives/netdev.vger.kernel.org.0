@@ -2,86 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 287931F1427
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 10:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5295F1F145C
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 10:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729132AbgFHIIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 04:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729124AbgFHIIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 04:08:45 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CA1C08C5C3;
-        Mon,  8 Jun 2020 01:08:44 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jiCpn-00HVPk-2v; Mon, 08 Jun 2020 10:08:43 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2020-06-08
-Date:   Mon,  8 Jun 2020 10:08:32 +0200
-Message-Id: <20200608080834.11576-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729156AbgFHIRI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jun 2020 04:17:08 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:52107 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729085AbgFHIRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 04:17:08 -0400
+Received: from marcel-macpro.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
+        by mail.holtmann.org (Postfix) with ESMTPSA id A3843CEC82;
+        Mon,  8 Jun 2020 10:26:54 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v3] Bluetooth: Allow suspend even when preparation has
+ failed
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200605135009.v3.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
+Date:   Mon, 8 Jun 2020 10:17:05 +0200
+Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        len.brown@intel.com,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        linux-pm@vger.kernel.org, rafael@kernel.org,
+        todd.e.brandt@linux.intel.com, rui.zhang@intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <24703FC2-32D1-434A-84FC-7111BEC45C2F@holtmann.org>
+References: <20200605135009.v3.1.I0ec31d716619532fc007eac081e827a204ba03de@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Hi Abhishek,
 
-We have a couple of updates - most importantly the fix
-for the deadlock issue that came up.
+> It is preferable to allow suspend even when Bluetooth has problems
+> preparing for sleep. When Bluetooth fails to finish preparing for
+> suspend, log the error and allow the suspend notifier to continue
+> instead.
+> 
+> To also make it clearer why suspend failed, change bt_dev_dbg to
+> bt_dev_err when handling the suspend timeout.
+> 
+> Fixes: dd522a7429b07e ("Bluetooth: Handle LE devices during suspend")
+> Reported-by: Len Brown <len.brown@intel.com>
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
+> To verify this is properly working, I added an additional change to
+> hci_suspend_wait_event to always return -16. This validates that suspend
+> continues even when an error has occurred during the suspend
+> preparation.
+> 
+> Example on Chromebook:
+> [   55.834524] PM: Syncing filesystems ... done.
+> [   55.841930] PM: Preparing system for sleep (s2idle)
+> [   55.940492] Bluetooth: hci_core.c:hci_suspend_notifier() hci0: Suspend notifier action (3) failed: -16
+> [   55.940497] Freezing user space processes ... (elapsed 0.001 seconds) done.
+> [   55.941692] OOM killer disabled.
+> [   55.941693] Freezing remaining freezable tasks ... (elapsed 0.000 seconds) done.
+> [   55.942632] PM: Suspending system (s2idle)
+> 
+> I ran this through a suspend_stress_test in the following scenarios:
+> * Peer classic device connected: 50+ suspends
+> * No devices connected: 100 suspends
+> * With the above test case returning -EBUSY: 50 suspends
+> 
+> I also ran this through our automated testing for suspend and wake on
+> BT from suspend continues to work.
+> 
+> 
+> Changes in v3:
+> - Changed printf format for unsigned long
+> 
+> Changes in v2:
+> - Added fixes and reported-by tags
+> 
+> net/bluetooth/hci_core.c | 17 ++++++++++-------
+> 1 file changed, 10 insertions(+), 7 deletions(-)
 
-Please pull and let me know if there's any problem.
+patch has been applied to bluetooth-next tree.
 
-Thanks,
-johannes
+Regards
 
-
-
-The following changes since commit 98749b7188affbf2900c2aab704a8853901d1139:
-
-  yam: fix possible memory leak in yam_init_driver (2020-06-04 15:58:41 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-davem-2020-06-08
-
-for you to fetch changes up to 59d4bfc1e2c09435d91c980b03f7b72ce6e9f24e:
-
-  net: fix wiki website url mac80211 and wireless files (2020-06-08 10:06:05 +0200)
-
-----------------------------------------------------------------
-Just a small update:
- * fix the deadlock on rfkill/wireless removal that a few
-   people reported
- * fix an uninitialized variable
- * update wiki URLs
-
-----------------------------------------------------------------
-Flavio Suligoi (3):
-      doc: networking: wireless: fix wiki website url
-      include: fix wiki website url in netlink interface header
-      net: fix wiki website url mac80211 and wireless files
-
-Johannes Berg (2):
-      cfg80211: fix management registrations deadlock
-      mac80211: initialize return flags in HE 6 GHz operation parsing
-
- Documentation/networking/mac80211-injection.rst |  2 +-
- Documentation/networking/regulatory.rst         |  6 +++---
- include/net/cfg80211.h                          |  5 +++--
- include/uapi/linux/nl80211.h                    |  2 +-
- net/mac80211/mlme.c                             |  2 ++
- net/mac80211/rx.c                               |  2 +-
- net/wireless/Kconfig                            |  2 +-
- net/wireless/core.c                             |  6 +++---
- net/wireless/core.h                             |  2 ++
- net/wireless/mlme.c                             | 26 ++++++++++++++++++++-----
- 10 files changed, 38 insertions(+), 17 deletions(-)
+Marcel
 
