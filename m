@@ -2,222 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71B5A1F1E58
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 19:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DC101F1E75
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 19:47:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387587AbgFHRa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 13:30:28 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24491 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730742AbgFHRa1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 13:30:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591637425;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CydLNuieMFXuTeLFl9DAS3JoZAu9uEAH3zDcoHjZ+rw=;
-        b=DzG7VzadXr+Dq39vXdYFdlnYHitriL24kmKc6Pq12luRG0uVnGCknIdqp7pXwGMEcgdVek
-        LO65hHoHYOnpoY6BdfeRhcMuhl2DRJCeBIFEG4KdsYQJJpzmDnyWMoWRa28uUfOpBWnIpn
-        Bot9bVfQwKrz3ruY6b2rqXZpewk6mxc=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-464-m0n7FJbUPeycYRbzognzLQ-1; Mon, 08 Jun 2020 13:30:23 -0400
-X-MC-Unique: m0n7FJbUPeycYRbzognzLQ-1
-Received: by mail-wm1-f70.google.com with SMTP id y15so60678wmi.0
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 10:30:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CydLNuieMFXuTeLFl9DAS3JoZAu9uEAH3zDcoHjZ+rw=;
-        b=K/c2vMpJMaQ/Ue2PBlT9k3ludlUqkVOqqPf76W8hhylO8U7T842HFX16uTrozipUjX
-         +MgLZN5xwbMWv2shjtLqr2gJLKni7MDR+yCd2PsZQfSHeDM+s0dsWX2Gqhu26TryXFiM
-         0Lsdh3g7tGv/Qqhwwc+PurxTSTvU3M0MYG6ab9hEPTRLkxxbpMzB3IFSE859DBvQJZGC
-         V04EhlKMPFuVC73Mg0t7/NDihcv1T1ysKscWH53b7xhUhJ1zH0VZJGbGeYYAhXhGdznG
-         vsGfiQWoYPK+sbbdofeQaOz6dUFup14BY9vGjmFUCJy8hP1chbtKo0MzkJ+J8nsCgiyi
-         PRDA==
-X-Gm-Message-State: AOAM533kPsLSGUx7hISTQCuipNSoDqIpws13B+9k4cZkS1kZ65DqbfKl
-        o3gh3y+cMM0XfL9DO+fc2m2t955KKfEYVV/ixrbalAG5FhZCBsSCY/cLnOPFpXbJfaRCG1ECbiz
-        usdMTJ9v7FtS2WKUX
-X-Received: by 2002:a1c:1983:: with SMTP id 125mr370289wmz.43.1591637421981;
-        Mon, 08 Jun 2020 10:30:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxawQBk2KuedCoeq45qKTknHdFZ/Hzdg0iNXD3UZKIwvVktz96TcUIMIJ1pKhk0TcTZ2sCXUw==
-X-Received: by 2002:a1c:1983:: with SMTP id 125mr370264wmz.43.1591637421518;
-        Mon, 08 Jun 2020 10:30:21 -0700 (PDT)
-Received: from steredhat ([79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id v19sm219936wml.26.2020.06.08.10.30.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 10:30:20 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 19:30:18 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        eperezma@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH RFC v6 00/11] vhost: ring format independence
-Message-ID: <20200608173018.2l5wywnscyinf4w7@steredhat>
-References: <20200608125238.728563-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200608125238.728563-1-mst@redhat.com>
+        id S1730065AbgFHRqj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Jun 2020 13:46:39 -0400
+Received: from mail-n.franken.de ([193.175.24.27]:56003 "EHLO drew.franken.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726097AbgFHRqj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 13:46:39 -0400
+X-Greylist: delayed 547 seconds by postgrey-1.27 at vger.kernel.org; Mon, 08 Jun 2020 13:46:38 EDT
+Received: from [IPv6:2a02:8109:1140:c3d:e915:c325:ef07:5ec7] (unknown [IPv6:2a02:8109:1140:c3d:e915:c325:ef07:5ec7])
+        (Authenticated sender: lurchi)
+        by mail-n.franken.de (Postfix) with ESMTPSA id B38FF721E282E;
+        Mon,  8 Jun 2020 19:37:26 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: packed structures used in socket options
+From:   Michael Tuexen <Michael.Tuexen@lurchi.franken.de>
+In-Reply-To: <cd3793726252407f8e80aa8d0025d44f@AcuMS.aculab.com>
+Date:   Mon, 8 Jun 2020 19:37:25 +0200
+Cc:     =?utf-8?Q?Ivan_Skytte_J=C3=B8rgensen?= <isj-sctp@i1.dk>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <7BD347D7-562F-459D-B0CB-0BC798919876@lurchi.franken.de>
+References: <CBFEFEF1-127A-4ADA-B438-B171B9E26282@lurchi.franken.de>
+ <B69695A1-F45B-4375-B9BB-1E50D1550C6D@lurchi.franken.de>
+ <23a14b44bd5749a6b1b51150c7f3c8ba@AcuMS.aculab.com>
+ <2213135.ChUyxVVRYb@isjsys>
+ <cd3793726252407f8e80aa8d0025d44f@AcuMS.aculab.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=disabled version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on mail-n.franken.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
 
-On Mon, Jun 08, 2020 at 08:52:51AM -0400, Michael S. Tsirkin wrote:
-> 
-> 
-> This adds infrastructure required for supporting
-> multiple ring formats.
-> 
-> The idea is as follows: we convert descriptors to an
-> independent format first, and process that converting to
-> iov later.
-> 
-> Used ring is similar: we fetch into an independent struct first,
-> convert that to IOV later.
-> 
-> The point is that we have a tight loop that fetches
-> descriptors, which is good for cache utilization.
-> This will also allow all kind of batching tricks -
-> e.g. it seems possible to keep SMAP disabled while
-> we are fetching multiple descriptors.
-> 
-> For used descriptors, this allows keeping track of the buffer length
-> without need to rescan IOV.
-> 
-> This seems to perform exactly the same as the original
-> code based on a microbenchmark.
-> Lightly tested.
-> More testing would be very much appreciated.
 
-while testing the vhost-vsock I found some issues in vhost-net (the VM
-had also a virtio-net device).
+> On 8. Jun 2020, at 18:18, David Laight <David.Laight@ACULAB.COM> wrote:
+> 
+> From: Ivan Skytte Jørgensen
+>> Sent: 07 June 2020 22:35
+> ...
+>>>>>>>> contains:
+>>>>>>>> 
+>>>>>>>> struct sctp_paddrparams {
+>>>>>>>> 	sctp_assoc_t		spp_assoc_id;
+>>>>>>>> 	struct sockaddr_storage	spp_address;
+>>>>>>>> 	__u32			spp_hbinterval;
+>>>>>>>> 	__u16			spp_pathmaxrxt;
+>>>>>>>> 	__u32			spp_pathmtu;
+>>>>>>>> 	__u32			spp_sackdelay;
+>>>>>>>> 	__u32			spp_flags;
+>>>>>>>> 	__u32			spp_ipv6_flowlabel;
+>>>>>>>> 	__u8			spp_dscp;
+>>>>>>>> } __attribute__((packed, aligned(4)));
+>>>>>>>> 
+>>>>>>>> This structure is only used in the IPPROTO_SCTP level socket option SCTP_PEER_ADDR_PARAMS.
+>>>>>>>> Why is it packed?
+> ...
+>> I was involved. At that time (September 2005) the SCTP API was still evolving (first finalized in
+>> 2011), and one of the major users of the API was 32-bit programs running on 64-bit kernel (on powerpc
+>> as I recall). When we realized that the structures were different between 32bit and 64bit we had to
+>> break the least number of programs, and the result were those ((packed)) structs so 32-bit programs
+>> wouldn't be broken and we didn't need a xxx_compat translation layer in the kernel.
+> 
+> I was also looking at all the __u16 in that header - borked.
+> 
+> Ok, so the intention was to avoid padding caused by the alignment
+> of sockaddr_storage rather than around the '__u16 spp_flags'.
+> 
+> I'd have to look up what (packed, aligned(4)) actually means.
+> It could force the structure to be fully packed (no holes)
+> but always have an overall alignment of 4.
+> 
+> It might have been clearer to put an 'aligned(4)' attribute
+> on the spp_address field itself.
+> Or even wonder whether sockaddr_storage should actually
+> have 8 byte alignment.
+> 
+> If it has 16 byte alignment then you cannot cast an IPv4
+> socket buffer address (which will be at most 4 byte aligned)
+> to sockaddr_storage and expect the compiler not to generate
+> code that will crash and burn on sparc64.
+> 
+> ISTR that the NetBSD view was that 'sockaddr_storage' should
+> never actually be instantiated - it only existed as a typed
+> pointer.
+Not sure this is correct. I would say this applies to stuct sockaddr *.
+I have seen instantiated sockaddr_storage variable in generic code,
+where you need to provide enough space to hold an address, not yet
+knowing the address family. However, I'm not familiar with the NetBSD
+code base.
 
-This is the dmesg of the host (it is a QEMU VM):
-
-[  171.860074] CPU: 0 PID: 16613 Comm: vhost-16595 Not tainted 5.7.0-ste-12703-gaf7b4801030c-dirty #6
-[  171.862210] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-[  171.865998] Call Trace:
-[  171.866440]  <IRQ>
-[  171.866817]  dump_stack+0x57/0x7a
-[  171.867440]  nmi_cpu_backtrace.cold+0x14/0x54
-[  171.868233]  ? lapic_can_unplug_cpu.cold+0x3b/0x3b
-[  171.869153]  nmi_trigger_cpumask_backtrace+0x85/0x92
-[  171.870143]  arch_trigger_cpumask_backtrace+0x19/0x20
-[  171.871134]  rcu_dump_cpu_stacks+0xa0/0xd2
-[  171.872203]  rcu_sched_clock_irq.cold+0x23a/0x41c
-[  171.873098]  update_process_times+0x2c/0x60
-[  171.874119]  tick_sched_timer+0x59/0x160
-[  171.874777]  ? tick_switch_to_oneshot.cold+0x79/0x79
-[  171.875602]  __hrtimer_run_queues+0x10d/0x290
-[  171.876317]  hrtimer_interrupt+0x109/0x220
-[  171.877025]  smp_apic_timer_interrupt+0x76/0x150
-[  171.877875]  apic_timer_interrupt+0xf/0x20
-[  171.878563]  </IRQ>
-[  171.878897] RIP: 0010:vhost_get_avail_buf+0x5f8/0x860 [vhost]
-[  171.879951] Code: 48 8b bb 88 00 00 00 48 85 ff 0f 84 ad 00 00 00 be 01 00 00 00 44 89 45 80 e8 24 52 08 c1 8b 43 68 44 8b 45 80 e9 e9 fb ff ff <45> 85 c0 0f 85 48 fd ff ff 48 8b 43 38 48 83 bb 38 45 00 00 00 48
-[  171.889938] RSP: 0018:ffffc90000397c40 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-[  171.896828] RAX: 0000000000000040 RBX: ffff88822c3f4688 RCX: ffff888231090000
-[  171.898903] RDX: 0000000000000440 RSI: ffff888231090000 RDI: ffffc90000397c80
-[  171.901025] RBP: ffffc90000397ce8 R08: 0000000000000001 R09: ffffc90000397dc4
-[  171.903136] R10: 000000231edc461f R11: 0000000000000003 R12: 0000000000000001
-[  171.905213] R13: 0000000000000001 R14: ffffc90000397dd4 R15: ffff88822c3f87a8
-[  171.907553]  get_tx_bufs+0x49/0x180 [vhost_net]
-[  171.909142]  handle_tx_copy+0xb4/0x5c0 [vhost_net]
-[  171.911495]  ? update_curr+0x67/0x160
-[  171.913376]  handle_tx+0xb0/0xe0 [vhost_net]
-[  171.916451]  handle_tx_kick+0x15/0x20 [vhost_net]
-[  171.919912]  vhost_worker+0xb3/0x110 [vhost]
-[  171.923379]  kthread+0x106/0x140
-[  171.925314]  ? __vhost_add_used_n+0x1c0/0x1c0 [vhost]
-[  171.933388]  ? kthread_park+0x90/0x90
-[  171.936148]  ret_from_fork+0x22/0x30
-[  234.859212] rcu: INFO: rcu_sched self-detected stall on CPU
-[  234.860036] rcu: 	0-....: (20981 ticks this GP) idle=962/1/0x4000000000000002 softirq=15513/15513 fqs=10340
-[  234.861547] 	(t=21003 jiffies g=24773 q=2390)
-[  234.862158] NMI backtrace for cpu 0
-[  234.862638] CPU: 0 PID: 16613 Comm: vhost-16595 Not tainted 5.7.0-ste-12703-gaf7b4801030c-dirty #6
-[  234.864008] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-[  234.866084] Call Trace:
-[  234.866395]  <IRQ>
-[  234.866648]  dump_stack+0x57/0x7a
-[  234.867079]  nmi_cpu_backtrace.cold+0x14/0x54
-[  234.867679]  ? lapic_can_unplug_cpu.cold+0x3b/0x3b
-[  234.868322]  nmi_trigger_cpumask_backtrace+0x85/0x92
-[  234.869013]  arch_trigger_cpumask_backtrace+0x19/0x20
-[  234.869747]  rcu_dump_cpu_stacks+0xa0/0xd2
-[  234.870267]  rcu_sched_clock_irq.cold+0x23a/0x41c
-[  234.870960]  update_process_times+0x2c/0x60
-[  234.871578]  tick_sched_timer+0x59/0x160
-[  234.872148]  ? tick_switch_to_oneshot.cold+0x79/0x79
-[  234.872949]  __hrtimer_run_queues+0x10d/0x290
-[  234.873711]  hrtimer_interrupt+0x109/0x220
-[  234.874271]  smp_apic_timer_interrupt+0x76/0x150
-[  234.874913]  apic_timer_interrupt+0xf/0x20
-[  234.876507]  </IRQ>
-[  234.876799] RIP: 0010:vhost_get_avail_buf+0x8a/0x860 [vhost]
-[  234.877828] Code: 8d 72 06 00 00 85 c0 0f 85 fb 02 00 00 8b 57 70 89 d0 2d 00 04 00 00 0f 88 72 06 00 00 45 31 c0 4c 8d bb 20 41 00 00 4d 89 ee <44> 0f b7 a3 08 01 00 00 66 44 3b a3 0a 01 00 00 0f 84 58 05 00 00
-[  234.882059] RSP: 0018:ffffc90000397c40 EFLAGS: 00000283 ORIG_RAX: ffffffffffffff13
-[  234.883227] RAX: 0000000000000040 RBX: ffff88822c3f4688 RCX: ffff888231090000
-[  234.884317] RDX: 0000000000000440 RSI: ffff888231090000 RDI: ffffc90000397c80
-[  234.886531] RBP: ffffc90000397ce8 R08: 0000000000000001 R09: ffffc90000397dc4
-[  234.891840] R10: 000000231edc461f R11: 0000000000000003 R12: 0000000000000001
-[  234.896670] R13: 0000000000000001 R14: ffffc90000397dd4 R15: ffff88822c3f87a8
-[  234.900918]  get_tx_bufs+0x49/0x180 [vhost_net]
-[  234.904280]  handle_tx_copy+0xb4/0x5c0 [vhost_net]
-[  234.916402]  ? update_curr+0x67/0x160
-[  234.917688]  handle_tx+0xb0/0xe0 [vhost_net]
-[  234.918865]  handle_tx_kick+0x15/0x20 [vhost_net]
-[  234.920366]  vhost_worker+0xb3/0x110 [vhost]
-[  234.921500]  kthread+0x106/0x140
-[  234.922219]  ? __vhost_add_used_n+0x1c0/0x1c0 [vhost]
-[  234.923595]  ? kthread_park+0x90/0x90
-[  234.924442]  ret_from_fork+0x22/0x30
-[  297.870095] rcu: INFO: rcu_sched self-detected stall on CPU
-[  297.871352] rcu: 	0-....: (36719 ticks this GP) idle=962/1/0x4000000000000002 softirq=15513/15513 fqs=18087
-[  297.873585] 	(t=36756 jiffies g=24773 q=2853)
-[  297.874478] NMI backtrace for cpu 0
-[  297.875229] CPU: 0 PID: 16613 Comm: vhost-16595 Not tainted 5.7.0-ste-12703-gaf7b4801030c-dirty #6
-[  297.877204] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-[  297.881644] Call Trace:
-[  297.882185]  <IRQ>
-[  297.882621]  dump_stack+0x57/0x7a
-[  297.883387]  nmi_cpu_backtrace.cold+0x14/0x54
-[  297.884390]  ? lapic_can_unplug_cpu.cold+0x3b/0x3b
-[  297.885568]  nmi_trigger_cpumask_backtrace+0x85/0x92
-[  297.886746]  arch_trigger_cpumask_backtrace+0x19/0x20
-[  297.888260]  rcu_dump_cpu_stacks+0xa0/0xd2
-[  297.889508]  rcu_sched_clock_irq.cold+0x23a/0x41c
-[  297.890803]  update_process_times+0x2c/0x60
-[  297.893357]  tick_sched_timer+0x59/0x160
-[  297.895143]  ? tick_switch_to_oneshot.cold+0x79/0x79
-[  297.897832]  __hrtimer_run_queues+0x10d/0x290
-[  297.899841]  hrtimer_interrupt+0x109/0x220
-[  297.900909]  smp_apic_timer_interrupt+0x76/0x150
-[  297.903543]  apic_timer_interrupt+0xf/0x20
-[  297.906509]  </IRQ>
-[  297.908004] RIP: 0010:vhost_get_avail_buf+0x92/0x860 [vhost]
-[  297.911536] Code: 85 fb 02 00 00 8b 57 70 89 d0 2d 00 04 00 00 0f 88 72 06 00 00 45 31 c0 4c 8d bb 20 41 00 00 4d 89 ee 44 0f b7 a3 08 01 00 00 <66> 44 3b a3 0a 01 00 00 0f 84 58 05 00 00 8b 43 28 83 e8 01 41 21
-[  297.930274] RSP: 0018:ffffc90000397c40 EFLAGS: 00000283 ORIG_RAX: ffffffffffffff13
-[  297.934056] RAX: 0000000000000040 RBX: ffff88822c3f4688 RCX: ffff888231090000
-[  297.938371] RDX: 0000000000000440 RSI: ffff888231090000 RDI: ffffc90000397c80
-[  297.944222] RBP: ffffc90000397ce8 R08: 0000000000000001 R09: ffffc90000397dc4
-[  297.953817] R10: 000000231edc461f R11: 0000000000000003 R12: 0000000000000001
-[  297.956453] R13: 0000000000000001 R14: ffffc90000397dd4 R15: ffff88822c3f87a8
-[  297.960873]  get_tx_bufs+0x49/0x180 [vhost_net]
-[  297.964163]  handle_tx_copy+0xb4/0x5c0 [vhost_net]
-[  297.965871]  ? update_curr+0x67/0x160
-[  297.966893]  handle_tx+0xb0/0xe0 [vhost_net]
-[  297.968442]  handle_tx_kick+0x15/0x20 [vhost_net]
-[  297.971327]  vhost_worker+0xb3/0x110 [vhost]
-[  297.974275]  kthread+0x106/0x140
-[  297.976141]  ? __vhost_add_used_n+0x1c0/0x1c0 [vhost]
-[  297.979518]  ? kthread_park+0x90/0x90
-[  297.981665]  ret_from_fork+0x22/0x30
+Best regards
+Michael
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
 
