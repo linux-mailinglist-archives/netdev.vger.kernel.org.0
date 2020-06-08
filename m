@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A6B1F24D8
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C351F24E3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731425AbgFHXXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:23:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47994 "EHLO mail.kernel.org"
+        id S1731504AbgFHXXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:23:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48840 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730526AbgFHXXA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:23:00 -0400
+        id S1731493AbgFHXX2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:23:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E507420899;
-        Mon,  8 Jun 2020 23:22:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6DF62208E4;
+        Mon,  8 Jun 2020 23:23:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658579;
-        bh=PTNJSFiuLP09hxP415aSDF4UBv9j2fM6vwrHY8m2+tU=;
+        s=default; t=1591658608;
+        bh=I/W2Mc+7x9Ho4bDAW0QetiC1OjneuutnmWlqomS3EOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0/VN4R6Fefj0hdfj1ZPv6gQaUyn5MycbPv0yzRFaK5tKxhjlst+zEKbaR6afwvr0
-         QGYj5+/h07MBRxUsdinQjQQfIl+rx+IoW0RuZx+aQbVB4nA5aHelZOfEAtuvD5oy8x
-         TnwM1LE34gNcJPXtJz0ZJ1EfkRwlziayxVP/ommc=
+        b=amAtN4HUFOQoarv4FFASi+EU8UwCrED8IdBPe76hxTwO1zFRiosOT7AUYINby5hPD
+         nvdWUXWPYKLVkuE9oNgICS7OI3wdDzoS4/LFLsAh12OFfTajVdlDeXefY8rjKFDaf1
+         wTwzMq9Nx3JEz2W/TDNj8uc+vMwHAoInoe29guSs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hsin-Yu Chao <hychao@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Kees Cook <keescook@chromium.org>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 017/106] Bluetooth: Add SCO fallback for invalid LMP parameters error
-Date:   Mon,  8 Jun 2020 19:21:09 -0400
-Message-Id: <20200608232238.3368589-17-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 4.19 035/106] e1000: Distribute switch variables for initialization
+Date:   Mon,  8 Jun 2020 19:21:27 -0400
+Message-Id: <20200608232238.3368589-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232238.3368589-1-sashal@kernel.org>
 References: <20200608232238.3368589-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,111 +47,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hsin-Yu Chao <hychao@chromium.org>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 56b5453a86203a44726f523b4133c1feca49ce7c ]
+[ Upstream commit a34c7f5156654ebaf7eaace102938be7ff7036cb ]
 
-Bluetooth PTS test case HFP/AG/ACC/BI-12-I accepts SCO connection
-with invalid parameter at the first SCO request expecting AG to
-attempt another SCO request with the use of "safe settings" for
-given codec, base on section 5.7.1.2 of HFP 1.7 specification.
+Variables declared in a switch statement before any case statements
+cannot be automatically initialized with compiler instrumentation (as
+they are not part of any execution flow). With GCC's proposed automatic
+stack variable initialization feature, this triggers a warning (and they
+don't get initialized). Clang's automatic stack variable initialization
+(via CONFIG_INIT_STACK_ALL=y) doesn't throw a warning, but it also
+doesn't initialize such variables[1]. Note that these warnings (or silent
+skipping) happen before the dead-store elimination optimization phase,
+so even when the automatic initializations are later elided in favor of
+direct initializations, the warnings remain.
 
-This patch addresses it by adding "Invalid LMP Parameters" (0x1e)
-to the SCO fallback case. Verified with below log:
+To avoid these problems, move such variables into the "case" where
+they're used or lift them up into the main function body.
 
-< HCI Command: Setup Synchronous Connection (0x01|0x0028) plen 17
-        Handle: 256
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 13
-        Setting: 0x0003
-          Input Coding: Linear
-          Input Data Format: 1's complement
-          Input Sample Size: 8-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: Transparent Data
-        Retransmission effort: Optimize for link quality (0x02)
-        Packet type: 0x0380
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Number of Completed Packets (0x13) plen 5
-        Num handles: 1
-        Handle: 256
-        Count: 1
-> HCI Event: Max Slots Change (0x1b) plen 3
-        Handle: 256
-        Max slots: 1
-> HCI Event: Synchronous Connect Complete (0x2c) plen 17
-        Status: Invalid LMP Parameters / Invalid LL Parameters (0x1e)
-        Handle: 0
-        Address: 00:1B:DC:F2:21:59 (OUI 00-1B-DC)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x02
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: Transparent (0x03)
-< HCI Command: Setup Synchronous Connection (0x01|0x0028) plen 17
-        Handle: 256
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 8
-        Setting: 0x0003
-          Input Coding: Linear
-          Input Data Format: 1's complement
-          Input Sample Size: 8-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: Transparent Data
-        Retransmission effort: Optimize for link quality (0x02)
-        Packet type: 0x03c8
-          EV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Max Slots Change (0x1b) plen 3
-        Handle: 256
-        Max slots: 5
-> HCI Event: Max Slots Change (0x1b) plen 3
-        Handle: 256
-        Max slots: 1
-> HCI Event: Synchronous Connect Complete (0x2c) plen 17
-        Status: Success (0x00)
-        Handle: 257
-        Address: 00:1B:DC:F2:21:59 (OUI 00-1B-DC)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x06
-        Retransmission window: 0x04
-        RX packet length: 30
-        TX packet length: 30
-        Air mode: Transparent (0x03)
+drivers/net/ethernet/intel/e1000/e1000_main.c: In function ‘e1000_xmit_frame’:
+drivers/net/ethernet/intel/e1000/e1000_main.c:3143:18: warning: statement will never be executed [-Wswitch-unreachable]
+ 3143 |     unsigned int pull_size;
+      |                  ^~~~~~~~~
 
-Signed-off-by: Hsin-Yu Chao <hychao@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+[1] https://bugs.llvm.org/show_bug.cgi?id=44916
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 3e7badb3ac2d..a044e6bb12b8 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4097,6 +4097,7 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
- 	case 0x11:	/* Unsupported Feature or Parameter Value */
- 	case 0x1c:	/* SCO interval rejected */
- 	case 0x1a:	/* Unsupported Remote Feature */
-+	case 0x1e:	/* Invalid LMP Parameters */
- 	case 0x1f:	/* Unspecified error */
- 	case 0x20:	/* Unsupported LMP Parameter value */
- 		if (conn->out) {
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 2110d5f2da19..47b867c64b14 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -3144,8 +3144,9 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
+ 		hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
+ 		if (skb->data_len && hdr_len == len) {
+ 			switch (hw->mac_type) {
++			case e1000_82544: {
+ 				unsigned int pull_size;
+-			case e1000_82544:
++
+ 				/* Make sure we have room to chop off 4 bytes,
+ 				 * and that the end alignment will work out to
+ 				 * this hardware's requirements
+@@ -3166,6 +3167,7 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
+ 				}
+ 				len = skb_headlen(skb);
+ 				break;
++			}
+ 			default:
+ 				/* do nothing */
+ 				break;
 -- 
 2.25.1
 
