@@ -2,180 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912051F168F
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:17:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF021F16C5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729347AbgFHKRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 06:17:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57523 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729172AbgFHKRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 06:17:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591611472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8qWrXG5uSNE9Dzp6V1sYS5ofw86anDpXXrPKXmMCdEo=;
-        b=L3JTHtrb2uLBgEnqW7kuKLKOcZVUjAhQJPkGkeUahooxPA7L9RwDQ1kfN4Rgg6PYhGIhir
-        SQ8wdVG5ojRhkUVGcAIFQAFH4252Xw9Kk27Q0cEkQu24mlc0bKYWG6f3RDizeMf7nCUNVK
-        exYPur8mACV8FeruZVtGYDQuWMiQtrU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-168-ZBkmfAasMrm1_yODe84HnQ-1; Mon, 08 Jun 2020 06:17:50 -0400
-X-MC-Unique: ZBkmfAasMrm1_yODe84HnQ-1
-Received: by mail-wm1-f72.google.com with SMTP id r1so1410623wmh.7
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 03:17:50 -0700 (PDT)
+        id S1729344AbgFHKfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 06:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729172AbgFHKfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 06:35:08 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34ACC08C5C3
+        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 03:35:08 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id x11so6494845plv.9
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 03:35:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=XYTtWcqohsgiBSt92FZ9EFsD017ojXHAAEEmBFsJP9g=;
+        b=bJ7hUtdat2qiYb0B4N3+D1uWE9Ki+8pdRNc/OW1FNAnhsU7iMC+pzVYWGEtUKYPvpG
+         SY/uJsfGRl5oklvn5cCd9KC5eVrhkoiGsZbxeAcTvsGf0+UEYi+jEvME8SsrNYbfxW3T
+         kflm7fItvnaRNP3GA1QzM04BXeQVRaHR+Gy+xB6B56P4hWGyLknceTI5vlPtcxbs21bI
+         T00dTGp5XET/xTtOyGOLCJjnKNf3IeABoLNMYgvhae7QC+roIF1K/wwwBhOehemYhYns
+         V9SQ697JYtQpftJxaHEfJls7NAesdSaZnyqCw5zHNqFd0UBBbLLSGWn5wGC5JR+u0R31
+         JkOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8qWrXG5uSNE9Dzp6V1sYS5ofw86anDpXXrPKXmMCdEo=;
-        b=bHWOoK48XLHUE+3I16h2Us8nObK4c4a2RPUWgYUZuz6b4KIFj17a2NrStwTOuR88jx
-         6xo/yQ1gzCu5+UY14rbNfV/aaTzLLltGIYC8sx+vmtW+VEfL3zBc4V/+z5xbrN2VTvUu
-         +R2Yq7mDzv1KRNlrnw4bbQQrY3a0RwUsG0fsggsC2Nkz2sQjHwdvA8m3atiVtA8c1m4s
-         mlGnO4dPOgygVqebBvdX6Nyo3Iu0OqHKEcwo38mUHKQo9/tXc8eWVy3aPJ140qsDZEsz
-         sCdjP/omX+aPJb/QVR2ZoIdeZhspU+jmx0JzlvfjsnNKraWXjg3O0WCgKnUx+rUWVhlI
-         9M9A==
-X-Gm-Message-State: AOAM53125LmGQOpCjPajzwLZkSjdPZJgwGksVdeN2VbAt9GuqgzqZ6UD
-        Pw/4I1jRZPUNRlcoOMToxZl6A/7fdz53CV4EhSa6KvSHePvWJ73ro+bA+ZBvpHWlEjIPy7Rxha2
-        mp6UnzzqJDEVRKJ56
-X-Received: by 2002:a1c:4105:: with SMTP id o5mr15395859wma.168.1591611469378;
-        Mon, 08 Jun 2020 03:17:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw01MpQfAn3zflPb7GVdN7FLLZh1HetB9oB+KWr4r5voKTa+SLtxH/AzT7wvjwZnQiGg0J+Pw==
-X-Received: by 2002:a1c:4105:: with SMTP id o5mr15395824wma.168.1591611469097;
-        Mon, 08 Jun 2020 03:17:49 -0700 (PDT)
-Received: from steredhat ([79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id a3sm22199003wrp.91.2020.06.08.03.17.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 03:17:48 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 12:17:46 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH RFC v5 12/13] vhost/vsock: switch to the buf API
-Message-ID: <20200608101746.xnxtwwygolsk7yol@steredhat>
-References: <20200607141057.704085-1-mst@redhat.com>
- <20200607141057.704085-13-mst@redhat.com>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=XYTtWcqohsgiBSt92FZ9EFsD017ojXHAAEEmBFsJP9g=;
+        b=DtMoPIOT9mVJmT9+p/fKxRUcYCf/tLcWvwziyNgpTERBde+8KMXrhhsFoVeVBHe+Rx
+         5Ips62DBWHT5ytJMY95rjHwfVUrMCvPT7qO9ko4ZvdWML5P5/RWl+bPG1NRocVaLQ+Tx
+         10xBVP6tFajtlwqN9fC+TZrtx6WLsQzQ8HFM+GdZKhVbjN+1KIK+qbkXW7EwmjWloFIo
+         SALNwYIbBer3F/qvVwrmdO1u1MOgcjA7oSF+g1TPN8I96hvEY7SaK7NOVPLcx2pXXUgK
+         ZybGlK3XRBiYeIMxhcbc1aqjrY6OD418RI9cGQicuhfoNazB2SPEACRrQA7UHPUxk8xx
+         Sepg==
+X-Gm-Message-State: AOAM532LAln9XkTGOnMIHrWCpq8JfuhanXui4BP929nN8veVbENVuUBh
+        vdI6VpkIZ5ASwUWQg7hDSKGE30GQSi6Xn75uigM=
+X-Google-Smtp-Source: ABdhPJwuDxF5MDJ9NWowyVoalLFI72eVGosqxvjvXcnYtxGeDC0qyVsmr7x8t0FvKehneH919jpk47eM/sFgWvB38Tg=
+X-Received: by 2002:a17:902:9a89:: with SMTP id w9mr1092962plp.30.1591612507909;
+ Mon, 08 Jun 2020 03:35:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200607141057.704085-13-mst@redhat.com>
+Reply-To: ebrimsegun@yandex.com
+Received: by 2002:a17:90a:de8f:0:0:0:0 with HTTP; Mon, 8 Jun 2020 03:35:07
+ -0700 (PDT)
+From:   Olusegun Ebrima <refatedirma@gmail.com>
+Date:   Mon, 8 Jun 2020 04:35:07 -0600
+X-Google-Sender-Auth: f04-5uqPYnfJYdhqTDg3nhZyMtU
+Message-ID: <CAFnLRaDb1W4G61jUZ7zpW+_FHM489mGXB0gG3C42z_CG8uSzcw@mail.gmail.com>
+Subject: The invitation need your response
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 07, 2020 at 10:11:49AM -0400, Michael S. Tsirkin wrote:
-> A straight-forward conversion.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
+Greetings,
 
-The changes for vsock part LGTM:
+With due respect to your personality and much sincerity of this
+purpose, I make this contact with you believing that you can be of
+great assistance to me. I'm Mr. Olusegun Ebrima, from Burkina Faso,
+I'm the Chairman of FOREIGN PAYMENTS CONTRACT AWARD COMMITTEE and also
+I currently hold the post of Internal Audit Manager of our bank in
+Ouagadougou Branch, Please see this as a confidential message and do
+not reveal it to another person because it=E2=80=99s a top secret.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+We are imposition to reclaim and inherit the sum of US $(38,850,000
+Million ) without any trouble, from a dormant account which remains
+unclaimed since 7 years the owner died. This is a U.S Dollars account
+and the beneficiary died without trace of his family to claim the
+fund.
+
+Upon my personal audit investigation into the details of the account,
+I find out that the deceased is a foreigner, which makes it possible
+for you as a foreigner no matter your country to lay claim on the
+balance as the Foreign Business Partner or Extended Relative to the
+deceased, provided you are not from here.
+
+Your integrity and trustworthiness will make us succeed without any
+risk. Please if you think that the amount is too much to be
+transferred into your account, you have the right to ask our bank to
+transfer the fund into your account bit by bit after approval or you
+double the account. Once this fund is transferred into your account,
+we will share the fund accordingly. 45%, for you, 45%, for me, 5%, had
+been mapped out for the expense made in this transaction, 5% as a free
+will donation to charity and motherless babies homes in both our
+countries as sign of breakthrough and more blessings.
 
 
-I also did some tests with vhost-vsock (tools/testing/vsock/vsock_test
-and iperf-vsock), so for vsock:
+If you are interested to help without disappointment or breach of
+trust, reply me, so that I will guide you on the proper banking
+guidelines to follow for the claim. After the transfer, I will fly to
+your country for sharing of funds according to our agreement.
+Assurance: Note that this transaction will never in any way harm or
+foiled your good post or reputation in your country, because
+everything will follow legal process.
 
-Tested-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Thanks,
-Stefano
-
-> 
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index a483cec31d5c..61c6d3dd2ae3 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -103,7 +103,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		unsigned out, in;
->  		size_t nbytes;
->  		size_t iov_len, payload_len;
-> -		int head;
-> +		struct vhost_buf buf;
-> +		int ret;
->  
->  		spin_lock_bh(&vsock->send_pkt_list_lock);
->  		if (list_empty(&vsock->send_pkt_list)) {
-> @@ -117,16 +118,17 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		list_del_init(&pkt->list);
->  		spin_unlock_bh(&vsock->send_pkt_list_lock);
->  
-> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> -					 &out, &in, NULL, NULL);
-> -		if (head < 0) {
-> +		ret = vhost_get_avail_buf(vq, &buf,
-> +					  vq->iov, ARRAY_SIZE(vq->iov),
-> +					  &out, &in, NULL, NULL);
-> +		if (ret < 0) {
->  			spin_lock_bh(&vsock->send_pkt_list_lock);
->  			list_add(&pkt->list, &vsock->send_pkt_list);
->  			spin_unlock_bh(&vsock->send_pkt_list_lock);
->  			break;
->  		}
->  
-> -		if (head == vq->num) {
-> +		if (!ret) {
->  			spin_lock_bh(&vsock->send_pkt_list_lock);
->  			list_add(&pkt->list, &vsock->send_pkt_list);
->  			spin_unlock_bh(&vsock->send_pkt_list_lock);
-> @@ -186,7 +188,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->  		 */
->  		virtio_transport_deliver_tap_pkt(pkt);
->  
-> -		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
-> +		buf.in_len = sizeof(pkt->hdr) + payload_len;
-> +		vhost_put_used_buf(vq, &buf);
->  		added = true;
->  
->  		pkt->off += payload_len;
-> @@ -440,7 +443,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
->  						 dev);
->  	struct virtio_vsock_pkt *pkt;
-> -	int head, pkts = 0, total_len = 0;
-> +	int ret, pkts = 0, total_len = 0;
-> +	struct vhost_buf buf;
->  	unsigned int out, in;
->  	bool added = false;
->  
-> @@ -461,12 +465,13 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  			goto no_more_replies;
->  		}
->  
-> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> -					 &out, &in, NULL, NULL);
-> -		if (head < 0)
-> +		ret = vhost_get_avail_buf(vq, &buf,
-> +					  vq->iov, ARRAY_SIZE(vq->iov),
-> +					  &out, &in, NULL, NULL);
-> +		if (ret < 0)
->  			break;
->  
-> -		if (head == vq->num) {
-> +		if (!ret) {
->  			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
->  				vhost_disable_notify(&vsock->dev, vq);
->  				continue;
-> @@ -494,7 +499,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->  			virtio_transport_free_pkt(pkt);
->  
->  		len += sizeof(pkt->hdr);
-> -		vhost_add_used(vq, head, len);
-> +		buf.in_len = len;
-> +		vhost_put_used_buf(vq, &buf);
->  		total_len += len;
->  		added = true;
->  	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
-> -- 
-> MST
-> 
-
+I am looking forward to hear from you soonest.
+Yours faithfully,
+Mr Olusegun Ebrima
