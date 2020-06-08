@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 316A51F3007
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4403F1F2D83
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730551AbgFIAzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:55:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54972 "EHLO mail.kernel.org"
+        id S1728893AbgFHXOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:14:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728376AbgFHXJP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:15 -0400
+        id S1729801AbgFHXOZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:14:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 79D21208C3;
-        Mon,  8 Jun 2020 23:09:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CB1B20C09;
+        Mon,  8 Jun 2020 23:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657754;
-        bh=HrQ0JH3fWf2Xyn1OUWcR/S2dJr+n45S5WHwcAjxQsoQ=;
+        s=default; t=1591658065;
+        bh=KIVtMWsZYjSeXPcrFP3pyIwtXZ4XUtv5qHuAvVcJRs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9YI7QvfCKl6pvLiDc+/+HtKFgdO/DrRSprevzbUy8J8xsLo+9Mbg9zWe5uhTpYYb
-         sU2gobW40ztCeyX+v6cqDenk0dcK6cBaTB1R3Z4zJaxZMel7aHa1tQKLOL0FTdHctT
-         qFBS7DMUOV0jsiuSDLHVsyZHk/gDFOJAP3+7+re0=
+        b=VQ462wQb5I53Aca1fy2iy4ObG5pEKhHfXZGMQk8j43fTHUKSOPunlTddC5kOp6cAP
+         lDzEit+uKumjpnWuHPmiBI9OrwxH+o8/nAHi8JGMjkz4puUia6I8VR8GBUfI/QtUTv
+         +hxM+rS3y9UO1s0RqExcy6AK3lVndv5ql9MYC20Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 140/274] net: bcmgenet: Fix WoL with password after deep sleep
-Date:   Mon,  8 Jun 2020 19:03:53 -0400
-Message-Id: <20200608230607.3361041-140-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 111/606] vhost/vsock: fix packet delivery order to monitoring devices
+Date:   Mon,  8 Jun 2020 19:03:56 -0400
+Message-Id: <20200608231211.3363633-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
-References: <20200608230607.3361041-1-sashal@kernel.org>
+In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
+References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,145 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-[ Upstream commit 6f7689057a0f10a6c967b9f2759d7a3dc948b930 ]
+[ Upstream commit 107bc0766b9feb5113074c753735a3f115c2141f ]
 
-Broadcom STB chips support a deep sleep mode where all register contents
-are lost. Because we were stashing the MagicPacket password into some of
-these registers a suspend into that deep sleep then a resumption would
-not lead to being able to wake-up from MagicPacket with password again.
+We want to deliver packets to monitoring devices before it is
+put in the virtqueue, to avoid that replies can appear in the
+packet capture before the transmitted packet.
 
-Fix this by keeping a software copy of the password and program it
-during suspend.
-
-Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
-Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/broadcom/genet/bcmgenet.h    |  2 +
- .../ethernet/broadcom/genet/bcmgenet_wol.c    | 39 +++++++++----------
- 2 files changed, 20 insertions(+), 21 deletions(-)
+ drivers/vhost/vsock.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-index daf8fb2c39b6..c3bfe97f2e5c 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-@@ -14,6 +14,7 @@
- #include <linux/if_vlan.h>
- #include <linux/phy.h>
- #include <linux/dim.h>
-+#include <linux/ethtool.h>
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index bb3f63386b47..53294c2f8cff 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -181,14 +181,14 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			break;
+ 		}
  
- /* total number of Buffer Descriptors, same for Rx/Tx */
- #define TOTAL_DESC				256
-@@ -676,6 +677,7 @@ struct bcmgenet_priv {
- 	/* WOL */
- 	struct clk *clk_wol;
- 	u32 wolopts;
-+	u8 sopass[SOPASS_MAX];
+-		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
+-		added = true;
+-
+-		/* Deliver to monitoring devices all correctly transmitted
+-		 * packets.
++		/* Deliver to monitoring devices all packets that we
++		 * will transmit.
+ 		 */
+ 		virtio_transport_deliver_tap_pkt(pkt);
  
- 	struct bcmgenet_mib_counters mib;
- 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index c9a43695b182..597c0498689a 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -41,18 +41,13 @@
- void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
--	u32 reg;
- 
- 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE;
- 	wol->wolopts = priv->wolopts;
- 	memset(wol->sopass, 0, sizeof(wol->sopass));
- 
--	if (wol->wolopts & WAKE_MAGICSECURE) {
--		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_MS);
--		put_unaligned_be16(reg, &wol->sopass[0]);
--		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_LS);
--		put_unaligned_be32(reg, &wol->sopass[2]);
--	}
-+	if (wol->wolopts & WAKE_MAGICSECURE)
-+		memcpy(wol->sopass, priv->sopass, sizeof(priv->sopass));
- }
- 
- /* ethtool function - set WOL (Wake on LAN) settings.
-@@ -62,7 +57,6 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	struct device *kdev = &priv->pdev->dev;
--	u32 reg;
- 
- 	if (!device_can_wakeup(kdev))
- 		return -ENOTSUPP;
-@@ -70,17 +64,8 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	if (wol->wolopts & ~(WAKE_MAGIC | WAKE_MAGICSECURE))
- 		return -EINVAL;
- 
--	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
--	if (wol->wolopts & WAKE_MAGICSECURE) {
--		bcmgenet_umac_writel(priv, get_unaligned_be16(&wol->sopass[0]),
--				     UMAC_MPD_PW_MS);
--		bcmgenet_umac_writel(priv, get_unaligned_be32(&wol->sopass[2]),
--				     UMAC_MPD_PW_LS);
--		reg |= MPD_PW_EN;
--	} else {
--		reg &= ~MPD_PW_EN;
--	}
--	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
-+	if (wol->wolopts & WAKE_MAGICSECURE)
-+		memcpy(priv->sopass, wol->sopass, sizeof(priv->sopass));
- 
- 	/* Flag the device and relevant IRQ as wakeup capable */
- 	if (wol->wolopts) {
-@@ -120,6 +105,14 @@ static int bcmgenet_poll_wol_status(struct bcmgenet_priv *priv)
- 	return retries;
- }
- 
-+static void bcmgenet_set_mpd_password(struct bcmgenet_priv *priv)
-+{
-+	bcmgenet_umac_writel(priv, get_unaligned_be16(&priv->sopass[0]),
-+			     UMAC_MPD_PW_MS);
-+	bcmgenet_umac_writel(priv, get_unaligned_be32(&priv->sopass[2]),
-+			     UMAC_MPD_PW_LS);
-+}
++		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
++		added = true;
 +
- int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
- 				enum bcmgenet_power_mode mode)
- {
-@@ -144,13 +137,17 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ 		pkt->off += payload_len;
+ 		total_len += payload_len;
  
- 	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
- 	reg |= MPD_EN;
-+	if (priv->wolopts & WAKE_MAGICSECURE) {
-+		bcmgenet_set_mpd_password(priv);
-+		reg |= MPD_PW_EN;
-+	}
- 	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
- 
- 	/* Do not leave UniMAC in MPD mode only */
- 	retries = bcmgenet_poll_wol_status(priv);
- 	if (retries < 0) {
- 		reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
--		reg &= ~MPD_EN;
-+		reg &= ~(MPD_EN | MPD_PW_EN);
- 		bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
- 		return retries;
- 	}
-@@ -189,7 +186,7 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
- 	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
- 	if (!(reg & MPD_EN))
- 		return;	/* already powered up so skip the rest */
--	reg &= ~MPD_EN;
-+	reg &= ~(MPD_EN | MPD_PW_EN);
- 	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
- 
- 	/* Disable CRC Forward */
 -- 
 2.25.1
 
