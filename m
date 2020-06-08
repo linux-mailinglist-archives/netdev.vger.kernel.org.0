@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A4C1F22A1
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 493171F22AD
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728502AbgFHXJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:09:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55476 "EHLO mail.kernel.org"
+        id S1728570AbgFHXKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:10:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728472AbgFHXJk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:40 -0400
+        id S1728553AbgFHXKC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:10:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A180208FE;
-        Mon,  8 Jun 2020 23:09:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0777A20897;
+        Mon,  8 Jun 2020 23:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657780;
-        bh=b8sF3nzdbNYI7vM2opADzKQK1kEfaHKTQBe+5In3VHI=;
+        s=default; t=1591657801;
+        bh=MjLl3ug6sbtCBvmLTLKqCIvNlrMQAeBsiE98mZv6j0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JFTDTcU7Ygj5En4fIVpl2rsFlvk/UtkG6RAoa6Ql6oznxpzDHfCr9+sCeBzW9gZD6
-         JZ2cysQxKEM9AwGYkN728Zvg96MX/wJ6CUSaOTUDZv4fkfrcn5iQHuLBOUyA9sGz4z
-         tDyrS3bA7B5iBp+LtTCiDZ9Ots5SB8hpJqQvwGgc=
+        b=RvtaMzB1/ddk2imoD0x1yP83AsidVKhg/A8ciG/VqRP7UB37oxa2vBi3ciy021LOp
+         8NaTSxCMylGC5N/klF1yTBYtWYw9JsByIPsb4B1orAbZa3ZKTCDsIkKFurWZk1jV2A
+         T87Z6yVl941iATkJflfIYlRpZg9FjafueQmx6+E4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tamizh Chelvam <tamizhr@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
+Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 162/274] ath11k: fix kernel panic by freeing the msdu received with invalid length
-Date:   Mon,  8 Jun 2020 19:04:15 -0400
-Message-Id: <20200608230607.3361041-162-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 179/274] iwlwifi: avoid debug max amsdu config overwriting itself
+Date:   Mon,  8 Jun 2020 19:04:32 -0400
+Message-Id: <20200608230607.3361041-179-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,88 +44,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tamizh Chelvam <tamizhr@codeaurora.org>
+From: Mordechay Goodstein <mordechay.goodstein@intel.com>
 
-[ Upstream commit d7d43782d541edb8596d2f4fc7f41b0734948ec5 ]
+[ Upstream commit a65a5824298b06049dbaceb8a9bd19709dc9507c ]
 
-In certain scenario host receives the packets with invalid length
-which causes below kernel panic. Free up those msdus to avoid
-this kernel panic.
+If we set amsdu_len one after another the second one overwrites
+the orig_amsdu_len so allow only moving from debug to non debug state.
 
- 2270.028121:   <6> task: ffffffc0008306d0 ti: ffffffc0008306d0 task.ti: ffffffc0008306d0
- 2270.035247:   <2> PC is at skb_panic+0x40/0x44
- 2270.042784:   <2> LR is at skb_panic+0x40/0x44
- 2270.521775:   <2> [<ffffffc0004a06e0>] skb_panic+0x40/0x44
- 2270.524039:   <2> [<ffffffc0004a1278>] skb_put+0x54/0x5c
- 2270.529264:   <2> [<ffffffbffcc373a8>] ath11k_dp_process_rx_err+0x320/0x5b0 [ath11k]
- 2270.533860:   <2> [<ffffffbffcc30b68>] ath11k_dp_service_srng+0x80/0x268 [ath11k]
- 2270.541063:   <2> [<ffffffbffcc1d554>] ath11k_hal_rx_reo_ent_buf_paddr_get+0x200/0xb64 [ath11k]
- 2270.547917:   <2> [<ffffffc0004b1f74>] net_rx_action+0xf8/0x274
- 2270.556247:   <2> [<ffffffc000099df4>] __do_softirq+0x128/0x228
- 2270.561625:   <2> [<ffffffc00009a130>] irq_exit+0x84/0xcc
- 2270.567008:   <2> [<ffffffc0000cfb28>] __handle_domain_irq+0x8c/0xb0
- 2270.571695:   <2> [<ffffffc000082484>] gic_handle_irq+0x6c/0xbc
+Also the TLC update check was wrong: it was checking that also the orig
+is smaller then the new updated size, which is not the case in debug
+amsdu mode.
 
-Signed-off-by: Tamizh Chelvam <tamizhr@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1588611568-20791-1-git-send-email-tamizhr@codeaurora.org
+Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
+Fixes: af2984e9e625 ("iwlwifi: mvm: add a debugfs entry to set a fixed size AMSDU for all TX packets")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20200424182644.e565446a4fce.I9729d8c520d8b8bb4de9a5cdc62e01eb85168aac@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c | 11 +++++++----
+ drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c   | 15 ++++++++-------
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 34b1e8e6a7fb..007bb73d6c61 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2265,6 +2265,7 @@ static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
- 	struct ieee80211_hdr *hdr;
- 	struct sk_buff *last_buf;
- 	u8 l3_pad_bytes;
-+	u8 *hdr_status;
- 	u16 msdu_len;
- 	int ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
+index 3beef8d077b8..8fae7e707374 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
+@@ -5,10 +5,9 @@
+  *
+  * GPL LICENSE SUMMARY
+  *
+- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
+  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
+  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of version 2 of the GNU General Public License as
+@@ -28,10 +27,9 @@
+  *
+  * BSD LICENSE
+  *
+- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
+  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
+  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -481,6 +479,11 @@ static ssize_t iwl_dbgfs_amsdu_len_write(struct ieee80211_sta *sta,
+ 	if (kstrtou16(buf, 0, &amsdu_len))
+ 		return -EINVAL;
  
-@@ -2293,8 +2294,13 @@ static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
- 		skb_pull(msdu, HAL_RX_DESC_SIZE);
- 	} else if (!rxcb->is_continuation) {
- 		if ((msdu_len + HAL_RX_DESC_SIZE) > DP_RX_BUFFER_SIZE) {
-+			hdr_status = ath11k_dp_rx_h_80211_hdr(rx_desc);
- 			ret = -EINVAL;
- 			ath11k_warn(ar->ab, "invalid msdu len %u\n", msdu_len);
-+			ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "", hdr_status,
-+					sizeof(struct ieee80211_hdr));
-+			ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "", rx_desc,
-+					sizeof(struct hal_rx_desc));
- 			goto free_out;
- 		}
- 		skb_put(msdu, HAL_RX_DESC_SIZE + l3_pad_bytes + msdu_len);
-@@ -3389,6 +3395,7 @@ ath11k_dp_process_rx_err_buf(struct ath11k *ar, u32 *ring_desc, int buf_id, bool
- 	struct sk_buff *msdu;
- 	struct ath11k_skb_rxcb *rxcb;
- 	struct hal_rx_desc *rx_desc;
-+	u8 *hdr_status;
- 	u16 msdu_len;
- 
- 	spin_lock_bh(&rx_ring->idr_lock);
-@@ -3426,6 +3433,17 @@ ath11k_dp_process_rx_err_buf(struct ath11k *ar, u32 *ring_desc, int buf_id, bool
- 
- 	rx_desc = (struct hal_rx_desc *)msdu->data;
- 	msdu_len = ath11k_dp_rx_h_msdu_start_msdu_len(rx_desc);
-+	if ((msdu_len + HAL_RX_DESC_SIZE) > DP_RX_BUFFER_SIZE) {
-+		hdr_status = ath11k_dp_rx_h_80211_hdr(rx_desc);
-+		ath11k_warn(ar->ab, "invalid msdu leng %u", msdu_len);
-+		ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "", hdr_status,
-+				sizeof(struct ieee80211_hdr));
-+		ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "", rx_desc,
-+				sizeof(struct hal_rx_desc));
-+		dev_kfree_skb_any(msdu);
-+		goto exit;
-+	}
++	/* only change from debug set <-> debug unset */
++	if ((amsdu_len && mvmsta->orig_amsdu_len) ||
++	    (!!amsdu_len && mvmsta->orig_amsdu_len))
++		return -EBUSY;
 +
- 	skb_put(msdu, HAL_RX_DESC_SIZE + msdu_len);
+ 	if (amsdu_len) {
+ 		mvmsta->orig_amsdu_len = sta->max_amsdu_len;
+ 		sta->max_amsdu_len = amsdu_len;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
+index 15d11fb72aca..6f4d241d47e9 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
+@@ -369,14 +369,15 @@ void iwl_mvm_tlc_update_notif(struct iwl_mvm *mvm,
+ 		u16 size = le32_to_cpu(notif->amsdu_size);
+ 		int i;
  
- 	if (ath11k_dp_rx_frag_h_mpdu(ar, msdu, ring_desc)) {
+-		/*
+-		 * In debug sta->max_amsdu_len < size
+-		 * so also check with orig_amsdu_len which holds the original
+-		 * data before debugfs changed the value
+-		 */
+-		if (WARN_ON(sta->max_amsdu_len < size &&
+-			    mvmsta->orig_amsdu_len < size))
++		if (sta->max_amsdu_len < size) {
++			/*
++			 * In debug sta->max_amsdu_len < size
++			 * so also check with orig_amsdu_len which holds the
++			 * original data before debugfs changed the value
++			 */
++			WARN_ON(mvmsta->orig_amsdu_len < size);
+ 			goto out;
++		}
+ 
+ 		mvmsta->amsdu_enabled = le32_to_cpu(notif->amsdu_enabled);
+ 		mvmsta->max_amsdu_len = size;
 -- 
 2.25.1
 
