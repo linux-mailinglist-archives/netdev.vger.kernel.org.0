@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BF91F2F73
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C53C1F2F61
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387894AbgFIAuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:50:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56648 "EHLO mail.kernel.org"
+        id S2387433AbgFIAuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:50:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728680AbgFHXKb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:10:31 -0400
+        id S1728721AbgFHXKj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:10:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 102CA20B80;
-        Mon,  8 Jun 2020 23:10:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 158CF20CC7;
+        Mon,  8 Jun 2020 23:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657831;
-        bh=eZBp0tsDujcrF4Qv8GoWmXbcnp4p9Qe7aDwVYZD6/yg=;
+        s=default; t=1591657838;
+        bh=+2pQ2hPrXJJgBbrILzKSDmiflemN4+VZ16ewRbpvJ9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l0qSSwPM5IgKH3FNyWY8dE9U1ZF/8XvrKxJ0rtiohfV8syQpcnfZbzkHzlIg0MOIi
-         Qs52tNU3de00EmHgsIOhH5sDwWo1zOE24giowPgQdt4t4vj5Lib5Kaq+Vd5qG5qNMV
-         yMdY6Ej4LDfj853T/upz42t3wY5JYXD2c8JQv2VM=
+        b=TiEAsU6EWlcOKApywW0hH4Ep4hrWNg93gUv8q+iOgv1vD6iRM5Sl3B0pBhTCUurl9
+         2fGRMlUbj8nZmt/069jNKHXWOcYybtaWBx88jQdOBxkoGtvjWXfHJyNculOZpRfu6A
+         1v4t0Em8Y0tT5L5zN9HDE3WZfuhrZMcAAE7JyiMU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     DENG Qingfang <dqfext@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Erez Shitrit <erezsh@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.7 201/274] net: dsa: mt7530: set CPU port to fallback mode
-Date:   Mon,  8 Jun 2020 19:04:54 -0400
-Message-Id: <20200608230607.3361041-201-sashal@kernel.org>
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 207/274] net/mlx5e: IPoIB, Drop multicast packets that this interface sent
+Date:   Mon,  8 Jun 2020 19:05:00 -0400
+Message-Id: <20200608230607.3361041-207-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -46,75 +45,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: DENG Qingfang <dqfext@gmail.com>
+From: Erez Shitrit <erezsh@mellanox.com>
 
-[ Upstream commit 38152ea37d8bdaffa22603e0a5b5b86cfa8714c9 ]
+[ Upstream commit 8b46d424a743ddfef8056d5167f13ee7ebd1dcad ]
 
-Currently, setting a bridge's self PVID to other value and deleting
-the default VID 1 renders untagged ports of that VLAN unable to talk to
-the CPU port:
+After enabled loopback packets for IPoIB, we need to drop these packets
+that this HCA has replicated and came back to the same interface that
+sent them.
 
-	bridge vlan add dev br0 vid 2 pvid untagged self
-	bridge vlan del dev br0 vid 1 self
-	bridge vlan add dev sw0p0 vid 2 pvid untagged
-	bridge vlan del dev sw0p0 vid 1
-	# br0 cannot send untagged frames out of sw0p0 anymore
-
-That is because the CPU port is set to security mode and its PVID is
-still 1, and untagged frames are dropped due to VLAN member violation.
-
-Set the CPU port to fallback mode so untagged frames can pass through.
-
-Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 4c6c615e3f30 ("net/mlx5e: IPoIB, Add PKEY child interface nic profile")
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+Reviewed-by: Alex Vesker <valex@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mt7530.c | 11 ++++++++---
- drivers/net/dsa/mt7530.h |  6 ++++++
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 34e4aadfa705..b75d09783a05 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -807,10 +807,15 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- 		   PCR_MATRIX_MASK, PCR_MATRIX(MT7530_ALL_MEMBERS));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index e2beb89c1832..b69957be653a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1501,6 +1501,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
  
- 	/* Trapped into security mode allows packet forwarding through VLAN
--	 * table lookup.
-+	 * table lookup. CPU port is set to fallback mode to let untagged
-+	 * frames pass through.
+ #ifdef CONFIG_MLX5_CORE_IPOIB
+ 
++#define MLX5_IB_GRH_SGID_OFFSET 8
+ #define MLX5_IB_GRH_DGID_OFFSET 24
+ #define MLX5_GID_SIZE           16
+ 
+@@ -1514,6 +1515,7 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	struct net_device *netdev;
+ 	struct mlx5e_priv *priv;
+ 	char *pseudo_header;
++	u32 flags_rqpn;
+ 	u32 qpn;
+ 	u8 *dgid;
+ 	u8 g;
+@@ -1535,7 +1537,8 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	tstamp = &priv->tstamp;
+ 	stats = &priv->channel_stats[rq->ix].rq;
+ 
+-	g = (be32_to_cpu(cqe->flags_rqpn) >> 28) & 3;
++	flags_rqpn = be32_to_cpu(cqe->flags_rqpn);
++	g = (flags_rqpn >> 28) & 3;
+ 	dgid = skb->data + MLX5_IB_GRH_DGID_OFFSET;
+ 	if ((!g) || dgid[0] != 0xff)
+ 		skb->pkt_type = PACKET_HOST;
+@@ -1544,9 +1547,15 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	else
+ 		skb->pkt_type = PACKET_MULTICAST;
+ 
+-	/* TODO: IB/ipoib: Allow mcast packets from other VFs
+-	 * 68996a6e760e5c74654723eeb57bf65628ae87f4
++	/* Drop packets that this interface sent, ie multicast packets
++	 * that the HCA has replicated.
  	 */
--	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
--		   MT7530_PORT_SECURITY_MODE);
-+	if (dsa_is_cpu_port(ds, port))
-+		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
-+			   MT7530_PORT_FALLBACK_MODE);
-+	else
-+		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
-+			   MT7530_PORT_SECURITY_MODE);
++	if (g && (qpn == (flags_rqpn & 0xffffff)) &&
++	    (memcmp(netdev->dev_addr + 4, skb->data + MLX5_IB_GRH_SGID_OFFSET,
++		    MLX5_GID_SIZE) == 0)) {
++		skb->dev = NULL;
++		return;
++	}
  
- 	/* Set the port as a user port which is to be able to recognize VID
- 	 * from incoming packets before fetching entry within the VLAN table.
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 82af4d2d406e..14de60d0b9ca 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -153,6 +153,12 @@ enum mt7530_port_mode {
- 	/* Port Matrix Mode: Frames are forwarded by the PCR_MATRIX members. */
- 	MT7530_PORT_MATRIX_MODE = PORT_VLAN(0),
+ 	skb_pull(skb, MLX5_IB_GRH_BYTES);
  
-+	/* Fallback Mode: Forward received frames with ingress ports that do
-+	 * not belong to the VLAN member. Frames whose VID is not listed on
-+	 * the VLAN table are forwarded by the PCR_MATRIX members.
-+	 */
-+	MT7530_PORT_FALLBACK_MODE = PORT_VLAN(1),
-+
- 	/* Security Mode: Discard any frame due to ingress membership
- 	 * violation or VID missed on the VLAN table.
- 	 */
 -- 
 2.25.1
 
