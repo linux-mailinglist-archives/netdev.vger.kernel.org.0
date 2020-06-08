@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 656D51F2CFA
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAD291F2F16
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730646AbgFIA3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:29:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37414 "EHLO mail.kernel.org"
+        id S1729089AbgFIArf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:47:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730177AbgFHXQI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:08 -0400
+        id S1728877AbgFHXLS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:11:18 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2908120814;
-        Mon,  8 Jun 2020 23:16:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A051B20C56;
+        Mon,  8 Jun 2020 23:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658168;
-        bh=A+2JaOpuAnOIT+qANT0NjlO+6c2TDnl9rdUJ6hBS1E0=;
+        s=default; t=1591657878;
+        bh=dpsUGNLG6DoVdDNoW0gHaByBiuslEuKEyAKeOGPrz5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRMt6LsewQj/+j+L90xUsFbMLYo+9UiD69tvkvvxaGSMIZjSDw4amKhHPZTWZ+Iqe
-         RUyQUT8NO10V2ulNKnXzTq1TG8+y+E7f6dZXK3csNoqMKWi/PqKuUH+iz06DzPQyfr
-         qyjEX6HE8q//VbnxZ0Z6LGmHiD97v9a1QpgIIZTI=
+        b=WztCF1MuP8IlQExHXvt+IXG9ECqOf3jT2CYo4NbGZehV09+c2kh4WqH1wORheCPD8
+         uHhNmQSj/c7fY4cGx/W94flbHN7aUIwOHBlnm4x+lepVoj0v7Vt+s32vy3s+5dqy7/
+         xdAuNJTA3XIIn3EmB6JWr5V9btiSHJLeYYhTyX7E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qiushi Wu <wu000273@umn.edu>, David Howells <dhowells@redhat.com>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 195/606] rxrpc: Fix a memory leak in rxkad_verify_response()
-Date:   Mon,  8 Jun 2020 19:05:20 -0400
-Message-Id: <20200608231211.3363633-195-sashal@kernel.org>
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 235/274] net: ethernet: fec: move GPR register offset and bit into DT
+Date:   Mon,  8 Jun 2020 19:05:28 -0400
+Message-Id: <20200608230607.3361041-235-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
-References: <20200608231211.3363633-1-sashal@kernel.org>
+In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
+References: <20200608230607.3361041-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,44 +43,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+From: Fugang Duan <fugang.duan@nxp.com>
 
-commit f45d01f4f30b53c3a0a1c6c1c154acb7ff74ab9f upstream.
+[ Upstream commit 8a448bf832af537d26aa557d183a16943dce4510 ]
 
-A ticket was not released after a call of the function
-"rxkad_decrypt_ticket" failed. Thus replace the jump target
-"temporary_error_free_resp" by "temporary_error_free_ticket".
+The commit da722186f654 (net: fec: set GPR bit on suspend by DT
+configuration) set the GPR reigster offset and bit in driver for
+wake on lan feature.
 
-Fixes: 8c2f826dc3631 ("rxrpc: Don't put crypto buffers on the stack")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Markus Elfring <Markus.Elfring@web.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+But it introduces two issues here:
+- one SOC has two instances, they have different bit
+- different SOCs may have different offset and bit
+
+So to support wake-on-lan feature on other i.MX platforms, it should
+configure the GPR reigster offset and bit from DT.
+
+So the patch is to improve the commit da722186f654 (net: fec: set GPR
+bit on suspend by DT configuration) to support multiple ethernet
+instances on i.MX series.
+
+v2:
+ * switch back to store the quirks bitmask in driver_data
+v3:
+ * suggested by Sascha Hauer, use a struct fec_devinfo for
+   abstracting differences between different hardware variants,
+   it can give more freedom to describe the differences.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/rxkad.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 24 +++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 098f1f9ec53b..52a24d4ef5d8 100644
---- a/net/rxrpc/rxkad.c
-+++ b/net/rxrpc/rxkad.c
-@@ -1148,7 +1148,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
- 	ret = rxkad_decrypt_ticket(conn, skb, ticket, ticket_len, &session_key,
- 				   &expiry, _abort_code);
- 	if (ret < 0)
--		goto temporary_error_free_resp;
-+		goto temporary_error_free_ticket;
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index dc6f8763a5d4..2840dbad25cb 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -88,8 +88,6 @@ static void fec_enet_itr_coal_init(struct net_device *ndev);
  
- 	/* use the session key from inside the ticket to decrypt the
- 	 * response */
-@@ -1230,7 +1230,6 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ struct fec_devinfo {
+ 	u32 quirks;
+-	u8 stop_gpr_reg;
+-	u8 stop_gpr_bit;
+ };
  
- temporary_error_free_ticket:
- 	kfree(ticket);
--temporary_error_free_resp:
- 	kfree(response);
- temporary_error:
- 	/* Ignore the response packet if we got a temporary error such as
+ static const struct fec_devinfo fec_imx25_info = {
+@@ -112,8 +110,6 @@ static const struct fec_devinfo fec_imx6q_info = {
+ 		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
+ 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR006358 |
+ 		  FEC_QUIRK_HAS_RACC,
+-	.stop_gpr_reg = 0x34,
+-	.stop_gpr_bit = 27,
+ };
+ 
+ static const struct fec_devinfo fec_mvf600_info = {
+@@ -3452,19 +3448,23 @@ static int fec_enet_get_irq_cnt(struct platform_device *pdev)
+ }
+ 
+ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
+-				   struct fec_devinfo *dev_info,
+ 				   struct device_node *np)
+ {
+ 	struct device_node *gpr_np;
++	u32 out_val[3];
+ 	int ret = 0;
+ 
+-	if (!dev_info)
+-		return 0;
+-
+-	gpr_np = of_parse_phandle(np, "gpr", 0);
++	gpr_np = of_parse_phandle(np, "fsl,stop-mode", 0);
+ 	if (!gpr_np)
+ 		return 0;
+ 
++	ret = of_property_read_u32_array(np, "fsl,stop-mode", out_val,
++					 ARRAY_SIZE(out_val));
++	if (ret) {
++		dev_dbg(&fep->pdev->dev, "no stop mode property\n");
++		return ret;
++	}
++
+ 	fep->stop_gpr.gpr = syscon_node_to_regmap(gpr_np);
+ 	if (IS_ERR(fep->stop_gpr.gpr)) {
+ 		dev_err(&fep->pdev->dev, "could not find gpr regmap\n");
+@@ -3473,8 +3473,8 @@ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
+ 		goto out;
+ 	}
+ 
+-	fep->stop_gpr.reg = dev_info->stop_gpr_reg;
+-	fep->stop_gpr.bit = dev_info->stop_gpr_bit;
++	fep->stop_gpr.reg = out_val[1];
++	fep->stop_gpr.bit = out_val[2];
+ 
+ out:
+ 	of_node_put(gpr_np);
+@@ -3551,7 +3551,7 @@ fec_probe(struct platform_device *pdev)
+ 	if (of_get_property(np, "fsl,magic-packet", NULL))
+ 		fep->wol_flag |= FEC_WOL_HAS_MAGIC_PACKET;
+ 
+-	ret = fec_enet_init_stop_mode(fep, dev_info, np);
++	ret = fec_enet_init_stop_mode(fep, np);
+ 	if (ret)
+ 		goto failed_stop_mode;
+ 
 -- 
 2.25.1
 
