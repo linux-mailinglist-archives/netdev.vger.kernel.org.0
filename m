@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8DB1F2C83
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:27:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636C51F2C81
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733041AbgFIAYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:24:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38394 "EHLO mail.kernel.org"
+        id S1733034AbgFIAY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:24:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728818AbgFHXRE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:17:04 -0400
+        id S1730398AbgFHXRF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:17:05 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9999A2078D;
-        Mon,  8 Jun 2020 23:17:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D53E02086A;
+        Mon,  8 Jun 2020 23:17:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658224;
-        bh=JJEYW8LD89bBtMkRmC/DxgoeVEhaIy42/RS1/a/Bm40=;
+        s=default; t=1591658225;
+        bh=y7B7DXueva7KEtGBWWvMlKUUR6TEa+EXPVc0K1XHINU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m617ZEN9/P+XrrDyoRwc7S6GjHVbQ5IlvqgXK6rItSgXcMzBIucykUvqryU6Xs32f
-         jq5kicfs0lTZHg1MmbZV0pNO3I6llr6Aa10KZWZdCOb+h30CGWXJDkDqLnEQcZc/hs
-         OauTvaoN/VKxD8G9yNnr3IFaFBMHPF/caHIwlRc8=
+        b=r/PeyiTR1SituUNyymXUZWzqo8xT7da1nUFZ3hZvoxLBi1g6A9RRddYUhFC0ppdKn
+         mqzDqm0j8t7aL2+DltF0XoYgYsi8uYCU2G4JbqFPntaDRV35jZnQgWBIJ327zSjAjk
+         TP+cRXcjNujQerRFHRY2ea5T8Ls1DyxNujK8pUHc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eran Ben Elisha <eranbe@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
+Cc:     Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 238/606] net/mlx5: Fix a race when moving command interface to events mode
-Date:   Mon,  8 Jun 2020 19:06:03 -0400
-Message-Id: <20200608231211.3363633-238-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 239/606] net/mlx5: Fix cleaning unmanaged flow tables
+Date:   Mon,  8 Jun 2020 19:06:04 -0400
+Message-Id: <20200608231211.3363633-239-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -45,171 +45,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eran Ben Elisha <eranbe@mellanox.com>
+From: Roi Dayan <roid@mellanox.com>
 
-[ Upstream commit d43b7007dbd1195a5b6b83213e49b1516aaf6f5e ]
+[ Upstream commit aee37f3d940ca732df71c3df49347bccaafc0b24 ]
 
-After driver creates (via FW command) an EQ for commands, the driver will
-be informed on new commands completion by EQE. However, due to a race in
-driver's internal command mode metadata update, some new commands will
-still be miss-handled by driver as if we are in polling mode. Such commands
-can get two non forced completion, leading to already freed command entry
-access.
+Unmanaged flow tables doesn't have a parent and tree_put_node()
+assume there is always a parent if cleaning is needed. fix that.
 
-CREATE_EQ command, that maps EQ to the command queue must be posted to the
-command queue while it is empty and no other command should be posted.
-
-Add SW mechanism that once the CREATE_EQ command is about to be executed,
-all other commands will return error without being sent to the FW. Allow
-sending other commands only after successfully changing the driver's
-internal command mode metadata.
-We can safely return error to all other commands while creating the command
-EQ, as all other commands might be sent from the user/application during
-driver load. Application can rerun them later after driver's load was
-finished.
-
-Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
-Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+Fixes: 5281a0c90919 ("net/mlx5: fs_core: Introduce unmanaged flow tables")
+Signed-off-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Mark Bloch <markb@mellanox.com>
+Reviewed-by: Paul Blakey <paulb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 35 ++++++++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  3 ++
- include/linux/mlx5/driver.h                   |  6 ++++
- 3 files changed, 40 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index d695b75bc0af..2f3cafdc3b1f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -848,6 +848,14 @@ static void free_msg(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *msg);
- static void mlx5_free_cmd_msg(struct mlx5_core_dev *dev,
- 			      struct mlx5_cmd_msg *msg);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 9dc24241dc91..cdc566768a07 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -323,14 +323,13 @@ static void tree_put_node(struct fs_node *node, bool locked)
+ 		if (node->del_hw_func)
+ 			node->del_hw_func(node);
+ 		if (parent_node) {
+-			/* Only root namespace doesn't have parent and we just
+-			 * need to free its node.
+-			 */
+ 			down_write_ref_node(parent_node, locked);
+ 			list_del_init(&node->list);
+ 			if (node->del_sw_func)
+ 				node->del_sw_func(node);
+ 			up_write_ref_node(parent_node, locked);
++		} else if (node->del_sw_func) {
++			node->del_sw_func(node);
+ 		} else {
+ 			kfree(node);
+ 		}
+@@ -447,8 +446,10 @@ static void del_sw_flow_table(struct fs_node *node)
+ 	fs_get_obj(ft, node);
  
-+static bool opcode_allowed(struct mlx5_cmd *cmd, u16 opcode)
-+{
-+	if (cmd->allowed_opcode == CMD_ALLOWED_OPCODE_ALL)
-+		return true;
-+
-+	return cmd->allowed_opcode == opcode;
-+}
-+
- static void cmd_work_handler(struct work_struct *work)
- {
- 	struct mlx5_cmd_work_ent *ent = container_of(work, struct mlx5_cmd_work_ent, work);
-@@ -914,7 +922,8 @@ static void cmd_work_handler(struct work_struct *work)
- 
- 	/* Skip sending command to fw if internal error */
- 	if (pci_channel_offline(dev->pdev) ||
--	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
-+	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR ||
-+	    !opcode_allowed(&dev->cmd, ent->op)) {
- 		u8 status = 0;
- 		u32 drv_synd;
- 
-@@ -1405,6 +1414,22 @@ static void create_debugfs_files(struct mlx5_core_dev *dev)
- 	mlx5_cmdif_debugfs_init(dev);
+ 	rhltable_destroy(&ft->fgs_hash);
+-	fs_get_obj(prio, ft->node.parent);
+-	prio->num_ft--;
++	if (ft->node.parent) {
++		fs_get_obj(prio, ft->node.parent);
++		prio->num_ft--;
++	}
+ 	kfree(ft);
  }
  
-+void mlx5_cmd_allowed_opcode(struct mlx5_core_dev *dev, u16 opcode)
-+{
-+	struct mlx5_cmd *cmd = &dev->cmd;
-+	int i;
-+
-+	for (i = 0; i < cmd->max_reg_cmds; i++)
-+		down(&cmd->sem);
-+	down(&cmd->pages_sem);
-+
-+	cmd->allowed_opcode = opcode;
-+
-+	up(&cmd->pages_sem);
-+	for (i = 0; i < cmd->max_reg_cmds; i++)
-+		up(&cmd->sem);
-+}
-+
- static void mlx5_cmd_change_mod(struct mlx5_core_dev *dev, int mode)
- {
- 	struct mlx5_cmd *cmd = &dev->cmd;
-@@ -1681,12 +1706,13 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
- 	int err;
- 	u8 status = 0;
- 	u32 drv_synd;
-+	u16 opcode;
- 	u8 token;
- 
-+	opcode = MLX5_GET(mbox_in, in, opcode);
- 	if (pci_channel_offline(dev->pdev) ||
--	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR) {
--		u16 opcode = MLX5_GET(mbox_in, in, opcode);
--
-+	    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR ||
-+	    !opcode_allowed(&dev->cmd, opcode)) {
- 		err = mlx5_internal_err_ret_value(dev, opcode, &drv_synd, &status);
- 		MLX5_SET(mbox_out, out, status, status);
- 		MLX5_SET(mbox_out, out, syndrome, drv_synd);
-@@ -1988,6 +2014,7 @@ int mlx5_cmd_init(struct mlx5_core_dev *dev)
- 	mlx5_core_dbg(dev, "descriptor at dma 0x%llx\n", (unsigned long long)(cmd->dma));
- 
- 	cmd->mode = CMD_MODE_POLLING;
-+	cmd->allowed_opcode = CMD_ALLOWED_OPCODE_ALL;
- 
- 	create_msg_cache(dev);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index cccea3a8eddd..ce6c621af043 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -611,11 +611,13 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 		.nent = MLX5_NUM_CMD_EQE,
- 		.mask[0] = 1ull << MLX5_EVENT_TYPE_CMD,
- 	};
-+	mlx5_cmd_allowed_opcode(dev, MLX5_CMD_OP_CREATE_EQ);
- 	err = setup_async_eq(dev, &table->cmd_eq, &param, "cmd");
- 	if (err)
- 		goto err1;
- 
- 	mlx5_cmd_use_events(dev);
-+	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
- 
- 	param = (struct mlx5_eq_param) {
- 		.irq_index = 0,
-@@ -645,6 +647,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 	mlx5_cmd_use_polling(dev);
- 	cleanup_async_eq(dev, &table->cmd_eq, "cmd");
- err1:
-+	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
- 	mlx5_eq_notifier_unregister(dev, &table->cq_err_nb);
- 	return err;
- }
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index b596353a3a12..6050264ebde1 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -301,6 +301,7 @@ struct mlx5_cmd {
- 	struct semaphore sem;
- 	struct semaphore pages_sem;
- 	int	mode;
-+	u16     allowed_opcode;
- 	struct mlx5_cmd_work_ent *ent_arr[MLX5_MAX_COMMANDS];
- 	struct dma_pool *pool;
- 	struct mlx5_cmd_debug dbg;
-@@ -893,10 +894,15 @@ mlx5_frag_buf_get_idx_last_contig_stride(struct mlx5_frag_buf_ctrl *fbc, u32 ix)
- 	return min_t(u32, last_frag_stride_idx - fbc->strides_offset, fbc->sz_m1);
- }
- 
-+enum {
-+	CMD_ALLOWED_OPCODE_ALL,
-+};
-+
- int mlx5_cmd_init(struct mlx5_core_dev *dev);
- void mlx5_cmd_cleanup(struct mlx5_core_dev *dev);
- void mlx5_cmd_use_events(struct mlx5_core_dev *dev);
- void mlx5_cmd_use_polling(struct mlx5_core_dev *dev);
-+void mlx5_cmd_allowed_opcode(struct mlx5_core_dev *dev, u16 opcode);
- 
- struct mlx5_async_ctx {
- 	struct mlx5_core_dev *dev;
 -- 
 2.25.1
 
