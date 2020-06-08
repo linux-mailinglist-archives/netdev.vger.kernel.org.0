@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B49E61F2A24
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9501F2AB5
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730882AbgFHXT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:19:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43076 "EHLO mail.kernel.org"
+        id S1731053AbgFIALV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:11:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730875AbgFHXTy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:19:54 -0400
+        id S1730878AbgFHXTz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:19:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4854920814;
-        Mon,  8 Jun 2020 23:19:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99C7D2085B;
+        Mon,  8 Jun 2020 23:19:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658394;
-        bh=LrwI3WVVMEZTLt+oktHm+tTG2mf3KGJ3BQ4rafhaoYY=;
+        s=default; t=1591658395;
+        bh=9lHRliieVBRuhWpIfnInKTM3rDQgHHFvUgGFx4dSJ7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDQJhI3p5YHJbgNnYb3jvpLxeHef65/yiWfBpOvQuhPyq3lutdVsC1Lrjrs8FN6hP
-         jnHrsl1RyNDKQLkhMLl5lt7d7TH7+RwNd4k3J74zsjvWLHx6nqHbXo4A24gzoAGt6T
-         67nAPT7MNfuBIbRp7cAVzLN85psVyZMSzi7DOKHg=
+        b=G+MkOtyPr/YKKUX+Z1885QbipjQP5V8QdncXAb5RdF/a53x7ZPMjVfgFz/DnCpDus
+         r6biYXcqgcWlLar//kd2Ib0ABOaA7LFrOECSEZtB4wyLAoOoLjz0skYsy3gcPYGQoJ
+         jsKsYC5xnjI2TbcrMI2RZPq3ngIR/Hzumnz44vCo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        Matthias Schiffer <mschiffer@universe-factory.net>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+Cc:     Surabhi Boob <surabhi.boob@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 051/175] batman-adv: Revert "disable ethtool link speed detection when auto negotiation off"
-Date:   Mon,  8 Jun 2020 19:16:44 -0400
-Message-Id: <20200608231848.3366970-51-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 052/175] ice: Fix memory leak
+Date:   Mon,  8 Jun 2020 19:16:45 -0400
+Message-Id: <20200608231848.3366970-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
 References: <20200608231848.3366970-1-sashal@kernel.org>
@@ -45,65 +46,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Surabhi Boob <surabhi.boob@intel.com>
 
-[ Upstream commit 9ad346c90509ebd983f60da7d082f261ad329507 ]
+[ Upstream commit 1aaef2bc4e0a5ce9e4dd86359e6a0bf52c6aa64f ]
 
-The commit 8c46fcd78308 ("batman-adv: disable ethtool link speed detection
-when auto negotiation off") disabled the usage of ethtool's link_ksetting
-when auto negotation was enabled due to invalid values when used with
-tun/tap virtual net_devices. According to the patch, automatic measurements
-should be used for these kind of interfaces.
+Handle memory leak on filter management initialization failure.
 
-But there are major flaws with this argumentation:
-
-* automatic measurements are not implemented
-* auto negotiation has nothing to do with the validity of the retrieved
-  values
-
-The first point has to be fixed by a longer patch series. The "validity"
-part of the second point must be addressed in the same patch series by
-dropping the usage of ethtool's link_ksetting (thus always doing automatic
-measurements over ethernet).
-
-Drop the patch again to have more default values for various net_device
-types/configurations. The user can still overwrite them using the
-batadv_hardif's BATADV_ATTR_THROUGHPUT_OVERRIDE.
-
-Reported-by: Matthias Schiffer <mschiffer@universe-factory.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Surabhi Boob <surabhi.boob@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/bat_v_elp.c | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_common.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/batman-adv/bat_v_elp.c b/net/batman-adv/bat_v_elp.c
-index 2614a9caee00..a39af0eefad3 100644
---- a/net/batman-adv/bat_v_elp.c
-+++ b/net/batman-adv/bat_v_elp.c
-@@ -120,20 +120,7 @@ static u32 batadv_v_elp_get_throughput(struct batadv_hardif_neigh_node *neigh)
- 	rtnl_lock();
- 	ret = __ethtool_get_link_ksettings(hard_iface->net_dev, &link_settings);
- 	rtnl_unlock();
--
--	/* Virtual interface drivers such as tun / tap interfaces, VLAN, etc
--	 * tend to initialize the interface throughput with some value for the
--	 * sake of having a throughput number to export via ethtool. This
--	 * exported throughput leaves batman-adv to conclude the interface
--	 * throughput is genuine (reflecting reality), thus no measurements
--	 * are necessary.
--	 *
--	 * Based on the observation that those interface types also tend to set
--	 * the link auto-negotiation to 'off', batman-adv shall check this
--	 * setting to differentiate between genuine link throughput information
--	 * and placeholders installed by virtual interfaces.
--	 */
--	if (ret == 0 && link_settings.base.autoneg == AUTONEG_ENABLE) {
-+	if (ret == 0) {
- 		/* link characteristics might change over time */
- 		if (link_settings.base.duplex == DUPLEX_FULL)
- 			hard_iface->bat_v.flags |= BATADV_FULL_DUPLEX;
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 171f0b625407..d68b8aa31b19 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -436,6 +436,7 @@ static void ice_init_flex_flds(struct ice_hw *hw, enum ice_rxdid prof_id)
+ static enum ice_status ice_init_fltr_mgmt_struct(struct ice_hw *hw)
+ {
+ 	struct ice_switch_info *sw;
++	enum ice_status status;
+ 
+ 	hw->switch_info = devm_kzalloc(ice_hw_to_dev(hw),
+ 				       sizeof(*hw->switch_info), GFP_KERNEL);
+@@ -446,7 +447,12 @@ static enum ice_status ice_init_fltr_mgmt_struct(struct ice_hw *hw)
+ 
+ 	INIT_LIST_HEAD(&sw->vsi_list_map_head);
+ 
+-	return ice_init_def_sw_recp(hw);
++	status = ice_init_def_sw_recp(hw);
++	if (status) {
++		devm_kfree(ice_hw_to_dev(hw), hw->switch_info);
++		return status;
++	}
++	return 0;
+ }
+ 
+ /**
 -- 
 2.25.1
 
