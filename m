@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB841F2E89
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E2D1F2E84
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729086AbgFHXMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:12:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59772 "EHLO mail.kernel.org"
+        id S1729113AbgFHXM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:12:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59864 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728384AbgFHXMU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:12:20 -0400
+        id S1729085AbgFHXMY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:12:24 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4C7C1212CC;
-        Mon,  8 Jun 2020 23:12:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 06A7C208C7;
+        Mon,  8 Jun 2020 23:12:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657940;
-        bh=52liZxWS/YVroA/0/89/gMuhBgSh5CrWsVrWvpMtxo8=;
+        s=default; t=1591657944;
+        bh=1APZRQmaZ94RwQ1cAvwgySx9/rkDQcEWWledK+r1HSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDwlKid4kRMpQBoMqO5E0dhfpM2WucrsJdCMZSl2gmfXwr4Qck+ua9JJor+CEFOWG
-         kX/FZp20iu9P2XerocXebmYl3jWbHVWPGLvxZ3GW+K+2gf1EhkxP/CWbDNsI7S/Gyd
-         FbXoh99o0Mjt2LgjSMFSOXdI7HKu1neJNUvOLtXQ=
+        b=mRN5rnbmbKWlM10fJD3bnsquRGyu0uhXHh08+EFQrsZKyfrXfDo8DG0DY0IKRkjae
+         mYCAtfaf2dqljTKn6deWnbeWlv+zbHY4MpmKMqhyKAUrBlZnrNGJsww8pLt7PiYw8w
+         T+RzibRFuZny+tfiOFUeHRhtauFM6EVvOWYjDYYo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sasha Levin <sashal@kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 006/606] bpf: Fix bug in mmap() implementation for BPF array map
-Date:   Mon,  8 Jun 2020 19:02:11 -0400
-Message-Id: <20200608231211.3363633-6-sashal@kernel.org>
+Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Subject: [PATCH AUTOSEL 5.6 009/606] net/rds: Use ERR_PTR for rds_message_alloc_sgs()
+Date:   Mon,  8 Jun 2020 19:02:14 -0400
+Message-Id: <20200608231211.3363633-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,63 +47,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Upstream commit 333291ce5055f2039afc907badaf5b66bc1adfdc ]
+From: Jason Gunthorpe <jgg@mellanox.com>
 
-mmap() subsystem allows user-space application to memory-map region with
-initial page offset. This wasn't taken into account in initial implementation
-of BPF array memory-mapping. This would result in wrong pages, not taking into
-account requested page shift, being memory-mmaped into user-space. This patch
-fixes this gap and adds a test for such scenario.
+commit 7dba92037baf3fa00b4880a31fd532542264994c upstream.
 
-Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20200512235925.3817805-1-andriin@fb.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Returning the error code via a 'int *ret' when the function returns a
+pointer is very un-kernely and causes gcc 10's static analysis to choke:
+
+net/rds/message.c: In function ‘rds_message_map_pages’:
+net/rds/message.c:358:10: warning: ‘ret’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  358 |   return ERR_PTR(ret);
+
+Use a typical ERR_PTR return instead.
+
+Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/arraymap.c                         | 7 ++++++-
- tools/testing/selftests/bpf/prog_tests/mmap.c | 9 +++++++++
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ net/rds/message.c | 19 ++++++-------------
+ net/rds/rdma.c    | 12 ++++++++----
+ net/rds/rds.h     |  3 +--
+ net/rds/send.c    |  6 ++++--
+ 4 files changed, 19 insertions(+), 21 deletions(-)
 
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index 95d77770353c..1d6120fd5ba6 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -486,7 +486,12 @@ static int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
- 	if (!(map->map_flags & BPF_F_MMAPABLE))
- 		return -EINVAL;
+diff --git a/net/rds/message.c b/net/rds/message.c
+index 50f13f1d4ae0..2d43e13d6dd5 100644
+--- a/net/rds/message.c
++++ b/net/rds/message.c
+@@ -308,26 +308,20 @@ struct rds_message *rds_message_alloc(unsigned int extra_len, gfp_t gfp)
+ /*
+  * RDS ops use this to grab SG entries from the rm's sg pool.
+  */
+-struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents,
+-					  int *ret)
++struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents)
+ {
+ 	struct scatterlist *sg_first = (struct scatterlist *) &rm[1];
+ 	struct scatterlist *sg_ret;
  
--	return remap_vmalloc_range(vma, array_map_vmalloc_addr(array), pgoff);
-+	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) >
-+	    PAGE_ALIGN((u64)array->map.max_entries * array->elem_size))
-+		return -EINVAL;
-+
-+	return remap_vmalloc_range(vma, array_map_vmalloc_addr(array),
-+				   vma->vm_pgoff + pgoff);
- }
+-	if (WARN_ON(!ret))
+-		return NULL;
+-
+ 	if (nents <= 0) {
+ 		pr_warn("rds: alloc sgs failed! nents <= 0\n");
+-		*ret = -EINVAL;
+-		return NULL;
++		return ERR_PTR(-EINVAL);
+ 	}
  
- const struct bpf_map_ops array_map_ops = {
-diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testing/selftests/bpf/prog_tests/mmap.c
-index 16a814eb4d64..b0e789678aa4 100644
---- a/tools/testing/selftests/bpf/prog_tests/mmap.c
-+++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
-@@ -197,6 +197,15 @@ void test_mmap(void)
- 	CHECK_FAIL(map_data->val[far] != 3 * 321);
+ 	if (rm->m_used_sgs + nents > rm->m_total_sgs) {
+ 		pr_warn("rds: alloc sgs failed! total %d used %d nents %d\n",
+ 			rm->m_total_sgs, rm->m_used_sgs, nents);
+-		*ret = -ENOMEM;
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+ 	}
  
- 	munmap(tmp2, 4 * page_size);
-+
-+	/* map all 4 pages, but with pg_off=1 page, should fail */
-+	tmp1 = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
-+		    data_map_fd, page_size /* initial page shift */);
-+	if (CHECK(tmp1 != MAP_FAILED, "adv_mmap7", "unexpected success")) {
-+		munmap(tmp1, 4 * page_size);
-+		goto cleanup;
+ 	sg_ret = &sg_first[rm->m_used_sgs];
+@@ -343,7 +337,6 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
+ 	unsigned int i;
+ 	int num_sgs = DIV_ROUND_UP(total_len, PAGE_SIZE);
+ 	int extra_bytes = num_sgs * sizeof(struct scatterlist);
+-	int ret;
+ 
+ 	rm = rds_message_alloc(extra_bytes, GFP_NOWAIT);
+ 	if (!rm)
+@@ -352,10 +345,10 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
+ 	set_bit(RDS_MSG_PAGEVEC, &rm->m_flags);
+ 	rm->m_inc.i_hdr.h_len = cpu_to_be32(total_len);
+ 	rm->data.op_nents = DIV_ROUND_UP(total_len, PAGE_SIZE);
+-	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs, &ret);
+-	if (!rm->data.op_sg) {
++	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
++	if (IS_ERR(rm->data.op_sg)) {
+ 		rds_message_put(rm);
+-		return ERR_PTR(ret);
++		return ERR_CAST(rm->data.op_sg);
+ 	}
+ 
+ 	for (i = 0; i < rm->data.op_nents; ++i) {
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index 585e6b3b69ce..554ea7f0277f 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -664,9 +664,11 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
+ 	op->op_odp_mr = NULL;
+ 
+ 	WARN_ON(!nr_pages);
+-	op->op_sg = rds_message_alloc_sgs(rm, nr_pages, &ret);
+-	if (!op->op_sg)
++	op->op_sg = rds_message_alloc_sgs(rm, nr_pages);
++	if (IS_ERR(op->op_sg)) {
++		ret = PTR_ERR(op->op_sg);
+ 		goto out_pages;
 +	}
-+
- cleanup:
- 	if (bss_mmaped)
- 		CHECK_FAIL(munmap(bss_mmaped, bss_sz));
+ 
+ 	if (op->op_notify || op->op_recverr) {
+ 		/* We allocate an uninitialized notifier here, because
+@@ -905,9 +907,11 @@ int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
+ 	rm->atomic.op_silent = !!(args->flags & RDS_RDMA_SILENT);
+ 	rm->atomic.op_active = 1;
+ 	rm->atomic.op_recverr = rs->rs_recverr;
+-	rm->atomic.op_sg = rds_message_alloc_sgs(rm, 1, &ret);
+-	if (!rm->atomic.op_sg)
++	rm->atomic.op_sg = rds_message_alloc_sgs(rm, 1);
++	if (IS_ERR(rm->atomic.op_sg)) {
++		ret = PTR_ERR(rm->atomic.op_sg);
+ 		goto err;
++	}
+ 
+ 	/* verify 8 byte-aligned */
+ 	if (args->local_addr & 0x7) {
+diff --git a/net/rds/rds.h b/net/rds/rds.h
+index e4a603523083..b8b7ad766046 100644
+--- a/net/rds/rds.h
++++ b/net/rds/rds.h
+@@ -852,8 +852,7 @@ rds_conn_connecting(struct rds_connection *conn)
+ 
+ /* message.c */
+ struct rds_message *rds_message_alloc(unsigned int nents, gfp_t gfp);
+-struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents,
+-					  int *ret);
++struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents);
+ int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
+ 			       bool zcopy);
+ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned int total_len);
+diff --git a/net/rds/send.c b/net/rds/send.c
+index 82dcd8b84fe7..68e2bdb08fd0 100644
+--- a/net/rds/send.c
++++ b/net/rds/send.c
+@@ -1274,9 +1274,11 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
+ 
+ 	/* Attach data to the rm */
+ 	if (payload_len) {
+-		rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs, &ret);
+-		if (!rm->data.op_sg)
++		rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
++		if (IS_ERR(rm->data.op_sg)) {
++			ret = PTR_ERR(rm->data.op_sg);
+ 			goto out;
++		}
+ 		ret = rds_message_copy_from_user(rm, &msg->msg_iter, zcopy);
+ 		if (ret)
+ 			goto out;
 -- 
 2.25.1
 
