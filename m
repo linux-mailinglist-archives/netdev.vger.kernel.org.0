@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 427B41F17F2
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 13:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5F31F184D
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 13:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729622AbgFHLi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 07:38:59 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:36424 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729561AbgFHLi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 07:38:56 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1591616335; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=UlNfDGogKCJ2Hte3WfYZUyoDNhoWUwvyIBaQzivZeyg=; b=pY9K81crIXaKvri2Dj/J2kiyKCzV1V1H5KtIXdNwrdBqYhFzJnWPWqQIPf+vQVPH2FHeK/PJ
- NETBQ99XZWOzDSbmIMfhN8gf8ujJ6QQf4H4XzDK5OuTwlW9bdE3Pnz39IVzbOgtNQjSyHdR3
- fBpP5KAsmPbS7iyFAHienypTFe0=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n12.prod.us-east-1.postgun.com with SMTP id
- 5ede234a8bec5077688023ce (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 08 Jun 2020 11:38:50
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B8DF7C433A1; Mon,  8 Jun 2020 11:38:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 920A6C433CA;
-        Mon,  8 Jun 2020 11:38:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 920A6C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     Govind Singh <govinds@qti.qualcomm.com>, kuabhs@google.com.org,
-        sujitka@chromium.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org,
-        Michal Kazior <michal.kazior@tieto.com>,
+        id S1729734AbgFHL4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 07:56:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51664 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726597AbgFHL4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 07:56:32 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 9CACCAB8F;
+        Mon,  8 Jun 2020 11:56:33 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id EF84260490; Mon,  8 Jun 2020 13:56:28 +0200 (CEST)
+Date:   Mon, 8 Jun 2020 13:56:28 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, bpf@vger.kernel.org,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] ath10k: Acquire tx_lock in tx error paths
-References: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
-Date:   Mon, 08 Jun 2020 14:38:43 +0300
-In-Reply-To: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
-        (Evan Green's message of "Thu, 4 Jun 2020 10:59:11 -0700")
-Message-ID: <87v9k1iy7w.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 04/16] net: bpfilter: use 'userprogs' syntax to build
+ bpfilter_umh
+Message-ID: <20200608115628.osizkpo76cgn2ci7@lion.mk-sys.cz>
+References: <20200423073929.127521-1-masahiroy@kernel.org>
+ <20200423073929.127521-5-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200423073929.127521-5-masahiroy@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Evan Green <evgreen@chromium.org> writes:
+On Thu, Apr 23, 2020 at 04:39:17PM +0900, Masahiro Yamada wrote:
+> The user mode helper should be compiled for the same architecture as
+> the kernel.
+> 
+> This Makefile reuses the 'hostprogs' syntax by overriding HOSTCC with CC.
+> 
+> Now that Kbuild provides the syntax 'userprogs', use it to fix the
+> Makefile mess.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Reported-by: kbuild test robot <lkp@intel.com>
+> ---
+> 
+>  net/bpfilter/Makefile | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+> 
+> diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
+> index 36580301da70..6ee650c6badb 100644
+> --- a/net/bpfilter/Makefile
+> +++ b/net/bpfilter/Makefile
+> @@ -3,17 +3,14 @@
+>  # Makefile for the Linux BPFILTER layer.
+>  #
+>  
+> -hostprogs := bpfilter_umh
+> +userprogs := bpfilter_umh
+>  bpfilter_umh-objs := main.o
+> -KBUILD_HOSTCFLAGS += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+> -HOSTCC := $(CC)
+> +user-ccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+>  
+> -ifeq ($(CONFIG_BPFILTER_UMH), y)
+> -# builtin bpfilter_umh should be compiled with -static
+> +# builtin bpfilter_umh should be linked with -static
+>  # since rootfs isn't mounted at the time of __init
+>  # function is called and do_execv won't find elf interpreter
+> -KBUILD_HOSTLDFLAGS += -static
+> -endif
+> +bpfilter_umh-ldflags += -static
+>  
+>  $(obj)/bpfilter_umh_blob.o: $(obj)/bpfilter_umh
 
-> ath10k_htt_tx_free_msdu_id() has a lockdep assertion that htt->tx_lock
-> is held. Acquire the lock in a couple of error paths when calling that
-> function to ensure this condition is met.
->
-> Fixes: 6421969f248fd ("ath10k: refactor tx pending management")
-> Fixes: e62ee5c381c59 ("ath10k: Add support for htt_data_tx_desc_64
-> descriptor")
+Hello,
 
-Fixes tag should be in one line, I fixed that in the pending branch.
+I just noticed that this patch (now in mainline as commit 8a2cc0505cc4)
+drops the test if CONFIG_BPFILTER_UMH is "y" so that -static is now
+passed to the linker even if bpfilter_umh is built as a module which
+wasn't the case in v5.7.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+This is not mentioned in the commit message and the comment still says
+"*builtin* bpfilter_umh should be linked with -static" so this change
+doesn't seem to be intentional. Did I miss something?
+
+Michal Kubecek
