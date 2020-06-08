@@ -2,165 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 287C81F2172
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 859081F2199
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgFHVWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 17:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726612AbgFHVWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 17:22:46 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F1EC08C5C2;
-        Mon,  8 Jun 2020 14:22:46 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id b18so14906408oti.1;
-        Mon, 08 Jun 2020 14:22:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wW8D/dSScjtqwaMeYYSqLpcYbiXjnjq+RVvdaEoSPKg=;
-        b=pH67onXKnkmvjnr7kTdmSi6Uzwy0roBDOYeXmG6zC7hP7OzMaXitW9M1K8phN51a9G
-         TTKgsjMlSf4ptU8tmEA3CoRwCvBdbHg2jNimQQgG0ZWXoZ15t826vTTeNF9nVOowoGbD
-         GgBXqH8k/ht6kmgSlqpkRfSIpxSag1DRxLuM43rZaQIptFsBuMGzEPAR56O7HyBC3AIr
-         lAi3Q4ke+IaJGDeYTXsvzOozZK8lRsydY5KEbzA/FHzSLLVl8COj0HK5DLgPsT9qlEhy
-         REUTa9QleLU8oFNH8y6Mz6xoFNoDIe9x6YSBoFr4sJi/RIGkmyG83kGaNnvJY6I93Qpa
-         1jcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wW8D/dSScjtqwaMeYYSqLpcYbiXjnjq+RVvdaEoSPKg=;
-        b=o3HtGnPRanoG2W2+QUbxBx2Cm3pZbLRWRR+iqocsB/d/t8l1Ho4yjjo8FsWEe1CS0w
-         mspMTrHyUtzP8GIL9KpfwPQNexWZ1VQUaMhvcaVbQt21S8nwqZwBMk4WI8mqZuDeCp6d
-         VDY59J7g2gznxnU9PGcNiidf/sPHEoBuOZPiWDuG8qyvMMSAo+9JHcp82ONxsDCtU/6Q
-         73lQFWzqZbiV2xwHzLeJuGi7Xrp4vc7+B8NgDjckQ3/a3ofWgG5QGk9RYyZ2el9M4chi
-         O6R9/iUHeXweFzCDUw/e3nQRCOamQ+D63v7+aDgCE2Bs5vDN8D6QfoKZQOk7B08Gt5I2
-         PKOw==
-X-Gm-Message-State: AOAM53253LEnFq19NgjD37FoxpIHRxYq1GthkcyOfqPVflr/7UTUJ98I
-        CgefymW++8N0lHCnoLbvIz0=
-X-Google-Smtp-Source: ABdhPJxqSR1gGUtivubbaRfehqrabRImW2oEhG335ChW6vi9VqUVtQNFJBheN9jpjiT1dHVCoDDJZQ==
-X-Received: by 2002:a9d:67c1:: with SMTP id c1mr12662793otn.27.1591651365554;
-        Mon, 08 Jun 2020 14:22:45 -0700 (PDT)
-Received: from ubuntu-n2-xlarge-x86 ([2604:1380:4111:8b00::3])
-        by smtp.gmail.com with ESMTPSA id r65sm592355oie.13.2020.06.08.14.22.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 14:22:44 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 14:22:43 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "leon@kernel.org" <leon@kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>,
-        Vu Pham <vuhuong@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] net/mlx5: Don't fail driver on failure to create
- debugfs
-Message-ID: <20200608212243.GA2072362@ubuntu-n2-xlarge-x86>
-References: <20200602122837.161519-1-leon@kernel.org>
- <20200602192724.GA672@Ryzen-9-3900X.localdomain>
- <20200603183436.GA2565136@ubuntu-n2-xlarge-x86>
- <cf22654ba1e726c3f3d1acf7eff2bc167de810c7.camel@mellanox.com>
+        id S1726771AbgFHVrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 17:47:43 -0400
+Received: from correo.us.es ([193.147.175.20]:44786 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726740AbgFHVrn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 17:47:43 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E1C54F236A
+        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 23:47:41 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D19E1DA791
+        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 23:47:41 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C370DDA798; Mon,  8 Jun 2020 23:47:41 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7DC32DA72F;
+        Mon,  8 Jun 2020 23:47:39 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 08 Jun 2020 23:47:39 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4D2D3426CCB9;
+        Mon,  8 Jun 2020 23:47:39 +0200 (CEST)
+Date:   Mon, 8 Jun 2020 23:47:39 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, paulb@mellanox.com, ozsh@mellanox.com,
+        vladbu@mellanox.com, jiri@resnulli.us, kuba@kernel.org,
+        saeedm@mellanox.com, michael.chan@broadcom.com
+Subject: Re: [PATCH 8/8 net] net: remove indirect block netdev event
+ registration
+Message-ID: <20200608214739.GA12131@salvia>
+References: <20200513164140.7956-1-pablo@netfilter.org>
+ <20200513164140.7956-9-pablo@netfilter.org>
+ <59884f4f-df03-98ac-0524-3e58c904f201@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="+HP7ph2BbKc20aGI"
 Content-Disposition: inline
-In-Reply-To: <cf22654ba1e726c3f3d1acf7eff2bc167de810c7.camel@mellanox.com>
+In-Reply-To: <59884f4f-df03-98ac-0524-3e58c904f201@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 04, 2020 at 04:44:00AM +0000, Saeed Mahameed wrote:
-> On Wed, 2020-06-03 at 11:34 -0700, Nathan Chancellor wrote:
-> > On Tue, Jun 02, 2020 at 12:27:24PM -0700, Nathan Chancellor wrote:
-> > > On Tue, Jun 02, 2020 at 03:28:37PM +0300, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@mellanox.com>
-> > > > 
-> > > > Clang warns:
-> > > > 
-> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:6: warning:
-> > > > variable
-> > > > 'err' is used uninitialized whenever 'if' condition is true
-> > > > [-Wsometimes-uninitialized]
-> > > >         if (!priv->dbg_root) {
-> > > >             ^~~~~~~~~~~~~~~
-> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1303:9: note:
-> > > > uninitialized use occurs here
-> > > >         return err;
-> > > >                ^~~
-> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:2: note:
-> > > > remove the
-> > > > 'if' if its condition is always false
-> > > >         if (!priv->dbg_root) {
-> > > >         ^~~~~~~~~~~~~~~~~~~~~~
-> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1259:9: note:
-> > > > initialize
-> > > > the variable 'err' to silence this warning
-> > > >         int err;
-> > > >                ^
-> > > >                 = 0
-> > > > 1 warning generated.
-> > > > 
-> > > > The check of returned value of debugfs_create_dir() is wrong
-> > > > because
-> > > > by the design debugfs failures should never fail the driver and
-> > > > the
-> > > > check itself was wrong too. The kernel compiled without
-> > > > CONFIG_DEBUG_FS
-> > > > will return ERR_PTR(-ENODEV) and not NULL as expected.
-> > > > 
-> > > > Fixes: 11f3b84d7068 ("net/mlx5: Split mdev init and pci init")
-> > > > Link: https://github.com/ClangBuiltLinux/linux/issues/1042
-> > > > Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> > > 
-> > > Thanks! That's what I figured it should be.
-> > > 
-> > > Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > 
-> > > > ---
-> > > > Original discussion:
-> > > > https://lore.kernel.org/lkml/20200530055447.1028004-1-natechancellor@gmail.com
-> > > > ---
-> > > >  drivers/net/ethernet/mellanox/mlx5/core/main.c | 5 -----
-> > > >  1 file changed, 5 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > > > b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > > > index df46b1fce3a7..110e8d277d15 100644
-> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > > > @@ -1275,11 +1275,6 @@ static int mlx5_mdev_init(struct
-> > > > mlx5_core_dev *dev, int profile_idx)
-> > > > 
-> > > >  	priv->dbg_root = debugfs_create_dir(dev_name(dev->device),
-> > > >  					    mlx5_debugfs_root);
-> > > > -	if (!priv->dbg_root) {
-> > > > -		dev_err(dev->device, "mlx5_core: error, Cannot create
-> > > > debugfs dir, aborting\n");
-> > > > -		goto err_dbg_root;
-> > 
-> > Actually, this removes the only use of err_dbg_root, so that should
-> > be
-> > removed at the same time.
-> > 
+
+--+HP7ph2BbKc20aGI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Mon, Jun 08, 2020 at 02:07:57PM -0700, Jacob Keller wrote:
 > 
-> Fixed this up and applied to net-next-mlx5, 
-> Thanks!
 > 
+> On 5/13/2020 9:41 AM, Pablo Neira Ayuso wrote:
+> > Drivers do not register to netdev events to set up indirect blocks
+> > anymore. Remove __flow_indr_block_cb_register() and
+> > __flow_indr_block_cb_unregister().
+> > 
+> > The frontends set up the callbacks through flow_indr_dev_setup_block()
+> > 
+> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> 
+> This commit failed to remove the prototypes from the header file:
+> include/net/flow_offload.h
 
-Hi Saeed,
+Thanks for reporting.
 
-I see this warning in mainline now, is this something you were planning
-to have merged this cycle or next? I see it in several configs so it
-would be nice if it could be resolved this one, since it was introduced
-by a patch in this cycle even though the core issue has been around for
-a few months.
+I'm attaching a sketch, I will submit this formally later.
 
-Cheers,
-Nathan
+--+HP7ph2BbKc20aGI
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 69e13c8b6b3a..f2c8311a0433 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -542,28 +542,4 @@ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 				struct flow_block_offload *bo,
+ 				void (*cleanup)(struct flow_block_cb *block_cb));
+ 
+-typedef void flow_indr_block_cmd_t(struct net_device *dev,
+-				   flow_indr_block_bind_cb_t *cb, void *cb_priv,
+-				   enum flow_block_command command);
+-
+-int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
+-				  flow_indr_block_bind_cb_t *cb,
+-				  void *cb_ident);
+-
+-void __flow_indr_block_cb_unregister(struct net_device *dev,
+-				     flow_indr_block_bind_cb_t *cb,
+-				     void *cb_ident);
+-
+-int flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
+-				flow_indr_block_bind_cb_t *cb, void *cb_ident);
+-
+-void flow_indr_block_cb_unregister(struct net_device *dev,
+-				   flow_indr_block_bind_cb_t *cb,
+-				   void *cb_ident);
+-
+-void flow_indr_block_call(struct net_device *dev,
+-			  struct flow_block_offload *bo,
+-			  enum flow_block_command command,
+-			  enum tc_setup_type type);
+-
+ #endif /* _NET_FLOW_OFFLOAD_H */
+
+--+HP7ph2BbKc20aGI--
