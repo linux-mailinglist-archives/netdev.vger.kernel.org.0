@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1AA1F28CC
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 687751F28D9
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731531AbgFHXXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:23:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49142 "EHLO mail.kernel.org"
+        id S2387967AbgFHX4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:56:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387454AbgFHXXi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:23:38 -0400
+        id S1731162AbgFHXXj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:23:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 44FF2208B8;
-        Mon,  8 Jun 2020 23:23:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 671F720872;
+        Mon,  8 Jun 2020 23:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658618;
-        bh=HH+2Ue1hHzAGnSOteBzokmUmBX/varrvGqjlV79dhic=;
+        s=default; t=1591658619;
+        bh=uZ84vTGYlo4IboKjY879TBGBz6Hhr7Vq0yu0/6vxmZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7wmu+arEjBADH/SkiMFlfRoxnqEk5sHpONsXpMXGK358DPMuhJYd3s3qF0Scp4Fm
-         I+jUYMNv+5W7hWPsI2jNUnPkKBt1pN7qQMvqbZZk5zaNVz6nhvrz8RanLdT1igA9eq
-         jFYP0onJEbe4GkuaKY0/13lE3k56S5RA1+WfqEI0=
+        b=a7YPaHmpKvtJX4DuhJ/p1eoxlA2l9V3G7Kdl2I6sJGwDNLg1ShRMcPty662Gin8A8
+         AVnCOEBgQ8XCOfMgxxJH4vessh0wlOhLQY6TYziY9Q3n6P70J78l9PjpQmaW2inq2Q
+         gl/Pd9ygyHoT/Ke6njhNFcNI+P8jK3EI5ApSqxwQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
         Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 043/106] netfilter: nft_nat: return EOPNOTSUPP if type or flags are not supported
-Date:   Mon,  8 Jun 2020 19:21:35 -0400
-Message-Id: <20200608232238.3368589-43-sashal@kernel.org>
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 044/106] selftests/bpf: Fix memory leak in extract_build_id()
+Date:   Mon,  8 Jun 2020 19:21:36 -0400
+Message-Id: <20200608232238.3368589-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232238.3368589-1-sashal@kernel.org>
 References: <20200608232238.3368589-1-sashal@kernel.org>
@@ -44,41 +46,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit 0d7c83463fdf7841350f37960a7abadd3e650b41 ]
+[ Upstream commit 9f56bb531a809ecaa7f0ddca61d2cf3adc1cb81a ]
 
-Instead of EINVAL which should be used for malformed netlink messages.
+getline() allocates string, which has to be freed.
 
-Fixes: eb31628e37a0 ("netfilter: nf_tables: Add support for IPv6 NAT")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 81f77fd0deeb ("bpf: add selftest for stackmap with BPF_F_STACK_BUILD_ID")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Cc: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20200429012111.277390-7-andriin@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_nat.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_progs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
-index c15807d10b91..3e82a7d0df2a 100644
---- a/net/netfilter/nft_nat.c
-+++ b/net/netfilter/nft_nat.c
-@@ -135,7 +135,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
- 		priv->type = NF_NAT_MANIP_DST;
- 		break;
- 	default:
--		return -EINVAL;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	if (tb[NFTA_NAT_FAMILY] == NULL)
-@@ -202,7 +202,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
- 	if (tb[NFTA_NAT_FLAGS]) {
- 		priv->flags = ntohl(nla_get_be32(tb[NFTA_NAT_FLAGS]));
- 		if (priv->flags & ~NF_NAT_RANGE_MASK)
--			return -EINVAL;
-+			return -EOPNOTSUPP;
- 	}
- 
- 	return nf_ct_netns_get(ctx->net, family);
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index 89f8b0dae7ef..bad3505d66e0 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -1118,6 +1118,7 @@ static int extract_build_id(char *build_id, size_t size)
+ 		len = size;
+ 	memcpy(build_id, line, len);
+ 	build_id[len] = '\0';
++	free(line);
+ 	return 0;
+ err:
+ 	fclose(fp);
 -- 
 2.25.1
 
