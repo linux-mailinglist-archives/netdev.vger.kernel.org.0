@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC62A1F2CB9
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 862A81F2CB6
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731284AbgFIA1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:27:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38048 "EHLO mail.kernel.org"
+        id S1730585AbgFIA1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:27:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38058 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728093AbgFHXQi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:38 -0400
+        id S1730299AbgFHXQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:16:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DBF820774;
-        Mon,  8 Jun 2020 23:16:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88B4E20801;
+        Mon,  8 Jun 2020 23:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658198;
-        bh=Z2yPyXe2DTYdCSg2T8K2lldLn+wWEr0DUHKU5AztZPs=;
+        s=default; t=1591658199;
+        bh=Ual6lbXI0lU8uEP87cPxtPd6hIy/Thh6CONhXh0FcVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z2XKxM2MLLO6n69oQA3w8OnYRtAW0JAaFRbQbwU1w9j6fGVb9UGuYsyGB63dMvYoN
-         lHU0Dt3+y22qRsG9HzEjlHDvhtoq/jRfZ8j2ENEbVda5ohGxiNhwxyKF3ojMxKyY57
-         wLLuXUR+4msbWYui8l2nRiBOTg9+DytIKowGq22I=
+        b=o/Vk6Eu/DbLcSDqTTG1dIbst8Y06tTemsBwzfZ12Jb7oheOUf673UazrognfdZ6cU
+         ZuigTomTvZnxsprgajThLq24tZ+pEk+mPcpBu5UC1qok0j4zyl+VNaXLbObyNn6Y2i
+         o3GtprFWFjMtkloXOZcUks2o0UOc2xDe+XAUiN7g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Matteo Croce <mcroce@redhat.com>,
+Cc:     Stephen Worley <sworley@cumulusnetworks.com>,
+        David Ahern <dsahern@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 218/606] net: mvpp2: fix RX hashing for non-10G ports
-Date:   Mon,  8 Jun 2020 19:05:43 -0400
-Message-Id: <20200608231211.3363633-218-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 219/606] net: nlmsg_cancel() if put fails for nhmsg
+Date:   Mon,  8 Jun 2020 19:05:44 -0400
+Message-Id: <20200608231211.3363633-219-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -45,188 +45,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King <rmk+kernel@armlinux.org.uk>
+From: Stephen Worley <sworley@cumulusnetworks.com>
 
-[ Upstream commit 3138a07ce219acde4c0d7ea0b6d54ba64153328b ]
+[ Upstream commit d69100b8eee27c2d60ee52df76e0b80a8d492d34 ]
 
-When rxhash is enabled on any ethernet port except the first in each CP
-block, traffic flow is prevented.  The analysis is below:
+Fixes data remnant seen when we fail to reserve space for a
+nexthop group during a larger dump.
 
-I've been investigating this afternoon, and what I've found, comparing
-a kernel without 895586d5dc32 and with 895586d5dc32 applied is:
+If we fail the reservation, we goto nla_put_failure and
+cancel the message.
 
-- The table programmed into the hardware via mvpp22_rss_fill_table()
-  appears to be identical with or without the commit.
+Reproduce with the following iproute2 commands:
+=====================
+ip link add dummy1 type dummy
+ip link add dummy2 type dummy
+ip link add dummy3 type dummy
+ip link add dummy4 type dummy
+ip link add dummy5 type dummy
+ip link add dummy6 type dummy
+ip link add dummy7 type dummy
+ip link add dummy8 type dummy
+ip link add dummy9 type dummy
+ip link add dummy10 type dummy
+ip link add dummy11 type dummy
+ip link add dummy12 type dummy
+ip link add dummy13 type dummy
+ip link add dummy14 type dummy
+ip link add dummy15 type dummy
+ip link add dummy16 type dummy
+ip link add dummy17 type dummy
+ip link add dummy18 type dummy
+ip link add dummy19 type dummy
+ip link add dummy20 type dummy
+ip link add dummy21 type dummy
+ip link add dummy22 type dummy
+ip link add dummy23 type dummy
+ip link add dummy24 type dummy
+ip link add dummy25 type dummy
+ip link add dummy26 type dummy
+ip link add dummy27 type dummy
+ip link add dummy28 type dummy
+ip link add dummy29 type dummy
+ip link add dummy30 type dummy
+ip link add dummy31 type dummy
+ip link add dummy32 type dummy
 
-- When rxhash is enabled on eth2, mvpp2_rss_port_c2_enable() reports
-  that c2.attr[0] and c2.attr[2] are written back containing:
+ip link set dummy1 up
+ip link set dummy2 up
+ip link set dummy3 up
+ip link set dummy4 up
+ip link set dummy5 up
+ip link set dummy6 up
+ip link set dummy7 up
+ip link set dummy8 up
+ip link set dummy9 up
+ip link set dummy10 up
+ip link set dummy11 up
+ip link set dummy12 up
+ip link set dummy13 up
+ip link set dummy14 up
+ip link set dummy15 up
+ip link set dummy16 up
+ip link set dummy17 up
+ip link set dummy18 up
+ip link set dummy19 up
+ip link set dummy20 up
+ip link set dummy21 up
+ip link set dummy22 up
+ip link set dummy23 up
+ip link set dummy24 up
+ip link set dummy25 up
+ip link set dummy26 up
+ip link set dummy27 up
+ip link set dummy28 up
+ip link set dummy29 up
+ip link set dummy30 up
+ip link set dummy31 up
+ip link set dummy32 up
 
-   - with 895586d5dc32, failing:    00200000 40000000
-   - without 895586d5dc32, working: 04000000 40000000
+ip link set dummy33 up
+ip link set dummy34 up
 
-- When disabling rxhash, c2.attr[0] and c2.attr[2] are written back as:
+ip link set vrf-red up
+ip link set vrf-blue up
 
-   04000000 00000000
+ip link set dummyVRFred up
+ip link set dummyVRFblue up
 
-The second value represents the MVPP22_CLS_C2_ATTR2_RSS_EN bit, the
-first value is the queue number, which comprises two fields. The high
-5 bits are 24:29 and the low three are 21:23 inclusive. This comes
-from:
+ip ro add 1.1.1.1/32 dev dummy1
+ip ro add 1.1.1.2/32 dev dummy2
+ip ro add 1.1.1.3/32 dev dummy3
+ip ro add 1.1.1.4/32 dev dummy4
+ip ro add 1.1.1.5/32 dev dummy5
+ip ro add 1.1.1.6/32 dev dummy6
+ip ro add 1.1.1.7/32 dev dummy7
+ip ro add 1.1.1.8/32 dev dummy8
+ip ro add 1.1.1.9/32 dev dummy9
+ip ro add 1.1.1.10/32 dev dummy10
+ip ro add 1.1.1.11/32 dev dummy11
+ip ro add 1.1.1.12/32 dev dummy12
+ip ro add 1.1.1.13/32 dev dummy13
+ip ro add 1.1.1.14/32 dev dummy14
+ip ro add 1.1.1.15/32 dev dummy15
+ip ro add 1.1.1.16/32 dev dummy16
+ip ro add 1.1.1.17/32 dev dummy17
+ip ro add 1.1.1.18/32 dev dummy18
+ip ro add 1.1.1.19/32 dev dummy19
+ip ro add 1.1.1.20/32 dev dummy20
+ip ro add 1.1.1.21/32 dev dummy21
+ip ro add 1.1.1.22/32 dev dummy22
+ip ro add 1.1.1.23/32 dev dummy23
+ip ro add 1.1.1.24/32 dev dummy24
+ip ro add 1.1.1.25/32 dev dummy25
+ip ro add 1.1.1.26/32 dev dummy26
+ip ro add 1.1.1.27/32 dev dummy27
+ip ro add 1.1.1.28/32 dev dummy28
+ip ro add 1.1.1.29/32 dev dummy29
+ip ro add 1.1.1.30/32 dev dummy30
+ip ro add 1.1.1.31/32 dev dummy31
+ip ro add 1.1.1.32/32 dev dummy32
 
-       c2.attr[0] = MVPP22_CLS_C2_ATTR0_QHIGH(qh) |
-                     MVPP22_CLS_C2_ATTR0_QLOW(ql);
+ip next add id 1 via 1.1.1.1 dev dummy1
+ip next add id 2 via 1.1.1.2 dev dummy2
+ip next add id 3 via 1.1.1.3 dev dummy3
+ip next add id 4 via 1.1.1.4 dev dummy4
+ip next add id 5 via 1.1.1.5 dev dummy5
+ip next add id 6 via 1.1.1.6 dev dummy6
+ip next add id 7 via 1.1.1.7 dev dummy7
+ip next add id 8 via 1.1.1.8 dev dummy8
+ip next add id 9 via 1.1.1.9 dev dummy9
+ip next add id 10 via 1.1.1.10 dev dummy10
+ip next add id 11 via 1.1.1.11 dev dummy11
+ip next add id 12 via 1.1.1.12 dev dummy12
+ip next add id 13 via 1.1.1.13 dev dummy13
+ip next add id 14 via 1.1.1.14 dev dummy14
+ip next add id 15 via 1.1.1.15 dev dummy15
+ip next add id 16 via 1.1.1.16 dev dummy16
+ip next add id 17 via 1.1.1.17 dev dummy17
+ip next add id 18 via 1.1.1.18 dev dummy18
+ip next add id 19 via 1.1.1.19 dev dummy19
+ip next add id 20 via 1.1.1.20 dev dummy20
+ip next add id 21 via 1.1.1.21 dev dummy21
+ip next add id 22 via 1.1.1.22 dev dummy22
+ip next add id 23 via 1.1.1.23 dev dummy23
+ip next add id 24 via 1.1.1.24 dev dummy24
+ip next add id 25 via 1.1.1.25 dev dummy25
+ip next add id 26 via 1.1.1.26 dev dummy26
+ip next add id 27 via 1.1.1.27 dev dummy27
+ip next add id 28 via 1.1.1.28 dev dummy28
+ip next add id 29 via 1.1.1.29 dev dummy29
+ip next add id 30 via 1.1.1.30 dev dummy30
+ip next add id 31 via 1.1.1.31 dev dummy31
+ip next add id 32 via 1.1.1.32 dev dummy32
 
-So, the working case gives eth2 a queue id of 4.0, or 32 as per
-port->first_rxq, and the non-working case a queue id of 0.1, or 1.
-The allocation of queue IDs seems to be in mvpp2_port_probe():
+i=100
 
-        if (priv->hw_version == MVPP21)
-                port->first_rxq = port->id * port->nrxqs;
-        else
-                port->first_rxq = port->id * priv->max_port_rxqs;
+while [ $i -le 200 ]
+do
+ip next add id $i group 1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19
 
-Where:
+	echo $i
 
-        if (priv->hw_version == MVPP21)
-                priv->max_port_rxqs = 8;
-        else
-                priv->max_port_rxqs = 32;
+	((i++))
 
-Making the port 0 (eth0 / eth1) have port->first_rxq = 0, and port 1
-(eth2) be 32. It seems the idea is that the first 32 queues belong to
-port 0, the second 32 queues belong to port 1, etc.
+done
 
-mvpp2_rss_port_c2_enable() gets the queue number from it's parameter,
-'ctx', which comes from mvpp22_rss_ctx(port, 0). This returns
-port->rss_ctx[0].
+ip next add id 999 group 1/2/3/4/5/6
 
-mvpp22_rss_context_create() is responsible for allocating that, which
-it does by looking for an unallocated priv->rss_tables[] pointer. This
-table is shared amongst all ports on the CP silicon.
+ip next ls
 
-When we write the tables in mvpp22_rss_fill_table(), the RSS table
-entry is defined by:
+========================
 
-                u32 sel = MVPP22_RSS_INDEX_TABLE(rss_ctx) |
-                          MVPP22_RSS_INDEX_TABLE_ENTRY(i);
-
-where rss_ctx is the context ID (queue number) and i is the index in
-the table.
-
-If we look at what is written:
-
-- The first table to be written has "sel" values of 00000000..0000001f,
-  containing values 0..3. This appears to be for eth1. This is table 0,
-  RX queue number 0.
-- The second table has "sel" values of 00000100..0000011f, and appears
-  to be for eth2.  These contain values 0x20..0x23. This is table 1,
-  RX queue number 0.
-- The third table has "sel" values of 00000200..0000021f, and appears
-  to be for eth3.  These contain values 0x40..0x43. This is table 2,
-  RX queue number 0.
-
-How do queue numbers translate to the RSS table?  There is another
-table - the RXQ2RSS table, indexed by the MVPP22_RSS_INDEX_QUEUE field
-of MVPP22_RSS_INDEX and accessed through the MVPP22_RXQ2RSS_TABLE
-register. Before 895586d5dc32, it was:
-
-       mvpp2_write(priv, MVPP22_RSS_INDEX,
-                   MVPP22_RSS_INDEX_QUEUE(port->first_rxq));
-       mvpp2_write(priv, MVPP22_RXQ2RSS_TABLE,
-                   MVPP22_RSS_TABLE_POINTER(port->id));
-
-and after:
-
-       mvpp2_write(priv, MVPP22_RSS_INDEX, MVPP22_RSS_INDEX_QUEUE(ctx));
-       mvpp2_write(priv, MVPP22_RXQ2RSS_TABLE, MVPP22_RSS_TABLE_POINTER(ctx));
-
-Before the commit, for eth2, that would've contained '32' for the
-index and '1' for the table pointer - mapping queue 32 to table 1.
-Remember that this is queue-high.queue-low of 4.0.
-
-After the commit, we appear to map queue 1 to table 1. That again
-looks fine on the face of it.
-
-Section 9.3.1 of the A8040 manual seems indicate the reason that the
-queue number is separated. queue-low seems to always come from the
-classifier, whereas queue-high can be from the ingress physical port
-number or the classifier depending on the MVPP2_CLS_SWFWD_PCTRL_REG.
-
-We set the port bit in MVPP2_CLS_SWFWD_PCTRL_REG, meaning that queue-high
-comes from the MVPP2_CLS_SWFWD_P2HQ_REG() register... and this seems to
-be where our bug comes from.
-
-mvpp2_cls_oversize_rxq_set() sets this up as:
-
-        mvpp2_write(port->priv, MVPP2_CLS_SWFWD_P2HQ_REG(port->id),
-                    (port->first_rxq >> MVPP2_CLS_OVERSIZE_RXQ_LOW_BITS));
-
-        val = mvpp2_read(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG);
-        val |= MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
-        mvpp2_write(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG, val);
-
-Setting the MVPP2_CLS_SWFWD_PCTRL_MASK bit means that the queue-high
-for eth2 is _always_ 4, so only queues 32 through 39 inclusive are
-available to eth2. Yet, we're trying to tell the classifier to set
-queue-high, which will be ignored, to zero. Hence, the queue-high
-field (MVPP22_CLS_C2_ATTR0_QHIGH()) from the classifier will be
-ignored.
-
-This means we end up directing traffic from eth2 not to queue 1, but
-to queue 33, and then we tell it to look up queue 33 in the RSS table.
-However, RSS table has not been programmed for queue 33, and so it ends
-up (presumably) dropping the packets.
-
-It seems that mvpp22_rss_context_create() doesn't take account of the
-fact that the upper 5 bits of the queue ID can't actually be changed
-due to the settings in mvpp2_cls_oversize_rxq_set(), _or_ it seems that
-mvpp2_cls_oversize_rxq_set() has been missed in this commit. Either
-way, these two functions mutually disagree with what queue number
-should be used.
-
-Looking deeper into what mvpp2_cls_oversize_rxq_set() and the MTU
-validation is doing, it seems that MVPP2_CLS_SWFWD_P2HQ_REG() is used
-for over-sized packets attempting to egress through this port. With
-the classifier having had RSS enabled and directing eth2 traffic to
-queue 1, we may still have packets appearing on queue 32 for this port.
-
-However, the only way we may end up with over-sized packets attempting
-to egress through eth2 - is if the A8040 forwards frames between its
-ports. From what I can see, we don't support that feature, and the
-kernel restricts the egress packet size to the MTU. In any case, if we
-were to attempt to transmit an oversized packet, we have no support in
-the kernel to deal with that appearing in the port's receive queue.
-
-So, this patch attempts to solve the issue by clearing the
-MVPP2_CLS_SWFWD_PCTRL_MASK() bit, allowing MVPP22_CLS_C2_ATTR0_QHIGH()
-from the classifier to define the queue-high field of the queue number.
-
-My testing seems to confirm my findings above - clearing this bit
-means that if I enable rxhash on eth2, the interface can then pass
-traffic, as we are now directing traffic to RX queue 1 rather than
-queue 33. Traffic still seems to work with rxhash off as well.
-
-Reported-by: Matteo Croce <mcroce@redhat.com>
-Tested-by: Matteo Croce <mcroce@redhat.com>
-Fixes: 895586d5dc32 ("net: mvpp2: cls: Use RSS contexts to handle RSS tables")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Fixes: ab84be7e54fc ("net: Initial nexthop code")
+Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/nexthop.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-index 4344a59c823f..6122057d60c0 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-@@ -1070,7 +1070,7 @@ void mvpp2_cls_oversize_rxq_set(struct mvpp2_port *port)
- 		    (port->first_rxq >> MVPP2_CLS_OVERSIZE_RXQ_LOW_BITS));
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index d072c326dd64..489c27f894d7 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -276,6 +276,7 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
+ 	return 0;
  
- 	val = mvpp2_read(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG);
--	val |= MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
-+	val &= ~MVPP2_CLS_SWFWD_PCTRL_MASK(port->id);
- 	mvpp2_write(port->priv, MVPP2_CLS_SWFWD_PCTRL_REG, val);
+ nla_put_failure:
++	nlmsg_cancel(skb, nlh);
+ 	return -EMSGSIZE;
  }
  
 -- 
