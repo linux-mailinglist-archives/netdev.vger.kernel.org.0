@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E40B11F2764
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 618261F275A
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732033AbgFHXpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:45:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54358 "EHLO mail.kernel.org"
+        id S2387749AbgFHXpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:45:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732000AbgFHX0i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:26:38 -0400
+        id S1732013AbgFHX0m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:26:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C722820775;
-        Mon,  8 Jun 2020 23:26:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 504202074B;
+        Mon,  8 Jun 2020 23:26:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658797;
-        bh=WlMZiVHm4EkowZDfAv/FXDl3g5KUViKZ6VTdwrywLfM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eQ7BnV5yEmD3UEP6J3Nmam2RuPZva13q7pTAaSjQxvChHGYp4V85GUu/anXHbYxLo
-         uYIvFC3wjVunG8Q12VlTzlJz9RAZI6b+no52KdLYWHnps3l4KNBIwqvMMZgZP9pZt9
-         KrnAmWqTtgi8WzoioQ/gexs97IQiZwEa2px6s6TQ=
+        s=default; t=1591658802;
+        bh=3M5dFGtf9TVeYxtL/mdwRmgEhHAvS6pmqwXhKXXZFzI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tcw9DTA4q8JNddIJZe64kSc+SEVcMgkM/t+m/j4VowZYjw8tzRtxltP1iIfY1YaqZ
+         UPeEzz+Gk5xEhQP7TV+Z2Ytqa+v2x/ZjwfFEmOSZyiqk+x+gsim+1RPoTZDNLdF2fc
+         ZoNozzxx6aUbfFPJzJDXiGI4oCSZP4YJmIWlTUGI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 71/72] vxlan: Avoid infinite loop when suppressing NS messages with invalid options
-Date:   Mon,  8 Jun 2020 19:24:59 -0400
-Message-Id: <20200608232500.3369581-71-sashal@kernel.org>
+Cc:     Qiujun Huang <hqjagain@gmail.com>,
+        syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 01/50] ath9x: Fix stack-out-of-bounds Write in ath9k_hif_usb_rx_cb
+Date:   Mon,  8 Jun 2020 19:25:51 -0400
+Message-Id: <20200608232640.3370262-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608232500.3369581-1-sashal@kernel.org>
-References: <20200608232500.3369581-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,51 +43,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Qiujun Huang <hqjagain@gmail.com>
 
-[ Upstream commit 8066e6b449e050675df48e7c4b16c29f00507ff0 ]
+[ Upstream commit 19d6c375d671ce9949a864fb9a03e19f5487b4d3 ]
 
-When proxy mode is enabled the vxlan device might reply to Neighbor
-Solicitation (NS) messages on behalf of remote hosts.
+Add barrier to accessing the stack array skb_pool.
 
-In case the NS message includes the "Source link-layer address" option
-[1], the vxlan device will use the specified address as the link-layer
-destination address in its reply.
+The case reported by syzbot:
+https://lore.kernel.org/linux-usb/0000000000003d7c1505a2168418@google.com
+BUG: KASAN: stack-out-of-bounds in ath9k_hif_usb_rx_stream
+drivers/net/wireless/ath/ath9k/hif_usb.c:626 [inline]
+BUG: KASAN: stack-out-of-bounds in ath9k_hif_usb_rx_cb+0xdf6/0xf70
+drivers/net/wireless/ath/ath9k/hif_usb.c:666
+Write of size 8 at addr ffff8881db309a28 by task swapper/1/0
 
-To avoid an infinite loop, break out of the options parsing loop when
-encountering an option with length zero and disregard the NS message.
+Call Trace:
+ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:626
+[inline]
+ath9k_hif_usb_rx_cb+0xdf6/0xf70
+drivers/net/wireless/ath/ath9k/hif_usb.c:666
+__usb_hcd_giveback_urb+0x1f2/0x470 drivers/usb/core/hcd.c:1648
+usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1713
+dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
+call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
+expire_timers kernel/time/timer.c:1449 [inline]
+__run_timers kernel/time/timer.c:1773 [inline]
+__run_timers kernel/time/timer.c:1740 [inline]
+run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
 
-This is consistent with the IPv6 ndisc code and RFC 4886 which states
-that "Nodes MUST silently discard an ND packet that contains an option
-with length zero" [2].
-
-[1] https://tools.ietf.org/html/rfc4861#section-4.3
-[2] https://tools.ietf.org/html/rfc4861#section-4.6
-
-Fixes: 4b29dba9c085 ("vxlan: fix nonfunctional neigh_reduce()")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-and-tested-by: syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com
+Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200404041838.10426-5-hqjagain@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 9bca97d5f063..afdc2c290fd0 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -1610,6 +1610,10 @@ static struct sk_buff *vxlan_na_create(struct sk_buff *request,
- 	ns_olen = request->len - skb_network_offset(request) -
- 		sizeof(struct ipv6hdr) - sizeof(*ns);
- 	for (i = 0; i < ns_olen-1; i += (ns->opt[i+1]<<3)) {
-+		if (!ns->opt[i + 1]) {
-+			kfree_skb(reply);
-+			return NULL;
-+		}
- 		if (ns->opt[i] == ND_OPT_SOURCE_LL_ADDR) {
- 			daddr = ns->opt + i + sizeof(struct nd_opt_hdr);
- 			break;
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index b5e12be73f2b..baa632e3b7a2 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -610,6 +610,11 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 			hif_dev->remain_skb = nskb;
+ 			spin_unlock(&hif_dev->rx_lock);
+ 		} else {
++			if (pool_index == MAX_PKT_NUM_IN_TRANSFER) {
++				dev_err(&hif_dev->udev->dev,
++					"ath9k_htc: over RX MAX_PKT_NUM\n");
++				goto err;
++			}
+ 			nskb = __dev_alloc_skb(pkt_len + 32, GFP_ATOMIC);
+ 			if (!nskb) {
+ 				dev_err(&hif_dev->udev->dev,
 -- 
 2.25.1
 
