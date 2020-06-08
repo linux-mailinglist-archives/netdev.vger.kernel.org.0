@@ -2,192 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2DF1F1D3A
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B3F1F1D80
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730458AbgFHQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 12:26:20 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57802 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730442AbgFHQ0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:26:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591633576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PfesJHBEui5hetw3RxW9+nGTdupwdIhkqQYIwcx4mZo=;
-        b=htDj+N5w5DH08wTF/tSGf2Mh8cxX+oINpFnzhTJBtSmzMYK9YHd8DqZU//94g1RYyauyIg
-        O8T+rHELvDO0en/TjbJvWlKMbRN5KNagv+KzOkyd/DwYYjyeeaiLDXzGVI4z97Ioi0NowI
-        LFTPWhVQPdleD5Ctrt1k6jwyMen68TU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-55-g5EFrPncO4WLaZbgOvguGw-1; Mon, 08 Jun 2020 12:26:13 -0400
-X-MC-Unique: g5EFrPncO4WLaZbgOvguGw-1
-Received: by mail-wr1-f69.google.com with SMTP id j16so7320267wre.22
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 09:26:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PfesJHBEui5hetw3RxW9+nGTdupwdIhkqQYIwcx4mZo=;
-        b=XTEG6hk6yPOI14AckOrNR2ujRip+4ZdqDqciRgWuUWYg7roS0XxK519SZa48ivXOW8
-         4iLWQCX3JBZBUlyvl1OXVaOZSzwRuYDMCR0BkOvEVxFr2CWss4jfDEvi7e8LkK6fbopf
-         f/FUsVJ5HcE6gUxmiwIFPUwFE/tXWKzUGcLe4EOaCI8ChC1mIL60vBKfRKPzWmz1jdQU
-         7akdhkDY1fUzCq8enGCIQBBTS6JnEr8zpqeyLuyXfQVQDceEP8tN5tx1ag7lfNJUPusw
-         isHUa56XFfxIsjoqt9qfbRgbvyTfiIjuGzPYUB6ZR3YYKi1NH754A/GKmf+UtNBPjGmu
-         dl9Q==
-X-Gm-Message-State: AOAM5335ql8HyFTY8nZ66jvfWeW6vDQ8bObvc5+KBOZTcqtPt8qpO8bL
-        rskXHcEIz0fcddhd9kwSygyq5Ep6nBHGBhnqEPpkg2c0VpmL/EQWaAGGXGZbk34S1r0+qxoGddd
-        9TSQt6QlNFOC7xhXy
-X-Received: by 2002:a1c:3c08:: with SMTP id j8mr151286wma.158.1591633571882;
-        Mon, 08 Jun 2020 09:26:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzMODrjwl3uJvjfo1A6dRDqHo2iDzOMSyj2EtMN5BDt+YBK8zUVruK6nz7/OV+XRdPj9GQbLA==
-X-Received: by 2002:a1c:3c08:: with SMTP id j8mr151258wma.158.1591633571606;
-        Mon, 08 Jun 2020 09:26:11 -0700 (PDT)
-Received: from steredhat ([79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id k21sm270313wrd.24.2020.06.08.09.26.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 09:26:10 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 18:26:08 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH RFC v5 12/13] vhost/vsock: switch to the buf API
-Message-ID: <20200608162608.gk2fpebujpvmkzpc@steredhat>
-References: <20200607141057.704085-1-mst@redhat.com>
- <20200607141057.704085-13-mst@redhat.com>
- <20200608101746.xnxtwwygolsk7yol@steredhat>
- <20200608092953-mutt-send-email-mst@kernel.org>
+        id S1730599AbgFHQgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 12:36:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39716 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730432AbgFHQgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 12:36:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=88MeFKvCY6T0QrZdQ+i9CPgwNPj+1wwn8P8nThk+OnE=; b=Y8KMgJvgWNbSr18uYw2huKiS+P
+        stY5qeIzYxS6W/lg9xGTQ99h9AEJ7WyjSKLK4oX9MVCkvC1Q0OFQUCMZPOzpW8ZvEbjz0Infp2R1B
+        PbLNvn3peyY6lZMM5oEDZm3fS2VDbOgwM2SoxVFHilleCzrmykl3tw4xQ5Y0ROH6BFlQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jiKlB-004Pxy-4L; Mon, 08 Jun 2020 18:36:29 +0200
+Date:   Mon, 8 Jun 2020 18:36:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        christoph.muellner@theobroma-systems.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: Re: [PATCH] net: phy: mscc: handle the clkout control on some phy
+ variants
+Message-ID: <20200608163629.GH1006885@lunn.ch>
+References: <20200608160207.1316052-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200608092953-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200608160207.1316052-1-heiko@sntech.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 09:30:38AM -0400, Michael S. Tsirkin wrote:
-> On Mon, Jun 08, 2020 at 12:17:46PM +0200, Stefano Garzarella wrote:
-> > On Sun, Jun 07, 2020 at 10:11:49AM -0400, Michael S. Tsirkin wrote:
-> > > A straight-forward conversion.
-> > > 
-> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > ---
-> > >  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
-> > >  1 file changed, 18 insertions(+), 12 deletions(-)
-> > 
-> > The changes for vsock part LGTM:
-> > 
-> > Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-> > 
-> > 
-> > I also did some tests with vhost-vsock (tools/testing/vsock/vsock_test
-> > and iperf-vsock), so for vsock:
-> > 
-> > Tested-by: Stefano Garzarella <sgarzare@redhat.com>
-> > 
-> > Thanks,
-> > Stefano
-> 
-> Re-testing v6 would be very much appreciated.
+On Mon, Jun 08, 2020 at 06:02:07PM +0200, Heiko Stuebner wrote:
+> +static int vsc8531_probe(struct phy_device *phydev)
+> +{
+> +	struct vsc8531_private *vsc8531;
+> +	int rate_magic;
+> +	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
+> +	   VSC8531_LINK_100_ACTIVITY};
+> +
+> +	rate_magic = vsc85xx_edge_rate_magic_get(phydev);
+> +	if (rate_magic < 0)
+> +		return rate_magic;
+> +
+> +	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+> +	if (!vsc8531)
+> +		return -ENOMEM;
+> +
+> +	phydev->priv = vsc8531;
+> +
+> +	vsc8531->rate_magic = rate_magic;
+> +	vsc8531->nleds = 2;
+> +	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
+> +	vsc8531->hw_stats = vsc85xx_hw_stats;
+> +	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
+> +	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+> +				      sizeof(u64), GFP_KERNEL);
+> +	if (!vsc8531->stats)
+> +		return -ENOMEM;
+> +
+> +	vsc8531_dt_clkout_rate_get(phydev);
+> +
+> +	return vsc85xx_dt_led_modes_get(phydev, default_mode);
+> +}
 
-Sure, I'm building v6 now and I'll send you a feedback :-)
+Hi Heiko
 
-Stefano
+The clock change itself looks O.K. Maybe we want to standardize on the
+name of the DT property, since it could be shared across all PHYs
+which have a clock output?
 
-> 
-> > > 
-> > > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > > index a483cec31d5c..61c6d3dd2ae3 100644
-> > > --- a/drivers/vhost/vsock.c
-> > > +++ b/drivers/vhost/vsock.c
-> > > @@ -103,7 +103,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> > >  		unsigned out, in;
-> > >  		size_t nbytes;
-> > >  		size_t iov_len, payload_len;
-> > > -		int head;
-> > > +		struct vhost_buf buf;
-> > > +		int ret;
-> > >  
-> > >  		spin_lock_bh(&vsock->send_pkt_list_lock);
-> > >  		if (list_empty(&vsock->send_pkt_list)) {
-> > > @@ -117,16 +118,17 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> > >  		list_del_init(&pkt->list);
-> > >  		spin_unlock_bh(&vsock->send_pkt_list_lock);
-> > >  
-> > > -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> > > -					 &out, &in, NULL, NULL);
-> > > -		if (head < 0) {
-> > > +		ret = vhost_get_avail_buf(vq, &buf,
-> > > +					  vq->iov, ARRAY_SIZE(vq->iov),
-> > > +					  &out, &in, NULL, NULL);
-> > > +		if (ret < 0) {
-> > >  			spin_lock_bh(&vsock->send_pkt_list_lock);
-> > >  			list_add(&pkt->list, &vsock->send_pkt_list);
-> > >  			spin_unlock_bh(&vsock->send_pkt_list_lock);
-> > >  			break;
-> > >  		}
-> > >  
-> > > -		if (head == vq->num) {
-> > > +		if (!ret) {
-> > >  			spin_lock_bh(&vsock->send_pkt_list_lock);
-> > >  			list_add(&pkt->list, &vsock->send_pkt_list);
-> > >  			spin_unlock_bh(&vsock->send_pkt_list_lock);
-> > > @@ -186,7 +188,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> > >  		 */
-> > >  		virtio_transport_deliver_tap_pkt(pkt);
-> > >  
-> > > -		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
-> > > +		buf.in_len = sizeof(pkt->hdr) + payload_len;
-> > > +		vhost_put_used_buf(vq, &buf);
-> > >  		added = true;
-> > >  
-> > >  		pkt->off += payload_len;
-> > > @@ -440,7 +443,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
-> > >  	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
-> > >  						 dev);
-> > >  	struct virtio_vsock_pkt *pkt;
-> > > -	int head, pkts = 0, total_len = 0;
-> > > +	int ret, pkts = 0, total_len = 0;
-> > > +	struct vhost_buf buf;
-> > >  	unsigned int out, in;
-> > >  	bool added = false;
-> > >  
-> > > @@ -461,12 +465,13 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
-> > >  			goto no_more_replies;
-> > >  		}
-> > >  
-> > > -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> > > -					 &out, &in, NULL, NULL);
-> > > -		if (head < 0)
-> > > +		ret = vhost_get_avail_buf(vq, &buf,
-> > > +					  vq->iov, ARRAY_SIZE(vq->iov),
-> > > +					  &out, &in, NULL, NULL);
-> > > +		if (ret < 0)
-> > >  			break;
-> > >  
-> > > -		if (head == vq->num) {
-> > > +		if (!ret) {
-> > >  			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
-> > >  				vhost_disable_notify(&vsock->dev, vq);
-> > >  				continue;
-> > > @@ -494,7 +499,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
-> > >  			virtio_transport_free_pkt(pkt);
-> > >  
-> > >  		len += sizeof(pkt->hdr);
-> > > -		vhost_add_used(vq, head, len);
-> > > +		buf.in_len = len;
-> > > +		vhost_put_used_buf(vq, &buf);
-> > >  		total_len += len;
-> > >  		added = true;
-> > >  	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
-> > > -- 
-> > > MST
-> > > 
-> 
+Could you add another patch first which refactors the _probe()
+functions. There is a lot of repeated code which could be put into a
+helper.
 
+Thanks
+	Andrew
