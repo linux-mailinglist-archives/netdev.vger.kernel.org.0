@@ -2,123 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8521F1D2A
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2DF1F1D3A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730482AbgFHQW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 12:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730475AbgFHQW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:22:57 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D8CC08C5C4
-        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 09:22:56 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id r7so18098362wro.1
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 09:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Hs1EELNtgkaMondyRtgQ/6Z9mw2fYYd1xiptMHkTtFA=;
-        b=ndOHGLTaByr9ofdCBK5UVRXpqyxBmcTEBUOqz/laTHtMlkelV5nMDGwIxHLn+n7LAx
-         6AG+1gPjhoqT0/eGqnxXkMs+4kwhXHbdLD51zfWNha64FIlC5WiZ3l/VfS2224OY1pP5
-         oqOnyaC2rND5M+dX4Nqp3MLtFrp1wWjZnDDbw=
+        id S1730458AbgFHQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 12:26:20 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57802 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730442AbgFHQ0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:26:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591633576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PfesJHBEui5hetw3RxW9+nGTdupwdIhkqQYIwcx4mZo=;
+        b=htDj+N5w5DH08wTF/tSGf2Mh8cxX+oINpFnzhTJBtSmzMYK9YHd8DqZU//94g1RYyauyIg
+        O8T+rHELvDO0en/TjbJvWlKMbRN5KNagv+KzOkyd/DwYYjyeeaiLDXzGVI4z97Ioi0NowI
+        LFTPWhVQPdleD5Ctrt1k6jwyMen68TU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-55-g5EFrPncO4WLaZbgOvguGw-1; Mon, 08 Jun 2020 12:26:13 -0400
+X-MC-Unique: g5EFrPncO4WLaZbgOvguGw-1
+Received: by mail-wr1-f69.google.com with SMTP id j16so7320267wre.22
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 09:26:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Hs1EELNtgkaMondyRtgQ/6Z9mw2fYYd1xiptMHkTtFA=;
-        b=RsCA1SeX1xbLy+LvNibGk+KkUSkmlg59RYNgQJRvGoQNMLDN/a1T9GKWaQ9bHaDJv1
-         kkKFVZins1UAnwMG/BqkPH+Uhd/NOJAzbca/TzJlj+ELQQQQORRxd1MckoUinAn6sjxl
-         bOfKbGIaNjBquylC79qiBK1TgorTa0j3EVrhIZ7A5DcbGvWQYHVOOyu3tqNOx3BghTnt
-         lXnZ0bCl72qpFVVM295ekXbJ1eR99LvYtFg7cvOAbSSvyW7GNghbWeoINNCIwTYtvuGp
-         cJP3Pz0WQfXZZ1wKd1+kXK/frihIy+ob15UphjRfq8z3+5GMk7Ddyf4UpH9GLeFaHVbU
-         hqfA==
-X-Gm-Message-State: AOAM531Nh8vNJuOing3e2K26bkMIwQeIINkWe7p2w6UhhfKvQqbAVq78
-        a1NyU+4YK/TE8sX5qOxgFhqzbA==
-X-Google-Smtp-Source: ABdhPJzP+Yico773WoQLz8PnS8XimH0eOsVTKoFbV8W6LsSuKSkEQnAXSFPDmG0XSmY2ceDAtZiaaA==
-X-Received: by 2002:adf:9c12:: with SMTP id f18mr26206857wrc.105.1591633375425;
-        Mon, 08 Jun 2020 09:22:55 -0700 (PDT)
-Received: from antares.lan (f.7.9.4.f.9.a.d.f.4.a.3.6.5.1.0.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:156:3a4f:da9f:497f])
-        by smtp.gmail.com with ESMTPSA id w3sm50929wmg.44.2020.06.08.09.22.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PfesJHBEui5hetw3RxW9+nGTdupwdIhkqQYIwcx4mZo=;
+        b=XTEG6hk6yPOI14AckOrNR2ujRip+4ZdqDqciRgWuUWYg7roS0XxK519SZa48ivXOW8
+         4iLWQCX3JBZBUlyvl1OXVaOZSzwRuYDMCR0BkOvEVxFr2CWss4jfDEvi7e8LkK6fbopf
+         f/FUsVJ5HcE6gUxmiwIFPUwFE/tXWKzUGcLe4EOaCI8ChC1mIL60vBKfRKPzWmz1jdQU
+         7akdhkDY1fUzCq8enGCIQBBTS6JnEr8zpqeyLuyXfQVQDceEP8tN5tx1ag7lfNJUPusw
+         isHUa56XFfxIsjoqt9qfbRgbvyTfiIjuGzPYUB6ZR3YYKi1NH754A/GKmf+UtNBPjGmu
+         dl9Q==
+X-Gm-Message-State: AOAM5335ql8HyFTY8nZ66jvfWeW6vDQ8bObvc5+KBOZTcqtPt8qpO8bL
+        rskXHcEIz0fcddhd9kwSygyq5Ep6nBHGBhnqEPpkg2c0VpmL/EQWaAGGXGZbk34S1r0+qxoGddd
+        9TSQt6QlNFOC7xhXy
+X-Received: by 2002:a1c:3c08:: with SMTP id j8mr151286wma.158.1591633571882;
+        Mon, 08 Jun 2020 09:26:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzMODrjwl3uJvjfo1A6dRDqHo2iDzOMSyj2EtMN5BDt+YBK8zUVruK6nz7/OV+XRdPj9GQbLA==
+X-Received: by 2002:a1c:3c08:: with SMTP id j8mr151258wma.158.1591633571606;
+        Mon, 08 Jun 2020 09:26:11 -0700 (PDT)
+Received: from steredhat ([79.49.207.108])
+        by smtp.gmail.com with ESMTPSA id k21sm270313wrd.24.2020.06.08.09.26.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 09:22:54 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Roman Gushchin <guro@fb.com>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf] bpf: cgroup: allow multi-attach program to replace itself
-Date:   Mon,  8 Jun 2020 17:22:01 +0100
-Message-Id: <20200608162202.94002-1-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 08 Jun 2020 09:26:10 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 18:26:08 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH RFC v5 12/13] vhost/vsock: switch to the buf API
+Message-ID: <20200608162608.gk2fpebujpvmkzpc@steredhat>
+References: <20200607141057.704085-1-mst@redhat.com>
+ <20200607141057.704085-13-mst@redhat.com>
+ <20200608101746.xnxtwwygolsk7yol@steredhat>
+ <20200608092953-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200608092953-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using BPF_PROG_ATTACH to attach a program to a cgroup in
-BPF_F_ALLOW_MULTI mode, it is not possible to replace a program
-with itself. This is because the check for duplicate programs
-doesn't take the replacement program into account.
+On Mon, Jun 08, 2020 at 09:30:38AM -0400, Michael S. Tsirkin wrote:
+> On Mon, Jun 08, 2020 at 12:17:46PM +0200, Stefano Garzarella wrote:
+> > On Sun, Jun 07, 2020 at 10:11:49AM -0400, Michael S. Tsirkin wrote:
+> > > A straight-forward conversion.
+> > > 
+> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > ---
+> > >  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
+> > >  1 file changed, 18 insertions(+), 12 deletions(-)
+> > 
+> > The changes for vsock part LGTM:
+> > 
+> > Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> > 
+> > 
+> > I also did some tests with vhost-vsock (tools/testing/vsock/vsock_test
+> > and iperf-vsock), so for vsock:
+> > 
+> > Tested-by: Stefano Garzarella <sgarzare@redhat.com>
+> > 
+> > Thanks,
+> > Stefano
+> 
+> Re-testing v6 would be very much appreciated.
 
-Replacing a program with itself might seem weird, but it has
-some uses: first, it allows resetting the associated cgroup storage.
-Second, it makes the API consistent with the non-ALLOW_MULTI usage,
-where it is possible to replace a program with itself. Third, it
-aligns BPF_PROG_ATTACH with bpf_link, where replacing itself is
-also supported.
+Sure, I'm building v6 now and I'll send you a feedback :-)
 
-Sice this code has been refactored a few times this change will
-only apply to v5.7 and later. Adjustments could be made to
-commit 1020c1f24a94 ("bpf: Simplify __cgroup_bpf_attach") and
-commit d7bf2c10af05 ("bpf: allocate cgroup storage entries on attaching bpf programs")
-as well as commit 324bda9e6c5a ("bpf: multi program support for cgroup+bpf")
+Stefano
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
----
- kernel/bpf/cgroup.c                                        | 2 +-
- .../testing/selftests/bpf/prog_tests/cgroup_attach_multi.c | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index fdf7836750a3..4d76f16524cc 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -378,7 +378,7 @@ static struct bpf_prog_list *find_attach_entry(struct list_head *progs,
- 	}
- 
- 	list_for_each_entry(pl, progs, node) {
--		if (prog && pl->prog == prog)
-+		if (prog && pl->prog == prog && prog != replace_prog)
- 			/* disallow attaching the same prog twice */
- 			return ERR_PTR(-EINVAL);
- 		if (link && pl->link == link)
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-index 139f8e82c7c6..b549fcfacc0b 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-@@ -230,6 +230,13 @@ void test_cgroup_attach_multi(void)
- 		  "prog_replace", "errno=%d\n", errno))
- 		goto err;
- 
-+	/* replace program with itself */
-+	attach_opts.replace_prog_fd = allow_prog[6];
-+	if (CHECK(bpf_prog_attach_xattr(allow_prog[6], cg1,
-+					BPF_CGROUP_INET_EGRESS, &attach_opts),
-+		  "prog_replace", "errno=%d\n", errno))
-+		goto err;
-+
- 	value = 0;
- 	CHECK_FAIL(bpf_map_update_elem(map_fd, &key, &value, 0));
- 	CHECK_FAIL(system(PING_CMD));
--- 
-2.25.1
+> 
+> > > 
+> > > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> > > index a483cec31d5c..61c6d3dd2ae3 100644
+> > > --- a/drivers/vhost/vsock.c
+> > > +++ b/drivers/vhost/vsock.c
+> > > @@ -103,7 +103,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> > >  		unsigned out, in;
+> > >  		size_t nbytes;
+> > >  		size_t iov_len, payload_len;
+> > > -		int head;
+> > > +		struct vhost_buf buf;
+> > > +		int ret;
+> > >  
+> > >  		spin_lock_bh(&vsock->send_pkt_list_lock);
+> > >  		if (list_empty(&vsock->send_pkt_list)) {
+> > > @@ -117,16 +118,17 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> > >  		list_del_init(&pkt->list);
+> > >  		spin_unlock_bh(&vsock->send_pkt_list_lock);
+> > >  
+> > > -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+> > > -					 &out, &in, NULL, NULL);
+> > > -		if (head < 0) {
+> > > +		ret = vhost_get_avail_buf(vq, &buf,
+> > > +					  vq->iov, ARRAY_SIZE(vq->iov),
+> > > +					  &out, &in, NULL, NULL);
+> > > +		if (ret < 0) {
+> > >  			spin_lock_bh(&vsock->send_pkt_list_lock);
+> > >  			list_add(&pkt->list, &vsock->send_pkt_list);
+> > >  			spin_unlock_bh(&vsock->send_pkt_list_lock);
+> > >  			break;
+> > >  		}
+> > >  
+> > > -		if (head == vq->num) {
+> > > +		if (!ret) {
+> > >  			spin_lock_bh(&vsock->send_pkt_list_lock);
+> > >  			list_add(&pkt->list, &vsock->send_pkt_list);
+> > >  			spin_unlock_bh(&vsock->send_pkt_list_lock);
+> > > @@ -186,7 +188,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> > >  		 */
+> > >  		virtio_transport_deliver_tap_pkt(pkt);
+> > >  
+> > > -		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
+> > > +		buf.in_len = sizeof(pkt->hdr) + payload_len;
+> > > +		vhost_put_used_buf(vq, &buf);
+> > >  		added = true;
+> > >  
+> > >  		pkt->off += payload_len;
+> > > @@ -440,7 +443,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+> > >  	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
+> > >  						 dev);
+> > >  	struct virtio_vsock_pkt *pkt;
+> > > -	int head, pkts = 0, total_len = 0;
+> > > +	int ret, pkts = 0, total_len = 0;
+> > > +	struct vhost_buf buf;
+> > >  	unsigned int out, in;
+> > >  	bool added = false;
+> > >  
+> > > @@ -461,12 +465,13 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+> > >  			goto no_more_replies;
+> > >  		}
+> > >  
+> > > -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+> > > -					 &out, &in, NULL, NULL);
+> > > -		if (head < 0)
+> > > +		ret = vhost_get_avail_buf(vq, &buf,
+> > > +					  vq->iov, ARRAY_SIZE(vq->iov),
+> > > +					  &out, &in, NULL, NULL);
+> > > +		if (ret < 0)
+> > >  			break;
+> > >  
+> > > -		if (head == vq->num) {
+> > > +		if (!ret) {
+> > >  			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
+> > >  				vhost_disable_notify(&vsock->dev, vq);
+> > >  				continue;
+> > > @@ -494,7 +499,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+> > >  			virtio_transport_free_pkt(pkt);
+> > >  
+> > >  		len += sizeof(pkt->hdr);
+> > > -		vhost_add_used(vq, head, len);
+> > > +		buf.in_len = len;
+> > > +		vhost_put_used_buf(vq, &buf);
+> > >  		total_len += len;
+> > >  		added = true;
+> > >  	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
+> > > -- 
+> > > MST
+> > > 
+> 
 
