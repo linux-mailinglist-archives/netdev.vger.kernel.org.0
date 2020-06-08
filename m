@@ -2,43 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E2D1F2E84
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:42:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C1911F307A
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729113AbgFHXM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:12:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59864 "EHLO mail.kernel.org"
+        id S1728131AbgFHXIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:08:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729085AbgFHXMY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:12:24 -0400
+        id S1728107AbgFHXIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:08:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06A7C208C7;
-        Mon,  8 Jun 2020 23:12:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3832B20842;
+        Mon,  8 Jun 2020 23:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657944;
-        bh=1APZRQmaZ94RwQ1cAvwgySx9/rkDQcEWWledK+r1HSI=;
+        s=default; t=1591657691;
+        bh=UgH8czb3Zqf99cuf6/cq5xSM1xd308oDJ5vXdkILL9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mRN5rnbmbKWlM10fJD3bnsquRGyu0uhXHh08+EFQrsZKyfrXfDo8DG0DY0IKRkjae
-         mYCAtfaf2dqljTKn6deWnbeWlv+zbHY4MpmKMqhyKAUrBlZnrNGJsww8pLt7PiYw8w
-         T+RzibRFuZny+tfiOFUeHRhtauFM6EVvOWYjDYYo=
+        b=NImMvxuqEixileN0cKasTp1aFKdtMLCwg1iIfjFyF9fv37jbF6iU7Ct6dEOMmIxa7
+         LLgNlo/97uYHUknNhQvR+Di4AMmidwrMVeXXL/99neosQJYELI35TL23LxOfpeiRwS
+         8NbV7BOq/QM++pzixWzH2Y1W+cGAvdILbkhsrDc8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
-Subject: [PATCH AUTOSEL 5.6 009/606] net/rds: Use ERR_PTR for rds_message_alloc_sgs()
-Date:   Mon,  8 Jun 2020 19:02:14 -0400
-Message-Id: <20200608231211.3363633-9-sashal@kernel.org>
+Cc:     Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 092/274] ath10k: fix kernel null pointer dereference
+Date:   Mon,  8 Jun 2020 19:03:05 -0400
+Message-Id: <20200608230607.3361041-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
-References: <20200608231211.3363633-1-sashal@kernel.org>
+In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
+References: <20200608230607.3361041-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,150 +44,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Gunthorpe <jgg@mellanox.com>
+From: Venkateswara Naralasetty <vnaralas@codeaurora.org>
 
-commit 7dba92037baf3fa00b4880a31fd532542264994c upstream.
+[ Upstream commit acb31476adc9ff271140cdd4d3c707ff0c97f5a4 ]
 
-Returning the error code via a 'int *ret' when the function returns a
-pointer is very un-kernely and causes gcc 10's static analysis to choke:
+Currently sta airtime is updated without any lock in case of
+host based airtime calculation. Which may result in accessing the
+invalid sta pointer in case of continuous station connect/disconnect.
 
-net/rds/message.c: In function ‘rds_message_map_pages’:
-net/rds/message.c:358:10: warning: ‘ret’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-  358 |   return ERR_PTR(ret);
+This patch fix the kernel null pointer dereference by updating the
+station airtime with proper RCU lock in case of host based airtime
+calculation.
 
-Use a typical ERR_PTR return instead.
+Proceeding with the analysis of "ARM Kernel Panic".
+The APSS crash happened due to OOPS on CPU 0.
+Crash Signature : Unable to handle kernel NULL pointer dereference
+at virtual address 00000300
+During the crash,
+PC points to "ieee80211_sta_register_airtime+0x1c/0x448 [mac80211]"
+LR points to "ath10k_txrx_tx_unref+0x17c/0x364 [ath10k_core]".
+The Backtrace obtained is as follows:
+[<bf880238>] (ieee80211_sta_register_airtime [mac80211]) from
+[<bf945a38>] (ath10k_txrx_tx_unref+0x17c/0x364 [ath10k_core])
+[<bf945a38>] (ath10k_txrx_tx_unref [ath10k_core]) from
+[<bf9428e4>] (ath10k_htt_txrx_compl_task+0xa50/0xfc0 [ath10k_core])
+[<bf9428e4>] (ath10k_htt_txrx_compl_task [ath10k_core]) from
+[<bf9b9bc8>] (ath10k_pci_napi_poll+0x50/0xf8 [ath10k_pci])
+[<bf9b9bc8>] (ath10k_pci_napi_poll [ath10k_pci]) from
+[<c059e3b0>] (net_rx_action+0xac/0x160)
+[<c059e3b0>] (net_rx_action) from [<c02329a4>] (__do_softirq+0x104/0x294)
+[<c02329a4>] (__do_softirq) from [<c0232b64>] (run_ksoftirqd+0x30/0x90)
+[<c0232b64>] (run_ksoftirqd) from [<c024e358>] (smpboot_thread_fn+0x25c/0x274)
+[<c024e358>] (smpboot_thread_fn) from [<c02482fc>] (kthread+0xd8/0xec)
 
-Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Tested HW: QCA9888
+Tested FW: 10.4-3.10-00047
+
+Signed-off-by: Venkateswara Naralasetty <vnaralas@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1585736290-17661-1-git-send-email-vnaralas@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rds/message.c | 19 ++++++-------------
- net/rds/rdma.c    | 12 ++++++++----
- net/rds/rds.h     |  3 +--
- net/rds/send.c    |  6 ++++--
- 4 files changed, 19 insertions(+), 21 deletions(-)
+ drivers/net/wireless/ath/ath10k/txrx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/rds/message.c b/net/rds/message.c
-index 50f13f1d4ae0..2d43e13d6dd5 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -308,26 +308,20 @@ struct rds_message *rds_message_alloc(unsigned int extra_len, gfp_t gfp)
- /*
-  * RDS ops use this to grab SG entries from the rm's sg pool.
-  */
--struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents,
--					  int *ret)
-+struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents)
- {
- 	struct scatterlist *sg_first = (struct scatterlist *) &rm[1];
- 	struct scatterlist *sg_ret;
+diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
+index 39abf8b12903..f46b9083bbf1 100644
+--- a/drivers/net/wireless/ath/ath10k/txrx.c
++++ b/drivers/net/wireless/ath/ath10k/txrx.c
+@@ -84,9 +84,11 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ 		wake_up(&htt->empty_tx_wq);
+ 	spin_unlock_bh(&htt->tx_lock);
  
--	if (WARN_ON(!ret))
--		return NULL;
--
- 	if (nents <= 0) {
- 		pr_warn("rds: alloc sgs failed! nents <= 0\n");
--		*ret = -EINVAL;
--		return NULL;
-+		return ERR_PTR(-EINVAL);
- 	}
++	rcu_read_lock();
+ 	if (txq && txq->sta && skb_cb->airtime_est)
+ 		ieee80211_sta_register_airtime(txq->sta, txq->tid,
+ 					       skb_cb->airtime_est, 0);
++	rcu_read_unlock();
  
- 	if (rm->m_used_sgs + nents > rm->m_total_sgs) {
- 		pr_warn("rds: alloc sgs failed! total %d used %d nents %d\n",
- 			rm->m_total_sgs, rm->m_used_sgs, nents);
--		*ret = -ENOMEM;
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 	}
- 
- 	sg_ret = &sg_first[rm->m_used_sgs];
-@@ -343,7 +337,6 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
- 	unsigned int i;
- 	int num_sgs = DIV_ROUND_UP(total_len, PAGE_SIZE);
- 	int extra_bytes = num_sgs * sizeof(struct scatterlist);
--	int ret;
- 
- 	rm = rds_message_alloc(extra_bytes, GFP_NOWAIT);
- 	if (!rm)
-@@ -352,10 +345,10 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
- 	set_bit(RDS_MSG_PAGEVEC, &rm->m_flags);
- 	rm->m_inc.i_hdr.h_len = cpu_to_be32(total_len);
- 	rm->data.op_nents = DIV_ROUND_UP(total_len, PAGE_SIZE);
--	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs, &ret);
--	if (!rm->data.op_sg) {
-+	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
-+	if (IS_ERR(rm->data.op_sg)) {
- 		rds_message_put(rm);
--		return ERR_PTR(ret);
-+		return ERR_CAST(rm->data.op_sg);
- 	}
- 
- 	for (i = 0; i < rm->data.op_nents; ++i) {
-diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-index 585e6b3b69ce..554ea7f0277f 100644
---- a/net/rds/rdma.c
-+++ b/net/rds/rdma.c
-@@ -664,9 +664,11 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
- 	op->op_odp_mr = NULL;
- 
- 	WARN_ON(!nr_pages);
--	op->op_sg = rds_message_alloc_sgs(rm, nr_pages, &ret);
--	if (!op->op_sg)
-+	op->op_sg = rds_message_alloc_sgs(rm, nr_pages);
-+	if (IS_ERR(op->op_sg)) {
-+		ret = PTR_ERR(op->op_sg);
- 		goto out_pages;
-+	}
- 
- 	if (op->op_notify || op->op_recverr) {
- 		/* We allocate an uninitialized notifier here, because
-@@ -905,9 +907,11 @@ int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
- 	rm->atomic.op_silent = !!(args->flags & RDS_RDMA_SILENT);
- 	rm->atomic.op_active = 1;
- 	rm->atomic.op_recverr = rs->rs_recverr;
--	rm->atomic.op_sg = rds_message_alloc_sgs(rm, 1, &ret);
--	if (!rm->atomic.op_sg)
-+	rm->atomic.op_sg = rds_message_alloc_sgs(rm, 1);
-+	if (IS_ERR(rm->atomic.op_sg)) {
-+		ret = PTR_ERR(rm->atomic.op_sg);
- 		goto err;
-+	}
- 
- 	/* verify 8 byte-aligned */
- 	if (args->local_addr & 0x7) {
-diff --git a/net/rds/rds.h b/net/rds/rds.h
-index e4a603523083..b8b7ad766046 100644
---- a/net/rds/rds.h
-+++ b/net/rds/rds.h
-@@ -852,8 +852,7 @@ rds_conn_connecting(struct rds_connection *conn)
- 
- /* message.c */
- struct rds_message *rds_message_alloc(unsigned int nents, gfp_t gfp);
--struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents,
--					  int *ret);
-+struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents);
- int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
- 			       bool zcopy);
- struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned int total_len);
-diff --git a/net/rds/send.c b/net/rds/send.c
-index 82dcd8b84fe7..68e2bdb08fd0 100644
---- a/net/rds/send.c
-+++ b/net/rds/send.c
-@@ -1274,9 +1274,11 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
- 
- 	/* Attach data to the rm */
- 	if (payload_len) {
--		rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs, &ret);
--		if (!rm->data.op_sg)
-+		rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
-+		if (IS_ERR(rm->data.op_sg)) {
-+			ret = PTR_ERR(rm->data.op_sg);
- 			goto out;
-+		}
- 		ret = rds_message_copy_from_user(rm, &msg->msg_iter, zcopy);
- 		if (ret)
- 			goto out;
+ 	if (ar->bus_param.dev_type != ATH10K_DEV_TYPE_HL)
+ 		dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
 -- 
 2.25.1
 
