@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D731B1F2000
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 21:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1118A1F2044
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 21:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbgFHThU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 15:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbgFHThU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 15:37:20 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11314C08C5C2
-        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 12:37:20 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id g62so12168698qtd.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 12:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=by8cJEioFTpEdRbqT2mRW0Cy3MJHn3+LTVQ596HzNBo=;
-        b=bly4NsdGLSqNbcYttzr9rv6ARVwuzyXqmH3GJttIK6RK/BvOaGeFKMFOIAI8e99dFZ
-         MPxJPI3IpZAEEp558C6x+ZWEWznTiGsxJh/Lhz+NUA8qrHRrVcNFGEEcbDU46QdQEMmU
-         Wuz7/2YSx7qt853C8AlnaxiOdZEnXVFHyCPZ2hF2bP+jnPx4FGqljusP/TE0+9AIlwKI
-         65NbJG/Hi9GUe1UmAk5veJINppNzl1YjLPLvo81qp44rduPxR0KJHiA0BgU75myTCtay
-         0UzmGiXu4UrKp/aznlGwucPPG34hRkkBa6Iw81rIIGVZYINqYAv2ATBQDuFpfdjr2Y8o
-         UAxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=by8cJEioFTpEdRbqT2mRW0Cy3MJHn3+LTVQ596HzNBo=;
-        b=BuyuN9i15Z7f1MSvNyylbb495LibvW05Q45/sv8Vg9JokD8zASUlWPo6EWHjKv01Zx
-         qocVoRLrFA/Hsv8d480pxsyJUd9gVHLXvOOuoALunA30epD6qjZVdDe7qbf6HVZ0wFVo
-         ABpczwY9OEiauoJWRR5u2oQD9YmAdCDzP9JkylAOH0krxBhir24ruyGfBajMwQ7qJByD
-         dKCCdZqcSlb0LEwvGdtVk55xXwthDXncjFOHveuRCOXHBJRSEPbSi7NFesO3LaMP6zBZ
-         bHvGiip/M77acqUsWhOR056e7WSXrl3lzqOvY3fguVpbSbJXcHUQL0jOH+vScEXl+u/N
-         ngBg==
-X-Gm-Message-State: AOAM533suAM3AuncS4sgoZmbObogznHXsvtlnjGvM4t3BRxIPbh1s04n
-        rFQfYaOlY5aXpZbef1TAIPqzksVI
-X-Google-Smtp-Source: ABdhPJyE1bHYO6V4rh2BLqeUn56HRWT4MnmmupFa5trBpUFOUihfTauXV0NVZJ9dRRWPA6X74I+tAg==
-X-Received: by 2002:ac8:27e3:: with SMTP id x32mr7261928qtx.322.1591645039120;
-        Mon, 08 Jun 2020 12:37:19 -0700 (PDT)
-Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:6db4:c56e:8332:4abd])
-        by smtp.gmail.com with ESMTPSA id l19sm8046859qtq.13.2020.06.08.12.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 12:37:18 -0700 (PDT)
-From:   Tanner Love <tannerlove.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, tannerlove <tannerlove@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] selftests/net: in timestamping, strncpy needs to preserve null byte
-Date:   Mon,  8 Jun 2020 15:37:15 -0400
-Message-Id: <20200608193715.122785-1-tannerlove.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
+        id S1726486AbgFHTpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 15:45:02 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:60023 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726409AbgFHTpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 15:45:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591645501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VaxVZkjnEZYrrPi0S56z9hliQp1tI96IZ+GgYvyZSpw=;
+        b=Laiqj9qnVH+qZ1sgtW/qMKNVac8Jz1q5PxhyotbDOezlHUZMAPfQ4q721GiyqhCOkJvBFx
+        VxaG1etUd6A7Obb3vfzXW7K8uMjhHPHqZsfBEFeuP025E3dmEuJOumJSWa4zvllZXM95Sa
+        XW1UD5xKL3J2XiHGWpnLJ/FvyvIfo0w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-343-nq1Dq9QyM06uvBumsB0RcQ-1; Mon, 08 Jun 2020 15:44:46 -0400
+X-MC-Unique: nq1Dq9QyM06uvBumsB0RcQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C517918FE860;
+        Mon,  8 Jun 2020 19:44:44 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 715E1768B4;
+        Mon,  8 Jun 2020 19:44:39 +0000 (UTC)
+Date:   Mon, 8 Jun 2020 21:44:37 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH bpf 1/3] bpf: syscall to start at file-descriptor 1
+Message-ID: <20200608214437.5f7766ab@carbon>
+In-Reply-To: <CAEf4BzagW8GFfybMf10yorwTA+fpiuZHqT41Uu-vAsRHnZqKRw@mail.gmail.com>
+References: <159163498340.1967373.5048584263152085317.stgit@firesoul>
+        <159163507753.1967373.62249862728421448.stgit@firesoul>
+        <CAEf4BzagW8GFfybMf10yorwTA+fpiuZHqT41Uu-vAsRHnZqKRw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: tannerlove <tannerlove@google.com>
+On Mon, 8 Jun 2020 11:36:33 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-If user passed an interface option longer than 15 characters, then
-device.ifr_name and hwtstamp.ifr_name became non-null-terminated
-strings. The compiler warned about this:
+> On Mon, Jun 8, 2020 at 9:51 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >
+> > This patch change BPF syscall to avoid returning file descriptor value zero.
+> >
+> > As mentioned in cover letter, it is very impractical when extending kABI
+> > that the file-descriptor value 'zero' is valid, as this requires new fields
+> > must be initialised as minus-1. First step is to change the kernel such that
+> > BPF-syscall simply doesn't return value zero as a FD number.
+> >
+> > This patch achieves this by similar code to anon_inode_getfd(), with the
+> > exception of getting unused FD starting from 1. The kernel already supports
+> > starting from a specific FD value, as this is used by f_dupfd(). It seems
+> > simpler to replicate part of anon_inode_getfd() code and use this start from
+> > offset feature, instead of using f_dupfd() handling afterwards.  
+> 
+> Wouldn't it be better to just handle that on libbpf side? That way it
+> works on all kernels and doesn't require this duplication of logic
+> inside kernel?
 
-timestamping.c:353:2: warning: ‘strncpy’ specified bound 16 equals \
-destination size [-Wstringop-truncation]
-  353 |  strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
+IMHO this is needed on the kernel side, to pair it with the API change.
+I don't see how doing this in libbpf can cover all cases.
 
-Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
-Signed-off-by: Tanner Love <tannerlove@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/net/timestamping.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+First of all, some users might not be using libbpf.
 
-diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
-index aca3491174a1..f4bb4fef0f39 100644
---- a/tools/testing/selftests/net/timestamping.c
-+++ b/tools/testing/selftests/net/timestamping.c
-@@ -313,10 +313,16 @@ int main(int argc, char **argv)
- 	int val;
- 	socklen_t len;
- 	struct timeval next;
-+	size_t if_len;
- 
- 	if (argc < 2)
- 		usage(0);
- 	interface = argv[1];
-+	if_len = strlen(interface);
-+	if (if_len >= IFNAMSIZ) {
-+		printf("interface name exceeds IFNAMSIZ\n");
-+		exit(1);
-+	}
- 
- 	for (i = 2; i < argc; i++) {
- 		if (!strcasecmp(argv[i], "SO_TIMESTAMP"))
-@@ -350,12 +356,12 @@ int main(int argc, char **argv)
- 		bail("socket");
- 
- 	memset(&device, 0, sizeof(device));
--	strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
-+	memcpy(device.ifr_name, interface, if_len + 1);
- 	if (ioctl(sock, SIOCGIFADDR, &device) < 0)
- 		bail("getting interface IP address");
- 
- 	memset(&hwtstamp, 0, sizeof(hwtstamp));
--	strncpy(hwtstamp.ifr_name, interface, sizeof(hwtstamp.ifr_name));
-+	memcpy(hwtstamp.ifr_name, interface, if_len + 1);
- 	hwtstamp.ifr_data = (void *)&hwconfig;
- 	memset(&hwconfig, 0, sizeof(hwconfig));
- 	hwconfig.tx_type =
+Second, a userspace application could be using an older version of
+libbpf on a newer kernel. (Notice this is not only due to older
+distros, but also because projects using git submodule libbpf will
+freeze at some point in time that worked).
+
 -- 
-2.27.0.278.ge193c7cf3a9-goog
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
