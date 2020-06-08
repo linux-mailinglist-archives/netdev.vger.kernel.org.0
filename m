@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 588CA1F3044
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ACE31F303C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387945AbgFIA5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:57:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54406 "EHLO mail.kernel.org"
+        id S1731723AbgFIA5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:57:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728265AbgFHXIv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:08:51 -0400
+        id S1728273AbgFHXIx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:08:53 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1CF4E21475;
-        Mon,  8 Jun 2020 23:08:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E1BC820890;
+        Mon,  8 Jun 2020 23:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657731;
-        bh=oFIdwIPcbSh6WjyfTNz2t9h1mlmA98OxWyFA46v78Jg=;
+        s=default; t=1591657733;
+        bh=LqIvZdy0rZViN+9Rw5CFoFIo9NiAxYZqFGNN6r9tn/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AYe+7FSqRXpY6YsctQaifpSRtMogA1eMZzVPVqMl1GwL9W28tucxa26OlXgyLdM8G
-         7glcAxO5Ncom+3iuS1M5R+FTVqtoia1cG/FCLh9Grw/SqcRZk5FKJzi5VnluMT58jG
-         y21DT7En6uE8V6iGoyELbo1tAgnznFkbpbX+eg3c=
+        b=n1mK95cfqwdhOTBa4rQ1ZwJxhYxOzm2hG0j28XhtUnwFZhCX/XVy+RrmIlqnVbi0Y
+         MqxzqiPQizq7FQFZ38DqiT3EqJWuevboRGMvgnkJEfPz3o1TnPcN/80ohKLRhjRZbF
+         uCOO2nYMwH1pgiQW0O1OdHr/ruHCngA6/SunVm5c=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zou Wei <zou_wei@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 122/274] net/mlx4_core: Add missing iounmap() in error path
-Date:   Mon,  8 Jun 2020 19:03:35 -0400
-Message-Id: <20200608230607.3361041-122-sashal@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 124/274] netfilter: nft_nat: return EOPNOTSUPP if type or flags are not supported
+Date:   Mon,  8 Jun 2020 19:03:37 -0400
+Message-Id: <20200608230607.3361041-124-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,37 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zou Wei <zou_wei@huawei.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit c90af587a9eee697e2d89683113707cada70116a ]
+[ Upstream commit 0d7c83463fdf7841350f37960a7abadd3e650b41 ]
 
-This fixes the following coccicheck warning:
+Instead of EINVAL which should be used for malformed netlink messages.
 
-drivers/net/ethernet/mellanox/mlx4/crdump.c:200:2-8: ERROR: missing iounmap;
-ioremap on line 190 and execution via conditional on line 198
-
-Fixes: 7ef19d3b1d5e ("devlink: report error once U32_MAX snapshot ids have been used")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zou Wei <zou_wei@huawei.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: eb31628e37a0 ("netfilter: nf_tables: Add support for IPv6 NAT")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/crdump.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nft_nat.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-index 73eae80e1cb7..ac5468b77488 100644
---- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-@@ -197,6 +197,7 @@ int mlx4_crdump_collect(struct mlx4_dev *dev)
- 	err = devlink_region_snapshot_id_get(devlink, &id);
- 	if (err) {
- 		mlx4_err(dev, "crdump: devlink get snapshot id err %d\n", err);
-+		iounmap(cr_space);
- 		return err;
+diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
+index 8b44a4de5329..bb49a217635e 100644
+--- a/net/netfilter/nft_nat.c
++++ b/net/netfilter/nft_nat.c
+@@ -129,7 +129,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
+ 		priv->type = NF_NAT_MANIP_DST;
+ 		break;
+ 	default:
+-		return -EINVAL;
++		return -EOPNOTSUPP;
  	}
  
+ 	if (tb[NFTA_NAT_FAMILY] == NULL)
+@@ -196,7 +196,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
+ 	if (tb[NFTA_NAT_FLAGS]) {
+ 		priv->flags = ntohl(nla_get_be32(tb[NFTA_NAT_FLAGS]));
+ 		if (priv->flags & ~NF_NAT_RANGE_MASK)
+-			return -EINVAL;
++			return -EOPNOTSUPP;
+ 	}
+ 
+ 	return nf_ct_netns_get(ctx->net, family);
 -- 
 2.25.1
 
