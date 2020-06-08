@@ -2,140 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 322801F2150
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A1621F2165
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgFHVJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 17:09:14 -0400
-Received: from mga07.intel.com ([134.134.136.100]:4792 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726725AbgFHVJI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 17:09:08 -0400
-IronPort-SDR: pigDRql+fRd4Ju4Ts1fHZYMlOjqX2kTALj9tB0Vv3lW+s6Pp+dzF1gU3t2k18bsOjvKAUOi6+4
- uV1HK8LWkp+A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2020 14:09:06 -0700
-IronPort-SDR: frmd7NyexTaQPNjw1Wq1AJSAV6dMLQE7KIOqLtiiSTgWfM1QMpgYdkgCZm7nHZaMI3r22Vvpob
- O5elf8Oxn2/A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,489,1583222400"; 
-   d="scan'208";a="288603314"
-Received: from sjchrist-coffee.jf.intel.com (HELO linux.intel.com) ([10.54.74.152])
-  by orsmga002.jf.intel.com with ESMTP; 08 Jun 2020 14:09:06 -0700
-Date:   Mon, 8 Jun 2020 14:09:06 -0700
-From:   Sean Christopherson <sean.j.christopherson@intel.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] virtio_net: Unregister and re-register xdp_rxq across
- freeze/restore
-Message-ID: <20200608210906.GG8223@linux.intel.com>
-References: <20200605214624.21430-1-sean.j.christopherson@intel.com>
- <20200607091542-mutt-send-email-mst@kernel.org>
+        id S1726910AbgFHVNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 17:13:22 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:34293 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726725AbgFHVNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 17:13:22 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-71-YI87RbRkNr-qQv0QA8wF6w-1; Mon, 08 Jun 2020 22:13:15 +0100
+X-MC-Unique: YI87RbRkNr-qQv0QA8wF6w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 8 Jun 2020 22:13:15 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 8 Jun 2020 22:13:15 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Michael Tuexen' <Michael.Tuexen@lurchi.franken.de>
+CC:     =?utf-8?B?SXZhbiBTa3l0dGUgSsO4cmdlbnNlbg==?= <isj-sctp@i1.dk>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: packed structures used in socket options
+Thread-Topic: packed structures used in socket options
+Thread-Index: AQHWPLpUTq2nADe9c02l9PzEMhJDA6jNLBzwgAAGoICAAC9ugP//9FcAgABAGeCAAAZCgIABR3tggAAIYoCAAEsBgA==
+Date:   Mon, 8 Jun 2020 21:13:15 +0000
+Message-ID: <529a772bd3ef40d3a310e78d613339ca@AcuMS.aculab.com>
+References: <CBFEFEF1-127A-4ADA-B438-B171B9E26282@lurchi.franken.de>
+ <B69695A1-F45B-4375-B9BB-1E50D1550C6D@lurchi.franken.de>
+ <23a14b44bd5749a6b1b51150c7f3c8ba@AcuMS.aculab.com>
+ <2213135.ChUyxVVRYb@isjsys>
+ <cd3793726252407f8e80aa8d0025d44f@AcuMS.aculab.com>
+ <7BD347D7-562F-459D-B0CB-0BC798919876@lurchi.franken.de>
+In-Reply-To: <7BD347D7-562F-459D-B0CB-0BC798919876@lurchi.franken.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200607091542-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 07, 2020 at 09:23:03AM -0400, Michael S. Tsirkin wrote:
-> On Fri, Jun 05, 2020 at 02:46:24PM -0700, Sean Christopherson wrote:
-> > @@ -1480,17 +1495,10 @@ static int virtnet_open(struct net_device *dev)
-> >  			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> >  				schedule_delayed_work(&vi->refill, 0);
-> >  
-> > -		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i);
-> > +		err = virtnet_reg_xdp(&vi->rq[i].xdp_rxq, dev, i);
-> >  		if (err < 0)
-> >  			return err;
-> >  
-> > -		err = xdp_rxq_info_reg_mem_model(&vi->rq[i].xdp_rxq,
-> > -						 MEM_TYPE_PAGE_SHARED, NULL);
-> > -		if (err < 0) {
-> > -			xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> > -			return err;
-> > -		}
-> > -
-> >  		virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
-> >  		virtnet_napi_tx_enable(vi, vi->sq[i].vq, &vi->sq[i].napi);
-> >  	}
-> > @@ -2306,6 +2314,7 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> >  
-> >  	if (netif_running(vi->dev)) {
-> >  		for (i = 0; i < vi->max_queue_pairs; i++) {
-> > +			xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> >  			napi_disable(&vi->rq[i].napi);
-> >  			virtnet_napi_tx_disable(&vi->sq[i].napi);
-> 
-> I suspect the right thing to do is to first disable all NAPI,
-> then play with XDP. Generally cleanup in the reverse order
-> of init is a good idea.
+RnJvbTogTWljaGFlbCBUdWV4ZW4NCj4gU2VudDogMDggSnVuZSAyMDIwIDE4OjM3DQo+ID4gT24g
+OC4gSnVuIDIwMjAsIGF0IDE4OjE4LCBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdodEBBQ1VMQUIu
+Q09NPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IEl2YW4gU2t5dHRlIErDuHJnZW5zZW4NCj4gPj4g
+U2VudDogMDcgSnVuZSAyMDIwIDIyOjM1DQo+ID4gLi4uDQo+ID4+Pj4+Pj4+IGNvbnRhaW5zOg0K
+PiA+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+PiBzdHJ1Y3Qgc2N0cF9wYWRkcnBhcmFtcyB7DQo+ID4+Pj4+
+Pj4+IAlzY3RwX2Fzc29jX3QJCXNwcF9hc3NvY19pZDsNCj4gPj4+Pj4+Pj4gCXN0cnVjdCBzb2Nr
+YWRkcl9zdG9yYWdlCXNwcF9hZGRyZXNzOw0KPiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfaGJpbnRl
+cnZhbDsNCj4gPj4+Pj4+Pj4gCV9fdTE2CQkJc3BwX3BhdGhtYXhyeHQ7DQo+ID4+Pj4+Pj4+IAlf
+X3UzMgkJCXNwcF9wYXRobXR1Ow0KPiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfc2Fja2RlbGF5Ow0K
+PiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfZmxhZ3M7DQo+ID4+Pj4+Pj4+IAlfX3UzMgkJCXNwcF9p
+cHY2X2Zsb3dsYWJlbDsNCj4gPj4+Pj4+Pj4gCV9fdTgJCQlzcHBfZHNjcDsNCj4gPj4+Pj4+Pj4g
+fSBfX2F0dHJpYnV0ZV9fKChwYWNrZWQsIGFsaWduZWQoNCkpKTsNCj4gPj4+Pj4+Pj4NCj4gPj4+
+Pj4+Pj4gVGhpcyBzdHJ1Y3R1cmUgaXMgb25seSB1c2VkIGluIHRoZSBJUFBST1RPX1NDVFAgbGV2
+ZWwgc29ja2V0IG9wdGlvbiBTQ1RQX1BFRVJfQUREUl9QQVJBTVMuDQo+ID4+Pj4+Pj4+IFdoeSBp
+cyBpdCBwYWNrZWQ/DQo+ID4gLi4uDQo+ID4+IEkgd2FzIGludm9sdmVkLiBBdCB0aGF0IHRpbWUg
+KFNlcHRlbWJlciAyMDA1KSB0aGUgU0NUUCBBUEkgd2FzIHN0aWxsIGV2b2x2aW5nIChmaXJzdCBm
+aW5hbGl6ZWQgaW4NCj4gPj4gMjAxMSksIGFuZCBvbmUgb2YgdGhlIG1ham9yIHVzZXJzIG9mIHRo
+ZSBBUEkgd2FzIDMyLWJpdCBwcm9ncmFtcyBydW5uaW5nIG9uIDY0LWJpdCBrZXJuZWwgKG9uDQo+
+IHBvd2VycGMNCj4gPj4gYXMgSSByZWNhbGwpLiBXaGVuIHdlIHJlYWxpemVkIHRoYXQgdGhlIHN0
+cnVjdHVyZXMgd2VyZSBkaWZmZXJlbnQgYmV0d2VlbiAzMmJpdCBhbmQgNjRiaXQgd2UgaGFkIHRv
+DQo+ID4+IGJyZWFrIHRoZSBsZWFzdCBudW1iZXIgb2YgcHJvZ3JhbXMsIGFuZCB0aGUgcmVzdWx0
+IHdlcmUgdGhvc2UgKChwYWNrZWQpKSBzdHJ1Y3RzIHNvIDMyLWJpdCBwcm9ncmFtcw0KPiA+PiB3
+b3VsZG4ndCBiZSBicm9rZW4gYW5kIHdlIGRpZG4ndCBuZWVkIGEgeHh4X2NvbXBhdCB0cmFuc2xh
+dGlvbiBsYXllciBpbiB0aGUga2VybmVsLg0KPiA+DQo+ID4gSSB3YXMgYWxzbyBsb29raW5nIGF0
+IGFsbCB0aGUgX191MTYgaW4gdGhhdCBoZWFkZXIgLSBib3JrZWQuDQo+ID4NCj4gPiBPaywgc28g
+dGhlIGludGVudGlvbiB3YXMgdG8gYXZvaWQgcGFkZGluZyBjYXVzZWQgYnkgdGhlIGFsaWdubWVu
+dA0KPiA+IG9mIHNvY2thZGRyX3N0b3JhZ2UgcmF0aGVyIHRoYW4gYXJvdW5kIHRoZSAnX191MTYg
+c3BwX2ZsYWdzJy4NCj4gPg0KPiA+IEknZCBoYXZlIHRvIGxvb2sgdXAgd2hhdCAocGFja2VkLCBh
+bGlnbmVkKDQpKSBhY3R1YWxseSBtZWFucy4NCj4gPiBJdCBjb3VsZCBmb3JjZSB0aGUgc3RydWN0
+dXJlIHRvIGJlIGZ1bGx5IHBhY2tlZCAobm8gaG9sZXMpDQo+ID4gYnV0IGFsd2F5cyBoYXZlIGFu
+IG92ZXJhbGwgYWxpZ25tZW50IG9mIDQuDQo+ID4NCj4gPiBJdCBtaWdodCBoYXZlIGJlZW4gY2xl
+YXJlciB0byBwdXQgYW4gJ2FsaWduZWQoNCknIGF0dHJpYnV0ZQ0KPiA+IG9uIHRoZSBzcHBfYWRk
+cmVzcyBmaWVsZCBpdHNlbGYuDQo+ID4gT3IgZXZlbiB3b25kZXIgd2hldGhlciBzb2NrYWRkcl9z
+dG9yYWdlIHNob3VsZCBhY3R1YWxseQ0KPiA+IGhhdmUgOCBieXRlIGFsaWdubWVudC4NCj4gPg0K
+PiA+IElmIGl0IGhhcyAxNiBieXRlIGFsaWdubWVudCB0aGVuIHlvdSBjYW5ub3QgY2FzdCBhbiBJ
+UHY0DQo+ID4gc29ja2V0IGJ1ZmZlciBhZGRyZXNzICh3aGljaCB3aWxsIGJlIGF0IG1vc3QgNCBi
+eXRlIGFsaWduZWQpDQo+ID4gdG8gc29ja2FkZHJfc3RvcmFnZSBhbmQgZXhwZWN0IHRoZSBjb21w
+aWxlciBub3QgdG8gZ2VuZXJhdGUNCj4gPiBjb2RlIHRoYXQgd2lsbCBjcmFzaCBhbmQgYnVybiBv
+biBzcGFyYzY0Lg0KDQpBY3R1YWxseSwgd2hhdCBoYXBwZW5zIHdoZW4gdGhlIG1pc2FsaWduZWQg
+J3N0cnVjdCBzb2NrYWRkcicNCihpbiB0aGUgc2N0cCBvcHRpb25zKSBpcyBwYXNzZWQgdGhyb3Vn
+aCB0byBhIGZ1bmN0aW9uDQp0aGF0IGV4cGVjdHMgaXQgdG8gYmUgYWxpZ25lZCBhbmQgdGhlbiBh
+Y2Nlc3NlcyBwYXJ0IG9mIChzYXkpDQphbiBJUHY2IHN0cnVjdHVyZSB1c2luZyA4IGJ5dGVzIGFj
+Y2Vzc2VzLg0KVGhhdCB3aWxsICdjcmFzaCBhbmQgYnVybicgb24gc3BhcmM2NCBhcyB3ZWxsLg0K
+DQo+ID4gSVNUUiB0aGF0IHRoZSBOZXRCU0QgdmlldyB3YXMgdGhhdCAnc29ja2FkZHJfc3RvcmFn
+ZScgc2hvdWxkDQo+ID4gbmV2ZXIgYWN0dWFsbHkgYmUgaW5zdGFudGlhdGVkIC0gaXQgb25seSBl
+eGlzdGVkIGFzIGEgdHlwZWQNCj4gPiBwb2ludGVyLg0KPg0KPiBOb3Qgc3VyZSB0aGlzIGlzIGNv
+cnJlY3QuIEkgd291bGQgc2F5IHRoaXMgYXBwbGllcyB0byBzdHVjdCBzb2NrYWRkciAqLg0KPiBJ
+IGhhdmUgc2VlbiBpbnN0YW50aWF0ZWQgc29ja2FkZHJfc3RvcmFnZSB2YXJpYWJsZSBpbiBnZW5l
+cmljIGNvZGUsDQo+IHdoZXJlIHlvdSBuZWVkIHRvIHByb3ZpZGUgZW5vdWdoIHNwYWNlIHRvIGhv
+bGQgYW4gYWRkcmVzcywgbm90IHlldA0KPiBrbm93aW5nIHRoZSBhZGRyZXNzIGZhbWlseS4gSG93
+ZXZlciwgSSdtIG5vdCBmYW1pbGlhciB3aXRoIHRoZSBOZXRCU0QNCj4gY29kZSBiYXNlLg0KDQpC
+YXNpY2FsbHkgeW91IHNob3VsZCBhbHdheXMgaGF2ZSB0aGUgYWRkcmVzcyBsZW5ndGguDQpJIGp1
+c3QgcmVtZW1iZXIgQ2hyaXN0b3MgY29tcGxhaW5pbmcgYWJvdXQgc29tZSBrZXJuZWwgY29kZQ0K
+dGhhdCBhbGxvY2F0ZWQgb25lIG9uIHN0YWNrLg0KKE15IE5ldEJTRCAnY29tbWl0IGJpdCcgaGFz
+IHJhdGhlciBsYXBzZWQuKQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2Vz
+aWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVL
+DQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-Hmm, I was simply following virtnet_close().  Actually, the entire loop
-could be factored out into a separate helper.  Perhaps do that as part of
-the fix, and then invert the ordering in a separate patch?
-
-> >  		}
-> > @@ -2313,6 +2322,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> >  }
-> >  
-> >  static int init_vqs(struct virtnet_info *vi);
-> > +static void virtnet_del_vqs(struct virtnet_info *vi);
-> > +static void free_receive_page_frags(struct virtnet_info *vi);
-> 
-> I'd really rather we reordered code so forward decls are not necessary.
-
-Yeah, no argument from me.  Would you prefer the reordering in a separate
-patch on top, e.g. to simplify potential backporting?
-
-> >  static int virtnet_restore_up(struct virtio_device *vdev)
-> >  {
-> > @@ -2331,6 +2342,10 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> >  				schedule_delayed_work(&vi->refill, 0);
-> >  
-> >  		for (i = 0; i < vi->max_queue_pairs; i++) {
-> > +			err = virtnet_reg_xdp(&vi->rq[i].xdp_rxq, vi->dev, i);
-> > +			if (err)
-> > +				goto free_vqs;
-> > +
-> >  			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
-> >  			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
-> >  					       &vi->sq[i].napi);
-> > @@ -2340,6 +2355,12 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> >  	netif_tx_lock_bh(vi->dev);
-> >  	netif_device_attach(vi->dev);
-> >  	netif_tx_unlock_bh(vi->dev);
-> > +	return 0;
-> > +
-> > +free_vqs:
-> > +	cancel_delayed_work_sync(&vi->refill);
-> > +	free_receive_page_frags(vi);
-> > +	virtnet_del_vqs(vi);
-> 
-> 
-> I am not sure this is safe to do after device-ready.
-> 
-> Can reg xdp happen before device ready?
-
-From a code perspective, I don't see anything that will explode, but I have
-no idea if that's correct/sane behavior.
-
-FWIW, the xdp error handling in virtnet_open() also looks bizarre to me,
-e.g. bails in the middle of a loop without doing any cleanup.  I assume
-virtnet_close() wouldn't called if open failed?  But I can't determine
-whether or not that holds true based on code inspection, there are too many
-call sites that lead to open and close.
