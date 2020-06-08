@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 688E91F2FE1
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC4F1F2FD4
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731537AbgFIAy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:54:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55284 "EHLO mail.kernel.org"
+        id S1728450AbgFHXJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:09:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728426AbgFHXJd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:33 -0400
+        id S1728158AbgFHXJe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:09:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2562C208FE;
-        Mon,  8 Jun 2020 23:09:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 613BF208A9;
+        Mon,  8 Jun 2020 23:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657773;
-        bh=IAdVph0fG5ogOIukRAnscPJyX0P9LSD/fmItIjoQA6w=;
+        s=default; t=1591657774;
+        bh=0kTjp2ybDUM0ctaeDR3fOgYBPE7QHYAKia5yuuniklk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sQfSHCDrQL6b7JgP2w1D5u+3u7UgUrMstqS62Z4xg44YjmKC5ZjZPrtG5Ku8vC8Ny
-         3dxmczQP6TeUeou2TXLtHMSFMDBvtWg8ZCpQ4ucEB1GOhrPbBWzDdvyd+Ae2rtQnO7
-         Y+KJMyk2Kp4NhQO4mPQsx9TKzRo6mys1w6JShqPw=
+        b=qaCIio5yiI8x6cdUsoS2EKA9TBu/7diQy425MnvghBzAaymzwJ9qDsKF4s0KA19S6
+         6c4MflzThtnDIZWVTGaatFToMIJoXaBJFpvYT2j3VmJwaTgJrVH4WhqHNzA1UbkkJe
+         pXADBhIcgKvLEl8RcFXG0SX361g611OVssyPwqlM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 156/274] ath10k: fix possible memory leak in ath10k_bmi_lz_data_large()
-Date:   Mon,  8 Jun 2020 19:04:09 -0400
-Message-Id: <20200608230607.3361041-156-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 157/274] ath11k: fix error return code in ath11k_dp_alloc()
+Date:   Mon,  8 Jun 2020 19:04:10 -0400
+Message-Id: <20200608230607.3361041-157-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -46,33 +46,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 2326aa011967f0afbcba7fe1a005d01f8b12900b ]
+[ Upstream commit f76f750aeea47fd98b6502eb6d37f84ca33662bf ]
 
-'cmd' is malloced in ath10k_bmi_lz_data_large() and should be freed
-before leaving from the error handling cases, otherwise it will cause
-memory leak.
+Fix to return negative error code -ENOMEM from the error handling
+case instead of 0, as done elsewhere in this function.
 
-Fixes: d58f466a5dee ("ath10k: add large size for BMI download data for SDIO")
+Fixes: d0998eb84ed3 ("ath11k: optimise ath11k_dp_tx_completion_handler")
 Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200427104348.13570-1-weiyongjun1@huawei.com
+Link: https://lore.kernel.org/r/20200427104621.23752-1-weiyongjun1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/bmi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath11k/dp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/bmi.c b/drivers/net/wireless/ath/ath10k/bmi.c
-index ea908107581d..5b6db6e66f65 100644
---- a/drivers/net/wireless/ath/ath10k/bmi.c
-+++ b/drivers/net/wireless/ath/ath10k/bmi.c
-@@ -380,6 +380,7 @@ static int ath10k_bmi_lz_data_large(struct ath10k *ar, const void *buffer, u32 l
- 						  NULL, NULL);
- 		if (ret) {
- 			ath10k_warn(ar, "unable to write to the device\n");
-+			kfree(cmd);
- 			return ret;
- 		}
+diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
+index 50350f77b309..2f35d325f7a5 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -909,8 +909,10 @@ int ath11k_dp_alloc(struct ath11k_base *ab)
+ 		dp->tx_ring[i].tx_status_head = 0;
+ 		dp->tx_ring[i].tx_status_tail = DP_TX_COMP_RING_SIZE - 1;
+ 		dp->tx_ring[i].tx_status = kmalloc(size, GFP_KERNEL);
+-		if (!dp->tx_ring[i].tx_status)
++		if (!dp->tx_ring[i].tx_status) {
++			ret = -ENOMEM;
+ 			goto fail_cmn_srng_cleanup;
++		}
+ 	}
  
+ 	for (i = 0; i < HAL_DSCP_TID_MAP_TBL_NUM_ENTRIES_MAX; i++)
 -- 
 2.25.1
 
