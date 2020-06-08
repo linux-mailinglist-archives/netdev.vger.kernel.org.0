@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 159381F2FF6
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E78F1F2FD2
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730550AbgFIAyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:54:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55164 "EHLO mail.kernel.org"
+        id S1728434AbgFHXJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:09:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55192 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728415AbgFHXJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:27 -0400
+        id S1728419AbgFHXJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:09:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 483BC208B8;
-        Mon,  8 Jun 2020 23:09:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F48020897;
+        Mon,  8 Jun 2020 23:09:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657767;
-        bh=gIPMWsm4ABPCize5QULWOmfap6esL9krjFHVmOk7eLw=;
+        s=default; t=1591657768;
+        bh=9tkCS5V/ET0qK/qSspzqlwj0GfOSKTROamVXeZoqZYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jb97ttQrecBOA4dUUzSc+83oiF7UcGx3ZHKsIsaqpptNpzD5XMGrZkf+pst+Xt6ro
-         6i5TvtUjwkNmVVh6wy1blMQ88xD1IosG+09xAise72ejAk/h7u9fsI62akxWQZJFft
-         H9oMwVQS0mEKCPIADQ73yGdUyvZwGGFgyEh1SP4Q=
+        b=l07D7tx7z2Ba8/M8Odh7sh4OBIZEo8yeySd93kJTl6v8PlhieYSrwgFTa3yj/CjuN
+         NzItjH24w8dKHCPRF6nC7Q5/hVq6ZAUWZFm6FZG+LebfcidoyAXtfcfUZTmWqUMn0e
+         zX6dv7QT3khwejZThx4LOBaDxi67PAbfg9f/HAY8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 151/274] ice: Fix error return code in ice_add_prof()
-Date:   Mon,  8 Jun 2020 19:04:04 -0400
-Message-Id: <20200608230607.3361041-151-sashal@kernel.org>
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 152/274] net: lpc-enet: fix error return code in lpc_mii_init()
+Date:   Mon,  8 Jun 2020 19:04:05 -0400
+Message-Id: <20200608230607.3361041-152-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -46,35 +47,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit f8d530ac29fe9248f5e58ca5bcf4c368f8393ccf ]
+[ Upstream commit 88ec7cb22ddde725ed4ce15991f0bd9dd817fd85 ]
 
-Fix to return a error code from the error handling case
-instead of 0, as done elsewhere in this function.
+Fix to return a negative error code from the error handling
+case instead of 0, as done elsewhere in this function.
 
-Fixes: 31ad4e4ee1e4 ("ice: Allocate flow profile")
+Fixes: b7370112f519 ("lpc32xx: Added ethernet driver")
 Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/nxp/lpc_eth.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 42bac3ec5526..e7a2671222d2 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -2962,8 +2962,10 @@ ice_add_prof(struct ice_hw *hw, enum ice_block blk, u64 id, u8 ptypes[],
+diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
+index d20cf03a3ea0..311454d9b0bc 100644
+--- a/drivers/net/ethernet/nxp/lpc_eth.c
++++ b/drivers/net/ethernet/nxp/lpc_eth.c
+@@ -823,7 +823,8 @@ static int lpc_mii_init(struct netdata_local *pldat)
+ 	if (err)
+ 		goto err_out_unregister_bus;
  
- 	/* add profile info */
- 	prof = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*prof), GFP_KERNEL);
--	if (!prof)
-+	if (!prof) {
-+		status = ICE_ERR_NO_MEMORY;
- 		goto err_ice_add_prof;
-+	}
+-	if (lpc_mii_probe(pldat->ndev) != 0)
++	err = lpc_mii_probe(pldat->ndev);
++	if (err)
+ 		goto err_out_unregister_bus;
  
- 	prof->profile_cookie = id;
- 	prof->prof_id = prof_id;
+ 	return 0;
 -- 
 2.25.1
 
