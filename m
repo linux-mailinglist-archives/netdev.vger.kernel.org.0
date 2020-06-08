@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E12C91F2FCA
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82D81F2FC1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733310AbgFIAxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:53:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55528 "EHLO mail.kernel.org"
+        id S1733302AbgFIAxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:53:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728488AbgFHXJn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:43 -0400
+        id S1728509AbgFHXJs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:09:48 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 195F320897;
-        Mon,  8 Jun 2020 23:09:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F6B0208FE;
+        Mon,  8 Jun 2020 23:09:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657782;
-        bh=YP48rbtDsCt7cPYauRcjGLjAc3a4MGalUtGGAlwwvpg=;
+        s=default; t=1591657787;
+        bh=jLox+8Gi6bC9/N3l0vacC+fK6yX3qEtgPqcMiIXdWZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caYNJ/377KU+JoNx1q38H67pp0OaoZ88mXx/hTWbnNStLGmcj56v79XpR77FMDNm4
-         r7eaZGqJQ8WZwBDumGKdEcEKYrbCAUopsgjBcgbhgvKIhGwjYnHiNVvZaw5OqFwY2n
-         I3/EQxkq0JQq6e/UVAlvU0aTu62HL2xXYe5+bLBM=
+        b=nMRFeyMkQrhgT48q24DKEP0czU89K2T65O+/c8kW3xEnN9tuZMLJ0ZonwdymA2J7O
+         Eq4ZziMRzJUxcZdnZygO15OD4+6xdETi8YoEPCnXTZ7CLTXyNLY8wU8RcOTvAR6njx
+         mHd2Ip2E7+NzqHwl2MZVYWXRh36A1SDH2Jry03PE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 164/274] libertas_tf: avoid a null dereference in pointer priv
-Date:   Mon,  8 Jun 2020 19:04:17 -0400
-Message-Id: <20200608230607.3361041-164-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 168/274] dsa: sja1105: dynamically allocate stats structure
+Date:   Mon,  8 Jun 2020 19:04:21 -0400
+Message-Id: <20200608230607.3361041-168-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,47 +43,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 049ceac308b0d57c4f06b9fb957cdf95d315cf0b ]
+[ Upstream commit ae1804de93f6f1626906567ae7deec8e0111259d ]
 
-Currently there is a check if priv is null when calling lbtf_remove_card
-but not in a previous call to if_usb_reset_dev that can also dereference
-priv.  Fix this by also only calling lbtf_remove_card if priv is null.
+The addition of sja1105_port_status_ether structure into the
+statistics causes the frame size to go over the warning limit:
 
-It is noteable that there don't seem to be any bugs reported that the
-null pointer dereference has ever occurred, so I'm not sure if the null
-check is required, but since we're doing a null check anyway it should
-be done for both function calls.
+drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
 
-Addresses-Coverity: ("Dereference before null check")
-Fixes: baa0280f08c7 ("libertas_tf: don't defer firmware loading until start()")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200501173900.296658-1-colin.king@canonical.com
+Use dynamic allocation to avoid this.
+
+Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/libertas_tf/if_usb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_ethtool.c | 144 +++++++++++-----------
+ 1 file changed, 74 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas_tf/if_usb.c b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
-index 25ac9db35dbf..bedc09215088 100644
---- a/drivers/net/wireless/marvell/libertas_tf/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
-@@ -247,10 +247,10 @@ static void if_usb_disconnect(struct usb_interface *intf)
+diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
+index d742ffcbfce9..709f035055c5 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
++++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
+@@ -421,92 +421,96 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
+ void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
+ {
+ 	struct sja1105_private *priv = ds->priv;
+-	struct sja1105_port_status status;
++	struct sja1105_port_status *status;
+ 	int rc, i, k = 0;
  
- 	lbtf_deb_enter(LBTF_DEB_MAIN);
+-	memset(&status, 0, sizeof(status));
++	status = kzalloc(sizeof(*status), GFP_KERNEL);
++	if (!status)
++		goto out;
  
--	if_usb_reset_device(priv);
--
--	if (priv)
-+	if (priv) {
-+		if_usb_reset_device(priv);
- 		lbtf_remove_card(priv);
-+	}
+-	rc = sja1105_port_status_get(priv, &status, port);
++	rc = sja1105_port_status_get(priv, status, port);
+ 	if (rc < 0) {
+ 		dev_err(ds->dev, "Failed to read port %d counters: %d\n",
+ 			port, rc);
+-		return;
++		goto out;
+ 	}
+ 	memset(data, 0, ARRAY_SIZE(sja1105_port_stats) * sizeof(u64));
+-	data[k++] = status.mac.n_runt;
+-	data[k++] = status.mac.n_soferr;
+-	data[k++] = status.mac.n_alignerr;
+-	data[k++] = status.mac.n_miierr;
+-	data[k++] = status.mac.typeerr;
+-	data[k++] = status.mac.sizeerr;
+-	data[k++] = status.mac.tctimeout;
+-	data[k++] = status.mac.priorerr;
+-	data[k++] = status.mac.nomaster;
+-	data[k++] = status.mac.memov;
+-	data[k++] = status.mac.memerr;
+-	data[k++] = status.mac.invtyp;
+-	data[k++] = status.mac.intcyov;
+-	data[k++] = status.mac.domerr;
+-	data[k++] = status.mac.pcfbagdrop;
+-	data[k++] = status.mac.spcprior;
+-	data[k++] = status.mac.ageprior;
+-	data[k++] = status.mac.portdrop;
+-	data[k++] = status.mac.lendrop;
+-	data[k++] = status.mac.bagdrop;
+-	data[k++] = status.mac.policeerr;
+-	data[k++] = status.mac.drpnona664err;
+-	data[k++] = status.mac.spcerr;
+-	data[k++] = status.mac.agedrp;
+-	data[k++] = status.hl1.n_n664err;
+-	data[k++] = status.hl1.n_vlanerr;
+-	data[k++] = status.hl1.n_unreleased;
+-	data[k++] = status.hl1.n_sizeerr;
+-	data[k++] = status.hl1.n_crcerr;
+-	data[k++] = status.hl1.n_vlnotfound;
+-	data[k++] = status.hl1.n_ctpolerr;
+-	data[k++] = status.hl1.n_polerr;
+-	data[k++] = status.hl1.n_rxfrm;
+-	data[k++] = status.hl1.n_rxbyte;
+-	data[k++] = status.hl1.n_txfrm;
+-	data[k++] = status.hl1.n_txbyte;
+-	data[k++] = status.hl2.n_qfull;
+-	data[k++] = status.hl2.n_part_drop;
+-	data[k++] = status.hl2.n_egr_disabled;
+-	data[k++] = status.hl2.n_not_reach;
++	data[k++] = status->mac.n_runt;
++	data[k++] = status->mac.n_soferr;
++	data[k++] = status->mac.n_alignerr;
++	data[k++] = status->mac.n_miierr;
++	data[k++] = status->mac.typeerr;
++	data[k++] = status->mac.sizeerr;
++	data[k++] = status->mac.tctimeout;
++	data[k++] = status->mac.priorerr;
++	data[k++] = status->mac.nomaster;
++	data[k++] = status->mac.memov;
++	data[k++] = status->mac.memerr;
++	data[k++] = status->mac.invtyp;
++	data[k++] = status->mac.intcyov;
++	data[k++] = status->mac.domerr;
++	data[k++] = status->mac.pcfbagdrop;
++	data[k++] = status->mac.spcprior;
++	data[k++] = status->mac.ageprior;
++	data[k++] = status->mac.portdrop;
++	data[k++] = status->mac.lendrop;
++	data[k++] = status->mac.bagdrop;
++	data[k++] = status->mac.policeerr;
++	data[k++] = status->mac.drpnona664err;
++	data[k++] = status->mac.spcerr;
++	data[k++] = status->mac.agedrp;
++	data[k++] = status->hl1.n_n664err;
++	data[k++] = status->hl1.n_vlanerr;
++	data[k++] = status->hl1.n_unreleased;
++	data[k++] = status->hl1.n_sizeerr;
++	data[k++] = status->hl1.n_crcerr;
++	data[k++] = status->hl1.n_vlnotfound;
++	data[k++] = status->hl1.n_ctpolerr;
++	data[k++] = status->hl1.n_polerr;
++	data[k++] = status->hl1.n_rxfrm;
++	data[k++] = status->hl1.n_rxbyte;
++	data[k++] = status->hl1.n_txfrm;
++	data[k++] = status->hl1.n_txbyte;
++	data[k++] = status->hl2.n_qfull;
++	data[k++] = status->hl2.n_part_drop;
++	data[k++] = status->hl2.n_egr_disabled;
++	data[k++] = status->hl2.n_not_reach;
  
- 	/* Unlink and free urb */
- 	if_usb_free(cardp);
+ 	if (priv->info->device_id == SJA1105E_DEVICE_ID ||
+ 	    priv->info->device_id == SJA1105T_DEVICE_ID)
+-		return;
++		goto out;;
+ 
+ 	memset(data + k, 0, ARRAY_SIZE(sja1105pqrs_extra_port_stats) *
+ 			sizeof(u64));
+ 	for (i = 0; i < 8; i++) {
+-		data[k++] = status.hl2.qlevel_hwm[i];
+-		data[k++] = status.hl2.qlevel[i];
++		data[k++] = status->hl2.qlevel_hwm[i];
++		data[k++] = status->hl2.qlevel[i];
+ 	}
+-	data[k++] = status.ether.n_drops_nolearn;
+-	data[k++] = status.ether.n_drops_noroute;
+-	data[k++] = status.ether.n_drops_ill_dtag;
+-	data[k++] = status.ether.n_drops_dtag;
+-	data[k++] = status.ether.n_drops_sotag;
+-	data[k++] = status.ether.n_drops_sitag;
+-	data[k++] = status.ether.n_drops_utag;
+-	data[k++] = status.ether.n_tx_bytes_1024_2047;
+-	data[k++] = status.ether.n_tx_bytes_512_1023;
+-	data[k++] = status.ether.n_tx_bytes_256_511;
+-	data[k++] = status.ether.n_tx_bytes_128_255;
+-	data[k++] = status.ether.n_tx_bytes_65_127;
+-	data[k++] = status.ether.n_tx_bytes_64;
+-	data[k++] = status.ether.n_tx_mcast;
+-	data[k++] = status.ether.n_tx_bcast;
+-	data[k++] = status.ether.n_rx_bytes_1024_2047;
+-	data[k++] = status.ether.n_rx_bytes_512_1023;
+-	data[k++] = status.ether.n_rx_bytes_256_511;
+-	data[k++] = status.ether.n_rx_bytes_128_255;
+-	data[k++] = status.ether.n_rx_bytes_65_127;
+-	data[k++] = status.ether.n_rx_bytes_64;
+-	data[k++] = status.ether.n_rx_mcast;
+-	data[k++] = status.ether.n_rx_bcast;
++	data[k++] = status->ether.n_drops_nolearn;
++	data[k++] = status->ether.n_drops_noroute;
++	data[k++] = status->ether.n_drops_ill_dtag;
++	data[k++] = status->ether.n_drops_dtag;
++	data[k++] = status->ether.n_drops_sotag;
++	data[k++] = status->ether.n_drops_sitag;
++	data[k++] = status->ether.n_drops_utag;
++	data[k++] = status->ether.n_tx_bytes_1024_2047;
++	data[k++] = status->ether.n_tx_bytes_512_1023;
++	data[k++] = status->ether.n_tx_bytes_256_511;
++	data[k++] = status->ether.n_tx_bytes_128_255;
++	data[k++] = status->ether.n_tx_bytes_65_127;
++	data[k++] = status->ether.n_tx_bytes_64;
++	data[k++] = status->ether.n_tx_mcast;
++	data[k++] = status->ether.n_tx_bcast;
++	data[k++] = status->ether.n_rx_bytes_1024_2047;
++	data[k++] = status->ether.n_rx_bytes_512_1023;
++	data[k++] = status->ether.n_rx_bytes_256_511;
++	data[k++] = status->ether.n_rx_bytes_128_255;
++	data[k++] = status->ether.n_rx_bytes_65_127;
++	data[k++] = status->ether.n_rx_bytes_64;
++	data[k++] = status->ether.n_rx_mcast;
++	data[k++] = status->ether.n_rx_bcast;
++out:
++	kfree(status);
+ }
+ 
+ void sja1105_get_strings(struct dsa_switch *ds, int port,
 -- 
 2.25.1
 
