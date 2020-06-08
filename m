@@ -2,107 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 633801F1772
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 13:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427B41F17F2
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 13:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729577AbgFHLTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 07:19:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729424AbgFHLTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 07:19:05 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20305C08C5C2
-        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 04:19:05 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id c35so13111792edf.5
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 04:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4xfA41RF7LMfRQKRnVMDXuzv0Fq5jkQXyGGuULSz9PU=;
-        b=C3n5QzrXpqqu4lMi7DZ1ifSqTYvef4TqFhQlqbzjLtSRBwxaz0Hyx0vBe+SxiduLcG
-         +rbQpGQJI/XuIU3us35k9SO9bIFEWmXkH0Z5Ve7+/vZPC97F8tkrjwf9XT0filJkeg/N
-         nDsoExyEmh/gW8uICQYNLnWZ8gpoM0NZE5PuWTIwa3BtKdibUkVLBNbG3wJ1FfzZpG4O
-         mXenZBuhHgSomsuYcOBzxa+vavjPzPdQ9FlV07ulitgVBtfhJjQz0kzwd1LLoHQUYLb9
-         eP7+0wWIxw2Mafs9IbnwHemFTQ3I6NnuJaGtILgsJhi49Nc+C3rqMy3Fk97ZAgN0ioHw
-         AMXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4xfA41RF7LMfRQKRnVMDXuzv0Fq5jkQXyGGuULSz9PU=;
-        b=bkwmCJ7X4doCVVPcrV4uScJgV8rbnpSTLOGtRVmEZnBWAp57xImRU8S1tlwmjGvCkw
-         2NHLUe4NPu7DKSuKD9cR+/yBzAEXLMBZA7mS94dMSvivNTZ6n8+5ZctPlRwDHLyaQc45
-         6tUakpLwCn2Zf775dRqDFhhGRejIkWzi3V/zlvFVUPVpBUml2Rk8V+mcXt/QjlMJh3zj
-         x4fbCqeVMKdt/mwclaPeN2CBc2xt+2sZJI+7i0iIqJ7QEXPW6SBzKTSfwfMJG6H4HFoP
-         GOGybF9scQ6lOD9EKo1XzQQCdfzdkb1+lt1TYyYE2XOsLFCSiJ3sU/P06gQxDVu/YgIB
-         e3fA==
-X-Gm-Message-State: AOAM531SAB1chE/cbXz+YYEKg7mPRKrc+Zwdk6tQLDo7jJFppZe3LtG8
-        pNiEajb2KVMU4f42sEU8oDw83g==
-X-Google-Smtp-Source: ABdhPJyZHaAfFAODcpmnhSe+6/nyareVtjYJA5+jXfGDl8rLkWsH6C6XtuRxaYZVCfLq+JKuRDph8Q==
-X-Received: by 2002:aa7:d158:: with SMTP id r24mr21077281edo.272.1591615143840;
-        Mon, 08 Jun 2020 04:19:03 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id bg21sm10684985ejb.90.2020.06.08.04.19.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Jun 2020 04:19:03 -0700 (PDT)
-Subject: Re: [PATCH net v2] mptcp: bugfix for RM_ADDR option parsing
-To:     Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1729622AbgFHLi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 07:38:59 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:36424 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729561AbgFHLi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 07:38:56 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1591616335; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=UlNfDGogKCJ2Hte3WfYZUyoDNhoWUwvyIBaQzivZeyg=; b=pY9K81crIXaKvri2Dj/J2kiyKCzV1V1H5KtIXdNwrdBqYhFzJnWPWqQIPf+vQVPH2FHeK/PJ
+ NETBQ99XZWOzDSbmIMfhN8gf8ujJ6QQf4H4XzDK5OuTwlW9bdE3Pnz39IVzbOgtNQjSyHdR3
+ fBpP5KAsmPbS7iyFAHienypTFe0=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n12.prod.us-east-1.postgun.com with SMTP id
+ 5ede234a8bec5077688023ce (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 08 Jun 2020 11:38:50
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B8DF7C433A1; Mon,  8 Jun 2020 11:38:48 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 920A6C433CA;
+        Mon,  8 Jun 2020 11:38:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 920A6C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Evan Green <evgreen@chromium.org>
+Cc:     Govind Singh <govinds@qti.qualcomm.com>, kuabhs@google.com.org,
+        sujitka@chromium.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org,
+        Michal Kazior <michal.kazior@tieto.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Krystad <peter.krystad@linux.intel.com>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-References: <5ec9759a19d4eba5f7f9006354da2cfeb39fa839.1591612830.git.geliangtang@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <983bab97-ed03-c84b-5bbb-b79b5dc5afb0@tessares.net>
-Date:   Mon, 8 Jun 2020 13:19:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] ath10k: Acquire tx_lock in tx error paths
+References: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
+Date:   Mon, 08 Jun 2020 14:38:43 +0300
+In-Reply-To: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
+        (Evan Green's message of "Thu, 4 Jun 2020 10:59:11 -0700")
+Message-ID: <87v9k1iy7w.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <5ec9759a19d4eba5f7f9006354da2cfeb39fa839.1591612830.git.geliangtang@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
+Evan Green <evgreen@chromium.org> writes:
 
-On 08/06/2020 12:47, Geliang Tang wrote:
-> In MPTCPOPT_RM_ADDR option parsing, the pointer "ptr" pointed to the
-> "Subtype" octet, the pointer "ptr+1" pointed to the "Address ID" octet:
-> 
->    +-------+-------+---------------+
->    |Subtype|(resvd)|   Address ID  |
->    +-------+-------+---------------+
->    |               |
->   ptr            ptr+1
-> 
-> We should set mp_opt->rm_id to the value of "ptr+1", not "ptr". This patch
-> will fix this bug.
-> 
-> Fixes: 3df523ab582c ("mptcp: Add ADD_ADDR handling")
-> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-> ---
->   Changes in v2:
->    - Add "-net" subject and "Fixes" tag as Matt suggested.
+> ath10k_htt_tx_free_msdu_id() has a lockdep assertion that htt->tx_lock
+> is held. Acquire the lock in a couple of error paths when calling that
+> function to ensure this condition is met.
+>
+> Fixes: 6421969f248fd ("ath10k: refactor tx pending management")
+> Fixes: e62ee5c381c59 ("ath10k: Add support for htt_data_tx_desc_64
+> descriptor")
 
-Thanks for this v2! LGTM!
+Fixes tag should be in one line, I fixed that in the pending branch.
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-Cheers,
-Matt
 -- 
-Matthieu Baerts | R&D Engineer
-matthieu.baerts@tessares.net
-Tessares SA | Hybrid Access Solutions
-www.tessares.net
-1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
