@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84FE21F30C3
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D901F30C0
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731032AbgFIBCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 21:02:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52644 "EHLO mail.kernel.org"
+        id S1728489AbgFIBCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:02:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728034AbgFHXHx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:07:53 -0400
+        id S1728049AbgFHXHz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:07:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0B40D2089D;
-        Mon,  8 Jun 2020 23:07:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A33462086A;
+        Mon,  8 Jun 2020 23:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657672;
-        bh=fD1Mv3OSJzmSUoaS2M1EiI+nfFsRVHr4ttthDic856o=;
+        s=default; t=1591657675;
+        bh=q1B3KQSxSxg9ydVzTPnGVgzi89sxg0AINlENfzb4HD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yLcLmBS7FoL2qRPOE2hgzCre7I7T+KsLeat8v5PtKod9Z/buhtfotseDmmm/c30F0
-         YPtCBtvbLqFp/65XL8JfJyOPMmxCHkcjvaw8l7F/KFScY958AvQ1229gYgSodMtj6d
-         iYFBEGykAfkAXyC/6NwBJ+XWIf9eb8g24a+KmYrs=
+        b=lUgohl814ilyn9UHqDppjqJI0bQyreoKPebLRnZB82R6TzPyDUfoax398LFTr2+Dr
+         ps/XFLff3V7e0lGj14wldA+Pn+Xg9adqpfR5CC2l/Oro/AxetR8a+9PEUMHQKjm15r
+         MzcarSYryu0g4Gz4l7Lh77aR/jQgl750o5q3obNU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 081/274] ice: fix PCI device serial number to be lowercase values
-Date:   Mon,  8 Jun 2020 19:02:54 -0400
-Message-Id: <20200608230607.3361041-81-sashal@kernel.org>
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 083/274] net: vmxnet3: fix possible buffer overflow caused by bad DMA value in vmxnet3_get_rss()
+Date:   Mon,  8 Jun 2020 19:02:56 -0400
+Message-Id: <20200608230607.3361041-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,38 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 1a9c561aa35534a03c0aa51c7fb1485731202a7c ]
+[ Upstream commit 3e1c6846b9e108740ef8a37be80314053f5dd52a ]
 
-Commit ceb2f00707f9 ("ice: Use pci_get_dsn()") changed the code to
-use a new function to get the Device Serial Number. It also changed
-the case of the filename for loading a package on a specific NIC
-from lowercase to uppercase. Change the filename back to
-lowercase since that is what we specified.
+The value adapter->rss_conf is stored in DMA memory, and it is assigned
+to rssConf, so rssConf->indTableSize can be modified at anytime by
+malicious hardware. Because rssConf->indTableSize is assigned to n,
+buffer overflow may occur when the code "rssConf->indTable[n]" is
+executed.
 
-Fixes: ceb2f00707f9 ("ice: Use pci_get_dsn()")
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To fix this possible bug, n is checked after being used.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 599dab844034..545817dbff67 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3126,7 +3126,7 @@ static char *ice_get_opt_fw_name(struct ice_pf *pf)
- 	if (!opt_fw_filename)
- 		return NULL;
- 
--	snprintf(opt_fw_filename, NAME_MAX, "%sice-%016llX.pkg",
-+	snprintf(opt_fw_filename, NAME_MAX, "%sice-%016llx.pkg",
- 		 ICE_DDP_PKG_PATH, dsn);
- 
- 	return opt_fw_filename;
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 6528940ce5f3..b53bb8bcd47f 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -700,6 +700,8 @@ vmxnet3_get_rss(struct net_device *netdev, u32 *p, u8 *key, u8 *hfunc)
+ 		*hfunc = ETH_RSS_HASH_TOP;
+ 	if (!p)
+ 		return 0;
++	if (n > UPT1_RSS_MAX_IND_TABLE_SIZE)
++		return 0;
+ 	while (n--)
+ 		p[n] = rssConf->indTable[n];
+ 	return 0;
 -- 
 2.25.1
 
