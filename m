@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A7D1F24C0
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A471F24C9
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387394AbgFHXWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:22:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46774 "EHLO mail.kernel.org"
+        id S2387417AbgFHXWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:22:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47104 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731278AbgFHXWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:22:16 -0400
+        id S1730966AbgFHXWa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:22:30 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 550E82086A;
-        Mon,  8 Jun 2020 23:22:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1415020842;
+        Mon,  8 Jun 2020 23:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658536;
-        bh=gt02xV2gTXAGJGD8SHqqXs6e/DU/oGfgASH0Dlqg5Pw=;
+        s=default; t=1591658550;
+        bh=E/5UJz2BshS2E+sqIdC3MSbzqLf/j0KyC3ZSbqD3Vyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SI4CO99KM9tTVwppXyxMVQP2WbGiROlfX8qM4hcnVXoq2/jjlTfG36f45t3TGOryn
-         UKCth3N4g9rVam183u46sRVv/Vk4P8PwxkMRNpSe3moy+YIbdFvUnlWJFkHZweyBlz
-         6MCegIIYAHuK/RO08dd6jCXBgQVPmVeKozQvq+Hg=
+        b=mmgs4+hTJbILiZ++6ZLcSBUznPStQ5ijQfMTDStiklFOzWXO0TQz9hL+ZNoXQp/V8
+         4J9EOENsrpAguZVBB/XNF83KVicB8sAG7kYtOVP1YqhXFkudVA1v3dgi6++mfkjfuV
+         I6sc3WzmBMreN5nmJ3Jtd8Kini7OomvEXTzrQlPU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sharon <sara.sharon@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 159/175] iwlwifi: mvm: fix aux station leak
-Date:   Mon,  8 Jun 2020 19:18:32 -0400
-Message-Id: <20200608231848.3366970-159-sashal@kernel.org>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 170/175] bpf: Refactor sockmap redirect code so its easy to reuse
+Date:   Mon,  8 Jun 2020 19:18:43 -0400
+Message-Id: <20200608231848.3366970-170-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
 References: <20200608231848.3366970-1-sashal@kernel.org>
@@ -44,112 +46,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sharon <sara.sharon@intel.com>
+From: John Fastabend <john.fastabend@gmail.com>
 
-[ Upstream commit f327236df2afc8c3c711e7e070f122c26974f4da ]
+[ Upstream commit ca2f5f21dbbd5e3a00cd3e97f728aa2ca0b2e011 ]
 
-When mvm is initialized we alloc aux station with aux queue.
-We later free the station memory when driver is stopped, but we
-never free the queue's memory, which casues a leak.
+We will need this block of code called from tls context shortly
+lets refactor the redirect logic so its easy to use. This also
+cleans up the switch stmt so we have fewer fallthrough cases.
 
-Add a proper de-initialization of the station.
+No logic changes are intended.
 
-Signed-off-by: Sharon <sara.sharon@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20200529092401.0121c5be55e9.Id7516fbb3482131d0c9dfb51ff20b226617ddb49@changeid
+Fixes: d829e9c4112b5 ("tls: convert to generic sk_msg interface")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/159079360110.5745.7024009076049029819.stgit@john-Precision-5820-Tower
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c  |  5 ++---
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c   | 18 +++++++++++++-----
- drivers/net/wireless/intel/iwlwifi/mvm/sta.h   |  6 +++---
- 3 files changed, 18 insertions(+), 11 deletions(-)
+ net/core/skmsg.c | 55 ++++++++++++++++++++++++++++++------------------
+ 1 file changed, 34 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 6ca087ffd163..ed92a8e8cd51 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1193,14 +1193,13 @@ void __iwl_mvm_mac_stop(struct iwl_mvm *mvm)
- 	 */
- 	flush_work(&mvm->roc_done_wk);
- 
-+	iwl_mvm_rm_aux_sta(mvm);
-+
- 	iwl_mvm_stop_device(mvm);
- 
- 	iwl_mvm_async_handlers_purge(mvm);
- 	/* async_handlers_list is empty and will stay empty: HW is stopped */
- 
--	/* the fw is stopped, the aux sta is dead: clean up driver state */
--	iwl_mvm_del_aux_sta(mvm);
--
- 	/*
- 	 * Clear IN_HW_RESTART and HW_RESTART_REQUESTED flag when stopping the
- 	 * hw (as restart_complete() won't be called in this case) and mac80211
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-index 71d339e90a9e..41f62793a57c 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-@@ -2080,16 +2080,24 @@ int iwl_mvm_rm_snif_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
- 	return ret;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index ded2d5227678..8e538a28fe0d 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -686,13 +686,43 @@ static struct sk_psock *sk_psock_from_strp(struct strparser *strp)
+ 	return container_of(parser, struct sk_psock, parser);
  }
  
--void iwl_mvm_dealloc_snif_sta(struct iwl_mvm *mvm)
-+int iwl_mvm_rm_aux_sta(struct iwl_mvm *mvm)
+-static void sk_psock_verdict_apply(struct sk_psock *psock,
+-				   struct sk_buff *skb, int verdict)
++static void sk_psock_skb_redirect(struct sk_psock *psock, struct sk_buff *skb)
  {
--	iwl_mvm_dealloc_int_sta(mvm, &mvm->snif_sta);
--}
-+	int ret;
+ 	struct sk_psock *psock_other;
+ 	struct sock *sk_other;
+ 	bool ingress;
  
--void iwl_mvm_del_aux_sta(struct iwl_mvm *mvm)
--{
- 	lockdep_assert_held(&mvm->mutex);
- 
-+	iwl_mvm_disable_txq(mvm, NULL, mvm->aux_queue, IWL_MAX_TID_COUNT, 0);
-+	ret = iwl_mvm_rm_sta_common(mvm, mvm->aux_sta.sta_id);
-+	if (ret)
-+		IWL_WARN(mvm, "Failed sending remove station\n");
- 	iwl_mvm_dealloc_int_sta(mvm, &mvm->aux_sta);
++	sk_other = tcp_skb_bpf_redirect_fetch(skb);
++	if (unlikely(!sk_other)) {
++		kfree_skb(skb);
++		return;
++	}
++	psock_other = sk_psock(sk_other);
++	if (!psock_other || sock_flag(sk_other, SOCK_DEAD) ||
++	    !sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
++		kfree_skb(skb);
++		return;
++	}
 +
-+	return ret;
++	ingress = tcp_skb_bpf_ingress(skb);
++	if ((!ingress && sock_writeable(sk_other)) ||
++	    (ingress &&
++	     atomic_read(&sk_other->sk_rmem_alloc) <=
++	     sk_other->sk_rcvbuf)) {
++		if (!ingress)
++			skb_set_owner_w(skb, sk_other);
++		skb_queue_tail(&psock_other->ingress_skb, skb);
++		schedule_work(&psock_other->work);
++	} else {
++		kfree_skb(skb);
++	}
 +}
 +
-+void iwl_mvm_dealloc_snif_sta(struct iwl_mvm *mvm)
++static void sk_psock_verdict_apply(struct sk_psock *psock,
++				   struct sk_buff *skb, int verdict)
 +{
-+	iwl_mvm_dealloc_int_sta(mvm, &mvm->snif_sta);
- }
- 
- /*
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
-index 8d70093847cb..da2d1ac01229 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
-@@ -8,7 +8,7 @@
-  * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2014 Intel Mobile Communications GmbH
-  * Copyright(c) 2015 - 2016 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2018 - 2020 Intel Corporation
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of version 2 of the GNU General Public License as
-@@ -31,7 +31,7 @@
-  * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2014 Intel Mobile Communications GmbH
-  * Copyright(c) 2015 - 2016 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2018 - 2020 Intel Corporation
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -541,7 +541,7 @@ int iwl_mvm_sta_tx_agg(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
- 		       int tid, u8 queue, bool start);
- 
- int iwl_mvm_add_aux_sta(struct iwl_mvm *mvm);
--void iwl_mvm_del_aux_sta(struct iwl_mvm *mvm);
-+int iwl_mvm_rm_aux_sta(struct iwl_mvm *mvm);
- 
- int iwl_mvm_alloc_bcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
- int iwl_mvm_send_add_bcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
++	struct sock *sk_other;
++
+ 	switch (verdict) {
+ 	case __SK_PASS:
+ 		sk_other = psock->sk;
+@@ -711,25 +741,8 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+ 		}
+ 		goto out_free;
+ 	case __SK_REDIRECT:
+-		sk_other = tcp_skb_bpf_redirect_fetch(skb);
+-		if (unlikely(!sk_other))
+-			goto out_free;
+-		psock_other = sk_psock(sk_other);
+-		if (!psock_other || sock_flag(sk_other, SOCK_DEAD) ||
+-		    !sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED))
+-			goto out_free;
+-		ingress = tcp_skb_bpf_ingress(skb);
+-		if ((!ingress && sock_writeable(sk_other)) ||
+-		    (ingress &&
+-		     atomic_read(&sk_other->sk_rmem_alloc) <=
+-		     sk_other->sk_rcvbuf)) {
+-			if (!ingress)
+-				skb_set_owner_w(skb, sk_other);
+-			skb_queue_tail(&psock_other->ingress_skb, skb);
+-			schedule_work(&psock_other->work);
+-			break;
+-		}
+-		/* fall-through */
++		sk_psock_skb_redirect(psock, skb);
++		break;
+ 	case __SK_DROP:
+ 		/* fall-through */
+ 	default:
 -- 
 2.25.1
 
