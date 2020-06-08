@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB281F22E2
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 654701F23CD
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728078AbgFHXKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:10:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56910 "EHLO mail.kernel.org"
+        id S1730255AbgFHXQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:16:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728747AbgFHXKp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:10:45 -0400
+        id S1730227AbgFHXQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:16:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C651920897;
-        Mon,  8 Jun 2020 23:10:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 832E320820;
+        Mon,  8 Jun 2020 23:16:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657844;
-        bh=IAEmTo8r0QTBrTT1aCXKT7SMUHR0JX6FwVOf55EPqtY=;
+        s=default; t=1591658188;
+        bh=Kz+SS6KZCYkKidBEtxWzTa9KnaNhfNGzMIsbwEJ6B4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VmBMrZaLfk8vkFANAePFo0o2uoc8rwD+6Xppr4HetC9OmAkJBHlPuts4LNJ3UoUH
-         OCE2yEG3W7oFksGtmY8eZN5JZbr8Ez8lPZ5e/E3CdsOfKEjVkYzkcUvFQprak+7QUQ
-         zRa7bPlmUFskKnqOsCSj3kpOovAtfr5wLPZm/PK8=
+        b=PX7qheSBumtJ3N3uuJyF3KckWXBbkaQz/ETRWrIZlOshp738azKceLoSYftPlYsYW
+         Q+Yle+DBehFT2CExGqJ2nSNhlw/rbTwSE4liPq7vfV9B+RtlXgaKN6Wx5VrAd38D6q
+         z9TRqBx+03hNJhPAVIzwYGGqBGIefAqvTMAMc6xU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 211/274] mwifiex: Fix memory corruption in dump_station
-Date:   Mon,  8 Jun 2020 19:05:04 -0400
-Message-Id: <20200608230607.3361041-211-sashal@kernel.org>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 210/606] felix: Fix initialization of ioremap resources
+Date:   Mon,  8 Jun 2020 19:05:35 -0400
+Message-Id: <20200608231211.3363633-210-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
-References: <20200608230607.3361041-1-sashal@kernel.org>
+In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
+References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,87 +45,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-[ Upstream commit 3aa42bae9c4d1641aeb36f1a8585cd1d506cf471 ]
+[ Upstream commit b4024c9e5c57902155d3b5e7de482e245f492bff ]
 
-The mwifiex_cfg80211_dump_station() uses static variable for iterating
-over a linked list of all associated stations (when the driver is in UAP
-role). This has a race condition if .dump_station is called in parallel
-for multiple interfaces. This corruption can be triggered by registering
-multiple SSIDs and calling, in parallel for multiple interfaces
-    iw dev <iface> station dump
+The caller of devm_ioremap_resource(), either accidentally
+or by wrong assumption, is writing back derived resource data
+to global static resource initialization tables that should
+have been constant.  Meaning that after it computes the final
+physical start address it saves the address for no reason
+in the static tables.  This doesn't affect the first driver
+probing after reboot, but it breaks consecutive driver reloads
+(i.e. driver unbind & bind) because the initialization tables
+no longer have the correct initial values.  So the next probe()
+will map the device registers to wrong physical addresses,
+causing ARM SError async exceptions.
+This patch fixes all of the above.
 
-[16750.719775] Unable to handle kernel paging request at virtual address dead000000000110
-...
-[16750.899173] Call trace:
-[16750.901696]  mwifiex_cfg80211_dump_station+0x94/0x100 [mwifiex]
-[16750.907824]  nl80211_dump_station+0xbc/0x278 [cfg80211]
-[16750.913160]  netlink_dump+0xe8/0x320
-[16750.916827]  netlink_recvmsg+0x1b4/0x338
-[16750.920861]  ____sys_recvmsg+0x7c/0x2b0
-[16750.924801]  ___sys_recvmsg+0x70/0x98
-[16750.928564]  __sys_recvmsg+0x58/0xa0
-[16750.932238]  __arm64_sys_recvmsg+0x28/0x30
-[16750.936453]  el0_svc_common.constprop.3+0x90/0x158
-[16750.941378]  do_el0_svc+0x74/0x90
-[16750.944784]  el0_sync_handler+0x12c/0x1a8
-[16750.948903]  el0_sync+0x114/0x140
-[16750.952312] Code: f9400003 f907f423 eb02007f 54fffd60 (b9401060)
-[16750.958583] ---[ end trace c8ad181c2f4b8576 ]---
-
-This patch drops the use of the static iterator, and instead every time
-the function is called iterates to the idx-th position of the
-linked-list.
-
-It would be better to convert the code not to use linked list for
-associated stations storage (since the chip has a limited number of
-associated stations anyway - it could just be an array). Such a change
-may be proposed in the future. In the meantime this patch can backported
-into stable kernels in this simple form.
-
-Fixes: 8baca1a34d4c ("mwifiex: dump station support in uap mode")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Acked-by: Ganapathi Bhat <ganapathi.bhat@nxp.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200515075924.13841-1-pali@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/marvell/mwifiex/cfg80211.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 23 +++++++++++------------
+ drivers/net/dsa/ocelot/felix.h         |  6 +++---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 22 ++++++++++------------
+ 3 files changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 1566d2197906..12bfd653a405 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -1496,7 +1496,8 @@ mwifiex_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *dev,
- 			      int idx, u8 *mac, struct station_info *sinfo)
- {
- 	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
--	static struct mwifiex_sta_node *node;
-+	struct mwifiex_sta_node *node;
-+	int i;
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index a7780c06fa65..b74580e87be8 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -385,6 +385,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	struct ocelot *ocelot = &felix->ocelot;
+ 	phy_interface_t *port_phy_modes;
+ 	resource_size_t switch_base;
++	struct resource res;
+ 	int port, i, err;
  
- 	if ((GET_BSS_ROLE(priv) == MWIFIEX_BSS_ROLE_STA) &&
- 	    priv->media_connected && idx == 0) {
-@@ -1506,13 +1507,10 @@ mwifiex_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *dev,
- 		mwifiex_send_cmd(priv, HOST_CMD_APCMD_STA_LIST,
- 				 HostCmd_ACT_GEN_GET, 0, NULL, true);
+ 	ocelot->num_phys_ports = num_phys_ports;
+@@ -416,17 +417,16 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
  
--		if (node && (&node->list == &priv->sta_list)) {
--			node = NULL;
--			return -ENOENT;
--		}
--
--		node = list_prepare_entry(node, &priv->sta_list, list);
--		list_for_each_entry_continue(node, &priv->sta_list, list) {
-+		i = 0;
-+		list_for_each_entry(node, &priv->sta_list, list) {
-+			if (i++ != idx)
-+				continue;
- 			ether_addr_copy(mac, node->mac_addr);
- 			return mwifiex_dump_station_info(priv, node, sinfo);
+ 	for (i = 0; i < TARGET_MAX; i++) {
+ 		struct regmap *target;
+-		struct resource *res;
+ 
+ 		if (!felix->info->target_io_res[i].name)
+ 			continue;
+ 
+-		res = &felix->info->target_io_res[i];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->target_io_res[i], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		target = ocelot_regmap_init(ocelot, res);
++		target = ocelot_regmap_init(ocelot, &res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map device memory space\n");
+@@ -447,7 +447,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	for (port = 0; port < num_phys_ports; port++) {
+ 		struct ocelot_port *ocelot_port;
+ 		void __iomem *port_regs;
+-		struct resource *res;
+ 
+ 		ocelot_port = devm_kzalloc(ocelot->dev,
+ 					   sizeof(struct ocelot_port),
+@@ -459,12 +458,12 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 			return -ENOMEM;
  		}
+ 
+-		res = &felix->info->port_io_res[port];
+-		res->flags = IORESOURCE_MEM;
+-		res->start += switch_base;
+-		res->end += switch_base;
++		memcpy(&res, &felix->info->port_io_res[port], sizeof(res));
++		res.flags = IORESOURCE_MEM;
++		res.start += switch_base;
++		res.end += switch_base;
+ 
+-		port_regs = devm_ioremap_resource(ocelot->dev, res);
++		port_regs = devm_ioremap_resource(ocelot->dev, &res);
+ 		if (IS_ERR(port_regs)) {
+ 			dev_err(ocelot->dev,
+ 				"failed to map registers for port %d\n", port);
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 8771d40324f1..2c024cc901d4 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -8,9 +8,9 @@
+ 
+ /* Platform-specific information */
+ struct felix_info {
+-	struct resource			*target_io_res;
+-	struct resource			*port_io_res;
+-	struct resource			*imdio_res;
++	const struct resource		*target_io_res;
++	const struct resource		*port_io_res;
++	const struct resource		*imdio_res;
+ 	const struct reg_field		*regfields;
+ 	const u32 *const		*map;
+ 	const struct ocelot_ops		*ops;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index edc1a67c002b..50074da3a1a0 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -328,10 +328,8 @@ static const u32 *vsc9959_regmap[] = {
+ 	[GCB]	= vsc9959_gcb_regmap,
+ };
+ 
+-/* Addresses are relative to the PCI device's base address and
+- * will be fixed up at ioremap time.
+- */
+-static struct resource vsc9959_target_io_res[] = {
++/* Addresses are relative to the PCI device's base address */
++static const struct resource vsc9959_target_io_res[] = {
+ 	[ANA] = {
+ 		.start	= 0x0280000,
+ 		.end	= 0x028ffff,
+@@ -374,7 +372,7 @@ static struct resource vsc9959_target_io_res[] = {
+ 	},
+ };
+ 
+-static struct resource vsc9959_port_io_res[] = {
++static const struct resource vsc9959_port_io_res[] = {
+ 	{
+ 		.start	= 0x0100000,
+ 		.end	= 0x010ffff,
+@@ -410,7 +408,7 @@ static struct resource vsc9959_port_io_res[] = {
+ /* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
+  * SGMII/QSGMII MAC PCS can be found.
+  */
+-static struct resource vsc9959_imdio_res = {
++static const struct resource vsc9959_imdio_res = {
+ 	.start		= 0x8030,
+ 	.end		= 0x8040,
+ 	.name		= "imdio",
+@@ -984,7 +982,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	struct device *dev = ocelot->dev;
+ 	resource_size_t imdio_base;
+ 	void __iomem *imdio_regs;
+-	struct resource *res;
++	struct resource res;
+ 	struct enetc_hw *hw;
+ 	struct mii_bus *bus;
+ 	int port;
+@@ -1001,12 +999,12 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	imdio_base = pci_resource_start(felix->pdev,
+ 					felix->info->imdio_pci_bar);
+ 
+-	res = felix->info->imdio_res;
+-	res->flags = IORESOURCE_MEM;
+-	res->start += imdio_base;
+-	res->end += imdio_base;
++	memcpy(&res, felix->info->imdio_res, sizeof(res));
++	res.flags = IORESOURCE_MEM;
++	res.start += imdio_base;
++	res.end += imdio_base;
+ 
+-	imdio_regs = devm_ioremap_resource(dev, res);
++	imdio_regs = devm_ioremap_resource(dev, &res);
+ 	if (IS_ERR(imdio_regs)) {
+ 		dev_err(dev, "failed to map internal MDIO registers\n");
+ 		return PTR_ERR(imdio_regs);
 -- 
 2.25.1
 
