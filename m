@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4751F2EF0
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503A21F2EF8
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:47:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbgFHXLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:11:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58584 "EHLO mail.kernel.org"
+        id S1731983AbgFIAqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:46:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728931AbgFHXLh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:11:37 -0400
+        id S1728211AbgFHXLi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:11:38 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 402C72100A;
-        Mon,  8 Jun 2020 23:11:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 79A7020C56;
+        Mon,  8 Jun 2020 23:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657897;
-        bh=khwqOgzIKy4HdyDJxlADdur1zwDQ2QxqGZxNDiHr2Sg=;
+        s=default; t=1591657898;
+        bh=87ai8exqIO0/5aKSt3LHjxMtckrsMxd+6M0b2LS5y40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WZ7SEphqmAl7WwvXWSQVgN8OxL88Wm7Kutp7nfFP+ItfW4uZEtiQeYUcuUTc3U62h
-         nXU2EUFsg71kgoKCbxpAyL2h/KXpyymvrX/I1Bl7Z+S2YquT3ihZ74V5o8kSH1ZVHF
-         2mhfy61x7YgvcbVf6yTpXAfUvnBF/PPigqL16FRI=
+        b=S63siA8MQS1vxdJ0GdTCOGAMlr3z7X2ELwmEXC+h2T1l1iLMSfbiATBEO+m+azcDi
+         ZpRxJq5RrqfnsbQvz8oMi5bsbGC1Q5k2A5ExNOft0nrNsl/baAfbozAqahioNGf3uP
+         IbnQChboyretzCeg4Ap7ck8P3z61DAdio0r4cOcw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+Cc:     Xie XiuQi <xiexiuqi@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 251/274] ice: fix potential double free in probe unrolling
-Date:   Mon,  8 Jun 2020 19:05:44 -0400
-Message-Id: <20200608230607.3361041-251-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 252/274] ixgbe: fix signed-integer-overflow warning
+Date:   Mon,  8 Jun 2020 19:05:45 -0400
+Message-Id: <20200608230607.3361041-252-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,47 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Xie XiuQi <xiexiuqi@huawei.com>
 
-[ Upstream commit bc3a024101ca497bea4c69be4054c32a5c349f1d ]
+[ Upstream commit 3b70683fc4d68f5d915d9dc7e5ba72c732c7315c ]
 
-If ice_init_interrupt_scheme fails, ice_probe will jump to clearing up
-the interrupts. This can lead to some static analysis tools such as the
-compiler sanitizers complaining about double free problems.
+ubsan report this warning, fix it by adding a unsigned suffix.
 
-Since ice_init_interrupt_scheme already unrolls internally on failure,
-there is no need to call ice_clear_interrupt_scheme when it fails. Add
-a new unroll label and use that instead.
+UBSAN: signed-integer-overflow in
+drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:2246:26
+65535 * 65537 cannot be represented in type 'int'
+CPU: 21 PID: 7 Comm: kworker/u256:0 Not tainted 5.7.0-rc3-debug+ #39
+Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 03/27/2020
+Workqueue: ixgbe ixgbe_service_task [ixgbe]
+Call trace:
+ dump_backtrace+0x0/0x3f0
+ show_stack+0x28/0x38
+ dump_stack+0x154/0x1e4
+ ubsan_epilogue+0x18/0x60
+ handle_overflow+0xf8/0x148
+ __ubsan_handle_mul_overflow+0x34/0x48
+ ixgbe_fc_enable_generic+0x4d0/0x590 [ixgbe]
+ ixgbe_service_task+0xc20/0x1f78 [ixgbe]
+ process_one_work+0x8f0/0xf18
+ worker_thread+0x430/0x6d0
+ kthread+0x218/0x238
+ ret_from_fork+0x10/0x18
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xie XiuQi <xiexiuqi@huawei.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 545817dbff67..69e50331e08e 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3298,7 +3298,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	if (err) {
- 		dev_err(dev, "ice_init_interrupt_scheme failed: %d\n", err);
- 		err = -EIO;
--		goto err_init_interrupt_unroll;
-+		goto err_init_vsi_unroll;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index 0bd1294ba517..39c5e6fdb72c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -2243,7 +2243,7 @@ s32 ixgbe_fc_enable_generic(struct ixgbe_hw *hw)
  	}
  
- 	/* Driver is mostly up */
-@@ -3387,6 +3387,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	ice_free_irq_msix_misc(pf);
- err_init_interrupt_unroll:
- 	ice_clear_interrupt_scheme(pf);
-+err_init_vsi_unroll:
- 	devm_kfree(dev, pf->vsi);
- err_init_pf_unroll:
- 	ice_deinit_pf(pf);
+ 	/* Configure pause time (2 TCs per register) */
+-	reg = hw->fc.pause_time * 0x00010001;
++	reg = hw->fc.pause_time * 0x00010001U;
+ 	for (i = 0; i < (MAX_TRAFFIC_CLASS / 2); i++)
+ 		IXGBE_WRITE_REG(hw, IXGBE_FCTTV(i), reg);
+ 
 -- 
 2.25.1
 
