@@ -2,100 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9AE1F15F7
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 11:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 188FD1F162B
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729316AbgFHJ5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 05:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728745AbgFHJ5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 05:57:21 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010BCC08C5C3;
-        Mon,  8 Jun 2020 02:57:21 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id f185so15855628wmf.3;
-        Mon, 08 Jun 2020 02:57:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ut3XaYVr0/pdTUeXNMqLLOtxnewlvYwLTTD1iBm+7XQ=;
-        b=RdlctmTtfBbd8Uko+DYTxuhK1HAbvp3LGhsev90w5XdLn4pFR6m2lTBek1+49DwYdk
-         VmL5CGX4YMjrmhpUY/1+uw8UpfPgX8eiMWhn2Xlz1mS0lEw6w05bjC1i9IBKsFrZP1LH
-         UerrHxTT5ZilPw+4+FiDPQOWEbWRfwVIN1HBObUPF7eUVE/U0wVHR73pK1TWWAFtmLRv
-         k3mwFrDKgtG+ZjPKZOlHaPSlXScavyU/xrJlJcIcE8RL9KfvqwfXbPyz13ezM8tfNQaj
-         jlPIMXjUL+I1zT2WcMv9onrW4KpD5djfRWEFACtNrqvnkm8TRRLl2hDp6Bba/HgHa+Ju
-         wirA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ut3XaYVr0/pdTUeXNMqLLOtxnewlvYwLTTD1iBm+7XQ=;
-        b=rz1rY6pOzgFS7SkpGVrRB0LadpDPBysUazLI4g4/jzA3EzOF58IibH7pnaMijeHIkQ
-         ODNH8LZqw7yXm01xImymoMbRHnRPRtLt0pU/brK/5gRt5k4gdGvODN/Uyh8QXZoOIe2s
-         cVHra/8ekZb6KdMm8MuAFR6l2Bg9c+uYwsztD4LZ1lmL5vtrlndc9WtgoDQ8gKS7qI0J
-         R8A+e8i1IxNQton41t9TmnjTM1qCD7/A34SkerDTwZRlyVewMJHMhxNZi2rFH74nO67m
-         0iVSBctfQUTHNLgTqbgYAFjKpvc5aIALC/rMJGEeyQ1QJgZt8qXvvcJIgVgZRrtkXfbd
-         S1YA==
-X-Gm-Message-State: AOAM530F+ggPIYG4ELoQdBVkJyShJmHWpDxO2qxysKDcawxsMKXNReOR
-        HwdH7tYlD+Tq2/R+M2QB5FQ=
-X-Google-Smtp-Source: ABdhPJxJZHspLs3/DHVKLx71a8WqmLy9gtnH+/lgVFgY/SGOtd7nkirOgTZxJcOMxzfUjQ7R8JH09w==
-X-Received: by 2002:a7b:c385:: with SMTP id s5mr16591261wmj.121.1591610239597;
-        Mon, 08 Jun 2020 02:57:19 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id d24sm21246990wmb.45.2020.06.08.02.57.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 02:57:18 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 10:57:16 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        eperezma@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH RFC v5 12/13] vhost/vsock: switch to the buf API
-Message-ID: <20200608095716.GE83191@stefanha-x1.localdomain>
-References: <20200607141057.704085-1-mst@redhat.com>
- <20200607141057.704085-13-mst@redhat.com>
+        id S1729309AbgFHKCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 06:02:10 -0400
+Received: from mail-eopbgr10057.outbound.protection.outlook.com ([40.107.1.57]:30017
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728745AbgFHKCI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 06:02:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U+mOKY7RHRQh+EwKjGn5xSqrZiMV9iLLWrtCnL5ACtiPhJGBjCG4uzmcv9cB0ZU18iA8CP7UZvHzfWKcpqP4Yukeqi7BCAvzI5//NZUQXS87J7PzJLpi8lXRSfg8tYghgfMxQckjAtIIBHN6w69Y8UDwO9N93MK1minsmaHmuD2/+Qp/EJEL1RtGYGtKMH5CzgnGVG2EOctskrziYLa9pOiNPVJOl11/zJ9v3yZJi1Ez0ReIaenNIwlcJH4QhFcuga8kfHww+j7A8VbrwxFMIJyByE2QZqcaZNfEhLAP5QERwj1b/CJ9L9PstOiQPhs8nJJHbtfAtXu4HeVLorNSHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hkd6vnUsumNq6K3u99+dkrfgPl8jgC2cd6DAh75q0hk=;
+ b=BZnDCRZHgQYJIkwGZwQ7GF9joemCaOONtfridoPguJ+LQPgz34YhZVitE2ckvZXPPhJgdIQwRSwHvrQx0IP6xrzc/iTuIfNjWFuXhjWjdlkdsES067ihjTIvSRjn367a5SnyAwdGsItyaESCXyj1mIUYXDveKDU5MYLQxg69Sot+XOgUrmxjHykRvxTacEaslEB80xbLNCr3Uu++JJetmv5lBX+UxXuecm3Nk40buB2/AGw5eH+LlzKASkscH+aQVlaWDdjap7rENG7CeVas8ylZbaesqwbH+7NaYCN2vL7bjhoaQB+mCLoaXNJEyOq+lEHAbplmaQx+XmfFyayaTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hkd6vnUsumNq6K3u99+dkrfgPl8jgC2cd6DAh75q0hk=;
+ b=XRpiM6wxySJ8f5vqlgYCiriW5SpibEENf+lHYc8IlM539oZEj97KwPsPxVqwlLCUQV0WpaXzMUmZpUUgsDLBU1yRm7sP1xYeb0+YEdbCZKpKWSf1w1FfANOz3a0s9roxKgZsY7+yC8OhBBgs0Fuyf7vbkMw/e9DYjfL1hh/PoyY=
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25) by AM0PR0502MB4001.eurprd05.prod.outlook.com
+ (2603:10a6:208:9::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.22; Mon, 8 Jun
+ 2020 10:02:04 +0000
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3066.023; Mon, 8 Jun 2020
+ 10:02:04 +0000
+From:   Amit Cohen <amitc@mellanox.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
+        "cforno12@linux.vnet.ibm.com" <cforno12@linux.vnet.ibm.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "linux@rempel-privat.de" <linux@rempel-privat.de>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
+        "liuhangbin@gmail.com" <liuhangbin@gmail.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [RFC PATCH net-next 05/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+Thread-Topic: [RFC PATCH net-next 05/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+Thread-Index: AQHWPNxbhhHrLhnGg0iUndeLWzHeZKjNXRSAgAEfm4A=
+Date:   Mon, 8 Jun 2020 10:02:04 +0000
+Message-ID: <AM0PR0502MB382638933BF9B7BE0AB34E81D7850@AM0PR0502MB3826.eurprd05.prod.outlook.com>
+References: <20200607145945.30559-1-amitc@mellanox.com>
+ <20200607145945.30559-6-amitc@mellanox.com>
+ <20200607164759.GG1022955@lunn.ch>
+In-Reply-To: <20200607164759.GG1022955@lunn.ch>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [87.68.150.248]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 131d0a3b-fe8f-449c-d0a7-08d80b92ff3d
+x-ms-traffictypediagnostic: AM0PR0502MB4001:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR0502MB4001E7675DC972CCB8FD1C72D7850@AM0PR0502MB4001.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 042857DBB5
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2Qp72XsMGwwy5zdWb+O4tkeendhLDhARFBG7CE/oUzM2iQyPWwffJQiVjUE4FAqb73jkR1LbpTpfTug7IY+Sys4H3NRYgAKIKkB6enD37pNtMoGF/GJ67nsirYkH7LQhoVRcgxlwDGfk63zdKkOi+2VIv8BHewSx23xs3vdtq/jrZm1GZp5RCIQN+dGGKdmRhccEoPzg/q5OZyFHGdJIPJRcFQ/A8FVxiKhggBm6gTpRTY7jdSy24ocUXgX+K/4y7KIQhSjlqppp1Xj+TV++41axU2cAz3Z5yrKY9qqOoMvBAG4bx01eEHYdPEnL7txVfTPMG00yAOXT3NVgLf1tFg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(366004)(376002)(346002)(396003)(8676002)(7696005)(26005)(83380400001)(7416002)(6506007)(9686003)(2906002)(33656002)(66556008)(54906003)(66446008)(64756008)(66476007)(186003)(55016002)(6916009)(76116006)(4326008)(5660300002)(4744005)(86362001)(478600001)(52536014)(71200400001)(8936002)(66946007)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: AWJmb1RItwBpYY1O6OLJ0eFw11wLeVYjzoNAjby7WvcyWl5XaL8PBTbYGpFLVRRkTLdFV46YA/zPlnkOBu6hCf316CsYtLAckFQkFHVBx72xiOfT56jF2jcduQ8Mep+hYf59J0qwzU6P0OZyaT3NPbO5T935zQs5Hy8tTdZAaPcNddwRqV15d+5NhX40yg+BU73NTitC93dgP3CmOtnGI+EjdtDgxRBjRHmK9lOU7VG9cdCb8eeKt5iRmbZS4+o3hNqgDdsCjfF+uMNe8eoS/d7Rd5m6QfN8HAky0Gh6YGKDmpTWS1uVrGL//kluRFdjsBsX1u5X59rKXd6BiX7EYTnTo9m+W3Bd5yLo09rw1Si3V1pIIQC+uAjWizj0aFA3gwPVjFyMhXJY/TBlEoAdGk9Fg8u+Se9C+Kn3XCBQd9BgLmRHOov80fgD1dWjK4gjDmsxpE3k0m+0NSLWtl5S+GiEySVLP4vRZ5B5hRoUU0n+Mhw6TihF4QbsXniELO8B
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="GxcwvYAGnODwn7V8"
-Content-Disposition: inline
-In-Reply-To: <20200607141057.704085-13-mst@redhat.com>
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 131d0a3b-fe8f-449c-d0a7-08d80b92ff3d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2020 10:02:04.6847
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2lNVl+IqK7ULKcpMtNm+8I5kM152bA6F+VE29I4qm1RbYTwEnhPcP7/knjnUPPovLH3IwE5PCX44MUa+QucFrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Andrew Lunn <andrew@lunn.ch> writes:
 
---GxcwvYAGnODwn7V8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> +Link extended states:
+>> +
+>> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D    =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+>> +  ``Autoneg failure``             Failure during auto negotiation mecha=
+nism
+>
+>I think you need to define 'failure' here.
+>
+>Linux PHYs don't have this state. auto-neg is either ongoing, or has compl=
+eted. There is no time limit for auto-neg. If there is no link partner, aut=
+o-neg does not fail, it just continues until there is a link partner which =
+responds and negotiation completes.
+>
+>Looking at the state diagrams in 802.3 clause 28, what do you consider as =
+failure?
+>
 
-On Sun, Jun 07, 2020 at 10:11:49AM -0400, Michael S. Tsirkin wrote:
-> A straight-forward conversion.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
+Ok, you're right. What about renaming this state to "Autoneg issue" and the=
+n as ext_substate you can use something like "Autoneg ongoing"?=20
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+>	 Andrew
 
---GxcwvYAGnODwn7V8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7eC3wACgkQnKSrs4Gr
-c8jwtAf+JgEio09QmwBTCC4RhAS9zTZxiNWAHCdPtESgu4E+VLcxHjEEpkF7w+Cm
-pQiZHcW0mG7Y2PKAg8VkP2GvXH0gbiNSQ/7ZTOFsExePWay5vLQdYg/u21hleZae
-zQ4oI905vhOEb6L92iAvzuFr0hTpIwZ1kvc+1bUAHQwLIycKalMkym1jgoyUaD2/
-eFPwvzPIPZfEuorb3mmhEq98yKTDxH5U5glFjBaZWD3E3Mg9RZN3g0Iqps80abIS
-Z47zkqMzxw8heuyjScbbz26hhKj6ziP1mcs3crmThZk3H1EpPqaVIcNHUTs6AE0P
-pRlUbV4l4np3xvL9u4DDOb2FGjgDlA==
-=6gku
------END PGP SIGNATURE-----
-
---GxcwvYAGnODwn7V8--
