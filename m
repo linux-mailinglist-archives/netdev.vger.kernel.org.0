@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC4F21F187B
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 14:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D061F18F1
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 14:43:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729674AbgFHMIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 08:08:07 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:43472 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729620AbgFHMIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 08:08:07 -0400
-X-Greylist: delayed 319 seconds by postgrey-1.27 at vger.kernel.org; Mon, 08 Jun 2020 08:08:05 EDT
-Received: from [192.168.2.100] (pub082136126227.dh-hfc.datazug.ch [82.136.126.227])
-        by mail.strongswan.org (Postfix) with ESMTPSA id 7099F400F7;
-        Mon,  8 Jun 2020 14:02:45 +0200 (CEST)
-Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
-To:     Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>, yuehaibing@huawei.com,
-        Andreas Steffen <andreas.steffen@strongswan.org>
-References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
-From:   Tobias Brunner <tobias@strongswan.org>
-Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <70458451-6ece-5222-c46f-87c708eee81e@strongswan.org>
-Date:   Mon, 8 Jun 2020 14:02:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728684AbgFHMn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 08:43:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47465 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728802AbgFHMnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 08:43:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591620202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=utvLOGjABWchDzVBBNcvjGgT0Uw4uVA8BCJYHrkDTYE=;
+        b=TyCgMLODxX0a9jzlp75v5jJdlB/ziQNUZGG1WFR4A1VSJIXaKZL0jHDPKPxvBk36zGfPGV
+        Wm68hG1vlF+FKx1KiRVln78MzBLMBXw9e1DoWFHgU0c44YVcA0QoVqCJ97sc0Dxg4+L062
+        DBCepTeUpfOWILkpU7co5aKxYyNROn8=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-231-fadBivTJNfa_ScRuU80DaQ-1; Mon, 08 Jun 2020 08:42:59 -0400
+X-MC-Unique: fadBivTJNfa_ScRuU80DaQ-1
+Received: by mail-wm1-f69.google.com with SMTP id h25so5343327wmb.0
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 05:42:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=utvLOGjABWchDzVBBNcvjGgT0Uw4uVA8BCJYHrkDTYE=;
+        b=NMModq/wBDkPQQI82jZFcuPGcdemWVfPcIsEUpq6F+aHrS39nnJ9j12q3qnQPwuaxH
+         svBIeU+kfX2NWJ1rpW+UQXTBNNcJTDBUp0IHGm5Plk6ZXvNqDHdBSXaNAF4Fq9lTHyBh
+         PkmQYmXptaMJYehoffE2F8Nbyl+jYmfAvIBCcYZjIz0Mfcyz276wGDoVaWr/+OGSIL0h
+         tQw1Zcl69efFhD53ZvPJCxfikkpTxCPavqZ0oogSZw0MzK5ijz/iaBz78TNKTI9i1+vc
+         K0u/x47YmlnhfkZ7ZwXPp+PQqqnIToodtUDyrh/K+PbmlVq6tzjZenug9mqwKxG2lRc9
+         TK1w==
+X-Gm-Message-State: AOAM533ptIQTUaM9y7QIn7GE1vOzlskm9QIm7fDd90H9d10B/QMGtHCi
+        TBIkUgqhNIzLtnbfH7xVV3BOmL9gPul908qvC7hKseYsgg2Q3Cyo9kCu0C9Pgzuxws/InFVLhYS
+        grRjRw1mQPb7y0dFI
+X-Received: by 2002:a1c:5411:: with SMTP id i17mr17027062wmb.137.1591620178258;
+        Mon, 08 Jun 2020 05:42:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxxHCDKaiMql4q+MgfnmT9afh3wFAhLtf//8SgAbDqi4VLnsVn3wc/xBGn3Rmk2vnzUyPWpJw==
+X-Received: by 2002:a1c:5411:: with SMTP id i17mr17027042wmb.137.1591620178029;
+        Mon, 08 Jun 2020 05:42:58 -0700 (PDT)
+Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
+        by smtp.gmail.com with ESMTPSA id g82sm22458959wmf.1.2020.06.08.05.42.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2020 05:42:57 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 08:42:56 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH] vhost/test: fix up after API change
+Message-ID: <20200608124254.727184-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steffen, Xin,
+Pass a flag to request kernel thread use.
 
-This change could be problematic.  Actually, it's not really this one
-but the original one that causes the issue:
-> Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+Fixes: 01fcb1cbc88e ("vhost: allow device that does not depend on vhost worker")
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-However, because the code in xfrm_policy_mark_match() treated policies
-with the same mark/mask equal without considering the priority before
-this change, it wasn't apparent.  The problem is that the code can now
-lead to duplicate policies, which can not correctly be removed or queried.
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index f55cb584b84a..12304eb8da15 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -122,7 +122,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
+ 	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
+ 	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
+ 	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+-		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
++		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, true, NULL);
+ 
+ 	f->private_data = n;
+ 
+-- 
+MST
 
-That's because the priority is sent only in xfrm_userpolicy_info, which
-XFRM_MSG_NEWPOLICY and XFRM_MSG_UPDPOLICY expect, but not in
-xfrm_userpolicy_id, which is used to query and delete policies with
-XFRM_MSG_GETPOLICY and XFRM_MSG_DELPOLICY, respectively (the mark is
-sent with a separate attribute, which can be supplied to all commands).
- So we can only query/delete the duplicate policy with the highest
-priority.  Such duplicates can even be created inadvertently via
-XFRM_MSG_UPDPOLICY if the priority of an existing policy should be
-changed, which worked fine so far.
-
-The latter currently happens when strongSwan e.g. replaces a trap or
-block policy with one that has templates assigned (those we install with
-a higher priority, by default), which uses XFRM_MSG_UPDPOLICY that
-doesn't update the existing policy anymore but creates a duplicate
-instead.  Since only one XFRM_MSG_DELPOLICY is sent later when the
-policy is deleted, a duplicate policy remains (and we couldn't even
-delete the exact policy we wanted - the trap might be removed by the
-user before the regular policy - due to the missing priority field in
-xfrm_userpolicy_id).
-
-I guess we could workaround this issue in strongSwan by installing
-policies that share the same mark and selector with the same priority,
-so only one instance is ever installed in the kernel.  But the inability
-to address the exact policy when querying/deleting still looks like a
-problem to me in general.
-
-Regards,
-Tobias
