@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B3F1F1D80
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2DCA1F1DC7
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:51:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730599AbgFHQgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 12:36:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39716 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730432AbgFHQgh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 12:36:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=88MeFKvCY6T0QrZdQ+i9CPgwNPj+1wwn8P8nThk+OnE=; b=Y8KMgJvgWNbSr18uYw2huKiS+P
-        stY5qeIzYxS6W/lg9xGTQ99h9AEJ7WyjSKLK4oX9MVCkvC1Q0OFQUCMZPOzpW8ZvEbjz0Infp2R1B
-        PbLNvn3peyY6lZMM5oEDZm3fS2VDbOgwM2SoxVFHilleCzrmykl3tw4xQ5Y0ROH6BFlQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jiKlB-004Pxy-4L; Mon, 08 Jun 2020 18:36:29 +0200
-Date:   Mon, 8 Jun 2020 18:36:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: Re: [PATCH] net: phy: mscc: handle the clkout control on some phy
- variants
-Message-ID: <20200608163629.GH1006885@lunn.ch>
-References: <20200608160207.1316052-1-heiko@sntech.de>
+        id S2387431AbgFHQvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 12:51:22 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59177 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730523AbgFHQvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:51:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591635080;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IJqgJi0TbFuBA4SoeHkaZM+/7OxWIOPGA5NgaEXtFn8=;
+        b=Siscq+kw++7N74yH5HKHIwaFfIiNd3EkbZ5g0wA8NxUUBy11WMKRfGrbmUYo2/hYi5FjK/
+        44YFHokWKV9gzqKVxFT98maFTCOORRwU56du4lP3+oBj2/iIc8Xh+aJ1W7Xp1/hTef22Yw
+        6ddUr/KqOB/KfKoPnJTMxnbt9e+DF5I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-LQUUDFU8PMG0OfbRQn-xWQ-1; Mon, 08 Jun 2020 12:51:18 -0400
+X-MC-Unique: LQUUDFU8PMG0OfbRQn-xWQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 363E38730A2;
+        Mon,  8 Jun 2020 16:51:17 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B90BB5C1C5;
+        Mon,  8 Jun 2020 16:51:13 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 7918E300003EB;
+        Mon,  8 Jun 2020 18:51:12 +0200 (CEST)
+Subject: [PATCH bpf 0/3] bpf: avoid using/returning file descriptor value zero
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Date:   Mon, 08 Jun 2020 18:51:12 +0200
+Message-ID: <159163498340.1967373.5048584263152085317.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200608160207.1316052-1-heiko@sntech.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 06:02:07PM +0200, Heiko Stuebner wrote:
-> +static int vsc8531_probe(struct phy_device *phydev)
-> +{
-> +	struct vsc8531_private *vsc8531;
-> +	int rate_magic;
-> +	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
-> +	   VSC8531_LINK_100_ACTIVITY};
-> +
-> +	rate_magic = vsc85xx_edge_rate_magic_get(phydev);
-> +	if (rate_magic < 0)
-> +		return rate_magic;
-> +
-> +	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
-> +	if (!vsc8531)
-> +		return -ENOMEM;
-> +
-> +	phydev->priv = vsc8531;
-> +
-> +	vsc8531->rate_magic = rate_magic;
-> +	vsc8531->nleds = 2;
-> +	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
-> +	vsc8531->hw_stats = vsc85xx_hw_stats;
-> +	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
-> +	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
-> +				      sizeof(u64), GFP_KERNEL);
-> +	if (!vsc8531->stats)
-> +		return -ENOMEM;
-> +
-> +	vsc8531_dt_clkout_rate_get(phydev);
-> +
-> +	return vsc85xx_dt_led_modes_get(phydev, default_mode);
-> +}
+Make it easier to handle UAPI/kABI extensions by avoid BPF using/returning
+file descriptor value zero. Use this in recent devmap extension to keep
+older applications compatible with newer kernels.
 
-Hi Heiko
+For special type maps (e.g. devmap and cpumap) the map-value data-layout is
+a configuration interface. This is a kernel Application Binary Interface
+(kABI) that can only be tail extended. Thus, new members (and thus features)
+can only be added to the end of this structure, and the kernel uses the
+map->value_size from userspace to determine feature set 'version'.
 
-The clock change itself looks O.K. Maybe we want to standardize on the
-name of the DT property, since it could be shared across all PHYs
-which have a clock output?
+For this kind of kABI to be extensible and backward compatible, is it common
+that new members/fields (that represent a new feature) in the struct are
+initialised as zero, which indicate that the feature isn't used. This makes
+it possible to write userspace applications that are unaware of new kernel
+features, but just include latest uapi headers, zero-init struct and
+populate features it knows about.
 
-Could you add another patch first which refactors the _probe()
-functions. There is a lot of repeated code which could be put into a
-helper.
+The recent extension of devmap with a bpf_prog.fd requires end-user to
+supply the file-descriptor value minus-1 to communicate that the features
+isn't used. This isn't compatible with the described kABI extension model.
 
-Thanks
-	Andrew
+---
+
+Jesper Dangaard Brouer (3):
+      bpf: syscall to start at file-descriptor 1
+      bpf: devmap adjust uapi for attach bpf program
+      bpf: selftests and tools use struct bpf_devmap_val from uapi
+
+
+ fs/file.c                                          |    2 +
+ include/linux/file.h                               |    1 +
+ include/uapi/linux/bpf.h                           |   13 +++++++
+ kernel/bpf/devmap.c                                |   17 ++-------
+ kernel/bpf/syscall.c                               |   38 +++++++++++++++++---
+ tools/include/uapi/linux/bpf.h                     |   13 +++++++
+ .../selftests/bpf/prog_tests/xdp_devmap_attach.c   |    8 ----
+ .../selftests/bpf/progs/test_xdp_devmap_helpers.c  |    2 +
+ .../bpf/progs/test_xdp_with_devmap_helpers.c       |    3 +-
+ 9 files changed, 66 insertions(+), 31 deletions(-)
+
+--
+
