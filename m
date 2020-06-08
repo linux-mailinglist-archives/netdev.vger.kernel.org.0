@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAFE51F310D
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F331C1F3124
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbgFHXHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:07:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50712 "EHLO mail.kernel.org"
+        id S1728743AbgFIBGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:06:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50942 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727784AbgFHXHE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:07:04 -0400
+        id S1727811AbgFHXHJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:07:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4E9B20801;
-        Mon,  8 Jun 2020 23:07:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 150E620823;
+        Mon,  8 Jun 2020 23:07:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657623;
-        bh=T1TFFnuOR8yP9KXZ3SI9ba8JrUEjNEAKKapF2hBhyM8=;
+        s=default; t=1591657629;
+        bh=r2ZD/z74CHUpWNLziOf1yJLE0NiqYpuEhktxmoHnFwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LNcUfdbAu+qPxo9Ufa+tE7TZQCgGYeUaoDOC6FDj1G8PdoARt/a1ytmvIDfpcvOCT
-         yrsnDjlQpErv7WeqJW2vz1u6XYXuE1HJtWiZuR8W9IeB0DY4hB/v0USCwEBMMXqKCO
-         h0269BWE4U5SAhNsytWzTllwocfxoCTMijUsSzFQ=
+        b=atsd5W3fOooIvGAn7Ii+ey0UKWoK/4lMyzkazsdqqTUV7NxofNf2QRzjhqu6MQ5ea
+         yppIJV5DEG9yd2R5dQE2ojqX0eGi2AqgLjXd45dx8VmLNF5re61l9R2lRBVny26TeC
+         gFI0y2zFjAG87yNfwgQx0j6WV/pBUIflUsFN/k3k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.7 044/274] mt76: mt7615: fix aid configuration in mt7615_mcu_wtbl_generic_tlv
-Date:   Mon,  8 Jun 2020 19:02:17 -0400
-Message-Id: <20200608230607.3361041-44-sashal@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 048/274] ixgbe: Fix XDP redirect on archs with PAGE_SIZE above 4K
+Date:   Mon,  8 Jun 2020 19:02:21 -0400
+Message-Id: <20200608230607.3361041-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,38 +46,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-[ Upstream commit fdf433121f82766ff508a6f06665d2aca3e258d5 ]
+[ Upstream commit 88eb0ee17b2ece64fcf6689a4557a5c2e7a89c4b ]
 
-If the vif is running in station mode the aid will be passed by mac80211
-using bss_conf.aid. Fix aid configuration in mt7615_mcu_wtbl_generic_tlv
+The ixgbe driver have another memory model when compiled on archs with
+PAGE_SIZE above 4096 bytes. In this mode it doesn't split the page in
+two halves, but instead increment rx_buffer->page_offset by truesize of
+packet (which include headroom and tailroom for skb_shared_info).
 
-Fixes: 04b8e65922f6 ("mt76: add mac80211 driver for MT7615 PCIe-based chipsets")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+This is done correctly in ixgbe_build_skb(), but in ixgbe_rx_buffer_flip
+which is currently only called on XDP_TX and XDP_REDIRECT, it forgets
+to add the tailroom for skb_shared_info. This breaks XDP_REDIRECT, for
+veth and cpumap.  Fix by adding size of skb_shared_info tailroom.
+
+Maintainers notice: This fix have been queued to Jeff.
+
+Fixes: 6453073987ba ("ixgbe: add initial support for xdp redirect")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Link: https://lore.kernel.org/bpf/158945344946.97035.17031588499266605743.stgit@firesoul
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-index 610cfa918c7b..a19fb0cb7794 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-@@ -823,8 +823,11 @@ mt7615_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	generic = (struct wtbl_generic *)tlv;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 718931d951bc..ea6834bae04c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -2254,7 +2254,8 @@ static void ixgbe_rx_buffer_flip(struct ixgbe_ring *rx_ring,
+ 	rx_buffer->page_offset ^= truesize;
+ #else
+ 	unsigned int truesize = ring_uses_build_skb(rx_ring) ?
+-				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) :
++				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
++				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
+ 				SKB_DATA_ALIGN(size);
  
- 	if (sta) {
-+		if (vif->type == NL80211_IFTYPE_STATION)
-+			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
-+		else
-+			generic->partial_aid = cpu_to_le16(sta->aid);
- 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
--		generic->partial_aid = cpu_to_le16(sta->aid);
- 		generic->muar_idx = mvif->omac_idx;
- 		generic->qos = sta->wme;
- 	} else {
+ 	rx_buffer->page_offset += truesize;
 -- 
 2.25.1
 
