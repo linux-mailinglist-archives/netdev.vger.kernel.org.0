@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDFFC1F316F
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:10:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2491F3167
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388233AbgFIBJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 21:09:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49910 "EHLO mail.kernel.org"
+        id S1728405AbgFIBIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:08:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50092 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727031AbgFHXGh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:06:37 -0400
+        id S1727062AbgFHXGn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:06:43 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1BE9F2088E;
-        Mon,  8 Jun 2020 23:06:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2D20520823;
+        Mon,  8 Jun 2020 23:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657597;
-        bh=KtAe3ObSg25LYSidXIG8L8qyak2OFEVpw47b12Sn1UY=;
+        s=default; t=1591657602;
+        bh=nJWsv0/g7G/O3ztFvtszYEgZRxSyuQKlNexXrHnG52E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CDob7BstU3Fw6JHjJo6+nEU5zMwXbEQYLBfhk45mmmfmECguNkv9sqOq9C1Hgmj7R
-         3KzFFwyC6Inu8MDOSJDh3F9OScaIxc3aNamUo95UMDCK5Nm68Jb67hnH/YOQ4CLWQG
-         u4gR4F8xrROFoJ7Fjkcb3iQPSc2C7QJqZKFD36Zw=
+        b=b0M/xXbYUVXB4qrgPjqoxurgt+AU4P5bBB57R6626Qt++W6YkaalJJzPLO1U3xQhv
+         skDr4Y702LOdjOCynyQg9zipsxQeifV6QjjK3Vk0Ks71YFI2RSO3+PF3142V1F0tTT
+         24sadTIh6cNfkVk7dPseGIZUr2KgZT28OMNg/tNI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Veronika Kabatova <vkabatov@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 023/274] selftests/bpf: Copy runqslower to OUTPUT directory
-Date:   Mon,  8 Jun 2020 19:01:56 -0400
-Message-Id: <20200608230607.3361041-23-sashal@kernel.org>
+Cc:     Mark Starovoytov <mstarovoitov@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 028/274] net: atlantic: make hw_get_regs optional
+Date:   Mon,  8 Jun 2020 19:02:01 -0400
+Message-Id: <20200608230607.3361041-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -46,45 +43,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Veronika Kabatova <vkabatov@redhat.com>
+From: Mark Starovoytov <mstarovoitov@marvell.com>
 
-[ Upstream commit b26d1e2b60284dc9f66ffad9ccd5c5da1100bb4b ]
+[ Upstream commit d0f23741c202c685447050713907f3be39a985ee ]
 
-$(OUTPUT)/runqslower makefile target doesn't actually create runqslower
-binary in the $(OUTPUT) directory. As lib.mk expects all
-TEST_GEN_PROGS_EXTENDED (which runqslower is a part of) to be present in
-the OUTPUT directory, this results in an error when running e.g. `make
-install`:
+This patch fixes potential crash in case if hw_get_regs is NULL.
 
-rsync: link_stat "tools/testing/selftests/bpf/runqslower" failed: No
-       such file or directory (2)
-
-Copy the binary into the OUTPUT directory after building it to fix the
-error.
-
-Fixes: 3a0d3092a4ed ("selftests/bpf: Build runqslower from selftests")
-Signed-off-by: Veronika Kabatova <vkabatov@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/20200428173742.2988395-1-vkabatov@redhat.com
+Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 7729892e0b04..4e654d41c7af 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -141,7 +141,8 @@ VMLINUX_BTF := $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
- $(OUTPUT)/runqslower: $(BPFOBJ)
- 	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	\
- 		    OUTPUT=$(SCRATCH_DIR)/ VMLINUX_BTF=$(VMLINUX_BTF)   \
--		    BPFOBJ=$(BPFOBJ) BPF_INCLUDE=$(INCLUDE_DIR)
-+		    BPFOBJ=$(BPFOBJ) BPF_INCLUDE=$(INCLUDE_DIR) &&	\
-+		    cp $(SCRATCH_DIR)/runqslower $@
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index a369705a786a..e5391e0b84f8 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -764,6 +764,9 @@ int aq_nic_get_regs(struct aq_nic_s *self, struct ethtool_regs *regs, void *p)
+ 	u32 *regs_buff = p;
+ 	int err = 0;
  
- $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(BPFOBJ)
++	if (unlikely(!self->aq_hw_ops->hw_get_regs))
++		return -EOPNOTSUPP;
++
+ 	regs->version = 1;
+ 
+ 	err = self->aq_hw_ops->hw_get_regs(self->aq_hw,
+@@ -778,6 +781,9 @@ int aq_nic_get_regs(struct aq_nic_s *self, struct ethtool_regs *regs, void *p)
+ 
+ int aq_nic_get_regs_count(struct aq_nic_s *self)
+ {
++	if (unlikely(!self->aq_hw_ops->hw_get_regs))
++		return 0;
++
+ 	return self->aq_nic_cfg.aq_hw_caps->mac_regs_count;
+ }
  
 -- 
 2.25.1
