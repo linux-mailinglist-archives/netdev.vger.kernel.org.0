@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074331F26BD
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 017211F26CE
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:46:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387729AbgFHX2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:28:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57662 "EHLO mail.kernel.org"
+        id S1732254AbgFHXiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:38:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732202AbgFHX2S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:28:18 -0400
+        id S2387735AbgFHX2V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:28:21 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9BE992074B;
-        Mon,  8 Jun 2020 23:28:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0E0A820775;
+        Mon,  8 Jun 2020 23:28:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658898;
-        bh=nsW59QYiE+70W8//0AtPqDPYbwUyl/wZLv8TQkNyFTo=;
+        s=default; t=1591658900;
+        bh=x3VIhFR9XLrzX8mIuUYpAdyJJhQHze81tFY+AcmDMk0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dEfZpMRFsge7q/MQnQThTqdSVmNTUz+iQs3PfL9ihCu6jP9K/UbaVxesipVSq7A3n
-         DkLsCasxcvIg3cDAgyMsXiTblK85RxhGSbI623mgp4Sc8/vffmLiwcmmhKNFCdNmG2
-         Z3bodw/keJQmncNsNAacpgxa9PgnZCCXY3h81aPY=
+        b=X2q8S73afymYnl7uhSzzSPzAjpPbrurW6hAhhwH+VLXtibubAebm5mV7prtgaRJwt
+         ALpYqJ9yW7Wnp+dshjExSbyfG1Jl5qxEruk3c6ocPeDw6DxtNrAZ1sCbsFGj5JVbiK
+         guKU/xgR3ILpkgEjAooF1HhjF/TrviWO4UxUqr7k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunjian Wang <wangyunjian@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.4 20/37] net: allwinner: Fix use correct return type for ndo_start_xmit()
-Date:   Mon,  8 Jun 2020 19:27:32 -0400
-Message-Id: <20200608232750.3370747-20-sashal@kernel.org>
+Cc:     Masashi Honma <masashi.honma@gmail.com>,
+        Denis <pro.denis@protonmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 22/37] ath9k_htc: Silence undersized packet warnings
+Date:   Mon,  8 Jun 2020 19:27:34 -0400
+Message-Id: <20200608232750.3370747-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232750.3370747-1-sashal@kernel.org>
 References: <20200608232750.3370747-1-sashal@kernel.org>
@@ -44,42 +45,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+From: Masashi Honma <masashi.honma@gmail.com>
 
-[ Upstream commit 09f6c44aaae0f1bdb8b983d7762676d5018c53bc ]
+[ Upstream commit 450edd2805982d14ed79733a82927d2857b27cac ]
 
-The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
-the ndo function to use the correct type. And emac_start_xmit() can
-leak one skb if 'channel' == 3.
+Some devices like TP-Link TL-WN722N produces this kind of messages
+frequently.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+kernel: ath: phy0: Short RX data len, dropping (dlen: 4)
+
+This warning is useful for developers to recognize that the device
+(Wi-Fi dongle or USB hub etc) is noisy but not for general users. So
+this patch make this warning to debug message.
+
+Reported-By: Denis <pro.denis@protonmail.com>
+Ref: https://bugzilla.kernel.org/show_bug.cgi?id=207539
+Fixes: cd486e627e67 ("ath9k_htc: Discard undersized packets")
+Signed-off-by: Masashi Honma <masashi.honma@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200504214443.4485-1-masashi.honma@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/allwinner/sun4i-emac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 8d50314ac3eb..dde3cd2d4763 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -438,7 +438,7 @@ static void emac_timeout(struct net_device *dev)
- /* Hardware start transmission.
-  * Send a packet to media from the upper layer.
-  */
--static int emac_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t emac_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct emac_board_info *db = netdev_priv(dev);
- 	unsigned long channel;
-@@ -446,7 +446,7 @@ static int emac_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	channel = db->tx_fifo_stat & 3;
- 	if (channel == 3)
--		return 1;
-+		return NETDEV_TX_BUSY;
- 
- 	channel = (channel == 1 ? 1 : 0);
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 0d757ced49ba..91d199481a37 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -998,9 +998,9 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
+ 	 * which are not PHY_ERROR (short radar pulses have a length of 3)
+ 	 */
+ 	if (unlikely(!rs_datalen || (rs_datalen < 10 && !is_phyerr))) {
+-		ath_warn(common,
+-			 "Short RX data len, dropping (dlen: %d)\n",
+-			 rs_datalen);
++		ath_dbg(common, ANY,
++			"Short RX data len, dropping (dlen: %d)\n",
++			rs_datalen);
+ 		goto rx_next;
+ 	}
  
 -- 
 2.25.1
