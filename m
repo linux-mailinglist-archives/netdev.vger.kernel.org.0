@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B557A1F315F
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B91F31F3173
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbgFHXGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:06:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49296 "EHLO mail.kernel.org"
+        id S2388176AbgFIBJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:09:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726952AbgFHXGV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:06:21 -0400
+        id S1727018AbgFHXGe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:06:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1628E2076A;
-        Mon,  8 Jun 2020 23:06:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 822692078C;
+        Mon,  8 Jun 2020 23:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657580;
-        bh=BL5eAXPRlC1IBRiuQcN180O4CGnUQWKkqqkqjGc2e78=;
+        s=default; t=1591657594;
+        bh=rza3GijJEHiYQS6naUd/LTVSyFhudYeYmLttrcZ8jOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QrQ/jl+8BmC9KzK7tx4QXEj5RT5haS7ZFaWIQOW+fhDuVBZHPdvVV2Pnq2R6TEGp9
-         P1KR8DCyQvxqsL1URqbFQ9UHLDGfoonRr1pUmEnegW0acXxnCpEPzMYy+KaTftL5JH
-         jzJ2s+FMQVTREHOOEZWZa01BnSEFD4q0sq29ZLeY=
+        b=O5eG3ktZYMifgzMt7m0OJalm0RkBxpin3ruCipnjkVYysg0fCbvAi2VkClacudXeL
+         dQBuC5nVZPrtyTWSZu66XrHe6ElomP9UtCc3h7qwheqiU/cLXWuLfLN93hVyGDhQnS
+         wxi7uXBGm9H7trsXE7Jupq0EEZSyUXlpHR2IdxnA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Guedes <andre.guedes@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 010/274] igc: Fix default MAC address filter override
-Date:   Mon,  8 Jun 2020 19:01:43 -0400
-Message-Id: <20200608230607.3361041-10-sashal@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 021/274] net: ethernet: ti: fix return value check in k3_cppi_desc_pool_create_name()
+Date:   Mon,  8 Jun 2020 19:01:54 -0400
+Message-Id: <20200608230607.3361041-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,44 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit ac9156b27564a089ec52f526bfcb59f61c34e7c6 ]
+[ Upstream commit 2ac757e4152e3322a04a6dfb3d1fa010d3521abf ]
 
-This patch fixes a bug when the user adds the first MAC address filter
-via ethtool NFC mechanism.
+In case of error, the function gen_pool_create() returns NULL pointer
+not ERR_PTR(). The IS_ERR() test in the return value check should be
+replaced with NULL test.
 
-When the first MAC address filter is added, it overwrites the default
-MAC address filter configured at RAL[0] and RAH[0]. As consequence,
-frames addressed to the interface MAC address are not sent to host
-anymore.
-
-This patch fixes the bug by calling igc_set_default_mac_filter() during
-adapter init so the position 0 of adapter->mac_table[] is assigned to
-the default MAC address.
-
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/ti/k3-cppi-desc-pool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 69fa1ce1f927..c7020ff2f490 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2325,7 +2325,9 @@ static void igc_configure(struct igc_adapter *adapter)
- 	igc_setup_mrqc(adapter);
- 	igc_setup_rctl(adapter);
+diff --git a/drivers/net/ethernet/ti/k3-cppi-desc-pool.c b/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
+index ad7cfc1316ce..38cc12f9f133 100644
+--- a/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
++++ b/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
+@@ -64,8 +64,8 @@ k3_cppi_desc_pool_create_name(struct device *dev, size_t size,
+ 		return ERR_PTR(-ENOMEM);
  
-+	igc_set_default_mac_filter(adapter);
- 	igc_nfc_filter_restore(adapter);
-+
- 	igc_configure_tx(adapter);
- 	igc_configure_rx(adapter);
- 
+ 	pool->gen_pool = gen_pool_create(ilog2(pool->desc_size), -1);
+-	if (IS_ERR(pool->gen_pool)) {
+-		ret = PTR_ERR(pool->gen_pool);
++	if (!pool->gen_pool) {
++		ret = -ENOMEM;
+ 		dev_err(pool->dev, "pool create failed %d\n", ret);
+ 		kfree_const(pool_name);
+ 		goto gen_pool_create_fail;
 -- 
 2.25.1
 
