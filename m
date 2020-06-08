@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E0E1F3017
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 381F11F2FEC
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:55:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730085AbgFIA4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:56:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54774 "EHLO mail.kernel.org"
+        id S1728392AbgFHXJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:09:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728342AbgFHXJI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:08 -0400
+        id S1728371AbgFHXJN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:09:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1D81F208C9;
-        Mon,  8 Jun 2020 23:09:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2FF1A20E65;
+        Mon,  8 Jun 2020 23:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657748;
-        bh=7qRrtypSSmzWLdDkp9783c/owwEwmGd/9SP07NiOk2s=;
+        s=default; t=1591657753;
+        bh=sI8qGZ67vRCEu32jaQy/usE2cJJy7oZBz5RPrSs/cAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPOGdBSXEHTJ9BjQyX7JAFlmdStNtE5CcFM/TDR0O77+gY9WGx6XW2W5FUIZMc+1Q
-         H8SG7qjhA0L8Wnp3gQMk5YPjGbJfC9XX7VsBqKo7/2x7FWwPY3/G8Md/g8Ygi5hT8F
-         o8IloG+sZrYZ1sXXNAt1yf8YYXeaL7kzynH/QAHU=
+        b=2MRGUJyfMnV47DfEwgVcDd6yQCn+s+eZ6hFMRT4kU31qW2UaCBboCy9wd2Y0xaPj3
+         lTA5JMkhLb2Hybhsqr/QxV+jbviyJn2WpEHWghZhVzlDh34quij4RA2z2RigaZn9Fv
+         pq3HmAKy+TtmSN/s4Dbu2DDan3kXH/0/IzCwx3lk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Veronika Kabatova <vkabatov@redhat.com>,
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 135/274] selftests/bpf: Add runqslower binary to .gitignore
-Date:   Mon,  8 Jun 2020 19:03:48 -0400
-Message-Id: <20200608230607.3361041-135-sashal@kernel.org>
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 139/274] net: bcmgenet: set Rx mode before starting netif
+Date:   Mon,  8 Jun 2020 19:03:52 -0400
+Message-Id: <20200608230607.3361041-139-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -46,33 +45,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit e4e8f4d047fdcf7ac7d944e266e85d8041f16cd6 ]
+[ Upstream commit 72f96347628e73dbb61b307f18dd19293cc6792a ]
 
-With recent changes, runqslower is being copied into selftests/bpf root
-directory. So add it into .gitignore.
+This commit explicitly calls the bcmgenet_set_rx_mode() function when
+the network interface is started. This function is normally called by
+ndo_set_rx_mode when the flags are changed, but apparently not when
+the driver is suspended and resumed.
 
-Fixes: b26d1e2b6028 ("selftests/bpf: Copy runqslower to OUTPUT directory")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Cc: Veronika Kabatova <vkabatov@redhat.com>
-Link: https://lore.kernel.org/bpf/20200429012111.277390-12-andriin@fb.com
+This change ensures that address filtering or promiscuous mode are
+properly restored by the driver after the MAC may have been reset.
+
+Fixes: b6e978e50444 ("net: bcmgenet: add suspend/resume callbacks")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/.gitignore | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index c30079c86998..35a577ca0226 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -39,4 +39,4 @@ test_cpp
- /no_alu32
- /bpf_gcc
- /tools
--
-+/runqslower
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 79636c78127c..38bdfd4b46f0 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -70,6 +70,9 @@
+ #define GENET_RDMA_REG_OFF	(priv->hw_params->rdma_offset + \
+ 				TOTAL_DESC * DMA_DESC_SIZE)
+ 
++/* Forward declarations */
++static void bcmgenet_set_rx_mode(struct net_device *dev);
++
+ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ {
+ 	/* MIPS chips strapped for BE will automagically configure the
+@@ -2803,6 +2806,7 @@ static void bcmgenet_netif_start(struct net_device *dev)
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 
+ 	/* Start the network engine */
++	bcmgenet_set_rx_mode(dev);
+ 	bcmgenet_enable_rx_napi(priv);
+ 
+ 	umac_enable_set(priv, CMD_TX_EN | CMD_RX_EN, true);
 -- 
 2.25.1
 
