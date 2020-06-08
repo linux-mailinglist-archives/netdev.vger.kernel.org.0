@@ -2,190 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF6C1F10B8
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 02:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 277731F10D5
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 02:58:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728286AbgFHAgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 20:36:24 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16646 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727965AbgFHAgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 20:36:23 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0580UcjV010067
-        for <netdev@vger.kernel.org>; Sun, 7 Jun 2020 17:36:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=pAzCA2kpyA3czVGvV+jHK/6wwisaOtSSG8JsrbSJiwc=;
- b=g6f9+2CuwoJ1gvQak6Xh3OKVxbLw44An3Vcv5scm6TbCcbmGufwrGIkyILbU+kTc5u7q
- 53g2bksaSz3HSz6UyOHxFLVR0NJp4dh18KB+fF2EJX1Sr8EeIi6NwpnJhC8E3oYsrIrW
- DWkYLkmfsdutCxA2ZZJ7W3J3zE8BV4WzNCQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31gtucj5fk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 17:36:23 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 7 Jun 2020 17:36:22 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id BC9D12EC3971; Sun,  7 Jun 2020 17:36:17 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] selftests/bpf: fix ringbuf selftest sample counting undeterminism
-Date:   Sun, 7 Jun 2020 17:36:15 -0700
-Message-ID: <20200608003615.3549991-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728872AbgFHA6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 20:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728667AbgFHA6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Jun 2020 20:58:06 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C2FC08C5C4;
+        Sun,  7 Jun 2020 17:58:06 -0700 (PDT)
+Received: from [5.158.153.53] (helo=debian-buster-darwi.lab.linutronix.de.)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <a.darwish@linutronix.de>)
+        id 1ji66U-0000hc-WF; Mon, 08 Jun 2020 02:57:31 +0200
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCH v2 00/18] seqlock: Extend seqcount API with associated locks
+Date:   Mon,  8 Jun 2020 02:57:11 +0200
+Message-Id: <20200608005729.1874024-1-a.darwish@linutronix.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200519214547.352050-1-a.darwish@linutronix.de>
+References: <20200519214547.352050-1-a.darwish@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-07_13:2020-06-04,2020-06-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
- bulkscore=0 priorityscore=1501 cotscore=-2147483648 spamscore=0
- lowpriorityscore=0 adultscore=0 malwarescore=0 mlxlogscore=961
- clxscore=1015 phishscore=0 mlxscore=0 impostorscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006080001
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix test race, in which background poll can get either 5 or 6 samples,
-depending on timing of notification. Prevent this by open-coding sample
-triggering and forcing notification for the very last sample only.
+Hi,
 
-Also switch to using atomic increments and exchanges for more obviously
-reliable counting and checking. Additionally, check expected processed sa=
-mple
-counters for single-threaded use cases as well.
+This is v2 of the seqlock patch series:
 
-Fixes: 9a5f25ad30e5 ("selftests/bpf: Fix sample_cnt shared between two th=
-reads")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/ringbuf.c        | 42 +++++++++++++++----
- 1 file changed, 35 insertions(+), 7 deletions(-)
+   [PATCH v1 00/25] seqlock: Extend seqcount API with associated locks
+   https://lore.kernel.org/lkml/20200519214547.352050-1-a.darwish@linutronix.de
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/tes=
-ting/selftests/bpf/prog_tests/ringbuf.c
-index 2bba908dfa63..c1650548433c 100644
---- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-@@ -25,13 +25,23 @@ struct sample {
- 	char comm[16];
- };
-=20
--static volatile int sample_cnt;
-+static int sample_cnt;
-+
-+static void atomic_inc(int *cnt)
-+{
-+	__atomic_add_fetch(cnt, 1, __ATOMIC_SEQ_CST);
-+}
-+
-+static int atomic_xchg(int *cnt, int val)
-+{
-+	return __atomic_exchange_n(cnt, val, __ATOMIC_SEQ_CST);
-+}
-=20
- static int process_sample(void *ctx, void *data, size_t len)
- {
- 	struct sample *s =3D data;
-=20
--	sample_cnt++;
-+	atomic_inc(&sample_cnt);
-=20
- 	switch (s->seq) {
- 	case 0:
-@@ -76,7 +86,7 @@ void test_ringbuf(void)
- 	const size_t rec_sz =3D BPF_RINGBUF_HDR_SZ + sizeof(struct sample);
- 	pthread_t thread;
- 	long bg_ret =3D -1;
--	int err;
-+	int err, cnt;
-=20
- 	skel =3D test_ringbuf__open_and_load();
- 	if (CHECK(!skel, "skel_open_load", "skeleton open&load failed\n"))
-@@ -116,11 +126,15 @@ void test_ringbuf(void)
- 	/* -EDONE is used as an indicator that we are done */
- 	if (CHECK(err !=3D -EDONE, "err_done", "done err: %d\n", err))
- 		goto cleanup;
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 2, "cnt", "exp %d samples, got %d\n", 2, cnt);
-=20
- 	/* we expect extra polling to return nothing */
- 	err =3D ring_buffer__poll(ringbuf, 0);
- 	if (CHECK(err !=3D 0, "extra_samples", "poll result: %d\n", err))
- 		goto cleanup;
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 0, "cnt", "exp %d samples, got %d\n", 0, cnt);
-=20
- 	CHECK(skel->bss->dropped !=3D 0, "err_dropped", "exp %ld, got %ld\n",
- 	      0L, skel->bss->dropped);
-@@ -136,6 +150,8 @@ void test_ringbuf(void)
- 	      3L * rec_sz, skel->bss->cons_pos);
- 	err =3D ring_buffer__poll(ringbuf, -1);
- 	CHECK(err <=3D 0, "poll_err", "err %d\n", err);
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 2, "cnt", "exp %d samples, got %d\n", 2, cnt);
-=20
- 	/* start poll in background w/ long timeout */
- 	err =3D pthread_create(&thread, NULL, poll_thread, (void *)(long)10000)=
-;
-@@ -164,6 +180,8 @@ void test_ringbuf(void)
- 	      2L, skel->bss->total);
- 	CHECK(skel->bss->discarded !=3D 1, "err_discarded", "exp %ld, got %ld\n=
-",
- 	      1L, skel->bss->discarded);
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 0, "cnt", "exp %d samples, got %d\n", 0, cnt);
-=20
- 	/* clear flags to return to "adaptive" notification mode */
- 	skel->bss->flags =3D 0;
-@@ -178,10 +196,20 @@ void test_ringbuf(void)
- 	if (CHECK(err !=3D EBUSY, "try_join", "err %d\n", err))
- 		goto cleanup;
-=20
-+	/* still no samples, because consumer is behind */
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 0, "cnt", "exp %d samples, got %d\n", 0, cnt);
-+
-+	skel->bss->dropped =3D 0;
-+	skel->bss->total =3D 0;
-+	skel->bss->discarded =3D 0;
-+
-+	skel->bss->value =3D 333;
-+	syscall(__NR_getpgid);
- 	/* now force notifications */
- 	skel->bss->flags =3D BPF_RB_FORCE_WAKEUP;
--	sample_cnt =3D 0;
--	trigger_samples();
-+	skel->bss->value =3D 777;
-+	syscall(__NR_getpgid);
-=20
- 	/* now we should get a pending notification */
- 	usleep(50000);
-@@ -193,8 +221,8 @@ void test_ringbuf(void)
- 		goto cleanup;
-=20
- 	/* 3 rounds, 2 samples each */
--	CHECK(sample_cnt !=3D 6, "wrong_sample_cnt",
--	      "expected to see %d samples, got %d\n", 6, sample_cnt);
-+	cnt =3D atomic_xchg(&sample_cnt, 0);
-+	CHECK(cnt !=3D 6, "cnt", "exp %d samples, got %d\n", 6, cnt);
-=20
- 	/* BPF side did everything right */
- 	CHECK(skel->bss->dropped !=3D 0, "err_dropped", "exp %ld, got %ld\n",
---=20
-2.24.1
+Patches 1=>3 of this v2 series add documentation for the existing
+seqlock.h datatypes and APIs. Hopefully they can hit v5.8 -rc2 or -rc3.
 
+Changelog-v2
+============
+
+1. Drop, for now, the seqlock v1 patches #7 and #8. These patches added
+lockdep non-preemptibility checks to seqcount_t write paths, but they
+now depend on on-going work by Peter:
+
+   [PATCH v3 0/5] lockdep: Change IRQ state tracking to use per-cpu variables
+   https://lkml.kernel.org/r/20200529213550.683440625@infradead.org
+
+   [PATCH 00/14] x86/entry: disallow #DB more and x86/entry lockdep/nmi
+   https://lkml.kernel.org/r/20200529212728.795169701@infradead.org
+
+Once Peter's work get merged, I'll send the non-preemptibility checks as
+a separate series.
+
+2. Drop the v1 seqcount_t call-sites bugfixes. I've already posted them
+in an isolated series. They got merged into their respective trees, and
+will hit v5.8-rc1 soon:
+
+   [PATCH v2 0/6] seqlock: seqcount_t call sites bugfixes
+   https://lore.kernel.org/lkml/20200603144949.1122421-1-a.darwish@linutronix.de
+
+3. Patch #1: Add a small paragraph explaining that seqcount_t/seqlock_t
+cannot be used if the protected data contains pointers. A similar
+paragraph already existed in seqlock.h, but got mistakenly dropped.
+
+4. Patch #2: Don't add RST directives inside kernel-doc comments. Peter
+doesn't like them :) I've kept the indentation though, and found a
+minimal way for Sphinx to properly render these code samples without too
+much disruption.
+
+5. Patch #3: Brush up the introduced kernel-doc comments. Make them more
+consistent overall, and more concise.
+
+Thanks,
+
+8<--------------
+
+Ahmed S. Darwish (18):
+  Documentation: locking: Describe seqlock design and usage
+  seqlock: Properly format kernel-doc code samples
+  seqlock: Add missing kernel-doc annotations
+  seqlock: Extend seqcount API with associated locks
+  dma-buf: Remove custom seqcount lockdep class key
+  dma-buf: Use sequence counter with associated wound/wait mutex
+  sched: tasks: Use sequence counter with associated spinlock
+  netfilter: conntrack: Use sequence counter with associated spinlock
+  netfilter: nft_set_rbtree: Use sequence counter with associated rwlock
+  xfrm: policy: Use sequence counters with associated lock
+  timekeeping: Use sequence counter with associated raw spinlock
+  vfs: Use sequence counter with associated spinlock
+  raid5: Use sequence counter with associated spinlock
+  iocost: Use sequence counter with associated spinlock
+  NFSv4: Use sequence counter with associated spinlock
+  userfaultfd: Use sequence counter with associated spinlock
+  kvm/eventfd: Use sequence counter with associated spinlock
+  hrtimer: Use sequence counter with associated raw spinlock
+
+ Documentation/locking/index.rst               |   1 +
+ Documentation/locking/seqlock.rst             | 242 +++++
+ MAINTAINERS                                   |   2 +-
+ block/blk-iocost.c                            |   5 +-
+ drivers/dma-buf/dma-resv.c                    |  15 +-
+ .../gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c  |   2 -
+ drivers/md/raid5.c                            |   2 +-
+ drivers/md/raid5.h                            |   2 +-
+ fs/dcache.c                                   |   2 +-
+ fs/fs_struct.c                                |   4 +-
+ fs/nfs/nfs4_fs.h                              |   2 +-
+ fs/nfs/nfs4state.c                            |   2 +-
+ fs/userfaultfd.c                              |   4 +-
+ include/linux/dcache.h                        |   2 +-
+ include/linux/dma-resv.h                      |   4 +-
+ include/linux/fs_struct.h                     |   2 +-
+ include/linux/hrtimer.h                       |   2 +-
+ include/linux/kvm_irqfd.h                     |   2 +-
+ include/linux/sched.h                         |   2 +-
+ include/linux/seqlock.h                       | 855 ++++++++++++++----
+ include/linux/seqlock_types_internal.h        | 187 ++++
+ include/net/netfilter/nf_conntrack.h          |   2 +-
+ init/init_task.c                              |   3 +-
+ kernel/fork.c                                 |   2 +-
+ kernel/time/hrtimer.c                         |  13 +-
+ kernel/time/timekeeping.c                     |  19 +-
+ net/netfilter/nf_conntrack_core.c             |   5 +-
+ net/netfilter/nft_set_rbtree.c                |   4 +-
+ net/xfrm/xfrm_policy.c                        |  10 +-
+ virt/kvm/eventfd.c                            |   2 +-
+ 30 files changed, 1175 insertions(+), 226 deletions(-)
+ create mode 100644 Documentation/locking/seqlock.rst
+ create mode 100644 include/linux/seqlock_types_internal.h
+
+base-commit: 3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162
+--
+2.20.1
