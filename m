@@ -2,102 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03361F1CE3
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2831F1CF0
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730466AbgFHQGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 12:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        id S1730497AbgFHQIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 12:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730378AbgFHQGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:06:39 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15DFC08C5C2;
-        Mon,  8 Jun 2020 09:06:38 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id s18so19309699ioe.2;
-        Mon, 08 Jun 2020 09:06:38 -0700 (PDT)
+        with ESMTP id S1730322AbgFHQIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 12:08:05 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F92AC08C5C2
+        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 09:08:04 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id w15so10529028lfe.11
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 09:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=m0MCfyAVvG/TnOOlixlSlNHg0o6ZIZMmhOPM1yKrMsk=;
-        b=sfxTc+T/k0Mho9L39uU9FVHb2ybu9cUIVG5skJKsPQcUIXMFQz8B8iqv7vWuAnpO76
-         qkRvSDxdWhNDz/fv9x3vu+QDY9mkoRnflPz3codabnyVY61rQUtwJNvXHN0ns1hlPnux
-         jxWt3I6Pxgs+RsCf6b7UcCIKJAibJ9yOJq5mskdqiFtEhnRzBkgBHyS/MEIUmvAqQFCC
-         QgOcnoY73Ai7zb+tLr/fEmbxeFJpVW1/XsquQz1o697ZzfzABPdQwYetdWaKEioi7TqX
-         s9ZvHXvFa01646sIIXO+oDGzJEMiDzP6gGHx++foHf1hw0FpCd+XmK3o4dwfzvW4c1LM
-         dLcA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ClSQBWTNKy6QM/u0O+83mkKXa/fUb2mZhnsBDib3FXU=;
+        b=Wj7uIHi3iVob7U2MnpWEYNidthbOPgWUvDSYkULGV6+X5T7T2QDw4sHvTkrkAIv0Ab
+         6Fg0K6exQtytZPQKO34LagmdPRaq460ZHKWIsEukUVc/6/emrmYy/9IVYBXfE7+n142s
+         THP8lUfiXgV4DF0FjAkuCp2x97R1OfEHEVP/Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=m0MCfyAVvG/TnOOlixlSlNHg0o6ZIZMmhOPM1yKrMsk=;
-        b=omd55WAnrrhdYzrW2iSnfr4tuMGat+ci7m+IkVXGghtMgmYLP//bfLf24sO4RZ38WC
-         5hjYIn6KtuHA8QQ5O7H6Xe32tNcSpEmMWNhlxpBUC3qyMa/wLwx8QJ3aU1F2YLBON2G+
-         c11rYS1eXlSHzO5MoRkrQSKBI+FqhhuoGOKQaJ1gNnKyij/JvOHYRlWhE4PfrZhbSDyj
-         v3QHRPlvJO8rt71ki/PMmXz5ln9ysysjp7nB7fEKra6AXzMvpeo8ndNYGjkcSzHhoOFT
-         S5PpZbTwEUg6sQSt+s/ofIY7TgtBkkuJqg3GO3Z9FrQCWJDp9F1dq5ZFySCNHKZiYtSA
-         zpJw==
-X-Gm-Message-State: AOAM532LIgFbCifp34u5UqyawIKGYyK6JaI+nO/DodnWRx7a8Z6m3M9J
-        EoK6+q8WyhVEq2lZokQrUk2CJOgbXAw=
-X-Google-Smtp-Source: ABdhPJwyZT+R6bq/65KQY0F4Egc1frdjkNNDesAzriYQHZ6yXj6Q/iRLH4JyhjGh9oMil22yUeIS0Q==
-X-Received: by 2002:a6b:9144:: with SMTP id t65mr20397005iod.99.1591632396889;
-        Mon, 08 Jun 2020 09:06:36 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id c3sm1866364ilr.45.2020.06.08.09.06.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 09:06:35 -0700 (PDT)
-Date:   Mon, 08 Jun 2020 09:06:27 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     dihu <anny.hu@linux.alibaba.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, dihu <anny.hu@linux.alibaba.com>
-Message-ID: <5ede6203aba1d_2c272afa690ca5c4c6@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200605084625.9783-1-anny.hu@linux.alibaba.com>
-References: <20200605084625.9783-1-anny.hu@linux.alibaba.com>
-Subject: RE: [PATCH] bpf/sockmap: fix kernel panic at __tcp_bpf_recvmsg
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ClSQBWTNKy6QM/u0O+83mkKXa/fUb2mZhnsBDib3FXU=;
+        b=qbURH6k2vaWn38pWOD/Vs/9q2y0tJMxv4sR8XqSyrvU1iwuQ/1OEWcVqk9wwMgHSaB
+         RdMjj7REuIBjvg21gU4p+a7A2CQ/W5CaBToROiwbFGBtrB3WWUQxGUkNulnR9rcO/FDU
+         YXPtS648u9oxcl/i7u/oXATsiUGCX357ib0RE3ol4PHEElQKQVxQ+AQRm0ikRoLhxmT4
+         kYu0whirii9YHgJiCttfPNnbMF2D4iG4FrGk1J6RuP4j7lpkMa5HTnhSpPeQKkvF942B
+         Z9GiJj4FdBkch+hdlebXSzDNgEUsEjnDPaAmCB1j8NAwmUtgZugH3GS0T73RSJT2njeu
+         rfMg==
+X-Gm-Message-State: AOAM533VfP9nrOd7RuZaE9LUJfOeibeRAJvUxmOK770iYRtYB6i64ba2
+        eVapovHPdRqt30IwDh2gCf2v+Ju9dMk=
+X-Google-Smtp-Source: ABdhPJyfxWQApqG5k50E2SK4qsjVXRwjux4SineCcpB/67KnFY3SBrvN27HniI9/q/bWiCG5hY1ejA==
+X-Received: by 2002:a19:8447:: with SMTP id g68mr13345552lfd.132.1591632482800;
+        Mon, 08 Jun 2020 09:08:02 -0700 (PDT)
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
+        by smtp.gmail.com with ESMTPSA id t16sm3791637ljj.57.2020.06.08.09.08.01
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Jun 2020 09:08:01 -0700 (PDT)
+Received: by mail-lj1-f179.google.com with SMTP id j18so8134459lji.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 09:08:01 -0700 (PDT)
+X-Received: by 2002:a2e:b4c1:: with SMTP id r1mr6601345ljm.370.1591632480876;
+ Mon, 08 Jun 2020 09:08:00 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200604105901.1.I5b8b0c7ee0d3e51a73248975a9da61401b8f3900@changeid>
+ <87v9k1iy7w.fsf@codeaurora.org>
+In-Reply-To: <87v9k1iy7w.fsf@codeaurora.org>
+From:   Evan Green <evgreen@chromium.org>
+Date:   Mon, 8 Jun 2020 09:07:24 -0700
+X-Gmail-Original-Message-ID: <CAE=gft76Nqo93QvvXU9xU-6sY-Q88H4RezMx8G6MWSBE7vJDKA@mail.gmail.com>
+Message-ID: <CAE=gft76Nqo93QvvXU9xU-6sY-Q88H4RezMx8G6MWSBE7vJDKA@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: Acquire tx_lock in tx error paths
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Govind Singh <govinds@qti.qualcomm.com>, sujitka@chromium.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, ath10k@lists.infradead.org,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kuabhs@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dihu wrote:
-> When user application calls read() with MSG_PEEK flag to read data
-> of bpf sockmap socket, kernel panic happens at
-> __tcp_bpf_recvmsg+0x12c/0x350. sk_msg is not removed from ingress_msg
-> queue after read out under MSG_PEEK flag is set. Because it's not
-> judged whether sk_msg is the last msg of ingress_msg queue, the next
-> sk_msg may be the head of ingress_msg queue, whose memory address of
-> sg page is invalid. So it's necessary to add check codes to prevent
-> this problem.
-> 
-> [20759.125457] BUG: kernel NULL pointer dereference, address:
-> 0000000000000008
-> [20759.132118] CPU: 53 PID: 51378 Comm: envoy Tainted: G            E
-> 5.4.32 #1
-> [20759.140890] Hardware name: Inspur SA5212M4/YZMB-00370-109, BIOS
-> 4.1.12 06/18/2017
-> [20759.149734] RIP: 0010:copy_page_to_iter+0xad/0x300
-> [20759.270877] __tcp_bpf_recvmsg+0x12c/0x350
-> [20759.276099] tcp_bpf_recvmsg+0x113/0x370
-> [20759.281137] inet_recvmsg+0x55/0xc0
-> [20759.285734] __sys_recvfrom+0xc8/0x130
-> [20759.290566] ? __audit_syscall_entry+0x103/0x130
-> [20759.296227] ? syscall_trace_enter+0x1d2/0x2d0
-> [20759.301700] ? __audit_syscall_exit+0x1e4/0x290
-> [20759.307235] __x64_sys_recvfrom+0x24/0x30
-> [20759.312226] do_syscall_64+0x55/0x1b0
-> [20759.316852] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Signed-off-by: dihu <anny.hu@linux.alibaba.com>
-> ---
->  net/ipv4/tcp_bpf.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+On Mon, Jun 8, 2020 at 4:39 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Evan Green <evgreen@chromium.org> writes:
+>
+> > ath10k_htt_tx_free_msdu_id() has a lockdep assertion that htt->tx_lock
+> > is held. Acquire the lock in a couple of error paths when calling that
+> > function to ensure this condition is met.
+> >
+> > Fixes: 6421969f248fd ("ath10k: refactor tx pending management")
+> > Fixes: e62ee5c381c59 ("ath10k: Add support for htt_data_tx_desc_64
+> > descriptor")
+>
+> Fixes tag should be in one line, I fixed that in the pending branch.
 
-Thanks, looks good to me.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Ah, got it. Thanks Kalle!
+-Evan
