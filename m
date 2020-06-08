@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 687751F28D9
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955011F28D3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387967AbgFHX4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:56:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49176 "EHLO mail.kernel.org"
+        id S2387921AbgFHX4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:56:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731162AbgFHXXj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:23:39 -0400
+        id S1731523AbgFHXXk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:23:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 671F720872;
-        Mon,  8 Jun 2020 23:23:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B197A2072F;
+        Mon,  8 Jun 2020 23:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658619;
-        bh=uZ84vTGYlo4IboKjY879TBGBz6Hhr7Vq0yu0/6vxmZ8=;
+        s=default; t=1591658620;
+        bh=vvo7Ahi+utMWS+xIUC6nXo1jAOt7DowPCxW6SV+Q9jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7YPaHmpKvtJX4DuhJ/p1eoxlA2l9V3G7Kdl2I6sJGwDNLg1ShRMcPty662Gin8A8
-         AVnCOEBgQ8XCOfMgxxJH4vessh0wlOhLQY6TYziY9Q3n6P70J78l9PjpQmaW2inq2Q
-         gl/Pd9ygyHoT/Ke6njhNFcNI+P8jK3EI5ApSqxwQ=
+        b=qwSvi2LVoDsx+jHjN5nN9u80WjAPBbrJH87jn9oDNu+ZAtiU4koaaZw9JQsD4u4C9
+         nJQGlVsqfDpCSIHg6A48AHCUzQwlg86BNFCP4skNE74Sp9UYhXVHe4xjstrq+ySbYB
+         1D8sK4NyjiQ0XeXDqi+hOu5xNNR3ACG9V0FZPl34=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 044/106] selftests/bpf: Fix memory leak in extract_build_id()
-Date:   Mon,  8 Jun 2020 19:21:36 -0400
-Message-Id: <20200608232238.3368589-44-sashal@kernel.org>
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 045/106] net: bcmgenet: set Rx mode before starting netif
+Date:   Mon,  8 Jun 2020 19:21:37 -0400
+Message-Id: <20200608232238.3368589-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232238.3368589-1-sashal@kernel.org>
 References: <20200608232238.3368589-1-sashal@kernel.org>
@@ -46,34 +45,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit 9f56bb531a809ecaa7f0ddca61d2cf3adc1cb81a ]
+[ Upstream commit 72f96347628e73dbb61b307f18dd19293cc6792a ]
 
-getline() allocates string, which has to be freed.
+This commit explicitly calls the bcmgenet_set_rx_mode() function when
+the network interface is started. This function is normally called by
+ndo_set_rx_mode when the flags are changed, but apparently not when
+the driver is suspended and resumed.
 
-Fixes: 81f77fd0deeb ("bpf: add selftest for stackmap with BPF_F_STACK_BUILD_ID")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Cc: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20200429012111.277390-7-andriin@fb.com
+This change ensures that address filtering or promiscuous mode are
+properly restored by the driver after the MAC may have been reset.
+
+Fixes: b6e978e50444 ("net: bcmgenet: add suspend/resume callbacks")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_progs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index 89f8b0dae7ef..bad3505d66e0 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -1118,6 +1118,7 @@ static int extract_build_id(char *build_id, size_t size)
- 		len = size;
- 	memcpy(build_id, line, len);
- 	build_id[len] = '\0';
-+	free(line);
- 	return 0;
- err:
- 	fclose(fp);
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 047fc0cf0263..40e8ef984b62 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -72,6 +72,9 @@
+ #define GENET_RDMA_REG_OFF	(priv->hw_params->rdma_offset + \
+ 				TOTAL_DESC * DMA_DESC_SIZE)
+ 
++/* Forward declarations */
++static void bcmgenet_set_rx_mode(struct net_device *dev);
++
+ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ {
+ 	/* MIPS chips strapped for BE will automagically configure the
+@@ -2859,6 +2862,7 @@ static void bcmgenet_netif_start(struct net_device *dev)
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 
+ 	/* Start the network engine */
++	bcmgenet_set_rx_mode(dev);
+ 	bcmgenet_enable_rx_napi(priv);
+ 
+ 	umac_enable_set(priv, CMD_TX_EN | CMD_RX_EN, true);
 -- 
 2.25.1
 
