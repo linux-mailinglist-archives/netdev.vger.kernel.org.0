@@ -2,53 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3A81F20B5
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 22:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B67C1F211D
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgFHUaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 16:30:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54400 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726753AbgFHUaX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 16:30:23 -0400
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591648223;
-        bh=aKkHAUwMJdAcjnYPmV/eAoZWvfj4xFrMkgKicaY87As=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=ljl2GCNCJsmVH4YW2QInicqFxjtP4XJuvf+wroeyjcdKgzyosTLptcNX/glYDUxqD
-         cLEaV/mQpbylmPSO01c0MgBjbsv0lbAtexoyT9CwAYUX3wlHADmr/SsgtxDyMOKXjO
-         pKBUj9EmftSY/WEdqmqI5WSagqmd39DdxHNN/iMY=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200602.171111.57475611625131165.davem@davemloft.net>
-References: <20200602.171111.57475611625131165.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200602.171111.57475611625131165.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: 065fcfd49763ec71ae345bb5c5a74f961031e70e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2
-Message-Id: <159164822321.23618.12568851381765933923.pr-tracker-bot@kernel.org>
-Date:   Mon, 08 Jun 2020 20:30:23 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1726746AbgFHVBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 17:01:18 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28049 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726774AbgFHVBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 17:01:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591650075;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mZRjN4QhW5X6YfR7Z2yjjbULaODEXfUST0bMuVtU8r4=;
+        b=TVq4UqEpH6AzOPmz2u6Bgb7NTJYGje/XKnsbvG1tpExn+Q4km03fRIbArVCniSnuvYC2wt
+        2STGGESwY2zyDneh0ZGE98UGbn+vWJdzxIJiEwbECNrBJX4l6+tD1VwzhKjmnzKdO9A7uN
+        52JrWhmCE/ZhwuCBKUASnpw3/hH5878=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-196-No3wbXOUNVKMTEBnZFNWjw-1; Mon, 08 Jun 2020 17:01:10 -0400
+X-MC-Unique: No3wbXOUNVKMTEBnZFNWjw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 925A31883612;
+        Mon,  8 Jun 2020 21:01:08 +0000 (UTC)
+Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A2B7D61169;
+        Mon,  8 Jun 2020 21:01:06 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next 1/4] xfrm: bail early on slave pass over skb
+Date:   Mon,  8 Jun 2020 17:00:55 -0400
+Message-Id: <20200608210058.37352-2-jarod@redhat.com>
+In-Reply-To: <20200608210058.37352-1-jarod@redhat.com>
+References: <20200608210058.37352-1-jarod@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Tue, 02 Jun 2020 17:11:11 -0700 (PDT):
+This is prep work for initial support of bonding hardware encryption
+pass-through support. The bonding driver will fill in the slave_dev
+pointer, and we use that to know not to skb_push() again on a given
+skb that was already processed on the bond device.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git refs/heads/master
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Steffen Klassert <steffen.klassert@secunet.com>
+CC: Herbert Xu <herbert@gondor.apana.org.au>
+CC: netdev@vger.kernel.org
+CC: intel-wired-lan@lists.osuosl.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+---
+ include/net/xfrm.h     |  1 +
+ net/xfrm/xfrm_device.c | 34 +++++++++++++++++-----------------
+ 2 files changed, 18 insertions(+), 17 deletions(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2
-
-Thank you!
-
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 094fe682f5d7..e20b2b27ec48 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -127,6 +127,7 @@ struct xfrm_state_walk {
+ 
+ struct xfrm_state_offload {
+ 	struct net_device	*dev;
++	struct net_device	*slave_dev;
+ 	unsigned long		offload_handle;
+ 	unsigned int		num_exthdrs;
+ 	u8			flags;
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index f50d1f97cf8e..b8918fc5248b 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -106,6 +106,7 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+ 	struct sk_buff *skb2, *nskb, *pskb = NULL;
+ 	netdev_features_t esp_features = features;
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
++	struct net_device *dev = skb->dev;
+ 	struct sec_path *sp;
+ 
+ 	if (!xo)
+@@ -119,6 +120,10 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+ 	if (xo->flags & XFRM_GRO || x->xso.flags & XFRM_OFFLOAD_INBOUND)
+ 		return skb;
+ 
++	/* This skb was already validated on the master dev */
++	if ((x->xso.dev != dev) && (x->xso.slave_dev == dev))
++		return skb;
++
+ 	local_irq_save(flags);
+ 	sd = this_cpu_ptr(&softnet_data);
+ 	err = !skb_queue_empty(&sd->xfrm_backlog);
+@@ -129,25 +134,20 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+ 		return skb;
+ 	}
+ 
+-	if (skb_is_gso(skb)) {
+-		struct net_device *dev = skb->dev;
+-
+-		if (unlikely(x->xso.dev != dev)) {
+-			struct sk_buff *segs;
++	if (skb_is_gso(skb) && unlikely(x->xso.dev != dev)) {
++		struct sk_buff *segs;
+ 
+-			/* Packet got rerouted, fixup features and segment it. */
+-			esp_features = esp_features & ~(NETIF_F_HW_ESP
+-							| NETIF_F_GSO_ESP);
++		/* Packet got rerouted, fixup features and segment it. */
++		esp_features = esp_features & ~(NETIF_F_HW_ESP | NETIF_F_GSO_ESP);
+ 
+-			segs = skb_gso_segment(skb, esp_features);
+-			if (IS_ERR(segs)) {
+-				kfree_skb(skb);
+-				atomic_long_inc(&dev->tx_dropped);
+-				return NULL;
+-			} else {
+-				consume_skb(skb);
+-				skb = segs;
+-			}
++		segs = skb_gso_segment(skb, esp_features);
++		if (IS_ERR(segs)) {
++			kfree_skb(skb);
++			atomic_long_inc(&dev->tx_dropped);
++			return NULL;
++		} else {
++			consume_skb(skb);
++			skb = segs;
+ 		}
+ 	}
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.20.1
+
