@@ -2,106 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBA81F10E8
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 02:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E84391F10F4
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 03:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgFHA66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Jun 2020 20:58:58 -0400
-Received: from mout.gmx.net ([212.227.15.19]:58795 "EHLO mout.gmx.net"
+        id S1728502AbgFHBAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Jun 2020 21:00:08 -0400
+Received: from mga14.intel.com ([192.55.52.115]:47604 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729019AbgFHA6y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Jun 2020 20:58:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1591577918;
-        bh=MuS8uek9XC84kDSjvlmb2pFbspDYI7yaLOzH753AIqA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=HkcNyvwbQer0H6h7SltND/pSmq7S1BwbMhMK3C+vUXGxf6wwg6WhzVNngU/HCgrLq
-         mOq4NqDn54/KCBfY06k93aIfkitG46eCJel3ZRwfogB+kUqzwN2lotz6ge1lmUDdUc
-         znCd69wUWicC7SAGIVAdr57M5UAT52elfPNUyAJU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from LT02.fritz.box ([88.152.145.75]) by mail.gmx.com (mrgmx004
- [212.227.17.184]) with ESMTPSA (Nemesis) id 1N33Il-1iwThb0ggP-013M9f; Mon, 08
- Jun 2020 02:58:38 +0200
-From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
-To:     Vishal Kulkarni <vishal@chelsio.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Heinrich Schuchardt <xypron.glpk@gmx.de>
-Subject: [PATCH 1/1] cxgb4: fix cxgb4_uld_in_use() not used error
-Date:   Mon,  8 Jun 2020 02:58:23 +0200
-Message-Id: <20200608005823.911290-1-xypron.glpk@gmx.de>
-X-Mailer: git-send-email 2.26.2
+        id S1727999AbgFHBAH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Jun 2020 21:00:07 -0400
+IronPort-SDR: /lrh735UV839a8Dvy5rTR6HHMbDve9ivdliINp1MzhqLde6nzTwSJjcykxgnobY7fHLvCAy7OH
+ G/2yawePoxLA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2020 18:00:04 -0700
+IronPort-SDR: lZJIu1OKRS/KiiMmZ6aWz7XPPJdY0Qe8Nx+DhkQxhqH7x7lXR8iZxq7PKGhlZSPgDmaRax/7mZ
+ zW8ildmMMw8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,486,1583222400"; 
+   d="scan'208";a="349014593"
+Received: from lkp-server01.sh.intel.com (HELO 3b764b36c89c) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2020 18:00:01 -0700
+Received: from kbuild by 3b764b36c89c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1ji68v-0000WX-8W; Mon, 08 Jun 2020 01:00:01 +0000
+Date:   Mon, 8 Jun 2020 08:59:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Subject: [vhost:vhost 18/52] drivers/virtio/virtio_mem.c:1391:5: warning:
+ Variable 'rc' is reassigned a value before the old one has been used.
+Message-ID: <202006080825.MWCyEzr3%lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:AKk9fwKJB810n5qOHCpvFi7CA2srjaobrfmnlcdouwAnjFU+Ykf
- xiKvZh9ul573o9cl+RcQT3Cv0e7t52bF+yOzYdY3waIKtZWYRK7RAnG+57tH9BdFAdvSygP
- 1YlGm+msycsLJtHUn4I/K/5MdngWzchmIrk6ROmRl+QkqD4YfIYzoU35wkAAqkWi18F+mfY
- Rics72LoeBimza0VzSuAA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fIA9CwzOi6Y=:L8t+SXJSj1BYp5AnGanTQj
- Px6207eUhyDjeODrHVcVkdViutWuk+c2nTfPaFbQXmbdais2jyjTPCGEeSJ9mZbPOXcxKhQ5U
- FPt3yEwKXyUTeUvE77Q5F7ossvHbeRnPj+OS58lYjAE6GNV4rZrmwgbznyk5qAwDcNOnggDQS
- nCJaccSf6UTBR5jYGTUnh25RtE8Vmz3exOytdNJ7HGrCRFF9cH66qBWeXoOYB1WdWPkwzyP7I
- UPBmcEbZ9bHEUvwm+M6Y5tGIdK41ugVbOgpo6yZRq6v6A6n679uaL1VPU9gSiHaRKzTMiFZuI
- bpFrHEt+AF4MEpwaOtbG7R8LWGLZT74QlkMPJlqKqPBI09KpK4va8M9pfSQWv+rTiQUy/h7yz
- zpGx6hMlO3yeSSAWtxLbKtxRd6u4zRyfebQRfeey42rfvyp+pwIMdzNLpZeRIHQLQ/dtHc33z
- btA0b6yUQW1AdNBfDNKvA/1SVBmW6Cnx5Bp+DeuFymJ7ocT+vxQ2QAdPoqXG38hw9+ZqLcJ9d
- i2tIbmcDAX2a/yMmYtc/b4y2KtgyKR2fEovMigREL7y6Gbub2Alwl6cSHutvfwE+nIGXBQG0L
- qi5fl92lXx782X9C3Jv4MzAGl0MyumreZcVDvIW7EQCpjJ1VJ5r+vbxzVgleOyWsP9bKMb7+1
- nprOg8kbfAROJy55fYMSIWTQ3lRw9GwEGXPd7LXCsxgTbo5gn1jxK+1gf3ujAwzvf2zLToRug
- ya9K3yDngyAJqvkAe7+HRGDI9Yk2QIiS6co4e3uTXChlvHsWOnXWB/jtBledrpQb3igG+uoDc
- xMllzVe2DGpT1eZSe4VSsR+O+1KrwJ7mixGX9aLNDqZ2+P4z4knl8cp0x15Uuyna9uVgNur8e
- JkONAQEdQjFG8cRpRdqEHBRfApFMyQy+lFfl2/eYsNlOtm/3PwoQy/JfLWPL+kRcnoZk0ZSuG
- r4uD9AhTQLkjOiNw8eXGL9lVyhW9fO/edhjHU6S8kfVfGnknBc0/U1KP5zMZCH1kJqFIIQPeV
- /iDcgWqg5uPsMAPA3cKMzNRkDD8kfMiJFeijXKrv1cMBFBBdIi9b/dFo+QcJ3RvRdSPPC9gWs
- UQvnFhRZKBc41uoJorpeZcRhrpBeneUXFGOu+HnoivCy577HECNaIDr0dpJcovh3i6VtNHXO5
- Uyr5ABi7cBGEIxMlQ7thxA4iRb9HI5OYMkFizpFx3qWbsUZ60nI4u8HkbEsRtVbFV/Esbx16q
- RMICc17mFpqrda+mA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building without CONFIG_CHELSIO_TLS_DEVICE a build error occurs:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
+head:   f3861bc96a7e130943e1975e571ae62c0319b064
+commit: 5f1f79bbc9e26fa9412fa9522f957bb8f030c442 [18/52] virtio-mem: Paravirtualized memory hotplug
+compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
 
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c:666:13: error:
-=E2=80=98cxgb4_uld_in_use=E2=80=99 defined but not used [-Werror=3Dunused-=
-function]
-  666 | static bool cxgb4_uld_in_use(struct adapter *adap)
-      |             ^~~~~~~~~~~~~~~~
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Guard cxgb4_uld_in_use() with #ifdef CONFIG_CHELSIO_TLS_DEVICE.
 
-Signed-off-by: Heinrich Schuchardt <xypron.glpk@gmx.de>
-=2D--
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+cppcheck warnings: (new ones prefixed by >>)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/=
-ethernet/chelsio/cxgb4/cxgb4_uld.c
-index 0307e9c69a47..f08f860b4983 100644
-=2D-- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
-@@ -663,6 +663,8 @@ static int uld_attach(struct adapter *adap, unsigned i=
-nt uld)
- 	return 0;
- }
+>> drivers/virtio/virtio_mem.c:1391:5: warning: Variable 'rc' is reassigned a value before the old one has been used. [redundantAssignment]
+    rc = virtio_mem_init_vq(vm);
+       ^
+   drivers/virtio/virtio_mem.c:1375:0: note: Variable 'rc' is reassigned a value before the old one has been used.
+    int rc = -EINVAL;
+   ^
+   drivers/virtio/virtio_mem.c:1391:5: note: Variable 'rc' is reassigned a value before the old one has been used.
+    rc = virtio_mem_init_vq(vm);
+       ^
+>> drivers/virtio/virtio_mem.c:801:22: warning: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+    const uint64_t size = count * vm->subblock_size;
+                        ^
+   drivers/virtio/virtio_mem.c:822:22: warning: int result is assigned to long variable. If the variable is long to avoid loss of information, then you have loss of information. [truncLongCastAssignment]
+    const uint64_t size = count * vm->subblock_size;
+                        ^
 
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+
- static bool cxgb4_uld_in_use(struct adapter *adap)
- {
- 	const struct tid_info *t =3D &adap->tids;
-@@ -670,7 +672,6 @@ static bool cxgb4_uld_in_use(struct adapter *adap)
- 	return (atomic_read(&t->conns_in_use) || t->stids_in_use);
- }
+vim +/rc +1391 drivers/virtio/virtio_mem.c
 
--#ifdef CONFIG_CHELSIO_TLS_DEVICE
- /* cxgb4_set_ktls_feature: request FW to enable/disable ktls settings.
-  * @adap: adapter info
-  * @enable: 1 to enable / 0 to disable ktls settings.
-=2D-
-2.26.2
+  1371	
+  1372	static int virtio_mem_probe(struct virtio_device *vdev)
+  1373	{
+  1374		struct virtio_mem *vm;
+  1375		int rc = -EINVAL;
+  1376	
+  1377		vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
+  1378		if (!vm)
+  1379			return -ENOMEM;
+  1380	
+  1381		init_waitqueue_head(&vm->host_resp);
+  1382		vm->vdev = vdev;
+  1383		INIT_WORK(&vm->wq, virtio_mem_run_wq);
+  1384		mutex_init(&vm->hotplug_mutex);
+  1385		INIT_LIST_HEAD(&vm->next);
+  1386		spin_lock_init(&vm->removal_lock);
+  1387		hrtimer_init(&vm->retry_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+  1388		vm->retry_timer.function = virtio_mem_timer_expired;
+  1389	
+  1390		/* register the virtqueue */
+> 1391		rc = virtio_mem_init_vq(vm);
+  1392		if (rc)
+  1393			goto out_free_vm;
+  1394	
+  1395		/* initialize the device by querying the config */
+  1396		rc = virtio_mem_init(vm);
+  1397		if (rc)
+  1398			goto out_del_vq;
+  1399	
+  1400		/* register callbacks */
+  1401		vm->memory_notifier.notifier_call = virtio_mem_memory_notifier_cb;
+  1402		rc = register_memory_notifier(&vm->memory_notifier);
+  1403		if (rc)
+  1404			goto out_del_vq;
+  1405		rc = register_virtio_mem_device(vm);
+  1406		if (rc)
+  1407			goto out_unreg_mem;
+  1408	
+  1409		virtio_device_ready(vdev);
+  1410	
+  1411		/* trigger a config update to start processing the requested_size */
+  1412		atomic_set(&vm->config_changed, 1);
+  1413		queue_work(system_freezable_wq, &vm->wq);
+  1414	
+  1415		return 0;
+  1416	out_unreg_mem:
+  1417		unregister_memory_notifier(&vm->memory_notifier);
+  1418	out_del_vq:
+  1419		vdev->config->del_vqs(vdev);
+  1420	out_free_vm:
+  1421		kfree(vm);
+  1422		vdev->priv = NULL;
+  1423	
+  1424		return rc;
+  1425	}
+  1426	
 
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
