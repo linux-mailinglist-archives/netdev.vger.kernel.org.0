@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8761F2C12
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7CC1F2BA7
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731252AbgFIAUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:20:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40160 "EHLO mail.kernel.org"
+        id S1730695AbgFHXSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:18:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730116AbgFHXSD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:18:03 -0400
+        id S1728395AbgFHXSp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:18:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D56B520823;
-        Mon,  8 Jun 2020 23:18:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2362620823;
+        Mon,  8 Jun 2020 23:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658283;
-        bh=EttFuyWUsVA2+0so7dutokKTLb7us68VFKlExgm5ag4=;
+        s=default; t=1591658325;
+        bh=sn8Keq0WlrH2oMOMaqzuef1suUNEu90hJWl2+RdW0To=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e646brd31a7ET/ANAANtpY6scNT0oIxilSA/IBIzRzW9FDak0UNekxxyUtPei6zwC
-         VfO6vcJFuz61VWBUYKHs1KvkxUgSOgTyrf00L2yfjm3R0j3fwKq4+Wg6vkiqUUYPZa
-         mefIpb0b9jbgc02xoX3JgXz5LhQy2WiAS5ahcDJI=
+        b=Lz+X0UzdbPgLWiR3vCKPD2v4+VAoYznhAOGMECW6TDFv/2wzfxorCDyr2Dd4mHeud
+         2tjkXrMsNnKKv9IusGEKjJtky1ia86xR72srLGpN1elGvN/QlWwHViMXnSX83g+RQ0
+         mPxd5Vo9pft9ZDIKJuIzArBwQ+/LEJNOCwUSz1aE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 288/606] drivers: net: hamradio: Fix suspicious RCU usage warning in bpqether.c
-Date:   Mon,  8 Jun 2020 19:06:53 -0400
-Message-Id: <20200608231211.3363633-288-sashal@kernel.org>
+Cc:     Jerry Lee <leisurelysw24@gmail.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 325/606] libceph: ignore pool overlay and cache logic on redirects
+Date:   Mon,  8 Jun 2020 19:07:30 -0400
+Message-Id: <20200608231211.3363633-325-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -44,41 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+From: Jerry Lee <leisurelysw24@gmail.com>
 
-[ Upstream commit 95f59bf88bb75281cc626e283ecefdd5d5641427 ]
+[ Upstream commit 890bd0f8997ae6ac0a367dd5146154a3963306dd ]
 
-This patch fixes the following warning:
-=============================
-WARNING: suspicious RCU usage
-5.7.0-rc5-next-20200514-syzkaller #0 Not tainted
------------------------------
-drivers/net/hamradio/bpqether.c:149 RCU-list traversed in non-reader section!!
+OSD client should ignore cache/overlay flag if got redirect reply.
+Otherwise, the client hangs when the cache tier is in forward mode.
 
-Since rtnl lock is held, pass this cond in list_for_each_entry_rcu().
+[ idryomov: Redirects are effectively deprecated and no longer
+  used or tested.  The original tiering modes based on redirects
+  are inherently flawed because redirects can race and reorder,
+  potentially resulting in data corruption.  The new proxy and
+  readproxy tiering modes should be used instead of forward and
+  readforward.  Still marking for stable as obviously correct,
+  though. ]
 
-Reported-by: syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+URL: https://tracker.ceph.com/issues/23296
+URL: https://tracker.ceph.com/issues/36406
+Signed-off-by: Jerry Lee <leisurelysw24@gmail.com>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/bpqether.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ceph/osd_client.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
-index fbea6f232819..e2ad3c2e8df5 100644
---- a/drivers/net/hamradio/bpqether.c
-+++ b/drivers/net/hamradio/bpqether.c
-@@ -127,7 +127,8 @@ static inline struct net_device *bpq_get_ax25_dev(struct net_device *dev)
- {
- 	struct bpqdev *bpq;
- 
--	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list) {
-+	list_for_each_entry_rcu(bpq, &bpq_devices, bpq_list,
-+				lockdep_rtnl_is_held()) {
- 		if (bpq->ethdev == dev)
- 			return bpq->axdev;
- 	}
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index af868d3923b9..834019dbc6b1 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -3652,7 +3652,9 @@ static void handle_reply(struct ceph_osd *osd, struct ceph_msg *msg)
+ 		 * supported.
+ 		 */
+ 		req->r_t.target_oloc.pool = m.redirect.oloc.pool;
+-		req->r_flags |= CEPH_OSD_FLAG_REDIRECTED;
++		req->r_flags |= CEPH_OSD_FLAG_REDIRECTED |
++				CEPH_OSD_FLAG_IGNORE_OVERLAY |
++				CEPH_OSD_FLAG_IGNORE_CACHE;
+ 		req->r_tid = 0;
+ 		__submit_request(req, false);
+ 		goto out_unlock_osdc;
 -- 
 2.25.1
 
