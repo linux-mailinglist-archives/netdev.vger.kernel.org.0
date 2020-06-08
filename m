@@ -2,58 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F5201F1AC7
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 16:17:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A671F1B83
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 16:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbgFHORE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 10:17:04 -0400
-Received: from www62.your-server.de ([213.133.104.62]:38190 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728472AbgFHORE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 10:17:04 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jiIaE-0006yd-9r; Mon, 08 Jun 2020 16:17:02 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jiIaE-000Kgh-1K; Mon, 08 Jun 2020 16:17:02 +0200
-Subject: Re: [PATCH bpf] selftests/bpf: fix ringbuf selftest sample counting
- undeterminism
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200608003615.3549991-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0e7cc718-9af1-a89a-d799-31cb1a83a6a9@iogearbox.net>
-Date:   Mon, 8 Jun 2020 16:17:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730086AbgFHO5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 10:57:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39612 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725975AbgFHO5m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 10:57:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=pxY+k1EDOGmASjIgfSa3YXyUmL2DqkU4/aox1YMvk6I=; b=2CXriWfrKP1Fl1stlshdbKaz2m
+        OfGHmEc7e9keimnc6B1dDuLMA6W2Q3LLtqe0b748WjJw0/OkXJdNpHwFSBUa71VtgqlTzrFh2/AU6
+        KcM4j01FXNpS3I0NCGVqADFVUqXE49yVSqMa/bIYOu9G5jtJ3MnjK8wN4LJwtXs/ZvgM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jiJDV-004PYI-4V; Mon, 08 Jun 2020 16:57:37 +0200
+Date:   Mon, 8 Jun 2020 16:57:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] net: ethernet: mvneta: add support for 2.5G DRSGMII mode
+Message-ID: <20200608145737.GG1006885@lunn.ch>
+References: <20200608074716.9975-1-s.hauer@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20200608003615.3549991-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25837/Mon Jun  8 14:50:11 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200608074716.9975-1-s.hauer@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/8/20 2:36 AM, Andrii Nakryiko wrote:
-> Fix test race, in which background poll can get either 5 or 6 samples,
-> depending on timing of notification. Prevent this by open-coding sample
-> triggering and forcing notification for the very last sample only.
+On Mon, Jun 08, 2020 at 09:47:16AM +0200, Sascha Hauer wrote:
+> The Marvell MVNETA Ethernet controller supports a 2.5 Gbps SGMII mode
+> called DRSGMII.
 > 
-> Also switch to using atomic increments and exchanges for more obviously
-> reliable counting and checking. Additionally, check expected processed sample
-> counters for single-threaded use cases as well.
+> This patch adds a corresponding phy-mode string 'drsgmii' and parses it
+> from DT. The MVNETA then configures the SERDES protocol value
+> accordingly.
 > 
-> Fixes: 9a5f25ad30e5 ("selftests/bpf: Fix sample_cnt shared between two threads")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> It was successfully tested on a MV78460 connected to a FPGA.
 
-Applied, thanks!
+Hi Sascha
+
+Is this really overclocked SGMII, or 2500BaseX? How does it differ
+from 2500BaseX, which mvneta already supports?
+
+Also, does comphy need extensions to support this?
+
+      Andrew
