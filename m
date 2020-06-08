@@ -2,175 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2DF11F1C8B
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 17:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B0621F1CB0
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 18:02:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730394AbgFHP7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 11:59:45 -0400
-Received: from mail-eopbgr70058.outbound.protection.outlook.com ([40.107.7.58]:6228
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730231AbgFHP7o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 11:59:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DgiVubfLuwyePKy8lbkcchHrrCnMOAmKuF6ZVUvxk+BH13iU05bNeux7i1wDtTTZDp0bpg4xeC1Udx9oJSRbV3U0bXRhKrjf8LItieRaA5YkRVdBM1iBIumvhjVumpoyA+TtGTYcjRJafHqTzy243Vw5nDI99jfiJrWQ1oG3P8tHDvSBk5ttCuAhrqgAf3gJ4YKWjVpEdi9AVCenPgjqIPWCLncLyToOpggKQMQnKbsBixYcZOjGMjvGnWQiy0Qnt9Qtj3B9vc/JWDFJZ5v/xUkjnIYjyloMldJYx15U4ytgEw73EcXwL23bQPiQhbYgPmpZK2ow3+n0gYZzPstc9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cQeVuWMrxJv9rWbmIQYRQOMNIbLCkE1hW8H3vyg8e+c=;
- b=N67HaBbecM30DXkImqr+lhZIROr4Oor5pbxZkUjp/JDQECOMH9mN9OjicX/E6AO4QTuXd86/RazdRuna3wTfp67Ec7l4hBuux+9SAEMVcp87jprYphyx5PyaqscbuYsxHHHGSrCvcCV+JwEVna4PFpNtjp6MYUH+YwtkzewRJrzTcEhQEADx8HmMAd1NYjp7S8zOkuYkk8ktMTmX8lgyfomnHotZdg820ng0y+aF7zA6Ike/X7zjrC0NaC4kMpbjst3weV2YQ0aBHZxUTHytErvBK9cValSMdLusdJlDHeEJ47ujjTF684q2O02/YQoJ3VTdvJXYCkxuq/DDt9YUPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cQeVuWMrxJv9rWbmIQYRQOMNIbLCkE1hW8H3vyg8e+c=;
- b=k1kRHG1C15kC/gsA5zmWsdv6JVQ7gI6g+TcbIXPLzLu5x055G97kntDbmy0jmOsnx6kTKlT87R0rbmNwzFteksBgkDXPqNRSqP5nb0db7thFNUlX5aRd9PrG102EpA9YfXcDlH7ONP2d83qcDuLM8yFx1mIOzj3zPFSmGqonHcA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
- (2603:10a6:208:1b::25) by AM0PR0502MB3971.eurprd05.prod.outlook.com
- (2603:10a6:208:11::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.20; Mon, 8 Jun
- 2020 15:59:37 +0000
-Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
- ([fe80::2dae:c2a2:c26a:f5b]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
- ([fe80::2dae:c2a2:c26a:f5b%7]) with mapi id 15.20.3066.023; Mon, 8 Jun 2020
- 15:59:37 +0000
-Subject: Re: [RFC PATCH net-next 05/10] Documentation: networking:
- ethtool-netlink: Add link extended state
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        jiri@mellanox.com, idosch@mellanox.com, shuah@kernel.org,
-        mkubecek@suse.cz, gustavo@embeddedor.com,
-        cforno12@linux.vnet.ibm.com, andrew@lunn.ch,
-        linux@rempel-privat.de, alexandru.ardelean@analog.com,
-        ayal@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
-        liuhangbin@gmail.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <20200607145945.30559-1-amitc@mellanox.com>
- <20200607145945.30559-6-amitc@mellanox.com>
- <de5a37cd-df07-4912-6928-f1c3effba01b@gmail.com>
-From:   Amit Cohen <amitc@mellanox.com>
-Message-ID: <8096f9ba-4fa9-bbad-7501-6c8e3d4dd1ac@mellanox.com>
-Date:   Mon, 8 Jun 2020 18:59:17 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-In-Reply-To: <de5a37cd-df07-4912-6928-f1c3effba01b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR04CA0041.eurprd04.prod.outlook.com
- (2603:10a6:208:1::18) To AM0PR0502MB3826.eurprd05.prod.outlook.com
- (2603:10a6:208:1b::25)
+        id S1730412AbgFHQC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 12:02:27 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:57392 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730231AbgFHQC1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 12:02:27 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1jiKE0-0004S9-Ux; Mon, 08 Jun 2020 18:02:13 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, heiko@sntech.de,
+        christoph.muellner@theobroma-systems.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: [PATCH] net: phy: mscc: handle the clkout control on some phy variants
+Date:   Mon,  8 Jun 2020 18:02:07 +0200
+Message-Id: <20200608160207.1316052-1-heiko@sntech.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.7] (87.68.150.248) by AM0PR04CA0041.eurprd04.prod.outlook.com (2603:10a6:208:1::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend Transport; Mon, 8 Jun 2020 15:59:35 +0000
-X-Originating-IP: [87.68.150.248]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a538ecbd-fa05-45d9-9b64-08d80bc4f1f8
-X-MS-TrafficTypeDiagnostic: AM0PR0502MB3971:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR0502MB397159DDBE7D4F3F325AAC93D7850@AM0PR0502MB3971.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 042857DBB5
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /HaknT/j6xMnTkjAbES4WVmkXP9ZaOWKdNph4ofH0oH5R7y0yVkCy5Je3XSOivkbXY2WAuahSuvkTeKwb8BpY9BR+YPrWkREQVY2eohXi3oQjFx2oRKv+NJPRfP7Jd3KBIKDB/ykjXHi5dsbi2G0oGLPwDP01GMVUzUAn1esl0rCgpQKoeoMCMwnSmE1WiIc7HiyJwRW8eofESHHvrffE5xBuiPsuzoMdcsNrlAjPfaF6pHTQ4Ypiint8SJGshg8Wh9cYubxwFBPus+jopVoXzTkwMHxGXt//9VA1Y8mxTkK1Vsba/Avl9mEAikLpjfl3dw2Gz2NmnlNCDdghSLVNlREaDQh1Rg+EIDTty4iZe+NiWdjvo5ZCOIyAhRBoLrp
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(366004)(376002)(39860400002)(346002)(16576012)(316002)(5660300002)(66556008)(6666004)(31696002)(66946007)(2616005)(956004)(53546011)(2906002)(36756003)(6486002)(66476007)(52116002)(8936002)(7416002)(8676002)(4326008)(186003)(26005)(16526019)(478600001)(83380400001)(86362001)(31686004)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Mv7r3ut4qEn+WMnlppE57VWNZxXlo/baRItxIkZnZrzPhpjgxt2X5JcfeDpfYO0aRCPSzISZ1Mw3q0vgXvcLH7jjQqNNwMimk5LXYJPIQbBO58pPyw/9G7saoWwg1KN3ncN0VfRcGN14wEkzjvg/i9gUXdRK+QrsMAiunVvMpQMycto+5UIFTZWDB0IDeoZMYUVWflc3upGBZsgW3kG1BAOKCilGuOMYIwKS/4y+YS0L4hSumLpIVbr6NSR59xvGZuUofwHSGGz4TKoKYOfipAY2D12abZ1ENjLsNbfrx+eM41gmRQi1SHp0EP3QCphq/AHyVyZEsrkyuG9HSheK3Arxzz7jx94jRgomxSk+SoA8S/Laq6yCQQHjRSJ21tIXn7PbEe1i4hRhUnM7oXACvK01vilRh9+fFSeROrBZrx4NTUzWfS17m5DnTIhcFmjb+uQDuFp2yON+fbAe9r6laYRixlMc4+FL+7C0eyHp06I=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a538ecbd-fa05-45d9-9b64-08d80bc4f1f8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2020 15:59:37.7680
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6YcSiqs4GwZ9CJUNr8eTPxrm95RUxd4s91+m+h/ERtZzPxhdktEz2jzLDBbE0hpU6nqtn721mWuxSQ5HcMEOFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3971
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07-Jun-20 22:11, Florian Fainelli wrote:
-> 
-> 
-> On 6/7/2020 7:59 AM, Amit Cohen wrote:
->> Add link extended state attributes.
->>
->> Signed-off-by: Amit Cohen <amitc@mellanox.com>
->> Reviewed-by: Petr Machata <petrm@mellanox.com>
->> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> 
-> If you need to resubmit, I would swap the order of patches #4 and #5
-> such that the documentation comes first.
-> 
-> [snip]
+From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 
-ok
+At least VSC8530/8531/8540/8541 contain a clock output that can emit
+a predefined rate of 25, 50 or 125MHz.
 
-> 
->>  
->> +Link extended states:
->> +
->> +  ============================    =============================================
->> +  ``Autoneg failure``             Failure during auto negotiation mechanism
->> +
->> +  ``Link training failure``       Failure during link training
->> +
->> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
->> +                                  or forward error correction sublayer
->> +
->> +  ``Bad signal integrity``        Signal integrity issues
->> +
->> +  ``No cable``                    No cable connected
->> +
->> +  ``Cable issue``                 Failure is related to cable,
->> +                                  e.g., unsupported cable
->> +
->> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
->> +                                  during reading or parsing the data
->> +
->> +  ``Calibration failure``         Failure during calibration algorithm
->> +
->> +  ``Power budget exceeded``       The hardware is not able to provide the
->> +                                  power required from cable or module
->> +
->> +  ``Overheat``                    The module is overheated
->> +  ============================    =============================================
->> +
->> +Many of the substates are obvious, or terms that someone working in the
->> +particular area will be familiar with. The following table summarizes some
->> +that are not:
-> 
-> Not sure this comment is helping that much, how about documenting each
-> of the sub-states currently defined, even if this is just paraphrasing
-> their own name? Being able to quickly go to the documentation rather
-> than looking at the header is appreciable.
-> 
-> Thank you!
+This may then feed back into the network interface as source clock.
+So follow the example the at803x already set and introduce a
+vsc8531,clk-out-frequency property to set that output.
 
-np, I'll add.
-> 
->> +
->> +Link extended substates:
->> +
->> +  ============================    =============================================
->> +  ``Unsupported rate``            The system attempted to operate the cable at
->> +                                  a rate that is not formally supported, which
->> +                                  led to signal integrity issues
-> 
-> Do you have examples? Would you consider a 4-pair copper cable for
-> Gigabit that has a damaged pair and would downshift somehow fall in that
-> category?
-> 
+Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+---
+ .../bindings/net/mscc-phy-vsc8531.txt         |  3 +
+ drivers/net/phy/mscc/mscc.h                   |  9 ++
+ drivers/net/phy/mscc/mscc_main.c              | 93 +++++++++++++++++--
+ 3 files changed, 98 insertions(+), 7 deletions(-)
 
-For example, this statement might appear when an 100G OPTICs (not copper) which is used in 40G rate and sees high BER (when using Parallel Detect).
-In this situation we recommend to  see the other end configuration and understand why it is configured to lower speed.
-
-Regarding your example, if it stays on the same speed and have high BER you should expect a different BAD SI statement.
+diff --git a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
+index 5ff37c68c941..4a1f50ae48e1 100644
+--- a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
++++ b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
+@@ -1,6 +1,8 @@
+ * Microsemi - vsc8531 Giga bit ethernet phy
+ 
+ Optional properties:
++- vsc8531,clk-out-frequency: Clock output frequency in Hertz.
++			  Should be one of 25000000, 50000000, 125000000
+ - vsc8531,vddmac	: The vddmac in mV. Allowed values is listed
+ 			  in the first row of Table 1 (below).
+ 			  This property is only used in combination
+@@ -63,6 +65,7 @@ Example:
+ 
+         vsc8531_0: ethernet-phy@0 {
+                 compatible = "ethernet-phy-id0007.0570";
++                vsc8531,clk-out-frequency = <125000000>;
+                 vsc8531,vddmac		= <3300>;
+                 vsc8531,edge-slowdown	= <7>;
+                 vsc8531,led-0-mode	= <LINK_1000_ACTIVITY>;
+diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+index 414e3b31bb1f..c8c395a041c2 100644
+--- a/drivers/net/phy/mscc/mscc.h
++++ b/drivers/net/phy/mscc/mscc.h
+@@ -218,6 +218,13 @@ enum rgmii_clock_delay {
+ #define INT_MEM_DATA_M			  0x00ff
+ #define INT_MEM_DATA(x)			  (INT_MEM_DATA_M & (x))
+ 
++#define MSCC_CLKOUT_CNTL		  13
++#define CLKOUT_ENABLE			  BIT(15)
++#define CLKOUT_FREQ_MASK		  GENMASK(14, 13)
++#define CLKOUT_FREQ_25M			  (0x0 << 13)
++#define CLKOUT_FREQ_50M			  (0x1 << 13)
++#define CLKOUT_FREQ_125M		  (0x2 << 13)
++
+ #define MSCC_PHY_PROC_CMD		  18
+ #define PROC_CMD_NCOMPLETED		  0x8000
+ #define PROC_CMD_FAILED			  0x4000
+@@ -361,6 +368,8 @@ struct vsc8531_private {
+ 	 */
+ 	unsigned int base_addr;
+ 
++	u32 clkout_rate;
++
+ #if IS_ENABLED(CONFIG_MACSEC)
+ 	/* MACsec fields:
+ 	 * - One SecY per device (enforced at the s/w implementation level)
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index c8aa6d905d8e..8e63af3628cd 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -432,6 +432,18 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
+ 	return led_mode;
+ }
+ 
++static void vsc8531_dt_clkout_rate_get(struct phy_device *phydev)
++{
++	struct vsc8531_private *priv = phydev->priv;
++	struct device *dev = &phydev->mdio.dev;
++	struct device_node *of_node = dev->of_node;
++
++	if (!of_node)
++		return;
++
++	of_property_read_u32(of_node, "vsc8531,clk-out-frequency",
++			     &priv->clkout_rate);
++}
+ #else
+ static int vsc85xx_edge_rate_magic_get(struct phy_device *phydev)
+ {
+@@ -444,6 +456,10 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
+ {
+ 	return default_mode;
+ }
++
++static void vsc8531_dt_clkout_rate_get(struct phy_device *phydev)
++{
++}
+ #endif /* CONFIG_OF_MDIO */
+ 
+ static int vsc85xx_dt_led_modes_get(struct phy_device *phydev,
+@@ -1540,6 +1556,37 @@ static int vsc85xx_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int vsc8531_config_init(struct phy_device *phydev)
++{
++	struct vsc8531_private *vsc8531 = phydev->priv;
++	u16 val;
++	int rc;
++
++	rc = vsc85xx_config_init(phydev);
++	if (rc)
++		return rc;
++
++	switch (vsc8531->clkout_rate) {
++	case 0:
++		val = 0;
++		break;
++	case 25000000:
++		val = CLKOUT_FREQ_25M | CLKOUT_ENABLE;
++		break;
++	case 50000000:
++		val = CLKOUT_FREQ_50M | CLKOUT_ENABLE;
++		break;
++	case 125000000:
++		val = CLKOUT_FREQ_125M | CLKOUT_ENABLE;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
++			       MSCC_CLKOUT_CNTL, val);
++}
++
+ static int vsc8584_did_interrupt(struct phy_device *phydev)
+ {
+ 	int rc = 0;
+@@ -2008,6 +2055,38 @@ static int vsc8514_probe(struct phy_device *phydev)
+ 	return vsc85xx_dt_led_modes_get(phydev, default_mode);
+ }
+ 
++static int vsc8531_probe(struct phy_device *phydev)
++{
++	struct vsc8531_private *vsc8531;
++	int rate_magic;
++	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
++	   VSC8531_LINK_100_ACTIVITY};
++
++	rate_magic = vsc85xx_edge_rate_magic_get(phydev);
++	if (rate_magic < 0)
++		return rate_magic;
++
++	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
++	if (!vsc8531)
++		return -ENOMEM;
++
++	phydev->priv = vsc8531;
++
++	vsc8531->rate_magic = rate_magic;
++	vsc8531->nleds = 2;
++	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
++	vsc8531->hw_stats = vsc85xx_hw_stats;
++	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
++	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
++				      sizeof(u64), GFP_KERNEL);
++	if (!vsc8531->stats)
++		return -ENOMEM;
++
++	vsc8531_dt_clkout_rate_get(phydev);
++
++	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++}
++
+ static int vsc8574_probe(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531;
+@@ -2174,14 +2253,14 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.phy_id_mask	= 0xfffffff0,
+ 	/* PHY_BASIC_FEATURES */
+ 	.soft_reset	= &genphy_soft_reset,
+-	.config_init	= &vsc85xx_config_init,
++	.config_init	= &vsc8531_config_init,
+ 	.config_aneg    = &vsc85xx_config_aneg,
+ 	.read_status	= &vsc85xx_read_status,
+ 	.ack_interrupt	= &vsc85xx_ack_interrupt,
+ 	.config_intr	= &vsc85xx_config_intr,
+ 	.suspend	= &genphy_suspend,
+ 	.resume		= &genphy_resume,
+-	.probe		= &vsc85xx_probe,
++	.probe		= &vsc8531_probe,
+ 	.set_wol	= &vsc85xx_wol_set,
+ 	.get_wol	= &vsc85xx_wol_get,
+ 	.get_tunable	= &vsc85xx_get_tunable,
+@@ -2198,14 +2277,14 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.phy_id_mask    = 0xfffffff0,
+ 	/* PHY_GBIT_FEATURES */
+ 	.soft_reset	= &genphy_soft_reset,
+-	.config_init    = &vsc85xx_config_init,
++	.config_init    = &vsc8531_config_init,
+ 	.config_aneg    = &vsc85xx_config_aneg,
+ 	.read_status	= &vsc85xx_read_status,
+ 	.ack_interrupt  = &vsc85xx_ack_interrupt,
+ 	.config_intr    = &vsc85xx_config_intr,
+ 	.suspend	= &genphy_suspend,
+ 	.resume		= &genphy_resume,
+-	.probe		= &vsc85xx_probe,
++	.probe		= &vsc8531_probe,
+ 	.set_wol	= &vsc85xx_wol_set,
+ 	.get_wol	= &vsc85xx_wol_get,
+ 	.get_tunable	= &vsc85xx_get_tunable,
+@@ -2222,14 +2301,14 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.phy_id_mask	= 0xfffffff0,
+ 	/* PHY_BASIC_FEATURES */
+ 	.soft_reset	= &genphy_soft_reset,
+-	.config_init	= &vsc85xx_config_init,
++	.config_init	= &vsc8531_config_init,
+ 	.config_aneg	= &vsc85xx_config_aneg,
+ 	.read_status	= &vsc85xx_read_status,
+ 	.ack_interrupt	= &vsc85xx_ack_interrupt,
+ 	.config_intr	= &vsc85xx_config_intr,
+ 	.suspend	= &genphy_suspend,
+ 	.resume		= &genphy_resume,
+-	.probe		= &vsc85xx_probe,
++	.probe		= &vsc8531_probe,
+ 	.set_wol	= &vsc85xx_wol_set,
+ 	.get_wol	= &vsc85xx_wol_get,
+ 	.get_tunable	= &vsc85xx_get_tunable,
+@@ -2246,7 +2325,7 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.phy_id_mask    = 0xfffffff0,
+ 	/* PHY_GBIT_FEATURES */
+ 	.soft_reset	= &genphy_soft_reset,
+-	.config_init    = &vsc85xx_config_init,
++	.config_init    = &vsc8531_config_init,
+ 	.config_aneg    = &vsc85xx_config_aneg,
+ 	.read_status	= &vsc85xx_read_status,
+ 	.ack_interrupt  = &vsc85xx_ack_interrupt,
+-- 
+2.26.2
 
