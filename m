@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576901F2579
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B1F71F2585
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732051AbgFHX0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:26:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54672 "EHLO mail.kernel.org"
+        id S1732113AbgFHX1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:27:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732040AbgFHX0r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:26:47 -0400
+        id S1729807AbgFHX1R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:27:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C0372074B;
-        Mon,  8 Jun 2020 23:26:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9109E20814;
+        Mon,  8 Jun 2020 23:27:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658806;
-        bh=Sy0U6npbpL4YrxpNb8BSlUzN3C5FuEgDLXmWVdd9Ia4=;
+        s=default; t=1591658837;
+        bh=P3J1uhq5KaE5PWts86ExAV3RvdYcRyFqVg7BLWLL3Yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nTt2EiTUtukqSikbCoNn8LoBxThbrNZd7YKlh0uvL7us2F7303cOOoF2V//knb69i
-         KvNzRvkEaEOouIpq01P6QdFy6FC+oprlxiMfzFHO6iPTfv/AAc8fpAD5N81MJthujl
-         1II1lCGsg89Dwfq1W1Mo4Fv0YgoeA2scgYro9Tp4=
+        b=mzgqSheZdAVZJ/IhXNMxYgtGCzzP+9Ee7F/YdLxznIGkUuoN0/W9Enhc32TJrctoC
+         fTS61AUgjgutK3Y/mQeIV8e4XsHWweNS8Xc9c8Hr1JvHcLm/1GyjbBlUaurfWNeaQy
+         Izcieq05U/FTURdh2WLGCe0prbHT7AQbJzKQdNbA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arthur Kiyanovski <akiyano@amazon.com>,
-        Sameeh Jubran <sameehj@amazon.com>,
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/50] net: ena: fix error returning in ena_com_get_hash_function()
-Date:   Mon,  8 Jun 2020 19:25:55 -0400
-Message-Id: <20200608232640.3370262-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 27/50] net: lpc-enet: fix error return code in lpc_mii_init()
+Date:   Mon,  8 Jun 2020 19:26:17 -0400
+Message-Id: <20200608232640.3370262-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608232640.3370262-1-sashal@kernel.org>
 References: <20200608232640.3370262-1-sashal@kernel.org>
@@ -44,50 +45,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit e9a1de378dd46375f9abfd8de1e6f59ee114a793 ]
+[ Upstream commit 88ec7cb22ddde725ed4ce15991f0bd9dd817fd85 ]
 
-In case the "func" parameter is NULL we now return "-EINVAL".
-This shouldn't happen in general, but when it does happen, this is the
-proper way to handle it.
+Fix to return a negative error code from the error handling
+case instead of 0, as done elsewhere in this function.
 
-We also check func for NULL in the beginning of the function, as there
-is no reason to do all the work and realize in the end of the function
-it was useless.
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Fixes: b7370112f519 ("lpc32xx: Added ethernet driver")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/nxp/lpc_eth.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 905911f78693..e95f19e573a7 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -2096,6 +2096,9 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 		rss->hash_key;
- 	int rc;
+diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
+index 9fcaf1910633..9b98ec3dcb82 100644
+--- a/drivers/net/ethernet/nxp/lpc_eth.c
++++ b/drivers/net/ethernet/nxp/lpc_eth.c
+@@ -845,7 +845,8 @@ static int lpc_mii_init(struct netdata_local *pldat)
+ 	if (mdiobus_register(pldat->mii_bus))
+ 		goto err_out_unregister_bus;
  
-+	if (unlikely(!func))
-+		return -EINVAL;
-+
- 	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
- 				    ENA_ADMIN_RSS_HASH_FUNCTION,
- 				    rss->hash_key_dma_addr,
-@@ -2108,8 +2111,7 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 	if (rss->hash_func)
- 		rss->hash_func--;
+-	if (lpc_mii_probe(pldat->ndev) != 0)
++	err = lpc_mii_probe(pldat->ndev);
++	if (err)
+ 		goto err_out_unregister_bus;
  
--	if (func)
--		*func = rss->hash_func;
-+	*func = rss->hash_func;
- 
- 	if (key)
- 		memcpy(key, hash_key->key, (size_t)(hash_key->keys_num) << 2);
+ 	return 0;
 -- 
 2.25.1
 
