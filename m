@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 493171F22AD
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B29BE1F22B9
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbgFHXKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:10:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56042 "EHLO mail.kernel.org"
+        id S1728667AbgFHXK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:10:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56544 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728553AbgFHXKC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:10:02 -0400
+        id S1728378AbgFHXKX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:10:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0777A20897;
-        Mon,  8 Jun 2020 23:10:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEEA6208C7;
+        Mon,  8 Jun 2020 23:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657801;
-        bh=MjLl3ug6sbtCBvmLTLKqCIvNlrMQAeBsiE98mZv6j0Q=;
+        s=default; t=1591657822;
+        bh=mS6E5KdtOU9+7cFz8Yn3gX2S53udT9uaNWpGg0utQBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RvtaMzB1/ddk2imoD0x1yP83AsidVKhg/A8ciG/VqRP7UB37oxa2vBi3ciy021LOp
-         8NaTSxCMylGC5N/klF1yTBYtWYw9JsByIPsb4B1orAbZa3ZKTCDsIkKFurWZk1jV2A
-         T87Z6yVl941iATkJflfIYlRpZg9FjafueQmx6+E4=
+        b=e/1c1OC0+TIplm/MdXHNey5q9LSCxYDT2AHVXg46J2PdHSe+erEFTdKnP1PEkJNJ4
+         97jJATeWkq7SJNXqAsNxLKI8s+QQxPc0i5qyFkerhquFNwZC2afm9dEgGuFx33ROi8
+         +HGV415XMb32+JvpiwCOVAI+2g8sNyBPS38An8vw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 179/274] iwlwifi: avoid debug max amsdu config overwriting itself
-Date:   Mon,  8 Jun 2020 19:04:32 -0400
-Message-Id: <20200608230607.3361041-179-sashal@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.7 195/274] mt76: mt7615: fix mt7615_driver_own routine
+Date:   Mon,  8 Jun 2020 19:04:48 -0400
+Message-Id: <20200608230607.3361041-195-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,94 +45,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mordechay Goodstein <mordechay.goodstein@intel.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a65a5824298b06049dbaceb8a9bd19709dc9507c ]
+[ Upstream commit 338061619185133f56ac17365deb1e75eaecc604 ]
 
-If we set amsdu_len one after another the second one overwrites
-the orig_amsdu_len so allow only moving from debug to non debug state.
+Introduce MT_PCIE_DOORBELL_PUSH register to fix mt7615_driver_own
+routine for mt7663e
 
-Also the TLC update check was wrong: it was checking that also the orig
-is smaller then the new updated size, which is not the case in debug
-amsdu mode.
-
-Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
-Fixes: af2984e9e625 ("iwlwifi: mvm: add a debugfs entry to set a fixed size AMSDU for all TX packets")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20200424182644.e565446a4fce.I9729d8c520d8b8bb4de9a5cdc62e01eb85168aac@changeid
+Fixes: f40ac0f3d3c0 ("mt76: mt7615: introduce mt7663e support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c | 11 +++++++----
- drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c   | 15 ++++++++-------
- 2 files changed, 15 insertions(+), 11 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c  | 6 +++++-
+ drivers/net/wireless/mediatek/mt76/mt7615/regs.h | 1 +
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
-index 3beef8d077b8..8fae7e707374 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
-@@ -5,10 +5,9 @@
-  *
-  * GPL LICENSE SUMMARY
-  *
-- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
-  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of version 2 of the GNU General Public License as
-@@ -28,10 +27,9 @@
-  *
-  * BSD LICENSE
-  *
-- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
-  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -481,6 +479,11 @@ static ssize_t iwl_dbgfs_amsdu_len_write(struct ieee80211_sta *sta,
- 	if (kstrtou16(buf, 0, &amsdu_len))
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 0d56e0834bde..29a7aaabb6da 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -1526,16 +1526,20 @@ static void mt7622_trigger_hif_int(struct mt7615_dev *dev, bool en)
  
-+	/* only change from debug set <-> debug unset */
-+	if ((amsdu_len && mvmsta->orig_amsdu_len) ||
-+	    (!!amsdu_len && mvmsta->orig_amsdu_len))
-+		return -EBUSY;
+ static int mt7615_driver_own(struct mt7615_dev *dev)
+ {
++	struct mt76_dev *mdev = &dev->mt76;
+ 	u32 addr;
+ 
+-	addr = is_mt7663(&dev->mt76) ? MT_CONN_HIF_ON_LPCTL : MT_CFG_LPCR_HOST;
++	addr = is_mt7663(mdev) ? MT_PCIE_DOORBELL_PUSH : MT_CFG_LPCR_HOST;
+ 	mt76_wr(dev, addr, MT_CFG_LPCR_HOST_DRV_OWN);
+ 
+ 	mt7622_trigger_hif_int(dev, true);
 +
- 	if (amsdu_len) {
- 		mvmsta->orig_amsdu_len = sta->max_amsdu_len;
- 		sta->max_amsdu_len = amsdu_len;
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-index 15d11fb72aca..6f4d241d47e9 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-@@ -369,14 +369,15 @@ void iwl_mvm_tlc_update_notif(struct iwl_mvm *mvm,
- 		u16 size = le32_to_cpu(notif->amsdu_size);
- 		int i;
++	addr = is_mt7663(mdev) ? MT_CONN_HIF_ON_LPCTL : MT_CFG_LPCR_HOST;
+ 	if (!mt76_poll_msec(dev, addr, MT_CFG_LPCR_HOST_FW_OWN, 0, 3000)) {
+ 		dev_err(dev->mt76.dev, "Timeout for driver own\n");
+ 		return -EIO;
+ 	}
++
+ 	mt7622_trigger_hif_int(dev, false);
  
--		/*
--		 * In debug sta->max_amsdu_len < size
--		 * so also check with orig_amsdu_len which holds the original
--		 * data before debugfs changed the value
--		 */
--		if (WARN_ON(sta->max_amsdu_len < size &&
--			    mvmsta->orig_amsdu_len < size))
-+		if (sta->max_amsdu_len < size) {
-+			/*
-+			 * In debug sta->max_amsdu_len < size
-+			 * so also check with orig_amsdu_len which holds the
-+			 * original data before debugfs changed the value
-+			 */
-+			WARN_ON(mvmsta->orig_amsdu_len < size);
- 			goto out;
-+		}
+ 	return 0;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/regs.h b/drivers/net/wireless/mediatek/mt76/mt7615/regs.h
+index f7c2a633841c..de0ef165c0ba 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/regs.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/regs.h
+@@ -65,6 +65,7 @@ enum mt7615_reg_base {
+ #define MT_HIF2_BASE			0xf0000
+ #define MT_HIF2(ofs)			(MT_HIF2_BASE + (ofs))
+ #define MT_PCIE_IRQ_ENABLE		MT_HIF2(0x188)
++#define MT_PCIE_DOORBELL_PUSH		MT_HIF2(0x1484)
  
- 		mvmsta->amsdu_enabled = le32_to_cpu(notif->amsdu_enabled);
- 		mvmsta->max_amsdu_len = size;
+ #define MT_CFG_LPCR_HOST		MT_HIF(0x1f0)
+ #define MT_CFG_LPCR_HOST_FW_OWN		BIT(0)
 -- 
 2.25.1
 
