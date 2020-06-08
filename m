@@ -2,113 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A1621F2165
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287C81F2172
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 23:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbgFHVNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 17:13:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:34293 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726725AbgFHVNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 17:13:22 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-71-YI87RbRkNr-qQv0QA8wF6w-1; Mon, 08 Jun 2020 22:13:15 +0100
-X-MC-Unique: YI87RbRkNr-qQv0QA8wF6w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 8 Jun 2020 22:13:15 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 8 Jun 2020 22:13:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Michael Tuexen' <Michael.Tuexen@lurchi.franken.de>
-CC:     =?utf-8?B?SXZhbiBTa3l0dGUgSsO4cmdlbnNlbg==?= <isj-sctp@i1.dk>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        id S1726734AbgFHVWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 17:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726612AbgFHVWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 17:22:46 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F1EC08C5C2;
+        Mon,  8 Jun 2020 14:22:46 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id b18so14906408oti.1;
+        Mon, 08 Jun 2020 14:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wW8D/dSScjtqwaMeYYSqLpcYbiXjnjq+RVvdaEoSPKg=;
+        b=pH67onXKnkmvjnr7kTdmSi6Uzwy0roBDOYeXmG6zC7hP7OzMaXitW9M1K8phN51a9G
+         TTKgsjMlSf4ptU8tmEA3CoRwCvBdbHg2jNimQQgG0ZWXoZ15t826vTTeNF9nVOowoGbD
+         GgBXqH8k/ht6kmgSlqpkRfSIpxSag1DRxLuM43rZaQIptFsBuMGzEPAR56O7HyBC3AIr
+         lAi3Q4ke+IaJGDeYTXsvzOozZK8lRsydY5KEbzA/FHzSLLVl8COj0HK5DLgPsT9qlEhy
+         REUTa9QleLU8oFNH8y6Mz6xoFNoDIe9x6YSBoFr4sJi/RIGkmyG83kGaNnvJY6I93Qpa
+         1jcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wW8D/dSScjtqwaMeYYSqLpcYbiXjnjq+RVvdaEoSPKg=;
+        b=o3HtGnPRanoG2W2+QUbxBx2Cm3pZbLRWRR+iqocsB/d/t8l1Ho4yjjo8FsWEe1CS0w
+         mspMTrHyUtzP8GIL9KpfwPQNexWZ1VQUaMhvcaVbQt21S8nwqZwBMk4WI8mqZuDeCp6d
+         VDY59J7g2gznxnU9PGcNiidf/sPHEoBuOZPiWDuG8qyvMMSAo+9JHcp82ONxsDCtU/6Q
+         73lQFWzqZbiV2xwHzLeJuGi7Xrp4vc7+B8NgDjckQ3/a3ofWgG5QGk9RYyZ2el9M4chi
+         O6R9/iUHeXweFzCDUw/e3nQRCOamQ+D63v7+aDgCE2Bs5vDN8D6QfoKZQOk7B08Gt5I2
+         PKOw==
+X-Gm-Message-State: AOAM53253LEnFq19NgjD37FoxpIHRxYq1GthkcyOfqPVflr/7UTUJ98I
+        CgefymW++8N0lHCnoLbvIz0=
+X-Google-Smtp-Source: ABdhPJxqSR1gGUtivubbaRfehqrabRImW2oEhG335ChW6vi9VqUVtQNFJBheN9jpjiT1dHVCoDDJZQ==
+X-Received: by 2002:a9d:67c1:: with SMTP id c1mr12662793otn.27.1591651365554;
+        Mon, 08 Jun 2020 14:22:45 -0700 (PDT)
+Received: from ubuntu-n2-xlarge-x86 ([2604:1380:4111:8b00::3])
+        by smtp.gmail.com with ESMTPSA id r65sm592355oie.13.2020.06.08.14.22.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2020 14:22:44 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 14:22:43 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "leon@kernel.org" <leon@kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>,
+        Vu Pham <vuhuong@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Leon Romanovsky <leonro@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: packed structures used in socket options
-Thread-Topic: packed structures used in socket options
-Thread-Index: AQHWPLpUTq2nADe9c02l9PzEMhJDA6jNLBzwgAAGoICAAC9ugP//9FcAgABAGeCAAAZCgIABR3tggAAIYoCAAEsBgA==
-Date:   Mon, 8 Jun 2020 21:13:15 +0000
-Message-ID: <529a772bd3ef40d3a310e78d613339ca@AcuMS.aculab.com>
-References: <CBFEFEF1-127A-4ADA-B438-B171B9E26282@lurchi.franken.de>
- <B69695A1-F45B-4375-B9BB-1E50D1550C6D@lurchi.franken.de>
- <23a14b44bd5749a6b1b51150c7f3c8ba@AcuMS.aculab.com>
- <2213135.ChUyxVVRYb@isjsys>
- <cd3793726252407f8e80aa8d0025d44f@AcuMS.aculab.com>
- <7BD347D7-562F-459D-B0CB-0BC798919876@lurchi.franken.de>
-In-Reply-To: <7BD347D7-562F-459D-B0CB-0BC798919876@lurchi.franken.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+Subject: Re: [PATCH net] net/mlx5: Don't fail driver on failure to create
+ debugfs
+Message-ID: <20200608212243.GA2072362@ubuntu-n2-xlarge-x86>
+References: <20200602122837.161519-1-leon@kernel.org>
+ <20200602192724.GA672@Ryzen-9-3900X.localdomain>
+ <20200603183436.GA2565136@ubuntu-n2-xlarge-x86>
+ <cf22654ba1e726c3f3d1acf7eff2bc167de810c7.camel@mellanox.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf22654ba1e726c3f3d1acf7eff2bc167de810c7.camel@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTWljaGFlbCBUdWV4ZW4NCj4gU2VudDogMDggSnVuZSAyMDIwIDE4OjM3DQo+ID4gT24g
-OC4gSnVuIDIwMjAsIGF0IDE4OjE4LCBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdodEBBQ1VMQUIu
-Q09NPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IEl2YW4gU2t5dHRlIErDuHJnZW5zZW4NCj4gPj4g
-U2VudDogMDcgSnVuZSAyMDIwIDIyOjM1DQo+ID4gLi4uDQo+ID4+Pj4+Pj4+IGNvbnRhaW5zOg0K
-PiA+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+PiBzdHJ1Y3Qgc2N0cF9wYWRkcnBhcmFtcyB7DQo+ID4+Pj4+
-Pj4+IAlzY3RwX2Fzc29jX3QJCXNwcF9hc3NvY19pZDsNCj4gPj4+Pj4+Pj4gCXN0cnVjdCBzb2Nr
-YWRkcl9zdG9yYWdlCXNwcF9hZGRyZXNzOw0KPiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfaGJpbnRl
-cnZhbDsNCj4gPj4+Pj4+Pj4gCV9fdTE2CQkJc3BwX3BhdGhtYXhyeHQ7DQo+ID4+Pj4+Pj4+IAlf
-X3UzMgkJCXNwcF9wYXRobXR1Ow0KPiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfc2Fja2RlbGF5Ow0K
-PiA+Pj4+Pj4+PiAJX191MzIJCQlzcHBfZmxhZ3M7DQo+ID4+Pj4+Pj4+IAlfX3UzMgkJCXNwcF9p
-cHY2X2Zsb3dsYWJlbDsNCj4gPj4+Pj4+Pj4gCV9fdTgJCQlzcHBfZHNjcDsNCj4gPj4+Pj4+Pj4g
-fSBfX2F0dHJpYnV0ZV9fKChwYWNrZWQsIGFsaWduZWQoNCkpKTsNCj4gPj4+Pj4+Pj4NCj4gPj4+
-Pj4+Pj4gVGhpcyBzdHJ1Y3R1cmUgaXMgb25seSB1c2VkIGluIHRoZSBJUFBST1RPX1NDVFAgbGV2
-ZWwgc29ja2V0IG9wdGlvbiBTQ1RQX1BFRVJfQUREUl9QQVJBTVMuDQo+ID4+Pj4+Pj4+IFdoeSBp
-cyBpdCBwYWNrZWQ/DQo+ID4gLi4uDQo+ID4+IEkgd2FzIGludm9sdmVkLiBBdCB0aGF0IHRpbWUg
-KFNlcHRlbWJlciAyMDA1KSB0aGUgU0NUUCBBUEkgd2FzIHN0aWxsIGV2b2x2aW5nIChmaXJzdCBm
-aW5hbGl6ZWQgaW4NCj4gPj4gMjAxMSksIGFuZCBvbmUgb2YgdGhlIG1ham9yIHVzZXJzIG9mIHRo
-ZSBBUEkgd2FzIDMyLWJpdCBwcm9ncmFtcyBydW5uaW5nIG9uIDY0LWJpdCBrZXJuZWwgKG9uDQo+
-IHBvd2VycGMNCj4gPj4gYXMgSSByZWNhbGwpLiBXaGVuIHdlIHJlYWxpemVkIHRoYXQgdGhlIHN0
-cnVjdHVyZXMgd2VyZSBkaWZmZXJlbnQgYmV0d2VlbiAzMmJpdCBhbmQgNjRiaXQgd2UgaGFkIHRv
-DQo+ID4+IGJyZWFrIHRoZSBsZWFzdCBudW1iZXIgb2YgcHJvZ3JhbXMsIGFuZCB0aGUgcmVzdWx0
-IHdlcmUgdGhvc2UgKChwYWNrZWQpKSBzdHJ1Y3RzIHNvIDMyLWJpdCBwcm9ncmFtcw0KPiA+PiB3
-b3VsZG4ndCBiZSBicm9rZW4gYW5kIHdlIGRpZG4ndCBuZWVkIGEgeHh4X2NvbXBhdCB0cmFuc2xh
-dGlvbiBsYXllciBpbiB0aGUga2VybmVsLg0KPiA+DQo+ID4gSSB3YXMgYWxzbyBsb29raW5nIGF0
-IGFsbCB0aGUgX191MTYgaW4gdGhhdCBoZWFkZXIgLSBib3JrZWQuDQo+ID4NCj4gPiBPaywgc28g
-dGhlIGludGVudGlvbiB3YXMgdG8gYXZvaWQgcGFkZGluZyBjYXVzZWQgYnkgdGhlIGFsaWdubWVu
-dA0KPiA+IG9mIHNvY2thZGRyX3N0b3JhZ2UgcmF0aGVyIHRoYW4gYXJvdW5kIHRoZSAnX191MTYg
-c3BwX2ZsYWdzJy4NCj4gPg0KPiA+IEknZCBoYXZlIHRvIGxvb2sgdXAgd2hhdCAocGFja2VkLCBh
-bGlnbmVkKDQpKSBhY3R1YWxseSBtZWFucy4NCj4gPiBJdCBjb3VsZCBmb3JjZSB0aGUgc3RydWN0
-dXJlIHRvIGJlIGZ1bGx5IHBhY2tlZCAobm8gaG9sZXMpDQo+ID4gYnV0IGFsd2F5cyBoYXZlIGFu
-IG92ZXJhbGwgYWxpZ25tZW50IG9mIDQuDQo+ID4NCj4gPiBJdCBtaWdodCBoYXZlIGJlZW4gY2xl
-YXJlciB0byBwdXQgYW4gJ2FsaWduZWQoNCknIGF0dHJpYnV0ZQ0KPiA+IG9uIHRoZSBzcHBfYWRk
-cmVzcyBmaWVsZCBpdHNlbGYuDQo+ID4gT3IgZXZlbiB3b25kZXIgd2hldGhlciBzb2NrYWRkcl9z
-dG9yYWdlIHNob3VsZCBhY3R1YWxseQ0KPiA+IGhhdmUgOCBieXRlIGFsaWdubWVudC4NCj4gPg0K
-PiA+IElmIGl0IGhhcyAxNiBieXRlIGFsaWdubWVudCB0aGVuIHlvdSBjYW5ub3QgY2FzdCBhbiBJ
-UHY0DQo+ID4gc29ja2V0IGJ1ZmZlciBhZGRyZXNzICh3aGljaCB3aWxsIGJlIGF0IG1vc3QgNCBi
-eXRlIGFsaWduZWQpDQo+ID4gdG8gc29ja2FkZHJfc3RvcmFnZSBhbmQgZXhwZWN0IHRoZSBjb21w
-aWxlciBub3QgdG8gZ2VuZXJhdGUNCj4gPiBjb2RlIHRoYXQgd2lsbCBjcmFzaCBhbmQgYnVybiBv
-biBzcGFyYzY0Lg0KDQpBY3R1YWxseSwgd2hhdCBoYXBwZW5zIHdoZW4gdGhlIG1pc2FsaWduZWQg
-J3N0cnVjdCBzb2NrYWRkcicNCihpbiB0aGUgc2N0cCBvcHRpb25zKSBpcyBwYXNzZWQgdGhyb3Vn
-aCB0byBhIGZ1bmN0aW9uDQp0aGF0IGV4cGVjdHMgaXQgdG8gYmUgYWxpZ25lZCBhbmQgdGhlbiBh
-Y2Nlc3NlcyBwYXJ0IG9mIChzYXkpDQphbiBJUHY2IHN0cnVjdHVyZSB1c2luZyA4IGJ5dGVzIGFj
-Y2Vzc2VzLg0KVGhhdCB3aWxsICdjcmFzaCBhbmQgYnVybicgb24gc3BhcmM2NCBhcyB3ZWxsLg0K
-DQo+ID4gSVNUUiB0aGF0IHRoZSBOZXRCU0QgdmlldyB3YXMgdGhhdCAnc29ja2FkZHJfc3RvcmFn
-ZScgc2hvdWxkDQo+ID4gbmV2ZXIgYWN0dWFsbHkgYmUgaW5zdGFudGlhdGVkIC0gaXQgb25seSBl
-eGlzdGVkIGFzIGEgdHlwZWQNCj4gPiBwb2ludGVyLg0KPg0KPiBOb3Qgc3VyZSB0aGlzIGlzIGNv
-cnJlY3QuIEkgd291bGQgc2F5IHRoaXMgYXBwbGllcyB0byBzdHVjdCBzb2NrYWRkciAqLg0KPiBJ
-IGhhdmUgc2VlbiBpbnN0YW50aWF0ZWQgc29ja2FkZHJfc3RvcmFnZSB2YXJpYWJsZSBpbiBnZW5l
-cmljIGNvZGUsDQo+IHdoZXJlIHlvdSBuZWVkIHRvIHByb3ZpZGUgZW5vdWdoIHNwYWNlIHRvIGhv
-bGQgYW4gYWRkcmVzcywgbm90IHlldA0KPiBrbm93aW5nIHRoZSBhZGRyZXNzIGZhbWlseS4gSG93
-ZXZlciwgSSdtIG5vdCBmYW1pbGlhciB3aXRoIHRoZSBOZXRCU0QNCj4gY29kZSBiYXNlLg0KDQpC
-YXNpY2FsbHkgeW91IHNob3VsZCBhbHdheXMgaGF2ZSB0aGUgYWRkcmVzcyBsZW5ndGguDQpJIGp1
-c3QgcmVtZW1iZXIgQ2hyaXN0b3MgY29tcGxhaW5pbmcgYWJvdXQgc29tZSBrZXJuZWwgY29kZQ0K
-dGhhdCBhbGxvY2F0ZWQgb25lIG9uIHN0YWNrLg0KKE15IE5ldEJTRCAnY29tbWl0IGJpdCcgaGFz
-IHJhdGhlciBsYXBzZWQuKQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2Vz
-aWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVL
-DQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Thu, Jun 04, 2020 at 04:44:00AM +0000, Saeed Mahameed wrote:
+> On Wed, 2020-06-03 at 11:34 -0700, Nathan Chancellor wrote:
+> > On Tue, Jun 02, 2020 at 12:27:24PM -0700, Nathan Chancellor wrote:
+> > > On Tue, Jun 02, 2020 at 03:28:37PM +0300, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@mellanox.com>
+> > > > 
+> > > > Clang warns:
+> > > > 
+> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:6: warning:
+> > > > variable
+> > > > 'err' is used uninitialized whenever 'if' condition is true
+> > > > [-Wsometimes-uninitialized]
+> > > >         if (!priv->dbg_root) {
+> > > >             ^~~~~~~~~~~~~~~
+> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1303:9: note:
+> > > > uninitialized use occurs here
+> > > >         return err;
+> > > >                ^~~
+> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1278:2: note:
+> > > > remove the
+> > > > 'if' if its condition is always false
+> > > >         if (!priv->dbg_root) {
+> > > >         ^~~~~~~~~~~~~~~~~~~~~~
+> > > > drivers/net/ethernet/mellanox/mlx5/core/main.c:1259:9: note:
+> > > > initialize
+> > > > the variable 'err' to silence this warning
+> > > >         int err;
+> > > >                ^
+> > > >                 = 0
+> > > > 1 warning generated.
+> > > > 
+> > > > The check of returned value of debugfs_create_dir() is wrong
+> > > > because
+> > > > by the design debugfs failures should never fail the driver and
+> > > > the
+> > > > check itself was wrong too. The kernel compiled without
+> > > > CONFIG_DEBUG_FS
+> > > > will return ERR_PTR(-ENODEV) and not NULL as expected.
+> > > > 
+> > > > Fixes: 11f3b84d7068 ("net/mlx5: Split mdev init and pci init")
+> > > > Link: https://github.com/ClangBuiltLinux/linux/issues/1042
+> > > > Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> > > > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> > > 
+> > > Thanks! That's what I figured it should be.
+> > > 
+> > > Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+> > > 
+> > > > ---
+> > > > Original discussion:
+> > > > https://lore.kernel.org/lkml/20200530055447.1028004-1-natechancellor@gmail.com
+> > > > ---
+> > > >  drivers/net/ethernet/mellanox/mlx5/core/main.c | 5 -----
+> > > >  1 file changed, 5 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > > > b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > > > index df46b1fce3a7..110e8d277d15 100644
+> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > > > @@ -1275,11 +1275,6 @@ static int mlx5_mdev_init(struct
+> > > > mlx5_core_dev *dev, int profile_idx)
+> > > > 
+> > > >  	priv->dbg_root = debugfs_create_dir(dev_name(dev->device),
+> > > >  					    mlx5_debugfs_root);
+> > > > -	if (!priv->dbg_root) {
+> > > > -		dev_err(dev->device, "mlx5_core: error, Cannot create
+> > > > debugfs dir, aborting\n");
+> > > > -		goto err_dbg_root;
+> > 
+> > Actually, this removes the only use of err_dbg_root, so that should
+> > be
+> > removed at the same time.
+> > 
+> 
+> Fixed this up and applied to net-next-mlx5, 
+> Thanks!
+> 
 
+Hi Saeed,
+
+I see this warning in mainline now, is this something you were planning
+to have merged this cycle or next? I see it in several configs so it
+would be nice if it could be resolved this one, since it was introduced
+by a patch in this cycle even though the core issue has been around for
+a few months.
+
+Cheers,
+Nathan
