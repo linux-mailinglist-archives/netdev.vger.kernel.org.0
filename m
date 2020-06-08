@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACE31F303C
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A88E1F302E
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731723AbgFIA5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:57:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54468 "EHLO mail.kernel.org"
+        id S1728298AbgFHXI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:08:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728273AbgFHXIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:08:53 -0400
+        id S1728282AbgFHXIz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:08:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E1BC820890;
-        Mon,  8 Jun 2020 23:08:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A9BB208B6;
+        Mon,  8 Jun 2020 23:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657733;
-        bh=LqIvZdy0rZViN+9Rw5CFoFIo9NiAxYZqFGNN6r9tn/o=;
+        s=default; t=1591657734;
+        bh=fe6JlMkedmaY+Fx6mlPmGF1n1tIJcCuXDwOukd/h1yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1mK95cfqwdhOTBa4rQ1ZwJxhYxOzm2hG0j28XhtUnwFZhCX/XVy+RrmIlqnVbi0Y
-         MqxzqiPQizq7FQFZ38DqiT3EqJWuevboRGMvgnkJEfPz3o1TnPcN/80ohKLRhjRZbF
-         uCOO2nYMwH1pgiQW0O1OdHr/ruHCngA6/SunVm5c=
+        b=PKn5jX7dIGmba3l9J/1JuUoIlobHcVR7Y24KQowsnG2bojfmF6gOU7LXjMlYQBYbL
+         kn8RberEpnIz4gtEQnTWPZrCcFgV9+BFBMBdNi9V6KJRle2wuoG7rv5azTsWftpgDl
+         BvXLQrJw8nmg0k3z+XPfo3BIjgEfthyOSuQjYrUk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 124/274] netfilter: nft_nat: return EOPNOTSUPP if type or flags are not supported
-Date:   Mon,  8 Jun 2020 19:03:37 -0400
-Message-Id: <20200608230607.3361041-124-sashal@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 125/274] ath11k: use GFP_ATOMIC under spin lock
+Date:   Mon,  8 Jun 2020 19:03:38 -0400
+Message-Id: <20200608230607.3361041-125-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,41 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 0d7c83463fdf7841350f37960a7abadd3e650b41 ]
+[ Upstream commit 69c93f9674c97dc439cdc0527811f8ad104c2e35 ]
 
-Instead of EINVAL which should be used for malformed netlink messages.
+A spin lock is taken here so we should use GFP_ATOMIC.
 
-Fixes: eb31628e37a0 ("netfilter: nf_tables: Add support for IPv6 NAT")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200427092417.56236-1-weiyongjun1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_nat.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
-index 8b44a4de5329..bb49a217635e 100644
---- a/net/netfilter/nft_nat.c
-+++ b/net/netfilter/nft_nat.c
-@@ -129,7 +129,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
- 		priv->type = NF_NAT_MANIP_DST;
- 		break;
- 	default:
--		return -EINVAL;
-+		return -EOPNOTSUPP;
- 	}
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index f74a0e74bf3e..34b1e8e6a7fb 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -892,7 +892,7 @@ int ath11k_peer_rx_tid_setup(struct ath11k *ar, const u8 *peer_mac, int vdev_id,
+ 	else
+ 		hw_desc_sz = ath11k_hal_reo_qdesc_size(DP_BA_WIN_SZ_MAX, tid);
  
- 	if (tb[NFTA_NAT_FAMILY] == NULL)
-@@ -196,7 +196,7 @@ static int nft_nat_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
- 	if (tb[NFTA_NAT_FLAGS]) {
- 		priv->flags = ntohl(nla_get_be32(tb[NFTA_NAT_FLAGS]));
- 		if (priv->flags & ~NF_NAT_RANGE_MASK)
--			return -EINVAL;
-+			return -EOPNOTSUPP;
- 	}
- 
- 	return nf_ct_netns_get(ctx->net, family);
+-	vaddr = kzalloc(hw_desc_sz + HAL_LINK_DESC_ALIGN - 1, GFP_KERNEL);
++	vaddr = kzalloc(hw_desc_sz + HAL_LINK_DESC_ALIGN - 1, GFP_ATOMIC);
+ 	if (!vaddr) {
+ 		spin_unlock_bh(&ab->base_lock);
+ 		return -ENOMEM;
 -- 
 2.25.1
 
