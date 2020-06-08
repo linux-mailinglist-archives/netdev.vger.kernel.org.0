@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77AD81F2B51
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFBF61F2B45
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbgFIAO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:14:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41984 "EHLO mail.kernel.org"
+        id S1732244AbgFIANz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:13:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730753AbgFHXTO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:19:14 -0400
+        id S1728408AbgFHXTV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:19:21 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A968B20872;
-        Mon,  8 Jun 2020 23:19:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5C9ED20814;
+        Mon,  8 Jun 2020 23:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658354;
-        bh=yPsbkK0qr+RwkZBuWEd8rzdE4nDsnkDCH/EO/rZc4aY=;
+        s=default; t=1591658361;
+        bh=Ie2mvIvkGQbdrF3H2i6PnpLXDR6Dmda2raGGfUvNt4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0OynDLcfMKTAUNdqLjLlAeJehEFp4DeiGOGVZ3BVhlxSlUjArSW54QOz4KhlIOXvE
-         Y6RfUsHBdN0MdCMUKsrjdCSVDWpWF/RGYQWL/SfoyDYrT84Go9OSUUDjcPnv4naV/e
-         yEIcHaj8558e2gfWR/f8sxULl+MljnnD0BH++PyU=
+        b=gpdsd84WAkctOlcNkZ4HyjuQKc19aPqKhDgktnld/SRfLuimP8rP6ghA/KZbSi2IE
+         UwMphn9BmKhq8kk6VcQFwZRcSyO8coEOw3U2lqA4f4gOIoVGPohBBK/1OFKzy8rTk1
+         B+q9eFRtycm3RRwjbeXngfgoDmie6b8Tcp4JlH1Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arthur Kiyanovski <akiyano@amazon.com>,
-        Sameeh Jubran <sameehj@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 021/175] net: ena: fix error returning in ena_com_get_hash_function()
-Date:   Mon,  8 Jun 2020 19:16:14 -0400
-Message-Id: <20200608231848.3366970-21-sashal@kernel.org>
+Cc:     Dejin Zheng <zhengdejin5@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 026/175] rtw88: fix an issue about leak system resources
+Date:   Mon,  8 Jun 2020 19:16:19 -0400
+Message-Id: <20200608231848.3366970-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
 References: <20200608231848.3366970-1-sashal@kernel.org>
@@ -44,50 +46,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Dejin Zheng <zhengdejin5@gmail.com>
 
-[ Upstream commit e9a1de378dd46375f9abfd8de1e6f59ee114a793 ]
+[ Upstream commit 191f6b08bfef24e1a9641eaac96ed030a7be4599 ]
 
-In case the "func" parameter is NULL we now return "-EINVAL".
-This shouldn't happen in general, but when it does happen, this is the
-proper way to handle it.
+the related system resources were not released when pci_iomap() return
+error in the rtw_pci_io_mapping() function. add pci_release_regions() to
+fix it.
 
-We also check func for NULL in the beginning of the function, as there
-is no reason to do all the work and realize in the end of the function
-it was useless.
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e3037485c68ec1a ("rtw88: new Realtek 802.11ac driver")
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+Acked-by: Yan-Hsuan Chuang <yhchuang@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200504083442.3033-1-zhengdejin5@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 48de4bee209e..9225733f4fec 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -2349,6 +2349,9 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 		rss->hash_key;
- 	int rc;
- 
-+	if (unlikely(!func))
-+		return -EINVAL;
-+
- 	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
- 				    ENA_ADMIN_RSS_HASH_FUNCTION,
- 				    rss->hash_key_dma_addr,
-@@ -2361,8 +2364,7 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 	if (rss->hash_func)
- 		rss->hash_func--;
- 
--	if (func)
--		*func = rss->hash_func;
-+	*func = rss->hash_func;
- 
- 	if (key)
- 		memcpy(key, hash_key->key, (size_t)(hash_key->keys_num) << 2);
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 77a2bdee50fa..4a43c4fa716d 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -974,6 +974,7 @@ static int rtw_pci_io_mapping(struct rtw_dev *rtwdev,
+ 	len = pci_resource_len(pdev, bar_id);
+ 	rtwpci->mmap = pci_iomap(pdev, bar_id, len);
+ 	if (!rtwpci->mmap) {
++		pci_release_regions(pdev);
+ 		rtw_err(rtwdev, "failed to map pci memory\n");
+ 		return -ENOMEM;
+ 	}
 -- 
 2.25.1
 
