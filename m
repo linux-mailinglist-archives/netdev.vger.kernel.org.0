@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13041F3154
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F411F3159
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 03:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388123AbgFIBIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 21:08:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50126 "EHLO mail.kernel.org"
+        id S1732032AbgFIBIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 21:08:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727063AbgFHXGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:06:44 -0400
+        id S1727068AbgFHXGr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:06:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3663F20774;
-        Mon,  8 Jun 2020 23:06:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D5C3D20870;
+        Mon,  8 Jun 2020 23:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657604;
-        bh=uyTL2Lu6aIQbzbN9xNngetGgXUNcmBdT+z3cenf8g70=;
+        s=default; t=1591657606;
+        bh=lg0K0W/aYAUtFjJepmp4AK6Gf1LVgkJTHCed3bKP0mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EuSjLWLKVDSST8YnBGzmK/lQbjKo0zTzoeGxpj7uBtzTDbNAMuLnhjWV6vq7wdTx0
-         hBRsL/mb0yRK9BVXpMcooKDIR5Zk5rrfVowqSAgvnc5CTAM3XDB9Dxdsm7oi7bXMzz
-         oLXGODs3BVkVkgaY8Fu9vmtY8E5UIXhluEq1HScQ=
+        b=pFxbsYJA9VZTAxKBjQ2141nT7rrKv3Y97/qrZDnhRcUydnJxcvn1Hh+T+eCw6WKKc
+         7TlBrcWWYXIbaMH8kOq74DVaHswYos4UieSzRBZF/n5rXG65sJY5EQJN6daEYhrMJm
+         CrcDSCVJjwzi6J2F5OgisYQbceCazmM75HnNxgUY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arthur Kiyanovski <akiyano@amazon.com>,
-        Sameeh Jubran <sameehj@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 029/274] net: ena: fix error returning in ena_com_get_hash_function()
-Date:   Mon,  8 Jun 2020 19:02:02 -0400
-Message-Id: <20200608230607.3361041-29-sashal@kernel.org>
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 031/274] ath10k: remove the max_sched_scan_reqs value
+Date:   Mon,  8 Jun 2020 19:02:04 -0400
+Message-Id: <20200608230607.3361041-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -44,50 +43,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit e9a1de378dd46375f9abfd8de1e6f59ee114a793 ]
+[ Upstream commit d431f8939c1419854dfe89dd345387f5397c6edd ]
 
-In case the "func" parameter is NULL we now return "-EINVAL".
-This shouldn't happen in general, but when it does happen, this is the
-proper way to handle it.
+The struct cfg80211_wowlan of NET_DETECT WoWLAN feature share the same
+struct cfg80211_sched_scan_request together with scheduled scan request
+feature, and max_sched_scan_reqs of wiphy is only used for sched scan,
+and ath10k does not support scheduled scan request feature, so ath10k
+does not set flag NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR, but ath10k
+set max_sched_scan_reqs of wiphy to a non zero value 1, then function
+nl80211_add_commands_unsplit of cfg80211 will set it support command
+NL80211_CMD_START_SCHED_SCAN because max_sched_scan_reqs is a non zero
+value, but actually ath10k not support it, then it leads a mismatch result
+for sched scan of cfg80211, then application shill found the mismatch and
+stop running case of MAC random address scan and then the case fail.
 
-We also check func for NULL in the beginning of the function, as there
-is no reason to do all the work and realize in the end of the function
-it was useless.
+After remove max_sched_scan_reqs value, it keeps match for sched scan and
+case of MAC random address scan pass.
 
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
+Tested with QCA6174 PCIe with firmware WLAN.RM.4.4.1-00110-QCARMSWP-1.
+
+Fixes: ce834e280f2f875 ("ath10k: support NET_DETECT WoWLAN feature")
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20191114050001.4658-1-wgong@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index a250046b8e18..07b0f396d3c2 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -2345,6 +2345,9 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 		rss->hash_key;
- 	int rc;
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 2d03b8dd3b8c..7c4ba17a0b68 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -8919,7 +8919,6 @@ int ath10k_mac_register(struct ath10k *ar)
+ 	ar->hw->wiphy->max_scan_ie_len = WLAN_SCAN_PARAMS_MAX_IE_LEN;
  
-+	if (unlikely(!func))
-+		return -EINVAL;
-+
- 	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
- 				    ENA_ADMIN_RSS_HASH_FUNCTION,
- 				    rss->hash_key_dma_addr,
-@@ -2357,8 +2360,7 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 	if (rss->hash_func)
- 		rss->hash_func--;
- 
--	if (func)
--		*func = rss->hash_func;
-+	*func = rss->hash_func;
- 
- 	if (key)
- 		memcpy(key, hash_key->key, (size_t)(hash_key->keys_num) << 2);
+ 	if (test_bit(WMI_SERVICE_NLO, ar->wmi.svc_map)) {
+-		ar->hw->wiphy->max_sched_scan_reqs = 1;
+ 		ar->hw->wiphy->max_sched_scan_ssids = WMI_PNO_MAX_SUPP_NETWORKS;
+ 		ar->hw->wiphy->max_match_sets = WMI_PNO_MAX_SUPP_NETWORKS;
+ 		ar->hw->wiphy->max_sched_scan_ie_len = WMI_PNO_MAX_IE_LENGTH;
 -- 
 2.25.1
 
