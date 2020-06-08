@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C53C1F2F61
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 229761F2F58
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387433AbgFIAuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:50:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56812 "EHLO mail.kernel.org"
+        id S1728740AbgFIAtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:49:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728721AbgFHXKj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:10:39 -0400
+        id S1728727AbgFHXKl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:10:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 158CF20CC7;
-        Mon,  8 Jun 2020 23:10:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 817C620890;
+        Mon,  8 Jun 2020 23:10:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657838;
-        bh=+2pQ2hPrXJJgBbrILzKSDmiflemN4+VZ16ewRbpvJ9g=;
+        s=default; t=1591657840;
+        bh=NGYYTHjM+zjFaXVoh/UT5+Ox2FDCfjV3foMGcxcNDDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TiEAsU6EWlcOKApywW0hH4Ep4hrWNg93gUv8q+iOgv1vD6iRM5Sl3B0pBhTCUurl9
-         2fGRMlUbj8nZmt/069jNKHXWOcYybtaWBx88jQdOBxkoGtvjWXfHJyNculOZpRfu6A
-         1v4t0Em8Y0tT5L5zN9HDE3WZfuhrZMcAAE7JyiMU=
+        b=KbzV3zq1AFT+/jBk8BP+YVnMtx4IuTO9zig/97UMe6Lytd8CCf0PJjkm/i7gm85Aw
+         PvsTQtZzxoNvSbBifL55dHU1/O6+U926wLWcZ2FUYPuoFlvkKJZQXbNB39c1ukznCD
+         2cdpvkygZE3xj3mqPU471LllyCZrw7bvh1w4aiUw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Erez Shitrit <erezsh@mellanox.com>,
-        Alex Vesker <valex@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 207/274] net/mlx5e: IPoIB, Drop multicast packets that this interface sent
-Date:   Mon,  8 Jun 2020 19:05:00 -0400
-Message-Id: <20200608230607.3361041-207-sashal@kernel.org>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 208/274] selftests/bpf: Fix test_align verifier log patterns
+Date:   Mon,  8 Jun 2020 19:05:01 -0400
+Message-Id: <20200608230607.3361041-208-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
 References: <20200608230607.3361041-1-sashal@kernel.org>
@@ -45,71 +45,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Erez Shitrit <erezsh@mellanox.com>
+From: Stanislav Fomichev <sdf@google.com>
 
-[ Upstream commit 8b46d424a743ddfef8056d5167f13ee7ebd1dcad ]
+[ Upstream commit 5366d2269139ba8eb6a906d73a0819947e3e4e0a ]
 
-After enabled loopback packets for IPoIB, we need to drop these packets
-that this HCA has replicated and came back to the same interface that
-sent them.
+Commit 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always
+call update_reg_bounds()") changed the way verifier logs some of its state,
+adjust the test_align accordingly. Where possible, I tried to not copy-paste
+the entire log line and resorted to dropping the last closing brace instead.
 
-Fixes: 4c6c615e3f30 ("net/mlx5e: IPoIB, Add PKEY child interface nic profile")
-Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
-Reviewed-by: Alex Vesker <valex@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20200515194904.229296-1-sdf@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/test_align.c | 41 ++++++++++++------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index e2beb89c1832..b69957be653a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1501,6 +1501,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 
- #ifdef CONFIG_MLX5_CORE_IPOIB
- 
-+#define MLX5_IB_GRH_SGID_OFFSET 8
- #define MLX5_IB_GRH_DGID_OFFSET 24
- #define MLX5_GID_SIZE           16
- 
-@@ -1514,6 +1515,7 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
- 	struct net_device *netdev;
- 	struct mlx5e_priv *priv;
- 	char *pseudo_header;
-+	u32 flags_rqpn;
- 	u32 qpn;
- 	u8 *dgid;
- 	u8 g;
-@@ -1535,7 +1537,8 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
- 	tstamp = &priv->tstamp;
- 	stats = &priv->channel_stats[rq->ix].rq;
- 
--	g = (be32_to_cpu(cqe->flags_rqpn) >> 28) & 3;
-+	flags_rqpn = be32_to_cpu(cqe->flags_rqpn);
-+	g = (flags_rqpn >> 28) & 3;
- 	dgid = skb->data + MLX5_IB_GRH_DGID_OFFSET;
- 	if ((!g) || dgid[0] != 0xff)
- 		skb->pkt_type = PACKET_HOST;
-@@ -1544,9 +1547,15 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
- 	else
- 		skb->pkt_type = PACKET_MULTICAST;
- 
--	/* TODO: IB/ipoib: Allow mcast packets from other VFs
--	 * 68996a6e760e5c74654723eeb57bf65628ae87f4
-+	/* Drop packets that this interface sent, ie multicast packets
-+	 * that the HCA has replicated.
- 	 */
-+	if (g && (qpn == (flags_rqpn & 0xffffff)) &&
-+	    (memcmp(netdev->dev_addr + 4, skb->data + MLX5_IB_GRH_SGID_OFFSET,
-+		    MLX5_GID_SIZE) == 0)) {
-+		skb->dev = NULL;
-+		return;
-+	}
- 
- 	skb_pull(skb, MLX5_IB_GRH_BYTES);
- 
+diff --git a/tools/testing/selftests/bpf/test_align.c b/tools/testing/selftests/bpf/test_align.c
+index 0262f7b374f9..c9c9bdce9d6d 100644
+--- a/tools/testing/selftests/bpf/test_align.c
++++ b/tools/testing/selftests/bpf/test_align.c
+@@ -359,15 +359,15 @@ static struct bpf_align_test tests[] = {
+ 			 * is still (4n), fixed offset is not changed.
+ 			 * Also, we create a new reg->id.
+ 			 */
+-			{29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc))"},
++			{29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (18)
+ 			 * which is 20.  Then the variable offset is (4n), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
+-			{33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
++			{33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
++			{33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
+ 		},
+ 	},
+ 	{
+@@ -410,15 +410,15 @@ static struct bpf_align_test tests[] = {
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{9, "R6_w=inv(id=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+ 			/* Packet pointer has (4n+2) offset */
+-			{11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+-			{13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
++			{13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
+ 			/* Newly read value in R6 was shifted left by 2, so has
+ 			 * known alignment of 4.
+ 			 */
+@@ -426,15 +426,15 @@ static struct bpf_align_test tests[] = {
+ 			/* Added (4n) to packet pointer's (4n+2) var_off, giving
+ 			 * another (4n+2).
+ 			 */
+-			{19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
+-			{21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
++			{19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
++			{21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
++			{23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
+ 		},
+ 	},
+ 	{
+@@ -469,16 +469,16 @@ static struct bpf_align_test tests[] = {
+ 		.matches = {
+ 			{4, "R5_w=pkt_end(id=0,off=0,imm=0)"},
+ 			/* (ptr - ptr) << 2 == unknown, (4n) */
+-			{6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc))"},
++			{6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc)"},
+ 			/* (4n) + 14 == (4n+2).  We blow our bounds, because
+ 			 * the add could overflow.
+ 			 */
+-			{7, "R5_w=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"},
++			{7, "R5_w=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>=0 */
+-			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* packet pointer + nonnegative (4n+2) */
+-			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+-			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+ 			 * We checked the bounds, but it might have been able
+ 			 * to overflow if the packet pointer started in the
+@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+ 			 * So we did not get a 'range' on R6, and the access
+ 			 * attempt will fail.
+ 			 */
+-			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 		}
+ 	},
+ 	{
+@@ -528,7 +528,7 @@ static struct bpf_align_test tests[] = {
+ 			/* New unknown value in R7 is (4n) */
+ 			{11, "R7_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+ 			/* Subtracting it from R6 blows our unsigned bounds */
+-			{12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,var_off=(0x2; 0xfffffffffffffffc))"},
++			{12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>= 0 */
+ 			{14, "R6=inv(id=0,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
+ 			/* At the time the word size load is performed from R5,
+@@ -537,7 +537,8 @@ static struct bpf_align_test tests[] = {
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc)"},
++
+ 		},
+ 	},
+ 	{
+@@ -579,18 +580,18 @@ static struct bpf_align_test tests[] = {
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{11, "R6_w=inv(id=0,umin_value=14,umax_value=74,var_off=(0x2; 0x7c))"},
+ 			/* Subtracting from packet pointer overflows ubounds */
+-			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c))"},
++			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c)"},
+ 			/* New unknown value in R7 is (4n), >= 76 */
+ 			{15, "R7_w=inv(id=0,umin_value=76,umax_value=1096,var_off=(0x0; 0x7fc))"},
+ 			/* Adding it to packet pointer gives nice bounds again */
+-			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
++			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
++			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
+ 		},
+ 	},
+ };
 -- 
 2.25.1
 
