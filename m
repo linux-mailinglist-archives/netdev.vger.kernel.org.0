@@ -2,113 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7AD1F1309
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 08:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 100FA1F133A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 09:09:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728995AbgFHGqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 02:46:05 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:37943 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728538AbgFHGqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 02:46:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591598758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=05DDfjAfIHUdRf5Uem2N9ccJI7OdmXrAgeiSijOGnoQ=;
-        b=Oh8XejA4PYyE/bScZJ9LQN9zCgIzh5IUwPjgFSqYsbvhLAYwBiaWu+60nZanaKZco37/eo
-        OuMs5rvltpu2oEkUCfk9Gz1d7YixoyAWmfhAlYFh1mN9twoSnPJwwDDl98LBLG5hRMqTzN
-        N47dDoNRWvCvKUTsjGNhKGEnsNhRycw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-13-6zZV5iN9PBqfsm4JB9jftg-1; Mon, 08 Jun 2020 02:45:54 -0400
-X-MC-Unique: 6zZV5iN9PBqfsm4JB9jftg-1
-Received: by mail-wr1-f70.google.com with SMTP id e7so6782513wrp.14
-        for <netdev@vger.kernel.org>; Sun, 07 Jun 2020 23:45:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=05DDfjAfIHUdRf5Uem2N9ccJI7OdmXrAgeiSijOGnoQ=;
-        b=Iqcuj9ObWPBz9lnabUdipC7mq6VCvx8UTvScTpT2mFzjRwa5urYgS8D8svDo+meKoa
-         bKRCxGkvGjqIP8ouX/laHN/vcDys3WsYSDzBeTHdK28haXQJrUREVsATxfKix/LVoT5w
-         TGJilnEas0iSYAazbggjcuh/UfMpEOw5NFS5vT8xEVhzGPMI7hJbBw4xVA4IaEVmew48
-         nnOhZ9MOUIkhMqidU6kkmWLWpJqEIJmIlAwspphT0bS6eFNNclyTu3y+lXTdsvAc7DlH
-         f+DmUC7bdxhaQlicsLHWZtpbiqjOe/ov+VmrGSONsH8qMRp56jyzhBmv9bN+HXEYx+aT
-         UTwA==
-X-Gm-Message-State: AOAM530NunRuqLNjDwSPn71mZ+eI8vdwGHlbPu9N6/70kFQcSSdtwp+q
-        tlDHohe6AdiezkThW+3sMvFhj0YSPUWO6cHGTwl9Y61Wf2OHlR3MH/T5AqiJqtUn3qoSSqi/mBX
-        sUp+vert9jqEK2mlF
-X-Received: by 2002:a5d:5261:: with SMTP id l1mr22608222wrc.246.1591598753584;
-        Sun, 07 Jun 2020 23:45:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKhmvKgwfu6GksB3KTO4SFsuK8YxZWmnpeKf96R+VzqaaCilkPcOAlU2/3T/svRcNiLt4VEA==
-X-Received: by 2002:a5d:5261:: with SMTP id l1mr22608211wrc.246.1591598753423;
-        Sun, 07 Jun 2020 23:45:53 -0700 (PDT)
-Received: from redhat.com (bzq-109-64-41-91.red.bezeqint.net. [109.64.41.91])
-        by smtp.gmail.com with ESMTPSA id x18sm20730927wmi.35.2020.06.07.23.45.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2020 23:45:52 -0700 (PDT)
-Date:   Mon, 8 Jun 2020 02:45:50 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        eperezma@redhat.com
-Subject: Re: [PATCH RFC v5 13/13] vhost: drop head based APIs
-Message-ID: <20200608023311-mutt-send-email-mst@kernel.org>
-References: <20200607141057.704085-1-mst@redhat.com>
- <20200607141057.704085-14-mst@redhat.com>
- <8e3f5b6f-a47b-73cd-e8e3-959d40f6c91c@redhat.com>
+        id S1728958AbgFHHJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 03:09:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33884 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727966AbgFHHJi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 03:09:38 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D92FE204EF;
+        Mon,  8 Jun 2020 07:09:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591600177;
+        bh=rjBLjDjW1O9fGRBJf6kjv/K3zXOgcWg6SA2GxlenQUo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pV7zn0HjBkPTH1rFr/cRU+ZpTXJyYcNmWp+gw0iMmCCAAh/ir+o04fbw3JuqBDR81
+         Kxp8krRzNTiB2yteIVm77VaSqGr7xthU4h/vQ+OR2nvGkId4m/0itdRo1Obwd69XIi
+         nEbWRIadXESsfCcJN0lTqzbyBCZrbiTu+TysZzRQ=
+Date:   Mon, 8 Jun 2020 08:09:30 +0100
+From:   Will Deacon <will@kernel.org>
+To:     syzbot <syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com>
+Cc:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@gmail.com,
+        ebiederm@xmission.com, edumazet@google.com, eric.dumazet@gmail.com,
+        hawk@kernel.org, jiri@mellanox.com, johannes.berg@intel.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
+        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
+        mkubecek@suse.cz, netdev@vger.kernel.org,
+        saiprakash.ranjan@codeaurora.org, songliubraving@fb.com,
+        suzuki.poulose@arm.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Subject: Re: WARNING in dev_change_net_namespace
+Message-ID: <20200608070930.GA555@willie-the-truck>
+References: <000000000000c54420059e4f08ff@google.com>
+ <00000000000011eb1705a76ad69d@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8e3f5b6f-a47b-73cd-e8e3-959d40f6c91c@redhat.com>
+In-Reply-To: <00000000000011eb1705a76ad69d@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 11:57:48AM +0800, Jason Wang wrote:
+On Sat, Jun 06, 2020 at 07:03:03AM -0700, syzbot wrote:
+> syzbot has bisected this bug to:
 > 
-> On 2020/6/7 下午10:11, Michael S. Tsirkin wrote:
-> > Everyone's using buf APIs, no need for head based ones anymore.
-> > 
-> > Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
-> > ---
-> >   drivers/vhost/vhost.c | 36 ++++++++----------------------------
-> >   drivers/vhost/vhost.h | 12 ------------
-> >   2 files changed, 8 insertions(+), 40 deletions(-)
-> > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index 72ee55c810c4..e6931b760b61 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -2299,12 +2299,12 @@ static int fetch_buf(struct vhost_virtqueue *vq)
-> >   	return 1;
-> >   }
-> > -/* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
-> > +/* Revert the effect of fetch_buf. Useful for error handling. */
-> > +static
-> >   void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
-> >   {
-> >   	vq->last_avail_idx -= n;
-> >   }
-> > -EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
+> commit 13dc4d836179444f0ca90188cfccd23f9cd9ff05
+> Author: Will Deacon <will@kernel.org>
+> Date:   Tue Apr 21 14:29:18 2020 +0000
 > 
+>     arm64: cpufeature: Remove redundant call to id_aa64pfr0_32bit_el0()
 > 
-> The same question as previous version.
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=109aa3b1100000
+> start commit:   7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+> git tree:       upstream
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=129aa3b1100000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=149aa3b1100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=be4578b3f1083656
+> dashboard link: https://syzkaller.appspot.com/bug?extid=830c6dbfc71edc4f0b8f
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12032832100000
 > 
-> Do we need to rewind cached descriptor here?
-> 
-> Thanks
+> Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> Fixes: 13dc4d836179 ("arm64: cpufeature: Remove redundant call to id_aa64pfr0_32bit_el0()")
 
-Good point.  This needs more thought, we need to also
-rewind the avail idx each time we flush the descriptor cache.
 
--- 
-MST
+Yeah... I doubt that very much.
 
+Will
