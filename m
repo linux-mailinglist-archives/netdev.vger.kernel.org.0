@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6151F2439
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:20:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D07AE1F2452
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730781AbgFHXTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:19:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42024 "EHLO mail.kernel.org"
+        id S1730938AbgFHXUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:20:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730766AbgFHXTR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:19:17 -0400
+        id S1730921AbgFHXUO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:20:14 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51E212083E;
-        Mon,  8 Jun 2020 23:19:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C1202074B;
+        Mon,  8 Jun 2020 23:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658357;
-        bh=elBE11fQiN4qbvXIOtPynWlN6qJBOFWfp7dr4xXo6MY=;
+        s=default; t=1591658413;
+        bh=UgH8czb3Zqf99cuf6/cq5xSM1xd308oDJ5vXdkILL9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDTrdO53CYIqty9VZfI5HpOf3HOPeH4Jb+N09DjwV+f/jRN15M9RS1nkkWwgCu8hG
-         ZymzmZt33A3ZXT5KZJuuke+GbWpc3A42Oy3ggBhhjCMeNLFkCLRgkWUa4muRhlj4oH
-         VP90kR6rX/PhfLzJRI/Zqz0PDhYI9YVBZ0CQfiU4=
+        b=XsyHY1Z1IZeI/ZC6xck34lVfuBKFswhRcAgyhwfNgOvVlcJghvBYzhZ/v7KL0ruFa
+         vg0Gcdrm4KIB43pghf71fcj/v+rU5c8YPk3J67c0/KWhzOGTtA8P2LXSi41nVM72TF
+         93sobBbPk6BX+1YRhxI1b2yN8U6KoX6iOGuQeJXY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 023/175] ath10k: remove the max_sched_scan_reqs value
-Date:   Mon,  8 Jun 2020 19:16:16 -0400
-Message-Id: <20200608231848.3366970-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 062/175] ath10k: fix kernel null pointer dereference
+Date:   Mon,  8 Jun 2020 19:16:55 -0400
+Message-Id: <20200608231848.3366970-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
 References: <20200608231848.3366970-1-sashal@kernel.org>
@@ -43,49 +44,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Venkateswara Naralasetty <vnaralas@codeaurora.org>
 
-[ Upstream commit d431f8939c1419854dfe89dd345387f5397c6edd ]
+[ Upstream commit acb31476adc9ff271140cdd4d3c707ff0c97f5a4 ]
 
-The struct cfg80211_wowlan of NET_DETECT WoWLAN feature share the same
-struct cfg80211_sched_scan_request together with scheduled scan request
-feature, and max_sched_scan_reqs of wiphy is only used for sched scan,
-and ath10k does not support scheduled scan request feature, so ath10k
-does not set flag NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR, but ath10k
-set max_sched_scan_reqs of wiphy to a non zero value 1, then function
-nl80211_add_commands_unsplit of cfg80211 will set it support command
-NL80211_CMD_START_SCHED_SCAN because max_sched_scan_reqs is a non zero
-value, but actually ath10k not support it, then it leads a mismatch result
-for sched scan of cfg80211, then application shill found the mismatch and
-stop running case of MAC random address scan and then the case fail.
+Currently sta airtime is updated without any lock in case of
+host based airtime calculation. Which may result in accessing the
+invalid sta pointer in case of continuous station connect/disconnect.
 
-After remove max_sched_scan_reqs value, it keeps match for sched scan and
-case of MAC random address scan pass.
+This patch fix the kernel null pointer dereference by updating the
+station airtime with proper RCU lock in case of host based airtime
+calculation.
 
-Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
-Tested with QCA6174 PCIe with firmware WLAN.RM.4.4.1-00110-QCARMSWP-1.
+Proceeding with the analysis of "ARM Kernel Panic".
+The APSS crash happened due to OOPS on CPU 0.
+Crash Signature : Unable to handle kernel NULL pointer dereference
+at virtual address 00000300
+During the crash,
+PC points to "ieee80211_sta_register_airtime+0x1c/0x448 [mac80211]"
+LR points to "ath10k_txrx_tx_unref+0x17c/0x364 [ath10k_core]".
+The Backtrace obtained is as follows:
+[<bf880238>] (ieee80211_sta_register_airtime [mac80211]) from
+[<bf945a38>] (ath10k_txrx_tx_unref+0x17c/0x364 [ath10k_core])
+[<bf945a38>] (ath10k_txrx_tx_unref [ath10k_core]) from
+[<bf9428e4>] (ath10k_htt_txrx_compl_task+0xa50/0xfc0 [ath10k_core])
+[<bf9428e4>] (ath10k_htt_txrx_compl_task [ath10k_core]) from
+[<bf9b9bc8>] (ath10k_pci_napi_poll+0x50/0xf8 [ath10k_pci])
+[<bf9b9bc8>] (ath10k_pci_napi_poll [ath10k_pci]) from
+[<c059e3b0>] (net_rx_action+0xac/0x160)
+[<c059e3b0>] (net_rx_action) from [<c02329a4>] (__do_softirq+0x104/0x294)
+[<c02329a4>] (__do_softirq) from [<c0232b64>] (run_ksoftirqd+0x30/0x90)
+[<c0232b64>] (run_ksoftirqd) from [<c024e358>] (smpboot_thread_fn+0x25c/0x274)
+[<c024e358>] (smpboot_thread_fn) from [<c02482fc>] (kthread+0xd8/0xec)
 
-Fixes: ce834e280f2f875 ("ath10k: support NET_DETECT WoWLAN feature")
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Tested HW: QCA9888
+Tested FW: 10.4-3.10-00047
+
+Signed-off-by: Venkateswara Naralasetty <vnaralas@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20191114050001.4658-1-wgong@codeaurora.org
+Link: https://lore.kernel.org/r/1585736290-17661-1-git-send-email-vnaralas@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/txrx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 36d24ea126a2..b0f6f2727053 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -8811,7 +8811,6 @@ int ath10k_mac_register(struct ath10k *ar)
- 	ar->hw->wiphy->max_scan_ie_len = WLAN_SCAN_PARAMS_MAX_IE_LEN;
+diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
+index 39abf8b12903..f46b9083bbf1 100644
+--- a/drivers/net/wireless/ath/ath10k/txrx.c
++++ b/drivers/net/wireless/ath/ath10k/txrx.c
+@@ -84,9 +84,11 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ 		wake_up(&htt->empty_tx_wq);
+ 	spin_unlock_bh(&htt->tx_lock);
  
- 	if (test_bit(WMI_SERVICE_NLO, ar->wmi.svc_map)) {
--		ar->hw->wiphy->max_sched_scan_reqs = 1;
- 		ar->hw->wiphy->max_sched_scan_ssids = WMI_PNO_MAX_SUPP_NETWORKS;
- 		ar->hw->wiphy->max_match_sets = WMI_PNO_MAX_SUPP_NETWORKS;
- 		ar->hw->wiphy->max_sched_scan_ie_len = WMI_PNO_MAX_IE_LENGTH;
++	rcu_read_lock();
+ 	if (txq && txq->sta && skb_cb->airtime_est)
+ 		ieee80211_sta_register_airtime(txq->sta, txq->tid,
+ 					       skb_cb->airtime_est, 0);
++	rcu_read_unlock();
+ 
+ 	if (ar->bus_param.dev_type != ATH10K_DEV_TYPE_HL)
+ 		dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
 -- 
 2.25.1
 
