@@ -2,107 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95D6A1F1670
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 912051F168F
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 12:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729310AbgFHKK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 06:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729269AbgFHKK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 06:10:26 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4524C08C5C3
-        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 03:10:26 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id q13so12944965edi.3
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 03:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FIHN9MZcZVs89vJj6qS2FPe1wOlI+KP3JEjnXkjgUIo=;
-        b=XZrT7p9hpwoQ1asrimWl4mEcrJFng4P/wINbcREbRIl9S0zPQr2ZqILftR75qdvKul
-         A40C4WgHf03Pxuk6un+J4HvV+TYa2ndpPV1wDxS+La6ce+buLRXoQ22CpPqdKHTIl10W
-         4g/2/0TPeoFpd+KaY2US54Yjx/YEwBkkdhub9G0XgoYW4OEIuXto41aqvb9neBiSBxqQ
-         Zk31fn1/vpMbPK1hs1ATveRuxmDFrSOG5/a1HsScmvLOsBl/hh4DBjccpL2hkaRHAKTn
-         PtbZ1v/O27+BmScm0wc/yXctHx7lh9g+9RZqAzlC/VK2PyFcxDfNC2QzHR9aCZqLoRgE
-         WPfw==
+        id S1729347AbgFHKRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 06:17:54 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57523 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729172AbgFHKRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 06:17:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591611472;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8qWrXG5uSNE9Dzp6V1sYS5ofw86anDpXXrPKXmMCdEo=;
+        b=L3JTHtrb2uLBgEnqW7kuKLKOcZVUjAhQJPkGkeUahooxPA7L9RwDQ1kfN4Rgg6PYhGIhir
+        SQ8wdVG5ojRhkUVGcAIFQAFH4252Xw9Kk27Q0cEkQu24mlc0bKYWG6f3RDizeMf7nCUNVK
+        exYPur8mACV8FeruZVtGYDQuWMiQtrU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-168-ZBkmfAasMrm1_yODe84HnQ-1; Mon, 08 Jun 2020 06:17:50 -0400
+X-MC-Unique: ZBkmfAasMrm1_yODe84HnQ-1
+Received: by mail-wm1-f72.google.com with SMTP id r1so1410623wmh.7
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 03:17:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FIHN9MZcZVs89vJj6qS2FPe1wOlI+KP3JEjnXkjgUIo=;
-        b=XiK4eBs5fRZzpwN4ggbyJEQoQonjLZJYgL+iVVruskwB+87MrosU+iHs+SBFHwlTnD
-         y0Rs5CnVXlqdiN/ys3fvT+JuGHVkLSyNBdzqWeoVSF/+9Otc5/60hVw/BjdwezZpgatU
-         wcHO9Uh/Zkl9w48HjfFAxw+nldkqgXsw+81XvBTYvetPr0Qr+oeLj/FFPsvf++VnQMSU
-         b0ha/J+P063dKuoQPOUoDXqxFFaIwkCf5F5iXE3iURaiWMSGLXnc4PYE/E8d3/UmfVLH
-         IGE+wwzKwnRdw6bGJqvnY0A0Fh285QFz6ql282GgKnyj8dkWuGX1eBaQrrZNgtu0aozL
-         cXMw==
-X-Gm-Message-State: AOAM530VWanEPLFuDRpen51cEP7+oUHR5Rwlskyx4v2vx2eKykY3pwE5
-        PxTIUTDBzem5gkN2r+ZMl+2MYA==
-X-Google-Smtp-Source: ABdhPJw0ngwli2qw4dkn4AewiyqmubBF/LRY4YnInqYpXOmLTtSzPm7V16Dxo0irGyb8jE8v5df7RA==
-X-Received: by 2002:aa7:df96:: with SMTP id b22mr21646067edy.348.1591611025407;
-        Mon, 08 Jun 2020 03:10:25 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id p15sm10371360ejm.88.2020.06.08.03.10.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Jun 2020 03:10:24 -0700 (PDT)
-Subject: Re: [PATCH] mptcp: bugfix for RM_ADDR option parsing
-To:     Geliang Tang <geliangtang@gmail.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-References: <904e4ae90b94d679d9877d3c48bd277cb9b39f5f.1591601587.git.geliangtang@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <41246875-febc-e88d-304b-2a6692f590ac@tessares.net>
-Date:   Mon, 8 Jun 2020 12:10:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8qWrXG5uSNE9Dzp6V1sYS5ofw86anDpXXrPKXmMCdEo=;
+        b=bHWOoK48XLHUE+3I16h2Us8nObK4c4a2RPUWgYUZuz6b4KIFj17a2NrStwTOuR88jx
+         6xo/yQ1gzCu5+UY14rbNfV/aaTzLLltGIYC8sx+vmtW+VEfL3zBc4V/+z5xbrN2VTvUu
+         +R2Yq7mDzv1KRNlrnw4bbQQrY3a0RwUsG0fsggsC2Nkz2sQjHwdvA8m3atiVtA8c1m4s
+         mlGnO4dPOgygVqebBvdX6Nyo3Iu0OqHKEcwo38mUHKQo9/tXc8eWVy3aPJ140qsDZEsz
+         sCdjP/omX+aPJb/QVR2ZoIdeZhspU+jmx0JzlvfjsnNKraWXjg3O0WCgKnUx+rUWVhlI
+         9M9A==
+X-Gm-Message-State: AOAM53125LmGQOpCjPajzwLZkSjdPZJgwGksVdeN2VbAt9GuqgzqZ6UD
+        Pw/4I1jRZPUNRlcoOMToxZl6A/7fdz53CV4EhSa6KvSHePvWJ73ro+bA+ZBvpHWlEjIPy7Rxha2
+        mp6UnzzqJDEVRKJ56
+X-Received: by 2002:a1c:4105:: with SMTP id o5mr15395859wma.168.1591611469378;
+        Mon, 08 Jun 2020 03:17:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw01MpQfAn3zflPb7GVdN7FLLZh1HetB9oB+KWr4r5voKTa+SLtxH/AzT7wvjwZnQiGg0J+Pw==
+X-Received: by 2002:a1c:4105:: with SMTP id o5mr15395824wma.168.1591611469097;
+        Mon, 08 Jun 2020 03:17:49 -0700 (PDT)
+Received: from steredhat ([79.49.207.108])
+        by smtp.gmail.com with ESMTPSA id a3sm22199003wrp.91.2020.06.08.03.17.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2020 03:17:48 -0700 (PDT)
+Date:   Mon, 8 Jun 2020 12:17:46 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH RFC v5 12/13] vhost/vsock: switch to the buf API
+Message-ID: <20200608101746.xnxtwwygolsk7yol@steredhat>
+References: <20200607141057.704085-1-mst@redhat.com>
+ <20200607141057.704085-13-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <904e4ae90b94d679d9877d3c48bd277cb9b39f5f.1591601587.git.geliangtang@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200607141057.704085-13-mst@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
-
-On 08/06/2020 09:48, Geliang Tang wrote:
-> In MPTCPOPT_RM_ADDR option parsing, the pointer "ptr" pointed to the
-> "Subtype" octet, the pointer "ptr+1" pointed to the "Address ID" octet:
+On Sun, Jun 07, 2020 at 10:11:49AM -0400, Michael S. Tsirkin wrote:
+> A straight-forward conversion.
 > 
->    +-------+-------+---------------+
->    |Subtype|(resvd)|   Address ID  |
->    +-------+-------+---------------+
->    |               |
->   ptr            ptr+1
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
+>  1 file changed, 18 insertions(+), 12 deletions(-)
+
+The changes for vsock part LGTM:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+
+I also did some tests with vhost-vsock (tools/testing/vsock/vsock_test
+and iperf-vsock), so for vsock:
+
+Tested-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Thanks,
+Stefano
+
 > 
-> We should set mp_opt->rm_id to the value of "ptr+1", not "ptr". This patch
-> will fix this bug.
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index a483cec31d5c..61c6d3dd2ae3 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -103,7 +103,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+>  		unsigned out, in;
+>  		size_t nbytes;
+>  		size_t iov_len, payload_len;
+> -		int head;
+> +		struct vhost_buf buf;
+> +		int ret;
+>  
+>  		spin_lock_bh(&vsock->send_pkt_list_lock);
+>  		if (list_empty(&vsock->send_pkt_list)) {
+> @@ -117,16 +118,17 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+>  		list_del_init(&pkt->list);
+>  		spin_unlock_bh(&vsock->send_pkt_list_lock);
+>  
+> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+> -					 &out, &in, NULL, NULL);
+> -		if (head < 0) {
+> +		ret = vhost_get_avail_buf(vq, &buf,
+> +					  vq->iov, ARRAY_SIZE(vq->iov),
+> +					  &out, &in, NULL, NULL);
+> +		if (ret < 0) {
+>  			spin_lock_bh(&vsock->send_pkt_list_lock);
+>  			list_add(&pkt->list, &vsock->send_pkt_list);
+>  			spin_unlock_bh(&vsock->send_pkt_list_lock);
+>  			break;
+>  		}
+>  
+> -		if (head == vq->num) {
+> +		if (!ret) {
+>  			spin_lock_bh(&vsock->send_pkt_list_lock);
+>  			list_add(&pkt->list, &vsock->send_pkt_list);
+>  			spin_unlock_bh(&vsock->send_pkt_list_lock);
+> @@ -186,7 +188,8 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+>  		 */
+>  		virtio_transport_deliver_tap_pkt(pkt);
+>  
+> -		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
+> +		buf.in_len = sizeof(pkt->hdr) + payload_len;
+> +		vhost_put_used_buf(vq, &buf);
+>  		added = true;
+>  
+>  		pkt->off += payload_len;
+> @@ -440,7 +443,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>  	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
+>  						 dev);
+>  	struct virtio_vsock_pkt *pkt;
+> -	int head, pkts = 0, total_len = 0;
+> +	int ret, pkts = 0, total_len = 0;
+> +	struct vhost_buf buf;
+>  	unsigned int out, in;
+>  	bool added = false;
+>  
+> @@ -461,12 +465,13 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>  			goto no_more_replies;
+>  		}
+>  
+> -		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+> -					 &out, &in, NULL, NULL);
+> -		if (head < 0)
+> +		ret = vhost_get_avail_buf(vq, &buf,
+> +					  vq->iov, ARRAY_SIZE(vq->iov),
+> +					  &out, &in, NULL, NULL);
+> +		if (ret < 0)
+>  			break;
+>  
+> -		if (head == vq->num) {
+> +		if (!ret) {
+>  			if (unlikely(vhost_enable_notify(&vsock->dev, vq))) {
+>  				vhost_disable_notify(&vsock->dev, vq);
+>  				continue;
+> @@ -494,7 +499,8 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>  			virtio_transport_free_pkt(pkt);
+>  
+>  		len += sizeof(pkt->hdr);
+> -		vhost_add_used(vq, head, len);
+> +		buf.in_len = len;
+> +		vhost_put_used_buf(vq, &buf);
+>  		total_len += len;
+>  		added = true;
+>  	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
+> -- 
+> MST
+> 
 
-Thank you for the patch, good catch!
-Indeed "ptr" should be incremented.
-
-Because this is a bug-fix for net, may you clearly indicate that in the 
-subject to help -net maintainers please? [PATCH net v2]
-
-Also, may you add a "Fixes" tag as well as it is for -net ? I guess it 
-should be:
-
-     Fixes: 3df523ab582c ("mptcp: Add ADD_ADDR handling")
-
-The rest is good!
-
-Cheers,
-Matt
--- 
-Matthieu Baerts | R&D Engineer
-matthieu.baerts@tessares.net
-Tessares SA | Hybrid Access Solutions
-www.tessares.net
-1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
