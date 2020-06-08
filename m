@@ -2,38 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B82D81F2FC1
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9EE1F2D66
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733302AbgFIAxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 20:53:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55614 "EHLO mail.kernel.org"
+        id S1733167AbgFIAdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:33:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728509AbgFHXJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:09:48 -0400
+        id S1729966AbgFHXPB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:15:01 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F6B0208FE;
-        Mon,  8 Jun 2020 23:09:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 45A7D20B80;
+        Mon,  8 Jun 2020 23:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657787;
-        bh=jLox+8Gi6bC9/N3l0vacC+fK6yX3qEtgPqcMiIXdWZg=;
+        s=default; t=1591658100;
+        bh=BXez2DSlSl51P+h9LqOJ6exEtf/VkbpZC0uv0fs2zX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nMRFeyMkQrhgT48q24DKEP0czU89K2T65O+/c8kW3xEnN9tuZMLJ0ZonwdymA2J7O
-         Eq4ZziMRzJUxcZdnZygO15OD4+6xdETi8YoEPCnXTZ7CLTXyNLY8wU8RcOTvAR6njx
-         mHd2Ip2E7+NzqHwl2MZVYWXRh36A1SDH2Jry03PE=
+        b=wKmF3dY24YsfQzYs898Q8NcD23SZH/Gu2jk4B8sUZo8Onxj4Z3nBLMidSnXjsFMjn
+         kjh8VpXDWUUMo1JqTHoXCBtfAZVP6LY/IXmTN0ZlHcCkqGzD0Se1C84YbUt3bkehjJ
+         3LKmOXOT8puKfvLic/vQpBo31+AQkjHEQuRRhRgM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 168/274] dsa: sja1105: dynamically allocate stats structure
-Date:   Mon,  8 Jun 2020 19:04:21 -0400
-Message-Id: <20200608230607.3361041-168-sashal@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 141/606] bpf: Restrict bpf_probe_read{, str}() only to archs where they work
+Date:   Mon,  8 Jun 2020 19:04:26 -0400
+Message-Id: <20200608231211.3363633-141-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
-References: <20200608230607.3361041-1-sashal@kernel.org>
+In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
+References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,196 +49,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit ae1804de93f6f1626906567ae7deec8e0111259d ]
+commit 0ebeea8ca8a4d1d453ad299aef0507dab04f6e8d upstream.
 
-The addition of sja1105_port_status_ether structure into the
-statistics causes the frame size to go over the warning limit:
+Given the legacy bpf_probe_read{,str}() BPF helpers are broken on archs
+with overlapping address ranges, we should really take the next step to
+disable them from BPF use there.
 
-drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
+To generally fix the situation, we've recently added new helper variants
+bpf_probe_read_{user,kernel}() and bpf_probe_read_{user,kernel}_str().
+For details on them, see 6ae08ae3dea2 ("bpf: Add probe_read_{user, kernel}
+and probe_read_{user,kernel}_str helpers").
 
-Use dynamic allocation to avoid this.
+Given bpf_probe_read{,str}() have been around for ~5 years by now, there
+are plenty of users at least on x86 still relying on them today, so we
+cannot remove them entirely w/o breaking the BPF tracing ecosystem.
 
-Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, their use should be restricted to archs with non-overlapping
+address ranges where they are working in their current form. Therefore,
+move this behind a CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE and
+have x86, arm64, arm select it (other archs supporting it can follow-up
+on it as well).
+
+For the remaining archs, they can workaround easily by relying on the
+feature probe from bpftool which spills out defines that can be used out
+of BPF C code to implement the drop-in replacement for old/new kernels
+via: bpftool feature probe macro
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/bpf/20200515101118.6508-2-daniel@iogearbox.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/sja1105/sja1105_ethtool.c | 144 +++++++++++-----------
- 1 file changed, 74 insertions(+), 70 deletions(-)
+ arch/arm/Kconfig         | 1 +
+ arch/arm64/Kconfig       | 1 +
+ arch/x86/Kconfig         | 1 +
+ init/Kconfig             | 3 +++
+ kernel/trace/bpf_trace.c | 6 ++++--
+ 5 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-index d742ffcbfce9..709f035055c5 100644
---- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-@@ -421,92 +421,96 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
- void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
- {
- 	struct sja1105_private *priv = ds->priv;
--	struct sja1105_port_status status;
-+	struct sja1105_port_status *status;
- 	int rc, i, k = 0;
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 97864aabc2a6..579f7eb6968a 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -13,6 +13,7 @@ config ARM
+ 	select ARCH_HAS_KEEPINITRD
+ 	select ARCH_HAS_KCOV
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
++	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_HAS_PTE_SPECIAL if ARM_LPAE
+ 	select ARCH_HAS_PHYS_TO_DMA
+ 	select ARCH_HAS_SETUP_DMA_OPS
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 0b30e884e088..84e1f0a43cdb 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -21,6 +21,7 @@ config ARM64
+ 	select ARCH_HAS_KCOV
+ 	select ARCH_HAS_KEEPINITRD
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
++	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_HAS_PTE_DEVMAP
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_HAS_SETUP_DMA_OPS
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index beea77046f9b..0bc9a74468be 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -70,6 +70,7 @@ config X86
+ 	select ARCH_HAS_KCOV			if X86_64
+ 	select ARCH_HAS_MEM_ENCRYPT
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
++	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_HAS_PMEM_API		if X86_64
+ 	select ARCH_HAS_PTE_DEVMAP		if X86_64
+ 	select ARCH_HAS_PTE_SPECIAL
+diff --git a/init/Kconfig b/init/Kconfig
+index ef59c5c36cdb..59908e87ece2 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -2223,6 +2223,9 @@ config ASN1
  
--	memset(&status, 0, sizeof(status));
-+	status = kzalloc(sizeof(*status), GFP_KERNEL);
-+	if (!status)
-+		goto out;
+ source "kernel/Kconfig.locks"
  
--	rc = sja1105_port_status_get(priv, &status, port);
-+	rc = sja1105_port_status_get(priv, status, port);
- 	if (rc < 0) {
- 		dev_err(ds->dev, "Failed to read port %d counters: %d\n",
- 			port, rc);
--		return;
-+		goto out;
- 	}
- 	memset(data, 0, ARRAY_SIZE(sja1105_port_stats) * sizeof(u64));
--	data[k++] = status.mac.n_runt;
--	data[k++] = status.mac.n_soferr;
--	data[k++] = status.mac.n_alignerr;
--	data[k++] = status.mac.n_miierr;
--	data[k++] = status.mac.typeerr;
--	data[k++] = status.mac.sizeerr;
--	data[k++] = status.mac.tctimeout;
--	data[k++] = status.mac.priorerr;
--	data[k++] = status.mac.nomaster;
--	data[k++] = status.mac.memov;
--	data[k++] = status.mac.memerr;
--	data[k++] = status.mac.invtyp;
--	data[k++] = status.mac.intcyov;
--	data[k++] = status.mac.domerr;
--	data[k++] = status.mac.pcfbagdrop;
--	data[k++] = status.mac.spcprior;
--	data[k++] = status.mac.ageprior;
--	data[k++] = status.mac.portdrop;
--	data[k++] = status.mac.lendrop;
--	data[k++] = status.mac.bagdrop;
--	data[k++] = status.mac.policeerr;
--	data[k++] = status.mac.drpnona664err;
--	data[k++] = status.mac.spcerr;
--	data[k++] = status.mac.agedrp;
--	data[k++] = status.hl1.n_n664err;
--	data[k++] = status.hl1.n_vlanerr;
--	data[k++] = status.hl1.n_unreleased;
--	data[k++] = status.hl1.n_sizeerr;
--	data[k++] = status.hl1.n_crcerr;
--	data[k++] = status.hl1.n_vlnotfound;
--	data[k++] = status.hl1.n_ctpolerr;
--	data[k++] = status.hl1.n_polerr;
--	data[k++] = status.hl1.n_rxfrm;
--	data[k++] = status.hl1.n_rxbyte;
--	data[k++] = status.hl1.n_txfrm;
--	data[k++] = status.hl1.n_txbyte;
--	data[k++] = status.hl2.n_qfull;
--	data[k++] = status.hl2.n_part_drop;
--	data[k++] = status.hl2.n_egr_disabled;
--	data[k++] = status.hl2.n_not_reach;
-+	data[k++] = status->mac.n_runt;
-+	data[k++] = status->mac.n_soferr;
-+	data[k++] = status->mac.n_alignerr;
-+	data[k++] = status->mac.n_miierr;
-+	data[k++] = status->mac.typeerr;
-+	data[k++] = status->mac.sizeerr;
-+	data[k++] = status->mac.tctimeout;
-+	data[k++] = status->mac.priorerr;
-+	data[k++] = status->mac.nomaster;
-+	data[k++] = status->mac.memov;
-+	data[k++] = status->mac.memerr;
-+	data[k++] = status->mac.invtyp;
-+	data[k++] = status->mac.intcyov;
-+	data[k++] = status->mac.domerr;
-+	data[k++] = status->mac.pcfbagdrop;
-+	data[k++] = status->mac.spcprior;
-+	data[k++] = status->mac.ageprior;
-+	data[k++] = status->mac.portdrop;
-+	data[k++] = status->mac.lendrop;
-+	data[k++] = status->mac.bagdrop;
-+	data[k++] = status->mac.policeerr;
-+	data[k++] = status->mac.drpnona664err;
-+	data[k++] = status->mac.spcerr;
-+	data[k++] = status->mac.agedrp;
-+	data[k++] = status->hl1.n_n664err;
-+	data[k++] = status->hl1.n_vlanerr;
-+	data[k++] = status->hl1.n_unreleased;
-+	data[k++] = status->hl1.n_sizeerr;
-+	data[k++] = status->hl1.n_crcerr;
-+	data[k++] = status->hl1.n_vlnotfound;
-+	data[k++] = status->hl1.n_ctpolerr;
-+	data[k++] = status->hl1.n_polerr;
-+	data[k++] = status->hl1.n_rxfrm;
-+	data[k++] = status->hl1.n_rxbyte;
-+	data[k++] = status->hl1.n_txfrm;
-+	data[k++] = status->hl1.n_txbyte;
-+	data[k++] = status->hl2.n_qfull;
-+	data[k++] = status->hl2.n_part_drop;
-+	data[k++] = status->hl2.n_egr_disabled;
-+	data[k++] = status->hl2.n_not_reach;
++config ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
++	bool
++
+ config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
+ 	bool
  
- 	if (priv->info->device_id == SJA1105E_DEVICE_ID ||
- 	    priv->info->device_id == SJA1105T_DEVICE_ID)
--		return;
-+		goto out;;
- 
- 	memset(data + k, 0, ARRAY_SIZE(sja1105pqrs_extra_port_stats) *
- 			sizeof(u64));
- 	for (i = 0; i < 8; i++) {
--		data[k++] = status.hl2.qlevel_hwm[i];
--		data[k++] = status.hl2.qlevel[i];
-+		data[k++] = status->hl2.qlevel_hwm[i];
-+		data[k++] = status->hl2.qlevel[i];
- 	}
--	data[k++] = status.ether.n_drops_nolearn;
--	data[k++] = status.ether.n_drops_noroute;
--	data[k++] = status.ether.n_drops_ill_dtag;
--	data[k++] = status.ether.n_drops_dtag;
--	data[k++] = status.ether.n_drops_sotag;
--	data[k++] = status.ether.n_drops_sitag;
--	data[k++] = status.ether.n_drops_utag;
--	data[k++] = status.ether.n_tx_bytes_1024_2047;
--	data[k++] = status.ether.n_tx_bytes_512_1023;
--	data[k++] = status.ether.n_tx_bytes_256_511;
--	data[k++] = status.ether.n_tx_bytes_128_255;
--	data[k++] = status.ether.n_tx_bytes_65_127;
--	data[k++] = status.ether.n_tx_bytes_64;
--	data[k++] = status.ether.n_tx_mcast;
--	data[k++] = status.ether.n_tx_bcast;
--	data[k++] = status.ether.n_rx_bytes_1024_2047;
--	data[k++] = status.ether.n_rx_bytes_512_1023;
--	data[k++] = status.ether.n_rx_bytes_256_511;
--	data[k++] = status.ether.n_rx_bytes_128_255;
--	data[k++] = status.ether.n_rx_bytes_65_127;
--	data[k++] = status.ether.n_rx_bytes_64;
--	data[k++] = status.ether.n_rx_mcast;
--	data[k++] = status.ether.n_rx_bcast;
-+	data[k++] = status->ether.n_drops_nolearn;
-+	data[k++] = status->ether.n_drops_noroute;
-+	data[k++] = status->ether.n_drops_ill_dtag;
-+	data[k++] = status->ether.n_drops_dtag;
-+	data[k++] = status->ether.n_drops_sotag;
-+	data[k++] = status->ether.n_drops_sitag;
-+	data[k++] = status->ether.n_drops_utag;
-+	data[k++] = status->ether.n_tx_bytes_1024_2047;
-+	data[k++] = status->ether.n_tx_bytes_512_1023;
-+	data[k++] = status->ether.n_tx_bytes_256_511;
-+	data[k++] = status->ether.n_tx_bytes_128_255;
-+	data[k++] = status->ether.n_tx_bytes_65_127;
-+	data[k++] = status->ether.n_tx_bytes_64;
-+	data[k++] = status->ether.n_tx_mcast;
-+	data[k++] = status->ether.n_tx_bcast;
-+	data[k++] = status->ether.n_rx_bytes_1024_2047;
-+	data[k++] = status->ether.n_rx_bytes_512_1023;
-+	data[k++] = status->ether.n_rx_bytes_256_511;
-+	data[k++] = status->ether.n_rx_bytes_128_255;
-+	data[k++] = status->ether.n_rx_bytes_65_127;
-+	data[k++] = status->ether.n_rx_bytes_64;
-+	data[k++] = status->ether.n_rx_mcast;
-+	data[k++] = status->ether.n_rx_bcast;
-+out:
-+	kfree(status);
- }
- 
- void sja1105_get_strings(struct dsa_switch *ds, int port,
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index b899a2d7e900..158233a2ab6c 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -857,14 +857,16 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_probe_read_user_proto;
+ 	case BPF_FUNC_probe_read_kernel:
+ 		return &bpf_probe_read_kernel_proto;
+-	case BPF_FUNC_probe_read:
+-		return &bpf_probe_read_compat_proto;
+ 	case BPF_FUNC_probe_read_user_str:
+ 		return &bpf_probe_read_user_str_proto;
+ 	case BPF_FUNC_probe_read_kernel_str:
+ 		return &bpf_probe_read_kernel_str_proto;
++#ifdef CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
++	case BPF_FUNC_probe_read:
++		return &bpf_probe_read_compat_proto;
+ 	case BPF_FUNC_probe_read_str:
+ 		return &bpf_probe_read_compat_str_proto;
++#endif
+ #ifdef CONFIG_CGROUPS
+ 	case BPF_FUNC_get_current_cgroup_id:
+ 		return &bpf_get_current_cgroup_id_proto;
 -- 
 2.25.1
 
