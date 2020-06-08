@@ -2,44 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AACE1F24AF
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7451F24AD
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 01:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731201AbgFHXVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:21:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45804 "EHLO mail.kernel.org"
+        id S1729884AbgFHXVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 19:21:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731172AbgFHXVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:21:33 -0400
+        id S1729163AbgFHXVe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:21:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 167A320814;
-        Mon,  8 Jun 2020 23:21:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 785F120B80;
+        Mon,  8 Jun 2020 23:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658493;
-        bh=DlI6oCseilzi6eilp8Gz7Ep8tm7QK7mbRC7ltwIV4Lc=;
+        s=default; t=1591658494;
+        bh=2ved1gwBbFnsvB8In8AxS051g4Ygu+m7vTx5SAx02eg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PTgts6CMhflbKbhwABViQu3iwTunrq2/Zon1TGBWvRTl5hc9uqw+PObJZ+6Xd6j2s
-         ySiHlhX8tqc7BTgpMPumcbZ77r3byO2EiCSTzgctFVqD4Nutq9HjT/54APJT6MUMIC
-         2Sj1jtMT+gE+LyQX29qd+cLxSdlX+8HXfrdciCO0=
+        b=VE5zVnWUAwZ9H6CP2lZjdqNb/Q9iqlj059LGaT/kbfYgHg/42xpOqJ3LNPGbm7Cxa
+         WmdaUlkG6NSSpapP/TC1BixY2q+xVv9JpM/v+/rpiQ6zHss6ZrEII/ZahPxmtqx3bm
+         x1rPwhpjizl/vgcZYxd5UBvx6ABF0fJmq8SpsanM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Mao Wenan <maowenan@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+Cc:     Erez Shitrit <erezsh@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 126/175] veth: Adjust hard_start offset on redirect XDP frames
-Date:   Mon,  8 Jun 2020 19:17:59 -0400
-Message-Id: <20200608231848.3366970-126-sashal@kernel.org>
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 127/175] net/mlx5e: IPoIB, Drop multicast packets that this interface sent
+Date:   Mon,  8 Jun 2020 19:18:00 -0400
+Message-Id: <20200608231848.3366970-127-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
 References: <20200608231848.3366970-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -48,84 +45,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Erez Shitrit <erezsh@mellanox.com>
 
-[ Upstream commit 5c8572251fabc5bb49fd623c064e95a9daf6a3e3 ]
+[ Upstream commit 8b46d424a743ddfef8056d5167f13ee7ebd1dcad ]
 
-When native XDP redirect into a veth device, the frame arrives in the
-xdp_frame structure. It is then processed in veth_xdp_rcv_one(),
-which can run a new XDP bpf_prog on the packet. Doing so requires
-converting xdp_frame to xdp_buff, but the tricky part is that
-xdp_frame memory area is located in the top (data_hard_start) memory
-area that xdp_buff will point into.
+After enabled loopback packets for IPoIB, we need to drop these packets
+that this HCA has replicated and came back to the same interface that
+sent them.
 
-The current code tried to protect the xdp_frame area, by assigning
-xdp_buff.data_hard_start past this memory. This results in 32 bytes
-less headroom to expand into via BPF-helper bpf_xdp_adjust_head().
-
-This protect step is actually not needed, because BPF-helper
-bpf_xdp_adjust_head() already reserve this area, and don't allow
-BPF-prog to expand into it. Thus, it is safe to point data_hard_start
-directly at xdp_frame memory area.
-
-Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
-Reported-by: Mao Wenan <maowenan@huawei.com>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/158945338331.97035.5923525383710752178.stgit@firesoul
+Fixes: 4c6c615e3f30 ("net/mlx5e: IPoIB, Add PKEY child interface nic profile")
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+Reviewed-by: Alex Vesker <valex@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/veth.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 9f3c839f9e5f..88cfd63f08a6 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -510,13 +510,15 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 					struct veth_xdp_tx_bq *bq)
- {
- 	void *hard_start = frame->data - frame->headroom;
--	void *head = hard_start - sizeof(struct xdp_frame);
- 	int len = frame->len, delta = 0;
- 	struct xdp_frame orig_frame;
- 	struct bpf_prog *xdp_prog;
- 	unsigned int headroom;
- 	struct sk_buff *skb;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index c4eed5bbcd45..066bada4ccd1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1428,6 +1428,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
  
-+	/* bpf_xdp_adjust_head() assures BPF cannot access xdp_frame area */
-+	hard_start -= sizeof(struct xdp_frame);
-+
- 	rcu_read_lock();
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
- 	if (likely(xdp_prog)) {
-@@ -538,7 +540,6 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 			break;
- 		case XDP_TX:
- 			orig_frame = *frame;
--			xdp.data_hard_start = head;
- 			xdp.rxq->mem = frame->mem;
- 			if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
- 				trace_xdp_exception(rq->dev, xdp_prog, act);
-@@ -550,7 +551,6 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 			goto xdp_xmit;
- 		case XDP_REDIRECT:
- 			orig_frame = *frame;
--			xdp.data_hard_start = head;
- 			xdp.rxq->mem = frame->mem;
- 			if (xdp_do_redirect(rq->dev, &xdp, xdp_prog)) {
- 				frame = &orig_frame;
-@@ -572,7 +572,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 	rcu_read_unlock();
+ #ifdef CONFIG_MLX5_CORE_IPOIB
  
- 	headroom = sizeof(struct xdp_frame) + frame->headroom - delta;
--	skb = veth_build_skb(head, headroom, len, 0);
-+	skb = veth_build_skb(hard_start, headroom, len, 0);
- 	if (!skb) {
- 		xdp_return_frame(frame);
- 		goto err;
++#define MLX5_IB_GRH_SGID_OFFSET 8
+ #define MLX5_IB_GRH_DGID_OFFSET 24
+ #define MLX5_GID_SIZE           16
+ 
+@@ -1441,6 +1442,7 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	struct net_device *netdev;
+ 	struct mlx5e_priv *priv;
+ 	char *pseudo_header;
++	u32 flags_rqpn;
+ 	u32 qpn;
+ 	u8 *dgid;
+ 	u8 g;
+@@ -1462,7 +1464,8 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	tstamp = &priv->tstamp;
+ 	stats = &priv->channel_stats[rq->ix].rq;
+ 
+-	g = (be32_to_cpu(cqe->flags_rqpn) >> 28) & 3;
++	flags_rqpn = be32_to_cpu(cqe->flags_rqpn);
++	g = (flags_rqpn >> 28) & 3;
+ 	dgid = skb->data + MLX5_IB_GRH_DGID_OFFSET;
+ 	if ((!g) || dgid[0] != 0xff)
+ 		skb->pkt_type = PACKET_HOST;
+@@ -1471,9 +1474,15 @@ static inline void mlx5i_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	else
+ 		skb->pkt_type = PACKET_MULTICAST;
+ 
+-	/* TODO: IB/ipoib: Allow mcast packets from other VFs
+-	 * 68996a6e760e5c74654723eeb57bf65628ae87f4
++	/* Drop packets that this interface sent, ie multicast packets
++	 * that the HCA has replicated.
+ 	 */
++	if (g && (qpn == (flags_rqpn & 0xffffff)) &&
++	    (memcmp(netdev->dev_addr + 4, skb->data + MLX5_IB_GRH_SGID_OFFSET,
++		    MLX5_GID_SIZE) == 0)) {
++		skb->dev = NULL;
++		return;
++	}
+ 
+ 	skb_pull(skb, MLX5_IB_GRH_BYTES);
+ 
 -- 
 2.25.1
 
