@@ -2,155 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117AB1F1F50
-	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 20:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5BC1F1F4A
+	for <lists+netdev@lfdr.de>; Mon,  8 Jun 2020 20:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726181AbgFHSvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 14:51:09 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:36740 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgFHSvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 14:51:07 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 058IlNaB095795;
-        Mon, 8 Jun 2020 18:50:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=l1nmDwr0dMNjA5gGFxnUo801EQzoxa4EkXtmbjrE/M8=;
- b=0h60S9doYNYNWbu72+rOca8l4vJx55hsbRpOjoLQHKZmvBMfhVwIB0Fts3XbWutOnnY+
- Z7KWWn1rx4zwzdrDflbO3oX0bY07KeVwvG89qvQ8iBmveKXuJqi4KI+Wua/erQOQ7Eox
- 9ZWb7yajT4gOHRv9xKaV0arXt99f8o4kyEqkCw7W8K6+QtW8gqDdEPbLlQxYN3b9Vgtk
- zXacB4iySe5omyAlGtCRLbiZ6Y2GHERSu7vHBpYsg3w5LpG65Ikj0shJVikSdFxvH2KJ
- 2jo+zTs2IRpnfdYKJxfqNeWzP5sKGYyifT1XIWH4qMfAJPdlTMee2110esKW7HiaXfsW vQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 31g33m0f5k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 08 Jun 2020 18:50:03 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 058IleAv088142;
-        Mon, 8 Jun 2020 18:50:02 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 31gn2vkjyg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 08 Jun 2020 18:50:02 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 058InxT0026480;
-        Mon, 8 Jun 2020 18:49:59 GMT
-Received: from [10.39.231.199] (/10.39.231.199)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 08 Jun 2020 11:49:59 -0700
-Subject: Re: [PATCH 03/12] x86/xen: Introduce new function to map
- HYPERVISOR_shared_info on Resume
-To:     Anchal Agarwal <anchalag@amazon.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, jgross@suse.com, linux-pm@vger.kernel.org,
-        linux-mm@kvack.org, kamatam@amazon.com, sstabellini@kernel.org,
-        konrad.wilk@oracle.com, roger.pau@citrix.com, axboe@kernel.dk,
-        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
-        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
-        sblbir@amazon.com, xen-devel@lists.xenproject.org,
-        vkuznets@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
-        benh@kernel.crashing.org
-References: <cover.1589926004.git.anchalag@amazon.com>
- <529f544a64bb93b920bf86b1d3f86d93b0a4219b.1589926004.git.anchalag@amazon.com>
- <72989b50-0c13-7a2b-19e2-de4a3646c83f@oracle.com>
- <20200604230307.GB25251@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <9644a5f1-e1f8-5fe1-3135-cc6b4baf893b@oracle.com>
- <20200608165235.GA1330@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
- xsFNBFH8CgsBEAC0KiOi9siOvlXatK2xX99e/J3OvApoYWjieVQ9232Eb7GzCWrItCzP8FUV
- PQg8rMsSd0OzIvvjbEAvaWLlbs8wa3MtVLysHY/DfqRK9Zvr/RgrsYC6ukOB7igy2PGqZd+M
- MDnSmVzik0sPvB6xPV7QyFsykEgpnHbvdZAUy/vyys8xgT0PVYR5hyvhyf6VIfGuvqIsvJw5
- C8+P71CHI+U/IhsKrLrsiYHpAhQkw+Zvyeml6XSi5w4LXDbF+3oholKYCkPwxmGdK8MUIdkM
- d7iYdKqiP4W6FKQou/lC3jvOceGupEoDV9botSWEIIlKdtm6C4GfL45RD8V4B9iy24JHPlom
- woVWc0xBZboQguhauQqrBFooHO3roEeM1pxXjLUbDtH4t3SAI3gt4dpSyT3EvzhyNQVVIxj2
- FXnIChrYxR6S0ijSqUKO0cAduenhBrpYbz9qFcB/GyxD+ZWY7OgQKHUZMWapx5bHGQ8bUZz2
- SfjZwK+GETGhfkvNMf6zXbZkDq4kKB/ywaKvVPodS1Poa44+B9sxbUp1jMfFtlOJ3AYB0WDS
- Op3d7F2ry20CIf1Ifh0nIxkQPkTX7aX5rI92oZeu5u038dHUu/dO2EcuCjl1eDMGm5PLHDSP
- 0QUw5xzk1Y8MG1JQ56PtqReO33inBXG63yTIikJmUXFTw6lLJwARAQABzTNCb3JpcyBPc3Ry
- b3Zza3kgKFdvcmspIDxib3Jpcy5vc3Ryb3Zza3lAb3JhY2xlLmNvbT7CwXgEEwECACIFAlH8
- CgsCGwMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEIredpCGysGyasEP/j5xApopUf4g
- 9Fl3UxZuBx+oduuw3JHqgbGZ2siA3EA4bKwtKq8eT7ekpApn4c0HA8TWTDtgZtLSV5IdH+9z
- JimBDrhLkDI3Zsx2CafL4pMJvpUavhc5mEU8myp4dWCuIylHiWG65agvUeFZYK4P33fGqoaS
- VGx3tsQIAr7MsQxilMfRiTEoYH0WWthhE0YVQzV6kx4wj4yLGYPPBtFqnrapKKC8yFTpgjaK
- jImqWhU9CSUAXdNEs/oKVR1XlkDpMCFDl88vKAuJwugnixjbPFTVPyoC7+4Bm/FnL3iwlJVE
- qIGQRspt09r+datFzPqSbp5Fo/9m4JSvgtPp2X2+gIGgLPWp2ft1NXHHVWP19sPgEsEJXSr9
- tskM8ScxEkqAUuDs6+x/ISX8wa5Pvmo65drN+JWA8EqKOHQG6LUsUdJolFM2i4Z0k40BnFU/
- kjTARjrXW94LwokVy4x+ZYgImrnKWeKac6fMfMwH2aKpCQLlVxdO4qvJkv92SzZz4538az1T
- m+3ekJAimou89cXwXHCFb5WqJcyjDfdQF857vTn1z4qu7udYCuuV/4xDEhslUq1+GcNDjAhB
- nNYPzD+SvhWEsrjuXv+fDONdJtmLUpKs4Jtak3smGGhZsqpcNv8nQzUGDQZjuCSmDqW8vn2o
- hWwveNeRTkxh+2x1Qb3GT46uzsFNBFH8CgsBEADGC/yx5ctcLQlB9hbq7KNqCDyZNoYu1HAB
- Hal3MuxPfoGKObEktawQPQaSTB5vNlDxKihezLnlT/PKjcXC2R1OjSDinlu5XNGc6mnky03q
- yymUPyiMtWhBBftezTRxWRslPaFWlg/h/Y1iDuOcklhpr7K1h1jRPCrf1yIoxbIpDbffnuyz
- kuto4AahRvBU4Js4sU7f/btU+h+e0AcLVzIhTVPIz7PM+Gk2LNzZ3/on4dnEc/qd+ZZFlOQ4
- KDN/hPqlwA/YJsKzAPX51L6Vv344pqTm6Z0f9M7YALB/11FO2nBB7zw7HAUYqJeHutCwxm7i
- BDNt0g9fhviNcJzagqJ1R7aPjtjBoYvKkbwNu5sWDpQ4idnsnck4YT6ctzN4I+6lfkU8zMzC
- gM2R4qqUXmxFIS4Bee+gnJi0Pc3KcBYBZsDK44FtM//5Cp9DrxRQOh19kNHBlxkmEb8kL/pw
- XIDcEq8MXzPBbxwHKJ3QRWRe5jPNpf8HCjnZz0XyJV0/4M1JvOua7IZftOttQ6KnM4m6WNIZ
- 2ydg7dBhDa6iv1oKdL7wdp/rCulVWn8R7+3cRK95SnWiJ0qKDlMbIN8oGMhHdin8cSRYdmHK
- kTnvSGJNlkis5a+048o0C6jI3LozQYD/W9wq7MvgChgVQw1iEOB4u/3FXDEGulRVko6xCBU4
- SQARAQABwsFfBBgBAgAJBQJR/AoLAhsMAAoJEIredpCGysGyfvMQAIywR6jTqix6/fL0Ip8G
- jpt3uk//QNxGJE3ZkUNLX6N786vnEJvc1beCu6EwqD1ezG9fJKMl7F3SEgpYaiKEcHfoKGdh
- 30B3Hsq44vOoxR6zxw2B/giADjhmWTP5tWQ9548N4VhIZMYQMQCkdqaueSL+8asp8tBNP+TJ
- PAIIANYvJaD8xA7sYUXGTzOXDh2THWSvmEWWmzok8er/u6ZKdS1YmZkUy8cfzrll/9hiGCTj
- u3qcaOM6i/m4hqtvsI1cOORMVwjJF4+IkC5ZBoeRs/xW5zIBdSUoC8L+OCyj5JETWTt40+lu
- qoqAF/AEGsNZTrwHJYu9rbHH260C0KYCNqmxDdcROUqIzJdzDKOrDmebkEVnxVeLJBIhYZUd
- t3Iq9hdjpU50TA6sQ3mZxzBdfRgg+vaj2DsJqI5Xla9QGKD+xNT6v14cZuIMZzO7w0DoojM4
- ByrabFsOQxGvE0w9Dch2BDSI2Xyk1zjPKxG1VNBQVx3flH37QDWpL2zlJikW29Ws86PHdthh
- Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
- 19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
- Jg6OxFYd01z+a+oL
-Message-ID: <311de66b-68fb-f9f3-910e-6fa5eeb648bb@oracle.com>
-Date:   Mon, 8 Jun 2020 14:49:54 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726119AbgFHSuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 14:50:10 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39688 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726101AbgFHSuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 14:50:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591642207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rH8MpXGVAV4nFViikxVNGQ6cewnlNkwGUrQ6pwHt3dQ=;
+        b=bZdnpChFIkeT8EDEpv+ZwlnPRnRxleUsx4L3ysHKHz9zxg9ql8hisGmUOoA57DsgjlngCT
+        oDSgJixQW9H9qniCp0Lt2BTXm356pMffOK6AP/hQYuKJi77ZzWxKvB04dlQWLBl+rdm84R
+        ZSvDvbmIp/0BROx4SH2JuzbH/4q88VQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-442-y9DUsuAwMhaWWEpFPB7X8g-1; Mon, 08 Jun 2020 14:50:05 -0400
+X-MC-Unique: y9DUsuAwMhaWWEpFPB7X8g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AEC4B1005512;
+        Mon,  8 Jun 2020 18:50:03 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BB8C100239B;
+        Mon,  8 Jun 2020 18:50:02 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 2/2] rxrpc: Fix missing notification
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Gerry Seidman <gerry@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Mon, 08 Jun 2020 19:50:01 +0100
+Message-ID: <159164220145.2758133.3370434050398146640.stgit@warthog.procyon.org.uk>
+In-Reply-To: <159164218727.2758133.1046957228494479308.stgit@warthog.procyon.org.uk>
+References: <159164218727.2758133.1046957228494479308.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.22
 MIME-Version: 1.0
-In-Reply-To: <20200608165235.GA1330@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9646 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 malwarescore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 spamscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006080133
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9646 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 spamscore=0
- cotscore=-2147483648 malwarescore=0 phishscore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=999
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006080133
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/8/20 12:52 PM, Anchal Agarwal wrote:
->
->>>>> +void xen_hvm_map_shared_info(void)
->>>>> +{
->>>>> +     xen_hvm_init_shared_info();
->>>>> +     if (shared_info_pfn)
->>>>> +             HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
->>>>> +}
->>>>> +
->>>> AFAICT it is only called once so I don't see a need for new routine.
->>>>
->>>>
->>> HYPERVISOR_shared_info can only be mapped in this scope without refactoring
->>> much of the code.
->>
->> Refactoring what? All am suggesting is
->>
-> shared_info_pfn does not seem to be in scope here, it's scope is limited
-> to enlighten_hvm.c. That's the reason I introduced a new function there.
+Under some circumstances, rxrpc will fail a transmit a packet through the
+underlying UDP socket (ie. UDP sendmsg returns an error).  This may result
+in a call getting stuck.
 
+In the instance being seen, where AFS tries to send a probe to the Volume
+Location server, tracepoints show the UDP Tx failure (in this case returing
+error 99 EADDRNOTAVAIL) and then nothing more:
 
-OK, that's a good point.
+ afs_make_vl_call: c=0000015d VL.GetCapabilities
+ rxrpc_call: c=0000015d NWc u=1 sp=rxrpc_kernel_begin_call+0x106/0x170 [rxrpc] a=00000000dd89ee8a
+ rxrpc_call: c=0000015d Gus u=2 sp=rxrpc_new_client_call+0x14f/0x580 [rxrpc] a=00000000e20e4b08
+ rxrpc_call: c=0000015d SEE u=2 sp=rxrpc_activate_one_channel+0x7b/0x1c0 [rxrpc] a=00000000e20e4b08
+ rxrpc_call: c=0000015d CON u=2 sp=rxrpc_kernel_begin_call+0x106/0x170 [rxrpc] a=00000000e20e4b08
+ rxrpc_tx_fail: c=0000015d r=1 ret=-99 CallDataNofrag
 
+The problem is that if the initial packet fails and the retransmission
+timer hasn't been started, the call is set to completed and an error is
+returned from rxrpc_send_data_packet() to rxrpc_queue_packet().  Though
+rxrpc_instant_resend() is called, this does nothing because the call is
+marked completed.
 
--boris
+So rxrpc_notify_socket() isn't called and the error is passed back up to
+rxrpc_send_data(), rxrpc_kernel_send_data() and thence to afs_make_call()
+and afs_vl_get_capabilities() where it is simply ignored because it is
+assumed that the result of a probe will be collected asynchronously.
+
+Fileserver probing is similarly affected via afs_fs_get_capabilities().
+
+Fix this by always issuing a notification in __rxrpc_set_call_completion()
+if it shifts a call to the completed state, even if an error is also
+returned to the caller through the function return value.
+
+Also put in a little bit of optimisation to avoid taking the call
+state_lock and disabling softirqs if the call is already in the completed
+state and remove some now redundant rxrpc_notify_socket() calls.
+
+Fixes: f5c17aaeb2ae ("rxrpc: Calls should only have one terminal state")
+Reported-by: Gerry Seidman <gerry@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+---
+
+ net/rxrpc/call_event.c |    1 -
+ net/rxrpc/conn_event.c |    7 +++----
+ net/rxrpc/input.c      |    7 ++-----
+ net/rxrpc/peer_event.c |    4 +---
+ net/rxrpc/recvmsg.c    |   21 +++++++++++++--------
+ net/rxrpc/sendmsg.c    |    6 ++----
+ 6 files changed, 21 insertions(+), 25 deletions(-)
+
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 2a65ac41055f..61a51c251e1b 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -320,7 +320,6 @@ void rxrpc_process_call(struct work_struct *work)
+ 
+ 	if (call->state == RXRPC_CALL_COMPLETE) {
+ 		del_timer_sync(&call->timer);
+-		rxrpc_notify_socket(call);
+ 		goto out_put;
+ 	}
+ 
+diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
+index 06fcff2ebbba..447f55ca6886 100644
+--- a/net/rxrpc/conn_event.c
++++ b/net/rxrpc/conn_event.c
+@@ -173,10 +173,9 @@ static void rxrpc_abort_calls(struct rxrpc_connection *conn,
+ 			else
+ 				trace_rxrpc_rx_abort(call, serial,
+ 						     conn->abort_code);
+-			if (rxrpc_set_call_completion(call, compl,
+-						      conn->abort_code,
+-						      conn->error))
+-				rxrpc_notify_socket(call);
++			rxrpc_set_call_completion(call, compl,
++						  conn->abort_code,
++						  conn->error);
+ 		}
+ 	}
+ 
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 3be4177baf70..299ac98e9754 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -275,7 +275,6 @@ static bool rxrpc_end_tx_phase(struct rxrpc_call *call, bool reply_begun,
+ 
+ 	case RXRPC_CALL_SERVER_AWAIT_ACK:
+ 		__rxrpc_call_completed(call);
+-		rxrpc_notify_socket(call);
+ 		state = call->state;
+ 		break;
+ 
+@@ -1013,9 +1012,8 @@ static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
+ 
+ 	_proto("Rx ABORT %%%u { %x }", sp->hdr.serial, abort_code);
+ 
+-	if (rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
+-				      abort_code, -ECONNABORTED))
+-		rxrpc_notify_socket(call);
++	rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++				  abort_code, -ECONNABORTED);
+ }
+ 
+ /*
+@@ -1102,7 +1100,6 @@ static void rxrpc_input_implicit_end_call(struct rxrpc_sock *rx,
+ 	spin_lock(&rx->incoming_lock);
+ 	__rxrpc_disconnect_call(conn, call);
+ 	spin_unlock(&rx->incoming_lock);
+-	rxrpc_notify_socket(call);
+ }
+ 
+ /*
+diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
+index b1449d971883..4704a8dceced 100644
+--- a/net/rxrpc/peer_event.c
++++ b/net/rxrpc/peer_event.c
+@@ -289,9 +289,7 @@ static void rxrpc_distribute_error(struct rxrpc_peer *peer, int error,
+ 
+ 	hlist_for_each_entry_rcu(call, &peer->error_targets, error_link) {
+ 		rxrpc_see_call(call);
+-		if (call->state < RXRPC_CALL_COMPLETE &&
+-		    rxrpc_set_call_completion(call, compl, 0, -error))
+-			rxrpc_notify_socket(call);
++		rxrpc_set_call_completion(call, compl, 0, -error);
+ 	}
+ }
+ 
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 6c4ba4224ddc..2989742a4aa1 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -73,6 +73,7 @@ bool __rxrpc_set_call_completion(struct rxrpc_call *call,
+ 		call->state = RXRPC_CALL_COMPLETE;
+ 		trace_rxrpc_call_complete(call);
+ 		wake_up(&call->waitq);
++		rxrpc_notify_socket(call);
+ 		return true;
+ 	}
+ 	return false;
+@@ -83,11 +84,13 @@ bool rxrpc_set_call_completion(struct rxrpc_call *call,
+ 			       u32 abort_code,
+ 			       int error)
+ {
+-	bool ret;
++	bool ret = false;
+ 
+-	write_lock_bh(&call->state_lock);
+-	ret = __rxrpc_set_call_completion(call, compl, abort_code, error);
+-	write_unlock_bh(&call->state_lock);
++	if (call->state < RXRPC_CALL_COMPLETE) {
++		write_lock_bh(&call->state_lock);
++		ret = __rxrpc_set_call_completion(call, compl, abort_code, error);
++		write_unlock_bh(&call->state_lock);
++	}
+ 	return ret;
+ }
+ 
+@@ -101,11 +104,13 @@ bool __rxrpc_call_completed(struct rxrpc_call *call)
+ 
+ bool rxrpc_call_completed(struct rxrpc_call *call)
+ {
+-	bool ret;
++	bool ret = false;
+ 
+-	write_lock_bh(&call->state_lock);
+-	ret = __rxrpc_call_completed(call);
+-	write_unlock_bh(&call->state_lock);
++	if (call->state < RXRPC_CALL_COMPLETE) {
++		write_lock_bh(&call->state_lock);
++		ret = __rxrpc_call_completed(call);
++		write_unlock_bh(&call->state_lock);
++	}
+ 	return ret;
+ }
+ 
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 5dd9ba000c00..1304b8608f56 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -261,10 +261,8 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ 		case -ENETUNREACH:
+ 		case -EHOSTUNREACH:
+ 		case -ECONNREFUSED:
+-			if (rxrpc_set_call_completion(call,
+-						      RXRPC_CALL_LOCAL_ERROR,
+-						      0, ret))
+-				rxrpc_notify_socket(call);
++			rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
++						  0, ret);
+ 			goto out;
+ 		}
+ 		_debug("need instant resend %d", ret);
+
 
