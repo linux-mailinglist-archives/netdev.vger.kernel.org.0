@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7CC1F2BA7
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A18EE1F2B9D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 02:18:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730695AbgFHXSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 19:18:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41152 "EHLO mail.kernel.org"
+        id S1732908AbgFIAR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 20:17:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728395AbgFHXSp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:18:45 -0400
+        id S1730004AbgFHXSv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:18:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2362620823;
-        Mon,  8 Jun 2020 23:18:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A6F9E20870;
+        Mon,  8 Jun 2020 23:18:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658325;
-        bh=sn8Keq0WlrH2oMOMaqzuef1suUNEu90hJWl2+RdW0To=;
+        s=default; t=1591658331;
+        bh=bS5W2ONyw/SXIa/fkGa6ec0BYeEBMqk33GK3nELN/DA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lz+X0UzdbPgLWiR3vCKPD2v4+VAoYznhAOGMECW6TDFv/2wzfxorCDyr2Dd4mHeud
-         2tjkXrMsNnKKv9IusGEKjJtky1ia86xR72srLGpN1elGvN/QlWwHViMXnSX83g+RQ0
-         mPxd5Vo9pft9ZDIKJuIzArBwQ+/LEJNOCwUSz1aE=
+        b=WT0FMiiOOWHCdtvX2pRIItQjYqFYIzA6XV7L4n7RC3YqkrWTRAgFwmA4a8bui6v2z
+         3GeJ32XAO22wT3R05PUcW6fsJPo8+85VIH5C7Kgol4JbT+C+5YBiyC6C9bcPz1HxgC
+         uU2FrWXQRNH1JbAIkeb+yCtz34sJr6ghjtqSq0cI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jerry Lee <leisurelysw24@gmail.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 325/606] libceph: ignore pool overlay and cache logic on redirects
-Date:   Mon,  8 Jun 2020 19:07:30 -0400
-Message-Id: <20200608231211.3363633-325-sashal@kernel.org>
+Cc:     Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        Govindaraj Saminathan <gsamin@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 002/175] ath10k: Fix the race condition in firmware dump work queue
+Date:   Mon,  8 Jun 2020 19:15:55 -0400
+Message-Id: <20200608231848.3366970-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
-References: <20200608231211.3363633-1-sashal@kernel.org>
+In-Reply-To: <20200608231848.3366970-1-sashal@kernel.org>
+References: <20200608231848.3366970-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,47 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jerry Lee <leisurelysw24@gmail.com>
+From: Maharaja Kennadyrajan <mkenna@codeaurora.org>
 
-[ Upstream commit 890bd0f8997ae6ac0a367dd5146154a3963306dd ]
+[ Upstream commit 3d1c60460fb2823a19ead9e6ec8f184dd7271aa7 ]
 
-OSD client should ignore cache/overlay flag if got redirect reply.
-Otherwise, the client hangs when the cache tier is in forward mode.
+There is a race condition, when the user writes 'hw-restart' and
+'hard' in the simulate_fw_crash debugfs file without any delay.
+In the above scenario, the firmware dump work queue(scheduled by
+'hard') should be handled gracefully, while the target is in the
+'hw-restart'.
 
-[ idryomov: Redirects are effectively deprecated and no longer
-  used or tested.  The original tiering modes based on redirects
-  are inherently flawed because redirects can race and reorder,
-  potentially resulting in data corruption.  The new proxy and
-  readproxy tiering modes should be used instead of forward and
-  readforward.  Still marking for stable as obviously correct,
-  though. ]
+Tested HW: QCA9984
+Tested FW: 10.4-3.9.0.2-00044
 
-Cc: stable@vger.kernel.org
-URL: https://tracker.ceph.com/issues/23296
-URL: https://tracker.ceph.com/issues/36406
-Signed-off-by: Jerry Lee <leisurelysw24@gmail.com>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Co-developed-by: Govindaraj Saminathan <gsamin@codeaurora.org>
+Signed-off-by: Govindaraj Saminathan <gsamin@codeaurora.org>
+Signed-off-by: Maharaja Kennadyrajan <mkenna@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1585213077-28439-1-git-send-email-mkenna@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ceph/osd_client.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
-index af868d3923b9..834019dbc6b1 100644
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -3652,7 +3652,9 @@ static void handle_reply(struct ceph_osd *osd, struct ceph_msg *msg)
- 		 * supported.
- 		 */
- 		req->r_t.target_oloc.pool = m.redirect.oloc.pool;
--		req->r_flags |= CEPH_OSD_FLAG_REDIRECTED;
-+		req->r_flags |= CEPH_OSD_FLAG_REDIRECTED |
-+				CEPH_OSD_FLAG_IGNORE_OVERLAY |
-+				CEPH_OSD_FLAG_IGNORE_CACHE;
- 		req->r_tid = 0;
- 		__submit_request(req, false);
- 		goto out_unlock_osdc;
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index 0a727502d14c..fd49d3419e79 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -2074,6 +2074,7 @@ static void ath10k_pci_hif_stop(struct ath10k *ar)
+ 	ath10k_pci_irq_sync(ar);
+ 	napi_synchronize(&ar->napi);
+ 	napi_disable(&ar->napi);
++	cancel_work_sync(&ar_pci->dump_work);
+ 
+ 	/* Most likely the device has HTT Rx ring configured. The only way to
+ 	 * prevent the device from accessing (and possible corrupting) host
 -- 
 2.25.1
 
