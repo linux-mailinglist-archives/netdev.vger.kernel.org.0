@@ -2,118 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 673DD1F47CE
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C941F47D1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389371AbgFIULc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 16:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731802AbgFIULb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:11:31 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F14DC05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 13:11:31 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id n9so25071plk.1
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 13:11:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Zx/VCKRiyi/4hcuXFzZBFZ7r4XlDXVNcoz/8+OOF5/w=;
-        b=RfrdJnnTX5HJDXWmv+Uk2n9IhZda/qegu2Cnm3Fqz40XH6obghrjrRYhJyp719ZuKk
-         sY/TpKURjWRQU8a9VqPNvJaIsGFPLF8gpSEQOYq5griKlC032j8ruskvm30W+5qjkPjM
-         jTc/H0PsWFCMXrM1XUQ+xLUpqX1MbMG8up9Xkt1w9aM8jlN1d9oSkT2kAy5pn8Bvsrsv
-         IP1Z08AorDXmFrjbc+wus2nff/fxaMTFaLAXBNMCXONoEsKtqrANe4/fzYkJ+7V3d37Y
-         Bnm5QBUj1oxDOYGxciqyVJ4vDbw2B4Ob0D9rvX66xrnpxrdICKuPyF5uMd5+1W+7IFU5
-         3pXA==
+        id S2389423AbgFIUMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 16:12:00 -0400
+Received: from mail-ej1-f65.google.com ([209.85.218.65]:46320 "EHLO
+        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731802AbgFIUL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:11:59 -0400
+Received: by mail-ej1-f65.google.com with SMTP id p20so3824429ejd.13;
+        Tue, 09 Jun 2020 13:11:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Zx/VCKRiyi/4hcuXFzZBFZ7r4XlDXVNcoz/8+OOF5/w=;
-        b=WM20PemaFboDA2BiOT7Fh4iPP8iOhrFSzKMlULs7drBALfOiC6PF0HKsU8gmW2xKus
-         0xT6/jdDCWZK2ozqslOOoLl/mlM0+9xjguRd6W8LGWj6YHDxbmzclhkETl5AOT55dCCX
-         7VRYq3XX+9S45+TTZCCB76r/f2oW4b+RyWB0MTK10j47ZbkBMbvkOTfN17gbFr7IFBbX
-         1eguOfB/c8mhRNN+TFLVQTaDOr3xWvvPblYfLel6OfcHD+P9YIzir1C1UgOcTLh9usbD
-         Wt01Im65yLfQIyk5hZChkNPGduCK0a6xI1O/UGE5PwA8jjdb26ZHHx1sj8rJP15pELhr
-         hRsQ==
-X-Gm-Message-State: AOAM5320UoX9NooFQdbgpF7sNwVKIHhB1ML3ga1KsxerMyiBloRBBa1Y
-        9j/fZXaCoVk/uuEpQrEpW/eMeTHbEX0=
-X-Google-Smtp-Source: ABdhPJw3JqVVvN1yYE+CipUzYaSGGxpUsyZUBsjSa2AqRhmBCrlxoUFS3/iI9fnMwN/FbvR/qIX6pg==
-X-Received: by 2002:a17:90a:6706:: with SMTP id n6mr6931353pjj.13.1591733490196;
-        Tue, 09 Jun 2020 13:11:30 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id z85sm10593650pfc.66.2020.06.09.13.11.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jun 2020 13:11:29 -0700 (PDT)
-Subject: Re: [PATCH net 1/1] ionic: wait on queue start until after IFF_UP
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20200609034143.7668-1-snelson@pensando.io>
- <20200609.124709.1693195732249155694.davem@davemloft.net>
- <99c98b8c-f8c3-b1be-9878-1ad0caf85656@pensando.io>
- <20200609.130637.1015423291014478400.davem@davemloft.net>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <9594f97d-bfc8-6322-ba6e-5a838d1dbde0@pensando.io>
-Date:   Tue, 9 Jun 2020 13:11:28 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NZeC2/l48nupjKZvZ1jifZHSazauyXFgX8W5icrG39c=;
+        b=WFD+kzLC7vZYvEvcVOTSduh0I/AVXp+ElxAv6c+YKFBPcXwIpSwPCHYFxTYEstRC6q
+         vzK1yJJHPtzIIyTqMG9B6r4tpjWFfxNtFb5N+6SQUV5hbKNEPYsV1ijAnKQzGdZHgUZN
+         MMTIiQJwrkV+lD39KkZ5fatEMeaKEEhgRI1EZNo7t6J4XDPxfHrZViqqJXWHGrRXBb2T
+         unc7Q7/dCHbFGYWo+fEvJ6rnorw9ug2qNYanWtE2SvU22bzG3MCsGxgws+JOGB6bSBHV
+         Ia+BJqnXfbL3sDirZtM+0LIR3DF+sbSPoMMgg4xspqa+iU9hiIfmD12f14uKlyHogQ0Z
+         vd9A==
+X-Gm-Message-State: AOAM532O9KD0L7QwQP+drL56G7O66whCILkXiNDByjxNWZ/3BpZeDcT1
+        2w7DNjkE1WbSm1FyYRH4466wPwe2K+A=
+X-Google-Smtp-Source: ABdhPJy0NfuVDiXVRnjQpUi9hQ6AmIz+GXIvUdT1uGBxPl7lZWBPr8IReYBdQOGiZTvXO0ixLFteCg==
+X-Received: by 2002:a17:906:aec5:: with SMTP id me5mr134331ejb.54.1591733517055;
+        Tue, 09 Jun 2020 13:11:57 -0700 (PDT)
+Received: from zenbook-val.localdomain (bbcs-65-74.pub.wingo.ch. [144.2.65.74])
+        by smtp.gmail.com with ESMTPSA id t5sm15503995eds.81.2020.06.09.13.11.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2020 13:11:56 -0700 (PDT)
+From:   Valentin Longchamp <valentin@longchamp.me>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com, Valentin Longchamp <valentin@longchamp.me>,
+        stable@vger.kernel.org
+Subject: [PATCH v3] net: sched: export __netdev_watchdog_up()
+Date:   Tue,  9 Jun 2020 22:11:54 +0200
+Message-Id: <20200609201154.22022-1-valentin@longchamp.me>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200609.130637.1015423291014478400.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/20 1:06 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Tue, 9 Jun 2020 12:51:17 -0700
->
->> On 6/9/20 12:47 PM, David Miller wrote:
->>> From: Shannon Nelson <snelson@pensando.io>
->>> Date: Mon,  8 Jun 2020 20:41:43 -0700
->>>
->>>> The netif_running() test looks at __LINK_STATE_START which
->>>> gets set before ndo_open() is called, there is a window of
->>>> time between that and when the queues are actually ready to
->>>> be run.  If ionic_check_link_status() notices that the link is
->>>> up very soon after netif_running() becomes true, it might try
->>>> to run the queues before they are ready, causing all manner of
->>>> potential issues.  Since the netdev->flags IFF_UP isn't set
->>>> until after ndo_open() returns, we can wait for that before
->>>> we allow ionic_check_link_status() to start the queues.
->>>>
->>>> On the way back to close, __LINK_STATE_START is cleared before
->>>> calling ndo_stop(), and IFF_UP is cleared after.  Both of
->>>> these need to be true in order to safely stop the queues
->>>> from ionic_check_link_status().
->>>>
->>>> Fixes: 49d3b493673a ("ionic: disable the queues on link down")
->>>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->>> What will make sure the queues actually get started if this
->>> event's queue start gets skipped in this scenerio?
->>>
->>> This code is only invoked when the link status changes or
->>> when the firmware is started.
->> If the link is already seen as up before ionic_open() is called it
->> starts the queues at that point.
->>
->> If link isn't seen until after ionic_open(), then the queues are
->> started in this periodic link check.
-> I'm saying if it happens in the race condition you mention that you
-> are protecting against, where running is true and IFF_UP is not.
->
-> The link check is periodic?  It looks like it triggers when the
-> link state changes to me.
+Since the quiesce/activate rework, __netdev_watchdog_up() is directly
+called in the ucc_geth driver.
 
-Yes, the link check is triggered by the periodic watchdog 
-ionic_watchdog_cb(), every 5 seconds.
+Unfortunately, this function is not available for modules and thus
+ucc_geth cannot be built as a module anymore. Fix it by exporting
+__netdev_watchdog_up().
 
-sln
+Since the commit introducing the regression was backported to stable
+branches, this one should ideally be as well.
 
+Fixes: 79dde73cf9bc ("net/ethernet/freescale: rework quiesce/activate for ucc_geth")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+---
+ net/sched/sch_generic.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index b19a0021a0bd..265a61d011df 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -464,6 +464,7 @@ void __netdev_watchdog_up(struct net_device *dev)
+ 			dev_hold(dev);
+ 	}
+ }
++EXPORT_SYMBOL_GPL(__netdev_watchdog_up);
+ 
+ static void dev_watchdog_up(struct net_device *dev)
+ {
+-- 
+2.25.1
 
