@@ -2,133 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AA1B1F3D8C
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BEA21F3D9F
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730132AbgFIOFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 10:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
+        id S1729023AbgFIOJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 10:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730011AbgFIOFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:05:17 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5C4C03E97C
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 07:05:17 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id q19so22524929eja.7
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 07:05:17 -0700 (PDT)
+        with ESMTP id S1726967AbgFIOJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:09:40 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28347C05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 07:09:40 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id e16so17706019qtg.0
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 07:09:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5hepcAY2/ehcC2QRXTzcnN6zPc+QLUZRF3NIFXI3NgY=;
-        b=CU9j5ULLQAwSyo5lzgoEK/VLxHk2fXaIjC83AeSXtVcYBK0qoA04HYDsrHYWVeMvS+
-         YGjAt81DhuozocMhJKbMfw/IqDZevlAoWNtcX4AiEc/Fr4TgLpg+9VoJcdEwNYhAac/I
-         X5nBwrg1GDIxiodJQUkQ15xrodKbrpaDomhYTVTMy5SYPxpIf2zlk6JMKIB+GF+BVINc
-         2lXvzaNWSzQuEn/j/IhOdfhX/ndgoVv4UKiDhGCKbBKgoHSGpB58+pEvHSvU8sxmOWuj
-         AVoSnoh2CKfWYLHw1KaE7T8Rd3XaaB3y3wlPdRGomcfI7alCTX0vQo9XCn7L+Yj22+BS
-         RDiQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m/PE01wytrFMZ5EZYea6fpxQsU5jVFPnMfGnMCPJHuQ=;
+        b=CChHc3z9wMihmsM2hB0S3nwfXU3Tc7SXYGjO1HiGV3jVqBpBtmm+aAdd7GmWVdwKuY
+         EsQcy8YTAL4gbze5kQGHYqUN+lfqMq7iuEM1VgBjLACDNaIuYZ6EFXOeXDZkCjQ1XatU
+         6Y2l8R6O6jDkfaIk/UI+ijRyeY12/9Qf+/yQS8ECc/84KOj/vbCQVjgABDb1733R/yXU
+         CVlxva3liFcMv9+n6qP4atG1xkoSozgJ49gxib4vexhRZm+BLwY4cULKoZrJ97IFTH1V
+         nK8na+ODtYv4ZKZV8Ong+h0Wp4IECSyPDQC5SxrZra9xAasEcLqZvMjfUMRUeJlSp9XK
+         c/iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5hepcAY2/ehcC2QRXTzcnN6zPc+QLUZRF3NIFXI3NgY=;
-        b=KmZL1+MCDUOaatAGlxQd31p4mBUzHzowzGPV+SgIbHt5DCRNuR1Bh3Ldscl7V4ApR3
-         3ZZmsXvQG5DiKw0uylQb38PprhlYmkT4Y/kiGKF6vN7cs+b28OfWxwgwOHRRymAfDQxK
-         t8u/VbR4AABIPq7PXcdastGe0C78NjSzDrMtLHg7frRG0a/e/q1z9ROMbc2h4Qr9CFye
-         BzhUwo5aqevn6OmDcUq9F088gtHBbacJdKwK3Kp5h25xAjjCm+GmgXgme/gWGTvHGWRa
-         gXUCrQ3TUWlfEzy4HcS8NO/jSlCfHlM1/+cQQXaERg5P8H9uLt8FgWXIUMJRVfjmD6ko
-         7sgg==
-X-Gm-Message-State: AOAM532jLgjDHNh6dshEkIMg8ue501OBrGkJu6Myt4c8LRuPwZRaqF0R
-        F13JJy1pSzf4ik885cJBK8d+HQ==
-X-Google-Smtp-Source: ABdhPJzg++2o5ePPL5lY4GZatvE+sm6jWJ3OClVthRqg01qkSFwIJ27W183rZIEmcXKonTMixnWQNw==
-X-Received: by 2002:a17:906:2656:: with SMTP id i22mr24427488ejc.397.1591711516099;
-        Tue, 09 Jun 2020 07:05:16 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:116c:c27a:3e7f:5eaf])
-        by smtp.gmail.com with ESMTPSA id k24sm3844512edk.95.2020.06.09.07.05.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m/PE01wytrFMZ5EZYea6fpxQsU5jVFPnMfGnMCPJHuQ=;
+        b=Y8Uer4bNtwvbXdyCyQ+Vt9h0BfEGv8ghn1/tnZVelYycFsow1tFaEKVW/7vvJli3KD
+         pxnR6zQFXda3gvt9l9Xc8n7ZAdltT+w0fqYpFWOHtk86fLHDriliKeZo6YQ38v+xRj40
+         eZME7XqfjSDSWVejjYmhMaRAZrFy6E8Z6r2JEV8ug7WCggKHK6D86nOdeqBbyE4zBnqB
+         MlBvamAqPwF4XOfVreIlV2PLW7w06V862MDLq5bPoo/Q6COrAdPBsO35t+dF1z/K4GZc
+         2NdT3Q5kmUeysbCqccr8WARcErdRORCABOSvprxzBhdn9ElRt8be4fyLjcyjaSzarZbw
+         70qQ==
+X-Gm-Message-State: AOAM532mWnfWm1d2oa4gqtqDzq1Rg31aQzvd4HTarmxUp9FojTMhiRKj
+        1kNK70NcL+ZvXsrZnJAcJ+X+ZbAb
+X-Google-Smtp-Source: ABdhPJzN0JArAuGEteqTCWUozXo38+fdz1hp3jkFPJvJJjLgQrAPFo5NTZBnywtNSrDlcKwPuzZ6eQ==
+X-Received: by 2002:ac8:3f77:: with SMTP id w52mr27947117qtk.161.1591711778419;
+        Tue, 09 Jun 2020 07:09:38 -0700 (PDT)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:8798:f98:652b:63f1])
+        by smtp.gmail.com with ESMTPSA id u25sm10454614qtc.11.2020.06.09.07.09.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 07:05:15 -0700 (PDT)
-Date:   Tue, 9 Jun 2020 16:05:04 +0200
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf] libbpf: Fix BTF-to-C conversion of noreturn function
- pointers
-Message-ID: <20200609140504.GA915559@myrica>
-References: <20200608152052.898491-1-jean-philippe@linaro.org>
- <CAEf4BzaNaHGBxNLdA1RA7VPou7ypO3Z5XBRG5gpkePx4g27yWA@mail.gmail.com>
+        Tue, 09 Jun 2020 07:09:37 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Willem de Bruijn <willemb@google.com>
+Subject: [PATCH RFC net-next 0/6] multi release pacing for UDP GSO
+Date:   Tue,  9 Jun 2020 10:09:28 -0400
+Message-Id: <20200609140934.110785-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzaNaHGBxNLdA1RA7VPou7ypO3Z5XBRG5gpkePx4g27yWA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 04:50:37PM -0700, Andrii Nakryiko wrote:
-> On Mon, Jun 8, 2020 at 8:23 AM Jean-Philippe Brucker
-> <jean-philippe@linaro.org> wrote:
-> >
-> > When trying to convert the BTF for a function pointer marked "noreturn"
-> > to C code, bpftool currently generates a syntax error. This happens with
-> > the exit() pointer in drivers/firmware/efi/libstub/efistub.h, in an
-> > arm64 vmlinux. When dealing with this declaration:
-> >
-> >         efi_status_t __noreturn (__efiapi *exit)(...);
-> >
-> > bpftool produces the following output:
-> >
-> >         efi_status_tvolatile  (*exit)(...);
-> 
-> 
-> I'm curious where this volatile is coming from, I don't see it in
-> __efiapi. But even if it's there, shouldn't it be inside parens
-> instead:
-> 
-> efi_status_t (volatile *exit)(...);
+From: Willem de Bruijn <willemb@google.com>
 
-It's the __noreturn attribute that becomes "volatile", not the __efiapi.
-My reproducer is:
+UDP segmentation offload with UDP_SEGMENT can significantly reduce the
+transmission cycle cost per byte for protocols like QUIC.
 
-  struct my_struct {
-          void __attribute__((noreturn)) (*fn)(int);
-  };
-  struct my_struct a;
+Pacing offload with SO_TXTIME can improve accuracy and cycle cost of
+pacing for such userspace protocols further.
 
-When generating DWARF info for this, GCC inserts a DW_TAG_volatile_type.
-Clang doesn't add a volatile tag, it just omits the noreturn qualifier.
-From what I could find, it's due to legacy "noreturn" support in GCC [1]:
-before version 2.5 the only way to declare a noreturn function was to
-declare it volatile.
+But the maximum GSO size built is limited by the pacing rate. As msec
+pacing interval, for many Internet clients results in at most a few
+segments per datagram.
 
-[1] https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html
+The pros and cons were captured in a recent CloudFlare article,
+specifically mentioning
 
-Given that not all compilers turn "noreturn" into "volatile", and that I
-haven't managed to insert any other modifier (volatile/const/restrict) in
-this location (the efistub example above is the only issue on an
-allyesconfig kernel), I was considering simply removing this call to
-btf_dump_emit_mods(). But I'm not confident enough that it won't ever be
-necessary.
+  "But it does not yet support specifying different times for each
+  packet when GSO is used, as there is no way to define multiple
+  timestamps for packets that need to be segmented (each segmented
+  packet essentially ends up being sent at the same time anyway)."
 
-> > Fix the error by inserting the space before the function modifier.
-> >
-> > Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > ---
-> 
-> Can you please add tests for this case into selftests (probably
-> progs/btf_dump_test_case_syntax.c?) So it's clear what's the input and
-> what's the expected output.
+  https://blog.cloudflare.com/accelerating-udp-packet-transmission-for-quic/
 
-Those tests are built with clang, which doesn't emit the "volatile"
-modifier. Should I add a separate test for GCC?
+We have been evaluating such a mechanism for multiple release times
+per UDP GSO packets. Since it sounds like it may of interest to
+others, too, it may be a while before we have all the data I'd like
+and it's more quiet on the list now that the merge window is open,
+sharing a WIP version.
 
-Thanks,
-Jean
+The basic approach is to specify
+
+1. initial early release time (in nsec)
+2. interval between subsequent release times (in msec)
+3. number of segments to release at each release time
+
+One implementation concern is where to store the additional two fields
+in the skb. Given that msec granularity is the Internet pacing speed,
+for now repurpose the two lowest 4B nibbles in skb->tstamp to hold the
+interval and segment count. I'm aware that this does not win a prize
+for elegance.
+
+Patch 1 adds the socket option and basic segmentation function to
+  adjust the skb->tstamp of the individual segments.
+
+Patch 2 extends this with support for build GSO segs. Build one GSO
+   segment per interval if the hardware can offload (USO) and thus
+   we are segmenting only to maintain pacing rate.
+
+Patch 3 wires the segmentation up to the FQ qdisc on enqueue, so that
+   segments will be scheduled for delivery at their adjusted time.
+
+Patch 4..6 extend existing tests to experiment with the feature
+
+Patch 4 allows testing so_txtime across hardware (for USO)
+Patch 5 extends the so_txtime test with support for gso and mr-pacing
+Patch 6 extends the udpgso bench to support pacing and mr-pacing
+
+Some known limitations:
+
+- the aforementioned storage in skb->tstamp.
+
+- exposing this constraint through the SO_TXTIME interface.
+  it is cleaner to add new fields to the cmsg, at nsec resolution.
+
+- the fq_enqueue path adds a branch to the hot path.
+  a static branch would avoid that.
+
+- a few udp specific assumptions in a net/core datapath.
+  notably the hw_features. this can be derived from gso_type.
+
+Willem de Bruijn (6):
+  net: multiple release time SO_TXTIME
+  net: build gso segs in multi release time SO_TXTIME
+  net_sched: sch_fq: multiple release time support
+  selftests/net: so_txtime: support txonly/rxonly modes
+  selftests/net: so_txtime: add gso and multi release pacing
+  selftests/net: upgso bench: add pacing with SO_TXTIME
+
+ include/linux/netdevice.h                     |   1 +
+ include/net/sock.h                            |   3 +-
+ include/uapi/linux/net_tstamp.h               |   3 +-
+ net/core/dev.c                                |  71 +++++++++
+ net/core/sock.c                               |   4 +
+ net/sched/sch_fq.c                            |  33 ++++-
+ tools/testing/selftests/net/so_txtime.c       | 136 ++++++++++++++----
+ tools/testing/selftests/net/so_txtime.sh      |   7 +
+ .../testing/selftests/net/so_txtime_multi.sh  |  68 +++++++++
+ .../selftests/net/udpgso_bench_multi.sh       |  65 +++++++++
+ tools/testing/selftests/net/udpgso_bench_tx.c |  72 +++++++++-
+ 11 files changed, 431 insertions(+), 32 deletions(-)
+ create mode 100755 tools/testing/selftests/net/so_txtime_multi.sh
+ create mode 100755 tools/testing/selftests/net/udpgso_bench_multi.sh
+
+-- 
+2.27.0.278.ge193c7cf3a9-goog
+
