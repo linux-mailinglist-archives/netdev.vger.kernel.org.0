@@ -2,148 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE1A1F3DC6
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13EF81F3DE2
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728952AbgFIOSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 10:18:36 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:34378 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726967AbgFIOSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:18:35 -0400
-Received: from [192.168.2.100] (pub082136126227.dh-hfc.datazug.ch [82.136.126.227])
-        by mail.strongswan.org (Postfix) with ESMTPSA id 4177640F5D;
-        Tue,  9 Jun 2020 16:18:32 +0200 (CEST)
-Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Yuehaibing <yuehaibing@huawei.com>,
-        Andreas Steffen <andreas.steffen@strongswan.org>
-References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
- <70458451-6ece-5222-c46f-87c708eee81e@strongswan.org>
- <CADvbK_cw0yeTdVuNfbc8MJ6+9+1RgnW7XGw1AgQQM7ybnbdaDQ@mail.gmail.com>
-From:   Tobias Brunner <tobias@strongswan.org>
-Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <b93d9e68-c2da-bb1c-e1f9-21c81f740242@strongswan.org>
-Date:   Tue, 9 Jun 2020 16:18:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <CADvbK_cw0yeTdVuNfbc8MJ6+9+1RgnW7XGw1AgQQM7ybnbdaDQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1730448AbgFIOVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 10:21:06 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:39252 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726967AbgFIOVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:21:04 -0400
+Received: from mailhost.synopsys.com (us03-mailhost1.synopsys.com [10.4.17.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 00DF4C03B6;
+        Tue,  9 Jun 2020 14:21:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1591712463; bh=dTosrzgZ1auDLU0m9kPUJt1eMM8mQUmMkL8wDLU/+CE=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=JSvuWSCsGg+fE+vVndian0cSRmEgI4XH48rD8HHeLXFSWLTlvhKXclXtsbmpvBNan
+         xOBq/xf0JGruu0xneT/pPTVmgqAgTg6eVUg/+RPOPtsRkSMQPEEf+M/13EhymtUUoH
+         mZshrAhWCzUdgtHaD8yo1Cp1DOk7ScfMG8dErUAofmOqdV+/S7A9bBhmVjo6TE4Ebf
+         fNHTrtKEkNDpb2VHgNtNywBQnjcteKOhIBxO5OoV6Kk3IOPM4FS9gmsaeFRq41Gwhf
+         7Q8dmhPjlgYReapX1Qgp04bf3ak+htRtkO6rVILJ9mh+Bz+eUFRJm1O6RROm4iBfbi
+         NpfDITWhd4Agg==
+Received: from o365relay-in.synopsys.com (sv2-o365relay3.synopsys.com [10.202.1.139])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 56013A0081;
+        Tue,  9 Jun 2020 14:21:02 +0000 (UTC)
+Authentication-Results: o365relay-in.synopsys.com; spf=pass (mailfrom) smtp.mailfrom=synopsys.com (client-ip=104.47.55.100; helo=nam10-mw2-obe.outbound.protection.outlook.com; envelope-from=joabreu@synopsys.com; receiver=<UNKNOWN>)
+Authentication-Results: o365relay-in.synopsys.com; dmarc=pass (p=reject dis=none) header.from=synopsys.com
+Authentication-Results: o365relay-in.synopsys.com;
+        dkim=pass (1024-bit key; unprotected) header.d=synopsys.com header.i=@synopsys.com header.b="XYd4KrBr";
+        dkim-atps=neutral
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "mail.protection.outlook.com", Issuer "GlobalSign Organization Validation CA - SHA256 - G3" (verified OK))
+        by o365relay-in.synopsys.com (Postfix) with ESMTPS id 671AD40063;
+        Tue,  9 Jun 2020 14:21:00 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OQ0k9C1lc4RcYtNkua4/PbwJGmTPybR2poX+IetRoIdLHVHsXB7pQnGsT9qR8Fhl012XXVxcGNr1aCUyZ/7izeQcbt6sUnVJjC9MnH/RzKikbNDV6SmxKyl1QE7OxkzcG8Zwz2l2ED75V5XobrKpUe+tv93oWAjTy5HU8H2ARPbYbwF34e9CaHgUdTuofmwvL103vnjIvRzwttVHsQi/5nfwH/T9MqwpVBS4vKy7uFIoNP49majCmhxn0zgZa3wKnLUK9xxrBOI4GuZdYJNjEzVEK29Neh8ldp95f3ZExIeBFzwW4y9OlkElK8ptcW6x2UAdt3ek8NSpjwEaNEVOOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fm/GXIKIxzuPcLFZUspm2+JU2r2MIqrPw5wUTuZFl4Y=;
+ b=jYMlWhBIDb7A++3MwcL2ozNcFus64swyuwiHaBVx0PvY7nGVF3bU0t/CQg5U9lzhJCkaltNYQ41iMowr2p3Y2Bi4tcNzedQoxQ0HTGhD60hOitOkTqRCIGlnpBnYQiLexJto/nPuRZ6qRR8aCnhuDePeO+GQEywIwoMAl6vl/looPlxfYPl1LnfUwGd+qD/5YaVWY9OzIsHZZspsRIvIetivWVQCky6bH6O4Vs/25Cg7eZpvCNQ65UH+KaCow5aXgfhGRIrVgoXLYuqzqn9eEbxqxYH/l7JANowZAXgHVNefBU56duOt+hHUxaxSvtCaKZ9F2R0Mtzb3CZ6BieBuNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fm/GXIKIxzuPcLFZUspm2+JU2r2MIqrPw5wUTuZFl4Y=;
+ b=XYd4KrBr4rgeGzgapD1Vxoz0ZUlWziGkna9J6O32OinMLcE5KZrad4P9LTmsWnDzFizBAAfBwdVwbu62j7YAGa7uqTQ7lLwe5NU+PZjkuOVbb1h1p3TYmUmX72cFSwkl2GY+VQYDRVWW18BxaSW3YheQsnaYbR/vHwOLw8GXJxs=
+Received: from BN6PR12MB1779.namprd12.prod.outlook.com (2603:10b6:404:108::21)
+ by BN6PR12MB1299.namprd12.prod.outlook.com (2603:10b6:404:1d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18; Tue, 9 Jun
+ 2020 14:20:59 +0000
+Received: from BN6PR12MB1779.namprd12.prod.outlook.com
+ ([fe80::f0ab:1cc3:95dc:caa4]) by BN6PR12MB1779.namprd12.prod.outlook.com
+ ([fe80::f0ab:1cc3:95dc:caa4%8]) with mapi id 15.20.3088.018; Tue, 9 Jun 2020
+ 14:20:59 +0000
+X-SNPS-Relay: synopsys.com
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Biao Huang <biao.huang@mediatek.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+Subject: RE: [PATCH] net: stmmac: Fix RX Coalesce IOC always true issue
+Thread-Topic: [PATCH] net: stmmac: Fix RX Coalesce IOC always true issue
+Thread-Index: AQHWPkKKXZ3xttNf8ES5nXitJQQIzqjQVajg
+Date:   Tue, 9 Jun 2020 14:20:58 +0000
+Message-ID: <BN6PR12MB1779E6EF20FD8F5F3255CCE8D3820@BN6PR12MB1779.namprd12.prod.outlook.com>
+References: <20200609094133.11053-1-biao.huang@mediatek.com>
+In-Reply-To: <20200609094133.11053-1-biao.huang@mediatek.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcam9hYnJldVxh?=
+ =?us-ascii?Q?cHBkYXRhXHJvYW1pbmdcMDlkODQ5YjYtMzJkMy00YTQwLTg1ZWUtNmI4NGJh?=
+ =?us-ascii?Q?MjllMzViXG1zZ3NcbXNnLTZlYzIxYmU4LWFhNWMtMTFlYS1iNjRkLWY0ZDEw?=
+ =?us-ascii?Q?OGU2NmE0NFxhbWUtdGVzdFw2ZWMyMWJlYS1hYTVjLTExZWEtYjY0ZC1mNGQx?=
+ =?us-ascii?Q?MDhlNjZhNDRib2R5LnR4dCIgc3o9IjUwMSIgdD0iMTMyMzYxODYwNTcwMzA1?=
+ =?us-ascii?Q?MzkzIiBoPSI0dXNLeDd4UGpXdTJUcVdWckx5bldITTduZTQ9IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFCUUpBQUJ4?=
+ =?us-ascii?Q?VXhveGFUN1dBUW53alZmRk40UWVDZkNOVjhVM2hCNE9BQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFDa0NBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?RUFBUUFCQUFBQW9aN0NDQUFBQUFBQUFBQUFBQUFBQUo0QUFBQm1BR2tBYmdC?=
+ =?us-ascii?Q?aEFHNEFZd0JsQUY4QWNBQnNBR0VBYmdCdUFHa0FiZ0JuQUY4QWR3QmhBSFFB?=
+ =?us-ascii?Q?WlFCeUFHMEFZUUJ5QUdzQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFF?=
+ =?us-ascii?Q?QUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdZQWJ3QjFBRzRBWkFCeUFIa0FYd0J3?=
+ =?us-ascii?Q?QUdFQWNnQjBBRzRBWlFCeUFITUFYd0JuQUdZQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFB?=
+ =?us-ascii?Q?QUFDZUFBQUFaZ0J2QUhVQWJnQmtBSElBZVFCZkFIQUFZUUJ5QUhRQWJnQmxB?=
+ =?us-ascii?Q?SElBY3dCZkFITUFZUUJ0QUhNQWRRQnVBR2NBWHdCakFHOEFiZ0JtQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCbUFHOEFk?=
+ =?us-ascii?Q?UUJ1QUdRQWNnQjVBRjhBY0FCaEFISUFkQUJ1QUdVQWNnQnpBRjhBY3dCaEFH?=
+ =?us-ascii?Q?MEFjd0IxQUc0QVp3QmZBSElBWlFCekFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR1lBYndCMUFHNEFaQUJ5QUhrQVh3?=
+ =?us-ascii?Q?QndBR0VBY2dCMEFHNEFaUUJ5QUhNQVh3QnpBRzBBYVFCakFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FB?=
+ =?us-ascii?Q?QUFBQUNlQUFBQVpnQnZBSFVBYmdCa0FISUFlUUJmQUhBQVlRQnlBSFFBYmdC?=
+ =?us-ascii?Q?bEFISUFjd0JmQUhNQWRBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFKNEFBQUJtQUc4?=
+ =?us-ascii?Q?QWRRQnVBR1FBY2dCNUFGOEFjQUJoQUhJQWRBQnVBR1VBY2dCekFGOEFkQUJ6?=
+ =?us-ascii?Q?QUcwQVl3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdBQUFHWUFid0IxQUc0QVpBQnlBSGtB?=
+ =?us-ascii?Q?WHdCd0FHRUFjZ0IwQUc0QVpRQnlBSE1BWHdCMUFHMEFZd0FBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQVFBQUFBQUFBQUFD?=
+ =?us-ascii?Q?QUFBQUFBQ2VBQUFBWndCMEFITUFYd0J3QUhJQWJ3QmtBSFVBWXdCMEFGOEFk?=
+ =?us-ascii?Q?QUJ5QUdFQWFRQnVBR2tBYmdCbkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQnpB?=
+ =?us-ascii?Q?R0VBYkFCbEFITUFYd0JoQUdNQVl3QnZBSFVBYmdCMEFGOEFjQUJzQUdFQWJn?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUhNQVlRQnNBR1VBY3dCZkFI?=
+ =?us-ascii?Q?RUFkUUJ2QUhRQVpRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFB?=
+ =?us-ascii?Q?QUNBQUFBQUFDZUFBQUFjd0J1QUhBQWN3QmZBR3dBYVFCakFHVUFiZ0J6QUdV?=
+ =?us-ascii?Q?QVh3QjBBR1VBY2dCdEFGOEFNUUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFC?=
+ =?us-ascii?Q?ekFHNEFjQUJ6QUY4QWJBQnBBR01BWlFCdUFITUFaUUJmQUhRQVpRQnlBRzBB?=
+ =?us-ascii?Q?WHdCekFIUUFkUUJrQUdVQWJnQjBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBSFlBWndCZkFHc0FaUUI1?=
+ =?us-ascii?Q?QUhjQWJ3QnlBR1FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFRQUFBQUFB?=
+ =?us-ascii?Q?QUFBQ0FBQUFBQUE9Ii8+PC9tZXRhPg=3D=3D?=
+authentication-results: mediatek.com; dkim=none (message not signed)
+ header.d=none;mediatek.com; dmarc=none action=none header.from=synopsys.com;
+x-originating-ip: [198.182.37.200]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5d436b1a-17e6-4756-5ce2-08d80c8054bf
+x-ms-traffictypediagnostic: BN6PR12MB1299:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR12MB1299CD795635CCD5489B777BD3820@BN6PR12MB1299.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-forefront-prvs: 042957ACD7
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wHwJ6ZDwqfSaB/mM1ruD6aWj4UjlPuETEJiX6FgzZ/741jfF0ejyK6C0raX4b1H30nE+dw2XiYcAqv67a9AXiE2chMT3928ULUcg2PhXjmD256zlATmBCikuIjzj0hARC61UVA/9zCMUPUKt0R2ux8sqtyfAaR+QiGcBvkG84fOZWQSp4AqKK9Z7oNE79e10uPkz4+Z31AiUkG1hVTeC4R9sszGfbXo0n1wdv0bMsxHp1NEQlGhiBoe6jTATz7TIGkWGfXguZsujY7rmOs2xlwoxmPoeIgtxgBinj1JV9J4DX4inwivDDLV12ciQBT/fpqVwejnGK8N+VCRyYEpQng==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR12MB1779.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(396003)(136003)(346002)(376002)(39860400002)(76116006)(66946007)(33656002)(7696005)(5660300002)(4326008)(186003)(478600001)(71200400001)(6506007)(86362001)(52536014)(66446008)(8676002)(110136005)(54906003)(4744005)(64756008)(9686003)(316002)(55016002)(66476007)(2906002)(26005)(66556008)(8936002)(107886003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 8Mo5a7Ilr9dXiqMawX5vPF3vdVM/NNeAfEo/sbJa5sTd+RBVx2YeZD3z2yFLO7I921pIEJ4U8V53ocKAUAd7AmwT8Xqvc8UtEIrxqQ3PIDJARwrEDdRFz2/MpztwdzR/MtIhoIOuQJfiKluw59SE21sK0o+a+IlcAyZpW9KLBPRgbQJMr5UW74H4WJ2D1WT7hifUO5CICKRz0kI8q4Gtvh1lExNgFiriUcvZCyrWxVvTZjFrPNSh9jzb8/nkaS7RTWv8ecxynP7vdUrLmWJ6lC03AN0Q+9FoR0Qo5YjJHXA5suLGDhpHdCcMH4o9+c5onX9ZniO0fInZbK5S0+1UZ+0MtTo3+I/Ma+RnTa07lSbch2eklI6hkwE8lKmHqAuPeOpZSBM25VzPiuvQO0chbx+mLKlcF30mT9jZgBpNMELPuBbWuLuNQ+DMw/JgRB4JVGOlZVm6OGMdyg0TY3ks0mBFQKntW1+PHWSezD2df3MbmN/fYWeG1Uu5l6GSDWpk
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: synopsys.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d436b1a-17e6-4756-5ce2-08d80c8054bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2020 14:20:58.9040
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FvmZXJavWRUAyspQSFJ5FMMJXv8kAk8NRshtP/Q8RQY6e7R95B303EQXNNeRJPseOZkectDGIOB/CLpElxEorg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1299
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xin,
+From: Biao Huang <biao.huang@mediatek.com>
+Date: Jun/09/2020, 10:41:33 (UTC+00:00)
 
->> I guess we could workaround this issue in strongSwan by installing
->> policies that share the same mark and selector with the same priority,
->> so only one instance is ever installed in the kernel.  But the inability
->> to address the exact policy when querying/deleting still looks like a
->> problem to me in general.
->>
-> For deleting, yes, but for querying, I think it makes sense not to pass
-> the priority, and always get the policy with the highest priority.
+> -		rx_q->rx_count_frames +=3D priv->rx_coal_frames;
+> -		if (rx_q->rx_count_frames > priv->rx_coal_frames)
+> +		if (rx_q->rx_count_frames >=3D priv->rx_coal_frames)
 
-While I agree it's less of a problem (at least for strongSwan),  it
-should be possible to query the exact policy one wants.  Because as far
-as I understand, the whole point of Steffen's original patch was that
-all duplicate policies could get used concurrently, depending on the
-marks and masks on them and the traffic, so all of them must be queryable.
+This is no right. If you want to RX IC bit to not always be set you need=20
+to change coalesce parameters using ethtool.
 
-But I actually think the previous check that viewed policies with the
-exact same mark and value as duplicates made sense, because those will
-never be used concurrently.  It would at least fix the default behavior
-with strongSwan (users have to configure marks/masks manually).
-
-> We can separate the deleting path from the querying path when
-> XFRMA_PRIORITY attribute is set.
-> 
-> Is that enough for your case to only fix for the policy deleting?
-
-While such an attribute could be part of a solution, it does not fix the
-regression your patch created.  The kernel behavior changed and a
-userland modification is required to get back to something resembling
-the previous behavior (without an additional kernel patch we'll actually
-not be able to restore the previous behavior, where we separated
-different types of policies into priority classes).  That is, current
-and old strongSwan versions could create lots of duplicate/lingering
-policies, which is not good.
-
-A problem with such an attribute is how userland would learn when to use
-it.  We could query the kernel version, but patches might get
-backported.  So how can we know the kernel will create duplicates when
-we update a policy and change the priority, which we then have to delete
-(or even can delete with such a new attribute)?  Do we have to do a
-runtime check (e.g. install two duplicate policies with different
-priorities and delete twice to see if the second attempt results in an
-error)?  With marks it's relatively easy as users have to configure them
-explicitly and they work or they don't depending on the kernel version.
- But here it's not so easy as the IKE daemon uses priorities extensively
-already.
-
-Like the marks it might work somehow if the new attribute also had to be
-passed in the message that creates a policy (marks have to be passed
-with every message, including querying them).  While that's not super
-ideal as we'd have two priority values in these messages (and have to
-keep track of them in the kernel state), there is some precedent with
-the anti-replay config for SAs (which can be passed via xfrm_usersa_info
-struct or as separate attribute with more options for ESN).  Userland
-would still have to learn somehow that the kernel understands the new
-attribute and duplicate policies with different priorities are possible.
- But if there was any advantage in using this, we could perhaps later
-add an option for users to enable it.  At least the current behavior
-would not change (i.e. older strongSwan versions would continue to run
-on newer kernels without modifications).
-
-Regards,
-Tobias
+---
+Thanks,
+Jose Miguel Abreu
