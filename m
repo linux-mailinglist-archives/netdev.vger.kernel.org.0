@@ -2,368 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7130A1F3263
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 04:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A45101F3276
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 05:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727012AbgFICyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 22:54:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726884AbgFICyq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Jun 2020 22:54:46 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3473D206D5;
-        Tue,  9 Jun 2020 02:54:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591671285;
-        bh=/0kUxFkKOn+2dcFeQW+7kBTDTcaki8i9hVBFW3ctSwk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KvMy3fs9/Hec6XlQBtLbcLMt5Ucr1QYjKrYgazLTCnYbmUkmkKWoACwMEEGzpOdrK
-         LNXQljZJ6ALicCXE7A2nK8frOorQJzSiy/s/tqXU4oMVQGFUVKhj2WKtyH5KHM62QJ
-         sKIlUaeY1ZXcy0hAt5susyuVD+YNVILznFJSOosE=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
-Cc:     David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: [PATCH v2 net] nexthop: Fix fdb labeling for groups
-Date:   Mon,  8 Jun 2020 20:54:43 -0600
-Message-Id: <20200609025443.19409-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1726943AbgFIDD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 23:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726884AbgFIDD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 23:03:56 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6C7C03E969;
+        Mon,  8 Jun 2020 20:03:56 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id d6so744827pjs.3;
+        Mon, 08 Jun 2020 20:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=o1xdnqtB0eVQDLfx59H38+2bM7V5x3vfyxVg2OMwsd4=;
+        b=DSp8WUmfuA4+3D5VcKP+ZMoH8myBBpC/9l61ZE4iVgV9Iou2IM90B0iiVhQ+Xu5FnN
+         iHqajEujKXP9U9+Og19F5i/GHc/UgPNfFrlej9FybM44BQhVdUdWAVQs3vk+46KFtd9c
+         CT+gzmb02f76sFXIr3cvc7J25clNxBd8rcDB04dFu6Bn5YR5SE7to75adcXaN9waH1tj
+         Px+UMc5zLlevn0yqZB88XiepRp2duK0Avu+66B1o6okZaAieLks9SPme7olwPx9SRyJv
+         9VWtqBIlxglm8L2NOgCOBEIkSXKahVoJ3vOCcVqO0/4HjBKEQ0k5JH6M3lnUPbFJgWrb
+         XwWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=o1xdnqtB0eVQDLfx59H38+2bM7V5x3vfyxVg2OMwsd4=;
+        b=as1lyNkitdda7E+lYRdit96S9hX8tsO0ImfAOvOk25ZGgFBi+utfUd/8C/+D+K7E20
+         d/XTX9KaL2z1ruyl/ylVgx8CKxx33hwj3PlVlqtP8XBKi7DtZMxgYCxYq94b9pIYKPxn
+         95TPdVQRY/rVh1aFDv0n+Dg+9CA3y6zf4r3furFj7VRuK7uJMThMi6+xI59avwetRpYf
+         YK+aOfi96NEvK9ET9QUFo6+WGrQ0Tyxbo8fpUkWd+eaLJ+90Vtj6kF+yj0MDsQe1RpAe
+         IyjPAhn/J+SLcOZ8TxVJMYhU/b2Bptfzw0O7OUXJ6TU0GWTnrVcvEObocrTXquFAevMf
+         eehQ==
+X-Gm-Message-State: AOAM532tASoRWFPHF3TwKoXOclJgD023mod3rEuEinTihcHelv1byJKV
+        LdidN5nNic6/jwgIf3Aj070Lu4soxDYTxg==
+X-Google-Smtp-Source: ABdhPJxsiyCOP98DpLPuhVw1J/zX9ZVMMsnYITkaeiQbeL1OmgX4XWHV93r7SxpD5R8g6SgjcHVNZA==
+X-Received: by 2002:a17:902:aa48:: with SMTP id c8mr1522401plr.128.1591671835936;
+        Mon, 08 Jun 2020 20:03:55 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id z8sm776966pjr.41.2020.06.08.20.03.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2020 20:03:55 -0700 (PDT)
+Date:   Tue, 9 Jun 2020 11:03:44 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
+Message-ID: <20200609030344.GP102436@dhcp-12-153.nay.redhat.com>
+References: <20200603024054.GK102436@dhcp-12-153.nay.redhat.com>
+ <87img8l893.fsf@toke.dk>
+ <20200604040940.GL102436@dhcp-12-153.nay.redhat.com>
+ <871rmvkvwn.fsf@toke.dk>
+ <20200604121212.GM102436@dhcp-12-153.nay.redhat.com>
+ <87bllzj9bw.fsf@toke.dk>
+ <20200604144145.GN102436@dhcp-12-153.nay.redhat.com>
+ <87d06ees41.fsf@toke.dk>
+ <20200605062606.GO102436@dhcp-12-153.nay.redhat.com>
+ <878sgxd13t.fsf@toke.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <878sgxd13t.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fdb nexthops are marked with a flag. For standalone nexthops, a flag was
-added to the nh_info struct. For groups that flag was added to struct
-nexthop when it should have been added to the group information. Fix
-by removing the flag from the nexthop struct and adding a flag to nh_group
-that mirrors nh_info and is really only a caching of the individual types.
-Add a helper, nexthop_is_fdb, for use by the vxlan code and fixup the
-internal code to use the flag from either nh_info or nh_group.
+On Mon, Jun 08, 2020 at 05:32:54PM +0200, Toke Høiland-Jørgensen wrote:
+> Hangbin Liu <liuhangbin@gmail.com> writes:
+> 
+> > On Thu, Jun 04, 2020 at 06:02:54PM +0200, Toke Høiland-Jørgensen wrote:
+> >> Hangbin Liu <liuhangbin@gmail.com> writes:
+> >> 
+> >> > On Thu, Jun 04, 2020 at 02:37:23PM +0200, Toke HÃƒÂ¸iland-JÃƒÂ¸rgensen wrote:
+> >> >> > Now I use the ethtool_stats.pl to count forwarding speed and here is the result:
+> >> >> >
+> >> >> > With kernel 5.7(ingress i40e, egress i40e)
+> >> >> > XDP:
+> >> >> > bridge: 1.8M PPS
+> >> >> > xdp_redirect_map:
+> >> >> >   generic mode: 1.9M PPS
+> >> >> >   driver mode: 10.4M PPS
+> >> >> 
+> >> >> Ah, now we're getting somewhere! :)
+> >> >> 
+> >> >> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
+> >> >> > bridge: 1.8M
+> >> >> > xdp_redirect_map:
+> >> >> >   generic mode: 1.86M PPS
+> >> >> >   driver mode: 10.17M PPS
+> >> >> 
+> >> >> Right, so this corresponds to a ~2ns overhead (10**9/10400000 -
+> >> >> 10**9/10170000). This is not too far from being in the noise, I suppose;
+> >> >> is the difference consistent?
+> >> >
+> >> > Sorry, I didn't get, what different consistent do you mean?
+> >> 
+> >> I meant, how much do the numbers vary between each test run?
+> >
+> > Oh, when run it at the same period, the number is stable, the range is about
+> > ~0.05M PPS. But after a long time or reboot, the speed may changed a little.
+> > Here is the new test result after I reboot the system:
+> >
+> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
+> > xdp_redirect_map:
+> >   generic mode: 1.9M PPS
+> >   driver mode: 10.2M PPS
+> >
+> > xdp_redirect_map_multi:
+> >   generic mode: 1.58M PPS
+> >   driver mode: 7.16M PPS
+> >
+> > Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(No XDP on peer))
+> > xdp_redirect_map:
+> >   generic mode: 2.2M PPS
+> >   driver mode: 14.2M PPS
+> 
+> This looks wrong - why is performance increasing when adding another
+> target? How are you even adding another target to regular
+> xdp_redirect_map?
+> 
+Oh, sorry for the typo, the numbers make me crazy, it should be only
+ingress i40e, egress veth. Here is the right description:
 
-v2
-- propagate fdb_nh in remove_nh_grp_entry
+Kernel 5.7 + my patch(ingress i40e, egress i40e)
+xdp_redirect_map:
+  generic mode: 1.9M PPS
+  driver mode: 10.2M PPS
 
-Fixes: 38428d68719c ("nexthop: support for fdb ecmp nexthops")
-Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
-Roopa: you have not submitted the iproute2 patch, so I can not run the
-fdb selftests added to fib_nexthops.sh
+xdp_redirect_map_multi:
+  generic mode: 1.58M PPS
+  driver mode: 7.16M PPS
 
- drivers/net/vxlan.c   |  2 +-
- include/net/nexthop.h | 17 ++++++++-
- net/ipv4/nexthop.c    | 82 ++++++++++++++++++++++++++-----------------
- 3 files changed, 66 insertions(+), 35 deletions(-)
+Kernel 5.7 + my patch(ingress i40e, egress veth(No XDP on peer))
+xdp_redirect_map:
+  generic mode: 2.2M PPS
+  driver mode: 14.2M PPS
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 5bb448ae6c9c..24ea689516e4 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -876,7 +876,7 @@ static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
- 			nh = NULL;
- 			goto err_inval;
- 		}
--		if (!nh->is_fdb_nh) {
-+		if (!nexthop_is_fdb(nh)) {
- 			NL_SET_ERR_MSG(extack, "Nexthop is not a fdb nexthop");
- 			goto err_inval;
- 		}
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index e4b55b43e907..3f9e0ca2dc4d 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -76,6 +76,7 @@ struct nh_group {
- 	struct nh_group		*spare; /* spare group for removals */
- 	u16			num_nh;
- 	bool			mpath;
-+	bool			fdb_nh;
- 	bool			has_v4;
- 	struct nh_grp_entry	nh_entries[];
- };
-@@ -93,7 +94,6 @@ struct nexthop {
- 	u8			protocol;   /* app managing this nh */
- 	u8			nh_flags;
- 	bool			is_group;
--	bool			is_fdb_nh;
- 
- 	refcount_t		refcnt;
- 	struct rcu_head		rcu;
-@@ -136,6 +136,21 @@ static inline bool nexthop_cmp(const struct nexthop *nh1,
- 	return nh1 == nh2;
- }
- 
-+static inline bool nexthop_is_fdb(const struct nexthop *nh)
-+{
-+	if (nh->is_group) {
-+		const struct nh_group *nh_grp;
-+
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		return nh_grp->fdb_nh;
-+	} else {
-+		const struct nh_info *nhi;
-+
-+		nhi = rcu_dereference_rtnl(nh->nh_info);
-+		return nhi->fdb_nh;
-+	}
-+}
-+
- static inline bool nexthop_is_multipath(const struct nexthop *nh)
- {
- 	if (nh->is_group) {
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 400a9f89ebdb..cc8049b100b2 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -247,12 +247,11 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 	if (nla_put_u32(skb, NHA_ID, nh->id))
- 		goto nla_put_failure;
- 
--	if (nh->is_fdb_nh && nla_put_flag(skb, NHA_FDB))
--		goto nla_put_failure;
--
- 	if (nh->is_group) {
- 		struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
- 
-+		if (nhg->fdb_nh && nla_put_flag(skb, NHA_FDB))
-+			goto nla_put_failure;
- 		if (nla_put_nh_group(skb, nhg))
- 			goto nla_put_failure;
- 		goto out;
-@@ -264,7 +263,10 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 		if (nla_put_flag(skb, NHA_BLACKHOLE))
- 			goto nla_put_failure;
- 		goto out;
--	} else if (!nh->is_fdb_nh) {
-+	} else if (nhi->fdb_nh) {
-+		if (nla_put_flag(skb, NHA_FDB))
-+			goto nla_put_failure;
-+	} else {
- 		const struct net_device *dev;
- 
- 		dev = nhi->fib_nhc.nhc_dev;
-@@ -385,7 +387,7 @@ static void nexthop_notify(int event, struct nexthop *nh, struct nl_info *info)
- }
- 
- static bool valid_group_nh(struct nexthop *nh, unsigned int npaths,
--			   struct netlink_ext_ack *extack)
-+			   bool *is_fdb, struct netlink_ext_ack *extack)
- {
- 	if (nh->is_group) {
- 		struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
-@@ -398,6 +400,7 @@ static bool valid_group_nh(struct nexthop *nh, unsigned int npaths,
- 				       "Multipath group can not be a nexthop within a group");
- 			return false;
- 		}
-+		*is_fdb = nhg->fdb_nh;
- 	} else {
- 		struct nh_info *nhi = rtnl_dereference(nh->nh_info);
- 
-@@ -406,6 +409,7 @@ static bool valid_group_nh(struct nexthop *nh, unsigned int npaths,
- 				       "Blackhole nexthop can not be used in a group with more than 1 path");
- 			return false;
- 		}
-+		*is_fdb = nhi->fdb_nh;
- 	}
- 
- 	return true;
-@@ -416,12 +420,13 @@ static int nh_check_attr_fdb_group(struct nexthop *nh, u8 *nh_family,
- {
- 	struct nh_info *nhi;
- 
--	if (!nh->is_fdb_nh) {
-+	nhi = rtnl_dereference(nh->nh_info);
-+
-+	if (!nhi->fdb_nh) {
- 		NL_SET_ERR_MSG(extack, "FDB nexthop group can only have fdb nexthops");
- 		return -EINVAL;
- 	}
- 
--	nhi = rtnl_dereference(nh->nh_info);
- 	if (*nh_family == AF_UNSPEC) {
- 		*nh_family = nhi->family;
- 	} else if (*nh_family != nhi->family) {
-@@ -473,19 +478,20 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 	nhg = nla_data(tb[NHA_GROUP]);
- 	for (i = 0; i < len; ++i) {
- 		struct nexthop *nh;
-+		bool is_fdb_nh;
- 
- 		nh = nexthop_find_by_id(net, nhg[i].id);
- 		if (!nh) {
- 			NL_SET_ERR_MSG(extack, "Invalid nexthop id");
- 			return -EINVAL;
- 		}
--		if (!valid_group_nh(nh, len, extack))
-+		if (!valid_group_nh(nh, len, &is_fdb_nh, extack))
- 			return -EINVAL;
- 
- 		if (nhg_fdb && nh_check_attr_fdb_group(nh, &nh_family, extack))
- 			return -EINVAL;
- 
--		if (!nhg_fdb && nh->is_fdb_nh) {
-+		if (!nhg_fdb && is_fdb_nh) {
- 			NL_SET_ERR_MSG(extack, "Non FDB nexthop group cannot have fdb nexthops");
- 			return -EINVAL;
- 		}
-@@ -553,13 +559,13 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
- 		if (hash > atomic_read(&nhge->upper_bound))
- 			continue;
- 
--		if (nhge->nh->is_fdb_nh)
-+		nhi = rcu_dereference(nhge->nh->nh_info);
-+		if (nhi->fdb_nh)
- 			return nhge->nh;
- 
- 		/* nexthops always check if it is good and does
- 		 * not rely on a sysctl for this behavior
- 		 */
--		nhi = rcu_dereference(nhge->nh->nh_info);
- 		switch (nhi->family) {
- 		case AF_INET:
- 			if (ipv4_good_nh(&nhi->fib_nh))
-@@ -624,11 +630,7 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
- 		       struct netlink_ext_ack *extack)
- {
- 	struct nh_info *nhi;
--
--	if (nh->is_fdb_nh) {
--		NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
--		return -EINVAL;
--	}
-+	bool is_fdb_nh;
- 
- 	/* fib6_src is unique to a fib6_info and limits the ability to cache
- 	 * routes in fib6_nh within a nexthop that is potentially shared
-@@ -645,10 +647,17 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
- 		nhg = rtnl_dereference(nh->nh_grp);
- 		if (nhg->has_v4)
- 			goto no_v4_nh;
-+		is_fdb_nh = nhg->fdb_nh;
- 	} else {
- 		nhi = rtnl_dereference(nh->nh_info);
- 		if (nhi->family == AF_INET)
- 			goto no_v4_nh;
-+		is_fdb_nh = nhi->fdb_nh;
-+	}
-+
-+	if (is_fdb_nh) {
-+		NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
-+		return -EINVAL;
- 	}
- 
- 	return 0;
-@@ -677,12 +686,9 @@ static int fib6_check_nh_list(struct nexthop *old, struct nexthop *new,
- 	return fib6_check_nexthop(new, NULL, extack);
- }
- 
--static int nexthop_check_scope(struct nexthop *nh, u8 scope,
-+static int nexthop_check_scope(struct nh_info *nhi, u8 scope,
- 			       struct netlink_ext_ack *extack)
- {
--	struct nh_info *nhi;
--
--	nhi = rtnl_dereference(nh->nh_info);
- 	if (scope == RT_SCOPE_HOST && nhi->fib_nhc.nhc_gw_family) {
- 		NL_SET_ERR_MSG(extack,
- 			       "Route with host scope can not have a gateway");
-@@ -704,29 +710,38 @@ static int nexthop_check_scope(struct nexthop *nh, u8 scope,
- int fib_check_nexthop(struct nexthop *nh, u8 scope,
- 		      struct netlink_ext_ack *extack)
- {
-+	struct nh_info *nhi;
- 	int err = 0;
- 
--	if (nh->is_fdb_nh) {
--		NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
--		err = -EINVAL;
--		goto out;
--	}
--
- 	if (nh->is_group) {
- 		struct nh_group *nhg;
- 
-+		nhg = rtnl_dereference(nh->nh_grp);
-+		if (nhg->fdb_nh) {
-+			NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
-+			err = -EINVAL;
-+			goto out;
-+		}
-+
- 		if (scope == RT_SCOPE_HOST) {
- 			NL_SET_ERR_MSG(extack, "Route with host scope can not have multiple nexthops");
- 			err = -EINVAL;
- 			goto out;
- 		}
- 
--		nhg = rtnl_dereference(nh->nh_grp);
- 		/* all nexthops in a group have the same scope */
--		err = nexthop_check_scope(nhg->nh_entries[0].nh, scope, extack);
-+		nhi = rtnl_dereference(nhg->nh_entries[0].nh->nh_info);
-+		err = nexthop_check_scope(nhi, scope, extack);
- 	} else {
--		err = nexthop_check_scope(nh, scope, extack);
-+		nhi = rtnl_dereference(nh->nh_info);
-+		if (nhi->fdb_nh) {
-+			NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
-+			err = -EINVAL;
-+			goto out;
-+		}
-+		err = nexthop_check_scope(nhi, scope, extack);
- 	}
-+
- out:
- 	return err;
- }
-@@ -787,6 +802,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
- 
- 	newg->has_v4 = nhg->has_v4;
- 	newg->mpath = nhg->mpath;
-+	newg->fdb_nh = nhg->fdb_nh;
- 	newg->num_nh = nhg->num_nh;
- 
- 	/* copy old entries to new except the one getting removed */
-@@ -1216,7 +1232,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 	}
- 
- 	if (cfg->nh_fdb)
--		nh->is_fdb_nh = 1;
-+		nhg->fdb_nh = 1;
- 
- 	rcu_assign_pointer(nh->nh_grp, nhg);
- 
-@@ -1255,7 +1271,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
- 		goto out;
- 	}
- 
--	if (nh->is_fdb_nh)
-+	if (nhi->fdb_nh)
- 		goto out;
- 
- 	/* sets nh_dev if successful */
-@@ -1326,7 +1342,7 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
- 	nhi->fib_nhc.nhc_scope = RT_SCOPE_LINK;
- 
- 	if (cfg->nh_fdb)
--		nh->is_fdb_nh = 1;
-+		nhi->fdb_nh = 1;
- 
- 	if (cfg->nh_blackhole) {
- 		nhi->reject_nh = 1;
-@@ -1349,7 +1365,7 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
- 	}
- 
- 	/* add the entry to the device based hash */
--	if (!nh->is_fdb_nh)
-+	if (!nhi->fdb_nh)
- 		nexthop_devhash_add(net, nhi);
- 
- 	rcu_assign_pointer(nh->nh_info, nhi);
--- 
-2.17.1
+xdp_redirect_map_multi:
+  generic mode: 1.6M PPS
+  driver mode: 9.9M PPS
 
+Kernel 5.7 + my patch(ingress i40e, egress veth(with XDP_DROP on peer))
+xdp_redirect_map:
+  generic mode: 1.6M PPS
+  driver mode: 13.6M PPS
+
+xdp_redirect_map_multi:
+  generic mode: 1.3M PPS
+  driver mode: 8.7M PPS
+
+Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(No XDP on peer))
+xdp_redirect_map_multi:
+  generic mode: 1.15M PPS
+  driver mode: 3.48M PPS
+
+Kernel 5.7 + my patch(ingress i40e, egress i40e + veth(with XDP_DROP on peer))
+xdp_redirect_map_multi:
+  generic mode: 0.98M PPS
+  driver mode: 3.15M PPS
+
+The performance number for xdp_redirect_map_multi is not very well.
+But I think we can optimize after the implementation.
+
+Thanks
+Hangbin
