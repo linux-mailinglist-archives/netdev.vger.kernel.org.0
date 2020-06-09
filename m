@@ -2,79 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5BEA1F47B8
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA1E51F47B9
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732808AbgFIUFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 16:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S1732905AbgFIUGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 16:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbgFIUFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:05:20 -0400
+        with ESMTP id S1732864AbgFIUGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:06:38 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD3FC05BD1E;
-        Tue,  9 Jun 2020 13:05:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C08C05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 13:06:38 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4BE4B1277496E;
-        Tue,  9 Jun 2020 13:05:18 -0700 (PDT)
-Date:   Tue, 09 Jun 2020 13:05:17 -0700 (PDT)
-Message-Id: <20200609.130517.1373472507830142138.davem@davemloft.net>
-To:     keescook@chromium.org
-Cc:     stephen@networkplumber.org, o.rempel@pengutronix.de,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        kuba@kernel.org, corbet@lwn.net, mkubecek@suse.cz,
-        linville@tuxdriver.com, david@protonic.nl, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux@armlinux.org.uk, mkl@pengutronix.de, marex@denx.de,
-        christian.herber@nxp.com, amitc@mellanox.com, petrm@mellanox.com
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
- support
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5FD5B1277A0A6;
+        Tue,  9 Jun 2020 13:06:38 -0700 (PDT)
+Date:   Tue, 09 Jun 2020 13:06:37 -0700 (PDT)
+Message-Id: <20200609.130637.1015423291014478400.davem@davemloft.net>
+To:     snelson@pensando.io
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/1] ionic: wait on queue start until after IFF_UP
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <202006091244.C8B5F9525@keescook>
-References: <202006091222.CB97F743AD@keescook>
-        <20200609.123437.1057990370119930723.davem@davemloft.net>
-        <202006091244.C8B5F9525@keescook>
+In-Reply-To: <99c98b8c-f8c3-b1be-9878-1ad0caf85656@pensando.io>
+References: <20200609034143.7668-1-snelson@pensando.io>
+        <20200609.124709.1693195732249155694.davem@davemloft.net>
+        <99c98b8c-f8c3-b1be-9878-1ad0caf85656@pensando.io>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 13:05:19 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 13:06:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
-Date: Tue, 9 Jun 2020 12:49:48 -0700
+From: Shannon Nelson <snelson@pensando.io>
+Date: Tue, 9 Jun 2020 12:51:17 -0700
 
-> Okay, for now, how about:
+> On 6/9/20 12:47 PM, David Miller wrote:
+>> From: Shannon Nelson <snelson@pensando.io>
+>> Date: Mon,  8 Jun 2020 20:41:43 -0700
+>>
+>>> The netif_running() test looks at __LINK_STATE_START which
+>>> gets set before ndo_open() is called, there is a window of
+>>> time between that and when the queues are actually ready to
+>>> be run.  If ionic_check_link_status() notices that the link is
+>>> up very soon after netif_running() becomes true, it might try
+>>> to run the queues before they are ready, causing all manner of
+>>> potential issues.  Since the netdev->flags IFF_UP isn't set
+>>> until after ndo_open() returns, we can wait for that before
+>>> we allow ionic_check_link_status() to start the queues.
+>>>
+>>> On the way back to close, __LINK_STATE_START is cleared before
+>>> calling ndo_stop(), and IFF_UP is cleared after.  Both of
+>>> these need to be true in order to safely stop the queues
+>>> from ionic_check_link_status().
+>>>
+>>> Fixes: 49d3b493673a ("ionic: disable the queues on link down")
+>>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> What will make sure the queues actually get started if this
+>> event's queue start gets skipped in this scenerio?
+>>
+>> This code is only invoked when the link status changes or
+>> when the firmware is started.
 > 
-> - If we're dealing with an existing spec, match the language.
+> If the link is already seen as up before ionic_open() is called it
+> starts the queues at that point.
+> 
+> If link isn't seen until after ionic_open(), then the queues are
+> started in this periodic link check.
 
-Yes.
+I'm saying if it happens in the race condition you mention that you
+are protecting against, where running is true and IFF_UP is not.
 
-> - If we're dealing with a new spec, ask the authors to fix their language.
-
-Please be more specific about "new", if it's a passed and ratified standard
-then to me it is "existing".
-
-> - If a new version of a spec has updated its language, adjust the kernel's.
-
-Unless you're willing to break UAPI, which I'm not, I don't see how this is
-tenable.
-
-> - If we're doing with something "internal" to the kernel (including UAPI),
->   stop adding new instances.
-
-Even if it is part of supporting a technology where the standard uses
-those terms?  So we'll use inconsitent terms internally?
-
-This is why I'm saying, just make sure new specs use language that is
-less controversial.  Then we just use what the specs use.
-
-Then you don't have to figure out what to do about established UAPIs
-and such, it's a non-issue.
-
+The link check is periodic?  It looks like it triggers when the
+link state changes to me.
