@@ -2,65 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 734EB1F476A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 21:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA111F4777
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 21:47:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730469AbgFITrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 15:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727942AbgFITrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 15:47:10 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84096C05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 12:47:10 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1E6C512771EE5;
-        Tue,  9 Jun 2020 12:47:10 -0700 (PDT)
-Date:   Tue, 09 Jun 2020 12:47:09 -0700 (PDT)
-Message-Id: <20200609.124709.1693195732249155694.davem@davemloft.net>
-To:     snelson@pensando.io
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/1] ionic: wait on queue start until after IFF_UP
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200609034143.7668-1-snelson@pensando.io>
-References: <20200609034143.7668-1-snelson@pensando.io>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 12:47:10 -0700 (PDT)
+        id S1731735AbgFITrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 15:47:55 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22255 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731710AbgFITry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 15:47:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591732072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xB1oD9kpoB9pl4KWasJnll/v8m3IdFvCXccjs79r90A=;
+        b=Y+pODCoOgepihoCAV2Y+UAH+cCeVh4YpmbHHc1gc5gTk4tRJVK7ag2ODW39fVEiPgxJ6Vl
+        3psoJ3ksexiuttjtxecnDCMvfUfWBCIjdHKbWtlCirF38HwvgvMxxyrIQHgG1wK5O4CQbl
+        OOlbq8oQmwrwG3ld+L7ltBpHxMtgbPU=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-464-m599dA6bONumsBGiETV6Hg-1; Tue, 09 Jun 2020 15:47:49 -0400
+X-MC-Unique: m599dA6bONumsBGiETV6Hg-1
+Received: by mail-ed1-f69.google.com with SMTP id x3so8300775eds.14
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 12:47:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=xB1oD9kpoB9pl4KWasJnll/v8m3IdFvCXccjs79r90A=;
+        b=eBLBgN/CNKDdxzVmKoj4HrdBb9SWIf1c63ywN3lIxTlOmi+TAiCFnvkY1x9f/DlGxq
+         qtkrYtZ4ojpIH7yAfwBht4cXXJWd+QzcZV8dxiviU5a2GdEbo+p6PFg2uIxnvTm0+oly
+         5La1wALr7u8a6is8sp/MjL84E1oJ7cS/IdujbKegF3Mq8VfUxvo5DK+mJXls/dtnum6B
+         E8LXrMtXk7/mExVrbkTaNX/XCpNw4uotfksjeXPkT3D2IhNhjUWUz1Il7O3Cm9lyZe8C
+         DwopUlsBDcct4jZA45NobfXS35Db7kJ9RrhqZSk0Aibq8/zt/GfJGgL6dHGbVUUyXn4I
+         e5nw==
+X-Gm-Message-State: AOAM530Sgkug/nBVPjGJffEfZGNcI04HQDQULlCmsPdeW9IHQHSPjJ7f
+        hRdG05xrUWWoCCdeOL6c/C72C0sG6ceiJqS2ZtfNrMS9tg9tikF0M/IFzeocy35p0JSMjWqhytQ
+        +Sm67o3hkHAtzQ2Kx
+X-Received: by 2002:a17:906:1d55:: with SMTP id o21mr26230173ejh.491.1591732068630;
+        Tue, 09 Jun 2020 12:47:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyf1sNKkLWeyTjzQSEoqtchZN5z8CNGMjaxb4kfu1oo54GerCMlQme8NBryBKoVoCUZzk2NIA==
+X-Received: by 2002:a17:906:1d55:: with SMTP id o21mr26230158ejh.491.1591732068366;
+        Tue, 09 Jun 2020 12:47:48 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id p6sm13932648ejb.71.2020.06.09.12.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2020 12:47:47 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0A9B8180654; Tue,  9 Jun 2020 21:47:47 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        brouer@redhat.com, maciej.fijalkowski@intel.com
+Subject: Re: [RFC PATCH bpf-next 2/2] i40e: avoid xdp_do_redirect() call when "redirect_tail_call" is set
+In-Reply-To: <20200609172622.37990-3-bjorn.topel@gmail.com>
+References: <20200609172622.37990-1-bjorn.topel@gmail.com> <20200609172622.37990-3-bjorn.topel@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 09 Jun 2020 21:47:46 +0200
+Message-ID: <87r1uo81i5.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
-Date: Mon,  8 Jun 2020 20:41:43 -0700
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 
-> The netif_running() test looks at __LINK_STATE_START which
-> gets set before ndo_open() is called, there is a window of
-> time between that and when the queues are actually ready to
-> be run.  If ionic_check_link_status() notices that the link is
-> up very soon after netif_running() becomes true, it might try
-> to run the queues before they are ready, causing all manner of
-> potential issues.  Since the netdev->flags IFF_UP isn't set
-> until after ndo_open() returns, we can wait for that before
-> we allow ionic_check_link_status() to start the queues.
-> 
-> On the way back to close, __LINK_STATE_START is cleared before
-> calling ndo_stop(), and IFF_UP is cleared after.  Both of
-> these need to be true in order to safely stop the queues
-> from ionic_check_link_status().
-> 
-> Fixes: 49d3b493673a ("ionic: disable the queues on link down")
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> If an XDP program, where all the bpf_redirect_map() calls are tail
+> calls (as defined by the previous commit), the driver does not need to
+> explicitly call xdp_do_redirect().
+>
+> The driver checks the active XDP program, and notifies the BPF helper
+> indirectly via xdp_set_redirect_tailcall().
+>
+> This is just a naive, as-simple-as-possible implementation, calling
+> xdp_set_redirect_tailcall() for each packet.
 
-What will make sure the queues actually get started if this
-event's queue start gets skipped in this scenerio?
+Do you really need the driver changes? The initial setup could be moved
+to bpf_prog_run_xdp(), and xdp_do_redirect() could be changed to an
+inline wrapper that just checks a flag and immediately returns 0 if the
+redirect action was already performed. Or am I missing some reason why
+this wouldn't work?
 
-This code is only invoked when the link status changes or
-when the firmware is started.
+-Toke
+
