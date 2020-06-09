@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5921F3AA0
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA5C1F3B0B
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:48:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729359AbgFIM2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 08:28:03 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51012 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726903AbgFIM2A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 08:28:00 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 851C3AAC6;
-        Tue,  9 Jun 2020 12:28:00 +0000 (UTC)
-Date:   Tue, 9 Jun 2020 14:27:55 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Baron <jbaron@akamai.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH v3 2/7] dynamic_debug: Group debug messages by level
- bitmask
-Message-ID: <20200609122755.GE23752@linux-b0ei>
-References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
- <20200609104604.1594-3-stanimir.varbanov@linaro.org>
+        id S1729487AbgFIMq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 08:46:26 -0400
+Received: from perceval.ideasonboard.com ([213.167.242.64]:54132 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727005AbgFIMqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:46:20 -0400
+Received: from Q.local (cpc89242-aztw30-2-0-cust488.18-1.cable.virginm.net [86.31.129.233])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 69A37291;
+        Tue,  9 Jun 2020 14:46:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1591706776;
+        bh=e3OIMaowMErPAcp8NkPKang2PFc5JcVtp2mzp1SGQas=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EOdFenfdoWi99kjLMHynj4J1fzXhK70x9pvPJKGRwe+u9s7ClkH6rqbqST2T0r5e5
+         rd2CXOXDlipTFhHia9lb8Zg7V4PjvCiyTFMXq9uTY1o2DVNqSQeMO1a0klpHPm0VND
+         3avMiOPNyTukk9rgiob/Q4qsq6cY/3qW7k1hOjx8=
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+To:     Kieran Bingham <kieran.bingham@ideasonboard.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, linux-mm@kvack.org
+Subject: [PATCH 00/17] spelling.txt: /decriptors/descriptors/
+Date:   Tue,  9 Jun 2020 13:45:53 +0100
+Message-Id: <20200609124610.3445662-1-kieran.bingham+renesas@ideasonboard.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200609104604.1594-3-stanimir.varbanov@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 2020-06-09 13:45:59, Stanimir Varbanov wrote:
-> This will allow dynamic debug users and driver writers to group
-> debug messages by level bitmask.  The level bitmask should be a
-> hex number.
-> 
-> Done this functionality by extending dynamic debug metadata with
-> new level member and propagate it over all the users.  Also
-> introduce new dynamic_pr_debug_level and dynamic_dev_dbg_level
-> macros to be used by the drivers.
+I wouldn't normally go through spelling fixes, but I caught sight of
+this typo twice, and then foolishly grepped the tree for it, and saw how
+pervasive it was.
 
-Could you please provide more details?
+so here I am ... fixing a typo globally... but with an addition in
+scripts/spelling.txt so it shouldn't re-appear ;-)
 
-What is the use case?
-What is the exact meaning of the level value?
-How the levels will get defined?
+Cc: linux-arm-kernel@lists.infradead.org (moderated list:TI DAVINCI MACHINE SUPPORT)
+Cc: linux-kernel@vger.kernel.org (open list)
+Cc: linux-pm@vger.kernel.org (open list:DEVICE FREQUENCY EVENT (DEVFREQ-EVENT))
+Cc: linux-gpio@vger.kernel.org (open list:GPIO SUBSYSTEM)
+Cc: dri-devel@lists.freedesktop.org (open list:DRM DRIVERS)
+Cc: linux-rdma@vger.kernel.org (open list:HFI1 DRIVER)
+Cc: linux-input@vger.kernel.org (open list:INPUT (KEYBOARD, MOUSE, JOYSTICK, TOUCHSCREEN)...)
+Cc: linux-mtd@lists.infradead.org (open list:NAND FLASH SUBSYSTEM)
+Cc: netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Cc: ath10k@lists.infradead.org (open list:QUALCOMM ATHEROS ATH10K WIRELESS DRIVER)
+Cc: linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS))
+Cc: linux-scsi@vger.kernel.org (open list:IBM Power Virtual FC Device Drivers)
+Cc: linuxppc-dev@lists.ozlabs.org (open list:LINUX FOR POWERPC (32-BIT AND 64-BIT))
+Cc: linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
+Cc: virtualization@lists.linux-foundation.org (open list:VIRTIO CORE AND NET DRIVERS)
+Cc: linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 
-Dynamic debug is used for messages with KERN_DEBUG log level.
-Is this another dimension of the message leveling?
 
-Given that the filter is defined by bits, it is rather grouping
-by context or so.
+Kieran Bingham (17):
+  arch: arm: mach-davinci: Fix trivial spelling
+  drivers: infiniband: Fix trivial spelling
+  drivers: gpio: Fix trivial spelling
+  drivers: mtd: nand: raw: Fix trivial spelling
+  drivers: net: Fix trivial spelling
+  drivers: scsi: Fix trivial spelling
+  drivers: usb: Fix trivial spelling
+  drivers: gpu: drm: Fix trivial spelling
+  drivers: regulator: Fix trivial spelling
+  drivers: input: joystick: Fix trivial spelling
+  drivers: infiniband: Fix trivial spelling
+  drivers: devfreq: Fix trivial spelling
+  include: dynamic_debug.h: Fix trivial spelling
+  kernel: trace: Fix trivial spelling
+  mm: Fix trivial spelling
+  regulator: gpio: Fix trivial spelling
+  scripts/spelling.txt: Add descriptors correction
 
+ arch/arm/mach-davinci/board-da830-evm.c  | 2 +-
+ drivers/devfreq/devfreq-event.c          | 4 ++--
+ drivers/gpio/TODO                        | 2 +-
+ drivers/gpu/drm/drm_dp_helper.c          | 2 +-
+ drivers/infiniband/hw/hfi1/iowait.h      | 2 +-
+ drivers/infiniband/hw/hfi1/ipoib_tx.c    | 2 +-
+ drivers/infiniband/hw/hfi1/verbs_txreq.h | 2 +-
+ drivers/input/joystick/spaceball.c       | 2 +-
+ drivers/mtd/nand/raw/mxc_nand.c          | 2 +-
+ drivers/mtd/nand/raw/nand_bbt.c          | 2 +-
+ drivers/net/wan/lmc/lmc_main.c           | 2 +-
+ drivers/net/wireless/ath/ath10k/usb.c    | 2 +-
+ drivers/net/wireless/ath/ath6kl/usb.c    | 2 +-
+ drivers/net/wireless/cisco/airo.c        | 2 +-
+ drivers/regulator/fixed.c                | 2 +-
+ drivers/regulator/gpio-regulator.c       | 2 +-
+ drivers/scsi/ibmvscsi/ibmvfc.c           | 2 +-
+ drivers/scsi/ibmvscsi/ibmvscsi.c         | 2 +-
+ drivers/scsi/qla2xxx/qla_inline.h        | 2 +-
+ drivers/scsi/qla2xxx/qla_iocb.c          | 6 +++---
+ drivers/usb/core/of.c                    | 2 +-
+ include/drm/drm_dp_helper.h              | 2 +-
+ include/linux/dynamic_debug.h            | 2 +-
+ kernel/trace/trace_events.c              | 2 +-
+ mm/balloon_compaction.c                  | 4 ++--
+ scripts/spelling.txt                     | 1 +
+ 26 files changed, 30 insertions(+), 29 deletions(-)
 
-> diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-> index 8f199f403ab5..5d28d388f6dd 100644
-> --- a/lib/dynamic_debug.c
-> +++ b/lib/dynamic_debug.c
-> @@ -55,6 +55,7 @@ struct ddebug_query {
->  	const char *function;
->  	const char *format;
->  	unsigned int first_lineno, last_lineno;
-> +	unsigned int level;
->  };
->  
->  struct ddebug_iter {
-> @@ -187,6 +188,18 @@ static int ddebug_change(const struct ddebug_query *query,
->  
->  			nfound++;
->  
-> +#ifdef CONFIG_JUMP_LABEL
-> +			if (query->level && query->level & dp->level) {
-> +				if (flags & _DPRINTK_FLAGS_PRINT)
-> +					static_branch_enable(&dp->key.dd_key_true);
-> +				else
-> +					static_branch_disable(&dp->key.dd_key_true);
-> +			} else if (query->level &&
-> +				   flags & _DPRINTK_FLAGS_PRINT) {
-> +				static_branch_disable(&dp->key.dd_key_true);
-> +				continue;
-> +			}
-> +#endif
+-- 
+2.25.1
 
-This looks like a hack in the existing code:
-
-  + It is suspicious that "continue" is only in one branch. It means
-    that static_branch_enable/disable() might get called 2nd time
-    by the code below. Or newflags are not stored when there is a change.
-
-  + It changes the behavior and the below vpr_info("changed ...")
-    is not called.
-
-Or do I miss anything?
-
->			newflags = (dp->flags & mask) | flags;
->  			if (newflags == dp->flags)
->  				continue;
-
-Best Regards,
-Petr
