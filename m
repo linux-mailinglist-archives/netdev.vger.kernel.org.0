@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC581F48E1
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF8F1F4906
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727993AbgFIV3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 17:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726888AbgFIV3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:29:05 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDE1C05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 14:29:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 74C7E127A7CE6;
-        Tue,  9 Jun 2020 14:29:04 -0700 (PDT)
-Date:   Tue, 09 Jun 2020 14:29:01 -0700 (PDT)
-Message-Id: <20200609.142901.3888767961952002.davem@davemloft.net>
-To:     lorenzo@kernel.org
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com
-Subject: Re: [PATCH net] net: mvneta: do not redirect frames during
- reconfiguration
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <fd076dae0536d823e136ab4c114346602e02b6d7.1591653494.git.lorenzo@kernel.org>
-References: <fd076dae0536d823e136ab4c114346602e02b6d7.1591653494.git.lorenzo@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 14:29:04 -0700 (PDT)
+        id S1728198AbgFIVoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 17:44:07 -0400
+Received: from rrcs-72-43-215-122.nys.biz.rr.com ([72.43.215.122]:41874 "EHLO
+        localhost.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728146AbgFIVoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:44:05 -0400
+Received: from Shop01 (localhost [127.0.0.1])
+        by localhost.localdomain (Postfix) with SMTP id D6BC7247DE3;
+        Tue,  9 Jun 2020 05:10:51 -0400 (EDT)
+Received: from [215.155.142.224] by Shop01 with ESMTP id 30322426; Tue, 09 Jun 2020 04:00:57 -0600
+Message-ID: <9$2-2$$784wn-3k3@wj84690.kvs>
+From:   "Mrs. Janet Olsen " <mrs.janetolse@gmail.com>
+Reply-To: "Mrs. Janet Olsen " <mrs.janetolse@gmail.com>
+To:     darkstar6262@gmail.com
+Subject: Your response 
+Date:   Tue, 09 Jun 20 04:00:57 GMT
+X-Mailer: Microsoft Outlook Express 5.00.2615.200
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+        boundary="C.9.8A.110."
+X-Priority: 5
+X-MSMail-Priority: Low
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-Date: Tue,  9 Jun 2020 00:02:39 +0200
 
-> Disable frames injection in mvneta_xdp_xmit routine during hw
-> re-configuration in order to avoid hardware hangs
-> 
-> Fixes: b0a43db9087a ("net: mvneta: add XDP_TX support")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+--C.9.8A.110.
+Content-Type: text/plain;
+Content-Transfer-Encoding: quoted-printable
 
-Looking around, I wonder if the fundamental difference from the normal
-TX path is that the XDP path doesn't use the TXQ enable/disable
-machinery and checks like the normal ndo_start_xmit() paths do.
+Hello, 
 
-And that's why only the XDP path has this issue.
+Greetings from Mrs. Janet Olsen, from Norway.
+ 
+Please i will like to establish some investments over there, such as Orpha=
+nage home and Hospital for Cancer patients but i don't have anyone, Who ca=
+n handle the contracts for me over there.
 
-I'll apply this, so that the bug is fixed, but note that I consider
-this kind of change adding a new flags mask and one state bit to solve
-a problem to be ultimately inelegant and ususally pointing out a more
-fundamental issue.
+So, I am contacting to ask you and to know if you will be able of handling=
+ the contracts for me over there and you will be rewarded bountifully.
 
-Thank you.
+Thanks and remain good, till i hear from you soon, for the full details.
+
+Regards, 
+
+Mrs. Janet Olsen.=20
+
+--C.9.8A.110.--
+
