@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3591F4188
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 18:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33CAA1F418D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 18:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731289AbgFIQ5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 12:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731061AbgFIQ5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 12:57:07 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB69C05BD1E;
-        Tue,  9 Jun 2020 09:57:07 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id m81so23586783ioa.1;
-        Tue, 09 Jun 2020 09:57:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=5gvAS0s0tNpovI3i50BhHwoc6p3AStdG8TOtuxWup4w=;
-        b=tMvNXNJopze0GqB5+EV+ftXRCWZBeAN6qu2GK8i13KXAnv+Byi7F93Bd+iVyKjBUNo
-         hO9yhQtuT1sdzfHnZpuAfXsSNp+c2JhctcoXr5c2mXRhl8+CBg7Jx8OWxFccaBI9KnxL
-         n2zqtjPDI5jwAFxNGB+OAWeU37COAvNIPl1jgVqy8mCiYJ1WIGtOBZIzQtOFBKDnY+Ah
-         LCoH04OVGWmsD1y+/oKEc4h5p65ORFlJfEnUghZAySAR8HtYygyTr/+mqjzSeFClHedW
-         wPAfikhEOotImnatbJaqQxq83Lf0sPc2zTERq0g1Dn//WhxPvQxFdGuY1T4cz2GBOwpr
-         UM6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=5gvAS0s0tNpovI3i50BhHwoc6p3AStdG8TOtuxWup4w=;
-        b=JJ9118HRxq49XaFOzBSaLzdvW5wuKw7rkjw/L5ajSATmr/FsWJiXq/p8RgJWJvbZVA
-         YW4jqh1zNXOU0SXRvq5K0m0VGqJvlVIDSiRWUHNYb2Hcoceg1WgBZ4X8TXHHPTthpSjQ
-         kxhsv19NZtafnpr8lE0N5QhYMRw2WOs4yRx/Rb/jGQKI2XhZmSCNHSAhY1tnaCRL2WDH
-         mc6Gza0e8JmiTDjQgRDtUdc1homko5Jhc43ZshmVY0vc8T2fIIe3xGnJcHT+XDrmV6+/
-         0jB9zBfWxDOfCCO/6ppKTyxWeD9gXUhsRorHKkP7JjeZUn8ShSF/VzZjhmccBDdqQb12
-         WDQg==
-X-Gm-Message-State: AOAM532Pikm+PT2FhTtSlMoJAX6hiKftLvIdRZ6OCO0pPs8bAPWpE3eF
-        XdN3on/nzIm+RXEjWjnAyUQ=
-X-Google-Smtp-Source: ABdhPJxzfFNX5iPi6sdKo+Si6me8KJa4LoBVF4M8+UTrToEsXFwUCXTJ4+2Cezd7q2X79o0KK+1RsQ==
-X-Received: by 2002:a02:84c6:: with SMTP id f64mr27190470jai.25.1591721826490;
-        Tue, 09 Jun 2020 09:57:06 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id n7sm6721682ile.76.2020.06.09.09.57.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 09:57:05 -0700 (PDT)
-Date:   Tue, 09 Jun 2020 09:56:56 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
-Message-ID: <5edfbf58f0ff1_5cca2af6a27f45b8fc@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200607205229.2389672-2-jakub@cloudflare.com>
-References: <20200607205229.2389672-1-jakub@cloudflare.com>
- <20200607205229.2389672-2-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf 1/2] bpf, sockhash: Fix memory leak when unlinking
- sockets in sock_hash_free
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1731325AbgFIQ6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 12:58:15 -0400
+Received: from smtprelay0097.hostedemail.com ([216.40.44.97]:60760 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731061AbgFIQ6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 12:58:12 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 48FFD100462CE;
+        Tue,  9 Jun 2020 16:58:10 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3871:3872:3873:3874:4321:5007:6119:10004:10400:10848:11232:11658:11914:12050:12297:12740:12760:12895:13069:13161:13229:13255:13311:13357:13439:14659:14721:21080:21433:21627:21810:30041:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: paper32_280912f26dc4
+X-Filterd-Recvd-Size: 2234
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf05.hostedemail.com (Postfix) with ESMTPA;
+        Tue,  9 Jun 2020 16:58:08 +0000 (UTC)
+Message-ID: <ba32bfa93ac2e147c2e0d3a4724815a7bbf41c59.camel@perches.com>
+Subject: Re: [PATCH v3 1/7] Documentation: dynamic-debug: Add description of
+ level bitmask
+From:   Joe Perches <joe@perches.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Jason Baron <jbaron@akamai.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jim Cromie <jim.cromie@gmail.com>
+Date:   Tue, 09 Jun 2020 09:58:07 -0700
+In-Reply-To: <20200609111615.GD780233@kroah.com>
+References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
+         <20200609104604.1594-2-stanimir.varbanov@linaro.org>
+         <20200609111615.GD780233@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.2-0ubuntu1 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> When sockhash gets destroyed while sockets are still linked to it, we will
-> walk the bucket lists and delete the links. However, we are not freeing the
-> list elements after processing them, leaking the memory.
-> 
-> The leak can be triggered by close()'ing a sockhash map when it still
-> contains sockets, and observed with kmemleak:
-> 
->   unreferenced object 0xffff888116e86f00 (size 64):
->     comm "race_sock_unlin", pid 223, jiffies 4294731063 (age 217.404s)
->     hex dump (first 32 bytes):
->       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->       81 de e8 41 00 00 00 00 c0 69 2f 15 81 88 ff ff  ...A.....i/.....
->     backtrace:
->       [<00000000dd089ebb>] sock_hash_update_common+0x4ca/0x760
->       [<00000000b8219bd5>] sock_hash_update_elem+0x1d2/0x200
->       [<000000005e2c23de>] __do_sys_bpf+0x2046/0x2990
->       [<00000000d0084618>] do_syscall_64+0xad/0x9a0
->       [<000000000d96f263>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> 
-> Fix it by freeing the list element when we're done with it.
-> 
-> Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
->  net/core/sock_map.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> index 00a26cf2cfe9..ea46f07a22d8 100644
-> --- a/net/core/sock_map.c
-> +++ b/net/core/sock_map.c
-> @@ -1031,6 +1031,7 @@ static void sock_hash_free(struct bpf_map *map)
->  			sock_map_unref(elem->sk, elem);
->  			rcu_read_unlock();
->  			release_sock(elem->sk);
-> +			sock_hash_free_elem(htab, elem);
->  		}
->  	}
->  
-> -- 
-> 2.25.4
-> 
+On Tue, 2020-06-09 at 13:16 +0200, Greg Kroah-Hartman wrote:
+> What is wrong with the existing control of dynamic
+> debug messages that you want to add another type of arbitrary grouping
+> to it? 
 
-In Cilium we pin the map and never release it thanks for catching this.
+There is no existing grouping mechanism.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Many drivers and some subsystems used an internal one
+before dynamic debug.
+
+$ git grep "MODULE_PARM.*\bdebug\b"|wc -l
+501
+
+This is an attempt to unify those homebrew mechanisms.
+
+Stanimir attempted to add one for his driver via a
+driver specific standardized format substring for level.
+
+> And who defines that grouping?
+
+Individual driver authors
+
+> Will it be driver/subsystem/arch/author specific?  Or kernel-wide?
+
+driver specific
+
+> This feels like it could easily get out of hand really quickly.
+
+Likely not.  A question might be how useful all these
+old debugging printks are today and if it's reasonable
+to just delete them.
+
+> Why not just use tracepoints if you really want to be fine-grained?
+
+Weight and lack of class/group capability
+
+
