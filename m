@@ -2,98 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 293701F3394
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 07:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5623B1F33A1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 07:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727122AbgFIFoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 01:44:18 -0400
-Received: from mail-ej1-f68.google.com ([209.85.218.68]:46075 "EHLO
-        mail-ej1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725770AbgFIFoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 01:44:17 -0400
-Received: by mail-ej1-f68.google.com with SMTP id o15so20893271ejm.12
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 22:44:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ciN7ZcRr4oIdU2pWpEV0PZyVR7mU2CdgAPLb8ibyRao=;
-        b=FoxkPjaPi8Dim5UcplpCYHVNa2KATrs2j6XJIo9nfwC1Xq/RLoXVC/1rlKVmPnIHoo
-         FBm8O86p1Bk3S1bT9/hyP7IuMP1WNq8J6IyYsjyXpXI3ZS5gzDAsZIIXbfTXTVJvjHtk
-         p480+TzvkcgqKKxe+Pzby2/iCzzqfSJnUJHvIueZn5zaHxWWhHPJXyak7TUxEQbkrGKg
-         bxypt8ccifyGvhmeMS0P9kGCBjm3ZpU91mhuGNC0ReEo9yHomGMrqIprwctmn9A3dqB6
-         KP1DvXDoU6J/mSbVTz7zzFwbf0FZdJcoswhZygjw5kQB++CRY23HjcG2z5yu0jJopZjS
-         uJFQ==
-X-Gm-Message-State: AOAM533NtTenn9lJk2GNOebdbJetJFTVy996xdEndEC0peobfd8pNXSl
-        J/wW5FBFbkUD1yYbJgyM7rwuLbMa
-X-Google-Smtp-Source: ABdhPJys27OIFhdSCcTLLQbWA4lVlLNSAKdmK4IV2ltCpSlTS+R7Zk37NAHA2oDdGs77xQuIiWL3VA==
-X-Received: by 2002:a17:906:1d5b:: with SMTP id o27mr23736412ejh.344.1591681455702;
-        Mon, 08 Jun 2020 22:44:15 -0700 (PDT)
-Received: from zenbook-val.localdomain (bbcs-65-74.pub.wingo.ch. [144.2.65.74])
-        by smtp.gmail.com with ESMTPSA id g13sm14004652edy.27.2020.06.08.22.44.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 22:44:15 -0700 (PDT)
-From:   Valentin Longchamp <valentin@longchamp.me>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, xiyou.wangcong@gmail.com,
-        jhs@mojatatu.com, Valentin Longchamp <valentin@longchamp.me>
-Subject: [PATCH v2 2/2] net: sched: make the watchdog functions more coherent
-Date:   Tue,  9 Jun 2020 07:43:51 +0200
-Message-Id: <20200609054351.21725-2-valentin@longchamp.me>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200609054351.21725-1-valentin@longchamp.me>
-References: <20200609054351.21725-1-valentin@longchamp.me>
+        id S1726949AbgFIFxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 01:53:20 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47054 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726120AbgFIFxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 01:53:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591681998;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T/2A/WU2/svppr3uz/G5VVDxLgqlNP79/92mX4BoUzs=;
+        b=LCQeUIoAF4mhb9gLr/WDJkE/X9QKY2JqWgEhpncVMWf76UMKTffu+2+zXuc0wdfRGlnnHo
+        +hiwSwQsbfzprWivguyfRYcIL4taxPa1YAfhIIiJeugKj5x2vt3p+u6muctHOxbjE0SK6G
+        M0e+2XaoFCazDNbo9P58dtPwIpYrWew=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-290-7lBnAItnOB6WES0WKXa7sA-1; Tue, 09 Jun 2020 01:53:16 -0400
+X-MC-Unique: 7lBnAItnOB6WES0WKXa7sA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 32E871005510;
+        Tue,  9 Jun 2020 05:53:15 +0000 (UTC)
+Received: from [10.72.12.252] (ovpn-12-252.pek2.redhat.com [10.72.12.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E327510013D6;
+        Tue,  9 Jun 2020 05:53:05 +0000 (UTC)
+Subject: Re: [PATCH] vhost/test: fix up after API change
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200608124254.727184-1-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e747a953-3135-fef9-b098-fca11755d6e4@redhat.com>
+Date:   Tue, 9 Jun 2020 13:53:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <20200608124254.727184-1-mst@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove dev_watchdog_up() that directly called __netdev_watchdog_up() and
-rename dev_watchdog_down() to __netdev_watchdog_down() for symmetry.
 
-Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
----
- net/sched/sch_generic.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+On 2020/6/8 下午8:42, Michael S. Tsirkin wrote:
+> Pass a flag to request kernel thread use.
+>
+> Fixes: 01fcb1cbc88e ("vhost: allow device that does not depend on vhost worker")
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>   drivers/vhost/test.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index f55cb584b84a..12304eb8da15 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -122,7 +122,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
+>   	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
+>   	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
+>   	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+> -		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
+> +		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, true, NULL);
+>   
+>   	f->private_data = n;
+>   
 
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 265a61d011df..b4d5548492ec 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -466,12 +466,7 @@ void __netdev_watchdog_up(struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(__netdev_watchdog_up);
- 
--static void dev_watchdog_up(struct net_device *dev)
--{
--	__netdev_watchdog_up(dev);
--}
--
--static void dev_watchdog_down(struct net_device *dev)
-+static void __netdev_watchdog_down(struct net_device *dev)
- {
- 	netif_tx_lock_bh(dev);
- 	if (del_timer(&dev->watchdog_timer))
-@@ -1124,7 +1119,7 @@ void dev_activate(struct net_device *dev)
- 
- 	if (need_watchdog) {
- 		netif_trans_update(dev);
--		dev_watchdog_up(dev);
-+		__netdev_watchdog_up(dev);
- 	}
- }
- EXPORT_SYMBOL(dev_activate);
-@@ -1210,7 +1205,7 @@ void dev_deactivate_many(struct list_head *head)
- 			dev_deactivate_queue(dev, dev_ingress_queue(dev),
- 					     &noop_qdisc);
- 
--		dev_watchdog_down(dev);
-+		__netdev_watchdog_down(dev);
- 	}
- 
- 	/* Wait for outstanding qdisc-less dev_queue_xmit calls.
--- 
-2.25.1
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+Just to confirm, have you queued the doorbell mapping patches already? 
+Or you expect I squash this into v2 of doorbell mapping series?
+
+Thanks
 
