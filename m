@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B34391F32A3
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 05:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 901171F32B3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 05:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgFIDlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Jun 2020 23:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51662 "EHLO
+        id S1727030AbgFIDqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Jun 2020 23:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726918AbgFIDlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 23:41:53 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D47C03E969
-        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 20:41:53 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id m2so784668pjv.2
-        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 20:41:52 -0700 (PDT)
+        with ESMTP id S1726831AbgFIDq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Jun 2020 23:46:28 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A9AC03E969
+        for <netdev@vger.kernel.org>; Mon,  8 Jun 2020 20:46:28 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id h185so9485369pfg.2
+        for <netdev@vger.kernel.org>; Mon, 08 Jun 2020 20:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
+        d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id;
-        bh=5gUZObmFDdjvI5YqGBSgNDCg9hb6hL7IYtn1moZvtuY=;
-        b=QA0ilU5tFzFeJC3zhoNjqq6BenfhL91eQ1n5VBKzKp5izEk17cKaFy+FELH77AuiZm
-         TaET5jbtZ2edD3MkyOiyZ9lBpnlIcb2/cvURJbSUBIPOxWp6DxCduR6YEHF55qvASEIW
-         tvXsAj82lZXcnHeACX6xkQ9V9s446kWFvhN3pN5EShSHn3Q0QO4AWN68vl8oMIAPXFGm
-         f7TYfEvB8w7VO4Lnrb+40Rj8udQP2c7Ai5MP+p4blDb5kpqbT6/4D6dwpfyb1zmqFA/4
-         X9rgmnTdfY86+PTxFaFRl6N3zl8xakteEUZLiIQCXigCS0DxkzYniBneuxkKX6zHt9gm
-         T8ZQ==
+        bh=iXUtJSfzChlaFF0+CMDFVMltRhorXfmefmfWmL2fmHA=;
+        b=KOIYvbQFzuurEnngkcPR0ifA8OS1cgWPp32xINehzxAzyBg+eoiVDPtgFIXDEmMHke
+         eu3TWGXAKcx3pJ6MlojavuMv02s/JUL9i17xjfOmyGBCgaDyZHH0CDFqma3rtohZlstO
+         60St3dVm0wJiYu5IE6UfNUL+90dAsIuLNdX0Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5gUZObmFDdjvI5YqGBSgNDCg9hb6hL7IYtn1moZvtuY=;
-        b=GBmNrCIHDpALJcJibLvtOGMh5+LniO/Ls5cV7q/21BsjjaqR4j4B9X4dsbDIla96pS
-         dE0tf/8ERYUL93C2DZZuWPS1RyeBzgfBiBUfbc4pgXkMqIxkADXdFYc0kS0SAVuFUsMJ
-         MJ6MYGsSdUq18w4NhWEogXXReDBIhG0qfB0CEodPa0Ysf+zd+Ovg41bh4fsvAeF5vZlA
-         LI2E61aiZTsqZfdEQNAkxF+AXzYaZ6u/QS4bsuAVK90XfTwHldyxt85TIQwdFi80o/44
-         UhOFFv69MmZ4pxEBz0nRt8qLwXdHfhlLrW+oV/b32S61SHvBBXtdTZxiwy0T5gl37mMC
-         o11A==
-X-Gm-Message-State: AOAM532scagxTa23Doypbn8tWuEdV7Qv0jyGwlHU/aD/gSuhdK7xof40
-        4SLLc/tdrhhIg1Zi9z7b9dF1x1Yk1Go=
-X-Google-Smtp-Source: ABdhPJwN4yVrGLw1iz2e3eGEZUez9s+L647j/1xP0Q1r5pTNLXkbBJCLNeoHGODQIzgEwz4DVie5pg==
-X-Received: by 2002:a17:902:b216:: with SMTP id t22mr1496278plr.181.1591674112013;
-        Mon, 08 Jun 2020 20:41:52 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id i34sm869674pje.10.2020.06.08.20.41.51
+        bh=iXUtJSfzChlaFF0+CMDFVMltRhorXfmefmfWmL2fmHA=;
+        b=ZZaxB1CoQ7nDdG6kOpjuV4XoQH/emK4J2QJ1zqfy9LujyNWvvA86LM/JMY8aEv680+
+         NYEHldlHy9GC6vRsV4YbfMSAk2RFwbdhWucH317OhY8mtUiEFAiEP29mjLIJ8fcRkx51
+         Xh6KQAudk3WqS6pTG0dKWOXNn7P4bm0nVNCw5cDCK8vpCPAWguxqTSfYe6eJT20dmIbJ
+         WvmmfvQpbDwwlkp0SsGSl7HIJiM36xROLsBcx41RRWfPnCRfvGaRC7vE1YjS3WQL4HGD
+         tz25vuSrvBReLyp1wRwqtDNoKopqYky6NACtUWOF70aN/L4tN1BJb0YCXB2wXDzIewnV
+         E8rw==
+X-Gm-Message-State: AOAM532rQj2v6+RpOF/S5pfqhF+tOIml4aAo1MiL+TypSb0E+UYNA14E
+        QM1jA+HKDT/6XvSO0lpeHpIBTt4CGFg=
+X-Google-Smtp-Source: ABdhPJws24HbP6h4138etJQSlnWm2Y2XwxnBASeT/cKcke6MEslGCkiEEYoqtXsbGeTqrfGEy7wOEA==
+X-Received: by 2002:a62:63c1:: with SMTP id x184mr18657222pfb.324.1591674387555;
+        Mon, 08 Jun 2020 20:46:27 -0700 (PDT)
+Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
+        by smtp.googlemail.com with ESMTPSA id nl11sm1696385pjb.0.2020.06.08.20.46.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 08 Jun 2020 20:41:51 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net 1/1] ionic: wait on queue start until after IFF_UP
-Date:   Mon,  8 Jun 2020 20:41:43 -0700
-Message-Id: <20200609034143.7668-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
+        Mon, 08 Jun 2020 20:46:26 -0700 (PDT)
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+X-Google-Original-From: Roopa Prabhu
+To:     dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        nikolay@cumulusnetworks.com
+Subject: [PATCH iproute2 net-next 0/2] support for fdb nexthop groups
+Date:   Mon,  8 Jun 2020 20:46:21 -0700
+Message-Id: <1591674383-20545-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: git-send-email 2.1.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The netif_running() test looks at __LINK_STATE_START which
-gets set before ndo_open() is called, there is a window of
-time between that and when the queues are actually ready to
-be run.  If ionic_check_link_status() notices that the link is
-up very soon after netif_running() becomes true, it might try
-to run the queues before they are ready, causing all manner of
-potential issues.  Since the netdev->flags IFF_UP isn't set
-until after ndo_open() returns, we can wait for that before
-we allow ionic_check_link_status() to start the queues.
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-On the way back to close, __LINK_STATE_START is cleared before
-calling ndo_stop(), and IFF_UP is cleared after.  Both of
-these need to be true in order to safely stop the queues
-from ionic_check_link_status().
+This series adds iproute2 support for recently added
+kernel fdb nexthop groups
 
-Fixes: 49d3b493673a ("ionic: disable the queues on link down")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+example:
+/* create fdb nexthop group */
+$ip nexthop add id 12 via 172.16.1.2 fdb
+$ip nexthop add id 13 via 172.16.1.3 fdb
+$ip nexthop add id 102 group 12/13 fdb
+   
+/* assign nexthop group to fdb entry */ 
+$bridge fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 7321a92f8395..fbc36e9e4729 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -116,7 +116,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
- 			netif_carrier_on(netdev);
- 		}
- 
--		if (netif_running(lif->netdev))
-+		if (lif->netdev->flags & IFF_UP && netif_running(lif->netdev))
- 			ionic_start_queues(lif);
- 	} else {
- 		if (netif_carrier_ok(netdev)) {
-@@ -124,7 +124,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
- 			netif_carrier_off(netdev);
- 		}
- 
--		if (netif_running(lif->netdev))
-+		if (lif->netdev->flags & IFF_UP && netif_running(lif->netdev))
- 			ionic_stop_queues(lif);
- 	}
- 
+Roopa Prabhu (2):
+  ipnexthop: support for fdb nexthops
+  bridge: support for nexthop id in fdb entries
+
+ bridge/fdb.c                 | 11 +++++++++++
+ include/uapi/linux/nexthop.h |  2 ++
+ ip/ipnexthop.c               | 17 ++++++++++++++++-
+ man/man8/bridge.8            | 13 ++++++++++---
+ man/man8/ip-nexthop.8        | 30 +++++++++++++++++++++++++++---
+ 5 files changed, 66 insertions(+), 7 deletions(-)
+
 -- 
-2.17.1
+2.1.4
 
