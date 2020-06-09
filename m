@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9388F1F39E9
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 13:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911871F3A23
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 13:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbgFILju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 07:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729014AbgFILjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 07:39:40 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6451FC03E97C;
-        Tue,  9 Jun 2020 04:39:40 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id w1so20400311qkw.5;
-        Tue, 09 Jun 2020 04:39:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=UYWL4b+Nksdqw2T1bjsF7nZO4cYFZU9p52lDBPWks3Q=;
-        b=EVE/MUmeNfXmLgTiwN5/i+wciCoKUwFN5h7WteGzb3uFj47uWistcYYVYgoLIMWUya
-         0mdzYDev4qaM1LIeOsWOR/IiRRiU3mULp01mh1rDC02Tfxfv2jNZc0MJXYFF8GNVnm91
-         mxx3fB9LaOjpzYVgDRBBPNrORD1BO1Z1UV4og/HwThZjR/UI2jPpqXGsxtd6pmvIIiBp
-         or7N5kR1jTvcexoFpu8lI9k9fdPCd06yQ8BhwvP49VfTjtVtCJZ5i3MQEo9YPcdQBAeV
-         hA3ufNs7D+YD7QXrSczACvOjUOLw5kdKRhU6g8xPesviG7SZKD2icTbCT8jm0s4Ylx9j
-         oLPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=UYWL4b+Nksdqw2T1bjsF7nZO4cYFZU9p52lDBPWks3Q=;
-        b=U+qDKnX0hArrIFGWuS/SeUd4kDwOskap4+DZ44zoo22f0NOoVPOP9RrvPSkfUh5t+m
-         cN8cgt82tbLg0h/ZJgWNjsLww7ScHpp15RhxHtgam0Cl5QVnzBIbn4qIR7qYjXfaOcmN
-         5TJRXv9/6ILYzrf/k/TMqhqg3ze1KOYE0H3y2BdG7yz1Cey+qe6Nl2Wz/DQY4yOC/Q2g
-         ZjXt13NBgrKd9tshMfOR/+XnIC/xeR6DiUcvSS50xI6gegtSk26l5m+TySqdbaZ61ki7
-         Hm1xeQjCI2uADSSTxiI3ULHQcX/JGnLDbPYj98T8n4KFX0XXCX5UsTs/WdISqo699Ukc
-         WOow==
-X-Gm-Message-State: AOAM533v/pLyFXv19JkVromjWFdL5GptFUwr2T65GDiZ/fXQ9lKbQN2h
-        ysxvjKGgHtcJhPSkmRnRemU=
-X-Google-Smtp-Source: ABdhPJw82gvLnPVRojON5y8/81l8qJFH5PwKefp/eQWm+pI3IoYi1CfHo4jZKwrlXaPWYhQlnEIoCg==
-X-Received: by 2002:a37:a504:: with SMTP id o4mr26378752qke.245.1591702779549;
-        Tue, 09 Jun 2020 04:39:39 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:29ac:7979:1e2e:c67b])
-        by smtp.googlemail.com with ESMTPSA id n13sm11281614qtb.20.2020.06.09.04.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 04:39:39 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
+        id S1729107AbgFILzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 07:55:00 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:56747 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728754AbgFILy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 07:54:59 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 030BC58016E;
+        Tue,  9 Jun 2020 07:54:56 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 09 Jun 2020 07:54:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=4XghQ4ngJrsVa7o3S5D2L5Fpmy6
+        lr42o/I7ET5fuZBE=; b=jUFRqrs66EfQdyi4QdpnhZ8Oh+re4JJMZ7Rj7o3r5m5
+        +ds97NPJ6VOO/zButAP+XIWrzEIg07/TyOvOKR4mvqSPM2lu7NsVaDwaZIpcouNm
+        jt3bszRxaFO3NBtwI7MI3l/ciYYfW3lc4Wtkpeo9LxbqwEKsnFbG/nY3vNSevoLZ
+        1k20y3uzc/WZbXTiW93oiP1szsmq0Cmau4Kw7YFEbVQ811iDIcoybCaaM+i0Ac3v
+        /OOrV3SQty5MLo4WLavuRef7BabSUwbIj+BNq/uBNe6KIF9yqmYcvr3jSHpnfx+q
+        xNuSBQHl6XUVpAcoPCaJ97lW9JEUSBWWnSDxlLzqoKg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=4XghQ4
+        ngJrsVa7o3S5D2L5Fpmy6lr42o/I7ET5fuZBE=; b=FqkFJrFrPcz+sUJo4ImAAn
+        TydrBGBzHIJwHPZo2QXSRonsQsT2Csj4anXD9+8fm/vjgs6Qs85sUG3gTzX5dpVc
+        75E776c0zlSmM47kCiMUkyCgwxZC/ZtqG4zoxFHB43ApxojrLzm16cxDW/zvXGYq
+        ydg6Vchn9Pde7V5c0ZOiIuYYVypFDM5RcOkgwk9zo/RRG2P77JZD52vppBeX33cx
+        eUf0/+JGLzZ2UjYYU/gnorxi6h4Uz4GtvdL8oyuXnXfM/temhQZcHbMIor6ylswu
+        HkLEqrE3elOdTpO2grvK7Fjc3o/3MK7TLKReWN3H6zL2pHPZLiMJEgy+5bruIheg
+        ==
+X-ME-Sender: <xms:j3jfXh9kqVH9-HALDlZLQVT7BENkZoY3hDDhBYhCD4-v7Fy4Y3BcMw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudehgedggeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrkeelrddutdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:j3jfXluXnWs_jAK1jDLLMKaQOkMUfXjkIo8paM0MaD5kFP-dodvGQQ>
+    <xmx:j3jfXvCLWdH0dctuGUr7cptGmFfiasX18CesjRfXan9IlErMbkq1Rg>
+    <xmx:j3jfXleh_fyxlHaxgd1mYPPBZXa8vu7uQWLlYHGxKyqGoNP2E5vcFg>
+    <xmx:j3jfXnn7jXQRdKIVOw7K18MEzLZer7ELe2Kuqlv-ZJxua8x3Gj4soA>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CDD08328005E;
+        Tue,  9 Jun 2020 07:54:54 -0400 (EDT)
+Date:   Tue, 9 Jun 2020 13:54:53 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Gaurav Singh <gaurav1086@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
@@ -57,42 +65,39 @@ To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] bpf: alloc_record_per_cpu Add null check after malloc
-Date:   Tue,  9 Jun 2020 07:38:39 -0400
-Message-Id: <20200609113839.9628-2-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200609113839.9628-1-gaurav1086@gmail.com>
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Subject: Re: your mail
+Message-ID: <20200609115453.GB819153@kroah.com>
 References: <20200609113839.9628-1-gaurav1086@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200609113839.9628-1-gaurav1086@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- samples/bpf/xdp_rxq_info_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Jun 09, 2020 at 07:38:38AM -0400, Gaurav Singh wrote:
+> Please find the patch below.
+> 
+> Thanks and regards,
+> Gaurav.
+> 
+> >From Gaurav Singh <gaurav1086@gmail.com> # This line is ignored.
+> From: Gaurav Singh <gaurav1086@gmail.com>
+> Reply-To: 
+> Subject: 
+> In-Reply-To: 
+> 
+> 
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..490b07b7df78 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
- 
- 	size = sizeof(struct datarec) * nr_cpus;
- 	array = malloc(size);
--	memset(array, 0, size);
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
- 	}
-+	memset(array, 0, size);
- 	return array;
- }
- 
--- 
-2.17.1
+I think something went wrong in your submission, just use 'git
+send-email' to send the patch out.
 
+thanks,
+
+greg k-h
