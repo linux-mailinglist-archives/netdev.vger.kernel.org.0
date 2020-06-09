@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EBA1F3DA5
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B043F1F3DA3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730293AbgFIOKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 10:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
+        id S1730197AbgFIOJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 10:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726967AbgFIOJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:09:46 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E882C05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 07:09:45 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id fc4so10137236qvb.1
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 07:09:45 -0700 (PDT)
+        with ESMTP id S1730043AbgFIOJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:09:49 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6A0C08C5C4
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 07:09:46 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id i16so17641491qtr.7
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 07:09:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uB2kcDcObXzwEG33hEUMjL0mxj4fwUyzdrYG3GdeEwc=;
-        b=W7cdEpr39EEPephPUMvFL2qj/FtrNiisJuc+Bi31+3C7vta4dggvMffHR04g6QGpvz
-         8bs9OYCuYdJVZbi603COf4ByDA0imPb47PkSRUJxQ7vM74GKRMxzhSMI31d2Q0LxO9VO
-         jnxpSESigXnpRlNSfmvgheZkAkToouzhBak1QtcSmHBVzS88Lq79Bb6LnoYtYlcIb6um
-         Hr3lfnTRCk78ywk5tzA0yPhPBziJFjMVfsePhBQZxwA6ck0iMsYwDvgaH7h8ZHTm6hbs
-         xjt/LYnWhe2uiM7QmIojggqR+T0PxW2dkU/nLiDvGrlCXF1Ox41Q/krmRTn0euJ/zKye
-         kTGA==
+        bh=xexHMXVgzOIx9WOc6t4fmgvCC/iI4Sqfb6vI5QhhmYY=;
+        b=j4qxx01mvqOJf6wpGsFioN4UH2p99MHQpMoBxfgYg5IdfibKRbyq1n2hZjUTPoQO4M
+         ufZdA4C8RBbKGbOzBB1WhtQiknC8XS5f3ZgqgMOcLdTA6EHGmUqXEAajq71v17TXHABm
+         deorRmlEey/LO8H8wnCe4HFiaZ+t/Nt6nu5aCCJslTH1+SWtuk7K41sgCerPYZWJtA/4
+         zCXmQW4w4GBJnNnl8pE09DCx40waeZfOsfk4v2ob5ZznTYsyKzYWY2GQfVD6xMPOT1lS
+         ciL6C0I+7USo1Q+rngfGlnzKQIP2ARkiCzKoY1qKCSF1EVpUC5B/yzHNgIKO5bqhoYUp
+         quqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uB2kcDcObXzwEG33hEUMjL0mxj4fwUyzdrYG3GdeEwc=;
-        b=L+UmfTXFHhsaneIva+b0tQiULliYAo/d8ScXCOAjVAWHJqj9PU92oncn2R8qQRo9Xj
-         VmZRVUwcf2XU36Hbt+regL03D/4ot13Gv7AMiSZpj6fOkFJuu3qoJQ0yEphTpDrJBdtS
-         7Z9GnEGVnOY5zcWqbwHSVbR4OmvVI4inikuA4p/gUL2INWaPhAOW54XcYdodvc3eVZj6
-         487AwphV2l77HZX6u6R/tGpdNUUsfuWcjWJucQJlm4gSQC72XysOVcczcRJmVRTloZSX
-         rd3PqpgtupjIBGF3ub6V7wcb+7iGJOn8aSbxaRom+hROFT4c/G+wMI8pKoNeV60ruTFc
-         1hVA==
-X-Gm-Message-State: AOAM531iIuboTekiwb9m/POL1SHp8+A2YRJfBS4BVHpxpimIHmJpBI9R
-        dsY0PA7cEtCtHHHlnqWgwMIeJmod
-X-Google-Smtp-Source: ABdhPJzszAfKOKc0Lb5qVQm/jkPzVdbSG683zBeHLLF+++NxiQdCCLewzTeJBZcWSsTNLXNIWe2yNg==
-X-Received: by 2002:a0c:f888:: with SMTP id u8mr4100102qvn.130.1591711784017;
+        bh=xexHMXVgzOIx9WOc6t4fmgvCC/iI4Sqfb6vI5QhhmYY=;
+        b=TLBCjudx0rXtjFkfj2S1xJd/3kpoq2YqUZgci6AM7CMCYTQ6Gr7Hp2ZqvrWObW3YhT
+         Pa0WbLR9bUVAIF6xbluk2A4YMtga5yWNcu7UyrzDAyj5Qzv/zvCNwU5RMsBaehwFcM89
+         QDBEmu6VUM8Gxut8rBml1kQagh2sE2UYsHVVqfhePvLoBWMWNl+sfT0IGRLTHQWnF90C
+         16rrSmFc+2ue/co1lYpicCCgCPJjc84uFCaR0/E0n17+SyuzKgqtjL8KbmEpJpu8OeKK
+         vvFIhw8Yjx2NgFsb3gcEPQiIUhk0snwcMTQFUDurb4+Rm7BSKQIozWmJYgXdmKe/EdZd
+         S+3g==
+X-Gm-Message-State: AOAM531/sAQajMdzkDOOOhDHk3lW3516Hu85b0im93SAMwvL6vbyYBLH
+        9Xo7eMGpVE7q4ZDd/LeRaQoJTaIt
+X-Google-Smtp-Source: ABdhPJwhdSOvJzzGNssa5VmvGF/R/sM/rLyzOZ2lp21VGTCrsTcXI5JqhSibxA1nMbMk4WtKK/3Hrg==
+X-Received: by 2002:ac8:2bc4:: with SMTP id n4mr28783535qtn.222.1591711784877;
         Tue, 09 Jun 2020 07:09:44 -0700 (PDT)
 Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:8798:f98:652b:63f1])
-        by smtp.gmail.com with ESMTPSA id u25sm10454614qtc.11.2020.06.09.07.09.42
+        by smtp.gmail.com with ESMTPSA id u25sm10454614qtc.11.2020.06.09.07.09.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 07:09:42 -0700 (PDT)
+        Tue, 09 Jun 2020 07:09:44 -0700 (PDT)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Willem de Bruijn <willemb@google.com>
-Subject: [PATCH RFC net-next 5/6] selftests/net: so_txtime: add gso and multi release pacing
-Date:   Tue,  9 Jun 2020 10:09:33 -0400
-Message-Id: <20200609140934.110785-6-willemdebruijn.kernel@gmail.com>
+Subject: [PATCH RFC net-next 6/6] selftests/net: upgso bench: add pacing with SO_TXTIME
+Date:   Tue,  9 Jun 2020 10:09:34 -0400
+Message-Id: <20200609140934.110785-7-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.27.0.278.ge193c7cf3a9-goog
 In-Reply-To: <20200609140934.110785-1-willemdebruijn.kernel@gmail.com>
 References: <20200609140934.110785-1-willemdebruijn.kernel@gmail.com>
@@ -65,267 +65,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-Support sending more than 1B payload and passing segment size.
+Enable passing an SCM_TXTIME ('-x'), optionally configured to use
+multi release (SOF_TXTIME_MULTI_RELEASE) ('-X').
 
-- add option '-s' to send more than 1B payload
-- add option '-m' to configure mss
+With multi release, the segments that make up a single udp gso packet
+can be released over time, as opposed to burst at once.
 
-If size exceeds mss, enable UDP_SEGMENT.
+Repurpose the lower 8 bits of the 64 bit timestamp for this purpose.
+- bits 4..7: delay between transmit periods in msec
+- bits 0..3: number of segments sent per period
 
-Optionally also allow configuring multi release time.
+Also add an optional delay in usec between sendmsg calls ('-d'). To
+reduce throughput sufficiently to observe pacing delay introduced.
 
-- add option '-M' to set release interval (msec)
-- add option '-N' to set release segment count
+Added udpgso_bench_multi.sh, derived from so_txtime_multi.sh, to run
+tests over veth.
 
-Both options have to be specified, or neither.
+Also fix up a minor issue where sizeof the wrong field was used
+(mss, instead of gso_size). They happen to both be uint16_t.
 
-Add a testcase to so_txtime.sh over loopback.
-Add a testscript so_txtime_multi.sh that operates over veth using
-txonly/rxonly mode.
+Tested:
+    ./udpgso_bench_multi.sh
 
-Also fix a small sock_extended_err parsing bug, mixing up
-ee_code and ee_errno
+    or manually ran across two hosts:
+
+    # sender
+    #
+    # -S 6000 -s 1400:  6000B buffer encoding 1400B datagrams
+    # -d 200000:        200 msec delay between sendmsg
+    # -x 0x989611:      ~1000000 nsec first delay + 1 MSS every 1 msec
+
+    ./udpgso_bench_tx -6 -D fd00::1 \
+        -l 1 -s 6000 -S 1400 -v
+        -d 200000 -x 0x989611 -X
+
+    # receiver
+
+    tcpdump -n -i eth1 -c 100 udp and port 8000 &
+    sleep 0.2
+    ./udpgso_bench_rx
+
+    16:29:45.146855 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.147798 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.148797 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.149797 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.150796 IP6 host1.40803 > host2.8000: UDP, length 400
+    16:29:45.347056 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.348000 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.349000 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.349999 IP6 host1.40803 > host2.8000: UDP, length 1400
+    16:29:45.350999 IP6 host1.40803 > host2.8000: UDP, length 400
 
 Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- tools/testing/selftests/net/so_txtime.c       | 80 +++++++++++++++----
- tools/testing/selftests/net/so_txtime.sh      |  7 ++
- .../testing/selftests/net/so_txtime_multi.sh  | 68 ++++++++++++++++
- 3 files changed, 141 insertions(+), 14 deletions(-)
- create mode 100755 tools/testing/selftests/net/so_txtime_multi.sh
+ .../selftests/net/udpgso_bench_multi.sh       | 65 +++++++++++++++++
+ tools/testing/selftests/net/udpgso_bench_tx.c | 72 +++++++++++++++++--
+ 2 files changed, 133 insertions(+), 4 deletions(-)
+ create mode 100755 tools/testing/selftests/net/udpgso_bench_multi.sh
 
-diff --git a/tools/testing/selftests/net/so_txtime.c b/tools/testing/selftests/net/so_txtime.c
-index fa748e4209c0..da4ef411693c 100644
---- a/tools/testing/selftests/net/so_txtime.c
-+++ b/tools/testing/selftests/net/so_txtime.c
-@@ -17,6 +17,7 @@
- #include <linux/errqueue.h>
- #include <linux/ipv6.h>
- #include <linux/tcp.h>
-+#include <netinet/udp.h>
- #include <stdbool.h>
- #include <stdlib.h>
- #include <stdio.h>
-@@ -32,7 +33,11 @@ static const char *cfg_addr;
- static int	cfg_clockid	= CLOCK_TAI;
- static bool	cfg_do_ipv4;
- static bool	cfg_do_ipv6;
-+static uint8_t	cfg_mr_num;
-+static uint8_t	cfg_mr_ival;
-+static int	cfg_mss		= 1400;
- static bool	cfg_rxonly;
-+static uint16_t	cfg_size	= 1;
- static int	cfg_timeout_sec;
- static bool	cfg_txonly;
- static uint16_t	cfg_port	= 8000;
-@@ -66,6 +71,7 @@ static uint64_t gettime_ns(void)
- 
- static void do_send_one(int fdt, struct timed_send *ts)
- {
-+	static char buf[1 << 16];
- 	char control[CMSG_SPACE(sizeof(uint64_t))];
- 	struct msghdr msg = {0};
- 	struct iovec iov = {0};
-@@ -73,8 +79,10 @@ static void do_send_one(int fdt, struct timed_send *ts)
- 	uint64_t tdeliver;
- 	int ret;
- 
--	iov.iov_base = &ts->data;
--	iov.iov_len = 1;
-+	memset(buf, ts->data, cfg_size);
-+
-+	iov.iov_base = buf;
-+	iov.iov_len = cfg_size;
- 
- 	msg.msg_iov = &iov;
- 	msg.msg_iovlen = 1;
-@@ -85,6 +93,11 @@ static void do_send_one(int fdt, struct timed_send *ts)
- 		msg.msg_controllen = sizeof(control);
- 
- 		tdeliver = glob_tstart + ts->delay_us * 1000;
-+		if (cfg_mr_ival) {
-+			tdeliver &= ~0xFF;
-+			tdeliver |= cfg_mr_ival << 4;
-+			tdeliver |= cfg_mr_num;
-+		}
- 
- 		cm = CMSG_FIRSTHDR(&msg);
- 		cm->cmsg_level = SOL_SOCKET;
-@@ -104,30 +117,41 @@ static void do_send_one(int fdt, struct timed_send *ts)
- static bool do_recv_one(int fdr, struct timed_send *ts)
- {
- 	int64_t tstop, texpect;
-+	int total = 0;
- 	char rbuf[2];
- 	int ret;
- 
--	ret = recv(fdr, rbuf, sizeof(rbuf), 0);
-+read_again:
-+	ret = recv(fdr, rbuf, sizeof(rbuf), MSG_TRUNC);
- 	if (ret == -1 && errno == EAGAIN)
--		return true;
-+		goto timedout;
- 	if (ret == -1)
- 		error(1, errno, "read");
--	if (ret != 1)
--		error(1, 0, "read: %dB", ret);
- 
- 	tstop = (gettime_ns() - glob_tstart) / 1000;
- 	texpect = ts->delay_us >= 0 ? ts->delay_us : 0;
- 
--	fprintf(stderr, "payload:%c delay:%lld expected:%lld (us)\n",
--			rbuf[0], (long long)tstop, (long long)texpect);
-+	fprintf(stderr, "payload:%c delay:%lld expected:%lld (us) -- read=%d,len=%d,total=%d\n",
-+			rbuf[0], (long long)tstop, (long long)texpect,
-+			total, ret, cfg_size);
- 
- 	if (rbuf[0] != ts->data)
- 		error(1, 0, "payload mismatch. expected %c", ts->data);
- 
--	if (labs(tstop - texpect) > cfg_variance_us)
-+	total += ret;
-+	if (total < cfg_size)
-+		goto read_again;
-+
-+	/* measure latency if all data arrives in a single datagram (not GSO) */
-+	if (ret == cfg_size && labs(tstop - texpect) > cfg_variance_us)
- 		error(1, 0, "exceeds variance (%d us)", cfg_variance_us);
- 
- 	return false;
-+
-+timedout:
-+	if (total != 0 && total != cfg_size)
-+		error(1, 0, "timeout mid-read");
-+	return true;
- }
- 
- static void do_recv_verify_empty(int fdr)
-@@ -168,7 +192,9 @@ static void do_recv_errqueue_timeout(int fdt)
- 			break;
- 		if (ret == -1)
- 			error(1, errno, "errqueue");
--		if (msg.msg_flags != MSG_ERRQUEUE)
-+		if (ret != sizeof(data))
-+			error(1, errno, "insufficient data");
-+		if (msg.msg_flags & ~(MSG_ERRQUEUE | MSG_TRUNC))
- 			error(1, 0, "errqueue: flags 0x%x\n", msg.msg_flags);
- 
- 		cm = CMSG_FIRSTHDR(&msg);
-@@ -180,7 +206,9 @@ static void do_recv_errqueue_timeout(int fdt)
- 		err = (struct sock_extended_err *)CMSG_DATA(cm);
- 		if (err->ee_origin != SO_EE_ORIGIN_TXTIME)
- 			error(1, 0, "errqueue: origin 0x%x\n", err->ee_origin);
--		if (err->ee_code != ECANCELED)
-+		if (err->ee_errno != ECANCELED)
-+			error(1, 0, "errqueue: errno 0x%x\n", err->ee_errno);
-+		if (err->ee_code != SO_EE_CODE_TXTIME_MISSED)
- 			error(1, 0, "errqueue: code 0x%x\n", err->ee_code);
- 
- 		tstamp = ((int64_t) err->ee_data) << 32 | err->ee_info;
-@@ -202,7 +230,7 @@ static void setsockopt_txtime(int fd)
- 	struct sock_txtime so_txtime_val_read = { 0 };
- 	socklen_t vallen = sizeof(so_txtime_val);
- 
--	so_txtime_val.flags = SOF_TXTIME_REPORT_ERRORS;
-+	so_txtime_val.flags = SOF_TXTIME_REPORT_ERRORS | SOF_TXTIME_MULTI_RELEASE;
- 
- 	if (setsockopt(fd, SOL_SOCKET, SO_TXTIME,
- 		       &so_txtime_val, sizeof(so_txtime_val)))
-@@ -230,6 +258,12 @@ static int setup_tx(struct sockaddr *addr, socklen_t alen)
- 
- 	setsockopt_txtime(fd);
- 
-+	if (cfg_size > cfg_mss) {
-+		if (setsockopt(fd, SOL_UDP, UDP_SEGMENT,
-+			       &cfg_mss, sizeof(cfg_mss)))
-+			error(1, errno, "setsockopt udp segment");
-+	}
-+
- 	return fd;
- }
- 
-@@ -321,7 +355,7 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c, ilen, olen;
- 
--	while ((c = getopt(argc, argv, "46A:c:rtT:")) != -1) {
-+	while ((c = getopt(argc, argv, "46A:c:m:M:N:rs:tT:")) != -1) {
- 		switch (c) {
- 		case '4':
- 			cfg_do_ipv4 = true;
-@@ -341,9 +375,25 @@ static void parse_opts(int argc, char **argv)
- 			else
- 				error(1, 0, "unknown clock id %s", optarg);
- 			break;
-+		case 'm':
-+			cfg_mss = strtol(optarg, NULL, 0);
-+			break;
-+		case 'M':
-+			cfg_mr_ival = atoi(optarg);
-+			if (cfg_mr_ival > 0xF)
-+				error(1, 0, "multi release ival exceeds max");
-+			break;
-+		case 'N':
-+			cfg_mr_num = atoi(optarg);
-+			if (cfg_mr_num > 0xF)
-+				error(1, 0, "multi release count exceeds max");
-+			break;
- 		case 'r':
- 			cfg_rxonly = true;
- 			break;
-+		case 's':
-+			cfg_size = atoi(optarg);
-+			break;
- 		case 't':
- 			cfg_txonly = true;
- 			break;
-@@ -356,12 +406,14 @@ static void parse_opts(int argc, char **argv)
- 	}
- 
- 	if (argc - optind != 2)
--		error(1, 0, "Usage: %s [-46rt] [-A addr] [-c clock] [-T timeout] <in> <out>", argv[0]);
-+		error(1, 0, "Usage: %s [-46rt] [-A addr] [-c clock] [-m mtu] [-M ival] [-N num] [-s size] [-T timeout] <in> <out>", argv[0]);
- 
- 	if (cfg_rxonly && cfg_txonly)
- 		error(1, 0, "Select rx-only or tx-only, not both");
- 	if (cfg_addr && cfg_do_ipv4 && cfg_do_ipv6)
- 		error(1, 0, "Cannot run both IPv4 and IPv6 when passing address");
-+	if (!!cfg_mr_ival ^ !!cfg_mr_num)
-+		error(1, 0, "Multi release pacing requires both -M and -N");
- 
- 	ilen = parse_io(argv[optind], cfg_in);
- 	olen = parse_io(argv[optind + 1], cfg_out);
-diff --git a/tools/testing/selftests/net/so_txtime.sh b/tools/testing/selftests/net/so_txtime.sh
-index 3f7800eaecb1..7c60c11717e4 100755
---- a/tools/testing/selftests/net/so_txtime.sh
-+++ b/tools/testing/selftests/net/so_txtime.sh
-@@ -16,13 +16,20 @@ fi
- 
- set -e
- 
-+ip link set dev lo mtu 1500
- tc qdisc add dev lo root fq
-+
- ./so_txtime -4 -6 -c mono a,-1 a,-1
- ./so_txtime -4 -6 -c mono a,0 a,0
- ./so_txtime -4 -6 -c mono a,10 a,10
- ./so_txtime -4 -6 -c mono a,10,b,20 a,10,b,20
- ./so_txtime -4 -6 -c mono a,20,b,10 b,20,a,20
- 
-+# test gso
-+./so_txtime -4 -6 -m 1000 -s 3500 -c mono a,50,b,100 a,50,b,100
-+./so_txtime -4 -6 -m 1000 -s 3500 -M 5 -N 1 -c mono a,50,b,100 a,50,b,100
-+./so_txtime -4 -6 -m 1000 -s 3500 -M 5 -N 2 -c mono a,50,b,100 a,50,b,100
-+
- if tc qdisc replace dev lo root etf clockid CLOCK_TAI delta 400000; then
- 	! ./so_txtime -4 -6 -c tai a,-1 a,-1
- 	! ./so_txtime -4 -6 -c tai a,0 a,0
-diff --git a/tools/testing/selftests/net/so_txtime_multi.sh b/tools/testing/selftests/net/so_txtime_multi.sh
+diff --git a/tools/testing/selftests/net/udpgso_bench_multi.sh b/tools/testing/selftests/net/udpgso_bench_multi.sh
 new file mode 100755
-index 000000000000..4e5ab06fd178
+index 000000000000..c29f75aec759
 --- /dev/null
-+++ b/tools/testing/selftests/net/so_txtime_multi.sh
-@@ -0,0 +1,68 @@
++++ b/tools/testing/selftests/net/udpgso_bench_multi.sh
+@@ -0,0 +1,65 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
@@ -366,34 +169,203 @@ index 000000000000..4e5ab06fd178
 +}
 +
 +run_test() {
-+	ip netns exec "${ns2}" ./so_txtime -r -T 1 $@ &
++	ip netns exec "${ns2}" tcpdump -q -n -i veth2 udp &
++	ip netns exec "${ns2}" ./udpgso_bench_rx &
 +	sleep 0.1
-+	ip netns exec "${ns1}" ./so_txtime -t $@
-+	wait
++	ip netns exec "${ns1}" ./udpgso_bench_tx $@
++	pkill -P $$
 +}
 +
 +run_test_46() {
-+	run_test -4 -A "${ns2_v4}" $@
-+	run_test -6 -A "${ns2_v6}" $@
++	run_test -4 -D "${ns2_v4}" $@
++	run_test -6 -D "${ns2_v6}" $@
 +}
 +
 +trap cleanup EXIT
 +setup
 +
-+echo "pacing"
-+TEST_ARGS="-c mono a,10 a,10"
-+run_test_46 ${TEST_ARGS}
-+
 +echo "gso + pacing"
-+TEST_ARGS_GSO="-m 1000 -s 4500 ${TEST_ARGS}"
-+run_test_46 ${TEST_ARGS_GSO}
++TEST_ARGS="-l 1 -s 3500 -S 1000 -v -d 200000 -x 1000000"
++run_test_46 ${TEST_ARGS} -x 1000000
 +
 +echo "gso + multi release pacing"
-+run_test_46 -M 5 -N 1 ${TEST_ARGS_GSO}
-+run_test_46 -M 5 -N 2 ${TEST_ARGS_GSO}
++run_test_46 ${TEST_ARGS} -X -x 0x989611
++run_test_46 ${TEST_ARGS} -X -x 0x9896A2
 +
 +# Does not validate pacing delay yet. Check manually.
 +echo "Ok. Executed tests."
+diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+index 17512a43885e..264222c2b94e 100644
+--- a/tools/testing/selftests/net/udpgso_bench_tx.c
++++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+@@ -23,6 +23,7 @@
+ #include <sys/time.h>
+ #include <sys/poll.h>
+ #include <sys/types.h>
++#include <time.h>
+ #include <unistd.h>
+ 
+ #include "../kselftest.h"
+@@ -56,6 +57,7 @@
+ static bool	cfg_cache_trash;
+ static int	cfg_cpu		= -1;
+ static int	cfg_connected	= true;
++static int	cfg_delay_us;
+ static int	cfg_family	= PF_UNSPEC;
+ static uint16_t	cfg_mss;
+ static int	cfg_payload_len	= (1472 * 42);
+@@ -65,6 +67,8 @@ static bool	cfg_poll;
+ static bool	cfg_segment;
+ static bool	cfg_sendmmsg;
+ static bool	cfg_tcp;
++static uint64_t	cfg_txtime;
++static bool	cfg_txtime_multi;
+ static uint32_t	cfg_tx_ts = SOF_TIMESTAMPING_TX_SOFTWARE;
+ static bool	cfg_tx_tstamp;
+ static bool	cfg_audit;
+@@ -306,6 +310,34 @@ static void send_ts_cmsg(struct cmsghdr *cm)
+ 	*valp = cfg_tx_ts;
+ }
+ 
++static uint64_t gettime_ns(void)
++{
++	struct timespec ts;
++
++	if (clock_gettime(CLOCK_MONOTONIC, &ts))
++		error(1, errno, "gettime");
++
++	return ts.tv_sec * (1000ULL * 1000 * 1000) + ts.tv_nsec;
++}
++
++static void send_txtime_cmsg(struct cmsghdr *cm)
++{
++	uint64_t tdeliver, *valp;
++
++	tdeliver = gettime_ns() + cfg_txtime;
++
++	if (cfg_txtime_multi) {
++		tdeliver &= ~0xFF;
++		tdeliver |= cfg_txtime & 0xFF;
++	}
++
++	cm->cmsg_level = SOL_SOCKET;
++	cm->cmsg_type = SCM_TXTIME;
++	cm->cmsg_len = CMSG_LEN(sizeof(cfg_txtime));
++	valp = (void *)CMSG_DATA(cm);
++	*valp = tdeliver;
++}
++
+ static int send_udp_sendmmsg(int fd, char *data)
+ {
+ 	char control[CMSG_SPACE(sizeof(cfg_tx_ts))] = {0};
+@@ -373,7 +405,8 @@ static void send_udp_segment_cmsg(struct cmsghdr *cm)
+ static int send_udp_segment(int fd, char *data)
+ {
+ 	char control[CMSG_SPACE(sizeof(cfg_gso_size)) +
+-		     CMSG_SPACE(sizeof(cfg_tx_ts))] = {0};
++		     CMSG_SPACE(sizeof(cfg_tx_ts)) +
++		     CMSG_SPACE(sizeof(uint64_t))] = {0};
+ 	struct msghdr msg = {0};
+ 	struct iovec iov = {0};
+ 	size_t msg_controllen;
+@@ -390,12 +423,17 @@ static int send_udp_segment(int fd, char *data)
+ 	msg.msg_controllen = sizeof(control);
+ 	cmsg = CMSG_FIRSTHDR(&msg);
+ 	send_udp_segment_cmsg(cmsg);
+-	msg_controllen = CMSG_SPACE(sizeof(cfg_mss));
++	msg_controllen = CMSG_SPACE(sizeof(cfg_gso_size));
+ 	if (cfg_tx_tstamp) {
+ 		cmsg = CMSG_NXTHDR(&msg, cmsg);
+ 		send_ts_cmsg(cmsg);
+ 		msg_controllen += CMSG_SPACE(sizeof(cfg_tx_ts));
+ 	}
++	if (cfg_txtime) {
++		cmsg = CMSG_NXTHDR(&msg, cmsg);
++		send_txtime_cmsg(cmsg);
++		msg_controllen += CMSG_SPACE(sizeof(cfg_txtime));
++	}
+ 
+ 	msg.msg_controllen = msg_controllen;
+ 	msg.msg_name = (void *)&cfg_dst_addr;
+@@ -413,7 +451,7 @@ static int send_udp_segment(int fd, char *data)
+ 
+ static void usage(const char *filepath)
+ {
+-	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
++	error(1, 0, "Usage: %s [-46acmHPtTuvXz] [-C cpu] [-d delay] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize] [-x time]",
+ 		    filepath);
+ }
+ 
+@@ -422,7 +460,7 @@ static void parse_opts(int argc, char **argv)
+ 	int max_len, hdrlen;
+ 	int c;
+ 
+-	while ((c = getopt(argc, argv, "46acC:D:Hl:mM:p:s:PS:tTuvz")) != -1) {
++	while ((c = getopt(argc, argv, "46acC:d:D:Hl:mM:p:s:PS:tTuvx:Xz")) != -1) {
+ 		switch (c) {
+ 		case '4':
+ 			if (cfg_family != PF_UNSPEC)
+@@ -445,6 +483,9 @@ static void parse_opts(int argc, char **argv)
+ 		case 'C':
+ 			cfg_cpu = strtol(optarg, NULL, 0);
+ 			break;
++		case 'd':
++			cfg_delay_us = strtol(optarg, NULL, 0);
++			break;
+ 		case 'D':
+ 			setup_sockaddr(cfg_family, optarg, &cfg_dst_addr);
+ 			break;
+@@ -486,6 +527,12 @@ static void parse_opts(int argc, char **argv)
+ 		case 'v':
+ 			cfg_verbose = true;
+ 			break;
++		case 'x':
++			cfg_txtime = strtoull(optarg, NULL, 0);
++			break;
++		case 'X':
++			cfg_txtime_multi = true;
++			break;
+ 		case 'z':
+ 			cfg_zerocopy = true;
+ 			break;
+@@ -551,6 +598,17 @@ static void set_tx_timestamping(int fd)
+ 		error(1, errno, "setsockopt tx timestamping");
+ }
+ 
++static void set_txtime(int fd)
++{
++	struct sock_txtime txt = { .clockid = CLOCK_MONOTONIC };
++
++	if (cfg_txtime_multi)
++		txt.flags = SOF_TXTIME_MULTI_RELEASE;
++
++	if (setsockopt(fd, SOL_SOCKET, SO_TXTIME, &txt, sizeof(txt)))
++		error(1, errno, "setsockopt txtime");
++}
++
+ static void print_audit_report(unsigned long num_msgs, unsigned long num_sends)
+ {
+ 	unsigned long tdelta;
+@@ -652,6 +710,9 @@ int main(int argc, char **argv)
+ 	if (cfg_tx_tstamp)
+ 		set_tx_timestamping(fd);
+ 
++	if (cfg_txtime)
++		set_txtime(fd);
++
+ 	num_msgs = num_sends = 0;
+ 	tnow = gettimeofday_ms();
+ 	tstart = tnow;
+@@ -687,6 +748,9 @@ int main(int argc, char **argv)
+ 		if (cfg_cache_trash)
+ 			i = ++i < NUM_PKT ? i : 0;
+ 
++		if (cfg_delay_us)
++			usleep(cfg_delay_us);
++
+ 	} while (!interrupted && (cfg_runtime_ms == -1 || tnow < tstop));
+ 
+ 	if (cfg_zerocopy || cfg_tx_tstamp)
 -- 
 2.27.0.278.ge193c7cf3a9-goog
 
