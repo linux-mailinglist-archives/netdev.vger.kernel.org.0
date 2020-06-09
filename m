@@ -2,128 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C4B1F4144
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 18:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E23B1F4159
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 18:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731061AbgFIQpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 12:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729988AbgFIQpX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 12:45:23 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14845C05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 09:45:22 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id m21so16884979eds.13
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 09:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jKWUJNaMbH8mXO94Kj7M7bC98oWTaC2jO4qO598aOKU=;
-        b=Bqkgd2VoBJF4kH+PvkFgqnTHQ35Yej7r1wBJm41zLeUtBkhFUrJn+XAhBW56/K+/yG
-         HbFskyaF/4tg4cvixD23TNnyarwTOmWuPeg7Vx7UfiSe1Na6fX3LA5OZbFGwOrL0n5Jh
-         Irt37Mtg0ZOhRwKNL9A9qic3uf5QIrhFz2NpbCbHN9giTzKuG/W1klOvFI/JpmZmNjT0
-         Fby2d0SR57rDgXagJpmHT+Gvqv/qICHeHbOVfDtbdLLoNGq7hG3YrxJjeFBwUSEJrWq5
-         UEWXt79zAglu0wCUNukr/3xQeJB70L2Fjwdfmje01efSFBSQ3Z6jadYSKoLhTtUK33Hb
-         xx+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jKWUJNaMbH8mXO94Kj7M7bC98oWTaC2jO4qO598aOKU=;
-        b=S3UOrwRT4kdhZOZNh3wZX2nF5duSxKNd77+4SIrydMHrdmuhU/0ZGAalkZPkuv9Zn0
-         FSyX/aTghJCpajYHcanycMMa7K846xW92PtLomf2M9EuVRZjqGE0YkYI0aPPgLRNgddG
-         D25lE3O2iSoGSf5uT2Z1ogcW1FAZL2i3RW8/Nu+qcPv+OeXEPfI1BJug+RP2oGR/JVHl
-         2KJgL1le/r8uBFeeZ8WOpxE1RiLQVM5M6fUYTQBGzKqNlWbkjIIZnbwRMeiYag+IdDtQ
-         5erF9HU7pk7zjj2MholtvnUK0O1XbyLD21+u1T1PZzMTIkWpmJ7sOLJ1k6EayqbMQdR3
-         MMuA==
-X-Gm-Message-State: AOAM530CVpVfVB/sNbu+NQPhl+BJ3DgHwwEpDw2Lcu5k0mpoaS4fYjKC
-        a6DjPw7ywxULVxy3R6CrY0zfz17R6/2Hz9Wk7H0=
-X-Google-Smtp-Source: ABdhPJwKe2uOFgC4+6VDMvNeAow/gaEMBA1Ajmef7IgOinShOhSwimcfjHSVWFrJ2cWgp7N/GXDgbsjW2LkamyOo+6g=
-X-Received: by 2002:a05:6402:2207:: with SMTP id cq7mr25308661edb.186.1591721120682;
- Tue, 09 Jun 2020 09:45:20 -0700 (PDT)
+        id S1731277AbgFIQti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 12:49:38 -0400
+Received: from smtprelay0148.hostedemail.com ([216.40.44.148]:58246 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731061AbgFIQtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 12:49:36 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 07A511005E387;
+        Tue,  9 Jun 2020 16:49:34 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1981:2194:2199:2393:2525:2553:2561:2564:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3865:3866:3867:3868:3870:3871:3872:3873:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:7514:7875:7903:9025:10004:10400:10848:11026:11232:11658:11914:12043:12048:12296:12297:12555:12740:12760:12895:12986:13069:13311:13357:13439:13845:14181:14659:14721:21080:21451:21627:21740:21811:21939:30029:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: van97_43148ba26dc4
+X-Filterd-Recvd-Size: 2619
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Tue,  9 Jun 2020 16:49:31 +0000 (UTC)
+Message-ID: <9a79aded6981ec47f1f8b317b784e6e44158ac61.camel@perches.com>
+Subject: Re: [PATCH v3 0/7] Venus dynamic debug
+From:   Joe Perches <joe@perches.com>
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Jim Cromie <jim.cromie@gmail.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Baron <jbaron@akamai.com>
+Date:   Tue, 09 Jun 2020 09:49:30 -0700
+In-Reply-To: <c239d5df-e069-2091-589e-30f341c2cbd3@infradead.org>
+References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
+         <20200609111323.GA19604@bombadil.infradead.org>
+         <c239d5df-e069-2091-589e-30f341c2cbd3@infradead.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.2-0ubuntu1 
 MIME-Version: 1.0
-References: <538FB666.9050303@yahoo-inc.com> <alpine.LFD.2.11.1406071441260.2287@ja.home.ssi.bg>
- <5397A98F.2030206@yahoo-inc.com> <58a4abb51fe9411fbc7b1a58a2a6f5da@UCL-MBX03.OASIS.UCLOUVAIN.BE>
- <CALMXkpYBMN5VR9v+xL0fOC6srABYd38x5tGJG5od+VNMS+BSAw@mail.gmail.com>
- <878029e5-b2b2-544c-f4b5-ff4c76fd6bd3@gmail.com> <CALMXkpbNeRCrOnQFWAWR8BzX4yRgDveDMPZgS6NupjXrHFX1pg@mail.gmail.com>
- <b520b541-9013-3095-2e3b-37ec835e4ff8@gmail.com> <20200607100049.GM28263@breakpoint.cc>
-In-Reply-To: <20200607100049.GM28263@breakpoint.cc>
-From:   Christoph Paasch <christoph.paasch@gmail.com>
-Date:   Tue, 9 Jun 2020 09:45:09 -0700
-Message-ID: <CALMXkpbD_81divLN013LQyJkV8-JyZwXXhkaqTAQ3wQdh-fUZg@mail.gmail.com>
-Subject: Re: TCP_DEFER_ACCEPT wakes up without data
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Julian Anastasov <ja@ssi.bg>,
-        Wayne Badger <badger@yahoo-inc.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Leif Hedstrom <lhedstrom@apple.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+(adding Jim Cromie and comments)
 
-On Sun, Jun 7, 2020 at 3:00 AM Florian Westphal <fw@strlen.de> wrote:
->
-> Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > Sure! TCP_DEFER_ACCEPT delays the creation of the socket until data
-> > > has been sent by the client *or* the specified time has expired upon
-> > > which a last SYN/ACK is sent and if the client replies with an ACK the
-> > > socket will be created and presented to the accept()-call. In the
-> > > latter case it means that the app gets a socket that does not have any
-> > > data to be read - which goes against the intention of TCP_DEFER_ACCEPT
-> > > (man-page says: "Allow a listener to be awakened only when data
-> > > arrives on the socket.").
-> > >
-> > > In the original thread the proposal was to kill the connection with a
-> > > TCP-RST when the specified timeout expired (after the final SYN/ACK).
-> > >
-> > > Thus, my question in my first email whether there is a specific reason
-> > > to not do this.
-> > >
-> > > API-breakage does not seem to me to be a concern here. Apps that are
-> > > setting DEFER_ACCEPT probably would not expect to get a socket that
-> > > does not have data to read.
-> >
-> > Thanks for the summary ;)
-> >
-> > I disagree.
-> >
-> > A server might have two modes :
-> >
-> > 1) A fast path, expecting data from user in a small amount of time, from peers not too far away.
-> >
-> > 2) A slow path, for clients far away. Server can implement strategies to control number of sockets
-> > that have been accepted() but not yet active (no data yet received).
+On Tue, 2020-06-09 at 09:03 -0700, Randy Dunlap wrote:
+> On 6/9/20 4:13 AM, Matthew Wilcox wrote:
+> > On Tue, Jun 09, 2020 at 01:45:57PM +0300, Stanimir Varbanov wrote:
+> > > Here is the third version of dynamic debug improvements in Venus
+> > > driver.  As has been suggested on previous version by Joe [1] I've
+> > > made the relevant changes in dynamic debug core to handle leveling
+> > > as more generic way and not open-code/workaround it in the driver.
+> > > 
+> > > About changes:
+> > >  - added change in the dynamic_debug and in documentation
+> > >  - added respective pr_debug_level and dev_dbg_level
+> > 
+> > Honestly, this seems like you want to use tracepoints, not dynamic debug.
 
-to add to that: There are indeed scenarios where TCP-SYN/... without
-payload go through fine but as soon as the packet-size increases
-WiFi/Cell has problems because of smaller grants given by the
-AP/tower. But even those connections should be able to get the data
-through within a "reasonable" timeframe. Anything beyond that
-timeframe will anyways have such a bad user-experience that it is
-pointless to continue.
+Tracepoints are a bit heavy and do not have any class
+or grouping mechanism.
 
-So, a use-case here would be where the user is in such a slow network
-and a TCP-split proxy is deployed (such proxies are very common in
-cellular networks). That proxy will be ACKing the server's SYN/ACK
-retransmission at the end of the defer-accept period, while the client
-is still trying very hard to get the data through to the proxy (or
-even, the client might have gone totally out-of-service).
+debug_class is likely a better name than debug_level
 
-For those kinds of scenarios it would make sense to have a different
-DEFER_ACCEPT-behavior (maybe with a separate socket-option as Florian
-suggested).
+> Also see this patch series:
+> https://lore.kernel.org/lkml/20200605162645.289174-1-jim.cromie@gmail.com/
+> [PATCH 00/16] dynamic_debug: cleanups, 2 features
+> 
+> It adds/expands dynamic debug flags quite a bit.
+
+Yes, and thanks Randy and Jim and Stanimir
+
+I haven't gone through Jim's proposal enough yet.
+It's unfortunate these patches series conflict.
+
+And for Jim, a link to Stanimir's patch series:
+https://lore.kernel.org/lkml/20200609104604.1594-1-stanimir.varbanov@linaro.org/
 
 
-Christoph
-
->
-> So we can't change DEFER_ACCEPT behaviour.
-> Any objections to adding TCP_DEFER_ACCEPT2 with the behaviour outlined
-> by Christoph?
