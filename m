@@ -2,122 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29ED31F4956
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 00:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF69F1F4969
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 00:32:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbgFIWXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 18:23:15 -0400
-Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:37066 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728191AbgFIWXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 18:23:12 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 2F710180CE42F;
-        Tue,  9 Jun 2020 22:23:11 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1981:2194:2199:2393:2525:2553:2561:2564:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6742:7514:7875:7903:8784:9025:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12555:12740:12760:12895:12986:13161:13229:13439:14096:14097:14181:14659:14721:14799:21080:21451:21627:21740:21795:21811:21939:21990:30029:30051:30054:30070:30080:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: ant44_0c05fb026dc6
-X-Filterd-Recvd-Size: 4029
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Tue,  9 Jun 2020 22:23:08 +0000 (UTC)
-Message-ID: <6115b15ced02686f7408417411ff758445b42421.camel@perches.com>
-Subject: Re: [PATCH v3 0/7] Venus dynamic debug
-From:   Joe Perches <joe@perches.com>
-To:     jim.cromie@gmail.com,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Baron <jbaron@akamai.com>
-Date:   Tue, 09 Jun 2020 15:23:07 -0700
-In-Reply-To: <CAJfuBxwyDysP30cMWDusw4CsSQitchA5hOKkpk1PktbsbCKTSw@mail.gmail.com>
-References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
-         <20200609111323.GA19604@bombadil.infradead.org>
-         <c239d5df-e069-2091-589e-30f341c2cbd3@infradead.org>
-         <9a79aded6981ec47f1f8b317b784e6e44158ac61.camel@perches.com>
-         <CAJfuBxwyDysP30cMWDusw4CsSQitchA5hOKkpk1PktbsbCKTSw@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1728460AbgFIWcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 18:32:17 -0400
+Received: from correo.us.es ([193.147.175.20]:33942 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728377AbgFIWcP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jun 2020 18:32:15 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 22B7B1B49B1
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:32:14 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1330DDA797
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:32:14 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BA720DA87B; Wed, 10 Jun 2020 00:32:04 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0E1A5DA856;
+        Wed, 10 Jun 2020 00:32:02 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 10 Jun 2020 00:32:02 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D208D4251482;
+        Wed, 10 Jun 2020 00:32:01 +0200 (CEST)
+Date:   Wed, 10 Jun 2020 00:32:01 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     syzbot <syzbot+eb9d5924c51d6d59e094@syzkaller.appspotmail.com>
+Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: memory leak in nf_tables_parse_netdev_hooks (3)
+Message-ID: <20200609223201.GA29165@salvia>
+References: <000000000000dbe05b05a7add269@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="ikeVEW9yuYc//A+q"
+Content-Disposition: inline
+In-Reply-To: <000000000000dbe05b05a7add269@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-06-09 at 15:21 -0600, jim.cromie@gmail.com wrote:
-> On Tue, Jun 9, 2020 at 10:49 AM Joe Perches <joe@perches.com> wrote:
-> > (adding Jim Cromie and comments)
-> > On Tue, 2020-06-09 at 09:03 -0700, Randy Dunlap wrote:
-> > > On 6/9/20 4:13 AM, Matthew Wilcox wrote:
-> > > > On Tue, Jun 09, 2020 at 01:45:57PM +0300, Stanimir Varbanov wrote:
-> > > > > Here is the third version of dynamic debug improvements in Venus
-> > > > > driver.  As has been suggested on previous version by Joe [1] I've
-> > > > > made the relevant changes in dynamic debug core to handle leveling
-> > > > > as more generic way and not open-code/workaround it in the driver.
-> > > > > 
-> > > > > About changes:
-> > > > >  - added change in the dynamic_debug and in documentation
-> > > > >  - added respective pr_debug_level and dev_dbg_level
-> > > > 
-> > > > Honestly, this seems like you want to use tracepoints, not dynamic debug.
-> > 
-> > Tracepoints are a bit heavy and do not have any class
-> > or grouping mechanism.
-> > 
-> > debug_class is likely a better name than debug_level
-> > 
-> > > Also see this patch series:
-> > > https://lore.kernel.org/lkml/20200605162645.289174-1-jim.cromie@gmail.com/
-> > > [PATCH 00/16] dynamic_debug: cleanups, 2 features
-> > > 
-> > > It adds/expands dynamic debug flags quite a bit.
-> > 
-> > Yes, and thanks Randy and Jim and Stanimir
-> > 
-> > I haven't gone through Jim's proposal enough yet.
-> > It's unfortunate these patches series conflict.
-> > 
-> > And for Jim, a link to Stanimir's patch series:
-> > https://lore.kernel.org/lkml/20200609104604.1594-1-stanimir.varbanov@linaro.org/
-> > 
-> > 
+
+--ikeVEW9yuYc//A+q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Tue, Jun 09, 2020 at 02:58:12PM -0700, syzbot wrote:
+> Hello,
 > 
-> As Joe noted, there is a lot of ad-hockery to possibly clean up,
-> but I dont grok how these levels should be distinguished from
-> KERN_(WARN|INFO|DEBUG) constants.
+> syzbot found the following crash on:
+> 
+> HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1741f5f2100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9a1aa05456dfd557
+> dashboard link: https://syzkaller.appspot.com/bug?extid=eb9d5924c51d6d59e094
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126f5446100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177f16fe100000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+eb9d5924c51d6d59e094@syzkaller.appspotmail.com
 
-These are not KERN_<LEVEL> at all, all are emitted at KERN_DEBUG
+Attaching a quick patch, I will have a closer look later.
 
-These are just driver developer mechanisms to enable/disable
-groups of formats via some test for < level or | bitmap
+--ikeVEW9yuYc//A+q
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
 
-> Those constants are used by coders, partly to convey how bad things are
-> As a user, Id be reluctant to disable an EMERG callsite.
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 073aa1051d43..5792e9dcd9bc 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -6550,12 +6550,22 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
+ 	return err;
+ }
+ 
++static void nft_flowtable_hook_release(struct nft_flowtable_hook *flowtable_hook)
++{
++	struct nft_hook *this, *next;
++
++	list_for_each_entry_safe(this, next, &flowtable_hook->list, list) {
++		list_del(&this->list);
++		kfree(this);
++	}
++}
++
+ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ 				 struct nft_flowtable *flowtable)
+ {
+ 	const struct nlattr * const *nla = ctx->nla;
+ 	struct nft_flowtable_hook flowtable_hook;
+-	struct nft_hook *this, *next, *hook;
++	struct nft_hook *this, *hook;
+ 	struct nft_trans *trans;
+ 	int err;
+ 
+@@ -6564,33 +6574,40 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ 	if (err < 0)
+ 		return err;
+ 
+-	list_for_each_entry_safe(this, next, &flowtable_hook.list, list) {
++	list_for_each_entry(this, &flowtable_hook.list, list) {
+ 		hook = nft_hook_list_find(&flowtable->hook_list, this);
+ 		if (!hook) {
+ 			err = -ENOENT;
+ 			goto err_flowtable_del_hook;
+ 		}
+ 		hook->inactive = true;
+-		list_del(&this->list);
+-		kfree(this);
+ 	}
+ 
+ 	trans = nft_trans_alloc(ctx, NFT_MSG_DELFLOWTABLE,
+ 				sizeof(struct nft_trans_flowtable));
+-	if (!trans)
+-		return -ENOMEM;
++	if (!trans) {
++		err = -ENOMEM;
++		goto err_flowtable_del_hook;
++	}
+ 
+ 	nft_trans_flowtable(trans) = flowtable;
+ 	nft_trans_flowtable_update(trans) = true;
+ 	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
++	nft_flowtable_hook_release(&flowtable_hook);
+ 
+ 	list_add_tail(&trans->list, &ctx->net->nft.commit_list);
+ 
+ 	return 0;
+ 
+ err_flowtable_del_hook:
+-	list_for_each_entry(hook, &flowtable_hook.list, list)
++	list_for_each_entry(this, &flowtable->hook_list, list) {
++		hook = nft_hook_list_find(&flowtable->hook_list, this);
++		if (!hook)
++			break;
++
+ 		hook->inactive = false;
++	}
++	nft_flowtable_hook_release(&flowtable_hook);
+ 
+ 	return err;
+ }
 
-Not possible.
-
-> are you trying to add a User Bit ? or maybe 7-9 of them ?
-
-Or maybe a u32/ulong worth as most as I think the largest
-current use is 32 bits of bitmask.
-
-> I have a patchset which adds a 'u' flag, for user.
-
-Adapting that with an external bool for bitmask or class
-would work fine.
-
-	if (is_bitmask)
-		enable/disable(value|flag)
-	else
-		enable/disable(value < flag)
-
-So the equivalent of logical sets would work just fine.
-
-
+--ikeVEW9yuYc//A+q--
