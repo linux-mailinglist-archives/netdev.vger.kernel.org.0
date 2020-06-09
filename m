@@ -2,119 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B841F4854
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BFA1F48C3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727017AbgFIUxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 16:53:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60948 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725993AbgFIUxK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 16:53:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 0A9B4AD5F;
-        Tue,  9 Jun 2020 20:53:08 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 9845460485; Tue,  9 Jun 2020 22:53:03 +0200 (CEST)
-Date:   Tue, 9 Jun 2020 22:53:03 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        David Miller <davem@davemloft.net>, stephen@networkplumber.org,
-        o.rempel@pengutronix.de, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kuba@kernel.org, corbet@lwn.net,
-        linville@tuxdriver.com, david@protonic.nl, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mkl@pengutronix.de, marex@denx.de, christian.herber@nxp.com,
-        amitc@mellanox.com, petrm@mellanox.com
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
- support
-Message-ID: <20200609205303.z3kfoptj7w2jpnts@lion.mk-sys.cz>
-References: <202006091222.CB97F743AD@keescook>
- <20200609.123437.1057990370119930723.davem@davemloft.net>
- <202006091244.C8B5F9525@keescook>
- <20200609.130517.1373472507830142138.davem@davemloft.net>
- <202006091312.F91BB4E0CE@keescook>
+        id S1728010AbgFIVVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 17:21:30 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:39637 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbgFIVV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:21:28 -0400
+Received: by mail-il1-f200.google.com with SMTP id o12so50896ilf.6
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 14:21:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=NSyl9LGsAtmwy93eIPaRM+kNwixkelOTwR/Z9dLPDoI=;
+        b=VPWs7hiXCAo+h7gYpIiShjQP+lis5sqsFtv/jATOUPuLxPylLGOti/L/uzc+Bg/xtl
+         wia32BEAiFz8MP40oaBiNJ7gpyVz1gjsOAcPIaxMKIM+x7QIKifqu5opsL/vMrOvqCH6
+         fXsbdMWWGFZkBGpCHqOTjIi+5Dta/gTHokqrszh/9/7kKmUgDqD0L8AlNTurdzzPQuW6
+         SCRCt574fO62jrqD4rCa/8LUO1EU+1tDhoiyo1klDY8BmRH4nI1ZMcq11VP6GulpWLsk
+         5cWgi/nxLWLFetI/PkCb7Y7DoNwSceHTqFdb3vhALw8IDkYOG5P7HR/6O6jNZdYOlHrE
+         gluA==
+X-Gm-Message-State: AOAM531xDnUjO4wWNuQS+D230fv1e6NwiewaRxmQgT+gd49TJbTrxS30
+        dGxC6b1p71MgBVltWTc1B9VndSGVLeJ+653ZS4NrAWGc+Wpd
+X-Google-Smtp-Source: ABdhPJwto8akOcvT4yl7dgwb+4TYYWnVdkWbAqBEJHGcVxXjBKZsKBCHNOiDvm5gg++yi2HEiBp+osqyMVLuYjyCsBMwEYmeppbG
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202006091312.F91BB4E0CE@keescook>
+X-Received: by 2002:a6b:ea10:: with SMTP id m16mr75992ioc.180.1591737687789;
+ Tue, 09 Jun 2020 14:21:27 -0700 (PDT)
+Date:   Tue, 09 Jun 2020 14:21:27 -0700
+In-Reply-To: <00000000000003d19705a764d5ee@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000074d91105a7ad4fe9@google.com>
+Subject: Re: KMSAN: uninit-value in slhc_compress (2)
+From:   syzbot <syzbot+801c60509310ac8083dd@syzkaller.appspotmail.com>
+To:     adobriyan@gmail.com, davem@davemloft.net, edumazet@google.com,
+        glider@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 09, 2020 at 01:29:42PM -0700, Kees Cook wrote:
-> On Tue, Jun 09, 2020 at 01:05:17PM -0700, David Miller wrote:
-> > From: Kees Cook <keescook@chromium.org>
-> > Date: Tue, 9 Jun 2020 12:49:48 -0700
-> > 
-> > > Okay, for now, how about:
-> > > 
-> > > - If we're dealing with an existing spec, match the language.
-> > 
-> > Yes.
-> > 
-> > > - If we're dealing with a new spec, ask the authors to fix their language.
-> > 
-> > Please be more specific about "new", if it's a passed and ratified standard
-> > then to me it is "existing".
-> 
-> Sure. But many kernel devs are also interacting with specifications as
-> they're being developed. We can have an eye out for this when we're in
-> such positions.
+syzbot has found a reproducer for the following crash on:
 
-I fully agree that this is the right place to raise concern like this.
-But I have to remind that here we are talking about implementation of an
-existing standard.
+HEAD commit:    f0d5ec90 kmsan: apply __no_sanitize_memory to dotraplinkag..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=10495a36100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=86e4f8af239686c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=801c60509310ac8083dd
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a2b432100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=164753a6100000
 
-> > > - If a new version of a spec has updated its language, adjust the kernel's.
-> > 
-> > Unless you're willing to break UAPI, which I'm not, I don't see how this is
-> > tenable.
-> 
-> We'll get there when we get there. I honestly don't think any old spec is
-> actually going to change their language; I look forward to being proven
-> wrong. But many times there is no UAPI. If it's some register states
-> between driver and hardware, no users sees or cares what the register
-> is named.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+801c60509310ac8083dd@syzkaller.appspotmail.com
 
-In my eyes, that would be one less reason to invent different names for
-them just to avoid someone being offended.
+=====================================================
+BUG: KMSAN: uninit-value in slhc_compress+0x2c5/0x2fb0 drivers/net/slip/slhc.c:251
+CPU: 0 PID: 9204 Comm: syz-executor789 Not tainted 5.7.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ slhc_compress+0x2c5/0x2fb0 drivers/net/slip/slhc.c:251
+ ppp_send_frame drivers/net/ppp/ppp_generic.c:1637 [inline]
+ __ppp_xmit_process+0x1902/0x2970 drivers/net/ppp/ppp_generic.c:1495
+ ppp_xmit_process+0x147/0x2f0 drivers/net/ppp/ppp_generic.c:1516
+ ppp_write+0x6bb/0x790 drivers/net/ppp/ppp_generic.c:512
+ do_loop_readv_writev fs/read_write.c:718 [inline]
+ do_iter_write+0xa0a/0xdc0 fs/read_write.c:1001
+ vfs_writev fs/read_write.c:1072 [inline]
+ do_pwritev+0x487/0x7d0 fs/read_write.c:1169
+ __do_sys_pwritev fs/read_write.c:1216 [inline]
+ __se_sys_pwritev+0xc6/0xe0 fs/read_write.c:1211
+ __x64_sys_pwritev+0x62/0x80 fs/read_write.c:1211
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4412f9
+Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd3ec8cf78 EFLAGS: 00000246 ORIG_RAX: 0000000000000128
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412f9
+RDX: 0000000000000003 RSI: 0000000020000480 RDI: 0000000000000003
+RBP: 0000000000014688 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402120
+R13: 00000000004021b0 R14: 0000000000000000 R15: 0000000000000000
 
-If you look into include/linux/tcp.h, you can find this comment near the
-beginning of struct tcp_sock definition:
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2802 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4436
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ ppp_write+0x115/0x790 drivers/net/ppp/ppp_generic.c:500
+ do_loop_readv_writev fs/read_write.c:718 [inline]
+ do_iter_write+0xa0a/0xdc0 fs/read_write.c:1001
+ vfs_writev fs/read_write.c:1072 [inline]
+ do_pwritev+0x487/0x7d0 fs/read_write.c:1169
+ __do_sys_pwritev fs/read_write.c:1216 [inline]
+ __se_sys_pwritev+0xc6/0xe0 fs/read_write.c:1211
+ __x64_sys_pwritev+0x62/0x80 fs/read_write.c:1211
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
-/*
- *	RFC793 variables by their proper names. This means you can
- *	read the code and the spec side by side (and laugh ...)
- *	See RFC793 and RFC1122. The RFC writes these in capitals.
- */
-
-It is a bit confusing now as there have been some reorderings but you
-can see that even if it's an internal kernel data structure, original
-author(s) of the code considered it beneficial to use the same names as
-standard for the state variables so that people reading the code don't
-need a translation table between state variables in kernel code and in
-standards.
-
-The same IMHO holds for your example with register states or names:
-I believe it is highly beneficial to make them consistent with technical
-documentation. There are even cases where we violate kernel coding style
-(e.g. by using camelcase) to match the names from specification.
-
-> > This is why I'm saying, just make sure new specs use language that is
-> > less controversial.  Then we just use what the specs use.
-> > 
-> > Then you don't have to figure out what to do about established UAPIs
-> > and such, it's a non-issue.
-> 
-> Yes, but there are places where people use these terms where they are
-> NOT part of specs, and usually there is actually _better_ terminology
-> to be used, and we can easily stop adding those. And we can start to
-> rename old "independent" cases too.
-
-Surely there are - but it is not the case here.
-
-Michal
