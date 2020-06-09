@@ -2,99 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F0B1F3A6E
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3E71F3A87
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729239AbgFIMLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 08:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45514 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729094AbgFIMLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:11:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C000C05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 05:11:33 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jid6K-0007sT-3d; Tue, 09 Jun 2020 14:11:32 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jid6J-0005En-9w; Tue, 09 Jun 2020 14:11:31 +0200
-Date:   Tue, 9 Jun 2020 14:11:31 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] net: ethernet: mvneta: add support for 2.5G DRSGMII mode
-Message-ID: <20200609121131.GJ11869@pengutronix.de>
-References: <20200608074716.9975-1-s.hauer@pengutronix.de>
- <20200608160801.GO1551@shell.armlinux.org.uk>
+        id S1729280AbgFIMT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 08:19:29 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38335 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729239AbgFIMT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:19:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591705167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BSEsHrwlhqk7DyzByK+cUZneFESEsg/CqT2uCmrkWg4=;
+        b=edwu2eYwyxV6bp022+ft39tlF+JCSoA70dRzg5p8nbMeOYKJU4GcQCEgknU7BFGbhpuRVJ
+        WYU5T05rhRC2XIfXsw3L5ky5g2o//gUMvlFEBMWxC9tSmjIoeD21cVHUlHCBsAFkWEefox
+        XiUyw+LW+La8Thp6nxws3vXWnyhgRF0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-YkP2-4GWN3ijU-xuiQOWIQ-1; Tue, 09 Jun 2020 08:19:23 -0400
+X-MC-Unique: YkP2-4GWN3ijU-xuiQOWIQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A8FA107ACF5;
+        Tue,  9 Jun 2020 12:19:19 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E980A2DE64;
+        Tue,  9 Jun 2020 12:19:13 +0000 (UTC)
+Date:   Tue, 9 Jun 2020 14:19:12 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Miller <davem@davemloft.net>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
+ BTF
+Message-ID: <20200609141912.34b70975@carbon>
+In-Reply-To: <CAADnVQKWj_eoVE9XLqwEX2ZWB_yLwRtuQqY7EuFZSNZd40ukPQ@mail.gmail.com>
+References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
+        <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
+        <20200604174806.29130b81@carbon>
+        <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
+        <20200604173341.rvfrjmt433knl3uv@ast-mbp.dhcp.thefacebook.com>
+        <20200605102323.15c2c06c@carbon>
+        <CAADnVQKWj_eoVE9XLqwEX2ZWB_yLwRtuQqY7EuFZSNZd40ukPQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200608160801.GO1551@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:53:29 up 110 days, 15:23, 126 users,  load average: 0.02, 0.10,
- 0.13
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 05:08:01PM +0100, Russell King - ARM Linux admin wrote:
-> On Mon, Jun 08, 2020 at 09:47:16AM +0200, Sascha Hauer wrote:
-> > The Marvell MVNETA Ethernet controller supports a 2.5 Gbps SGMII mode
-> > called DRSGMII.
-> > 
-> > This patch adds a corresponding phy-mode string 'drsgmii' and parses it
-> > from DT. The MVNETA then configures the SERDES protocol value
-> > accordingly.
-> > 
-> > It was successfully tested on a MV78460 connected to a FPGA.
+On Fri, 5 Jun 2020 09:58:26 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> On Fri, Jun 5, 2020 at 1:23 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >
+> > Great. If we can remove this requirement of -1 init (and let zero mean
+> > feature isn't used), then I'm all for exposing expose in uapi/bpf.h.  
 > 
-> Digging around, this is Armada XP?  Which SoCs is this mode supported?
-> There's no mention of DRSGMII in the A38x nor A37xx documentation which
-> are later than Armada XP.
+> Not having it in bpf.h doesn't magically make it invisible.
+> It's uapi because user space C sources rely on its fixed format.
+> vmlinux.h contains all kernel types. both uapi and kernel internal.
+> devmap selftest taking uapi 'struct bpf_devmap_val' from vmlinux.h is
+> an awful hack.
+> I prefer to keep vmlinux.h usage to bpf programs only.
+> User space C code should interface with kernel via proper uapi headers.
+> When vmlinux.h is used by bpf C program it's completely different from
+> user space C code doing the same, because llvm emits relocations for
+> bpf prog and libbpf adjusts them.
+> So doing 'foo->bar' in bpf C is specific to target kernel, whereas
+> user C code 'foo->bar' is a hard constant which bakes it into uapi
+> that kernel has to keep backwards compatible.
 
-It's an Armada XP MV78460 in my case. I have no idea what other SoCs
-this mode is supported on.
+Thank you for taking time to explain this.
+Much appreciated, I agree with everything above.
 
-> 
-> What exactly is "drsgmii"?  It can't be "double-rate" SGMII because that
-> would give you 2Gbps max instead of the 1Gbps, but this gives 2.5Gbps,
-> so I'm really not sure using "drsgmii" is a good idea.  It may be what
-> Marvell call it, but we really need to know if there's some vendor
-> neutral way to refer to it.
 
-The abbreviation really is for "Double Rated SGMII". It seems it has 2.5
-times the clock rate than ordinary SGMII. Another term I found is HSGMII
-(High serial gigabit media-independent interface) which also has
-2.5Gbps.
+> If in some distant future we teach both gcc and clang to do bpf-style
+> relocations for x86 and teach ld.so to adjust them then we can dream
+> about very differently looking kernel/user interfaces.
+> Right now any struct used by user C code and passed into kernel is uapi.
 
-Anyway, I just learned from the paragraph you added to
-Documentation/networking/phy.rst that 1000BASEX differs from SGMII in
-the format of the control word. As we have a fixed link to a FPGA the
-control word seems to be unused, at least the Port MAC Control Register0
-PortType setting bit doesn't change anything. So I can equally well use
-the existing 2500BASEX mode.
+I like this future vision.
 
-Sascha
+I guess this patch is premature, as it operates in the same problem
+space. It tried to address uapi flexbility, by letting userspace define
+the uapi layout via BTF at map_create() time, and let kernel-side
+validate BTF-info and restrict possible struct member names, which are
+remapped to offsets inside the kernel.
+
+I'll instead wait for the future...
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
