@@ -2,107 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E0A1F3A91
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5921F3AA0
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729281AbgFIMXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 08:23:32 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:27111 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728005AbgFIMXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:23:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591705410;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=d3aWiXtS8cF+u5/TS5j+n1u7AbVcRqeRZ4SH9J+GaOc=;
-        b=QJv+STammPSsvqrJs8xbwuuoU8RUYbGzevD02eTQm0ZeVsyXR27RpMsWfQf7Y74jN4ykwQ
-        d7lOoj/OexalxWcPigXWkS/n+n/2fwfQJFJaUTLJ5dx9Hg6whC53MHSiC2jJ4+AW349A9C
-        /Fx42yU7BKmHRpfcBWojYPOMoB3gwyo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-252-mSCxeT0HPrWtom8qduK5cQ-1; Tue, 09 Jun 2020 08:23:26 -0400
-X-MC-Unique: mSCxeT0HPrWtom8qduK5cQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CEF2107B266;
-        Tue,  9 Jun 2020 12:23:24 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C715F5D9C9;
-        Tue,  9 Jun 2020 12:23:19 +0000 (UTC)
-Date:   Tue, 9 Jun 2020 14:23:15 +0200
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Gaurav Singh <gaurav1086@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1729359AbgFIM2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 08:28:03 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51012 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726903AbgFIM2A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jun 2020 08:28:00 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 851C3AAC6;
+        Tue,  9 Jun 2020 12:28:00 +0000 (UTC)
+Date:   Tue, 9 Jun 2020 14:27:55 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Baron <jbaron@akamai.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH] bpf: alloc_record_per_cpu Add null check after malloc
-Message-ID: <20200609142315.4d131599@carbon>
-In-Reply-To: <20200609120804.10569-1-gaurav1086@gmail.com>
-References: <20200609120804.10569-1-gaurav1086@gmail.com>
-Organization: Red Hat Inc.
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v3 2/7] dynamic_debug: Group debug messages by level
+ bitmask
+Message-ID: <20200609122755.GE23752@linux-b0ei>
+References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
+ <20200609104604.1594-3-stanimir.varbanov@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200609104604.1594-3-stanimir.varbanov@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  9 Jun 2020 08:08:03 -0400
-Gaurav Singh <gaurav1086@gmail.com> wrote:
-
-> The memset call is made right after malloc call. To fix this, add the null check right after malloc and then do memset.
+On Tue 2020-06-09 13:45:59, Stanimir Varbanov wrote:
+> This will allow dynamic debug users and driver writers to group
+> debug messages by level bitmask.  The level bitmask should be a
+> hex number.
 > 
+> Done this functionality by extending dynamic debug metadata with
+> new level member and propagate it over all the users.  Also
+> introduce new dynamic_pr_debug_level and dynamic_dev_dbg_level
+> macros to be used by the drivers.
 
-Did you read the section about how long lines should be in desc?
+Could you please provide more details?
+
+What is the use case?
+What is the exact meaning of the level value?
+How the levels will get defined?
+
+Dynamic debug is used for messages with KERN_DEBUG log level.
+Is this another dimension of the message leveling?
+
+Given that the filter is defined by bits, it is rather grouping
+by context or so.
 
 
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
-> ---
->  samples/bpf/xdp_rxq_info_user.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-> index 4fe47502ebed..490b07b7df78 100644
-> --- a/samples/bpf/xdp_rxq_info_user.c
-> +++ b/samples/bpf/xdp_rxq_info_user.c
-> @@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
+> diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
+> index 8f199f403ab5..5d28d388f6dd 100644
+> --- a/lib/dynamic_debug.c
+> +++ b/lib/dynamic_debug.c
+> @@ -55,6 +55,7 @@ struct ddebug_query {
+>  	const char *function;
+>  	const char *format;
+>  	unsigned int first_lineno, last_lineno;
+> +	unsigned int level;
+>  };
 >  
->  	size = sizeof(struct datarec) * nr_cpus;
->  	array = malloc(size);
-> -	memset(array, 0, size);
->  	if (!array) {
->  		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
->  		exit(EXIT_FAIL_MEM);
->  	}
-> +	memset(array, 0, size);
->  	return array;
->  }
+>  struct ddebug_iter {
+> @@ -187,6 +188,18 @@ static int ddebug_change(const struct ddebug_query *query,
+>  
+>  			nfound++;
+>  
+> +#ifdef CONFIG_JUMP_LABEL
+> +			if (query->level && query->level & dp->level) {
+> +				if (flags & _DPRINTK_FLAGS_PRINT)
+> +					static_branch_enable(&dp->key.dd_key_true);
+> +				else
+> +					static_branch_disable(&dp->key.dd_key_true);
+> +			} else if (query->level &&
+> +				   flags & _DPRINTK_FLAGS_PRINT) {
+> +				static_branch_disable(&dp->key.dd_key_true);
+> +				continue;
+> +			}
+> +#endif
 
-Looking at code, this bug happen in more places. Please fix up all locations.
+This looks like a hack in the existing code:
 
-I think this fix should go through the "bpf" tree.
-Please read:
- https://github.com/torvalds/linux/blob/master/Documentation/bpf/bpf_devel_QA.rst
+  + It is suspicious that "continue" is only in one branch. It means
+    that static_branch_enable/disable() might get called 2nd time
+    by the code below. Or newflags are not stored when there is a change.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+  + It changes the behavior and the below vpr_info("changed ...")
+    is not called.
 
+Or do I miss anything?
+
+>			newflags = (dp->flags & mask) | flags;
+>  			if (newflags == dp->flags)
+>  				continue;
+
+Best Regards,
+Petr
