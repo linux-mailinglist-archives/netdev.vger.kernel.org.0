@@ -2,87 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06FEA1F47C7
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 673DD1F47CE
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 22:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733255AbgFIUKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 16:10:37 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:25110 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731802AbgFIUKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:10:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591733435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rIBz2nM/i5kWg1owng6M9L0w19pJxveVwHk7hkV+/2c=;
-        b=e9+9QHZhV4fHRbZyi7vKAUhcSm4x+DTeRBOQpb7SWRXEUxTrFTszQjTBEuVNDxmuBIt6VQ
-        A0FSLrmXc+/0Ikpip0m+M5kXq2izr9LyjUZRX7wvCeREvRcSntcrUyLz6+r1LSQM4kJsRe
-        QM2S3r+YIWmuWTTT09sCMK3XKmCYgMg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-141-1W2XOXo0P1i2_SrDPOjHsQ-1; Tue, 09 Jun 2020 16:10:30 -0400
-X-MC-Unique: 1W2XOXo0P1i2_SrDPOjHsQ-1
-Received: by mail-ed1-f69.google.com with SMTP id i93so8653986edi.4
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 13:10:29 -0700 (PDT)
+        id S2389371AbgFIULc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 16:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731802AbgFIULb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 16:11:31 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F14DC05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 13:11:31 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id n9so25071plk.1
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 13:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=Zx/VCKRiyi/4hcuXFzZBFZ7r4XlDXVNcoz/8+OOF5/w=;
+        b=RfrdJnnTX5HJDXWmv+Uk2n9IhZda/qegu2Cnm3Fqz40XH6obghrjrRYhJyp719ZuKk
+         sY/TpKURjWRQU8a9VqPNvJaIsGFPLF8gpSEQOYq5griKlC032j8ruskvm30W+5qjkPjM
+         jTc/H0PsWFCMXrM1XUQ+xLUpqX1MbMG8up9Xkt1w9aM8jlN1d9oSkT2kAy5pn8Bvsrsv
+         IP1Z08AorDXmFrjbc+wus2nff/fxaMTFaLAXBNMCXONoEsKtqrANe4/fzYkJ+7V3d37Y
+         Bnm5QBUj1oxDOYGxciqyVJ4vDbw2B4Ob0D9rvX66xrnpxrdICKuPyF5uMd5+1W+7IFU5
+         3pXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=rIBz2nM/i5kWg1owng6M9L0w19pJxveVwHk7hkV+/2c=;
-        b=JM8U+pQt9t6jE2ZjkneOxZRTHfTdtpJNLhazzciI1c10CYU0NZNDu0E5RB25SMhCKC
-         zh3BkOR+lXKH11p+0FoZsIxN0iUOn4RpwbIMjLXBRhX2rfQA3rPurYZajXOVRbS086hW
-         ixCzJuASSdXIQepCQ+xcV6zxJXHKyYvn8T1P+82uzm+ZG60HQYxg+/oKpZpZnyU5OvSo
-         P6aTCCHx1y3Cn9Pj/fl2m1DuHUh7xwfjGLAS8MXbjCh5r6I+lymuWvYu95QcCgRu9C0W
-         +FfJNqKxEUKnCSO3z03IkW5UwGDD5RLWwcxUm1SQgbrBt+2t+JlXY+4GwLou257mffTJ
-         pKgQ==
-X-Gm-Message-State: AOAM5319Jl5BIz4RhPEOu/WI70bwz6yeL1j17hsULInUG3amwen8hlx8
-        sFz+c1f2Qc82Ee/soPzMFJ0E8+p29CWth2gbIyDMN/U7QzcJYJT777QFnlq8hPjuDBfZiRpvorT
-        2sB2UDt3J33uihLBy
-X-Received: by 2002:a17:906:1841:: with SMTP id w1mr86272eje.21.1591733429076;
-        Tue, 09 Jun 2020 13:10:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzhzKST1N5AbWaZKuqZEg8N4xtlo13xa2B0900r3iNywVgyEJwUOyuKAHUumf2R7GN011qnRQ==
-X-Received: by 2002:a17:906:1841:: with SMTP id w1mr86256eje.21.1591733428888;
-        Tue, 09 Jun 2020 13:10:28 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v26sm13484784ejx.25.2020.06.09.13.10.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 13:10:28 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BBC65180654; Tue,  9 Jun 2020 22:10:27 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        john.fastabend@gmail.com
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        brouer@redhat.com, maciej.fijalkowski@intel.com,
-        bjorn.topel@intel.com
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf_redirect_map() tail call detection and xdp_do_redirect() avoidance
-In-Reply-To: <20200609172622.37990-1-bjorn.topel@gmail.com>
-References: <20200609172622.37990-1-bjorn.topel@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 09 Jun 2020 22:10:27 +0200
-Message-ID: <87o8ps80gc.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=Zx/VCKRiyi/4hcuXFzZBFZ7r4XlDXVNcoz/8+OOF5/w=;
+        b=WM20PemaFboDA2BiOT7Fh4iPP8iOhrFSzKMlULs7drBALfOiC6PF0HKsU8gmW2xKus
+         0xT6/jdDCWZK2ozqslOOoLl/mlM0+9xjguRd6W8LGWj6YHDxbmzclhkETl5AOT55dCCX
+         7VRYq3XX+9S45+TTZCCB76r/f2oW4b+RyWB0MTK10j47ZbkBMbvkOTfN17gbFr7IFBbX
+         1eguOfB/c8mhRNN+TFLVQTaDOr3xWvvPblYfLel6OfcHD+P9YIzir1C1UgOcTLh9usbD
+         Wt01Im65yLfQIyk5hZChkNPGduCK0a6xI1O/UGE5PwA8jjdb26ZHHx1sj8rJP15pELhr
+         hRsQ==
+X-Gm-Message-State: AOAM5320UoX9NooFQdbgpF7sNwVKIHhB1ML3ga1KsxerMyiBloRBBa1Y
+        9j/fZXaCoVk/uuEpQrEpW/eMeTHbEX0=
+X-Google-Smtp-Source: ABdhPJw3JqVVvN1yYE+CipUzYaSGGxpUsyZUBsjSa2AqRhmBCrlxoUFS3/iI9fnMwN/FbvR/qIX6pg==
+X-Received: by 2002:a17:90a:6706:: with SMTP id n6mr6931353pjj.13.1591733490196;
+        Tue, 09 Jun 2020 13:11:30 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id z85sm10593650pfc.66.2020.06.09.13.11.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Jun 2020 13:11:29 -0700 (PDT)
+Subject: Re: [PATCH net 1/1] ionic: wait on queue start until after IFF_UP
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20200609034143.7668-1-snelson@pensando.io>
+ <20200609.124709.1693195732249155694.davem@davemloft.net>
+ <99c98b8c-f8c3-b1be-9878-1ad0caf85656@pensando.io>
+ <20200609.130637.1015423291014478400.davem@davemloft.net>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <9594f97d-bfc8-6322-ba6e-5a838d1dbde0@pensando.io>
+Date:   Tue, 9 Jun 2020 13:11:28 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200609.130637.1015423291014478400.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+On 6/9/20 1:06 PM, David Miller wrote:
+> From: Shannon Nelson <snelson@pensando.io>
+> Date: Tue, 9 Jun 2020 12:51:17 -0700
+>
+>> On 6/9/20 12:47 PM, David Miller wrote:
+>>> From: Shannon Nelson <snelson@pensando.io>
+>>> Date: Mon,  8 Jun 2020 20:41:43 -0700
+>>>
+>>>> The netif_running() test looks at __LINK_STATE_START which
+>>>> gets set before ndo_open() is called, there is a window of
+>>>> time between that and when the queues are actually ready to
+>>>> be run.  If ionic_check_link_status() notices that the link is
+>>>> up very soon after netif_running() becomes true, it might try
+>>>> to run the queues before they are ready, causing all manner of
+>>>> potential issues.  Since the netdev->flags IFF_UP isn't set
+>>>> until after ndo_open() returns, we can wait for that before
+>>>> we allow ionic_check_link_status() to start the queues.
+>>>>
+>>>> On the way back to close, __LINK_STATE_START is cleared before
+>>>> calling ndo_stop(), and IFF_UP is cleared after.  Both of
+>>>> these need to be true in order to safely stop the queues
+>>>> from ionic_check_link_status().
+>>>>
+>>>> Fixes: 49d3b493673a ("ionic: disable the queues on link down")
+>>>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>>> What will make sure the queues actually get started if this
+>>> event's queue start gets skipped in this scenerio?
+>>>
+>>> This code is only invoked when the link status changes or
+>>> when the firmware is started.
+>> If the link is already seen as up before ionic_open() is called it
+>> starts the queues at that point.
+>>
+>> If link isn't seen until after ionic_open(), then the queues are
+>> started in this periodic link check.
+> I'm saying if it happens in the race condition you mention that you
+> are protecting against, where running is true and IFF_UP is not.
+>
+> The link check is periodic?  It looks like it triggers when the
+> link state changes to me.
 
-> Is this a good idea? I have only measured for AF_XDP redirects, but
-> all XDP_REDIRECT targets should benefit. For AF_XDP the rxdrop
-> scenario went from 21.5 to 23.2 Mpps on my machine.
+Yes, the link check is triggered by the periodic watchdog 
+ionic_watchdog_cb(), every 5 seconds.
 
-I like it! I guess in the end the feasibility will depend on the quality
-tail call detection, which I don't have any ideas for improving. I'm
-sure someone else will, though :)
+sln
 
--Toke
 
