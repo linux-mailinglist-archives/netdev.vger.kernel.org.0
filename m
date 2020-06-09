@@ -2,126 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A00B1F420D
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 19:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397E51F4226
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 19:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731698AbgFIRTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 13:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        id S1731720AbgFIR0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 13:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729551AbgFIRTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 13:19:46 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB72EC05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 10:19:45 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id j1so10194125pfe.4
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 10:19:45 -0700 (PDT)
+        with ESMTP id S1726938AbgFIR0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 13:26:38 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D3CC05BD1E;
+        Tue,  9 Jun 2020 10:26:38 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id t16so8292983plo.7;
+        Tue, 09 Jun 2020 10:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pS3fXxlqQZ1qpuPBeNYDB/9xxIJhEcPh7OngVI7wDQM=;
-        b=LqHOcWuaretR3F7j6V1cZg3Pe+dpy0Uucy+WLGNPBzxuUK+GR+f4ut+G6xbh0LURpd
-         O1UA4aPP4qREUSmh9IWCn0ckBp2l9czR5ryTYPGYNeyddQ2pKIuP3T7ZuCriqrxTBXY6
-         mb4WY1gHj1MNX4S7C9ldXj5VzqtIYzIU6xvOFch9/jzXbYwqIVupOg7sIf4oi+MXFYfM
-         yEccXskW7tkw54JxFhTZvYESrno7n1ufHuVkbPq/rklcFioiA0pKWsu042fwJzmQ5o6M
-         1kZxDUaLeUSMUXd3LF2rqPwSWlSbf+eZ9ebCLb2b6WZ5rmVQkPp18x8tcCoDs49KE4WE
-         INyw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H0WCBbKlN3H2RLMXFyw7xfGn8ug6YqjVteAv3Iz89Go=;
+        b=YxyXQEdb19IlluMtrrYyZkmuPZufBxjhbsS1ZmiQxrFW+mUL+uYd8NEQ+CM1hqBTco
+         C3NIS+Gt+KcKlLV1UFWJscUEBOLUqAhSsJ7ulYW+tPZSYSQ9iRz4abW9LQ1oQTqqGZn9
+         Ejl8TgioygsdIWQNXfHgnGPGtW88SjQNosN1kZrsbuJ5ZKPpygLVIYEbmVPLrT+DhrSQ
+         V4fSBEW+/jx3ZFfoz9gPpHxYiPTHSUPNdfyQPjlBNgqoc/nskguVSEukkNmYt7rj+IDY
+         cp5mDEUF1bMkkGi89kKb7BZ87FRWFMnMs5HBXhxS4hdtImZUkLqQs8aBBJR3tG9t+Xpj
+         PW8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pS3fXxlqQZ1qpuPBeNYDB/9xxIJhEcPh7OngVI7wDQM=;
-        b=CQVq3HVa5tXJqdFn4hi/owETx4dDp20yjlikRRZ9ziypJcF9cy4SL9BmCyIQkOfXPG
-         ElctET9SUTD17PeeJrcTLsd/YLW8TsUJXDw2vieGEpslMrs9LpIpnR1hvGeasZy8VfYI
-         qZBX6ZtOblCy833XQu4EBtiV2qqIFdWcxu31k1Fr9/910osSltGSET0aUz4/t6VTZxeI
-         D2mIAgTb617MRjNMEeZF4OwprqVtnwOPIuVyVcg6y6rUiULd8Fxjly9NofL8ZcVyQNSU
-         dPFnGy1V2gqbty0Fd1deOn1Wg3FIdWhGTruU38GlLM/JfFvZoXSgppm/TJiuu5j38wSB
-         VJkg==
-X-Gm-Message-State: AOAM5307YmkZG9fHxogSxz85H+QymNml08QwHFp2KGDRm+cpYXEc7Dyg
-        iWRwqvAhY8oHCIMlbUTjFp5rmw==
-X-Google-Smtp-Source: ABdhPJzUWQw08dzF+hQyYORg3Kzta5U3cP3gTCT2NcJJzsUgAa6pwkXSNLsSb6HZi1DU032775KyKA==
-X-Received: by 2002:a05:6a00:1494:: with SMTP id v20mr26724761pfu.150.1591723185179;
-        Tue, 09 Jun 2020 10:19:45 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i37sm1935829pgl.68.2020.06.09.10.19.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H0WCBbKlN3H2RLMXFyw7xfGn8ug6YqjVteAv3Iz89Go=;
+        b=m1uOXM2tf2HNxkyNfh6o5sywkEVDf6RztHW8MO/lCET4+LXE45jFNHKQP2GAuhiW+R
+         5IPKn4nlM/C7Fhu5aQLoCRu6RxAZM7P+1pVRYV+sq/nK4B/pRw2Dhsf4IK2pGnTxFn2M
+         /fT0BU9Jinpn8aS+LghUibEc0Af6SCddUb+cf5x4GhTVcoukYQZRtLLGPusccSVayeZQ
+         MeZpilNPGEzhK4/gpu0QHxmHOKCz8FqAtlsOhTtZu6ors+kVAPs9EacgjMqCaSamQkio
+         0VDBBGNjXZLOj0+wRieSYGvj9ulqLpsTLbvtlDtDligzsrLXra1CeBOEkjLnhJY2eqE0
+         JMEA==
+X-Gm-Message-State: AOAM531Jgof8wzIoZo0CDeRJ680SDDPQbhGfDp4vIphto4lr/6k546aN
+        hJHJbgVMaiCBpI41PW68LgQ9rpXghf8=
+X-Google-Smtp-Source: ABdhPJzhGk/apyuUOFJO6BzMUHyvCz3QlCOAX63h65V9ueRQAu4EzZWL/Hg9pGwHI1YNJpxt9pWVnw==
+X-Received: by 2002:a17:90b:1495:: with SMTP id js21mr6000385pjb.48.1591723597857;
+        Tue, 09 Jun 2020 10:26:37 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
+        by smtp.gmail.com with ESMTPSA id w190sm10390387pfw.35.2020.06.09.10.26.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 10:19:44 -0700 (PDT)
-Date:   Tue, 9 Jun 2020 10:19:35 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     o.rempel@pengutronix.de, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kuba@kernel.org, corbet@lwn.net,
-        mkubecek@suse.cz, linville@tuxdriver.com, david@protonic.nl,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux@armlinux.org.uk, mkl@pengutronix.de,
-        marex@denx.de, christian.herber@nxp.com, amitc@mellanox.com,
-        petrm@mellanox.com
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
- support
-Message-ID: <20200609101935.5716b3bd@hermes.lan>
-In-Reply-To: <20200607.164532.964293508393444353.davem@davemloft.net>
-References: <20200526091025.25243-1-o.rempel@pengutronix.de>
-        <20200607153019.3c8d6650@hermes.lan>
-        <20200607.164532.964293508393444353.davem@davemloft.net>
+        Tue, 09 Jun 2020 10:26:36 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        john.fastabend@gmail.com, toke@redhat.com
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        brouer@redhat.com, maciej.fijalkowski@intel.com,
+        bjorn.topel@intel.com
+Subject: [RFC PATCH bpf-next 0/2] bpf_redirect_map() tail call detection and xdp_do_redirect() avoidance
+Date:   Tue,  9 Jun 2020 19:26:20 +0200
+Message-Id: <20200609172622.37990-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 07 Jun 2020 16:45:32 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
+I hacked a quick PoC, based on the input from my earlier post [1].
 
-> From: Stephen Hemminger <stephen@networkplumber.org>
-> Date: Sun, 7 Jun 2020 15:30:19 -0700
-> 
-> > Open source projects have been working hard to remove the terms master and slave
-> > in API's and documentation. Apparently, Linux hasn't gotten the message.
-> > It would make sense not to introduce new instances.  
-> 
-> Would you also be against, for example, the use of the terminology
-> expressing the "death" of allocated registers in a compiler backend,
-> for example?
-> 
-> How far do you plan take this resistence of terminology when it
-> clearly has a well defined usage and meaning in a specific technical
-> realm which is entirely disconnected to what the terms might imply,
-> meaning wise, in other realms?
-> 
-> And if you are going to say not to use this terminology, you must
-> suggest a reasonable (and I do mean _reasonable_) well understood
-> and _specific_ replacement.
-> 
-> Thank you.
+Quick recap; For certain XDP programs, would it be possible to get rid
+of the xdp_do_redirect() call (and the per-cpu write/read), and
+instead perform the action directly from the BPF helper? If so, that
+would potentially make the XDP_REDIRECT faster/less complex.
 
-How many times have you or Linus argued about variable naming.
-Yes, words do matter and convey a lot of implied connotation and meaning.
+This PoC/RFC teach the verifier to detect when an XDP program is
+structured such that all bpf_redirect_map() calls are tail calls. A
+driver can then probe the BPF program, use the new
+xdp_set_redirect_tailcall() function, and avoid the xdp_do_redirect()
+call. This was Toke's suggestion, instead of my XDP_CONSUMED idea,
+adding a new action.
 
-Most projects and standards bodies are taking a stance on fixing the
-language. The IETF is has proposed making changes as well.
+To perform the xdp_do_redirect() tasks from the bpf_redirect_map()
+helper, additional parameters are needed (XDP context, netdev, and XDP
+program). They are passed via the bpf_redirect_into per-cpu structure
+using the xdp_set_redirect_tailcall() function.
 
-There are a very specific set of trigger words and terms that
-should be fixed. Most of these terms do have better alternatives.
+Note that the code is broken for programs mixing bpf_redirect() and
+bpf_redirect_map()!
 
-A common example is that master/slave is unclear and would be clearer
-as primary/secondary or active/backup or controller/worker.
+There are more details in the commits.
 
-Most of networking is based on standards. When the standards wording changes
-(and it will happen soon); then Linux should also change the wording in the
-source, api and documentation.
+Is this a good idea? I have only measured for AF_XDP redirects, but
+all XDP_REDIRECT targets should benefit. For AF_XDP the rxdrop
+scenario went from 21.5 to 23.2 Mpps on my machine.
+
+Next steps would be implement proper tail calls (suggested by John and
+Alexei).
+
+Getting input on my (horrible) verifier peephole hack, and a better
+way to detect tail calls would be very welcome!
+
+Disregard naming and style. I'm mostly interested what people think
+about the concept, and if it's worth working on.
+
+Next steps:
+  * Better tail call detection in the verifier, instead of the naive
+    peephole version in patch 1.
+  * Implement proper tail calls (constrained, indirect jump BPF
+    instruction).
 
 
-See:
+Cheers,
+Björn
+
+[1] https://lore.kernel.org/bpf/CAJ+HfNidbgwtLinLQohwocUmoYyRcAG454ggGkCbseQPSA1cpw@mail.gmail.com/
+
+Björn Töpel (2):
+  bpf, xdp: add naive bpf_redirect_map() tail call detection
+  i40e: avoid xdp_do_redirect() call when "redirect_tail_call" is set
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 14 ++++-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 14 ++++-
+ include/linux/bpf_verifier.h                |  2 +
+ include/linux/filter.h                      | 19 ++++++-
+ kernel/bpf/verifier.c                       | 53 +++++++++++++++++++
+ net/core/filter.c                           | 57 +++++++++++++++++++++
+ 6 files changed, 154 insertions(+), 5 deletions(-)
 
 
-[0] - <https://www.cs.cmu.edu/~mjw/Language/NonSexist/vuw.non-sexist-language-guidelines.txt>, <https://twitter.com/justkelly_ok/status/933011085594066944>
-[1] - <https://github.com/django/django/pull/2692>
-[2] - <https://bugs.python.org/issue34605>
-[3] - <https://github.com/rust-lang-deprecated/rust-buildbot/issues/2>, <https://github.com/rust-community/foss-events-planner/issues/58>
-[4] - <https://twitter.com/ISCdotORG/status/942815837299253248>
-[5] - <https://gitlab.gnome.org/GNOME/geary/issues/324>
-[6] - https://mail.gnome.org/archives/desktop-devel-list/2019-April/msg00049.html
-[7] - https://www.ietf.org/archive/id/draft-knodel-terminology-01.txt
+base-commit: cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2
+-- 
+2.25.1
+
