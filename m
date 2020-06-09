@@ -2,84 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 791D41F48D4
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC581F48E1
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:29:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728153AbgFIVZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 17:25:22 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:47572 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgFIVZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:25:22 -0400
-Received: from chumthang.blr.asicdesigners.com (chumthang.blr.asicdesigners.com [10.193.186.96])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 059LOn5P030078;
-        Tue, 9 Jun 2020 14:25:16 -0700
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org, manojmalviya@chelsio.com,
-        Ayush Sawal <ayush.sawal@chelsio.com>
-Subject: [PATCH net-next 2/2] Crypto/chcr: Checking cra_refcnt before unregistering the algorithms
-Date:   Wed, 10 Jun 2020 02:54:32 +0530
-Message-Id: <20200609212432.2467-3-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.26.0.rc1.11.g30e9940
-In-Reply-To: <20200609212432.2467-1-ayush.sawal@chelsio.com>
-References: <20200609212432.2467-1-ayush.sawal@chelsio.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727993AbgFIV3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 17:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726888AbgFIV3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:29:05 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDE1C05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 14:29:05 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 74C7E127A7CE6;
+        Tue,  9 Jun 2020 14:29:04 -0700 (PDT)
+Date:   Tue, 09 Jun 2020 14:29:01 -0700 (PDT)
+Message-Id: <20200609.142901.3888767961952002.davem@davemloft.net>
+To:     lorenzo@kernel.org
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com
+Subject: Re: [PATCH net] net: mvneta: do not redirect frames during
+ reconfiguration
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <fd076dae0536d823e136ab4c114346602e02b6d7.1591653494.git.lorenzo@kernel.org>
+References: <fd076dae0536d823e136ab4c114346602e02b6d7.1591653494.git.lorenzo@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 14:29:04 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch puts a check for algorithm unregister, to avoid removal of
-driver if the algorithm is under use.
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+Date: Tue,  9 Jun 2020 00:02:39 +0200
 
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/crypto/chelsio/chcr_algo.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+> Disable frames injection in mvneta_xdp_xmit routine during hw
+> re-configuration in order to avoid hardware hangs
+> 
+> Fixes: b0a43db9087a ("net: mvneta: add XDP_TX support")
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-diff --git a/drivers/crypto/chelsio/chcr_algo.c b/drivers/crypto/chelsio/chcr_algo.c
-index f8b55137cf7d..4c2553672b6f 100644
---- a/drivers/crypto/chelsio/chcr_algo.c
-+++ b/drivers/crypto/chelsio/chcr_algo.c
-@@ -4391,22 +4391,32 @@ static int chcr_unregister_alg(void)
- 	for (i = 0; i < ARRAY_SIZE(driver_algs); i++) {
- 		switch (driver_algs[i].type & CRYPTO_ALG_TYPE_MASK) {
- 		case CRYPTO_ALG_TYPE_SKCIPHER:
--			if (driver_algs[i].is_registered)
-+			if (driver_algs[i].is_registered && refcount_read(
-+			    &driver_algs[i].alg.skcipher.base.cra_refcnt)
-+			    == 1) {
- 				crypto_unregister_skcipher(
- 						&driver_algs[i].alg.skcipher);
-+				driver_algs[i].is_registered = 0;
-+			}
- 			break;
- 		case CRYPTO_ALG_TYPE_AEAD:
--			if (driver_algs[i].is_registered)
-+			if (driver_algs[i].is_registered && refcount_read(
-+			    &driver_algs[i].alg.aead.base.cra_refcnt) == 1) {
- 				crypto_unregister_aead(
- 						&driver_algs[i].alg.aead);
-+				driver_algs[i].is_registered = 0;
-+			}
- 			break;
- 		case CRYPTO_ALG_TYPE_AHASH:
--			if (driver_algs[i].is_registered)
-+			if (driver_algs[i].is_registered && refcount_read(
-+			    &driver_algs[i].alg.hash.halg.base.cra_refcnt)
-+			    == 1) {
- 				crypto_unregister_ahash(
- 						&driver_algs[i].alg.hash);
-+				driver_algs[i].is_registered = 0;
-+			}
- 			break;
- 		}
--		driver_algs[i].is_registered = 0;
- 	}
- 	return 0;
- }
--- 
-2.26.0.rc1.11.g30e9940
+Looking around, I wonder if the fundamental difference from the normal
+TX path is that the XDP path doesn't use the TXQ enable/disable
+machinery and checks like the normal ndo_start_xmit() paths do.
 
+And that's why only the XDP path has this issue.
+
+I'll apply this, so that the bug is fixed, but note that I consider
+this kind of change adding a new flags mask and one state bit to solve
+a problem to be ultimately inelegant and ususally pointing out a more
+fundamental issue.
+
+Thank you.
