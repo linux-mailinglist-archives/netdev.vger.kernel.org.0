@@ -2,119 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 330CD1F3460
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 08:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D392C1F347D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 08:56:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbgFIGuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 02:50:37 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60188 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726949AbgFIGud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 02:50:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591685432;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RMwcUIFPWAyOd8cKk46GmiqaJ7VH8w0Cpy4nyi0OjGc=;
-        b=Q2XX1BIcRvHh/Ffa/vOneVFLtSHNBU2WgyajTxzp9XVTiIr2U9z8txAdg4ZP1G9JfjKCr/
-        Xja7yaitye6uLhpV3ist3ib/FeOBnl9coc+NrcmYh2BBa1VPt3EJW/os/1bnWLn7sHxVMW
-        spaLPGcqbI+O9Xf8XKVKURsCMUZPvA8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-391-pfs1qKM-NFKoNWHgrO6dWA-1; Tue, 09 Jun 2020 02:50:28 -0400
-X-MC-Unique: pfs1qKM-NFKoNWHgrO6dWA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E95FC18FF661;
-        Tue,  9 Jun 2020 06:50:25 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5700F768C1;
-        Tue,  9 Jun 2020 06:50:18 +0000 (UTC)
-Date:   Tue, 9 Jun 2020 08:50:17 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     gaurav singh <gaurav1086@gmail.com>
-Cc:     brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bpf: alloc_record_per_cpu Add null check after malloc
-Message-ID: <20200609085017.0d285568@carbon>
-In-Reply-To: <CAFAFadDVe1Au2eJ8ho_cK1riwf9FDaGck3o+VEcKpqRgO5qXdA@mail.gmail.com>
-References: <CAFAFadDVe1Au2eJ8ho_cK1riwf9FDaGck3o+VEcKpqRgO5qXdA@mail.gmail.com>
+        id S1728039AbgFIGzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 02:55:54 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:45221 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726886AbgFIGzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 02:55:53 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id B00815C0057;
+        Tue,  9 Jun 2020 02:55:51 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 09 Jun 2020 02:55:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=K8ADmm
+        X7v+hv/X8ogy48EiWtb/0gZSHGu5XCN38uzLo=; b=iianZOFy5NXWR1Q3QRxzAs
+        TYGq2I78ucdzlzojnu3c1HIKqiWWb9EE1y1X0PIZ7QnBWShyUFgeQGdIJ44V0oZR
+        thmfmqrlGRFWH61BP4mSxFih5Riimag7FTm4RYCMWWEdqCkDGagO6JrfJyeBiBso
+        EVx7VdEZ0KlnQtEsq5W3DFOw2V+mnO02fyLcxoSYiwZO1BSviqR0guK2JKMkn0mo
+        CQsnNHP+n/6AlCrpqPMMMwFwnA4D8gKVPowjHGud6nnzSmHLf2cIVKqGBZF5yrnT
+        fG/gMeVRepjXAEXgkO9i1s+s3sVPAup0l5pbaST9Y+Nb67J+Ryzj5Un03wz9XaLQ
+        ==
+X-ME-Sender: <xms:dzLfXkBp8Ej708ahrJZ8hMkWh6g7Z-ap4qFSrTQb9p4HrUAymXq9ag>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudehfedgudduiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefgueetjedtgfelffelhfehleelteeiuddtvefhfedvgfdvteejuedvgfdu
+    veefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpihgvthhfrdhorhhgnecukfhppe
+    ejledrudejkedrgeehrddvvdefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghm
+    pehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:dzLfXmhs4tuSyfhCuUzkC6RCMX6pk9Q5wjQ--zydiRfxPA6V3KNQIA>
+    <xmx:dzLfXnnwDSTVUqFkaOQC_bzVlGhN28LsDEXW12srjUz1RPBp27BVYA>
+    <xmx:dzLfXqyFa8LS_BxMNM0ZjVXDwsYRhg1rBm8woioD-XiNYbQsldB2qQ>
+    <xmx:dzLfXkcCUJE_TIvTXnc0Qdcm5fR0ll78Euk28JADyGjv0CGS8q76oA>
+Received: from localhost (bzq-79-178-45-223.red.bezeqint.net [79.178.45.223])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 13EEF328005D;
+        Tue,  9 Jun 2020 02:55:50 -0400 (EDT)
+Date:   Tue, 9 Jun 2020 09:55:48 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.7 264/274] vxlan: Avoid infinite loop when
+ suppressing NS messages with invalid options
+Message-ID: <20200609065548.GA2113611@splinter>
+References: <20200608230607.3361041-1-sashal@kernel.org>
+ <20200608230607.3361041-264-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200608230607.3361041-264-sashal@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 6 Jun 2020 19:59:48 -0400
-gaurav singh <gaurav1086@gmail.com> wrote:
-
-> Hi,
+On Mon, Jun 08, 2020 at 07:05:57PM -0400, Sasha Levin wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> The memset call is made right after malloc call. To fix this, add the null
-> check right after malloc and then do memset.
+> [ Upstream commit 8066e6b449e050675df48e7c4b16c29f00507ff0 ]
+
+Hi,
+
+In the same patch set I also included a similar fix for the bridge
+module:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=53fc685243bd6fb90d90305cea54598b78d3cbfc
+
+But I don't see it in the patch sets you sent.
+
+Don't see it here as well:
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git/tree/queue-5.7
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/?h=linux-5.7.y
+
+Did it get lost or it's just pending somewhere else?
+
+Thanks
+
 > 
-> Please find the patch below.
-
-The fix in your patch seem correct (although there are more places),
-but the way you send/submit the patch is wrong.  The patch itself also
-mangle whitespaces.
-
-You can read the guide:
-
- https://www.kernel.org/doc/html/latest/process/submitting-patches.html
- https://www.kernel.org/doc/html/latest/process/index.html
-
---Jesper
-
-
-> Thanks and regards,
-> Gaurav.
+> When proxy mode is enabled the vxlan device might reply to Neighbor
+> Solicitation (NS) messages on behalf of remote hosts.
 > 
+> In case the NS message includes the "Source link-layer address" option
+> [1], the vxlan device will use the specified address as the link-layer
+> destination address in its reply.
 > 
-> From 552b7df0e12572737929c60478b5dca2a40f4ad9 Mon Sep 17 00:00:00 2001
-> From: Gaurav Singh <gaurav1086@gmail.com>
-> Date: Sat, 6 Jun 2020 19:57:48 -0400
-> Subject: [PATCH] bpf: alloc_record_per_cpu Add null check after malloc
+> To avoid an infinite loop, break out of the options parsing loop when
+> encountering an option with length zero and disregard the NS message.
 > 
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+> This is consistent with the IPv6 ndisc code and RFC 4886 which states
+> that "Nodes MUST silently discard an ND packet that contains an option
+> with length zero" [2].
+> 
+> [1] https://tools.ietf.org/html/rfc4861#section-4.3
+> [2] https://tools.ietf.org/html/rfc4861#section-4.6
+> 
+> Fixes: 4b29dba9c085 ("vxlan: fix nonfunctional neigh_reduce()")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->  samples/bpf/xdp_rxq_info_user.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/net/vxlan.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/samples/bpf/xdp_rxq_info_user.c
-> b/samples/bpf/xdp_rxq_info_user.c
-> index 4fe47502ebed..490b07b7df78 100644
-> --- a/samples/bpf/xdp_rxq_info_user.c
-> +++ b/samples/bpf/xdp_rxq_info_user.c
-> @@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
+> diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+> index a5b415fed11e..779e56c43d27 100644
+> --- a/drivers/net/vxlan.c
+> +++ b/drivers/net/vxlan.c
+> @@ -1924,6 +1924,10 @@ static struct sk_buff *vxlan_na_create(struct sk_buff *request,
+>  	ns_olen = request->len - skb_network_offset(request) -
+>  		sizeof(struct ipv6hdr) - sizeof(*ns);
+>  	for (i = 0; i < ns_olen-1; i += (ns->opt[i+1]<<3)) {
+> +		if (!ns->opt[i + 1]) {
+> +			kfree_skb(reply);
+> +			return NULL;
+> +		}
+>  		if (ns->opt[i] == ND_OPT_SOURCE_LL_ADDR) {
+>  			daddr = ns->opt + i + sizeof(struct nd_opt_hdr);
+>  			break;
+> -- 
+> 2.25.1
 > 
->   size = sizeof(struct datarec) * nr_cpus;
->   array = malloc(size);
-> - memset(array, 0, size);
->   if (!array) {
->   fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
->   exit(EXIT_FAIL_MEM);
->   }
-> + memset(array, 0, size);
->   return array;
->  }
-> 
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
