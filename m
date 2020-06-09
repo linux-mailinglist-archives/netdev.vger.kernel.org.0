@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C3E71F3A87
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:19:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E0A1F3A91
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 14:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729280AbgFIMT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 08:19:29 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38335 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729239AbgFIMT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:19:28 -0400
+        id S1729281AbgFIMXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 08:23:32 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:27111 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728005AbgFIMXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 08:23:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591705167;
+        s=mimecast20190719; t=1591705410;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BSEsHrwlhqk7DyzByK+cUZneFESEsg/CqT2uCmrkWg4=;
-        b=edwu2eYwyxV6bp022+ft39tlF+JCSoA70dRzg5p8nbMeOYKJU4GcQCEgknU7BFGbhpuRVJ
-        WYU5T05rhRC2XIfXsw3L5ky5g2o//gUMvlFEBMWxC9tSmjIoeD21cVHUlHCBsAFkWEefox
-        XiUyw+LW+La8Thp6nxws3vXWnyhgRF0=
+        bh=d3aWiXtS8cF+u5/TS5j+n1u7AbVcRqeRZ4SH9J+GaOc=;
+        b=QJv+STammPSsvqrJs8xbwuuoU8RUYbGzevD02eTQm0ZeVsyXR27RpMsWfQf7Y74jN4ykwQ
+        d7lOoj/OexalxWcPigXWkS/n+n/2fwfQJFJaUTLJ5dx9Hg6whC53MHSiC2jJ4+AW349A9C
+        /Fx42yU7BKmHRpfcBWojYPOMoB3gwyo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-333-YkP2-4GWN3ijU-xuiQOWIQ-1; Tue, 09 Jun 2020 08:19:23 -0400
-X-MC-Unique: YkP2-4GWN3ijU-xuiQOWIQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-252-mSCxeT0HPrWtom8qduK5cQ-1; Tue, 09 Jun 2020 08:23:26 -0400
+X-MC-Unique: mSCxeT0HPrWtom8qduK5cQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A8FA107ACF5;
-        Tue,  9 Jun 2020 12:19:19 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CEF2107B266;
+        Tue,  9 Jun 2020 12:23:24 +0000 (UTC)
 Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E980A2DE64;
-        Tue,  9 Jun 2020 12:19:13 +0000 (UTC)
-Date:   Tue, 9 Jun 2020 14:19:12 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Miller <davem@davemloft.net>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V1] bpf: devmap dynamic map-value area based on
- BTF
-Message-ID: <20200609141912.34b70975@carbon>
-In-Reply-To: <CAADnVQKWj_eoVE9XLqwEX2ZWB_yLwRtuQqY7EuFZSNZd40ukPQ@mail.gmail.com>
-References: <159119908343.1649854.17264745504030734400.stgit@firesoul>
-        <20200603162257.nxgultkidnb7yb6q@ast-mbp.dhcp.thefacebook.com>
-        <20200604174806.29130b81@carbon>
-        <205b3716-e571-b38f-614f-86819d153c4e@gmail.com>
-        <20200604173341.rvfrjmt433knl3uv@ast-mbp.dhcp.thefacebook.com>
-        <20200605102323.15c2c06c@carbon>
-        <CAADnVQKWj_eoVE9XLqwEX2ZWB_yLwRtuQqY7EuFZSNZd40ukPQ@mail.gmail.com>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C715F5D9C9;
+        Tue,  9 Jun 2020 12:23:19 +0000 (UTC)
+Date:   Tue, 9 Jun 2020 14:23:15 +0200
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     Gaurav Singh <gaurav1086@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
+        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH] bpf: alloc_record_per_cpu Add null check after malloc
+Message-ID: <20200609142315.4d131599@carbon>
+In-Reply-To: <20200609120804.10569-1-gaurav1086@gmail.com>
+References: <20200609120804.10569-1-gaurav1086@gmail.com>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Jun 2020 09:58:26 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+On Tue,  9 Jun 2020 08:08:03 -0400
+Gaurav Singh <gaurav1086@gmail.com> wrote:
 
-> On Fri, Jun 5, 2020 at 1:23 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> >
-> > Great. If we can remove this requirement of -1 init (and let zero mean
-> > feature isn't used), then I'm all for exposing expose in uapi/bpf.h.  
+> The memset call is made right after malloc call. To fix this, add the null check right after malloc and then do memset.
 > 
-> Not having it in bpf.h doesn't magically make it invisible.
-> It's uapi because user space C sources rely on its fixed format.
-> vmlinux.h contains all kernel types. both uapi and kernel internal.
-> devmap selftest taking uapi 'struct bpf_devmap_val' from vmlinux.h is
-> an awful hack.
-> I prefer to keep vmlinux.h usage to bpf programs only.
-> User space C code should interface with kernel via proper uapi headers.
-> When vmlinux.h is used by bpf C program it's completely different from
-> user space C code doing the same, because llvm emits relocations for
-> bpf prog and libbpf adjusts them.
-> So doing 'foo->bar' in bpf C is specific to target kernel, whereas
-> user C code 'foo->bar' is a hard constant which bakes it into uapi
-> that kernel has to keep backwards compatible.
 
-Thank you for taking time to explain this.
-Much appreciated, I agree with everything above.
+Did you read the section about how long lines should be in desc?
 
 
-> If in some distant future we teach both gcc and clang to do bpf-style
-> relocations for x86 and teach ld.so to adjust them then we can dream
-> about very differently looking kernel/user interfaces.
-> Right now any struct used by user C code and passed into kernel is uapi.
+> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+> ---
+>  samples/bpf/xdp_rxq_info_user.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
+> index 4fe47502ebed..490b07b7df78 100644
+> --- a/samples/bpf/xdp_rxq_info_user.c
+> +++ b/samples/bpf/xdp_rxq_info_user.c
+> @@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
+>  
+>  	size = sizeof(struct datarec) * nr_cpus;
+>  	array = malloc(size);
+> -	memset(array, 0, size);
+>  	if (!array) {
+>  		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
+>  		exit(EXIT_FAIL_MEM);
+>  	}
+> +	memset(array, 0, size);
+>  	return array;
+>  }
 
-I like this future vision.
+Looking at code, this bug happen in more places. Please fix up all locations.
 
-I guess this patch is premature, as it operates in the same problem
-space. It tried to address uapi flexbility, by letting userspace define
-the uapi layout via BTF at map_create() time, and let kernel-side
-validate BTF-info and restrict possible struct member names, which are
-remapped to offsets inside the kernel.
-
-I'll instead wait for the future...
+I think this fix should go through the "bpf" tree.
+Please read:
+ https://github.com/torvalds/linux/blob/master/Documentation/bpf/bpf_devel_QA.rst
 
 -- 
 Best regards,
