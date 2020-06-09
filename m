@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF8F1F4906
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:44:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1091B1F48E3
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:32:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728198AbgFIVoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 17:44:07 -0400
-Received: from rrcs-72-43-215-122.nys.biz.rr.com ([72.43.215.122]:41874 "EHLO
-        localhost.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728146AbgFIVoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:44:05 -0400
-Received: from Shop01 (localhost [127.0.0.1])
-        by localhost.localdomain (Postfix) with SMTP id D6BC7247DE3;
-        Tue,  9 Jun 2020 05:10:51 -0400 (EDT)
-Received: from [215.155.142.224] by Shop01 with ESMTP id 30322426; Tue, 09 Jun 2020 04:00:57 -0600
-Message-ID: <9$2-2$$784wn-3k3@wj84690.kvs>
-From:   "Mrs. Janet Olsen " <mrs.janetolse@gmail.com>
-Reply-To: "Mrs. Janet Olsen " <mrs.janetolse@gmail.com>
-To:     darkstar6262@gmail.com
-Subject: Your response 
-Date:   Tue, 09 Jun 20 04:00:57 GMT
-X-Mailer: Microsoft Outlook Express 5.00.2615.200
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-        boundary="C.9.8A.110."
-X-Priority: 5
-X-MSMail-Priority: Low
+        id S1727824AbgFIVcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 17:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726936AbgFIVcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:32:12 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8652C05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 14:32:12 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 176CF127AA14D;
+        Tue,  9 Jun 2020 14:32:12 -0700 (PDT)
+Date:   Tue, 09 Jun 2020 14:32:11 -0700 (PDT)
+Message-Id: <20200609.143211.547390495331150908.davem@davemloft.net>
+To:     tannerlove.kernel@gmail.com
+Cc:     netdev@vger.kernel.org, tannerlove@google.com, willemb@google.com
+Subject: Re: [PATCH net] selftests/net: in rxtimestamp getopt_long needs
+ terminating null entry
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200609212132.100714-1-tannerlove.kernel@gmail.com>
+References: <20200609212132.100714-1-tannerlove.kernel@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 09 Jun 2020 14:32:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tanner Love <tannerlove.kernel@gmail.com>
+Date: Tue,  9 Jun 2020 17:21:32 -0400
 
---C.9.8A.110.
-Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
+> From: tannerlove <tannerlove@google.com>
+> 
+> getopt_long requires the last element to be filled with zeros.
+> Otherwise, passing an unrecognized option can cause a segfault.
+> 
+> Fixes: 16e781224198 ("selftests/net: Add a test to validate behavior of rx timestamps")
+> Signed-off-by: Tanner Love <tannerlove@google.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-Hello, 
-
-Greetings from Mrs. Janet Olsen, from Norway.
- 
-Please i will like to establish some investments over there, such as Orpha=
-nage home and Hospital for Cancer patients but i don't have anyone, Who ca=
-n handle the contracts for me over there.
-
-So, I am contacting to ask you and to know if you will be able of handling=
- the contracts for me over there and you will be rewarded bountifully.
-
-Thanks and remain good, till i hear from you soon, for the full details.
-
-Regards, 
-
-Mrs. Janet Olsen.=20
-
---C.9.8A.110.--
-
+Applied and queued up for -stable, thank you.
