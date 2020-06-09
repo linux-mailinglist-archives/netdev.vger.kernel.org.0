@@ -2,110 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8A71F3CCF
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:40:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130BB1F3C98
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:32:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730056AbgFINky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 09:40:54 -0400
-Received: from mga07.intel.com ([134.134.136.100]:22603 "EHLO mga07.intel.com"
+        id S1730042AbgFINbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 09:31:55 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:37916 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728888AbgFINkx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 09:40:53 -0400
-IronPort-SDR: 9ue5OnYhqm0GTmzV5htnMsWpOlozXb7cXm8BJVPqXkEs4H3acUwHAvIHLWvxsAQ9PBV78GC55K
- MR0uSGzEURcg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2020 06:40:52 -0700
-IronPort-SDR: mpyT7sZhMKlrLlo0YzHV3LqvTaMfSV/lMAZxvBsqN/vdYSjm1gfC6tcrcAYOXXdBrgo7cfNh8y
- 58XQCT5fgyuQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,492,1583222400"; 
-   d="scan'208";a="295837460"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.8])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Jun 2020 06:40:51 -0700
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, ciara.loftus@intel.com
-Subject: [PATCH net 3/3] ice: protect ring accesses with WRITE_ONCE
-Date:   Tue,  9 Jun 2020 13:19:45 +0000
-Message-Id: <20200609131945.18373-3-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200609131945.18373-1-ciara.loftus@intel.com>
-References: <20200609131945.18373-1-ciara.loftus@intel.com>
+        id S1729644AbgFINbz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jun 2020 09:31:55 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.sntech)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1jieLu-0004rD-O6; Tue, 09 Jun 2020 15:31:42 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, heiko@sntech.de,
+        christoph.muellner@theobroma-systems.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: [PATCH v2 1/2] net: phy: mscc: move shared probe code into a helper
+Date:   Tue,  9 Jun 2020 15:31:39 +0200
+Message-Id: <20200609133140.1421109-1-heiko@sntech.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The READ_ONCE macro is used when reading rings prior to accessing the
-statistics pointer. The corresponding WRITE_ONCE usage when allocating and
-freeing the rings to ensure protected access was not in place. Introduce
-this.
+From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+The different probe functions share a lot of code, so move the
+common parts into a helper to reduce duplication.
+
+Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c  | 8 ++++----
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+changes in v2:
+- new patch as suggested by Andrew
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 28b46cc9f5cb..2e3a39cea2c0 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1194,7 +1194,7 @@ static void ice_vsi_clear_rings(struct ice_vsi *vsi)
- 		for (i = 0; i < vsi->alloc_txq; i++) {
- 			if (vsi->tx_rings[i]) {
- 				kfree_rcu(vsi->tx_rings[i], rcu);
--				vsi->tx_rings[i] = NULL;
-+				WRITE_ONCE(vsi->tx_rings[i], NULL);
- 			}
- 		}
- 	}
-@@ -1202,7 +1202,7 @@ static void ice_vsi_clear_rings(struct ice_vsi *vsi)
- 		for (i = 0; i < vsi->alloc_rxq; i++) {
- 			if (vsi->rx_rings[i]) {
- 				kfree_rcu(vsi->rx_rings[i], rcu);
--				vsi->rx_rings[i] = NULL;
-+				WRITE_ONCE(vsi->rx_rings[i], NULL);
- 			}
- 		}
- 	}
-@@ -1235,7 +1235,7 @@ static int ice_vsi_alloc_rings(struct ice_vsi *vsi)
- 		ring->vsi = vsi;
- 		ring->dev = dev;
- 		ring->count = vsi->num_tx_desc;
--		vsi->tx_rings[i] = ring;
-+		WRITE_ONCE(vsi->tx_rings[i], ring);
+ drivers/net/phy/mscc/mscc_main.c | 97 +++++++++++++-------------------
+ 1 file changed, 40 insertions(+), 57 deletions(-)
+
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index c8aa6d905d8e..54cac9c295ad 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1983,12 +1983,11 @@ static int vsc85xx_read_status(struct phy_device *phydev)
+ 	return genphy_read_status(phydev);
+ }
+ 
+-static int vsc8514_probe(struct phy_device *phydev)
++static int vsc85xx_probe_helper(struct phy_device *phydev,
++				u32 *leds, int num_leds, u16 led_modes,
++				const struct vsc85xx_hw_stat *stats, int nstats)
+ {
+ 	struct vsc8531_private *vsc8531;
+-	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+-	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+-	   VSC8531_DUPLEX_COLLISION};
+ 
+ 	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+ 	if (!vsc8531)
+@@ -1996,46 +1995,46 @@ static int vsc8514_probe(struct phy_device *phydev)
+ 
+ 	phydev->priv = vsc8531;
+ 
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc85xx_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
++	vsc8531->nleds = num_leds;
++	vsc8531->supp_led_modes = led_modes;
++	vsc8531->hw_stats = stats;
++	vsc8531->nstats = nstats;
+ 	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+ 				      sizeof(u64), GFP_KERNEL);
+ 	if (!vsc8531->stats)
+ 		return -ENOMEM;
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return vsc85xx_dt_led_modes_get(phydev, leds);
+ }
+ 
+-static int vsc8574_probe(struct phy_device *phydev)
++static int vsc8514_probe(struct phy_device *phydev)
+ {
+-	struct vsc8531_private *vsc8531;
+ 	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+ 	   VSC8531_DUPLEX_COLLISION};
+ 
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
++	return vsc85xx_probe_helper(phydev, default_mode,
++				    ARRAY_SIZE(default_mode),
++				    VSC85XX_SUPP_LED_MODES,
++				    vsc85xx_hw_stats,
++				    ARRAY_SIZE(vsc85xx_hw_stats));
++}
+ 
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC8584_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc8584_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc8584_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
++static int vsc8574_probe(struct phy_device *phydev)
++{
++	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
++	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
++	   VSC8531_DUPLEX_COLLISION};
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return vsc85xx_probe_helper(phydev, default_mode,
++				    ARRAY_SIZE(default_mode),
++				    VSC8584_SUPP_LED_MODES,
++				    vsc8584_hw_stats,
++				    ARRAY_SIZE(vsc8584_hw_stats));
+ }
+ 
+ static int vsc8584_probe(struct phy_device *phydev)
+ {
+-	struct vsc8531_private *vsc8531;
+ 	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+ 	   VSC8531_DUPLEX_COLLISION};
+@@ -2045,28 +2044,17 @@ static int vsc8584_probe(struct phy_device *phydev)
+ 		return -ENOTSUPP;
  	}
  
- 	/* Allocate Rx rings */
-@@ -1254,7 +1254,7 @@ static int ice_vsi_alloc_rings(struct ice_vsi *vsi)
- 		ring->netdev = vsi->netdev;
- 		ring->dev = dev;
- 		ring->count = vsi->num_rx_desc;
--		vsi->rx_rings[i] = ring;
-+		WRITE_ONCE(vsi->rx_rings[i], ring);
- 	}
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
+-
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC8584_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc8584_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc8584_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
+-
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return vsc85xx_probe_helper(phydev, default_mode,
++				    ARRAY_SIZE(default_mode),
++				    VSC8584_SUPP_LED_MODES,
++				    vsc8584_hw_stats,
++				    ARRAY_SIZE(vsc8584_hw_stats));
+ }
  
- 	return 0;
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 082825e3cb39..4cbd49c87568 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -1702,7 +1702,7 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 		xdp_ring->netdev = NULL;
- 		xdp_ring->dev = dev;
- 		xdp_ring->count = vsi->num_tx_desc;
--		vsi->xdp_rings[i] = xdp_ring;
-+		WRITE_ONCE(vsi->xdp_rings[i], xdp_ring);
- 		if (ice_setup_tx_ring(xdp_ring))
- 			goto free_xdp_rings;
- 		ice_set_ring_xdp(xdp_ring);
+ static int vsc85xx_probe(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531;
+-	int rate_magic;
++	int rate_magic, rc;
+ 	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY};
+ 
+@@ -2074,23 +2062,18 @@ static int vsc85xx_probe(struct phy_device *phydev)
+ 	if (rate_magic < 0)
+ 		return rate_magic;
+ 
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
++	rc = vsc85xx_probe_helper(phydev, default_mode,
++				  ARRAY_SIZE(default_mode),
++				  VSC85XX_SUPP_LED_MODES,
++				  vsc85xx_hw_stats,
++				  ARRAY_SIZE(vsc85xx_hw_stats));
++	if (rc < 0)
++		return rc;
+ 
++	vsc8531 = phydev->priv;
+ 	vsc8531->rate_magic = rate_magic;
+-	vsc8531->nleds = 2;
+-	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc85xx_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return 0;
+ }
+ 
+ /* Microsemi VSC85xx PHYs */
 -- 
-2.17.1
+2.26.2
 
