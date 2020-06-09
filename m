@@ -2,141 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B1501F491A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49BB21F492C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 23:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728218AbgFIVtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 17:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727001AbgFIVtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:49:04 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574EBC05BD1E
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 14:49:04 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id m21so17540827eds.13
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 14:49:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dF+RQ0AQoP42Ff+qtYJONpy5p7iRkssBS+Qb7xcQPb4=;
-        b=WyzmLb5SHrusklbUivTJLgHqRqnRqMxkpynwwTr3vbBJiY6c7PmcAEIIIvP2jlHn6B
-         mZwe2OOpQoB3n3VcfW5KVnwFuOM1x+srCuMxz5iJjpGg4WKloGOQp9oFUSx04T8ZmSKR
-         +4GJ7DTuahDB9EhglmBziGz/xDhPcnwhLos0OryPrLEwh9QgwtvC3gKB8wZ3SOADGhFM
-         KWszOiOj/3MgGRj8POFzDeNzXiDjnC5qI56jh12gAEuVwMzsAgIx3nZhLKEJo9WZXfEA
-         OJSYTUELmgqymgcl8RsPJmsaUdTb+H7K9spydxz6F8uCXlX5GkKk/K7xTley7ISL2JWu
-         E1Qg==
+        id S1728377AbgFIV6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 17:58:39 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:38046 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728116AbgFIV6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 17:58:13 -0400
+Received: by mail-io1-f70.google.com with SMTP id l19so206430iol.5
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 14:58:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dF+RQ0AQoP42Ff+qtYJONpy5p7iRkssBS+Qb7xcQPb4=;
-        b=ufXrdqTYYDh8M5WrkwOdFFhMQgiyVYB+gODfJsRE9F7hi8FDlAZ8G7EJf5kq/K1R3T
-         EhbDErOhlRR6D0KKjn33coT99cTlm2BO7ciRBVjYPr8BjIV3nmROaCSjnctJkCjq//bg
-         K7+QJtIaXSHYpN5tfkraU12U6WzJt2VRobwaSFZRpaCL0ZmUQzKbb5cyAOHnylCWZ0wi
-         NKxF9+Us4aj5QBd21xL4igKiAUjAJW2/yod6tJpjBbXcDvzNIDp5VR40HQvV7/q7lck0
-         yAPBfKlWDM8Bc1Wo1Qd++cCFFYObcJp3z48kWctpY4i8AJaJRAp/YMVUvPetYxw2EFi4
-         nzog==
-X-Gm-Message-State: AOAM5303cY3CsKFFpAhFw/mv7BY9f+tGUBHaZchJuyEm1EbyOQ9C5sho
-        5FwO6aA/Lzlx/Mgd3IpHBUuIQlGj64Aou4biHISvLQ==
-X-Google-Smtp-Source: ABdhPJzbVOtjVZ79aGfP2Lwa/ckHUcZ4Mr+zJirQEkN0p/xLAj8D/4/tCBcmX7Ur2OZQfbfkbGZpgqEbiStWTsnkvUA=
-X-Received: by 2002:aa7:c944:: with SMTP id h4mr28309011edt.383.1591739342882;
- Tue, 09 Jun 2020 14:49:02 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=is3mYXvfsr8aZ3qMnGeuXO0CoeZIoQo4k3FctA0HRyE=;
+        b=Ck8135wMO+GZtTv5tYN4SXzhxX+Oh6chk+ZBTeSttPVet1BK7nH1NJJxUBTiEqvzJ2
+         mobHBHUO6WwLACbpddZov+3qnLdW0NNNMTun+e3QDZdU4kutHhI1Z5YpvaFFYFMYqtVs
+         Mo22uP9FoWZ+QpzwdP2yDChSTCFdyzUvh+XU7Ft1xqJVzeotTnwnJc+3KIL8wB4uOMcT
+         l+gQEk0p4TufitGiqaZJjA0IcyxoZmwJAgewoWAt3EEoneOeEInQqqw0bF/oXC1K4dkU
+         X7/q3Xg2oO+kvxlHEXSPVzu6glIWlFh6WSGDyOpgBk29owB+625yQuo7Fn8AlhdfJ8R8
+         /wmQ==
+X-Gm-Message-State: AOAM532uySPhf69+QjvF5dlK4T4jPw2tnyDU4FlAHz5CKDA8ryG1ZrtG
+        LFw8I+zQ3ULsOpxfaMyvg9dEOd6NnbzJyU/e1arb631DYT5T
+X-Google-Smtp-Source: ABdhPJw/82TPa1XeCOKkpmVno/WmIk8WcRmqHcdCILzMZK6LifwgFRho/qtOA2H4sjM4sHA2CvI9A0QlZoHSd4A63OiluVzQpNuy
 MIME-Version: 1.0
-References: <20200609101935.5716b3bd@hermes.lan> <20200609.113633.1866761141966326637.davem@davemloft.net>
- <4d664ff641dbf3aeab1ecd5eacda220dab9d7d17.camel@intel.com> <20200609.123858.466960203090925019.davem@davemloft.net>
-In-Reply-To: <20200609.123858.466960203090925019.davem@davemloft.net>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 9 Jun 2020 14:48:51 -0700
-Message-ID: <CAPcyv4jr9F_0q4S-LSvHzJK7mamLW-m1Skgw7cXvkZYNtStyxA@mail.gmail.com>
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration support
-To:     David Miller <davem@davemloft.net>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jonathan Corbet <corbet@lwn.net>, Andrew Lunn <andrew@lunn.ch>,
-        amitc@mellanox.com, david@protonic.nl, linville@tuxdriver.com,
-        marex@denx.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        petrm@mellanox.com, hkallweit1@gmail.com, kernel@pengutronix.de,
-        christian.herber@nxp.com, mkubecek@suse.cz, kuba@kernel.org,
-        o.rempel@pengutronix.de, Netdev <netdev@vger.kernel.org>,
-        mkl@pengutronix.de, f.fainelli@gmail.com
+X-Received: by 2002:a05:6602:164f:: with SMTP id y15mr199028iow.210.1591739892356;
+ Tue, 09 Jun 2020 14:58:12 -0700 (PDT)
+Date:   Tue, 09 Jun 2020 14:58:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dbe05b05a7add269@google.com>
+Subject: memory leak in nf_tables_parse_netdev_hooks (3)
+From:   syzbot <syzbot+eb9d5924c51d6d59e094@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 9, 2020 at 12:57 PM David Miller <davem@davemloft.net> wrote:
->
-> From: "Williams, Dan J" <dan.j.williams@intel.com>
-> Date: Tue, 9 Jun 2020 19:30:50 +0000
->
-> > On Tue, 2020-06-09 at 11:36 -0700, David Miller wrote:
-> >> From: Stephen Hemminger <stephen@networkplumber.org>
-> >> Date: Tue, 9 Jun 2020 10:19:35 -0700
-> >>
-> >> > Yes, words do matter and convey a lot of implied connotation and
-> >> > meaning.
-> >>
-> >> What is your long term plan?  Will you change all of the UAPI for
-> >> bonding for example?
-> >
-> > The long term plan in my view includes talking with standards bodies to
-> > move new content to, for example, master/subordinate. In other words,
-> > practical forward steps, not retroactively changing interfaces.
->
-> When that knowledge is established legitimately in standards and
-> transferred into common knowledge of these technologies, yes then
-> please come present your proposals.
+Hello,
 
-Our hands are not completely tied by the specifications, as a
-community we have a non-zero level of influence over standards bodies,
-even direct participation in some. So we could do something stronger
-than passively wait for standards to catch up. For example, deprecate
-our consideration of future specifications that include this language
-and set a cut off date.
+syzbot found the following crash on:
 
-I understand the confusion that arises from using terminology
-differently from the specification, but at the same time when
-specification language actively hurts kernel code maintainability we
-change it. For example, when I did the first iteration of what
-eventually became libnvdimm Ingo rightly reacted to the naming being
-too ACPI specification centric and wanting more kernel-centric naming.
+HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1741f5f2100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9a1aa05456dfd557
+dashboard link: https://syzkaller.appspot.com/bug?extid=eb9d5924c51d6d59e094
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126f5446100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177f16fe100000
 
-If the common kernel name for what was formerly called a "slave"
-device is a "subordinate" device then the confusion is lessened, only
-one common kernel translation to consider.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+eb9d5924c51d6d59e094@syzkaller.appspotmail.com
 
-> But right now using different words will create confusion.
->
-> I also find master/subordinate an interesting proposal, what if master
-> is a triggering term?  Why only slave?
+executing program
+BUG: memory leak
+unreferenced object 0xffff88811589cd80 (size 96):
+  comm "syz-executor337", pid 6663, jiffies 4294942418 (age 13.980s)
+  hex dump (first 32 bytes):
+    00 c9 89 15 81 88 ff ff 68 f9 ff 00 00 c9 ff ff  ........h.......
+    00 cd 89 15 81 88 ff ff 60 52 c5 82 ff ff ff ff  ........`R......
+  backtrace:
+    [<00000000104a1f01>] kmalloc include/linux/slab.h:555 [inline]
+    [<00000000104a1f01>] nft_netdev_hook_alloc+0x3b/0xd0 net/netfilter/nf_tables_api.c:1659
+    [<000000003bc42f25>] nf_tables_parse_netdev_hooks+0x94/0x210 net/netfilter/nf_tables_api.c:1709
+    [<000000004b6a9590>] nft_flowtable_parse_hook+0x101/0x1d0 net/netfilter/nf_tables_api.c:6243
+    [<000000004204916e>] nft_delflowtable_hook net/netfilter/nf_tables_api.c:6562 [inline]
+    [<000000004204916e>] nf_tables_delflowtable+0x249/0x4a0 net/netfilter/nf_tables_api.c:6640
+    [<00000000fa0bd6d2>] nfnetlink_rcv_batch+0x2f3/0x810 net/netfilter/nfnetlink.c:433
+    [<000000004d4e8df7>] nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
+    [<000000004d4e8df7>] nfnetlink_rcv+0x183/0x1b0 net/netfilter/nfnetlink.c:561
+    [<000000001710060c>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<000000001710060c>] netlink_unicast+0x20a/0x2f0 net/netlink/af_netlink.c:1329
+    [<00000000bb814b80>] netlink_sendmsg+0x2b5/0x560 net/netlink/af_netlink.c:1918
+    [<00000000eb7a00fe>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<00000000eb7a00fe>] sock_sendmsg+0x4c/0x60 net/socket.c:672
+    [<000000008cc37c52>] ____sys_sendmsg+0x2c4/0x2f0 net/socket.c:2352
+    [<00000000b882e46e>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2406
+    [<00000000870e7750>] __sys_sendmsg+0x77/0xe0 net/socket.c:2439
+    [<000000002b222e75>] do_syscall_64+0x6e/0x220 arch/x86/entry/common.c:295
+    [<00000000356e1a8a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-"slave" has a direct connection to human suffering deployed at global scale.
+BUG: memory leak
+unreferenced object 0xffff88811589c900 (size 96):
+  comm "syz-executor337", pid 6663, jiffies 4294942418 (age 13.980s)
+  hex dump (first 32 bytes):
+    68 f9 ff 00 00 c9 ff ff 80 cd 89 15 81 88 ff ff  h...............
+    00 00 00 00 00 00 00 00 60 52 c5 82 ff ff ff ff  ........`R......
+  backtrace:
+    [<00000000104a1f01>] kmalloc include/linux/slab.h:555 [inline]
+    [<00000000104a1f01>] nft_netdev_hook_alloc+0x3b/0xd0 net/netfilter/nf_tables_api.c:1659
+    [<000000003bc42f25>] nf_tables_parse_netdev_hooks+0x94/0x210 net/netfilter/nf_tables_api.c:1709
+    [<000000004b6a9590>] nft_flowtable_parse_hook+0x101/0x1d0 net/netfilter/nf_tables_api.c:6243
+    [<000000004204916e>] nft_delflowtable_hook net/netfilter/nf_tables_api.c:6562 [inline]
+    [<000000004204916e>] nf_tables_delflowtable+0x249/0x4a0 net/netfilter/nf_tables_api.c:6640
+    [<00000000fa0bd6d2>] nfnetlink_rcv_batch+0x2f3/0x810 net/netfilter/nfnetlink.c:433
+    [<000000004d4e8df7>] nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
+    [<000000004d4e8df7>] nfnetlink_rcv+0x183/0x1b0 net/netfilter/nfnetlink.c:561
+    [<000000001710060c>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<000000001710060c>] netlink_unicast+0x20a/0x2f0 net/netlink/af_netlink.c:1329
+    [<00000000bb814b80>] netlink_sendmsg+0x2b5/0x560 net/netlink/af_netlink.c:1918
+    [<00000000eb7a00fe>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<00000000eb7a00fe>] sock_sendmsg+0x4c/0x60 net/socket.c:672
+    [<000000008cc37c52>] ____sys_sendmsg+0x2c4/0x2f0 net/socket.c:2352
+    [<00000000b882e46e>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2406
+    [<00000000870e7750>] __sys_sendmsg+0x77/0xe0 net/socket.c:2439
+    [<000000002b222e75>] do_syscall_64+0x6e/0x220 arch/x86/entry/common.c:295
+    [<00000000356e1a8a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-One way I think about this is consider we have our first ever Linux
-Plumbers on the African continent, and you had a choice about giving a
-talk about how the git master branch operates, or a talk about slave
-devices which one would you feel more immediately comfortable leading?
-Any hesitation you would feel freely using the word slave with a
-predominantly black audience is a similar speed bump a contributor
-might feel needing to consume that term to get their job done.
+BUG: memory leak
+unreferenced object 0xffff888115961800 (size 96):
+  comm "syz-executor337", pid 6664, jiffies 4294943010 (age 8.060s)
+  hex dump (first 32 bytes):
+    00 19 96 15 81 88 ff ff 68 f9 ff 00 00 c9 ff ff  ........h.......
+    00 00 00 00 00 00 00 00 60 52 c5 82 ff ff ff ff  ........`R......
+  backtrace:
+    [<00000000104a1f01>] kmalloc include/linux/slab.h:555 [inline]
+    [<00000000104a1f01>] nft_netdev_hook_alloc+0x3b/0xd0 net/netfilter/nf_tables_api.c:1659
+    [<000000003bc42f25>] nf_tables_parse_netdev_hooks+0x94/0x210 net/netfilter/nf_tables_api.c:1709
+    [<000000004b6a9590>] nft_flowtable_parse_hook+0x101/0x1d0 net/netfilter/nf_tables_api.c:6243
+    [<000000004204916e>] nft_delflowtable_hook net/netfilter/nf_tables_api.c:6562 [inline]
+    [<000000004204916e>] nf_tables_delflowtable+0x249/0x4a0 net/netfilter/nf_tables_api.c:6640
+    [<00000000fa0bd6d2>] nfnetlink_rcv_batch+0x2f3/0x810 net/netfilter/nfnetlink.c:433
+    [<000000004d4e8df7>] nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
+    [<000000004d4e8df7>] nfnetlink_rcv+0x183/0x1b0 net/netfilter/nfnetlink.c:561
+    [<000000001710060c>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<000000001710060c>] netlink_unicast+0x20a/0x2f0 net/netlink/af_netlink.c:1329
+    [<00000000bb814b80>] netlink_sendmsg+0x2b5/0x560 net/netlink/af_netlink.c:1918
+    [<00000000eb7a00fe>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<00000000eb7a00fe>] sock_sendmsg+0x4c/0x60 net/socket.c:672
+    [<000000008cc37c52>] ____sys_sendmsg+0x2c4/0x2f0 net/socket.c:2352
+    [<00000000b882e46e>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2406
+    [<00000000870e7750>] __sys_sendmsg+0x77/0xe0 net/socket.c:2439
+    [<000000002b222e75>] do_syscall_64+0x6e/0x220 arch/x86/entry/common.c:295
+    [<00000000356e1a8a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Explaining "no, not that connotation of slave" does not scale as much
-as transitioning to another term.
 
-> I know people feel something needs to change, but do that moving
-> forward for the technologies themselves.
 
-This is the start of a process that the kernel community can take an
-active role to lead, we have it within our control to not wait for the
-lowest common denominator to catch up.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> Not how we implement support
-> for a technology which is established already.
->
-> Plant the seed, don't chop the tree down.
-
-I appreciate the engagement.
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
