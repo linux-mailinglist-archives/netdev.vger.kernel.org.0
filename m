@@ -2,117 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EF91F4A15
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 01:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 048591F4A1C
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 01:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725911AbgFIX1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 19:27:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46492 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725840AbgFIX1a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 19:27:30 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726035AbgFIXaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 19:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbgFIXaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 19:30:21 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A35C05BD1E;
+        Tue,  9 Jun 2020 16:30:21 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2EE74206A4;
-        Tue,  9 Jun 2020 23:27:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591745249;
-        bh=W5b9xaweRRU8wG7moJ1hgDrhv8aPDYSP/hKyzuDXx6k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YjBjrGeHLL2w6z3Lr3fsim9c07YGqzhLAlz6bVQCrI677bEJ9rdkRFZHNxcvpcZca
-         gAuxuMLW7TKFx18m2S+5J6MCiU+wR3344vBhvJ2bUSvg67+J+Khhe+cX6T2tPZbJfK
-         /nDUkgxNcQG3WQEsMqt5dOPogITHTdaWFeFlepXs=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
-Cc:     David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: [PATCH net] vxlan: Remove access to nexthop group struct
-Date:   Tue,  9 Jun 2020 17:27:28 -0600
-Message-Id: <20200609232728.26621-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49hRDm2cmSz9sRR;
+        Wed, 10 Jun 2020 09:30:15 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1591745416;
+        bh=lTqyPH1IXzHOL7YNp6Xf9Boc2LGwLLUlsKJcuVTbVIc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=T4pD86Zp/YjSKhnt56tra6AT0I67mQbEqxqlxmPN0eV92XdWPIBLMM2+vKCL41aTa
+         w/jfvQsoMFJBvnxUNBy1IW/GgSU4bOQXeELXANkpo9NeoNJaC0JdwSSGt6e/voa4tz
+         2BvMy+qQaMdcx5KB/jS+WgliBj4+I2z7hXSgvnK81Er8lBwkgIqfRewqVs4JzPhdDu
+         C119QGFU4U3CQ7reqjRLP5xFsxbJRW8NCbYOv79nNV34FZxn1L7Lo5nOfH+n9452Kb
+         lF/LZpNvj8A8O1x+AxRa3WJRc2o8MPzXP1iRGcHiFXbffVFDoGTstehHKmuzTaLQ8K
+         G/AlXmxN8FbLg==
+Date:   Wed, 10 Jun 2020 09:30:12 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arjun Roy <arjunroy@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: linux-next: manual merge of the net tree with Linus' tree
+Message-ID: <20200610093012.13391de8@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/_WFzV36PO8JK65ZVN9wu=UP";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vxlan driver should be using helpers to access nexthop struct
-internals. Remove open check if whether nexthop is multipath in
-favor of the existing nexthop_is_multipath helper. Add a new
-helper, nexthop_has_v4, to cover the need to check has_v4 in
-a group.
+--Sig_/_WFzV36PO8JK65ZVN9wu=UP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 1274e1cc4226 ("vxlan: ecmp support for mac fdb entries")
-Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
- drivers/net/vxlan.c   |  8 +++-----
- include/net/nexthop.h | 11 +++++++++++
- 2 files changed, 14 insertions(+), 5 deletions(-)
+Hi all,
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 5bb448ae6c9c..0c6086879ab7 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -857,7 +857,6 @@ static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
- 			       u32 nhid, struct netlink_ext_ack *extack)
- {
- 	struct nexthop *old_nh = rtnl_dereference(fdb->nh);
--	struct nh_group *nhg;
- 	struct nexthop *nh;
- 	int err = -EINVAL;
- 
-@@ -881,8 +880,7 @@ static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
- 			goto err_inval;
- 		}
- 
--		nhg = rtnl_dereference(nh->nh_grp);
--		if (!nh->is_group || !nhg->mpath) {
-+		if (!nexthop_is_multipath(nh)) {
- 			NL_SET_ERR_MSG(extack, "Nexthop is not a multipath group");
- 			goto err_inval;
- 		}
-@@ -890,14 +888,14 @@ static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
- 		/* check nexthop group family */
- 		switch (vxlan->default_dst.remote_ip.sa.sa_family) {
- 		case AF_INET:
--			if (!nhg->has_v4) {
-+			if (!nexthop_has_v4(nh)) {
- 				err = -EAFNOSUPPORT;
- 				NL_SET_ERR_MSG(extack, "Nexthop group family not supported");
- 				goto err_inval;
- 			}
- 			break;
- 		case AF_INET6:
--			if (nhg->has_v4) {
-+			if (nexthop_has_v4(nh)) {
- 				err = -EAFNOSUPPORT;
- 				NL_SET_ERR_MSG(extack, "Nexthop group family not supported");
- 				goto err_inval;
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index c28bed98d211..f452fc6ad742 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -137,6 +137,17 @@ static inline bool nexthop_cmp(const struct nexthop *nh1,
- 	return nh1 == nh2;
- }
- 
-+static inline bool nexthop_has_v4(const struct nexthop *nh)
-+{
-+	if (nh->is_group) {
-+		struct nh_group *nh_grp;
-+
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		return nh_grp->has_v4;
-+	}
-+	return false;
-+}
-+
- static inline bool nexthop_is_multipath(const struct nexthop *nh)
- {
- 	if (nh->is_group) {
--- 
-2.17.1
+Today's linux-next merge of the net tree got a conflict in:
 
+  net/ipv4/tcp.c
+
+between commit:
+
+  d8ed45c5dcd4 ("mmap locking API: use coccinelle to convert mmap_sem rwsem=
+ call sites")
+
+from Linus' tree and commit:
+
+  3763a24c727e ("net-zerocopy: use vm_insert_pages() for tcp rcv zerocopy")
+
+from the net tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/ipv4/tcp.c
+index 27716e4932bc,ecbba0abd3e5..000000000000
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@@ -1762,7 -1796,9 +1796,9 @@@ static int tcp_zerocopy_receive(struct=20
+ =20
+  	sock_rps_record_flow(sk);
+ =20
++ 	tp =3D tcp_sk(sk);
++=20
+ -	down_read(&current->mm->mmap_sem);
+ +	mmap_read_lock(current->mm);
+ =20
+  	vma =3D find_vma(current->mm, address);
+  	if (!vma || vma->vm_start > address || vma->vm_ops !=3D &tcp_vm_ops) {
+@@@ -1817,17 -1863,27 +1863,27 @@@
+  			zc->recv_skip_hint -=3D remaining;
+  			break;
+  		}
+- 		ret =3D vm_insert_page(vma, address + length,
+- 				     skb_frag_page(frags));
+- 		if (ret)
+- 			break;
++ 		pages[pg_idx] =3D skb_frag_page(frags);
++ 		pg_idx++;
+  		length +=3D PAGE_SIZE;
+- 		seq +=3D PAGE_SIZE;
+  		zc->recv_skip_hint -=3D PAGE_SIZE;
+  		frags++;
++ 		if (pg_idx =3D=3D PAGE_BATCH_SIZE) {
++ 			ret =3D tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
++ 							   &curr_addr, &length,
++ 							   &seq, zc);
++ 			if (ret)
++ 				goto out;
++ 			pg_idx =3D 0;
++ 		}
++ 	}
++ 	if (pg_idx) {
++ 		ret =3D tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
++ 						   &curr_addr, &length, &seq,
++ 						   zc);
+  	}
+  out:
+ -	up_read(&current->mm->mmap_sem);
+ +	mmap_read_unlock(current->mm);
+  	if (length) {
+  		WRITE_ONCE(tp->copied_seq, seq);
+  		tcp_rcv_space_adjust(sk);
+
+--Sig_/_WFzV36PO8JK65ZVN9wu=UP
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7gG4QACgkQAVBC80lX
+0GyCnwf6ApvtS2bOp659IILBedqzBUQSqVTYXYtsSNhbQclLg3tUdHFHmrPYRDVE
+Ki/w1uhDK9vG0ZzZnLselpQDcDI0acNEb2RZ8Y4CjCQHqB+QmSHoEvAzEJGn/YUg
+DQLHLzKCWftRf555QJfBzm8vk+jZIzE6v0k6BsMfLLRdGLDX68dQ6w0/SyN9Ex1I
+M1cvRqSSrIvHQdkl3y4BgTuC1DXOiFD3k2xMtwgGZUQ4N1oY7zyOcl6aydoJO4X7
+wTAQXNdAWRWrMISkTE2zd9ziWyNYu3xuqQIRAGuczq0VzvsPjjFrRXWRa9HRCOeo
+YLV7f8coF9/mtZnyw/BYv1pq175lZw==
+=x2XT
+-----END PGP SIGNATURE-----
+
+--Sig_/_WFzV36PO8JK65ZVN9wu=UP--
