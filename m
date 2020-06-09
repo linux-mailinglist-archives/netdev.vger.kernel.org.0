@@ -2,277 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2539F1F3C95
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 627771F3C9D
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730084AbgFINcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 09:32:00 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:37912 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729000AbgFINb4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 09:31:56 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.sntech)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1jieLv-0004rD-6B; Tue, 09 Jun 2020 15:31:43 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, heiko@sntech.de,
-        christoph.muellner@theobroma-systems.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: [PATCH v2 2/2] net: phy: mscc: handle the clkout control on some phy variants
-Date:   Tue,  9 Jun 2020 15:31:40 +0200
-Message-Id: <20200609133140.1421109-2-heiko@sntech.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200609133140.1421109-1-heiko@sntech.de>
-References: <20200609133140.1421109-1-heiko@sntech.de>
+        id S1730113AbgFINcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 09:32:11 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46102 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730056AbgFINb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 09:31:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591709516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yI7IMsyT2cyUZiENZ8NN7SZy7IVjzdxQU2eq9zUxhow=;
+        b=LthrtZVPldLk+OBQjORSzL2+bdHQ4A0jUrcAIr1GfYvarjU17Y63VSUUwQbSMZAsQOGUlB
+        nrZSoo8TgUk7F+um+XsuQczzTGZQmBBwX2qOVCK4Zz2nIkDQlKUBPzb17DbSk2uTBksgoQ
+        nCQ112Y2gCn8yQM3wbhvV8ktjVZbDWM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-231-mELueZGPPnet7pC3fggmEA-1; Tue, 09 Jun 2020 09:31:47 -0400
+X-MC-Unique: mELueZGPPnet7pC3fggmEA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35121872FEB;
+        Tue,  9 Jun 2020 13:31:46 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 16ADC5D9E4;
+        Tue,  9 Jun 2020 13:31:43 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id D3944300003EB;
+        Tue,  9 Jun 2020 15:31:41 +0200 (CEST)
+Subject: [PATCH bpf V2 0/2] bpf: adjust uapi for devmap prior to kernel
+ release
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Date:   Tue, 09 Jun 2020 15:31:41 +0200
+Message-ID: <159170947966.2102545.14401752480810420709.stgit@firesoul>
+In-Reply-To: <20200609013410.5ktyuzlqu5xpbp4a@ast-mbp.dhcp.thefacebook.com>
+References: <20200609013410.5ktyuzlqu5xpbp4a@ast-mbp.dhcp.thefacebook.com>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+For special type maps (e.g. devmap and cpumap) the map-value data-layout is
+a configuration interface. This is uapi that can only be tail extended.
+Thus, new members (and thus features) can only be added to the end of this
+structure, and the kernel uses the map->value_size from userspace to
+determine feature set 'version'.
 
-At least VSC8530/8531/8540/8541 contain a clock output that can emit
-a predefined rate of 25, 50 or 125MHz.
+For this kind of uapi to be extensible and backward compatible, is it common
+that new members/fields (that represent a new feature) in the struct are
+initialized as zero, which indicate that the feature isn't used. This makes
+it possible to write userspace applications that are unaware of new kernel
+features, but just include latest uapi headers, zero-init struct and
+populate features it knows about.
 
-This may then feed back into the network interface as source clock.
-So follow the example the at803x already set and introduce a
-vsc8531,clk-out-frequency property to set that output.
+The recent extension of devmap with a bpf_prog.fd requires end-user to
+supply the file-descriptor value minus-1 to communicate that the features
+isn't used. This isn't compatible with the described kABI extension model.
 
-Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+V2: Drop patch-1 that changed BPF-syscall to start at file-descriptor 1
+
 ---
-Hi Andrew,
 
-I didn't change the property yet, do you have a suggestion on
-how to name it though? Going by the other examples in the
-ethernet-phy.yamls, something like enet-phy-clock-out-frequency ?
+Jesper Dangaard Brouer (2):
+      bpf: devmap adjust uapi for attach bpf program
+      bpf: selftests and tools use struct bpf_devmap_val from uapi
 
 
- .../bindings/net/mscc-phy-vsc8531.txt         |  3 +
- drivers/net/phy/mscc/mscc.h                   |  9 ++
- drivers/net/phy/mscc/mscc_main.c              | 87 +++++++++++++++++--
- 3 files changed, 92 insertions(+), 7 deletions(-)
+ include/uapi/linux/bpf.h                           |   13 +++++++++++++
+ kernel/bpf/devmap.c                                |   17 ++++-------------
+ tools/include/uapi/linux/bpf.h                     |   13 +++++++++++++
+ .../selftests/bpf/prog_tests/xdp_devmap_attach.c   |    8 --------
+ .../selftests/bpf/progs/test_xdp_devmap_helpers.c  |    2 +-
+ .../bpf/progs/test_xdp_with_devmap_helpers.c       |    3 +--
+ 6 files changed, 32 insertions(+), 24 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-index 5ff37c68c941..4a1f50ae48e1 100644
---- a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-+++ b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-@@ -1,6 +1,8 @@
- * Microsemi - vsc8531 Giga bit ethernet phy
- 
- Optional properties:
-+- vsc8531,clk-out-frequency: Clock output frequency in Hertz.
-+			  Should be one of 25000000, 50000000, 125000000
- - vsc8531,vddmac	: The vddmac in mV. Allowed values is listed
- 			  in the first row of Table 1 (below).
- 			  This property is only used in combination
-@@ -63,6 +65,7 @@ Example:
- 
-         vsc8531_0: ethernet-phy@0 {
-                 compatible = "ethernet-phy-id0007.0570";
-+                vsc8531,clk-out-frequency = <125000000>;
-                 vsc8531,vddmac		= <3300>;
-                 vsc8531,edge-slowdown	= <7>;
-                 vsc8531,led-0-mode	= <LINK_1000_ACTIVITY>;
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index 414e3b31bb1f..c8c395a041c2 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -218,6 +218,13 @@ enum rgmii_clock_delay {
- #define INT_MEM_DATA_M			  0x00ff
- #define INT_MEM_DATA(x)			  (INT_MEM_DATA_M & (x))
- 
-+#define MSCC_CLKOUT_CNTL		  13
-+#define CLKOUT_ENABLE			  BIT(15)
-+#define CLKOUT_FREQ_MASK		  GENMASK(14, 13)
-+#define CLKOUT_FREQ_25M			  (0x0 << 13)
-+#define CLKOUT_FREQ_50M			  (0x1 << 13)
-+#define CLKOUT_FREQ_125M		  (0x2 << 13)
-+
- #define MSCC_PHY_PROC_CMD		  18
- #define PROC_CMD_NCOMPLETED		  0x8000
- #define PROC_CMD_FAILED			  0x4000
-@@ -361,6 +368,8 @@ struct vsc8531_private {
- 	 */
- 	unsigned int base_addr;
- 
-+	u32 clkout_rate;
-+
- #if IS_ENABLED(CONFIG_MACSEC)
- 	/* MACsec fields:
- 	 * - One SecY per device (enforced at the s/w implementation level)
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 54cac9c295ad..012d5019d7c8 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -432,6 +432,18 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
- 	return led_mode;
- }
- 
-+static void vsc8531_dt_clkout_rate_get(struct phy_device *phydev)
-+{
-+	struct vsc8531_private *priv = phydev->priv;
-+	struct device *dev = &phydev->mdio.dev;
-+	struct device_node *of_node = dev->of_node;
-+
-+	if (!of_node)
-+		return;
-+
-+	of_property_read_u32(of_node, "vsc8531,clk-out-frequency",
-+			     &priv->clkout_rate);
-+}
- #else
- static int vsc85xx_edge_rate_magic_get(struct phy_device *phydev)
- {
-@@ -444,6 +456,10 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
- {
- 	return default_mode;
- }
-+
-+static void vsc8531_dt_clkout_rate_get(struct phy_device *phydev)
-+{
-+}
- #endif /* CONFIG_OF_MDIO */
- 
- static int vsc85xx_dt_led_modes_get(struct phy_device *phydev,
-@@ -1540,6 +1556,37 @@ static int vsc85xx_config_init(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int vsc8531_config_init(struct phy_device *phydev)
-+{
-+	struct vsc8531_private *vsc8531 = phydev->priv;
-+	u16 val;
-+	int rc;
-+
-+	rc = vsc85xx_config_init(phydev);
-+	if (rc)
-+		return rc;
-+
-+	switch (vsc8531->clkout_rate) {
-+	case 0:
-+		val = 0;
-+		break;
-+	case 25000000:
-+		val = CLKOUT_FREQ_25M | CLKOUT_ENABLE;
-+		break;
-+	case 50000000:
-+		val = CLKOUT_FREQ_50M | CLKOUT_ENABLE;
-+		break;
-+	case 125000000:
-+		val = CLKOUT_FREQ_125M | CLKOUT_ENABLE;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
-+			       MSCC_CLKOUT_CNTL, val);
-+}
-+
- static int vsc8584_did_interrupt(struct phy_device *phydev)
- {
- 	int rc = 0;
-@@ -2020,6 +2067,32 @@ static int vsc8514_probe(struct phy_device *phydev)
- 				    ARRAY_SIZE(vsc85xx_hw_stats));
- }
- 
-+static int vsc8531_probe(struct phy_device *phydev)
-+{
-+	struct vsc8531_private *vsc8531;
-+	int rate_magic, rc;
-+	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
-+	   VSC8531_LINK_100_ACTIVITY};
-+
-+	rate_magic = vsc85xx_edge_rate_magic_get(phydev);
-+	if (rate_magic < 0)
-+		return rate_magic;
-+
-+	rc = vsc85xx_probe_helper(phydev, default_mode,
-+				  ARRAY_SIZE(default_mode),
-+				  VSC85XX_SUPP_LED_MODES,
-+				  vsc85xx_hw_stats,
-+				  ARRAY_SIZE(vsc85xx_hw_stats));
-+	if (rc < 0)
-+		return rc;
-+
-+	vsc8531 = phydev->priv;
-+	vsc8531->rate_magic = rate_magic;
-+	vsc8531_dt_clkout_rate_get(phydev);
-+
-+	return 0;
-+}
-+
- static int vsc8574_probe(struct phy_device *phydev)
- {
- 	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
-@@ -2157,14 +2230,14 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	/* PHY_BASIC_FEATURES */
- 	.soft_reset	= &genphy_soft_reset,
--	.config_init	= &vsc85xx_config_init,
-+	.config_init	= &vsc8531_config_init,
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.read_status	= &vsc85xx_read_status,
- 	.ack_interrupt	= &vsc85xx_ack_interrupt,
- 	.config_intr	= &vsc85xx_config_intr,
- 	.suspend	= &genphy_suspend,
- 	.resume		= &genphy_resume,
--	.probe		= &vsc85xx_probe,
-+	.probe		= &vsc8531_probe,
- 	.set_wol	= &vsc85xx_wol_set,
- 	.get_wol	= &vsc85xx_wol_get,
- 	.get_tunable	= &vsc85xx_get_tunable,
-@@ -2181,14 +2254,14 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.phy_id_mask    = 0xfffffff0,
- 	/* PHY_GBIT_FEATURES */
- 	.soft_reset	= &genphy_soft_reset,
--	.config_init    = &vsc85xx_config_init,
-+	.config_init    = &vsc8531_config_init,
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.read_status	= &vsc85xx_read_status,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
- 	.config_intr    = &vsc85xx_config_intr,
- 	.suspend	= &genphy_suspend,
- 	.resume		= &genphy_resume,
--	.probe		= &vsc85xx_probe,
-+	.probe		= &vsc8531_probe,
- 	.set_wol	= &vsc85xx_wol_set,
- 	.get_wol	= &vsc85xx_wol_get,
- 	.get_tunable	= &vsc85xx_get_tunable,
-@@ -2205,14 +2278,14 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	/* PHY_BASIC_FEATURES */
- 	.soft_reset	= &genphy_soft_reset,
--	.config_init	= &vsc85xx_config_init,
-+	.config_init	= &vsc8531_config_init,
- 	.config_aneg	= &vsc85xx_config_aneg,
- 	.read_status	= &vsc85xx_read_status,
- 	.ack_interrupt	= &vsc85xx_ack_interrupt,
- 	.config_intr	= &vsc85xx_config_intr,
- 	.suspend	= &genphy_suspend,
- 	.resume		= &genphy_resume,
--	.probe		= &vsc85xx_probe,
-+	.probe		= &vsc8531_probe,
- 	.set_wol	= &vsc85xx_wol_set,
- 	.get_wol	= &vsc85xx_wol_get,
- 	.get_tunable	= &vsc85xx_get_tunable,
-@@ -2229,7 +2302,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.phy_id_mask    = 0xfffffff0,
- 	/* PHY_GBIT_FEATURES */
- 	.soft_reset	= &genphy_soft_reset,
--	.config_init    = &vsc85xx_config_init,
-+	.config_init    = &vsc8531_config_init,
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.read_status	= &vsc85xx_read_status,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
--- 
-2.26.2
+--
 
