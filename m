@@ -2,89 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3147F1F3B7A
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955111F3B80
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728435AbgFINMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 09:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728206AbgFINL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 09:11:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BD9C03E97C
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 06:11:57 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jie2l-0005rI-Ih; Tue, 09 Jun 2020 15:11:55 +0200
-Received: from sha by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jie2l-0005x4-4l; Tue, 09 Jun 2020 15:11:55 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        id S1728710AbgFINMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 09:12:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41540 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728404AbgFINMU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jun 2020 09:12:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=T5qZZZONjhOyZmzsYwxogqZVynVoTskOeNFAgtVitgc=; b=0kT+i8bG4gJ9YNgZTit0buJYCX
+        2qKIXFpSv1dv/f1KOB1LgmNQD0/+namhgfd9+b1HqSPiPqIfpSYY8G8TA6yoIElSoHuD6Wog52UkJ
+        no6a7ZwRv6rKmWDmE7UTvQKa7kvzgR84SKAA9hSB0PpG340P16NmV+uv64+nvte0hASU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jie36-004Vx2-MB; Tue, 09 Jun 2020 15:12:16 +0200
+Date:   Tue, 9 Jun 2020 15:12:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        devicetree@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH] net: mvneta: Fix Serdes configuration for 2.5Gbps modes
-Date:   Tue,  9 Jun 2020 15:11:52 +0200
-Message-Id: <20200609131152.22836-1-s.hauer@pengutronix.de>
-X-Mailer: git-send-email 2.27.0
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] net: ethernet: mvneta: add support for 2.5G DRSGMII mode
+Message-ID: <20200609131216.GJ1022955@lunn.ch>
+References: <20200608074716.9975-1-s.hauer@pengutronix.de>
+ <20200608145737.GG1006885@lunn.ch>
+ <20200609125535.GK11869@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200609125535.GK11869@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
-called DRSGMII. Depending on the Port MAC Control Register0 PortType
-setting this seems to be either an overclocked SGMII mode or 2500BaseX.
+On Tue, Jun 09, 2020 at 02:55:35PM +0200, Sascha Hauer wrote:
+> On Mon, Jun 08, 2020 at 04:57:37PM +0200, Andrew Lunn wrote:
+> > On Mon, Jun 08, 2020 at 09:47:16AM +0200, Sascha Hauer wrote:
+> > > The Marvell MVNETA Ethernet controller supports a 2.5 Gbps SGMII mode
+> > > called DRSGMII.
+> > > 
+> > > This patch adds a corresponding phy-mode string 'drsgmii' and parses it
+> > > from DT. The MVNETA then configures the SERDES protocol value
+> > > accordingly.
+> > > 
+> > > It was successfully tested on a MV78460 connected to a FPGA.
+> > 
+> > Hi Sascha
+> > 
+> > Is this really overclocked SGMII, or 2500BaseX? How does it differ
+> > from 2500BaseX, which mvneta already supports?
+> 
+> I think it is overclocked SGMII or 2500BaseX depending on the Port MAC
+> Control Register0 PortType setting bit.
+> As said to Russell we have a fixed link so nobody really cares if it's
+> SGMII or 2500BaseX. This boils down the patch to fixing the Serdes
+> configuration setting for 2500BaseX.
 
-This patch adds the necessary Serdes Configuration setting for the
-2.5Gbps modes. There is no phy interface mode define for overclocked
-SGMII, so only 2500BaseX is handled for now.
+Hi Sascha
 
-As phy_interface_mode_is_8023z() returns true for both
-PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
-explicitly test for 1000BaseX instead of using
-phy_interface_mode_is_8023z() to differentiate the different
-possibilities.
+Does 2500BaseX work for your use case? Since this drsmgii mode is not
+well defined, i would prefer to not add it, unless it is really
+needed.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- drivers/net/ethernet/marvell/mvneta.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 51889770958d8..3b13048931412 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -109,6 +109,7 @@
- #define MVNETA_SERDES_CFG			 0x24A0
- #define      MVNETA_SGMII_SERDES_PROTO		 0x0cc7
- #define      MVNETA_QSGMII_SERDES_PROTO		 0x0667
-+#define      MVNETA_DRSGMII_SERDES_PROTO	 0x1107
- #define MVNETA_TYPE_PRIO                         0x24bc
- #define      MVNETA_FORCE_UNI                    BIT(21)
- #define MVNETA_TXQ_CMD_1                         0x24e4
-@@ -4966,8 +4967,10 @@ static int mvneta_port_power_up(struct mvneta_port *pp, int phy_mode)
- 	if (phy_mode == PHY_INTERFACE_MODE_QSGMII)
- 		mvreg_write(pp, MVNETA_SERDES_CFG, MVNETA_QSGMII_SERDES_PROTO);
- 	else if (phy_mode == PHY_INTERFACE_MODE_SGMII ||
--		 phy_interface_mode_is_8023z(phy_mode))
-+		 phy_mode == PHY_INTERFACE_MODE_1000BASEX)
- 		mvreg_write(pp, MVNETA_SERDES_CFG, MVNETA_SGMII_SERDES_PROTO);
-+	else if (phy_mode == PHY_INTERFACE_MODE_2500BASEX)
-+		mvreg_write(pp, MVNETA_SERDES_CFG, MVNETA_DRSGMII_SERDES_PROTO);
- 	else if (!phy_interface_mode_is_rgmii(phy_mode))
- 		return -EINVAL;
- 
--- 
-2.27.0
-
+	Andrew
