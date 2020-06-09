@@ -2,78 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9CBD1F3D09
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 15:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA1B1F3D8C
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 16:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730116AbgFINrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 09:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
+        id S1730132AbgFIOFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 10:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgFINrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 09:47:09 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DF9C05BD1E;
-        Tue,  9 Jun 2020 06:47:08 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id t6so7407544otk.9;
-        Tue, 09 Jun 2020 06:47:08 -0700 (PDT)
+        with ESMTP id S1730011AbgFIOFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 10:05:17 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5C4C03E97C
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 07:05:17 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id q19so22524929eja.7
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 07:05:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qgKoPkdMulK8cD96PHMScD30hE1lFNmXEnKFEDFAepg=;
-        b=YKD1A4FcQwSV53erTJO0/LQOfea3xVVq60w/XyKAjQaYh7j7XoVSpVdp2cbLPXYadm
-         SB/Al+Eh6QJviW0OmtGMw51zj5xMoybNF0lekrKHKYn2Rtv7NrcRb+tEfJLoeyWE5fUa
-         KDhhopnjsl9kf1304Mj+ZzlwbIIPvsczE6g00QZAv+JwHXznZVJ/WcV2nBhumvQ/d+Cm
-         y0h26/bROTnoc+X2uP+b7mn93apMBWsJIcKn80iQUYF05NGPnsfRTtMYqCsrxBOnpO3l
-         V0Iabt8GeWSZMDbr0zoma3TrrGDijeXnxOPJM+5AAMTSMJnfHtTqszW9oPVSYnshYBIV
-         eTYw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5hepcAY2/ehcC2QRXTzcnN6zPc+QLUZRF3NIFXI3NgY=;
+        b=CU9j5ULLQAwSyo5lzgoEK/VLxHk2fXaIjC83AeSXtVcYBK0qoA04HYDsrHYWVeMvS+
+         YGjAt81DhuozocMhJKbMfw/IqDZevlAoWNtcX4AiEc/Fr4TgLpg+9VoJcdEwNYhAac/I
+         X5nBwrg1GDIxiodJQUkQ15xrodKbrpaDomhYTVTMy5SYPxpIf2zlk6JMKIB+GF+BVINc
+         2lXvzaNWSzQuEn/j/IhOdfhX/ndgoVv4UKiDhGCKbBKgoHSGpB58+pEvHSvU8sxmOWuj
+         AVoSnoh2CKfWYLHw1KaE7T8Rd3XaaB3y3wlPdRGomcfI7alCTX0vQo9XCn7L+Yj22+BS
+         RDiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qgKoPkdMulK8cD96PHMScD30hE1lFNmXEnKFEDFAepg=;
-        b=mxVtLCmKXaEU5CekjZ9/eC7ICPV1AXrP/DIPmvuDUC/DOlNNVHhiJlaNQjOpgRrOQi
-         nr/8X1htvIsmBXepI5xXmIyKSAWaiEe8XbEQb59TjgIx/pShPpBIgHq53qftkz9427ds
-         aPu0Rcthmcx/uHJlZDBI2THtrQOdghdErvuUO/F5ES+nonO+PDTWgTLKUuRpPpoZLjgK
-         RZ4Y0Gnc+Y0mAxoliUX0cPBG9ZWz5cc+xD7LHOR/OvnxHC/Iwt/910BO2uEK0Z2jqMHY
-         iue2Fg6pNFgxeETsPchQ7+rFTGVpYlo7yF+tGkK4V92pyzOxtw5yzF0U8haoUKvcSf6X
-         hY3Q==
-X-Gm-Message-State: AOAM5317VW6oCgt0MlR+m9Zqgj5OyOtN9xxuapaFSTerQc5OOe+pH3XR
-        MVwlvYnfr38RICY7H2kbmbY=
-X-Google-Smtp-Source: ABdhPJwyoS15lKTFHDjTs6kqCBVkjBROTRVqrtBlL/R3VlXtid16ISbZnPVV4BRPiSkFxGvalrHs8Q==
-X-Received: by 2002:a9d:67c1:: with SMTP id c1mr15006400otn.27.1591710428171;
-        Tue, 09 Jun 2020 06:47:08 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:88f9:fca6:94cb:96a4? ([2601:282:803:7700:88f9:fca6:94cb:96a4])
-        by smtp.googlemail.com with ESMTPSA id r65sm1044439oie.13.2020.06.09.06.47.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jun 2020 06:47:07 -0700 (PDT)
-Subject: Re: [PATCH bpf V2 1/2] bpf: devmap adjust uapi for attach bpf program
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-References: <159170947966.2102545.14401752480810420709.stgit@firesoul>
- <159170950687.2102545.7235914718298050113.stgit@firesoul>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a34343ec-2248-111d-9360-f00de212dbcb@gmail.com>
-Date:   Tue, 9 Jun 2020 07:47:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5hepcAY2/ehcC2QRXTzcnN6zPc+QLUZRF3NIFXI3NgY=;
+        b=KmZL1+MCDUOaatAGlxQd31p4mBUzHzowzGPV+SgIbHt5DCRNuR1Bh3Ldscl7V4ApR3
+         3ZZmsXvQG5DiKw0uylQb38PprhlYmkT4Y/kiGKF6vN7cs+b28OfWxwgwOHRRymAfDQxK
+         t8u/VbR4AABIPq7PXcdastGe0C78NjSzDrMtLHg7frRG0a/e/q1z9ROMbc2h4Qr9CFye
+         BzhUwo5aqevn6OmDcUq9F088gtHBbacJdKwK3Kp5h25xAjjCm+GmgXgme/gWGTvHGWRa
+         gXUCrQ3TUWlfEzy4HcS8NO/jSlCfHlM1/+cQQXaERg5P8H9uLt8FgWXIUMJRVfjmD6ko
+         7sgg==
+X-Gm-Message-State: AOAM532jLgjDHNh6dshEkIMg8ue501OBrGkJu6Myt4c8LRuPwZRaqF0R
+        F13JJy1pSzf4ik885cJBK8d+HQ==
+X-Google-Smtp-Source: ABdhPJzg++2o5ePPL5lY4GZatvE+sm6jWJ3OClVthRqg01qkSFwIJ27W183rZIEmcXKonTMixnWQNw==
+X-Received: by 2002:a17:906:2656:: with SMTP id i22mr24427488ejc.397.1591711516099;
+        Tue, 09 Jun 2020 07:05:16 -0700 (PDT)
+Received: from myrica ([2001:171b:226e:c200:116c:c27a:3e7f:5eaf])
+        by smtp.gmail.com with ESMTPSA id k24sm3844512edk.95.2020.06.09.07.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2020 07:05:15 -0700 (PDT)
+Date:   Tue, 9 Jun 2020 16:05:04 +0200
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf] libbpf: Fix BTF-to-C conversion of noreturn function
+ pointers
+Message-ID: <20200609140504.GA915559@myrica>
+References: <20200608152052.898491-1-jean-philippe@linaro.org>
+ <CAEf4BzaNaHGBxNLdA1RA7VPou7ypO3Z5XBRG5gpkePx4g27yWA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <159170950687.2102545.7235914718298050113.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaNaHGBxNLdA1RA7VPou7ypO3Z5XBRG5gpkePx4g27yWA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/20 7:31 AM, Jesper Dangaard Brouer wrote:
-> This patch remove the minus-1 checks, and have zero mean feature isn't used.
+On Mon, Jun 08, 2020 at 04:50:37PM -0700, Andrii Nakryiko wrote:
+> On Mon, Jun 8, 2020 at 8:23 AM Jean-Philippe Brucker
+> <jean-philippe@linaro.org> wrote:
+> >
+> > When trying to convert the BTF for a function pointer marked "noreturn"
+> > to C code, bpftool currently generates a syntax error. This happens with
+> > the exit() pointer in drivers/firmware/efi/libstub/efistub.h, in an
+> > arm64 vmlinux. When dealing with this declaration:
+> >
+> >         efi_status_t __noreturn (__efiapi *exit)(...);
+> >
+> > bpftool produces the following output:
+> >
+> >         efi_status_tvolatile  (*exit)(...);
 > 
+> 
+> I'm curious where this volatile is coming from, I don't see it in
+> __efiapi. But even if it's there, shouldn't it be inside parens
+> instead:
+> 
+> efi_status_t (volatile *exit)(...);
 
-For consistency this should apply to other XDP fd uses as well -- like
-IFLA_XDP_EXPECTED_FD and IFLA_XDP_FD.
+It's the __noreturn attribute that becomes "volatile", not the __efiapi.
+My reproducer is:
+
+  struct my_struct {
+          void __attribute__((noreturn)) (*fn)(int);
+  };
+  struct my_struct a;
+
+When generating DWARF info for this, GCC inserts a DW_TAG_volatile_type.
+Clang doesn't add a volatile tag, it just omits the noreturn qualifier.
+From what I could find, it's due to legacy "noreturn" support in GCC [1]:
+before version 2.5 the only way to declare a noreturn function was to
+declare it volatile.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html
+
+Given that not all compilers turn "noreturn" into "volatile", and that I
+haven't managed to insert any other modifier (volatile/const/restrict) in
+this location (the efistub example above is the only issue on an
+allyesconfig kernel), I was considering simply removing this call to
+btf_dump_emit_mods(). But I'm not confident enough that it won't ever be
+necessary.
+
+> > Fix the error by inserting the space before the function modifier.
+> >
+> > Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
+> 
+> Can you please add tests for this case into selftests (probably
+> progs/btf_dump_test_case_syntax.c?) So it's clear what's the input and
+> what's the expected output.
+
+Those tests are built with clang, which doesn't emit the "volatile"
+modifier. Should I add a separate test for GCC?
+
+Thanks,
+Jean
