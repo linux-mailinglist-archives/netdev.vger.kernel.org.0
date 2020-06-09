@@ -2,152 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8119F1F4691
-	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 20:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4EF1F46BB
+	for <lists+netdev@lfdr.de>; Tue,  9 Jun 2020 21:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388445AbgFISrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 14:47:07 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:49906 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728400AbgFISrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 14:47:06 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id F10CD600AC;
-        Tue,  9 Jun 2020 18:47:03 +0000 (UTC)
-Received: from us4-mdac16-37.ut7.mdlocal (unknown [10.7.66.156])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EEA9F8009E;
-        Tue,  9 Jun 2020 18:47:03 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.175])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5E5AA80055;
-        Tue,  9 Jun 2020 18:47:03 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0597C70006C;
-        Tue,  9 Jun 2020 18:47:01 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 9 Jun 2020
- 19:46:50 +0100
-Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
- support
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Miller <davem@davemloft.net>
-CC:     <o.rempel@pengutronix.de>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <corbet@lwn.net>, <mkubecek@suse.cz>, <linville@tuxdriver.com>,
-        <david@protonic.nl>, <kernel@pengutronix.de>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mkl@pengutronix.de>, <marex@denx.de>,
-        <christian.herber@nxp.com>, <amitc@mellanox.com>,
-        <petrm@mellanox.com>
-References: <20200526091025.25243-1-o.rempel@pengutronix.de>
- <20200607153019.3c8d6650@hermes.lan>
- <20200607.164532.964293508393444353.davem@davemloft.net>
- <20200609101935.5716b3bd@hermes.lan>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <b72ca873-d2d1-7361-c7b1-95156cc6b20f@solarflare.com>
-Date:   Tue, 9 Jun 2020 19:46:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730191AbgFITDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 15:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729806AbgFITDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 15:03:16 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2779C05BD1E;
+        Tue,  9 Jun 2020 12:03:15 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id u5so10712132pgn.5;
+        Tue, 09 Jun 2020 12:03:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gGyIV6UxNUHV7DjM1a2LqubEJEXLMYkVW9VjppkBHpI=;
+        b=UIVuxdEN2zRdJRiCZmsVCLJ20AR0QoWuqHPqlvA5RFEkf/DSXtMInyukg02/TAyjdj
+         ixOTYtKq2jlN/6VDbasUZZsGnjjnFChSLpZuHk4qhJh+vm5tFkzQ0ESxrYgte5+525cO
+         JF03NhIm0sb6osnYtEV/yyZX9JJQSw7a/uMxhmjZ1rjtd4Kg0kgLrr6OuaROo6nQS6ym
+         u9xPBJ5AlGdyJe9s4pf7g9dvrKAzSE6PKTeTSwT0Uz4dytcUciOkI1+W4YNbiwdTeh5s
+         BaUn/gG06iFIIWcp5Abidmcc0PARVYa/LGrRYij5w2zTA/kdL/fgaLLuS8pcIqwNu5pQ
+         pAZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gGyIV6UxNUHV7DjM1a2LqubEJEXLMYkVW9VjppkBHpI=;
+        b=AXQznsyubVT2MpAgOG1WYSvE0yKh71K6/FemgXNJXuAp7HowjyeMjaFIeN0Epaxnni
+         bBy7WWB5ZhI7Jhf8s7ejV4TBDjYp5VYeNMi0DnQZA+HUoGLGnZqXlrGFeJdBZS4XSU4w
+         +JaBOmwUOoVhtbTkMXRlztRur+LatGta2n4T1PFPIsnrkUoIKAnumAyio0Ag92eQ13kk
+         hFL/iYBmZ7LEIpyFb4/O/hm62Wui5M4fqEfID5N1aLZCXVNvQAMP9OFzFLEIqIXAtpiH
+         IukVCeiy3rlVS0xOeAlCaAS2lRML9PPSwVlRMBnYQFW7ySt+gqGviR2j3nRvm69FMpYd
+         ge8Q==
+X-Gm-Message-State: AOAM530eP9cpx0TbE+QETKmCm6SZXJ+kbB81tmPlx44lbF3wp2jSaZi/
+        AyiTcGbm+OYvNuvKF7jPyQc=
+X-Google-Smtp-Source: ABdhPJxmm43xmoi3b4iNxuTyglXh970KPyLvSJMVBn3QPi9G7NOT50VlUOA70Ek8sFwpEWMAsvKhNQ==
+X-Received: by 2002:a63:5961:: with SMTP id j33mr25841067pgm.372.1591729395179;
+        Tue, 09 Jun 2020 12:03:15 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:73f9])
+        by smtp.gmail.com with ESMTPSA id w10sm9155982pgm.70.2020.06.09.12.03.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2020 12:03:14 -0700 (PDT)
+Date:   Tue, 9 Jun 2020 12:03:12 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH bpf V2 0/2] bpf: adjust uapi for devmap prior to kernel
+ release
+Message-ID: <20200609190312.cymwvcbxdnrelatx@ast-mbp.dhcp.thefacebook.com>
+References: <20200609013410.5ktyuzlqu5xpbp4a@ast-mbp.dhcp.thefacebook.com>
+ <159170947966.2102545.14401752480810420709.stgit@firesoul>
 MIME-Version: 1.0
-In-Reply-To: <20200609101935.5716b3bd@hermes.lan>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25470.003
-X-TM-AS-Result: No-2.044500-8.000000-10
-X-TMASE-MatchedRID: I31hiQfYWUPoJ7/BCqClnedNi+0D4LmKiqCjW9swDxLk1kyQDpEj8Cj5
-        3aEB5qDLm+1fvYNhFyBXxguJUe2GCZRvsQ56OO4qOctXWsNe0qUOb7iOh4v5/Ul/J9Ro+MABiZT
-        IEGltZs0aSRZgvGgsvMSl+MnAnGpqvRY9Eui9+hzGAzTlP3eD9uq6JaIt1QeiAOoJD+M7nOm+O/
-        Fr84/iGLBUm9aP+NTyDXaTDtw9qt5JH11OOVB0ycEvKlG0CjjIojQrbrPpzzpMat91z9vy7D1Hu
-        bz0trKxNKNt3Qs1qr4Z6AKZ5CDJjoKuaJr4qkjK7I0RzvPYnMLEMDPEVkc5zDrW2rRfTfGrOcWn
-        tyTplLMC9V8w+aDVpAEhGMDW4utRwttG2hjGkeWieObBHrVnUgAWEaci2Ej6abJxhiIFjJlsKYH
-        pCFiCVDRpr9frjETDuFcRhUATSXhCUInNiru3wMqquP3qhQpqprzcyrz2L11xps32fZo2QXTYjQ
-        YTwAbR8sfxw8KspferIfOiZKnM2A6sbMpeuGpS+eKrHwoGV9MXyU2Cxtlxb2OMyb1Ixq8Vy46qz
-        TSht7d0QOrJWPXvVus4dFY9QFMbycoUIDNWKI3Rc75iroKqAmFDbD27a+U2Vu51yUEi8EMqO2wf
-        skV8/JS3tfb2kgp1ToE+2PHM5kemrRd7k2N7HK4GXSu53BPrGnGYpZN+xAgiOHkao5dpqAneP6Z
-        J8eSdj3aMjC9UtrzPNTb4wusNVDVM51zwCh5jMKPrF7dK57N9LQinZ4QefL6qvLNjDYTwmTDwp0
-        zM3zoqtq5d3cxkNTizVX2KWmj74ZLrXlvDZfHYjHL5MME3WgOM+WwfFTZmNLfMQ9dk3GCpalTRT
-        gI0TqRpZ1FQ4dmEsVnyzyXEOWtA2U6LQNPaf9oQy0xZsLaTBsRAh8WmTAcG2WAWHb2qekrMHC7k
-        mmSWJy4DmWREnADvdCUIFuasqw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-2.044500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25470.003
-X-MDID: 1591728423-ZrdNJEdlB61c
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <159170947966.2102545.14401752480810420709.stgit@firesoul>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Disclaimer: *definitely* not speaking for my employer.
+On Tue, Jun 09, 2020 at 03:31:41PM +0200, Jesper Dangaard Brouer wrote:
+> For special type maps (e.g. devmap and cpumap) the map-value data-layout is
+> a configuration interface. This is uapi that can only be tail extended.
+> Thus, new members (and thus features) can only be added to the end of this
+> structure, and the kernel uses the map->value_size from userspace to
+> determine feature set 'version'.
+> 
+> For this kind of uapi to be extensible and backward compatible, is it common
+> that new members/fields (that represent a new feature) in the struct are
+> initialized as zero, which indicate that the feature isn't used. This makes
+> it possible to write userspace applications that are unaware of new kernel
+> features, but just include latest uapi headers, zero-init struct and
+> populate features it knows about.
+> 
+> The recent extension of devmap with a bpf_prog.fd requires end-user to
+> supply the file-descriptor value minus-1 to communicate that the features
+> isn't used. This isn't compatible with the described kABI extension model.
 
-On 09/06/2020 18:19, Stephen Hemminger wrote:
-> How many times have you or Linus argued about variable naming.
-> Yes, words do matter and convey a lot of implied connotation and meaning.
-Connotation, unlike denotation, is widely variable.  I would aver
- that for most people who are triggered or offended by the technical
- use of master/slave or similar terms, this is a *learned behaviour*
- that occurs because they have been taught that they should be
- offended by these words.  Are these people also incapable of using
- those words to describe actual historical slavery?
-There is a difference between stating "X relates to Y as a slave to
- a master" and "You relate to me (or ought to do so) as a slave to a
- master".  The former is a merely factual claim which is often true
- of technical entities (and in the past or in certain parts of the
- world today is true of some humans, however morally wrong); the
- latter is an assertion of power.  It is only the latter which is,
- or at any rate should be, offensive; the attempt to ban the former
- rests on an equivocation between positive and normative uses.
-Anyone who can't put connotation aside and stick to denotation
- (a) needs to grow up
- (b) is ill-suited to working with computers.
-
-> Most projects and standards bodies are taking a stance on fixing the
-> language. The IETF is has proposed making changes as well.
-An expired Internet-Draft authored by a human-rights charity and a
- media studies postgrad student does not constitute "the IETF has
- proposed".  (Besides, it's historically inaccurate; it claims that
- the word "robot" means slave, when in fact it means the labour owed
- by a _serf_ ("robotnik").  And it cites Orwell with apparently *no*
- sense of irony whatsoever... he was arguing _against_ Newspeak, not
- for it!)
-
-> A common example is that master/slave is unclear and would be clearer
-> as primary/secondary or active/backup or controller/worker.
-So why isn't controller/worker just as offensive, given all those
- labourers throughout history who have suffered under abusive
- managers?  Or does a word need a tenuous connection to race before
- it can be ritually purified from the language?
-And is there really an EE anywhere who finds the terminology of
- master and slave clocks unclear?  I suspect very few would gain a
- better understanding from any of your suggested alternatives.
-
-> Most of networking is based on standards. When the standards wording changes
-> (and it will happen soon); then Linux should also change the wording in the
-> source, api and documentation.
-Rather, it seems that this is an attempt to change Linux in order
- to _de facto_ change the standard, thereby creating pressure on
- standards bodies to change it _de jure_ to match.  Yet, in the
- real world, engineers use and understand the current terminology;
- the push for language purification bears but little reference to
- anything outside of itself.
-
-In conclusion, I'd like to quote from Henry Spencer's Ten
- Commandments for C Programmers (Annotated Edition) [1]:
-> As a lamentable side issue, there has been some unrest from the
-> fanatics of the Pronoun Gestapo over the use of the word "man"
-> in [the eighth] Commandment, for they believe that great efforts
-> and loud shouting devoted to the ritual purification of the
-> language will somehow redound to the benefit of the downtrodden
-> (whose real and grievous woes tendeth to get lost amidst all that
-> thunder and fury).
-
-Grumpily yours,
--ed
-
-[1] https://www.lysator.liu.se/c/ten-commandments.html
+Applied to bpf tree without this cover letter, because I don't want
+folks to read above and start using kabi terminology liks this.
+I've never seen a definition of kabi. I've heard redhat has something, but
+I don't know what it is and really not interested to find out.
+Studying amd64 psABI, sparc psABI, gABI was enough of time sink.
+When folks use ABI they really mean binary. 
+Old binaries that use devmap_val will work as-is with newer kernel.
+There is no binary breakage due to devmap_val.
+Whereas what you describe above is what will happen if something gets
+recompiled. It's an API quirk. And arguable not an UAPI breakage.
+UAPI structs have to initialized.
+There is a struct and there is initializer for it.
+Like if you did 'spinlock_t lock;' and it got broken with new kernel
+it's programmers fault. It's not uapi and certainly not abi issue.
+DEFINE_SPINLOCK() should have been used.
+Same thing with user space.
+'struct bpf_devmap_val' would be ok from uapi pov even with -1.
+It's just much more convenient to have zero init. Less error prone, etc.
