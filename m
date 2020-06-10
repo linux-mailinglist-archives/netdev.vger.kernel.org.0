@@ -2,423 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9312F1F4BE8
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 05:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA221F4C80
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 06:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbgFJDuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 23:50:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45952 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726121AbgFJDuA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 23:50:00 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EFF76207ED;
-        Wed, 10 Jun 2020 03:49:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591761000;
-        bh=FNKeL/Abtr/Ds1M9hz8iAPAvAFUctIULH8ZIyN6MAF8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WEiyxKonivrf8EOhE75FguWAQti8aHUzrAwJWUe/i25VeNYPvf6x+JoxqCwF4hyRL
-         3dd/TrQLdWeahMriNvyLXNvanDbdLDB1tWf/ISSBIahfqMBWl1zwTgbcnaV7AAZqcC
-         kVjzDNNEhVhy7rmk3k8Cco9PZYhDyT9jLvHUpKH4=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, assogba.emery@gmail.com,
-        dsahern@gmail.com, David Ahern <dsahern@kernel.org>
-Subject: [PATCH RFC net-next 8/8] selftests: Add active-backup nexthop tests
-Date:   Tue,  9 Jun 2020 21:49:53 -0600
-Message-Id: <20200610034953.28861-9-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200610034953.28861-1-dsahern@kernel.org>
-References: <20200610034953.28861-1-dsahern@kernel.org>
+        id S1726119AbgFJEp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 00:45:26 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43653 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726090AbgFJEpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 00:45:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591764313;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=VxmhQ3VVJqCwy8aaYD5pSLwJjZ0VIqyd7EjfATRpmNc=;
+        b=NG6tSwBkc81oFBWN+wllwaRWgcFg2SyhzLht96520428SbsMntcJimy0TcM3D8hBcfn7F5
+        cz1kK1RT+WAAYobpsQouRZiXNC83FKW6em2Ff2UDcOWcVaxnyuO9Znc8HDLCNPJ2Gkk5bm
+        180Y6JKS7WwBD6TDaiwtjW6elgnwPRQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-405-CU48r9ZZMUW5diM0kc7KFg-1; Wed, 10 Jun 2020 00:45:06 -0400
+X-MC-Unique: CU48r9ZZMUW5diM0kc7KFg-1
+Received: by mail-wr1-f72.google.com with SMTP id i6so512507wrr.23
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 21:45:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=VxmhQ3VVJqCwy8aaYD5pSLwJjZ0VIqyd7EjfATRpmNc=;
+        b=NUWN22Ixrg5RW/jmQ4b/SKBOZalxc+5XCT0V68ouT6kHweZiVUGhU6CgVn/hNrV8Oz
+         2t5WZ98Z6IMDWc2a9EsTq2+LRDwNxxZuxo13wa1N648whZBvyll1AUct/2Sbju5xf+80
+         qQD4iTAUzuUhtIXInj/XQ3XGLZ+q5EmZ+uAzj+fKOf8ihIcMfO93aCEG9Y5TIimi9ghX
+         1Y+0Tf5h6hr9vgWmgTza6k8YunSFHlbhnivLkjcOFajRqB7dhZL6ayUXk6u+K9nBesxB
+         koTgHJpcrLUxW5p5bFeRmgmla8KSkH3asfevYqd6PdI8Wl0MuOvhuzfgPdC8jdn5mXpP
+         CgQw==
+X-Gm-Message-State: AOAM533iwOz+peNo8rzy6GrmlCaMcoo3ww8igs1O7d8dghAEBwkWyxCF
+        C2+smkCh0zvD+4YCJn93OfH8rtobW4x7HhkY1UiSXzNchE40sy5ZSipW3mRTNEf0haLEp1yA4hI
+        0Mc6mENVm87Gjd1RR
+X-Received: by 2002:a5d:5001:: with SMTP id e1mr1496124wrt.56.1591764305579;
+        Tue, 09 Jun 2020 21:45:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJywRytP6FIoM+W4oWypswZZXFPjrrjECTCkbmv+pP0bloGWVKqtSdiGopJ/ccnY8HzNdJNBwg==
+X-Received: by 2002:a5d:5001:: with SMTP id e1mr1496086wrt.56.1591764305280;
+        Tue, 09 Jun 2020 21:45:05 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-55-232.red.bezeqint.net. [79.181.55.232])
+        by smtp.gmail.com with ESMTPSA id q128sm5199346wma.38.2020.06.09.21.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2020 21:45:04 -0700 (PDT)
+Date:   Wed, 10 Jun 2020 00:44:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, alexander.h.duyck@linux.intel.com,
+        anshuman.khandual@arm.com, anthony.yznaga@oracle.com,
+        arei.gonglei@huawei.com, cai@lca.pw, clabbe@baylibre.com,
+        dan.j.williams@intel.com, davem@davemloft.net, david@redhat.com,
+        dyoung@redhat.com, elfring@users.sourceforge.net,
+        glider@google.com, gregkh@linuxfoundation.org,
+        guennadi.liakhovetski@linux.intel.com, hannes@cmpxchg.org,
+        herbert@gondor.apana.org.au, hulkci@huawei.com,
+        imammedo@redhat.com, jasowang@redhat.com, jgross@suse.com,
+        kernelfans@gmail.com, konrad.wilk@oracle.com, lenb@kernel.org,
+        lingshan.zhu@intel.com, linux-acpi@vger.kernel.org, lkp@intel.com,
+        longpeng2@huawei.com, matej.genci@nutanix.com,
+        mgorman@techsingularity.net, mhocko@kernel.org, mhocko@suse.com,
+        mst@redhat.com, osalvador@suse.com, osalvador@suse.de,
+        pankaj.gupta.linux@gmail.com, pasha.tatashin@soleen.com,
+        pavel.tatashin@microsoft.com, rafael@kernel.org,
+        richard.weiyang@gmail.com, rjw@rjwysocki.net, rppt@linux.ibm.com,
+        stable@vger.kernel.org, stefanha@redhat.com,
+        teawaterz@linux.alibaba.com, vbabka@suse.cz, zou_wei@huawei.com
+Subject: [GIT PULL] virtio: features, fixes
+Message-ID: <20200610004455-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
- tools/testing/selftests/net/fib_nexthops.sh | 334 +++++++++++++++++++-
- 1 file changed, 330 insertions(+), 4 deletions(-)
+There's a single commit here that I tweaked since linux-next - the
+change is in printk format string which I consider trivial enough not
+force wait for more testing. A couple of hashes are different from
+what's in linux-next though.  I also upgraded the machine I used to sign
+the tag (didn't change the key) - hope the signature is still ok. If not
+pls let me know!
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index dee567f7576a..4db390438885 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -5,11 +5,21 @@
- #   2001:db8:91::1     |       2001:db8:91::2  |
- #   172.16.1.1         |       172.16.1.2      |
- #            veth1 <---|---> veth2             |
--#                      |              veth5 <--|--> veth6  172.16.101.1
-+#                      |              veth6 <--|--> veth5  172.16.101.1
- #            veth3 <---|---> veth4             |           2001:db8:101::1
- #   172.16.2.1         |       172.16.2.2      |
- #   2001:db8:92::1     |       2001:db8:92::2  |
- #
-+# For active/backup testing:
-+# ns: me               | ns: peer2             | ns: remote
-+#   2001:db8:81::1     |       2001:db8:81::2  |
-+#   172.16.81.1        |       172.16.81.2     |
-+#           veth21 <---|---> veth22            |
-+#                      |             veth26 <--|--> veth25 <--> br
-+#           veth23 <---|---> veth24            |
-+#   172.16.82.1        |       172.16.82.2     |
-+#   2001:db8:82::1     |       2001:db8:82::2  |
-+#
- # This test is for checking IPv4 and IPv6 FIB behavior with nexthop
- # objects. Device reference counts and network namespace cleanup tested
- # by use of network namespace for peer.
-@@ -19,8 +29,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal ipv4_torture"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal ipv6_torture"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal ipv4_torture ipv4_ab_group"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal ipv6_torture ipv6_ab_group"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -179,11 +189,60 @@ setup()
- 	set +e
- }
- 
-+setup_ab()
-+{
-+	create_ns peer2
-+
-+	set -e
-+	$IP li add veth21 type veth peer name veth22
-+	$IP li set veth21 up
-+	$IP addr add 172.16.81.1/24 dev veth21
-+	$IP -6 addr add 2001:db8:81::1/64 dev veth21 nodad
-+
-+	$IP li add veth23 type veth peer name veth24
-+	$IP li set veth23 up
-+	$IP addr add 172.16.82.1/24 dev veth23
-+	$IP -6 addr add 2001:db8:82::1/64 dev veth23 nodad
-+
-+	$IP li set veth22 netns peer2 up
-+	ip -netns peer2 addr add 172.16.81.2/24 dev veth22
-+	ip -netns peer2 -6 addr add 2001:db8:81::2/64 dev veth22 nodad
-+
-+	$IP li set veth24 netns peer2 up
-+	ip -netns peer2 addr add 172.16.82.2/24 dev veth24
-+	ip -netns peer2 -6 addr add 2001:db8:82::2/64 dev veth24 nodad
-+
-+	ip -netns remote li set veth5 down
-+	ip -netns remote addr flush dev veth5
-+	ip -netns remote li add br0 type bridge
-+	ip -netns remote li add veth25 type veth peer name veth26
-+	ip -netns remote li set veth25 master br0 up
-+	ip -netns remote li set veth5 master br0 up
-+	ip -netns remote li set br0 up
-+
-+	ip -netns remote addr add dev br0 172.16.101.1/24
-+	ip -netns remote -6 addr add dev br0 2001:db8:101::1/64 nodad
-+
-+	ip -netns remote li set veth26 netns peer2 up
-+	ip -netns peer2 addr add dev veth26 172.16.101.3/24
-+	ip -netns peer2 -6 addr add dev veth26 2001:db8:101::3/64 nodad
-+
-+	ip -netns remote ro add 172.16.1.0/24 nexthop via 172.16.101.2
-+	ip -netns remote ro add 172.16.2.0/24 nexthop via 172.16.101.2
-+	ip -netns remote ro add 172.16.81.0/24 nexthop via 172.16.101.3
-+	ip -netns remote ro add 172.16.82.0/24 nexthop via 172.16.101.3
-+	ip -netns remote -6 ro add 2001:db8:91::/64 nexthop via 2001:db8:101::2
-+	ip -netns remote -6 ro add 2001:db8:92::/64 nexthop via 2001:db8:101::2
-+	ip -netns remote -6 ro add 2001:db8:81::/64 nexthop via 2001:db8:101::3
-+	ip -netns remote -6 ro add 2001:db8:82::/64 nexthop via 2001:db8:101::3
-+	set +e
-+}
-+
- cleanup()
- {
- 	local ns
- 
--	for ns in me peer remote; do
-+	for ns in me peer peer2 remote; do
- 		ip netns del ${ns} 2>/dev/null
- 	done
- }
-@@ -335,6 +394,273 @@ stop_ip_monitor()
- 	return $rc
- }
- 
-+################################################################################
-+# active-backup nexthops
-+
-+check_nexthop_ab_support()
-+{
-+	$IP nexthop help 2>&1 | grep -q active-backup
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: iproute2 too old, missing active-backup nexthop support"
-+		return $ksft_skip
-+	fi
-+}
-+
-+ipv6_ab_group()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 active-backup groups"
-+	echo "-------------------------"
-+
-+	check_nexthop_ab_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	setup_ab
-+
-+	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 2001:db8:81::2 dev veth21"
-+	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
-+	check_nexthop "id 101" "id 101 group 11/12 active-backup"
-+	log_test $? 0 "Create active-backup group"
-+
-+	run_cmd "$IP ro add 2001:db8:101::/64 nhid 101"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::/64 nhid 101 via 2001:db8:91::2 dev veth1 metric 1024"
-+	log_test $? 0 "Route list shows active device"
-+
-+	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth1"
-+	log_test $? 0 "Route get shows active device"
-+
-+	# carrier down or admin down on nexthop device removes that entry
-+	run_cmd "ip -netns peer li set veth2 down"
-+	check_nexthop "id 101" "id 101 group 12 active-backup"
-+	log_test $? 0 "Carrier down removes active"
-+
-+	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth21"
-+	log_test $? 0 "Route get shows backup device"
-+
-+	run_cmd "$IP li set veth21 down"
-+	$IP nexthop sh id 101 2>/dev/null
-+	log_test $? 2 "Link down on backup removes nexthop"
-+
-+	check_route "2001:db8:101::1" ""
-+	log_test $? 0 "Route removed after a-b nexthop removed"
-+
-+	# restore device state
-+	run_cmd "ip -netns peer li set veth2 up"
-+	run_cmd "$IP li set veth21 up"
-+
-+	# a/b with mpath
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP nexthop add id 21 via 2001:db8:81::2 dev veth21"
-+	run_cmd "$IP nexthop add id 22 via 2001:db8:82::2 dev veth23"
-+	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
-+	run_cmd "$IP nexthop add id 102 group 12/22 active-backup"
-+	run_cmd "$IP nexthop add id 103 group 101/102"
-+	log_test $? 0 "Multipath with active-backup paths"
-+
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP ro add 2001:db8:101::/64 nhid 103"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "ping with multipath containing active-backup paths"
-+
-+	run_cmd "ip -netns peer li set veth2 down"
-+	check_nexthop "id 103" "id 103 group 101/102"
-+	log_test $? 0 "Multipath still shows 2 paths after carrier down in a/b"
-+
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "ping with still works after carrier down"
-+
-+	run_cmd "ip -netns peer li set veth2 up"
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP -6 ro ls"
-+
-+	run_cmd "$IP li set veth21 down"
-+	check_nexthop "id 103" "id 103 group 102"
-+	log_test $? 0 "Multipath shows 1 path after admin down on new active"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "ping with still works after mpath loss of a-b path"
-+
-+	run_cmd "$IP li set veth21 up"
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP -6 ro ls"
-+
-+	#
-+	# negative tests
-+	#
-+	# active points to invalid gw
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 2001:db8:91::3 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 2001:db8:81::2 dev veth21"
-+	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
-+	run_cmd "$IP ro add 2001:db8:101::/64 nhid 101"
-+
-+	# failed neigh for gateway - should fallback to backup
-+	run_cmd "${IP} -6 neigh add 2001:db8:91::3 dev veth1 nud failed"
-+	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth21"
-+	log_test $? 0 "Route get shows backup device with invalid neigh"
-+
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP nexthop add id 13 blackhole"
-+	run_cmd "$IP nexthop add id 21 via 2001:db8:81::2 dev veth21"
-+	run_cmd "$IP nexthop add id 22 via 2001:db8:82::2 dev veth23"
-+
-+	# must have 2 entries of equal weight
-+	run_cmd "$IP nexthop add id 101 group 11 active-backup"
-+	log_test $? 2 "Active-backup nexthop can not have 1 entry"
-+	run_cmd "$IP nexthop add id 101 group 11/12/21 active-backup"
-+	log_test $? 2 "Active-backup nexthop can not have more than 2 entries"
-+	run_cmd "$IP nexthop add id 101 group 11,5/21,4 active-backup"
-+	log_test $? 2 "Active-backup nexthops must have equal weight"
-+	run_cmd "$IP nexthop add id 101 group 11,3/21,3 active-backup"
-+	log_test $? 2 "Active-backup nexthops must have default weight"
-+
-+	# can not replace a/b group with mpath
-+	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
-+	run_cmd "$IP nexthop replace id 101 group 11/21 mpath"
-+	log_test $? 2 "Can not change group type"
-+
-+	# a/b group can not have blackhole
-+	run_cmd "$IP nexthop add id 102 group 11/13 active-backup"
-+	log_test $? 2 "Active-backup can use blackhole as a path"
-+}
-+
-+ipv4_ab_group()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 active-backup groups"
-+	echo "-------------------------"
-+
-+	check_nexthop_ab_support
-+	if [ $? -eq $ksft_skip ]; then
-+		return $ksft_skip
-+	fi
-+
-+	setup_ab
-+
-+	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 172.16.81.2 dev veth21"
-+	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
-+	check_nexthop "id 101" "id 101 group 11/12 active-backup"
-+	log_test $? 0 "Create active-backup group"
-+
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 101"
-+	check_route "172.16.101.1" "172.16.101.0/24 nhid 101 via 172.16.1.2 dev veth1"
-+	log_test $? 0 "Route list shows active device"
-+
-+	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth1"
-+	log_test $? 0 "Route get shows active device"
-+
-+	# carrier down or admin down on nexthop device removes that entry
-+	run_cmd "ip -netns peer li set veth2 down"
-+	check_nexthop "id 101" "id 101 group 12 active-backup"
-+	log_test $? 0 "Carrier down removes active"
-+
-+	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth21"
-+	log_test $? 0 "Route get shows backup device"
-+
-+	run_cmd "$IP li set veth21 down"
-+	$IP nexthop sh id 101 2>/dev/null
-+	log_test $? 2 "Link down on backup removes nexthop"
-+
-+	check_route "172.16.101.1" ""
-+	log_test $? 0 "Route removed after a-b nexthop removed"
-+
-+	# restore device state
-+	run_cmd "ip -netns peer li set veth2 up"
-+	run_cmd "$IP li set veth21 up"
-+
-+	# a/b with mpath
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 172.16.2.2 dev veth3"
-+	run_cmd "$IP nexthop add id 21 via 172.16.81.2 dev veth21"
-+	run_cmd "$IP nexthop add id 22 via 172.16.82.2 dev veth23"
-+	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
-+	run_cmd "$IP nexthop add id 102 group 12/22 active-backup"
-+	run_cmd "$IP nexthop add id 103 group 101/102"
-+	log_test $? 0 "Multipath with active-backup paths"
-+
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 103"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "ping with multipath containing active-backup paths"
-+
-+	run_cmd "ip -netns peer li set veth2 down"
-+	check_nexthop "id 103" "id 103 group 101/102"
-+	log_test $? 0 "Multipath still shows 2 paths after carrier down in a/b"
-+
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "ping with still works after carrier down"
-+
-+	run_cmd "ip -netns peer li set veth2 up"
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP ro ls"
-+
-+	run_cmd "$IP li set veth21 down"
-+	check_nexthop "id 103" "id 103 group 102"
-+	log_test $? 0 "Multipath shows 1 path after admin down on new active"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "ping with still works after mpath loss of a-b path"
-+
-+	run_cmd "$IP li set veth21 up"
-+	run_cmd "$IP nexthop ls"
-+	run_cmd "$IP ro ls"
-+
-+	#
-+	# negative tests
-+	#
-+	# active points to invalid gw
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 172.16.1.3 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 172.16.81.2 dev veth21"
-+	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 101"
-+
-+	# failed neigh for gateway - should fallback to backup
-+	run_cmd "${IP} neigh add 172.16.1.3 dev veth1 nud failed"
-+	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth21"
-+	log_test $? 0 "Route get shows backup device with invalid neigh"
-+
-+	run_cmd "$IP nexthop flush"
-+	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 12 via 172.16.2.2 dev veth3"
-+	run_cmd "$IP nexthop add id 13 blackhole"
-+	run_cmd "$IP nexthop add id 21 via 172.16.81.2 dev veth21"
-+	run_cmd "$IP nexthop add id 22 via 172.16.82.2 dev veth23"
-+
-+	# must have 2 entries of equal weight
-+	run_cmd "$IP nexthop add id 101 group 11 active-backup"
-+	log_test $? 2 "Active-backup nexthop can not have 1 entry"
-+	run_cmd "$IP nexthop add id 101 group 11/12/21 active-backup"
-+	log_test $? 2 "Active-backup nexthop can not have more than 2 entries"
-+	run_cmd "$IP nexthop add id 101 group 11,5/21,4 active-backup"
-+	log_test $? 2 "Active-backup nexthops must have equal weight"
-+	run_cmd "$IP nexthop add id 101 group 11,3/21,3 active-backup"
-+	log_test $? 2 "Active-backup nexthops must have default weight"
-+
-+	# can not replace a/b group with mpath
-+	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
-+	run_cmd "$IP nexthop replace id 101 group 11/21 mpath"
-+	log_test $? 2 "Can not change group type"
-+
-+	# a/b group can not have blackhole
-+	run_cmd "$IP nexthop add id 102 group 11/13 active-backup"
-+	log_test $? 2 "Active-backup can use blackhole as a path"
-+}
-+
-+################################################################################
-+# fdb nexthops
-+
- check_nexthop_fdb_support()
- {
- 	$IP nexthop help 2>&1 | grep -q fdb
--- 
-2.21.1 (Apple Git-122.3)
+The following changes since commit 3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162:
+
+  Linux 5.7 (2020-05-31 16:49:15 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+
+for you to fetch changes up to 044e4b09223039e571e6ec540e25552054208765:
+
+  vhost/test: fix up after API change (2020-06-09 06:42:06 -0400)
+
+----------------------------------------------------------------
+virtio: features, fixes
+
+virtio-mem
+doorbell mapping for vdpa
+config interrupt support in ifc
+fixes all over the place
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Alexander Duyck (1):
+      virtio-balloon: Disable free page reporting if page poison reporting is not enabled
+
+David Hildenbrand (17):
+      MAINTAINERS: Add myself as virtio-balloon co-maintainer
+      virtio-mem: Paravirtualized memory hotplug
+      MAINTAINERS: Add myself as virtio-mem maintainer
+      virtio-mem: Allow to specify an ACPI PXM as nid
+      virtio-mem: Paravirtualized memory hotunplug part 1
+      virtio-mem: Paravirtualized memory hotunplug part 2
+      mm: Allow to offline unmovable PageOffline() pages via MEM_GOING_OFFLINE
+      virtio-mem: Allow to offline partially unplugged memory blocks
+      mm/memory_hotplug: Introduce offline_and_remove_memory()
+      virtio-mem: Offline and remove completely unplugged memory blocks
+      virtio-mem: Better retry handling
+      virtio-mem: Add parent resource for all added "System RAM"
+      virtio-mem: Drop manual check for already present memory
+      virtio-mem: Unplug subblocks right-to-left
+      virtio-mem: Use -ETXTBSY as error code if the device is busy
+      virtio-mem: Try to unplug the complete online memory block first
+      virtio-mem: Don't rely on implicit compiler padding for requests
+
+Guennadi Liakhovetski (1):
+      vhost: (cosmetic) remove a superfluous variable initialisation
+
+Jason Wang (4):
+      vhost: allow device that does not depend on vhost worker
+      vhost: use mmgrab() instead of mmget() for non worker device
+      vdpa: introduce get_vq_notification method
+      vhost_vdpa: support doorbell mapping via mmap
+
+Longpeng(Mike) (3):
+      crypto: virtio: Fix src/dst scatterlist calculation in __virtio_crypto_skcipher_do_req()
+      crypto: virtio: Fix use-after-free in virtio_crypto_skcipher_finalize_req()
+      crypto: virtio: Fix dest length calculation in __virtio_crypto_skcipher_do_req()
+
+Markus Elfring (1):
+      virtio-mmio: Delete an error message in vm_find_vqs()
+
+Matej Genci (1):
+      virtio: add VIRTIO_RING_NO_LEGACY
+
+Michael S. Tsirkin (6):
+      virtio: force spec specified alignment on types
+      vhost: revert "vhost: disable for OABI"
+      vhost_vdpa: disable doorbell mapping for !MMU
+      virtio-mem: drop unnecessary initialization
+      virtio_mem: convert device block size into 64bit
+      vhost/test: fix up after API change
+
+Samuel Zou (1):
+      vdpasim: Fix some coccinelle warnings
+
+Zhu Lingshan (5):
+      ifcvf: move IRQ request/free to status change handlers
+      ifcvf: ignore continuous setting same status value
+      vhost_vdpa: Support config interrupt in vdpa
+      vhost: replace -1 with VHOST_FILE_UNBIND in ioctls
+      ifcvf: implement config interrupt in IFCVF
+
+ MAINTAINERS                                |   18 +-
+ drivers/acpi/numa/srat.c                   |    1 +
+ drivers/crypto/virtio/virtio_crypto_algs.c |   21 +-
+ drivers/misc/mic/Kconfig                   |    2 +-
+ drivers/net/caif/Kconfig                   |    2 +-
+ drivers/vdpa/Kconfig                       |    2 +-
+ drivers/vdpa/ifcvf/ifcvf_base.c            |    3 +
+ drivers/vdpa/ifcvf/ifcvf_base.h            |    4 +
+ drivers/vdpa/ifcvf/ifcvf_main.c            |  146 ++-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c           |    7 +-
+ drivers/vhost/Kconfig                      |   17 +-
+ drivers/vhost/net.c                        |    2 +-
+ drivers/vhost/scsi.c                       |    2 +-
+ drivers/vhost/test.c                       |    2 +-
+ drivers/vhost/vdpa.c                       |  112 +-
+ drivers/vhost/vhost.c                      |  100 +-
+ drivers/vhost/vhost.h                      |    8 +-
+ drivers/vhost/vringh.c                     |    6 +-
+ drivers/vhost/vsock.c                      |    2 +-
+ drivers/virtio/Kconfig                     |   17 +
+ drivers/virtio/Makefile                    |    1 +
+ drivers/virtio/virtio_balloon.c            |    9 +-
+ drivers/virtio/virtio_mem.c                | 1965 ++++++++++++++++++++++++++++
+ drivers/virtio/virtio_mmio.c               |    4 +-
+ drivers/virtio/virtio_pci_modern.c         |    1 +
+ include/linux/memory_hotplug.h             |    1 +
+ include/linux/page-flags.h                 |   10 +
+ include/linux/vdpa.h                       |   16 +
+ include/linux/vringh.h                     |    6 +-
+ include/uapi/linux/vhost.h                 |    4 +
+ include/uapi/linux/virtio_ids.h            |    1 +
+ include/uapi/linux/virtio_mem.h            |  211 +++
+ include/uapi/linux/virtio_ring.h           |   48 +-
+ mm/memory_hotplug.c                        |   81 +-
+ mm/page_alloc.c                            |   26 +
+ mm/page_isolation.c                        |    9 +
+ 36 files changed, 2723 insertions(+), 144 deletions(-)
+ create mode 100644 drivers/virtio/virtio_mem.c
+ create mode 100644 include/uapi/linux/virtio_mem.h
 
