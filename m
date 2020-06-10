@@ -2,96 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545E81F5C69
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F601F5C7B
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730508AbgFJUFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 16:05:42 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45112 "EHLO mx2.suse.de"
+        id S1730491AbgFJUMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 16:12:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33160 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727877AbgFJUFm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jun 2020 16:05:42 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id A4F24AC5F;
-        Wed, 10 Jun 2020 20:05:41 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 3A54760739; Wed, 10 Jun 2020 22:05:35 +0200 (CEST)
-Date:   Wed, 10 Jun 2020 22:05:35 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>,
-        Amit Cohen <amitc@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: Re: [PATCH v4 0/3] Add support for SQI and master-slave
-Message-ID: <20200610200535.zkozejqc3ssxpeam@lion.mk-sys.cz>
-References: <20200610083744.21322-1-o.rempel@pengutronix.de>
+        id S1726362AbgFJUMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jun 2020 16:12:25 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jj75E-0005UV-0w; Wed, 10 Jun 2020 22:12:24 +0200
+Date:   Wed, 10 Jun 2020 22:12:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: correct use of PHY_INTERFACE_MODE_RGMII{,_TXID,_RXID,_ID}
+Message-ID: <20200610201224.GC19869@lunn.ch>
+References: <20200610081236.GA31659@laureti-dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200610083744.21322-1-o.rempel@pengutronix.de>
+In-Reply-To: <20200610081236.GA31659@laureti-dev>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 10:37:41AM +0200, Oleksij Rempel wrote:
-> This patch set is extending ethtool to make it more usable on automotive
-> PHYs like NXP TJA11XX.
+On Wed, Jun 10, 2020 at 10:12:37AM +0200, Helmut Grohne wrote:
+> Hi,
 > 
-> They make use of new KAPI (currently in net-next, will go probably to the
-> kernel 5.8-rc1):
-> - PHY master-slave role configuration and status informaton. Mostly needed
->   for 100Base-T1 PHYs due the lack of autonegatiation support.
-> - Signal Quality Index to investigate cable related issues.
-> 
-> changes v4:
-> - rebase is against current ethtool master
-> - pull headers from current kernel master
-> - use tabs instead of spaces in the manual
-> 
-> changes v3:
-> - rename "Port mode" to "master-slave"
-> - use [preferred|forced]-[master|slave] for information and
->   configuration
-> 
-> changes v2:
-> - add master-slave information to the "ethtool --help" and man page
-> - move KAPI update changes to the separate patch. 
-> 
-> Oleksij Rempel (3):
->   update UAPI header copies
->   netlink: add master/slave configuration support
->   netlink: add LINKSTATE SQI support
-> 
->  ethtool.8.in                 |  19 +++++
->  ethtool.c                    |   1 +
->  netlink/desc-ethtool.c       |   4 +
->  netlink/settings.c           |  66 +++++++++++++++
->  uapi/linux/ethtool.h         |  16 +++-
->  uapi/linux/ethtool_netlink.h | 153 ++++++++++++++++++++++++++++++++++-
->  uapi/linux/genetlink.h       |   2 +
->  uapi/linux/if_link.h         |   1 +
->  uapi/linux/netlink.h         | 103 +++++++++++++++++++++++
->  uapi/linux/rtnetlink.h       |   6 ++
->  10 files changed, 369 insertions(+), 2 deletions(-)
-> 
-> -- 
-> 2.27.0
-> 
+> I've been trying to write a dt for a board and got quite confused about
+> the RGMII delays. That's why I looked into it and got even more confused
+> by what I found. Different drivers handle this quite differently. Let me
+> summarize.
 
-The series looks good to me, I'll wait for another day or two for other
-comments and apply it there are no objections.
+Hi Helmut
 
-Michal
+In general, in DT, put what you want the PHY to do. If the PCB does
+not add the delay, use rgmii-id. If the PCB does add the delay, then
+use rgmii.
+
+It is quite confusing, we have had bugs, and some drivers just do odd
+things. In general, the MAC should not add delays. The PHY should add
+delays, based on what is passed via DT. This assumes the PHY actually
+implements the delays, which most PHYs do.
+
+What exact hardware are you using?
+
+     Andrew
