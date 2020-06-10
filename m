@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC331F5C40
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 21:54:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E73771F5C44
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 21:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730402AbgFJTx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 15:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
+        id S1730456AbgFJTyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 15:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730368AbgFJTxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 15:53:51 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639B1C03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:51 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id q8so3697906iow.7
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:51 -0700 (PDT)
+        with ESMTP id S1730383AbgFJTxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 15:53:53 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1304C03E96F
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:52 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id 9so3153648ilg.12
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TPu28iSnpxiaKV6OmQYQaLs7QlaJe31+At5Kd0wdaDI=;
-        b=K3+ZwfORmOVFRGG1urRqIcC4gUufLJJjuwLcZ7LSR+xCycfbHvEeB6GoJxqPsZwH1H
-         6p0Q+K4GKZtgn+82EMsnrOfYroJoKWl8b94TzFLGm5GmDGnOhg8t0mnC5U8TV+yjqG0l
-         Humzwmlu/BVXvtE1GkdoJlmkoaEIvBgI8pMGOJDTfIxJuBgKd04lms6IXA87MUVhkVhH
-         DP8axBJPM9c75q9HQ+PnrYDmI/+owBVOhw0OM7Bjr4QRTfGk966Qy1kSNxrm3Od/YldA
-         piYET9anDy4k2M/bpN1Dl82TjtyAdxG7DwCEtWNiCYB10HYNa/s3ifQWJFpSUQk/mGe7
-         Qleg==
+        bh=5T05cldmDvQfb77MhXbjwDSTWhsR/a0PAAsdMXfo7+U=;
+        b=IYvRVub8FU12CaBQnSJ2Hg6GIrhJmIi6cUGltv6PVN66zyTX70sHSyd0ICHKjU6V9x
+         rLmepJu4GpTX4wNlOll08ytzCDn1Ol1D65KaSMQB5ySSrwfnKIPBXn2IAAXRjbkXLED6
+         kpEv+B1EZ4Tanfj8QYBKVQRrr27c6PPzXdubnHU3W2LPCSVV865TeTw4aSQdglLrGBvu
+         frTbFad/Pil8R+xm9KOR/uH3wS/Um+sNQxvCVnrgIvUpEN6AGYTzu1QH92R6FYFETJh6
+         qWhWvcYPVDpfp7FCAIuax4b25ffslmx+YL1e9e+k//8jIYxawuDfIzUFyPMlvXzQ2lB9
+         zQRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TPu28iSnpxiaKV6OmQYQaLs7QlaJe31+At5Kd0wdaDI=;
-        b=gY1Y0co6DBTCEfXST0ME9PGNap6fTX3g9o2OU49HB1KHDzKpajqWhCApvd+vFAKfU5
-         s8b/dsDK6yUv/AVamRvD5uoCfYCWoJCbnaNMCWcvJpHqjuFxY6ymBdxdQP6JgFk5AgZI
-         eO4e1Ey5n0sz3GC274irX3jv/qATWETd6VXF55yV/RioxDjpY2h7iHQsSMVpIi+/EoRI
-         s4YEQzDabRkqWh2TO534gUg3A9xfL3bi3JroDghCtKhIIpv9xC0WBSyZWTCqb0agOrK6
-         Dxg5n3SMGQap30c12qYJSSIDvgwHdmj+54uEpNz7N4KpaMZ5No9R6ZyPcW2lbELTlLfj
-         OBOQ==
-X-Gm-Message-State: AOAM5308BMzj5Jt9mBTQVyVaBo3+XErOcsMhgU0IUAj2JXlGydx/ipvX
-        UTl+UzsP5L4oO0miFZKTMQlvRA==
-X-Google-Smtp-Source: ABdhPJwewTX9Sq82Or47p/sVRzCbeGlI/MpiGttp6BlkKzGBfJsIMA/TR+2gXpGwoOLg29k4xpjzhg==
-X-Received: by 2002:a6b:2cc5:: with SMTP id s188mr4956803ios.77.1591818830843;
-        Wed, 10 Jun 2020 12:53:50 -0700 (PDT)
+        bh=5T05cldmDvQfb77MhXbjwDSTWhsR/a0PAAsdMXfo7+U=;
+        b=GCDQTpS66xSLUge6U27YUpVH3IqTW+n6A1Ea4cMXbJc31eh6uOqh3Bsmwf6qRMfQEw
+         oOTSLPSVagVrIEg+WWw+L5MeRR9tYrvffrrtpNfnHpfOuLjPHvRhCEYgg1+Nmaox+7Vu
+         WPRTxcoQUOj5EUQCSQA89cQ2PeDU6toODhJEaYD3ce4pdv026Iu913TbtO/jFfsQTrN9
+         McjS5dK72P3xwk2fsafeLnfjGrehm5kknvyoRHSRcYJET+zEARrRWV4yKgsdfgfSU7EM
+         9jLjKm7qppDTnC8UewvdEwosTOHKEv3Pkitl/pRbNCN39o1YQy38KTyA57hWr7iYy7ti
+         fjtg==
+X-Gm-Message-State: AOAM530VU5DCkj9NV0A/v7J/tXFqIQTUK+ZYHOwW7rBhK2Yqlb8beg1c
+        tybE7mJa16X3CvpxE21fGSUOBQ==
+X-Google-Smtp-Source: ABdhPJzaarLdXeahhIkS4rtJPH7St+FhJ1fUqWHoibOoLJjv5eJVw88zDBj3opnjHqvL0pAiV7Vw0g==
+X-Received: by 2002:a92:d302:: with SMTP id x2mr4710813ila.175.1591818832177;
+        Wed, 10 Jun 2020 12:53:52 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id r10sm408828ile.36.2020.06.10.12.53.49
+        by smtp.gmail.com with ESMTPSA id r10sm408828ile.36.2020.06.10.12.53.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 12:53:50 -0700 (PDT)
+        Wed, 10 Jun 2020 12:53:51 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 3/5] net: ipa: program upper nibbles of sequencer type
-Date:   Wed, 10 Jun 2020 14:53:30 -0500
-Message-Id: <20200610195332.2612233-4-elder@linaro.org>
+Subject: [PATCH net 4/5] net: ipa: header pad field only valid for AP->modem endpoint
+Date:   Wed, 10 Jun 2020 14:53:31 -0500
+Message-Id: <20200610195332.2612233-5-elder@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200610195332.2612233-1-elder@linaro.org>
 References: <20200610195332.2612233-1-elder@linaro.org>
@@ -65,51 +65,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The upper two nibbles of the sequencer type were not used for
-SDM845, and were assumed to be 0.  But for SC7180 they are used, and
-so they must be programmed by ipa_endpoint_init_seq().  Fix this bug.
+Only QMAP endpoints should be configured to find a pad size field
+within packet headers.  They are found in the first byte of the QMAP
+header (and the hardware fills only the 6 bits in that byte that
+constitute the pad_len field).
 
-IPA_SEQ_PKT_PROCESS_NO_DEC_NO_UCP_DMAP doesn't have a descriptive
-comment, so add one.
+The RMNet driver assumes the pad_len field is valid for received
+packets, so we want to ensure the pad_len field is filled in that
+case.  That driver also assumes the length in the QMAP header
+includes the pad bytes.
+
+The RMNet driver does *not* pad the packets it sends, so the pad_len
+field can be ignored.
+
+Fix ipa_endpoint_init_hdr_ext() so it only marks the pad field
+offset valid for QMAP RX endpoints, and in that case indicates
+that the length field in the header includes the pad bytes.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 6 ++++--
- drivers/net/ipa/ipa_reg.h      | 2 ++
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 6015fabb4df5..59313ced7036 100644
+index 59313ced7036..b35e027003b3 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -699,10 +699,12 @@ static void ipa_endpoint_init_seq(struct ipa_endpoint *endpoint)
- 	u32 seq_type = endpoint->seq_type;
+@@ -467,7 +467,7 @@ void ipa_endpoint_init_hdr(struct ipa_endpoint *endpoint)
+ 			header_size += sizeof(struct rmnet_map_ul_csum_header);
+ 		val |= u32_encode_bits(header_size, HDR_LEN_FMASK);
+ 
+-		/* Define how to fill mux_id in a received QMAP header */
++		/* Define how to fill fields in a received QMAP header */
+ 		if (!endpoint->toward_ipa) {
+ 			u32 off;	/* Field offset within header */
+ 
+@@ -499,10 +499,21 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
  	u32 val = 0;
  
-+	/* Sequencer type is made up of four nibbles */
- 	val |= u32_encode_bits(seq_type & 0xf, HPS_SEQ_TYPE_FMASK);
- 	val |= u32_encode_bits((seq_type >> 4) & 0xf, DPS_SEQ_TYPE_FMASK);
--	/* HPS_REP_SEQ_TYPE is 0 */
--	/* DPS_REP_SEQ_TYPE is 0 */
-+	/* The second two apply to replicated packets */
-+	val |= u32_encode_bits((seq_type >> 8) & 0xf, HPS_REP_SEQ_TYPE_FMASK);
-+	val |= u32_encode_bits((seq_type >> 12) & 0xf, DPS_REP_SEQ_TYPE_FMASK);
+ 	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
+-	val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
+-	/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
++
++	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
++	 * driver assumes this field is meaningful in packets it receives,
++	 * and assumes the header's payload length includes that padding.
++	 * The RMNet driver does *not* pad packets it sends, however, so
++	 * the pad field (although 0) should be ignored.
++	 */
++	if (endpoint->data->qmap && !endpoint->toward_ipa) {
++		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
++		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
++		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
++		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++	}
++
+ 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
+-	/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
+ 	if (!endpoint->toward_ipa)
+ 		val |= u32_encode_bits(pad_align, HDR_PAD_TO_ALIGNMENT_FMASK);
  
- 	iowrite32(val, endpoint->ipa->reg_virt + offset);
- }
-diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-index 3b8106aa277a..0a688d8c1d7c 100644
---- a/drivers/net/ipa/ipa_reg.h
-+++ b/drivers/net/ipa/ipa_reg.h
-@@ -455,6 +455,8 @@ enum ipa_mode {
-  *	second packet processing pass + no decipher + microcontroller
-  * @IPA_SEQ_DMA_DEC:		DMA + cipher/decipher
-  * @IPA_SEQ_DMA_COMP_DECOMP:	DMA + compression/decompression
-+ * @IPA_SEQ_PKT_PROCESS_NO_DEC_NO_UCP_DMAP:
-+ *	packet processing + no decipher + no uCP + HPS REP DMA parser
-  * @IPA_SEQ_INVALID:		invalid sequencer type
-  *
-  * The values defined here are broken into 4-bit nibbles that are written
 -- 
 2.25.1
 
