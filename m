@@ -2,78 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D6E1F5D40
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:33:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC49F1F5D4C
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:40:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbgFJUdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 16:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
+        id S1726260AbgFJUk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 16:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726134AbgFJUdy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 16:33:54 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E56C03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:33:53 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id dr13so4091109ejc.3
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:33:53 -0700 (PDT)
+        with ESMTP id S1726207AbgFJUk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 16:40:26 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98850C03E96B
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:40:26 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id r18so1495146pgk.11
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:40:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3duwPjVge1QT36mZAd+ftqEzkC7id+2L48L/c8NMj2g=;
-        b=H8P3o1nzqcuxd8x+15CJpCrlGb96KK4JPtMaebgIV2jdFb/6blDoVLL85r2EB7tNUm
-         Fe9OrJHvD3svSNzGIZajYhi+df6diovdNqT+iwZNa9SZAOkrWXk+EVYxdfWnjtQiNCl7
-         wdhGEEIZAdUSR5M0ZZMXb4cDIe81trNgY6zN8=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lo0/SE8IXZXwbTZMPh6EGOBfF/IRixoQhYemNfB6AVs=;
+        b=EI4b+J1Eja6cdvOSql6vZGqt5/Q1ocogp78JoWNshLKO8Y0x75On5Cu6sYuqlgWZFi
+         PdaLrP9H72ak38+zjF7NPxSS025lHlIdqqtr6i55RZGrJzYyXYML8udFFIHp+D/J85ru
+         no7Ggavh9RN9+1u5akVdeS4d1i7U0U2j+3aLKtbY/bd8uAbdrsCkVsZnqBMlFXW31u4Q
+         FGZeKS8F923YHevgBokxxJFYTQanDeeg5a4rKCga4Zm0+FoTCDpGmpoG/cWiiJcIuwVY
+         wavdHfQBIrWq9kJDL7KKHfXAsJGXPicVEVTB/xAn6KX+275FtqULtO0y3UxIYglpQiai
+         Y9Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3duwPjVge1QT36mZAd+ftqEzkC7id+2L48L/c8NMj2g=;
-        b=HRzpCNdgdwQTnhbeUt+RLqIszkBNmv+w+PKJO+8YLVrtDDfwPLzS3rFxmuOg2aHCXv
-         gW+J4+C89M51WViLHIeBk6iZFxiD+g8jAG5pWaWdZUSHWgq1UeCS7EK0vCeE5KBjVyKP
-         kiFQk75fTA9eImZisD7qRF4Au6/EFJAYkgRzpt6L7e4A4cbUCMPcexsvxHYWQkJPFOJN
-         9TYoS2w9MmsezKOUasSFFDFOUQzYW0+n4CY1r7Ip69nQtjOXlMcfevtcgJ2cSm2zlq+0
-         L+WDij7A8YpMpRymkpH6gbQfSllSJ+3w4oLC28YCU6vu3x6ErbEtTS4lAuO0GSj8frLJ
-         TGJA==
-X-Gm-Message-State: AOAM530yOlUferQIfEzEzGC7K2QYQVWxUSJ83JWgtp9w5Qh01d3s9MTI
-        dso/FWIQ2HTQRmanxFG6Ol8SsGuVw/QXSY+R4nYwMCXp
-X-Google-Smtp-Source: ABdhPJxLMlkAQaayj+M3nx635J6bwqZZ0vjPMUc9YwNSlthvtqt4e/2Il/79lTmmE7iL8my6P0lssW3VKWxMm8tXo6g=
-X-Received: by 2002:a17:906:66d0:: with SMTP id k16mr5286550ejp.293.1591821232411;
- Wed, 10 Jun 2020 13:33:52 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lo0/SE8IXZXwbTZMPh6EGOBfF/IRixoQhYemNfB6AVs=;
+        b=ZeOlP7wzfO7P7SFLxW1WEI7hPiYDYVBJy8lp6aR9feZiifdcsz9wJ2AOV/G4Z+x9gT
+         iRiShF2b5PlDF2k3uigtZ8+9KoglEq7mrSu/SUmtD6KTOjrpCiWX1bm0T1xKupD3etvZ
+         WzDjFH3rL0vGhSE+YypJTJRBjEccatmvaDrlIrRfCAF8XqrvP68MZSjGy8wrje/aUk8w
+         AttkJic5ia4XY8NdPqZjIsTgm+e7f3SusSIbH7xbiaE/CsttbSz7HEtPFSD/N2pzrri9
+         zIt3mgQDndmc9phbiaHQCMBr+wKmzyttuV+czHRg6nNWZcjqPUqBsaiq2v1smjcDVyim
+         Aqrw==
+X-Gm-Message-State: AOAM531IERq/PE5vZ8zALzcrsXlmz3e/4egvbm2XyhT7eOJ6T/gtqH8E
+        jLuIcKRZDvD9NZyZbvUHhLt3B4mC
+X-Google-Smtp-Source: ABdhPJyt6CxntjTe+GaxjpD7sAIZ1rS788zylH5dB/LKGvWiAh1BJY8MVyY4wsVUD26v+p7qVzPWHQ==
+X-Received: by 2002:a62:5c03:: with SMTP id q3mr4302043pfb.58.1591821625339;
+        Wed, 10 Jun 2020 13:40:25 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n1sm788777pfd.156.2020.06.10.13.40.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Jun 2020 13:40:24 -0700 (PDT)
+Subject: Re: correct use of PHY_INTERFACE_MODE_RGMII{,_TXID,_RXID,_ID}
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     netdev@vger.kernel.org
+References: <20200610081236.GA31659@laureti-dev>
+ <20200610201224.GC19869@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <bd14bc16-1f0b-695f-cd00-713c100bfda7@gmail.com>
+Date:   Wed, 10 Jun 2020 13:40:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200609025443.19409-1-dsahern@kernel.org>
-In-Reply-To: <20200609025443.19409-1-dsahern@kernel.org>
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-Date:   Wed, 10 Jun 2020 13:33:41 -0700
-Message-ID: <CAJieiUiMccp8yXETq6XGdWkKYYtO1XqS+KXfOOYiZAbXCoJiGA@mail.gmail.com>
-Subject: Re: [PATCH v2 net] nexthop: Fix fdb labeling for groups
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, kuba@kernel.org,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200610201224.GC19869@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 8, 2020 at 7:54 PM David Ahern <dsahern@kernel.org> wrote:
->
-> fdb nexthops are marked with a flag. For standalone nexthops, a flag was
-> added to the nh_info struct. For groups that flag was added to struct
-> nexthop when it should have been added to the group information. Fix
-> by removing the flag from the nexthop struct and adding a flag to nh_group
-> that mirrors nh_info and is really only a caching of the individual types.
-> Add a helper, nexthop_is_fdb, for use by the vxlan code and fixup the
-> internal code to use the flag from either nh_info or nh_group.
->
-> v2
-> - propagate fdb_nh in remove_nh_grp_entry
->
-> Fixes: 38428d68719c ("nexthop: support for fdb ecmp nexthops")
-> Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
-> Signed-off-by: David Ahern <dsahern@kernel.org>
 
-nice cleanups. Thanks David.
 
-looks like the patches were just applied, FWIW,
-Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+On 6/10/2020 1:12 PM, Andrew Lunn wrote:
+> On Wed, Jun 10, 2020 at 10:12:37AM +0200, Helmut Grohne wrote:
+>> Hi,
+>>
+>> I've been trying to write a dt for a board and got quite confused about
+>> the RGMII delays. That's why I looked into it and got even more confused
+>> by what I found. Different drivers handle this quite differently. Let me
+>> summarize.
+> 
+> Hi Helmut
+> 
+> In general, in DT, put what you want the PHY to do. If the PCB does
+> not add the delay, use rgmii-id. If the PCB does add the delay, then
+> use rgmii.
+> 
+> It is quite confusing, we have had bugs, and some drivers just do odd
+> things. In general, the MAC should not add delays. The PHY should add
+> delays, based on what is passed via DT. This assumes the PHY actually
+> implements the delays, which most PHYs do.
+
+In a MAC to MAC connection, one of the MAC, or both, or the PCB must
+ensure that appropriate delays are inserted in order for
+the RGMII connection to be functional. Or put differently, you could
+view one of the MAC abiding to the 'phy-mode' property as if it was a PHY.
+
+This is the reason why you may find Device Trees like
+arch/arm/boot/dts/sun7i-a20-lamobo-r1.dts where we have a stmmac
+connected to an external BCM53125 switch and the stmmac sets phy-mode =
+'rgmii' while the switch sets phy-mode = 'rgmii-txid' in order to
+account for the necessary delay.
+
+The essential problem we have today is that there is no consistent, fool
+proof and programmatic way to ensure that when a MAC and PHY or MAC and
+MAC are interfaced to each other, that the delays are correct, this is
+almost always a trial and error process which is irritating.
+-- 
+Florian
