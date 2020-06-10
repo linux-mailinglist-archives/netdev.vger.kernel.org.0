@@ -2,74 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 999A81F503A
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 892761F5062
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgFJI0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 04:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
+        id S1726853AbgFJIiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 04:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbgFJI0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:26:11 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B052EC03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:26:10 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id x6so1186542wrm.13
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=wIu6h48N6izevCPKdcY0ePVmCk36mEfxgfJP1/z8jYg=;
-        b=I/wL68yoOntoqYE8DSpYVqbGHEcgycrC21zkoe7wqiRSYCDA6/3F4DR/LfU3+yTP9J
-         pR2npGazj4+8U4l+cu9yGQJz3Cari5qJtNebtgTevfmISzop4GAFw/YYlRvGgbTayuqy
-         eUE5nAFUqO/RRP4FoSomiu3TtETkflfr7LXpGG405nSNcf1oLK7OLRQlIWsi5eOEkOqM
-         EA7yrJUZRktO/ZPhq3oOfIr010nEd/CngmVwEyvCBKf9lZBRKaljyk0rROx2dYvXBq5t
-         pKGQQmT3YDdpj+8efbvBuS2egMf1UpG2eI00MsAqeff8VYIM18NwHML3FpDR7koHsEf/
-         HtIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=wIu6h48N6izevCPKdcY0ePVmCk36mEfxgfJP1/z8jYg=;
-        b=l1jejYWEiuibr2gcY8llhEVo46pSd6WG6IwUufLHXZqz1eBSFG3qbCVEOhq8331Vk7
-         5qf6mJkRBFc1+lVwRt91I7p9VoC3in+MNfhURSC6pmkRPVhV3E3QZJLeccUsRjEnhYIt
-         +BSCDHfW17mZ68aTw4qXvkhT5XP4eyw1K3Gp9OBx4AUPd0A4qPdt6FLKemSfEPqjHHRv
-         kU1VvoWttDFIZTc0IHe5rmQfG6PnRvVxA06CJz4mqCnp7epx1MbN3+cxzEwU/jKW4JiE
-         DzTAdYYvaelApMJuRVKtYxndBND664XCSZ3PDGds2hxdsGbjZoAeyIUHRkcoz37Txkgm
-         gRjw==
-X-Gm-Message-State: AOAM5330xeHZVClkVPGUnyCvOTA3imaFg5EaxzDqYXQuz3wnQbHwJzkT
-        XQCRPmdjVjI7thxRUUy22pmUCR/t
-X-Google-Smtp-Source: ABdhPJzo7WWA3DNhVHfm4tWarGECxY5sZBPE2NNhmHTE9nm8dprpHvg3sA57c3UDnEcpNfZ84zIzAg==
-X-Received: by 2002:a5d:6789:: with SMTP id v9mr2471007wru.124.1591777568752;
-        Wed, 10 Jun 2020 01:26:08 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:8de0:f6e2:666:9123? (p200300ea8f2357008de0f6e206669123.dip0.t-ipconnect.de. [2003:ea:8f23:5700:8de0:f6e2:666:9123])
-        by smtp.googlemail.com with ESMTPSA id d24sm5811368wmb.45.2020.06.10.01.26.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2020 01:26:08 -0700 (PDT)
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: ethtool 5.7: netlink ENOENT error when setting WOL
-Message-ID: <77652728-722e-4d3b-6737-337bf4b391b7@gmail.com>
-Date:   Wed, 10 Jun 2020 10:26:00 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        with ESMTP id S1726839AbgFJIiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:38:03 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F782C08C5C1
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:38:03 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jiwF5-0000Ii-SU; Wed, 10 Jun 2020 10:37:51 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jiwEz-0007ud-Kk; Wed, 10 Jun 2020 10:37:45 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        "John W. Linville" <linville@tuxdriver.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>,
+        Amit Cohen <amitc@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>
+Subject: [PATCH v4 0/3] Add support for SQI and master-slave
+Date:   Wed, 10 Jun 2020 10:37:41 +0200
+Message-Id: <20200610083744.21322-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since ethtool 5.7 following happens (kernel is latest linux-next):
+This patch set is extending ethtool to make it more usable on automotive
+PHYs like NXP TJA11XX.
 
-ethtool -s enp3s0 wol g
-netlink error: No such file or directory
+They make use of new KAPI (currently in net-next, will go probably to the
+kernel 5.8-rc1):
+- PHY master-slave role configuration and status informaton. Mostly needed
+  for 100Base-T1 PHYs due the lack of autonegatiation support.
+- Signal Quality Index to investigate cable related issues.
 
-With ethtool 5.6 this doesn't happen. I also checked the latest ethtool
-git version (5.7 + some fixes), error still occurs.
+changes v4:
+- rebase is against current ethtool master
+- pull headers from current kernel master
+- use tabs instead of spaces in the manual
 
-Heiner
+changes v3:
+- rename "Port mode" to "master-slave"
+- use [preferred|forced]-[master|slave] for information and
+  configuration
+
+changes v2:
+- add master-slave information to the "ethtool --help" and man page
+- move KAPI update changes to the separate patch. 
+
+Oleksij Rempel (3):
+  update UAPI header copies
+  netlink: add master/slave configuration support
+  netlink: add LINKSTATE SQI support
+
+ ethtool.8.in                 |  19 +++++
+ ethtool.c                    |   1 +
+ netlink/desc-ethtool.c       |   4 +
+ netlink/settings.c           |  66 +++++++++++++++
+ uapi/linux/ethtool.h         |  16 +++-
+ uapi/linux/ethtool_netlink.h | 153 ++++++++++++++++++++++++++++++++++-
+ uapi/linux/genetlink.h       |   2 +
+ uapi/linux/if_link.h         |   1 +
+ uapi/linux/netlink.h         | 103 +++++++++++++++++++++++
+ uapi/linux/rtnetlink.h       |   6 ++
+ 10 files changed, 369 insertions(+), 2 deletions(-)
+
+-- 
+2.27.0
+
