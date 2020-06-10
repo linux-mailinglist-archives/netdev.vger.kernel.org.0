@@ -2,94 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B3B1F50FB
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 11:13:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55BC21F5176
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 11:47:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgFJJNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 05:13:30 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51668 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726948AbgFJJNa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jun 2020 05:13:30 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id AAE71AAC6;
-        Wed, 10 Jun 2020 09:13:32 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 9316360739; Wed, 10 Jun 2020 11:13:28 +0200 (CEST)
-Date:   Wed, 10 Jun 2020 11:13:28 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: ethtool 5.7: netlink ENOENT error when setting WOL
-Message-ID: <20200610091328.evddgipbedykwaq6@lion.mk-sys.cz>
-References: <77652728-722e-4d3b-6737-337bf4b391b7@gmail.com>
- <6359d5f8-50e4-a504-ba26-c3b6867f3deb@gmail.com>
+        id S1727918AbgFJJrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 05:47:43 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:56561 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727007AbgFJJrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 05:47:43 -0400
+Received: from ip5f5af183.dynamic.kabel-deutschland.de ([95.90.241.131] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1jixKb-0006ae-2c; Wed, 10 Jun 2020 09:47:37 +0000
+Date:   Wed, 10 Jun 2020 11:47:35 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <christian@brauner.io>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] Use __scm_install_fd() more widely
+Message-ID: <20200610094735.7ewsvrfhhpioq5xe@wittgenstein>
+References: <20200610045214.1175600-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <6359d5f8-50e4-a504-ba26-c3b6867f3deb@gmail.com>
+In-Reply-To: <20200610045214.1175600-1-keescook@chromium.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 10:52:26AM +0200, Heiner Kallweit wrote:
-> On 10.06.2020 10:26, Heiner Kallweit wrote:
-> > Since ethtool 5.7 following happens (kernel is latest linux-next):
-> > 
-> > ethtool -s enp3s0 wol g
-> > netlink error: No such file or directory
-> > 
-> > With ethtool 5.6 this doesn't happen. I also checked the latest ethtool
-> > git version (5.7 + some fixes), error still occurs.
-> > 
-> > Heiner
-> > 
-> Bisecting points to:
-> netlink: show netlink error even without extack
+On Tue, Jun 09, 2020 at 09:52:12PM -0700, Kees Cook wrote:
+> Hi,
+> 
+> This extends the recent work hch did for scm_detach_fds(), and updates
+> the compat path as well, fixing bugs in the process. Additionally,
+> an effectively incomplete and open-coded __scm_install_fd() is fixed
+> in pidfd_getfd().
 
-Just to make sure you are hitting the same problem I'm just looking at,
-please check if
+Since __scm_detach_fds() becomes something that is available outside of
+net/* should we provide a static inline wrapper under a different name? The
+"socket-level control message" prefix seems a bit odd in pidfd_getfd()
+and - once we make use of it there - seccomp.
 
-- your kernel is built with ETHTOOL_NETLINK=n
-- the command actually succeeds (i.e. changes the WoL modes)
-- output with of "ethtool --debug 0x12 -s enp3s0 wol g" looks like
+I'd suggest we do:
 
-  sending genetlink packet (32 bytes):
-      msg length 32 genl-ctrl
-      CTRL_CMD_GETFAMILY
-          CTRL_ATTR_FAMILY_NAME = "ethtool"
-  received genetlink packet (52 bytes):
-      msg length 52 error errno=-2
-  netlink error: No such file or directory
-  offending message:
-      ETHTOOL_MSG_LINKINFO_SET
-          ETHTOOL_A_LINKINFO_PORT = 101
+static inline int fd_install_received(struct file *file, unsigned int flags)
+{
+	return __scm_install_fd(file, NULL, flags);
+}
 
-If this is the case, than the commit found by bisect only revealed an
-issue which was introduced earlier by commit 76bdf9372824 ("netlink: use
-pretty printing for ethtool netlink messages"). The patch below should
-suppress the message as intended.
+which can be called in pidfd_getfd() and once we have other callers that
+want the additional put_user() (e.g. seccomp_ in there we simply add:
 
-Michal
+static inline fd_install_user(struct file *file, unsigned int flags, int __user *ufd)
+{
+	return __scm_install_fd(file, ufd, flags);
+}
 
-diff --git a/netlink/nlsock.c b/netlink/nlsock.c
-index 2c760b770ec5..c3f09b6ee9ab 100644
---- a/netlink/nlsock.c
-+++ b/netlink/nlsock.c
-@@ -255,12 +255,12 @@ int nlsock_process_reply(struct nl_socket *nlsk, mnl_cb_t reply_cb, void *data)
- 
- 		nlhdr = (struct nlmsghdr *)buff;
- 		if (nlhdr->nlmsg_type == NLMSG_ERROR) {
--			bool silent = nlsk->nlctx->suppress_nlerr;
-+			unsigned int suppress = nlsk->nlctx->suppress_nlerr;
- 			bool pretty;
- 
- 			pretty = debug_on(nlsk->nlctx->ctx->debug,
- 					  DEBUG_NL_PRETTY_MSG);
--			return nlsock_process_ack(nlhdr, len, silent, pretty);
-+			return nlsock_process_ack(nlhdr, len, suppress, pretty);
- 		}
- 
- 		msgbuff->nlhdr = nlhdr;
+and seems the wrappers both could happily live in the fs part of the world?
+
+Christian
