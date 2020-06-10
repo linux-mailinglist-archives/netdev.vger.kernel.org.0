@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03CBA1F4BE7
+	by mail.lfdr.de (Postfix) with ESMTP id 9312F1F4BE8
 	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 05:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbgFJDuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 23:50:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45978 "EHLO mail.kernel.org"
+        id S1726164AbgFJDuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 23:50:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45952 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726115AbgFJDuC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Jun 2020 23:50:02 -0400
+        id S1726121AbgFJDuA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Jun 2020 23:50:00 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6804920829;
+        by mail.kernel.org (Postfix) with ESMTPSA id EFF76207ED;
         Wed, 10 Jun 2020 03:49:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591760999;
-        bh=XNR7jklSCQPwpm5aH7JokTLnhIsh/ZOnoOSS4HOKJoc=;
+        s=default; t=1591761000;
+        bh=FNKeL/Abtr/Ds1M9hz8iAPAvAFUctIULH8ZIyN6MAF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XPS0I5UuEL8L4qaNCp++CXWT9L0zxPs80Rxx9Yji3lWuRftKwc0OQ1Pp8k2g5KHJV
-         k4OyGKlMwytJLp1vwqXDpALAaCtNWz/sJB08Jz60qMzUMjPfIoKmpa1+JLt4KFgMsT
-         FESzHfnB2Se8Cfyy0KandQyiVvcfGkMg8m/SFZK4=
+        b=WEiyxKonivrf8EOhE75FguWAQti8aHUzrAwJWUe/i25VeNYPvf6x+JoxqCwF4hyRL
+         3dd/TrQLdWeahMriNvyLXNvanDbdLDB1tWf/ISSBIahfqMBWl1zwTgbcnaV7AAZqcC
+         kVjzDNNEhVhy7rmk3k8Cco9PZYhDyT9jLvHUpKH4=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, assogba.emery@gmail.com,
         dsahern@gmail.com, David Ahern <dsahern@kernel.org>
-Subject: [PATCH RFC net-next 7/8] nexthop: Add support for active-backup nexthop type
-Date:   Tue,  9 Jun 2020 21:49:52 -0600
-Message-Id: <20200610034953.28861-8-dsahern@kernel.org>
+Subject: [PATCH RFC net-next 8/8] selftests: Add active-backup nexthop tests
+Date:   Tue,  9 Jun 2020 21:49:53 -0600
+Message-Id: <20200610034953.28861-9-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200610034953.28861-1-dsahern@kernel.org>
 References: <20200610034953.28861-1-dsahern@kernel.org>
@@ -40,546 +40,385 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new active-backup group type. The intent is that the group describes
-a primary nexthop with a backup option if the primary is not available.
-Since nexthop code removes entries on carrier or admin down this really
-means the backup applies when the neighbor entry for the active becomes
-invalid. In that case the lookup atomically switches to use the backup.
-
-Conceptually, the linkage is like this. For single path routes, a FIB
-entry references a nexthop that is a an active-backup pair:
-                                nexthop active
-  { prefix }  -> a-b nexthop -<
-                                nexthop backup
-
-Alternatively, an active-backup nexthop can be one more entries in a
-multipath route:
-                                                     nexthop active
-                                   nexthop 1 (ab) -<
-  { prefix }  -> mpath nexthop -<    ...             nexthop backup
-                                   nexthop N
-
-The intent is to provide a fast failover option for routing daemons -
-the primary goes down, notification is sent to userspace, and the backup
-takes over until the daemon can adjust the routes.
-
-For multipath routes this has the added benefit of providing an option
-to limit the flows affected by a carrier or admin down event. Currently,
-flows are hashed over the N-paths of a multipath route. If a path goes
-dead, the leg is effectively removed and all flows are potentially
-affected as the hashing consides now N-1 paths. With active-backup
-nexthops an admin can setup a backup for each leg to minimize the
-affected flows.
-
-Most of this change is updating the group handling to account for
-the a-b pair, especially in nexthop groups. Datapath lookups should
-only consider the active nexthop unless it is determined bad. Route
-notifications and lookups will only show the existence of the
-active nexthop.
-
-Signed-off-by: ASSOGBA Emery <assogba.emery@gmail.com>
-Co-developed-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: David Ahern <dsahern@kernel.org>
 ---
- include/net/nexthop.h        |  50 ++++++++--
- include/uapi/linux/nexthop.h |   1 +
- net/ipv4/fib_semantics.c     |   6 +-
- net/ipv4/nexthop.c           | 186 ++++++++++++++++++++++++++++++++---
- 4 files changed, 217 insertions(+), 26 deletions(-)
+ tools/testing/selftests/net/fib_nexthops.sh | 334 +++++++++++++++++++-
+ 1 file changed, 330 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 8cedadb902b6..aee870bc8c0e 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -76,6 +76,7 @@ struct nh_group {
- 	struct nh_group		*spare; /* spare group for removals */
- 	u16			num_nh;
- 	bool			mpath;
-+	bool			active_backup;
- 	bool			has_v4;
- 	struct nh_grp_entry	nh_entries[];
- };
-@@ -158,6 +159,17 @@ static inline bool nexthop_is_multipath(const struct nexthop *nh)
- 	return false;
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index dee567f7576a..4db390438885 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -5,11 +5,21 @@
+ #   2001:db8:91::1     |       2001:db8:91::2  |
+ #   172.16.1.1         |       172.16.1.2      |
+ #            veth1 <---|---> veth2             |
+-#                      |              veth5 <--|--> veth6  172.16.101.1
++#                      |              veth6 <--|--> veth5  172.16.101.1
+ #            veth3 <---|---> veth4             |           2001:db8:101::1
+ #   172.16.2.1         |       172.16.2.2      |
+ #   2001:db8:92::1     |       2001:db8:92::2  |
+ #
++# For active/backup testing:
++# ns: me               | ns: peer2             | ns: remote
++#   2001:db8:81::1     |       2001:db8:81::2  |
++#   172.16.81.1        |       172.16.81.2     |
++#           veth21 <---|---> veth22            |
++#                      |             veth26 <--|--> veth25 <--> br
++#           veth23 <---|---> veth24            |
++#   172.16.82.1        |       172.16.82.2     |
++#   2001:db8:82::1     |       2001:db8:82::2  |
++#
+ # This test is for checking IPv4 and IPv6 FIB behavior with nexthop
+ # objects. Device reference counts and network namespace cleanup tested
+ # by use of network namespace for peer.
+@@ -19,8 +29,8 @@ ret=0
+ ksft_skip=4
+ 
+ # all tests in this script. Can be overridden with -t option
+-IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal ipv4_torture"
+-IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal ipv6_torture"
++IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_large_grp ipv4_compat_mode ipv4_fdb_grp_fcnal ipv4_torture ipv4_ab_group"
++IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_large_grp ipv6_compat_mode ipv6_fdb_grp_fcnal ipv6_torture ipv6_ab_group"
+ 
+ ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
+ TESTS="${ALL_TESTS}"
+@@ -179,11 +189,60 @@ setup()
+ 	set +e
  }
  
-+static inline bool nexthop_is_active_backup(const struct nexthop *nh)
++setup_ab()
 +{
-+	if (nh->is_group) {
-+		struct nh_group *nh_grp;
++	create_ns peer2
 +
-+		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+		return nh_grp->active_backup;
-+	}
-+	return false;
++	set -e
++	$IP li add veth21 type veth peer name veth22
++	$IP li set veth21 up
++	$IP addr add 172.16.81.1/24 dev veth21
++	$IP -6 addr add 2001:db8:81::1/64 dev veth21 nodad
++
++	$IP li add veth23 type veth peer name veth24
++	$IP li set veth23 up
++	$IP addr add 172.16.82.1/24 dev veth23
++	$IP -6 addr add 2001:db8:82::1/64 dev veth23 nodad
++
++	$IP li set veth22 netns peer2 up
++	ip -netns peer2 addr add 172.16.81.2/24 dev veth22
++	ip -netns peer2 -6 addr add 2001:db8:81::2/64 dev veth22 nodad
++
++	$IP li set veth24 netns peer2 up
++	ip -netns peer2 addr add 172.16.82.2/24 dev veth24
++	ip -netns peer2 -6 addr add 2001:db8:82::2/64 dev veth24 nodad
++
++	ip -netns remote li set veth5 down
++	ip -netns remote addr flush dev veth5
++	ip -netns remote li add br0 type bridge
++	ip -netns remote li add veth25 type veth peer name veth26
++	ip -netns remote li set veth25 master br0 up
++	ip -netns remote li set veth5 master br0 up
++	ip -netns remote li set br0 up
++
++	ip -netns remote addr add dev br0 172.16.101.1/24
++	ip -netns remote -6 addr add dev br0 2001:db8:101::1/64 nodad
++
++	ip -netns remote li set veth26 netns peer2 up
++	ip -netns peer2 addr add dev veth26 172.16.101.3/24
++	ip -netns peer2 -6 addr add dev veth26 2001:db8:101::3/64 nodad
++
++	ip -netns remote ro add 172.16.1.0/24 nexthop via 172.16.101.2
++	ip -netns remote ro add 172.16.2.0/24 nexthop via 172.16.101.2
++	ip -netns remote ro add 172.16.81.0/24 nexthop via 172.16.101.3
++	ip -netns remote ro add 172.16.82.0/24 nexthop via 172.16.101.3
++	ip -netns remote -6 ro add 2001:db8:91::/64 nexthop via 2001:db8:101::2
++	ip -netns remote -6 ro add 2001:db8:92::/64 nexthop via 2001:db8:101::2
++	ip -netns remote -6 ro add 2001:db8:81::/64 nexthop via 2001:db8:101::3
++	ip -netns remote -6 ro add 2001:db8:82::/64 nexthop via 2001:db8:101::3
++	set +e
 +}
 +
- struct nexthop *nexthop_select_path(struct nexthop *nh, int hash);
- 
- static inline unsigned int nexthop_num_path(const struct nexthop *nh)
-@@ -168,8 +180,7 @@ static inline unsigned int nexthop_num_path(const struct nexthop *nh)
- 		struct nh_group *nh_grp;
- 
- 		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
--		if (nh_grp->mpath)
--			rc = nh_grp->num_nh;
-+		rc = nh_grp->num_nh;
- 	}
- 
- 	return rc;
-@@ -196,9 +207,18 @@ int nexthop_mpath_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 
- 	for (i = 0; i < nhg->num_nh; i++) {
- 		struct nexthop *nhe = nhg->nh_entries[i].nh;
--		struct nh_info *nhi = rcu_dereference_rtnl(nhe->nh_info);
--		struct fib_nh_common *nhc = &nhi->fib_nhc;
- 		int weight = nhg->nh_entries[i].weight;
-+		struct fib_nh_common *nhc;
-+		struct nh_info *nhi;
-+
-+		if (nhe->is_group) {
-+			struct nh_group *nhg_ab = rtnl_dereference(nhe->nh_grp);
-+
-+			/* group in group is active-backup. take primary */
-+			nhe = nhg_ab->nh_entries[0].nh;
-+		}
-+		nhi = rcu_dereference_rtnl(nhe->nh_info);
-+		nhc = &nhi->fib_nhc;
- 
- 		if (fib_add_nexthop(skb, nhc, weight, rt_family) < 0)
- 			return -EMSGSIZE;
-@@ -216,7 +236,7 @@ static inline bool nexthop_is_blackhole(const struct nexthop *nh)
- 		struct nh_group *nh_grp;
- 
- 		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
--		if (nh_grp->num_nh > 1)
-+		if (nh_grp->active_backup || nh_grp->num_nh > 1)
- 			return false;
- 
- 		nh = nh_grp->nh_entries[0].nh;
-@@ -253,6 +273,16 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
- 			nh = nexthop_mpath_select(nh_grp, nhsel);
- 			if (!nh)
- 				return NULL;
-+
-+			/* multipath with a-b path */
-+			if (nh->is_group) {
-+				nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+				nh = nh_grp->nh_entries[0].nh;
-+			}
-+		} else if (nh_grp->active_backup) {
-+			if (nhsel > 0)
-+				return NULL;
-+			nh = nh_grp->nh_entries[0].nh;
- 		}
- 	}
- 
-@@ -309,9 +339,13 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
- 		struct nh_group *nh_grp;
- 
- 		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
--		nh = nexthop_mpath_select(nh_grp, 0);
--		if (!nh)
--			return NULL;
-+		nh = nh_grp->nh_entries[0].nh;
-+
-+		/* mpath with active-backup path */
-+		if (nh->is_group) {
-+			nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-+			nh = nh_grp->nh_entries[0].nh;
-+		}
- 	}
- 
- 	nhi = rcu_dereference_rtnl(nh->nh_info);
-diff --git a/include/uapi/linux/nexthop.h b/include/uapi/linux/nexthop.h
-index 2d4a1e784cf0..9566e1ac07fe 100644
---- a/include/uapi/linux/nexthop.h
-+++ b/include/uapi/linux/nexthop.h
-@@ -22,6 +22,7 @@ struct nexthop_grp {
- 
- enum {
- 	NEXTHOP_GRP_TYPE_MPATH,  /* default type if not specified */
-+	NEXTHOP_GRP_TYPE_ACTIVE_BACKUP,
- 	__NEXTHOP_GRP_TYPE_MAX,
- };
- 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index e53871e4a097..a218cd912de9 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -480,10 +480,10 @@ static inline size_t fib_nlmsg_size(struct fib_info *fi)
- 		nhsize += 2 * nla_total_size(4);
- 
- 		/* grab encap info */
--		for (i = 0; i < fib_info_num_path(fi); i++) {
-+		for (i = 0; i < nhs; i++) {
- 			struct fib_nh_common *nhc = fib_info_nhc(fi, i);
- 
--			if (nhc->nhc_lwtstate) {
-+			if (nhc && nhc->nhc_lwtstate) {
- 				/* RTA_ENCAP_TYPE */
- 				nh_encapsize += lwtunnel_get_encap_size(
- 						nhc->nhc_lwtstate);
-@@ -1780,6 +1780,8 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
- 			goto nla_put_failure;
- 		if (nexthop_is_blackhole(fi->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
-+		else if (nexthop_is_active_backup(fi->nh))
-+			nhs = 1;
- 		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
- 			goto offload;
- 	}
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 8984e1e4058b..e7335a81198f 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -204,6 +204,9 @@ static int nla_put_nh_group(struct sk_buff *skb, struct nh_group *nhg)
- 	if (nhg->mpath)
- 		group_type = NEXTHOP_GRP_TYPE_MPATH;
- 
-+	if (nhg->active_backup)
-+		group_type = NEXTHOP_GRP_TYPE_ACTIVE_BACKUP;
-+
- 	if (nla_put_u16(skb, NHA_GROUP_TYPE, group_type))
- 		goto nla_put_failure;
- 
-@@ -433,6 +436,7 @@ static int nh_check_attr_fdb_group(struct nexthop *nh, u8 *nh_family,
- }
- 
- static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
-+			       u16 nh_grp_type,
- 			       struct netlink_ext_ack *extack)
+ cleanup()
  {
- 	unsigned int len = nla_len(tb[NHA_GROUP]);
-@@ -451,6 +455,13 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 	len /= sizeof(*nhg);
+ 	local ns
  
- 	nhg = nla_data(tb[NHA_GROUP]);
-+
-+	if (nh_grp_type == NEXTHOP_GRP_TYPE_ACTIVE_BACKUP &&
-+	    (len != 2 || nhg[0].weight || nhg[1].weight)) {
-+		NL_SET_ERR_MSG(extack, "Active/backup group must have 2 nexthops and weight can not be set");
-+		return -EINVAL;
-+	}
-+
- 	for (i = 0; i < len; ++i) {
- 		if (nhg[i].resvd1 || nhg[i].resvd2) {
- 			NL_SET_ERR_MSG(extack, "Reserved fields in nexthop_grp must be 0");
-@@ -468,8 +479,14 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 		}
- 	}
- 
--	if (tb[NHA_FDB])
-+	if (tb[NHA_FDB]) {
-+		if (nh_grp_type == NEXTHOP_GRP_TYPE_ACTIVE_BACKUP) {
-+			NL_SET_ERR_MSG(extack, "Active/backup group not valid with fdb entries");
-+			return -EINVAL;
-+		}
- 		nhg_fdb = 1;
-+	}
-+
- 	nhg = nla_data(tb[NHA_GROUP]);
- 	for (i = 0; i < len; ++i) {
- 		struct nexthop *nh;
-@@ -559,16 +576,43 @@ static bool good_nh(struct nexthop *nh)
- 	return rc;
+-	for ns in me peer remote; do
++	for ns in me peer peer2 remote; do
+ 		ip netns del ${ns} 2>/dev/null
+ 	done
+ }
+@@ -335,6 +394,273 @@ stop_ip_monitor()
+ 	return $rc
  }
  
--struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
-+static struct nexthop *nh_select_path_ab(struct nh_group *nhg, int hash)
++################################################################################
++# active-backup nexthops
++
++check_nexthop_ab_support()
++{
++	$IP nexthop help 2>&1 | grep -q active-backup
++	if [ $? -ne 0 ]; then
++		echo "SKIP: iproute2 too old, missing active-backup nexthop support"
++		return $ksft_skip
++	fi
++}
++
++ipv6_ab_group()
++{
++	local rc
++
++	echo
++	echo "IPv6 active-backup groups"
++	echo "-------------------------"
++
++	check_nexthop_ab_support
++	if [ $? -eq $ksft_skip ]; then
++		return $ksft_skip
++	fi
++
++	setup_ab
++
++	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 2001:db8:81::2 dev veth21"
++	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
++	check_nexthop "id 101" "id 101 group 11/12 active-backup"
++	log_test $? 0 "Create active-backup group"
++
++	run_cmd "$IP ro add 2001:db8:101::/64 nhid 101"
++	check_route6 "2001:db8:101::1" "2001:db8:101::/64 nhid 101 via 2001:db8:91::2 dev veth1 metric 1024"
++	log_test $? 0 "Route list shows active device"
++
++	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth1"
++	log_test $? 0 "Route get shows active device"
++
++	# carrier down or admin down on nexthop device removes that entry
++	run_cmd "ip -netns peer li set veth2 down"
++	check_nexthop "id 101" "id 101 group 12 active-backup"
++	log_test $? 0 "Carrier down removes active"
++
++	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth21"
++	log_test $? 0 "Route get shows backup device"
++
++	run_cmd "$IP li set veth21 down"
++	$IP nexthop sh id 101 2>/dev/null
++	log_test $? 2 "Link down on backup removes nexthop"
++
++	check_route "2001:db8:101::1" ""
++	log_test $? 0 "Route removed after a-b nexthop removed"
++
++	# restore device state
++	run_cmd "ip -netns peer li set veth2 up"
++	run_cmd "$IP li set veth21 up"
++
++	# a/b with mpath
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 2001:db8:92::2 dev veth3"
++	run_cmd "$IP nexthop add id 21 via 2001:db8:81::2 dev veth21"
++	run_cmd "$IP nexthop add id 22 via 2001:db8:82::2 dev veth23"
++	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
++	run_cmd "$IP nexthop add id 102 group 12/22 active-backup"
++	run_cmd "$IP nexthop add id 103 group 101/102"
++	log_test $? 0 "Multipath with active-backup paths"
++
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP ro add 2001:db8:101::/64 nhid 103"
++	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
++	log_test $? 0 "ping with multipath containing active-backup paths"
++
++	run_cmd "ip -netns peer li set veth2 down"
++	check_nexthop "id 103" "id 103 group 101/102"
++	log_test $? 0 "Multipath still shows 2 paths after carrier down in a/b"
++
++	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
++	log_test $? 0 "ping with still works after carrier down"
++
++	run_cmd "ip -netns peer li set veth2 up"
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP -6 ro ls"
++
++	run_cmd "$IP li set veth21 down"
++	check_nexthop "id 103" "id 103 group 102"
++	log_test $? 0 "Multipath shows 1 path after admin down on new active"
++	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
++	log_test $? 0 "ping with still works after mpath loss of a-b path"
++
++	run_cmd "$IP li set veth21 up"
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP -6 ro ls"
++
++	#
++	# negative tests
++	#
++	# active points to invalid gw
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 2001:db8:91::3 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 2001:db8:81::2 dev veth21"
++	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
++	run_cmd "$IP ro add 2001:db8:101::/64 nhid 101"
++
++	# failed neigh for gateway - should fallback to backup
++	run_cmd "${IP} -6 neigh add 2001:db8:91::3 dev veth1 nud failed"
++	$IP -o ro get 2001:db8:101::1 2>/dev/null | grep -q "dev veth21"
++	log_test $? 0 "Route get shows backup device with invalid neigh"
++
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 2001:db8:92::2 dev veth3"
++	run_cmd "$IP nexthop add id 13 blackhole"
++	run_cmd "$IP nexthop add id 21 via 2001:db8:81::2 dev veth21"
++	run_cmd "$IP nexthop add id 22 via 2001:db8:82::2 dev veth23"
++
++	# must have 2 entries of equal weight
++	run_cmd "$IP nexthop add id 101 group 11 active-backup"
++	log_test $? 2 "Active-backup nexthop can not have 1 entry"
++	run_cmd "$IP nexthop add id 101 group 11/12/21 active-backup"
++	log_test $? 2 "Active-backup nexthop can not have more than 2 entries"
++	run_cmd "$IP nexthop add id 101 group 11,5/21,4 active-backup"
++	log_test $? 2 "Active-backup nexthops must have equal weight"
++	run_cmd "$IP nexthop add id 101 group 11,3/21,3 active-backup"
++	log_test $? 2 "Active-backup nexthops must have default weight"
++
++	# can not replace a/b group with mpath
++	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
++	run_cmd "$IP nexthop replace id 101 group 11/21 mpath"
++	log_test $? 2 "Can not change group type"
++
++	# a/b group can not have blackhole
++	run_cmd "$IP nexthop add id 102 group 11/13 active-backup"
++	log_test $? 2 "Active-backup can use blackhole as a path"
++}
++
++ipv4_ab_group()
++{
++	local rc
++
++	echo
++	echo "IPv4 active-backup groups"
++	echo "-------------------------"
++
++	check_nexthop_ab_support
++	if [ $? -eq $ksft_skip ]; then
++		return $ksft_skip
++	fi
++
++	setup_ab
++
++	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 172.16.81.2 dev veth21"
++	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
++	check_nexthop "id 101" "id 101 group 11/12 active-backup"
++	log_test $? 0 "Create active-backup group"
++
++	run_cmd "$IP ro add 172.16.101.0/24 nhid 101"
++	check_route "172.16.101.1" "172.16.101.0/24 nhid 101 via 172.16.1.2 dev veth1"
++	log_test $? 0 "Route list shows active device"
++
++	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth1"
++	log_test $? 0 "Route get shows active device"
++
++	# carrier down or admin down on nexthop device removes that entry
++	run_cmd "ip -netns peer li set veth2 down"
++	check_nexthop "id 101" "id 101 group 12 active-backup"
++	log_test $? 0 "Carrier down removes active"
++
++	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth21"
++	log_test $? 0 "Route get shows backup device"
++
++	run_cmd "$IP li set veth21 down"
++	$IP nexthop sh id 101 2>/dev/null
++	log_test $? 2 "Link down on backup removes nexthop"
++
++	check_route "172.16.101.1" ""
++	log_test $? 0 "Route removed after a-b nexthop removed"
++
++	# restore device state
++	run_cmd "ip -netns peer li set veth2 up"
++	run_cmd "$IP li set veth21 up"
++
++	# a/b with mpath
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 172.16.2.2 dev veth3"
++	run_cmd "$IP nexthop add id 21 via 172.16.81.2 dev veth21"
++	run_cmd "$IP nexthop add id 22 via 172.16.82.2 dev veth23"
++	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
++	run_cmd "$IP nexthop add id 102 group 12/22 active-backup"
++	run_cmd "$IP nexthop add id 103 group 101/102"
++	log_test $? 0 "Multipath with active-backup paths"
++
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP ro add 172.16.101.0/24 nhid 103"
++	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
++	log_test $? 0 "ping with multipath containing active-backup paths"
++
++	run_cmd "ip -netns peer li set veth2 down"
++	check_nexthop "id 103" "id 103 group 101/102"
++	log_test $? 0 "Multipath still shows 2 paths after carrier down in a/b"
++
++	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
++	log_test $? 0 "ping with still works after carrier down"
++
++	run_cmd "ip -netns peer li set veth2 up"
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP ro ls"
++
++	run_cmd "$IP li set veth21 down"
++	check_nexthop "id 103" "id 103 group 102"
++	log_test $? 0 "Multipath shows 1 path after admin down on new active"
++	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
++	log_test $? 0 "ping with still works after mpath loss of a-b path"
++
++	run_cmd "$IP li set veth21 up"
++	run_cmd "$IP nexthop ls"
++	run_cmd "$IP ro ls"
++
++	#
++	# negative tests
++	#
++	# active points to invalid gw
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 172.16.1.3 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 172.16.81.2 dev veth21"
++	run_cmd "$IP nexthop add id 101 group 11/12 active-backup"
++	run_cmd "$IP ro add 172.16.101.0/24 nhid 101"
++
++	# failed neigh for gateway - should fallback to backup
++	run_cmd "${IP} neigh add 172.16.1.3 dev veth1 nud failed"
++	$IP -o ro get 172.16.101.1 2>/dev/null | grep -q "dev veth21"
++	log_test $? 0 "Route get shows backup device with invalid neigh"
++
++	run_cmd "$IP nexthop flush"
++	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
++	run_cmd "$IP nexthop add id 12 via 172.16.2.2 dev veth3"
++	run_cmd "$IP nexthop add id 13 blackhole"
++	run_cmd "$IP nexthop add id 21 via 172.16.81.2 dev veth21"
++	run_cmd "$IP nexthop add id 22 via 172.16.82.2 dev veth23"
++
++	# must have 2 entries of equal weight
++	run_cmd "$IP nexthop add id 101 group 11 active-backup"
++	log_test $? 2 "Active-backup nexthop can not have 1 entry"
++	run_cmd "$IP nexthop add id 101 group 11/12/21 active-backup"
++	log_test $? 2 "Active-backup nexthop can not have more than 2 entries"
++	run_cmd "$IP nexthop add id 101 group 11,5/21,4 active-backup"
++	log_test $? 2 "Active-backup nexthops must have equal weight"
++	run_cmd "$IP nexthop add id 101 group 11,3/21,3 active-backup"
++	log_test $? 2 "Active-backup nexthops must have default weight"
++
++	# can not replace a/b group with mpath
++	run_cmd "$IP nexthop add id 101 group 11/21 active-backup"
++	run_cmd "$IP nexthop replace id 101 group 11/21 mpath"
++	log_test $? 2 "Can not change group type"
++
++	# a/b group can not have blackhole
++	run_cmd "$IP nexthop add id 102 group 11/13 active-backup"
++	log_test $? 2 "Active-backup can use blackhole as a path"
++}
++
++################################################################################
++# fdb nexthops
++
+ check_nexthop_fdb_support()
  {
- 	struct nexthop *rc = NULL;
--	struct nh_group *nhg;
--	int i;
-+	struct nexthop *p, *b;
-+
-+	switch (nhg->num_nh) {
-+	case 2:
-+		/* if primary is good, use it */
-+		p = nhg->nh_entries[0].nh;
-+		if (good_nh(p)) {
-+			rc = p;
-+			break;
-+		}
- 
--	if (!nh->is_group)
--		return nh;
-+		/* try backup */
-+		b = nhg->nh_entries[1].nh;
-+		if (good_nh(b))
-+			rc = b;
-+		break;
-+	case 1:
-+		p = nhg->nh_entries[0].nh;
-+		if (good_nh(p))
-+			rc = p;
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
-+	}
-+
-+	return rc;
-+}
-+
-+static struct nexthop *nh_select_path_mpath(struct nh_group *nhg, int hash)
-+{
-+	struct nexthop *rc = NULL;
-+	int i;
- 
--	nhg = rcu_dereference(nh->nh_grp);
- 	for (i = 0; i < nhg->num_nh; ++i) {
- 		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
- 		struct nexthop *nh;
-@@ -577,8 +621,17 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
- 			continue;
- 
- 		nh = nhge->nh;
--		if (nh->is_fdb_nh || good_nh(nh))
-+
-+		/* group in a group; inner one is active/backup pair */
-+		if (unlikely(nh->is_group)) {
-+			struct nh_group *nhg = rcu_dereference(nh->nh_grp);
-+
-+			nh = nh_select_path_ab(nhg, hash);
-+			if (nh)
-+				return nh;
-+		} else if (good_nh(nh)) {
- 			return nh;
-+		}
- 
- 		if (!rc)
- 			rc = nh;
-@@ -586,6 +639,23 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
- 
- 	return rc;
- }
-+
-+struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
-+{
-+	struct nh_group *nhg;
-+	struct nexthop *rc;
-+
-+	if (!nh->is_group)
-+		return nh;
-+
-+	nhg = rcu_dereference(nh->nh_grp);
-+	if (nhg->active_backup)
-+		rc = nh_select_path_ab(nhg, hash);
-+	else
-+		rc = nh_select_path_mpath(nhg, hash);
-+
-+	return rc;
-+}
- EXPORT_SYMBOL_GPL(nexthop_select_path);
- 
- static struct fib_nh_common *nhc_lookup_single(const struct nexthop *nh,
-@@ -603,6 +673,17 @@ static struct fib_nh_common *nhc_lookup_single(const struct nexthop *nh,
- 	return NULL;
- }
- 
-+/* active-backup only looks at primary */
-+static struct fib_nh_common *nhc_lookup_ab(const struct nh_group *nhg,
-+					   int fib_flags,
-+					   const struct flowi4 *flp,
-+					   int *nhsel)
-+{
-+	struct nexthop *nhe = nhg->nh_entries[0].nh;
-+
-+	return nhc_lookup_single(nhe, fib_flags, flp, nhsel);
-+}
-+
- static struct fib_nh_common *nhc_lookup_mpath(const struct nh_group *nhg,
- 					      int fib_flags,
- 					      const struct flowi4 *flp,
-@@ -614,7 +695,14 @@ static struct fib_nh_common *nhc_lookup_mpath(const struct nh_group *nhg,
- 	for (i = 0; i < nhg->num_nh; i++) {
- 		struct nexthop *nhe = nhg->nh_entries[i].nh;
- 
--		nhc = nhc_lookup_single(nhe, fib_flags, flp, nhsel);
-+		if (nhe->is_group) {
-+			const struct nh_group *nhg_ab;
-+
-+			nhg_ab = rcu_dereference(nhe->nh_grp);
-+			nhc = nhc_lookup_ab(nhg_ab, fib_flags, flp, nhsel);
-+		} else {
-+			nhc = nhc_lookup_single(nhe, fib_flags, flp, nhsel);
-+		}
- 		if (nhc) {
- 			*nhsel = i;
- 			return nhc;
-@@ -632,7 +720,10 @@ struct fib_nh_common *nexthop_get_nhc_lookup(const struct nexthop *nh,
- 	if (nh->is_group) {
- 		const struct nh_group *nhg = rcu_dereference(nh->nh_grp);
- 
--		return nhc_lookup_mpath(nhg, fib_flags, flp, nhsel);
-+		if (nhg->mpath)
-+			return nhc_lookup_mpath(nhg, fib_flags, flp, nhsel);
-+
-+		return nhc_lookup_ab(nhg, fib_flags, flp, nhsel);
- 	}
- 
- 	return nhc_lookup_single(nh, fib_flags, flp, nhsel);
-@@ -647,6 +738,15 @@ static bool nh_uses_dev_single(const struct nexthop *nh,
- 	return nhc_l3mdev_matches_dev(&nhi->fib_nhc, dev);
- }
- 
-+/* active-backup only looks at primary */
-+static bool nh_uses_dev_ab(const struct nh_group *nhg,
-+			   const struct net_device *dev)
-+{
-+	struct nexthop *nhe = nhg->nh_entries[0].nh;
-+
-+	return nh_uses_dev_single(nhe, dev);
-+}
-+
- static bool nh_uses_dev_mpath(const struct nh_group *nhg,
- 			      const struct net_device *dev)
- {
-@@ -655,8 +755,15 @@ static bool nh_uses_dev_mpath(const struct nh_group *nhg,
- 	for (i = 0; i < nhg->num_nh; i++) {
- 		struct nexthop *nhe = nhg->nh_entries[i].nh;
- 
--		if (nh_uses_dev_single(nhe, dev))
-+		if (nhe->is_group) {
-+			const struct nh_group *nhg_ab;
-+
-+			nhg_ab = rcu_dereference(nhe->nh_grp);
-+			if (nh_uses_dev_ab(nhg_ab, dev))
-+				return true;
-+		} else if (nh_uses_dev_single(nhe, dev)) {
- 			return true;
-+		}
- 	}
- 
- 	return false;
-@@ -667,7 +774,9 @@ bool nexthop_uses_dev(const struct nexthop *nh, const struct net_device *dev)
- 	if (nh->is_group) {
- 		const struct nh_group *nhg = rcu_dereference(nh->nh_grp);
- 
--		return nh_uses_dev_mpath(nhg, dev);
-+		if (nhg->mpath)
-+			return nh_uses_dev_mpath(nhg, dev);
-+		return nh_uses_dev_ab(nhg, dev);
- 	}
- 
- 	return nh_uses_dev_single(nh, dev);
-@@ -684,6 +793,28 @@ static int nexthop_fib6_nh_cb(struct nexthop *nh,
- 	return cb(&nhi->fib6_nh, arg);
- }
- 
-+static int nexthop_fib6_ab_nhg_cb(struct nh_group *nhg, bool primary_only,
-+				  int (*cb)(struct fib6_nh *nh, void *arg),
-+				  void *arg)
-+{
-+	int err;
-+	int i;
-+
-+	for (i = 0; i < nhg->num_nh; i++) {
-+		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
-+		struct nexthop *nh = nhge->nh;
-+
-+		err = nexthop_fib6_nh_cb(nh, cb, arg);
-+		if (err)
-+			return err;
-+
-+		if (primary_only)
-+			break;
-+	}
-+
-+	return 0;
-+}
-+
- static int nexthop_fib6_nhg_cb(struct nh_group *nhg, bool primary_only,
- 			       int (*cb)(struct fib6_nh *nh, void *arg),
- 			       void *arg)
-@@ -695,7 +826,17 @@ static int nexthop_fib6_nhg_cb(struct nh_group *nhg, bool primary_only,
- 		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
- 		struct nexthop *nh = nhge->nh;
- 
--		err = nexthop_fib6_nh_cb(nh, cb, arg);
-+		if (unlikely(nh->is_group)) {
-+			struct nh_group *nhg2;
-+
-+			nhg2 = rcu_dereference(nh->nh_grp);
-+			/* group in group is active/backup */
-+			err = nexthop_fib6_ab_nhg_cb(nhg2, primary_only,
-+						     cb, arg);
-+		} else {
-+			err = nexthop_fib6_nh_cb(nh, cb, arg);
-+		}
-+
- 		if (err)
- 			return err;
- 	}
-@@ -899,6 +1040,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
- 
- 	newg->has_v4 = nhg->has_v4;
- 	newg->mpath = nhg->mpath;
-+	newg->active_backup = nhg->active_backup;
- 	newg->num_nh = nhg->num_nh;
- 
- 	/* copy old entries to new except the one getting removed */
-@@ -941,7 +1083,8 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
- 	synchronize_rcu();
- }
- 
--static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
-+static void remove_nexthop_group(struct net *net, struct nexthop *nh,
-+				 struct nl_info *nlinfo)
- {
- 	struct nh_group *nhg = rcu_dereference_rtnl(nh->nh_grp);
- 	int i, num_nh = nhg->num_nh;
-@@ -954,6 +1097,9 @@ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
- 
- 		list_del_init(&nhge->nh_list);
- 	}
-+
-+	if (nhg->active_backup)
-+		remove_nexthop_from_groups(net, nh, nlinfo);
- }
- 
- /* not called for nexthop replace */
-@@ -987,7 +1133,7 @@ static void __remove_nexthop(struct net *net, struct nexthop *nh,
- 	__remove_nexthop_fib(net, nh);
- 
- 	if (nh->is_group) {
--		remove_nexthop_group(nh, nlinfo);
-+		remove_nexthop_group(net, nh, nlinfo);
- 	} else {
- 		struct nh_info *nhi;
- 
-@@ -1043,6 +1189,11 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
- 	oldg = rtnl_dereference(old->nh_grp);
- 	newg = rtnl_dereference(new->nh_grp);
- 
-+	if (oldg->active_backup ^ newg->active_backup) {
-+		NL_SET_ERR_MSG(extack, "Can not change group type with replace");
-+		return -EINVAL;
-+	}
-+
- 	/* update parents - used by nexthop code for cleanup */
- 	for (i = 0; i < newg->num_nh; i++)
- 		newg->nh_entries[i].nh_parent = old;
-@@ -1330,6 +1481,9 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 	if (cfg->nh_fdb)
- 		nh->is_fdb_nh = 1;
- 
-+	if (cfg->nh_grp_type == NEXTHOP_GRP_TYPE_ACTIVE_BACKUP)
-+		nhg->active_backup = 1;
-+
- 	rcu_assign_pointer(nh->nh_grp, nhg);
- 
- 	return nh;
-@@ -1594,7 +1748,7 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
- 			NL_SET_ERR_MSG(extack, "Invalid group type");
- 			goto out;
- 		}
--		err = nh_check_attr_group(net, tb, extack);
-+		err = nh_check_attr_group(net, tb, cfg->nh_grp_type, extack);
- 
- 		/* no other attributes should be set */
- 		goto out;
+ 	$IP nexthop help 2>&1 | grep -q fdb
 -- 
 2.21.1 (Apple Git-122.3)
 
