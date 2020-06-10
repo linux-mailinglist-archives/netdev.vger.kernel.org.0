@@ -2,156 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7173F1F58E7
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 18:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C741F58F9
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 18:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728536AbgFJQTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 12:19:14 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26147 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728513AbgFJQTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 12:19:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591805951;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=anaWHR8ODh6bT+XuFE0Xz0+EuRSEm+J1BoLhgrw84d0=;
-        b=PqwsPm3+wCtoi/v/uszAfAEjXalzKuvEu4AWipiAtWKzz1GnfaNnGLnOPmjOyIWdhWxO2b
-        DFL3m6P4s0A3ucDHFEe8Y2nMEoEOvu6tdBe1jKqVclnpj7P9WUtWn6AyXF6LrPBjjfaBQI
-        imBTP9sJb3LhvSUArEFFpRYYzpE+2As=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-107-63cJjWElOkG0rndkqPa_3Q-1; Wed, 10 Jun 2020 12:19:09 -0400
-X-MC-Unique: 63cJjWElOkG0rndkqPa_3Q-1
-Received: by mail-qt1-f199.google.com with SMTP id u48so2340964qth.17
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 09:19:09 -0700 (PDT)
+        id S1728784AbgFJQYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 12:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728789AbgFJQYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 12:24:40 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE97DC03E96B
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 09:24:40 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id x14so2982759wrp.2
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 09:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vhw/oGxvNGD7lKTQozqoLOGqfX4cCNC+SJwFgjZB/LQ=;
+        b=h7e7wkAaxunIsaTo7AirYu5tuyDInw2PEBZQ5SKt/RouZy/1//qDTG+IGgkn5f8+zp
+         louUeBvFK6zgN0dp3KVtU+hOfXofYlthrQ0Rspqhcf7Mte7FM2RLTwd03CovE6qnDCYn
+         OU/xxnh4n3qlJyW5eAQwBCXxR9nVFUkcVH/kKpT3S+E9Z8u4bN41V0I8EH8o/8HqnkCu
+         xKlU/9Y07AUYTFh5evt+UoTxNTsS6uzWdoA/DvPg3NqXUVMtvxE6Ec7vTtGSezCNqolT
+         zANwo7r/c526B1LSz3BOL+eNKsu6nEUj1V5Bv7Fawr9abwoDOu+xQUnFFKwmTcN04X8N
+         pCZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=anaWHR8ODh6bT+XuFE0Xz0+EuRSEm+J1BoLhgrw84d0=;
-        b=uZ/NX5qopgf+rIO1MBP4SFqukUGtb75rX8M0iM1Ivt47TIfLJve8mW8lKCe4y1DMLJ
-         7UUIvnZ6UmJ8Ckzbd6dqFXvmyZe/QOuTrky6dwOMDKpgKFe8DBf9/G0oB9qb4uMmNbRv
-         SfgLjZhEfu7BEOQR0qgxRZo3T9RxTWwYtMiQ5J4l/e7knS6BuuuJ9BaWKe9MG4TqblqG
-         E9DHgwUS2CLOM2s9vfbb7ZLUprG/L+79dJP3B7b7Hibt7lrlLQLngqr3o19z5Mg2eyWT
-         VhxLnmL7GJ5yQP8QpoJHlq6XvpuE3qgqbt2V9l7l5d+U5YGuA0yrkcZ95LLymvNXmhGS
-         YjvA==
-X-Gm-Message-State: AOAM530+s01BRcw76BL/ryAbLRTXtFSuvDDIZCHeSsTH3IVX4oV6I/Gv
-        akmTcJnS7JTDEZ8YRIDdcT7qV1+cqI1NA8nBkx7ZeHIEhJnLWLGxG0CPH7MF/kOS3qNbkupIckR
-        Fskaa5CJwA+PKIpavwWvzqtMQhAHPKpxL
-X-Received: by 2002:a37:2702:: with SMTP id n2mr3862400qkn.497.1591805949117;
-        Wed, 10 Jun 2020 09:19:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4zn0n1VsDB2zRrhX3o2J87XhGBACiQ4fWr35+ECNuZ32gZdIovwS6Er7XIT1803b34VxsP/mWRIhTQj1OyYA=
-X-Received: by 2002:a37:2702:: with SMTP id n2mr3862363qkn.497.1591805948686;
- Wed, 10 Jun 2020 09:19:08 -0700 (PDT)
+        bh=Vhw/oGxvNGD7lKTQozqoLOGqfX4cCNC+SJwFgjZB/LQ=;
+        b=ff6LrPPCxMuV4gHoDT1royAZVlJzc2B7kPkCapO8u0RGiYOG23WprDwo2SyQn/ftQh
+         76AmAOZiycCUDKdYXn8Vpf8AVUu+ZZptMEmBIY1g+Xjcne8oSpnWwLzBktIrxWRBS6q7
+         kJn1AoAMv3OjAH/z8xIUS1Cxzzar3koo2qi+wxc02NfS05PfqqNeG2a4TbZ0GPT2Ppns
+         MX1cQ41/PnEz217mM5jPM/FqvRFQwEbSGWPmkVAbenwo2T5aPTvo6Gvq2MUQSv8sCA5m
+         P/USiwIQRJozOgZRSzNNS3KrNEOHQaGDLWg0u5phmUuQydSdW2G0A5mf/uHBUaidFTQE
+         TVvA==
+X-Gm-Message-State: AOAM533PvPfvlJ2PPXFTvBj3lvJ3hwoYbngQrNFr5+XOPNJ6L9ceFSQr
+        rXhsaEJ+QHAz4KItCH/+mExcK+fYJmxPrcz6wranL0GZD/w=
+X-Google-Smtp-Source: ABdhPJxfjgJXs/bPY/aE8HMQ8QvpZV3IX+2Q+eH6h8D62o/czR+/4yQd66BOFYEkbubh/YInEIqtuuONovWGA7PcSVs=
+X-Received: by 2002:adf:a34d:: with SMTP id d13mr4454262wrb.270.1591806279635;
+ Wed, 10 Jun 2020 09:24:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200610113515.1497099-1-mst@redhat.com> <20200610113515.1497099-4-mst@redhat.com>
- <CAJaqyWdGKh5gSTndGuVPyJSgt3jfjfW4xNCrJ2tQ9f+mD8=sMQ@mail.gmail.com> <20200610111147-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200610111147-mutt-send-email-mst@kernel.org>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 10 Jun 2020 18:18:32 +0200
-Message-ID: <CAJaqyWe6d19hFAbpqaQqOPuQQmBQyevyF4sTVkaXKhD729XDkw@mail.gmail.com>
-Subject: Re: [PATCH RFC v7 03/14] vhost: use batched get_vq_desc version
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
+References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
+ <70458451-6ece-5222-c46f-87c708eee81e@strongswan.org> <CADvbK_cw0yeTdVuNfbc8MJ6+9+1RgnW7XGw1AgQQM7ybnbdaDQ@mail.gmail.com>
+ <b93d9e68-c2da-bb1c-e1f9-21c81f740242@strongswan.org>
+In-Reply-To: <b93d9e68-c2da-bb1c-e1f9-21c81f740242@strongswan.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 11 Jun 2020 00:32:46 +0800
+Message-ID: <CADvbK_egkEe0Pw-Yy8eQggS-cfvndOnj7W2hqvpdNxS2xJ50xg@mail.gmail.com>
+Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
+To:     Tobias Brunner <tobias@strongswan.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Yuehaibing <yuehaibing@huawei.com>,
+        Andreas Steffen <andreas.steffen@strongswan.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 5:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Tue, Jun 9, 2020 at 10:18 PM Tobias Brunner <tobias@strongswan.org> wrote:
 >
-> On Wed, Jun 10, 2020 at 02:37:50PM +0200, Eugenio Perez Martin wrote:
-> > > +/* This function returns a value > 0 if a descriptor was found, or 0 if none were found.
-> > > + * A negative code is returned on error. */
-> > > +static int fetch_descs(struct vhost_virtqueue *vq)
-> > > +{
-> > > +       int ret;
-> > > +
-> > > +       if (unlikely(vq->first_desc >= vq->ndescs)) {
-> > > +               vq->first_desc = 0;
-> > > +               vq->ndescs = 0;
-> > > +       }
-> > > +
-> > > +       if (vq->ndescs)
-> > > +               return 1;
-> > > +
-> > > +       for (ret = 1;
-> > > +            ret > 0 && vq->ndescs <= vhost_vq_num_batch_descs(vq);
-> > > +            ret = fetch_buf(vq))
-> > > +               ;
+> Hi Xin,
+>
+> >> I guess we could workaround this issue in strongSwan by installing
+> >> policies that share the same mark and selector with the same priority,
+> >> so only one instance is ever installed in the kernel.  But the inability
+> >> to address the exact policy when querying/deleting still looks like a
+> >> problem to me in general.
+> >>
+> > For deleting, yes, but for querying, I think it makes sense not to pass
+> > the priority, and always get the policy with the highest priority.
+>
+> While I agree it's less of a problem (at least for strongSwan),  it
+> should be possible to query the exact policy one wants.  Because as far
+> as I understand, the whole point of Steffen's original patch was that
+> all duplicate policies could get used concurrently, depending on the
+> marks and masks on them and the traffic, so all of them must be queryable.
+>
+> But I actually think the previous check that viewed policies with the
+> exact same mark and value as duplicates made sense, because those will
+> never be used concurrently.  It would at least fix the default behavior
+> with strongSwan (users have to configure marks/masks manually).
+>
+> > We can separate the deleting path from the querying path when
+> > XFRMA_PRIORITY attribute is set.
 > >
-> > (Expanding comment in V6):
-> >
-> > We get an infinite loop this way:
-> > * vq->ndescs == 0, so we call fetch_buf() here
-> > * fetch_buf gets less than vhost_vq_num_batch_descs(vq); descriptors. ret = 1
-> > * This loop calls again fetch_buf, but vq->ndescs > 0 (and avail_vq ==
-> > last_avail_vq), so it just return 1
+> > Is that enough for your case to only fix for the policy deleting?
 >
-> That's what
->          [PATCH RFC v7 08/14] fixup! vhost: use batched get_vq_desc version
-> is supposed to fix.
+> While such an attribute could be part of a solution, it does not fix the
+> regression your patch created.  The kernel behavior changed and a
+> userland modification is required to get back to something resembling
+> the previous behavior (without an additional kernel patch we'll actually
+> not be able to restore the previous behavior, where we separated
+> different types of policies into priority classes).  That is, current
+> and old strongSwan versions could create lots of duplicate/lingering
+> policies, which is not good.
 >
-
-Sorry, I forgot to include that fixup.
-
-With it I don't see CPU stalls, but with that version latency has
-increased a lot and I see packet lost:
-+ ping -c 5 10.200.0.1
-PING 10.200.0.1 (10.200.0.1) 56(84) bytes of data.
-From 10.200.0.2 icmp_seq=1 Destination Host Unreachable
-From 10.200.0.2 icmp_seq=2 Destination Host Unreachable
-From 10.200.0.2 icmp_seq=3 Destination Host Unreachable
-64 bytes from 10.200.0.1: icmp_seq=5 ttl=64 time=6848 ms
-
---- 10.200.0.1 ping statistics ---
-5 packets transmitted, 1 received, +3 errors, 80% packet loss, time 76ms
-rtt min/avg/max/mdev = 6848.316/6848.316/6848.316/0.000 ms, pipe 4
---
-
-I cannot even use netperf.
-
-If I modify with my proposed version:
-+ ping -c 5 10.200.0.1
-PING 10.200.0.1 (10.200.0.1) 56(84) bytes of data.
-64 bytes from 10.200.0.1: icmp_seq=1 ttl=64 time=7.07 ms
-64 bytes from 10.200.0.1: icmp_seq=2 ttl=64 time=0.358 ms
-64 bytes from 10.200.0.1: icmp_seq=3 ttl=64 time=5.35 ms
-64 bytes from 10.200.0.1: icmp_seq=4 ttl=64 time=2.27 ms
-64 bytes from 10.200.0.1: icmp_seq=5 ttl=64 time=0.426 ms
-
-[root@localhost ~]# netperf -H 10.200.0.1 -p 12865 -l 10 -t TCP_STREAM
-MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-10.200.0.1 () port 0 AF_INET
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
-131072  16384  16384    10.01    4742.36
-[root@localhost ~]# netperf -H 10.200.0.1 -p 12865 -l 10 -t UDP_STREAM
-MIGRATED UDP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-10.200.0.1 () port 0 AF_INET
-Socket  Message  Elapsed      Messages
-Size    Size     Time         Okay Errors   Throughput
-bytes   bytes    secs            #      #   10^6bits/sec
-
-212992   65507   10.00        9214      0     482.83
-212992           10.00        9214            482.83
-
-I will compare with the non-batch version for reference, but the
-difference between the two is noticeable. Maybe it's worth finding a
-good value for the if() inside fetch_buf?
-
-Thanks!
-
-
-> --
-> MST
+> A problem with such an attribute is how userland would learn when to use
+> it.  We could query the kernel version, but patches might get
+> backported.  So how can we know the kernel will create duplicates when
+> we update a policy and change the priority, which we then have to delete
+> (or even can delete with such a new attribute)?  Do we have to do a
+> runtime check (e.g. install two duplicate policies with different
+> priorities and delete twice to see if the second attempt results in an
+> error)?  With marks it's relatively easy as users have to configure them
+> explicitly and they work or they don't depending on the kernel version.
+>  But here it's not so easy as the IKE daemon uses priorities extensively
+> already.
 >
+> Like the marks it might work somehow if the new attribute also had to be
+> passed in the message that creates a policy (marks have to be passed
+> with every message, including querying them).  While that's not super
+> ideal as we'd have two priority values in these messages (and have to
+> keep track of them in the kernel state), there is some precedent with
+> the anti-replay config for SAs (which can be passed via xfrm_usersa_info
+> struct or as separate attribute with more options for ESN).  Userland
+> would still have to learn somehow that the kernel understands the new
+> attribute and duplicate policies with different priorities are possible.
+>  But if there was any advantage in using this, we could perhaps later
+> add an option for users to enable it.  At least the current behavior
+> would not change (i.e. older strongSwan versions would continue to run
+> on newer kernels without modifications).
+>
+Now I can see some about how userland is using "priority". We probably
+need to revert both this patch and 7cb8a93968e3 ("xfrm: Allow inserting
+policies with matching mark and different priorities").
 
+Thanks for the explanation, I will think more about it tomorrow.
