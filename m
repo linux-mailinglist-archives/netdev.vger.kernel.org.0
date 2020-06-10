@@ -2,67 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BBEB1F5C31
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 21:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A54761F5C45
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 21:54:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730336AbgFJTuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 15:50:02 -0400
-Received: from smtprelay0193.hostedemail.com ([216.40.44.193]:34158 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730085AbgFJTuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 15:50:02 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 700B5180295B8;
-        Wed, 10 Jun 2020 19:50:00 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3351:3622:3865:3866:3867:3868:3872:3874:4321:5007:6119:6691:7903:10004:10400:10848:11232:11658:11914:12297:12740:12760:12895:13069:13172:13229:13311:13357:13439:14659:14721:21080:21433:21627:21740:30045:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: blade08_160868726dcd
-X-Filterd-Recvd-Size: 1819
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 10 Jun 2020 19:49:58 +0000 (UTC)
-Message-ID: <31e1aa72b41f9ff19094476033511442bb6ccda0.camel@perches.com>
-Subject: Re: [PATCH v3 6/7] venus: Make debug infrastructure more flexible
-From:   Joe Perches <joe@perches.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Jason Baron <jbaron@akamai.com>
-Date:   Wed, 10 Jun 2020 12:49:57 -0700
-In-Reply-To: <20200610133717.GB1906670@kroah.com>
-References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
-         <20200609104604.1594-7-stanimir.varbanov@linaro.org>
-         <20200609111414.GC780233@kroah.com>
-         <dc85bf9e-e3a6-15a1-afaa-0add3e878573@linaro.org>
-         <20200610133717.GB1906670@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1730331AbgFJTxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 15:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727884AbgFJTxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 15:53:48 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002E6C03E96F
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:47 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id m81so3733282ioa.1
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 12:53:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O7/TXfQZ+QnJiUEUdXBEq+AyXg2ISr3BLixo9khgkNk=;
+        b=h8JQPbsbyoHWB2WjYedvvxIu3PJTMuBU2jVyhL4S1VpuhuiyVsHrVa+hkbVVJ2dkCb
+         84dUHwmLQ7+Lm2npW9DNjosCPg+h/syEzBmIA3pbXy478Oes03vPm3ylkhvG+vxjTcU2
+         Z9sNOJzhP+FHSyndzewU/AhVy0+EnPnO709/Dvk80GSuCZdXaf/VkP8mmt991AKEpCP/
+         vlfNJTjQqqzB8ORXCbHgSPN/kwXoP/KqGvvs9rh0IgRgh0TOdiFGujNE15my9X06/PV6
+         Z1ZLCpAWbGKLtQweD4e29VFcQQOssH1S2gLtEITECZrkCyu7yQUPmleWbWbql01VahXK
+         y0yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O7/TXfQZ+QnJiUEUdXBEq+AyXg2ISr3BLixo9khgkNk=;
+        b=DIfYmLsWB8P5W3xnVb4Ox5WJRuWfQ3ab0aepfTLd5G9pvmmVrrtaVygK+1leLUYc50
+         JfJMe4OTMZluhSYZlGyOuVZH42nO5gj2z5W1S5SNps1SRXE8PNN1UIu8hvyg+KfKB0jv
+         sQbNNfbpM6x7xzu2Grag+49VlEjd4DXcnk+0feZeurTudClpZ2zIRI7bHTrFuVofuk+5
+         KoZ2+RhzJDU9HrZ+1D+zK5/FW71XbZCINzH1GQ3X4bWqzqkiJPHQYrvQ4iQbNT+PEigG
+         t0/qdH4ubCB8saQ7R3m1EioH7IjVLNBBjDGKK5lrH3jznwiP7iJSJiFsWF1DmyWBga3W
+         jcRQ==
+X-Gm-Message-State: AOAM530/eiJV9rfTt0xOL/ltTOC1dZD6QXDyTH1/e/UXzcPSas07l2vV
+        gf+DdtVxEsHg7Y28i5JpVgpe3Q==
+X-Google-Smtp-Source: ABdhPJy6JWIFDBX/oG+bShtNLcHYuInCmW4DpTZXDTg/DHaZKUZGnJyPYPT79FJPZnUuQHFZQogh7A==
+X-Received: by 2002:a5e:dd0a:: with SMTP id t10mr5148449iop.9.1591818827078;
+        Wed, 10 Jun 2020 12:53:47 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id r10sm408828ile.36.2020.06.10.12.53.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jun 2020 12:53:46 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/5] net: ipa: endpoint configuration fixes
+Date:   Wed, 10 Jun 2020 14:53:27 -0500
+Message-Id: <20200610195332.2612233-1-elder@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-06-10 at 15:37 +0200, Greg Kroah-Hartman wrote:
-> Please work with the infrastructure we have, we have spent a lot of time
-> and effort to make it uniform to make it easier for users and
-> developers.
+This series fixes four bugs in the configuration of IPA endpoints.
+See the description of each for more information.  The last patch
+changes a BUILD_BUG_ON() call into a runtime warning, because
+violating the checked condition does not consitute a real bug.
 
-Not quite.
+					-Alex
 
-This lack of debug grouping by type has been a
-_long_ standing issue with drivers.
+Alex Elder (5):
+  net: ipa: program metadata mask differently
+  net: ipa: fix modem LAN RX endpoint id
+  net: ipa: program upper nibbles of sequencer type
+  net: ipa: header pad field only valid for AP->modem endpoint
+  net: ipa: warn if gsi_trans structure is too big
 
-> Don't regress and try to make driver-specific ways of doing
-> things, that way lies madness...
+ drivers/net/ipa/ipa_data-sc7180.c |  2 +-
+ drivers/net/ipa/ipa_endpoint.c    | 97 ++++++++++++++++++-------------
+ drivers/net/ipa/ipa_main.c        |  7 ++-
+ drivers/net/ipa/ipa_reg.h         |  2 +
+ 4 files changed, 65 insertions(+), 43 deletions(-)
 
-It's not driver specific, it allows driver developers to
-better isolate various debug states instead of keeping
-lists of specific debug messages and enabling them
-individually.
-
+-- 
+2.25.1
 
