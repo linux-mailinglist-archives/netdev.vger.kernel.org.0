@@ -2,120 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 783341F4B7C
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 04:35:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8A61F4BA8
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 05:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbgFJCfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 22:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S1726085AbgFJDB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 23:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbgFJCfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 22:35:21 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55134C05BD1E;
-        Tue,  9 Jun 2020 19:35:20 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id s23so431680pfh.7;
-        Tue, 09 Jun 2020 19:35:20 -0700 (PDT)
+        with ESMTP id S1725927AbgFJDB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 23:01:58 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D3CC05BD1E;
+        Tue,  9 Jun 2020 20:01:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i16so671320qtr.7;
+        Tue, 09 Jun 2020 20:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=KwqUKh9BVBfc72TeUnUwfF0EHYYLBppLJ9XiJiFqPwE=;
-        b=mWbMQytT2cCRnHvGhoKaSG8N/VioLcW6SilE+9qrGvgXmVfihd1Qe0EcK2GY0MZeGX
-         4aFShmg1DmmBoSK69GkCgjj1RH/QCeNJ4AwSR9zMjSgN9+Ow1xjImLcTNqa3ZZso8V1f
-         yHc4yh+GcnJMGj2pOPLc8joa6z0bbo5iP84Woru/0UCSMKWc1y9t/nqQ89JJ9FjF9SAa
-         DPAKi2qOTc6pPmhuVhbsQNxP7QYEfUle+NCELWWas0vTEsrouxp0eZxa6m5q4bOXlhe7
-         if7bakqVUi1Ff6/qgAy60k/xBTBFSgtRrnoVZpI1nfILxtBe5xHdWA/0jpoCHp//c2Qs
-         4Tew==
+        h=from:to:subject:date:message-id;
+        bh=9BDkz46lWvTDN3YxKGr7Bl8qQegPZ/wDf2X35bbrkxU=;
+        b=oVKNo/tfvz7bFmNdvIMwTizX/CsT8Gxj6piNvPjqzCF7cJCI3wQOS7Hs/HkFy/pMjn
+         mQVorA9tU4t/ylaGAJpQZFrmG+Q+MopbBOyPQ0PzFOhqkJ/DH/0Yafq3HOw7AndkRtNZ
+         SfusXBFGo2lTUTDTOO8g1n9dT/ZxKcHOMg+Uc+6d5b6JD+s3yMj2RikNoEKXSom/kaD/
+         Qp4dSrLdIfVKC2/Mx40xuzWkOZ1W1/FGfSLmisSFwlayob8MtzuMRjhlV1mLu4TmZjr9
+         Z3VtByXkO8hKPzHHwdmQuvLURHxXGA0eWs0zvL+xiQMEmvDU7kkwDPnoFuZ9fOxmMtA1
+         iUwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=KwqUKh9BVBfc72TeUnUwfF0EHYYLBppLJ9XiJiFqPwE=;
-        b=LYMogoG1MqhSp6J9d77UXNXN28YfbPMazzLqADPRH4Nym14mr8kU7BAOFeY8oysGc6
-         m0l2rOV/5NmrmQfRoB/t/PsXyJnu+iwvjtxmpU1SfCVvyWtCnEGnKc9z9l2dRIMaQ27d
-         1f9w79NyNv2NlyUMIx1e/4RyUK1BNuIdBse86um2b4DCw9BbDUhzVAI1n4U1vN3t0sJm
-         VFJky2k6zIVN16xbZ7L0TH+iME4pI6egQEduRScLUM2hBij3AhiYSmuAHs5G1bvLkoIG
-         0G9pNewyMKsJkZUQMDoD0D0nyF+7lVQIL49hmE1K9DKDevd3LqeeXPnkEs9BwLKas+Ai
-         xKuA==
-X-Gm-Message-State: AOAM530Ehu9lQoVP5db9m5Hm3k7R2aB0ezOwJq75K+/HKLkwmhMjuRqJ
-        Cn2hnuhztR4lIfs9jvIK6ZI=
-X-Google-Smtp-Source: ABdhPJzpTUY42IZJdfxAnsDBVe4jQJHiDsTMF8jQmZPaB0C2uUB1RNu1iMZBZKYoqlWn04kIQAeFDQ==
-X-Received: by 2002:a62:4e91:: with SMTP id c139mr782516pfb.18.1591756519769;
-        Tue, 09 Jun 2020 19:35:19 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g18sm9616386pgn.47.2020.06.09.19.35.16
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=9BDkz46lWvTDN3YxKGr7Bl8qQegPZ/wDf2X35bbrkxU=;
+        b=Nt7LpsCpQkA0L8sWbzHXcQc20oSvmrFU0gx4DRQrcsgRMzJGjy2AV6dleGL9fyRxoh
+         dLPtyU41SjFIRuQejvLp1sE0zsmoyN9v+O/8EvaB0hNgTzZ7InxSLuybnvND5G4YJFDx
+         QrbT8ZCdhBB76Fw8CuawupSGj6tcAyvLGh3QQzJTdvbC9xLg2DLBrA1Cakmu0vd/jgA+
+         VZU2fZYE1MmFrvErymTIdJwG+OBry2wrdWoam5fT1iQIccvbwDYpTekwF2vmGws1/qqg
+         2kDnwuNEV4AjhTbDrq3RVPr/DIEXqlvhnq7dqGhCc/MBF62yIFo31b7WEw9TfvNbLXGl
+         mrDQ==
+X-Gm-Message-State: AOAM530VO8zevcedf7YlTk1+UaFH1Raq/7u5CbN5Li/kk7YlDePbn6UY
+        nmhqKDIKp5GOFSo5VqARnr0=
+X-Google-Smtp-Source: ABdhPJwO45Dbs22xOgau2tZLeyyht/La6qYJg4UW4TydiwZ68nZvNhFSDc2qDJGiLzO3Va+Sh21zaw==
+X-Received: by 2002:ac8:18b9:: with SMTP id s54mr1089544qtj.176.1591758117561;
+        Tue, 09 Jun 2020 20:01:57 -0700 (PDT)
+Received: from linux.home ([2604:2000:1344:41d:29ac:7979:1e2e:c67b])
+        by smtp.googlemail.com with ESMTPSA id y19sm10778716qki.19.2020.06.09.20.01.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 19:35:19 -0700 (PDT)
-Date:   Wed, 10 Jun 2020 10:35:08 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Tue, 09 Jun 2020 20:01:56 -0700 (PDT)
+From:   Gaurav Singh <gaurav1086@gmail.com>
+To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200610023508.GR102436@dhcp-12-153.nay.redhat.com>
-References: <20200604040940.GL102436@dhcp-12-153.nay.redhat.com>
- <871rmvkvwn.fsf@toke.dk>
- <20200604121212.GM102436@dhcp-12-153.nay.redhat.com>
- <87bllzj9bw.fsf@toke.dk>
- <20200604144145.GN102436@dhcp-12-153.nay.redhat.com>
- <87d06ees41.fsf@toke.dk>
- <20200605062606.GO102436@dhcp-12-153.nay.redhat.com>
- <878sgxd13t.fsf@toke.dk>
- <20200609030344.GP102436@dhcp-12-153.nay.redhat.com>
- <87lfkw7zhk.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87lfkw7zhk.fsf@toke.dk>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
+        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] xdp_rxq_info_user: Add null check after malloc
+Date:   Tue,  9 Jun 2020 23:01:36 -0400
+Message-Id: <20200610030145.17263-1-gaurav1086@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 09, 2020 at 10:31:19PM +0200, Toke Høiland-Jørgensen wrote:
-> > Oh, sorry for the typo, the numbers make me crazy, it should be only
-> > ingress i40e, egress veth. Here is the right description:
-> >
-> > Kernel 5.7 + my patch(ingress i40e, egress i40e)
-> > xdp_redirect_map:
-> >   generic mode: 1.9M PPS
-> >   driver mode: 10.2M PPS
-> >
-> > xdp_redirect_map_multi:
-> >   generic mode: 1.58M PPS
-> >   driver mode: 7.16M PPS
-> >
-> > Kernel 5.7 + my patch(ingress i40e, egress veth(No XDP on peer))
-> > xdp_redirect_map:
-> >   generic mode: 2.2M PPS
-> >   driver mode: 14.2M PPS
-> 
-> A few messages up-thread you were getting 4.15M PPS in this case - what
-> changed? It's inconsistencies like these that make me suspicious of the
-> whole set of results :/
+Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
 
-I got the number after a reboot, not sure what happened.
-And I also feel surprised... But the result shows the number, so I have
-to put it here.
+The memset call is made right after malloc call which
+can return a NULL pointer upon failure causing a 
+segmentation fault. Fix this by adding a null check 
+right after malloc() and then do memset().
 
-> 
-> Are you getting these numbers from ethtool_stats.pl or from the XDP
-> program? What counter are you looking at, exactly?
+---
+ samples/bpf/xdp_rxq_info_user.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-For bridge testing I use ethtool_stats.pl. For later xdp_redirect_map
-and xdp_redirect_map_multi testing, I checked that ethtool_stats.pl and
-XDP program shows the same number. When run ethtool_stats.pl the number
-will go a little bit slower. So at the end I use the xdp program's number.
+diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
+index 4fe47502ebed..2d03c84a4cca 100644
+--- a/samples/bpf/xdp_rxq_info_user.c
++++ b/samples/bpf/xdp_rxq_info_user.c
+@@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
+ 
+ 	size = sizeof(struct datarec) * nr_cpus;
+ 	array = malloc(size);
+-	memset(array, 0, size);
+ 	if (!array) {
+ 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
+ 		exit(EXIT_FAIL_MEM);
+ 	}
++	memset(array, 0, size);
+ 	return array;
+ }
+ 
+@@ -218,11 +218,11 @@ static struct record *alloc_record_per_rxq(void)
+ 
+ 	size = sizeof(struct record) * nr_rxqs;
+ 	array = malloc(size);
+-	memset(array, 0, size);
+ 	if (!array) {
+ 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
+ 		exit(EXIT_FAIL_MEM);
+ 	}
++	memset(array, 0, size);
+ 	return array;
+ }
+ 
+@@ -233,11 +233,11 @@ static struct stats_record *alloc_stats_record(void)
+ 	int i;
+ 
+ 	rec = malloc(sizeof(*rec));
+-	memset(rec, 0, sizeof(*rec));
+ 	if (!rec) {
+ 		fprintf(stderr, "Mem alloc error\n");
+ 		exit(EXIT_FAIL_MEM);
+ 	}
++	memset(rec, 0, sizeof(*rec));
+ 	rec->rxq = alloc_record_per_rxq();
+ 	for (i = 0; i < nr_rxqs; i++)
+ 		rec->rxq[i].cpu = alloc_record_per_cpu();
+-- 
+2.17.1
 
-I'm going to re-setup the test environment and share it with you. Hope
-we could get a final number that we all accept.
-
-Thanks
-Hangbin
