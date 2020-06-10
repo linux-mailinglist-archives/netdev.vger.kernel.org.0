@@ -2,102 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7D21F5D71
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 834281F5DA6
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 23:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgFJU6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 16:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726134AbgFJU6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 16:58:45 -0400
-X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Jun 2020 13:58:44 PDT
-Received: from pandora.armlinux.org.uk (unknown [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D3BC03E96B;
-        Wed, 10 Jun 2020 13:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=qRd9E6mg/me3FC+zYkNIbQdzQKiPFe8haYKnIMtGAPI=; b=xXS/kmbZXA25AeuRymU+hgewWJ
-        Ucr/LjQXb+HkftrRyQ6fa4AMVX9nzR/smEsPPKj/13wta/BBtkf0vd6Is0j+D7fY47czVMIb55q5Y
-        QWw1qCEV/pkcIQXkKTmYoNf0GKSwGfZ/ISd3jbWjeny3YE7xsO6TEWMDhNzb4BlinYsOrnBbd97ZX
-        JjBiZvY0eiOPC6pr8ttcA6jewlAjhjrMOGfgnquBsklB42j+WsLB/9i1hDmlwk1gXGXzmEWKic2vB
-        5DNhEHj3BMWPfig6Oa9fR4pJ8WzU4QzZ2ywg5l2eAc10o+0MCIJUqgWPVSuMLiFFVRM1ohzrbhFAZ
-        6naFcpqg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:59226 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jj7gm-0006sH-2y; Wed, 10 Jun 2020 21:51:12 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jj7gl-0008Bq-BQ; Wed, 10 Jun 2020 21:51:11 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     coreteam@netfilter.org, netfilter-devel@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] netfiler: ipset: fix unaligned atomic access
+        id S1726293AbgFJVUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 17:20:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59010 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726159AbgFJVUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jun 2020 17:20:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 82AE8206F7;
+        Wed, 10 Jun 2020 21:20:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591824038;
+        bh=a+WMnH6/yPbuL8PSANPxjRC1KNz5QB8EwmMTF+RMAx4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=A16FxRcXHRu1mSq80RT2bJOKiY+VDw/HitLxKkH5R3vkHQbGEoTks3peZyQpfBxD3
+         HFAwI3j0E7lFoeFRStK+3Sa6VJPo77489H2zRdwQVXvf3S09UXixncGlUhoKV5DQvz
+         q3whNmnsFXTOiYlOP/FHlTxBqBcVS0RgK9oB/srY=
+Date:   Wed, 10 Jun 2020 14:20:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     dwilder <dwilder@us.ibm.com>
+Cc:     netdev@vger.kernel.org, wilder@us.ibm.com,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com
+Subject: Re: [(RFC) PATCH ] be2net: Allow a VF to use physical link state.
+Message-ID: <20200610142036.30c13bb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f2e408a1cd3b3e7327769f1b8d37aa74@linux.vnet.ibm.com>
+References: <20200609000059.12924-1-dwilder@us.ibm.com>
+        <20200609145839.36f1cbec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <f2e408a1cd3b3e7327769f1b8d37aa74@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jj7gl-0008Bq-BQ@rmk-PC.armlinux.org.uk>
-Date:   Wed, 10 Jun 2020 21:51:11 +0100
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using ip_set with counters and comment, traffic causes the kernel
-to panic on 32-bit ARM:
+On Wed, 10 Jun 2020 10:22:22 -0700 dwilder wrote:
+> On 2020-06-09 14:58, Jakub Kicinski wrote:
+> > On Mon,  8 Jun 2020 17:00:59 -0700 David Wilder wrote:  
+> >> Hyper-visors owning a PF are allowed by Emulex specification to 
+> >> provide
+> >> a VF with separate physical and/or logical link states. However, on
+> >> linux, a VF driver must chose one or the other.
+> >> 
+> >> My scenario is a proprietary driver controlling the PF, be2net is the 
+> >> VF.
+> >> When I do a physical cable pull test the PF sends a link event
+> >> notification to the VF with the "physical" link status but this is
+> >> ignored in be2net (see be_async_link_state_process() ).
+> >> 
+> >> The PF is reporting the adapter type as:
+> >> 0xe228   /* Device id for VF in Lancer */
+> >> 
+> >> I added a module parameter "use_pf_link_state". When set the VF should
+> >> ignore logical link state and use the physical link state.
+> >> 
+> >> However I have an issue making this work.  When the cable is pulled I
+> >> see two link statuses reported:
+> >> [1706100.767718] be2net 8002:01:00.0 eth1: Link is Down
+> >> [1706101.189298] be2net 8002:01:00.0 eth1: Link is Up
+> >> 
+> >> be_link_status_update() is called twice, the first with the physical 
+> >> link
+> >> status called from be_async_link_state_process(), and the second with 
+> >> the
+> >> logical link status from be_get_link_ksettings().
+> >> 
+> >> I am unsure why be_async_link_state_process() is called from
+> >> be_get_link_ksettings(), it results in multiple link state changes
+> >> (even in the un-patched case). If I eliminate this call then it works.
+> >> But I am un-sure of this change.
+> >> 
+> >> Signed-off-by: David Wilder <dwilder@us.ibm.com>  
+> > 
+> > Hm. Just looking at the code in __be_cmd_set_logical_link_config():
+> > 
+> > 
+> > 	if (link_state == IFLA_VF_LINK_STATE_ENABLE ||
+> > 	    link_state == IFLA_VF_LINK_STATE_AUTO)
+> > 		link_config |= PLINK_ENABLE;
+> > 
+> > 	if (link_state == IFLA_VF_LINK_STATE_AUTO)
+> > 		link_config |= PLINK_TRACK;
+> > 
+> > Maybe we shouldn't set ENABLE for AUTO?  
+> 
+> If I am understanding this correctly, this is used by the linux PF 
+> driver to configure how link status is delivered to a VF.
+> 
+> My problem is one of interoperability between the PF (not linux) and the 
+> VF is running on linux.
 
-Alignment trap: not handling instruction e1b82f9f at [<bf01b0dc>]
-Unhandled fault: alignment exception (0x221) at 0xea08133c
-PC is at ip_set_match_extensions+0xe0/0x224 [ip_set]
+I see.
 
-The problem occurs when we try to update the 64-bit counters - the
-faulting address above is not 64-bit aligned.  The problem occurs
-due to the way elements are allocated, for example:
+> The PF driver is implemented to the Emulex/Broadcom spec, which allows a 
+> PF driver to be configured such that the VF can be notified of both 
+> physical and logical link status, separately.
 
-	set->dsize = ip_set_elem_len(set, tb, 0, 0);
-	map = ip_set_alloc(sizeof(*map) + elements * set->dsize);
+We'd need a first-class support for this behavior both on PF and VF
+sides. A module parameter in one vendor driver to enable support for
+this behavior when running with a non-Linux PF driver is unlikely to
+succeed.
 
-If the element has a requirement for a member to be 64-bit aligned,
-and set->dsize is not a multiple of 8, but is a multiple of four,
-then every odd numbered elements will be misaligned - and hitting
-an atomic64_add() on that element will cause the kernel to panic.
+> > The module parameter is definitely not a good idea, what you're asking
+> > for seems to be well within the expectation from the
+> > .ndo_set_vf_link_state config, so it seems the driver / firmware is 
+> > just
+> > not implementing that right.  
+> 
+> I am attempting to resolve an issue that the linux implementation cant 
+> conform to the the Emulex specification due to the implementation on 
+> linux.
 
-ip_set_elem_len() must return a size that is rounded to the maximum
-alignment of any extension field stored in the element.  This change
-ensures that is the case.
-
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-Patch against v5.6, where I tripped over this bug.  This bug has
-caused a kernel panic on my new router twice today.
-
- net/netfilter/ipset/ip_set_core.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 8dd17589217d..be9cd6a500fb 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -459,6 +459,8 @@ ip_set_elem_len(struct ip_set *set, struct nlattr *tb[], size_t len,
- 	for (id = 0; id < IPSET_EXT_ID_MAX; id++) {
- 		if (!add_extension(id, cadt_flags, tb))
- 			continue;
-+		if (align < ip_set_extensions[id].align)
-+			align = ip_set_extensions[id].align;
- 		len = ALIGN(len, ip_set_extensions[id].align);
- 		set->offset[id] = len;
- 		set->extensions |= ip_set_extensions[id].type;
--- 
-2.20.1
-
+Sadly I'd think that it's Emulex that needs to conform to Linux APIs,
+not the other way around.
