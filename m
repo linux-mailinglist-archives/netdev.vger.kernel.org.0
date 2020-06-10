@@ -2,61 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F5D1F5793
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 17:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB871F57B6
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 17:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728411AbgFJPSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 11:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
+        id S1730177AbgFJPYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 11:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726979AbgFJPSd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 11:18:33 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDAAC03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id u5so1129193pgn.5
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
+        with ESMTP id S1730073AbgFJPYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 11:24:15 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096C3C03E96B;
+        Wed, 10 Jun 2020 08:24:14 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id p21so1119300pgm.13;
+        Wed, 10 Jun 2020 08:24:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=njwXkRLhpbwJpwE28Xoyp4QDD0utuEbplByiFs2TJNM=;
-        b=zcLg7VvaihtvTwWpJP+aFNIujEis7B74/M5WLWXj+2dFdGo0dY8K+UOqTGE9wp0GKQ
-         cDHlsfyuJRiugBCwZZV2qYlrnj4nnBmxdhYoxf42y/Uei2pBKacv4iKRpFbhxu72K+oF
-         ABDIa+jhzVBcpNN3f0vNCJ7t4ZD7zs8jPapE96ZHsF7lmlmd2TPQTZRjw3AdhnQq4Qr5
-         /W+3LI/ILR+Q3j2lQWsOcCafuzC47yRxGSYssSRELhmiGrUH7ATb8sHnu6yE61S3zVnU
-         cxZ7adbIRUDXYRXi5XDCTmNcncZBIPGM5EAS6HKPTJUQjUcp3/4ykEdb/hB5SATAOla2
-         qbZA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=o5XQnO02H0fKrctspxTo+pKLyxRvYHKgJy5mnWAg2J8=;
+        b=DnJQPEBGaSs22StiK/XmIEJixwrHcLpFw59LuvDPEuhTrZlIONMfkMnz4lAvBDtCF4
+         wEzvpXzgnPaWsoQj5RPbhUEB2ixk1Kpyzy/3fGeiWiqw/x4NHfuFYEIDJefx/OkBsCvr
+         7MZTF4mm9UfVcqPrylz8nO/3u5pf8QDDcYzDZvpxE981m/GBKFa+VC60p4H3xUbwyhxc
+         upe69uaPxFjhkAhVe10O/6KIuOrw9R0xJJmyp+KUNH1uAuUW234e+8frFJFSMzvgGO8A
+         kD4WMupFrDKSG7EhHr40wHf5mvx8MYCRjp4bFb90rxEz/GkyYy5ePH87jyEFxCPnGR50
+         4mbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=njwXkRLhpbwJpwE28Xoyp4QDD0utuEbplByiFs2TJNM=;
-        b=RDyZ4upeYzltbX6MPhx2eurHfHbNdD/VRMtmRIuUq4jpw1GiKNc6RyVQSMei65wmCy
-         3cWB3s0RiEn062gvn2AzxRq5MI40B6d4htZ4N5d039D5KzP7XW2uyZkqk5ZZuRZ0hSH0
-         su+JjdMQBs5lzVqjAlGZLt+O5uSUpp3y71zDE59FIRfu/Z8TEbFRwHuxkAOT15VZlDPD
-         5DIlEQmnryWSJtscOj/w/gedDRi2h+97Po6DfQt9flBJZPh537P3GxxaM0JnshGx1R8J
-         DrezDc0DzkRdby4f3aWKyPM1G42t0Pk8AnvY2VMdvqK6sqt7rQ0FsMRywcJT0p/QLsQh
-         FVxA==
-X-Gm-Message-State: AOAM5310ACJOW47vGTewXDYKllg4m/F6lJ8HShtQfHDnMA2Uw00XNbWJ
-        v4Fe7d/h+AFI3GgzLAJhZlI58HgBx1Q=
-X-Google-Smtp-Source: ABdhPJyrZkFven5bSQTCdJ4Au++YjP3QZ2Klgbi26HD7WLcnm1KyW3yQ7iTGmo0d3AHxD63WuzGCjw==
-X-Received: by 2002:a63:c5a:: with SMTP id 26mr3034867pgm.270.1591802312390;
-        Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q92sm126927pjh.12.2020.06.10.08.18.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
-Date:   Wed, 10 Jun 2020 08:18:23 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     netdev@vger.kernel.org
-Subject: Fw: [Bug 208121] New: IPsec AH ICV Padding for IPv4
-Message-ID: <20200610081823.35098936@hermes.lan>
+        bh=o5XQnO02H0fKrctspxTo+pKLyxRvYHKgJy5mnWAg2J8=;
+        b=lGhIzzMVVliHE7anddM4EgVJmoneTOJl+E9m0KI5Rrelj5n+9oS1To1gLC+RlzY6Tg
+         If54UlvCUmh/49EyTzcKB6+9YK/CdAsACLlmrobD/GyIUlYqNiJXml4Erd2eojVyMJdB
+         cWi1nuOXOfFKYOG1BM4LkYCrFfFyYXYOCsRDLGZcf38bSgluC/N5F4ShHxBkduJlG6Qq
+         8Mg1DqPg9Q9CsbaRPntINc4mMxobls3PszrCeBvNuzWqaJTlZadgjcMjEha1VYMgr0oh
+         FsJlNy+VIgUkvLGMYaGOZbQGCOWZYd4l6sFYXXYb/GvfLG37iojNCsyqtQIhxLdGbCrF
+         LTgg==
+X-Gm-Message-State: AOAM533USYPZSyLC9UhMffijWqnRb2lf9lPiGFkKY3tHlo9rVUVNMd/u
+        Nl5/GWnCLoesfwpvjxYo4+Y=
+X-Google-Smtp-Source: ABdhPJw1fTlxizPaM70IutkwBiYtRCvKawKfiyPzN0ibNSUxNU8n5tvL+NWKirw4pGk+03aHkek4mA==
+X-Received: by 2002:a62:8811:: with SMTP id l17mr3158370pfd.72.1591802653831;
+        Wed, 10 Jun 2020 08:24:13 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q18sm196360pgt.74.2020.06.10.08.24.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Jun 2020 08:24:12 -0700 (PDT)
+Subject: Re: [PATCH] net: mvneta: Fix Serdes configuration for 2.5Gbps modes
+To:     Sascha Hauer <s.hauer@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+References: <20200609131152.22836-1-s.hauer@pengutronix.de>
+ <20200609132848.GA1076317@lunn.ch> <20200610062606.GM11869@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9f85b076-dab8-63e4-5d2c-b48575979a02@gmail.com>
+Date:   Wed, 10 Jun 2020 08:24:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200610062606.GM11869@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -65,62 +72,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-Begin forwarded message:
-
-Date: Wed, 10 Jun 2020 09:32:26 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 208121] New: IPsec AH ICV Padding for IPv4
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=208121
-
-            Bug ID: 208121
-           Summary: IPsec AH ICV Padding for IPv4
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.4.0.37.40
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: markus.gasser@elektrobit.com
-        Regression: No
-
-Created attachment 289597
-  --> https://bugzilla.kernel.org/attachment.cgi?id=289597&action=edit  
-packet capture
-
-According to RFC 4302[1]:
-
-> As mentioned in Section 2.6, the ICV field may include explicit
-> padding if required to ensure that the AH header is a multiple of 32
-> bits (IPv4) or 64 bits (IPv6).  If padding is required, its length is
-> determined by two factors:
+On 6/9/2020 11:26 PM, Sascha Hauer wrote:
+> Hi Andrew,
 > 
->            - the length of the ICV
->            - the IP protocol version (v4 or v6)  
-[...]
->    Inclusion of padding in excess of the minimum amount required to
->    satisfy IPv4/IPv6 alignment requirements is prohibited.  
+> +Cc Maxime Chevallier
+> 
+> On Tue, Jun 09, 2020 at 03:28:48PM +0200, Andrew Lunn wrote:
+>> On Tue, Jun 09, 2020 at 03:11:52PM +0200, Sascha Hauer wrote:
+>>> The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
+>>> called DRSGMII. Depending on the Port MAC Control Register0 PortType
+>>> setting this seems to be either an overclocked SGMII mode or 2500BaseX.
+>>>
+>>> This patch adds the necessary Serdes Configuration setting for the
+>>> 2.5Gbps modes. There is no phy interface mode define for overclocked
+>>> SGMII, so only 2500BaseX is handled for now.
+>>>
+>>> As phy_interface_mode_is_8023z() returns true for both
+>>> PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
+>>> explicitly test for 1000BaseX instead of using
+>>> phy_interface_mode_is_8023z() to differentiate the different
+>>> possibilities.
+>>
+>> Hi Sascha
+>>
+>> This seems like it should have a Fixes: tag, and be submitted to the
+>> net tree. Please see the Networking FAQ.
+> 
+> This might be a candidate for a Fixes: tag:
+> 
+> | commit da58a931f248f423f917c3a0b3c94303aa30a738
+> | Author: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> | Date:   Tue Sep 25 15:59:39 2018 +0200
+> | 
+> |     net: mvneta: Add support for 2500Mbps SGMII
+> 
+> What do you mean by "submitted to the net tree"? I usually send network
+> driver related patches to netdev@vger.kernel.org and from there David
+> applies them. Is there anything more to it I haven't respected?
 
-However, in the Linux implementation padding is always added (and expected) so
-that the Authentication Header (AH) is a multiple of 64 bits, independent of
-the IP version used. This is an issue when the IPsec AH with IPv4 is used with
-HMAC authentication e.g. HMAC-sha256-128. In this case the ICV field is 128
-bits long, which results in an AH length of 96 + 128 = 224 bits. Even though
-this is a multiple of 32 bits, Linux adds an additional 32 bits of padding.
-Additionally, Linux drops incoming packets that do not have this padding.
+Here are relevant bits from the netdev-FAQ:
 
-In the attached file the outgoing packets, that are wrongfully padded can be
-seen.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n28
 
-[1] https://tools.ietf.org/html/rfc4302#section-3.3.3.2.1
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n78
 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n210
 -- 
-You are receiving this mail because:
-You are the assignee for the bug.
+Florian
