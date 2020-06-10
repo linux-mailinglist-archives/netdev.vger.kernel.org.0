@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2C71F4F7B
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 09:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0424F1F4F80
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 09:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726699AbgFJHri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 03:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
+        id S1726716AbgFJHrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 03:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbgFJHrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 03:47:36 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8186EC03E96F
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:47:36 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a45so1869704pje.1
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:47:36 -0700 (PDT)
+        with ESMTP id S1726717AbgFJHrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 03:47:42 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E7AC08C5C2
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:47:42 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id r10so615239pgv.8
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=j0l5m+TkhIbHssxUHNdbOXyWREI7WDwMdOHBW8DfxuY=;
-        b=Jc9rHwljfT71s/9i0z9uDLSP3HTlTPJzFA5A5EC8gzBVw0+fibexV8BFLBct6lA24V
-         gQLilKWQYHHyxgA84oN3H/uDzsIuVrPxS7sV7x83MCvSh8p1z8JcnwXU7SQgBpUn+rJM
-         H/jQ1txWUMUsXpTTdyRWZvPIANNutMwgHyDGfMV4ncSi6fzozrwhpS9husX+9dLlFdcc
-         mZIIJgtfE4kpOy6BI0ypx7JjrfHP2jka5NlUbjW897U6Iln7QkXJ8FKrng1BJQh6kNae
-         4EqHeALUaBfgza5OthMyweta1VoOWDN0rvsKYB2BMKdWLfxuD06ZJB9utmBc9xZXoL3y
-         Q3hg==
+        bh=KPH+/JEy/C0E3Wvv3TmYr7qJX6IchbSuJkgneJXNq0k=;
+        b=mfBoKqzdsAZbANTQpF0VLNXZfxIZ95SDC+E6ApR6/qfxbwnzXXLkVbphoapmnuUHTO
+         KKbNAF3vtnRFCHx6ZlyvyaPe5fiN8IMYXW5l/Yb155gdMW67wQdxSQqIeTgzxhdx7UwM
+         VxE4D6WYiw62LGjhUmjy0MEwDD8RgtbA7QSUVWb76nmvk/sCfYgtuJbYVqKUsKH45hfh
+         l6QPdmjEXAljOcPpcXKxbTGAyegMSBmXjkHZ/iLHbHOB/HO3I81EYIHHAVKBSd9mRWap
+         4zCl0hVDJrsUpxW0gK98g3z56bA52//WAoOCEiAYCqLjVlGZmkqOnXSm678M5sIMr302
+         Zaaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=j0l5m+TkhIbHssxUHNdbOXyWREI7WDwMdOHBW8DfxuY=;
-        b=XZQt0rX93eQPcfR6kwp3Y2dDpos5wXwok/fngFXmohghKUKx67tAiYLiqY3bPEwnB1
-         VJkW5ajNZtFbVIj8OY7d75cezKj/SEy+RYBPHkMbGuQxMb35E7sS0uxdxso6PX2Nrohg
-         NfeD/YYwM3UwfrktSNYmj72qACTdZ4Bq2odNjk3E/rYlsaZ7X8amCCsJ9Kc+wm9gri8o
-         wBK8Z5rhr+cKtpXORlD3n7hMcg1Pi/N4YdVoQTwk4IEhevufcjPQ+FIbCCeRijYI+GGW
-         sSLp5/iFftulW9E/qs27IJjI2vJ5wfDLeBR1PQQU3yRQmDrp27un4/bKtbolIO1qDGDh
-         d05A==
-X-Gm-Message-State: AOAM533JE9AhvXJuEvSaULarfUGWVB/j31X1lkhKohdOq5NLG97ko69i
-        PGRVkZtiIm8Bv4xclYVqdl13
-X-Google-Smtp-Source: ABdhPJx6/fNl0MWUrXpUFw2pMZUYW+fhs77FqzqCcyhD4ojuJDyezm8UHO32YEdXI2rhUHlSe9j+cw==
-X-Received: by 2002:a17:902:d70a:: with SMTP id w10mr1985841ply.256.1591775255289;
-        Wed, 10 Jun 2020 00:47:35 -0700 (PDT)
+        bh=KPH+/JEy/C0E3Wvv3TmYr7qJX6IchbSuJkgneJXNq0k=;
+        b=pEtUyiih0DCd9cFi0x1CJdei1w8+u8CoBiOTz22kVDM7wZ+2AwFYi2p0QpXsgooEmu
+         NorTQR3GXgH2jmCdod3KHDU6XZofP1GVX/R4dkHU7/eonYqwUwlCzJQxxZ9zGMUhAmfM
+         tKq76dB09i3/75kUXYCU9vHqucD7vZRldQmNOMGDWyeqLJkP/JnaeTSwEcaefKNAtC/h
+         ruz95MPLBBoBXqUcAlOCUIhFdxPJKwxDLHlNtaik2SI74ydZ7gvT5nsNCX0+Ga9a8YZo
+         IoUyABBf0FpU+3FObWIgCyBa5dvFc3ePDlMs4Clu7L8PDWmirRz3Ta7XyjMIfMsIn4QE
+         xnrA==
+X-Gm-Message-State: AOAM531zztZBwlh2CVHD9wOOTb2xEeZPFi+DgshC9vVm+PsX+I53TOqq
+        qsHAC9KoZcWN6l9P2A7dpzQf
+X-Google-Smtp-Source: ABdhPJxRbM6eEDLg1cxEW5MK04+zNlvpbkI3r5INyEN9H3MAIlu6z2hGV4njzmLaoicesgAAnNWNFw==
+X-Received: by 2002:a63:fb04:: with SMTP id o4mr1686195pgh.386.1591775261497;
+        Wed, 10 Jun 2020 00:47:41 -0700 (PDT)
 Received: from Mani-XPS-13-9360.localdomain ([2409:4072:630f:1dba:c41:a14e:6586:388a])
-        by smtp.gmail.com with ESMTPSA id u1sm10075040pgf.28.2020.06.10.00.47.29
+        by smtp.gmail.com with ESMTPSA id u1sm10075040pgf.28.2020.06.10.00.47.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 00:47:34 -0700 (PDT)
+        Wed, 10 Jun 2020 00:47:40 -0700 (PDT)
 From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To:     wg@grandegger.com, mkl@pengutronix.de, robh+dt@kernel.org
 Cc:     kernel@martin.sperl.org, linux-can@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [RESEND PATCH 2/6] can: mcp25xxfd: Add Microchip MCP25XXFD CAN-FD driver infrastructure
-Date:   Wed, 10 Jun 2020 13:17:07 +0530
-Message-Id: <20200610074711.10969-3-manivannan.sadhasivam@linaro.org>
+Subject: [RESEND PATCH 3/6] can: mcp25xxfd: Add support for CAN reception
+Date:   Wed, 10 Jun 2020 13:17:08 +0530
+Message-Id: <20200610074711.10969-4-manivannan.sadhasivam@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200610074711.10969-1-manivannan.sadhasivam@linaro.org>
 References: <20200610074711.10969-1-manivannan.sadhasivam@linaro.org>
@@ -65,458 +65,801 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin Sperl <kernel@martin.sperl.org>
 
-This commit adds basic driver support for the Microchip MCP25XXFD
-CAN-FD controller series. This driver currently supports MCP2517FD as the
-target controller.
+Add un-optimized CAN2.0 and CAN-FD reception support.
 
-The MCP2517FD is capable of transmitting and receiving standard data
-frames, extended data frames, remote frames and Can-FD frames.
-The MCP2517FD interfaces with the host over SPI.
-
-This commit provides basic driver functionality such as setting up clocks,
-regulators and the infrastructure for the CAN.
-
-Datasheet:
-* http://ww1.microchip.com/downloads/en/DeviceDoc/20005688A.pdf
-Reference manual:
-* http://ww1.microchip.com/downloads/en/DeviceDoc/20005678A.pdf
-Errata:
-* http://ww1.microchip.com/downloads/en/DeviceDoc/MCP2517FD-Silicon-Errata-and-Data-Sheet-Clarification-DS80000792A.pdf
+On a Rasperry pi 3 it is already able to process CAN2.0 Frames
+with DLC=0 on a CAN bus with 1MHz without losing any packets
+on the SPI side. Packets still get lost inside the network stack.
 
 Signed-off-by: Martin Sperl <kernel@martin.sperl.org>
-[mani: trimmed the gpio part and done some cleanups]
+[mani: misc cleanups for upstream]
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/net/can/spi/Kconfig                   |   2 +
- drivers/net/can/spi/Makefile                  |   2 +
- drivers/net/can/spi/mcp25xxfd/Kconfig         |   5 +
- drivers/net/can/spi/mcp25xxfd/Makefile        |   7 +
- .../net/can/spi/mcp25xxfd/mcp25xxfd_base.c    | 171 +++++
- .../net/can/spi/mcp25xxfd/mcp25xxfd_base.h    |  14 +
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c | 141 ++++
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h |  16 +
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c | 226 ++++++
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h |  84 +++
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c |  31 +
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h |  15 +
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c |  74 ++
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h |  16 +
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c |  59 ++
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h |  15 +
- .../net/can/spi/mcp25xxfd/mcp25xxfd_priv.h    |  48 ++
- .../net/can/spi/mcp25xxfd/mcp25xxfd_regs.h    | 656 ++++++++++++++++++
- 18 files changed, 1582 insertions(+)
- create mode 100644 drivers/net/can/spi/mcp25xxfd/Kconfig
- create mode 100644 drivers/net/can/spi/mcp25xxfd/Makefile
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h
- create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h
+ drivers/net/can/spi/mcp25xxfd/Makefile        |   3 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_base.c    |   6 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c | 395 ++++++++++-
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h |  35 +
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c    | 228 ++++++
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h    |  16 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h  |  69 ++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c | 655 ++++++++++++++++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h |  18 +
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_priv.h    | 131 ++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c  | 233 +++++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h  |  18 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c |  14 +-
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_priv.h    |   2 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_regs.h    |   5 +
+ 15 files changed, 1823 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_priv.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h
 
-diff --git a/drivers/net/can/spi/Kconfig b/drivers/net/can/spi/Kconfig
-index 1c50788055cb..d4b68eb5d386 100644
---- a/drivers/net/can/spi/Kconfig
-+++ b/drivers/net/can/spi/Kconfig
-@@ -15,4 +15,6 @@ config CAN_MCP251X
- 	  Driver for the Microchip MCP251x and MCP25625 SPI CAN
- 	  controllers.
- 
-+source "drivers/net/can/spi/mcp25xxfd/Kconfig"
-+
- endmenu
-diff --git a/drivers/net/can/spi/Makefile b/drivers/net/can/spi/Makefile
-index f115b2c46623..f56514541ce4 100644
---- a/drivers/net/can/spi/Makefile
-+++ b/drivers/net/can/spi/Makefile
-@@ -6,3 +6,5 @@
- 
- obj-$(CONFIG_CAN_HI311X)	+= hi311x.o
- obj-$(CONFIG_CAN_MCP251X)	+= mcp251x.o
-+
-+obj-y                           += mcp25xxfd/
-diff --git a/drivers/net/can/spi/mcp25xxfd/Kconfig b/drivers/net/can/spi/mcp25xxfd/Kconfig
-new file mode 100644
-index 000000000000..f720f1377612
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/Kconfig
-@@ -0,0 +1,5 @@
-+config CAN_MCP25XXFD
-+	tristate "Microchip MCP25xxFD SPI CAN controllers"
-+	depends on HAS_DMA
-+	help
-+	  Driver for the Microchip MCP25XXFD SPI FD-CAN controller family.
 diff --git a/drivers/net/can/spi/mcp25xxfd/Makefile b/drivers/net/can/spi/mcp25xxfd/Makefile
-new file mode 100644
-index 000000000000..d8fdb76a9578
---- /dev/null
+index d8fdb76a9578..5787bdd57a9d 100644
+--- a/drivers/net/can/spi/mcp25xxfd/Makefile
 +++ b/drivers/net/can/spi/mcp25xxfd/Makefile
-@@ -0,0 +1,7 @@
-+obj-$(CONFIG_CAN_MCP25XXFD)	+= mcp25xxfd.o
-+mcp25xxfd-objs                  := mcp25xxfd_base.o
-+mcp25xxfd-objs                  += mcp25xxfd_can.o
-+mcp25xxfd-objs                  += mcp25xxfd_cmd.o
-+mcp25xxfd-objs                  += mcp25xxfd_crc.o
-+mcp25xxfd-objs                  += mcp25xxfd_ecc.o
-+mcp25xxfd-objs                  += mcp25xxfd_int.o
+@@ -1,6 +1,9 @@
+ obj-$(CONFIG_CAN_MCP25XXFD)	+= mcp25xxfd.o
+ mcp25xxfd-objs                  := mcp25xxfd_base.o
+ mcp25xxfd-objs                  += mcp25xxfd_can.o
++mcp25xxfd-objs                  += mcp25xxfd_can_fifo.o
++mcp25xxfd-objs                  += mcp25xxfd_can_int.o
++mcp25xxfd-objs                  += mcp25xxfd_can_rx.o
+ mcp25xxfd-objs                  += mcp25xxfd_cmd.o
+ mcp25xxfd-objs                  += mcp25xxfd_crc.o
+ mcp25xxfd-objs                  += mcp25xxfd_ecc.o
 diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c
-new file mode 100644
-index 000000000000..4be456df0998
---- /dev/null
+index 4be456df0998..c6b67c54a3cd 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c
 +++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c
-@@ -0,0 +1,171 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#include "mcp25xxfd_base.h"
-+#include "mcp25xxfd_can.h"
-+#include "mcp25xxfd_cmd.h"
-+#include "mcp25xxfd_ecc.h"
-+#include "mcp25xxfd_int.h"
-+#include "mcp25xxfd_priv.h"
-+
-+int mcp25xxfd_base_power_enable(struct regulator *reg, int enable)
-+{
-+	if (enable)
-+		return regulator_enable(reg);
-+	else
-+		return regulator_disable(reg);
-+}
-+
-+static const struct of_device_id mcp25xxfd_of_match[] = {
-+	{
-+		.compatible	= "microchip,mcp2517fd",
-+		.data		= (void *)CAN_MCP2517FD,
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, mcp25xxfd_of_match);
-+
-+static int mcp25xxfd_base_probe(struct spi_device *spi)
-+{
-+	const struct of_device_id *of_id =
-+		of_match_device(mcp25xxfd_of_match, &spi->dev);
-+	struct mcp25xxfd_priv *priv;
-+	struct clk *clk;
-+	enum mcp25xxfd_model model;
-+	u32 freq;
-+	int ret;
-+
-+	/* Check whether valid IRQ line is defined or not */
-+	if (spi->irq <= 0) {
-+		dev_err(&spi->dev, "no valid irq line defined: irq = %i\n",
-+			spi->irq);
-+		return -EINVAL;
-+	}
-+
-+	priv = devm_kzalloc(&spi->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	spi_set_drvdata(spi, priv);
-+	priv->spi = spi;
-+
-+	/* Assign device name */
-+	snprintf(priv->device_name, sizeof(priv->device_name),
-+		 DEVICE_NAME "-%s", dev_name(&priv->spi->dev));
-+
-+	/* assign model from of or driver_data */
-+	if (of_id)
-+		model = (enum mcp25xxfd_model)of_id->data;
-+	else
-+		model = spi_get_device_id(spi)->driver_data;
-+
-+	clk = devm_clk_get(&spi->dev, NULL);
-+	if (IS_ERR(clk)) {
-+		ret = PTR_ERR(clk);
-+		goto out_free;
-+	}
-+
-+	freq = clk_get_rate(clk);
-+	if (!(freq == CLOCK_4_MHZ || freq == CLOCK_10_MHZ ||
-+	      freq == CLOCK_40_MHZ)) {
-+		ret = -ERANGE;
-+		goto out_free;
-+	}
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret)
-+		goto out_free;
-+
-+	priv->clk = clk;
-+	priv->clock_freq = freq;
-+
-+	/* Configure the SPI bus */
-+	spi->bits_per_word = 8;
-+
-+	/* The frequency of SCK has to be less than or equal to half the
-+	 * frequency of SYSCLK.
-+	 */
-+	spi->max_speed_hz = freq / 2;
-+	ret = spi_setup(spi);
-+	if (ret)
-+		goto out_clk;
-+
-+	priv->power = devm_regulator_get(&spi->dev, "vdd");
-+	if (IS_ERR(priv->power)) {
-+		if (PTR_ERR(priv->power) != -EPROBE_DEFER)
-+			dev_err(&spi->dev, "failed to get vdd\n");
-+		ret = PTR_ERR(priv->power);
-+		goto out_clk;
-+	}
-+
-+	ret = mcp25xxfd_base_power_enable(priv->power, 1);
-+	if (ret)
-+		goto out_clk;
-+
-+	/* disable interrupts */
-+	ret = mcp25xxfd_int_enable(priv, false);
+@@ -123,6 +123,11 @@ static int mcp25xxfd_base_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto out_power;
+ 
++	/* setting up CAN */
++	ret = mcp25xxfd_can_setup(priv);
 +	if (ret)
 +		goto out_power;
 +
-+	/* setup ECC for SRAM */
-+	ret = mcp25xxfd_ecc_enable(priv);
-+	if (ret)
-+		goto out_power;
-+
-+	dev_info(&spi->dev,
-+		 "MCP%04x successfully initialized.\n", model);
-+	return 0;
-+
-+out_power:
-+	mcp25xxfd_base_power_enable(priv->power, 0);
-+out_clk:
-+	clk_disable_unprepare(clk);
-+out_free:
-+	dev_err(&spi->dev, "Probe failed, err=%d\n", -ret);
-+	return ret;
-+}
-+
-+static int mcp25xxfd_base_remove(struct spi_device *spi)
-+{
-+	struct mcp25xxfd_priv *priv = spi_get_drvdata(spi);
-+
-+	mcp25xxfd_base_power_enable(priv->power, 0);
-+	clk_disable_unprepare(priv->clk);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id mcp25xxfd_id_table[] = {
-+	{
-+		.name		= "mcp2517fd",
-+		.driver_data	= (kernel_ulong_t)CAN_MCP2517FD,
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, mcp25xxfd_id_table);
-+
-+static struct spi_driver mcp25xxfd_can_driver = {
-+	.driver = {
-+		.name = DEVICE_NAME,
-+		.of_match_table = mcp25xxfd_of_match,
-+	},
-+	.id_table = mcp25xxfd_id_table,
-+	.probe = mcp25xxfd_base_probe,
-+	.remove = mcp25xxfd_base_remove,
-+};
-+module_spi_driver(mcp25xxfd_can_driver);
-+
-+MODULE_AUTHOR("Martin Sperl <kernel@martin.sperl.org>");
-+MODULE_DESCRIPTION("Microchip 25XXFD CAN driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.h
-new file mode 100644
-index 000000000000..4559ac60645c
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+#ifndef __MCP25XXFD_BASE_H
-+#define __MCP25XXFD_BASE_H
-+
-+#include <linux/regulator/consumer.h>
-+
-+int mcp25xxfd_base_power_enable(struct regulator *reg, int enable);
-+
-+#endif /* __MCP25XXFD_BASE_H */
+ 	dev_info(&spi->dev,
+ 		 "MCP%04x successfully initialized.\n", model);
+ 	return 0;
+@@ -140,6 +145,7 @@ static int mcp25xxfd_base_remove(struct spi_device *spi)
+ {
+ 	struct mcp25xxfd_priv *priv = spi_get_drvdata(spi);
+ 
++	mcp25xxfd_can_remove(priv);
+ 	mcp25xxfd_base_power_enable(priv->power, 0);
+ 	clk_disable_unprepare(priv->clk);
+ 
 diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c
-new file mode 100644
-index 000000000000..41a5ab508582
---- /dev/null
+index 41a5ab508582..2ac78024c171 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c
 +++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c
-@@ -0,0 +1,141 @@
-+// SPDX-License-Identifier: GPL-2.0
+@@ -5,15 +5,119 @@
+  * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
+  */
+ 
++#include <linux/bitfield.h>
++#include <linux/can/core.h>
++#include <linux/can/dev.h>
+ #include <linux/device.h>
++#include <linux/interrupt.h>
+ #include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
+ 
++#include "mcp25xxfd_base.h"
++#include "mcp25xxfd_can_fifo.h"
++#include "mcp25xxfd_can_int.h"
++#include "mcp25xxfd_can_priv.h"
+ #include "mcp25xxfd_can.h"
+ #include "mcp25xxfd_cmd.h"
++#include "mcp25xxfd_int.h"
+ #include "mcp25xxfd_priv.h"
+ #include "mcp25xxfd_regs.h"
+ 
++#include <uapi/linux/can/netlink.h>
 +
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
++/* everything related to bit timing */
++static
++const struct can_bittiming_const mcp25xxfd_can_nominal_bittiming_const = {
++	.name           = DEVICE_NAME,
++	.tseg1_min      = 2,
++	.tseg1_max      = BIT(MCP25XXFD_CAN_NBTCFG_TSEG1_BITS),
++	.tseg2_min      = 1,
++	.tseg2_max      = BIT(MCP25XXFD_CAN_NBTCFG_TSEG2_BITS),
++	.sjw_max        = BIT(MCP25XXFD_CAN_NBTCFG_SJW_BITS),
++	.brp_min        = 1,
++	.brp_max        = BIT(MCP25XXFD_CAN_NBTCFG_BRP_BITS),
++	.brp_inc        = 1,
++};
 +
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
++static
++const struct can_bittiming_const mcp25xxfd_can_data_bittiming_const = {
++	.name           = DEVICE_NAME,
++	.tseg1_min      = 1,
++	.tseg1_max      = BIT(MCP25XXFD_CAN_DBTCFG_TSEG1_BITS),
++	.tseg2_min      = 1,
++	.tseg2_max      = BIT(MCP25XXFD_CAN_DBTCFG_TSEG2_BITS),
++	.sjw_max        = BIT(MCP25XXFD_CAN_DBTCFG_SJW_BITS),
++	.brp_min        = 1,
++	.brp_max        = BIT(MCP25XXFD_CAN_DBTCFG_BRP_BITS),
++	.brp_inc        = 1,
++};
 +
-+#include "mcp25xxfd_can.h"
-+#include "mcp25xxfd_cmd.h"
-+#include "mcp25xxfd_priv.h"
-+#include "mcp25xxfd_regs.h"
-+
-+int mcp25xxfd_can_get_mode(struct mcp25xxfd_priv *priv, u32 *reg)
++static int mcp25xxfd_can_do_set_nominal_bittiming(struct net_device *net)
 +{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++	struct can_bittiming *bt = &cpriv->can.bittiming;
++	int sjw = bt->sjw;
++	int pseg2 = bt->phase_seg2;
++	int pseg1 = bt->phase_seg1;
++	int propseg = bt->prop_seg;
++	int brp = bt->brp;
++	int tseg1 = propseg + pseg1;
++	int tseg2 = pseg2;
++
++	/* calculate nominal bit timing */
++	cpriv->regs.nbtcfg = ((sjw - 1) << MCP25XXFD_CAN_NBTCFG_SJW_SHIFT) |
++		((tseg2 - 1) << MCP25XXFD_CAN_NBTCFG_TSEG2_SHIFT) |
++		((tseg1 - 1) << MCP25XXFD_CAN_NBTCFG_TSEG1_SHIFT) |
++		((brp - 1) << MCP25XXFD_CAN_NBTCFG_BRP_SHIFT);
++
++	return mcp25xxfd_cmd_write(cpriv->priv->spi, MCP25XXFD_CAN_NBTCFG,
++				   cpriv->regs.nbtcfg);
++}
++
++static int mcp25xxfd_can_do_set_data_bittiming(struct net_device *net)
++{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++	struct mcp25xxfd_priv *priv = cpriv->priv;
++	struct can_bittiming *bt = &cpriv->can.data_bittiming;
++	struct spi_device *spi = priv->spi;
++	int sjw = bt->sjw;
++	int pseg2 = bt->phase_seg2;
++	int pseg1 = bt->phase_seg1;
++	int propseg = bt->prop_seg;
++	int brp = bt->brp;
++	int tseg1 = propseg + pseg1;
++	int tseg2 = pseg2;
++	int tdco;
 +	int ret;
 +
-+	ret = mcp25xxfd_cmd_read(priv->spi, MCP25XXFD_CAN_CON, reg);
++	/* set up Transmitter delay compensation */
++	cpriv->regs.tdc = FIELD_PREP(MCP25XXFD_CAN_TDC_TDCMOD_MASK,
++				     MCP25XXFD_CAN_TDC_TDCMOD_AUTO);
++
++	/* configure TDC offsets */
++	tdco = clamp_t(int, bt->brp * tseg1, -64, 63);
++	cpriv->regs.tdc &= ~MCP25XXFD_CAN_TDC_TDCO_MASK;
++	cpriv->regs.tdc |= FIELD_PREP(MCP25XXFD_CAN_TDC_TDCO_MASK, tdco);
++
++	/* set TDC */
++	ret = mcp25xxfd_cmd_write(spi, MCP25XXFD_CAN_TDC, cpriv->regs.tdc);
 +	if (ret)
 +		return ret;
 +
-+	return FIELD_GET(MCP25XXFD_CAN_CON_OPMOD_MASK, *reg);
++	/* calculate data bit timing */
++	cpriv->regs.dbtcfg =
++		FIELD_PREP(MCP25XXFD_CAN_DBTCFG_SJW_MASK, (sjw - 1)) |
++		FIELD_PREP(MCP25XXFD_CAN_DBTCFG_TSEG2_MASK, (tseg2 - 1)) |
++		FIELD_PREP(MCP25XXFD_CAN_DBTCFG_TSEG1_MASK, (tseg1 - 1)) |
++		FIELD_PREP(MCP25XXFD_CAN_DBTCFG_BRP_MASK, (brp - 1));
++
++	return mcp25xxfd_cmd_write(spi, MCP25XXFD_CAN_DBTCFG,
++				   cpriv->regs.dbtcfg);
 +}
 +
-+static int mcp25xxfd_can_switch_mode(struct mcp25xxfd_priv *priv,
-+				     u32 *reg, int mode)
+ int mcp25xxfd_can_get_mode(struct mcp25xxfd_priv *priv, u32 *reg)
+ {
+ 	int ret;
+@@ -25,10 +129,10 @@ int mcp25xxfd_can_get_mode(struct mcp25xxfd_priv *priv, u32 *reg)
+ 	return FIELD_GET(MCP25XXFD_CAN_CON_OPMOD_MASK, *reg);
+ }
+ 
+-static int mcp25xxfd_can_switch_mode(struct mcp25xxfd_priv *priv,
+-				     u32 *reg, int mode)
++int mcp25xxfd_can_switch_mode_no_wait(struct mcp25xxfd_priv *priv,
++				      u32 *reg, int mode)
+ {
+-	int ret, i;
++	int ret;
+ 
+ 	ret = mcp25xxfd_can_get_mode(priv, reg);
+ 	if (ret < 0)
+@@ -41,7 +145,15 @@ static int mcp25xxfd_can_switch_mode(struct mcp25xxfd_priv *priv,
+ 		FIELD_PREP(MCP25XXFD_CAN_CON_OPMOD_MASK, mode);
+ 
+ 	/* Request the mode switch */
+-	ret = mcp25xxfd_cmd_write(priv->spi, MCP25XXFD_CAN_CON, *reg);
++	return mcp25xxfd_cmd_write(priv->spi, MCP25XXFD_CAN_CON, *reg);
++}
++
++int mcp25xxfd_can_switch_mode(struct mcp25xxfd_priv *priv, u32 *reg, int mode)
 +{
 +	int ret, i;
 +
-+	ret = mcp25xxfd_can_get_mode(priv, reg);
-+	if (ret < 0)
-+		return ret;
++	/* trigger the mode switch itself */
++	ret = mcp25xxfd_can_switch_mode_no_wait(priv, reg, mode);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -139,3 +251,278 @@ int mcp25xxfd_can_probe(struct mcp25xxfd_priv *priv)
+ 	/* Finally check if modeswitch is really working */
+ 	return mcp25xxfd_can_probe_modeswitch(priv);
+ }
 +
-+	/* Compute the effective mode in osc*/
-+	*reg &= ~(MCP25XXFD_CAN_CON_REQOP_MASK |
-+		  MCP25XXFD_CAN_CON_OPMOD_MASK);
-+	*reg |= FIELD_PREP(MCP25XXFD_CAN_CON_REQOP_MASK, mode) |
-+		FIELD_PREP(MCP25XXFD_CAN_CON_OPMOD_MASK, mode);
++static int mcp25xxfd_can_config(struct net_device *net)
++{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++	struct mcp25xxfd_priv *priv = cpriv->priv;
++	struct spi_device *spi = priv->spi;
++	int ret;
 +
-+	/* Request the mode switch */
-+	ret = mcp25xxfd_cmd_write(priv->spi, MCP25XXFD_CAN_CON, *reg);
++	/* setup value of con_register */
++	cpriv->regs.con = MCP25XXFD_CAN_CON_STEF; /* enable TEF, disable TXQ */
++
++	/* non iso FD mode */
++	if (!(cpriv->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO))
++		cpriv->regs.con |= MCP25XXFD_CAN_CON_ISOCRCEN;
++
++	/* one shot */
++	if (cpriv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
++		cpriv->regs.con |= MCP25XXFD_CAN_CON_RTXAT;
++
++	/* apply it now together with a mode switch */
++	ret = mcp25xxfd_can_switch_mode(cpriv->priv, &cpriv->regs.con,
++					MCP25XXFD_CAN_CON_MODE_CONFIG);
++	if (ret)
++		return 0;
++
++	/* time stamp control register - 1ns resolution */
++	cpriv->regs.tscon = 0;
++	ret = mcp25xxfd_cmd_write(spi, MCP25XXFD_CAN_TBC, 0);
 +	if (ret)
 +		return ret;
 +
-+	/* Wait for 256 rounds to stabilize. This is essentially > 12ms
-+	 * at 1MHz
++	cpriv->regs.tscon = MCP25XXFD_CAN_TSCON_TBCEN |
++			    FIELD_PREP(MCP25XXFD_CAN_TSCON_TBCPRE_MASK,
++				       ((cpriv->can.clock.freq / 1000000)));
++	ret = mcp25xxfd_cmd_write(spi, MCP25XXFD_CAN_TSCON, cpriv->regs.tscon);
++	if (ret)
++		return ret;
++
++	/* setup fifos */
++	ret = mcp25xxfd_can_fifo_setup(cpriv);
++	if (ret)
++		return ret;
++
++	/* setup can bittiming now - the do_set_bittiming methods
++	 * are not used as they get called before open
 +	 */
-+	for (i = 0; i < 256; i++) {
-+		/* get the mode */
-+		ret = mcp25xxfd_can_get_mode(priv, reg);
-+		if (ret < 0)
-+			return ret;
-+		/* check that we have reached our mode */
-+		if (ret == mode)
-+			return 0;
-+	}
++	ret = mcp25xxfd_can_do_set_nominal_bittiming(net);
++	if (ret)
++		return ret;
 +
-+	dev_err(&priv->spi->dev, "Failed to switch to mode %u in time\n",
-+		mode);
++	ret = mcp25xxfd_can_do_set_data_bittiming(net);
++	if (ret)
++		return ret;
 +
-+	return -ETIMEDOUT;
++	return ret;
 +}
 +
-+static int mcp25xxfd_can_probe_modeswitch(struct mcp25xxfd_priv *priv)
++/* mode setting */
++static int mcp25xxfd_can_do_set_mode(struct net_device *net,
++				     enum can_mode mode)
 +{
-+	u32 mode_data;
-+	int ret;
-+
-+	/* We should be in config mode now, so move to INT_LOOPBACK */
-+	ret = mcp25xxfd_can_switch_mode(priv, &mode_data,
-+					MCP25XXFD_CAN_CON_MODE_INT_LOOPBACK);
-+	if (ret) {
-+		dev_err(&priv->spi->dev,
-+			"Failed to switch into loopback mode\n");
-+		return ret;
-+	}
-+
-+	/* Switch back into config mode */
-+	ret = mcp25xxfd_can_switch_mode(priv, &mode_data,
-+					MCP25XXFD_CAN_CON_MODE_CONFIG);
-+	if (ret) {
-+		dev_err(&priv->spi->dev,
-+			"Failed to switch back to config mode\n");
-+		return ret;
++	switch (mode) {
++	case CAN_MODE_START:
++		break;
++	default:
++		return -EOPNOTSUPP;
 +	}
 +
 +	return 0;
 +}
 +
-+int mcp25xxfd_can_probe(struct mcp25xxfd_priv *priv)
++/* binary error counters */
++static int mcp25xxfd_can_get_berr_counter(const struct net_device *net,
++					  struct can_berr_counter *bec)
++{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++
++	bec->txerr = FIELD_PREP(MCP25XXFD_CAN_TREC_TEC_MASK,
++				cpriv->status.trec);
++	bec->rxerr = FIELD_PREP(MCP25XXFD_CAN_TREC_REC_MASK,
++				cpriv->status.trec);
++
++	return 0;
++}
++
++static int mcp25xxfd_can_open(struct net_device *net)
++{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++	struct spi_device *spi = cpriv->priv->spi;
++	int ret, mode;
++
++	ret = open_candev(net);
++	if (ret) {
++		netdev_err(net, "unable to set initial baudrate!\n");
++		return ret;
++	}
++
++	/* request an IRQ but keep disabled for now */
++	ret = request_threaded_irq(spi->irq, NULL,
++				   mcp25xxfd_can_int,
++				   IRQF_ONESHOT | IRQF_TRIGGER_LOW,
++				   cpriv->priv->device_name, cpriv);
++	if (ret) {
++		dev_err(&spi->dev, "failed to acquire irq %d - %i\n",
++			spi->irq, ret);
++		goto out_candev;
++	}
++
++	disable_irq(spi->irq);
++	cpriv->irq.allocated = true;
++	cpriv->irq.enabled = false;
++
++	/* enable power to the transceiver */
++	ret = mcp25xxfd_base_power_enable(cpriv->transceiver, 1);
++	if (ret)
++		goto out_irq;
++
++	/* configure controller for reception */
++	ret = mcp25xxfd_can_config(net);
++	if (ret)
++		goto out_power;
++
++	/* setting up state */
++	cpriv->can.state = CAN_STATE_ERROR_ACTIVE;
++
++	/* enable interrupts */
++	ret = mcp25xxfd_int_enable(cpriv->priv, true);
++	if (ret)
++		goto out_canconfig;
++
++	if (cpriv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
++		mode = MCP25XXFD_CAN_CON_MODE_EXT_LOOPBACK;
++	else if (cpriv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
++		mode = MCP25XXFD_CAN_CON_MODE_LISTENONLY;
++	else if (cpriv->can.ctrlmode & CAN_CTRLMODE_FD)
++		mode = MCP25XXFD_CAN_CON_MODE_MIXED;
++	else
++		mode = MCP25XXFD_CAN_CON_MODE_CAN2_0;
++
++	/* switch to active mode */
++	ret = mcp25xxfd_can_switch_mode(cpriv->priv, &cpriv->regs.con, mode);
++	if (ret)
++		goto out_int;
++
++	return 0;
++
++out_int:
++	mcp25xxfd_int_enable(cpriv->priv, false);
++out_canconfig:
++	mcp25xxfd_can_fifo_release(cpriv);
++out_power:
++	mcp25xxfd_base_power_enable(cpriv->transceiver, 0);
++out_irq:
++	free_irq(spi->irq, cpriv);
++	cpriv->irq.allocated = false;
++	cpriv->irq.enabled = false;
++out_candev:
++	close_candev(net);
++	return ret;
++}
++
++static void mcp25xxfd_can_shutdown(struct mcp25xxfd_can_priv *cpriv)
++{
++	/* switch us to CONFIG mode - this disables the controller */
++	mcp25xxfd_can_switch_mode(cpriv->priv, &cpriv->regs.con,
++				  MCP25XXFD_CAN_CON_MODE_CONFIG);
++}
++
++static int mcp25xxfd_can_stop(struct net_device *net)
++{
++	struct mcp25xxfd_can_priv *cpriv = netdev_priv(net);
++	struct mcp25xxfd_priv *priv = cpriv->priv;
++	struct spi_device *spi = priv->spi;
++
++	/* shutdown the can controller */
++	mcp25xxfd_can_shutdown(cpriv);
++
++	/* disable inerrupts on controller */
++	mcp25xxfd_int_enable(cpriv->priv, false);
++
++	/* disable the transceiver */
++	mcp25xxfd_base_power_enable(cpriv->transceiver, 0);
++
++	/* disable interrupt on host */
++	free_irq(spi->irq, cpriv);
++	cpriv->irq.allocated = false;
++	cpriv->irq.enabled = false;
++
++	/* close the can_decice */
++	close_candev(net);
++
++	return 0;
++}
++
++static const struct net_device_ops mcp25xxfd_netdev_ops = {
++	.ndo_open = mcp25xxfd_can_open,
++	.ndo_stop = mcp25xxfd_can_stop,
++	.ndo_change_mtu = can_change_mtu,
++};
++
++/* probe and remove */
++int mcp25xxfd_can_setup(struct mcp25xxfd_priv *priv)
 +{
 +	struct spi_device *spi = priv->spi;
-+	u32 mode_data;
-+	int mode, ret;
++	struct mcp25xxfd_can_priv *cpriv;
++	struct net_device *net;
++	struct regulator *transceiver;
++	int ret;
 +
-+	/* For sanity check read TXQCON register. The TXEN bit should always
-+	 * be read as 1.
++	/* get transceiver power regulator*/
++	transceiver = devm_regulator_get(&spi->dev, "xceiver");
++	if (PTR_ERR(transceiver) == -EPROBE_DEFER)
++		return PTR_ERR(transceiver);
++
++	/* allocate can device */
++	net = alloc_candev(sizeof(*cpriv), TX_ECHO_SKB_MAX);
++	if (!net)
++		return -ENOMEM;
++
++	cpriv = netdev_priv(net);
++	cpriv->priv = priv;
++	priv->cpriv = cpriv;
++
++	/* setup network */
++	SET_NETDEV_DEV(net, &spi->dev);
++	net->netdev_ops = &mcp25xxfd_netdev_ops;
++	net->flags |= IFF_ECHO;
++
++	cpriv->transceiver = transceiver;
++
++	cpriv->can.clock.freq = priv->clock_freq;
++	cpriv->can.bittiming_const =
++		&mcp25xxfd_can_nominal_bittiming_const;
++	cpriv->can.data_bittiming_const =
++		&mcp25xxfd_can_data_bittiming_const;
++
++	/* we are not setting bit-timing methods here as they get called by
++	 * the framework before open. So the controller would be still in sleep
++	 * mode, which does not help as things are configured in open instead.
 +	 */
-+	ret = mcp25xxfd_cmd_read(spi, MCP25XXFD_CAN_TXQCON, &mode_data);
++	cpriv->can.do_set_mode =
++		mcp25xxfd_can_do_set_mode;
++	cpriv->can.do_get_berr_counter =
++		mcp25xxfd_can_get_berr_counter;
++	cpriv->can.ctrlmode_supported =
++		CAN_CTRLMODE_FD |
++		CAN_CTRLMODE_FD_NON_ISO |
++		CAN_CTRLMODE_LOOPBACK |
++		CAN_CTRLMODE_LISTENONLY |
++		CAN_CTRLMODE_BERR_REPORTING |
++		CAN_CTRLMODE_ONE_SHOT;
++
++	ret = register_candev(net);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to register can device\n");
++		goto out;
++	}
++
++	return 0;
++
++out:
++	free_candev(net);
++	priv->cpriv = NULL;
++
++	return ret;
++}
++
++void mcp25xxfd_can_remove(struct mcp25xxfd_priv *priv)
++{
++	if (priv->cpriv) {
++		unregister_candev(priv->cpriv->can.dev);
++		free_candev(priv->cpriv->can.dev);
++		priv->cpriv = NULL;
++	}
++}
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
+index f54c716735fb..4b18b5bb3d45 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
+@@ -8,9 +8,44 @@
+ #ifndef __MCP25XXFD_CAN_H
+ #define __MCP25XXFD_CAN_H
+ 
++#include "mcp25xxfd_can_priv.h"
+ #include "mcp25xxfd_priv.h"
++#include "mcp25xxfd_regs.h"
++
++/* get the optimal controller target mode */
++static inline
++int mcp25xxfd_can_targetmode(struct mcp25xxfd_can_priv *cpriv)
++{
++	return (cpriv->can.dev->mtu == CAN_MTU) ?
++		MCP25XXFD_CAN_CON_MODE_CAN2_0 : MCP25XXFD_CAN_CON_MODE_MIXED;
++}
++
++static inline
++void mcp25xxfd_can_queue_frame(struct mcp25xxfd_can_priv *cpriv,
++			       s32 fifo, u16 ts)
++{
++	int idx = cpriv->fifos.submit_queue_count;
++
++	cpriv->fifos.submit_queue[idx].fifo = fifo;
++	cpriv->fifos.submit_queue[idx].ts = ts;
++
++	cpriv->fifos.submit_queue_count++;
++}
++
++/* get the current controller mode */
++int mcp25xxfd_can_get_mode(struct mcp25xxfd_priv *priv, u32 *reg);
++
++/* switch controller mode */
++int mcp25xxfd_can_switch_mode_no_wait(struct mcp25xxfd_priv *priv,
++				      u32 *reg, int mode);
++int mcp25xxfd_can_switch_mode(struct mcp25xxfd_priv *priv,
++			      u32 *reg, int mode);
+ 
+ /* probe the can controller */
+ int mcp25xxfd_can_probe(struct mcp25xxfd_priv *priv);
+ 
++/* setup and the can controller net interface */
++int mcp25xxfd_can_setup(struct mcp25xxfd_priv *priv);
++void mcp25xxfd_can_remove(struct mcp25xxfd_priv *priv);
++
+ #endif /* __MCP25XXFD_CAN_H */
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c
+new file mode 100644
+index 000000000000..4bd776772d2d
+--- /dev/null
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c
+@@ -0,0 +1,228 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
++ *
++ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
++ */
++
++/* here we define and configure the fifo layout */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++
++#include "mcp25xxfd_can.h"
++#include "mcp25xxfd_can_fifo.h"
++#include "mcp25xxfd_can_priv.h"
++#include "mcp25xxfd_cmd.h"
++
++static int mcp25xxfd_can_fifo_get_address(struct mcp25xxfd_can_priv *cpriv)
++{
++	int fifo, ret;
++
++	/* we need to move out of config mode to force address computation */
++	ret = mcp25xxfd_can_switch_mode(cpriv->priv, &cpriv->regs.con,
++					MCP25XXFD_CAN_CON_MODE_INT_LOOPBACK);
 +	if (ret)
 +		return ret;
 +
-+	if ((mode_data & MCP25XXFD_CAN_TXQCON_TXEN) == 0) {
-+		dev_err(&spi->dev, "TXQCON does not have TXEN bit set");
-+		return -EINVAL;
-+	}
-+
-+	/* Try to get the current mode */
-+	mode = mcp25xxfd_can_get_mode(priv, &mode_data);
-+	if (mode < 0)
-+		return mode;
-+
-+	/* SPI-reset should have moved us into config mode. But then the
-+	 * documentation says that SPI-reset may only work reliably when already
-+	 * in config mode. So if we are in config mode then everything is fine
-+	 * and we check that a mode switch works properly.
-+	 */
-+	if (mode == MCP25XXFD_CAN_CON_MODE_CONFIG)
-+		return mcp25xxfd_can_probe_modeswitch(priv);
-+
-+	/* Any other mode is unexpected */
-+	dev_err(&spi->dev,
-+		"Found controller in unexpected mode: %d\n", mode);
-+
-+	/* Once again try to move to config mode. If this fails, we'll
-+	 * bail out.
-+	 */
-+	ret = mcp25xxfd_can_switch_mode(priv, &mode_data,
++	/* and get back into config mode */
++	ret = mcp25xxfd_can_switch_mode(cpriv->priv, &cpriv->regs.con,
 +					MCP25XXFD_CAN_CON_MODE_CONFIG);
-+	if (ret) {
-+		dev_err(&priv->spi->dev,
-+			"Unable to switch to config mode\n");
++	if (ret)
++		return ret;
++
++	/* read address and config back in */
++	for (fifo = 1; fifo < 32; fifo++) {
++		ret = mcp25xxfd_cmd_read(cpriv->priv->spi,
++					 MCP25XXFD_CAN_FIFOUA(fifo),
++					 &cpriv->fifos.info[fifo].offset);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int mcp25xxfd_can_fifo_setup_config(struct mcp25xxfd_can_priv *cpriv,
++					   struct mcp25xxfd_fifo *desc,
++					   u32 flags, u32 flags_last)
++{
++	u32 val;
++	int i, p, f, c, ret;
++
++	for (i = 0, f = desc->start, c = desc->count, p = 31;
++	     c > 0; i++, f++, p--, c--) {
++		val = (c > 1) ? flags : flags_last;
++
++		/* write the config to the controller in one go */
++		ret = mcp25xxfd_cmd_write(cpriv->priv->spi,
++					  MCP25XXFD_CAN_FIFOCON(f), val);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int mcp25xxfd_can_fifo_setup_rx(struct mcp25xxfd_can_priv *cpriv)
++{
++	u32 rx_flags = MCP25XXFD_CAN_FIFOCON_FRESET |     /* reset FIFO */
++		MCP25XXFD_CAN_FIFOCON_RXTSEN |            /* RX timestamps */
++		MCP25XXFD_CAN_FIFOCON_TFERFFIE |          /* FIFO Full */
++		MCP25XXFD_CAN_FIFOCON_TFHRFHIE |          /* FIFO Half Full*/
++		MCP25XXFD_CAN_FIFOCON_TFNRFNIE |          /* FIFO not empty */
++		(cpriv->fifos.payload_mode <<
++		 MCP25XXFD_CAN_FIFOCON_PLSIZE_SHIFT) |
++		(0 << MCP25XXFD_CAN_FIFOCON_FSIZE_SHIFT); /* 1 FIFO deep */
++	/* enable overflow int on last fifo */
++	u32 rx_flags_last = rx_flags | MCP25XXFD_CAN_FIFOCON_RXOVIE;
++
++	return mcp25xxfd_can_fifo_setup_config(cpriv, &cpriv->fifos.rx,
++					       rx_flags, rx_flags_last);
++}
++
++static int mcp25xxfd_can_fifo_setup_rxfilter(struct mcp25xxfd_can_priv *cpriv)
++{
++	u8 filter_con[32];
++	int c, f;
++
++	/* clear the filters and filter mappings for all filters */
++	memset(filter_con, 0, sizeof(filter_con));
++
++	/* and now set up the rx filters */
++	for (c = 0, f = cpriv->fifos.rx.start; c < cpriv->fifos.rx.count;
++	     c++, f++) {
++		/* set up filter config - we can use the mask of filter 0 */
++		filter_con[c] = MCP25XXFD_CAN_FIFOCON_FLTEN(0) |
++			(f << MCP25XXFD_CAN_FILCON_SHIFT(0));
++	}
++
++	/* and set up filter control */
++	return mcp25xxfd_cmd_write_regs(cpriv->priv->spi,
++					MCP25XXFD_CAN_FLTCON(0),
++					(u32 *)filter_con, sizeof(filter_con));
++}
++
++static int mcp25xxfd_can_fifo_compute(struct mcp25xxfd_can_priv *cpriv)
++{
++	int rx_memory_available;
++
++	switch (cpriv->can.dev->mtu) {
++	case CAN_MTU:
++		/* MTU is 8 */
++		cpriv->fifos.payload_size = 8;
++		cpriv->fifos.payload_mode = MCP25XXFD_CAN_TXQCON_PLSIZE_8;
++
++		break;
++	case CANFD_MTU:
++		/* MTU is 64 */
++		cpriv->fifos.payload_size = 64;
++		cpriv->fifos.payload_mode = MCP25XXFD_CAN_TXQCON_PLSIZE_64;
++
++		break;
++	default:
 +		return -EINVAL;
 +	}
 +
-+	/* Finally check if modeswitch is really working */
-+	return mcp25xxfd_can_probe_modeswitch(priv);
++	/* compute effective sizes */
++	cpriv->fifos.rx.size = sizeof(struct mcp25xxfd_can_obj_rx) +
++		cpriv->fifos.payload_size;
++
++	/* calculate evailable memory for RX_fifos */
++	rx_memory_available = MCP25XXFD_SRAM_SIZE;
++
++	/* calculate possible amount of RX fifos */
++	cpriv->fifos.rx.count = rx_memory_available / cpriv->fifos.rx.size;
++
++	/* now calculate effective number of rx-fifos. There are only 31 fifos
++	 * available in total, so we need to limit ourselves
++	 */
++	if (cpriv->fifos.rx.count > 31)
++		cpriv->fifos.rx.count = 31;
++
++	cpriv->fifos.rx.start = 1;
++
++	return 0;
 +}
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
++
++static int mcp25xxfd_can_fifo_clear_regs(struct mcp25xxfd_can_priv *cpriv,
++					 u32 start, u32 end)
++{
++	size_t len = end - start;
++	u8 *data;
++	int ret;
++
++	data = kzalloc(len, GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	ret = mcp25xxfd_cmd_write_regs(cpriv->priv->spi,
++				       start, (u32 *)data, len);
++
++	kfree(data);
++
++	return ret;
++}
++
++static int mcp25xxfd_can_fifo_clear(struct mcp25xxfd_can_priv *cpriv)
++{
++	int ret;
++
++	memset(&cpriv->fifos.info, 0, sizeof(cpriv->fifos.info));
++	memset(&cpriv->fifos.rx, 0, sizeof(cpriv->fifos.rx));
++
++	/* clear FIFO config */
++	ret = mcp25xxfd_can_fifo_clear_regs(cpriv, MCP25XXFD_CAN_FIFOCON(1),
++					    MCP25XXFD_CAN_FIFOCON(32));
++	if (ret)
++		return ret;
++
++	/* clear the filter mask - match any frame with every filter */
++	return mcp25xxfd_can_fifo_clear_regs(cpriv, MCP25XXFD_CAN_FLTCON(0),
++					     MCP25XXFD_CAN_FLTCON(32));
++}
++
++int mcp25xxfd_can_fifo_setup(struct mcp25xxfd_can_priv *cpriv)
++{
++	int ret;
++
++	/* clear fifo config */
++	ret = mcp25xxfd_can_fifo_clear(cpriv);
++	if (ret)
++		return ret;
++
++	ret = mcp25xxfd_can_fifo_compute(cpriv);
++	if (ret)
++		return ret;
++
++	cpriv->regs.tefcon = 0;
++	ret = mcp25xxfd_cmd_write(cpriv->priv->spi, MCP25XXFD_CAN_TEFCON,
++				  cpriv->regs.tefcon);
++	if (ret)
++		return ret;
++
++	ret = mcp25xxfd_cmd_write(cpriv->priv->spi, MCP25XXFD_CAN_TXQCON, 0);
++	if (ret)
++		return ret;
++
++	ret = mcp25xxfd_can_fifo_setup_rx(cpriv);
++	if (ret)
++		return ret;
++
++	ret = mcp25xxfd_can_fifo_setup_rxfilter(cpriv);
++	if (ret)
++		return ret;
++
++	/* get fifo addresses */
++	ret = mcp25xxfd_can_fifo_get_address(cpriv);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++void mcp25xxfd_can_fifo_release(struct mcp25xxfd_can_priv *cpriv)
++{
++	mcp25xxfd_can_fifo_clear(cpriv);
++}
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h
 new file mode 100644
-index 000000000000..f54c716735fb
+index 000000000000..ed2daa05220a
 --- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h
 @@ -0,0 +1,16 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +
@@ -525,21 +868,96 @@ index 000000000000..f54c716735fb
 + * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
 + */
 +
-+#ifndef __MCP25XXFD_CAN_H
-+#define __MCP25XXFD_CAN_H
++#ifndef __MCP25XXFD_CAN_FIFO_H
++#define __MCP25XXFD_CAN_FIFO_H
 +
-+#include "mcp25xxfd_priv.h"
++#include "mcp25xxfd_can_priv.h"
 +
-+/* probe the can controller */
-+int mcp25xxfd_can_probe(struct mcp25xxfd_priv *priv);
++int mcp25xxfd_can_fifo_setup(struct mcp25xxfd_can_priv *cpriv);
++void mcp25xxfd_can_fifo_release(struct mcp25xxfd_can_priv *cpriv);
 +
-+#endif /* __MCP25XXFD_CAN_H */
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c
++#endif /* __MCP25XXFD_CAN_FIFO_H */
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h
 new file mode 100644
-index 000000000000..24d01e6f59d4
+index 000000000000..00a6c6639bd5
 --- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c
-@@ -0,0 +1,226 @@
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h
+@@ -0,0 +1,69 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
++ *
++ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
++ */
++
++#ifndef __MCP25XXFD_CAN_IF_H
++#define __MCP25XXFD_CAN_IF_H
++
++#include <uapi/linux/can.h>
++
++#include "mcp25xxfd_can_id.h"
++#include "mcp25xxfd_regs.h"
++
++/* ideally these would be defined in uapi/linux/can.h */
++#define MCP25XXFD_CAN_EFF_SID_SHIFT	(CAN_EFF_ID_BITS - CAN_SFF_ID_BITS)
++#define MCP25XXFD_CAN_EFF_SID_BITS	CAN_SFF_ID_BITS
++#define MCP25XXFD_CAN_EFF_SID_MASK					\
++	GENMASK(MCP25XXFD_CAN_EFF_SID_SHIFT + MCP25XXFD_CAN_EFF_SID_BITS - 1, \
++		MCP25XXFD_CAN_EFF_SID_SHIFT)
++#define MCP25XXFD_CAN_EFF_EID_SHIFT	0
++#define MCP25XXFD_CAN_EFF_EID_BITS	MCP25XXFD_CAN_EFF_SID_SHIFT
++#define MCP25XXFD_CAN_EFF_EID_MASK					\
++	GENMASK(MCP25XXFD_CAN_EFF_EID_SHIFT + MCP25XXFD_CAN_EFF_EID_BITS - 1, \
++		MCP25XXFD_CAN_EFF_EID_SHIFT)
++
++static inline
++void mcp25xxfd_can_id_from_mcp25xxfd(u32 mcp_id, u32 mcp_flags, u32 *can_id)
++{
++	u32 sid = (mcp_id & MCP25XXFD_CAN_OBJ_ID_SID_MASK) >>
++		MCP25XXFD_CAN_OBJ_ID_SID_SHIFT;
++	u32 eid = (mcp_id & MCP25XXFD_CAN_OBJ_ID_EID_MASK) >>
++		MCP25XXFD_CAN_OBJ_ID_EID_SHIFT;
++
++	/* select normal or extended ids */
++	if (mcp_flags & MCP25XXFD_CAN_OBJ_FLAGS_IDE) {
++		*can_id = (eid << MCP25XXFD_CAN_EFF_EID_SHIFT) |
++			(sid << MCP25XXFD_CAN_EFF_SID_SHIFT) |
++			CAN_EFF_FLAG;
++	} else {
++		*can_id = sid << MCP25XXFD_CAN_EFF_EID_SHIFT;
++	}
++	/* handle rtr */
++	*can_id |= (mcp_flags & MCP25XXFD_CAN_OBJ_FLAGS_RTR) ? CAN_RTR_FLAG : 0;
++}
++
++static inline
++void mcp25xxfd_can_id_to_mcp25xxfd(u32 can_id, u32 *id, u32 *flags)
++{
++	/* depending on can_id flag compute extended or standard ids */
++	if (can_id & CAN_EFF_FLAG) {
++		int sid = (can_id & MCP25XXFD_CAN_EFF_SID_MASK) >>
++			MCP25XXFD_CAN_EFF_SID_SHIFT;
++		int eid = (can_id & MCP25XXFD_CAN_EFF_EID_MASK) >>
++			MCP25XXFD_CAN_EFF_EID_SHIFT;
++		*id = (eid << MCP25XXFD_CAN_OBJ_ID_EID_SHIFT) |
++			(sid << MCP25XXFD_CAN_OBJ_ID_SID_SHIFT);
++		*flags = MCP25XXFD_CAN_OBJ_FLAGS_IDE;
++	} else {
++		*id = can_id & CAN_SFF_MASK;
++		*flags = 0;
++	}
++
++	/* Handle RTR */
++	*flags |= (can_id & CAN_RTR_FLAG) ? MCP25XXFD_CAN_OBJ_FLAGS_RTR : 0;
++}
++
++#endif /* __MCP25XXFD_CAN_IF_H */
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c
+new file mode 100644
+index 000000000000..83656b2604df
+--- /dev/null
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c
+@@ -0,0 +1,655 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
@@ -547,1277 +965,1153 @@ index 000000000000..24d01e6f59d4
 + * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
 + */
 +
++#include <linux/can/core.h>
++#include <linux/can/dev.h>
++#include <linux/device.h>
++#include <linux/interrupt.h>
++#include <linux/irqreturn.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/net.h>
++#include <linux/netdevice.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/sort.h>
++
++#include "mcp25xxfd_regs.h"
++#include "mcp25xxfd_can.h"
++#include "mcp25xxfd_can_int.h"
++#include "mcp25xxfd_can_priv.h"
++#include "mcp25xxfd_can_rx.h"
++#include "mcp25xxfd_cmd.h"
++#include "mcp25xxfd_ecc.h"
++
++#define MCP25XXFD_RESCHEDULE_TIMES 4
++
++static void mcp25xxfd_can_int_send_error_skb(struct mcp25xxfd_can_priv *cpriv)
++{
++	struct net_device *net = cpriv->can.dev;
++	struct sk_buff *skb;
++	struct can_frame *frame;
++
++	/* allocate error frame */
++	skb = alloc_can_err_skb(net, &frame);
++	if (!skb) {
++		netdev_err(net, "cannot allocate error skb\n");
++		return;
++	}
++
++	/* setup can error frame data */
++	frame->can_id |= cpriv->error_frame.id;
++	memcpy(frame->data, cpriv->error_frame.data, sizeof(frame->data));
++
++	/* and submit it */
++	netif_receive_skb(skb);
++}
++
++static int mcp25xxfd_can_int_compare_obj_ts(const void *a, const void *b)
++{
++	s32 ats = ((struct mcp25xxfd_obj_ts *)a)->ts;
++	s32 bts = ((struct mcp25xxfd_obj_ts *)b)->ts;
++
++	if (ats < bts)
++		return -1;
++	if (ats > bts)
++		return 1;
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_submit_frames(struct mcp25xxfd_can_priv *cpriv)
++{
++	struct mcp25xxfd_obj_ts *queue = cpriv->fifos.submit_queue;
++	int count = cpriv->fifos.submit_queue_count;
++	int i, fifo;
++	int ret;
++
++	/* skip processing if the queue count is 0 */
++	if (count == 0)
++		goto out;
++
++	/* sort the fifos (rx and tx - actually TEF) by receive timestamp */
++	sort(queue, count, sizeof(*queue),
++	     mcp25xxfd_can_int_compare_obj_ts, NULL);
++
++	/* now submit the fifos  */
++	for (i = 0; i < count; i++) {
++		fifo = queue[i].fifo;
++		ret = mcp25xxfd_can_rx_submit_frame(cpriv, fifo);
++		if (ret)
++			return ret;
++	}
++
++	/* if we have received or transmitted something and the IVMIE is
++	 * disabled, then enable it. This is mostly to avoid unnecessary
++	 * interrupts when CAN bus is disconnected.
++	 */
++	if (!(cpriv->status.intf | MCP25XXFD_CAN_INT_IVMIE)) {
++		cpriv->status.intf |= MCP25XXFD_CAN_INT_IVMIE;
++		ret = mcp25xxfd_cmd_write_mask(cpriv->priv->spi,
++					       MCP25XXFD_CAN_INT,
++					       cpriv->status.intf,
++					       MCP25XXFD_CAN_INT_IVMIE);
++		if (ret)
++			return ret;
++	}
++
++out:
++	return 0;
++}
++
++static int mcp25xxfd_can_int_clear_int_flags(struct mcp25xxfd_can_priv *cpriv)
++{
++	u32 clearable_irq_active = cpriv->status.intf &
++		MCP25XXFD_CAN_INT_IF_CLEAR_MASK;
++	u32 clear_irq = cpriv->status.intf & (~MCP25XXFD_CAN_INT_IF_CLEAR_MASK);
++
++	if (!clearable_irq_active)
++		return 0;
++
++	return mcp25xxfd_cmd_write_mask(cpriv->priv->spi, MCP25XXFD_CAN_INT,
++					clear_irq, clearable_irq_active);
++}
++
++static
++int mcp25xxfd_can_int_handle_serrif_txmab(struct mcp25xxfd_can_priv *cpriv)
++{
++	int mode = mcp25xxfd_can_targetmode(cpriv);
++
++	cpriv->can.dev->stats.tx_fifo_errors++;
++	cpriv->can.dev->stats.tx_errors++;
++
++	/* data7 contains custom mcp25xxfd error flags */
++	cpriv->error_frame.data[7] |= MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_SERR_TX;
++
++	/* and switch back into the correct mode */
++	return mcp25xxfd_can_switch_mode_no_wait(cpriv->priv,
++						 &cpriv->regs.con, mode);
++}
++
++static
++int mcp25xxfd_can_int_handle_serrif_rxmab(struct mcp25xxfd_can_priv *cpriv)
++{
++	cpriv->can.dev->stats.rx_dropped++;
++	cpriv->can.dev->stats.rx_errors++;
++
++	/* data7 contains custom mcp25xxfd error flags */
++	cpriv->error_frame.data[7] |= MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_SERR_RX;
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_handle_serrif(struct mcp25xxfd_can_priv *cpriv)
++{
++	if (!(cpriv->status.intf & MCP25XXFD_CAN_INT_SERRIF))
++		return 0;
++
++	/* Errors here are:
++	 * * Bus Bandwidth Error: when a RX Message Assembly Buffer
++	 *   is still full when the next message has already arrived
++	 *   the recived message shall be ignored
++	 * * TX MAB Underflow: when a TX Message is invalid
++	 *   due to ECC errors or TXMAB underflow
++	 *   in this situatioon the system will transition to
++	 *   Restricted or Listen Only mode
++	 */
++
++	cpriv->error_frame.id |= CAN_ERR_CRTL;
++	cpriv->error_frame.data[1] |= CAN_ERR_CRTL_UNSPEC;
++
++	/* mode change + invalid message would indicate TX MAB Underflow */
++	if ((cpriv->status.intf & MCP25XXFD_CAN_INT_MODIF) &&
++	    (cpriv->status.intf & MCP25XXFD_CAN_INT_IVMIF)) {
++		return mcp25xxfd_can_int_handle_serrif_txmab(cpriv);
++	}
++
++	/* for RX there is only the RXIF an indicator - surprizingly RX-MAB
++	 * does not change mode or anything
++	 */
++	if (cpriv->status.intf & MCP25XXFD_CAN_INT_RXIF)
++		return mcp25xxfd_can_int_handle_serrif_rxmab(cpriv);
++
++	dev_warn_ratelimited(&cpriv->priv->spi->dev,
++			     "unidentified system interrupt - intf =  %08x\n",
++			     cpriv->status.intf);
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_handle_modif(struct mcp25xxfd_can_priv *cpriv)
++{
++	struct spi_device *spi = cpriv->priv->spi;
++	int mode;
++	int ret;
++
++	/* Note that this irq does not get triggered in all situations
++	 * for example SERRIF will move to RESTICTED or LISTENONLY but MODIF
++	 * will not be raised!
++	 */
++	if (!(cpriv->status.intf & MCP25XXFD_CAN_INT_MODIF))
++		return 0;
++
++	/* get the current mode */
++	ret = mcp25xxfd_can_get_mode(cpriv->priv, &mode);
++	if (ret)
++		return ret;
++
++	mode = ret;
++
++	/* switches to the same mode as before are ignored
++	 * - this typically happens if the driver is shortly
++	 *   switching to a different mode and then returning to the
++	 *   original mode
++	 */
++	if (mode == cpriv->mode)
++		return 0;
++
++	/* if we are restricted, then return to "normal" mode */
++	if (mode == MCP25XXFD_CAN_CON_MODE_RESTRICTED) {
++		cpriv->mode = mode;
++		mode = mcp25xxfd_can_targetmode(cpriv);
++		return mcp25xxfd_can_switch_mode_no_wait(cpriv->priv,
++							 &cpriv->regs.con,
++							 mode);
++	}
++
++	/* the controller itself will transition to sleep, so we ignore it */
++	if (mode == MCP25XXFD_CAN_CON_MODE_SLEEP) {
++		cpriv->mode = mode;
++		return 0;
++	}
++
++	dev_warn(&spi->dev,
++		 "Controller unexpectedly switched from mode %u to %u\n",
++		 cpriv->mode, mode);
++
++	/* assign the mode as current */
++	cpriv->mode = mode;
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_handle_eccif(struct mcp25xxfd_can_priv *cpriv)
++{
++	if (!(cpriv->status.intf & MCP25XXFD_CAN_INT_ECCIF))
++		return 0;
++
++	/* and prepare ERROR FRAME */
++	cpriv->error_frame.id |= CAN_ERR_CRTL;
++	cpriv->error_frame.data[1] |= CAN_ERR_CRTL_UNSPEC;
++	/* data7 contains custom mcp25xxfd error flags */
++	cpriv->error_frame.data[7] |= MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_ECC;
++
++	/* delegate to interrupt cleaning */
++	return mcp25xxfd_ecc_clear_int(cpriv->priv);
++}
++
++static void mcp25xxfd_can_int_handle_ivmif_tx(struct mcp25xxfd_can_priv *cpriv,
++					      u32 *mask)
++{
++	/* check if it is really a known tx error */
++	if ((cpriv->bus.bdiag[1] &
++	     (MCP25XXFD_CAN_BDIAG1_DBIT1ERR |
++	      MCP25XXFD_CAN_BDIAG1_DBIT0ERR |
++	      MCP25XXFD_CAN_BDIAG1_NACKERR |
++	      MCP25XXFD_CAN_BDIAG1_NBIT1ERR |
++	      MCP25XXFD_CAN_BDIAG1_NBIT0ERR
++		     )) == 0)
++		return;
++
++	/* mark it as a protocol error */
++	cpriv->error_frame.id |= CAN_ERR_PROT;
++
++	/* and update statistics */
++	cpriv->can.dev->stats.tx_errors++;
++
++	/* and handle all the known cases */
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NACKERR) {
++		/* TX-Frame not acknowledged - connected to CAN-bus? */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NACKERR;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_TX;
++		cpriv->can.dev->stats.tx_aborted_errors++;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NBIT1ERR) {
++		/* TX-Frame CAN-BUS Level is unexpectedly dominant */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NBIT1ERR;
++		cpriv->can.dev->stats.tx_carrier_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_BIT1;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NBIT0ERR) {
++		/* TX-Frame CAN-BUS Level is unexpectedly recessive */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NBIT0ERR;
++		cpriv->can.dev->stats.tx_carrier_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_BIT0;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DBIT1ERR) {
++		/* TX-Frame CAN-BUS Level is unexpectedly dominant
++		 * during data phase
++		 */
++		*mask |= MCP25XXFD_CAN_BDIAG1_DBIT1ERR;
++		cpriv->can.dev->stats.tx_carrier_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_BIT1;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DBIT0ERR) {
++		/* TX-Frame CAN-BUS Level is unexpectedly recessive
++		 * during data phase
++		 */
++		*mask |= MCP25XXFD_CAN_BDIAG1_DBIT0ERR;
++		cpriv->can.dev->stats.tx_carrier_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_BIT0;
++	}
++}
++
++static void mcp25xxfd_can_int_handle_ivmif_rx(struct mcp25xxfd_can_priv *cpriv,
++					      u32 *mask)
++{
++	/* check if it is really a known tx error */
++	if ((cpriv->bus.bdiag[1] &
++	     (MCP25XXFD_CAN_BDIAG1_DCRCERR |
++	      MCP25XXFD_CAN_BDIAG1_DSTUFERR |
++	      MCP25XXFD_CAN_BDIAG1_DFORMERR |
++	      MCP25XXFD_CAN_BDIAG1_NCRCERR |
++	      MCP25XXFD_CAN_BDIAG1_NSTUFERR |
++	      MCP25XXFD_CAN_BDIAG1_NFORMERR
++		     )) == 0)
++		return;
++
++	/* mark it as a protocol error */
++	cpriv->error_frame.id |= CAN_ERR_PROT;
++
++	/* and update statistics */
++	cpriv->can.dev->stats.rx_errors++;
++
++	/* handle the cases */
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DCRCERR) {
++		/* RX-Frame with bad CRC during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_DCRCERR;
++		cpriv->can.dev->stats.rx_crc_errors++;
++		cpriv->error_frame.data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DSTUFERR) {
++		/* RX-Frame with bad stuffing during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_DSTUFERR;
++		cpriv->can.dev->stats.rx_frame_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_STUFF;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DFORMERR) {
++		/* RX-Frame with bad format during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_DFORMERR;
++		cpriv->can.dev->stats.rx_frame_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_FORM;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NCRCERR) {
++		/* RX-Frame with bad CRC during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NCRCERR;
++		cpriv->can.dev->stats.rx_crc_errors++;
++		cpriv->error_frame.data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NSTUFERR) {
++		/* RX-Frame with bad stuffing during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NSTUFERR;
++		cpriv->can.dev->stats.rx_frame_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_STUFF;
++	}
++
++	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_NFORMERR) {
++		/* RX-Frame with bad format during data phase */
++		*mask |= MCP25XXFD_CAN_BDIAG1_NFORMERR;
++		cpriv->can.dev->stats.rx_frame_errors++;
++		cpriv->error_frame.data[2] |= CAN_ERR_PROT_FORM;
++	}
++}
++
++static int mcp25xxfd_can_int_handle_ivmif(struct mcp25xxfd_can_priv *cpriv)
++{
++	struct spi_device *spi = cpriv->priv->spi;
++	u32 mask, bdiag1;
++	int ret;
++
++	if (!(cpriv->status.intf & MCP25XXFD_CAN_INT_IVMIF))
++		return 0;
++
++	if (cpriv->status.intf & MCP25XXFD_CAN_INT_SERRIF)
++		return 0;
++
++	ret = mcp25xxfd_cmd_read_regs(spi, MCP25XXFD_CAN_BDIAG0,
++				      cpriv->bus.bdiag,
++				      sizeof(cpriv->bus.bdiag));
++	if (ret)
++		return ret;
++
++	mask = 0;
++
++	/* check rx and tx errors */
++	mcp25xxfd_can_int_handle_ivmif_tx(cpriv, &mask);
++	mcp25xxfd_can_int_handle_ivmif_rx(cpriv, &mask);
++
++	/* clear flags if we have bits masked */
++	if (!mask) {
++		dev_warn_once(&spi->dev,
++			      "found IVMIF situation not supported by driver - bdiag = [0x%08x, 0x%08x]",
++			      cpriv->bus.bdiag[0], cpriv->bus.bdiag[1]);
++		return -EINVAL;
++	}
++
++	bdiag1 = cpriv->bus.bdiag[1] & (~mask);
++	ret = mcp25xxfd_cmd_write_mask(spi, MCP25XXFD_CAN_BDIAG1, bdiag1, mask);
++	if (ret)
++		return ret;
++
++	/* clear the interrupt flag until we have received or transmited */
++	cpriv->status.intf &= ~(MCP25XXFD_CAN_INT_IVMIE);
++	return mcp25xxfd_cmd_write_mask(spi, MCP25XXFD_CAN_INT,
++					cpriv->status.intf,
++					MCP25XXFD_CAN_INT_IVMIE);
++}
++
++static int mcp25xxfd_can_int_handle_cerrif(struct mcp25xxfd_can_priv *cpriv)
++{
++	if (!(cpriv->status.intf & MCP25XXFD_CAN_INT_CERRIF))
++		return 0;
++
++	/* this interrupt exists primarilly to counter possible bus off
++	 * situations. More detailed information can be found and controlled in
++	 * the TREC register
++	 */
++
++	netdev_warn(cpriv->can.dev, "CAN Bus error experienced");
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_error_counters(struct mcp25xxfd_can_priv *cpriv)
++{
++	if (cpriv->status.trec & MCP25XXFD_CAN_TREC_TXWARN) {
++		cpriv->bus.new_state = CAN_STATE_ERROR_WARNING;
++		cpriv->error_frame.id |= CAN_ERR_CRTL;
++		cpriv->error_frame.data[1] |= CAN_ERR_CRTL_TX_WARNING;
++	}
++
++	if (cpriv->status.trec & MCP25XXFD_CAN_TREC_RXWARN) {
++		cpriv->bus.new_state = CAN_STATE_ERROR_WARNING;
++		cpriv->error_frame.id |= CAN_ERR_CRTL;
++		cpriv->error_frame.data[1] |= CAN_ERR_CRTL_RX_WARNING;
++	}
++
++	if (cpriv->status.trec & MCP25XXFD_CAN_TREC_TXBP) {
++		cpriv->bus.new_state = CAN_STATE_ERROR_PASSIVE;
++		cpriv->error_frame.id |= CAN_ERR_CRTL;
++		cpriv->error_frame.data[1] |= CAN_ERR_CRTL_TX_PASSIVE;
++	}
++
++	if (cpriv->status.trec & MCP25XXFD_CAN_TREC_RXBP) {
++		cpriv->bus.new_state = CAN_STATE_ERROR_PASSIVE;
++		cpriv->error_frame.id |= CAN_ERR_CRTL;
++		cpriv->error_frame.data[1] |= CAN_ERR_CRTL_RX_PASSIVE;
++	}
++
++	if (cpriv->status.trec & MCP25XXFD_CAN_TREC_TXBO) {
++		cpriv->bus.new_state = CAN_STATE_BUS_OFF;
++		cpriv->error_frame.id |= CAN_ERR_BUSOFF;
++	}
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_error_handling(struct mcp25xxfd_can_priv *cpriv)
++{
++	/* based on the last state state check the new state */
++	switch (cpriv->can.state) {
++	case CAN_STATE_ERROR_ACTIVE:
++		if (cpriv->bus.new_state >= CAN_STATE_ERROR_WARNING &&
++		    cpriv->bus.new_state <= CAN_STATE_BUS_OFF)
++			cpriv->can.can_stats.error_warning++;
++		fallthrough;
++	case CAN_STATE_ERROR_WARNING:
++		if (cpriv->bus.new_state >= CAN_STATE_ERROR_PASSIVE &&
++		    cpriv->bus.new_state <= CAN_STATE_BUS_OFF)
++			cpriv->can.can_stats.error_passive++;
++		break;
++	default:
++		break;
++	}
++
++	cpriv->can.state = cpriv->bus.new_state;
++
++	/* send error packet */
++	if (cpriv->error_frame.id)
++		mcp25xxfd_can_int_send_error_skb(cpriv);
++
++	/* handle BUS OFF */
++	if (cpriv->can.state == CAN_STATE_BUS_OFF) {
++		if (cpriv->can.restart_ms == 0) {
++			cpriv->can.can_stats.bus_off++;
++			can_bus_off(cpriv->can.dev);
++		}
++	}
++
++	return 0;
++}
++
++static int mcp25xxfd_can_int_handle_status(struct mcp25xxfd_can_priv *cpriv)
++{
++	int ret;
++
++	ret = mcp25xxfd_can_int_clear_int_flags(cpriv);
++	if (ret)
++		return ret;
++
++	/* set up new state and error frame for this loop */
++	cpriv->bus.new_state = cpriv->bus.state;
++	memset(&cpriv->error_frame, 0, sizeof(cpriv->error_frame));
++
++	/* setup the process queue by clearing the counter */
++	cpriv->fifos.submit_queue_count = 0;
++
++	/* system error interrupt needs to get handled first
++	 * to get us out of restricted mode
++	 */
++	ret = mcp25xxfd_can_int_handle_serrif(cpriv);
++	if (ret)
++		return ret;
++
++	/* mode change interrupt */
++	ret = mcp25xxfd_can_int_handle_modif(cpriv);
++	if (ret)
++		return ret;
++
++	/* handle the rx */
++	ret = mcp25xxfd_can_rx_handle_int_rxif(cpriv);
++	if (ret)
++		return ret;
++
++	/* handle error interrupt flags */
++	ret = mcp25xxfd_can_rx_handle_int_rxovif(cpriv);
++	if (ret)
++		return ret;
++
++	/* sram ECC error interrupt */
++	ret = mcp25xxfd_can_int_handle_eccif(cpriv);
++	if (ret)
++		return ret;
++
++	/* message format interrupt */
++	ret = mcp25xxfd_can_int_handle_ivmif(cpriv);
++	if (ret)
++		return ret;
++
++	/* handle bus errors in more detail */
++	ret = mcp25xxfd_can_int_handle_cerrif(cpriv);
++	if (ret)
++		return ret;
++
++	/* error counter handling */
++	ret = mcp25xxfd_can_int_error_counters(cpriv);
++	if (ret)
++		return ret;
++
++	/* error counter handling */
++	ret = mcp25xxfd_can_int_error_handling(cpriv);
++	if (ret)
++		return ret;
++
++	/* and submit can frames to network stack */
++	ret = mcp25xxfd_can_int_submit_frames(cpriv);
++
++	return ret;
++}
++
++irqreturn_t mcp25xxfd_can_int(int irq, void *dev_id)
++{
++	struct mcp25xxfd_can_priv *cpriv = dev_id;
++	int loops, ret;
++
++	/* loop forever unless we need to exit */
++	for (loops = 0; true; loops++) {
++		/* read interrupt status flags in bulk */
++		ret = mcp25xxfd_cmd_read_regs(cpriv->priv->spi,
++					      MCP25XXFD_CAN_INT,
++					      &cpriv->status.intf,
++					      sizeof(cpriv->status));
++		if (ret)
++			return ret;
++
++		/* only act if the IE mask configured has active IF bits
++		 * otherwise the Interrupt line should be deasserted already
++		 * so we can exit the loop
++		 */
++		if (((cpriv->status.intf >> MCP25XXFD_CAN_INT_IE_SHIFT) &
++		       cpriv->status.intf) == 0)
++			break;
++
++		/* handle the status */
++		ret = mcp25xxfd_can_int_handle_status(cpriv);
++		if (ret)
++			return ret;
++
++		/* allow voluntarily rescheduling every so often to avoid
++		 * long CS lows at the end of a transfer on low power CPUs
++		 * avoiding SERR happening
++		 */
++		if (loops % MCP25XXFD_RESCHEDULE_TIMES == 0)
++			cond_resched();
++	}
++
++	return IRQ_HANDLED;
++}
++
++int mcp25xxfd_can_int_clear(struct mcp25xxfd_priv *priv)
++{
++	return mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_CAN_INT, 0,
++					MCP25XXFD_CAN_INT_IF_MASK);
++}
++
++int mcp25xxfd_can_int_enable(struct mcp25xxfd_priv *priv, bool enable)
++{
++	struct mcp25xxfd_can_priv *cpriv = priv->cpriv;
++	const u32 mask = MCP25XXFD_CAN_INT_TEFIE |
++		MCP25XXFD_CAN_INT_RXIE |
++		MCP25XXFD_CAN_INT_MODIE |
++		MCP25XXFD_CAN_INT_SERRIE |
++		MCP25XXFD_CAN_INT_IVMIE |
++		MCP25XXFD_CAN_INT_CERRIE |
++		MCP25XXFD_CAN_INT_RXOVIE |
++		MCP25XXFD_CAN_INT_ECCIE;
++	u32 value = cpriv ? cpriv->status.intf : 0;
++	int ret;
++
++	value &= ~(MCP25XXFD_CAN_INT_IE_MASK);
++	if (enable)
++		value |= mask;
++
++	ret = mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_CAN_INT,
++				       value, mask);
++	if (ret)
++		return ret;
++
++	if (!cpriv)
++		return 0;
++
++	cpriv->status.intf = value;
++	if (cpriv->irq.allocated) {
++		if (enable && !cpriv->irq.enabled)
++			enable_irq(cpriv->priv->spi->irq);
++		if (!enable && cpriv->irq.enabled)
++			disable_irq(cpriv->priv->spi->irq);
++		cpriv->irq.enabled = enable;
++	} else {
++		cpriv->irq.enabled = false;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h
+new file mode 100644
+index 000000000000..aa67a5da9271
+--- /dev/null
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
++ *
++ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
++ */
++#ifndef __MCP25XXFD_CAN_INT_H
++#define __MCP25XXFD_CAN_INT_H
++
++#include "mcp25xxfd_priv.h"
++#include <linux/irqreturn.h>
++
++int mcp25xxfd_can_int_clear(struct mcp25xxfd_priv *priv);
++int mcp25xxfd_can_int_enable(struct mcp25xxfd_priv *priv, bool enable);
++
++irqreturn_t mcp25xxfd_can_int(int irq, void *dev_id);
++
++#endif /* __MCP25XXFD_CAN_INT_H */
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_priv.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_priv.h
+new file mode 100644
+index 000000000000..e043b262a868
+--- /dev/null
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_priv.h
+@@ -0,0 +1,131 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
++ *
++ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
++ */
++
++#ifndef __MCP25XXFD_CAN_PRIV_H
++#define __MCP25XXFD_CAN_PRIV_H
++
++#include <linux/can/dev.h>
++#include <linux/dcache.h>
++
++#include "mcp25xxfd_priv.h"
++
++#define TX_ECHO_SKB_MAX	32
++
++/* information on each fifo type */
++struct mcp25xxfd_fifo {
++	u32 count;
++	u32 start;
++	u32 size;
++};
++
++/* used for sorting incoming messages */
++struct mcp25xxfd_obj_ts {
++	s32 ts; /* using signed to handle rollover correctly when sorting */
++	u16 fifo;
++};
++
++/* general info on each fifo */
++struct mcp25xxfd_fifo_info {
++	u32 offset;
++	u32 priority;
++};
++
++struct mcp25xxfd_can_priv {
++	/* can_priv has to be the first one to be usable with alloc_candev
++	 * which expects struct can_priv to be right at the start of the
++	 * priv structure
++	 */
++	struct can_priv can;
++	struct mcp25xxfd_priv *priv;
++	struct regulator *transceiver;
++
++	/* the can mode currently active */
++	int mode;
++
++	/* interrupt state */
++	struct {
++		int enabled;
++		int allocated;
++	} irq;
++
++	/* can config registers */
++	struct {
++		u32 con;
++		u32 tdc;
++		u32 tscon;
++		u32 tefcon;
++		u32 nbtcfg;
++		u32 dbtcfg;
++	} regs;
++
++	/* can status registers (mostly) - read in one go
++	 * bdiag0 and bdiag1 are optional, but when
++	 * berr counters are requested on a regular basis
++	 * during high CAN-bus load this would trigger the fact
++	 * that spi_sync would get queued for execution in the
++	 * spi thread and the spi handler would not get
++	 * called inline in the interrupt thread without any
++	 * context switches or wakeups...
++	 */
++	struct {
++		u32 intf;
++		/* ASSERT(CAN_INT + 4 == CAN_RXIF) */
++		u32 rxif;
++		/* ASSERT(CAN_RXIF + 4 == CAN_TXIF) */
++		u32 txif;
++		/* ASSERT(CAN_TXIF + 4 == CAN_RXOVIF) */
++		u32 rxovif;
++		/* ASSERT(CAN_RXOVIF + 4 == CAN_TXATIF) */
++		u32 txatif;
++		/* ASSERT(CAN_TXATIF + 4 == CAN_TXREQ) */
++		u32 txreq;
++		/* ASSERT(CAN_TXREQ + 4 == CAN_TREC) */
++		u32 trec;
++	} status;
++
++	/* information of fifo setup */
++	struct {
++		/* define payload size and mode */
++		u32 payload_size;
++		u32 payload_mode;
++
++		/* infos on fifo layout */
++
++		/* info on each fifo */
++		struct mcp25xxfd_fifo_info info[32];
++
++		/* extra info on rx fifo groups */
++		struct mcp25xxfd_fifo rx;
++
++		/* queue of can frames that need to get submitted
++		 * to the network stack during an interrupt loop in one go
++		 * (this gets sorted by timestamp before submission
++		 * and contains both rx frames as well tx frames that have
++		 * gone over the CAN bus successfully
++		 */
++		struct mcp25xxfd_obj_ts submit_queue[32];
++		int  submit_queue_count;
++	} fifos;
++
++	/* bus state */
++	struct {
++		u32 state;
++		u32 new_state;
++		u32 bdiag[2];
++	} bus;
++
++	/* can error messages */
++	struct {
++		u32 id;
++		u8  data[8];
++	} error_frame;
++
++	/* a copy of mcp25xxfd-sram in ram */
++	u8 sram[MCP25XXFD_SRAM_SIZE];
++};
++
++#endif /* __MCP25XXFD_CAN_PRIV_H */
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c
+new file mode 100644
+index 000000000000..5e3f706e7a3f
+--- /dev/null
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c
+@@ -0,0 +1,233 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
++ *
++ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
++ *
++ * Based on Microchip MCP251x CAN controller driver written by
++ * David Vrabel, Copyright 2006 Arcom Control Systems Ltd.
++ */
++
++#include <linux/can/core.h>
++#include <linux/can/dev.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/netdevice.h>
++#include <linux/skbuff.h>
 +#include <linux/slab.h>
 +#include <linux/spi/spi.h>
 +
 +#include "mcp25xxfd_cmd.h"
-+#include "mcp25xxfd_priv.h"
++#include "mcp25xxfd_can.h"
++#include "mcp25xxfd_can_id.h"
++#include "mcp25xxfd_can_priv.h"
++#include "mcp25xxfd_can_rx.h"
 +
-+static int mcp25xxfd_cmd_sync_write(struct spi_device *spi,
-+				    const void *tx_buf,
-+				    unsigned int tx_len)
++static struct sk_buff *
++mcp25xxfd_can_rx_submit_normal_frame(struct mcp25xxfd_can_priv *cpriv,
++				     u32 id, u32 dlc, u8 **data)
 +{
-+	struct spi_transfer xfer;
++	struct can_frame *frame;
++	struct sk_buff *skb;
 +
-+	memset(&xfer, 0, sizeof(xfer));
-+	xfer.tx_buf = tx_buf;
-+	xfer.len = tx_len;
++	/* allocate frame */
++	skb = alloc_can_skb(cpriv->can.dev, &frame);
++	if (!skb)
++		return NULL;
 +
-+	return spi_sync_transfer(spi, &xfer, 1);
++	/* set id, dlc and flags */
++	frame->can_id = id;
++	frame->can_dlc = dlc;
++
++	/* and set the pointer to data */
++	*data = frame->data;
++
++	return skb;
 +}
 +
-+static int mcp25xxfd_cmd_write_then_read(struct spi_device *spi,
-+					 const void *tx_buf,
-+					 unsigned int tx_len,
-+					 void *rx_buf,
-+					 unsigned int rx_len)
++/* it is almost identical except for the type of the frame... */
++static struct sk_buff *
++mcp25xxfd_can_rx_submit_fd_frame(struct mcp25xxfd_can_priv *cpriv,
++				 u32 id, u32 flags, u32 len, u8 **data)
 +{
-+	struct spi_transfer xfer[2];
-+	u8 *spi_tx, *spi_rx;
-+	int xfers;
-+	int ret;
++	struct canfd_frame *frame;
++	struct sk_buff *skb;
 +
-+	spi_tx = kzalloc(tx_len + rx_len, GFP_KERNEL);
-+	if (!spi_tx)
-+		return -ENOMEM;
++	/* allocate frame */
++	skb = alloc_canfd_skb(cpriv->can.dev, &frame);
++	if (!skb)
++		return NULL;
 +
-+	spi_rx = spi_tx + tx_len;
-+	memset(xfer, 0, sizeof(xfer));
++	/* set id, dlc and flags */
++	frame->can_id = id;
++	frame->len = len;
++	frame->flags |= flags;
 +
-+	/* Special handling for half-duplex */
-+	if (spi->master->flags & SPI_MASTER_HALF_DUPLEX) {
-+		xfers = 2;
-+		xfer[0].tx_buf = spi_tx;
-+		xfer[0].len = tx_len;
-+		/* Offset for rx_buf needs to get aligned */
-+		xfer[1].rx_buf = spi_rx + tx_len;
-+		xfer[1].len = rx_len;
++	/* and set the pointer to data */
++	*data = frame->data;
++
++	return skb;
++}
++
++int mcp25xxfd_can_rx_submit_frame(struct mcp25xxfd_can_priv *cpriv, int fifo)
++{
++	struct net_device *net = cpriv->can.dev;
++	int addr = cpriv->fifos.info[fifo].offset;
++	struct mcp25xxfd_can_obj_rx *rx =
++		(struct mcp25xxfd_can_obj_rx *)(cpriv->sram + addr);
++	u8 *data = NULL;
++	struct sk_buff *skb;
++	u32 id, dlc, len, flags;
++
++	/* compute the can_id */
++	mcp25xxfd_can_id_from_mcp25xxfd(rx->id, rx->flags, &id);
++
++	/* and dlc */
++	dlc = (rx->flags & MCP25XXFD_CAN_OBJ_FLAGS_DLC_MASK) >>
++		MCP25XXFD_CAN_OBJ_FLAGS_DLC_SHIFT;
++	len = can_dlc2len(dlc);
++
++	/* update stats */
++	net->stats.rx_packets++;
++	net->stats.rx_bytes += len;
++
++	/* allocate the skb buffer */
++	if (rx->flags & MCP25XXFD_CAN_OBJ_FLAGS_FDF) {
++		flags = 0;
++		flags |= (rx->flags & MCP25XXFD_CAN_OBJ_FLAGS_BRS) ?
++			CANFD_BRS : 0;
++		flags |= (rx->flags & MCP25XXFD_CAN_OBJ_FLAGS_ESI) ?
++			CANFD_ESI : 0;
++		skb = mcp25xxfd_can_rx_submit_fd_frame(cpriv, id, flags,
++						       len, &data);
 +	} else {
-+		xfers = 1;
-+		xfer[0].len = tx_len + rx_len;
-+		xfer[0].tx_buf = spi_tx;
-+		xfer[0].rx_buf = spi_rx;
++		skb = mcp25xxfd_can_rx_submit_normal_frame(cpriv, id,
++							   len, &data);
++	}
++	if (!skb) {
++		netdev_err(net, "cannot allocate RX skb\n");
++		net->stats.rx_dropped++;
++		return -ENOMEM;
 +	}
 +
-+	memcpy(spi_tx, tx_buf, tx_len);
-+	ret = spi_sync_transfer(spi, xfer, xfers);
-+	if (ret)
-+		goto out;
++	/* copy the payload data */
++	memcpy(data, rx->data, len);
 +
-+	memcpy(rx_buf, xfer[0].rx_buf + tx_len, rx_len);
-+
-+out:
-+	kfree(spi_tx);
-+
-+	return ret;
-+}
-+
-+static int mcp25xxfd_cmd_write_then_write(struct spi_device *spi,
-+					  const void *tx_buf,
-+					  unsigned int tx_len,
-+					  const void *tx2_buf,
-+					  unsigned int tx2_len)
-+{
-+	struct spi_transfer xfer;
-+	u8 *spi_tx;
-+	int ret;
-+
-+	spi_tx = kzalloc(tx_len + tx2_len, GFP_KERNEL);
-+	if (!spi_tx)
-+		return -ENOMEM;
-+
-+	memset(&xfer, 0, sizeof(xfer));
-+	xfer.len = tx_len + tx2_len;
-+	xfer.tx_buf = spi_tx;
-+
-+	memcpy(spi_tx, tx_buf, tx_len);
-+	memcpy(spi_tx + tx_len, tx2_buf, tx2_len);
-+
-+	ret = spi_sync_transfer(spi, &xfer, 1);
-+	kfree(spi_tx);
-+
-+	return ret;
-+}
-+
-+/* Read multiple bytes from registers */
-+int mcp25xxfd_cmd_read_multi(struct spi_device *spi, u32 reg,
-+			     void *data, int n)
-+{
-+	u8 cmd[2];
-+	int ret;
-+
-+	mcp25xxfd_cmd_calc(MCP25XXFD_INSTRUCTION_READ, reg, cmd);
-+
-+	ret = mcp25xxfd_cmd_write_then_read(spi, &cmd, 2, data, n);
-+	if (ret)
-+		return ret;
++	/* and submit the frame */
++	netif_rx_ni(skb);
 +
 +	return 0;
 +}
 +
-+int mcp25xxfd_cmd_read_mask(struct spi_device *spi, u32 reg,
-+			    u32 *data, u32 mask)
++static int mcp25xxfd_can_rx_read_frame(struct mcp25xxfd_can_priv *cpriv,
++				       int fifo, int prefetch_bytes)
 +{
-+	int first_byte, last_byte, len_byte;
-+	int ret;
++	struct spi_device *spi = cpriv->priv->spi;
++	struct net_device *net = cpriv->can.dev;
++	int addr = cpriv->fifos.info[fifo].offset;
++	struct mcp25xxfd_can_obj_rx *rx =
++		(struct mcp25xxfd_can_obj_rx *)(cpriv->sram + addr);
++	int dlc;
++	int len, ret;
 +
-+	/* Make sure at least one bit is set */
-+	if (!mask)
-+		return -EINVAL;
-+
-+	/* Calculate first and last byte used */
-+	first_byte = mcp25xxfd_cmd_first_byte(mask);
-+	last_byte = mcp25xxfd_cmd_last_byte(mask);
-+	len_byte = last_byte - first_byte + 1;
-+
-+	*data = 0;
-+	ret = mcp25xxfd_cmd_read_multi(spi, reg + first_byte,
-+				       ((void *)data + first_byte), len_byte);
++	/* we read the header plus prefetch_bytes */
++	ret = mcp25xxfd_cmd_read_multi(spi, MCP25XXFD_SRAM_ADDR(addr),
++				       rx, sizeof(*rx) + prefetch_bytes);
 +	if (ret)
 +		return ret;
 +
-+	mcp25xxfd_cmd_convert_to_cpu(data, 1);
++	/* transpose the headers to CPU format*/
++	rx->id = le32_to_cpu(rx->id);
++	rx->flags = le32_to_cpu(rx->flags);
++	rx->ts = le32_to_cpu(rx->ts);
++
++	/* compute len */
++	dlc = (rx->flags & MCP25XXFD_CAN_OBJ_FLAGS_DLC_MASK) >>
++		MCP25XXFD_CAN_OBJ_FLAGS_DLC_SHIFT;
++	len = can_dlc2len(min_t(int, dlc, (net->mtu == CANFD_MTU) ? 15 : 8));
++
++	/* read the remaining data for canfd frames */
++	if (len > prefetch_bytes) {
++		/* here the extra portion reading data after prefetch */
++		ret = mcp25xxfd_cmd_read_multi(spi,
++					       MCP25XXFD_SRAM_ADDR(addr) +
++					       sizeof(*rx) + prefetch_bytes,
++					       &rx->data[prefetch_bytes],
++					       len - prefetch_bytes);
++		if (ret)
++			return ret;
++	}
++
++	/* clear the rest of the buffer - just to be safe */
++	memset(rx->data + len, 0, ((net->mtu == CANFD_MTU) ? 64 : 8) - len);
++
++	/* add the fifo to the process queues */
++	mcp25xxfd_can_queue_frame(cpriv, fifo, rx->ts);
++
++	/* and clear the interrupt flag for that fifo */
++	return mcp25xxfd_cmd_write_mask(spi, MCP25XXFD_CAN_FIFOCON(fifo),
++					MCP25XXFD_CAN_FIFOCON_FRESET,
++					MCP25XXFD_CAN_FIFOCON_FRESET);
++}
++
++static int mcp25xxfd_can_rx_read_frames(struct mcp25xxfd_can_priv *cpriv)
++{
++	int i, f, prefetch;
++	int ret;
++
++	prefetch = 8;
++	/* TODO: Optimize this */
++	for (i = 0, f = cpriv->fifos.rx.start; i < cpriv->fifos.rx.count;
++	     i++, f++) {
++		if (cpriv->status.rxif & BIT(f)) {
++			/* read the frame */
++			ret = mcp25xxfd_can_rx_read_frame(cpriv, f, prefetch);
++			if (ret)
++				return ret;
++		}
++	}
 +
 +	return 0;
 +}
 +
-+/* Write multiple bytes to registers */
-+int mcp25xxfd_cmd_write_multi(struct spi_device *spi, u32 reg,
-+			      void *data, int n)
++int mcp25xxfd_can_rx_handle_int_rxif(struct mcp25xxfd_can_priv *cpriv)
 +{
-+	int ret;
-+	u8 cmd[2];
-+
-+	mcp25xxfd_cmd_calc(MCP25XXFD_INSTRUCTION_WRITE, reg, cmd);
-+
-+	ret = mcp25xxfd_cmd_write_then_write(spi, &cmd, 2, data, n);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+int mcp25xxfd_cmd_write_mask(struct spi_device *spi, u32 reg,
-+			     u32 data, u32 mask)
-+{
-+	int first_byte, last_byte, len_byte;
-+	u8 cmd[2];
-+
-+	/* Make sure at least one bit is set */
-+	if (!mask)
-+		return -EINVAL;
-+
-+	/* calculate first and last byte used */
-+	first_byte = mcp25xxfd_cmd_first_byte(mask);
-+	last_byte = mcp25xxfd_cmd_last_byte(mask);
-+	len_byte = last_byte - first_byte + 1;
-+
-+	mcp25xxfd_cmd_calc(MCP25XXFD_INSTRUCTION_WRITE,
-+			   reg + first_byte, cmd);
-+
-+	mcp25xxfd_cmd_convert_from_cpu(&data, 1);
-+
-+	return mcp25xxfd_cmd_write_then_write(spi,
-+					      cmd, sizeof(cmd),
-+					      ((void *)&data + first_byte),
-+					      len_byte);
-+}
-+
-+int mcp25xxfd_cmd_write_regs(struct spi_device *spi, u32 reg,
-+			     u32 *data, u32 bytes)
-+{
-+	int ret;
-+
-+	mcp25xxfd_cmd_convert_from_cpu(data, bytes / sizeof(bytes));
-+
-+	ret = mcp25xxfd_cmd_write_multi(spi, reg, data, bytes);
-+
-+	mcp25xxfd_cmd_convert_to_cpu(data, bytes / sizeof(bytes));
-+
-+	return ret;
-+}
-+
-+int mcp25xxfd_cmd_read_regs(struct spi_device *spi, u32 reg,
-+			    u32 *data, u32 bytes)
-+{
-+	int ret;
-+
-+	ret = mcp25xxfd_cmd_read_multi(spi, reg, data, bytes);
-+
-+	mcp25xxfd_cmd_convert_to_cpu((u32 *)data, bytes / sizeof(bytes));
-+
-+	return ret;
-+}
-+
-+int mcp25xxfd_cmd_reset(struct spi_device *spi)
-+{
-+	u8 *cmd;
-+	int ret;
-+
-+	cmd = kzalloc(2, GFP_KERNEL);
-+	if (!cmd)
-+		return -ENOMEM;
-+
-+	mcp25xxfd_cmd_calc(MCP25XXFD_INSTRUCTION_RESET, 0, cmd);
-+
-+	ret = mcp25xxfd_cmd_sync_write(spi, cmd, 2);
-+
-+	kfree(cmd);
-+
-+	return ret;
-+}
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h
-new file mode 100644
-index 000000000000..a61815f97bf6
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h
-@@ -0,0 +1,84 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#ifndef __MCP25XXFD_CMD_H
-+#define __MCP25XXFD_CMD_H
-+
-+#include <linux/byteorder/generic.h>
-+#include <linux/spi/spi.h>
-+
-+/* SPI commands */
-+#define MCP25XXFD_INSTRUCTION_RESET		0x0000
-+#define MCP25XXFD_INSTRUCTION_READ		0x3000
-+#define MCP25XXFD_INSTRUCTION_WRITE		0x2000
-+#define MCP25XXFD_INSTRUCTION_READ_CRC		0xB000
-+#define MCP25XXFD_INSTRUCTION_WRITE_CRC		0xA000
-+#define MCP25XXFD_INSTRUCTION_WRITE_SAVE	0xC000
-+
-+#define MCP25XXFD_ADDRESS_MASK			0x0fff
-+
-+static inline void mcp25xxfd_cmd_convert_to_cpu(u32 *data, int n)
-+{
-+	le32_to_cpu_array(data, n);
-+}
-+
-+static inline void mcp25xxfd_cmd_convert_from_cpu(u32 *data, int n)
-+{
-+	cpu_to_le32_array(data, n);
-+}
-+
-+static inline void mcp25xxfd_cmd_calc(u16 cmd, u16 addr, u8 *data)
-+{
-+	cmd = cmd | (addr & MCP25XXFD_ADDRESS_MASK);
-+
-+	data[0] = (cmd >> 8) & 0xff;
-+	data[1] = (cmd >> 0) & 0xff;
-+}
-+
-+static inline int mcp25xxfd_cmd_first_byte(u32 mask)
-+{
-+	return (mask & 0x0000ffff) ?
-+		((mask & 0x000000ff) ? 0 : 1) :
-+		((mask & 0x00ff0000) ? 2 : 3);
-+}
-+
-+static inline int mcp25xxfd_cmd_last_byte(u32 mask)
-+{
-+	return (mask & 0xffff0000) ?
-+		((mask & 0xff000000) ? 3 : 2) :
-+		((mask & 0x0000ff00) ? 1 : 0);
-+}
-+
-+int mcp25xxfd_cmd_read_multi(struct spi_device *spi, u32 reg,
-+			     void *data, int n);
-+int mcp25xxfd_cmd_read_mask(struct spi_device *spi, u32 reg,
-+			    u32 *data, u32 mask);
-+static inline int mcp25xxfd_cmd_read(struct spi_device *spi, u32 reg,
-+				     u32 *data)
-+{
-+	return mcp25xxfd_cmd_read_mask(spi, reg, data, -1);
-+}
-+
-+int mcp25xxfd_cmd_read_regs(struct spi_device *spi, u32 reg,
-+			    u32 *data, u32 bytes);
-+
-+int mcp25xxfd_cmd_write_multi(struct spi_device *spi, u32 reg,
-+			      void *data, int n);
-+int mcp25xxfd_cmd_write_mask(struct spi_device *spi, u32 reg,
-+			     u32 data, u32 mask);
-+static inline int mcp25xxfd_cmd_write(struct spi_device *spi, u32 reg,
-+				      u32 data)
-+{
-+	return mcp25xxfd_cmd_write_mask(spi, reg, data, -1);
-+}
-+
-+int mcp25xxfd_cmd_write_regs(struct spi_device *spi, u32 reg,
-+			     u32 *data, u32 bytes);
-+
-+int mcp25xxfd_cmd_reset(struct spi_device *spi);
-+
-+#endif /* __MCP25XXFD_CMD_H */
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c
-new file mode 100644
-index 000000000000..b893d8009448
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include "mcp25xxfd_cmd.h"
-+#include "mcp25xxfd_crc.h"
-+#include "mcp25xxfd_regs.h"
-+#include "mcp25xxfd_priv.h"
-+
-+int mcp25xxfd_crc_enable_int(struct mcp25xxfd_priv *priv, bool enable)
-+{
-+	u32 mask = MCP25XXFD_CRC_CRCERRIE | MCP25XXFD_CRC_FERRIE;
-+
-+	priv->regs.crc &= ~mask;
-+	priv->regs.crc |= enable ? mask : 0;
-+
-+	return mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_CRC,
-+					priv->regs.crc, mask);
-+}
-+
-+int mcp25xxfd_crc_clear_int(struct mcp25xxfd_priv *priv)
-+{
-+	return mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_CRC, 0,
-+					MCP25XXFD_CRC_CRCERRIF |
-+					MCP25XXFD_CRC_FERRIF);
-+}
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h
-new file mode 100644
-index 000000000000..6e42fe0fad0f
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+#ifndef __MCP25XXFD_CRC_H
-+#define __MCP25XXFD_CRC_H
-+
-+#include "mcp25xxfd_priv.h"
-+
-+int mcp25xxfd_crc_enable_int(struct mcp25xxfd_priv *priv, bool enable);
-+int mcp25xxfd_crc_clear_int(struct mcp25xxfd_priv *priv);
-+
-+#endif /* __MCP25XXFD_CRC_H */
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c
-new file mode 100644
-index 000000000000..56e2c4fbf52d
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c
-@@ -0,0 +1,74 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include "mcp25xxfd_cmd.h"
-+#include "mcp25xxfd_ecc.h"
-+#include "mcp25xxfd_priv.h"
-+#include "mcp25xxfd_regs.h"
-+
-+int mcp25xxfd_ecc_clear_int(struct mcp25xxfd_priv *priv)
-+{
-+	u32 val, addr;
-+	int ret;
-+
-+	/* First report the error address */
-+	ret = mcp25xxfd_cmd_read(priv->spi, MCP25XXFD_ECCSTAT, &val);
-+	if (ret)
-+		return ret;
-+
-+	/* If no flags are set then nothing to do */
-+	if (!(val & (MCP25XXFD_ECCSTAT_SECIF | MCP25XXFD_ECCSTAT_DEDIF)))
++	if (!cpriv->status.rxif)
 +		return 0;
 +
-+	addr = (val & MCP25XXFD_ECCSTAT_ERRADDR_MASK) >>
-+		MCP25XXFD_ECCSTAT_ERRADDR_SHIFT;
-+
-+	dev_err_ratelimited(&priv->spi->dev, "ECC %s bit error at %03x\n",
-+			    (val & MCP25XXFD_ECCSTAT_DEDIF) ?
-+			    "double" : "single",
-+			    addr);
-+
-+	/* Clear the error */
-+	return mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_ECCSTAT, 0,
-+					MCP25XXFD_ECCSTAT_SECIF |
-+					MCP25XXFD_ECCSTAT_DEDIF);
++	/* read all the fifos */
++	return mcp25xxfd_can_rx_read_frames(cpriv);
 +}
 +
-+int mcp25xxfd_ecc_enable_int(struct mcp25xxfd_priv *priv, bool enable)
++int mcp25xxfd_can_rx_handle_int_rxovif(struct mcp25xxfd_can_priv *cpriv)
 +{
-+	u32 mask = MCP25XXFD_ECCCON_SECIE | MCP25XXFD_ECCCON_DEDIE;
++	u32 mask = MCP25XXFD_CAN_FIFOSTA_RXOVIF;
++	int ret, i, reg;
 +
-+	priv->regs.ecccon &= ~mask;
-+	priv->regs.ecccon |= MCP25XXFD_ECCCON_ECCEN | (enable ? mask : 0);
++	if (!cpriv->status.rxovif)
++		return 0;
 +
-+	return mcp25xxfd_cmd_write_mask(priv->spi, MCP25XXFD_ECCCON,
-+					priv->regs.ecccon,
-+					MCP25XXFD_ECCCON_ECCEN | mask);
-+}
++	/* clear all fifos that have an overflow bit set */
++	for (i = 0; i < 32; i++) {
++		if (cpriv->status.rxovif & BIT(i)) {
++			/* clear fifo status */
++			reg = MCP25XXFD_CAN_FIFOSTA(i);
++			ret = mcp25xxfd_cmd_write_mask(cpriv->priv->spi,
++						       reg, 0, mask);
++			if (ret)
++				return ret;
 +
-+int mcp25xxfd_ecc_enable(struct mcp25xxfd_priv *priv)
-+{
-+	u8 buffer[256];
-+	int i, ret;
++			/* update statistics */
++			cpriv->can.dev->stats.rx_over_errors++;
++			cpriv->can.dev->stats.rx_errors++;
 +
-+	ret = mcp25xxfd_ecc_enable_int(priv, false);
-+	if (ret)
-+		return ret;
-+
-+	memset(buffer, 0, sizeof(buffer));
-+	for (i = 0; i < MCP25XXFD_SRAM_SIZE; i += sizeof(buffer)) {
-+		ret = mcp25xxfd_cmd_write_multi(priv->spi,
-+						MCP25XXFD_SRAM_ADDR(i),
-+						buffer, sizeof(buffer));
-+		if (ret)
-+			return ret;
++			/* and prepare ERROR FRAME */
++			cpriv->error_frame.id |= CAN_ERR_CRTL;
++			cpriv->error_frame.data[1] |=
++				CAN_ERR_CRTL_RX_OVERFLOW;
++		}
 +	}
 +
 +	return 0;
 +}
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h
 new file mode 100644
-index 000000000000..117f58c65a46
+index 000000000000..71953e2f3615
 --- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h
-@@ -0,0 +1,16 @@
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h
+@@ -0,0 +1,18 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +
 +/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
 + *
 + * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
 + */
-+#ifndef __MCP25XXFD_ECC_H
-+#define __MCP25XXFD_ECC_H
++
++#ifndef __MCP25XXFD_CAN_RX_H
++#define __MCP25XXFD_CAN_RX_H
 +
 +#include "mcp25xxfd_priv.h"
 +
-+int mcp25xxfd_ecc_clear_int(struct mcp25xxfd_priv *priv);
-+int mcp25xxfd_ecc_enable_int(struct mcp25xxfd_priv *priv, bool enable);
-+int mcp25xxfd_ecc_enable(struct mcp25xxfd_priv *priv);
++int mcp25xxfd_can_rx_submit_frame(struct mcp25xxfd_can_priv *cpriv, int fifo);
 +
-+#endif /* __MCP25XXFD_ECC_H */
++int mcp25xxfd_can_rx_handle_int_rxif(struct mcp25xxfd_can_priv *cpriv);
++int mcp25xxfd_can_rx_handle_int_rxovif(struct mcp25xxfd_can_priv *cpriv);
++
++#endif /* __MCP25XXFD_CAN_RX_H */
 diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c
-new file mode 100644
-index 000000000000..5e274d452646
---- /dev/null
+index 5e274d452646..182172b6c59c 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c
 +++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c
-@@ -0,0 +1,59 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+
-+#include "mcp25xxfd_crc.h"
-+#include "mcp25xxfd_ecc.h"
-+#include "mcp25xxfd_int.h"
-+#include "mcp25xxfd_priv.h"
-+
-+int mcp25xxfd_int_clear(struct mcp25xxfd_priv *priv)
-+{
-+	int ret;
-+
-+	ret = mcp25xxfd_ecc_clear_int(priv);
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/spi/spi.h>
+ 
++#include "mcp25xxfd_can_int.h"
+ #include "mcp25xxfd_crc.h"
+ #include "mcp25xxfd_ecc.h"
+ #include "mcp25xxfd_int.h"
+@@ -21,7 +22,11 @@ int mcp25xxfd_int_clear(struct mcp25xxfd_priv *priv)
+ 	if (ret)
+ 		return ret;
+ 
+-	return mcp25xxfd_crc_clear_int(priv);
++	ret = mcp25xxfd_crc_clear_int(priv);
 +	if (ret)
 +		return ret;
 +
-+	return mcp25xxfd_crc_clear_int(priv);
-+}
-+
-+int mcp25xxfd_int_enable(struct mcp25xxfd_priv *priv, bool enable)
-+{
-+	int ret;
-+
-+	/* If we enable interrupts, then clear interrupt first */
-+	if (enable) {
-+		ret = mcp25xxfd_int_clear(priv);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = mcp25xxfd_crc_enable_int(priv, enable);
++	return mcp25xxfd_can_int_clear(priv);
+ }
+ 
+ int mcp25xxfd_int_enable(struct mcp25xxfd_priv *priv, bool enable)
+@@ -47,12 +52,19 @@ int mcp25xxfd_int_enable(struct mcp25xxfd_priv *priv, bool enable)
+ 	if (ret)
+ 		goto out_crc;
+ 
++	ret = mcp25xxfd_can_int_enable(priv, enable);
 +	if (ret)
-+		return ret;
++		goto out_ecc;
 +
-+	ret = mcp25xxfd_ecc_enable(priv);
-+	if (ret)
-+		goto out_crc;
+ 	/* If we disable interrupts, then clear interrupt flags last */
+ 	if (!enable)
+ 		mcp25xxfd_int_clear(priv);
+ 
+ 	return 0;
+ 
++out_ecc:
++	mcp25xxfd_ecc_enable_int(priv, false);
 +
-+	ret = mcp25xxfd_ecc_enable_int(priv, enable);
-+	if (ret)
-+		goto out_crc;
-+
-+	/* If we disable interrupts, then clear interrupt flags last */
-+	if (!enable)
-+		mcp25xxfd_int_clear(priv);
-+
-+	return 0;
-+
-+out_crc:
-+	mcp25xxfd_crc_enable_int(priv, false);
-+	return ret;
-+}
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h
-new file mode 100644
-index 000000000000..4daf0182d1af
---- /dev/null
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+#ifndef __MCP25XXFD_INT_H
-+#define __MCP25XXFD_INT_H
-+
-+#include "mcp25xxfd_priv.h"
-+
-+int mcp25xxfd_int_clear(struct mcp25xxfd_priv *priv);
-+int mcp25xxfd_int_enable(struct mcp25xxfd_priv *priv, bool enable);
-+
-+#endif /* __MCP25XXFD_INT_H */
+ out_crc:
+ 	mcp25xxfd_crc_enable_int(priv, false);
+ 	return ret;
 diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h
-new file mode 100644
-index 000000000000..8bc7a599224c
---- /dev/null
+index 8bc7a599224c..85c27a7f6785 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h
 +++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h
-@@ -0,0 +1,48 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#ifndef __MCP25XXFD_PRIV_H
-+#define __MCP25XXFD_PRIV_H
-+
-+#include <linux/clk.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+
-+#include "mcp25xxfd_regs.h"
-+
-+#define DEVICE_NAME "mcp25xxfd"
-+#define CLOCK_4_MHZ 4000000
-+#define CLOCK_10_MHZ 10000000
-+#define CLOCK_40_MHZ 40000000
-+
-+enum mcp25xxfd_model {
-+	CAN_MCP2517FD	= 0x2517,
-+};
-+
-+struct mcp25xxfd_priv {
-+	struct spi_device *spi;
-+	struct clk *clk;
-+
-+	/* actual model of the mcp25xxfd */
-+	enum mcp25xxfd_model model;
-+
-+	/* full device name used for interrupts */
-+	char device_name[32];
-+
-+	int clock_freq;
-+	struct regulator *power;
-+
-+	/* configuration registers */
-+	struct {
-+		u32 osc;
-+		u32 iocon;
-+		u32 crc;
-+		u32 ecccon;
-+	} regs;
-+};
-+
-+#endif /* __MCP25XXFD_PRIV_H */
+@@ -23,9 +23,11 @@ enum mcp25xxfd_model {
+ 	CAN_MCP2517FD	= 0x2517,
+ };
+ 
++struct mcp25xxfd_can_priv;
+ struct mcp25xxfd_priv {
+ 	struct spi_device *spi;
+ 	struct clk *clk;
++	struct mcp25xxfd_can_priv *cpriv;
+ 
+ 	/* actual model of the mcp25xxfd */
+ 	enum mcp25xxfd_model model;
 diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h
-new file mode 100644
-index 000000000000..b500cb46b9a4
---- /dev/null
+index b500cb46b9a4..222527439c70 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h
 +++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h
-@@ -0,0 +1,656 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
+@@ -653,4 +653,9 @@ struct mcp25xxfd_can_obj_tef {
+ 		MCP25XXFD_CAN_FLAGS_FILHIT_BITS - 1,			\
+ 		MCP25XXFD_CAN_FLAGS_FILHIT_SHIFT)
+ 
++/* custom status error */
++#define MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_SERR_RX BIT(0)
++#define MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_SERR_TX BIT(1)
++#define MCP25XXFD_CAN_ERR_DATA7_MCP25XXFD_ECC	  BIT(2)
 +
-+/* CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-+ *
-+ * Copyright 2019 Martin Sperl <kernel@martin.sperl.org>
-+ */
-+
-+#ifndef __MCP25XXFD_REGS_H
-+#define __MCP25XXFD_REGS_H
-+
-+#include <linux/bitops.h>
-+
-+/* some constants derived from the datasheets */
-+#define MCP25XXFD_OST_DELAY_MS		3
-+#define MCP25XXFD_MIN_CLOCK_FREQUENCY	1000000
-+#define MCP25XXFD_MAX_CLOCK_FREQUENCY	40000000
-+#define MCP25XXFD_PLL_MULTIPLIER	10
-+#define MCP25XXFD_AUTO_PLL_MAX_CLOCK_FREQUENCY				\
-+	(MCP25XXFD_MAX_CLOCK_FREQUENCY / MCP25XXFD_PLL_MULTIPLIER)
-+#define MCP25XXFD_SCLK_DIVIDER		2
-+
-+/* GPIO, clock, ecc related register definitions of Controller itself */
-+#define MCP25XXFD_SFR_BASE(x)			(0xE00 + (x))
-+#define MCP25XXFD_OSC				MCP25XXFD_SFR_BASE(0x00)
-+#  define MCP25XXFD_OSC_PLLEN			BIT(0)
-+#  define MCP25XXFD_OSC_OSCDIS			BIT(2)
-+#  define MCP25XXFD_OSC_SCLKDIV			BIT(4)
-+#  define MCP25XXFD_OSC_CLKODIV_BITS		2
-+#  define MCP25XXFD_OSC_CLKODIV_SHIFT		5
-+#  define MCP25XXFD_OSC_CLKODIV_MASK					\
-+	GENMASK(MCP25XXFD_OSC_CLKODIV_SHIFT				\
-+		+ MCP25XXFD_OSC_CLKODIV_BITS - 1,			\
-+		MCP25XXFD_OSC_CLKODIV_SHIFT)
-+#  define MCP25XXFD_OSC_CLKODIV_10		3
-+#  define MCP25XXFD_OSC_CLKODIV_4		2
-+#  define MCP25XXFD_OSC_CLKODIV_2		1
-+#  define MCP25XXFD_OSC_CLKODIV_1		0
-+#  define MCP25XXFD_OSC_PLLRDY			BIT(8)
-+#  define MCP25XXFD_OSC_OSCRDY			BIT(10)
-+#  define MCP25XXFD_OSC_SCLKRDY			BIT(12)
-+#define MCP25XXFD_IOCON				MCP25XXFD_SFR_BASE(0x04)
-+#  define MCP25XXFD_IOCON_TRIS0			BIT(0)
-+#  define MCP25XXFD_IOCON_TRIS1			BIT(1)
-+#  define MCP25XXFD_IOCON_XSTBYEN		BIT(6)
-+#  define MCP25XXFD_IOCON_LAT0			BIT(8)
-+#  define MCP25XXFD_IOCON_LAT1			BIT(9)
-+#  define MCP25XXFD_IOCON_GPIO0			BIT(16)
-+#  define MCP25XXFD_IOCON_GPIO1			BIT(17)
-+#  define MCP25XXFD_IOCON_PM0			BIT(24)
-+#  define MCP25XXFD_IOCON_PM1			BIT(25)
-+#  define MCP25XXFD_IOCON_TXCANOD		BIT(28)
-+#  define MCP25XXFD_IOCON_SOF			BIT(29)
-+#  define MCP25XXFD_IOCON_INTOD			BIT(30)
-+#define MCP25XXFD_CRC				MCP25XXFD_SFR_BASE(0x08)
-+#  define MCP25XXFD_CRC_MASK			GENMASK(15, 0)
-+#  define MCP25XXFD_CRC_CRCERRIE		BIT(16)
-+#  define MCP25XXFD_CRC_FERRIE			BIT(17)
-+#  define MCP25XXFD_CRC_CRCERRIF		BIT(24)
-+#  define MCP25XXFD_CRC_FERRIF			BIT(25)
-+#define MCP25XXFD_ECCCON			MCP25XXFD_SFR_BASE(0x0C)
-+#  define MCP25XXFD_ECCCON_ECCEN		BIT(0)
-+#  define MCP25XXFD_ECCCON_SECIE		BIT(1)
-+#  define MCP25XXFD_ECCCON_DEDIE		BIT(2)
-+#  define MCP25XXFD_ECCCON_PARITY_BITS		6
-+#  define MCP25XXFD_ECCCON_PARITY_SHIFT		8
-+#  define MCP25XXFD_ECCCON_PARITY_MASK					\
-+	GENMASK(MCP25XXFD_ECCCON_PARITY_SHIFT				\
-+		+ MCP25XXFD_ECCCON_PARITY_BITS - 1,			\
-+		MCP25XXFD_ECCCON_PARITY_SHIFT)
-+#define MCP25XXFD_ECCSTAT			MCP25XXFD_SFR_BASE(0x10)
-+#  define MCP25XXFD_ECCSTAT_SECIF		BIT(1)
-+#  define MCP25XXFD_ECCSTAT_DEDIF		BIT(2)
-+#  define MCP25XXFD_ECCSTAT_ERRADDR_SHIFT	8
-+#  define MCP25XXFD_ECCSTAT_ERRADDR_MASK				\
-+	GENMASK(MCP25XXFD_ECCSTAT_ERRADDR_SHIFT + 11,			\
-+		MCP25XXFD_ECCSTAT_ERRADDR_SHIFT)
-+
-+/* CAN related register definitions of Controller CAN block */
-+#define MCP25XXFD_CAN_SFR_BASE(x)		(0x000 + (x))
-+#define MCP25XXFD_CAN_CON						\
-+	MCP25XXFD_CAN_SFR_BASE(0x00)
-+#  define MCP25XXFD_CAN_CON_DNCNT_BITS		5
-+#  define MCP25XXFD_CAN_CON_DNCNT_SHIFT		0
-+#  define MCP25XXFD_CAN_CON_DNCNT_MASK					\
-+	GENMASK(MCP25XXFD_CAN_CON_DNCNT_SHIFT +				\
-+		MCP25XXFD_CAN_CON_DNCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_CON_DNCNT_SHIFT)
-+#  define MCP25XXFD_CAN_CON_ISOCRCEN		BIT(5)
-+#  define MCP25XXFD_CAN_CON_PXEDIS		BIT(6)
-+#  define MCP25XXFD_CAN_CON_WAKFIL		BIT(8)
-+#  define MCP25XXFD_CAN_CON_WFT_BITS		2
-+#  define MCP25XXFD_CAN_CON_WFT_SHIFT		9
-+#  define MCP25XXFD_CAN_CON_WFT_MASK					\
-+	GENMASK(MCP25XXFD_CAN_CON_WFT_SHIFT +				\
-+		MCP25XXFD_CAN_CON_WFT_BITS - 1,				\
-+		MCP25XXFD_CAN_CON_WFT_SHIFT)
-+#  define MCP25XXFD_CAN_CON_BUSY		BIT(11)
-+#  define MCP25XXFD_CAN_CON_BRSDIS		BIT(12)
-+#  define MCP25XXFD_CAN_CON_RTXAT		BIT(16)
-+#  define MCP25XXFD_CAN_CON_ESIGM		BIT(17)
-+#  define MCP25XXFD_CAN_CON_SERR2LOM		BIT(18)
-+#  define MCP25XXFD_CAN_CON_STEF		BIT(19)
-+#  define MCP25XXFD_CAN_CON_TXQEN		BIT(20)
-+#  define MCP25XXFD_CAN_CON_OPMODE_BITS		3
-+#  define MCP25XXFD_CAN_CON_OPMOD_SHIFT		21
-+#  define MCP25XXFD_CAN_CON_OPMOD_MASK					\
-+	GENMASK(MCP25XXFD_CAN_CON_OPMOD_SHIFT +				\
-+		MCP25XXFD_CAN_CON_OPMODE_BITS - 1,			\
-+		MCP25XXFD_CAN_CON_OPMOD_SHIFT)
-+#  define MCP25XXFD_CAN_CON_REQOP_BITS		3
-+#  define MCP25XXFD_CAN_CON_REQOP_SHIFT		24
-+#  define MCP25XXFD_CAN_CON_REQOP_MASK					\
-+	GENMASK(MCP25XXFD_CAN_CON_REQOP_SHIFT +				\
-+		MCP25XXFD_CAN_CON_REQOP_BITS - 1,			\
-+		MCP25XXFD_CAN_CON_REQOP_SHIFT)
-+#    define MCP25XXFD_CAN_CON_MODE_MIXED	0
-+#    define MCP25XXFD_CAN_CON_MODE_SLEEP	1
-+#    define MCP25XXFD_CAN_CON_MODE_INT_LOOPBACK	2
-+#    define MCP25XXFD_CAN_CON_MODE_LISTENONLY	3
-+#    define MCP25XXFD_CAN_CON_MODE_CONFIG	4
-+#    define MCP25XXFD_CAN_CON_MODE_EXT_LOOPBACK	5
-+#    define MCP25XXFD_CAN_CON_MODE_CAN2_0	6
-+#    define MCP25XXFD_CAN_CON_MODE_RESTRICTED	7
-+#  define MCP25XXFD_CAN_CON_ABAT		BIT(27)
-+#  define MCP25XXFD_CAN_CON_TXBWS_BITS		3
-+#  define MCP25XXFD_CAN_CON_TXBWS_SHIFT		28
-+#  define MCP25XXFD_CAN_CON_TXBWS_MASK					\
-+	GENMASK(MCP25XXFD_CAN_CON_TXBWS_SHIFT +				\
-+		MCP25XXFD_CAN_CON_TXBWS_BITS - 1,			\
-+		MCP25XXFD_CAN_CON_TXBWS_SHIFT)
-+#  define MCP25XXFD_CAN_CON_DEFAULT					\
-+	(MCP25XXFD_CAN_CON_ISOCRCEN |					\
-+	 MCP25XXFD_CAN_CON_PXEDIS |					\
-+	 MCP25XXFD_CAN_CON_WAKFIL |					\
-+	 (3 << MCP25XXFD_CAN_CON_WFT_SHIFT) |				\
-+	 MCP25XXFD_CAN_CON_STEF |					\
-+	 MCP25XXFD_CAN_CON_TXQEN |					\
-+	 (MCP25XXFD_CAN_CON_MODE_CONFIG << MCP25XXFD_CAN_CON_OPMOD_SHIFT) | \
-+	 (MCP25XXFD_CAN_CON_MODE_CONFIG << MCP25XXFD_CAN_CON_REQOP_SHIFT))
-+#  define MCP25XXFD_CAN_CON_DEFAULT_MASK				\
-+	(MCP25XXFD_CAN_CON_DNCNT_MASK |					\
-+	 MCP25XXFD_CAN_CON_ISOCRCEN |					\
-+	 MCP25XXFD_CAN_CON_PXEDIS |					\
-+	 MCP25XXFD_CAN_CON_WAKFIL |					\
-+	 MCP25XXFD_CAN_CON_WFT_MASK |					\
-+	 MCP25XXFD_CAN_CON_BRSDIS |					\
-+	 MCP25XXFD_CAN_CON_RTXAT |					\
-+	 MCP25XXFD_CAN_CON_ESIGM |					\
-+	 MCP25XXFD_CAN_CON_SERR2LOM |					\
-+	 MCP25XXFD_CAN_CON_STEF |					\
-+	 MCP25XXFD_CAN_CON_TXQEN |					\
-+	 MCP25XXFD_CAN_CON_OPMOD_MASK |					\
-+	 MCP25XXFD_CAN_CON_REQOP_MASK |					\
-+	 MCP25XXFD_CAN_CON_ABAT |					\
-+	 MCP25XXFD_CAN_CON_TXBWS_MASK)
-+#define MCP25XXFD_CAN_NBTCFG			MCP25XXFD_CAN_SFR_BASE(0x04)
-+#  define MCP25XXFD_CAN_NBTCFG_SJW_BITS		7
-+#  define MCP25XXFD_CAN_NBTCFG_SJW_SHIFT	0
-+#  define MCP25XXFD_CAN_NBTCFG_SJW_MASK					\
-+	GENMASK(MCP25XXFD_CAN_NBTCFG_SJW_SHIFT +			\
-+		MCP25XXFD_CAN_NBTCFG_SJW_BITS - 1,			\
-+		MCP25XXFD_CAN_NBTCFG_SJW_SHIFT)
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG2_BITS	7
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG2_SHIFT	8
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG2_MASK				\
-+	GENMASK(MCP25XXFD_CAN_NBTCFG_TSEG2_SHIFT +			\
-+		MCP25XXFD_CAN_NBTCFG_TSEG2_BITS - 1,			\
-+		MCP25XXFD_CAN_NBTCFG_TSEG2_SHIFT)
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG1_BITS	8
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG1_SHIFT	16
-+#  define MCP25XXFD_CAN_NBTCFG_TSEG1_MASK				\
-+	GENMASK(MCP25XXFD_CAN_NBTCFG_TSEG1_SHIFT +			\
-+		MCP25XXFD_CAN_NBTCFG_TSEG1_BITS - 1,			\
-+		MCP25XXFD_CAN_NBTCFG_TSEG1_SHIFT)
-+#  define MCP25XXFD_CAN_NBTCFG_BRP_BITS		8
-+#  define MCP25XXFD_CAN_NBTCFG_BRP_SHIFT	24
-+#  define MCP25XXFD_CAN_NBTCFG_BRP_MASK					\
-+	GENMASK(MCP25XXFD_CAN_NBTCFG_BRP_SHIFT +			\
-+		MCP25XXFD_CAN_NBTCFG_BRP_BITS - 1,			\
-+		MCP25XXFD_CAN_NBTCFG_BRP_SHIFT)
-+#define MCP25XXFD_CAN_DBTCFG			MCP25XXFD_CAN_SFR_BASE(0x08)
-+#  define MCP25XXFD_CAN_DBTCFG_SJW_BITS		4
-+#  define MCP25XXFD_CAN_DBTCFG_SJW_SHIFT	0
-+#  define MCP25XXFD_CAN_DBTCFG_SJW_MASK					\
-+	GENMASK(MCP25XXFD_CAN_DBTCFG_SJW_SHIFT +			\
-+		MCP25XXFD_CAN_DBTCFG_SJW_BITS - 1,			\
-+		MCP25XXFD_CAN_DBTCFG_SJW_SHIFT)
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG2_BITS	4
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG2_SHIFT	8
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG2_MASK				\
-+	GENMASK(MCP25XXFD_CAN_DBTCFG_TSEG2_SHIFT +			\
-+		MCP25XXFD_CAN_DBTCFG_TSEG2_BITS - 1,			\
-+		MCP25XXFD_CAN_DBTCFG_TSEG2_SHIFT)
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG1_BITS	5
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG1_SHIFT	16
-+#  define MCP25XXFD_CAN_DBTCFG_TSEG1_MASK				\
-+	GENMASK(MCP25XXFD_CAN_DBTCFG_TSEG1_SHIFT +			\
-+		MCP25XXFD_CAN_DBTCFG_TSEG1_BITS - 1,			\
-+		MCP25XXFD_CAN_DBTCFG_TSEG1_SHIFT)
-+#  define MCP25XXFD_CAN_DBTCFG_BRP_BITS		8
-+#  define MCP25XXFD_CAN_DBTCFG_BRP_SHIFT	24
-+#  define MCP25XXFD_CAN_DBTCFG_BRP_MASK					\
-+	GENMASK(MCP25XXFD_CAN_DBTCFG_BRP_SHIFT +			\
-+		MCP25XXFD_CAN_DBTCFG_BRP_BITS - 1,			\
-+		MCP25XXFD_CAN_DBTCFG_BRP_SHIFT)
-+#define MCP25XXFD_CAN_TDC			MCP25XXFD_CAN_SFR_BASE(0x0C)
-+#  define MCP25XXFD_CAN_TDC_TDCV_BITS		5
-+#  define MCP25XXFD_CAN_TDC_TDCV_SHIFT		0
-+#  define MCP25XXFD_CAN_TDC_TDCV_MASK					\
-+	GENMASK(MCP25XXFD_CAN_TDC_TDCV_SHIFT +				\
-+		MCP25XXFD_CAN_TDC_TDCV_BITS - 1,			\
-+		MCP25XXFD_CAN_TDC_TDCV_SHIFT)
-+#  define MCP25XXFD_CAN_TDC_TDCO_BITS		5
-+#  define MCP25XXFD_CAN_TDC_TDCO_SHIFT		8
-+#  define MCP25XXFD_CAN_TDC_TDCO_MASK					\
-+	GENMASK(MCP25XXFD_CAN_TDC_TDCO_SHIFT +				\
-+		MCP25XXFD_CAN_TDC_TDCO_BITS - 1,			\
-+		MCP25XXFD_CAN_TDC_TDCO_SHIFT)
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_BITS		2
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_SHIFT	16
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_MASK					\
-+	GENMASK(MCP25XXFD_CAN_TDC_TDCMOD_SHIFT +			\
-+		MCP25XXFD_CAN_TDC_TDCMOD_BITS - 1,			\
-+		MCP25XXFD_CAN_TDC_TDCMOD_SHIFT)
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_DISABLED	0
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_MANUAL	1
-+#  define MCP25XXFD_CAN_TDC_TDCMOD_AUTO		2
-+#  define MCP25XXFD_CAN_TDC_SID11EN		BIT(24)
-+#  define MCP25XXFD_CAN_TDC_EDGFLTEN		BIT(25)
-+#define MCP25XXFD_CAN_TBC			MCP25XXFD_CAN_SFR_BASE(0x10)
-+#define MCP25XXFD_CAN_TSCON			MCP25XXFD_CAN_SFR_BASE(0x14)
-+#  define MCP25XXFD_CAN_TSCON_TBCPRE_BITS	10
-+#  define MCP25XXFD_CAN_TSCON_TBCPRE_SHIFT	0
-+#  define MCP25XXFD_CAN_TSCON_TBCPRE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TSCON_TBCPRE_SHIFT +			\
-+		MCP25XXFD_CAN_TSCON_TBCPRE_BITS - 1,			\
-+		MCP25XXFD_CAN_TSCON_TBCPRE_SHIFT)
-+#  define MCP25XXFD_CAN_TSCON_TBCEN		BIT(16)
-+#  define MCP25XXFD_CAN_TSCON_TSEOF		BIT(17)
-+#  define MCP25XXFD_CAN_TSCON_TSRES		BIT(18)
-+#define MCP25XXFD_CAN_VEC			MCP25XXFD_CAN_SFR_BASE(0x18)
-+#  define MCP25XXFD_CAN_VEC_ICODE_BITS		7
-+#  define MCP25XXFD_CAN_VEC_ICODE_SHIFT		0
-+#  define MCP25XXFD_CAN_VEC_ICODE_MASK					\
-+	GENMASK(MCP25XXFD_CAN_VEC_ICODE_SHIFT +				\
-+		MCP25XXFD_CAN_VEC_ICODE_BITS - 1,			\
-+		MCP25XXFD_CAN_VEC_ICODE_SHIFT)
-+#  define MCP25XXFD_CAN_VEC_FILHIT_BITS		5
-+#  define MCP25XXFD_CAN_VEC_FILHIT_SHIFT	8
-+#  define MCP25XXFD_CAN_VEC_FILHIT_MASK					\
-+	GENMASK(MCP25XXFD_CAN_VEC_FILHIT_SHIFT +			\
-+		MCP25XXFD_CAN_VEC_FILHIT_BITS - 1,			\
-+		MCP25XXFD_CAN_VEC_FILHIT_SHIFT)
-+#  define MCP25XXFD_CAN_VEC_TXCODE_BITS		7
-+#  define MCP25XXFD_CAN_VEC_TXCODE_SHIFT	16
-+#  define MCP25XXFD_CAN_VEC_TXCODE_MASK					\
-+	GENMASK(MCP25XXFD_CAN_VEC_TXCODE_SHIFT +			\
-+		MCP25XXFD_CAN_VEC_TXCODE_BITS - 1,			\
-+		MCP25XXFD_CAN_VEC_TXCODE_SHIFT)
-+#  define MCP25XXFD_CAN_VEC_RXCODE_BITS		7
-+#  define MCP25XXFD_CAN_VEC_RXCODE_SHIFT	24
-+#  define MCP25XXFD_CAN_VEC_RXCODE_MASK					\
-+	GENMASK(MCP25XXFD_CAN_VEC_RXCODE_SHIFT +			\
-+		MCP25XXFD_CAN_VEC_RXCODE_BITS - 1,			\
-+		MCP25XXFD_CAN_VEC_RXCODE_SHIFT)
-+#define MCP25XXFD_CAN_INT			MCP25XXFD_CAN_SFR_BASE(0x1C)
-+#  define MCP25XXFD_CAN_INT_IF_SHIFT		0
-+#  define MCP25XXFD_CAN_INT_TXIF		BIT(0)
-+#  define MCP25XXFD_CAN_INT_RXIF		BIT(1)
-+#  define MCP25XXFD_CAN_INT_TBCIF		BIT(2)
-+#  define MCP25XXFD_CAN_INT_MODIF		BIT(3)
-+#  define MCP25XXFD_CAN_INT_TEFIF		BIT(4)
-+#  define MCP25XXFD_CAN_INT_ECCIF		BIT(8)
-+#  define MCP25XXFD_CAN_INT_SPICRCIF		BIT(9)
-+#  define MCP25XXFD_CAN_INT_TXATIF		BIT(10)
-+#  define MCP25XXFD_CAN_INT_RXOVIF		BIT(11)
-+#  define MCP25XXFD_CAN_INT_SERRIF		BIT(12)
-+#  define MCP25XXFD_CAN_INT_CERRIF		BIT(13)
-+#  define MCP25XXFD_CAN_INT_WAKIF		BIT(14)
-+#  define MCP25XXFD_CAN_INT_IVMIF		BIT(15)
-+#  define MCP25XXFD_CAN_INT_IF_MASK					\
-+	(MCP25XXFD_CAN_INT_TXIF |					\
-+	 MCP25XXFD_CAN_INT_RXIF |					\
-+	 MCP25XXFD_CAN_INT_TBCIF |					\
-+	 MCP25XXFD_CAN_INT_MODIF |					\
-+	 MCP25XXFD_CAN_INT_TEFIF |					\
-+	 MCP25XXFD_CAN_INT_ECCIF |					\
-+	 MCP25XXFD_CAN_INT_SPICRCIF |					\
-+	 MCP25XXFD_CAN_INT_TXATIF |					\
-+	 MCP25XXFD_CAN_INT_RXOVIF |					\
-+	 MCP25XXFD_CAN_INT_CERRIF |					\
-+	 MCP25XXFD_CAN_INT_SERRIF |					\
-+	 MCP25XXFD_CAN_INT_WAKIF |					\
-+	 MCP25XXFD_CAN_INT_IVMIF)
-+#  define MCP25XXFD_CAN_INT_IF_CLEAR_MASK				\
-+	(MCP25XXFD_CAN_INT_TBCIF  |					\
-+	 MCP25XXFD_CAN_INT_MODIF  |					\
-+	 MCP25XXFD_CAN_INT_CERRIF |					\
-+	 MCP25XXFD_CAN_INT_SERRIF |					\
-+	 MCP25XXFD_CAN_INT_WAKIF |					\
-+	 MCP25XXFD_CAN_INT_IVMIF)
-+#  define MCP25XXFD_CAN_INT_IE_SHIFT		16
-+#  define MCP25XXFD_CAN_INT_TXIE					\
-+	(MCP25XXFD_CAN_INT_TXIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_RXIE					\
-+	(MCP25XXFD_CAN_INT_RXIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_TBCIE					\
-+	(MCP25XXFD_CAN_INT_TBCIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_MODIE					\
-+	(MCP25XXFD_CAN_INT_MODIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_TEFIE					\
-+	(MCP25XXFD_CAN_INT_TEFIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_ECCIE					\
-+	(MCP25XXFD_CAN_INT_ECCIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_SPICRCIE					\
-+	(MCP25XXFD_CAN_INT_SPICRCIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_TXATIE					\
-+	(MCP25XXFD_CAN_INT_TXATIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_RXOVIE					\
-+	(MCP25XXFD_CAN_INT_RXOVIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_CERRIE					\
-+	(MCP25XXFD_CAN_INT_CERRIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_SERRIE					\
-+	(MCP25XXFD_CAN_INT_SERRIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_WAKIE					\
-+	(MCP25XXFD_CAN_INT_WAKIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_IVMIE					\
-+	(MCP25XXFD_CAN_INT_IVMIF << MCP25XXFD_CAN_INT_IE_SHIFT)
-+#  define MCP25XXFD_CAN_INT_IE_MASK					\
-+	(MCP25XXFD_CAN_INT_TXIE |					\
-+	 MCP25XXFD_CAN_INT_RXIE |					\
-+	 MCP25XXFD_CAN_INT_TBCIE |					\
-+	 MCP25XXFD_CAN_INT_MODIE |					\
-+	 MCP25XXFD_CAN_INT_TEFIE |					\
-+	 MCP25XXFD_CAN_INT_ECCIE |					\
-+	 MCP25XXFD_CAN_INT_SPICRCIE |					\
-+	 MCP25XXFD_CAN_INT_TXATIE |					\
-+	 MCP25XXFD_CAN_INT_RXOVIE |					\
-+	 MCP25XXFD_CAN_INT_CERRIE |					\
-+	 MCP25XXFD_CAN_INT_SERRIE |					\
-+	 MCP25XXFD_CAN_INT_WAKIE |					\
-+	 MCP25XXFD_CAN_INT_IVMIE)
-+#define MCP25XXFD_CAN_RXIF			MCP25XXFD_CAN_SFR_BASE(0x20)
-+#define MCP25XXFD_CAN_TXIF			MCP25XXFD_CAN_SFR_BASE(0x24)
-+#define MCP25XXFD_CAN_RXOVIF			MCP25XXFD_CAN_SFR_BASE(0x28)
-+#define MCP25XXFD_CAN_TXATIF			MCP25XXFD_CAN_SFR_BASE(0x2C)
-+#define MCP25XXFD_CAN_TXREQ			MCP25XXFD_CAN_SFR_BASE(0x30)
-+#define MCP25XXFD_CAN_TREC			MCP25XXFD_CAN_SFR_BASE(0x34)
-+#  define MCP25XXFD_CAN_TREC_REC_BITS		8
-+#  define MCP25XXFD_CAN_TREC_REC_SHIFT		0
-+#  define MCP25XXFD_CAN_TREC_REC_MASK					\
-+	GENMASK(MCP25XXFD_CAN_TREC_REC_SHIFT +				\
-+		MCP25XXFD_CAN_TREC_REC_BITS - 1,			\
-+		MCP25XXFD_CAN_TREC_REC_SHIFT)
-+#  define MCP25XXFD_CAN_TREC_TEC_BITS		8
-+#  define MCP25XXFD_CAN_TREC_TEC_SHIFT		8
-+#  define MCP25XXFD_CAN_TREC_TEC_MASK					\
-+	GENMASK(MCP25XXFD_CAN_TREC_TEC_SHIFT +				\
-+		MCP25XXFD_CAN_TREC_TEC_BITS - 1,			\
-+		MCP25XXFD_CAN_TREC_TEC_SHIFT)
-+#  define MCP25XXFD_CAN_TREC_EWARN		BIT(16)
-+#  define MCP25XXFD_CAN_TREC_RXWARN		BIT(17)
-+#  define MCP25XXFD_CAN_TREC_TXWARN		BIT(18)
-+#  define MCP25XXFD_CAN_TREC_RXBP		BIT(19)
-+#  define MCP25XXFD_CAN_TREC_TXBP		BIT(20)
-+#  define MCP25XXFD_CAN_TREC_TXBO		BIT(21)
-+#define MCP25XXFD_CAN_BDIAG0			MCP25XXFD_CAN_SFR_BASE(0x38)
-+#  define MCP25XXFD_CAN_BDIAG0_NRERRCNT_BITS	8
-+#  define MCP25XXFD_CAN_BDIAG0_NRERRCNT_SHIFT	0
-+#  define MCP25XXFD_CAN_BDIAG0_NRERRCNT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_BDIAG0_NRERRCNT_SHIFT +			\
-+		MCP25XXFD_CAN_BDIAG0_NRERRCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_BDIAG0_NRERRCNT_SHIFT)
-+#  define MCP25XXFD_CAN_BDIAG0_NTERRCNT_BITS	8
-+#  define MCP25XXFD_CAN_BDIAG0_NTERRCNT_SHIFT	8
-+#  define MCP25XXFD_CAN_BDIAG0_NTERRCNT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_BDIAG0_NTERRCNT_SHIFT +			\
-+		MCP25XXFD_CAN_BDIAG0_NTERRCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_BDIAG0_NTERRCNT_SHIFT)
-+#  define MCP25XXFD_CAN_BDIAG0_DRERRCNT_BITS	8
-+#  define MCP25XXFD_CAN_BDIAG0_DRERRCNT_SHIFT	16
-+#  define MCP25XXFD_CAN_BDIAG0_DRERRCNT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_BDIAG0_DRERRCNT_SHIFT +			\
-+		MCP25XXFD_CAN_BDIAG0_DRERRCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_BDIAG0_DRERRCNT_SHIFT)
-+#  define MCP25XXFD_CAN_BDIAG0_DTERRCNT_BITS	8
-+#  define MCP25XXFD_CAN_BDIAG0_DTERRCNT_SHIFT	24
-+#  define MCP25XXFD_CAN_BDIAG0_DTERRCNT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_BDIAG0_DTERRCNT_SHIFT +			\
-+		MCP25XXFD_CAN_BDIAG0_DTERRCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_BDIAG0_DTERRCNT_SHIFT)
-+#define MCP25XXFD_CAN_BDIAG1			MCP25XXFD_CAN_SFR_BASE(0x3C)
-+#  define MCP25XXFD_CAN_BDIAG1_EFMSGCNT_BITS	16
-+#  define MCP25XXFD_CAN_BDIAG1_EFMSGCNT_SHIFT	0
-+#  define MCP25XXFD_CAN_BDIAG1_EFMSGCNT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_BDIAG1_EFMSGCNT_SHIFT +			\
-+		MCP25XXFD_CAN_BDIAG1_EFMSGCNT_BITS - 1,			\
-+		MCP25XXFD_CAN_BDIAG1_EFMSGCNT_SHIFT)
-+#  define MCP25XXFD_CAN_BDIAG1_NBIT0ERR		BIT(16)
-+#  define MCP25XXFD_CAN_BDIAG1_NBIT1ERR		BIT(17)
-+#  define MCP25XXFD_CAN_BDIAG1_NACKERR		BIT(18)
-+#  define MCP25XXFD_CAN_BDIAG1_NSTUFERR		BIT(19)
-+#  define MCP25XXFD_CAN_BDIAG1_NFORMERR		BIT(20)
-+#  define MCP25XXFD_CAN_BDIAG1_NCRCERR		BIT(21)
-+#  define MCP25XXFD_CAN_BDIAG1_TXBOERR		BIT(23)
-+#  define MCP25XXFD_CAN_BDIAG1_DBIT0ERR		BIT(24)
-+#  define MCP25XXFD_CAN_BDIAG1_DBIT1ERR		BIT(25)
-+#  define MCP25XXFD_CAN_BDIAG1_DFORMERR		BIT(27)
-+#  define MCP25XXFD_CAN_BDIAG1_DSTUFERR		BIT(28)
-+#  define MCP25XXFD_CAN_BDIAG1_DCRCERR		BIT(29)
-+#  define MCP25XXFD_CAN_BDIAG1_ESI		BIT(30)
-+#  define MCP25XXFD_CAN_BDIAG1_DLCMM		BIT(31)
-+#define MCP25XXFD_CAN_TEFCON			MCP25XXFD_CAN_SFR_BASE(0x40)
-+#  define MCP25XXFD_CAN_TEFCON_TEFNEIE		BIT(0)
-+#  define MCP25XXFD_CAN_TEFCON_TEFHIE		BIT(1)
-+#  define MCP25XXFD_CAN_TEFCON_TEFFIE		BIT(2)
-+#  define MCP25XXFD_CAN_TEFCON_TEFOVIE		BIT(3)
-+#  define MCP25XXFD_CAN_TEFCON_TEFTSEN		BIT(5)
-+#  define MCP25XXFD_CAN_TEFCON_UINC		BIT(8)
-+#  define MCP25XXFD_CAN_TEFCON_FRESET		BIT(10)
-+#  define MCP25XXFD_CAN_TEFCON_FSIZE_BITS	5
-+#  define MCP25XXFD_CAN_TEFCON_FSIZE_SHIFT	24
-+#  define MCP25XXFD_CAN_TEFCON_FSIZE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TEFCON_FSIZE_SHIFT +			\
-+		MCP25XXFD_CAN_TEFCON_FSIZE_BITS - 1,			\
-+		MCP25XXFD_CAN_TEFCON_FSIZE_SHIFT)
-+#define MCP25XXFD_CAN_TEFSTA			MCP25XXFD_CAN_SFR_BASE(0x44)
-+#  define MCP25XXFD_CAN_TEFSTA_TEFNEIF		BIT(0)
-+#  define MCP25XXFD_CAN_TEFSTA_TEFHIF		BIT(1)
-+#  define MCP25XXFD_CAN_TEFSTA_TEFFIF		BIT(2)
-+#  define MCP25XXFD_CAN_TEFSTA_TEVOVIF		BIT(3)
-+#define MCP25XXFD_CAN_TEFUA			MCP25XXFD_CAN_SFR_BASE(0x48)
-+#define MCP25XXFD_CAN_RESERVED			MCP25XXFD_CAN_SFR_BASE(0x4C)
-+#define MCP25XXFD_CAN_TXQCON			MCP25XXFD_CAN_SFR_BASE(0x50)
-+#  define MCP25XXFD_CAN_TXQCON_TXQNIE		BIT(0)
-+#  define MCP25XXFD_CAN_TXQCON_TXQEIE		BIT(2)
-+#  define MCP25XXFD_CAN_TXQCON_TXATIE		BIT(4)
-+#  define MCP25XXFD_CAN_TXQCON_TXEN		BIT(7)
-+#  define MCP25XXFD_CAN_TXQCON_UINC		BIT(8)
-+#  define MCP25XXFD_CAN_TXQCON_TXREQ		BIT(9)
-+#  define MCP25XXFD_CAN_TXQCON_FRESET		BIT(10)
-+#  define MCP25XXFD_CAN_TXQCON_TXPRI_BITS	5
-+#  define MCP25XXFD_CAN_TXQCON_TXPRI_SHIFT	16
-+#  define MCP25XXFD_CAN_TXQCON_TXPRI_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TXQCON_TXPRI_SHIFT +			\
-+		MCP25XXFD_CAN_TXQCON_TXPRI_BITS - 1,			\
-+		MCP25XXFD_CAN_TXQCON_TXPRI_SHIFT)
-+#  define MCP25XXFD_CAN_TXQCON_TXAT_BITS	2
-+#  define MCP25XXFD_CAN_TXQCON_TXAT_SHIFT	21
-+#  define MCP25XXFD_CAN_TXQCON_TXAT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TXQCON_TXAT_SHIFT +			\
-+		#MCP25XXFD_CAN_TXQCON_TXAT_BITS - 1,			\
-+		MCP25XXFD_CAN_TXQCON_TXAT_SHIFT)
-+#  define MCP25XXFD_CAN_TXQCON_FSIZE_BITS	5
-+#  define MCP25XXFD_CAN_TXQCON_FSIZE_SHIFT	24
-+#  define MCP25XXFD_CAN_TXQCON_FSIZE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TXQCON_FSIZE_SHIFT +			\
-+		MCP25XXFD_CAN_TXQCON_FSIZE_BITS - 1,			\
-+		MCP25XXFD_CAN_TXQCON_FSIZE_SHIFT)
-+#  define MCP25XXFD_CAN_TXQCON_PLSIZE_BITS	3
-+#  define MCP25XXFD_CAN_TXQCON_PLSIZE_SHIFT	29
-+#  define MCP25XXFD_CAN_TXQCON_PLSIZE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TXQCON_PLSIZE_SHIFT +			\
-+		MCP25XXFD_CAN_TXQCON_PLSIZE_BITS - 1,			\
-+		MCP25XXFD_CAN_TXQCON_PLSIZE_SHIFT)
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_8	0
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_12	1
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_16	2
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_20	3
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_24	4
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_32	5
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_48	6
-+#    define MCP25XXFD_CAN_TXQCON_PLSIZE_64	7
-+
-+#define MCP25XXFD_CAN_TXQSTA			MCP25XXFD_CAN_SFR_BASE(0x54)
-+#  define MCP25XXFD_CAN_TXQSTA_TXQNIF		BIT(0)
-+#  define MCP25XXFD_CAN_TXQSTA_TXQEIF		BIT(2)
-+#  define MCP25XXFD_CAN_TXQSTA_TXATIF		BIT(4)
-+#  define MCP25XXFD_CAN_TXQSTA_TXERR		BIT(5)
-+#  define MCP25XXFD_CAN_TXQSTA_TXLARB		BIT(6)
-+#  define MCP25XXFD_CAN_TXQSTA_TXABT		BIT(7)
-+#  define MCP25XXFD_CAN_TXQSTA_TXQCI_BITS	5
-+#  define MCP25XXFD_CAN_TXQSTA_TXQCI_SHIFT	8
-+#  define MCP25XXFD_CAN_TXQSTA_TXQCI_MASK				\
-+	GENMASK(MCP25XXFD_CAN_TXQSTA_TXQCI_SHIFT +			\
-+		MCP25XXFD_CAN_TXQSTA_TXQCI_BITS - 1,			\
-+		MCP25XXFD_CAN_TXQSTA_TXQCI_SHIFT)
-+
-+#define MCP25XXFD_CAN_TXQUA			MCP25XXFD_CAN_SFR_BASE(0x58)
-+#define MCP25XXFD_CAN_FIFOCON(x)					\
-+	MCP25XXFD_CAN_SFR_BASE(0x5C + 12 * ((x) - 1))
-+#define MCP25XXFD_CAN_FIFOCON_TFNRFNIE		BIT(0)
-+#define MCP25XXFD_CAN_FIFOCON_TFHRFHIE		BIT(1)
-+#define MCP25XXFD_CAN_FIFOCON_TFERFFIE		BIT(2)
-+#define MCP25XXFD_CAN_FIFOCON_RXOVIE		BIT(3)
-+#define MCP25XXFD_CAN_FIFOCON_TXATIE		BIT(4)
-+#define MCP25XXFD_CAN_FIFOCON_RXTSEN		BIT(5)
-+#define MCP25XXFD_CAN_FIFOCON_RTREN		BIT(6)
-+#define MCP25XXFD_CAN_FIFOCON_TXEN		BIT(7)
-+#define MCP25XXFD_CAN_FIFOCON_UINC		BIT(8)
-+#define MCP25XXFD_CAN_FIFOCON_TXREQ		BIT(9)
-+#define MCP25XXFD_CAN_FIFOCON_FRESET		BIT(10)
-+#  define MCP25XXFD_CAN_FIFOCON_TXPRI_BITS	5
-+#  define MCP25XXFD_CAN_FIFOCON_TXPRI_SHIFT	16
-+#  define MCP25XXFD_CAN_FIFOCON_TXPRI_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FIFOCON_TXPRI_SHIFT +			\
-+		MCP25XXFD_CAN_FIFOCON_TXPRI_BITS - 1,			\
-+		MCP25XXFD_CAN_FIFOCON_TXPRI_SHIFT)
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_BITS	2
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_SHIFT	21
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FIFOCON_TXAT_SHIFT +			\
-+		MCP25XXFD_CAN_FIFOCON_TXAT_BITS - 1,			\
-+		MCP25XXFD_CAN_FIFOCON_TXAT_SHIFT)
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_ONE_SHOT	0
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_THREE_SHOT	1
-+#  define MCP25XXFD_CAN_FIFOCON_TXAT_UNLIMITED	2
-+#  define MCP25XXFD_CAN_FIFOCON_FSIZE_BITS	5
-+#  define MCP25XXFD_CAN_FIFOCON_FSIZE_SHIFT	24
-+#  define MCP25XXFD_CAN_FIFOCON_FSIZE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FIFOCON_FSIZE_SHIFT +			\
-+		MCP25XXFD_CAN_FIFOCON_FSIZE_BITS - 1,			\
-+		MCP25XXFD_CAN_FIFOCON_FSIZE_SHIFT)
-+#  define MCP25XXFD_CAN_FIFOCON_PLSIZE_BITS	3
-+#  define MCP25XXFD_CAN_FIFOCON_PLSIZE_SHIFT	29
-+#  define MCP25XXFD_CAN_FIFOCON_PLSIZE_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FIFOCON_PLSIZE_SHIFT +			\
-+		MCP25XXFD_CAN_FIFOCON_PLSIZE_BITS - 1,			\
-+		MCP25XXFD_CAN_FIFOCON_PLSIZE_SHIFT)
-+#define MCP25XXFD_CAN_FIFOSTA(x)					\
-+	MCP25XXFD_CAN_SFR_BASE(0x60 + 12 * ((x) - 1))
-+#  define MCP25XXFD_CAN_FIFOSTA_TFNRFNIF	BIT(0)
-+#  define MCP25XXFD_CAN_FIFOSTA_TFHRFHIF	BIT(1)
-+#  define MCP25XXFD_CAN_FIFOSTA_TFERFFIF	BIT(2)
-+#  define MCP25XXFD_CAN_FIFOSTA_RXOVIF		BIT(3)
-+#  define MCP25XXFD_CAN_FIFOSTA_TXATIF		BIT(4)
-+#  define MCP25XXFD_CAN_FIFOSTA_TXERR		BIT(5)
-+#  define MCP25XXFD_CAN_FIFOSTA_TXLARB		BIT(6)
-+#  define MCP25XXFD_CAN_FIFOSTA_TXABT		BIT(7)
-+#  define MCP25XXFD_CAN_FIFOSTA_FIFOCI_BITS	5
-+#  define MCP25XXFD_CAN_FIFOSTA_FIFOCI_SHIFT	8
-+#  define MCP25XXFD_CAN_FIFOSTA_FIFOCI_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FIFOSTA_FIFOCI_SHIFT +			\
-+		MCP25XXFD_CAN_FIFOSTA_FIFOCI_BITS - 1,			\
-+		MCP25XXFD_CAN_FIFOSTA_FIFOCI_SHIFT)
-+#define MCP25XXFD_CAN_FIFOUA(x)						\
-+	MCP25XXFD_CAN_SFR_BASE(0x64 + 12 * ((x) - 1))
-+#define MCP25XXFD_CAN_FLTCON(x)						\
-+	MCP25XXFD_CAN_SFR_BASE(0x1D0 + ((x) & 0x1c))
-+#  define MCP25XXFD_CAN_FILCON_SHIFT(x)		(((x) & 3) * 8)
-+#  define MCP25XXFD_CAN_FILCON_BITS(x)		MCP25XXFD_CAN_FILCON_BITS_
-+#  define MCP25XXFD_CAN_FILCON_BITS_		4
-+	/* avoid macro reuse warning, so do not use GENMASK as above */
-+#  define MCP25XXFD_CAN_FILCON_MASK(x)					\
-+	(GENMASK(MCP25XXFD_CAN_FILCON_BITS_ - 1, 0) <<			\
-+	 MCP25XXFD_CAN_FILCON_SHIFT(x))
-+#  define MCP25XXFD_CAN_FIFOCON_FLTEN(x)				\
-+	BIT(7 + MCP25XXFD_CAN_FILCON_SHIFT(x))
-+#define MCP25XXFD_CAN_FLTOBJ(x)						\
-+	MCP25XXFD_CAN_SFR_BASE(0x1F0 + 8 * (x))
-+#  define MCP25XXFD_CAN_FILOBJ_SID_BITS		11
-+#  define MCP25XXFD_CAN_FILOBJ_SID_SHIFT	0
-+#  define MCP25XXFD_CAN_FILOBJ_SID_MASK					\
-+	GENMASK(MCP25XXFD_CAN_FILOBJ_SID_SHIFT +			\
-+		MCP25XXFD_CAN_FILOBJ_SID_BITS - 1,			\
-+		MCP25XXFD_CAN_FILOBJ_SID_SHIFT)
-+#  define MCP25XXFD_CAN_FILOBJ_EID_BITS		18
-+#  define MCP25XXFD_CAN_FILOBJ_EID_SHIFT	12
-+#  define MCP25XXFD_CAN_FILOBJ_EID_MASK					\
-+	GENMASK(MCP25XXFD_CAN_FILOBJ_EID_SHIFT +			\
-+		MCP25XXFD_CAN_FILOBJ_EID_BITS - 1,			\
-+		MCP25XXFD_CAN_FILOBJ_EID_SHIFT)
-+#  define MCP25XXFD_CAN_FILOBJ_SID11		BIT(29)
-+#  define MCP25XXFD_CAN_FILOBJ_EXIDE		BIT(30)
-+#define MCP25XXFD_CAN_FLTMASK(x)					\
-+	MCP25XXFD_CAN_SFR_BASE(0x1F4 + 8 * (x))
-+#  define MCP25XXFD_CAN_FILMASK_MSID_BITS	11
-+#  define MCP25XXFD_CAN_FILMASK_MSID_SHIFT	0
-+#  define MCP25XXFD_CAN_FILMASK_MSID_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FILMASK_MSID_SHIFT +			\
-+		MCP25XXFD_CAN_FILMASK_MSID_BITS - 1,			\
-+		MCP25XXFD_CAN_FILMASK_MSID_SHIFT)
-+#  define MCP25XXFD_CAN_FILMASK_MEID_BITS	18
-+#  define MCP25XXFD_CAN_FILMASK_MEID_SHIFT	12
-+#  define MCP25XXFD_CAN_FILMASK_MEID_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FILMASK_MEID_SHIFT +			\
-+		MCP25XXFD_CAN_FILMASK_MEID_BITS - 1,			\
-+		MCP25XXFD_CAN_FILMASK_MEID_SHIFT)
-+#  define MCP25XXFD_CAN_FILMASK_MSID11		BIT(29)
-+#  define MCP25XXFD_CAN_FILMASK_MIDE		BIT(30)
-+
-+/* the FIFO Objects in SRAM */
-+#define MCP25XXFD_SRAM_SIZE 2048
-+#define MCP25XXFD_SRAM_ADDR(x) (0x400 + (x))
-+
-+/* memory structure in sram for tx fifos */
-+struct mcp25xxfd_can_obj_tx {
-+	u32 id;
-+	u32 flags;
-+	u8 data[];
-+};
-+
-+/* memory structure in sram for rx fifos */
-+struct mcp25xxfd_can_obj_rx {
-+	u32 id;
-+	u32 flags;
-+	u32 ts;
-+	u8 data[];
-+};
-+
-+/* memory structure in sram for tef fifos */
-+struct mcp25xxfd_can_obj_tef {
-+	u32 id;
-+	u32 flags;
-+	u32 ts;
-+};
-+
-+#define MCP25XXFD_CAN_OBJ_ID_SID_BITS		11
-+#define MCP25XXFD_CAN_OBJ_ID_SID_SHIFT		0
-+#define MCP25XXFD_CAN_OBJ_ID_SID_MASK					\
-+	GENMASK(MCP25XXFD_CAN_OBJ_ID_SID_SHIFT +			\
-+		MCP25XXFD_CAN_OBJ_ID_SID_BITS - 1,			\
-+		MCP25XXFD_CAN_OBJ_ID_SID_SHIFT)
-+#define MCP25XXFD_CAN_OBJ_ID_EID_BITS		18
-+#define MCP25XXFD_CAN_OBJ_ID_EID_SHIFT		11
-+#define MCP25XXFD_CAN_OBJ_ID_EID_MASK					\
-+	GENMASK(MCP25XXFD_CAN_OBJ_ID_EID_SHIFT +			\
-+		MCP25XXFD_CAN_OBJ_ID_EID_BITS - 1,			\
-+		MCP25XXFD_CAN_OBJ_ID_EID_SHIFT)
-+#define MCP25XXFD_CAN_OBJ_ID_SID_BIT11		BIT(29)
-+
-+#define MCP25XXFD_CAN_OBJ_FLAGS_DLC_BITS	4
-+#define MCP25XXFD_CAN_OBJ_FLAGS_DLC_SHIFT	0
-+#define MCP25XXFD_CAN_OBJ_FLAGS_DLC_MASK				\
-+	GENMASK(MCP25XXFD_CAN_OBJ_FLAGS_DLC_SHIFT +			\
-+		MCP25XXFD_CAN_OBJ_FLAGS_DLC_BITS - 1,			\
-+		MCP25XXFD_CAN_OBJ_FLAGS_DLC_SHIFT)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_IDE		BIT(4)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_RTR		BIT(5)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_BRS		BIT(6)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_FDF		BIT(7)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_ESI		BIT(8)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_SEQ_BITS	7
-+#define MCP25XXFD_CAN_OBJ_FLAGS_SEQ_SHIFT	9
-+#define MCP25XXFD_CAN_OBJ_FLAGS_SEQ_MASK				\
-+	GENMASK(MCP25XXFD_CAN_OBJ_FLAGS_SEQ_SHIFT +			\
-+		MCP25XXFD_CAN_OBJ_FLAGS_SEQ_BITS - 1,			\
-+		MCP25XXFD_CAN_OBJ_FLAGS_SEQ_SHIFT)
-+#define MCP25XXFD_CAN_OBJ_FLAGS_FILHIT_BITS	11
-+#define MCP25XXFD_CAN_OBJ_FLAGS_FILHIT_SHIFT	5
-+#define MCP25XXFD_CAN_OBJ_FLAGS_FILHIT_MASK				\
-+	GENMASK(MCP25XXFD_CAN_FLAGS_FILHIT_SHIFT +			\
-+		MCP25XXFD_CAN_FLAGS_FILHIT_BITS - 1,			\
-+		MCP25XXFD_CAN_FLAGS_FILHIT_SHIFT)
-+
-+#endif /* __MCP25XXFD_REGS_H */
+ #endif /* __MCP25XXFD_REGS_H */
 -- 
 2.17.1
 
