@@ -2,110 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93F31F5D5F
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7D21F5D71
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 22:58:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbgFJUso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 16:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
+        id S1726871AbgFJU6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 16:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726424AbgFJUsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 16:48:43 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11124C03E96F
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:48:43 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id c17so4220476lji.11
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:48:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wkhkcPvpAeE4x4kAO1HjblduVWOEiZ+eHHO4eca07FY=;
-        b=IgN05Fh0uREALZZU/s8t66dRm0ApTxlnvcL6Nnx/SwIGy9zTKN1m9HDCNywJFvcZ2U
-         1xEVjk51dwqTD6l0sgKb+Vtjqr4s6SbTFzUJ0kDAKBXdGB7diNzJzQphVdL+BPgjm0Ga
-         CNO9Wx8KMuwTuBeK1fJ+X3/7/j11L4DzwfyzA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wkhkcPvpAeE4x4kAO1HjblduVWOEiZ+eHHO4eca07FY=;
-        b=lHqCsV8r9I7tj/vGdDVkDq054xykdhmdG5WMznCQ5b7Ey5VB988jjlcONoVMCiOdx+
-         ysu86DR870V8s7TI2m2KQTeERHncbe+NgkhEetY2aZZoQysS9lnrus0dfr+DwSgTIZJq
-         gSu0rvDN6y20pS/OnFb/Ny0GJGOgMP79B/bfO017E0XNfuFP3hY/WT13NyaDE7dvjQlz
-         EhO7SWBIf5IRvfCh8UcPEpK7au3gvJUy5/H+9XWohFy3eUt5zZq5akSCPrT0O8nsj3yx
-         f3ZnhR5aMr84hQWJ74xgpsqqlMC/yXSL60lG7VWpAYQJDPn5k/d2RT+qHIArmCBFglbD
-         nJig==
-X-Gm-Message-State: AOAM533Qc/NQ8EoZYJP8zdj4uRKxFdBn8D09phgyANNX6Ax8OCptDBkJ
-        5Yv7xBhOPg5pBena7MxcF3haulmpZx4=
-X-Google-Smtp-Source: ABdhPJz4qKmA1Ca0rKL3fhwteXDLAp+5Zmvi2eFO7rnZHp2LPJaE9guU7ZsQ7CQJppHilWAfhxrSVw==
-X-Received: by 2002:a05:651c:547:: with SMTP id q7mr2455752ljp.437.1591822120840;
-        Wed, 10 Jun 2020 13:48:40 -0700 (PDT)
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
-        by smtp.gmail.com with ESMTPSA id p68sm199956lfa.71.2020.06.10.13.48.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2020 13:48:39 -0700 (PDT)
-Received: by mail-lj1-f178.google.com with SMTP id x18so4255982lji.1
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 13:48:38 -0700 (PDT)
-X-Received: by 2002:a2e:b5d7:: with SMTP id g23mr2510079ljn.70.1591822118508;
- Wed, 10 Jun 2020 13:48:38 -0700 (PDT)
+        with ESMTP id S1726134AbgFJU6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 16:58:45 -0400
+X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Jun 2020 13:58:44 PDT
+Received: from pandora.armlinux.org.uk (unknown [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D3BC03E96B;
+        Wed, 10 Jun 2020 13:58:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qRd9E6mg/me3FC+zYkNIbQdzQKiPFe8haYKnIMtGAPI=; b=xXS/kmbZXA25AeuRymU+hgewWJ
+        Ucr/LjQXb+HkftrRyQ6fa4AMVX9nzR/smEsPPKj/13wta/BBtkf0vd6Is0j+D7fY47czVMIb55q5Y
+        QWw1qCEV/pkcIQXkKTmYoNf0GKSwGfZ/ISd3jbWjeny3YE7xsO6TEWMDhNzb4BlinYsOrnBbd97ZX
+        JjBiZvY0eiOPC6pr8ttcA6jewlAjhjrMOGfgnquBsklB42j+WsLB/9i1hDmlwk1gXGXzmEWKic2vB
+        5DNhEHj3BMWPfig6Oa9fR4pJ8WzU4QzZ2ywg5l2eAc10o+0MCIJUqgWPVSuMLiFFVRM1ohzrbhFAZ
+        6naFcpqg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:59226 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jj7gm-0006sH-2y; Wed, 10 Jun 2020 21:51:12 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jj7gl-0008Bq-BQ; Wed, 10 Jun 2020 21:51:11 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     coreteam@netfilter.org, netfilter-devel@vger.kernel.org
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH] netfiler: ipset: fix unaligned atomic access
 MIME-Version: 1.0
-References: <20200610004455-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200610004455-mutt-send-email-mst@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 10 Jun 2020 13:48:22 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiyR6X=SkHXMM3BWcePBryF4pmBNYMFWAnz5CfZwAp_Wg@mail.gmail.com>
-Message-ID: <CAHk-=wiyR6X=SkHXMM3BWcePBryF4pmBNYMFWAnz5CfZwAp_Wg@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio: features, fixes
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        anshuman.khandual@arm.com, anthony.yznaga@oracle.com,
-        arei.gonglei@huawei.com, Qian Cai <cai@lca.pw>,
-        clabbe@baylibre.com, Dan Williams <dan.j.williams@intel.com>,
-        David Miller <davem@davemloft.net>,
-        David Hildenbrand <david@redhat.com>, dyoung@redhat.com,
-        Markus Elfring <elfring@users.sourceforge.net>,
-        Alexander Potapenko <glider@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        guennadi.liakhovetski@linux.intel.com,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>, hulkci@huawei.com,
-        imammedo@redhat.com, Jason Wang <jasowang@redhat.com>,
-        Juergen Gross <jgross@suse.com>, kernelfans@gmail.com,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Len Brown <lenb@kernel.org>, lingshan.zhu@intel.com,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>, longpeng2@huawei.com,
-        matej.genci@nutanix.com, Mel Gorman <mgorman@techsingularity.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Michal Hocko <mhocko@suse.com>, osalvador@suse.com,
-        Oscar Salvador <osalvador@suse.de>,
-        pankaj.gupta.linux@gmail.com, pasha.tatashin@soleen.com,
-        Pasha Tatashin <pavel.tatashin@microsoft.com>,
-        Rafael Wysocki <rafael@kernel.org>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Rafael Wysocki <rjw@rjwysocki.net>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        stable <stable@vger.kernel.org>, stefanha@redhat.com,
-        teawaterz@linux.alibaba.com, Vlastimil Babka <vbabka@suse.cz>,
-        zou_wei@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jj7gl-0008Bq-BQ@rmk-PC.armlinux.org.uk>
+Date:   Wed, 10 Jun 2020 21:51:11 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 9, 2020 at 9:45 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
->   I also upgraded the machine I used to sign
-> the tag (didn't change the key) - hope the signature is still ok. If not
-> pls let me know!
+When using ip_set with counters and comment, traffic causes the kernel
+to panic on 32-bit ARM:
 
-All looks normal as far as I can tell,
+Alignment trap: not handling instruction e1b82f9f at [<bf01b0dc>]
+Unhandled fault: alignment exception (0x221) at 0xea08133c
+PC is at ip_set_match_extensions+0xe0/0x224 [ip_set]
 
-                Linus
+The problem occurs when we try to update the 64-bit counters - the
+faulting address above is not 64-bit aligned.  The problem occurs
+due to the way elements are allocated, for example:
+
+	set->dsize = ip_set_elem_len(set, tb, 0, 0);
+	map = ip_set_alloc(sizeof(*map) + elements * set->dsize);
+
+If the element has a requirement for a member to be 64-bit aligned,
+and set->dsize is not a multiple of 8, but is a multiple of four,
+then every odd numbered elements will be misaligned - and hitting
+an atomic64_add() on that element will cause the kernel to panic.
+
+ip_set_elem_len() must return a size that is rounded to the maximum
+alignment of any extension field stored in the element.  This change
+ensures that is the case.
+
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+Patch against v5.6, where I tripped over this bug.  This bug has
+caused a kernel panic on my new router twice today.
+
+ net/netfilter/ipset/ip_set_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index 8dd17589217d..be9cd6a500fb 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -459,6 +459,8 @@ ip_set_elem_len(struct ip_set *set, struct nlattr *tb[], size_t len,
+ 	for (id = 0; id < IPSET_EXT_ID_MAX; id++) {
+ 		if (!add_extension(id, cadt_flags, tb))
+ 			continue;
++		if (align < ip_set_extensions[id].align)
++			align = ip_set_extensions[id].align;
+ 		len = ALIGN(len, ip_set_extensions[id].align);
+ 		set->offset[id] = len;
+ 		set->extensions |= ip_set_extensions[id].type;
+-- 
+2.20.1
+
