@@ -2,101 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4BB1F5081
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FAC01F5088
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbgFJIqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 04:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726081AbgFJIqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:46:18 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A67C03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:46:17 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id n24so1677479ejd.0
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Fr9WSBy3gq5GY8giUE4KFe+ZLK4loVtHVClvYlgpVVQ=;
-        b=TqVVUJoSRKntkPgmQCHuFRGWI2BxlwxQqsTclCYQSCf3eaVZpD7azhD7/QG6YAJQKg
-         eI6na/W/DIwZ84Qt/aaZ/XVkVellNvzRI94eENitRi8ribFC5CRIvpEVJTba6+uJIT/D
-         fC3WJTBmPf6caQC9IyXy5jMWJ6vs61gRXJMwvfDkmEEkaydtTZe32inwrCGoGNopHZUm
-         K2Kev9SuC0Te4VLCcq0LagBi1XEOnohn16uumL+sxUHhJwcNyaoAJsmhkuJ9Fp+ieAd5
-         ZjUivzxPfztI3q0hHnzfnoiuJkqBT1Bt/c0xSX01IRZQZ28lefeFup44z2IVWqQjVS1P
-         hHMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Fr9WSBy3gq5GY8giUE4KFe+ZLK4loVtHVClvYlgpVVQ=;
-        b=TfhpZGUuXxBb4XHJeEMbHZMsbOdyH04NmEWAtLrC6BHHIoAthKat1H/pGvvLHNeshB
-         Pdgy6YVab/96KzdP+pT3bP7sc2zQxMQhFlOskUwNfGPsUEzUm49pl1cKgbL8nRAFGiJY
-         LVhDNu6+DlgqdTS2v/sUp4FWkPrf+P/PlMQ+BZ33AWgEXFoknx8Yzgks2tENwxiELAz/
-         75as7iYsbVRUT71YPaYhpel7qsnrMM0cvpABpHCR8j7HUFxl7nAYzdQuETcfCxUAZ43t
-         JjxEbSPN7tkEqBhoKqgoKWcZHwDRWQDPjg/Tr7bChnRxRbE7KrxERQ28cY4X4T7RU3z8
-         R01g==
-X-Gm-Message-State: AOAM530JXAT40kKFxRkehoJcb9bX+HH+DZGE/GgL57CmhxE1fYmPwFge
-        BLCD3bGsLvqjsdOcWNj3JJN6cQ==
-X-Google-Smtp-Source: ABdhPJzA97A3rrLRtTlBwR3B3e3BG33eFj9uqUFs9Ug4zmbFxTvGgBuwrDfFMBkC8/t0lc1NotIZ0w==
-X-Received: by 2002:a17:906:2b92:: with SMTP id m18mr2574832ejg.218.1591778776018;
-        Wed, 10 Jun 2020 01:46:16 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:116c:c27a:3e7f:5eaf])
-        by smtp.gmail.com with ESMTPSA id p13sm16608202edq.50.2020.06.10.01.46.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 01:46:15 -0700 (PDT)
-Date:   Wed, 10 Jun 2020 10:46:05 +0200
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf] libbpf: handle GCC noreturn-turned-volatile quirk
-Message-ID: <20200610084605.GB6844@myrica>
-References: <20200610052335.2862559-1-andriin@fb.com>
+        id S1726919AbgFJIsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 04:48:07 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41231 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726753AbgFJIsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:48:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591778885;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vkcejUSN9pvEJkJVGV5DUomFfP5ZIULSOtOTHN43lNM=;
+        b=ApZ4/ShiuyUlxHxXoVQm8i4jgMwfYP3AWBrCdZYQZGQu8BsqW5ZDWeOrsb8RAL7smQUXQZ
+        l4B0gskXoctrNkuvsts3FupcKqQbkt6VEBGMkYZAQ2gLK+N3R70BxgmD5a9av4jS/GXDxB
+        ITV61UdNEliPmrANikwBQ5CuBrPn30Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-6zlssVomN1ywRWxl_xaJPw-1; Wed, 10 Jun 2020 04:48:03 -0400
+X-MC-Unique: 6zlssVomN1ywRWxl_xaJPw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78FF78014D4;
+        Wed, 10 Jun 2020 08:48:02 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-114-163.ams2.redhat.com [10.36.114.163])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11B137B5F4;
+        Wed, 10 Jun 2020 08:48:00 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
+Subject: [PATCH net] mptcp: fix races between shutdown and recvmsg
+Date:   Wed, 10 Jun 2020 10:47:41 +0200
+Message-Id: <766c50ce4e7e0415adaf0c63e3f92e75abb8470c.1591778786.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200610052335.2862559-1-andriin@fb.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 09, 2020 at 10:23:35PM -0700, Andrii Nakryiko wrote:
-> Handle a GCC quirk of emitting extra volatile modifier in DWARF (and
-> subsequently preserved in BTF by pahole) for function pointers marked as
-> __attribute__((noreturn)). This was the way to mark such functions before GCC
-> 2.5 added noreturn attribute. Drop such func_proto modifiers, similarly to how
-> it's done for array (also to handle GCC quirk/bug).
-> 
-> Such volatile attribute is emitted by GCC only, so existing selftests can't
-> express such test. Simple repro is like this (compiled with GCC + BTF
-> generated by pahole):
-> 
->   struct my_struct {
->       void __attribute__((noreturn)) (*fn)(int);
->   };
->   struct my_struct a;
-> 
-> Without this fix, output will be:
-> 
-> struct my_struct {
->     voidvolatile  (*fn)(int);
-> };
-> 
-> With the fix:
-> 
-> struct my_struct {
->     void (*fn)(int);
-> };
-> 
-> Reported-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+The msk sk_shutdown flag is set by a workqueue, possibly
+introducing some delay in user-space notification. If the last
+subflow carries some data with the fin packet, the user space
+can wake-up before RCV_SHUTDOWN is set. If it executes unblocking
+recvmsg(), it may return with an error instead of eof.
 
-Thanks, this fixes the issue I was seeing with the arm64 vmlinux
+Address the issue explicitly checking for eof in recvmsg(), when
+no data is found.
 
-Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Fixes: 59832e246515 ("mptcp: subflow: check parent mptcp socket on subflow state change")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/mptcp/protocol.c | 45 +++++++++++++++++++++++---------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
+
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 14b253d10ccf..3980fbb6f31e 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -374,6 +374,27 @@ void mptcp_subflow_eof(struct sock *sk)
+ 		sock_hold(sk);
+ }
+ 
++static void mptcp_check_for_eof(struct mptcp_sock *msk)
++{
++	struct mptcp_subflow_context *subflow;
++	struct sock *sk = (struct sock *)msk;
++	int receivers = 0;
++
++	mptcp_for_each_subflow(msk, subflow)
++		receivers += !subflow->rx_eof;
++
++	if (!receivers && !(sk->sk_shutdown & RCV_SHUTDOWN)) {
++		/* hopefully temporary hack: propagate shutdown status
++		 * to msk, when all subflows agree on it
++		 */
++		sk->sk_shutdown |= RCV_SHUTDOWN;
++
++		smp_mb__before_atomic(); /* SHUTDOWN must be visible first */
++		set_bit(MPTCP_DATA_READY, &msk->flags);
++		sk->sk_data_ready(sk);
++	}
++}
++
+ static void mptcp_stop_timer(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -1011,6 +1032,9 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 				break;
+ 			}
+ 
++			if (test_and_clear_bit(MPTCP_WORK_EOF, &msk->flags))
++				mptcp_check_for_eof(msk);
++
+ 			if (sk->sk_shutdown & RCV_SHUTDOWN)
+ 				break;
+ 
+@@ -1148,27 +1172,6 @@ static unsigned int mptcp_sync_mss(struct sock *sk, u32 pmtu)
+ 	return 0;
+ }
+ 
+-static void mptcp_check_for_eof(struct mptcp_sock *msk)
+-{
+-	struct mptcp_subflow_context *subflow;
+-	struct sock *sk = (struct sock *)msk;
+-	int receivers = 0;
+-
+-	mptcp_for_each_subflow(msk, subflow)
+-		receivers += !subflow->rx_eof;
+-
+-	if (!receivers && !(sk->sk_shutdown & RCV_SHUTDOWN)) {
+-		/* hopefully temporary hack: propagate shutdown status
+-		 * to msk, when all subflows agree on it
+-		 */
+-		sk->sk_shutdown |= RCV_SHUTDOWN;
+-
+-		smp_mb__before_atomic(); /* SHUTDOWN must be visible first */
+-		set_bit(MPTCP_DATA_READY, &msk->flags);
+-		sk->sk_data_ready(sk);
+-	}
+-}
+-
+ static void mptcp_worker(struct work_struct *work)
+ {
+ 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+-- 
+2.21.3
 
