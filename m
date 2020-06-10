@@ -2,97 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95C541F5886
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 18:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D011E1F58D4
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 18:15:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727892AbgFJQGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 12:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727813AbgFJQGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 12:06:44 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB877C03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 09:06:43 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id g28so2573089qkl.0
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 09:06:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=50PX8qK4T1iv6JqM7pFOdpjLhNtOB+QoAu5D63W+6Mw=;
-        b=OHPghzVBaArOrbnO+AMX0wh/JVgJAV1YhgDhmVPsFX9lenE5jGRaOp2y1zIsdEJyIC
-         nMeWCZVlF7pnFRUbVvcE5+KGPbKkDf2nCo3Cf6eLhDtG8irZLVMQAT49Q7+4aWQVOMEh
-         BkaqjPN+kDLu6VWf6z9WvjLZVrD4fgttNADUASppi3DGW5uZf9/Sh+L7jgUIb0WFzBsc
-         JUc8Q6CqaZ4k2gq6n/dnvFqLxBxXEH84lKsiYGfqKcvIiCr7P5/VwjeX4l97XNJ23mnN
-         7BFyfNr1iY7nCeHKLeb7alFqTmNX7rf30Ct4DHx/1+6JAlgWSygKJLsGtURbHzcMRBSL
-         SMfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=50PX8qK4T1iv6JqM7pFOdpjLhNtOB+QoAu5D63W+6Mw=;
-        b=h4fGp1ypznTehgZa8auQTBedmyajGKSyQenc8EZO68pdkjFl9g+cUG+7dZ9M+ofZQN
-         SS/21ljnklcYQ8XCKV6kttV3NLBW/UDc1nAUR2uYAaZlwgtIA7KfH06voCOBiv+D228x
-         +tfHPVuePZ9gYyeV+L77Y795hYMcBn1xALxJgagScFRK2HQnQzxhOdmeOnv0OZ/6hqLC
-         A7jRmp78kE+8B6m7KnujJXGxKBvWt/4cv88EQYPYSrpBSYDFXhgQ+iJ3rLKSnF0WE+b/
-         KSDsRCAFnHJjp5Eb/lmAuVlVBJGhzacny70EgqdQfFaSKId3kbZE3Wxr1A7BeNJcDJ/V
-         KWpw==
-X-Gm-Message-State: AOAM533y7j8i5ATUEYmdO3KB28d59W2ns0sORN4I7rwXNCdN9kuJ6xGb
-        OmD16jqZUfD2srPSwjAc1y8=
-X-Google-Smtp-Source: ABdhPJxCLwZuPMAK7f2N193l42excZPrkKLgAOePfF9cjswQFgsPmjQwNgCpZbWdn8lFxD7JGLC0rA==
-X-Received: by 2002:ae9:dd02:: with SMTP id r2mr3528310qkf.179.1591805203117;
-        Wed, 10 Jun 2020 09:06:43 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:7d55:1130:4e46:eb98? ([2601:282:803:7700:7d55:1130:4e46:eb98])
-        by smtp.googlemail.com with ESMTPSA id x66sm88869qkb.33.2020.06.10.09.06.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2020 09:06:42 -0700 (PDT)
-Subject: Re: [PATCH iproute2 net-next 1/2] ipnexthop: support for fdb nexthops
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        nikolay@cumulusnetworks.com
-References: <1591674383-20545-1-git-send-email-roopa@cumulusnetworks.com>
- <1591674383-20545-2-git-send-email-roopa@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c72763ac-98a4-1bac-85aa-fd17985fc916@gmail.com>
-Date:   Wed, 10 Jun 2020 10:06:40 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+        id S1728145AbgFJQPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 12:15:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727948AbgFJQPN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jun 2020 12:15:13 -0400
+Received: from sol.hsd1.ca.comcast.net (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B3822063A;
+        Wed, 10 Jun 2020 16:15:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591805713;
+        bh=NeECbS+JD2nd9m1zZ4V4IaXqINFSAhWGzBIDMBB1vD4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Vcqo6vNpiERFxO5VKq/sNjCiZ5r7qbZyEr1Rfk+xY8QZPHLsONvC2Jm0nEU2qsowi
+         FQlgm0h4SqDxjl1V+zPBy8+xknDZ7cM+42uef1HRPyoGwfwPmfj17j+BzgVlG9lxzp
+         tPZBvXmuC1pH6K1wbrT5CdAwNod+1pPsHZQ07iAA=
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-crypto@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH net v4 0/3] esp, ah: improve crypto algorithm selections
+Date:   Wed, 10 Jun 2020 09:14:34 -0700
+Message-Id: <20200610161437.4290-1-ebiggers@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1591674383-20545-2-git-send-email-roopa@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/8/20 9:46 PM, Roopa Prabhu wrote:
-> @@ -70,6 +71,12 @@ static int nh_dump_filter(struct nlmsghdr *nlh, int reqlen)
->  			return err;
->  	}
->  
-> +	if (filter.fdb) {
-> +		addattr_l(nlh, reqlen, NHA_FDB, NULL, 0);
+This series consolidates and modernizes the lists of crypto algorithms
+that are selected by the IPsec kconfig options, and adds CRYPTO_SEQIV
+since it no longer gets selected automatically by other things.
 
-missing 'err = '
-> +		if (err)
-> +			return err;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -131,6 +138,7 @@ static int ipnh_flush(unsigned int all)
->  		filter.groups = 1;
->  		filter.ifindex = 0;
->  		filter.master = 0;
-> +		filter.fdb = 1;
+See previous discussion at
+https://lkml.kernel.org/netdev/20200604192322.22142-1-ebiggers@kernel.org/T/#u
 
-This should not be needed. The point of this block is to flush groups
-first and then standalone nexthops on a second pass. Adding fdb = 1 here
-means only fdb groups are flushed in the first round.
+Changed v3 => v4:
+  - Don't say that AH is "NOT RECOMMENDED" by RFC 8221.
+  - Updated commit messages (added Acked-by tags, fixed a bad Fixes tag,
+    added some more explanation to patch 3).
 
+Eric Biggers (3):
+  esp, ah: consolidate the crypto algorithm selections
+  esp: select CRYPTO_SEQIV
+  esp, ah: modernize the crypto algorithm selections
+
+ net/ipv4/Kconfig | 34 ++++++++++++++++++----------------
+ net/ipv6/Kconfig | 34 ++++++++++++++++++----------------
+ net/xfrm/Kconfig | 24 ++++++++++++++++++++++++
+ 3 files changed, 60 insertions(+), 32 deletions(-)
+
+
+base-commit: 89dc68533b190117e1a2fb4298d88b96b3580abf
+-- 
+2.26.2
 
