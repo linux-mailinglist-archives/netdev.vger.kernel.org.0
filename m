@@ -2,151 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C7A1F4D62
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 07:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9391D1F4DDB
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 08:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726273AbgFJF5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 01:57:15 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:42640 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbgFJF5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 01:57:14 -0400
-Received: by mail-il1-f198.google.com with SMTP id j71so771359ilg.9
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 22:57:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=yOgbcmbmkDjbAdsXtHmX68CQ4GSO0HPYQRr+QH3lVlA=;
-        b=G5qnNFKHmGADQ17Oytf/buPD/okVTeLY9qY2G58/H0UUsh+LU2rwAhKKYlvlFmh8SW
-         9pEby6gwGjcDJPjScm13PEaAJoqOnD66154AKxhPNVwDWrpFm2i6EDmQK+bcU+cXsfN4
-         Rsbj2ibPtuZFOwv1INralKsK01or0IR7MkV2ClDxxQ+Y1TTD8VUaTl5cHRc7cyDxeq/p
-         5xQwASIwuOXjhub0nbYI0K1CgF1MQ5AH0vfQtHibWTmrjnGikQK/iwKOU6+VJZgMI0rG
-         BcLy8pt02CheMSOgCewqWB5SwJz9s0lR8y0yqh6KaJKCYzJJS23uUmsAEI4iiXUwEN88
-         aulQ==
-X-Gm-Message-State: AOAM532pv8kc6dZNoXLk35k2z0opzHzwkgdx9tGjvqXMHRzVuJg7ssyb
-        6o5o7GxfJvnKrloyveYEJle4MiYudJoj0YoRku29LfXShVc+
-X-Google-Smtp-Source: ABdhPJwM9DQcjI9A2nOZL/NLJkcyaBlzTyndTAn1jVtBa5B6ws3rmYes8+pC+/GO7tDN1EPO5Z21Pp5D4fu/qaj6xXG/i93EoOMd
+        id S1726105AbgFJGHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 02:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbgFJGHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 02:07:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954E8C05BD1E
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 23:07:50 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jitth-0008J3-Lj; Wed, 10 Jun 2020 08:07:37 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jittX-0001xa-5S; Wed, 10 Jun 2020 08:07:27 +0200
+Date:   Wed, 10 Jun 2020 08:07:27 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     David Miller <davem@davemloft.net>, marex@denx.de,
+        Andrew Lunn <andrew@lunn.ch>, mkubecek@suse.cz,
+        f.fainelli@gmail.com, Jonathan Corbet <corbet@lwn.net>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Netdev <netdev@vger.kernel.org>, linville@tuxdriver.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        kuba@kernel.org, mkl@pengutronix.de, kernel@pengutronix.de,
+        david@protonic.nl, amitc@mellanox.com, petrm@mellanox.com,
+        christian.herber@nxp.com, hkallweit1@gmail.com
+Subject: Re: [PATCH ethtool v1] netlink: add master/slave configuration
+ support
+Message-ID: <20200610060727.q4nzryh3mp6fj2ax@pengutronix.de>
+References: <20200609101935.5716b3bd@hermes.lan>
+ <20200609.113633.1866761141966326637.davem@davemloft.net>
+ <4d664ff641dbf3aeab1ecd5eacda220dab9d7d17.camel@intel.com>
+ <20200609.123858.466960203090925019.davem@davemloft.net>
+ <CAPcyv4jr9F_0q4S-LSvHzJK7mamLW-m1Skgw7cXvkZYNtStyxA@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:22d6:: with SMTP id e22mr1770839ioe.128.1591768632010;
- Tue, 09 Jun 2020 22:57:12 -0700 (PDT)
-Date:   Tue, 09 Jun 2020 22:57:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e02b3505a7b48345@google.com>
-Subject: KASAN: use-after-free Read in tipc_named_reinit
-From:   syzbot <syzbot+e9cc557752ab126c1b99@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6rzrcepciphpb3j5"
+Content-Disposition: inline
+In-Reply-To: <CAPcyv4jr9F_0q4S-LSvHzJK7mamLW-m1Skgw7cXvkZYNtStyxA@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 07:07:27 up 207 days, 20:26, 198 users,  load average: 0.05, 0.08,
+ 0.02
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
+--6rzrcepciphpb3j5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-HEAD commit:    cb8e59cc Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12eccfd2100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a16ddbc78955e3a9
-dashboard link: https://syzkaller.appspot.com/bug?extid=e9cc557752ab126c1b99
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+On Tue, Jun 09, 2020 at 02:48:51PM -0700, Dan Williams wrote:
+> On Tue, Jun 9, 2020 at 12:57 PM David Miller <davem@davemloft.net> wrote:
+> >
+> > From: "Williams, Dan J" <dan.j.williams@intel.com>
+> > Date: Tue, 9 Jun 2020 19:30:50 +0000
+> >
+> > > On Tue, 2020-06-09 at 11:36 -0700, David Miller wrote:
+> > >> From: Stephen Hemminger <stephen@networkplumber.org>
+> > >> Date: Tue, 9 Jun 2020 10:19:35 -0700
+> > >>
+> > >> > Yes, words do matter and convey a lot of implied connotation and
+> > >> > meaning.
+> > >>
+> > >> What is your long term plan?  Will you change all of the UAPI for
+> > >> bonding for example?
+> > >
+> > > The long term plan in my view includes talking with standards bodies =
+to
+> > > move new content to, for example, master/subordinate. In other words,
+> > > practical forward steps, not retroactively changing interfaces.
+> >
+> > When that knowledge is established legitimately in standards and
+> > transferred into common knowledge of these technologies, yes then
+> > please come present your proposals.
+>=20
+> Our hands are not completely tied by the specifications, as a
+> community we have a non-zero level of influence over standards bodies,
+> even direct participation in some. So we could do something stronger
+> than passively wait for standards to catch up. For example, deprecate
+> our consideration of future specifications that include this language
+> and set a cut off date.
+>=20
+> I understand the confusion that arises from using terminology
+> differently from the specification, but at the same time when
+> specification language actively hurts kernel code maintainability we
+> change it. For example, when I did the first iteration of what
+> eventually became libnvdimm Ingo rightly reacted to the naming being
+> too ACPI specification centric and wanting more kernel-centric naming.
+>=20
+> If the common kernel name for what was formerly called a "slave"
+> device is a "subordinate" device then the confusion is lessened, only
+> one common kernel translation to consider.
+>=20
+> > But right now using different words will create confusion.
+> >
+> > I also find master/subordinate an interesting proposal, what if master
+> > is a triggering term?  Why only slave?
+>=20
+> "slave" has a direct connection to human suffering deployed at global sca=
+le.
+>=20
+> One way I think about this is consider we have our first ever Linux
+> Plumbers on the African continent, and you had a choice about giving a
+> talk about how the git master branch operates, or a talk about slave
+> devices which one would you feel more immediately comfortable leading?
+> Any hesitation you would feel freely using the word slave with a
+> predominantly black audience is a similar speed bump a contributor
+> might feel needing to consume that term to get their job done.
+>=20
+> Explaining "no, not that connotation of slave" does not scale as much
+> as transitioning to another term.
+>=20
+> > I know people feel something needs to change, but do that moving
+> > forward for the technologies themselves.
+>=20
+> This is the start of a process that the kernel community can take an
+> active role to lead, we have it within our control to not wait for the
+> lowest common denominator to catch up.
+>=20
+> > Not how we implement support
+> > for a technology which is established already.
+> >
+> > Plant the seed, don't chop the tree down.
+>=20
+> I appreciate the engagement.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+It is interesting to see technical mind arguing about humanitarian
+topics. Usually I need to translate IT to theologies, historic teachers
+or linguists. So, let me try to do it other way around:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e9cc557752ab126c1b99@syzkaller.appspotmail.com
+- a language is not a snapshot. The meaning of words is changing
+  continually. For example, an ARM is buying Intel networking division and =
+all
+  i200 controller should be renamed to arm100..
+  I'm not familiar with your local history, so i give some examples to
+  German readers:
+  - The word "F=C3=BChrer" was abused by some historical person and event.
+  - The word "geil" is changed within one generation from sexual
+    erection to a positive emotion reusable in almost every context.
+  There is many language changes just within last century, please refer
+  to DUDEN to learn more about it:
+  https://www.duden.de/ueber_duden/auflagengeschichte
+  Or for more generic examples:
+  https://en.wikipedia.org/wiki/Language_change
 
-==================================================================
-BUG: KASAN: use-after-free in __read_once_size include/linux/compiler.h:252 [inline]
-BUG: KASAN: use-after-free in tipc_named_reinit+0x913/0x946 net/tipc/name_distr.c:344
-Read of size 8 at addr ffff8880580d2000 by task kworker/1:1/27
+- from your argumentation I would assume, you are trying to define a
+  language. A language not historically misused, so it will be
+  acceptable by every one. Or at least by the technical community.
+  Suddenly, I should disappoint you. The number of programming
+  languages defined by technical community is is still growing and none of =
+it
+  makes happy every one. How do you thing the reality looks for spoken lang=
+uage?
+  Welcome to my reality:
+  https://en.wikipedia.org/wiki/Universal_language
+  In case the historical argumentations are too boring, let me give you
+  a modern, less boring example:
+  https://youtu.be/7C-aB09i30E
 
-CPU: 1 PID: 27 Comm: kworker/1:1 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events tipc_net_finalize_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x413 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- __read_once_size include/linux/compiler.h:252 [inline]
- tipc_named_reinit+0x913/0x946 net/tipc/name_distr.c:344
- tipc_net_finalize net/tipc/net.c:138 [inline]
- tipc_net_finalize+0x1cf/0x310 net/tipc/net.c:131
- tipc_net_finalize_work+0x55/0x80 net/tipc/net.c:150
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
- worker_thread+0x96/0xe20 kernel/workqueue.c:2414
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-
-Allocated by task 22186:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc mm/kasan/common.c:494 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:467
- kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
- kmalloc include/linux/slab.h:555 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- tipc_nametbl_init+0x1b5/0x490 net/tipc/name_table.c:852
- tipc_init_net+0x381/0x5c0 net/tipc/core.c:79
- ops_init+0xaf/0x420 net/core/net_namespace.c:151
- setup_net+0x2de/0x860 net/core/net_namespace.c:341
- copy_net_ns+0x293/0x590 net/core/net_namespace.c:482
- create_new_namespaces+0x3fb/0xb30 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xbd/0x1f0 kernel/nsproxy.c:231
- ksys_unshare+0x43d/0x8e0 kernel/fork.c:2984
- __do_sys_unshare kernel/fork.c:3052 [inline]
- __se_sys_unshare kernel/fork.c:3050 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3050
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-Freed by task 191:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- tipc_exit_net+0x2c/0x270 net/tipc/core.c:113
- ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:186
- cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
- worker_thread+0x96/0xe20 kernel/workqueue.c:2414
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-
-The buggy address belongs to the object at ffff8880580d0000
- which belongs to the cache kmalloc-16k of size 16384
-The buggy address is located 8192 bytes inside of
- 16384-byte region [ffff8880580d0000, ffff8880580d4000)
-The buggy address belongs to the page:
-page:ffffea0001603400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 head:ffffea0001603400 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea0001509008 ffff8880aa001c50 ffff8880aa002380
-raw: 0000000000000000 ffff8880580d0000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880580d1f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880580d1f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880580d2000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff8880580d2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880580d2100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+- Are there any other attempts to change historical and linguistic
+  reality by removing and replacing something? Sure:
+  https://en.wikipedia.org/wiki/Book_burning
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Regards,
+Oleksij
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+--6rzrcepciphpb3j5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl7geJoACgkQ4omh9DUa
+UbPUVxAAtAFesYvW2blzrOec4ViiN4687g25pl4c/1E8dFBcBnGc1S7CkcxaRdLS
+dmna8qVGz8AHV0iI5xcxs9BgCvDQ0GLpHZXLVXdRNEaqzqjxeN3R71pRHAyGfLzQ
+5j+wa1GrA+aQcfCX0g8owjUkMipX+tv63KoMxMpvzKJCQvKlgwBxwnV2HIij7YIw
+HjYxfvrSzqLIPzHyJbv6ij6BXl2sfzORU5XqtGPHm0klwPOwntHAWxe8bCzkO3Xe
+o2ZH6fSFMWdFi7EppxOwGkjZclN68gklT2prGRUoSarvolgShoyl+BNsvw8+ef6v
+X+IoomBvz84xUtuigpS0BsG1dUGLF7PjAyJyPLxeW4MX1dngu9OKbOOnHE2Ek1sN
+EbWHMAFRsHgZlHYyBsI+iN0fqXvcznbuMdGUD1SkZwXF67LQvVImJ5dxoaLgjzew
+ihc1leTPojTd0+bXwZIInitD3SFqz1aalnTPry9nZSOAIo9KwQuA8pEYPCsVaPHw
+4NDr40N9euw/eDnrSnSBGH5/PkEVne7TV9C051t8IAd+UPxmBRNjeXsGpYE3obpF
+bbZzO5ogDqDE/GzHtoudUXe6s4U/BqumMtpqgO3XNV2XhQcxoabZwcalpL2nuz/H
+P4TEuVfCUH5DR3GSePnwuBFJyekn3nSMB9K58zljq9ORWb759BI=
+=aGp7
+-----END PGP SIGNATURE-----
+
+--6rzrcepciphpb3j5--
