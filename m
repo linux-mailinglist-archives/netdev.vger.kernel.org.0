@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8A61F4BA8
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 05:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41ACD1F4BB0
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 05:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbgFJDB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Jun 2020 23:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S1726144AbgFJDKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Jun 2020 23:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725927AbgFJDB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 23:01:58 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D3CC05BD1E;
-        Tue,  9 Jun 2020 20:01:58 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id i16so671320qtr.7;
-        Tue, 09 Jun 2020 20:01:58 -0700 (PDT)
+        with ESMTP id S1726030AbgFJDKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Jun 2020 23:10:45 -0400
+Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A8AC05BD1E;
+        Tue,  9 Jun 2020 20:10:43 -0700 (PDT)
+Received: by mail-vk1-xa41.google.com with SMTP id e1so228946vkd.1;
+        Tue, 09 Jun 2020 20:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=9BDkz46lWvTDN3YxKGr7Bl8qQegPZ/wDf2X35bbrkxU=;
-        b=oVKNo/tfvz7bFmNdvIMwTizX/CsT8Gxj6piNvPjqzCF7cJCI3wQOS7Hs/HkFy/pMjn
-         mQVorA9tU4t/ylaGAJpQZFrmG+Q+MopbBOyPQ0PzFOhqkJ/DH/0Yafq3HOw7AndkRtNZ
-         SfusXBFGo2lTUTDTOO8g1n9dT/ZxKcHOMg+Uc+6d5b6JD+s3yMj2RikNoEKXSom/kaD/
-         Qp4dSrLdIfVKC2/Mx40xuzWkOZ1W1/FGfSLmisSFwlayob8MtzuMRjhlV1mLu4TmZjr9
-         Z3VtByXkO8hKPzHHwdmQuvLURHxXGA0eWs0zvL+xiQMEmvDU7kkwDPnoFuZ9fOxmMtA1
-         iUwA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KZBhwJpe3f99/5LDVB8Bc5/cCcPk7wAvZ6DTVQ9hBQo=;
+        b=avSeW6EdipkgvBtqfFwap8GyOTxynTVR7JqrquqYKuotU0/nUvlM7xlHlJ1tAitGDu
+         QUYLYb87xZef7qj3qeDE1k4EmFE1cbYmQBfwIp09ULfRs+wYjiabO06Gibetk1NLU5gJ
+         rz5CnO6egYTloKqDOFWswZX+Qro6lyuXdsGra+adGQtRrNeqz0rCxNlGxP7ZObqx4AUF
+         stvyFWZSCqViy5vTX6NLyPyMg06O5duxH5cDOYMXNueL8NZbQl9UJrPYb9l3LdrILH6E
+         mdsSwmmV1rLAh1NQeFdUB2r7ptxXppY9s3qS69KO4aMfegJuLl9rYGsN+J8hVyUg8zJP
+         qYFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=9BDkz46lWvTDN3YxKGr7Bl8qQegPZ/wDf2X35bbrkxU=;
-        b=Nt7LpsCpQkA0L8sWbzHXcQc20oSvmrFU0gx4DRQrcsgRMzJGjy2AV6dleGL9fyRxoh
-         dLPtyU41SjFIRuQejvLp1sE0zsmoyN9v+O/8EvaB0hNgTzZ7InxSLuybnvND5G4YJFDx
-         QrbT8ZCdhBB76Fw8CuawupSGj6tcAyvLGh3QQzJTdvbC9xLg2DLBrA1Cakmu0vd/jgA+
-         VZU2fZYE1MmFrvErymTIdJwG+OBry2wrdWoam5fT1iQIccvbwDYpTekwF2vmGws1/qqg
-         2kDnwuNEV4AjhTbDrq3RVPr/DIEXqlvhnq7dqGhCc/MBF62yIFo31b7WEw9TfvNbLXGl
-         mrDQ==
-X-Gm-Message-State: AOAM530VO8zevcedf7YlTk1+UaFH1Raq/7u5CbN5Li/kk7YlDePbn6UY
-        nmhqKDIKp5GOFSo5VqARnr0=
-X-Google-Smtp-Source: ABdhPJwO45Dbs22xOgau2tZLeyyht/La6qYJg4UW4TydiwZ68nZvNhFSDc2qDJGiLzO3Va+Sh21zaw==
-X-Received: by 2002:ac8:18b9:: with SMTP id s54mr1089544qtj.176.1591758117561;
-        Tue, 09 Jun 2020 20:01:57 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:29ac:7979:1e2e:c67b])
-        by smtp.googlemail.com with ESMTPSA id y19sm10778716qki.19.2020.06.09.20.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 20:01:56 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] xdp_rxq_info_user: Add null check after malloc
-Date:   Tue,  9 Jun 2020 23:01:36 -0400
-Message-Id: <20200610030145.17263-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KZBhwJpe3f99/5LDVB8Bc5/cCcPk7wAvZ6DTVQ9hBQo=;
+        b=DWA14aZkwaQ44lR6kIP/BMdQn4DL4eG6pG7wJnebWakrj9MO9orf8XJX+UG8M0BpgG
+         S3C/EObVpyMUfau8z9puNbItd7aMAav0hZcBdcF4Ol+rEuJ0kU/sqB5rjO0mv4dMV0A+
+         3FjC1LJWCDCyw68s/RTa6DrRXby8dc1ige7lg9XPj45QlHBw5tdkIHuOvi5T1GKanGbU
+         nx2BjSqqiE5xQp/3QeP9AmvwTCb/+aVvqLe50B0ZArdkRbu0mIpzpDVB8uIpf3o1JiiP
+         DtXdOGNCOXeyolQoavxa/7o8QdQsoW5EPVLTTub2KGpz7OnFHyLaWGU0+IFVMXRyTGyr
+         IHFA==
+X-Gm-Message-State: AOAM533ajg6jBaBWKQ/YfLn6b5quzMNkN8X9ME5uK5DMTUz/4jdVOShM
+        OzOXjOR5uKdvDbKHtOKT5kxF7sqpINDNxldHZFI=
+X-Google-Smtp-Source: ABdhPJwhJJbrVDdVhPbiFe8woY8RZS6gzI8WAuQcnLKqPCqx6QB1rkMVrPvxE9COyN4yin3SLa4xOGD0F8W2ftqaENc=
+X-Received: by 2002:a1f:9094:: with SMTP id s142mr886695vkd.6.1591758642398;
+ Tue, 09 Jun 2020 20:10:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
+ <20200609111323.GA19604@bombadil.infradead.org> <c239d5df-e069-2091-589e-30f341c2cbd3@infradead.org>
+ <9a79aded6981ec47f1f8b317b784e6e44158ac61.camel@perches.com>
+ <CAJfuBxwyDysP30cMWDusw4CsSQitchA5hOKkpk1PktbsbCKTSw@mail.gmail.com> <6115b15ced02686f7408417411ff758445b42421.camel@perches.com>
+In-Reply-To: <6115b15ced02686f7408417411ff758445b42421.camel@perches.com>
+From:   jim.cromie@gmail.com
+Date:   Tue, 9 Jun 2020 21:10:15 -0600
+Message-ID: <CAJfuBxzd1Jmd726_zYxfjPy1YgTpcLzLU_fh=pd5FEBaVFCWrw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/7] Venus dynamic debug
+To:     Joe Perches <joe@perches.com>
+Cc:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Baron <jbaron@akamai.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+On Tue, Jun 9, 2020 at 4:23 PM Joe Perches <joe@perches.com> wrote:
+>
+> On Tue, 2020-06-09 at 15:21 -0600, jim.cromie@gmail.com wrote:
+> >
+> > As Joe noted, there is a lot of ad-hockery to possibly clean up,
+> > but I dont grok how these levels should be distinguished from
+> > KERN_(WARN|INFO|DEBUG) constants.
+>
+> These are not KERN_<LEVEL> at all, all are emitted at KERN_DEBUG
 
-The memset call is made right after malloc call which
-can return a NULL pointer upon failure causing a 
-segmentation fault. Fix this by adding a null check 
-right after malloc() and then do memset().
+yes indeed.  but they are chosen by programmer, fixed by compiler.  not dynamic.
+<pmladek@suse.com> also noted the conceptual adjacency (ambiguity),
+and referenced KERN_<lvl>
 
----
- samples/bpf/xdp_rxq_info_user.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..2d03c84a4cca 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -202,11 +202,11 @@ static struct datarec *alloc_record_per_cpu(void)
- 
- 	size = sizeof(struct datarec) * nr_cpus;
- 	array = malloc(size);
--	memset(array, 0, size);
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
- 	}
-+	memset(array, 0, size);
- 	return array;
- }
- 
-@@ -218,11 +218,11 @@ static struct record *alloc_record_per_rxq(void)
- 
- 	size = sizeof(struct record) * nr_rxqs;
- 	array = malloc(size);
--	memset(array, 0, size);
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
- 		exit(EXIT_FAIL_MEM);
- 	}
-+	memset(array, 0, size);
- 	return array;
- }
- 
-@@ -233,11 +233,11 @@ static struct stats_record *alloc_stats_record(void)
- 	int i;
- 
- 	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
- 	}
-+	memset(rec, 0, sizeof(*rec));
- 	rec->rxq = alloc_record_per_rxq();
- 	for (i = 0; i < nr_rxqs; i++)
- 		rec->rxq[i].cpu = alloc_record_per_cpu();
--- 
-2.17.1
 
+If we need this extra query-term, lets call it   mbits / mflags /
+module_flags / module_bits
+it needs to be module specific, so also requiring "module foo" search
+term in the query.
+( "modflags" is no good, cuz "mod" also means "modified" - just mflags
+is better )
+
+Already, we have function, file, module, all of which convey semantic
+structure of the code,
+and they also match wildcards, so " function foo_*_* " is an effective grouping.
+Id think this would cover most cases.
+
+Finally, all "module venus +p " callsites could be explicitly
+specified individually in
+universe=`grep venus control | wc -l`
+lines, likely a small set.
+Using the semantic structure exposed by `grep venus control`, it would
+likely be far less.
